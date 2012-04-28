@@ -8,10 +8,10 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-import com.untangle.uvm.message.StatDescs;
 import com.untangle.uvm.node.NodeProperties;
 import com.untangle.uvm.node.License;
 import com.untangle.uvm.node.NodeSettings;
+import com.untangle.uvm.node.ABCMetric;
 
 @SuppressWarnings("serial")
 public class RackView implements Serializable
@@ -19,23 +19,18 @@ public class RackView implements Serializable
     private List<Application> applications;
     private List<NodeSettings> instances;
     private List<NodeProperties> nodeProperties;
-    private Map<Long, StatDescs> statDescs;
+    private Map<Long, List<ABCMetric>> nodeStats;
     private Map<String, License> licenseMap;
     private Map<Long, NodeSettings.NodeState> runStates;
 
-    public RackView(List<Application> applications,
-                    List<NodeSettings> instances,
-                    List<NodeProperties> nodeProperties,
-                    Map<Long, StatDescs> statDescs,
-                    Map<String, License> license,
-                    Map<Long, NodeSettings.NodeState> runStates)
+    public RackView(List<Application> applications, List<NodeSettings> instances, List<NodeProperties> nodeProperties, Map<Long, List<ABCMetric>> nodeStats, Map<String, License> license, Map<Long, NodeSettings.NodeState> runStates)
     {
-        this.applications = Collections.unmodifiableList(applications);
-        this.instances = Collections.unmodifiableList(instances);
-        this.nodeProperties = Collections.unmodifiableList(nodeProperties);
-        this.statDescs = Collections.unmodifiableMap(statDescs);
-        this.licenseMap = Collections.unmodifiableMap(license);
-        this.runStates = Collections.unmodifiableMap(runStates);
+        this.applications = applications;
+        this.instances = instances;
+        this.nodeProperties = nodeProperties;
+        this.nodeStats = nodeStats;
+        this.licenseMap = license;
+        this.runStates = runStates;
     }
 
     public List<Application> getApplications()
@@ -53,9 +48,9 @@ public class RackView implements Serializable
         return nodeProperties;
     }
     
-    public Map<Long, StatDescs> getStatDescs()
+    public Map<Long, List<ABCMetric>> getNodeStats()
     {
-        return statDescs;
+        return nodeStats;
     }
 
     public Map<String, License> getLicenseMap()
@@ -70,7 +65,7 @@ public class RackView implements Serializable
     @Override
     public String toString()
     {
-        return "RackView\n  AVAILABLE: " + applications + "\n  INSTANCES: " + instances + "\n  STAT DESCS: " + statDescs;
+        return "RackView\n  AVAILABLE: " + applications + "\n  INSTANCES: " + instances + "\n  STAT DESCS: " + nodeStats;
     }
 
 }

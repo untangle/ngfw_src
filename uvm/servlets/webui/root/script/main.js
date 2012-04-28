@@ -696,7 +696,7 @@ Ung.Main=Ext.extend(Object, {
 
             var node=this.createNode(nodeProperties,
                                      nodeSettings,
-                                     rpc.rackView.statDescs.map[nodeSettings.id],
+                                     null,
                                      rpc.rackView.licenseMap.map[nodeProperties.name],
                                      rpc.rackView.runStates.map[nodeSettings.id]);
             this.nodes.push(node);
@@ -1101,7 +1101,7 @@ Ung.Main=Ext.extend(Object, {
         var selVirtualRackIndex = 0;
         for( var i=0 ; i<rpc.policies.length ; i++ ) {
             var policy = rpc.policies[i];
-            selVirtualRackIndex = (policyId == 1 ? i :selVirtualRackIndex);
+            selVirtualRackIndex = (policy.policyId == 1 ? i :selVirtualRackIndex);
             items.push({text:policy.name,
                         value:policy.policyId,
                         index:i,

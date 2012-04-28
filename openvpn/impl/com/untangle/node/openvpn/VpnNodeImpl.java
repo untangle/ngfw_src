@@ -20,14 +20,12 @@ import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.MailSender;
 import com.untangle.uvm.SettingsManager;
 import com.untangle.uvm.node.NodeSettings;
-import com.untangle.uvm.message.BlingBlinger;
-import com.untangle.uvm.message.Counters;
-import com.untangle.uvm.message.MessageManager;
 import com.untangle.uvm.node.HostAddress;
 import com.untangle.uvm.node.IPAddress;
 import com.untangle.uvm.node.ValidateException;
 import com.untangle.uvm.node.Validator;
 import com.untangle.uvm.node.EventLogQuery;
+import com.untangle.uvm.node.ABCMetric;
 import com.untangle.uvm.util.I18nUtil;
 import com.untangle.uvm.util.JsonClient;
 import com.untangle.uvm.util.TransactionWork;
@@ -42,8 +40,12 @@ public class VpnNodeImpl extends NodeBase implements VpnNode
 {
     private static final String SETTINGS_CONVERSION_SCRIPT = System.getProperty( "uvm.bin.dir" ) + "/openvpn-convert-settings.py";
 
-    private static final String TRAN_NAME    = "openvpn";
-    private static final String WEB_APP      = TRAN_NAME;
+    private static final String STAT_PASS = "pass";
+    private static final String STAT_BLOCK = "block";
+    private static final String STAT_CONNECT = "connect";
+
+    private static final String NODE_NAME    = "openvpn";
+    private static final String WEB_APP      = NODE_NAME;
     private static final String WEB_APP_PATH = "/" + WEB_APP;
 
     private static final String CLEANUP_SCRIPT = Constants.SCRIPT_DIR + "/cleanup";
@@ -77,10 +79,6 @@ public class VpnNodeImpl extends NodeBase implements VpnNode
 
     private Sandbox sandbox = null;
 
-    private final BlingBlinger passBlinger;
-    private final BlingBlinger blockBlinger;
-    private final BlingBlinger connectBlinger;
-
     private String adminDownloadClientKey = null;
     private long   adminDownloadClientExpiration = 0l;
 
@@ -97,20 +95,14 @@ public class VpnNodeImpl extends NodeBase implements VpnNode
 
         /* Have to figure out pipeline ordering, this should always
          * next to towards the outside, then there is OpenVpn and then Nat */
-        this.pipeSpec = new SoloPipeSpec
-            ( TRAN_NAME, this, handler, Fitting.OCTET_STREAM, Affinity.CLIENT,
-              SoloPipeSpec.MAX_STRENGTH - 2);
+        this.pipeSpec = new SoloPipeSpec( NODE_NAME, this, handler, Fitting.OCTET_STREAM, Affinity.CLIENT, SoloPipeSpec.MAX_STRENGTH - 2);
         this.pipeSpecs = new SoloPipeSpec[] { pipeSpec };
 
-        MessageManager lmm = UvmContextFactory.context().messageManager();
-        Counters c = lmm.getCounters(getNodeSettings().getId());
-        blockBlinger = c.addActivity("block", I18nUtil.marktr("Clients blocked"), null, I18nUtil.marktr("BLOCK"));
-        passBlinger = c.addActivity("pass", I18nUtil.marktr("Clients passed"), null, I18nUtil.marktr("PASS"));
-        connectBlinger = c.addActivity("connect", I18nUtil.marktr("Clients connected"), null, I18nUtil.marktr("CONNECT"));
-        lmm.setActiveMetrics(getNodeSettings().getId(), blockBlinger, passBlinger, connectBlinger);
+        this.addStat(new ABCMetric(STAT_BLOCK, I18nUtil.marktr("Sessions blocked")));
+        this.addStat(new ABCMetric(STAT_PASS, I18nUtil.marktr("Sessions passed")));
+        this.addStat(new ABCMetric(STAT_CONNECT, I18nUtil.marktr("Clients Connected")));
 
-        this.connectEventsQuery = new EventLogQuery(I18nUtil.marktr("Closed Sessions"),
-                                                   "FROM OpenvpnLogEventFromReports evt ORDER BY evt.timeStamp DESC");
+        this.connectEventsQuery = new EventLogQuery(I18nUtil.marktr("Closed Sessions"), "FROM OpenvpnLogEventFromReports evt ORDER BY evt.timeStamp DESC");
     }
 
     private void readNodeSettings()
@@ -821,17 +813,17 @@ public class VpnNodeImpl extends NodeBase implements VpnNode
 
     public void incrementBlockCount()
     {
-        blockBlinger.increment();
+        this.incrementStat(this.STAT_BLOCK);
     }
 
     public void incrementPassCount()
     {
-        passBlinger.increment();
+        this.incrementStat(this.STAT_PASS);
     }
 
     public void incrementConnectCount()
     {
-        connectBlinger.increment();
+        this.incrementStat(this.STAT_CONNECT);
     }
 
     public Validator getValidator()

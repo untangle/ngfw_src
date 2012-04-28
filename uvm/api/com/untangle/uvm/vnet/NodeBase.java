@@ -4,7 +4,10 @@
 package com.untangle.uvm.vnet;
 
 import java.util.HashSet;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.LinkedList;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
@@ -25,6 +28,7 @@ import com.untangle.uvm.node.Node;
 import com.untangle.uvm.node.NodeProperties;
 import com.untangle.uvm.node.NodeSettings;
 import com.untangle.uvm.node.DeployException;
+import com.untangle.uvm.node.ABCMetric;
 import com.untangle.uvm.util.I18nUtil;
 import com.untangle.uvm.util.TransactionWork;
 import com.untangle.uvm.logging.LogEvent;
@@ -73,6 +77,12 @@ public abstract class NodeBase implements Node
      */
     private Set<Node> children = new HashSet<Node>();
 
+    /**
+     * StatList
+     */
+    private Map<String, ABCMetric> metrics = new HashMap<String, ABCMetric>();
+    private List<ABCMetric> metricList = new ArrayList<ABCMetric>();
+        
     private NodeSettings.NodeState currentState;
     private boolean wasStarted = false;
 
@@ -85,7 +95,7 @@ public abstract class NodeBase implements Node
     {
         this.nodeSettings = nodeSettings;
         this.nodeProperties = nodeProperties;
-        
+
         currentState = NodeState.LOADED;
     }
 
@@ -371,6 +381,64 @@ public abstract class NodeBase implements Node
         return sessions;
     }
 
+    public List<ABCMetric> getStats()
+    {
+        return metricList;
+    }
+
+    public void decrementStat( String name )
+    {
+        adjustStat( name, -1L );
+    }
+
+    public void incrementStat( String name )
+    {
+        adjustStat( name, 1L );
+    }
+
+    public void setStat( String name, Long newValue )
+    {
+        if ( name == null ) {
+            logger.warn( "Invalid stat: " + name );
+            return;
+        }
+        
+        ABCMetric metric = metrics.get(name);
+        if (metric == null) {
+            logger.warn("ABCMetric not found: " + name);
+            return;
+        }
+        metric.setValue( newValue );
+    }
+
+    public void adjustStat( String name, Long adjustmentValue )
+    {
+        if ( name == null ) {
+            logger.warn( "Invalid stat: " + name );
+            return;
+        }
+        
+        ABCMetric metric = metrics.get(name);
+        if (metric == null) {
+            logger.warn("ABCMetric not found: " + name);
+            return;
+        }
+
+        Long value = metric.getValue();
+        if (value == null)
+            value = 0L;
+        value = value + adjustmentValue;
+        metric.setValue( value );
+    }
+
+    public void addStat( ABCMetric metric )
+    {
+        if (metrics.get(metric.getName()) != null)
+            return;
+        this.metrics.put( metric.getName(), metric );
+        this.metricList.add( metric );
+    }
+    
     public String toString()
     {
         return "Node[" + getNodeSettings().getId() + "," + getNodeSettings().getNodeName() + "]";

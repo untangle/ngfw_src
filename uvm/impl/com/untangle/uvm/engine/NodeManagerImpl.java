@@ -31,7 +31,6 @@ import com.untangle.uvm.ArgonManager;
 import com.untangle.uvm.SettingsManager;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.SessionMatcher;
-import com.untangle.uvm.message.Counters;
 import com.untangle.uvm.message.MessageManager;
 import com.untangle.uvm.message.NodeInstantiatedMessage;
 import com.untangle.uvm.node.NodeManagerSettings;
@@ -305,12 +304,8 @@ public class NodeManagerImpl implements NodeManager
         PackageDesc.Type type = packageDesc.getType();
 
         if ( node != null && !packageDesc.isInvisible() && (PackageDesc.Type.NODE == type || PackageDesc.Type.SERVICE == type)) {
-            MessageManager lmm = uvmContext.messageManager();
-            Counters c = lmm.getCounters(node.getNodeSettings().getId());
-
-            NodeInstantiatedMessage ne = new NodeInstantiatedMessage(nodeProperties, nodeSettings, c.getStatDescs(), uvmContext.licenseManager().getLicense(packageDesc.getName()), node.getNodeSettings().getPolicyId());
-            MessageManager mm = uvmContext.messageManager();
-            mm.submitMessage(ne);
+            NodeInstantiatedMessage ne = new NodeInstantiatedMessage(nodeProperties, nodeSettings, node.getStats(), uvmContext.licenseManager().getLicense(packageDesc.getName()), node.getNodeSettings().getPolicyId());
+            uvmContext.messageManager().submitMessage(ne);
         }
 
         clearEnabledNodes();

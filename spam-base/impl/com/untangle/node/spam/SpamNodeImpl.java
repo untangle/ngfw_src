@@ -11,9 +11,6 @@ import org.apache.log4j.Logger;
 
 import com.untangle.node.token.TokenAdaptor;
 import com.untangle.uvm.UvmContextFactory;
-import com.untangle.uvm.message.BlingBlinger;
-import com.untangle.uvm.message.Counters;
-import com.untangle.uvm.message.MessageManager;
 import com.untangle.uvm.util.I18nUtil;
 import com.untangle.uvm.util.TransactionWork;
 import com.untangle.uvm.vnet.NodeBase;
@@ -22,11 +19,19 @@ import com.untangle.uvm.vnet.Fitting;
 import com.untangle.uvm.vnet.PipeSpec;
 import com.untangle.uvm.vnet.SoloPipeSpec;
 import com.untangle.uvm.node.EventLogQuery;
+import com.untangle.uvm.node.ABCMetric;
 
 public class SpamNodeImpl extends NodeBase implements SpamNode
 {
     private final Logger logger = Logger.getLogger(getClass());
 
+    private static final String STAT_RECEIVED = "email-received";
+    private static final String STAT_SPAM = "spam-detected";
+    private static final String STAT_PASS = "pass";
+    private static final String STAT_DROP = "drop";
+    private static final String STAT_MARK = "mark";
+    private static final String STAT_QUARANTINE = "quarantine";
+    
     private final TarpitEventHandler tarpitHandler = new TarpitEventHandler(this);
 
     // We want to make sure that spam is before virus in the pipeline (towards the client for smtp,
@@ -44,13 +49,6 @@ public class SpamNodeImpl extends NodeBase implements SpamNode
     private final SpamAssassinDaemon saDaemon;
 
     protected volatile SpamSettings spamSettings;
-
-    private final BlingBlinger emailReceivedBlinger;
-    private final BlingBlinger spamDetectedBlinger;
-    private final BlingBlinger passBlinger;
-    private final BlingBlinger blockBlinger;
-    private final BlingBlinger markBlinger;
-    private final BlingBlinger quarantineBlinger;
 
     private EventLogQuery allEventQuery;
     private EventLogQuery spamEventQuery;
@@ -109,15 +107,12 @@ public class SpamNodeImpl extends NodeBase implements SpamNode
                                                   "AND evt.policyId = :policyId " +
                                                   "ORDER BY evt.timeStamp DESC");
         
-        MessageManager lmm = UvmContextFactory.context().messageManager();
-        Counters c = lmm.getCounters(getNodeSettings().getId());
-        passBlinger = c.addActivity("pass", I18nUtil.marktr("Messages passed"), null, I18nUtil.marktr("PASS"));
-        blockBlinger = c.addActivity("block", I18nUtil.marktr("Messages dropped"), null, I18nUtil.marktr("DROP"));
-        markBlinger = c.addActivity("mark", I18nUtil.marktr("Messages marked"), null, I18nUtil.marktr("MARK"));
-        quarantineBlinger = c.addActivity("quarantine", I18nUtil.marktr("Messages quarantined"), null, I18nUtil.marktr("QUARANTINE"));
-        spamDetectedBlinger = c.addMetric("spam", I18nUtil.marktr("Spam detected"), null);
-        emailReceivedBlinger = c.addMetric("email", I18nUtil.marktr("Messages received"), null);
-        lmm.setActiveMetrics(getNodeSettings().getId(), passBlinger, blockBlinger, markBlinger, quarantineBlinger);
+        this.addStat(new ABCMetric(STAT_RECEIVED, I18nUtil.marktr("Messages received")));
+        this.addStat(new ABCMetric(STAT_PASS, I18nUtil.marktr("Messages passed")));
+        this.addStat(new ABCMetric(STAT_DROP, I18nUtil.marktr("Messages dropped")));
+        this.addStat(new ABCMetric(STAT_MARK, I18nUtil.marktr("Messages marked")));
+        this.addStat(new ABCMetric(STAT_QUARANTINE, I18nUtil.marktr("Messages quarantined")));
+        this.addStat(new ABCMetric(STAT_SPAM, I18nUtil.marktr("Spam detected")));
     }
 
     public EventLogQuery[] getEventQueries()
@@ -133,36 +128,40 @@ public class SpamNodeImpl extends NodeBase implements SpamNode
     /**
      * Increment the counter for blocked (SMTP only).
      */
-    public void incrementBlockCount() {
-        blockBlinger.increment();
-        spamDetectedBlinger.increment();
-        emailReceivedBlinger.increment();
+    public void incrementBlockCount()
+    {
+        this.incrementStat(STAT_RECEIVED);
+        this.incrementStat(STAT_DROP);
+        this.incrementStat(STAT_SPAM);
     }
 
     /**
      * Increment the counter for messages passed
      */
-    public void incrementPassCount() {
-        passBlinger.increment();
-        emailReceivedBlinger.increment();
+    public void incrementPassCount()
+    {
+        this.incrementStat(STAT_RECEIVED);
+        this.incrementStat(STAT_PASS);
     }
 
     /**
      * Increment the counter for messages marked
      */
-    public void incrementMarkCount() {
-        markBlinger.increment();
-        spamDetectedBlinger.increment();
-        emailReceivedBlinger.increment();
+    public void incrementMarkCount()
+    {
+        this.incrementStat(STAT_RECEIVED);
+        this.incrementStat(STAT_MARK);
+        this.incrementStat(STAT_SPAM);
     }
 
     /**
      * Increment the count for messages quarantined.
      */
-    public void incrementQuarantineCount() {
-        quarantineBlinger.increment();
-        spamDetectedBlinger.increment();
-        emailReceivedBlinger.increment();
+    public void incrementQuarantineCount()
+    {
+        this.incrementStat(STAT_QUARANTINE);
+        this.incrementStat(STAT_SPAM);
+        this.incrementStat(STAT_RECEIVED);
     }
 
     protected void initSpamDnsblList(SpamSettings tmpSpamSettings)
@@ -170,8 +169,8 @@ public class SpamNodeImpl extends NodeBase implements SpamNode
         initSpamDnsblList(tmpSpamSettings.getSpamDnsblList());
     }
 
-    protected void initSpamDnsblList(List<SpamDnsbl> spamDnsblList) {
-
+    protected void initSpamDnsblList(List<SpamDnsbl> spamDnsblList)
+    {
         if (( null == spamDnsblList) || ( false == spamDnsblList.isEmpty())) {
             // if already initialized,
             // use list as-is (e.g., database contains final word)
@@ -190,7 +189,8 @@ public class SpamNodeImpl extends NodeBase implements SpamNode
         return;
     }
 
-    protected void configureSpamSettings(SpamSettings tmpSpamSettings) {
+    protected void configureSpamSettings(SpamSettings tmpSpamSettings)
+    {
         tmpSpamSettings.setSmtpConfig(new SpamSmtpConfig(true,
                 SmtpSpamMessageAction.QUARANTINE,
                 SpamProtoConfig.DEFAULT_STRENGTH,

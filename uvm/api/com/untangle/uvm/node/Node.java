@@ -71,4 +71,9 @@ public interface Node
      * This is just a convenience method for different parts of the node to log events
      */
     void logEvent(LogEvent evt);
+
+    /**
+     * Return statistics tracked for this node (if any)
+     */
+    List<ABCMetric> getStats();
 }

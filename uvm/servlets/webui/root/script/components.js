@@ -1902,7 +1902,7 @@ Ung.MessageManager = {
                                 refreshApps=true;
                                 var node=main.getNode( msg.nodeProperties.name, msg.policyId );
                                 if(!node) {
-                                    node=main.createNode(msg.nodeProperties, msg.nodeSettings, msg.statDescs, msg.license,"INITIALIZED");
+                                    node=main.createNode(msg.nodeProperties, msg.nodeSettings, null, msg.license,"INITIALIZED");
                                     main.nodes.push(node);
                                     main.addNode(node,true);
                                     main.removeParentNode( node, msg.policyId );

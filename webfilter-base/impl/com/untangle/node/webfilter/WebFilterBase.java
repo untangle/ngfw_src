@@ -19,15 +19,13 @@ import com.untangle.uvm.UvmContext;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.node.NodeSettings;
 import com.untangle.uvm.node.NodeProperties;
-import com.untangle.uvm.message.BlingBlinger;
-import com.untangle.uvm.message.Counters;
-import com.untangle.uvm.message.MessageManager;
 import com.untangle.uvm.node.IPMaskedAddressRule;
 import com.untangle.uvm.node.IPMaskedAddressValidator;
 import com.untangle.uvm.node.GenericRule;
 import com.untangle.uvm.node.Rule;
 import com.untangle.uvm.node.Validator;
 import com.untangle.uvm.node.EventLogQuery;
+import com.untangle.uvm.node.ABCMetric;
 import com.untangle.uvm.util.I18nUtil;
 import com.untangle.uvm.util.TransactionWork;
 import com.untangle.uvm.vnet.NodeBase;
@@ -46,6 +44,11 @@ public abstract class WebFilterBase extends NodeBase implements WebFilter
 {
     private static final String SETTINGS_CONVERSION_SCRIPT = System.getProperty( "uvm.bin.dir" ) + "/webfilter-base-convert-settings.py";
 
+    private static final String STAT_SCAN = "scan";
+    private static final String STAT_BLOCK = "block";
+    private static final String STAT_PASS = "pass";
+    private static final String STAT_PASS_POLICY = "pass-policy";
+    
     protected static int deployCount = 0;
 
     protected final Logger logger = Logger.getLogger(getClass());
@@ -58,11 +61,6 @@ public abstract class WebFilterBase extends NodeBase implements WebFilter
     protected final WebFilterReplacementGenerator replacementGenerator;
 
     protected volatile WebFilterSettings settings;
-
-    protected final BlingBlinger scanBlinger;
-    protected final BlingBlinger passBlinger;
-    protected final BlingBlinger blockBlinger;
-    protected final BlingBlinger passLogBlinger;
 
     protected final UnblockedSitesMonitor unblockedSitesMonitor;
 
@@ -101,17 +99,13 @@ public abstract class WebFilterBase extends NodeBase implements WebFilter
                                                    "AND evt.policyId = :policyId " + 
                                                    "ORDER BY evt.timeStamp DESC");
                                                    
+        this.addStat(new ABCMetric(STAT_SCAN, I18nUtil.marktr("Pages scanned")));
+        this.addStat(new ABCMetric(STAT_BLOCK, I18nUtil.marktr("Pages blocked")));
+        this.addStat(new ABCMetric(STAT_PASS, I18nUtil.marktr("Pages passed")));
+        this.addStat(new ABCMetric(STAT_PASS_POLICY, I18nUtil.marktr("Passed by policy")));
 
-
-        MessageManager lmm = UvmContextFactory.context().messageManager();
-        Counters c = lmm.getCounters(getNodeSettings().getId());
-        scanBlinger = c.addActivity("scan", I18nUtil.marktr("Pages scanned"), null, I18nUtil.marktr("SCAN"));
-        blockBlinger = c.addActivity("block", I18nUtil.marktr("Pages blocked"), null, I18nUtil.marktr("BLOCK"));
-        passBlinger = c.addActivity("pass", I18nUtil.marktr("Pages passed"), null, I18nUtil.marktr("PASS"));
-        passLogBlinger = c.addMetric("log", I18nUtil.marktr("Passed by policy"), null);
-        lmm.setActiveMetrics(getNodeSettings().getId(), scanBlinger, blockBlinger, passBlinger, passLogBlinger);
-
-        unblockedSitesMonitor = new UnblockedSitesMonitor(this);
+        this.unblockedSitesMonitor = new UnblockedSitesMonitor(this);
+        
     }
 
     public EventLogQuery[] getEventQueries()
@@ -303,22 +297,22 @@ public abstract class WebFilterBase extends NodeBase implements WebFilter
 
     public void incrementScanCount()
     {
-        scanBlinger.increment();
+        this.incrementStat(STAT_SCAN);
     }
 
     public void incrementBlockCount()
     {
-        blockBlinger.increment();
+        this.incrementStat(STAT_BLOCK);
     }
 
     public void incrementPassCount()
     {
-        passBlinger.increment();
+        this.incrementStat(STAT_PASS);
     }
 
     public void incrementPassLogCount()
     {
-        passLogBlinger.increment();
+        this.incrementStat(STAT_PASS_POLICY);
     }
 
     protected WebFilterReplacementGenerator buildReplacementGenerator()

@@ -3,26 +3,28 @@
  */
 package com.untangle.uvm.message;
 
+import java.util.List;
+
 import com.untangle.uvm.node.License;
 import com.untangle.uvm.node.NodeProperties;
 import com.untangle.uvm.node.NodeSettings;
+import com.untangle.uvm.node.ABCMetric;
 import com.untangle.uvm.message.Message;
-import com.untangle.uvm.message.StatDescs;
 
 @SuppressWarnings("serial")
 public class NodeInstantiatedMessage extends Message
 {
     private final NodeProperties nodeProperties;
     private final NodeSettings nodeSettings;
-    private final StatDescs statDescs;
+    private final List<ABCMetric> nodeStats;
     private final License license;
     private final Long policyId;
     
-    public NodeInstantiatedMessage(NodeProperties nodeProperties, NodeSettings nodeSettings, StatDescs statDescs, License license, Long policyId)
+    public NodeInstantiatedMessage(NodeProperties nodeProperties, NodeSettings nodeSettings, List<ABCMetric> nodeStats, License license, Long policyId)
     {
         this.nodeProperties = nodeProperties;
         this.nodeSettings = nodeSettings;
-        this.statDescs = statDescs;
+        this.nodeStats = nodeStats;
         this.license = license;
         this.policyId = policyId;
     }
@@ -42,9 +44,9 @@ public class NodeInstantiatedMessage extends Message
         return this.nodeSettings;
     }
     
-    public StatDescs getStatDescs()
+    public List<ABCMetric> getNodeStats()
     {
-        return this.statDescs;
+        return this.nodeStats;
     }
 
     public License getLicense()

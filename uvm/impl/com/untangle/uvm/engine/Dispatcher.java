@@ -23,15 +23,13 @@ import com.untangle.uvm.argon.ArgonTCPSessionImpl;
 import com.untangle.uvm.argon.ArgonTCPNewSessionRequest;
 import com.untangle.uvm.argon.ArgonUDPNewSessionRequest;
 import com.untangle.uvm.argon.ArgonIPNewSessionRequest;
-import com.untangle.uvm.message.BlingBlinger;
-import com.untangle.uvm.message.Counters;
-import com.untangle.uvm.message.LoadCounter;
-import com.untangle.uvm.message.MessageManager;
 import com.untangle.uvm.node.Node;
 import com.untangle.uvm.node.NodeProperties;
 import com.untangle.uvm.node.NodeManager;
+import com.untangle.uvm.node.ABCMetric;
 import com.untangle.uvm.util.I18nUtil;
 import com.untangle.uvm.util.MetaEnv;
+import com.untangle.uvm.vnet.NodeBase;
 import com.untangle.uvm.vnet.IPSession;
 import com.untangle.uvm.vnet.VnetSessionDesc;
 import com.untangle.uvm.vnet.SessionStats;
@@ -51,9 +49,6 @@ import com.untangle.uvm.vnet.event.UDPSessionEvent;
 /**
  * One dispatcher per ArgonConnector.  This where all the new session logic
  * lives, and the event dispatching.
- *
- * @author <a href="mailto:jdi@untangle.com">John Irwin</a>
- * @version 1.0
  */
 class Dispatcher implements com.untangle.uvm.argon.NewSessionEventListener
 {
@@ -87,17 +82,17 @@ class Dispatcher implements com.untangle.uvm.argon.NewSessionEventListener
     private Logger logger;
 
     private final ArgonConnectorImpl argonConnector;
-    private final Node node;
+    private final NodeBase node;
 
-    private final LoadCounter liveSessionCounter;
-    private final LoadCounter udpLiveSessionCounter;
-    private final LoadCounter tcpLiveSessionCounter;
-    private final BlingBlinger totalSessionCounter;
-    private final BlingBlinger udpTotalSessionCounter;
-    private final BlingBlinger tcpTotalSessionCounter;
-    private final BlingBlinger totalSessionRequestCounter;
-    private final BlingBlinger udpTotalSessionRequestCounter;
-    private final BlingBlinger tcpTotalSessionRequestCounter;
+    private static final String STAT_LIVE_SESSIONS = "live-sessions";
+    private static final String STAT_TCP_LIVE_SESSIONS = "tcp-live-sessions";
+    private static final String STAT_UDP_LIVE_SESSIONS = "udp-live-sessions";
+    private static final String STAT_SESSIONS     = "sessions";
+    private static final String STAT_TCP_SESSIONS = "tcp-sessions";
+    private static final String STAT_UDP_SESSIONS = "udp-sessions";
+    private static final String STAT_SESSION_REQUESTS     = "session-requests";
+    private static final String STAT_TCP_SESSION_REQUESTS = "tcp-session-requests";
+    private static final String STAT_UDP_SESSION_REQUESTS = "udp-session-requests";
     
     /**
      * <code>mainThread</code> is the master thread started by
@@ -114,7 +109,6 @@ class Dispatcher implements com.untangle.uvm.argon.NewSessionEventListener
      */
     private Logger sessionEventLogger;
 
-
     /**
      * We need a single global <code>releasedHandler</code> for all
      * sessions that have been release(); ed after session request
@@ -122,29 +116,6 @@ class Dispatcher implements com.untangle.uvm.argon.NewSessionEventListener
      * to become a transparent proxy.
      */
     private SessionEventListener releasedHandler;
-
-    /**
-     * SessionHandler & friends let us know to update the selection
-     * keys for these session here.
-     */
-    // private LinkedQueue dirtySessions;
-
-    /**
-     * We keep a queue of ready sessions so that we can have short
-     * decoupling.  This is a queue of SessionHandler objects.  Only
-     * used when HANDLE_ALL_INLINE is true, since it doesn't make
-     * sense in the pooled case.
-     */
-    // private LinkedQueue readySessions;
-
-
-    /**
-     * Where new sessions are passed between command thread and new
-     * session handler threads.  Uses itself for locking.
-     */
-    // private PooledExecutor newSessionPool;
-
-    // private PooledExecutor sessionPool;
 
     /**
      * The set of active sessions (both TCP and UDP), kept as weak
@@ -168,7 +139,7 @@ class Dispatcher implements com.untangle.uvm.argon.NewSessionEventListener
     {
         logger = Logger.getLogger(Dispatcher.class.getName());
         this.argonConnector = argonConnector;
-        this.node = argonConnector.node();
+        this.node = (NodeBase)argonConnector.node();
         sessionEventListener = null;
         NodeProperties td = node.getNodeProperties();
 
@@ -177,50 +148,39 @@ class Dispatcher implements com.untangle.uvm.argon.NewSessionEventListener
 
         liveSessions = new ConcurrentHashMap<IPSession,IPSession>();
 
-        MessageManager lmm = UvmContextFactory.context().messageManager();
-        Counters c = lmm.getCounters(node.getNodeSettings().getId());
-        liveSessionCounter = c.makeLoadCounter("liveSessionCounter", "Live Sessions");
-        udpLiveSessionCounter = c.makeLoadCounter("udpLiveSessionCounter", "Live UDP sessions");
-        tcpLiveSessionCounter = c.makeLoadCounter("tcpLiveSessionCounter", "Live TCP sessions");
-        totalSessionCounter = c.addMetric("totalSessionCounter", I18nUtil.marktr("Sessions"), null, false);
-        udpTotalSessionCounter = c.addMetric("udpTotalSessionCounter", I18nUtil.marktr("UDP sessions"), null, false);
-        tcpTotalSessionCounter = c.addMetric("tcpTotalSessionCounter", I18nUtil.marktr("TCP sessions"), null, false);
-        totalSessionRequestCounter = c.addMetric("totalSessionRequestCounter", I18nUtil.marktr("Session requests"), null, false);
-        udpTotalSessionRequestCounter = c.addMetric("udpTotalSessionRequestCounter", I18nUtil.marktr("UDP session requests"), null, false);
-        tcpTotalSessionRequestCounter = c.addMetric("tcpTotalSessionRequestCounter", I18nUtil.marktr("TCP session requests"), null, false);        
+        this.node.addStat(new ABCMetric(STAT_LIVE_SESSIONS, I18nUtil.marktr("Current Sessions")));
+        this.node.addStat(new ABCMetric(STAT_TCP_LIVE_SESSIONS, I18nUtil.marktr("Current TCP Sessions")));
+        this.node.addStat(new ABCMetric(STAT_UDP_LIVE_SESSIONS, I18nUtil.marktr("Current UDP Sessions")));
+        this.node.addStat(new ABCMetric(STAT_SESSIONS, I18nUtil.marktr("Sessions")));
+        this.node.addStat(new ABCMetric(STAT_TCP_SESSIONS, I18nUtil.marktr("TCP Sessions")));
+        this.node.addStat(new ABCMetric(STAT_UDP_SESSIONS, I18nUtil.marktr("UDP Sessions")));
+        this.node.addStat(new ABCMetric(STAT_SESSION_REQUESTS, I18nUtil.marktr("Session Requests")));
+        this.node.addStat(new ABCMetric(STAT_TCP_SESSION_REQUESTS, I18nUtil.marktr("TCP Session Requests")));
+        this.node.addStat(new ABCMetric(STAT_UDP_SESSION_REQUESTS, I18nUtil.marktr("UDP Session Requests")));
     }
-
-    /*
-      public void finalize()
-      {
-      if (comrbuf != null) {
-      BufferPool.pool().release(comrbuf);
-      comrbuf = null;
-      }
-      }
-    */
-
 
     // Called by the new session handler thread.
     void addSession(TCPSession sess)
         throws InterruptedException
     {
-        liveSessionCounter.increment();
-        tcpLiveSessionCounter.increment();
-        totalSessionCounter.increment();
-        tcpTotalSessionCounter.increment();
-        // liveSessions.add(new WeakReference(ss));
+        this.node.incrementStat(STAT_LIVE_SESSIONS);
+        this.node.incrementStat(STAT_TCP_LIVE_SESSIONS);
+
+        this.node.incrementStat(STAT_SESSIONS);
+        this.node.incrementStat(STAT_TCP_SESSIONS);
+        
         liveSessions.put(sess, sess);
     }
 
     // Called by the new session handler thread.
     void addSession(UDPSession sess) throws InterruptedException
     {
-        liveSessionCounter.increment();
-        udpLiveSessionCounter.increment();
-        totalSessionCounter.increment();
-        udpTotalSessionCounter.increment();
-        // liveSessions.add(new WeakReference(ss));
+        this.node.incrementStat(STAT_LIVE_SESSIONS);
+        this.node.incrementStat(STAT_UDP_LIVE_SESSIONS);
+
+        this.node.incrementStat(STAT_SESSIONS);
+        this.node.incrementStat(STAT_UDP_SESSIONS);
+
         liveSessions.put(sess, sess);
     }
 
@@ -235,11 +195,11 @@ class Dispatcher implements com.untangle.uvm.argon.NewSessionEventListener
             agent.removeSession(sess.argonSession);
         }
 
-        liveSessionCounter.decrement();
+        this.node.decrementStat(STAT_LIVE_SESSIONS);
         if (sess instanceof UDPSession) {
-            udpLiveSessionCounter.decrement();
+            this.node.decrementStat(STAT_UDP_LIVE_SESSIONS);
         } else if (sess instanceof TCPSession) {
-            tcpLiveSessionCounter.decrement();
+            this.node.decrementStat(STAT_TCP_LIVE_SESSIONS);
         }
     }
 
@@ -286,8 +246,9 @@ class Dispatcher implements com.untangle.uvm.argon.NewSessionEventListener
             TCPNewSessionRequestImpl treq = new TCPNewSessionRequestImpl(this, request);
             if (RWSessionStats.DoDetailedTimes)
                 dispatchRequestTime = MetaEnv.currentTimeMillis();
-            totalSessionRequestCounter.increment();
-            tcpTotalSessionRequestCounter.increment();
+
+            this.node.incrementStat(STAT_SESSION_REQUESTS);
+            this.node.incrementStat(STAT_TCP_SESSION_REQUESTS);
 
             // Give the request event to the user, to give them a
             // chance to reject the session.
@@ -402,8 +363,9 @@ class Dispatcher implements com.untangle.uvm.argon.NewSessionEventListener
             UDPNewSessionRequestImpl ureq = new UDPNewSessionRequestImpl(this, request);
             if (RWSessionStats.DoDetailedTimes)
                 dispatchRequestTime = MetaEnv.currentTimeMillis();
-            totalSessionRequestCounter.increment();
-            udpTotalSessionRequestCounter.increment();
+
+            this.node.incrementStat(STAT_SESSION_REQUESTS);
+            this.node.incrementStat(STAT_UDP_SESSION_REQUESTS);
 
             // Give the request event to the user, to give them a chance to reject the session.
             logger.debug("sending UDP new session request event");

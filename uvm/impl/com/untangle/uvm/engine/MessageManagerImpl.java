@@ -27,21 +27,16 @@ import com.untangle.uvm.ArgonManager;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.logging.SystemStatEvent;
 import com.untangle.uvm.logging.LogEvent;
-import com.untangle.uvm.message.NodeMetric;
-import com.untangle.uvm.message.BlingBlinger;
-import com.untangle.uvm.message.Counters;
 import com.untangle.uvm.message.MessageManager;
 import com.untangle.uvm.message.Message;
 import com.untangle.uvm.message.MessageQueue;
-import com.untangle.uvm.message.StatDescs;
-import com.untangle.uvm.message.StatInterval;
-import com.untangle.uvm.message.Stats;
 import com.untangle.uvm.networking.NetworkConfiguration;
 import com.untangle.uvm.networking.InterfaceConfiguration;
 import com.untangle.uvm.node.Node;
 import com.untangle.uvm.node.NodeManager;
 import com.untangle.uvm.node.SessionEndpoints;
 import com.untangle.uvm.node.NodeSettings;
+import com.untangle.uvm.node.ABCMetric;
 import com.untangle.uvm.util.Pulse;
 import com.untangle.uvm.util.TransactionWork;
 
@@ -66,15 +61,11 @@ class MessageManagerImpl implements MessageManager
     private static final Set<String> MEMINFO_KEEPERS;
     private static final Set<String> VMSTAT_KEEPERS;
 
-    private final Map<Long, Counters> counters = new HashMap<Long, Counters>();
-
     private final Random random = new Random();
 
     private final Map<Integer, List<Message>> messages = new HashMap<Integer, List<Message>>();
 
     private final Map<Integer, Long> lastMessageAccess = new HashMap<Integer, Long>();
-
-    private final Map<Long, List<NodeMetric>> activeMetrics = new HashMap<Long, List<NodeMetric>>();
 
     private final Pulse updatePulse = new Pulse("system-stat-collector", true, new SystemStatCollector());
 
@@ -118,7 +109,7 @@ class MessageManagerImpl implements MessageManager
         }
         nodeIds.add( 0L );
 
-        Map<Long, Stats> stats = getStats( nodeIds );
+        Map<Long, List<ABCMetric>> stats = getStats( nodeIds );
         List<Message> messages = getMessages(key);
         return new MessageQueue(messages, stats, systemStats);
     }
@@ -133,20 +124,10 @@ class MessageManagerImpl implements MessageManager
         }
         nodeIds.add( 0L );
         
-        Map<Long, Stats> stats = getStats( nodeIds );
+        Map<Long, List<ABCMetric>> stats = getStats( nodeIds );
         List<Message> messages = getMessages(key);
 
         return new MessageQueue(messages, stats, systemStats);
-    }
-
-    public StatDescs getStatDescs( Long nodeId )
-    {
-        if ( nodeId != null ) {
-            StatDescs sd = getCounters(nodeId).getStatDescs();
-            return sd;
-        } else {
-            return null;
-        }
     }
 
     public Map<String, Object> getSystemStats()
@@ -154,29 +135,6 @@ class MessageManagerImpl implements MessageManager
         return this.systemStats;
     }
 
-    public void setActiveMetrics( Long nodeId, List<NodeMetric> activeMetrics)
-    {
-        synchronized (this.activeMetrics) {
-            this.activeMetrics.put(nodeId, activeMetrics);
-        }
-    }
-
-    public void setActiveMetrics( Long nodeId, BlingBlinger... blingers )
-    {
-        List<NodeMetric> l = new ArrayList<NodeMetric>();
-
-        for (BlingBlinger b : blingers) {
-            l.add(new NodeMetric(b.getStatDesc().getName(), StatInterval.SINCE_MIDNIGHT));
-        }
-
-        setActiveMetrics( nodeId, l );
-    }
-    
-    public List<NodeMetric> getActiveMetrics(Long nodeId)
-    {
-        return this.activeMetrics.get( nodeId );
-    }
-    
     public Integer getMessageKey()
     {
         int key;
@@ -194,25 +152,6 @@ class MessageManagerImpl implements MessageManager
     }
 
     // MessageManager methods --------------------------------------------
-
-    public Counters getUvmCounters()
-    {
-        return getCounters(0L);
-    }
-
-    public Counters getCounters( Long nodeId )
-    {
-        Counters c;
-        synchronized (counters) {
-            c = counters.get( nodeId );
-            if (null == c) {
-                c = new Counters( nodeId );
-                counters.put( nodeId, c );
-            }
-        }
-
-        return c;
-    }
 
     public void submitMessage( Message m )
     {
@@ -247,16 +186,15 @@ class MessageManagerImpl implements MessageManager
         }
     }
 
-    public Stats getStats( Long nodeId )
+    public List<ABCMetric> getStats( Long nodeId )
     {
-        Counters c = getCounters( nodeId );
-        return c.getAllStats();
-    }
-
-    public Stats getAllStats( Long nodeId )
-    {
-        Counters c = getCounters( nodeId );
-        return c.getAllStats();
+        Node node = UvmContextFactory.context().nodeManager().node( nodeId );
+        if (node != null)
+            return node.getStats();
+        else {
+            logger.warn("Node not found: " + nodeId);
+            return null;
+        }
     }
 
     public List<Message> getMessages(Integer key)
@@ -282,13 +220,12 @@ class MessageManagerImpl implements MessageManager
 
     // private methods --------------------------------------------------------
 
-    private Map<Long, Stats> getStats( List<Long> nodeIds )
+    private Map<Long, List<ABCMetric>> getStats( List<Long> nodeIds )
     {
-        Map<Long, Stats> stats = new HashMap<Long, Stats>(nodeIds.size());
+        Map<Long, List<ABCMetric>> stats = new HashMap<Long, List<ABCMetric>>(nodeIds.size());
 
         for (Long nodeId : nodeIds) {
-            Counters counters = getCounters(nodeId);
-            stats.put(nodeId, counters.getAllStats());
+            stats.put( nodeId, getStats( nodeId ) );
         }
 
         return stats;

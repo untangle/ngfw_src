@@ -25,11 +25,9 @@ import com.untangle.uvm.LocalAppServerManager;
 import com.untangle.uvm.UvmContext;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.SessionMatcher;
-import com.untangle.uvm.message.BlingBlinger;
-import com.untangle.uvm.message.Counters;
-import com.untangle.uvm.message.MessageManager;
 import com.untangle.uvm.node.GenericRule;
 import com.untangle.uvm.node.EventLogQuery;
+import com.untangle.uvm.node.ABCMetric;
 import com.untangle.uvm.util.I18nUtil;
 import com.untangle.uvm.util.OutsideValve;
 import com.untangle.uvm.util.TransactionWork;
@@ -52,6 +50,12 @@ public abstract class VirusNodeImpl extends NodeBase implements VirusNode
 {
     private static final String SETTINGS_CONVERSION_SCRIPT = System.getProperty( "uvm.bin.dir" ) + "/virus-base-convert-settings.py";
 
+    private static final String STAT_SCAN = "scan";
+    private static final String STAT_PASS = "pass";
+    private static final String STAT_BLOCK = "block";
+    private static final String STAT_REMOVE = "remove";
+    private static final String STAT_PASS_POLICY = "pass-infected";
+    
     private static final int TRICKLE_RATE = 90;
     
     private static final String MOD_SUB_TEMPLATE =
@@ -95,12 +99,6 @@ public abstract class VirusNodeImpl extends NodeBase implements VirusNode
     private String signatureVersion = "";
 
     private VirusSettings settings;
-
-    private final BlingBlinger scanBlinger;
-    private final BlingBlinger passBlinger;
-    private final BlingBlinger blockBlinger;
-    private final BlingBlinger removeBlinger;
-    private final BlingBlinger passedInfectedMessageBlinger;
 
     private EventLogQuery httpInfectedEventQuery;
     private EventLogQuery httpCleanEventQuery;
@@ -181,15 +179,11 @@ public abstract class VirusNodeImpl extends NodeBase implements VirusNode
                                                      " AND evt.policyId = :policyId" + 
                                                      " ORDER BY evt.timeStamp DESC");
 
-        MessageManager lmm = UvmContextFactory.context().messageManager();
-        Counters c = lmm.getCounters(getNodeSettings().getId());
-        scanBlinger   = c.addActivity("scan",   I18nUtil.marktr("Documents scanned"),  null, I18nUtil.marktr("SCAN"));
-        blockBlinger  = c.addActivity("block",  I18nUtil.marktr("Documents blocked"),  null, I18nUtil.marktr("BLOCK"));
-        passBlinger   = c.addActivity("pass",   I18nUtil.marktr("Documents passed"),   null, I18nUtil.marktr("PASS"));
-        removeBlinger = c.addActivity("remove", I18nUtil.marktr("Infections removed"), null, I18nUtil.marktr("REMOVE"));
-        passedInfectedMessageBlinger = c.addMetric("infected", I18nUtil.marktr("Passed by policy"), null);
-
-        lmm.setActiveMetrics(getNodeSettings().getId(), scanBlinger, blockBlinger, passBlinger, removeBlinger);
+        this.addStat(new ABCMetric(STAT_SCAN, I18nUtil.marktr("Documents scanned")));
+        this.addStat(new ABCMetric(STAT_BLOCK, I18nUtil.marktr("Documents blocked")));
+        this.addStat(new ABCMetric(STAT_PASS, I18nUtil.marktr("Documents passed")));
+        this.addStat(new ABCMetric(STAT_REMOVE, I18nUtil.marktr("Infections removed")));
+        this.addStat(new ABCMetric(STAT_PASS_POLICY, I18nUtil.marktr("Passed by policy")));
     }
 
     // VirusNode methods -------------------------------------------------
@@ -470,7 +464,7 @@ public abstract class VirusNodeImpl extends NodeBase implements VirusNode
      */
     public void incrementScanCount()
     {
-        scanBlinger.increment();
+        this.incrementStat(STAT_SCAN);
     }
 
     /**
@@ -478,7 +472,7 @@ public abstract class VirusNodeImpl extends NodeBase implements VirusNode
      */
     public void incrementBlockCount()
     {
-        blockBlinger.increment();
+        this.incrementStat(STAT_BLOCK);
     }
 
     /**
@@ -486,7 +480,7 @@ public abstract class VirusNodeImpl extends NodeBase implements VirusNode
      */
     public void incrementPassCount()
     {
-        passBlinger.increment();
+        this.incrementStat(STAT_PASS);
     }
 
     /**
@@ -495,7 +489,7 @@ public abstract class VirusNodeImpl extends NodeBase implements VirusNode
      */
     public void incrementRemoveCount()
     {
-        removeBlinger.increment();
+        this.incrementStat(STAT_REMOVE);
     }
 
     /**
@@ -504,7 +498,7 @@ public abstract class VirusNodeImpl extends NodeBase implements VirusNode
      */
     public void incrementPassedInfectedMessageCount()
     {
-        passedInfectedMessageBlinger.increment();
+        this.incrementStat(STAT_PASS_POLICY);
     }
 
     private static synchronized void deployWebAppIfRequired(Logger logger)

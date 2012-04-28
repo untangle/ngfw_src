@@ -16,17 +16,5 @@ public interface MessageManager
     List<Message> getMessages( Integer key );
     Integer       getMessageKey();
     
-    StatDescs getStatDescs( Long nodeId );
-    Stats getStats( Long nodeId );
-    Stats getAllStats( Long nodeId );
-    Map<String, Object> getSystemStats();
-
-    Counters getUvmCounters();
-    Counters getCounters( Long nodeId );
-    List<NodeMetric> getActiveMetrics( Long nodeId );
-
     void submitMessage( Message m );
-
-    void setActiveMetrics( Long nodeId, List<NodeMetric> activeStats );
-    void setActiveMetrics( Long nodeId, BlingBlinger... blingers );
 }

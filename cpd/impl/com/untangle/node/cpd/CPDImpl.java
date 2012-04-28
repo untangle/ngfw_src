@@ -30,13 +30,11 @@ import com.untangle.uvm.UvmState;
 import com.untangle.uvm.BrandingManager;
 import com.untangle.uvm.node.NodeSettings;
 import com.untangle.uvm.node.License;
-import com.untangle.uvm.message.BlingBlinger;
-import com.untangle.uvm.message.Counters;
-import com.untangle.uvm.message.MessageManager;
 import com.untangle.uvm.node.Node;
 import com.untangle.uvm.node.IntfMatcher;
 import com.untangle.uvm.node.IPMatcher;
 import com.untangle.uvm.node.EventLogQuery;
+import com.untangle.uvm.node.ABCMetric;
 import com.untangle.uvm.servlet.UploadHandler;
 import com.untangle.uvm.util.I18nUtil;
 import com.untangle.uvm.util.OutsideValve;
@@ -58,8 +56,8 @@ public class CPDImpl extends NodeBase implements CPD
 
     private final CPDManager manager = new CPDManager(this);
 
-    private final BlingBlinger blockBlinger;
-    private final BlingBlinger authorizeBlinger;
+    private static final String STAT_BLOCK = "block";
+    private static final String STAT_AUTHORIZE = "authorize";
 
     public static final String DEFAULT_USERNAME = "captive portal user";
 
@@ -85,11 +83,8 @@ public class CPDImpl extends NodeBase implements CPD
         this.settings = new CPDSettings();
         this.pipeSpecs = new PipeSpec[0];
 
-        MessageManager lmm = UvmContextFactory.context().messageManager();
-        Counters c = lmm.getCounters(getNodeSettings().getId());
-        blockBlinger = c.addActivity("block", I18nUtil.marktr("Blocked Sessions"), null, I18nUtil.marktr("BLOCK"));
-        authorizeBlinger = c.addActivity("authorize", I18nUtil.marktr("Authorized Clients"), null, I18nUtil.marktr("AUTHORIZE"));
-        lmm.setActiveMetrics(getNodeSettings().getId(), blockBlinger, authorizeBlinger);
+        this.addStat(new ABCMetric(STAT_BLOCK, I18nUtil.marktr("Sessions blocked")));
+        this.addStat(new ABCMetric(STAT_AUTHORIZE, I18nUtil.marktr("Clients authorized")));
     }
 
     public void initializeSettings()
@@ -241,11 +236,11 @@ public class CPDImpl extends NodeBase implements CPD
     {
         switch ( blingerType ) {
         case BLOCK:
-            this.blockBlinger.increment(delta);
+            this.adjustStat(STAT_BLOCK, delta);
             break;
 
         case AUTHORIZE:
-            this.authorizeBlinger.increment(delta);
+            this.adjustStat(STAT_AUTHORIZE, delta);
             break;
         }
     }

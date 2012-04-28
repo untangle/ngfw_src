@@ -36,17 +36,16 @@ import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.Period;
 import com.untangle.uvm.ExecManagerResult;
 import com.untangle.uvm.ExecManager;
-import com.untangle.uvm.node.License;
-import com.untangle.uvm.node.LicenseManager;
-import com.untangle.uvm.message.Counters;
 import com.untangle.uvm.message.MessageManager;
 import com.untangle.uvm.message.Message;
-import com.untangle.uvm.message.StatDescs;
+import com.untangle.uvm.node.License;
+import com.untangle.uvm.node.LicenseManager;
 import com.untangle.uvm.node.Node;
 import com.untangle.uvm.node.DeployException;
 import com.untangle.uvm.node.NodeProperties;
 import com.untangle.uvm.node.NodeManager;
 import com.untangle.uvm.node.NodeSettings;
+import com.untangle.uvm.node.ABCMetric;
 import com.untangle.uvm.toolbox.Application;
 import com.untangle.uvm.toolbox.InstallAndInstantiateComplete;
 import com.untangle.uvm.toolbox.PackageDesc;
@@ -208,14 +207,12 @@ class ToolboxManagerImpl implements ToolboxManager
         NodeManagerImpl nm = (NodeManagerImpl)UvmContextFactory.context().nodeManager();
         List<Node> instances = nm.visibleNodes( policyId );
 
-        Map<Long, StatDescs> statDescs = new HashMap<Long, StatDescs>(instances.size());
+        Map<Long, List<ABCMetric>> nodeStats = new HashMap<Long, List<ABCMetric>>(instances.size());
         for (Node visibleNode : instances) {
             Long nodeId = visibleNode.getNodeSettings().getId();
             Long nodePolicyId = visibleNode.getNodeSettings().getPolicyId();
             MessageManager lmm = UvmContextFactory.context().messageManager();
-            Counters c = lmm.getCounters( nodeId );
-            StatDescs sd = c.getStatDescs();
-            statDescs.put( nodeId , sd);
+            nodeStats.put( nodeId , visibleNode.getStats());
 
             if ( nodePolicyId == null || nodePolicyId.equals( policyId ) ) {
                 nodes.remove( visibleNode.getNodeProperties().getDisplayName() );
@@ -255,7 +252,7 @@ class ToolboxManagerImpl implements ToolboxManager
             nodeSettings.add(node.getNodeSettings());
         }
 
-        return new RackView(apps, nodeSettings, nodeProperties, statDescs, licenseMap, runStates);
+        return new RackView(apps, nodeSettings, nodeProperties, nodeStats, licenseMap, runStates);
     }
 
     public UpgradeStatus getUpgradeStatus(boolean doUpdate) throws PackageException, InterruptedException

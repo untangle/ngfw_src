@@ -9,9 +9,6 @@ import org.apache.log4j.Logger;
 import com.untangle.node.token.TokenAdaptor;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.SettingsManager;
-import com.untangle.uvm.message.BlingBlinger;
-import com.untangle.uvm.message.Counters;
-import com.untangle.uvm.message.MessageManager;
 import com.untangle.uvm.util.I18nUtil;
 import com.untangle.uvm.util.TransactionWork;
 import com.untangle.uvm.vnet.NodeBase;
@@ -20,12 +17,17 @@ import com.untangle.uvm.vnet.Fitting;
 import com.untangle.uvm.vnet.PipeSpec;
 import com.untangle.uvm.vnet.SoloPipeSpec;
 import com.untangle.uvm.node.EventLogQuery;
+import com.untangle.uvm.node.ABCMetric;
 
 public class IpsNodeImpl extends NodeBase implements IpsNode
 {
     private static final String SETTINGS_CONVERSION_SCRIPT = System.getProperty( "uvm.bin.dir" ) + "/ips-convert-settings.py";
     private final Logger logger = Logger.getLogger(getClass());
 
+    private static final String STAT_SCAN = "scan";
+    private static final String STAT_DETECT = "detect";
+    private static final String STAT_BLOCK = "block";
+    
     private IpsSettings settings = null;
     final IpsStatisticManager statisticManager;
     final IpsStatistics statistics;
@@ -35,10 +37,6 @@ public class IpsNodeImpl extends NodeBase implements IpsNode
     private final PipeSpec[] pipeSpecs;
 
     private IpsDetectionEngine engine;
-
-    private final BlingBlinger scanBlinger;
-    private final BlingBlinger detectBlinger;
-    private final BlingBlinger blockBlinger;
 
     private EventLogQuery allEventQuery;
     private EventLogQuery blockedEventQuery;
@@ -72,12 +70,9 @@ public class IpsNodeImpl extends NodeBase implements IpsNode
         List<RuleClassification> classifications = FileLoader.loadClassifications();
         engine.setClassifications(classifications);
 
-        MessageManager lmm = UvmContextFactory.context().messageManager();
-        Counters c = lmm.getCounters(getNodeSettings().getId());
-        scanBlinger = c.addActivity("scan", I18nUtil.marktr("Sessions scanned"), null, I18nUtil.marktr("SCAN"));
-        detectBlinger = c.addActivity("detect", I18nUtil.marktr("Sessions logged"), null, I18nUtil.marktr("LOG"));
-        blockBlinger = c.addActivity("block", I18nUtil.marktr("Sessions blocked"), null, I18nUtil.marktr("BLOCK"));
-        lmm.setActiveMetrics(getNodeSettings().getId(), scanBlinger, detectBlinger, blockBlinger);
+        this.addStat(new ABCMetric(STAT_SCAN, I18nUtil.marktr("Sessions scanned")));
+        this.addStat(new ABCMetric(STAT_DETECT, I18nUtil.marktr("Sessions logged")));
+        this.addStat(new ABCMetric(STAT_BLOCK, I18nUtil.marktr("Sessions blocked")));
     }
 
     @Override
@@ -248,16 +243,16 @@ public class IpsNodeImpl extends NodeBase implements IpsNode
 
     public void incrementScanCount()
     {
-        scanBlinger.increment();
+        this.incrementStat(STAT_SCAN);
     }
 
     public void incrementDetectCount()
     {
-        detectBlinger.increment();
+        this.incrementStat(STAT_DETECT);
     }
 
     public void incrementBlockCount()
     {
-        blockBlinger.increment();
+        this.incrementStat(STAT_BLOCK);
     }
 }

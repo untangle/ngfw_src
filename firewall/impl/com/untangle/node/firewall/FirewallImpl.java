@@ -17,9 +17,7 @@ import com.untangle.uvm.SessionMatcher;
 import com.untangle.uvm.SessionMatcherFactory;
 import com.untangle.uvm.node.NodeSettings;
 import com.untangle.uvm.node.NodeProperties;
-import com.untangle.uvm.message.BlingBlinger;
-import com.untangle.uvm.message.Counters;
-import com.untangle.uvm.message.MessageManager;
+import com.untangle.uvm.node.ABCMetric;
 import com.untangle.uvm.node.Validator;
 import com.untangle.uvm.node.IntfMatcher;
 import com.untangle.uvm.node.IPMatcher;
@@ -40,6 +38,10 @@ public class FirewallImpl extends NodeBase implements Firewall
 {
     private final Logger logger = Logger.getLogger(getClass());
 
+    private static final String STAT_BLOCK = "block";
+    private static final String STAT_LOG = "log";
+    private static final String STAT_PASS = "pass";
+    
     private static final String SETTINGS_CONVERSION_SCRIPT = System.getProperty( "uvm.bin.dir" ) + "/firewall-convert-settings.py";
 
     private final EventHandler handler;
@@ -50,10 +52,6 @@ public class FirewallImpl extends NodeBase implements Firewall
     private EventLogQuery blockedEventsQuery;
     
     private FirewallSettings settings = null;
-
-    private final BlingBlinger passBlinger;
-    private final BlingBlinger blockBlinger;
-    private final BlingBlinger loggedBlinger;
 
     /* This can't be static because it uses policy which is per node */
     private final SessionMatcher FIREWALL_SESSION_MATCHER = new SessionMatcher() {
@@ -124,12 +122,9 @@ public class FirewallImpl extends NodeBase implements Firewall
                                                     "AND firewallWasBlocked IS TRUE " +
                                                     "ORDER BY evt.timeStamp DESC");
 
-        MessageManager lmm = UvmContextFactory.context().messageManager();
-        Counters c = lmm.getCounters(getNodeSettings().getId());
-        passBlinger = c.addActivity("pass", I18nUtil.marktr("Sessions passed"), null, I18nUtil.marktr("PASS"));
-        loggedBlinger = c.addActivity("log", I18nUtil.marktr("Sessions logged"), null, I18nUtil.marktr("LOG"));
-        blockBlinger = c.addActivity("block", I18nUtil.marktr("Sessions blocked"), null, I18nUtil.marktr("BLOCK"));
-        lmm.setActiveMetrics(getNodeSettings().getId(), passBlinger, loggedBlinger, blockBlinger);
+        this.addStat(new ABCMetric(STAT_PASS, I18nUtil.marktr("Sessions passed")));
+        this.addStat(new ABCMetric(STAT_LOG, I18nUtil.marktr("Sessions logged")));
+        this.addStat(new ABCMetric(STAT_BLOCK, I18nUtil.marktr("Sessions blocked")));
     }
 
     public EventLogQuery[] getEventQueries()
@@ -184,17 +179,17 @@ public class FirewallImpl extends NodeBase implements Firewall
 
     public void incrementBlockCount() 
     {
-        blockBlinger.increment();
+        this.incrementStat(STAT_BLOCK);
     }
 
     public void incrementPassCount() 
     {
-        passBlinger.increment();
+        this.incrementStat(STAT_PASS);
     }
 
     public void incrementLogCount() 
     {
-        loggedBlinger.increment();
+        this.incrementStat(STAT_LOG);
     }
 
     @Override

@@ -13,6 +13,7 @@ import java.util.TreeMap;
 import org.apache.log4j.Logger;
 
 import com.untangle.uvm.node.EventLogQuery;
+import com.untangle.uvm.node.ABCMetric;
 import com.untangle.uvm.util.I18nUtil;
 import com.untangle.uvm.util.TransactionWork;
 import com.untangle.uvm.vnet.NodeBase;
@@ -21,14 +22,15 @@ import com.untangle.uvm.vnet.Fitting;
 import com.untangle.uvm.vnet.PipeSpec;
 import com.untangle.uvm.vnet.SoloPipeSpec;
 import com.untangle.uvm.UvmContextFactory;
-import com.untangle.uvm.message.BlingBlinger;
-import com.untangle.uvm.message.Counters;
-import com.untangle.uvm.message.MessageManager;
 import com.untangle.uvm.SettingsManager;
 
 public class ProtoFilterImpl extends NodeBase implements ProtoFilter
 {
     private static final String SETTINGS_CONVERSION_SCRIPT = System.getProperty( "uvm.bin.dir" ) + "/protofilter-convert-settings.py";
+
+    private static final String STAT_SCAN = "scan";
+    private static final String STAT_DETECT = "detect";
+    private static final String STAT_BLOCK = "block";
 
     private final EventHandler handler = new EventHandler( this );
 
@@ -42,10 +44,6 @@ public class ProtoFilterImpl extends NodeBase implements ProtoFilter
     private EventLogQuery allEventQuery;
     private EventLogQuery blockedEventQuery;
     
-    private final BlingBlinger scanBlinger;
-    private final BlingBlinger detectBlinger;
-    private final BlingBlinger blockBlinger;
-
     // constructors -----------------------------------------------------------
 
     public ProtoFilterImpl( com.untangle.uvm.node.NodeSettings nodeSettings, com.untangle.uvm.node.NodeProperties nodeProperties )
@@ -64,14 +62,9 @@ public class ProtoFilterImpl extends NodeBase implements ProtoFilter
                                                    "AND pfBlocked IS TRUE " +
                                                    "ORDER BY evt.timeStamp DESC");
 
-        MessageManager lmm = UvmContextFactory.context().messageManager();
-        Counters c = lmm.getCounters(getNodeSettings().getId());
-
-        scanBlinger = c.addActivity("scan", I18nUtil.marktr("Chunks scanned"), null, I18nUtil.marktr("SCAN"));
-        detectBlinger = c.addActivity("detect", I18nUtil.marktr("Sessions logged"), null, I18nUtil.marktr("LOG"));
-        blockBlinger = c.addActivity("block", I18nUtil.marktr("Sessions blocked"), null, I18nUtil.marktr("BLOCK"));
-
-        lmm.setActiveMetrics(getNodeSettings().getId(), scanBlinger, detectBlinger, blockBlinger);
+        this.addStat(new ABCMetric(STAT_SCAN, I18nUtil.marktr("Chunks scanned")));
+        this.addStat(new ABCMetric(STAT_DETECT, I18nUtil.marktr("Sessions logged")));
+        this.addStat(new ABCMetric(STAT_BLOCK, I18nUtil.marktr("Sessions blocked")));
     }
 
     // ProtoFilter methods ----------------------------------------------------
@@ -265,16 +258,16 @@ public class ProtoFilterImpl extends NodeBase implements ProtoFilter
 
     void incrementScanCount()
     {
-        scanBlinger.increment();
+        this.incrementStat(STAT_SCAN);
     }
 
     void incrementBlockCount()
     {
-        blockBlinger.increment();
+        this.incrementStat(STAT_BLOCK);
     }
 
     void incrementDetectCount()
     {
-        detectBlinger.increment();
+        this.incrementStat(STAT_DETECT);
     }
 }

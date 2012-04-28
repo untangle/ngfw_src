@@ -7,21 +7,23 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
 
+import com.untangle.uvm.node.ABCMetric;
+
 @SuppressWarnings("serial")
 public class MessageQueue implements Serializable
 {
     private final List<Message> messages;
-    private final Map<Long, Stats> stats;
+    private final Map<Long, List<ABCMetric>> stats;
     private final Map<String, Object> systemStats;
 
-    public MessageQueue(List<Message> messages, Map<Long, Stats> stats, Map<String, Object> systemStats)
+    public MessageQueue(List<Message> messages, Map<Long, List<ABCMetric>> stats, Map<String, Object> systemStats)
     {
         this.messages = messages;
         this.stats = stats;
         this.systemStats = systemStats;
     }
 
-    public Map<Long, Stats> getStats()
+    public Map<Long, List<ABCMetric>> getStats()
     {
         return stats;
     }

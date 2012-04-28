@@ -31,14 +31,12 @@ import com.untangle.uvm.SettingsManager;
 import com.untangle.uvm.LocalAppServerManager;
 import com.untangle.uvm.UvmContext;
 import com.untangle.uvm.UvmContextFactory;
-import com.untangle.uvm.message.BlingBlinger;
-import com.untangle.uvm.message.Counters;
-import com.untangle.uvm.message.MessageManager;
 import com.untangle.uvm.node.IPMaskedAddress;
 import com.untangle.uvm.node.IPMaskedAddressRule;
 import com.untangle.uvm.node.Validator;
 import com.untangle.uvm.node.GenericRule;
 import com.untangle.uvm.node.EventLogQuery;
+import com.untangle.uvm.node.ABCMetric;
 import com.untangle.uvm.util.I18nUtil;
 import com.untangle.uvm.util.OutsideValve;
 import com.untangle.uvm.util.TransactionWork;
@@ -60,6 +58,10 @@ public class SpywareImpl extends NodeBase implements Spyware
     private static final String COOKIE_LIST = "/usr/share/untangle-webfilter-init/spyware-cookie";
     private static final String SUBNET_LIST = "/usr/share/untangle-webfilter-init/spyware-subnet";
 
+    private static final String STAT_SCAN = "scan";
+    private static final String STAT_BLOCK = "block";
+    private static final String STAT_PASS = "pass";
+
     private final Logger logger = Logger.getLogger(getClass());
 
     private static int deployCount = 0;
@@ -77,10 +79,6 @@ public class SpywareImpl extends NodeBase implements Spyware
         new SoloPipeSpec("spyware-byte", this, streamHandler, Fitting.OCTET_STREAM, Affinity.SERVER, 2) };
 
     private final Map<InetAddress, Set<String>> unblockedSites = new HashMap<InetAddress, Set<String>>();
-
-    private final BlingBlinger scanBlinger;
-    private final BlingBlinger passBlinger;
-    private final BlingBlinger blockBlinger;
 
     private volatile SpywareSettings settings;
 
@@ -116,13 +114,9 @@ public class SpywareImpl extends NodeBase implements Spyware
                                              " AND evt.policyId = :policyId" + 
                                              " ORDER BY evt.timeStamp DESC");
 
-        MessageManager lmm = UvmContextFactory.context().messageManager();
-        Counters c = lmm.getCounters(getNodeSettings().getId());
-        scanBlinger = c.addActivity("scan", I18nUtil.marktr("Pages scanned"), null, I18nUtil.marktr("SCAN"));
-        blockBlinger = c.addActivity("block", I18nUtil.marktr("Pages blocked"), null, I18nUtil.marktr("BLOCK"));
-        passBlinger = c.addActivity("pass", I18nUtil.marktr("Pages passed"), null, I18nUtil.marktr("PASS"));
-
-        lmm.setActiveMetrics(getNodeSettings().getId(), scanBlinger, blockBlinger, passBlinger);
+        this.addStat(new ABCMetric(STAT_SCAN, I18nUtil.marktr("Pages scanned")));
+        this.addStat(new ABCMetric(STAT_BLOCK, I18nUtil.marktr("Pages blocked")));
+        this.addStat(new ABCMetric(STAT_PASS, I18nUtil.marktr("Pages passed")));
     }
 
     // SpywareNode methods -----------------------------------------------------
@@ -388,62 +382,62 @@ public class SpywareImpl extends NodeBase implements Spyware
 
     void incrementSubnetScan()
     {
-        scanBlinger.increment();
+        this.incrementStat(STAT_SCAN);
     }
 
     void incrementSubnetBlock()
     {
-        blockBlinger.increment();
+        this.incrementStat(STAT_BLOCK);
     }
 
     void incrementHttpScan()
     {
-        scanBlinger.increment();
+        this.incrementStat(STAT_SCAN);
     }
 
     void incrementHttpWhitelisted()
     {
-        passBlinger.increment();
+        this.incrementStat(STAT_PASS);
     }
 
     void incrementHttpBlockedDomain()
     {
-        blockBlinger.increment();
+        this.incrementStat(STAT_BLOCK);
     }
 
     void incrementHttpPassed()
     {
-        passBlinger.increment();
+        this.incrementStat(STAT_PASS);
     }
 
     void incrementHttpClientCookieScan()
     {
-        scanBlinger.increment();
+        this.incrementStat(STAT_SCAN);
     }
 
     void incrementHttpClientCookieBlock()
     {
-        blockBlinger.increment();
+        this.incrementStat(STAT_BLOCK);
     }
 
     void incrementHttpClientCookiePass()
     {
-        passBlinger.increment();
+        this.incrementStat(STAT_PASS);
     }
 
     void incrementHttpServerCookieScan()
     {
-        scanBlinger.increment();
+        this.incrementStat(STAT_SCAN);
     }
 
     void incrementHttpServerCookieBlock()
     {
-        blockBlinger.increment();
+        this.incrementStat(STAT_BLOCK);
     }
 
     void incrementHttpServerCookiePass()
     {
-        passBlinger.increment();
+        this.incrementStat(STAT_PASS);
     }
 
     Token[] generateResponse(SpywareBlockDetails bd, TCPSession sess, String uri, Header header, boolean persistent)
