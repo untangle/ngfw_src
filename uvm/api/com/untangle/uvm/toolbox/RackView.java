@@ -19,16 +19,16 @@ public class RackView implements Serializable
     private List<Application> applications;
     private List<NodeSettings> instances;
     private List<NodeProperties> nodeProperties;
-    private Map<Long, List<NodeMetric>> nodeStats;
+    private Map<Long, List<NodeMetric>> nodeMetrics;
     private Map<String, License> licenseMap;
     private Map<Long, NodeSettings.NodeState> runStates;
 
-    public RackView(List<Application> applications, List<NodeSettings> instances, List<NodeProperties> nodeProperties, Map<Long, List<NodeMetric>> nodeStats, Map<String, License> license, Map<Long, NodeSettings.NodeState> runStates)
+    public RackView(List<Application> applications, List<NodeSettings> instances, List<NodeProperties> nodeProperties, Map<Long, List<NodeMetric>> nodeMetrics, Map<String, License> license, Map<Long, NodeSettings.NodeState> runStates)
     {
         this.applications = applications;
         this.instances = instances;
         this.nodeProperties = nodeProperties;
-        this.nodeStats = nodeStats;
+        this.nodeMetrics = nodeMetrics;
         this.licenseMap = license;
         this.runStates = runStates;
     }
@@ -48,9 +48,9 @@ public class RackView implements Serializable
         return nodeProperties;
     }
     
-    public Map<Long, List<NodeMetric>> getNodeStats()
+    public Map<Long, List<NodeMetric>> getNodeMetrics()
     {
-        return nodeStats;
+        return nodeMetrics;
     }
 
     public Map<String, License> getLicenseMap()
@@ -65,7 +65,7 @@ public class RackView implements Serializable
     @Override
     public String toString()
     {
-        return "RackView\n  AVAILABLE: " + applications + "\n  INSTANCES: " + instances + "\n  STAT DESCS: " + nodeStats;
+        return "RackView\n  AVAILABLE: " + applications + "\n  INSTANCES: " + instances + "\n  STAT DESCS: " + nodeMetrics;
     }
 
 }

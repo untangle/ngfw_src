@@ -16,15 +16,15 @@ public class NodeInstantiatedMessage extends Message
 {
     private final NodeProperties nodeProperties;
     private final NodeSettings nodeSettings;
-    private final List<NodeMetric> nodeStats;
+    private final List<NodeMetric> nodeMetrics;
     private final License license;
     private final Long policyId;
     
-    public NodeInstantiatedMessage(NodeProperties nodeProperties, NodeSettings nodeSettings, List<NodeMetric> nodeStats, License license, Long policyId)
+    public NodeInstantiatedMessage(NodeProperties nodeProperties, NodeSettings nodeSettings, List<NodeMetric> nodeMetrics, License license, Long policyId)
     {
         this.nodeProperties = nodeProperties;
         this.nodeSettings = nodeSettings;
-        this.nodeStats = nodeStats;
+        this.nodeMetrics = nodeMetrics;
         this.license = license;
         this.policyId = policyId;
     }
@@ -44,9 +44,9 @@ public class NodeInstantiatedMessage extends Message
         return this.nodeSettings;
     }
     
-    public List<NodeMetric> getNodeStats()
+    public List<NodeMetric> getNodeMetrics()
     {
-        return this.nodeStats;
+        return this.nodeMetrics;
     }
 
     public License getLicense()

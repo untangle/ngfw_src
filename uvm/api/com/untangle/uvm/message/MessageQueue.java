@@ -13,19 +13,19 @@ import com.untangle.uvm.node.NodeMetric;
 public class MessageQueue implements Serializable
 {
     private final List<Message> messages;
-    private final Map<Long, List<NodeMetric>> stats;
+    private final Map<Long, List<NodeMetric>> metrics;
     private final Map<String, Object> systemStats;
 
-    public MessageQueue(List<Message> messages, Map<Long, List<NodeMetric>> stats, Map<String, Object> systemStats)
+    public MessageQueue(List<Message> messages, Map<Long, List<NodeMetric>> metrics, Map<String, Object> systemStats)
     {
         this.messages = messages;
-        this.stats = stats;
+        this.metrics = metrics;
         this.systemStats = systemStats;
     }
 
-    public Map<Long, List<NodeMetric>> getStats()
+    public Map<Long, List<NodeMetric>> getMetrics()
     {
-        return stats;
+        return metrics;
     }
 
     public List<Message> getMessages()

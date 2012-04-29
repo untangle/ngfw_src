@@ -1346,10 +1346,12 @@ Ext.define("Ung.Node", {
     settingsWin : null,
     // settings Class name
     settingsClassName : null,
-    // last blinger data received
-    stats : null,
+    // list of available metrics for this node/app
+    metrics : null,
+    // which metrics are shown on the facebplate
+    activeMetrics : [0,1,2,3],
     //activityBlinger: null,             // OLD_BLINGER
-    systemBlinger: null,
+    faceplateMetrics: null,
     buttonsPanel: null,
     subCmps : null,
     fnCallback: null,
@@ -1515,26 +1517,26 @@ Ext.define("Ung.Node", {
             }
         }
     },
-    updateBlingers : function() {
-        if (this.powerOn && this.stats) {
+    updateMetrics : function() {
+        if (this.powerOn && this.metrics) {
             // OLD_BLINGER
             //             if(this.activityBlinger!=null) {
-            //                 this.activityBlinger.update(this.stats);
+            //                 this.activityBlinger.update(this.metrics);
             //             }
-            if(this.systemBlinger!=null) {
-                this.systemBlinger.update(this.stats);
+            if(this.faceplateMetrics!=null) {
+                this.faceplateMetrics.update(this.metrics);
             }
         } else {
-            this.resetBlingers();
+            this.resetMetrics();
         }
     },
-    resetBlingers : function() {
+    resetMetrics : function() {
         // OLD_BLINGER
         //         if(this.activityBlinger!=null) {
         //             this.activityBlinger.reset();
         //         }
-        if(this.systemBlinger!=null) {
-            this.systemBlinger.reset();
+        if(this.faceplateMetrics!=null) {
+            this.faceplateMetrics.reset();
         }
     },
     onPowerClick : function() {
@@ -1569,7 +1571,7 @@ Ext.define("Ung.Node", {
             this.setState("attention");
             this.rpcNode.stop(Ext.bind(function(result, exception) {
                 //this.updateRunState("INITIALIZED");
-                this.resetBlingers();
+                this.resetMetrics();
                 if(Ung.Util.handleException(exception)) return;
             },this));
         },this));
@@ -1719,7 +1721,7 @@ Ext.define("Ung.Node", {
     },
     // initialize blingers
     initBlingers : function() {
-        if(this.stats != null && this.stats.list != null) {
+        if(this.metrics != null && this.metrics.list != null) {
             // OLD_BLINGER
             //             if(this.blingers.activityDescs!=null && this.blingers.activityDescs.list.length>0) {
             //                 this.activityBlinger=new Ung.ActivityBlinger({
@@ -1730,17 +1732,17 @@ Ext.define("Ung.Node", {
             //                 this.subCmps.push(this.activityBlinger);
             //             }
 //             var dispMetricDescs=[];
-//             for(var i=0;i<this.stats.list.length;i++) {
-//                 dispMetricDescs.push(this.stats.list[i]);
+//             for(var i=0;i<this.metrics.list.length;i++) {
+//                 dispMetricDescs.push(this.metrics.list[i]);
 //             }
-//            this.stats.dispMetricDescs = dispMetricDescs;
-            if( this.stats.list.length > 0 ) {
-                this.systemBlinger=new Ung.SystemBlinger({
+//            this.metrics.dispMetricDescs = dispMetricDescs;
+            if( this.metrics.list.length > 0 ) {
+                this.faceplateMetrics=new Ung.FaceplateMetric({
                     parentId : this.getId(),
-                    metric: this.stats.list
+                    metric: this.metrics.list
                 });
-                this.systemBlinger.render('node-blingers_' + this.getId());
-                this.subCmps.push(this.systemBlinger);
+                this.faceplateMetrics.render('node-blingers_' + this.getId());
+                this.subCmps.push(this.faceplateMetrics);
             }
         }
             
@@ -1956,7 +1958,7 @@ Ung.MessageManager = {
                                 refreshApps=true;
                                 var node=main.getNode( msg.nodeProperties.name, msg.policyId );
                                 if(!node) {
-                                    node=main.createNode(msg.nodeProperties, msg.nodeSettings, msg.nodeStats, msg.license,"INITIALIZED");
+                                    node=main.createNode(msg.nodeProperties, msg.nodeSettings, msg.nodeMetrics, msg.license,"INITIALIZED");
                                     main.nodes.push(node);
                                     main.addNode(node,true);
                                     main.removeParentNode( node, msg.policyId );
@@ -2064,16 +2066,16 @@ Ung.MessageManager = {
                     }
                 }
                 if(!Ung.MessageManager.upgradeMode) {
-                  // update system stats
-                  main.systemStats.update(messageQueue.systemStats);
-                  // upgrade nodes blingers
-                  for (var i = 0; i < main.nodes.length; i++) {
-                    var nodeCmp = Ung.Node.getCmp(main.nodes[i].nodeId);
-                    if (nodeCmp && nodeCmp.isRunning()) {
-                      nodeCmp.stats = messageQueue.stats.map[main.nodes[i].nodeId];
-                      nodeCmp.updateBlingers();
+                    // update system stats
+                    main.systemStats.update(messageQueue.systemStats);
+                    // upgrade nodes blingers
+                    for (var i = 0; i < main.nodes.length; i++) {
+                        var nodeCmp = Ung.Node.getCmp(main.nodes[i].nodeId);
+                        if (nodeCmp && nodeCmp.isRunning()) {
+                            nodeCmp.metrics = messageQueue.metrics.map[main.nodes[i].nodeId];
+                            nodeCmp.updateMetrics();
+                        }
                     }
-                  }
                 }
             } catch (err) {
                 Ext.MessageBox.alert("Exception in MessageManager", err.message);
@@ -2385,7 +2387,7 @@ Ext.define("Ung.SystemStats", {
 // Ext.ComponentMgr.registerType('ungActivityBlinger', Ung.ActivityBlinger);
 
 // System Blinger Class
-Ext.define("Ung.SystemBlinger", {
+Ext.define("Ung.FaceplateMetric", {
     extend: "Ext.Component",
     autoEl:"div",
     parentId : null,
@@ -2398,13 +2400,13 @@ Ext.define("Ung.SystemBlinger", {
     sessionRequestTotal : null,
     constructor : function(config) {
         this.id = "blinger_system_" + config.parentId;
-        Ung.SystemBlinger.superclass.constructor.apply(this, arguments);
+        Ung.FaceplateMetric.superclass.constructor.apply(this, arguments);
     },
 
     onRender : function(container, position) {
-        Ung.SystemBlinger.superclass.onRender.call(this, container, position);
+        Ung.FaceplateMetric.superclass.onRender.call(this, container, position);
         this.getEl().addCls("system-blinger");
-        var templateHTML = Ung.SystemBlinger.template.applyTemplate({
+        var templateHTML = Ung.FaceplateMetric.template.applyTemplate({
             'id' : this.getId(),
             'blingerName' : i18n._("system")
         });
@@ -2425,26 +2427,20 @@ Ext.define("Ung.SystemBlinger", {
     },
     buildActiveMetrics : function () {
         var nodeCmp = Ext.getCmp(this.parentId);
-        var activeMetrics=nodeCmp.stats.list;
-        //         if(activeMetrics.length>4) {
-        //             Ext.MessageBox.alert(i18n._("Warning"), Ext.String.format(i18n._("The node {0} has {1} metrics. The maximum number of metrics is {2}."),nodeCmp.displayName ,activeMetrics.length,4));
-            //         }
+        var activeMetrics = nodeCmp.activeMetrics;
+        if(activeMetrics.length>4) {
+            Ext.MessageBox.alert(i18n._("Warning"), Ext.String.format(i18n._("The node {0} has {1} metrics. The maximum number of metrics is {2}."),nodeCmp.displayName ,activeMetrics.length,4));
+        }
         var metricsLen=Math.min(activeMetrics.length,4);
         for(var i=0; i<metricsLen;i++) {
-            var activeMetric=activeMetrics[i];
-            for(var j=0;j<nodeCmp.stats.list.length;j++) {
-                var metric=nodeCmp.stats.list[j];
-                if(activeMetric.name==metric.name) {
-                    activeMetric.metricDesc=metric;
-                    activeMetric.index=i;
-                    var nameDiv=document.getElementById('systemName_' + this.getId() + '_' + i);
-                    var valueDiv=document.getElementById('systemValue_' + this.getId() + '_' + i);
-                    nameDiv.innerHTML = i18n._(metric.displayName);
-                    nameDiv.style.display="";
-                    valueDiv.innerHTML = "&nbsp;";
-                    valueDiv.style.display="";
-                }
-            }
+            var metricIndex=activeMetrics[i];
+            var metric=nodeCmp.metrics.list[metricIndex];
+            var nameDiv=document.getElementById('systemName_' + this.getId() + '_' + i);
+            var valueDiv=document.getElementById('systemValue_' + this.getId() + '_' + i);
+            nameDiv.innerHTML = i18n._(metric.displayName);
+            nameDiv.style.display="";
+            valueDiv.innerHTML = "&nbsp;";
+            valueDiv.style.display="";
         }
         for(var i=activeMetrics.length; i<4;i++) {
             var nameDiv=document.getElementById('systemName_' + this.getId() + '_' + i);
@@ -2458,29 +2454,29 @@ Ext.define("Ung.SystemBlinger", {
     },
     showBlingerSettings : function() {
         var nodeCmp = Ext.getCmp(this.parentId);
-        this.tempMetrics=[];
+        this.newActiveMetrics=[];
         if(this.configWin==null) {
             var configItems=[];
-            for(var i=0;i<nodeCmp.stats.list.length;i++) {
-                var metric=nodeCmp.stats.list[i];
+            for(var i=0;i<nodeCmp.metrics.list.length;i++) {
+                var metric=nodeCmp.metrics.list[i];
                 configItems.push({
                     xtype : 'checkbox',
                     boxLabel : i18n._(metric.displayName),
                     hideLabel : true,
                     name : metric.displayName,
-                    dataIndex: metric.name,
+                    dataIndex: i,
                     checked : false,
                     listeners : {
                         "change" : {
                             fn : Ext.bind(function(elem, checked) {
-                                if(checked && this.tempMetrics.length>=4) {
-                                    //Ext.MessageBox.alert(i18n._("Warning"),i18n._("Please set up to four items."));
+                                if(checked && this.newActiveMetrics.length>=4) {
+                                    Ext.MessageBox.alert(i18n._("Warning"),i18n._("Please set up to four items."));
                                     elem.setValue(false);
                                     return;
                                 }
                                 var itemIndex=-1;
-                                for(var i=0;i<this.tempMetrics.length;i++) {
-                                    if(this.tempMetrics[i]==elem.dataIndex) {
+                                for(var i=0;i<this.newActiveMetrics.length;i++) {
+                                    if(this.newActiveMetrics[i]==elem.dataIndex) {
                                         itemIndex=i;
                                         break;
                                     }
@@ -2488,12 +2484,12 @@ Ext.define("Ung.SystemBlinger", {
                                 if(checked) {
                                     if(itemIndex==-1) {
                                         // add element
-                                        this.tempMetrics.push(elem.dataIndex);
+                                        this.newActiveMetrics.push(elem.dataIndex);
                                     }
                                 } else {
                                     if(itemIndex!=-1) {
                                         // remove element
-                                        this.tempMetrics.splice(itemIndex,1);
+                                        this.newActiveMetrics.splice(itemIndex,1);
                                     }
                                 }
 
@@ -2539,52 +2535,31 @@ Ext.define("Ung.SystemBlinger", {
             });
         }
 
-        var activeMetrics=nodeCmp.stats.list;
         for(var i=0;i<this.configWin.items.length;i++) {
             this.configWin.items.get(i).setValue(false);
         }
-        for(var j=0;j<activeMetrics.length;j++) {
-            for(var i=0;i<this.configWin.items.length;i++) {
-                var metricItem=this.configWin.items.get(i);
-                if(activeMetrics[j].name==metricItem.dataIndex) {
-                    metricItem.setValue(true);
-                    break;
-                }
-            }
+        for( var j=0 ; j<nodeCmp.activeMetrics.length ; j++ ) {
+            var metricIndex = nodeCmp.activeMetrics[j];
+            var metricItem=this.configWin.items.get(metricIndex);
+            if (metricItem != null)
+                metricItem.setValue(true);
         }
         this.configWin.show();
     },
     updateActiveMetrics : function() {
-        var activeMetrics=[];
         var nodeCmp = Ext.getCmp(this.parentId);
-        for(var i=0; i<this.tempMetrics.length;i++) {
-            for(var j=0;j<nodeCmp.stats.list.length;j++) {
-                var metric=nodeCmp.stats.list[j];
-                if(this.tempMetrics[i]==metric.name) {
-                    activeMetrics.push({
-                       javaClass : "com.untangle.uvm.message.NodeMetric",
-                       name : metric.name,
-                       interval: "SINCE_MIDNIGHT"
-                    });
-                }
-            }
-        }
-        // no longer saved
-        //         rpc.messageManager.setActiveMetrics(Ext.bind(function(result, exception) {
-        //             if(Ung.Util.handleException(exception)) return;
-        //             var nodeCmp = Ext.getCmp(this.parentId);
-        //             nodeCmp.stats.list=activeMetrics;
-        //             this.buildActiveMetrics();
-        //         },this),nodeCmp.nodeSettings,{javaClass:"java.util.List", list:activeMetrics});
+        nodeCmp.activeMetrics = this.newActiveMetrics;
+        this.buildActiveMetrics();
     },
-    update : function(stats) {
+    update : function(metrics) {
         // UPDATE COUNTS
         var nodeCmp = Ext.getCmp(this.parentId);
-        var activeMetrics=nodeCmp.stats.list;
+        var activeMetrics = nodeCmp.activeMetrics;
         for (var i = 0; i < activeMetrics.length; i++) {
-            var activeMetric=activeMetrics[i];
+            var metricIndex = activeMetrics[i];
+            var metric=nodeCmp.metrics.list[metricIndex];
             var newValue="&nbsp;";
-            newValue = activeMetric.value;
+            newValue = metric.value;
             var valueDiv = document.getElementById('systemValue_' + this.getId() + '_' + i);
             if(valueDiv!=null) {
                 valueDiv.innerHTML = newValue;
@@ -2598,10 +2573,10 @@ Ext.define("Ung.SystemBlinger", {
         }
 }
 });
-Ung.SystemBlinger.template = new Ext.Template('<div class="blinger-name">{blingerName}</div>',
+Ung.FaceplateMetric.template = new Ext.Template('<div class="blinger-name">{blingerName}</div>',
         '<div class="system-blinger-box" id="blingerBox_{id}"></div>',
         '<div class="systemStatSettings" id="systemStatSettings_{id}"></div>');
-Ext.ComponentMgr.registerType('ungSystemBlinger', Ung.SystemBlinger);
+Ext.ComponentMgr.registerType('ungFaceplateMetric', Ung.FaceplateMetric);
 
 // Event Log class
 Ext.define("Ung.GridEventLog", {

@@ -678,7 +678,7 @@ Ext.define("Ung.Main", {
         }
         return null;
     },
-    createNode: function (nodeProperties, nodeSettings, nodeStats, license, runState) {
+    createNode: function (nodeProperties, nodeSettings, nodeMetrics, license, runState) {
         var node={};
         node.nodeId=nodeSettings.id;
         node.nodeSettings=nodeSettings;
@@ -688,7 +688,7 @@ Ext.define("Ung.Main", {
         node.displayName=nodeProperties.displayName;
         node.license=license;
         node.image='image?name='+node.name;
-        node.stats=nodeStats;
+        node.metrics=nodeMetrics;
         node.runState=runState;
         node.viewPosition=nodeProperties.viewPosition;
         return node;
@@ -733,7 +733,7 @@ Ext.define("Ung.Main", {
 
             var node=this.createNode(nodeProperties,
                                      nodeSettings,
-                                     rpc.rackView.nodeStats.map[nodeSettings.id],
+                                     rpc.rackView.nodeMetrics.map[nodeSettings.id],
                                      rpc.rackView.licenseMap.map[nodeProperties.name],
                                      rpc.rackView.runStates.map[nodeSettings.id]);
             this.nodes.push(node);
