@@ -34,7 +34,7 @@ import com.untangle.uvm.node.Node;
 import com.untangle.uvm.node.IntfMatcher;
 import com.untangle.uvm.node.IPMatcher;
 import com.untangle.uvm.node.EventLogQuery;
-import com.untangle.uvm.node.ABCMetric;
+import com.untangle.uvm.node.NodeMetric;
 import com.untangle.uvm.servlet.UploadHandler;
 import com.untangle.uvm.util.I18nUtil;
 import com.untangle.uvm.util.OutsideValve;
@@ -83,8 +83,8 @@ public class CPDImpl extends NodeBase implements CPD
         this.settings = new CPDSettings();
         this.pipeSpecs = new PipeSpec[0];
 
-        this.addStat(new ABCMetric(STAT_BLOCK, I18nUtil.marktr("Sessions blocked")));
-        this.addStat(new ABCMetric(STAT_AUTHORIZE, I18nUtil.marktr("Clients authorized")));
+        this.addStat(new NodeMetric(STAT_BLOCK, I18nUtil.marktr("Sessions blocked")));
+        this.addStat(new NodeMetric(STAT_AUTHORIZE, I18nUtil.marktr("Clients authorized")));
     }
 
     public void initializeSettings()

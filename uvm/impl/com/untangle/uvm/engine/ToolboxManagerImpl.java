@@ -45,7 +45,7 @@ import com.untangle.uvm.node.DeployException;
 import com.untangle.uvm.node.NodeProperties;
 import com.untangle.uvm.node.NodeManager;
 import com.untangle.uvm.node.NodeSettings;
-import com.untangle.uvm.node.ABCMetric;
+import com.untangle.uvm.node.NodeMetric;
 import com.untangle.uvm.toolbox.Application;
 import com.untangle.uvm.toolbox.InstallAndInstantiateComplete;
 import com.untangle.uvm.toolbox.PackageDesc;
@@ -207,7 +207,7 @@ class ToolboxManagerImpl implements ToolboxManager
         NodeManagerImpl nm = (NodeManagerImpl)UvmContextFactory.context().nodeManager();
         List<Node> instances = nm.visibleNodes( policyId );
 
-        Map<Long, List<ABCMetric>> nodeStats = new HashMap<Long, List<ABCMetric>>(instances.size());
+        Map<Long, List<NodeMetric>> nodeStats = new HashMap<Long, List<NodeMetric>>(instances.size());
         for (Node visibleNode : instances) {
             Long nodeId = visibleNode.getNodeSettings().getId();
             Long nodePolicyId = visibleNode.getNodeSettings().getPolicyId();

@@ -75,5 +75,5 @@ public interface Node
     /**
      * Return statistics tracked for this node (if any)
      */
-    List<ABCMetric> getStats();
+    List<NodeMetric> getStats();
 }

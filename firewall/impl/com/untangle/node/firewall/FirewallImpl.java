@@ -17,7 +17,7 @@ import com.untangle.uvm.SessionMatcher;
 import com.untangle.uvm.SessionMatcherFactory;
 import com.untangle.uvm.node.NodeSettings;
 import com.untangle.uvm.node.NodeProperties;
-import com.untangle.uvm.node.ABCMetric;
+import com.untangle.uvm.node.NodeMetric;
 import com.untangle.uvm.node.Validator;
 import com.untangle.uvm.node.IntfMatcher;
 import com.untangle.uvm.node.IPMatcher;
@@ -122,9 +122,9 @@ public class FirewallImpl extends NodeBase implements Firewall
                                                     "AND firewallWasBlocked IS TRUE " +
                                                     "ORDER BY evt.timeStamp DESC");
 
-        this.addStat(new ABCMetric(STAT_PASS, I18nUtil.marktr("Sessions passed")));
-        this.addStat(new ABCMetric(STAT_LOG, I18nUtil.marktr("Sessions logged")));
-        this.addStat(new ABCMetric(STAT_BLOCK, I18nUtil.marktr("Sessions blocked")));
+        this.addStat(new NodeMetric(STAT_PASS, I18nUtil.marktr("Sessions passed")));
+        this.addStat(new NodeMetric(STAT_LOG, I18nUtil.marktr("Sessions logged")));
+        this.addStat(new NodeMetric(STAT_BLOCK, I18nUtil.marktr("Sessions blocked")));
     }
 
     public EventLogQuery[] getEventQueries()

@@ -11,7 +11,7 @@ import java.util.Map;
 import com.untangle.uvm.node.NodeProperties;
 import com.untangle.uvm.node.License;
 import com.untangle.uvm.node.NodeSettings;
-import com.untangle.uvm.node.ABCMetric;
+import com.untangle.uvm.node.NodeMetric;
 
 @SuppressWarnings("serial")
 public class RackView implements Serializable
@@ -19,11 +19,11 @@ public class RackView implements Serializable
     private List<Application> applications;
     private List<NodeSettings> instances;
     private List<NodeProperties> nodeProperties;
-    private Map<Long, List<ABCMetric>> nodeStats;
+    private Map<Long, List<NodeMetric>> nodeStats;
     private Map<String, License> licenseMap;
     private Map<Long, NodeSettings.NodeState> runStates;
 
-    public RackView(List<Application> applications, List<NodeSettings> instances, List<NodeProperties> nodeProperties, Map<Long, List<ABCMetric>> nodeStats, Map<String, License> license, Map<Long, NodeSettings.NodeState> runStates)
+    public RackView(List<Application> applications, List<NodeSettings> instances, List<NodeProperties> nodeProperties, Map<Long, List<NodeMetric>> nodeStats, Map<String, License> license, Map<Long, NodeSettings.NodeState> runStates)
     {
         this.applications = applications;
         this.instances = instances;
@@ -48,7 +48,7 @@ public class RackView implements Serializable
         return nodeProperties;
     }
     
-    public Map<Long, List<ABCMetric>> getNodeStats()
+    public Map<Long, List<NodeMetric>> getNodeStats()
     {
         return nodeStats;
     }

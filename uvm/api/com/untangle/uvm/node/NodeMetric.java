@@ -1,27 +1,27 @@
 /**
- * $Id: ABCMetric.java,v 1.00 2012/04/05 17:00:24 dmorris Exp $
+ * $Id: NodeMetric.java,v 1.00 2012/04/05 17:00:24 dmorris Exp $
  */
 package com.untangle.uvm.node;
 
 import java.io.Serializable;
 
 @SuppressWarnings("serial")
-public class ABCMetric implements Serializable
+public class NodeMetric implements Serializable
 {
     private String name;
     private String displayName;
     private Long value;
     
-    public ABCMetric() { }
+    public NodeMetric() { }
 
-    public ABCMetric(String name, String displayName)
+    public NodeMetric(String name, String displayName)
     {
         this.name = name;
         this.displayName = displayName;
         this.value = 0L;
     }
 
-    public ABCMetric(String name, String displayName, Long value)
+    public NodeMetric(String name, String displayName, Long value)
     {
         this.name = name;
         this.displayName = displayName;
@@ -39,6 +39,6 @@ public class ABCMetric implements Serializable
 
     public String toString()
     {
-        return "ABCMetric[" + name + "] = " + value;
+        return "NodeMetric[" + name + "] = " + value;
     }
 }

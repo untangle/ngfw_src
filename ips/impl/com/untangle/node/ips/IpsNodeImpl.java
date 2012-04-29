@@ -17,7 +17,7 @@ import com.untangle.uvm.vnet.Fitting;
 import com.untangle.uvm.vnet.PipeSpec;
 import com.untangle.uvm.vnet.SoloPipeSpec;
 import com.untangle.uvm.node.EventLogQuery;
-import com.untangle.uvm.node.ABCMetric;
+import com.untangle.uvm.node.NodeMetric;
 
 public class IpsNodeImpl extends NodeBase implements IpsNode
 {
@@ -70,9 +70,9 @@ public class IpsNodeImpl extends NodeBase implements IpsNode
         List<RuleClassification> classifications = FileLoader.loadClassifications();
         engine.setClassifications(classifications);
 
-        this.addStat(new ABCMetric(STAT_SCAN, I18nUtil.marktr("Sessions scanned")));
-        this.addStat(new ABCMetric(STAT_DETECT, I18nUtil.marktr("Sessions logged")));
-        this.addStat(new ABCMetric(STAT_BLOCK, I18nUtil.marktr("Sessions blocked")));
+        this.addStat(new NodeMetric(STAT_SCAN, I18nUtil.marktr("Sessions scanned")));
+        this.addStat(new NodeMetric(STAT_DETECT, I18nUtil.marktr("Sessions logged")));
+        this.addStat(new NodeMetric(STAT_BLOCK, I18nUtil.marktr("Sessions blocked")));
     }
 
     @Override

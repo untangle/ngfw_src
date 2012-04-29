@@ -13,7 +13,7 @@ import java.util.TreeMap;
 import org.apache.log4j.Logger;
 
 import com.untangle.uvm.node.EventLogQuery;
-import com.untangle.uvm.node.ABCMetric;
+import com.untangle.uvm.node.NodeMetric;
 import com.untangle.uvm.util.I18nUtil;
 import com.untangle.uvm.util.TransactionWork;
 import com.untangle.uvm.vnet.NodeBase;
@@ -62,9 +62,9 @@ public class ProtoFilterImpl extends NodeBase implements ProtoFilter
                                                    "AND pfBlocked IS TRUE " +
                                                    "ORDER BY evt.timeStamp DESC");
 
-        this.addStat(new ABCMetric(STAT_SCAN, I18nUtil.marktr("Chunks scanned")));
-        this.addStat(new ABCMetric(STAT_DETECT, I18nUtil.marktr("Sessions logged")));
-        this.addStat(new ABCMetric(STAT_BLOCK, I18nUtil.marktr("Sessions blocked")));
+        this.addStat(new NodeMetric(STAT_SCAN, I18nUtil.marktr("Chunks scanned")));
+        this.addStat(new NodeMetric(STAT_DETECT, I18nUtil.marktr("Sessions logged")));
+        this.addStat(new NodeMetric(STAT_BLOCK, I18nUtil.marktr("Sessions blocked")));
     }
 
     // ProtoFilter methods ----------------------------------------------------

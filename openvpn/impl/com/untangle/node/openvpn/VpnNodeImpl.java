@@ -25,7 +25,7 @@ import com.untangle.uvm.node.IPAddress;
 import com.untangle.uvm.node.ValidateException;
 import com.untangle.uvm.node.Validator;
 import com.untangle.uvm.node.EventLogQuery;
-import com.untangle.uvm.node.ABCMetric;
+import com.untangle.uvm.node.NodeMetric;
 import com.untangle.uvm.util.I18nUtil;
 import com.untangle.uvm.util.JsonClient;
 import com.untangle.uvm.util.TransactionWork;
@@ -98,9 +98,9 @@ public class VpnNodeImpl extends NodeBase implements VpnNode
         this.pipeSpec = new SoloPipeSpec( NODE_NAME, this, handler, Fitting.OCTET_STREAM, Affinity.CLIENT, SoloPipeSpec.MAX_STRENGTH - 2);
         this.pipeSpecs = new SoloPipeSpec[] { pipeSpec };
 
-        this.addStat(new ABCMetric(STAT_BLOCK, I18nUtil.marktr("Sessions blocked")));
-        this.addStat(new ABCMetric(STAT_PASS, I18nUtil.marktr("Sessions passed")));
-        this.addStat(new ABCMetric(STAT_CONNECT, I18nUtil.marktr("Clients Connected")));
+        this.addStat(new NodeMetric(STAT_BLOCK, I18nUtil.marktr("Sessions blocked")));
+        this.addStat(new NodeMetric(STAT_PASS, I18nUtil.marktr("Sessions passed")));
+        this.addStat(new NodeMetric(STAT_CONNECT, I18nUtil.marktr("Clients Connected")));
 
         this.connectEventsQuery = new EventLogQuery(I18nUtil.marktr("Closed Sessions"), "FROM OpenvpnLogEventFromReports evt ORDER BY evt.timeStamp DESC");
     }

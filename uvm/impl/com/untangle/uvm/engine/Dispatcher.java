@@ -26,7 +26,7 @@ import com.untangle.uvm.argon.ArgonIPNewSessionRequest;
 import com.untangle.uvm.node.Node;
 import com.untangle.uvm.node.NodeProperties;
 import com.untangle.uvm.node.NodeManager;
-import com.untangle.uvm.node.ABCMetric;
+import com.untangle.uvm.node.NodeMetric;
 import com.untangle.uvm.util.I18nUtil;
 import com.untangle.uvm.util.MetaEnv;
 import com.untangle.uvm.vnet.NodeBase;
@@ -148,15 +148,15 @@ class Dispatcher implements com.untangle.uvm.argon.NewSessionEventListener
 
         liveSessions = new ConcurrentHashMap<IPSession,IPSession>();
 
-        this.node.addStat(new ABCMetric(STAT_LIVE_SESSIONS, I18nUtil.marktr("Current Sessions")));
-        this.node.addStat(new ABCMetric(STAT_TCP_LIVE_SESSIONS, I18nUtil.marktr("Current TCP Sessions")));
-        this.node.addStat(new ABCMetric(STAT_UDP_LIVE_SESSIONS, I18nUtil.marktr("Current UDP Sessions")));
-        this.node.addStat(new ABCMetric(STAT_SESSIONS, I18nUtil.marktr("Sessions")));
-        this.node.addStat(new ABCMetric(STAT_TCP_SESSIONS, I18nUtil.marktr("TCP Sessions")));
-        this.node.addStat(new ABCMetric(STAT_UDP_SESSIONS, I18nUtil.marktr("UDP Sessions")));
-        this.node.addStat(new ABCMetric(STAT_SESSION_REQUESTS, I18nUtil.marktr("Session Requests")));
-        this.node.addStat(new ABCMetric(STAT_TCP_SESSION_REQUESTS, I18nUtil.marktr("TCP Session Requests")));
-        this.node.addStat(new ABCMetric(STAT_UDP_SESSION_REQUESTS, I18nUtil.marktr("UDP Session Requests")));
+        this.node.addStat(new NodeMetric(STAT_LIVE_SESSIONS, I18nUtil.marktr("Current Sessions")));
+        this.node.addStat(new NodeMetric(STAT_TCP_LIVE_SESSIONS, I18nUtil.marktr("Current TCP Sessions")));
+        this.node.addStat(new NodeMetric(STAT_UDP_LIVE_SESSIONS, I18nUtil.marktr("Current UDP Sessions")));
+        this.node.addStat(new NodeMetric(STAT_SESSIONS, I18nUtil.marktr("Sessions")));
+        this.node.addStat(new NodeMetric(STAT_TCP_SESSIONS, I18nUtil.marktr("TCP Sessions")));
+        this.node.addStat(new NodeMetric(STAT_UDP_SESSIONS, I18nUtil.marktr("UDP Sessions")));
+        this.node.addStat(new NodeMetric(STAT_SESSION_REQUESTS, I18nUtil.marktr("Session Requests")));
+        this.node.addStat(new NodeMetric(STAT_TCP_SESSION_REQUESTS, I18nUtil.marktr("TCP Session Requests")));
+        this.node.addStat(new NodeMetric(STAT_UDP_SESSION_REQUESTS, I18nUtil.marktr("UDP Session Requests")));
     }
 
     // Called by the new session handler thread.

@@ -27,7 +27,7 @@ import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.SessionMatcher;
 import com.untangle.uvm.node.GenericRule;
 import com.untangle.uvm.node.EventLogQuery;
-import com.untangle.uvm.node.ABCMetric;
+import com.untangle.uvm.node.NodeMetric;
 import com.untangle.uvm.util.I18nUtil;
 import com.untangle.uvm.util.OutsideValve;
 import com.untangle.uvm.util.TransactionWork;
@@ -179,11 +179,11 @@ public abstract class VirusNodeImpl extends NodeBase implements VirusNode
                                                      " AND evt.policyId = :policyId" + 
                                                      " ORDER BY evt.timeStamp DESC");
 
-        this.addStat(new ABCMetric(STAT_SCAN, I18nUtil.marktr("Documents scanned")));
-        this.addStat(new ABCMetric(STAT_BLOCK, I18nUtil.marktr("Documents blocked")));
-        this.addStat(new ABCMetric(STAT_PASS, I18nUtil.marktr("Documents passed")));
-        this.addStat(new ABCMetric(STAT_REMOVE, I18nUtil.marktr("Infections removed")));
-        this.addStat(new ABCMetric(STAT_PASS_POLICY, I18nUtil.marktr("Passed by policy")));
+        this.addStat(new NodeMetric(STAT_SCAN, I18nUtil.marktr("Documents scanned")));
+        this.addStat(new NodeMetric(STAT_BLOCK, I18nUtil.marktr("Documents blocked")));
+        this.addStat(new NodeMetric(STAT_PASS, I18nUtil.marktr("Documents passed")));
+        this.addStat(new NodeMetric(STAT_REMOVE, I18nUtil.marktr("Infections removed")));
+        this.addStat(new NodeMetric(STAT_PASS_POLICY, I18nUtil.marktr("Passed by policy")));
     }
 
     // VirusNode methods -------------------------------------------------

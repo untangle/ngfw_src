@@ -36,7 +36,7 @@ import com.untangle.uvm.node.IPMaskedAddressRule;
 import com.untangle.uvm.node.Validator;
 import com.untangle.uvm.node.GenericRule;
 import com.untangle.uvm.node.EventLogQuery;
-import com.untangle.uvm.node.ABCMetric;
+import com.untangle.uvm.node.NodeMetric;
 import com.untangle.uvm.util.I18nUtil;
 import com.untangle.uvm.util.OutsideValve;
 import com.untangle.uvm.util.TransactionWork;
@@ -114,9 +114,9 @@ public class SpywareImpl extends NodeBase implements Spyware
                                              " AND evt.policyId = :policyId" + 
                                              " ORDER BY evt.timeStamp DESC");
 
-        this.addStat(new ABCMetric(STAT_SCAN, I18nUtil.marktr("Pages scanned")));
-        this.addStat(new ABCMetric(STAT_BLOCK, I18nUtil.marktr("Pages blocked")));
-        this.addStat(new ABCMetric(STAT_PASS, I18nUtil.marktr("Pages passed")));
+        this.addStat(new NodeMetric(STAT_SCAN, I18nUtil.marktr("Pages scanned")));
+        this.addStat(new NodeMetric(STAT_BLOCK, I18nUtil.marktr("Pages blocked")));
+        this.addStat(new NodeMetric(STAT_PASS, I18nUtil.marktr("Pages passed")));
     }
 
     // SpywareNode methods -----------------------------------------------------

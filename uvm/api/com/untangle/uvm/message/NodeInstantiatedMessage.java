@@ -8,7 +8,7 @@ import java.util.List;
 import com.untangle.uvm.node.License;
 import com.untangle.uvm.node.NodeProperties;
 import com.untangle.uvm.node.NodeSettings;
-import com.untangle.uvm.node.ABCMetric;
+import com.untangle.uvm.node.NodeMetric;
 import com.untangle.uvm.message.Message;
 
 @SuppressWarnings("serial")
@@ -16,11 +16,11 @@ public class NodeInstantiatedMessage extends Message
 {
     private final NodeProperties nodeProperties;
     private final NodeSettings nodeSettings;
-    private final List<ABCMetric> nodeStats;
+    private final List<NodeMetric> nodeStats;
     private final License license;
     private final Long policyId;
     
-    public NodeInstantiatedMessage(NodeProperties nodeProperties, NodeSettings nodeSettings, List<ABCMetric> nodeStats, License license, Long policyId)
+    public NodeInstantiatedMessage(NodeProperties nodeProperties, NodeSettings nodeSettings, List<NodeMetric> nodeStats, License license, Long policyId)
     {
         this.nodeProperties = nodeProperties;
         this.nodeSettings = nodeSettings;
@@ -44,7 +44,7 @@ public class NodeInstantiatedMessage extends Message
         return this.nodeSettings;
     }
     
-    public List<ABCMetric> getNodeStats()
+    public List<NodeMetric> getNodeStats()
     {
         return this.nodeStats;
     }

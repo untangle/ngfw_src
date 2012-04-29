@@ -28,7 +28,7 @@ import com.untangle.uvm.node.Node;
 import com.untangle.uvm.node.NodeProperties;
 import com.untangle.uvm.node.NodeSettings;
 import com.untangle.uvm.node.DeployException;
-import com.untangle.uvm.node.ABCMetric;
+import com.untangle.uvm.node.NodeMetric;
 import com.untangle.uvm.util.I18nUtil;
 import com.untangle.uvm.util.TransactionWork;
 import com.untangle.uvm.logging.LogEvent;
@@ -80,8 +80,8 @@ public abstract class NodeBase implements Node
     /**
      * StatList
      */
-    private Map<String, ABCMetric> metrics = new HashMap<String, ABCMetric>();
-    private List<ABCMetric> metricList = new ArrayList<ABCMetric>();
+    private Map<String, NodeMetric> metrics = new HashMap<String, NodeMetric>();
+    private List<NodeMetric> metricList = new ArrayList<NodeMetric>();
         
     private NodeSettings.NodeState currentState;
     private boolean wasStarted = false;
@@ -381,7 +381,7 @@ public abstract class NodeBase implements Node
         return sessions;
     }
 
-    public List<ABCMetric> getStats()
+    public List<NodeMetric> getStats()
     {
         return metricList;
     }
@@ -403,9 +403,9 @@ public abstract class NodeBase implements Node
             return;
         }
         
-        ABCMetric metric = metrics.get(name);
+        NodeMetric metric = metrics.get(name);
         if (metric == null) {
-            logger.warn("ABCMetric not found: " + name);
+            logger.warn("NodeMetric not found: " + name);
             return;
         }
         metric.setValue( newValue );
@@ -418,9 +418,9 @@ public abstract class NodeBase implements Node
             return;
         }
         
-        ABCMetric metric = metrics.get(name);
+        NodeMetric metric = metrics.get(name);
         if (metric == null) {
-            logger.warn("ABCMetric not found: " + name);
+            logger.warn("NodeMetric not found: " + name);
             return;
         }
 
@@ -431,7 +431,7 @@ public abstract class NodeBase implements Node
         metric.setValue( value );
     }
 
-    public void addStat( ABCMetric metric )
+    public void addStat( NodeMetric metric )
     {
         if (metrics.get(metric.getName()) != null)
             return;

@@ -36,7 +36,7 @@ import com.untangle.uvm.node.Node;
 import com.untangle.uvm.node.NodeManager;
 import com.untangle.uvm.node.SessionEndpoints;
 import com.untangle.uvm.node.NodeSettings;
-import com.untangle.uvm.node.ABCMetric;
+import com.untangle.uvm.node.NodeMetric;
 import com.untangle.uvm.util.Pulse;
 import com.untangle.uvm.util.TransactionWork;
 
@@ -109,7 +109,7 @@ class MessageManagerImpl implements MessageManager
         }
         nodeIds.add( 0L );
 
-        Map<Long, List<ABCMetric>> stats = getStats( nodeIds );
+        Map<Long, List<NodeMetric>> stats = getStats( nodeIds );
         List<Message> messages = getMessages(key);
         return new MessageQueue(messages, stats, systemStats);
     }
@@ -124,7 +124,7 @@ class MessageManagerImpl implements MessageManager
         }
         nodeIds.add( 0L );
         
-        Map<Long, List<ABCMetric>> stats = getStats( nodeIds );
+        Map<Long, List<NodeMetric>> stats = getStats( nodeIds );
         List<Message> messages = getMessages(key);
 
         return new MessageQueue(messages, stats, systemStats);
@@ -186,7 +186,7 @@ class MessageManagerImpl implements MessageManager
         }
     }
 
-    public List<ABCMetric> getStats( Long nodeId )
+    public List<NodeMetric> getStats( Long nodeId )
     {
         Node node = UvmContextFactory.context().nodeManager().node( nodeId );
         if (node != null)
@@ -220,9 +220,9 @@ class MessageManagerImpl implements MessageManager
 
     // private methods --------------------------------------------------------
 
-    private Map<Long, List<ABCMetric>> getStats( List<Long> nodeIds )
+    private Map<Long, List<NodeMetric>> getStats( List<Long> nodeIds )
     {
-        Map<Long, List<ABCMetric>> stats = new HashMap<Long, List<ABCMetric>>(nodeIds.size());
+        Map<Long, List<NodeMetric>> stats = new HashMap<Long, List<NodeMetric>>(nodeIds.size());
 
         for (Long nodeId : nodeIds) {
             stats.put( nodeId, getStats( nodeId ) );

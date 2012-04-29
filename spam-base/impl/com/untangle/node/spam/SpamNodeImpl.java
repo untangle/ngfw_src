@@ -19,7 +19,7 @@ import com.untangle.uvm.vnet.Fitting;
 import com.untangle.uvm.vnet.PipeSpec;
 import com.untangle.uvm.vnet.SoloPipeSpec;
 import com.untangle.uvm.node.EventLogQuery;
-import com.untangle.uvm.node.ABCMetric;
+import com.untangle.uvm.node.NodeMetric;
 
 public class SpamNodeImpl extends NodeBase implements SpamNode
 {
@@ -107,12 +107,12 @@ public class SpamNodeImpl extends NodeBase implements SpamNode
                                                   "AND evt.policyId = :policyId " +
                                                   "ORDER BY evt.timeStamp DESC");
         
-        this.addStat(new ABCMetric(STAT_RECEIVED, I18nUtil.marktr("Messages received")));
-        this.addStat(new ABCMetric(STAT_PASS, I18nUtil.marktr("Messages passed")));
-        this.addStat(new ABCMetric(STAT_DROP, I18nUtil.marktr("Messages dropped")));
-        this.addStat(new ABCMetric(STAT_MARK, I18nUtil.marktr("Messages marked")));
-        this.addStat(new ABCMetric(STAT_QUARANTINE, I18nUtil.marktr("Messages quarantined")));
-        this.addStat(new ABCMetric(STAT_SPAM, I18nUtil.marktr("Spam detected")));
+        this.addStat(new NodeMetric(STAT_RECEIVED, I18nUtil.marktr("Messages received")));
+        this.addStat(new NodeMetric(STAT_PASS, I18nUtil.marktr("Messages passed")));
+        this.addStat(new NodeMetric(STAT_DROP, I18nUtil.marktr("Messages dropped")));
+        this.addStat(new NodeMetric(STAT_MARK, I18nUtil.marktr("Messages marked")));
+        this.addStat(new NodeMetric(STAT_QUARANTINE, I18nUtil.marktr("Messages quarantined")));
+        this.addStat(new NodeMetric(STAT_SPAM, I18nUtil.marktr("Spam detected")));
     }
 
     public EventLogQuery[] getEventQueries()
