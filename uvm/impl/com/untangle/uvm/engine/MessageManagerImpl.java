@@ -107,7 +107,6 @@ public class MessageManagerImpl implements MessageManager
         for ( Node node : UvmContextImpl.getInstance().nodeManager().nodeInstances() ) {
             nodeIds.add( node.getNodeSettings().getId() );
         }
-        nodeIds.add( 0L );
 
         Map<Long, List<NodeMetric>> stats = getStats( nodeIds );
         List<Message> messages = getMessages(key);
@@ -122,7 +121,6 @@ public class MessageManagerImpl implements MessageManager
         for ( Node node : UvmContextImpl.getInstance().nodeManager().nodeInstances() ) {
             nodeIds.add( node.getNodeSettings().getId() );
         }
-        nodeIds.add( 0L );
         
         Map<Long, List<NodeMetric>> stats = getStats( nodeIds );
         List<Message> messages = getMessages(key);
