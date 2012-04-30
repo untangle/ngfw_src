@@ -2432,17 +2432,8 @@ Ext.define("Ung.FaceplateMetric", {
             Ext.MessageBox.alert(i18n._("Warning"), Ext.String.format(i18n._("The node {0} has {1} metrics. The maximum number of metrics is {2}."),nodeCmp.displayName ,activeMetrics.length,4));
         }
         var metricsLen=Math.min(activeMetrics.length,4);
-        for(var i=0; i<metricsLen;i++) {
-            var metricIndex=activeMetrics[i];
-            var metric=nodeCmp.metrics.list[metricIndex];
-            var nameDiv=document.getElementById('systemName_' + this.getId() + '_' + i);
-            var valueDiv=document.getElementById('systemValue_' + this.getId() + '_' + i);
-            nameDiv.innerHTML = i18n._(metric.displayName);
-            nameDiv.style.display="";
-            valueDiv.innerHTML = "&nbsp;";
-            valueDiv.style.display="";
-        }
-        for(var i=activeMetrics.length; i<4;i++) {
+        /* set all four to blank */
+        for(var i=0; i<4;i++) {
             var nameDiv=document.getElementById('systemName_' + this.getId() + '_' + i);
             var valueDiv=document.getElementById('systemValue_' + this.getId() + '_' + i);
             nameDiv.innerHTML = "&nbsp;";
@@ -2450,7 +2441,19 @@ Ext.define("Ung.FaceplateMetric", {
             valueDiv.innerHTML = "&nbsp;";
             valueDiv.style.display="none";
         }
-
+        /* fill in name and value */
+        for(var i=0; i<metricsLen;i++) {
+            var metricIndex=activeMetrics[i];
+            var metric = nodeCmp.metrics.list[metricIndex];
+            if (metric != null && metric !== undefined) {
+                var nameDiv=document.getElementById('systemName_' + this.getId() + '_' + i);
+                var valueDiv=document.getElementById('systemValue_' + this.getId() + '_' + i);
+                nameDiv.innerHTML = i18n._(metric.displayName);
+                nameDiv.style.display="";
+                valueDiv.innerHTML = "&nbsp;";
+                valueDiv.style.display="";
+            }
+        }
     },
     showBlingerSettings : function() {
         var nodeCmp = Ext.getCmp(this.parentId);
@@ -2458,7 +2461,7 @@ Ext.define("Ung.FaceplateMetric", {
         if(this.configWin==null) {
             var configItems=[];
             for(var i=0;i<nodeCmp.metrics.list.length;i++) {
-                var metric=nodeCmp.metrics.list[i];
+                var metric = nodeCmp.metrics.list[i];
                 configItems.push({
                     xtype : 'checkbox',
                     boxLabel : i18n._(metric.displayName),
