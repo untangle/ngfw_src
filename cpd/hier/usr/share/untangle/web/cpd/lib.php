@@ -46,53 +46,7 @@ function get_cpd_settings()
     return $json;
 }
 
-function get_radius_server_settings()
-{
-    global $uvm_db;
-    $query =<<<END_OF_QUERY
-SELECT
-  u_radius_server_settings.enabled AS enabled,
-  u_radius_server_settings.server AS host,
-  u_radius_server_settings.port AS port,
-  u_radius_server_settings.shared_secret AS shared_secret,
-  u_radius_server_settings.auth_method AS auth_method
-FROM
-  settings.u_radius_server_settings,
-  settings.u_ab_settings
-WHERE
-  u_ab_settings.radius_server_settings = u_radius_server_settings.settings_id;
-END_OF_QUERY;
-
-    $result = pg_query( $uvm_db, $query );
-    $row = pg_fetch_assoc($result);
-    pg_free_result($result);
-    return $row;
-}
-
-function get_ad_settings()
-{
-    global $uvm_db;
-    $query =<<<END_OF_QUERY
-SELECT
-    u_ab_repository_settings."domain" AS ad_domain,
-    u_ab_repository_settings.ldap_host AS host,
-    u_ab_repository_settings.ou_filter AS ou_filter,
-  u_ab_repository_settings.port AS port
-FROM
-    settings.u_ab_settings,
-  settings.u_ab_repository_settings
-WHERE
-    u_ab_settings.ad_repo_settings = u_ab_repository_settings.settings_id;
-END_OF_QUERY;
-
-    $result = pg_query( $uvm_db, $query );
-    $row = pg_fetch_assoc($result);
-    pg_free_result($result);
-    return $row;
-}
-
-function ad_authenticate($username, $password, $base_dn,
-                         $account_suffix, $domain_controller)
+function ad_authenticate($username, $password, $base_dn, $account_suffix, $domain_controller)
 {
   try {
     $adldap = new adLDAP(array('base_dn'=>$base_dn,
@@ -106,8 +60,7 @@ function ad_authenticate($username, $password, $base_dn,
   }
 }
 
-function radius_authenticate($username, $password, $server, $port,
-                             $shared_secret, $method)
+function radius_authenticate($username, $password, $server, $port, $shared_secret, $method)
 {
   try {
     radius_connect($server, $port, $shared_secret);
