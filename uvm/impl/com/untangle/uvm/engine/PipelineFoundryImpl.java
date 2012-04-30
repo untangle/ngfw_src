@@ -447,8 +447,6 @@ public class PipelineFoundryImpl implements PipelineFoundry
     
     private void removeDuplicates(Long policyId, List<ArgonConnectorFitting> chain)
     {
-        Set<String> enabledNodes = UvmContextFactory.context().nodeManager().getEnabledNodes(policyId);
-
         Map<String, Integer> numParents = new HashMap<String, Integer>();
         Map<ArgonConnectorFitting, Integer> fittingDistance = new HashMap<ArgonConnectorFitting, Integer>();
 
@@ -462,12 +460,6 @@ public class PipelineFoundryImpl implements PipelineFoundry
             }
 
             String nodeName = acFitting.argonConnector.node().getNodeProperties().getName();
-            /* Remove the items that are not enabled in this policy */
-            if (!enabledNodes.contains(nodeName)) {
-                i.remove();
-                continue;
-            }
-
             Integer n = numParents.get(nodeName);
             int distance = getPolicyGenerationDiff(policyId, nodePolicyId);
 

@@ -535,7 +535,6 @@ public abstract class NodeBase implements Node
 
             UvmContextFactory.context().nodeManager().saveTargetState( this, nodeState );
             
-            UvmContextFactory.context().nodeManager().flushNodeStateCache();
             UvmContextFactory.context().pipelineFoundry().clearChains();
         }
     }

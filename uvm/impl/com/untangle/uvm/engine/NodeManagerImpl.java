@@ -65,16 +65,7 @@ public class NodeManagerImpl implements NodeManager
 
     private NodeManagerSettings settings = null;
     
-    private Map<Long,Set<String>> enabledNodes = new HashMap<Long,Set<String>>();
-
     private boolean live = true;
-
-    /*
-     * Update this value to a new long whenever clearing enabled nodes.  This way
-     * it is possible to quickly determine if an enabled nodes lookup should be cached
-     * without synchronizing the entire operation.
-     */
-    private long enabledNodesCleared = 0;
 
     public NodeManagerImpl() { }
 
@@ -308,8 +299,6 @@ public class NodeManagerImpl implements NodeManager
             uvmContext.messageManager().submitMessage(ne);
         }
 
-        clearEnabledNodes();
-        
         return node;
     }
 
@@ -355,8 +344,6 @@ public class NodeManagerImpl implements NodeManager
             this.setSettings(this.settings);       
         }
 
-        clearEnabledNodes();
-
         return;
     }
 
@@ -368,55 +355,6 @@ public class NodeManagerImpl implements NodeManager
         }
 
         return result;
-    }
-
-    /**
-     * Get a map of nodes that are enabled for a policy, this takes into account
-     * parent / child relationships
-     */
-    @Override
-    public Set<String> getEnabledNodes( Long policyId )
-    {
-        if ( policyId == null ) {
-            return Collections.emptySet();
-        }
-        
-        Set<String> policyNodes = null;
-        long enabledNodesCleared = 0;
-        
-        /* With the lock, check if there is an entry and return it if exists.
-         * Otherwise, create an
-         */
-        synchronized ( this.enabledNodes ) {
-            policyNodes = this.enabledNodes.get(policyId);
-            enabledNodesCleared = this.enabledNodesCleared ;
-        }
-
-        if ( policyNodes == null ) {
-            policyNodes = new HashSet<String>();
-
-            for ( Node node : getNodesForPolicy( policyId, true ) ) {
-                if ( node.getRunState() == NodeSettings.NodeState.RUNNING ) {
-                    policyNodes.add( node.getNodeSettings().getNodeName() );
-                }
-            }
-            
-            synchronized( this.enabledNodes ) {
-                if ( enabledNodesCleared == this.enabledNodesCleared ) {
-                    this.enabledNodes.put( policyId, policyNodes );
-                }
-            }
-                
-
-        }
-        
-        return policyNodes;
-    }
-    
-    @Override
-    public void flushNodeStateCache()
-    {
-        this.clearEnabledNodes();
     }
 
     public boolean isInstantiated(String nodeName)
@@ -431,8 +369,6 @@ public class NodeManagerImpl implements NodeManager
         loadSettings();
 
         restartUnloaded();
-        
-        clearEnabledNodes();
     }
 
     protected void destroy()
@@ -459,8 +395,6 @@ public class NodeManagerImpl implements NodeManager
             ((NodeBase)node).unloadClass();
             loadedNodesMap.remove( node.getNodeSettings().getId() );
         }
-        
-        clearEnabledNodes();
     }
 
     protected void restart( String name )
@@ -487,8 +421,6 @@ public class NodeManagerImpl implements NodeManager
             
             restartUnloaded();
         }
-        
-        clearEnabledNodes();
     }
 
     protected void startAutoStart( PackageDesc extraPkg )
@@ -545,8 +477,6 @@ public class NodeManagerImpl implements NodeManager
                 }
             }
         }
-        
-        clearEnabledNodes();
     }
 
     // private methods --------------------------------------------------------
@@ -584,8 +514,6 @@ public class NodeManagerImpl implements NodeManager
         logger.info("Time to restart nodes: " + (t1 - t0) + " millis");
 
         startAutoStart(null);
-        
-        clearEnabledNodes();
     }
 
     private static int startThreadNum = 0;
@@ -659,8 +587,6 @@ public class NodeManagerImpl implements NodeManager
         } catch (InterruptedException exn) {
             logger.error("Interrupted while starting transforms"); // Give up
         }
-        
-        clearEnabledNodes();
     }
 
     private int getRunnableCount(Set<Thread> threads) {
@@ -978,19 +904,6 @@ public class NodeManagerImpl implements NodeManager
         }
 
         return finalList;
-    }
-
-    /**
-     * Used to empty the cache of the enabled nodes.  This cache is used to build
-     * the pipeline, so it must be updated whenever the node state changes.
-     */
-    private void clearEnabledNodes()
-    {
-        logger.debug( "clearing the cache of enabled nodes." );
-        synchronized ( this.enabledNodes ) {
-            this.enabledNodes.clear();
-            this.enabledNodesCleared = System.nanoTime();
-        }
     }
 
     private void _setSettings( NodeManagerSettings newSettings )

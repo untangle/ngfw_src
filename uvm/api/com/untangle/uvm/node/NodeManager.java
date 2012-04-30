@@ -144,17 +144,6 @@ public interface NodeManager
     Map<Long, NodeSettings.NodeState> allNodeStates();
     
     /**
-     * Get a map of nodes that are enabled for a policy, this takes into account
-     * parent / child relationships
-     */
-    Set<String> getEnabledNodes( Long policyId );
-    
-    /**
-     * Clear out any state related to the nodes in the node manager.
-     */
-    void flushNodeStateCache();
-
-    /**
      * Returns true if the given node/app is instantiated in the rack
      * false otherwise
      *
