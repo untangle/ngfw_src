@@ -1,4 +1,4 @@
-/*
+/**
  * $Id: MessageManagerImpl.java,v 1.00 2011/08/22 13:52:25 dmorris Exp $
  */
 package com.untangle.uvm.engine;
@@ -40,7 +40,7 @@ import com.untangle.uvm.node.NodeMetric;
 import com.untangle.uvm.util.Pulse;
 import com.untangle.uvm.util.TransactionWork;
 
-class MessageManagerImpl implements MessageManager
+public class MessageManagerImpl implements MessageManager
 {
     private static final long CLIENT_TIMEOUT = 1800000; // 30 min
 

@@ -396,7 +396,7 @@ public abstract class NodeBase implements Node
         adjustStat( name, 1L );
     }
 
-    public void setStat( String name, Long newValue )
+    public synchronized void setStat( String name, Long newValue )
     {
         if ( name == null ) {
             logger.warn( "Invalid stat: " + name );
@@ -411,7 +411,7 @@ public abstract class NodeBase implements Node
         metric.setValue( newValue );
     }
 
-    public void adjustStat( String name, Long adjustmentValue )
+    public synchronized void adjustStat( String name, Long adjustmentValue )
     {
         if ( name == null ) {
             logger.warn( "Invalid stat: " + name );
