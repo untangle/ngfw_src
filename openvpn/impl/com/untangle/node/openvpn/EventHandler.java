@@ -1,21 +1,6 @@
-/*
- * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc.
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License, version 2,
- * as published by the Free Software Foundation.
- *
- * This program is distributed in the hope that it will be useful, but
- * AS-IS and WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE, TITLE, or
- * NONINFRINGEMENT.  See the GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
+/**
+ * $Id$
  */
-
 package com.untangle.node.openvpn;
 
 import java.net.InetAddress;
@@ -42,6 +27,8 @@ class EventHandler extends AbstractEventHandler
     private List <IPMatcher> clientAddressList = new LinkedList<IPMatcher>();
     private List <IPMatcher> exportedAddressList = new LinkedList<IPMatcher>();
 
+    private VpnSettings settings;
+    
     /* Firewall Node */
     private final VpnNodeImpl node;
 
@@ -102,7 +89,6 @@ class EventHandler extends AbstractEventHandler
         if ( this.isUntanglePlatformClient ) {
             node.incrementPassCount();
             request.release();
-
             return;
         }
 
@@ -115,28 +101,28 @@ class EventHandler extends AbstractEventHandler
                 break;
             }
         }
-
         if ( !isValid ) {
             reject( request );
             return;
         }
 
-        /* The local address must be one of the exported addresses */
-        isValid = false;
-
-        for ( IPMatcher matcher : this.exportedAddressList ) {
-            if ( logger.isDebugEnabled()) {
-                logger.debug( "Testing local " + local.getHostAddress() + " against " + matcher );
+        /* The local address must be one of the exported addresses if proxy isn't enabled */
+        if ( ! this.settings.getAllowProxy() ) {
+            isValid = false;
+            for ( IPMatcher matcher : this.exportedAddressList ) {
+                if ( logger.isDebugEnabled()) {
+                    logger.debug( "Testing local " + local.getHostAddress() + " against " + matcher );
+                }
+                if ( matcher.isMatch( local )) {
+                    isValid = true;
+                    break;
+                }
             }
-            if ( matcher.isMatch( local )) {
-                isValid = true;
-                break;
-            }
-        }
 
-        if ( !isValid ) {
-            reject( request );
-            return;
+            if ( !isValid ) {
+                reject( request );
+                return;
+            }
         }
 
         /* Accept the request */
@@ -169,6 +155,8 @@ class EventHandler extends AbstractEventHandler
     {
         logger.debug( "Configuring handler" );
 
+        this.settings = settings;
+        
         if ( settings.isUntanglePlatformClient()) {
             isUntanglePlatformClient = settings.isUntanglePlatformClient();
             return;

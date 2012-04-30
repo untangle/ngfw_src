@@ -1,21 +1,6 @@
-/*
- * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc.
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License, version 2,
- * as published by the Free Software Foundation.
- *
- * This program is distributed in the hope that it will be useful, but
- * AS-IS and WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE, TITLE, or
- * NONINFRINGEMENT.  See the GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
+/**
+ * $Id$
  */
-
 package com.untangle.node.openvpn;
 
 import java.io.Serializable;
@@ -58,7 +43,6 @@ public class VpnSettings implements Serializable, Validatable
     public static final int DEFAULT_PUBLIC_PORT = 1194;
 
     private Long id;
-//    private NodeSettings tid;
 
     private boolean isBridgeMode = false;
     private boolean isUntanglePlatformClient = false;
@@ -93,7 +77,8 @@ public class VpnSettings implements Serializable, Validatable
     private String  organizationUnit = "";
     private String  email;
     private boolean caKeyOnUsb;
-
+    private boolean allowProxy = false;
+    
     /* This is the name of the site for distinguishing the VPN client on user machines */
     private String siteName = "";
 
@@ -101,8 +86,6 @@ public class VpnSettings implements Serializable, Validatable
 
     public void validate() throws ValidateException
     {
-        /* XXXXXXXXXXX */
-
         /* That is the only setting required for edgeguard client */
         if ( isUntanglePlatformClient ) return;
 
@@ -485,6 +468,19 @@ public class VpnSettings implements Serializable, Validatable
         this.email = email;
     }
 
+    /**
+     * @return the allow proxy settings
+     */
+    public boolean getAllowProxy()
+    {
+        return this.allowProxy;
+    }
+
+    public void setAllowProxy( boolean allowProxy )
+    {
+        this.allowProxy = allowProxy;
+    }
+    
     /**
      * @return true if the CA private key is on a USB key.
      */
