@@ -114,9 +114,9 @@ public class SpywareImpl extends NodeBase implements Spyware
                                              " AND evt.policyId = :policyId" + 
                                              " ORDER BY evt.timeStamp DESC");
 
-        this.addStat(new NodeMetric(STAT_SCAN, I18nUtil.marktr("Pages scanned")));
-        this.addStat(new NodeMetric(STAT_BLOCK, I18nUtil.marktr("Pages blocked")));
-        this.addStat(new NodeMetric(STAT_PASS, I18nUtil.marktr("Pages passed")));
+        this.addMetric(new NodeMetric(STAT_SCAN, I18nUtil.marktr("Pages scanned")));
+        this.addMetric(new NodeMetric(STAT_BLOCK, I18nUtil.marktr("Pages blocked")));
+        this.addMetric(new NodeMetric(STAT_PASS, I18nUtil.marktr("Pages passed")));
     }
 
     // SpywareNode methods -----------------------------------------------------
@@ -382,62 +382,62 @@ public class SpywareImpl extends NodeBase implements Spyware
 
     void incrementSubnetScan()
     {
-        this.incrementStat(STAT_SCAN);
+        this.incrementMetric(STAT_SCAN);
     }
 
     void incrementSubnetBlock()
     {
-        this.incrementStat(STAT_BLOCK);
+        this.incrementMetric(STAT_BLOCK);
     }
 
     void incrementHttpScan()
     {
-        this.incrementStat(STAT_SCAN);
+        this.incrementMetric(STAT_SCAN);
     }
 
     void incrementHttpWhitelisted()
     {
-        this.incrementStat(STAT_PASS);
+        this.incrementMetric(STAT_PASS);
     }
 
     void incrementHttpBlockedDomain()
     {
-        this.incrementStat(STAT_BLOCK);
+        this.incrementMetric(STAT_BLOCK);
     }
 
     void incrementHttpPassed()
     {
-        this.incrementStat(STAT_PASS);
+        this.incrementMetric(STAT_PASS);
     }
 
     void incrementHttpClientCookieScan()
     {
-        this.incrementStat(STAT_SCAN);
+        this.incrementMetric(STAT_SCAN);
     }
 
     void incrementHttpClientCookieBlock()
     {
-        this.incrementStat(STAT_BLOCK);
+        this.incrementMetric(STAT_BLOCK);
     }
 
     void incrementHttpClientCookiePass()
     {
-        this.incrementStat(STAT_PASS);
+        this.incrementMetric(STAT_PASS);
     }
 
     void incrementHttpServerCookieScan()
     {
-        this.incrementStat(STAT_SCAN);
+        this.incrementMetric(STAT_SCAN);
     }
 
     void incrementHttpServerCookieBlock()
     {
-        this.incrementStat(STAT_BLOCK);
+        this.incrementMetric(STAT_BLOCK);
     }
 
     void incrementHttpServerCookiePass()
     {
-        this.incrementStat(STAT_PASS);
+        this.incrementMetric(STAT_PASS);
     }
 
     Token[] generateResponse(SpywareBlockDetails bd, TCPSession sess, String uri, Header header, boolean persistent)

@@ -207,12 +207,12 @@ class ToolboxManagerImpl implements ToolboxManager
         NodeManagerImpl nm = (NodeManagerImpl)UvmContextFactory.context().nodeManager();
         List<Node> instances = nm.visibleNodes( policyId );
 
-        Map<Long, List<NodeMetric>> nodeStats = new HashMap<Long, List<NodeMetric>>(instances.size());
+        Map<Long, List<NodeMetric>> nodeMetrics = new HashMap<Long, List<NodeMetric>>(instances.size());
         for (Node visibleNode : instances) {
             Long nodeId = visibleNode.getNodeSettings().getId();
             Long nodePolicyId = visibleNode.getNodeSettings().getPolicyId();
             MessageManager lmm = UvmContextFactory.context().messageManager();
-            nodeStats.put( nodeId , visibleNode.getStats());
+            nodeMetrics.put( nodeId , visibleNode.getMetrics());
 
             if ( nodePolicyId == null || nodePolicyId.equals( policyId ) ) {
                 nodes.remove( visibleNode.getNodeProperties().getDisplayName() );
@@ -252,7 +252,7 @@ class ToolboxManagerImpl implements ToolboxManager
             nodeSettings.add(node.getNodeSettings());
         }
 
-        return new RackView(apps, nodeSettings, nodeProperties, nodeStats, licenseMap, runStates);
+        return new RackView(apps, nodeSettings, nodeProperties, nodeMetrics, licenseMap, runStates);
     }
 
     public UpgradeStatus getUpgradeStatus(boolean doUpdate) throws PackageException, InterruptedException

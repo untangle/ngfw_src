@@ -108,7 +108,7 @@ public class MessageManagerImpl implements MessageManager
             nodeIds.add( node.getNodeSettings().getId() );
         }
 
-        Map<Long, List<NodeMetric>> stats = getStats( nodeIds );
+        Map<Long, List<NodeMetric>> stats = getMetrics( nodeIds );
         List<Message> messages = getMessages(key);
         return new MessageQueue(messages, stats, systemStats);
     }
@@ -122,7 +122,7 @@ public class MessageManagerImpl implements MessageManager
             nodeIds.add( node.getNodeSettings().getId() );
         }
         
-        Map<Long, List<NodeMetric>> stats = getStats( nodeIds );
+        Map<Long, List<NodeMetric>> stats = getMetrics( nodeIds );
         List<Message> messages = getMessages(key);
 
         return new MessageQueue(messages, stats, systemStats);
@@ -184,11 +184,11 @@ public class MessageManagerImpl implements MessageManager
         }
     }
 
-    public List<NodeMetric> getStats( Long nodeId )
+    public List<NodeMetric> getMetrics( Long nodeId )
     {
         Node node = UvmContextFactory.context().nodeManager().node( nodeId );
         if (node != null)
-            return node.getStats();
+            return node.getMetrics();
         else {
             logger.warn("Node not found: " + nodeId);
             return null;
@@ -218,12 +218,12 @@ public class MessageManagerImpl implements MessageManager
 
     // private methods --------------------------------------------------------
 
-    private Map<Long, List<NodeMetric>> getStats( List<Long> nodeIds )
+    private Map<Long, List<NodeMetric>> getMetrics( List<Long> nodeIds )
     {
         Map<Long, List<NodeMetric>> stats = new HashMap<Long, List<NodeMetric>>(nodeIds.size());
 
         for (Long nodeId : nodeIds) {
-            stats.put( nodeId, getStats( nodeId ) );
+            stats.put( nodeId, getMetrics( nodeId ) );
         }
 
         return stats;

@@ -83,8 +83,8 @@ public class CPDImpl extends NodeBase implements CPD
         this.settings = new CPDSettings();
         this.pipeSpecs = new PipeSpec[0];
 
-        this.addStat(new NodeMetric(STAT_BLOCK, I18nUtil.marktr("Sessions blocked")));
-        this.addStat(new NodeMetric(STAT_AUTHORIZE, I18nUtil.marktr("Clients authorized")));
+        this.addMetric(new NodeMetric(STAT_BLOCK, I18nUtil.marktr("Sessions blocked")));
+        this.addMetric(new NodeMetric(STAT_AUTHORIZE, I18nUtil.marktr("Clients authorized")));
     }
 
     public void initializeSettings()
@@ -236,11 +236,11 @@ public class CPDImpl extends NodeBase implements CPD
     {
         switch ( blingerType ) {
         case BLOCK:
-            this.adjustStat(STAT_BLOCK, delta);
+            this.adjustMetric(STAT_BLOCK, delta);
             break;
 
         case AUTHORIZE:
-            this.adjustStat(STAT_AUTHORIZE, delta);
+            this.adjustMetric(STAT_AUTHORIZE, delta);
             break;
         }
     }

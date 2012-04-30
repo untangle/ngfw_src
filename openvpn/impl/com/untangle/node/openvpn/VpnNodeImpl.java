@@ -98,9 +98,9 @@ public class VpnNodeImpl extends NodeBase implements VpnNode
         this.pipeSpec = new SoloPipeSpec( NODE_NAME, this, handler, Fitting.OCTET_STREAM, Affinity.CLIENT, SoloPipeSpec.MAX_STRENGTH - 2);
         this.pipeSpecs = new SoloPipeSpec[] { pipeSpec };
 
-        this.addStat(new NodeMetric(STAT_BLOCK, I18nUtil.marktr("Sessions blocked")));
-        this.addStat(new NodeMetric(STAT_PASS, I18nUtil.marktr("Sessions passed")));
-        this.addStat(new NodeMetric(STAT_CONNECT, I18nUtil.marktr("Clients Connected")));
+        this.addMetric(new NodeMetric(STAT_BLOCK, I18nUtil.marktr("Sessions blocked")));
+        this.addMetric(new NodeMetric(STAT_PASS, I18nUtil.marktr("Sessions passed")));
+        this.addMetric(new NodeMetric(STAT_CONNECT, I18nUtil.marktr("Clients Connected")));
 
         this.connectEventsQuery = new EventLogQuery(I18nUtil.marktr("Closed Sessions"), "FROM OpenvpnLogEventFromReports evt ORDER BY evt.timeStamp DESC");
     }
@@ -813,17 +813,17 @@ public class VpnNodeImpl extends NodeBase implements VpnNode
 
     public void incrementBlockCount()
     {
-        this.incrementStat(this.STAT_BLOCK);
+        this.incrementMetric(this.STAT_BLOCK);
     }
 
     public void incrementPassCount()
     {
-        this.incrementStat(this.STAT_PASS);
+        this.incrementMetric(this.STAT_PASS);
     }
 
     public void incrementConnectCount()
     {
-        this.incrementStat(this.STAT_CONNECT);
+        this.incrementMetric(this.STAT_CONNECT);
     }
 
     public Validator getValidator()

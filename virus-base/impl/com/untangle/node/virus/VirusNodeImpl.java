@@ -179,11 +179,11 @@ public abstract class VirusNodeImpl extends NodeBase implements VirusNode
                                                      " AND evt.policyId = :policyId" + 
                                                      " ORDER BY evt.timeStamp DESC");
 
-        this.addStat(new NodeMetric(STAT_SCAN, I18nUtil.marktr("Documents scanned")));
-        this.addStat(new NodeMetric(STAT_BLOCK, I18nUtil.marktr("Documents blocked")));
-        this.addStat(new NodeMetric(STAT_PASS, I18nUtil.marktr("Documents passed")));
-        this.addStat(new NodeMetric(STAT_REMOVE, I18nUtil.marktr("Infections removed")));
-        this.addStat(new NodeMetric(STAT_PASS_POLICY, I18nUtil.marktr("Passed by policy")));
+        this.addMetric(new NodeMetric(STAT_SCAN, I18nUtil.marktr("Documents scanned")));
+        this.addMetric(new NodeMetric(STAT_BLOCK, I18nUtil.marktr("Documents blocked")));
+        this.addMetric(new NodeMetric(STAT_PASS, I18nUtil.marktr("Documents passed")));
+        this.addMetric(new NodeMetric(STAT_REMOVE, I18nUtil.marktr("Infections removed")));
+        this.addMetric(new NodeMetric(STAT_PASS_POLICY, I18nUtil.marktr("Passed by policy")));
     }
 
     // VirusNode methods -------------------------------------------------
@@ -464,7 +464,7 @@ public abstract class VirusNodeImpl extends NodeBase implements VirusNode
      */
     public void incrementScanCount()
     {
-        this.incrementStat(STAT_SCAN);
+        this.incrementMetric(STAT_SCAN);
     }
 
     /**
@@ -472,7 +472,7 @@ public abstract class VirusNodeImpl extends NodeBase implements VirusNode
      */
     public void incrementBlockCount()
     {
-        this.incrementStat(STAT_BLOCK);
+        this.incrementMetric(STAT_BLOCK);
     }
 
     /**
@@ -480,7 +480,7 @@ public abstract class VirusNodeImpl extends NodeBase implements VirusNode
      */
     public void incrementPassCount()
     {
-        this.incrementStat(STAT_PASS);
+        this.incrementMetric(STAT_PASS);
     }
 
     /**
@@ -489,7 +489,7 @@ public abstract class VirusNodeImpl extends NodeBase implements VirusNode
      */
     public void incrementRemoveCount()
     {
-        this.incrementStat(STAT_REMOVE);
+        this.incrementMetric(STAT_REMOVE);
     }
 
     /**
@@ -498,7 +498,7 @@ public abstract class VirusNodeImpl extends NodeBase implements VirusNode
      */
     public void incrementPassedInfectedMessageCount()
     {
-        this.incrementStat(STAT_PASS_POLICY);
+        this.incrementMetric(STAT_PASS_POLICY);
     }
 
     private static synchronized void deployWebAppIfRequired(Logger logger)

@@ -62,9 +62,9 @@ public class ProtoFilterImpl extends NodeBase implements ProtoFilter
                                                    "AND pfBlocked IS TRUE " +
                                                    "ORDER BY evt.timeStamp DESC");
 
-        this.addStat(new NodeMetric(STAT_SCAN, I18nUtil.marktr("Chunks scanned")));
-        this.addStat(new NodeMetric(STAT_DETECT, I18nUtil.marktr("Sessions logged")));
-        this.addStat(new NodeMetric(STAT_BLOCK, I18nUtil.marktr("Sessions blocked")));
+        this.addMetric(new NodeMetric(STAT_SCAN, I18nUtil.marktr("Chunks scanned")));
+        this.addMetric(new NodeMetric(STAT_DETECT, I18nUtil.marktr("Sessions logged")));
+        this.addMetric(new NodeMetric(STAT_BLOCK, I18nUtil.marktr("Sessions blocked")));
     }
 
     // ProtoFilter methods ----------------------------------------------------
@@ -258,16 +258,16 @@ public class ProtoFilterImpl extends NodeBase implements ProtoFilter
 
     void incrementScanCount()
     {
-        this.incrementStat(STAT_SCAN);
+        this.incrementMetric(STAT_SCAN);
     }
 
     void incrementBlockCount()
     {
-        this.incrementStat(STAT_BLOCK);
+        this.incrementMetric(STAT_BLOCK);
     }
 
     void incrementDetectCount()
     {
-        this.incrementStat(STAT_DETECT);
+        this.incrementMetric(STAT_DETECT);
     }
 }

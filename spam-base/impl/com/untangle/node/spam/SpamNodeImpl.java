@@ -107,12 +107,12 @@ public class SpamNodeImpl extends NodeBase implements SpamNode
                                                   "AND evt.policyId = :policyId " +
                                                   "ORDER BY evt.timeStamp DESC");
         
-        this.addStat(new NodeMetric(STAT_RECEIVED, I18nUtil.marktr("Messages received")));
-        this.addStat(new NodeMetric(STAT_PASS, I18nUtil.marktr("Messages passed")));
-        this.addStat(new NodeMetric(STAT_DROP, I18nUtil.marktr("Messages dropped")));
-        this.addStat(new NodeMetric(STAT_MARK, I18nUtil.marktr("Messages marked")));
-        this.addStat(new NodeMetric(STAT_QUARANTINE, I18nUtil.marktr("Messages quarantined")));
-        this.addStat(new NodeMetric(STAT_SPAM, I18nUtil.marktr("Spam detected")));
+        this.addMetric(new NodeMetric(STAT_RECEIVED, I18nUtil.marktr("Messages received")));
+        this.addMetric(new NodeMetric(STAT_PASS, I18nUtil.marktr("Messages passed")));
+        this.addMetric(new NodeMetric(STAT_DROP, I18nUtil.marktr("Messages dropped")));
+        this.addMetric(new NodeMetric(STAT_MARK, I18nUtil.marktr("Messages marked")));
+        this.addMetric(new NodeMetric(STAT_QUARANTINE, I18nUtil.marktr("Messages quarantined")));
+        this.addMetric(new NodeMetric(STAT_SPAM, I18nUtil.marktr("Spam detected")));
     }
 
     public EventLogQuery[] getEventQueries()
@@ -130,9 +130,9 @@ public class SpamNodeImpl extends NodeBase implements SpamNode
      */
     public void incrementBlockCount()
     {
-        this.incrementStat(STAT_RECEIVED);
-        this.incrementStat(STAT_DROP);
-        this.incrementStat(STAT_SPAM);
+        this.incrementMetric(STAT_RECEIVED);
+        this.incrementMetric(STAT_DROP);
+        this.incrementMetric(STAT_SPAM);
     }
 
     /**
@@ -140,8 +140,8 @@ public class SpamNodeImpl extends NodeBase implements SpamNode
      */
     public void incrementPassCount()
     {
-        this.incrementStat(STAT_RECEIVED);
-        this.incrementStat(STAT_PASS);
+        this.incrementMetric(STAT_RECEIVED);
+        this.incrementMetric(STAT_PASS);
     }
 
     /**
@@ -149,9 +149,9 @@ public class SpamNodeImpl extends NodeBase implements SpamNode
      */
     public void incrementMarkCount()
     {
-        this.incrementStat(STAT_RECEIVED);
-        this.incrementStat(STAT_MARK);
-        this.incrementStat(STAT_SPAM);
+        this.incrementMetric(STAT_RECEIVED);
+        this.incrementMetric(STAT_MARK);
+        this.incrementMetric(STAT_SPAM);
     }
 
     /**
@@ -159,9 +159,9 @@ public class SpamNodeImpl extends NodeBase implements SpamNode
      */
     public void incrementQuarantineCount()
     {
-        this.incrementStat(STAT_QUARANTINE);
-        this.incrementStat(STAT_SPAM);
-        this.incrementStat(STAT_RECEIVED);
+        this.incrementMetric(STAT_QUARANTINE);
+        this.incrementMetric(STAT_SPAM);
+        this.incrementMetric(STAT_RECEIVED);
     }
 
     protected void initSpamDnsblList(SpamSettings tmpSpamSettings)

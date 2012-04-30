@@ -70,9 +70,9 @@ public class IpsNodeImpl extends NodeBase implements IpsNode
         List<RuleClassification> classifications = FileLoader.loadClassifications();
         engine.setClassifications(classifications);
 
-        this.addStat(new NodeMetric(STAT_SCAN, I18nUtil.marktr("Sessions scanned")));
-        this.addStat(new NodeMetric(STAT_DETECT, I18nUtil.marktr("Sessions logged")));
-        this.addStat(new NodeMetric(STAT_BLOCK, I18nUtil.marktr("Sessions blocked")));
+        this.addMetric(new NodeMetric(STAT_SCAN, I18nUtil.marktr("Sessions scanned")));
+        this.addMetric(new NodeMetric(STAT_DETECT, I18nUtil.marktr("Sessions logged")));
+        this.addMetric(new NodeMetric(STAT_BLOCK, I18nUtil.marktr("Sessions blocked")));
     }
 
     @Override
@@ -243,16 +243,16 @@ public class IpsNodeImpl extends NodeBase implements IpsNode
 
     public void incrementScanCount()
     {
-        this.incrementStat(STAT_SCAN);
+        this.incrementMetric(STAT_SCAN);
     }
 
     public void incrementDetectCount()
     {
-        this.incrementStat(STAT_DETECT);
+        this.incrementMetric(STAT_DETECT);
     }
 
     public void incrementBlockCount()
     {
-        this.incrementStat(STAT_BLOCK);
+        this.incrementMetric(STAT_BLOCK);
     }
 }

@@ -17,7 +17,7 @@ public class NodeSettings implements Serializable, JSONString, Comparable<NodeSe
     private Long id = null;
     private Long policyId = null;
     private String nodeName = null;
-    private NodeState targetState = null;
+    private NodeState targetState = NodeState.INITIALIZED;
     
     public enum NodeState {
         LOADED,

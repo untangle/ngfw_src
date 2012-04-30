@@ -122,9 +122,9 @@ public class FirewallImpl extends NodeBase implements Firewall
                                                     "AND firewallWasBlocked IS TRUE " +
                                                     "ORDER BY evt.timeStamp DESC");
 
-        this.addStat(new NodeMetric(STAT_PASS, I18nUtil.marktr("Sessions passed")));
-        this.addStat(new NodeMetric(STAT_LOG, I18nUtil.marktr("Sessions logged")));
-        this.addStat(new NodeMetric(STAT_BLOCK, I18nUtil.marktr("Sessions blocked")));
+        this.addMetric(new NodeMetric(STAT_PASS, I18nUtil.marktr("Sessions passed")));
+        this.addMetric(new NodeMetric(STAT_LOG, I18nUtil.marktr("Sessions logged")));
+        this.addMetric(new NodeMetric(STAT_BLOCK, I18nUtil.marktr("Sessions blocked")));
     }
 
     public EventLogQuery[] getEventQueries()
@@ -179,17 +179,17 @@ public class FirewallImpl extends NodeBase implements Firewall
 
     public void incrementBlockCount() 
     {
-        this.incrementStat(STAT_BLOCK);
+        this.incrementMetric(STAT_BLOCK);
     }
 
     public void incrementPassCount() 
     {
-        this.incrementStat(STAT_PASS);
+        this.incrementMetric(STAT_PASS);
     }
 
     public void incrementLogCount() 
     {
-        this.incrementStat(STAT_LOG);
+        this.incrementMetric(STAT_LOG);
     }
 
     @Override

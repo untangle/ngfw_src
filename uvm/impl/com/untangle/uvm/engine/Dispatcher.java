@@ -148,26 +148,26 @@ class Dispatcher implements com.untangle.uvm.argon.NewSessionEventListener
 
         liveSessions = new ConcurrentHashMap<IPSession,IPSession>();
 
-        this.node.addStat(new NodeMetric(STAT_LIVE_SESSIONS, I18nUtil.marktr("Current Sessions")));
-        this.node.addStat(new NodeMetric(STAT_TCP_LIVE_SESSIONS, I18nUtil.marktr("Current TCP Sessions")));
-        this.node.addStat(new NodeMetric(STAT_UDP_LIVE_SESSIONS, I18nUtil.marktr("Current UDP Sessions")));
-        this.node.addStat(new NodeMetric(STAT_SESSIONS, I18nUtil.marktr("Sessions")));
-        this.node.addStat(new NodeMetric(STAT_TCP_SESSIONS, I18nUtil.marktr("TCP Sessions")));
-        this.node.addStat(new NodeMetric(STAT_UDP_SESSIONS, I18nUtil.marktr("UDP Sessions")));
-        this.node.addStat(new NodeMetric(STAT_SESSION_REQUESTS, I18nUtil.marktr("Session Requests")));
-        this.node.addStat(new NodeMetric(STAT_TCP_SESSION_REQUESTS, I18nUtil.marktr("TCP Session Requests")));
-        this.node.addStat(new NodeMetric(STAT_UDP_SESSION_REQUESTS, I18nUtil.marktr("UDP Session Requests")));
+        this.node.addMetric(new NodeMetric(STAT_LIVE_SESSIONS, I18nUtil.marktr("Current Sessions")));
+        this.node.addMetric(new NodeMetric(STAT_TCP_LIVE_SESSIONS, I18nUtil.marktr("Current TCP Sessions")));
+        this.node.addMetric(new NodeMetric(STAT_UDP_LIVE_SESSIONS, I18nUtil.marktr("Current UDP Sessions")));
+        this.node.addMetric(new NodeMetric(STAT_SESSIONS, I18nUtil.marktr("Sessions")));
+        this.node.addMetric(new NodeMetric(STAT_TCP_SESSIONS, I18nUtil.marktr("TCP Sessions")));
+        this.node.addMetric(new NodeMetric(STAT_UDP_SESSIONS, I18nUtil.marktr("UDP Sessions")));
+        this.node.addMetric(new NodeMetric(STAT_SESSION_REQUESTS, I18nUtil.marktr("Session Requests")));
+        this.node.addMetric(new NodeMetric(STAT_TCP_SESSION_REQUESTS, I18nUtil.marktr("TCP Session Requests")));
+        this.node.addMetric(new NodeMetric(STAT_UDP_SESSION_REQUESTS, I18nUtil.marktr("UDP Session Requests")));
     }
 
     // Called by the new session handler thread.
     void addSession(TCPSession sess)
         throws InterruptedException
     {
-        this.node.incrementStat(STAT_LIVE_SESSIONS);
-        this.node.incrementStat(STAT_TCP_LIVE_SESSIONS);
+        this.node.incrementMetric(STAT_LIVE_SESSIONS);
+        this.node.incrementMetric(STAT_TCP_LIVE_SESSIONS);
 
-        this.node.incrementStat(STAT_SESSIONS);
-        this.node.incrementStat(STAT_TCP_SESSIONS);
+        this.node.incrementMetric(STAT_SESSIONS);
+        this.node.incrementMetric(STAT_TCP_SESSIONS);
         
         liveSessions.put(sess, sess);
     }
@@ -175,11 +175,11 @@ class Dispatcher implements com.untangle.uvm.argon.NewSessionEventListener
     // Called by the new session handler thread.
     void addSession(UDPSession sess) throws InterruptedException
     {
-        this.node.incrementStat(STAT_LIVE_SESSIONS);
-        this.node.incrementStat(STAT_UDP_LIVE_SESSIONS);
+        this.node.incrementMetric(STAT_LIVE_SESSIONS);
+        this.node.incrementMetric(STAT_UDP_LIVE_SESSIONS);
 
-        this.node.incrementStat(STAT_SESSIONS);
-        this.node.incrementStat(STAT_UDP_SESSIONS);
+        this.node.incrementMetric(STAT_SESSIONS);
+        this.node.incrementMetric(STAT_UDP_SESSIONS);
 
         liveSessions.put(sess, sess);
     }
@@ -195,11 +195,11 @@ class Dispatcher implements com.untangle.uvm.argon.NewSessionEventListener
             agent.removeSession(sess.argonSession);
         }
 
-        this.node.decrementStat(STAT_LIVE_SESSIONS);
+        this.node.decrementMetric(STAT_LIVE_SESSIONS);
         if (sess instanceof UDPSession) {
-            this.node.decrementStat(STAT_UDP_LIVE_SESSIONS);
+            this.node.decrementMetric(STAT_UDP_LIVE_SESSIONS);
         } else if (sess instanceof TCPSession) {
-            this.node.decrementStat(STAT_TCP_LIVE_SESSIONS);
+            this.node.decrementMetric(STAT_TCP_LIVE_SESSIONS);
         }
     }
 
@@ -247,8 +247,8 @@ class Dispatcher implements com.untangle.uvm.argon.NewSessionEventListener
             if (RWSessionStats.DoDetailedTimes)
                 dispatchRequestTime = MetaEnv.currentTimeMillis();
 
-            this.node.incrementStat(STAT_SESSION_REQUESTS);
-            this.node.incrementStat(STAT_TCP_SESSION_REQUESTS);
+            this.node.incrementMetric(STAT_SESSION_REQUESTS);
+            this.node.incrementMetric(STAT_TCP_SESSION_REQUESTS);
 
             // Give the request event to the user, to give them a
             // chance to reject the session.
@@ -364,8 +364,8 @@ class Dispatcher implements com.untangle.uvm.argon.NewSessionEventListener
             if (RWSessionStats.DoDetailedTimes)
                 dispatchRequestTime = MetaEnv.currentTimeMillis();
 
-            this.node.incrementStat(STAT_SESSION_REQUESTS);
-            this.node.incrementStat(STAT_UDP_SESSION_REQUESTS);
+            this.node.incrementMetric(STAT_SESSION_REQUESTS);
+            this.node.incrementMetric(STAT_UDP_SESSION_REQUESTS);
 
             // Give the request event to the user, to give them a chance to reject the session.
             logger.debug("sending UDP new session request event");

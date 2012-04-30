@@ -295,7 +295,7 @@ public class NodeManagerImpl implements NodeManager
         PackageDesc.Type type = packageDesc.getType();
 
         if ( node != null && !packageDesc.isInvisible() && (PackageDesc.Type.NODE == type || PackageDesc.Type.SERVICE == type)) {
-            NodeInstantiatedMessage ne = new NodeInstantiatedMessage(nodeProperties, nodeSettings, node.getStats(), uvmContext.licenseManager().getLicense(packageDesc.getName()), node.getNodeSettings().getPolicyId());
+            NodeInstantiatedMessage ne = new NodeInstantiatedMessage(nodeProperties, nodeSettings, node.getMetrics(), uvmContext.licenseManager().getLicense(packageDesc.getName()), node.getNodeSettings().getPolicyId());
             uvmContext.messageManager().submitMessage(ne);
         }
 

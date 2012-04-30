@@ -78,7 +78,9 @@ public abstract class NodeBase implements Node
     private Set<Node> children = new HashSet<Node>();
 
     /**
-     * StatList
+     * These store this node's metrics (for display in the UI)
+     * The hash map is for fast lookups
+     * The list is to maintain order for the UI
      */
     private Map<String, NodeMetric> metrics = new HashMap<String, NodeMetric>();
     private List<NodeMetric> metricList = new ArrayList<NodeMetric>();
@@ -381,22 +383,22 @@ public abstract class NodeBase implements Node
         return sessions;
     }
 
-    public List<NodeMetric> getStats()
+    public List<NodeMetric> getMetrics()
     {
         return metricList;
     }
 
-    public void decrementStat( String name )
+    public void decrementMetric( String name )
     {
-        adjustStat( name, -1L );
+        adjustMetric( name, -1L );
     }
 
-    public void incrementStat( String name )
+    public void incrementMetric( String name )
     {
-        adjustStat( name, 1L );
+        adjustMetric( name, 1L );
     }
 
-    public synchronized void setStat( String name, Long newValue )
+    public synchronized void setMetric( String name, Long newValue )
     {
         if ( name == null ) {
             logger.warn( "Invalid stat: " + name );
@@ -411,7 +413,7 @@ public abstract class NodeBase implements Node
         metric.setValue( newValue );
     }
 
-    public synchronized void adjustStat( String name, Long adjustmentValue )
+    public synchronized void adjustMetric( String name, Long adjustmentValue )
     {
         if ( name == null ) {
             logger.warn( "Invalid stat: " + name );
@@ -431,12 +433,27 @@ public abstract class NodeBase implements Node
         metric.setValue( value );
     }
 
-    public void addStat( NodeMetric metric )
+    public synchronized void addMetric( NodeMetric metric )
     {
         if (metrics.get(metric.getName()) != null)
             return;
         this.metrics.put( metric.getName(), metric );
         this.metricList.add( metric );
+    }
+
+    public synchronized void removeMetric( NodeMetric metric )
+    {
+        if ( metric == null ) {
+            logger.warn("Invalid argument: null");
+            return;
+        }
+        if (metrics.get(metric.getName()) == null) {
+            logger.warn("Invalid argument: metric not found");
+            return;
+        }        
+
+        this.metrics.remove( metric.getName() );
+        this.metricList.remove( metric );
     }
     
     public String toString()

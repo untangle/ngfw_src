@@ -99,10 +99,10 @@ public abstract class WebFilterBase extends NodeBase implements WebFilter
                                                    "AND evt.policyId = :policyId " + 
                                                    "ORDER BY evt.timeStamp DESC");
                                                    
-        this.addStat(new NodeMetric(STAT_SCAN, I18nUtil.marktr("Pages scanned")));
-        this.addStat(new NodeMetric(STAT_BLOCK, I18nUtil.marktr("Pages blocked")));
-        this.addStat(new NodeMetric(STAT_PASS, I18nUtil.marktr("Pages passed")));
-        this.addStat(new NodeMetric(STAT_PASS_POLICY, I18nUtil.marktr("Passed by policy")));
+        this.addMetric(new NodeMetric(STAT_SCAN, I18nUtil.marktr("Pages scanned")));
+        this.addMetric(new NodeMetric(STAT_BLOCK, I18nUtil.marktr("Pages blocked")));
+        this.addMetric(new NodeMetric(STAT_PASS, I18nUtil.marktr("Pages passed")));
+        this.addMetric(new NodeMetric(STAT_PASS_POLICY, I18nUtil.marktr("Passed by policy")));
 
         this.unblockedSitesMonitor = new UnblockedSitesMonitor(this);
         
@@ -297,22 +297,22 @@ public abstract class WebFilterBase extends NodeBase implements WebFilter
 
     public void incrementScanCount()
     {
-        this.incrementStat(STAT_SCAN);
+        this.incrementMetric(STAT_SCAN);
     }
 
     public void incrementBlockCount()
     {
-        this.incrementStat(STAT_BLOCK);
+        this.incrementMetric(STAT_BLOCK);
     }
 
     public void incrementPassCount()
     {
-        this.incrementStat(STAT_PASS);
+        this.incrementMetric(STAT_PASS);
     }
 
     public void incrementPassLogCount()
     {
-        this.incrementStat(STAT_PASS_POLICY);
+        this.incrementMetric(STAT_PASS_POLICY);
     }
 
     protected WebFilterReplacementGenerator buildReplacementGenerator()
