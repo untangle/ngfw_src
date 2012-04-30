@@ -341,7 +341,6 @@ while True:
     debug("       UVM Launching");
     debug("==============================");
 
-    resetIptables();
     flushConntrack();
 
     if exit_flag == 1:
