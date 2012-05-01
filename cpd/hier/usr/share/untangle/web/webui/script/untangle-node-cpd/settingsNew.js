@@ -1,5 +1,5 @@
 /*
-TODO: server side: high priority fix issue when saving: 
+TODO: server side: high priority fix issue when saving:
   An exception has occurred:
   java.io.FileNotFoundException
   /etc/untangle-cpd/settings.file (No such file or directory)
@@ -22,9 +22,12 @@ if (!Ung.hasResource["Ung.CPD"]) {
 
         gridLoginEventLog : null,
         gridBlockEventLog : null,
+        nodeWindow : null,
 
         initComponent : function()
         {
+            nodeWindow = this;
+
             Ung.Util.clearInterfaceStore();
             this.getSettings();
 
@@ -76,27 +79,6 @@ if (!Ung.hasResource["Ung.CPD"]) {
 
         buildGridCaptiveStatus : function()
         {
-            // this function will logout an active user
-            userLogout = Ext.bind(function(record) {
-                this.getRpcNode().logout( record.data.ipv4Address );
-                this.gridCaptiveStatus.store.reload();
-            }, this );
-
-            // logout is a button column
-            var logoutColumn = Ext.create('Ext.grid.column.Action',{
-                width : 80,
-                sortable : false,
-                header : this.i18n._("Control"),
-                handler : userLogout,
-                renderer : Ext.bind(function(value, metadata, record) {
-                    var out= '';
-                    if(record.data.id>=0) {
-                        out = '<div class="ung-button button-column" style="text-align:center;" >' + this.i18n._("Logout") + '</div>';
-                    }
-                    return out;
-                }, this )
-            });
-
             this.gridCaptiveStatus = Ext.create('Ung.EditorGrid',{
                 name : "gridCaptiveStatus",
                 settingsCmp : this,
@@ -123,7 +105,7 @@ if (!Ung.hasResource["Ung.CPD"]) {
                             tooltip : i18n._('Refresh'),
                             iconCls : 'icon-refresh',
                             handler : Ext.bind(function() {
-                                this.gridCaptiveStatus.store.reload();
+                                this.gridCaptiveStatus.store.load();
                             },this)
                         }
                     ]
@@ -167,7 +149,20 @@ if (!Ung.hasResource["Ung.CPD"]) {
                     dataIndex:'expirationDate',
                     width : 180,
                     renderer : function(value) { return i18n.timestampFormat(value); }
-                },logoutColumn]
+                },{
+                    header : this.i18n._("Control"),
+                    xtype : 'actioncolumn',
+                    width : 80,
+                    items : [{
+                        id : 'userLogout',
+                        icon : '/skins/default/images/admin/icon_logout_row.gif',
+                        handler : function(grid,row,col) {
+                            var rec = grid.getStore().getAt(row);
+                            window.nodeWindow.getRpcNode().logout(rec.data.ipv4Address);
+                            grid.getStore().load();
+                        }
+                    }]
+                }]
             });
         },
 
@@ -547,7 +542,7 @@ if (!Ung.hasResource["Ung.CPD"]) {
                         dataIndex : "live",
                         fixed : true,
                         width:55
-                    }, 
+                    },
                     {
                         header : this.i18n._("Description"),
                         width : 200,
