@@ -58,9 +58,7 @@ public abstract class LogEvent implements Comparable<LogEvent>, Serializable
     }
 
     /**
-     * Don't make Aaron angry!  This should only be set by the event
-     * logging system unless you're doing tricky things (with Aaron's
-     * approval).
+     * 
      */
     public void setTimeStamp(Date timeStamp)
     {

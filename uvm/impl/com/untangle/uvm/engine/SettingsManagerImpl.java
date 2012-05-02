@@ -193,7 +193,6 @@ public class SettingsManagerImpl implements SettingsManager
 
             Thread.currentThread().setContextClassLoader(getClass().getClassLoader());
             return (T) serializer.fromJSON(jsonString.toString());
-
         } catch (IOException e) {
             logger.warn("IOException: ",e);
             throw new SettingsException("Unable to the settings: '" + is + "'", e);
