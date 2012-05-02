@@ -306,7 +306,7 @@ public class LogWorkerImpl implements Runnable, LogWorker
                 if (totalTimeMs == null)
                     mapOutput += " " + item.name + "[" + item.count + "]";
                 else
-                    mapOutput += " " + item.name + "[" + item.count + "," + totalTimeMs + "ms]";
+                    mapOutput += " " + item.name + "[" + item.count + "," + totalTimeMs + "ms" + "," + String.format("%.1f",((float)totalTimeMs/((float)(item.count)))) + "avg]";
             }
 
             long t1 = System.currentTimeMillis();
