@@ -749,7 +749,8 @@ Ung.Util= {
                 name : 'category',
                 type : 'string'
             }, {
-                name : 'enabled'
+                name : 'enabled',
+                defaultValue : 'true'
             }, {
                 name : 'blocked'
             }, {
