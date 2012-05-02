@@ -16,12 +16,6 @@
         "annotatedClasses" : {
             "javaClass": "java.util.LinkedList",
             "list": [
-                "com.untangle.node.mail.papi.MessageInfo",
-                "com.untangle.node.mail.papi.MessageInfoAddr",
-                "com.untangle.node.spam.SpamDnsbl",
-                "com.untangle.node.spam.SpamLogEvent",
-                "com.untangle.node.spam.SpamSmtpEvent",
-                "com.untangle.node.spam.SpamSmtpTarpitEvent",
                 "com.untangle.uvm.logging.TarpitEventsFromReports"
             ]
         }

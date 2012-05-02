@@ -111,8 +111,7 @@ class SpamBaseNode(Node):
         sql_helper.drop_fact_table('n_spam_smtp_tarpit_events', cutoff)
 
     @print_timing
-    def __update_n_mail_events(self, src_table, target_table, protocol,
-                               start_date, end_date):
+    def __update_n_mail_events(self, src_table, target_table, protocol, start_date, end_date):
 
         conn = sql_helper.get_connection()
         try:
@@ -148,20 +147,6 @@ CREATE TABLE reports.n_spam_smtp_tarpit_events (
 
         sql_helper.create_index("reports","n_spam_smtp_tarpit_events","event_id");
         sql_helper.create_index("reports","n_spam_smtp_tarpit_events","time_stamp");
-
-        conn = sql_helper.get_connection()
-        try:
-            sql_helper.run_sql("""\
-INSERT INTO reports.n_spam_smtp_tarpit_events
-      (time_stamp, ipaddr, hostname, vendor_name, policy_id)
-SELECT evts.time_stamp, ipaddr, hostname, vendor_name, policy_id
-FROM events.n_spam_smtp_tarpit_evt as evts join reports.sessions using (session_id)
-WHERE evts.time_stamp < %s::timestamp without time zone""", 
-                               (start_time,), connection=conn, auto_commit=False)
-            conn.commit()
-        except Exception, e:
-            conn.rollback()
-            raise e
 
 class SpamHighlight(Highlight):
     def __init__(self, name, short_name, spam_label):

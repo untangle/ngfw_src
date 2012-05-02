@@ -22,7 +22,7 @@ public class SpamSmtpConfig extends SpamProtoConfig
     /* settings */
     private boolean tarpit = DEFAULT_TARPIT;
     private int tarpit_timeout = DEFAULT_TARPIT_TIMEOUT;
-    private SmtpSpamMessageAction msgAction = SmtpSpamMessageAction.QUARANTINE;
+    private SpamMessageAction msgAction = SpamMessageAction.QUARANTINE;
     private int superSpamStrength = DEFAULT_SUPER_STRENGTH;
     private boolean blockSuperSpam = DEFAULT_BLOCK_SUPER_SPAM;
     private boolean failClosed = DEFAULT_FAIL_CLOSED;
@@ -33,7 +33,7 @@ public class SpamSmtpConfig extends SpamProtoConfig
     public SpamSmtpConfig() { }
 
     public SpamSmtpConfig(boolean bScan,
-                          SmtpSpamMessageAction msgAction,
+                          SpamMessageAction msgAction,
                           int strength,
                           boolean addSpamHeaders,
                           boolean blockSuperSpam,
@@ -105,12 +105,12 @@ public class SpamSmtpConfig extends SpamProtoConfig
      *
      * @return the action to take if a message is judged to be spam.
      */
-    public SmtpSpamMessageAction getMsgAction()
+    public SpamMessageAction getMsgAction()
     {
         return msgAction;
     }
 
-    public void setMsgAction(SmtpSpamMessageAction msgAction)
+    public void setMsgAction(SpamMessageAction msgAction)
     {
         this.msgAction = msgAction;
     }

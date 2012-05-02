@@ -113,21 +113,21 @@ public class SpamSmtpHandler extends BufferingSessionHandler
         File f = messageToFile(msg, tx);
         if (f == null) {
             logger.error("Error writing to file.  Unable to scan.  Assume pass");
-            postSpamEvent(msgInfo, cleanReport(), SmtpSpamMessageAction.PASS);
+            postSpamEvent(msgInfo, cleanReport(), SpamMessageAction.PASS);
             spamImpl.incrementPassCount();
             return PASS_MESSAGE;
         }
 
         if (f.length() > getGiveupSz()) {
             logger.debug("Message larger than " + getGiveupSz() + ".  Don't bother to scan");
-            postSpamEvent(msgInfo, cleanReport(), SmtpSpamMessageAction.OVERSIZE);
+            postSpamEvent(msgInfo, cleanReport(), SpamMessageAction.OVERSIZE);
             spamImpl.incrementPassCount();
             return PASS_MESSAGE;
         }
 
         if (safelist.isSafelisted(tx.getFrom(), msg.getMMHeaders().getFrom(), tx.getRecipients(false))) {
             logger.debug("Message sender safelisted");
-            postSpamEvent(msgInfo, cleanReport(), SmtpSpamMessageAction.SAFELIST);
+            postSpamEvent(msgInfo, cleanReport(), SpamMessageAction.SAFELIST);
             spamImpl.incrementPassCount();
             return PASS_MESSAGE;
         }
@@ -136,7 +136,7 @@ public class SpamSmtpHandler extends BufferingSessionHandler
             boolean isWan = UvmContextFactory.context().networkManager().getNetworkConfiguration().findById(session.serverIntf()).isWAN();
             if (!config.getScanWanMail() && isWan) {
                 logger.debug("Ignoring WAN-bound SMTP mail");
-                postSpamEvent(msgInfo, cleanReport(), SmtpSpamMessageAction.OUTBOUND);
+                postSpamEvent(msgInfo, cleanReport(), SpamMessageAction.OUTBOUND);
                 spamImpl.incrementPassCount();
                 return PASS_MESSAGE;
             }
@@ -153,12 +153,12 @@ public class SpamSmtpHandler extends BufferingSessionHandler
                 /* FIXME  */
                 /* We don't actually DROP here, we close the connection so a retransmit will happen */
                 /* We should log a different event */
-                postSpamEvent(msgInfo, cleanReport(), SmtpSpamMessageAction.DROP);
+                postSpamEvent(msgInfo, cleanReport(), SpamMessageAction.DROP);
                 spamImpl.incrementBlockCount();
                 return TEMPORARILY_REJECT;
             } else {
                 logger.warn("Error scanning message. Failing open");
-                postSpamEvent(msgInfo, cleanReport(), SmtpSpamMessageAction.PASS);
+                postSpamEvent(msgInfo, cleanReport(), SpamMessageAction.PASS);
                 spamImpl.incrementPassCount();
                 return PASS_MESSAGE;
             }
@@ -168,52 +168,52 @@ public class SpamSmtpHandler extends BufferingSessionHandler
             report.addHeaders(msg);
         }
 
-        SmtpSpamMessageAction action = config.getMsgAction();
+        SpamMessageAction action = config.getMsgAction();
 
         if (config.getBlockSuperSpam()
             && config.getSuperSpamStrength() / 10.0f <= report.getScore()) {
-            action = SmtpSpamMessageAction.DROP;
+            action = SpamMessageAction.DROP;
         }
 
         if (report.isSpam()) {// BEGIN SPAM
             logger.debug("Spam found");
 
-            if (action == SmtpSpamMessageAction.PASS) {
+            if (action == SpamMessageAction.PASS) {
                 logger.debug("Although SPAM detected, pass message as-per policy");
                 markHeaders(msg, report);
-                postSpamEvent(msgInfo, report, SmtpSpamMessageAction.PASS);
+                postSpamEvent(msgInfo, report, SpamMessageAction.PASS);
                 spamImpl.incrementPassCount();
                 return new BPMEvaluationResult(msg);
-            } else if (action == SmtpSpamMessageAction.MARK) {
+            } else if (action == SpamMessageAction.MARK) {
                 logger.debug("Marking message as-per policy");
-                postSpamEvent(msgInfo, report, SmtpSpamMessageAction.MARK);
+                postSpamEvent(msgInfo, report, SpamMessageAction.MARK);
                 markHeaders(msg, report);
                 spamImpl.incrementMarkCount();
                 MIMEMessage wrappedMsg = this.getMsgGenerator().wrap(msg, tx, report);
                 return new BPMEvaluationResult(wrappedMsg);
-            } else if (action == SmtpSpamMessageAction.QUARANTINE) {
+            } else if (action == SpamMessageAction.QUARANTINE) {
                 logger.debug("Attempt to quarantine mail as-per policy");
                 if (quarantineMail(msg, tx, report, f)) {
                     spamImpl.incrementQuarantineCount();
-                    postSpamEvent(msgInfo, report, SmtpSpamMessageAction.QUARANTINE);
+                    postSpamEvent(msgInfo, report, SpamMessageAction.QUARANTINE);
                     return BLOCK_MESSAGE;
                 } else {
                     logger.debug("Quarantine failed.  Fall back to mark");
                     spamImpl.incrementMarkCount();
-                    postSpamEvent(msgInfo, report, SmtpSpamMessageAction.MARK);
+                    postSpamEvent(msgInfo, report, SpamMessageAction.MARK);
                     markHeaders(msg, report);
                     MIMEMessage wrappedMsg = this.getMsgGenerator().wrap(msg, tx, report);
                     return new BPMEvaluationResult(wrappedMsg);
                 }
             } else {
                 logger.debug("Blocking SPAM message as-per policy");
-                postSpamEvent(msgInfo, report, SmtpSpamMessageAction.DROP);
+                postSpamEvent(msgInfo, report, SpamMessageAction.DROP);
                 spamImpl.incrementBlockCount();
                 return BLOCK_MESSAGE;
             }
         } else {
             markHeaders(msg, report);
-            postSpamEvent(msgInfo, report, SmtpSpamMessageAction.PASS);
+            postSpamEvent(msgInfo, report, SpamMessageAction.PASS);
             logger.debug("Not spam");
             spamImpl.incrementPassCount();
 
@@ -246,21 +246,21 @@ public class SpamSmtpHandler extends BufferingSessionHandler
         File f = messageToFile(msg, tx);
         if (f == null) {
             logger.error("Error writing to file.  Unable to scan.  Assume pass");
-            postSpamEvent(msgInfo, cleanReport(), SmtpSpamMessageAction.PASS);
+            postSpamEvent(msgInfo, cleanReport(), SpamMessageAction.PASS);
             spamImpl.incrementPassCount();
             return BlockOrPassResult.PASS;
         }
 
         if (f.length() > getGiveupSz()) {
             logger.debug("Message larger than " + getGiveupSz() + ".  Don't bother to scan");
-            postSpamEvent(msgInfo, cleanReport(), SmtpSpamMessageAction.OVERSIZE);
+            postSpamEvent(msgInfo, cleanReport(), SpamMessageAction.OVERSIZE);
             spamImpl.incrementPassCount();
             return BlockOrPassResult.PASS;
         }
 
         if (safelist.isSafelisted(tx.getFrom(), msg.getMMHeaders().getFrom(), tx.getRecipients(false))) {
             logger.debug("Message sender safelisted");
-            postSpamEvent(msgInfo, cleanReport(), SmtpSpamMessageAction.SAFELIST);
+            postSpamEvent(msgInfo, cleanReport(), SpamMessageAction.SAFELIST);
             spamImpl.incrementPassCount();
             return BlockOrPassResult.PASS;
         }
@@ -269,7 +269,7 @@ public class SpamSmtpHandler extends BufferingSessionHandler
             boolean isWan = UvmContextFactory.context().networkManager().getNetworkConfiguration().findById(session.serverIntf()).isWAN();
             if (!config.getScanWanMail() && isWan) {
                 logger.debug("Ignoring WAN-bound SMTP mail");
-                postSpamEvent(msgInfo, cleanReport(), SmtpSpamMessageAction.SAFELIST);
+                postSpamEvent(msgInfo, cleanReport(), SpamMessageAction.SAFELIST);
                 spamImpl.incrementPassCount();
                 return BlockOrPassResult.PASS;
             }
@@ -283,77 +283,77 @@ public class SpamSmtpHandler extends BufferingSessionHandler
         if (report == null) { // Handle error case
             if (config.getFailClosed()) {
                 logger.warn("Error scanning message. Failing closed");
-                postSpamEvent(msgInfo, cleanReport(), SmtpSpamMessageAction.DROP);
+                postSpamEvent(msgInfo, cleanReport(), SpamMessageAction.DROP);
                 spamImpl.incrementBlockCount();
                 return BlockOrPassResult.TEMPORARILY_REJECT;
             } else {
                 logger.warn("Error scanning message. Failing open");
-                postSpamEvent(msgInfo, cleanReport(), SmtpSpamMessageAction.PASS);
+                postSpamEvent(msgInfo, cleanReport(), SpamMessageAction.PASS);
                 spamImpl.incrementPassCount();
                 return BlockOrPassResult.PASS;
             }
         }
 
-        SmtpSpamMessageAction action = config.getMsgAction();
+        SpamMessageAction action = config.getMsgAction();
 
         // Anything going out External MARK instead of QUARANTINE
         boolean isWan = UvmContextFactory.context().networkManager().getNetworkConfiguration().findById(session.serverIntf()).isWAN();
-        if (action == SmtpSpamMessageAction.QUARANTINE && isWan) {
+        if (action == SpamMessageAction.QUARANTINE && isWan) {
             // Change action now, as it'll make the event logs
             // more accurate
             logger.debug("Implicitly converting policy from \"QUARANTINE\"" + " to \"MARK\" as we have a message going out WAN");
-            action = SmtpSpamMessageAction.MARK;
+            action = SpamMessageAction.MARK;
         }
 
         // Check for the impossible-to-satisfy action of "REMOVE"
-        if (action == SmtpSpamMessageAction.MARK) {
+        if (action == SpamMessageAction.MARK) {
             // Change action now, as it'll make the event logs
             // more accurate
             logger.debug("Implicitly converting policy from \"MARK\"" +
                            " to \"PASS\" as we have already begun to trickle");
-            action = SmtpSpamMessageAction.PASS;
+            action = SpamMessageAction.PASS;
         }
 
         if (config.getBlockSuperSpam()
             && config.getSuperSpamStrength() / 10.0f <= report.getScore()) {
-            action = SmtpSpamMessageAction.DROP;
+            action = SpamMessageAction.DROP;
         }
 
         if (report.isSpam()) {
             logger.debug("Spam");
 
-            if (action == SmtpSpamMessageAction.PASS) {
+            if (action == SpamMessageAction.PASS) {
                 logger.debug("Although SPAM detected, pass message as-per policy");
-                postSpamEvent(msgInfo, report, SmtpSpamMessageAction.PASS);
+                postSpamEvent(msgInfo, report, SpamMessageAction.PASS);
                 spamImpl.incrementPassCount();
                 return BlockOrPassResult.PASS;
-            } else if (action == SmtpSpamMessageAction.MARK) {
+            } else if (action == SpamMessageAction.MARK) {
                 logger.debug("Cannot mark at this time.  Simply pass");
-                postSpamEvent(msgInfo, report, SmtpSpamMessageAction.PASS);
+                postSpamEvent(msgInfo, report, SpamMessageAction.PASS);
                 spamImpl.incrementPassCount();
                 return BlockOrPassResult.PASS;
-            } else if (action == SmtpSpamMessageAction.QUARANTINE) {
+            } else if (action == SpamMessageAction.QUARANTINE) {
                 logger.debug("Attempt to quarantine mail as-per policy");
                 if (quarantineMail(msg, tx, report, f)) {
                     logger.debug("Mail quarantined");
-                    postSpamEvent(msgInfo, report, SmtpSpamMessageAction.QUARANTINE);
+                    postSpamEvent(msgInfo, report, SpamMessageAction.QUARANTINE);
                     spamImpl.incrementQuarantineCount();
                     return BlockOrPassResult.BLOCK;
                 } else {
                     logger.debug("Quarantine failed.  Fall back to pass");
-                    postSpamEvent(msgInfo, report, SmtpSpamMessageAction.PASS);
+                    postSpamEvent(msgInfo, report, SpamMessageAction.PASS);
                     spamImpl.incrementPassCount();
                     return BlockOrPassResult.PASS;
                 }
             } else {
                 logger.debug("Blocking SPAM message as-per policy");
-                postSpamEvent(msgInfo, report, SmtpSpamMessageAction.DROP);
+                postSpamEvent(msgInfo, report, SpamMessageAction.DROP);
                 spamImpl.incrementBlockCount();
                 return BlockOrPassResult.BLOCK;
             }
         } else {
             logger.debug("Not Spam");
-            postSpamEvent(msgInfo, report, SmtpSpamMessageAction.PASS);
+            postSpamEvent(msgInfo, report, SpamMessageAction.PASS);
             spamImpl.incrementPassCount();
             return BlockOrPassResult.PASS;
         }
@@ -379,14 +379,10 @@ public class SpamSmtpHandler extends BufferingSessionHandler
     /**
      * ...name says it all...
      */
-    private void postSpamEvent(MessageInfo msgInfo, SpamReport report, SmtpSpamMessageAction action)
+    private void postSpamEvent(MessageInfo msgInfo, SpamReport report, SpamMessageAction action)
     {
 
-        SpamSmtpEvent spamEvent = new SpamSmtpEvent(msgInfo,
-                                                    report.getScore(),
-                                                    report.isSpam(),
-                                                    action,
-                                                    spamImpl.getScanner().getVendorName());
+        SpamLogEvent spamEvent = new SpamLogEvent(msgInfo, report.getScore(), report.isSpam(), action, spamImpl.getScanner().getVendorName());
         spamImpl.logEvent(spamEvent);
     }
 

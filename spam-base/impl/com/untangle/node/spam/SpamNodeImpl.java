@@ -192,7 +192,7 @@ public class SpamNodeImpl extends NodeBase implements SpamNode
     protected void configureSpamSettings(SpamSettings tmpSpamSettings)
     {
         tmpSpamSettings.setSmtpConfig(new SpamSmtpConfig(true,
-                SmtpSpamMessageAction.QUARANTINE,
+                SpamMessageAction.QUARANTINE,
                 SpamProtoConfig.DEFAULT_STRENGTH,
                 SpamProtoConfig.DEFAULT_ADD_SPAM_HEADERS,
                 SpamSmtpConfig.DEFAULT_BLOCK_SUPER_SPAM,
