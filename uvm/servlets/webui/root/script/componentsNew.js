@@ -1478,7 +1478,7 @@ Ext.define("Ung.Node", {
             }
         }
         this.updateRunState(this.runState, true);
-        this.initBlingers();
+        this.initMetrics();
     },
     // is runState "RUNNING"
     isRunning : function() {
@@ -1720,7 +1720,7 @@ Ext.define("Ung.Node", {
         },this));
     },
     // initialize blingers
-    initBlingers : function() {
+    initMetrics : function() {
         if(this.metrics != null && this.metrics.list != null) {
             // OLD_BLINGER
             //             if(this.blingers.activityDescs!=null && this.blingers.activityDescs.list.length>0) {
@@ -2455,100 +2455,100 @@ Ext.define("Ung.FaceplateMetric", {
             }
         }
     },
-    showBlingerSettings : function() {
-        var nodeCmp = Ext.getCmp(this.parentId);
-        this.newActiveMetrics=[];
-        if(this.configWin==null) {
-            var configItems=[];
-            for(var i=0;i<nodeCmp.metrics.list.length;i++) {
-                var metric = nodeCmp.metrics.list[i];
-                configItems.push({
-                    xtype : 'checkbox',
-                    boxLabel : i18n._(metric.displayName),
-                    hideLabel : true,
-                    name : metric.displayName,
-                    dataIndex: i,
-                    checked : false,
-                    listeners : {
-                        "change" : {
-                            fn : Ext.bind(function(elem, checked) {
-                                if(checked && this.newActiveMetrics.length>=4) {
-                                    Ext.MessageBox.alert(i18n._("Warning"),i18n._("Please set up to four items."));
-                                    elem.setValue(false);
-                                    return;
-                                }
-                                var itemIndex=-1;
-                                for(var i=0;i<this.newActiveMetrics.length;i++) {
-                                    if(this.newActiveMetrics[i]==elem.dataIndex) {
-                                        itemIndex=i;
-                                        break;
-                                    }
-                                }
-                                if(checked) {
-                                    if(itemIndex==-1) {
-                                        // add element
-                                        this.newActiveMetrics.push(elem.dataIndex);
-                                    }
-                                } else {
-                                    if(itemIndex!=-1) {
-                                        // remove element
-                                        this.newActiveMetrics.splice(itemIndex,1);
-                                    }
-                                }
+    //     showBlingerSettings : function() {
+        //         var nodeCmp = Ext.getCmp(this.parentId);
+    //         this.newActiveMetrics=[];
+    //         if(this.configWin==null) {
+    //             var configItems=[];
+    //             for(var i=0;i<nodeCmp.metrics.list.length;i++) {
+    //                 var metric = nodeCmp.metrics.list[i];
+    //                 configItems.push({
+    //                     xtype : 'checkbox',
+    //                     boxLabel : i18n._(metric.displayName),
+    //                     hideLabel : true,
+    //                     name : metric.displayName,
+    //                     dataIndex: i,
+    //                     checked : false,
+    //                     listeners : {
+    //                         "change" : {
+    //                             fn : Ext.bind(function(elem, checked) {
+    //                                 if(checked && this.newActiveMetrics.length>=4) {
+    //                                     Ext.MessageBox.alert(i18n._("Warning"),i18n._("Please set up to four items."));
+    //                                     elem.setValue(false);
+    //                                     return;
+    //                                 }
+    //                                 var itemIndex=-1;
+    //                                 for(var i=0;i<this.newActiveMetrics.length;i++) {
+    //                                     if(this.newActiveMetrics[i]==elem.dataIndex) {
+    //                                         itemIndex=i;
+    //                                         break;
+    //                                     }
+    //                                 }
+    //                                 if(checked) {
+    //                                     if(itemIndex==-1) {
+    //                                         // add element
+    //                                         this.newActiveMetrics.push(elem.dataIndex);
+    //                                     }
+    //                                 } else {
+    //                                     if(itemIndex!=-1) {
+    //                                         // remove element
+    //                                         this.newActiveMetrics.splice(itemIndex,1);
+    //                                     }
+    //                                 }
 
-                            },this)
-                        }
-                    }
-                });
-            }
-            this.configWin= Ext.create("Ung.Window", {
-                blingerCmp: this,
-                modal : true,
-                title : i18n._("Set up to four"),
-                bodyStyle : "padding: 5px 5px 5px 15px;",
-                defaults: {},
-                items: configItems,
-                autoScroll : true,
-                draggable : true,
-                resizable : true,
-                buttons: [{
-                    name : 'Ok',
-                    text : i18n._("Ok"),
-                    handler : Ext.bind(function() {
-                        this.updateActiveMetrics();
-                        this.configWin.hide();
-                    },this)
-                },{
-                    name : 'Cancel',
-                    text : i18n._("Cancel"),
-                    handler : Ext.bind(function() {
-                        this.configWin.hide();
-                    },this)
-                }],
-                show : function() {
-                    Ung.Window.superclass.show.call(this);
-                    this.setSize({width:260,height:280});
-                    this.alignTo(this.blingerCmp.getEl(),"tr-br");
-                    var pos=this.getPosition();
-                    var sub=pos[1]+280-main.viewport.getSize().height;
-                    if(sub>0) {
-                        this.setPosition( pos[0],pos[1]-sub);
-                    }
-                }
-            });
-        }
+    //                             },this)
+    //                         }
+    //                     }
+    //                 });
+    //             }
+    //             this.configWin= Ext.create("Ung.Window", {
+    //                 blingerCmp: this,
+    //                 modal : true,
+    //                 title : i18n._("Set up to four"),
+    //                 bodyStyle : "padding: 5px 5px 5px 15px;",
+    //                 defaults: {},
+    //                 items: configItems,
+    //                 autoScroll : true,
+    //                 draggable : true,
+    //                 resizable : true,
+    //                 buttons: [{
+    //                     name : 'Ok',
+    //                     text : i18n._("Ok"),
+    //                     handler : Ext.bind(function() {
+    //                         this.updateActiveMetrics();
+    //                         this.configWin.hide();
+    //                     },this)
+    //                 },{
+    //                     name : 'Cancel',
+    //                     text : i18n._("Cancel"),
+    //                     handler : Ext.bind(function() {
+    //                         this.configWin.hide();
+    //                     },this)
+    //                 }],
+    //                 show : function() {
+    //                     Ung.Window.superclass.show.call(this);
+    //                     this.setSize({width:260,height:280});
+    //                     this.alignTo(this.blingerCmp.getEl(),"tr-br");
+    //                     var pos=this.getPosition();
+    //                     var sub=pos[1]+280-main.viewport.getSize().height;
+    //                     if(sub>0) {
+    //                         this.setPosition( pos[0],pos[1]-sub);
+    //                     }
+    //                 }
+    //             });
+    //         }
 
-        for(var i=0;i<this.configWin.items.length;i++) {
-            this.configWin.items.get(i).setValue(false);
-        }
-        for( var j=0 ; j<nodeCmp.activeMetrics.length ; j++ ) {
-            var metricIndex = nodeCmp.activeMetrics[j];
-            var metricItem=this.configWin.items.get(metricIndex);
-            if (metricItem != null)
-                metricItem.setValue(true);
-        }
-        this.configWin.show();
-    },
+    //         for(var i=0;i<this.configWin.items.length;i++) {
+    //             this.configWin.items.get(i).setValue(false);
+    //         }
+    //         for( var j=0 ; j<nodeCmp.activeMetrics.length ; j++ ) {
+    //             var metricIndex = nodeCmp.activeMetrics[j];
+    //             var metricItem=this.configWin.items.get(metricIndex);
+    //             if (metricItem != null)
+    //                 metricItem.setValue(true);
+    //         }
+    //         this.configWin.show();
+    //     },
     updateActiveMetrics : function() {
         var nodeCmp = Ext.getCmp(this.parentId);
         nodeCmp.activeMetrics = this.newActiveMetrics;
@@ -2560,12 +2560,14 @@ Ext.define("Ung.FaceplateMetric", {
         var activeMetrics = nodeCmp.activeMetrics;
         for (var i = 0; i < activeMetrics.length; i++) {
             var metricIndex = activeMetrics[i];
-            var metric=nodeCmp.metrics.list[metricIndex];
-            var newValue="&nbsp;";
-            newValue = metric.value;
-            var valueDiv = document.getElementById('systemValue_' + this.getId() + '_' + i);
-            if(valueDiv!=null) {
-                valueDiv.innerHTML = newValue;
+            var metric = nodeCmp.metrics.list[metricIndex];
+            if (metric != null && metric !== undefined) {
+                var newValue="&nbsp;";
+                newValue = metric.value;
+                var valueDiv = document.getElementById('systemValue_' + this.getId() + '_' + i);
+                if(valueDiv!=null) {
+                    valueDiv.innerHTML = newValue;
+                }
             }
         }
     },
