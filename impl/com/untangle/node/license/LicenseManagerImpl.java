@@ -234,7 +234,6 @@ public class LicenseManagerImpl extends NodeBase implements LicenseManager
             this.settings = settingsManager.load( LicenseSettings.class, System.getProperty("uvm.conf.dir") + "/licenses/licenses" );
         } catch (SettingsManager.SettingsException e) {
             logger.error("Unable to read license file: ", e );
-            return;
         }
 
         if (this.settings == null)
