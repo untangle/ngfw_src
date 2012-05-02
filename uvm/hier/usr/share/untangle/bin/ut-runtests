@@ -180,11 +180,10 @@ ClientControl.interface = parser.internalIntfId;
 ClientControl.interfaceExternal = parser.externalIntfId;
 
 # if reports isn't installed, install and start it - it is required
-reportsAdded = False;
+reportsNode = None;
 if (not uvm.Uvm().getUvmContext().nodeManager().isInstantiated('untangle-node-reporting')):
     print "== Installing untangle-node-reporting =="
-    reportsAdded = True;
-    reportsNodeProperties = uvm.Uvm().getUvmContext().nodeManager().instantiateAndStart('untangle-node-reporting', None)
+    reportsNode = uvm.Uvm().getUvmContext().nodeManager().instantiateAndStart('untangle-node-reporting', None)
 
 if ("environment" in parser.nodesToTest or "all" in parser.nodesToTest):
     runTestEnvironmentTests()
@@ -248,7 +247,7 @@ while True:
         break
 
 # if reports was added earlier, revert to original settings
-if reportsAdded:
+if reportsNode != None:
     print "== UnInstalling untangle-node-reporting =="
     uvm.Uvm().getUvmContext().nodeManager().destroy( reportsNode.getNodeSettings()['id'] );
 
