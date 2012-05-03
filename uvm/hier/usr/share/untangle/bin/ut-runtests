@@ -21,6 +21,7 @@ from   untangle_tests.adconnector_tests import DirectoryConnectorTests
 from   untangle_tests.openvpn_tests import OpenVPNTests
 from   untangle_tests.ipsec_tests import IPsecTests
 from   untangle_tests.policy_tests import PolicyTests
+from   untangle_tests.adblocker_tests import AdBlockerTests
 
 class ArgumentParser(object):
     def __init__(self):
@@ -241,6 +242,10 @@ while True:
         total += subTotal
     if ("policy" in parser.nodesToTest or "all" in parser.nodesToTest):
         errors, subTotal = runTestSuite(PolicyTests)
+        rc += errors
+        total += subTotal
+    if ("adblocker" in parser.nodesToTest or "all" in parser.nodesToTest):
+        errors, subTotal = runTestSuite(AdBlockerTests)
         rc += errors
         total += subTotal
     if not parser.repeat:

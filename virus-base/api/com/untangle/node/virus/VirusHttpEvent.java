@@ -32,8 +32,6 @@ public class VirusHttpEvent extends LogEvent
         this.vendorName = vendorName;
     }
 
-    // VirusEvent methods -------------------------------------------------
-
     // accessors ----------------------------------------------------------
 
     /**
@@ -41,45 +39,20 @@ public class VirusHttpEvent extends LogEvent
      *
      * @return the request line.
      */
-    public Long getRequestId()
-    {
-        return requestId;
-    }
-
-    public void setRequestId(Long requestId)
-    {
-        this.requestId = requestId;
-    }
+    public Long getRequestId() { return requestId; }
+    public void setRequestId( Long requestId ) { this.requestId = requestId; }
 
     /**
      * Virus scan result.
-     *
-     * @return the scan result.
      */
-    public VirusScannerResult getResult()
-    {
-        return result;
-    }
-
-    public void setResult(VirusScannerResult result)
-    {
-        this.result = result;
-    }
+    public VirusScannerResult getResult() { return result; }
+    public void setResult( VirusScannerResult result ) { this.result = result; }
 
     /**
      * Virus vendor.
-     *
-     * @return the vendor
      */
-    public String getVendorName()
-    {
-        return vendorName;
-    }
-
-    public void setVendorName(String vendorName)
-    {
-        this.vendorName = vendorName;
-    }
+    public String getVendorName() { return vendorName; }
+    public void setVendorName( String vendorName ) { this.vendorName = vendorName; }
 
     @Override
     public boolean isDirectEvent()
