@@ -196,8 +196,6 @@ public class OpenVpnManager
         UvmContextFactory.context().execManager().exec( VPN_STOP_SCRIPT );
 
         try {
-            //
-            // am.disableInternalBridgeIntf( UvmContextFactory.context().networkingManager().get());
             UvmContextFactory.context().networkManager().refreshNetworkConfig();
         } catch ( Exception e ) {
             throw new Exception( e );

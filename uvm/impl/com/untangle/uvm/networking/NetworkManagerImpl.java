@@ -24,6 +24,7 @@ import org.json.JSONObject;
 import com.untangle.jnetcap.Netcap;
 import com.untangle.uvm.IntfConstants;
 import com.untangle.uvm.UvmContextFactory;
+import com.untangle.uvm.UvmState;
 import com.untangle.uvm.NetworkManager;
 import com.untangle.uvm.node.IPSessionDesc;
 import com.untangle.uvm.node.IPAddress;
@@ -520,6 +521,12 @@ public class NetworkManagerImpl implements NetworkManager
     {
         logger.info("Refreshing Network Configuration...");
 
+        /**
+         * If the UVM is shutting down, don't bother doing anything
+         */
+        if ( UvmContextFactory.context().state() == UvmState.DESTROYED)
+            return;
+                                 
         this.networkConfiguration = loadNetworkConfiguration( );
 
         if (this.networkConfiguration == null) {

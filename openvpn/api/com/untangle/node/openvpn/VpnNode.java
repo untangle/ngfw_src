@@ -64,9 +64,9 @@ public interface VpnNode extends Node
     public void setClients( ClientList parameters ) throws Exception;
     public void setSites( SiteList parameters ) throws Exception;
 
-    public List<ClientConnectEvent> getActiveClients();
+    public List<ClientStatusEvent> getActiveClients();
 
-    public EventLogQuery[] getConnectEventsQueries();
+    public EventLogQuery[] getStatusEventsQueries();
 
     public Validator getValidator();
 }

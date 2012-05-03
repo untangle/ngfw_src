@@ -7,12 +7,6 @@
         "type" : "SERVICE",
         "viewPosition" : 1080,
         "autoStart" : "false",
-        "singleInstance" : "true",
-        "annotatedClasses" : {
-            "javaClass": "java.util.LinkedList",
-            "list": [
-                "com.untangle.node.openvpn.ClientConnectEvent"
-            ]
-        }
+        "singleInstance" : "true"
 }
 

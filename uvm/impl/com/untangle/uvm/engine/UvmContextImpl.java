@@ -1009,20 +1009,18 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
         this.addAnnotatedClass("com.untangle.uvm.AdminSettings");
         this.addAnnotatedClass("com.untangle.uvm.User");
         this.addAnnotatedClass("com.untangle.uvm.logging.LoggingSettings");
+        this.addAnnotatedClass("com.untangle.uvm.networking.AccessSettings");
+        this.addAnnotatedClass("com.untangle.uvm.networking.AddressSettings");
+        this.addAnnotatedClass("com.untangle.uvm.snmp.SnmpSettings");
+        this.addAnnotatedClass("com.untangle.uvm.toolbox.UpgradeSettings");
+
         this.addAnnotatedClass("com.untangle.uvm.logging.SessionLogEventFromReports");
         this.addAnnotatedClass("com.untangle.uvm.logging.HttpLogEventFromReports");
         this.addAnnotatedClass("com.untangle.uvm.logging.MailLogEventFromReports");
         this.addAnnotatedClass("com.untangle.uvm.logging.OpenvpnLogEventFromReports");
         this.addAnnotatedClass("com.untangle.uvm.logging.CpdBlockEventsFromReports");
         this.addAnnotatedClass("com.untangle.uvm.logging.CpdLoginEventsFromReports");
-        this.addAnnotatedClass("com.untangle.uvm.networking.AccessSettings");
-        this.addAnnotatedClass("com.untangle.uvm.networking.AddressSettings");
-        this.addAnnotatedClass("com.untangle.uvm.node.IPMaskedAddressDirectory");
-        this.addAnnotatedClass("com.untangle.uvm.node.IPMaskedAddressRule");
-        this.addAnnotatedClass("com.untangle.uvm.node.StringRule");
-        this.addAnnotatedClass("com.untangle.uvm.node.NodeSettings");
-        this.addAnnotatedClass("com.untangle.uvm.snmp.SnmpSettings");
-        this.addAnnotatedClass("com.untangle.uvm.toolbox.UpgradeSettings");
+
         /* impl */
         this.addAnnotatedClass("com.untangle.uvm.engine.LoginEvent");
     }

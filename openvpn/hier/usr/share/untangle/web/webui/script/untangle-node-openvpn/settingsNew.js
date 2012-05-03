@@ -473,8 +473,8 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                     "address" : "",
                     "clientName" : "",
                     "start" : "",
-                    "bytesRx" : "",
-                    "bytesTx" : ""
+                    "bytesRxTotal" : "",
+                    "bytesTxTotal" : ""
                 },
                 height : 400,
                 hasAdd : false,
@@ -503,7 +503,7 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                         }
                     ]
                 }),
-                recordJavaClass : "com.untangle.node.openvpn.ClientConnectEvent",
+                recordJavaClass : "com.untangle.node.openvpn.ClientStatusEvent",
                 dataFn : this.getRpcNode().getActiveClients,
                 fields : [{
                     name : "address"
@@ -512,9 +512,9 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                 },{
                     name : "start"
                 },{
-                    name : "bytesRx"
+                    name : "bytesRxTotal"
                 },{
-                    name : "bytesTx"
+                    name : "bytesTxTotal"
                 },{
                     name : "id"
                 }],
@@ -655,7 +655,7 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
         buildConnectionEventLog : function() {
             this.gridConnectionEventLog = Ext.create('Ung.GridEventLog',{
                 settingsCmp : this,
-                eventQueriesFn : this.getRpcNode().getConnectEventsQueries,
+                eventQueriesFn : this.getRpcNode().getStatusEventsQueries,
                 name : "Connection Event Log",
                 title : i18n._('Connection Event Log'),
                 fields : [{
@@ -682,13 +682,13 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                     name : 'address',
                     mapping : 'remoteAddress'
                 }, {
-                    name : 'bytesTx',
+                    name : 'bytesTxTotal',
                     mapping : 'txBytes',
                     convert : function(val) {
                         return parseFloat(val) / 1024;
                     }
                 }, {
-                    name : 'bytesRx',
+                    name : 'bytesRxTotal',
                     mapping : 'rxBytes',
                     convert : function(val) {
                         return parseFloat(val) / 1024;
@@ -730,7 +730,7 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                     header : this.i18n._("KB sent"),
                     width : 80,
                     sortable : true,
-                    dataIndex : 'bytesTx',
+                    dataIndex : 'bytesTxTotal',
                     renderer : Ext.bind(function( value ) {
                         return Math.round(( value + 0.0 ) * 10 ) / 10;
                     },this )
@@ -738,7 +738,7 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                     header : this.i18n._("KB received"),
                     width : 80,
                     sortable : true,
-                    dataIndex : 'bytesRx',
+                    dataIndex : 'bytesRxTotal',
                     renderer : Ext.bind(function( value ) {
                         return Math.round(( value + 0.0 ) * 10 ) / 10;
                     }, this )
@@ -1217,8 +1217,7 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                 },
                 title : this.i18n._("Address Pools"),
                 recordJavaClass : "com.untangle.node.openvpn.VpnGroup",
-                data : this.getSettings().groupList,
-                dataRoot : 'list',
+                data : this.getSettings().groupList.list,
                 // the list of fields
                 fields : [{
                     name : 'id'
@@ -1240,13 +1239,13 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                 columns : [
                 {
                     xtype:'checkcolumn',
-                    header : this.i18n._("enabled"),
+                    header : this.i18n._("Enabled"),
                     dataIndex : 'live',
                     width : 80,
                     fixed : true
                 },
                 {
-                    header : this.i18n._("pool name"),
+                    header : this.i18n._("Pool Name"),
                     width : 160,
                     dataIndex : 'name',
                     flex:1,
@@ -1256,7 +1255,7 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                     }
                 }, 
                 {
-                    header : this.i18n._("IP address"),
+                    header : this.i18n._("IP Address"),
                     width : 130,
                     dataIndex : 'address',
                     editor: {
@@ -1266,7 +1265,7 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                     }
                 }, 
                 {
-                    header : this.i18n._("netmask"),
+                    header : this.i18n._("Netmask"),
                     width : 130,
                     dataIndex : 'netmask',
                     editor: {
@@ -1277,7 +1276,7 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                 },
                 {
                     id : "useDNS",
-                    header : this.i18n._("export DNS"),
+                    header : this.i18n._("Export DNS"),
                     dataIndex : 'useDNS',
                     width : 90,
                     fixed : true
@@ -1292,16 +1291,16 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                     fieldLabel : this.i18n._("Enabled")
                 }, {
                     xtype : "textfield",
-                    name : "Pool name",
+                    name : "Pool Name",
                     dataIndex : "name",
-                    fieldLabel : this.i18n._("Pool name"),
+                    fieldLabel : this.i18n._("Pool Name"),
                     allowBlank : false,
                     width : 300
                 }, {
                     xtype : "textfield",
                     name : "IP address",
                     dataIndex : "address",
-                    fieldLabel : this.i18n._("IP address"),
+                    fieldLabel : this.i18n._("IP Address"),
                     allowBlank : false,
                     vtype : 'ipAddress',
                     width : 300
@@ -1315,9 +1314,9 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                     width : 300
                 }, {
                     xtype : 'checkbox',
-                    name : "export DNS",
+                    name : "Export DNS",
                     dataIndex : "useDNS",
-                    fieldLabel : this.i18n._("export DNS")
+                    fieldLabel : this.i18n._("Export DNS")
                 }]
             });
             return gridGroups;
@@ -1770,13 +1769,13 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                 
                 this.gridClients.emptyRow.groupName = defaultGroup== null ? null : defaultGroup.name;
 
-                this.gridClients.clearChangedData();
+                //this.gridClients.clearChangedData();
                 this.gridClients.store.loadData( settings.clientList.list );
-                this.gridSites.clearChangedData();
+                //this.gridSites.clearChangedData();
                 this.gridSites.store.loadData( settings.siteList.list );
-                this.gridGroups.clearChangedData();
+                //this.gridGroups.clearChangedData();
                 this.gridGroups.store.loadData( settings.groupList );
-                this.gridExports.clearChangedData();
+                //this.gridExports.clearChangedData();
                 this.gridExports.store.loadData( settings.exportedAddressList.list );
                 
                 Ext.getCmp( "openvpn_advanced_siteName" ).setValue( settings.siteName );

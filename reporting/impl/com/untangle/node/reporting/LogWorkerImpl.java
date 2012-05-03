@@ -21,7 +21,6 @@ import java.sql.SQLException;
 import java.sql.Statement;
 
 import org.apache.log4j.Logger;
-import org.hibernate.Session;
 
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.logging.LogWorker;
@@ -199,11 +198,9 @@ public class LogWorkerImpl implements Runnable, LogWorker
         int count = logQueue.size();
         long t0 = System.currentTimeMillis();
 
-        Session session = null; 
         Connection conn = null;
         Statement statement = null;
         try {
-            session = UvmContextFactory.context().makeHibernateSession();
             conn = UvmContextFactory.context().getDBConnection();
             if (conn != null) 
                 statement = conn.createStatement();
@@ -256,27 +253,11 @@ public class LogWorkerImpl implements Runnable, LogWorker
                         }
                     }
                 } 
-            } else {
-                if (session != null) {
-                    /**
-                     * Write event to database using hibernate
-                     * If fails, just move on
-                     */
-                    try {
-                        session.save(event);
-                    } catch (Exception exc) {
-                        logger.error("could not log event: ", exc);
-                    }
-                }
-            }
+            } 
 
             i.remove();
         }
 
-        if (session != null) {
-            try { session.flush(); } catch (Exception e) { logger.warn("Exception during session flush",e); }
-            try { session.close(); } catch (Exception e) { logger.warn("Exception during session close",e); }
-        }
         if (conn != null) {
             try {conn.close();} catch (SQLException e) { logger.warn("Exception during conn close",e); }
         }

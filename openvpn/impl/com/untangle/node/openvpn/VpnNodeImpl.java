@@ -801,12 +801,12 @@ public class VpnNodeImpl extends NodeBase implements VpnNode
         this.sandbox.setSiteList( parameters );
     }
 
-    public List<ClientConnectEvent> getActiveClients()
+    public List<ClientStatusEvent> getActiveClients()
     {
         return this.openVpnMonitor.getOpenConnectionsAsEvents();
     }
 
-    public EventLogQuery[] getConnectEventsQueries()
+    public EventLogQuery[] getStatusEventsQueries()
     {
         return new EventLogQuery[] { this.connectEventsQuery };
     }

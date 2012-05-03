@@ -5,22 +5,11 @@ package com.untangle.uvm.node;
 
 import java.io.Serializable;
 
-import javax.persistence.Column;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.MappedSuperclass;
-
 /**
  * Abstract class for rules.
- *
- * @author <a href="mailto:amread@untangle.com">Aaron Read</a>
- * @version 1.0
  */
-@SuppressWarnings("serial")
-@MappedSuperclass
 public abstract class Rule implements Serializable
 {
-
     public static final String EMPTY_NAME        = "[no name]";
     public static final String EMPTY_DESCRIPTION = "[no description]";
     public static final String EMPTY_CATEGORY    = "[no category]";
@@ -80,109 +69,26 @@ public abstract class Rule implements Serializable
     
     // accessors --------------------------------------------------------------
 
-    @Id
-    @Column(name="rule_id")
-    @GeneratedValue
-    public Long getId()
-    {
-        return id;
-    }
+    public Long getId() { return id; }
+    public void setId(Long id) { this.id = id; }
 
-    public void setId(Long id)
-    {
-        this.id = id;
-    }
+    public String getName() { return name; }
+    public void setName(String name) { this.name = name; }
 
-    /**
-     * Get a name for display purposes.
-     *
-     * @return name.
-     */
-    public String getName()
-    {
-        return name;
-    }
+    public String getCategory() { return category; }
+    public void setCategory(String category) { this.category = category; }
 
-    public void setName(String name)
-    {
-        this.name = name;
-    }
+    public String getDescription() { return description; }
+    public void setDescription(String description) { this.description = description; }
 
-    /**
-     * Get a category for display purposes.
-     *
-     * @return category.
-     */
-    public String getCategory()
-    {
-        return category;
-    }
+    public boolean isLive() { return live; }
+    public void setLive(boolean live) { this.live = live; }
 
-    public void setCategory(String category)
-    {
-        this.category = category;
-    }
+    public boolean getAlert() { return alert; }
+    public void setAlert(boolean alert) { this.alert = alert; }
 
-    /**
-     * Get a description for display purposes.
-     *
-     * @return human description;
-     */
-    public String getDescription()
-    {
-        return description;
-    }
-
-    public void setDescription(String description)
-    {
-        this.description = description;
-    }
-
-    /**
-     * Will the rule be used for matching?
-     *
-     * @return true if this address is matched.
-     */
-    public boolean isLive()
-    {
-        return live;
-    }
-
-    public void setLive(boolean live)
-    {
-        this.live = live;
-    }
-
-    /**
-     * Should admin be alerted.
-     *
-     * @return true if alerts should be sent.
-     */
-    public boolean getAlert()
-    {
-        return alert;
-    }
-
-    public void setAlert(boolean alert)
-    {
-        this.alert = alert;
-    }
-
-    /**
-     * Should admin be logged.
-     *
-     * @return true if should be logged.
-     */
-    public boolean getLog()
-    {
-        return log;
-    }
-
-    public void setLog(boolean log)
-    {
-        this.log = log;
-    }
-
+    public boolean getLog() { return log; }
+    public void setLog(boolean log) { this.log = log; }
     
     public void update(Rule rule) {
 		this.name = rule.name;

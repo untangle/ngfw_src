@@ -1,37 +1,19 @@
-/*
- * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License, version 2,
- * as published by the Free Software Foundation.
- *
- * This program is distributed in the hope that it will be useful, but
- * AS-IS and WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE, TITLE, or
- * NONINFRINGEMENT.  See the GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
+/**
+ * $Id$
  */
-
 package com.untangle.node.openvpn;
 
 import com.untangle.uvm.node.IPAddress;
-import com.untangle.uvm.node.Rule;
-import com.untangle.uvm.node.Validatable;
-import com.untangle.uvm.node.ValidateException;
 
 /**
  * A VPN group of address and clients.
- *
- * @author <a href="mailto:rbscott@untangle.com">Robert Scott</a>
- * @version 1.0
  */
 @SuppressWarnings("serial")
-public class VpnGroup extends Rule implements Validatable
+public class VpnGroup implements java.io.Serializable
 {
+    public static final String EMPTY_NAME        = "[no name]";
+    public static final String EMPTY_DESCRIPTION = "[no description]";
+    public static final String EMPTY_CATEGORY    = "[no category]";
 
     /* The interface that clients from the client pool are associated with */
     private int intf;
@@ -39,69 +21,52 @@ public class VpnGroup extends Rule implements Validatable
     private IPAddress address;
     private IPAddress netmask;
     private boolean useDNS = false;
+    private String name = EMPTY_NAME;
+    private String category = EMPTY_CATEGORY;
+    private String description = EMPTY_DESCRIPTION;
+    // XXX we need to set hibernate & SQL NOT NULL on these
+    private boolean live = true;
 
     public VpnGroup() { }
 
     /**
      * Should clients use DNS from the server
      */
-    public boolean getUseDNS()
-    {
-        return useDNS;
-    }
-
-    public void setUseDNS(boolean useDNS)
-    {
-        this.useDNS = useDNS;
-    }
+    public boolean getUseDNS() { return useDNS; }
+    public void setUseDNS(boolean useDNS) { this.useDNS = useDNS; }
 
     /**
      * Get the pool of addresses for the clients.
-     *
-     * @return the pool address to send to the client, don't use in
-     * bridging mode.
      */
-    public IPAddress getAddress()
-    {
-        return this.address;
-    }
-
-    public void setAddress( IPAddress address )
-    {
-        this.address = address;
-    }
+    public IPAddress getAddress() { return this.address; }
+    public void setAddress( IPAddress address ) { this.address = address; }
 
     /**
      * Get the pool of netmaskes for the clients, in bridging mode
      * this must come from the pool that the interface is bridged
      * with.
-     *
-     * @return the pool netmask to send to the client
      */
-    public IPAddress getNetmask()
-    {
-        return this.netmask;
-    }
+    public IPAddress getNetmask() { return this.netmask; }
+    public void setNetmask( IPAddress netmask ) { this.netmask = netmask; }
 
-    public void setNetmask( IPAddress netmask )
-    {
-        this.netmask = netmask;
-    }
-
-    /* XXX Use a string or byte */
     /**
      * @return Default interface to associate VPN traffic with.
      */
-    public int trans_getIntf()
-    {
-        return this.intf;
-    }
+    public int trans_getIntf() { return this.intf; }
+    public void trans_setIntf( int intf ) { this.intf = intf; }
 
-    public void trans_setIntf( int intf )
-    {
-        this.intf = intf;
-    }
+    public String getName() { return name; }
+    public void setName(String name) { this.name = name; }
 
+    public String getCategory() { return category; }
+    public void setCategory(String category) { this.category = category; }
+
+    public String getDescription() { return description; }
+    public void setDescription(String description) { this.description = description; }
+
+    public boolean isLive() { return live; }
+    public void setLive(boolean live) { this.live = live; }
+    
     /**
      * This is the name that is used as the common name in the
      * certificate
@@ -109,11 +74,6 @@ public class VpnGroup extends Rule implements Validatable
     public String trans_getInternalName()
     {
         return getName().trim().toLowerCase();
-    }
-
-    public void validate() throws ValidateException
-    {
-        /* XXXXXXXXXXXXXXXXXXXXXXXXXXXXXX */
     }
 
     /**

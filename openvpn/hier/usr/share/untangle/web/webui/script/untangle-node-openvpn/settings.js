@@ -495,7 +495,7 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                         }
                     ]
                 }),
-                recordJavaClass : "com.untangle.node.openvpn.ClientConnectEvent",
+                recordJavaClass : "com.untangle.node.openvpn.ClientStatusEvent",
                 proxyRpcFn : this.getRpcNode().getActiveClients,
                 fields : [{
                     name : "address"
@@ -645,7 +645,7 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
         buildConnectionEventLog : function() {
             this.gridConnectionEventLog = new Ung.GridEventLog({
                 settingsCmp : this,
-                eventQueriesFn : this.getRpcNode().getConnectEventsQueries,
+                eventQueriesFn : this.getRpcNode().getStatusEventsQueries,
                 name : "Connection Event Log",
                 title : i18n._('Connection Event Log'),
                 fields : [{

@@ -1,3 +1,6 @@
+/**
+ * $Id$
+ */
 package com.untangle.node.openvpn;
 
 import java.io.BufferedReader;
@@ -29,7 +32,7 @@ import com.untangle.uvm.util.I18nUtil;
 class OpenVpnMonitor implements Runnable
 {
     /* Poll every 5 seconds */
-    private static final long   SLEEP_TIME_MSEC = 5 * 1000;
+    private static final long   SLEEP_TIME_MSEC = 10 * 1000;
 
     /* Log every 5 minutes ? */
     private static final long   LOG_TIME_MSEC = 5 * 60 * 1000;
@@ -114,10 +117,10 @@ class OpenVpnMonitor implements Runnable
             }
 
             /* Update the current time */
-            now.setTime( System.currentTimeMillis());
+            now.setTime( System.currentTimeMillis() );
 
-            //Grab lock, such that a concurrent read of the "activeMap"
-            //doesn't happen during an update
+            // Grab lock, such that a concurrent read of the "activeMap"
+            // doesn't happen during an update
             synchronized(this) {
                 try {
                     /* Cleanup UNDEF sessions every time you are going to update the stats */
@@ -145,27 +148,21 @@ class OpenVpnMonitor implements Runnable
     }
 
     /**
-     * Method returns a list of open clients as ClientConnectEvents w/o
+     * Method returns a list of open clients as ClientStatusEvents w/o
      * an end date.
      */
-    public synchronized List<ClientConnectEvent> getOpenConnectionsAsEvents()
+    public synchronized List<ClientStatusEvent> getOpenConnectionsAsEvents()
     {
         Date now = new Date();
-        List<ClientConnectEvent> ret = new ArrayList<ClientConnectEvent>();
+        List<ClientStatusEvent> ret = new ArrayList<ClientStatusEvent>();
         for(Stats s : activeMap.values()) {
             if(s.isActive) {
-                ClientConnectEvent copy = s.copyCurrentEvent(now);
-                copy.setTimeStamp(copy.getStart());
+                ClientStatusEvent copy = s.getCurrentStatusEventCopy(now);
                 copy.setEnd(null);
                 ret.add(copy);
             }
         }
 
-        int i = 0;
-        for (ClientConnectEvent evt : ret) {
-            evt.setId((new Integer(++i)).toString());
-        }
-        
         return ret;
     }
 
@@ -277,9 +274,9 @@ class OpenVpnMonitor implements Runnable
     {
         Date now = new Date();
 
-        for ( Stats stats : activeMap.values()) {
+        for ( Stats stats : activeMap.values() ) {
             stats.fillEvent( now );
-            logClientConnectEvent(stats);
+            node.logEvent( stats.sessionEvent );
         }
 
         activeMap.clear();
@@ -290,18 +287,9 @@ class OpenVpnMonitor implements Runnable
         Date now = new Date();
 
         for ( Stats stats : statusMap.values()) {
-            if ( stats.isNew ) {
-                node.incrementConnectCount();
-                stats.isNew = false;
-            }
-
-            /* Anything that is inactive or didn't get updated, is dead (or going to be dead) */
-
-            if ( !stats.updated || !stats.isActive ) {
-                stats.fillEvent( now );
-                if ( logger.isDebugEnabled()) logger.debug( "Logging " + stats.key );
-                logClientConnectEvent(stats);
-            }
+            stats.fillEvent( now );
+            if ( logger.isDebugEnabled()) logger.debug( "Logging stats for " + stats.key );
+            node.logEvent( stats.sessionEvent );
         }
     }
 
@@ -382,12 +370,13 @@ class OpenVpnMonitor implements Runnable
         Stats stats = statusMap.get( key );
 
         if ( stats == null ) {
+            node.incrementConnectCount();
+
             stats  = activeMap.get( name );
             if ( stats == null ) {
                 if ( logger.isDebugEnabled()) logger.debug( "New vpn client session: inserting key " + key );
                 stats = new Stats( key, bytesRx, bytesTx );
                 stats.isActive = true;
-                stats.isNew = true;
                 stats.updated = true;
                 activeMap.put( name, stats );
                 statusMap.put( key, stats );
@@ -400,7 +389,6 @@ class OpenVpnMonitor implements Runnable
                     /* Create a disable stats */
                     stats = new Stats( key, bytesRx, bytesTx );
                     stats.isActive = false;
-                    stats.isNew = true;
                     stats.updated = true;
                     statusMap.put( key, stats );
                 } else {
@@ -416,7 +404,6 @@ class OpenVpnMonitor implements Runnable
                     /* Create new stats and replace them in the map */
                     stats = new Stats( key, bytesRx, bytesTx );
                     stats.isActive = true;
-                    stats.isNew = true;
                     stats.updated = true;
 
                     /* Replace the status map */
@@ -444,13 +431,6 @@ class OpenVpnMonitor implements Runnable
         /* Read out the response, ignore it */
         in.readLine();
     }
-
-    private void logClientConnectEvent(Stats stats)
-    {
-        if( stats.logged ) return;
-        node.logEvent( stats.sessionEvent );
-        stats.logged = true;
-    }
 }
 
 class Key
@@ -461,7 +441,7 @@ class Key
     final Date start;
     final int hashCode;
 
-    Key( String name, InetAddress address, int port, Date start )
+    protected Key( String name, InetAddress address, int port, Date start )
     {
         this.name     = name;
         this.address  = address;
@@ -511,22 +491,19 @@ class Stats
 {
     final Key key;
 
-    final ClientConnectEvent sessionEvent;
+    final ClientStatusEvent sessionEvent;
 
     /* Total bytes received since the last event */
-    long bytesRxLast;
+    long bytesRxDelta;
 
     /* Total bytes received */
     long bytesRxTotal;
 
     /* Total bytes transferred since the last event  */
-    long bytesTxLast;
+    long bytesTxDelta;
 
     /* Total bytes transferred */
     long bytesTxTotal;
-
-    /* indicate this is new */
-    boolean isNew;
 
     Date lastUpdate;
 
@@ -534,59 +511,45 @@ class Stats
 
     boolean isActive;
 
-    boolean logged = false;
-
-    Stats( Key key, long bytesRx, long bytesTx )
+    protected Stats( Key key, long bytesRx, long bytesTx )
     {
         this.key          = key;
         this.bytesRxTotal = bytesRx;
-        this.bytesRxLast  = bytesRx;
+        this.bytesRxDelta  = bytesRx;
         this.bytesTxTotal = bytesTx;
-        this.bytesTxLast  = bytesTx;
+        this.bytesTxDelta  = bytesTx;
         this.lastUpdate   = new Date();
-        this.isNew        = true;
         this.isActive     = true;
-        this.sessionEvent =
-            new ClientConnectEvent( key.start, new IPAddress( this.key.address ),
-                                    this.key.port, this.key.name );
+        this.sessionEvent = new ClientStatusEvent( key.start, new IPAddress( this.key.address ), this.key.port, this.key.name );
     }
 
     void fillEvent( Date now )
     {
-        fillEventImpl(this.sessionEvent, now );
+        this.fillEvent( this.sessionEvent, now );
     }
 
-    void fillEventImpl(ClientConnectEvent event, Date now )
+    void fillEvent( ClientStatusEvent event, Date now )
     {
         event.setEnd( now );
-        event.setBytesTx( this.bytesTxTotal );
-        event.setBytesRx( this.bytesRxTotal );
+        event.setBytesTxTotal( this.bytesTxTotal );
+        event.setBytesRxTotal( this.bytesRxTotal );
+        event.setBytesTxDelta( this.bytesTxDelta );
+        event.setBytesRxDelta( this.bytesRxDelta );
+    }
+    
+    ClientStatusEvent getCurrentStatusEventCopy(Date now)
+    {
+        return new ClientStatusEvent( this.sessionEvent );
     }
 
-    ClientConnectEvent copyCurrentEvent(Date now)
+    void update( long newBytesRxTotal, long newBytesTxTotal )
     {
-        ClientConnectEvent cce = new ClientConnectEvent(sessionEvent.getStart(),
-                                                        sessionEvent.getAddress(),
-                                                        sessionEvent.getPort(),
-                                                        sessionEvent.getClientName());
-        fillEventImpl(cce, now);
-        return cce;
-    }
-
-
-    void update( long bytesRx, long bytesTx )
-    {
-        /* XXX In v2.0.6 they actually use 64 bit counters */
-        if (( this.bytesRxTotal & 0xFFFFFFFFL ) > bytesRx ) { /* Overflow */
-            this.bytesRxTotal += 0x100000000L;
-        }
-        this.bytesRxTotal  = ( this.bytesRxTotal & 0x7FFFFFFF00000000L ) + ( bytesRx & 0xFFFFFFFFL );
-
-        if (( this.bytesTxTotal & 0xFFFFFFFFL ) > bytesTx ) {  /* Overflow */
-            this.bytesTxTotal += 0x100000000L;
-        }
-        this.bytesTxTotal  = ( this.bytesTxTotal & 0x7FFFFFFF00000000L ) + ( bytesTx & 0xFFFFFFFFL );
-
+        long prevBytesRxTotal = this.bytesRxTotal;
+        long prevBytesTxTotal = this.bytesTxTotal;
+        this.bytesRxTotal = newBytesRxTotal;
+        this.bytesTxTotal = newBytesRxTotal;
+        this.bytesRxDelta = this.bytesRxTotal - prevBytesRxTotal;
+        this.bytesTxDelta = this.bytesTxTotal - prevBytesTxTotal;
         this.updated = true;
     }
 }

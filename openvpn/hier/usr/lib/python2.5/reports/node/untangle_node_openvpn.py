@@ -36,7 +36,7 @@ class OpenVpn(Node):
         Node.__init__(self, 'untangle-node-openvpn')
 
     def setup(self, start_date, end_date, start_time):
-        self.__create_n_openvpn_stats(start_date, end_date, start_time)
+        self.__create_n_openvpn_stats( )
 
         ft = FactTable('reports.n_openvpn_connect_totals',
                        'reports.n_openvpn_stats',
@@ -73,10 +73,10 @@ class OpenVpn(Node):
 
     @sql_helper.print_timing
     def events_cleanup(self, cutoff):
-        sql_helper.clean_table("events", "n_openvpn_connect_evt ", cutoff);
+        return
 
     @print_timing
-    def __create_n_openvpn_stats(self, start_date, end_date, start_time):
+    def __create_n_openvpn_stats( self ):
         sql_helper.create_fact_table("""\
 CREATE TABLE reports.n_openvpn_stats (
     time_stamp timestamp without time zone,
@@ -84,12 +84,11 @@ CREATE TABLE reports.n_openvpn_stats (
     end_time timestamp without time zone,
     rx_bytes bigint,
     tx_bytes bigint,
-    seconds double precision,
     remote_address inet,
     remote_port integer,
     client_name text,
     event_id bigserial
-)""", 'time_stamp', start_date, end_date)
+)""", 'time_stamp', None, None)
 
         sql_helper.add_column('reports', 'n_openvpn_stats', 'event_id', 'bigserial')
         sql_helper.add_column('reports', 'n_openvpn_stats', 'start_time', 'timestamp without time zone')
@@ -101,25 +100,11 @@ CREATE TABLE reports.n_openvpn_stats (
         # we used to create event_id as serial instead of bigserial - convert if necessary
         sql_helper.convert_column("reports","n_openvpn_stats","event_id","integer","bigint");
 
+        # drop obsolete column
+        sql_helper.drop_column("reports","n_openvpn_stats","seconds")
+
         sql_helper.create_index("reports","n_openvpn_stats","event_id");
         sql_helper.create_index("reports","n_openvpn_stats","time_stamp");
-
-        conn = sql_helper.get_connection()
-        try:
-            sql_helper.run_sql("""\
-INSERT INTO reports.n_openvpn_stats
-      (time_stamp, start_time, end_time, rx_bytes, tx_bytes, seconds,
-       remote_address, remote_port, client_name)
-    SELECT time_stamp, start_time, end_time, rx_bytes, tx_bytes,
-           extract('epoch' from (end_time - start_time)) AS seconds,
-           remote_address, remote_port, client_name
-    FROM events.n_openvpn_connect_evt evt
-    WHERE time_stamp < %s::timestamp without time zone""",
-                               (start_time,), connection=conn, auto_commit=False)
-            conn.commit()
-        except Exception, e:
-            conn.rollback()
-            raise e
 
 class OpenvpnHighlight(Highlight):
     def __init__(self, name):
@@ -289,12 +274,11 @@ class OpenVpnDetail(DetailSection):
         if host or user or email:
             return None
 
-        sql = "SELECT trunc_time, client_name, host(remote_address), remote_port"
+        sql = "SELECT distinct(trunc_time), client_name, host(remote_address), remote_port"
 
         sql = sql + ("""
 FROM reports.n_openvpn_connect_totals
-WHERE trunc_time >= %s::timestamp without time zone AND trunc_time < %s::timestamp without time zone""" % (DateFromMx(start_date),
-                                                 DateFromMx(end_date)))
+WHERE trunc_time >= %s::timestamp without time zone AND trunc_time < %s::timestamp without time zone""" % (DateFromMx(start_date), DateFromMx(end_date)))
 
         return sql + " ORDER BY trunc_time DESC"
 
