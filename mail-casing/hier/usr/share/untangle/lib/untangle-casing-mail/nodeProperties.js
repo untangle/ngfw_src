@@ -4,11 +4,6 @@
         "name" : "untangle-casing-mail",
         "displayName" : "Mail Casing",
         "syslogName" : "Mail_Casing",
-        "type" : "CASING",
-        "annotatedClasses" : {
-            "javaClass": "java.util.LinkedList",
-            "list": []
-        }
-
+        "type" : "CASING"
 }
 
