@@ -1,35 +1,28 @@
-/*
- * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc.
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License, version 2,
- * as published by the Free Software Foundation.
- *
- * This program is distributed in the hope that it will be useful, but
- * AS-IS and WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE, TITLE, or
- * NONINFRINGEMENT.  See the GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
+/**
+ * $Id$
  */
-
 package com.untangle.node.ips;
 
 import java.io.Serializable;
-import com.untangle.uvm.node.Rule;
 
 /**
  * Hibernate object to store Ips rules.
- *
- * @author <a href="mailto:nchilders@untangle.com">Nick Childers</a>
- * @version 1.0
  */
 @SuppressWarnings("serial")
-public class IpsRule extends Rule implements Serializable
+public class IpsRule implements Serializable
 {
+    public static final String EMPTY_NAME        = "[no name]";
+    public static final String EMPTY_DESCRIPTION = "[no description]";
+    public static final String EMPTY_CATEGORY    = "[no category]";
+
+    private Long id;
+    private String name = EMPTY_NAME;
+    private String category = EMPTY_CATEGORY;
+    private String description = EMPTY_DESCRIPTION;
+    private boolean live = true;
+    private boolean alert = false;
+    private boolean log = false;
+
     // Actions (indices to ACTIONS)
     public static final int ALERT = 0;
     public static final int LOG = 1;
@@ -47,11 +40,46 @@ public class IpsRule extends Rule implements Serializable
 
     public IpsRule(String rule, String  category, String description)
     {
-        super("Name", category,description,false);
-
         this.rule = rule;
+        this.name = "Name";
+        this.category = category;
+        this.description = description;
+        this.live = false;
     }
 
+    public Long getId() { return id; }
+    public void setId( Long id ) { this.id = id; }
+
+    /**
+     * Get a name for display purposes.
+     */
+    public String getName() { return name; }
+    public void setName( String name ) { this.name = name; }
+
+    /**
+     * Get a category for display purposes.
+     */
+    public String getCategory() { return category; }
+    public void setCategory( String category ) { this.category = category; }
+
+    /**
+     * Get a description for display purposes.
+     */
+    public String getDescription() { return description; }
+    public void setDescription( String description ) { this.description = description; }
+
+    /**
+     * Will the rule be used for matching?
+     */
+    public boolean isLive() { return live; }
+    public void setLive( boolean live ) { this.live = live; }
+
+    /**
+     * Should rule be logged
+     */
+    public boolean getLog() { return log; }
+    public void setLog( boolean log ) { this.log = log; }
+    
     public long trans_getKeyValue() { return getId(); }
     public void trans_setKeyValue(Long val) { setId(val); }
 
@@ -104,8 +132,13 @@ public class IpsRule extends Rule implements Serializable
 
     public void update(IpsRule rule)
     {
-	super.update(rule);
-	this.rule = rule.rule;
-	this.sid = rule.sid;
+		this.name = rule.name;
+		this.category = rule.category;
+		this.description = rule.description;
+		this.live = rule.live;
+		this.alert = rule.alert;
+		this.log = rule.log;
+        this.rule = rule.rule;
+        this.sid = rule.sid;
     }
 }

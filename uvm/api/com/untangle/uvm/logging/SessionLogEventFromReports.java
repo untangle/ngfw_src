@@ -64,7 +64,6 @@ import com.untangle.uvm.logging.SyslogPriority;
         private Integer classdConfidence;
         private Integer classdRuleId;
         private Boolean ipsBlocked;
-        private String ipsName;
         private String ipsDescription;
         private String swAccessIdent;
 
@@ -197,10 +196,6 @@ import com.untangle.uvm.logging.SyslogPriority;
         @Column(name="ips_blocked")
         public Boolean getIpsBlocked() { return ipsBlocked; }
         public void setIpsBlocked(Boolean ipsBlocked) { this.ipsBlocked = ipsBlocked; }
-
-        @Column(name="ips_name")
-        public String getIpsName() { return ipsName; }
-        public void setIpsName(String ipsName) { this.ipsName = ipsName; }
 
         @Column(name="ips_description")
         public String getIpsDescription() { return ipsDescription; }

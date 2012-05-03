@@ -190,7 +190,7 @@ public class MessageManagerImpl implements MessageManager
         if (node != null)
             return node.getMetrics();
         else {
-            logger.warn("Node not found: " + nodeId);
+            logger.warn("Node not found: " + nodeId, new Exception());
             return null;
         }
     }

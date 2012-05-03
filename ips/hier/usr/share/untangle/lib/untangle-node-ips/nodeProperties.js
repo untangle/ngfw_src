@@ -12,19 +12,6 @@
             "list": [
                 "untangle-casing-http"
             ]
-        },
-        "annotatedClasses" : {
-            "javaClass": "java.util.LinkedList",
-            "list": [
-                "com.untangle.node.http.HttpSettings",
-                "com.untangle.node.http.HttpRequestEvent",
-                "com.untangle.node.http.HttpResponseEvent",
-                "com.untangle.node.ips.IpsRule",
-                "com.untangle.node.ips.IpsSettings",
-                "com.untangle.node.ips.IpsVariable",
-                "com.untangle.node.ips.IpsStatisticEvent",
-                "com.untangle.node.ips.IpsLogEvent"
-            ]
         }
 }
 

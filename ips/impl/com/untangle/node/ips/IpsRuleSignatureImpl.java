@@ -17,6 +17,8 @@ import com.untangle.uvm.vnet.IPSession;
 
 public class IpsRuleSignatureImpl
 {
+    private static final Logger logger = Logger.getLogger(IpsRuleSignatureImpl.class);
+
     /***************************************
      * These are options that are safe to ignore
      * Any other option *WILL DROP THE RULE*
@@ -26,10 +28,10 @@ public class IpsRuleSignatureImpl
     private static final String[] IGNORE_SAFE_OPTIONS = { "rev", "priority" };
     /** **************************************/
 
-    private static final Map<Integer, long[]> ruleTimes
-        = new HashMap<Integer, long[]>();
+    private static final Map<Integer, long[]> ruleTimes = new HashMap<Integer, long[]>();
 
     private final int sid;
+    private final IpsRule rule;
     private final int action;
     private final String string;
 
@@ -49,7 +51,8 @@ public class IpsRuleSignatureImpl
         this.sid = rule.getSid();
         this.action = action;
         this.string = null == string ? "Starting.." : string;
-
+        this.rule = rule;
+        
         String replaceChar = ""+0xff42;
         signatureString = signatureString.replaceAll("\\\\;",replaceChar);
         String options[] = signatureString.trim().split(";");
@@ -159,12 +162,15 @@ public class IpsRuleSignatureImpl
 
     public boolean execute(IpsNodeImpl ips, IpsSessionInfo info)
     {
+        logger.debug("Executing rule: " + this.rule.getDescription());
+        
         boolean result = true;
         long startTime = 0;
         if (IpsDetectionEngine.DO_PROFILING)
             startTime = System.nanoTime();
         for (IpsOption option : options) {
             boolean opres = option.run(info);
+            logger.debug("Executing rule: " + this.rule.getDescription() + " option: " + option + " result: " + opres);
             // if (log.isDebugEnabled())
             // log.debug("res: " + opres + ", rule " + rule.getSid() + " option " + option.getClass().getName());
             if (!opres) {
@@ -212,27 +218,24 @@ public class IpsRuleSignatureImpl
         case IpsRule.ALERT:
             // Can't happen right now.
             log.warn("Alert: "+classification + ", " + message);
-            ips.statisticManager.incrLogged();
             engine.incrementDetectCount();
             break;
 
         case IpsRule.LOG:
             log.debug("Log: "+classification + ", " + message);
-            ips.statisticManager.incrLogged();
             engine.incrementDetectCount();
             break;
 
         case IpsRule.BLOCK:
             log.info("Block: "+classification + ", " + message);
             blocked = true;
-            ips.statisticManager.incrBlocked();
             engine.incrementBlockCount();
             info.blockSession();
             break;
         }
 
         //Add list number that this rule came from
-        ips.logEvent(new IpsLogEvent(session.sessionEvent(), sid, classification, message, blocked));
+        ips.logEvent(new IpsLogEvent(session.sessionEvent(), rule, classification, message, blocked));
     }
 
     public String toString()

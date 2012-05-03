@@ -14,13 +14,6 @@
                 "untangle-casing-ftp",
                 "untangle-casing-mail"
             ]
-        },
-        "annotatedClasses" : {
-            "javaClass": "java.util.LinkedList",
-            "list": [
-                "com.untangle.node.mail.papi.MessageInfo",
-                "com.untangle.node.mail.papi.MessageInfoAddr",
-            ]
         }
 }
 

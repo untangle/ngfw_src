@@ -266,7 +266,6 @@ public class IpsDetectionEngine
                 result = info.processC2SSignatures();
 
             if (!result) {
-                node.statisticManager.incrDNC();
                 if (stats.s2tChunks() > maxChunks || stats.c2tChunks() > maxChunks) {
                     session.release();
                     // Free up storage immediately in case session

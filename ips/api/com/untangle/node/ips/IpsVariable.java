@@ -1,33 +1,16 @@
-/*
- * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc.
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License, version 2,
- * as published by the Free Software Foundation.
- *
- * This program is distributed in the hope that it will be useful, but
- * AS-IS and WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE, TITLE, or
- * NONINFRINGEMENT.  See the GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
+/**
+ * $Id$
  */
-
 package com.untangle.node.ips;
 
 import java.io.Serializable;
 
 /**
  * Hibernate object to store Ips Variable.
- *
- * @author <a href="mailto:nchilders@untangle.com">Nick Childers</a>
- * @version 1.0
  */
 @SuppressWarnings("serial")
-public class IpsVariable implements Serializable {
+public class IpsVariable implements Serializable
+{
     private Long id;
     private String variable;
     private String definition;
@@ -35,7 +18,8 @@ public class IpsVariable implements Serializable {
 
     public IpsVariable() {}
 
-    public IpsVariable(String var, String def, String desc) {
+    public IpsVariable(String var, String def, String desc)
+    {
 
         if(512 < var.length() || 512 < def.length())
             throw new IllegalArgumentException("Ips Variable argument too long");
@@ -57,7 +41,8 @@ public class IpsVariable implements Serializable {
     public String getDescription() { return this.description; }
     public void setDescription(String s) { this.description = s; }
 
-    public void updateVariable(IpsVariable var) {
+    public void updateVariable(IpsVariable var)
+    {
         this.variable = var.variable;
         this.description = var.description;
         this.definition = var.definition;

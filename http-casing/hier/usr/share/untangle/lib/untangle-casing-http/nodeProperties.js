@@ -4,10 +4,6 @@
         "name" : "untangle-casing-http",
         "displayName" : "HTTP Casing",
         "syslogName" : "HTTP_Casing",
-        "type" : "CASING",
-        "annotatedClasses" : {
-            "javaClass": "java.util.LinkedList",
-            "list": []
-        }
+        "type" : "CASING"
 }
 

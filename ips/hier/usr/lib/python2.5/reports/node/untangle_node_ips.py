@@ -42,14 +42,11 @@ class Ips(Node):
 
     @print_timing
     def setup(self, start_date, end_date, start_time):
-        self.__update_sessions(start_date, end_date)
 
         ft = reports.engine.get_fact_table('reports.session_totals')
 
-        ft.measures.append(Column('ips_blocks', 'integer',
-                                  "count(CASE WHEN NOT ips_blocked ISNULL THEN 1 ELSE null END)"))
+        ft.measures.append(Column('ips_blocks', 'integer', "count(CASE WHEN NOT ips_blocked ISNULL THEN 1 ELSE null END)"))
 
-        ft.dimensions.append(Column('ips_name', 'text'))
         ft.dimensions.append(Column('ips_description', 'text'))
 
     def get_toc_membership(self):
@@ -73,26 +70,10 @@ class Ips(Node):
 
     @sql_helper.print_timing
     def events_cleanup(self, cutoff):
-        sql_helper.clean_table("events", "n_ips_evt", cutoff);
-        sql_helper.clean_table("events", "n_ips_statistic_evt", cutoff);
+        return
 
     def reports_cleanup(self, cutoff):
         pass
-
-    @print_timing
-    def __update_sessions(self, start_date, end_date):
-        conn = sql_helper.get_connection()
-        try:
-            sql_helper.run_sql("""\
-UPDATE reports.sessions
-SET ips_blocked = blocked, ips_name = sid, ips_description = description
-FROM events.n_ips_evt join settings.n_ips_rule on rule_sid = sid
-WHERE reports.sessions.session_id = events.n_ips_evt.session_id""",
-                               (), connection=conn, auto_commit=False)
-            conn.commit()
-        except Exception, e:
-            conn.rollback()
-            raise e
 
 class IpsHighlight(Highlight):
     def __init__(self, name):
@@ -137,7 +118,7 @@ WHERE trunc_time >= %s::timestamp without time zone AND trunc_time < %s::timesta
                 curs.execute(query, (one_week, ed))
 
             h = sql_helper.get_result_dictionary(curs)
-                
+            
         finally:
             conn.commit()
 
@@ -252,7 +233,7 @@ class DailyUsage(Graph):
                 attacks = [0,]
 
             rp = sql_helper.get_required_points(start_date, end_date,
-                                            mx.DateTime.DateTimeDeltaFromSeconds(time_interval))
+                                                mx.DateTime.DateTimeDeltaFromSeconds(time_interval))
 
             ks = KeyStatistic(_('Avg Attacks Blocked'),
                               sum(attacks) / len(rp),
@@ -312,7 +293,7 @@ FROM reports.sessions
 WHERE time_stamp >= %s::timestamp without time zone AND time_stamp < %s::timestamp without time zone
 AND NOT ips_description ISNULL
 AND ips_description != '' """ % (DateFromMx(start_date),
-                          DateFromMx(end_date)))
+                                 DateFromMx(end_date)))
 
         if host:
             sql = sql + (" AND hname = %s" % QuotedString(host))

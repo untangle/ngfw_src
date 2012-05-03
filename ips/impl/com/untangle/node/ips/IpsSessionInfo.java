@@ -88,7 +88,6 @@ public class IpsSessionInfo
         return isServer;
     }
 
-    // First match wins. XX
     public boolean processC2SSignatures()
     {
         for(IpsRuleSignature sig : c2sSignatures) {
@@ -99,7 +98,6 @@ public class IpsSessionInfo
         return false;
     }
 
-    // First match wins. XX
     public boolean processS2CSignatures()
     {
         for(IpsRuleSignature sig : s2cSignatures) {

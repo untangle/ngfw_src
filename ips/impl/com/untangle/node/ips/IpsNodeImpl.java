@@ -29,7 +29,6 @@ public class IpsNodeImpl extends NodeBase implements IpsNode
     private static final String STAT_BLOCK = "block";
     
     private IpsSettings settings = null;
-    final IpsStatisticManager statisticManager;
     final IpsStatistics statistics;
 
     private final EventHandler handler;
@@ -47,7 +46,6 @@ public class IpsNodeImpl extends NodeBase implements IpsNode
 
         engine = new IpsDetectionEngine(this);
         handler = new EventHandler(this);
-        statisticManager = new IpsStatisticManager();
         statistics = new IpsStatistics();
 
         // Put the octet stream close to the server so that it is after the http processing.
@@ -58,7 +56,7 @@ public class IpsNodeImpl extends NodeBase implements IpsNode
         this.allEventQuery = new EventLogQuery(I18nUtil.marktr("All Events"),
                                                "FROM SessionLogEventFromReports evt " +
                                                "WHERE evt.policyId = :policyId " +
-                                               "AND ipsName IS NOT NULL " +
+                                               "AND ipsDescription IS NOT NULL " +
                                                "ORDER BY evt.timeStamp DESC");
 
         this.blockedEventQuery = new EventLogQuery(I18nUtil.marktr("Blocked Events"),
@@ -123,7 +121,6 @@ public class IpsNodeImpl extends NodeBase implements IpsNode
         setSettings(settings);
         logger.info(ruleSet.size() + " rules loaded");
 
-        statisticManager.stop();
     }
 
     public IpsDetectionEngine getEngine() {
@@ -134,15 +131,12 @@ public class IpsNodeImpl extends NodeBase implements IpsNode
 
     protected void postStop()
     {
-        statisticManager.stop();
         engine.stop();
     }
 
     protected void preStart()
     {
         logger.info("Pre Start");
-
-        statisticManager.start();
     }
 
     protected void postInit()

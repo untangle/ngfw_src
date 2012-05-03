@@ -1,21 +1,6 @@
-/*
- * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc.
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License, version 2,
- * as published by the Free Software Foundation.
- *
- * This program is distributed in the hope that it will be useful, but
- * AS-IS and WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE, TITLE, or
- * NONINFRINGEMENT.  See the GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
+/**
+ * $Id$
  */
-
 package com.untangle.node.ips;
 
 import java.io.Serializable;
@@ -26,9 +11,6 @@ import java.util.Set;
 
 /**
  * Ips node settings.
- *
- * @author <a href="mailto:mahotz@untangle.com">Michael Hotz</a>
- * @version 1.0
  */
 @SuppressWarnings("serial")
 public class IpsSettings implements Serializable
@@ -49,7 +31,7 @@ public class IpsSettings implements Serializable
         int logging = 0;
         int blocking = 0;
 
-            for( IpsRule rule : rules)
+        for( IpsRule rule : rules)
             {
                 if(rule.isLive()) blocking++;
                 if(rule.getLog()) logging++;
@@ -60,7 +42,7 @@ public class IpsSettings implements Serializable
         argStats.setTotalLogging(logging);
     }
 
-// maxChunks -----------------------------------------------------------------
+    // maxChunks -----------------------------------------------------------------
 
     public int getMaxChunks()
     {
@@ -72,7 +54,7 @@ public class IpsSettings implements Serializable
         this.maxChunks = maxChunks;
     }
 
- // rules --------------------------------------------------------------------
+    // rules --------------------------------------------------------------------
 
     public Set<IpsRule> grabRules()
     {
@@ -95,7 +77,7 @@ public class IpsSettings implements Serializable
         this.rules = new HashSet<IpsRule>(rules);
     }
 
-// variables -----------------------------------------------------------------
+    // variables -----------------------------------------------------------------
 
     public Set<IpsVariable> grabVariables()
     {
@@ -118,7 +100,7 @@ public class IpsSettings implements Serializable
         this.variables = new HashSet<IpsVariable>(variables);
     }
 
-// immutables ----------------------------------------------------------------
+    // immutables ----------------------------------------------------------------
 
     public Set<IpsVariable> grabImmutables()
     {

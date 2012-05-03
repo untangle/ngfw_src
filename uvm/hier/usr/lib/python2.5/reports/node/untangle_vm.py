@@ -237,13 +237,15 @@ CREATE TABLE reports.sessions (
         sql_helper.add_column('reports', 'sessions', 'classd_ruleid', 'integer')
         sql_helper.add_column('reports', 'sessions', 'classd_detail', 'text')
         sql_helper.add_column('reports', 'sessions', 'ips_blocked', 'boolean')
-        sql_helper.add_column('reports', 'sessions', 'ips_name', 'text')
         sql_helper.add_column('reports', 'sessions', 'ips_description', 'text')
         sql_helper.add_column('reports', 'sessions', 'sw_access_ident', 'text')
         sql_helper.add_column('reports', 'sessions', 's_client_addr', 'inet')
         sql_helper.add_column('reports', 'sessions', 's_server_addr', 'inet')
         sql_helper.add_column('reports', 'sessions', 's_server_port', 'int4')
         sql_helper.add_column('reports', 'sessions', 's_client_port', 'int4')
+        
+        # drop obsolete column
+        sql_helper.drop_column('reports', 'sessions', 'ips_name')
 
         # we used to create event_id as serial instead of bigserial - convert if necessary
         sql_helper.convert_column("reports","sessions","event_id","integer","bigint");

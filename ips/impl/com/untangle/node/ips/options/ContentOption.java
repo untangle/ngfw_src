@@ -146,6 +146,9 @@ class ContentOption extends IpsOption
         sessionInfo.start = start;
         sessionInfo.end = end;
 
+        //logger.debug("needle: " + stringPattern);
+        //logger.debug("haystack: " + data);
+        
         if(distanceFlag)
             sessionInfo.start = sessionInfo.indexOfLastMatch + distance;
         //start = previousContentOption.getIndexOfLastMatch()+distance;
