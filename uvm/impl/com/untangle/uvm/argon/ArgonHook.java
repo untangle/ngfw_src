@@ -254,7 +254,7 @@ public abstract class ArgonHook implements Runnable
                     logger.warn( "exception debugging invalid netcap interface: ", exn );
                 }
             } else if ( message.startsWith( "netcap_interface_dst_intf" )) {
-                logger.warn( "Unable to determine the outgoing interface." );
+                logger.warn( "Unable to determine the outgoing interface: " + sessionGlobalState.netcapSession() );
             } else {
                 logger.warn( "Exception executing argon hook:", e );
             }

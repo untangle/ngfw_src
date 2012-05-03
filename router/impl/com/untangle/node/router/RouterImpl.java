@@ -150,7 +150,7 @@ public class RouterImpl extends NodeBase implements Router
 
     public void networkSettingsEvent() 
     {
-        logger.info("networkSettingsEvent");
+        logger.debug("networkSettingsEvent");
 
         /* Retrieve the new settings from the network manager */
         NetworkManager nm = UvmContextFactory.context().networkManager();

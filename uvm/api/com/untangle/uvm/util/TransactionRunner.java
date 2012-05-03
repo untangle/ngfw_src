@@ -14,9 +14,6 @@ import org.hibernate.TransactionException;
 
 /**
  * Executes {@link TransactionWork} within a Hibernate transaction.
- *
- * @author <a href="mailto:amread@untangle.com">Aaron Read</a>
- * @version 1.0
  */
 public class TransactionRunner
 {

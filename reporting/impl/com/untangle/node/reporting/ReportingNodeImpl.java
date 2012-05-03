@@ -25,8 +25,6 @@ import java.util.regex.Pattern;
 import java.net.InetAddress;
 
 import org.apache.log4j.Logger;
-import org.hibernate.Query;
-import org.hibernate.Session;
 
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.node.NodeSettings;
@@ -75,18 +73,18 @@ public class ReportingNodeImpl extends NodeBase implements ReportingNode, LogWor
     {
         ReportingNodeImpl.this.settings = settings;
 
-        TransactionWork<Void> tw = new TransactionWork<Void>() {
-            public boolean doWork(Session s)
-            {
-                s.saveOrUpdate(settings);
-                return true;
-            }
+//         TransactionWork<Void> tw = new TransactionWork<Void>() {
+//             public boolean doWork(Session s)
+//             {
+//                 s.saveOrUpdate(settings);
+//                 return true;
+//             }
 
-            public Void getResult() {
-                return null;
-            };
-        };
-        UvmContextFactory.context().runTransaction(tw);
+//             public Void getResult() {
+//                 return null;
+//             };
+//         };
+//         UvmContextFactory.context().runTransaction(tw);
 
         writeCronFile();
     }
@@ -228,36 +226,36 @@ public class ReportingNodeImpl extends NodeBase implements ReportingNode, LogWor
 
     protected void postInit()
     {
-        TransactionWork<Void> tw = new TransactionWork<Void>() {
-            public boolean doWork(Session s) {
-                Query q = s
-                .createQuery("from ReportingSettings ts where ts.nodeId = :nodeId");
-                q.setParameter("nodeId", getNodeSettings().getId());
-                settings = (ReportingSettings) q.uniqueResult();
+        //         TransactionWork<Void> tw = new TransactionWork<Void>() {
+        //             public boolean doWork(Session s) {
+        //                 Query q = s
+        //                 .createQuery("from ReportingSettings ts where ts.nodeId = :nodeId");
+        //                 q.setParameter("nodeId", getNodeSettings().getId());
+        //                 settings = (ReportingSettings) q.uniqueResult();
 
-                if (null == settings) {
-                    settings = initSettings();
-                    s.save(settings.getSchedule());
-                    s.merge(settings);
-                }
+        //                 if (null == settings) {
+        //                     settings = initSettings();
+        //                     s.save(settings.getSchedule());
+        //                     s.merge(settings);
+        //                 }
 
-                if (null == settings.getSchedule()) {
-                    /* You have to save the schedule before continuing */
-                    settings.setSchedule(new Schedule());
-                    s.save(settings.getSchedule());
-                    s.merge(settings);
-                }
+        //                 if (null == settings.getSchedule()) {
+        //                     /* You have to save the schedule before continuing */
+        //                     settings.setSchedule(new Schedule());
+        //                     s.save(settings.getSchedule());
+        //                     s.merge(settings);
+        //                 }
 
-                return true;
-            }
+        //                 return true;
+        //             }
 
-            public Void getResult() {
-                return null;
-            }
-        };
+        //             public Void getResult() {
+        //                 return null;
+        //             }
+        //         };
+        //UvmContextFactory.context().runTransaction(tw);
 
-        UvmContextFactory.context().runTransaction(tw);
-
+        settings = initSettings();
 
         if (!CRON_FILE.exists())
             writeCronFile();
