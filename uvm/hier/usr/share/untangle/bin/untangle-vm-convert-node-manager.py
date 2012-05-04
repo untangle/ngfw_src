@@ -17,6 +17,8 @@ policy_list = None;
 # the next policies id (the first unused policy id)
 policy_next_id = 0;
 
+next_node_id = 2;
+
 #
 # Makes a map from old policy_id's (big numbers) to new ones
 #
@@ -68,6 +70,9 @@ def build_policy_map(debug=False):
 
 def build_node(nodeId, nodeName, targetState, old_policy_id, debug=False):
     global policy_map
+    global next_node_id
+    next_node_id = max(next_node_id,nodeId+1)
+
     str = '\t\t{\n'
     str += '\t\t\t"javaClass": "com.untangle.uvm.node.NodeSettings",\n'
     str += '\t\t\t"id": "%s",\n' % nodeId
@@ -106,14 +111,18 @@ def get_nodes(debug=False):
         id = id + 1
 
     str += '\n\t\t]\n'
-    str += '\t}\n'
+    str += '\t}'
     
     return str
 
 def get_settings(debug=False):
+    global next_node_id
+
     str = "{\n"
     str += '\t"javaClass": "com.untangle.uvm.node.NodeManagerSettings",\n'
-    str += '\t"nodes": %s\n' % get_nodes(debug=debug)
+    str += '\t"nodes": %s,\n' % get_nodes(debug=debug)
+    str += '\t"nextNodeId": %i\n' % next_node_id
+
     str += '}\n'
 
     return str
