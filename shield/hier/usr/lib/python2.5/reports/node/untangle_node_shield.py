@@ -36,20 +36,19 @@ class Shield(Node):
 
     @print_timing
     def setup(self, start_date, end_date, start_time):
-        self.__create_n_shield_rejection_totals(start_date, end_date, start_time)
-        self.__create_n_shield_totals(start_date, end_date, start_time)
+        self.__create_n_shield_rejection_totals()
+        self.__create_n_shield_totals()
 
     @sql_helper.print_timing
     def events_cleanup(self, cutoff):
-        sql_helper.clean_table("events", "n_shield_rejection_evt", cutoff);
-        sql_helper.clean_table("events", "n_shield_statistic_evt", cutoff);
+        return
 
     def reports_cleanup(self, cutoff):
         sql_helper.drop_fact_table("n_shield_rejection_totals", cutoff)
         sql_helper.drop_fact_table("n_shield_totals", cutoff)        
 
     @print_timing
-    def __create_n_shield_rejection_totals(self, start_date, end_date, start_time):
+    def __create_n_shield_rejection_totals(self):
         sql_helper.create_fact_table("""\
 CREATE TABLE reports.n_shield_rejection_totals (
     time_stamp timestamp without time zone,
@@ -60,7 +59,7 @@ CREATE TABLE reports.n_shield_rejection_totals (
     limited     integer,
     dropped     integer,
     rejected    integer,
-    event_id bigserial)""",  'time_stamp', start_date, end_date)
+    event_id bigserial)""",  'time_stamp', None, None)
 
         # old tables did not have event_id
         sql_helper.add_column('reports', 'n_shield_rejection_totals', 'event_id', 'bigserial')
@@ -73,45 +72,17 @@ CREATE TABLE reports.n_shield_rejection_totals (
         sql_helper.create_index("reports","n_shield_rejection_totals","event_id");
         sql_helper.create_index("reports","n_shield_rejection_totals","time_stamp");
 
-        conn = sql_helper.get_connection()
-        try:
-            sql_helper.run_sql("""\
-INSERT INTO reports.n_shield_rejection_totals
-      (time_stamp, client_addr, client_intf, mode, reputation, limited, dropped, rejected)
-SELECT time_stamp, client_addr, client_intf, mode, reputation, limited, dropped, rejected
-FROM events.n_shield_rejection_evt
-WHERE time_stamp < %s::timestamp without time zone""", 
-                               (start_time,), connection=conn, auto_commit=False)
-            conn.commit()
-        except Exception, e:
-            conn.rollback()
-            raise e
-
-    def __create_n_shield_totals(self, start_date, end_date, start_time):
+    def __create_n_shield_totals(self):
         sql_helper.create_fact_table("""\
 CREATE TABLE reports.n_shield_totals (
     time_stamp timestamp without time zone,
     accepted   integer,
     limited    integer,
     dropped    integer,
-    rejected   integer)""",  'time_stamp', start_date, end_date)
+    rejected   integer)""",  'time_stamp', None, None)
 
         # convert from old name
         sql_helper.rename_column("reports","n_shield_totals","trunc_time","time_stamp");
-
-        conn = sql_helper.get_connection()
-        try:
-            sql_helper.run_sql("""\
-INSERT INTO reports.n_shield_totals
-      (time_stamp, accepted, limited, dropped, rejected)
-SELECT time_stamp, accepted, limited, dropped, rejected
-FROM events.n_shield_statistic_evt
-WHERE time_stamp < %s::timestamp without time zone""", 
-                               (start_time,), connection=conn, auto_commit=False)
-            conn.commit()
-        except Exception, e:
-            conn.rollback()
-            raise e
 
     def get_toc_membership(self):
         return [TOP_LEVEL]
