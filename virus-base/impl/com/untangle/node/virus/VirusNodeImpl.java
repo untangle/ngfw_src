@@ -13,8 +13,6 @@ import java.util.Set;
 
 import org.apache.catalina.Valve;
 import org.apache.log4j.Logger;
-import org.hibernate.Query;
-import org.hibernate.Session;
 import org.json.JSONString;
 
 import com.untangle.uvm.SettingsManager;

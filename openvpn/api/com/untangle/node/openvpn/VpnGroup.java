@@ -24,7 +24,6 @@ public class VpnGroup implements java.io.Serializable
     private String name = EMPTY_NAME;
     private String category = EMPTY_CATEGORY;
     private String description = EMPTY_DESCRIPTION;
-    // XXX we need to set hibernate & SQL NOT NULL on these
     private boolean live = true;
 
     public VpnGroup() { }

@@ -7,7 +7,6 @@ import com.untangle.uvm.logging.LogEvent;
 import com.untangle.uvm.logging.SyslogBuilder;
 import com.untangle.uvm.logging.SyslogPriority;
 import com.untangle.node.http.RequestLine;
-import org.hibernate.annotations.Type;
 
 /**
  * Log event for a blocked request.
