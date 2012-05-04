@@ -6,12 +6,6 @@
         "syslogName" : "Router",
         "type" : "SERVICE",
         "viewPosition" : 1000,
-        "annotatedClasses" : {
-            "javaClass": "java.util.LinkedList",
-            "list": [
-                "com.untangle.node.router.RouterStatisticEvent"
-            ]
-        },
         "parents" : {
             "javaClass": "java.util.LinkedList",
             "list": [

@@ -25,7 +25,6 @@ public class RouterImpl extends NodeBase implements Router
 {
     private final RouterEventHandler handler;
     private final RouterSessionManager sessionManager;
-    private final RouterStatisticManager statisticManager;
     private final DhcpMonitor dhcpMonitor;
     /* Done with an inner class so the GUI doesn't freak out about not
      * having the NetworkConfigurationListener class */
@@ -46,7 +45,6 @@ public class RouterImpl extends NodeBase implements Router
 
         this.handler          = new RouterEventHandler(this);
         this.sessionManager   = new RouterSessionManager(this);
-        this.statisticManager = new RouterStatisticManager();
         this.dhcpMonitor      = new DhcpMonitor( this );
         this.listener         = new SettingsListener();
 
@@ -94,9 +92,6 @@ public class RouterImpl extends NodeBase implements Router
 
         /* deconfigure the event handle and the dhcp manager */
         dhcpMonitor.stop();
-
-        /* Stop the statistics manager */
-        statisticManager.stop();
     }
 
     public String lookupHostname( InetAddress address )
@@ -122,8 +117,6 @@ public class RouterImpl extends NodeBase implements Router
         } catch ( Exception e ) {
             logger.warn( "Error in network update.", e );
         }
-
-        statisticManager.start();
     }
 
     protected void postStart()
@@ -138,8 +131,6 @@ public class RouterImpl extends NodeBase implements Router
         killMatchingSessions(SessionMatcherFactory.getAllInstance());
 
         dhcpMonitor.stop();
-
-        statisticManager.stop();
     }
 
     @Override protected void postDestroy() 
