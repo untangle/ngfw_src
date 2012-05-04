@@ -81,7 +81,7 @@ public class PhishHttpHandler extends HttpStateMachine
             if( googlePhishHashList.contains(host, uri.toString()) ) 
                 isBlocked = true;
         }
-
+        
         if (isBlocked) {
             node.incrementBlockCount();
                 

@@ -28,6 +28,7 @@ import com.untangle.node.token.TokenAdaptor;
 import com.untangle.uvm.LocalAppServerManager;
 import com.untangle.uvm.UvmContext;
 import com.untangle.uvm.UvmContextFactory;
+import com.untangle.uvm.util.I18nUtil;
 import com.untangle.uvm.util.OutsideValve;
 import com.untangle.uvm.vnet.Affinity;
 import com.untangle.uvm.vnet.Fitting;
@@ -57,6 +58,8 @@ public class PhishNode extends SpamNodeImpl implements Phish
 
     private static int deployCount = 0;
 
+    private EventLogQuery httpBlockedEventQuery;
+    
     // We want to make sure that phish is before spam,
     // before virus in the pipeline (towards the client for smtp,
     // server for pop/imap).
@@ -78,6 +81,12 @@ public class PhishNode extends SpamNodeImpl implements Phish
 
         replacementGenerator = new PhishReplacementGenerator(getNodeSettings());
 
+        this.httpBlockedEventQuery = new EventLogQuery(I18nUtil.marktr("Blocked Web Events"),
+                                                     "FROM HttpLogEventFromReports evt" + 
+                                                     " WHERE evt.phishAction = 'B'" + 
+                                                     " AND evt.policyId = :policyId" + 
+                                                     " ORDER BY evt.timeStamp DESC");
+        
         synchronized (PhishNode.class) {
             updateMalwareList();
         }
@@ -162,7 +171,7 @@ public class PhishNode extends SpamNodeImpl implements Phish
 
     public EventLogQuery[] getHttpEventQueries()
     {
-        return new EventLogQuery[] { new EventLogQuery(" "," ") };
+        return new EventLogQuery[] { this.httpBlockedEventQuery };
     }
 
     public PhishSettings getSettings()

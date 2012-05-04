@@ -214,18 +214,6 @@ if (!Ung.hasResource["Ung.Phish"]) {
         },
         // Web Event Log
         buildWebEventLog : function() {
-            var asClient = function(value) {
-                var pe = (value == null ? null : value.pipelineEndpoints);
-                return pe === null ? "" : pe.CClientAddr + ":" + pe.CClientPort;
-            };
-            var asServer = function(value) {
-                var pe = (value == null ? null : value.pipelineEndpoints);
-                return pe === null ? "" : pe.SServerAddr + ":" + pe.SServerPort;
-            };
-            var asRequest = Ext.bind(function(value) {
-                return value == null || value.url == null ? "" : value.url;
-            },this);
-
             this.gridWebEventLog = Ext.create('Ung.GridEventLog',{
                 name : 'Web Event Log',
                 helpSource : 'web_event_log',
@@ -238,7 +226,7 @@ if (!Ung.hasResource["Ung.Phish"]) {
                     sortType : Ung.SortTypes.asTimestamp
                 }, {
                     name : 'displayAction',
-                    mapping : 'actionType',
+                    mapping : 'phishAction',
                     type : 'string',
                     convert : Ext.bind(function(value) {
                         switch (value) {
@@ -249,19 +237,20 @@ if (!Ung.hasResource["Ung.Phish"]) {
                                 return this.i18n._("block");
                         }
                     },this)
-				},
-				{
+				}, {
                     name : 'client',
-                    mapping : 'requestLine',
-                    sortType : asClient
+                    mapping : 'CClientAddr'
+                }, {
+                    name : 'uid'
                 }, {
                     name : 'server',
-                    mapping : 'requestLine',
-                    sortType : asServer
+                    mapping : 'CServerAddr'
                 }, {
-                    name : 'request',
-                    mapping : 'requestLine',
-                    sortType : asRequest
+                    name : 'host',
+                    mapping : 'host'
+                }, {
+                    name : 'uri',
+                    mapping : 'uri'
                 }],
                 // the list of columns
                 columns : [{
@@ -273,29 +262,27 @@ if (!Ung.hasResource["Ung.Phish"]) {
                         return i18n.timestampFormat(value);
                     }
                 }, {
+                    header : this.i18n._("client"),
+                    width : Ung.Util.ipFieldWidth,
+                    dataIndex : 'client'
+                }, {
+                    header : this.i18n._("username"),
+                    width : Ung.Util.usernameFieldWidth,
+                    dataIndex : 'uid'
+                }, {
+                    header : this.i18n._("host"),
+                    width : Ung.Util.hostnameFieldWidth,
+                    dataIndex : 'host'
+                }, {
+                    header : this.i18n._("uri"),
+                    flex:1,
+                    width : Ung.Util.uriFieldWidth,
+                    dataIndex : 'uri'
+                }, {
                     header : this.i18n._("action"),
                     width : 120,
                     sortable : true,
                     dataIndex : 'displayAction'
-                }, {
-                    header : this.i18n._("client"),
-                    width : Ung.Util.ipFieldWidth,
-                    sortable : true,
-                    dataIndex : 'client',
-                    renderer : asClient
-                }, {
-                    header : this.i18n._("request"),
-                    width : 120,
-                    sortable : true,
-                    flex:1,
-                    dataIndex : 'request',
-                    renderer : asRequest
-                }, {
-                    header : this.i18n._("server"),
-                    width : Ung.Util.ipFieldWidth,
-                    sortable : true,
-                    dataIndex : 'server',
-                    renderer : asServer
                 }]
             });
         },

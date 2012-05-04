@@ -159,7 +159,7 @@
   </category>
 
   <category name="com.untangle.node.util">
-    <priority value="INFtO"/>
+    <priority value="INFO"/>
   </category>
 
   <category name="com.untangle.node.token">
@@ -228,10 +228,6 @@
 
   <category name="com.untangle.node.ipsec">
     <priority value="INFO"/>
-  </category>
- 
-  <category name="com.untangle.node.datavault">
-    <priority value="DEBUG"/>
   </category>
  
   <category name="com.untangle.node.license">

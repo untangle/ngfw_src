@@ -59,6 +59,7 @@ CREATE TABLE reports.n_http_events (
     virus_clam_name text,
     sw_blacklisted boolean,
     sw_cookie_ident text,
+    phish_action character,
     virus_kaspersky_clean boolean,
     virus_kaspersky_name text,
     wf_untangle_reason character,
@@ -76,6 +77,7 @@ CREATE TABLE reports.n_http_events (
         sql_helper.add_column('reports', 'n_http_events', 'ab_action', 'character(1)')
         sql_helper.add_column('reports', 'n_http_events', 'sw_cookie_ident', 'text')
         sql_helper.add_column('reports', 'n_http_events', 'sw_blacklisted', 'boolean')
+        sql_helper.add_column('reports', 'n_http_events', 'phish_action', 'character(1)')
         sql_helper.add_column('reports', 'n_http_events', 'start_time', 'timestamp')
 
         # we used to create event_id as serial instead of bigserial - convert if necessary

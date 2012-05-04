@@ -75,6 +75,7 @@ public class HttpLogEventFromReports extends LogEvent
     private Boolean wfUntangleBlocked;
     private Boolean wfUntangleFlagged;
     private String abAction;
+    private Character phishAction;
 
     // constructors -----------------------------------------------------------
 
@@ -237,6 +238,10 @@ public class HttpLogEventFromReports extends LogEvent
     public String getAbAction() { return abAction; }
     public void setAbAction(String abAction) { this.abAction = abAction; }
 
+    @Column(name="phish_action")
+    public Character getPhishAction() { return phishAction; }
+    public void setPhishAction(Character phishAction) { this.phishAction = phishAction; }
+    
     public void appendSyslog(SyslogBuilder sb) // FIXME: not called for now
     {
     }
