@@ -755,59 +755,6 @@ if (!Ung.hasResource["Ung.Reporting"]) {
                   return true;
                   },
         */        
-        validateServer: function() {
-            // ipMaskedAddress list must be validated server side
-            var ipMapList = this.gridIpMap.getSaveList();
-            var ipMaskedAddressList = [];
-            var i;
-
-            // added
-            for ( i = 0; i < ipMapList[0].list.length; i++) {
-                ipMaskedAddressList.push(ipMapList[0].list[i]["ipMaskedAddress"]);
-            }
-            // modified
-            for ( i = 0; i < ipMapList[2].list.length; i++) {
-                ipMaskedAddressList.push(ipMapList[2].list[i]["ipMaskedAddress"]);
-            }
-            
-            if (ipMaskedAddressList.length > 0) {
-                try {
-                    var result=null;
-                    try {
-                        result = this.getValidator().validate({
-                            list: ipMaskedAddressList,
-                            "javaClass": "java.util.ArrayList"
-                        });
-                    } catch (e) {
-                        Ung.Util.rpcExHandler(e);
-                    }
-                    if (!result.valid) {
-                        var errorMsg = "";
-                        switch (result.errorCode) {
-                          case 'INVALID_IPMADDR' :
-                            errorMsg = this.i18n._("Invalid \"IP address\" specified") + ": " + result.cause;
-                            break;
-                        default :
-                            errorMsg = this.i18n._(result.errorCode) + ": " + result.cause;
-                        }
-
-                        this.tabs.setActiveTab(this.gridIpMap);
-                        this.gridIpMap.focusFirstChangedDataByFieldValue("ipMaskedAddress", result.cause);
-                        Ext.MessageBox.alert(this.i18n._("Validation failed"), errorMsg);
-                        return false;
-                    }
-                } catch (e) {
-                    var message = ( e == null ) ? "Unknown" : e.message;
-                    if (message == "Unknown") {
-                        message = i18n._("Please Try Again");
-                    }
-                    Ext.MessageBox.alert(i18n._("Failed"), message);
-                    return false;
-                }
-            }
-
-            return true;
-        },
         applyAction : function()
         {
             this.commitSettings(Ext.bind(this.reloadSettings,this));

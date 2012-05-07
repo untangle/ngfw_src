@@ -8,7 +8,6 @@ import java.net.InetAddress;
 
 import com.untangle.uvm.node.Node;
 import com.untangle.uvm.node.HostnameLookup;
-import com.untangle.uvm.node.Validator;
 
 public interface ReportingNode extends Node, HostnameLookup
 {
@@ -17,8 +16,6 @@ public interface ReportingNode extends Node, HostnameLookup
     ReportingSettings getReportingSettings();
 
     void runDailyReport() throws Exception;
-
-    Validator getValidator();
 
     /**
      * Force flush all the pending databdase events to the database and run

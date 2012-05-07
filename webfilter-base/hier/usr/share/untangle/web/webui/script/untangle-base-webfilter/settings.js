@@ -791,10 +791,6 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                             grid : settingsCmp.gridPassedClients,
                             applyAction : function(callback){
                                 var validateSaveList = settingsCmp.gridPassedClients.getSaveList();
-                                if ( !settingsCmp.validateServer(validateSaveList)) {
-                                    return;
-                                }
-                                
                                 Ext.MessageBox.wait(i18n._("Saving..."), i18n._("Please wait"));
                                 settingsCmp.gridPassedClients.getGridSaveList(function(saveList) {
                                     this.getRpcNode().setPassedClients(function(result, exception) {
@@ -1116,58 +1112,6 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                 value = value.substring(0, value.length - 1);
             }
             return value.trim();
-        },
-        validateServer : function(passedClientsSaveList)
-        {
-            // ipMaskedAddress list must be validated server side\            
-            if (passedClientsSaveList != null) {
-                var ipMaskedAddressList = [];
-                // added
-                for (var i = 0; i < passedClientsSaveList[0].list.length; i++) {
-                    ipMaskedAddressList.push(passedClientsSaveList[0].list[i]["string"]);
-                }
-                // modified
-                for (var i = 0; i < passedClientsSaveList[2].list.length; i++) {
-                    ipMaskedAddressList.push(passedClientsSaveList[2].list[i]["string"]);
-                }
-                if (ipMaskedAddressList.length > 0) {
-                    try {
-                        var result = null;
-                        try {
-                            result = this.getValidator().validate({
-                                list : ipMaskedAddressList,
-                                "javaClass" : "java.util.LinkedList"
-                            });
-                        } catch (e) {
-                            Ung.Util.rpcExHandler(e);
-                        }
-                        if (!result.valid) {
-                            var errorMsg = "";
-                            switch (result.errorCode) {
-                                case 'INVALID_IPMADDR' :
-                                    errorMsg = this.i18n._("Invalid subnet specified") + ": " + result.cause;
-                                break;
-                                default :
-                                    errorMsg = this.i18n._(result.errorCode) + ": " + result.cause;
-                            }
-
-                            this.panelPassLists.onManagePassedClients();
-                            this.gridPassedClients.focusFirstChangedDataByFieldValue("string", result.cause);
-                            Ext.MessageBox.alert(this.i18n._("Validation failed"), errorMsg);
-                            return false;
-                        }
-                    } catch (e) {
-                        var message = e.message;
-                        if (message == null || message == "Unknown") {
-                            message = this.i18n._("Please Try Again");
-                        }
-                        
-                        Ext.MessageBox.alert(i18n._("Failed"), message);
-                        return false;
-                    }
-                }
-            }
-            return true;
         },
         applyAction : function(){
             this.saveAction(true);

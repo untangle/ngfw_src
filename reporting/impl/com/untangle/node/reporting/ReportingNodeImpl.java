@@ -139,10 +139,6 @@ public class ReportingNodeImpl extends NodeBase implements ReportingNode, LogWor
         setReportingSettings(initSettings());
     }
 
-    public Validator getValidator() {
-        return new ReportingValidator();
-    }
-
     public Object getSettings()
     {
         return getReportingSettings();

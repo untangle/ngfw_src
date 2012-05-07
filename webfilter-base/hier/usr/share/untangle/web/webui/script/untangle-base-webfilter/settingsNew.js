@@ -835,10 +835,6 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                             grid : settingsCmp.gridPassedClients,
                             applyAction : function(callback){
                                 var validateSaveList = settingsCmp.gridPassedClients.getSaveList();
-                                if ( !settingsCmp.validateServer(validateSaveList)) {
-                                    return;
-                                }
-                                
                                 Ext.MessageBox.wait(i18n._("Saving..."), i18n._("Please wait"));
                                 settingsCmp.gridPassedClients.getGridSaveList(Ext.bind(function(saveList) {
                                     this.getRpcNode().setPassedClients(Ext.bind(function(result, exception) {
@@ -1172,22 +1168,6 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                 value = value.substring(0, value.length - 1);
             }
             return value.trim();
-        },
-        validateServer : function(passedClientsSaveList)
-        {
-            // ipMaskedAddress list must be validated server side\            
-            if (passedClientsSaveList != null) {
-                var ipMaskedAddressList = [];
-                // added
-                for (var i = 0; i < passedClientsSaveList[0].list.length; i++) {
-                    ipMaskedAddressList.push(passedClientsSaveList[0].list[i]["string"]);
-                }
-                // modified
-                for (var i = 0; i < passedClientsSaveList[2].list.length; i++) {
-                    ipMaskedAddressList.push(passedClientsSaveList[2].list[i]["string"]);
-                }
-            }
-            return true;
         }
     });
 }
