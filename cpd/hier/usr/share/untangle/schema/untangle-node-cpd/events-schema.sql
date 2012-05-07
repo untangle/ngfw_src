@@ -21,26 +21,26 @@
 -----------
 
 -- com.untangle.node.cpd.BlockEvent
-CREATE TABLE events.n_cpd_block_evt (
-    event_id INT8 NOT NULL,
-    time_stamp TIMESTAMP,
-    proto INT2,
-    client_intf INT2,
-    client_address INET,
-    client_port INT4,
-    server_address INET,
-    server_port INT4,
-    PRIMARY KEY (event_id));
+-- CREATE TABLE events.n_cpd_block_evt (
+--     event_id INT8 NOT NULL,
+--     time_stamp TIMESTAMP,
+--     proto INT2,
+--     client_intf INT2,
+--     client_address INET,
+--     client_port INT4,
+--     server_address INET,
+--     server_port INT4,
+--     PRIMARY KEY (event_id));
 
 -- CPDLoginEvent
-CREATE TABLE events.n_cpd_login_evt (
-    event_id    INT8 NOT NULL,
-    login_name  TEXT,
-    event	TEXT,
-    auth_type   TEXT,
-    time_stamp  TIMESTAMP,
-    client_addr inet,
-    PRIMARY KEY (event_id));
+-- CREATE TABLE events.n_cpd_login_evt (
+--     event_id    INT8 NOT NULL,
+--     login_name  TEXT,
+--     event	TEXT,
+--     auth_type   TEXT,
+--     time_stamp  TIMESTAMP,
+--     client_addr inet,
+--     PRIMARY KEY (event_id));
 
 -- com.untangle.node.cpd.HostDatabaseEntry
 CREATE TABLE events.n_cpd_host_database_entry (
@@ -58,8 +58,8 @@ CREATE TABLE events.n_cpd_host_database_entry (
 ----------------
 
 -- indices for reporting
-CREATE INDEX n_cpd_block_evt_ts_idx ON events.n_cpd_block_evt (time_stamp);
-CREATE INDEX n_cpd_login_evt_ts_idx ON events.n_cpd_login_evt (time_stamp);
+--CREATE INDEX n_cpd_block_evt_ts_idx ON events.n_cpd_block_evt (time_stamp);
+--CREATE INDEX n_cpd_login_evt_ts_idx ON events.n_cpd_login_evt (time_stamp);
 
 CREATE INDEX n_cpd_host_database_last_session_idx ON 
        events.n_cpd_host_database_entry (last_session);

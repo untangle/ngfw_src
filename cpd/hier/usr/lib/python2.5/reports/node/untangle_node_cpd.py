@@ -52,8 +52,8 @@ class Cpd(Node):
         Node.__init__(self, 'untangle-node-cpd')
 
     def setup(self, start_date, end_date, start_time):
-        self.__create_n_cpd_login_events(start_date, end_date, start_time)
-        self.__create_n_cpd_block_events(start_date, end_date, start_time)
+        self.__make_n_cpd_login_events_table()
+        self.__make_n_cpd_block_events_table()
         
         ft = FactTable('reports.n_cpd_login_totals',
                        'reports.n_cpd_login_events',
@@ -104,10 +104,8 @@ class Cpd(Node):
         
         return Report(self, sections)
 
-    @sql_helper.print_timing
     def events_cleanup(self, cutoff):
-        sql_helper.clean_table("events", "n_cpd_login_evt", cutoff);
-        sql_helper.clean_table("events", "n_cpd_block_evt", cutoff);
+        return
 
     def reports_cleanup(self, cutoff):
         sql_helper.drop_fact_table("n_cpd_login_events", cutoff)
@@ -116,7 +114,7 @@ class Cpd(Node):
         sql_helper.drop_fact_table("n_cpd_block_totals", cutoff)
         
     @print_timing
-    def __create_n_cpd_login_events(self, start_date, end_date, start_time):
+    def __make_n_cpd_login_events_table(self):
         sql_helper.create_fact_table("""\
 CREATE TABLE reports.n_cpd_login_events (
     time_stamp timestamp without time zone,
@@ -124,7 +122,7 @@ CREATE TABLE reports.n_cpd_login_events (
     event text,
     auth_type text,
     client_addr inet,
-    event_id bigserial)""",  'time_stamp', start_date, end_date)
+    event_id bigserial)""",  'time_stamp', None, None)
 
         sql_helper.add_column('reports', 'n_cpd_login_events', 'event_id', 'bigserial')
 
@@ -134,22 +132,8 @@ CREATE TABLE reports.n_cpd_login_events (
         sql_helper.create_index("reports","n_cpd_login_events","event_id");
         sql_helper.create_index("reports","n_cpd_login_events","time_stamp");
 
-        conn = sql_helper.get_connection()
-        try:
-            sql_helper.run_sql("""\
-INSERT INTO reports.n_cpd_login_events
-      (time_stamp, login_name, event, auth_type, client_addr)
-SELECT time_stamp, login_name, event, auth_type, client_addr
-FROM events.n_cpd_login_evt
-WHERE time_stamp < %s::timestamp without time zone""",
-                               (start_time,), connection=conn, auto_commit=False)
-            conn.commit()
-        except Exception, e:
-            conn.rollback()
-            raise e
-
     @print_timing
-    def __create_n_cpd_block_events(self, start_date, end_date, start_time):
+    def __make_n_cpd_block_events_table(self):
         sql_helper.create_fact_table("""\
 CREATE TABLE reports.n_cpd_block_events (
     time_stamp timestamp without time zone,
@@ -159,7 +143,7 @@ CREATE TABLE reports.n_cpd_block_events (
     client_port INT4,
     server_address INET,
     server_port INT4,
-    event_id bigserial)""",  'time_stamp', start_date, end_date)
+    event_id bigserial)""",  'time_stamp', None, None)
 
         sql_helper.add_column('reports', 'n_cpd_block_events', 'event_id', 'bigserial')
 
@@ -168,21 +152,6 @@ CREATE TABLE reports.n_cpd_block_events (
 
         sql_helper.create_index("reports","n_cpd_block_events","event_id");
         sql_helper.create_index("reports","n_cpd_block_events","time_stamp");
-
-        conn = sql_helper.get_connection()
-        try:
-            sql_helper.run_sql("""\
-INSERT INTO reports.n_cpd_block_events
-      (time_stamp, proto, client_intf, client_address, client_port, server_address, server_port)
-SELECT time_stamp, proto, client_intf, client_address, client_port, server_address, server_port
-FROM events.n_cpd_block_evt
-WHERE time_stamp < %s::timestamp without time zone""",
-                               (start_time,), connection=conn, auto_commit=False)
-            conn.commit()
-        except Exception, e:
-            conn.rollback()
-            raise e
-
 
 class CpdHighlight(Highlight):
     def __init__(self, name):

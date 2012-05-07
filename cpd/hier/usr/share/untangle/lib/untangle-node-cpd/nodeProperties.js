@@ -11,8 +11,6 @@
         "annotatedClasses" : {
             "javaClass": "java.util.LinkedList",
             "list": [
-                "com.untangle.node.cpd.BlockEvent",
-                "com.untangle.node.cpd.CPDLoginEvent",
                 "com.untangle.node.cpd.HostDatabaseEntry"
             ]
         }
