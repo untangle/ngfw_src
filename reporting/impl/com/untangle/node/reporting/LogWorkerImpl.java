@@ -132,10 +132,11 @@ public class LogWorkerImpl implements Runnable, LogWorker
             while (true) {
                 try {wait();} catch (java.lang.InterruptedException e) {}
 
-                if (!forceFlush)
+                if (!forceFlush) {
+                    logger.info("forceFlush() complete.");
                     return;
+                }
             }
-            logger.info("forceFlush() complete.");
         }
     }
     
