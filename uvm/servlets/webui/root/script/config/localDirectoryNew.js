@@ -177,7 +177,7 @@ if (!Ung.hasResource["Ung.LocalDirectory"]) {
                 // verify that the login name is not duplicated
                 for(var j=i+1; j<listUsers.length;j++) {
                     if (listUsers[i].username == listUsers[j].username) {
-                        Ext.MessageBox.alert(this.i18n._('Warning'), String.format(this.i18n._('The login name "{0}" at row {1} has already been taken.'), listUsers[j].username, j+1),
+                        Ext.MessageBox.alert(this.i18n._('Warning'), Ext.String.format(this.i18n._('The login name "{0}" at row {1} has already been taken.'), listUsers[j].username, j+1),
                             Ext.bind(function () {
                                 this.tabs.setActiveTab(this.gridUsers);
                             },this) 
@@ -187,7 +187,7 @@ if (!Ung.hasResource["Ung.LocalDirectory"]) {
                 }
                 // login name contains no forward slash character
                 if (listUsers[i].username.indexOf("/") != -1) {
-                    Ext.MessageBox.alert(this.i18n._('Warning'), String.format(this.i18n._('The login name at row {0} must not contain forward slash character.'), i+1),
+                    Ext.MessageBox.alert(this.i18n._('Warning'), Ext.String.format(this.i18n._('The login name at row {0} must not contain forward slash character.'), i+1),
                         Ext.bind(function () {
                             this.tabs.setActiveTab(this.gridUsers);
                         },this) 
@@ -196,7 +196,7 @@ if (!Ung.hasResource["Ung.LocalDirectory"]) {
                 }
                 // first name contains no spaces
                 if (listUsers[i].firstName.indexOf(" ") != -1) {
-                    Ext.MessageBox.alert(this.i18n._('Warning'), String.format(this.i18n._('The first name at row {0} must not contain any space characters.'), i+1),
+                    Ext.MessageBox.alert(this.i18n._('Warning'), Ext.String.format(this.i18n._('The first name at row {0} must not contain any space characters.'), i+1),
                         Ext.bind(function () {
                             this.tabs.setActiveTab(this.gridUsers);
                         },this) 
@@ -205,7 +205,7 @@ if (!Ung.hasResource["Ung.LocalDirectory"]) {
                 }
                 // last name contains no spaces
                 if (listUsers[i].lastName.indexOf(" ") != -1) {
-                    Ext.MessageBox.alert(this.i18n._('Warning'), String.format(this.i18n._('The last name at row {0} must not contain any space characters.'), i+1),
+                    Ext.MessageBox.alert(this.i18n._('Warning'), Ext.String.format(this.i18n._('The last name at row {0} must not contain any space characters.'), i+1),
                         Ext.bind(function () {
                             this.tabs.setActiveTab(this.gridUsers);
                         },this) 
@@ -214,7 +214,7 @@ if (!Ung.hasResource["Ung.LocalDirectory"]) {
                 }
                 // the password is at least one character
                 if (listUsers[i].password.length == 0) {
-                    Ext.MessageBox.alert(this.i18n._('Warning'), String.format(this.i18n._('The password at row {0} must be at least 1 character long.'), i+1),
+                    Ext.MessageBox.alert(this.i18n._('Warning'), Ext.String.format(this.i18n._('The password at row {0} must be at least 1 character long.'), i+1),
                         Ext.bind(function () {
                             this.tabs.setActiveTab(this.gridUsers);
                         },this) 
@@ -223,7 +223,7 @@ if (!Ung.hasResource["Ung.LocalDirectory"]) {
                 }
                 // the password contains no spaces
                 if (listUsers[i].password.indexOf(" ") != -1) {
-                    Ext.MessageBox.alert(this.i18n._('Warning'), String.format(this.i18n._('The password at row {0} must not contain any space characters.'), i+1),
+                    Ext.MessageBox.alert(this.i18n._('Warning'), Ext.String.format(this.i18n._('The password at row {0} must not contain any space characters.'), i+1),
                         Ext.bind(function () {
                             this.tabs.setActiveTab(this.gridUsers);
                         },this) 

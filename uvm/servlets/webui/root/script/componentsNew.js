@@ -519,7 +519,7 @@ Ung.Util= {
                 /* ... */
             case "254":
             default :
-                name = String.format( i18n._("Interface {0}"), key );
+                name = Ext.String.format( i18n._("Interface {0}"), key );
                 break;
 
             }
