@@ -1020,9 +1020,6 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
         this.addAnnotatedClass("com.untangle.uvm.logging.OpenvpnLogEventFromReports");
         this.addAnnotatedClass("com.untangle.uvm.logging.CpdBlockEventsFromReports");
         this.addAnnotatedClass("com.untangle.uvm.logging.CpdLoginEventsFromReports");
-
-        /* impl */
-        this.addAnnotatedClass("com.untangle.uvm.engine.LoginEvent");
     }
     
     /**

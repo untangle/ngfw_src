@@ -45,9 +45,9 @@ class UvmNode(Node):
 
         self.__do_housekeeping()
 
-        self.__create_n_admin_logins(start_date, end_date, start_time)
+        self.__make_n_admin_logins_table()
 
-        self.__make_sessions_table(start_date, end_date, start_time)
+        self.__make_sessions_table()
 
         ft = FactTable('reports.session_totals',
                        'reports.sessions',
@@ -85,7 +85,7 @@ class UvmNode(Node):
         return None
         
     @print_timing
-    def __create_n_admin_logins(self, start_date, end_date, start_time):
+    def __make_n_admin_logins_table(self):
         sql_helper.create_fact_table("""\
 CREATE TABLE reports.n_admin_logins (
     time_stamp timestamp without time zone,
@@ -93,30 +93,15 @@ CREATE TABLE reports.n_admin_logins (
     local boolean,
     client_addr inet,
     succeeded boolean,
-    reason char(1) )""", 'time_stamp', start_date, end_date)
-
-        conn = sql_helper.get_connection()
-        try:
-            sql_helper.run_sql("""\
-INSERT INTO reports.n_admin_logins
-      (time_stamp, login, local, client_addr, succeeded, reason)
-    SELECT time_stamp, login, local, client_addr, succeeded, reason
-    FROM events.u_login_evt evt
-    WHERE time_stamp < %s::timestamp without time zone""",
-                               (start_time,), connection=conn, auto_commit=False)
-            conn.commit()
-        except Exception, e:
-            conn.rollback()
-            raise e
+    reason char(1) )""", 'time_stamp', None, None)
 
     def post_facttable_setup(self, start_date, end_date):
         self.__make_session_counts_table(start_date, end_date)
         self.__make_hnames_table(start_date, end_date)
         self.__make_users_table(start_date, end_date)
 
-    @sql_helper.print_timing
     def events_cleanup(self, cutoff):
-        sql_helper.clean_table("events", "u_login_evt", cutoff);
+        return
 
     def reports_cleanup(self, cutoff):
         sql_helper.drop_fact_table("n_admin_logins", cutoff)
@@ -194,7 +179,7 @@ INSERT INTO reports.hnames (date, hname)
             raise e
 
     @print_timing
-    def __make_sessions_table(self, start_date, end_date, start_time):
+    def __make_sessions_table( self ):
         sql_helper.create_fact_table("""\
 CREATE TABLE reports.sessions (
         session_id int8 NOT NULL,
@@ -217,7 +202,7 @@ CREATE TABLE reports.sessions (
         c2p_bytes int8,
         p2c_bytes int8,
         s2p_bytes int8,
-        p2s_bytes int8)""", 'time_stamp', start_date, end_date)
+        p2s_bytes int8)""", 'time_stamp', None, None)
 
         sql_helper.add_column('reports', 'sessions', 'event_id', 'bigserial')
         sql_helper.add_column('reports', 'sessions', 'policy_id', 'bigint')
@@ -334,22 +319,7 @@ GROUP BY time, uid, hname, client_intf, server_intf
     def teardown(self):
         pass
 
-    @print_timing
     def __do_housekeeping(self):
-#        sql_helper.run_sql("""\
-#DELETE FROM settings.n_reporting_settings WHERE tid NOT IN
-#(SELECT tid FROM settings.u_node_persistent_state
-#WHERE NOT target_state = 'destroyed')""")
-
-        sql_helper.run_sql("""\
-DELETE FROM settings.u_ipmaddr_dir_entries WHERE ipmaddr_dir_id NOT IN
-(SELECT id FROM settings.u_ipmaddr_dir WHERE id IN
-(SELECT network_directory FROM settings.n_reporting_settings))""")
-
-        sql_helper.run_sql("""\
-DELETE FROM settings.u_ipmaddr_dir WHERE id NOT IN
-(SELECT network_directory FROM settings.n_reporting_settings)""")
-
         if sql_helper.table_exists('reports', 'merged_address_map'):
             sql_helper.run_sql("DROP TABLE reports.merged_address_map");
 
@@ -640,6 +610,7 @@ class AdministrativeLoginsDetail(DetailSection):
         rv = [ColumnDesc('time_stamp', _('Time'), 'Date')]
 
         rv += [ColumnDesc('client_addr', _('Client Ip')),
+               ColumnDesc('login', _('Login')),
                ColumnDesc('succeeded', _('Success'))]
 
         return rv
