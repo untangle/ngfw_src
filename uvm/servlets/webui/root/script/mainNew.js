@@ -28,6 +28,9 @@ Ext.define("Ung.Main", {
     firstTimeRun: null,
     companyName: document.title,
     hostName: null,
+    
+    policyNodeWidget:null,
+    
     capitalize : function(foo) {
             return foo.replace(/\w+/g, function(a){
                     return a.charAt(0).toUpperCase() + a.substr(1).toLowerCase();
@@ -724,6 +727,7 @@ Ext.define("Ung.Main", {
     buildNodes: function() {
         //build nodes
         Ung.MessageManager.stop();
+        Ext.getCmp('policyManagerMenuItem').disable();
 
         this.destoyNodes();
         this.nodes=[];
@@ -1009,6 +1013,12 @@ Ext.define("Ung.Main", {
         var position=this.getNodePosition(place,node.viewPosition);
         nodeWidget.render(place,position);
         Ung.AppItem.updateState(node.displayName, null);
+        if ( node.name == 'untangle-node-policy') {
+            // refresh rpc.policyManager to properly handle the case when the policy manager is removed and then re-added to the application list
+            rpc.policyManager=rpc.jsonrpc.UvmContext.nodeManager().node("untangle-node-policy");
+            Ext.getCmp('policyManagerMenuItem').enable();
+            this.policyNodeWidget = nodeWidget;
+        }
     },
     addNodePreview: function (md) {
         var nodeWidget=new Ung.NodePreview(md);
@@ -1124,7 +1134,7 @@ Ext.define("Ung.Main", {
             items.push({text:policy.name,
                         value:policy.policyId,
                         index:i,
-                        handler:main.changePolicy,
+                        handler:main.changeRack,
                         hideDelay :0});
 
             if( policy.policyId == 1 ) {
@@ -1132,9 +1142,9 @@ Ext.define("Ung.Main", {
             }
         }
         items.push('-');
-        items.push({text:i18n._('Show Policy Manager'),value:'SHOW_POLICY_MANAGER',handler:main.changePolicy, hideDelay :0});
+        items.push({text:i18n._('Show Policy Manager'),value:'SHOW_POLICY_MANAGER',handler:main.showPolicyManager, id:'policyManagerMenuItem', disabled:true,hideDelay :0});
         items.push('-');
-        items.push({text:i18n._('Show Sessions'),value:'SHOW_SESSIONS',handler:main.changePolicy, hideDelay :0});
+        items.push({text:i18n._('Show Sessions'),value:'SHOW_SESSIONS',handler:main.showSessions, hideDelay :0});
         main.rackSelect = new Ext.SplitButton({
             renderTo: 'rack-select-container', // the container id
             text: items[selVirtualRackIndex].text,
@@ -1160,27 +1170,32 @@ Ext.define("Ung.Main", {
         else
             return i18n._( "Unknown Rack" );
     },
-    // change current policy
-    changePolicy: function () {
-        if(this.value=='SHOW_POLICY_MANAGER'){
-            Ext.MessageBox.show({
-                title : i18n._( "IMPLEMENT ME - use policy manager->settings" ),
-                msg : i18n._( "IMPLEMENT ME - use policy manager->settings" ),
-                buttons : Ext.MessageBox.OK,
-                icon : Ext.MessageBox.INFO
-            });
-        } else if(this.value=='SHOW_SESSIONS'){
-            Ext.MessageBox.wait(i18n._("Loading..."), i18n._("Please wait"));
+    
+    showSessions: function() {
+        Ext.MessageBox.wait(i18n._("Loading..."), i18n._("Please wait"));
+        if ( main.sessionMonitorWin == null) {
             Ext.Function.defer(Ung.Util.loadResourceAndExecute,1,this,["Ung.SessionMonitor",Ung.Util.getScriptSrc("script/config/sessionMonitorNew.js"), function() {
                 main.sessionMonitorWin=new Ung.SessionMonitor({"name":"sessionMonitor", "helpSource":"session_viewer"});
                 main.sessionMonitorWin.show();
                 Ext.MessageBox.hide();
             }]);
         } else {
-            Ext.getCmp('rack-select').setText(this.text);
-            rpc.currentPolicy=rpc.policies[this.index];
-            main.loadRackView();
+            main.sessionMonitorWin.show();
+            Ext.MessageBox.hide();
         }
+    },
+    
+    showPolicyManager:function() {
+        if ( main.policyNodeWidget) {
+            main.policyNodeWidget.loadSettings();
+        }
+    },
+    
+    // change current policy
+    changeRack: function () {
+        Ext.getCmp('rack-select').setText(this.text);
+        rpc.currentPolicy=rpc.policies[this.index];
+        main.loadRackView();
     },
 
     getParentName : function( parentId )

@@ -1664,6 +1664,9 @@ Ext.define("Ung.Node", {
             });
         }
         this.settingsWin.addListener("hide",Ext.bind(function() { 
+                                                if ( Ext.isFunction(this.beforeClose)) {
+                                                    this.beforeClose();
+                                                }
                                                 this.destroy();
                                             }, this.settingsWin));
         this.settingsWin.show();
@@ -3361,7 +3364,7 @@ Ext.define("Ung.NodeWin", {
 			Ext.MessageBox.hide();
 			if(Ung.Util.handleException(exception)) return;
 			if (!isApply) {
-				this.closeWindow();
+                this.closeWindow();
 				return;
 			} else {
 				this.getSettings(true);
