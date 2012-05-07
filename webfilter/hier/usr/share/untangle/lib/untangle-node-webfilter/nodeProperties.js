@@ -12,13 +12,6 @@
             "list": [
                 "untangle-casing-http"
             ]
-        },
-        "annotatedClasses" : {
-            "javaClass": "java.util.LinkedList",
-            "list": [
-                "com.untangle.node.http.HttpSettings",
-                "com.untangle.node.webfilter.BlockTemplate"
-            ]
         }
 }
 

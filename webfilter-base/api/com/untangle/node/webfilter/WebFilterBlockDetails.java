@@ -38,7 +38,7 @@ public class WebFilterBlockDetails extends BlockDetails
 
     public String getHeader()
     {
-        return settings.getBlockTemplate().getHeader();
+        return "Web Filter";
     }
 
     public String getReason()

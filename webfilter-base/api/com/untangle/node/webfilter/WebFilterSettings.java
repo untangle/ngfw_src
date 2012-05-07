@@ -25,8 +25,6 @@ public class WebFilterSettings implements Serializable
     public static final String UNBLOCK_MODE_HOST   = "Host";
     public static final String UNBLOCK_MODE_GLOBAL = "Global";
 
-    private BlockTemplate blockTemplate = new BlockTemplate();
-
     private Integer version = new Integer(1);
 
     private Boolean enableHttps = false;
@@ -53,76 +51,88 @@ public class WebFilterSettings implements Serializable
 
     // accessors --------------------------------------------------------------
 
-    public Integer getVersion()
-    {
-        return this.version;
-    }
+    public Integer getVersion() { return this.version; }
+    public void setVersion( Integer version ) { this.version = version; }
 
-    public void setVersion(Integer version)
-    {
-        this.version = version;
-    }
+    public List<GenericRule> getPassedClients() { return passedClients; }
+    public void setPassedClients( List<GenericRule > passedClients) { this.passedClients = passedClients; }
 
-    public List<GenericRule> getPassedClients()
-    {
-        return passedClients;
-    }
+    public List<GenericRule> getPassedUrls() { return passedUrls; }
+    public void setPassedUrls( List<GenericRule > passedUrls) { this.passedUrls = passedUrls; }
 
-    public void setPassedClients(List<GenericRule> passedClients)
-    {
-        this.passedClients = passedClients;
-    }
+    public List<GenericRule> getBlockedUrls() { return blockedUrls; }
+    public void setBlockedUrls( List<GenericRule > blockedUrls) { this.blockedUrls = blockedUrls; }
 
-    public List<GenericRule> getPassedUrls()
-    {
-        return passedUrls;
-    }
+    public List<GenericRule> getBlockedMimeTypes() { return blockedMimeTypes; }
+    public void setBlockedMimeTypes( List<GenericRule > blockedMimeTypes) { this.blockedMimeTypes = blockedMimeTypes; }
 
-    public void setPassedUrls(List<GenericRule> passedUrls)
-    {
-        this.passedUrls = passedUrls;
-    }
+    public List<GenericRule> getBlockedExtensions() { return blockedExtensions; }
+    public void setBlockedExtensions( List<GenericRule > blockedExtensions) { this.blockedExtensions = blockedExtensions; }
 
-    public List<GenericRule> getBlockedUrls()
-    {
-        return blockedUrls;
-    }
+    public List<GenericRule> getCategories() { return this.categories; }
+    public void setCategories( List<GenericRule > categories) { this.categories = categories; }
 
-    public void setBlockedUrls(List<GenericRule> blockedUrls)
-    {
-        this.blockedUrls = blockedUrls;
-    }
+    /**
+     * Block all requests to hosts identified only by an IP address.
+     */
+    public Boolean getBlockAllIpHosts() { return blockAllIpHosts; }
+    public void setBlockAllIpHosts( Boolean blockAllIpHosts ) { this.blockAllIpHosts = blockAllIpHosts; }
 
-    public List<GenericRule> getBlockedMimeTypes()
-    {
-        return blockedMimeTypes;
-    }
+    /**
+     * If true, enables checking of HTTPS traffic.
+     */
+    public Boolean getEnableHttps() { return enableHttps; }
+    public void setEnableHttps( Boolean enableHttps ) { this.enableHttps = enableHttps; }
 
-    public void setBlockedMimeTypes(List<GenericRule> blockedMimeTypes)
-    {
-        this.blockedMimeTypes = blockedMimeTypes;
-    }
+    /**
+     * If true, enforces safe search on popular search engines.
+     */
+    public Boolean getEnforceSafeSearch() { return enforceSafeSearch; }
+    public void setEnforceSafeSearch( Boolean enforceSafeSearch ) { this.enforceSafeSearch = enforceSafeSearch; }
 
-    public List<GenericRule> getBlockedExtensions()
-    {
-        return blockedExtensions;
-    }
+    /**
+     * If true, enforces safe search on popular search engines.
+     */
+    public Boolean getEnforceYoutubeForSchools() { return enforceYoutubeForSchools; }
+    public void setEnforceYoutubeForSchools( Boolean enforceYoutubeForSchools ) { this.enforceYoutubeForSchools = enforceYoutubeForSchools; }
 
-    public void setBlockedExtensions(List<GenericRule> blockedExtensions)
-    {
-        this.blockedExtensions = blockedExtensions;
-    }
+    /**
+     * If true, enforces safe search on popular search engines.
+     */
+    public String getYoutubeForSchoolsIdentifier() { return youtubeForSchoolsIdentifier; }
+    public void setYoutubeForSchoolsIdentifier( String youtubeForSchoolsIdentifier ) { this.youtubeForSchoolsIdentifier = youtubeForSchoolsIdentifier; }
 
-    public List<GenericRule> getCategories()
-    {
-        return this.categories;
-    }
+    /**
+     * If true, ask for a password to unblock a site.
+     */
+    public Boolean getUnblockPasswordEnabled() { return this.unblockPasswordEnabled; }
+    public void setUnblockPasswordEnabled( Boolean newValue ) { this.unblockPasswordEnabled = newValue; }
 
-    public void setCategories(List<GenericRule> categories)
-    {
-        this.categories = categories;
-    }
+    /**
+     * If true, ask for a password to unblock a site.
+     */
+    public Boolean getUnblockPasswordAdmin() { return this.unblockPasswordAdmin; }
+    public void setUnblockPasswordAdmin( Boolean newValue ) { this.unblockPasswordAdmin = newValue; }
+    
+    /**
+     * String to use for the unblock password
+     */
+    public String getUnblockPassword() { return this.unblockPassword; }
+    public void setUnblockPassword( String newValue ) { this.unblockPassword = newValue; }
 
+    /**
+     * The mode for bypass
+     */
+    public String getUnblockMode() { return this.unblockMode; }
+    public void setUnblockMode( String unblockMode ) { this.unblockMode = unblockMode; }
+
+    /**
+     * The timeout for bypass (seconds)
+     * If unblock mode is set to Host, then the unblock will last for this many seconds
+     */
+    public Integer getUnblockTimeout() { return this.unblockTimeout; }
+    public void setUnblockTimeout( Integer unblockTimeout ) { this.unblockTimeout = unblockTimeout; }
+    
     public GenericRule getCategory(String idString)
     {
         if (idString == null)
@@ -135,174 +145,7 @@ public class WebFilterSettings implements Serializable
 
             return null;
     }
-
-    /**
-     * Template for block messages.
-     *
-     * @return the block message.
-     */
-    public BlockTemplate getBlockTemplate()
-    {
-        return blockTemplate;
-    }
-
-    public void setBlockTemplate(BlockTemplate blockTemplate)
-    {
-        this.blockTemplate = blockTemplate;
-    }
-
-    /**
-     * Block all requests to hosts identified only by an IP address.
-     *
-     * @return true when IP requests are blocked.
-     */
-    public Boolean getBlockAllIpHosts()
-    {
-        return blockAllIpHosts;
-    }
-
-    public void setBlockAllIpHosts(Boolean blockAllIpHosts)
-    {
-        this.blockAllIpHosts = blockAllIpHosts;
-    }
-
-    /**
-     * If true, enables checking of HTTPS traffic.
-     *
-     * @return true to block.
-     */
-    public Boolean getEnableHttps()
-    {
-        return enableHttps;
-    }
-
-    public void setEnableHttps(Boolean enableHttps)
-    {
-        this.enableHttps = enableHttps;
-    }
-
-    /**
-     * If true, enforces safe search on popular search engines.
-     *
-     * @return true to block.
-     */
-    public Boolean getEnforceSafeSearch()
-    {
-        return enforceSafeSearch;
-    }
-
-    public void setEnforceSafeSearch(Boolean enforceSafeSearch)
-    {
-        this.enforceSafeSearch = enforceSafeSearch;
-    }
-
-    /**
-     * If true, enforces safe search on popular search engines.
-     *
-     * @return true to block.
-     */
-    public Boolean getEnforceYoutubeForSchools()
-    {
-        return enforceYoutubeForSchools;
-    }
-
-    public void setEnforceYoutubeForSchools(Boolean enforceYoutubeForSchools)
-    {
-        this.enforceYoutubeForSchools = enforceYoutubeForSchools;
-    }
-
-    /**
-     * If true, enforces safe search on popular search engines.
-     *
-     * @return true to block.
-     */
-    public String getYoutubeForSchoolsIdentifier()
-    {
-        return youtubeForSchoolsIdentifier;
-    }
-
-    public void setYoutubeForSchoolsIdentifier(String youtubeForSchoolsIdentifier)
-    {
-        this.youtubeForSchoolsIdentifier = youtubeForSchoolsIdentifier;
-    }
-
-    /**
-     * If true, ask for a password to unblock a site.
-     *
-     * @return true to block.
-     */
-    public Boolean getUnblockPasswordEnabled()
-    {
-        return this.unblockPasswordEnabled;
-    }
-
-    public void setUnblockPasswordEnabled(Boolean newValue)
-    {
-        this.unblockPasswordEnabled = newValue;
-    }
-
-    /**
-     * If true, ask for a password to unblock a site.
-     *
-     * @return true to block.
-     */
-    public Boolean getUnblockPasswordAdmin()
-    {
-        return this.unblockPasswordAdmin;
-    }
-
-    public void setUnblockPasswordAdmin(Boolean newValue)
-    {
-        this.unblockPasswordAdmin = newValue;
-    }
     
-    /**
-     * String to use for the unblock password
-     *
-     * @return Unblock password for this node..
-     */
-    public String getUnblockPassword()
-    {
-        return this.unblockPassword;
-    }
-
-    public void setUnblockPassword(String newValue)
-    {
-        this.unblockPassword = newValue;
-    }
-
-    /**
-     * The mode for bypass
-     *
-     * @return The unblock mode
-     */
-    public String getUnblockMode()
-    {
-        return this.unblockMode;
-    }
-
-    public void setUnblockMode(String unblockMode)
-    {
-        this.unblockMode = unblockMode;
-    }
-
-    /**
-     * The timeout for bypass (seconds)
-     * If unblock mode is set to Host, then the unblock will last for this many seconds
-     *
-     * @return The unblock timeout
-     */
-    public Integer getUnblockTimeout()
-    {
-        return this.unblockTimeout;
-    }
-
-    public void setUnblockTimeout(Integer unblockTimeout)
-    {
-        this.unblockTimeout = unblockTimeout;
-    }
-    
-
     public String toJSONString()
     {
         JSONObject jO = new JSONObject(this);
