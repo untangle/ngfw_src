@@ -22,7 +22,6 @@ import com.untangle.node.token.Chunk;
 import com.untangle.node.token.Header;
 import com.untangle.node.token.Token;
 import com.untangle.node.util.AsciiCharBuffer;
-import com.untangle.uvm.node.StringRule;
 import com.untangle.uvm.vnet.TCPSession;
 import com.untangle.node.util.UrlHashSet;
 import com.untangle.node.util.GoogleSafeBrowsingHashSet;

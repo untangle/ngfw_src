@@ -63,7 +63,7 @@ public class VpnGroup implements java.io.Serializable
     public String getDescription() { return description; }
     public void setDescription(String description) { this.description = description; }
 
-    public boolean isLive() { return live; }
+    public boolean getLive() { return live; }
     public void setLive(boolean live) { this.live = live; }
     
     /**

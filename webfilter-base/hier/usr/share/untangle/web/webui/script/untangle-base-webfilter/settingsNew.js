@@ -1186,42 +1186,6 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                 for (var i = 0; i < passedClientsSaveList[2].list.length; i++) {
                     ipMaskedAddressList.push(passedClientsSaveList[2].list[i]["string"]);
                 }
-                if (ipMaskedAddressList.length > 0) {
-                    try {
-                        var result = null;
-                        try {
-                            result = this.getValidator().validate({
-                                list : ipMaskedAddressList,
-                                "javaClass" : "java.util.LinkedList"
-                            });
-                        } catch (e) {
-                            Ung.Util.rpcExHandler(e);
-                        }
-                        if (!result.valid) {
-                            var errorMsg = "";
-                            switch (result.errorCode) {
-                                case 'INVALID_IPMADDR' :
-                                    errorMsg = this.i18n._("Invalid subnet specified") + ": " + result.cause;
-                                break;
-                                default :
-                                    errorMsg = this.i18n._(result.errorCode) + ": " + result.cause;
-                            }
-
-                            this.panelPassLists.onManagePassedClients();
-                            this.gridPassedClients.focusFirstChangedDataByFieldValue("string", result.cause);
-                            Ext.MessageBox.alert(this.i18n._("Validation failed"), errorMsg);
-                            return false;
-                        }
-                    } catch (e) {
-                        var message = e.message;
-                        if (message == null || message == "Unknown") {
-                            message = this.i18n._("Please Try Again");
-                        }
-                        
-                        Ext.MessageBox.alert(i18n._("Failed"), message);
-                        return false;
-                    }
-                }
             }
             return true;
         }

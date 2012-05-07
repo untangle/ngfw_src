@@ -10,7 +10,6 @@ import org.apache.log4j.Logger;
 import org.json.JSONObject;
 import org.json.JSONString;
 
-import com.untangle.uvm.node.IPMaskedAddressRule;
 import com.untangle.uvm.node.GenericRule;
 import com.untangle.uvm.node.NodeSettings;
 

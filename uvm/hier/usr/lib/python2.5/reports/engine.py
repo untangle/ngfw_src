@@ -47,10 +47,6 @@ def get_wan_names_map():
 
     return map
 
-
-def print_progress_str(step, maxstep):
-    logger.debug('PROGRESS [%2.1f%%]' % (step * 100.0 / maxstep))
- 
 class Node:
     def __init__(self, name):
         self.__name = name
@@ -384,7 +380,6 @@ def setup(start_date, end_date, start_time):
     global __nodes
 
     count = 0.0
-    print_progress_str( count, len(__get_node_partial_order())+1 )
     for name in __get_node_partial_order():
         try:
             logger.debug('doing setup for: %s (%s -> %s)' % (name, start_date, end_date))
@@ -400,7 +395,6 @@ def setup(start_date, end_date, start_time):
                 node.setup(start_date, end_date, start_time)
 
             count = count+1.0 
-            print_progress_str( count, len(__get_node_partial_order())+1 )
         except:
             logger.warn('could not setup for: %s' % name, exc_info=True)
 
@@ -417,9 +411,7 @@ def post_facttable_setup(start_date, end_date):
             else:
                 node.post_facttable_setup(start_date, end_date)
         except:
-            logger.warn('could not do post factable setup for: %s' % name,
-                         exc_info=True)
-    print_progress_str( len(__get_node_partial_order())+1, len(__get_node_partial_order())+1 )
+            logger.warn('could not do post factable setup for: %s' % name, exc_info=True)
 
 @print_timing
 def fix_hierarchy(output_base):

@@ -21,7 +21,6 @@ import org.apache.log4j.Logger;
 import com.untangle.node.http.RequestLineToken;
 import com.untangle.node.token.Header;
 import com.untangle.uvm.UvmContextFactory;
-import com.untangle.uvm.node.IPMaskedAddressRule;
 import com.untangle.uvm.node.IPMaskedAddress;
 import com.untangle.uvm.node.MimeType;
 import com.untangle.uvm.node.GenericRule;

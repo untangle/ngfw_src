@@ -168,7 +168,7 @@ class EventHandler extends AbstractEventHandler
 
         for ( VpnGroup group : settings.getGroupList()) {
             /* Don't insert inactive groups */
-            if ( !group.isLive()) continue;
+            if ( !group.getLive()) continue;
             IPMatcher matcher = IPMatcher.makeSubnetMatcher( group.getAddress(), group.getNetmask());
 
             clientAddressList.add( matcher );
@@ -182,12 +182,12 @@ class EventHandler extends AbstractEventHandler
         for ( VpnSite site : settings.getSiteList()) {
             VpnGroup group = groupMap.get(site.getGroupName());
             /* Continue if the client isn't live or the group the client is in isn't live */
-            if ( !site.trans_isEnabled() || ( group == null ) || !group.isLive()) {
+            if ( !site.trans_isEnabled() || ( group == null ) || !group.getLive()) {
                 continue;
             }
 
             for ( SiteNetwork siteNetwork : site.getExportedAddressList()) {
-                if ( !siteNetwork.isLive()) continue;
+                if ( !siteNetwork.getLive()) continue;
                 IPMatcher matcher =
                     IPMatcher.makeSubnetMatcher( siteNetwork.getNetwork(), siteNetwork.getNetmask());
 
@@ -199,7 +199,7 @@ class EventHandler extends AbstractEventHandler
         }
 
         for ( SiteNetwork siteNetwork : settings.getExportedAddressList()) {
-            if ( !siteNetwork.isLive()) continue;
+            if ( !siteNetwork.getLive()) continue;
             IPMatcher matcher =
                 IPMatcher.makeSubnetMatcher( siteNetwork.getNetwork(), siteNetwork.getNetmask());
 

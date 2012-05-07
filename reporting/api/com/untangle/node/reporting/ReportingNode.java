@@ -26,11 +26,5 @@ public interface ReportingNode extends Node, HostnameLookup
      */
     void flushEvents();
     
-    /**
-     * Returns the current status string of a given reports run or incremental reports run
-     * This can be used to display progress in the UI
-     */
-    String getCurrentStatus();
-
     String lookupHostname( InetAddress address );
 }

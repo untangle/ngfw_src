@@ -6,9 +6,7 @@ package com.untangle.node.spyware;
 import java.util.List;
 import java.util.Date;
 
-import com.untangle.uvm.node.IPMaskedAddressRule;
 import com.untangle.uvm.node.Node;
-import com.untangle.uvm.node.StringRule;
 import com.untangle.uvm.node.Validator;
 import com.untangle.uvm.node.GenericRule;
 import com.untangle.uvm.node.EventLogQuery;

@@ -1,19 +1,5 @@
-/*
- * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc.
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License, version 2,
- * as published by the Free Software Foundation.
- *
- * This program is distributed in the hope that it will be useful, but
- * AS-IS and WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE, TITLE, or
- * NONINFRINGEMENT.  See the GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
+/**
+ * $Id$
  */
 package com.untangle.node.openvpn;
 
@@ -257,7 +243,7 @@ public class OpenVpnManager
          * not sure about this comment, the entries seem to get
          * pushed automatically. */
         for ( SiteNetwork siteNetwork : settings.getExportedAddressList()) {
-            if ( !siteNetwork.isLive()) continue;
+            if ( !siteNetwork.getLive()) continue;
 
             writePushRoute( sw, siteNetwork.getNetwork(), siteNetwork.getNetmask());
         }
@@ -268,12 +254,12 @@ public class OpenVpnManager
         for ( VpnSite site : settings.getSiteList()) {
             VpnGroup group = groupMap.get(site.getGroupName());
 
-            if ( !site.trans_isEnabled() || ( group == null ) || !group.isLive()) {
+            if ( !site.trans_isEnabled() || ( group == null ) || !group.getLive()) {
                 continue;
             }
 
             for ( SiteNetwork siteNetwork : site.getExportedAddressList()) {
-                if ( !siteNetwork.isLive()) continue;
+                if ( !siteNetwork.getLive()) continue;
 
                 IPAddress network = siteNetwork.getNetwork();
                 IPAddress netmask = siteNetwork.getNetmask();
@@ -295,7 +281,7 @@ public class OpenVpnManager
         sw.appendComment( "Groups" );
 
         for ( VpnGroup group : settings.getGroupList()) {
-            if ( !group.isLive()) continue;
+            if ( !group.getLive()) continue;
 
             writeRoute( sw, group.getAddress(), group.getNetmask());
         }
@@ -423,7 +409,7 @@ public class OpenVpnManager
         for ( VpnClient client : settings.getClientList()) {
             VpnGroup group = groupMap.get(client.getGroupName());
 
-            if ( !client.trans_isEnabled() || ( group == null ) || !group.isLive()) {
+            if ( !client.trans_isEnabled() || ( group == null ) || !group.getLive()) {
                 continue;
             }
 
@@ -472,7 +458,7 @@ public class OpenVpnManager
         for ( VpnSite site : settings.getSiteList()) {
             VpnGroup group = groupMap.get(site.getGroupName());
 
-            if ( !site.trans_isEnabled() || ( group == null ) || !group.isLive()) {
+            if ( !site.trans_isEnabled() || ( group == null ) || !group.getLive()) {
                 continue;
             }
 
@@ -488,7 +474,7 @@ public class OpenVpnManager
             sw.appendVariable( FLAG_CLI_IFCONFIG, "" + localEndpoint + " " + remoteEndpoint );
 
             for ( SiteNetwork siteNetwork : site.getExportedAddressList()) {
-                if ( !siteNetwork.isLive()) continue;
+                if ( !siteNetwork.getLive()) continue;
 
                 writeClientRoute( sw, siteNetwork.getNetwork(), siteNetwork.getNetmask());
             }

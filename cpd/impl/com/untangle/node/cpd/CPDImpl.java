@@ -309,7 +309,7 @@ public class CPDImpl extends NodeBase implements CPD
         /* Check if there is at least one enabled capture rule */
         boolean hasCaptureRule = false;
         for ( CaptureRule rule : this.settings.getCaptureRules()) {
-            if ( rule.isLive() && rule.getCapture()) {
+            if ( rule.getLive() && rule.getCapture()) {
                 hasCaptureRule = true;
                 break;
             }

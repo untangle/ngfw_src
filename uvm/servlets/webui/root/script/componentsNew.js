@@ -2911,20 +2911,6 @@ Ext.define("Ung.GridEventLog", {
                     this.setLoading(i18n._('Refreshing Events...'));
                     this.refreshList();
                 },this));
-                this.updateFunction = Ext.bind(function(){
-                    var statusStr = this.getUntangleNodeReporting().getCurrentStatus();
-                    //if the loadMask is no longer shown, stop this task
-                    //if the loadMask has moved on to a different phase, stop this task
-                    if(this.loadMask ==null || this.loadMask.disabled || this.loadMask.msg.indexOf("Syncing") == -1) { 
-                        return;
-                    }
-                    
-                    this.setLoading(i18n._('Syncing events to Database... ') + statusStr);
-
-                    window.setTimeout(this.updateFunction, 1000);
-                },this);
-
-                window.setTimeout(this.updateFunction, 2000);
             }
         }
     },
@@ -2959,21 +2945,6 @@ Ext.define("Ung.GridEventLog", {
                 // refresh after complete
                 this.refreshHandler();
             }, this));
-
-            this.updateFunction = Ext.bind( function(){
-                var statusStr = this.getUntangleNodeReporting().getCurrentStatus();
-                //if the loadMask is no longer shown, stop this task
-                //if the loadMask has moved on to a different phase, stop this task
-                if(this.loadMask ==null || this.loadMask.disabled || this.loadMask.msg.indexOf("Syncing") == -1) { 
-                    return;
-                }
-
-                this.setLoading(i18n._('Syncing events to Database... ') + statusStr);
-                window.setTimeout(this.updateFunction, 1000);
-
-            }, this);
-
-            window.setTimeout(this.updateFunction, 2000);
         }
     },
     refreshList : function() {

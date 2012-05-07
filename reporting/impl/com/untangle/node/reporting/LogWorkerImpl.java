@@ -126,7 +126,7 @@ public class LogWorkerImpl implements Runnable, LogWorker
          */
         synchronized( this ) {
             forceFlush = true;
-            logger.info("forceFlush()");
+            logger.info("forceFlush() ...");
             thread.interrupt();
 
             while (true) {
@@ -135,6 +135,7 @@ public class LogWorkerImpl implements Runnable, LogWorker
                 if (!forceFlush)
                     return;
             }
+            logger.info("forceFlush() complete.");
         }
     }
     

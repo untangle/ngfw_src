@@ -7,20 +7,15 @@ import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
 import com.untangle.uvm.node.IPAddress;
-import com.untangle.uvm.node.Rule;
 import com.untangle.uvm.node.Validatable;
 import com.untangle.uvm.node.ValidateException;
 
 /**
  * the configuration for a vpn client.
- *
- * @author <a href="mailto:rbscott@untangle.com">Robert Scott</a>
- * @version 1.0
  */
-public class VpnClient extends Rule implements Validatable
+@SuppressWarnings("serial")
+public class VpnClient implements Validatable
 {
-    private static final long serialVersionUID = -3644312179187645702L;
-
     private static final Pattern NAME_PATTERN;
 
     private static final int MAX_NAME_LENGTH = 60;
@@ -49,6 +44,9 @@ public class VpnClient extends Rule implements Validatable
     /* Email addresss where to send the client */
     private String distributionEmail = null;
 
+    private String name = "";
+    private boolean live = true;
+    
     // constructors -----------------------------------------------------------
 
     public VpnClient() { }
@@ -56,79 +54,43 @@ public class VpnClient extends Rule implements Validatable
     // accessors --------------------------------------------------------------
 
     /**
-     * @return The address group that this client belongs to.
+     * The address group that this client belongs to.
      */
-    public String getGroupName()
-    {
-        return this.groupName;
-    }
-
-    public void setGroupName( String newValue )
-    {
-        this.groupName = newValue;
-    }
+    public String getGroupName() { return this.groupName; }
+    public void setGroupName( String newValue ) { this.groupName = newValue; }
 
     /**
      * Static address for this client, this cannot be set, it is assigned.
      *
      * @return static address of the machine.
      */
-    public IPAddress getAddress()
-    {
-        return this.address;
-    }
-
-    public void setAddress( IPAddress address )
-    {
-        this.address = address;
-    }
+    public IPAddress getAddress() { return this.address; }
+    public void setAddress( IPAddress address ) { this.address = address; }
 
     /**
-     * @return the key required to download the client.
+     * the key required to download the client.
      */
-    public String getDistributionKey()
-    {
-        return this.distributionKey;
-    }
-
-    public void setDistributionKey( String distributionKey )
-    {
-        this.distributionKey = distributionKey;
-    }
+    public String getDistributionKey() { return this.distributionKey; }
+    public void setDistributionKey( String distributionKey ) { this.distributionKey = distributionKey; }
 
     /**
      * @return the key password to download the client.(unused)
      */
-    public String getDistributionPassword()
-    {
-        return this.distributionPassword;
-    }
+    public String getDistributionPassword() { return this.distributionPassword; }
+    public void setDistributionPassword( String distributionPassword ) { this.distributionPassword = distributionPassword; }
 
-    public void setDistributionPassword( String distributionPassword )
-    {
-        this.distributionPassword = distributionPassword;
-    }
+    public String getName() { return name; }
+    public void setName(String name) { this.name = name; }
+
+    public boolean getLive() { return live; }
+    public void setLive(boolean live) { this.live = live; }
 
     /* Indicates whether or not the server should distribute a config for this client */
-    public boolean trans_getDistributeClient()
-    {
-        return this.distributeClient;
-    }
+    public boolean trans_getDistributeClient() { return this.distributeClient; }
+    public void trans_setDistributeClient( boolean distributeClient ) { this.distributeClient = distributeClient; }
 
-    public void trans_setDistributeClient( boolean distributeClient )
-    {
-        this.distributeClient = distributeClient;
-    }
-
-    public String trans_getDistributionEmail()
-    {
-        return this.distributionEmail;
-    }
-
-    public void trans_setDistributionEmail( String email )
-    {
-        this.distributionEmail = email;
-    }
+    public String trans_getDistributionEmail() { return this.distributionEmail; }
+    public void trans_setDistributionEmail( String email ) { this.distributionEmail = email; }
 
     public boolean trans_hasDistributionEmail()
     {
@@ -178,7 +140,7 @@ public class VpnClient extends Rule implements Validatable
      * assigned an address. */
     public boolean trans_isEnabled()
     {
-        return isLive() && ( this.address != null );
+        return getLive() && ( this.address != null );
     }
 
     static void validateName( String name ) throws ValidateException

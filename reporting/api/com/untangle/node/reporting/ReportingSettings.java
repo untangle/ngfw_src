@@ -3,16 +3,15 @@
  */
 package com.untangle.node.reporting;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.io.Serializable;
 
 import com.untangle.uvm.node.NodeSettings;
-import com.untangle.uvm.node.IPMaskedAddressDirectory;
+import com.untangle.uvm.node.IPMaskedAddress;
 
 /**
  * Settings for the Reporting Node.
- *
- * @author <a href="mailto:amread@untangle.com">Aaron Read</a>
- * @version 1.0
  */
 @SuppressWarnings("serial")
 public class ReportingSettings implements Serializable
@@ -20,7 +19,7 @@ public class ReportingSettings implements Serializable
     private Long id;
     private Long nodeId;
 
-    private IPMaskedAddressDirectory networkDirectory = new IPMaskedAddressDirectory();
+    private Map<IPMaskedAddress,String> hostnameMap = new HashMap<IPMaskedAddress,String>();
     private Integer dbRetention = 7; // days
     private Integer fileRetention = 30; // days
     private Boolean emailDetail = false;
@@ -51,8 +50,8 @@ public class ReportingSettings implements Serializable
      *
      * @return the network directory
      */
-    public IPMaskedAddressDirectory getNetworkDirectory() { return networkDirectory; }
-    public void setNetworkDirectory(IPMaskedAddressDirectory networkDirectory) { this.networkDirectory = networkDirectory; }
+    public Map<IPMaskedAddress,String> getHostnameMap() { return hostnameMap; }
+    public void setHostnameMap(Map<IPMaskedAddress,String> hostnameMap) { this.hostnameMap = hostnameMap; }
 
     public int getDbRetention() { return dbRetention; }
     public void setDbRetention(int dbRetention) { this.dbRetention = dbRetention; }

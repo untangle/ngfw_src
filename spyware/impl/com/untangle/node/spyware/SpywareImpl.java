@@ -1,3 +1,6 @@
+/**
+ * $Id$
+ */
 package com.untangle.node.spyware;
 
 import java.io.IOException;
@@ -32,7 +35,6 @@ import com.untangle.uvm.LocalAppServerManager;
 import com.untangle.uvm.UvmContext;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.node.IPMaskedAddress;
-import com.untangle.uvm.node.IPMaskedAddressRule;
 import com.untangle.uvm.node.Validator;
 import com.untangle.uvm.node.GenericRule;
 import com.untangle.uvm.node.EventLogQuery;

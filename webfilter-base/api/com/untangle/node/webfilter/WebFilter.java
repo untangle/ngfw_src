@@ -1,11 +1,10 @@
-/*
+/**
  * $Id$
  */
 package com.untangle.node.webfilter;
 
 import java.util.List;
 
-import com.untangle.uvm.node.IPMaskedAddressRule;
 import com.untangle.uvm.node.GenericRule;
 import com.untangle.uvm.node.Node;
 import com.untangle.uvm.node.Validator;
@@ -39,8 +38,6 @@ public interface WebFilter extends Node
 
     List<GenericRule> getCategories();
     void setCategories(List<GenericRule> newCategories);
-
-    Validator getValidator();
 
     WebFilterBlockDetails getDetails(String nonce);
 

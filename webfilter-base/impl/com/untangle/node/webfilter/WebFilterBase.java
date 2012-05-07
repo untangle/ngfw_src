@@ -19,11 +19,7 @@ import com.untangle.uvm.UvmContext;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.node.NodeSettings;
 import com.untangle.uvm.node.NodeProperties;
-import com.untangle.uvm.node.IPMaskedAddressRule;
-import com.untangle.uvm.node.IPMaskedAddressValidator;
 import com.untangle.uvm.node.GenericRule;
-import com.untangle.uvm.node.Rule;
-import com.untangle.uvm.node.Validator;
 import com.untangle.uvm.node.EventLogQuery;
 import com.untangle.uvm.node.NodeMetric;
 import com.untangle.uvm.util.I18nUtil;
@@ -261,12 +257,6 @@ public abstract class WebFilterBase extends NodeBase implements WebFilter
         this.settings.setPassedUrls(passedUrls);
 
         _setSettings(this.settings);
-    }
-
-    
-    public Validator getValidator()
-    {
-        return new IPMaskedAddressValidator();
     }
 
     public abstract DecisionEngine getDecisionEngine();

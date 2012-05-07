@@ -18,6 +18,7 @@ import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -30,8 +31,6 @@ import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.node.NodeSettings;
 import com.untangle.uvm.node.NodeProperties;
 import com.untangle.uvm.node.Validator;
-import com.untangle.uvm.node.IPMaskedAddressDirectory;
-import com.untangle.uvm.node.IPMaskedAddressRule;
 import com.untangle.uvm.node.IPMaskedAddress;
 import com.untangle.uvm.AdminManager;
 import com.untangle.uvm.User;
@@ -48,19 +47,14 @@ public class ReportingNodeImpl extends NodeBase implements ReportingNode, LogWor
     private static final String  REPORTS_SCRIPT = System.getProperty("uvm.home") + "/bin/reporting-generate-reports.py";
     private static final String  REPORTER_LOG_FILE = "/var/log/uvm/reporter.log";
     private static final long    REPORTER_LOG_FILE_READ_TIMEOUT = 180 * 1000; /* 180 seconds */
-    private static final Pattern REPORTER_LOG_PROGRESS_PATTERN = Pattern.compile(".*PROGRESS\\s*\\[(.*)\\]");
 
     private static final String CRON_STRING = "* * * root /usr/share/untangle/bin/reporting-generate-reports.py -d $(date \"+\\%Y-\\%m-\\%d\") > /dev/null 2>&1";
     private static final File CRON_FILE = new File("/etc/cron.d/untangle-reports-nightly");
 
     private static LogWorkerImpl logWorker = null;
 
-    private String currentStatus = "";
-
     private ReportingSettings settings;
 
-    private long lastFlushTime = 0;
-    
     public ReportingNodeImpl( NodeSettings nodeSettings, NodeProperties nodeProperties )
     {
         super( nodeSettings, nodeProperties );
@@ -73,18 +67,18 @@ public class ReportingNodeImpl extends NodeBase implements ReportingNode, LogWor
     {
         ReportingNodeImpl.this.settings = settings;
 
-//         TransactionWork<Void> tw = new TransactionWork<Void>() {
-//             public boolean doWork(Session s)
-//             {
-//                 s.saveOrUpdate(settings);
-//                 return true;
-//             }
+        //         TransactionWork<Void> tw = new TransactionWork<Void>() {
+        //             public boolean doWork(Session s)
+        //             {
+        //                 s.saveOrUpdate(settings);
+        //                 return true;
+        //             }
 
-//             public Void getResult() {
-//                 return null;
-//             };
-//         };
-//         UvmContextFactory.context().runTransaction(tw);
+        //             public Void getResult() {
+        //                 return null;
+        //             };
+        //         };
+        //         UvmContextFactory.context().runTransaction(tw);
 
         writeCronFile();
     }
@@ -112,15 +106,8 @@ public class ReportingNodeImpl extends NodeBase implements ReportingNode, LogWor
                 tries++;
                 tryAgain = false;
             
-                try {
-                    String args[] = { REPORTS_SCRIPT, "-r", "1", "-m", "-d", ts };
-                    Process proc = UvmContextFactory.context().execManager().execEvil(args);
-                    tailLog(REPORTER_LOG_FILE, REPORTER_LOG_FILE_READ_TIMEOUT, proc);
-                    exitCode = proc.waitFor();
-                    proc.destroy();
-                } catch (Exception e) {
-                    logger.error("Unable to run daily reports", e );
-                }
+                exitCode = UvmContextFactory.context().execManager().execResult(REPORTS_SCRIPT + " -m -i -r -1 ");
+
                 /* exitCode == 1 means another reports process is running, just wait and try again. */
                 if (exitCode == 1)  {
                     logger.warn("Report process already running. Waiting and then trying again...");
@@ -138,41 +125,13 @@ public class ReportingNodeImpl extends NodeBase implements ReportingNode, LogWor
         }
     }
 
-    public String getCurrentStatus()
-    {
-        return this.currentStatus;
-    }
-
     public void flushEvents()
     {
         long currentTime  = System.currentTimeMillis();
         
-        int exitCode = -1;
-        this.currentStatus = "";
-            
         logger.info("Flushing queued events...");
         if (this.logWorker != null)
             this.logWorker.forceFlush();
-
-        logger.info("Running incremental report...");
-        synchronized (this) {
-            try {
-                String args[] = { REPORTS_SCRIPT, "-m", "-i", "-r", "1" };
-                Process proc = UvmContextFactory.context().execManager().execEvil(args);
-                tailLog(REPORTER_LOG_FILE, REPORTER_LOG_FILE_READ_TIMEOUT, proc);
-                exitCode = proc.waitFor();
-                proc.destroy();
-            } catch (Exception e) {
-                logger.error("Unable to run incremental reports", e );
-            }
-        }
-
-        this.currentStatus = "";
-        lastFlushTime = System.currentTimeMillis();
-                
-        if (exitCode != 0) {
-            logger.warn("Incremental reports exited with non-zero return code: " + exitCode);
-        }
     }
     
     public void initializeSettings()
@@ -199,16 +158,24 @@ public class ReportingNodeImpl extends NodeBase implements ReportingNode, LogWor
         ReportingSettings settings = this.getReportingSettings();
         if (settings == null)
             return null;
-        IPMaskedAddressDirectory nameMap = settings.getNetworkDirectory();
+        /* XXX */
+        /* XXX */
+        /* XXX */
+        /* Map<IPMaskedAddress,String> nameMap = settings.getHostnameMap(); FIXME */
+        Map<IPMaskedAddress,String> nameMap = null;
+        /* XXX */
+        /* XXX */
+        /* XXX */
         if (nameMap == null)
             return null;
-        List<IPMaskedAddressRule> nameMapList = nameMap.getEntries();
+        
+        Set<IPMaskedAddress> nameMapList = nameMap.keySet();
         if (nameMapList == null)
             return null;
-        for (IPMaskedAddressRule rule : nameMapList) {
-            IPMaskedAddress addr = rule.getIpMaskedAddress();
+        
+        for (IPMaskedAddress addr : nameMapList) {
             if (addr != null && addr.contains(address))
-                return rule.getName();
+                return nameMap.get(addr);
         }
         return null;
     }
@@ -327,32 +294,6 @@ public class ReportingNodeImpl extends NodeBase implements ReportingNode, LogWor
         s.setReportingUsers(reportEmail);
         // also sign them up for emailed reports
         adminManager.getMailSettings().setReportEmail(reportEmail);
-    }
-
-    private void tailLog(String logFile, long timeout, Process proc)
-    {
-        try {
-            File file = new File(logFile);
-            if (!file.exists()) {
-                logger.warn(logFile + " not found.");
-            }
-
-            RandomAccessFile raf = new RandomAccessFile(file, "r");
-            raf.seek(file.length()); // seek to end
-                
-            String line = null;
-            while ((line = readLine(raf, timeout, proc)) != null) {
-                Matcher match = REPORTER_LOG_PROGRESS_PATTERN.matcher(line);
-                if (match.matches()) {
-                    currentStatus = match.group(1);
-                    logger.info("update currentStatus: " + currentStatus);
-                }
-            }
-        } catch (IOException e) {
-            logger.error("Unable to read log file.", e);
-        }
-        
-        logger.info("tailLog() complete");
     }
 
     /**

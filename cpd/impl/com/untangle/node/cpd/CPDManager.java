@@ -1,3 +1,6 @@
+/**
+ * $Id$
+ */
 package com.untangle.node.cpd;
 
 import java.io.File;
@@ -290,13 +293,13 @@ public class CPDManager
 
         /* Add the passed clients and addresses first, and then add the capture rules */
         for ( PassedAddress client : settings.getPassedClients()) {
-            if (client.isLive()) {
+            if (client.getLive()) {
                 serializePassedAddress(captureRules, client.getAddress(), IPMatcher.getAnyMatcher());
             }
         }
 
         for ( PassedAddress server : settings.getPassedServers()) {
-            if (server.isLive()) {
+            if (server.getLive()) {
                 serializePassedAddress(captureRules, IPMatcher.getAnyMatcher(), server.getAddress());
             }
         }
@@ -331,7 +334,7 @@ public class CPDManager
             for ( String clientAddress : clientAddressList ) {
                 for ( String serverAddress : serverAddressList ) {
                     JSONObject json = new JSONObject();
-                    json.put("enabled", captureRule.isLive());
+                    json.put("enabled", captureRule.getLive());
                     json.put("description",captureRule.getDescription());
                     json.put("capture", captureRule.getCapture());
                     json.put("client_address", clientAddress );

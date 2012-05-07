@@ -2874,23 +2874,6 @@ Ung.GridEventLog = Ext.extend(Ext.grid.GridPanel, {
                     this.loadMask.show();
                     this.refreshList();
                 }.createDelegate(this));
-
-                this.updateFunction = function(){
-                    var statusStr = this.getUntangleNodeReporting().getCurrentStatus();
-                    //if the loadMask is no longer shown, stop this task
-                    if(this.loadMask.disabled) 
-                        return;
-                    //if the loadMask has moved on to a different phase, stop this task
-                    if(this.loadMask.msg.indexOf("Syncing") == -1)
-                        return;
-                    
-                    this.loadMask.msg = i18n._('Syncing events to Database... ') + statusStr;
-                    this.loadMask.show();
-                    window.setTimeout(this.updateFunction, 1000);
-
-                }.createDelegate(this);
-
-                window.setTimeout(this.updateFunction, 2000);
             }
         }
     },
@@ -2925,23 +2908,6 @@ Ung.GridEventLog = Ext.extend(Ext.grid.GridPanel, {
                 // refresh after complete
                 this.refreshHandler();
             }.createDelegate(this));
-
-            this.updateFunction = function(){
-                var statusStr = this.getUntangleNodeReporting().getCurrentStatus();
-                //if the loadMask is no longer shown, stop this task
-                if(this.loadMask.disabled) 
-                    return;
-                //if the loadMask has moved on to a different phase, stop this task
-                if(this.loadMask.msg.indexOf("Syncing") == -1)
-                    return;
-                
-                this.loadMask.msg = i18n._('Syncing events to Database... ') + statusStr;
-                this.loadMask.show();
-                window.setTimeout(this.updateFunction, 1000);
-
-            }.createDelegate(this);
-
-            window.setTimeout(this.updateFunction, 2000);
         }
     },
     refreshList : function() {
