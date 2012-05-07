@@ -34,7 +34,7 @@ import com.untangle.uvm.logging.SyslogPriority;
 @org.hibernate.annotations.Entity(mutable=false)
 @Table(name="n_mail_addrs", schema="reports")
 @SuppressWarnings("serial")
-public class MailLogEventFromReports extends LogEvent
+public class MailLogEventFromReports extends LogEventFromReports
 {
     private Long sessionId;
     private Integer clientIntf;
@@ -263,4 +263,5 @@ public class MailLogEventFromReports extends LogEvent
         // FIXME
         return SyslogPriority.INFORMATIONAL;
     }
+
 }

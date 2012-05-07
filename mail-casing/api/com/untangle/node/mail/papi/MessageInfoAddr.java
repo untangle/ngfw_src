@@ -125,12 +125,6 @@ public class MessageInfoAddr extends LogEvent implements Serializable
     }
 
     @Override
-    public boolean isDirectEvent()
-    {
-        return true;
-    }
-
-    @Override
     public String getDirectEventSql()
     {
         SessionEvent se = messageInfo.getSessionEvent();
@@ -148,7 +142,7 @@ public class MessageInfoAddr extends LogEvent implements Serializable
             " VALUES " +
             "( " +
             "timestamp '" + new java.sql.Timestamp(getTimeStamp().getTime()) + "'" + "," +
-            se.getId() + "," +
+            se.getSessionId() + "," +
             se.getClientIntf() + "," +
             se.getServerIntf() + "," +
             "'" + se.getCClientAddr().getHostAddress() + "'" + "," +

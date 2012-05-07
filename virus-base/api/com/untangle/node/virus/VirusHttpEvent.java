@@ -55,12 +55,6 @@ public class VirusHttpEvent extends LogEvent
     public void setVendorName( String vendorName ) { this.vendorName = vendorName; }
 
     @Override
-    public boolean isDirectEvent()
-    {
-        return true;
-    }
-
-    @Override
     public String getDirectEventSql()
     {
         String sql =

@@ -122,12 +122,6 @@ public class ClientStatusEvent extends LogEvent implements Serializable
     // Syslog methods ---------------------------------------------------------
 
     @Override
-    public boolean isDirectEvent()
-    {
-        return true;
-    }
-
-    @Override
     public String getDirectEventSql()
     {
         String sql = "INSERT INTO reports.n_openvpn_stats " +

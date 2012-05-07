@@ -28,7 +28,7 @@ import com.untangle.uvm.logging.SyslogPriority;
     @org.hibernate.annotations.Entity(mutable=false)
     @Table(name="n_cpd_block_events", schema="reports")
     @SuppressWarnings("serial")
-    public class CpdBlockEventsFromReports extends LogEvent
+    public class CpdBlockEventsFromReports extends LogEventFromReports
     {
         private InetAddress clientAddress;
         private InetAddress serverAddress;
@@ -80,4 +80,5 @@ import com.untangle.uvm.logging.SyslogPriority;
             return SyslogPriority.INFORMATIONAL;
         }
 
+        
     }

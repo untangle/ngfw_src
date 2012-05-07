@@ -117,13 +117,6 @@ public class WebFilterEvent extends LogEvent
         this.vendorName = vendorName;
     }
 
-
-    @Override
-    public boolean isDirectEvent()
-    {
-        return true;
-    }
-
     @Override
     public String getDirectEventSql()
     {
@@ -168,6 +161,6 @@ public class WebFilterEvent extends LogEvent
 
     public String toString()
     {
-        return "WebFilterEvent id: " + getId();
+        return "WebFilterEvent id: " + getRequestId();
     }
 }

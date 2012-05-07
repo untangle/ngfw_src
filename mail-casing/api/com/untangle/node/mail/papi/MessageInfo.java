@@ -221,12 +221,11 @@ public class MessageInfo extends LogEvent implements Serializable
         return;
     }
 
-    @Override
-    public boolean isDirectEvent()
+    public String getDirectEventSql()
     {
-        return true;
+        return null;
     }
-
+    
     @Override
     public List<String> getDirectEventSqls()
     {

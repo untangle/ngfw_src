@@ -68,12 +68,6 @@ public class SystemStatEvent extends LogEvent
     public void setSwapTotal(final long newSwapTotal) { this.swapTotal = newSwapTotal; }
 
     @Override
-    public boolean isDirectEvent()
-    {
-        return true;
-    }
-
-    @Override
     public String getDirectEventSql()
     {
         String sql =
@@ -120,6 +114,6 @@ public class SystemStatEvent extends LogEvent
 
     public String toString()
     {
-        return "SystemStatEvent id: " + getId();
+        return "SystemStatEvent";
     }
 }

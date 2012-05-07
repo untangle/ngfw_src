@@ -29,7 +29,7 @@ import com.untangle.uvm.logging.SyslogPriority;
 @org.hibernate.annotations.Entity(mutable=false)
 @Table(name="n_shield_rejection_totals", schema="reports")
 @SuppressWarnings("serial")
-public class ShieldEventsFromReports extends LogEvent
+public class ShieldEventsFromReports extends LogEventFromReports
 {
     private IPAddress clientAddr;
     private Integer clientIntf;

@@ -186,7 +186,7 @@ public class SpywareHttpHandler extends HttpStateMachine
                     logger.debug("blocking cookie: " + domain);
                 }
                 node.incrementHttpClientCookieBlock();
-                node.logEvent(new SpywareCookieEvent(requestLine.getRequestLine(), domain, true));
+                node.logEvent(new SpywareCookieEvent(requestLine.getRequestLine(), domain));
                 i.remove();
                 if (logger.isDebugEnabled()) {
                     logger.debug("making cookieKiller: " + domain);
@@ -251,7 +251,7 @@ public class SpywareHttpHandler extends HttpStateMachine
                     logger.debug("cookie deleted: " + domain);
                 }
                 node.incrementHttpServerCookieBlock();
-                node.logEvent(new SpywareCookieEvent(rl.getRequestLine(), domain, false));
+                node.logEvent(new SpywareCookieEvent(rl.getRequestLine(), domain));
                 i.remove();
             } else {
                 if (logger.isDebugEnabled()) {

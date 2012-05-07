@@ -71,12 +71,6 @@ public class SpamSmtpTarpitEvent extends LogEvent
     public void setSessionEvent( SessionEvent sessionEvent ) { this.sessionEvent = sessionEvent; }
 
     @Override
-    public boolean isDirectEvent()
-    {
-        return true;
-    }
-
-    @Override
     public String getDirectEventSql()
     {
         String sql = "INSERT INTO reports.n_spam_smtp_tarpit_events " +

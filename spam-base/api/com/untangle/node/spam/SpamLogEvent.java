@@ -146,10 +146,7 @@ public class SpamLogEvent extends LogEvent
     public void setVendorName(String vendorName) { this.vendorName = vendorName; }
 
     @Override
-    public boolean isDirectEvent()
-    {
-        return true;
-    }
+    public String getDirectEventSql() {return null;}
 
     @Override
     public List<String> getDirectEventSqls()

@@ -31,7 +31,7 @@ import com.untangle.uvm.logging.SyslogPriority;
 @org.hibernate.annotations.Entity(mutable=false)
 @Table(name="n_http_events", schema="reports")
 @SuppressWarnings("serial")
-public class HttpLogEventFromReports extends LogEvent
+public class HttpLogEventFromReports extends LogEventFromReports
 {
     private Long sessionId;
     private Integer clientIntf;
@@ -242,9 +242,7 @@ public class HttpLogEventFromReports extends LogEvent
     public Character getPhishAction() { return phishAction; }
     public void setPhishAction(Character phishAction) { this.phishAction = phishAction; }
     
-    public void appendSyslog(SyslogBuilder sb) // FIXME: not called for now
-    {
-    }
+    public void appendSyslog(SyslogBuilder sb) { }
 
     @Transient
     public String getSyslogId()
@@ -258,5 +256,4 @@ public class HttpLogEventFromReports extends LogEvent
         // FIXME
         return SyslogPriority.INFORMATIONAL;
     }
-
 }

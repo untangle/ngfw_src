@@ -83,12 +83,6 @@ public class VirusFtpEvent extends LogEvent
     }
 
     @Override
-    public boolean isDirectEvent()
-    {
-        return true;
-    }
-
-    @Override
     public String getDirectEventSql()
     {
         /* 

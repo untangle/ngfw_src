@@ -82,12 +82,6 @@ public class ShieldRejectionEvent extends LogEvent implements Serializable
     public void setDropped(  int dropped  ) { this.dropped = dropped; }
 
     @Override
-    public boolean isDirectEvent()
-    {
-        return true;
-    }
-
-    @Override
     public String getDirectEventSql()
     {
         String sql = "INSERT INTO reports.n_shield_rejection_totals " +

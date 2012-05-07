@@ -29,7 +29,7 @@ import com.untangle.uvm.logging.SyslogPriority;
 @org.hibernate.annotations.Entity(mutable=false)
 @Table(name="n_spam_smtp_tarpit_events", schema="reports")
 @SuppressWarnings("serial")
-public class TarpitEventsFromReports extends LogEvent
+public class TarpitEventsFromReports extends LogEventFromReports
 {
     private String hostname;
     private IPAddress ipAddr;
@@ -86,6 +86,7 @@ public class TarpitEventsFromReports extends LogEvent
     public void appendSyslog(SyslogBuilder sb) 
     {
     }
+
 
     @Transient
     public String getSyslogId()

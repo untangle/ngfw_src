@@ -254,6 +254,10 @@
     <priority value="INFO"/>
   </category>
 
+  <category name="com.untangle.node.reporting">
+    <priority value="INFO"/>
+  </category>
+
   <category name="com.untangle.node.shield">
     <priority value="INFO"/>
   </category>

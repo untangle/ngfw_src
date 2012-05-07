@@ -99,12 +99,6 @@ public class ShieldStatisticEvent extends LogEvent implements Serializable
     public void setClosed(  int closed  ) { this.closed = closed; }
 
     @Override
-    public boolean isDirectEvent()
-    {
-        return true;
-    }
-
-    @Override
     public String getDirectEventSql()
     {
         String sql = "INSERT INTO reports.n_shield_totals " +

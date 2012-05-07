@@ -99,10 +99,7 @@ public class VirusMailEvent extends LogEvent
     }
 
     @Override
-    public boolean isDirectEvent()
-    {
-        return true;
-    }
+    public String getDirectEventSql() {return null;}
 
     @Override
     public List<String> getDirectEventSqls()

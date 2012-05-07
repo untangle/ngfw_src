@@ -201,12 +201,6 @@ public class SessionStatsEvent extends LogEvent
     }
 
     @Override
-    public boolean isDirectEvent()
-    {
-        return true;
-    }
-
-    @Override
     public String getDirectEventSql()
     {
         String sql = "UPDATE reports.sessions " +

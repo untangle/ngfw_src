@@ -60,12 +60,6 @@ public class PhishHttpEvent extends LogEvent
     }
 
     @Override
-    public boolean isDirectEvent()
-    {
-        return true;
-    }
-
-    @Override
     public String getDirectEventSql()
     {
         String sql =
@@ -109,6 +103,6 @@ public class PhishHttpEvent extends LogEvent
 
     public String toString()
     {
-        return "PhishHttpEvent id: " + getId() + " RequestLine: " + requestLine;
+        return "PhishHttpEvent id: " + getRequestId() + " RequestLine: " + requestLine;
     }
 }

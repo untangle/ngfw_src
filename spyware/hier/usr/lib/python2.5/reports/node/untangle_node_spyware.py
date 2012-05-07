@@ -37,7 +37,7 @@ class Spyware(Node):
         Node.__init__(self, 'untangle-node-spyware')
 
     def setup(self, start_date, end_date, start_time):
-        self.__update_access(start_date, end_date)
+        self.__update_access()
         self.__update_url(start_date, end_date)
         self.__update_cookie(start_date, end_date)
 
@@ -49,9 +49,7 @@ class Spyware(Node):
 
     @sql_helper.print_timing
     def events_cleanup(self, cutoff):
-        sql_helper.clean_table("events", "n_spyware_evt_access", cutoff);
-        sql_helper.clean_table("events", "n_spyware_evt_url", cutoff);
-        sql_helper.clean_table("events", "n_spyware_evt_cookie", cutoff);
+        return
 
     def reports_cleanup(self, cutoff):
         pass
@@ -79,20 +77,7 @@ class Spyware(Node):
         return Report(self, sections)
 
     @print_timing
-    def __update_access(self, start_date, end_date):
-        conn = sql_helper.get_connection()
-        try:
-            sql_helper.run_sql("""\
-UPDATE reports.sessions
-SET sw_access_ident = ident
-FROM events.n_spyware_evt_access
-WHERE reports.sessions.session_id = events.n_spyware_evt_access.session_id""",
-                               (), connection=conn, auto_commit=False)
-            conn.commit()
-        except Exception, e:
-            conn.rollback()
-            raise e
-
+    def __update_access(self):
         ft = reports.engine.get_fact_table('reports.session_totals')
         ft.measures.append(Column('sw_accesses', 'integer',
                                   'count(sw_access_ident)'))
@@ -100,37 +85,11 @@ WHERE reports.sessions.session_id = events.n_spyware_evt_access.session_id""",
 
     @print_timing
     def __update_url(self, start_date, end_date):
-        conn = sql_helper.get_connection()
-        try:
-            sql_helper.run_sql("""\
-UPDATE reports.n_http_events
-SET sw_blacklisted = true
-FROM events.n_spyware_evt_url
-WHERE reports.n_http_events.request_id = events.n_spyware_evt_url.request_id""",
-                               (), connection=conn, auto_commit=False)
-            conn.commit()
-        except Exception, e:
-            conn.rollback()
-            raise e
-
         ft = reports.engine.get_fact_table('reports.n_http_totals')
         ft.measures.append(Column('sw_blacklisted', 'integer', 'count(sw_blacklisted)'))
 
     @print_timing
     def __update_cookie(self, start_date, end_date):
-        conn = sql_helper.get_connection()
-        try:
-            sql_helper.run_sql("""\
-UPDATE reports.n_http_events
-SET sw_cookie_ident = ident
-FROM events.n_spyware_evt_cookie
-WHERE reports.n_http_events.request_id = events.n_spyware_evt_cookie.request_id""",
-                               (), connection=conn, auto_commit=False)
-            conn.commit()
-        except Exception, e:
-            conn.rollback()
-            raise e
-
         ft = reports.engine.get_fact_table('reports.n_http_totals')
         ft.measures.append(Column('sw_cookies', 'integer',
                                   'count(sw_cookie_ident)'))
@@ -145,8 +104,7 @@ class SpywareHighlight(Highlight):
                            "%(blocks)s" + " " + _("activities"))
 
     @print_timing
-    def get_highlights(self, end_date, report_days,
-                       host=None, user=None, email=None):
+    def get_highlights(self, end_date, report_days, host=None, user=None, email=None):
         if email:
             return None
 

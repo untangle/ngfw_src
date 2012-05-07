@@ -62,12 +62,6 @@ public class CPDLoginEvent extends LogEvent
     public void setAuthenticationType( AuthenticationType newValue ) { this.authenticationTypeValue = newValue.toString(); }
 
     @Override
-    public boolean isDirectEvent()
-    {
-        return true;
-    }
-
-    @Override
     public String getDirectEventSql()
     {
         String sql = "INSERT INTO reports.n_cpd_login_events " +
@@ -108,7 +102,6 @@ public class CPDLoginEvent extends LogEvent
 
     public String toString()
     {
-        return "CPDLoginEvent id: " + getId() + " login-name: " + loginName + " authenticationType: " + authenticationTypeValue +
-        " event: " + eventValue;
+        return "CPDLoginEvent login-name: " + loginName + " authenticationType: " + authenticationTypeValue +  " + event: " + eventValue;
     }
 }

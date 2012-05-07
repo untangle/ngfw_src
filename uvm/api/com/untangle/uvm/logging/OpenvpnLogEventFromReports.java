@@ -28,7 +28,7 @@ import com.untangle.uvm.logging.SyslogPriority;
     @org.hibernate.annotations.Entity(mutable=false)
     @Table(name="n_openvpn_stats", schema="reports")
     @SuppressWarnings("serial")
-    public class OpenvpnLogEventFromReports extends LogEvent
+    public class OpenvpnLogEventFromReports extends LogEventFromReports
     {
         private Long rxBytes;
         private Long txBytes;

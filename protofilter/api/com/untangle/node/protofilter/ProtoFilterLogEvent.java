@@ -72,12 +72,6 @@ public class ProtoFilterLogEvent extends LogEvent
     }
 
     @Override
-    public boolean isDirectEvent()
-    {
-        return true;
-    }
-
-    @Override
     public String getDirectEventSql()
     {
         String sql =

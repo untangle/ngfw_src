@@ -66,12 +66,6 @@ public class IpsLogEvent extends LogEvent
     public void setSessionEvent(SessionEvent sessionEvent) { this.sessionEvent = sessionEvent; }
 
     @Override
-    public boolean isDirectEvent()
-    {
-        return true;
-    }
-
-    @Override
     public String getDirectEventSql()
     {
         String sql =
@@ -111,6 +105,6 @@ public class IpsLogEvent extends LogEvent
 
     public String toString()
     {
-        return "IpsLogEvent id: " + getId() + " Message: " + message;
+        return "IpsLogEvent id: " + sessionEvent.getSessionId() + " Message: " + message;
     }
 }

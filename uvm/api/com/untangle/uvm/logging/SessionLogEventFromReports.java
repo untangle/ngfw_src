@@ -25,10 +25,10 @@ import com.untangle.uvm.logging.SyslogPriority;
  * @version 1.0
  */
 @Entity
-    @org.hibernate.annotations.Entity(mutable=false)
+@org.hibernate.annotations.Entity(mutable=false)
     @Table(name="sessions", schema="reports")
     @SuppressWarnings("serial")
-    public class SessionLogEventFromReports extends LogEvent
+    public class SessionLogEventFromReports extends LogEventFromReports
     {
         private Long sessionId;
         private Date endTime;
@@ -75,14 +75,14 @@ import com.untangle.uvm.logging.SyslogPriority;
         @Column(name="session_id")
         public Long getSessionId() { return sessionId; }
         public void setSessionId(Long sessionId) { this.sessionId = sessionId; }
-
+        
         @Temporal(TemporalType.TIMESTAMP)
         @Column(name="end_time")
         public Date getEndTime() { return endTime; }
         public void setEndTime(Date endTime) { this.endTime = endTime; }
 
         @Column(name="hname")        
-        public String getHname() { return hname; }
+            public String getHname() { return hname; }
         public void setHname(String hname) { this.hname = hname; }
 
         @Column(name="uid")
@@ -207,29 +207,29 @@ import com.untangle.uvm.logging.SyslogPriority;
 
         public void appendSyslog(SyslogBuilder sb) // FIXME: not called for now
         {
-//             sb.startSection("endpoints");
-//             sb.addField("create-date", getTimeStamp());
+            //             sb.startSection("endpoints");
+            //             sb.addField("create-date", getTimeStamp());
 
-//             Long policyId = getPolicyId();
-//             sb.addField("policy", ((policyId == null) ? "<none>" : policyId.toString()));
+            //             Long policyId = getPolicyId();
+            //             sb.addField("policy", ((policyId == null) ? "<none>" : policyId.toString()));
 
-//             sb.addField("client-iface", getClientIntf());
-//             sb.addField("client-addr", getCClientAddr());
-//             sb.addField("client-port", getCClientPort());
-//             sb.addField("server-addr", getCServerAddr());
-//             sb.addField("server-port", getCServerPort());
+            //             sb.addField("client-iface", getClientIntf());
+            //             sb.addField("client-addr", getCClientAddr());
+            //             sb.addField("client-port", getCClientPort());
+            //             sb.addField("server-addr", getCServerAddr());
+            //             sb.addField("server-port", getCServerPort());
 
-//             sb.startSection("info");
-//             sb.addField("pf-protocol", getPfProtocol());
-//             sb.addField("pf-blocked", getPfBlocked());
+            //             sb.startSection("info");
+            //             sb.addField("pf-protocol", getPfProtocol());
+            //             sb.addField("pf-blocked", getPfBlocked());
 
-//             sb.addField("ips-name", getIpsName());
-//             sb.addField("ips-blocked", getIpsBlocked());
+            //             sb.addField("ips-name", getIpsName());
+            //             sb.addField("ips-blocked", getIpsBlocked());
 
-//             sb.addField("fw-description", getFirewallRuleDescription());
-//             sb.addField("fw-blocked", getFirewallWasBlocked());
+            //             sb.addField("fw-description", getFirewallRuleDescription());
+            //             sb.addField("fw-blocked", getFirewallWasBlocked());
 
-//             sb.addField("sw-access", getSwAccessIdent());
+            //             sb.addField("sw-access", getSwAccessIdent());
         }
 
         @Transient
@@ -241,16 +241,16 @@ import com.untangle.uvm.logging.SyslogPriority;
         @Transient
         public SyslogPriority getSyslogPriority()
         {
-//             // WARNING = traffic altered
-//             // INFORMATIONAL = statistics or normal operation
-//             if (getPfBlocked() || 
-//                 getIpsBlocked() ||
-//                 getFirewallWasBlocked() ||
-//                 (getSwAccessIdent() != null && getSwAccessIdent() != ""))
-//                 return SyslogPriority.WARNING;
-//             else
+            //             // WARNING = traffic altered
+            //             // INFORMATIONAL = statistics or normal operation
+            //             if (getPfBlocked() || 
+            //                 getIpsBlocked() ||
+            //                 getFirewallWasBlocked() ||
+            //                 (getSwAccessIdent() != null && getSwAccessIdent() != ""))
+            //                 return SyslogPriority.WARNING;
+            //             else
             return SyslogPriority.INFORMATIONAL;
         }
 
-
+        
     }

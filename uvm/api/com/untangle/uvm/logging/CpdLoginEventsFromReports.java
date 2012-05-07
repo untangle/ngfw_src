@@ -28,7 +28,7 @@ import com.untangle.uvm.logging.SyslogPriority;
     @org.hibernate.annotations.Entity(mutable=false)
     @Table(name="n_cpd_login_events", schema="reports")
     @SuppressWarnings("serial")
-    public class CpdLoginEventsFromReports extends LogEvent
+    public class CpdLoginEventsFromReports extends LogEventFromReports
     {
         private String loginName;
         private String event;
@@ -69,4 +69,5 @@ import com.untangle.uvm.logging.SyslogPriority;
             return SyslogPriority.INFORMATIONAL;
         }
 
+        
     }

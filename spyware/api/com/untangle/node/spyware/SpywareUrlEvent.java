@@ -3,27 +3,18 @@
  */
 package com.untangle.node.spyware;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Entity;
-import javax.persistence.Table;
-import javax.persistence.Transient;
-import javax.persistence.Column;
-
 import com.untangle.uvm.node.SessionEvent;
 import com.untangle.node.http.HttpRequestEvent;
 import com.untangle.node.http.RequestLine;
+import com.untangle.uvm.logging.LogEvent;
+import com.untangle.uvm.logging.SyslogBuilder;
+import com.untangle.uvm.logging.SyslogPriority;
 
 /**
  * Log event for a spyware hit.
- *
- * @author
- * @version 1.0
  */
-@Entity
-@org.hibernate.annotations.Entity(mutable=false)
-@Table(name="n_spyware_evt_url", schema="events")
 @SuppressWarnings("serial")
-public class SpywareUrlEvent extends SpywareEvent
+public class SpywareUrlEvent extends LogEvent
 {
     private Long requestId;
     private RequestLine requestLine; // pipeline endpoints & location
@@ -40,41 +31,18 @@ public class SpywareUrlEvent extends SpywareEvent
 
     // SpywareEvent methods ---------------------------------------------------
 
-    @Transient
-    public String getType()
-    {
-        return "Blacklist";
-    }
-
-    @Transient
-    public String getReason()
-    {
-        return "in URL List";
-    }
-
-    @Transient
     public String getIdentification()
     {
         HttpRequestEvent hre = requestLine.getHttpRequestEvent();
-        String host = null == hre
-            ? getSessionEvent().getSServerAddr().toString()
-            : hre.getHost();
+        String host = null == hre ? getSessionEvent().getSServerAddr().toString() : hre.getHost();
         return "http://" + host + requestLine.getRequestUri().toString();
     }
 
-    @Transient
-    public Boolean isBlocked()
+    public Boolean getBlocked()
     {
         return true;
     }
 
-    @Transient
-    public String getLocation()
-    {
-        return requestLine.getUrl().toString();
-    }
-
-    @Transient
     public SessionEvent getSessionEvent()
     {
         return requestLine.getSessionEvent();
@@ -82,7 +50,6 @@ public class SpywareUrlEvent extends SpywareEvent
 
     // accessors --------------------------------------------------------------
 
-    @Column(name="request_id")
     public Long getRequestId()
     {
         return requestId;
@@ -93,4 +60,25 @@ public class SpywareUrlEvent extends SpywareEvent
         this.requestId = requestId;
     }
 
+    @Override
+    public String getDirectEventSql()
+    {
+        String sql =
+            "UPDATE reports.n_http_events " +
+            "SET " +
+            "sw_blacklisted  = " + "'" + getBlocked() + "'" + " " +
+            "WHERE " +
+            "request_id = " + getRequestId() +
+            ";";
+        return sql;
+    }
+
+    public void appendSyslog(SyslogBuilder sb)
+    {
+        getSessionEvent().appendSyslog(sb);
+
+        sb.startSection("info");
+        sb.addField("ident", getIdentification());
+        sb.addField("blocked", getBlocked());
+    }
 }

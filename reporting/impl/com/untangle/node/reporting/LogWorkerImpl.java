@@ -39,8 +39,6 @@ public class LogWorkerImpl implements Runnable, LogWorker
 
     private static boolean forceFlush = false;
 
-    private static boolean running = false;
-
     private volatile Thread thread;
     
     private long lastLoggedWarningTime = System.currentTimeMillis();
@@ -89,7 +87,9 @@ public class LogWorkerImpl implements Runnable, LogWorker
                  */
                 if (logQueue.size() > 0)
                     persist(logQueue);
-
+                else
+                    logger.info("persist(): 0 events");
+                
                 /**
                  * If the forceFlush flag was set, reset it and wake any interested parties
                  */
@@ -99,16 +99,6 @@ public class LogWorkerImpl implements Runnable, LogWorker
                 }
             }
         }
-
-        /**
-         * Log remaining events and exit
-         */
-        while ((event = inputQueue.poll()) != null) {
-            logQueue.add(event);
-        }
-        if ( logQueue.size() > 0 ) {
-            persist(logQueue);
-        }
     }
 
     /**
@@ -116,7 +106,7 @@ public class LogWorkerImpl implements Runnable, LogWorker
      */
     public void forceFlush()
     {
-        if (thread == null || running == false) {
+        if ( thread == null ) {
             logger.warn("forceFlush() called, but reporting not running.");
             return;
         }
@@ -142,9 +132,9 @@ public class LogWorkerImpl implements Runnable, LogWorker
     
     public void logEvent(LogEvent event)
     {
-        if (!running) {
-            if (System.currentTimeMillis() - this.lastLoggedWarningTime > 10000) {
-                logger.warn("Reporting node not found, discarding event");
+        if ( this.thread == null ) {
+            if ( System.currentTimeMillis() - this.lastLoggedWarningTime > 10000 ) {
+                logger.warn("Reporting node not running, discarding event");
                 this.lastLoggedWarningTime = System.currentTimeMillis();
             }
             return;
@@ -214,47 +204,36 @@ public class LogWorkerImpl implements Runnable, LogWorker
         for (Iterator<LogEvent> i = logQueue.iterator(); i.hasNext(); ) {
             LogEvent event = i.next();
 
-            if (event.isDirectEvent()) {
-                if (conn != null && statement != null) {
-                    /**
-                     * Write event to database using SQL
-                     * If fails, just move on
-                     */
-                    String sqlStr = event.getDirectEventSql();
-                    if (sqlStr != null) {
+            if (conn != null && statement != null) {
+                /**
+                 * Write event to database using SQL
+                 * If fails, just move on
+                 */
+                List<String> sqls = event.getDirectEventSqls();
+                if (sqls != null) {
+                    long write_t0 = System.currentTimeMillis();
+                    for (String sqlStr : sqls) {
                         logger.debug("Write direct event: " + sqlStr);
                         try {
-                            long write_t0 = System.currentTimeMillis();
                             statement.execute(sqlStr);
-                            long write_t1 = System.currentTimeMillis();
-
-                            if (logger.isInfoEnabled()) {
-                                /**
-                                 * Update the stats
-                                 */
-                                String eventTypeName = event.getClass().getSimpleName();
-                                Long currentTime = timeMap.get(eventTypeName);
-                                if (currentTime == null)
-                                    currentTime = 0L;
-                                currentTime = currentTime+(write_t1-write_t0); //add time to write this instances
-                                timeMap.put(eventTypeName, currentTime);
-                            }
                         } catch (SQLException e) {
                             logger.warn("Failed SQL query: \"" + sqlStr + "\": " + e.getMessage());
                         }
                     }
-                    List<String> sqls = event.getDirectEventSqls();
-                    if (sqls != null) {
-                        for (String sql : sqls) {
-                            logger.debug("Write direct event: " + sql);
-                            try {
-                                statement.execute(sql);
-                            } catch (SQLException e) {
-                                logger.warn("Failed SQL query [" + event.getClass().toString() + "] : \"" + sql + "\": ",e);
-                            }
-                        }
+                    long write_t1 = System.currentTimeMillis();
+
+                    if (logger.isInfoEnabled()) {
+                        /**
+                         * Update the stats
+                         */
+                        String eventTypeName = event.getClass().getSimpleName();
+                        Long currentTime = timeMap.get(eventTypeName);
+                        if (currentTime == null)
+                            currentTime = 0L;
+                        currentTime = currentTime+(write_t1-write_t0); //add time to write this instances
+                        timeMap.put(eventTypeName, currentTime);
                     }
-                } 
+                }
             } 
 
             i.remove();
@@ -299,17 +278,17 @@ public class LogWorkerImpl implements Runnable, LogWorker
 
     protected void start()
     {
-        this.running = true;
         UvmContextFactory.context().newThread(this).start();
     }
 
     protected void stop()
     {
-        this.running = false;
-        Thread t = thread;
+        forceFlush(); /* flush last few events */
+
+        Thread tmp = thread;
         thread = null; /* thread will exit if thread is null */
-        if (t != null) {
-            t.interrupt();
+        if (tmp != null) {
+            tmp.interrupt();
         }
     }
 
