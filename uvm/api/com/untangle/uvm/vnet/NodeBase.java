@@ -279,8 +279,10 @@ public abstract class NodeBase implements Node
     public static final Node loadClass( NodeProperties nodeProperties, NodeSettings nodeSettings, PackageDesc packageDesc, boolean isNew ) throws DeployException
     {
         Set<Node> parentNodes = new HashSet<Node>();
-        for (String parent : nodeProperties.getParents()) {
-            parentNodes.add(startParent(parent, nodeSettings.getPolicyId()));
+        if (nodeProperties.getParents() != null) {
+            for (String parent : nodeProperties.getParents()) {
+                parentNodes.add(startParent(parent, nodeSettings.getPolicyId()));
+            }
         }
 
         NodeBase node;
