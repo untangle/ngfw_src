@@ -582,7 +582,6 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
         }
 
         this.loggingManager = new LoggingManagerImpl();
-        loggingManager.initSchema("uvm");
 
         InheritableThreadLocal<HttpServletRequest> threadRequest = new InheritableThreadLocal<HttpServletRequest>();
 

@@ -58,13 +58,6 @@ public class LogWorkerImpl implements Runnable, LogWorker
         LogEvent event = null;
         
         /**
-         * Wait for all SQL conversions to complete
-         */
-        do {
-            try {Thread.sleep(1000);} catch (Exception e) {}
-        } while (!UvmContextFactory.context().loggingManager().isConversionComplete());
-        
-        /**
          * Loop indefinitely and continue logging events
          */
         while (thread != null) {

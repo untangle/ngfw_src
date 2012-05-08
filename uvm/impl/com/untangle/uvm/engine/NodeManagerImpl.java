@@ -274,14 +274,10 @@ public class NodeManagerImpl implements NodeManager
                 UvmContextImpl.getInstance().schemaUtil().initSchema("settings", nodeProperties.getNodeBase());
             }
             UvmContextImpl.getInstance().schemaUtil().initSchema("settings", nodeProperties.getName());
-            if (null != nodeProperties.getNodeBase()) {
-                UvmContextImpl.getInstance().loggingManager().initSchema(nodeProperties.getNodeBase());
-            }
-            UvmContextImpl.getInstance().loggingManager().initSchema(nodeProperties.getName());
-
             /*
              * XXX remove me after settings conversion complete FIXME
              */
+
             node = NodeBase.loadClass(nodeProperties, nodeSettings, packageDesc, true);
 
             if (node != null) {

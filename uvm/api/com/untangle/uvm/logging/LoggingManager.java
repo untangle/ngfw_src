@@ -1,4 +1,4 @@
-/*
+/**
  * $Id$
  */
 package com.untangle.uvm.logging;
@@ -28,9 +28,4 @@ public interface LoggingManager
     void logError(String errorText);
 
     void logEvent(LogEvent evt);
-
-    /**
-     * Returns true if the schema conversion on startup are complete
-     */
-    boolean isConversionComplete();
 }

@@ -124,44 +124,7 @@ class LoggingManagerImpl implements LoggingManager
         this.logWorker.logEvent(evt);
     }
     
-    public boolean isConversionComplete()
-    {
-        return conversionComplete;
-    }
-
     // package protected methods ----------------------------------------------
-
-    void initSchema(final String name)
-    {
-        synchronized (initQueue) {
-            conversionComplete = false;
-
-            initQueue.add(name);
-        }
-
-        new Thread(new Runnable() {
-                public void run()
-                {
-                    UvmContextImpl uvmContext = UvmContextImpl.getInstance();
-                    uvmContext.waitForStartup();
-
-                    synchronized (initQueue) {
-                        if (initQueue.size() > 0) {
-                            for (Iterator<String> i = initQueue.iterator(); i.hasNext(); ) {
-                                String n = i.next();
-                                i.remove();
-                                logger.info("Initializeing events schema: \"" + n + "\"");
-                                uvmContext.schemaUtil().initSchema("events", n);
-                            }
-                            uvmContext.schemaUtil().close();
-
-                            initQueue.notifyAll();
-                        }
-                        conversionComplete = true;
-                    }
-                }
-            }).start();
-    }
 
     private void getLogWorker()
     {
