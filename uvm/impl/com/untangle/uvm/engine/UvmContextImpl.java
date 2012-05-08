@@ -49,6 +49,7 @@ import com.untangle.uvm.SessionMonitor;
 import com.untangle.uvm.argon.Argon;
 import com.untangle.uvm.argon.ArgonManagerImpl;
 import com.untangle.uvm.node.LicenseManager;
+import com.untangle.uvm.logging.EventWriter;
 import com.untangle.uvm.logging.LogEvent;
 import com.untangle.uvm.message.MessageManager;
 import com.untangle.uvm.message.MessageManager;
@@ -64,9 +65,6 @@ import com.untangle.uvm.util.JsonClient;
 
 /**
  * Implements UvmContext.
- *
- * @author <a href="mailto:amread@untangle.com">Aaron Read</a>
- * @version 1.0
  */
 public class UvmContextImpl extends UvmContextBase implements UvmContext
 {
@@ -123,6 +121,8 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
     private LocalDirectoryImpl localDirectory;
     private ExecManagerImpl execManager;
     private JSONSerializer serializer;
+    private EventWriter logWorker = null;
+    private long lastLoggedWarningTime = System.currentTimeMillis();
     
     private volatile boolean sessionFactoryNeedsRebuild = true;
     private volatile SessionFactory sessionFactory;
@@ -539,7 +539,12 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
     
     public void logEvent(LogEvent evt)
     {
-        this.loggingManager.logEvent(evt);
+        if (this.logWorker == null)
+            getEventWriter();
+        if (this.logWorker == null)
+            return;
+
+        this.logWorker.logEvent(evt);
     }
 
     // UvmContextBase methods --------------------------------------------------
@@ -1074,5 +1079,25 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
             l.add(sb);
         }
     }
-    
+
+    private void getEventWriter()
+    {
+        synchronized(this) {
+            if (this.logWorker == null) {
+                try {
+                    this.logWorker = (EventWriter) this.nodeManager().node("untangle-node-reporting");
+                    if (this.logWorker == null) {
+                        if (System.currentTimeMillis() - this.lastLoggedWarningTime > 10000) {
+                            logger.warn("EventWriter node not found, discarding event");
+                            this.lastLoggedWarningTime = System.currentTimeMillis();
+                        }
+                        return;
+                    }
+                } catch (Exception e) {
+                    logger.warn("Unable to initialize logWorker", e);
+                    return;
+                }
+            }
+        }
+    }
 }

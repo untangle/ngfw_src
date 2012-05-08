@@ -273,7 +273,7 @@ public abstract class NodeBase implements Node
         String tag = nodeProperties.getSyslogName() + "[" + nodeSettings.getId() + "]: ";
         evt.setTag(tag);
         
-        UvmContextFactory.context().loggingManager().logEvent(evt);
+        UvmContextFactory.context().logEvent(evt);
     }
 
     public static final Node loadClass( NodeProperties nodeProperties, NodeSettings nodeSettings, PackageDesc packageDesc, boolean isNew ) throws DeployException

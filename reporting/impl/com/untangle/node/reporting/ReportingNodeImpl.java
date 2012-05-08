@@ -34,13 +34,13 @@ import com.untangle.uvm.node.Validator;
 import com.untangle.uvm.node.IPMaskedAddress;
 import com.untangle.uvm.AdminManager;
 import com.untangle.uvm.User;
-import com.untangle.uvm.logging.LogWorker;
-import com.untangle.uvm.logging.LogWorkerFacility;
+import com.untangle.uvm.logging.EventWriter;
+import com.untangle.uvm.logging.LogEvent;
 import com.untangle.uvm.util.TransactionWork;
 import com.untangle.uvm.vnet.NodeBase;
 import com.untangle.uvm.vnet.PipeSpec;
 
-public class ReportingNodeImpl extends NodeBase implements ReportingNode, LogWorkerFacility
+public class ReportingNodeImpl extends NodeBase implements ReportingNode, EventWriter
 {
     private static final Logger logger = Logger.getLogger(ReportingNodeImpl.class);
 
@@ -51,7 +51,7 @@ public class ReportingNodeImpl extends NodeBase implements ReportingNode, LogWor
     private static final String CRON_STRING = "* * * root /usr/share/untangle/bin/reporting-generate-reports.py -d $(date \"+\\%Y-\\%m-\\%d\") > /dev/null 2>&1";
     private static final File CRON_FILE = new File("/etc/cron.d/untangle-reports-nightly");
 
-    private static LogWorkerImpl logWorker = null;
+    private static EventWriterImpl logWorker = null;
 
     private ReportingSettings settings;
 
@@ -60,7 +60,7 @@ public class ReportingNodeImpl extends NodeBase implements ReportingNode, LogWor
         super( nodeSettings, nodeProperties );
 
         if (logWorker == null)
-            logWorker = new LogWorkerImpl(this);
+            logWorker = new EventWriterImpl(this);
     }
 
     public void setReportingSettings(final ReportingSettings settings)
@@ -176,9 +176,14 @@ public class ReportingNodeImpl extends NodeBase implements ReportingNode, LogWor
         return null;
     }
 
-    public LogWorker getLogWorker()
+    public void logEvent( LogEvent evt )
     {
-        return this.logWorker;
+        this.logWorker.logEvent( evt );
+    }
+
+    public void forceFlush()
+    {
+        this.logWorker.forceFlush();
     }
     
     @Override

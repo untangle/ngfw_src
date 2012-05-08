@@ -13,8 +13,6 @@ import org.hibernate.Query;
 import org.hibernate.Session;
 
 import com.untangle.uvm.UvmContextFactory;
-import com.untangle.uvm.logging.LogWorker;
-import com.untangle.uvm.logging.LogWorkerFacility;
 import com.untangle.uvm.logging.LoggingSettings;
 import com.untangle.uvm.logging.LoggingManager;
 import com.untangle.uvm.util.TransactionWork;
@@ -25,17 +23,12 @@ import com.untangle.uvm.logging.LogEvent;
  */
 class LoggingManagerImpl implements LoggingManager
 {
-    private static final boolean LOGGING_DISABLED = Boolean.parseBoolean(System.getProperty("uvm.logging.disabled"));
-
     private final List<String> initQueue = new LinkedList<String>();
 
     private final Logger logger = Logger.getLogger(getClass());
 
     private LoggingSettings loggingSettings;
 
-    private LogWorker logWorker = null;
-    private long lastLoggedWarningTime = System.currentTimeMillis();
-    
     private volatile boolean conversionComplete = true;
 
     public LoggingManagerImpl()
@@ -58,11 +51,6 @@ class LoggingManagerImpl implements LoggingManager
         UvmContextFactory.context().runTransaction(tw);
 
         SyslogManagerImpl.manager().reconfigure(loggingSettings);
-    }
-
-    static boolean isLoggingDisabled()
-    {
-        return LOGGING_DISABLED;
     }
 
     public LoggingSettings getLoggingSettings()
@@ -101,58 +89,5 @@ class LoggingManagerImpl implements LoggingManager
     public void resetAllLogs()
     {
         UvmRepositorySelector.instance().reconfigureAll();
-    }
-
-    public void logError(String errorText)
-    {
-        if (null == errorText) {
-            logger.error("This is the default error text.");
-        } else {
-            logger.error(errorText);
-        }
-
-        return;
-    }
-
-    public void logEvent(LogEvent evt)
-    {
-        if (this.logWorker == null)
-            getLogWorker();
-        if (this.logWorker == null)
-            return;
-
-        this.logWorker.logEvent(evt);
-    }
-    
-    // package protected methods ----------------------------------------------
-
-    private void getLogWorker()
-    {
-        synchronized(this) {
-            if (this.logWorker == null) {
-                try {
-                    LogWorkerFacility reports = (LogWorkerFacility) UvmContextFactory.context().nodeManager().node("untangle-node-reporting");
-                    if (reports == null) {
-                        if (System.currentTimeMillis() - this.lastLoggedWarningTime > 10000) {
-                            logger.warn("Reporting node not found, discarding event");
-                            this.lastLoggedWarningTime = System.currentTimeMillis();
-                        }
-                        return;
-                    }
-
-                    this.logWorker = reports.getLogWorker();
-                    if (this.logWorker == null) {
-                        if (System.currentTimeMillis() - this.lastLoggedWarningTime > 10000) {
-                            logger.warn("LogWorker node not found, discarding event");
-                            this.lastLoggedWarningTime = System.currentTimeMillis();
-                        }
-                        return;
-                    }
-                } catch (Exception e) {
-                    logger.warn("Unable to initialize logWorker", e);
-                    return;
-                }
-            }
-        }
     }
 }

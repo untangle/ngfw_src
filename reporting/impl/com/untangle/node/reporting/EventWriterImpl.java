@@ -1,5 +1,5 @@
 /**
- * $Id: LogWorker.java,v 1.00 2011/12/18 19:09:03 dmorris Exp $
+ * $Id: EventWriter.java,v 1.00 2011/12/18 19:09:03 dmorris Exp $
  */
 package com.untangle.node.reporting;
 
@@ -23,7 +23,7 @@ import java.sql.Statement;
 import org.apache.log4j.Logger;
 
 import com.untangle.uvm.UvmContextFactory;
-import com.untangle.uvm.logging.LogWorker;
+import com.untangle.uvm.logging.EventWriter;
 import com.untangle.uvm.logging.LogEvent;
 import com.untangle.uvm.logging.SyslogManager;
 import com.untangle.uvm.util.TransactionWork;
@@ -31,7 +31,7 @@ import com.untangle.uvm.util.TransactionWork;
 /**
  * Worker that batches and flushes events to the database.
  */
-public class LogWorkerImpl implements Runnable, LogWorker
+public class EventWriterImpl implements Runnable, EventWriter
 {
     private static final int SYNC_TIME = 60*1000; /* 60 seconds */
 
@@ -48,7 +48,7 @@ public class LogWorkerImpl implements Runnable, LogWorker
      */
     private final BlockingQueue<LogEvent> inputQueue = new LinkedBlockingQueue<LogEvent>();
 
-    public LogWorkerImpl(ReportingNode node) { }
+    public EventWriterImpl(ReportingNode node) { }
 
     public void run()
     {

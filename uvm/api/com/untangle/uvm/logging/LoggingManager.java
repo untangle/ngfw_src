@@ -24,8 +24,4 @@ public interface LoggingManager
     void setLoggingNode(Long nodeId);
 
     void setLoggingUvm();
-
-    void logError(String errorText);
-
-    void logEvent(LogEvent evt);
 }
