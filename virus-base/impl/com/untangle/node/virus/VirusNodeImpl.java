@@ -155,25 +155,25 @@ public abstract class VirusNodeImpl extends NodeBase implements VirusNode
         String vendor = scanner.getVendorName();
 
         this.httpInfectedEventQuery = new EventLogQuery(I18nUtil.marktr("Infected Web Events"),
-                                                        "FROM HttpLogEventFromReports evt" + 
-                                                        " WHERE evt.virus" + vendor + "Clean IS FALSE" + 
+                                                        " SELECT * FROM reports.n_http_events " + 
+                                                        " WHERE virus_" + vendor + "_clean IS FALSE" + 
                                                         " AND policy_id = :policyId" + 
                                                         " ORDER BY time_stamp DESC");
         this.httpCleanEventQuery = new EventLogQuery(I18nUtil.marktr("Clean Web Events"),
-                                                     "FROM HttpLogEventFromReports evt" + 
-                                                     " WHERE evt.virus" + vendor + "Clean IS TRUE" + 
+                                                     " SELECT * FROM reports.n_http_events " + 
+                                                     " WHERE virus_" + vendor + "_clean IS TRUE" + 
                                                      " AND policy_id = :policyId" + 
                                                      " ORDER BY time_stamp DESC");
         this.mailInfectedEventQuery = new EventLogQuery(I18nUtil.marktr("Infected Email Events"),
-                                                        "FROM MailLogEventFromReports evt" + 
-                                                        " WHERE evt.addrKind IN ('T', 'C')" +
-                                                        " AND evt.virus" + vendor + "Clean IS FALSE" + 
+                                                     " SELECT * FROM reports.n_mail_addrs " + 
+                                                        " WHERE addr_kind IN ('T', 'C')" +
+                                                        " AND virus_" + vendor + "_clean IS FALSE" + 
                                                         " AND policy_id = :policyId" + 
                                                         " ORDER BY time_stamp DESC");
         this.mailCleanEventQuery = new EventLogQuery(I18nUtil.marktr("Clean Email Events"),
-                                                     "FROM MailLogEventFromReports evt" + 
-                                                     " WHERE evt.addrKind IN ('T', 'C')" +
-                                                     " AND evt.virus" + vendor + "Clean IS TRUE" + 
+                                                     " SELECT * FROM reports.n_mail_addrs " + 
+                                                     " WHERE addr_kind IN ('T', 'C')" +
+                                                     " AND virus_" + vendor + "_clean IS TRUE" + 
                                                      " AND policy_id = :policyId" + 
                                                      " ORDER BY time_stamp DESC");
 

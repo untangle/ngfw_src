@@ -217,7 +217,7 @@ if (!Ung.hasResource["Ung.Virus"]) {
                 dataProperty : "httpFileExtensions",
                 fields : Ung.Util.getGenericRuleFields(this),
                 columns : [{
-                    header : this.i18n._("file type"),
+                    header : this.i18n._("File Type"),
                     width : 200,
                     dataIndex : 'string',
 					editor: {
@@ -227,12 +227,12 @@ if (!Ung.hasResource["Ung.Virus"]) {
                 }, 
 				{
 					xtype:'checkcolumn',
-					header : this.i18n._("scan"),
+					header : this.i18n._("Scan"),
 					dataIndex : 'enabled',
 					fixed : true,
 					width:55
 				}, {
-                    header : this.i18n._("description"),
+                    header : this.i18n._("Description"),
                     width : 200,
                     dataIndex : 'name',
                     flex: 1,
@@ -284,7 +284,7 @@ if (!Ung.hasResource["Ung.Virus"]) {
                 dataProperty : "httpMimeTypes",
                 fields : Ung.Util.getGenericRuleFields(this),
                 columns : [{
-                    header : this.i18n._("MIME type"),
+                    header : this.i18n._("MIME Type"),
                     width : 200,
                     dataIndex : 'string',
 					editor:{
@@ -293,12 +293,12 @@ if (!Ung.hasResource["Ung.Virus"]) {
 					}
                 }, {
 					xtype:'checkcolumn',
-					header : this.i18n._("scan"),
+					header : this.i18n._("Scan"),
 					dataIndex : 'enabled',
 					fixed : true,
 					width:55
 				}, {
-                    header : this.i18n._("description"),
+                    header : this.i18n._("Description"),
                     width : 200,
                     dataIndex : 'name',
                     flex : 1,
@@ -541,11 +541,11 @@ if (!Ung.hasResource["Ung.Virus"]) {
                     name : 'location'
                 }, {
                     name : 'reason',
-                    mapping : 'virus' + main.capitalize(this.vendor) + 'Name'
+                    mapping : 'virus_' + this.vendor + '_name'
                 }],
                 // the list of columns
                 columns : [{
-                    header : this.i18n._("timestamp"),
+                    header : this.i18n._("Timestamp"),
                     width : Ung.Util.timestampFieldWidth,
                     sortable : true,
                     dataIndex : 'time_stamp',
@@ -553,31 +553,31 @@ if (!Ung.hasResource["Ung.Virus"]) {
                         return i18n.timestampFormat(value);
                     }
                 }, {
-                    header : this.i18n._("client"),
+                    header : this.i18n._("Client"),
                     width : Ung.Util.ipFieldWidth,
                     sortable : true,
                     dataIndex : 'client'
                 }, {
-                    header : this.i18n._("username"),
+                    header : this.i18n._("Username"),
                     width : Ung.Util.usernameFieldWidth,
                     sortable : true,
                     dataIndex : 'uid'
                 }, {
-                    header : this.i18n._("host"),
+                    header : this.i18n._("Host"),
                     width : Ung.Util.hostnameFieldWidth,
                     dataIndex : 'host'
                 }, {
-                    header : this.i18n._("uri"),
+                    header : this.i18n._("Uri"),
                     flex:1,
                     width : Ung.Util.uriFieldWidth,
                     dataIndex : 'uri'
                 }, {
-                    header : this.i18n._("virus name"),
+                    header : this.i18n._("Virus Name"),
                     width : 140,
                     sortable : true,
                     dataIndex : 'reason'
                 }, {
-                    header : this.i18n._("server"),
+                    header : this.i18n._("Server"),
                     width : Ung.Util.ipFieldWidth,
                     sortable : true,
                     dataIndex : 'server'
@@ -616,11 +616,11 @@ if (!Ung.hasResource["Ung.Virus"]) {
                     type : 'string'
                 }, {
                     name : 'reason',
-                    mapping : 'virus' + main.capitalize(this.vendor) + 'Name'
+                    mapping : 'virus_' + this.vendor + '_name'
                 }],
                 // the list of columns
                 columns : [{
-                    header : this.i18n._("timestamp"),
+                    header : this.i18n._("Timestamp"),
                     width : Ung.Util.timestampFieldWidth,
                     sortable : true,
                     dataIndex : 'time_stamp',
@@ -628,33 +628,33 @@ if (!Ung.hasResource["Ung.Virus"]) {
                         return i18n.timestampFormat(value);
                     }
                 }, {
-                    header : this.i18n._("client"),
+                    header : this.i18n._("Client"),
                     width : Ung.Util.ipFieldWidth,
                     sortable : true,
                     dataIndex : 'client'
                 }, {
-                    header : this.i18n._("receiver"),
+                    header : this.i18n._("Receiver"),
                     width : Ung.Util.emailFieldWidth,
                     sortable : true,
                     dataIndex : 'addr'
                 }, {
-                    header : this.i18n._("sender"),
+                    header : this.i18n._("Sender"),
                     width : Ung.Util.emailFieldWidth,
                     sortable : true,
                     dataIndex : 'sender'
                 }, {
-                    header : this.i18n._("subject"),
+                    header : this.i18n._("Subject"),
                     flex:1,
                     width : 150,
                     sortable : true,
                     dataIndex : 'subject'
                 }, {
-                    header : this.i18n._("virus name"),
+                    header : this.i18n._("Virus name"),
                     width : 140,
                     sortable : true,
                     dataIndex : 'reason'
                 }, {
-                    header : this.i18n._("server"),
+                    header : this.i18n._("Server"),
                     width : Ung.Util.ipFieldWidth,
                     sortable : true,
                     dataIndex : 'server'

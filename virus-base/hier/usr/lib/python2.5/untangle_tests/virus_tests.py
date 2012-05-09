@@ -27,7 +27,7 @@ class VirusTests(unittest.TestCase):
 
     @staticmethod
     def vendorName():
-        return "Untangle"
+        return "untangle"
 
     def setUp(self):
         global node
@@ -73,8 +73,8 @@ class VirusTests(unittest.TestCase):
         print "Event:" + str(events['list'][0])
         assert(events['list'][0]['host'] == "test.untangle.com")
         assert(events['list'][0]['uri'] == ("/test/eicar.zip?arg=%s" % fname))
-        assert(events['list'][0]['virus' + self.vendorName() + 'Name'] != None)
-        assert(events['list'][0]['virus' + self.vendorName() + 'Clean'] == False)
+        assert(events['list'][0]['virus_' + self.vendorName() + '_name'] != None)
+        assert(events['list'][0]['virus_' + self.vendorName() + '_clean'] == False)
 
     def test_101_eventlog_httpNonVirus(self):
         fname = sys._getframe().f_code.co_name
@@ -92,7 +92,7 @@ class VirusTests(unittest.TestCase):
         print "Event:" + str(events['list'][0])
         assert(events['list'][0]['host'] == "test.untangle.com")
         assert(events['list'][0]['uri'] == ("/test/test.zip?arg=%s" % fname))
-        assert(events['list'][0]['virus' + self.vendorName() + 'Clean'] == True)
+        assert(events['list'][0]['virus_' + self.vendorName() + '_clean'] == True)
 
     def test_102_eventlog_smtpVirus(self):
         startTime = datetime.now()
@@ -113,7 +113,7 @@ class VirusTests(unittest.TestCase):
         print "Event:" + str(events['list'][0])
         assert(events['list'][0]['addr'] == "junk@test.untangle.com")
         assert(events['list'][0]['subject'] == str(fname))
-        assert(events['list'][0]['virus' + self.vendorName() + 'Clean'] == False)
+        assert(events['list'][0]['virus_' + self.vendorName() + '_clean'] == False)
         assert(datetime.fromtimestamp((events['list'][0]['time_stamp']['time'])/1000) > startTime)
 
     def test_103_eventlog_smtpNonVirus(self):
@@ -137,7 +137,7 @@ class VirusTests(unittest.TestCase):
         print "Event:" + str(events['list'][0])
         assert(events['list'][0]['addr'] == "junk@test.untangle.com")
         assert(events['list'][0]['subject'] == str(fname))
-        assert(events['list'][0]['virus' + self.vendorName() + 'Clean'] == True)
+        assert(events['list'][0]['virus_' + self.vendorName() + '_clean'] == True)
         assert(datetime.fromtimestamp((events['list'][0]['time_stamp']['time'])/1000) > startTime)
 
     def test_999_finalTearDown(self):

@@ -82,7 +82,7 @@ public class SpamNodeImpl extends NodeBase implements SpamNode
         
         this.allEventQuery = new EventLogQuery(I18nUtil.marktr("All Email Events"),
                                                "FROM MailLogEventFromReports AS evt" +
-                                               " WHERE evt.addrKind IN ('T', 'C')" +
+                                               " WHERE addr_kind IN ('T', 'C')" +
                                                " AND evt." + vendorTag + "Action IS NOT NULL" +
                                                " AND policy_id = :policyId" + 
                                                " ORDER BY time_stamp DESC");
@@ -90,14 +90,14 @@ public class SpamNodeImpl extends NodeBase implements SpamNode
         this.spamEventQuery = new EventLogQuery(I18nUtil.marktr("All") + " " + I18nUtil.marktr(badEmailName) + " " + I18nUtil.marktr("Events"),
                                                 "FROM MailLogEventFromReports evt" +
                                                 " WHERE evt." + vendorTag + "IsSpam IS TRUE" + 
-                                                " AND evt.addrKind IN ('T', 'C')" +
+                                                " AND addr_kind IN ('T', 'C')" +
                                                 " AND policy_id = :policyId" + 
                                                 " ORDER BY time_stamp DESC");
 
         this.quarantinedEventQuery = new EventLogQuery(I18nUtil.marktr("Quarantined Events"),
                                                        "FROM MailLogEventFromReports evt" +
                                                        " WHERE evt." + vendorTag + "Action = 'Q'" + 
-                                                       " AND evt.addrKind IN ('T', 'C')" +
+                                                       " AND addr_kind IN ('T', 'C')" +
                                                        " AND policy_id = :policyId" + 
                                                        " ORDER BY time_stamp DESC");
                                                        

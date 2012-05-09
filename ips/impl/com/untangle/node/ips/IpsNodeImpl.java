@@ -1,4 +1,4 @@
-/*
+/**
  * $Id$
  */
 package com.untangle.node.ips;
@@ -54,15 +54,15 @@ public class IpsNodeImpl extends NodeBase implements IpsNode
         pipeSpecs = new PipeSpec[] { httpPipeSpec, octetPipeSpec };
 
         this.allEventQuery = new EventLogQuery(I18nUtil.marktr("All Events"),
-                                               "FROM SessionLogEventFromReports evt " +
+                                               "SELECT * FROM reports.sessions " + 
                                                "WHERE policy_id = :policyId " +
-                                               "AND ipsDescription IS NOT NULL " +
+                                               "AND ips_description IS NOT NULL " +
                                                "ORDER BY time_stamp DESC");
 
         this.blockedEventQuery = new EventLogQuery(I18nUtil.marktr("Blocked Events"),
-                                                   "FROM SessionLogEventFromReports evt " +
+                                                   "SELECT * FROM reports.sessions " + 
                                                    "WHERE policy_id = :policyId " +
-                                                   "AND ipsBlocked IS TRUE " +
+                                                   "AND ips_blocked IS TRUE " +
                                                    "ORDER BY time_stamp DESC");
 
         List<RuleClassification> classifications = FileLoader.loadClassifications();

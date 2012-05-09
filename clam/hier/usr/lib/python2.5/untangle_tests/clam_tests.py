@@ -20,7 +20,7 @@ class ClamTests(VirusTests):
 
     @staticmethod
     def vendorName():
-        return "Clam"
+        return "clam"
 
     # verify daemon is running
     def test_009_clamdIsRunning(self):
