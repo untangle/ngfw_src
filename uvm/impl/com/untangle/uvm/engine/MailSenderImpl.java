@@ -37,7 +37,6 @@ import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
 
 import org.apache.log4j.Logger;
-import org.hibernate.Query;
 
 import com.sun.mail.smtp.SMTPTransport;
 import com.untangle.uvm.UvmContext;

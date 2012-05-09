@@ -7,7 +7,6 @@ import java.net.InetAddress;
 import java.sql.Timestamp;
 import java.util.Date;
 
-import org.hibernate.annotations.Type;
 
 import com.untangle.uvm.logging.LogEvent;
 import com.untangle.uvm.logging.SyslogBuilder;

@@ -3,7 +3,6 @@
  */
 package com.untangle.node.ftp;
 
-import com.untangle.uvm.util.TransactionWork;
 import com.untangle.uvm.vnet.NodeBase;
 import com.untangle.uvm.vnet.CasingPipeSpec;
 import com.untangle.uvm.vnet.Fitting;

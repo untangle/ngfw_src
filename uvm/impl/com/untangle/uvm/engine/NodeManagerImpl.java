@@ -46,7 +46,6 @@ import com.untangle.uvm.vnet.NodeBase;
 import com.untangle.uvm.toolbox.PackageDesc;
 import com.untangle.uvm.toolbox.ToolboxManager;
 import com.untangle.uvm.util.Pulse;
-import com.untangle.uvm.util.TransactionWork;
 
 /**
  * Implements NodeManager.
@@ -242,39 +241,6 @@ public class NodeManagerImpl implements NodeManager
              */
             if (nodeInstances( nodeProperties.getName(), nodeSettings.getPolicyId(), false ).size() >= 1) 
                 throw new DeployException("too many instances: " + nodeName);
-            
-            /**
-             * load annotated classes
-             */
-            /*
-             * XXX remove me after settings conversion complete FIXME
-             */
-            if (nodeProperties != null) {
-                List<String> annotatedClasses = nodeProperties.getAnnotatedClasses();
-                boolean classAdded = false;
-                if (annotatedClasses != null) {
-                    for (String clz : annotatedClasses) {
-                        classAdded |= UvmContextImpl.getInstance().addAnnotatedClass(clz);
-                    }
-                }
-            }
-            /*
-             * XXX remove me after settings conversion complete FIXME
-             */
-
-            /**
-             * Initialize the schema
-             */
-            /*
-             * XXX remove me after settings conversion complete FIXME
-             */
-            if (null != nodeProperties.getNodeBase()) {
-                UvmContextImpl.getInstance().schemaUtil().initSchema("settings", nodeProperties.getNodeBase());
-            }
-            UvmContextImpl.getInstance().schemaUtil().initSchema("settings", nodeProperties.getName());
-            /*
-             * XXX remove me after settings conversion complete FIXME
-             */
 
             node = NodeBase.loadClass(nodeProperties, nodeSettings, packageDesc, true);
 
@@ -523,15 +489,6 @@ public class NodeManagerImpl implements NodeManager
             final String name = nodeSettings.getNodeName();
             final PackageDesc packageDesc = tbm.packageDesc(name);
             loadedParents.add(name);
-
-            if (nodeProperties != null) {
-                List<String> annotatedClasses = nodeProperties.getAnnotatedClasses();
-                if (annotatedClasses != null) {
-                    for (String clz : annotatedClasses) {
-                        UvmContextImpl.getInstance().addAnnotatedClass(clz);
-                    }
-                }
-            }
 
             if (packageDesc != null) {
                 Runnable r = new Runnable()

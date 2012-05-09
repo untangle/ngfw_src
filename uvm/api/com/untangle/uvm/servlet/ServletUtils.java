@@ -9,13 +9,10 @@ import org.jabsorb.serializer.Serializer;
 import org.jabsorb.serializer.impl.JSONBeanSerializer;
 
 import com.untangle.uvm.webui.jabsorb.serializer.EnumSerializer;
-import com.untangle.uvm.webui.jabsorb.serializer.ExtendedListSerializer;
-import com.untangle.uvm.webui.jabsorb.serializer.ExtendedSetSerializer;
 import com.untangle.uvm.webui.jabsorb.serializer.HostAddressSerializer;
 import com.untangle.uvm.webui.jabsorb.serializer.IPMaskedAddressSerializer;
 import com.untangle.uvm.webui.jabsorb.serializer.IPAddressSerializer;
 import com.untangle.uvm.webui.jabsorb.serializer.InetAddressSerializer;
-import com.untangle.uvm.webui.jabsorb.serializer.LazyInitializerSerializer;
 import com.untangle.uvm.webui.jabsorb.serializer.MimeTypeSerializer;
 import com.untangle.uvm.webui.jabsorb.serializer.RFC2253NameSerializer;
 import com.untangle.uvm.webui.jabsorb.serializer.TimeSerializer;
@@ -75,11 +72,6 @@ public class ServletUtils
         registrator.registerSerializer(root, new MimeTypeSerializer());
         registrator.registerSerializer(root, new RFC2253NameSerializer());
         
-        // hibernate related serializers
-        registrator.registerSerializer(root, new LazyInitializerSerializer());
-        registrator.registerSerializer(root, new ExtendedListSerializer());
-        registrator.registerSerializer(root, new ExtendedSetSerializer());
-
         // matchers
         registrator.registerSerializer(root, new GenericStringSerializer(ProtocolMatcher.class));
         registrator.registerSerializer(root, new GenericStringSerializer(IPMatcher.class));

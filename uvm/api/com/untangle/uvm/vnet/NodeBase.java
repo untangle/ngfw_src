@@ -12,8 +12,6 @@ import java.util.List;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
-import org.hibernate.Query;
-import org.hibernate.Session;
 
 import com.untangle.uvm.UvmContext;
 import com.untangle.uvm.UvmContextFactory;
@@ -30,7 +28,6 @@ import com.untangle.uvm.node.NodeSettings;
 import com.untangle.uvm.node.DeployException;
 import com.untangle.uvm.node.NodeMetric;
 import com.untangle.uvm.util.I18nUtil;
-import com.untangle.uvm.util.TransactionWork;
 import com.untangle.uvm.logging.LogEvent;
 import com.untangle.uvm.toolbox.PackageDesc;
 

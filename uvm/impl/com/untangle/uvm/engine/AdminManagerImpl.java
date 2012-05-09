@@ -22,8 +22,6 @@ import java.io.InputStreamReader;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.log4j.Logger;
-import org.hibernate.Query;
-import org.hibernate.Session;
 
 import com.untangle.uvm.LanguageSettings;
 import com.untangle.uvm.MailSender;

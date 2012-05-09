@@ -38,7 +38,6 @@ import com.untangle.uvm.node.NodeMetric;
 import com.untangle.uvm.servlet.UploadHandler;
 import com.untangle.uvm.util.I18nUtil;
 import com.untangle.uvm.util.OutsideValve;
-import com.untangle.uvm.util.TransactionWork;
 import com.untangle.uvm.util.JsonClient.ConnectionException;
 import com.untangle.uvm.vnet.NodeBase;
 import com.untangle.uvm.vnet.PipeSpec;

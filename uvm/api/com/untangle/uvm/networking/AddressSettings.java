@@ -1,49 +1,11 @@
-/*
- * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
- *
- * This library is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License, version 2,
- * as published by the Free Software Foundation.
- *
- * This library is distributed in the hope that it will be useful, but
- * AS-IS and WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE, TITLE, or
- * NONINFRINGEMENT.  See the GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this library; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
- *
- * Linking this library statically or dynamically with other modules is
- * making a combined work based on this library.  Thus, the terms and
- * conditions of the GNU General Public License cover the whole combination.
- *
- * As a special exception, the copyright holders of this library give you
- * permission to link this library with independent modules to produce an
- * executable, regardless of the license terms of these independent modules,
- * and to copy and distribute the resulting executable under terms of your
- * choice, provided that you also meet, for each linked independent module,
- * the terms and conditions of the license of that module.  An independent
- * module is a module which is not derived from or based on this library.
- * If you modify this library, you may extend this exception to your version
- * of the library, but you are not obligated to do so.  If you do not wish
- * to do so, delete this exception statement from your version.
+/**
+ * $Id$
  */
-
 package com.untangle.uvm.networking;
 
 import java.io.Serializable;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.Table;
-import javax.persistence.Transient;
-
 import org.apache.log4j.Logger;
-import org.hibernate.annotations.Type;
 
 import com.untangle.uvm.node.IPAddress;
 import com.untangle.uvm.node.ParseException;
@@ -54,12 +16,7 @@ import com.untangle.uvm.node.HostAddress;
 /**
  * These are settings related to the hostname and the adddress that is
  * used to connect to box.
- *
- * @author <a href="mailto:rbscott@untangle.com">Robert Scott</a>
- * @version 1.0
  */
-@Entity
-@Table(name="u_address_settings", schema="settings")
 @SuppressWarnings("serial")
 public class AddressSettings implements Serializable, Validatable
 {
@@ -103,72 +60,31 @@ public class AddressSettings implements Serializable, Validatable
         this.publicIPAddress = settings.publicIPAddress;
     }
         
-    @Id
-    @Column(name="settings_id")
-    @GeneratedValue
-    public Long getId()
-    {
-        return id;
-    }
-
-    public void setId( Long id )
-    {
-        this.id = id;
-    }
+    public Long getId() { return id; }
+    public void setId(  Long id  ) { this.id = id; }
 
     /**
-     * Get the port to run HTTPs on in addition to port 443. */
-    @Column(name="https_port")
-    public int getHttpsPort()
-    {
-        return this.httpsPort;
-    }
-
-    /**
-     * Set the port to run HTTPs on in addition to port 443. */
-    public void setHttpsPort( int newValue )
-    {
-        this.httpsPort = newValue;
-    }
+     * Get the port to run HTTPs on in addition to port 443.
+     */
+    public int getHttpsPort() { return this.httpsPort; }
+    public void setHttpsPort(  int newValue  ) { this.httpsPort = newValue; }
 
     /**
      * Returns if the hostname for this box is publicly resolvable to
-     * this box */
-    @Column(name="is_hostname_public")
-    public boolean getIsHostNamePublic()
-    {
-        return this.isHostnamePublic;
-    }
-
-    /**
-     * Set if the hostname for this box is publicly resolvable to this
-     * box */
-    public void setIsHostNamePublic( boolean newValue )
-    {
-        this.isHostnamePublic = newValue;
-    }
+     * this box
+     */
+    public boolean getIsHostNamePublic() { return this.isHostnamePublic; }
+    public void setIsHostNamePublic(  boolean newValue  ) { this.isHostnamePublic = newValue; }
 
     /**
      * True if the public address should be used
      */
-    @Column(name="has_public_address")
-    public boolean getIsPublicAddressEnabled()
-    {
-        return this.isPublicAddressEnabled;
-    }
-
-    public void setIsPublicAddressEnabled( boolean newValue )
-    {
-        this.isPublicAddressEnabled = newValue;
-    }
+    public boolean getIsPublicAddressEnabled() { return this.isPublicAddressEnabled; }
+    public void setIsPublicAddressEnabled(  boolean newValue  ) { this.isPublicAddressEnabled = newValue; }
 
     /**
      * Retrieve the public address for the box.
-     *
-     * @return the public url for the box, this is the address (may be
-     * hostname or ip address)
      */
-    @Transient
     public String getPublicAddress()
     {
         if ( this.publicIPAddress == null || this.publicIPAddress.isEmpty()) return "";
@@ -221,27 +137,12 @@ public class AddressSettings implements Serializable, Validatable
     /**
      * Retrieve the address portion of the public address.
      */
-    @Column(name="public_ip_addr")
-    @Type(type="com.untangle.uvm.type.IPAddressUserType")
-    public IPAddress getPublicIPAddress()
-    {
-        return this.publicIPAddress;
-    }
-
-    /**
-     * Set the address portion of the public address.
-     *
-     * @param newValue the new address for the public address.
-     */
-    public void setPublicIPAddress( IPAddress newValue )
-    {
-        this.publicIPAddress = newValue;
-    }
+    public IPAddress getPublicIPAddress() { return this.publicIPAddress; }
+    public void setPublicIPAddress(  IPAddress newValue  ) { this.publicIPAddress = newValue; }
 
     /**
      * Retrieve the port component of the public address.
      */
-    @Column(name="public_port")
     public int getPublicPort()
     {
         if (( this.publicPort <= 0 ) || ( this.publicPort >= 0xFFFF )) {
@@ -266,7 +167,6 @@ public class AddressSettings implements Serializable, Validatable
     /**
      * Return true if the current settings use a public address
      */
-    @Transient
     public boolean hasPublicAddress()
     {
         return (( this.publicIPAddress != null ) &&  !this.publicIPAddress.isEmpty());
@@ -275,7 +175,6 @@ public class AddressSettings implements Serializable, Validatable
     /**
      * The current hostname (calculated)
      */
-    @Transient
     public HostAddress getCurrentPublicAddress()
     {
         HostAddress address = null;
@@ -311,7 +210,6 @@ public class AddressSettings implements Serializable, Validatable
     /**
      * @return the public url for the box, this is the address (may be hostname or ip address)
      */
-    @Transient
     public String getCurrentURL()
     {
         HostAddress currentPublicAddress = this.getCurrentPublicAddress();
@@ -328,7 +226,6 @@ public class AddressSettings implements Serializable, Validatable
     /**
      * The current port (calculated)
      */
-    @Transient
     public int getCurrentPublicPort()
     {
         int port = this.getHttpsPort();
@@ -348,7 +245,6 @@ public class AddressSettings implements Serializable, Validatable
     /**
      * Validate that the settings are free of errors.
      */
-    @Transient
     public void validate() throws ValidateException
     {
         /* nothing appears to be necessary here for now */

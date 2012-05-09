@@ -147,7 +147,7 @@ public abstract class OutsideValve extends ValveBase
             return isInsecureAccessAllowed;
         }
 
-        int blockPagePort = UvmContextFactory.context().networkManager().getAccessSettings().getBlockPagePort();
+        int blockPagePort = DEFAULT_HTTP_PORT;
         
         if ( port == blockPagePort ) {
             return isInsecureAccessAllowed;

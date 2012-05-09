@@ -5,16 +5,6 @@ package com.untangle.uvm.toolbox;
 
 import java.io.Serializable;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.Table;
-
 import com.untangle.uvm.Period;
 
 /**
@@ -23,8 +13,6 @@ import com.untangle.uvm.Period;
  * @author <a href="mailto:amread@untangle.com">Aaron Read</a>
  * @version 1.0
  */
-@Entity
-@Table(name="u_upgrade_settings", schema="settings")
 @SuppressWarnings("serial")
 public class UpgradeSettings implements Serializable
 {
@@ -44,9 +32,6 @@ public class UpgradeSettings implements Serializable
 
     // accessors --------------------------------------------------------------
 
-    @Id
-    @Column(name="upgrade_settings_id")
-    @GeneratedValue
     public Long getId()
     {
         return id;
@@ -60,10 +45,7 @@ public class UpgradeSettings implements Serializable
     /**
      * Specifies if apt-get upgrade should be run automatically after
      * an update.
-     *
-     * @return true if we autoupgrade.
      */
-    @Column(name="auto_upgrade", nullable=false)
     public boolean getAutoUpgrade()
     {
         return autoUpgrade;
@@ -79,8 +61,6 @@ public class UpgradeSettings implements Serializable
      *
      * @return upgrade period.
      */
-    @ManyToOne(cascade=CascadeType.ALL, fetch=FetchType.EAGER)
-    @JoinColumn(name="period", nullable=false)
     public Period getPeriod()
     {
         return period;

@@ -25,7 +25,6 @@ import org.apache.log4j.Logger;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.logging.LogEvent;
 import com.untangle.uvm.logging.SyslogManager;
-import com.untangle.uvm.util.TransactionWork;
 
 /**
  * Worker that batches and flushes events to the database.
@@ -73,7 +72,7 @@ public class EventWriterImpl implements Runnable
 
             if ( dbConnection == null ) {
                 try {
-                    dbConnection = UvmContextFactory.context().getDBConnection();
+                    dbConnection = ReportingNodeImpl.getDBConnection();
                 } catch (Exception e) {
                     logger.warn("Unable to create connection to DB",e);
                 }

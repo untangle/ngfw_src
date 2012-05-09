@@ -46,7 +46,7 @@ jts << (jt = JarTarget.build_target(uvm_lib, Jars::Base, 'api', ["./uvm/api", 'v
 BuildEnv::SRC.installTarget.install_jars(jt, uvm_lib.getWebappDir('webstart'), nil, true)
 
 ## Implementation
-deps  = Jars::Base + Jars::TomcatEmb + Jars::JavaMail + Jars::Dom4j + Jars::JFreeChart + 
+deps  = Jars::Base + Jars::TomcatEmb + Jars::JavaMail + Jars::JFreeChart + 
   [ uvm_lib['bootstrap'], uvm_lib['api'], jnetcap['impl'], jvector['impl']]
 
 jts << JarTarget.build_target(uvm_lib, deps, 'impl', "./uvm/impl")
@@ -139,7 +139,7 @@ end
 
 BuildEnv::SRC.installTarget.register_dependency(uvm_cacerts)
 
-deps  = Jars::Base + Jars::TomcatEmb + Jars::JavaMail + Jars::Dom4j +  
+deps  = Jars::Base + Jars::TomcatEmb + Jars::JavaMail +   
   [ uvm_lib['bootstrap'], uvm_lib['api'], uvm_lib['impl'], jnetcap['impl'], jvector['impl']]
 
 JarTarget.build_target(BuildEnv::SRC["unittest"], deps, 'untangle-libuvm', "./uvm/unittest")

@@ -5,22 +5,12 @@ package com.untangle.uvm;
 
 import java.io.Serializable;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.Table;
-import javax.persistence.Transient;
-
-
 /**
  * An UVM user.
  *
  * @author <a href="mailto:amread@untangle.com">Aaron Read</a>
  * @version 1.0
  */
-@Entity
-@Table(name="u_user", schema="settings")
 @SuppressWarnings("serial")
 public class User implements Serializable
 {
@@ -86,8 +76,6 @@ public class User implements Serializable
         this.sendAlerts = sendAlerts;
     }
 
-    @Id
-    @GeneratedValue
     public Long getId()
     {
         return id;
@@ -103,7 +91,6 @@ public class User implements Serializable
      *
      * @return user login.
      */
-    @Column(nullable=false, length=24)
     public String getLogin()
     {
         return login;
@@ -119,14 +106,12 @@ public class User implements Serializable
      *
      * @return encrypted password bytes.
      */
-    @Column(nullable=false, length=24)
     public byte[] getPassword()
     {
         return password;
     }
 
     /* for hibernate only */
-    @SuppressWarnings("unused")
 	private void setPassword(byte[] password)
     {
         this.password = password;
@@ -137,7 +122,6 @@ public class User implements Serializable
      *
      * @return username.
      */
-    @Column(nullable=false, length=64)
     public String getName()
     {
         return name;
@@ -153,7 +137,6 @@ public class User implements Serializable
      *
      * @return true True if this user can modify settings.
      */
-    @Column(name="write_access", nullable=false)
     public boolean getHasWriteAccess()
     {
         return hasWriteAccess;
@@ -170,7 +153,6 @@ public class User implements Serializable
      *
      * @return true if this user can view reports.
      */
-    @Column(name="reports_access", nullable=false)
     public boolean getHasReportsAccess()
     {
         return hasReportsAccess;
@@ -186,7 +168,6 @@ public class User implements Serializable
      *
      * @param password to be encrypted.
      */
-    @Transient
     public void setClearPassword(String password)
     {
         if (password == null) {
@@ -201,7 +182,6 @@ public class User implements Serializable
      *
      * @return user's contact email.
      */
-    @Column(length=64)
     public String getEmail()
     {
         return email;
@@ -217,7 +197,6 @@ public class User implements Serializable
      *
      * @return random info about user.
      */
-    @Column(length=256)
     public String getNotes()
     {
         return notes;
@@ -233,7 +212,6 @@ public class User implements Serializable
      *
      * @return true if alerts are sent.
      */
-    @Column(name="send_alerts")
     public boolean getSendAlerts()
     {
         return sendAlerts;

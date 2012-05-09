@@ -9,13 +9,10 @@ import java.util.List;
 import java.util.concurrent.BlockingQueue;
 
 import org.apache.log4j.Logger;
-import org.hibernate.Query;
-import org.hibernate.Session;
 
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.logging.LoggingSettings;
 import com.untangle.uvm.logging.LoggingManager;
-import com.untangle.uvm.util.TransactionWork;
 import com.untangle.uvm.logging.LogEvent;
 
 /**
@@ -33,23 +30,27 @@ class LoggingManagerImpl implements LoggingManager
 
     public LoggingManagerImpl()
     {
-        TransactionWork<Object> tw = new TransactionWork<Object>()
-            {
-                public boolean doWork(Session s)
-                {
-                    Query q = s.createQuery("from LoggingSettings ls");
-                    loggingSettings = (LoggingSettings)q.uniqueResult();
+//         TransactionWork<Object> tw = new TransactionWork<Object>()
+//             {
+//                 public boolean doWork(Session s)
+//                 {
+//                     Query q = s.createQuery("from LoggingSettings ls");
+//                     loggingSettings = (LoggingSettings)q.uniqueResult();
 
-                    if (null == loggingSettings) {
-                        loggingSettings = new LoggingSettings();
-                        s.save(loggingSettings);
-                    }
+//                     if (null == loggingSettings) {
+//                         loggingSettings = new LoggingSettings();
+//                         s.save(loggingSettings);
+//                     }
 
-                    return true;
-                }
-            };
-        UvmContextFactory.context().runTransaction(tw);
+//                     return true;
+//                 }
+//             };
+//         UvmContextFactory.context().runTransaction(tw);
 
+        if ( loggingSettings == null ) {
+            loggingSettings = new LoggingSettings();
+        }
+        
         SyslogManagerImpl.manager().reconfigure(loggingSettings);
     }
 
@@ -62,17 +63,17 @@ class LoggingManagerImpl implements LoggingManager
     {
         this.loggingSettings = loggingSettings;
 
-        TransactionWork<Object> tw = new TransactionWork<Object>()
-            {
-                public boolean doWork(Session s)
-                {
-                    s.merge(loggingSettings);
-                    return true;
-                }
-            };
+//         TransactionWork<Object> tw = new TransactionWork<Object>()
+//             {
+//                 public boolean doWork(Session s)
+//                 {
+//                     s.merge(loggingSettings);
+//                     return true;
+//                 }
+//             };
 
-        UvmContextFactory.context().runTransaction(tw);
-
+//         UvmContextFactory.context().runTransaction(tw);
+        
         SyslogManagerImpl.manager().reconfigure(loggingSettings);
     }
 

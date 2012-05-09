@@ -6,20 +6,12 @@ package com.untangle.uvm;
 import java.io.Serializable;
 import java.util.Calendar;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.Table;
-
 /**
  * Time specification for scheduling tasks.
  *
  * @author <a href="mailto:amread@untangle.com">Aaron Read</a>
  * @version 1.0
  */
-@Entity
-@Table(name="u_period", schema="settings")
 @SuppressWarnings("serial")
 public class Period implements Serializable
 {
@@ -123,9 +115,6 @@ public class Period implements Serializable
 
     // accessors --------------------------------------------------------------
 
-    @Id
-    @Column(name="period_id")
-    @GeneratedValue
     public Long getId()
     {
         return id;
@@ -139,7 +128,6 @@ public class Period implements Serializable
     /**
      * Hour of update.
      */
-    @Column(nullable=false)
     public int getHour()
     {
         return hour;
@@ -152,10 +140,7 @@ public class Period implements Serializable
 
     /**
      * Minute of update.
-     *
-     * @return the minute.
      */
-    @Column(nullable=false)
     public int getMinute()
     {
         return minute;
@@ -168,10 +153,7 @@ public class Period implements Serializable
 
     /**
      * Includes Sunday.
-     *
-     * @return true if it happens on Sunday.
      */
-    @Column(nullable=false)
     public boolean getSunday()
     {
         return sunday;
@@ -184,10 +166,7 @@ public class Period implements Serializable
 
     /**
      * Includes Monday.
-     *
-     * @return true if it happens on Monday.
      */
-    @Column(nullable=false)
     public boolean getMonday()
     {
         return monday;
@@ -200,10 +179,7 @@ public class Period implements Serializable
 
     /**
      * Includes Tuesday.
-     *
-     * @return true if it happens on Tuesday.
      */
-    @Column(nullable=false)
     public boolean getTuesday()
     {
         return tuesday;
@@ -216,10 +192,7 @@ public class Period implements Serializable
 
     /**
      * Includes Wednesday.
-     *
-     * @return true if it happens on Wednesday.
      */
-    @Column(nullable=false)
     public boolean getWednesday()
     {
         return wednesday;
@@ -232,10 +205,7 @@ public class Period implements Serializable
 
     /**
      * Includes Thursday.
-     *
-     * @return true if it happens on Thursday.
      */
-    @Column(nullable=false)
     public boolean getThursday()
     {
         return thursday;
@@ -248,10 +218,7 @@ public class Period implements Serializable
 
     /**
      * Includes Friday.
-     *
-     * @return true if it happens on Friday.
      */
-    @Column(nullable=false)
     public boolean getFriday()
     {
         return friday;
@@ -264,10 +231,7 @@ public class Period implements Serializable
 
     /**
      * Includes Saturday.
-     *
-     * @return true if it happens on Saturday.
      */
-    @Column(nullable=false)
     public boolean getSaturday()
     {
         return saturday;

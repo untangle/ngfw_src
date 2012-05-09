@@ -15,10 +15,9 @@ UNZIP=unzip
 #* EDIT HERE WHEN ADDING, UPGRADING, OR REMOVING.
 ###############################################################################
 tarballs_gz=apache-ant-1.6.5.tar.gz \
-	hibernate-3.2.4.sp1.tar.gz hibernate-annotations-3.3.0.GA.tar.gz \
 	apache-tomcat-5.5.26.tar.gz jfreechart-1.0.13.tar.gz \
 	logging-log4j-1.2.16.tar.gz \
-	bcel-5.2.tar.gz c3p0-0.9.1.2.tar.gz velocity-1.4.tar.gz \
+	bcel-5.2.tar.gz velocity-1.4.tar.gz \
 	commons-fileupload-1.1.tar.gz commons-io-1.1.tar.gz \
 	commons-httpclient-3.0.tar.gz AjaxTK-3.1.1_GA_394-src.tar.gz \
 	commons-codec-1.3.tar.gz \
@@ -31,7 +30,7 @@ tarballs_bz2=
 zips=javamail-1_3_3_01.zip xstream-distribution-1.3-bin.zip \
 	jabsorb-1.2.2-src.zip 
 
-jars=hibernate-client.jar gettext-commons-0.9.1.jar postgresql-9.1-902.jdbc4.jar
+jars=gettext-commons-0.9.1.jar postgresql-9.1-902.jdbc4.jar
 
 ###############################################################################
 ###############################################################################

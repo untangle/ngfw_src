@@ -169,7 +169,7 @@ public class ExecManagerImpl implements ExecManager
             logger.info("About to start daemon " + launcher);
             proc = Runtime.getRuntime().exec(launcher);
         } catch (IOException e) {
-            logger.error("Couldn't start ut-update-schema", e);
+            logger.error("Couldn't start ut-exec-launcher", e);
             return;
         }
 

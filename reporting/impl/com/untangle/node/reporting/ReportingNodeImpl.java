@@ -22,9 +22,12 @@ import java.util.Map;
 import java.util.Set;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Properties;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.net.InetAddress;
+import java.sql.Connection;
+import java.sql.DriverManager;
 
 import org.apache.log4j.Logger;
 
@@ -37,7 +40,6 @@ import com.untangle.uvm.node.Reporting;
 import com.untangle.uvm.AdminManager;
 import com.untangle.uvm.User;
 import com.untangle.uvm.logging.LogEvent;
-import com.untangle.uvm.util.TransactionWork;
 import com.untangle.uvm.vnet.NodeBase;
 import com.untangle.uvm.vnet.PipeSpec;
 
@@ -193,6 +195,24 @@ public class ReportingNodeImpl extends NodeBase implements ReportingNode, Report
     public ArrayList getEvents( final String query, final Long policyId, final int limit )
     {
         return this.eventReader.getEvents( query, policyId, limit );
+    }
+
+    protected static Connection getDBConnection()
+    {
+        try {
+            Class.forName("org.postgresql.Driver");
+            String url = "jdbc:postgresql://localhost/uvm?charset=unicode";
+            Properties props = new Properties();
+            props.setProperty( "user", "postgres" );
+            props.setProperty( "password", "foo" );
+            props.setProperty( "ssl", "false" );
+
+            return DriverManager.getConnection(url,props);
+        }
+        catch (Exception e) {
+            logger.warn("Failed to connect to DB", e);
+            return null;
+        }
     }
     
     @Override

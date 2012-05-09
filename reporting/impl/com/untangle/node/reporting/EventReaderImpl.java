@@ -46,7 +46,7 @@ public class EventReaderImpl
 
         if ( dbConnection == null ) {
             try {
-                dbConnection = UvmContextFactory.context().getDBConnection();
+                dbConnection = ReportingNodeImpl.getDBConnection();
             } catch (Exception e) {
                 logger.warn("Unable to create connection to DB",e);
             }

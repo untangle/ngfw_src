@@ -8,7 +8,6 @@ import java.util.ArrayList;
 import java.io.IOException;
 import java.sql.Connection;
 
-import org.hibernate.Session;
 
 import com.untangle.uvm.UvmContext;
 import com.untangle.uvm.logging.LoggingManager;
@@ -23,7 +22,6 @@ import com.untangle.uvm.reports.ReportingManager;
 import com.untangle.uvm.AdminManager;
 import com.untangle.uvm.servlet.UploadManager;
 import com.untangle.uvm.toolbox.ToolboxManager;
-import com.untangle.uvm.util.TransactionWork;
 import com.untangle.uvm.vnet.PipelineFoundry;
 import com.untangle.uvm.LocalTomcatManager;
 
@@ -354,12 +352,6 @@ public interface UvmContext
      * @return a <code>boolean</code> value
      */
     boolean isWizardComplete();
-
-    /**
-     * Hibernate transaction runner
-     * FIXME remove me
-     */
-    boolean runTransaction(TransactionWork<?> tw);
 
     /**
      * blocks until startup is complete

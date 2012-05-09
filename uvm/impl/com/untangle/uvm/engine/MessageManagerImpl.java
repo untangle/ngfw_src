@@ -20,8 +20,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.log4j.Logger;
-import org.hibernate.Query;
-import org.hibernate.Session;
 
 import com.untangle.uvm.ArgonManager;
 import com.untangle.uvm.UvmContextFactory;
@@ -38,7 +36,6 @@ import com.untangle.uvm.node.SessionEndpoints;
 import com.untangle.uvm.node.NodeSettings;
 import com.untangle.uvm.node.NodeMetric;
 import com.untangle.uvm.util.Pulse;
-import com.untangle.uvm.util.TransactionWork;
 
 public class MessageManagerImpl implements MessageManager
 {

@@ -15,19 +15,15 @@ import java.util.List;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.StringTokenizer;
+import java.util.Properties;
 import java.sql.SQLException;
 import java.sql.Connection;
+import java.sql.DriverManager;
 
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.fileupload.FileItem;
 import org.apache.log4j.Logger;
-import org.hibernate.Hibernate;
-import org.hibernate.HibernateException;
-import org.hibernate.Query;
-import org.hibernate.Session;
-import org.hibernate.SessionFactory;
-import org.hibernate.cfg.AnnotationConfiguration;
 
 import org.jabsorb.JSONSerializer;
 
@@ -58,8 +54,6 @@ import com.untangle.uvm.node.NodeManager;
 import com.untangle.uvm.servlet.ServletUtils;
 import com.untangle.uvm.servlet.UploadHandler;
 import com.untangle.uvm.servlet.UploadManager;
-import com.untangle.uvm.util.TransactionRunner;
-import com.untangle.uvm.util.TransactionWork;
 import com.untangle.uvm.util.XMLRPCUtil;
 import com.untangle.uvm.util.JsonClient;
 
@@ -87,7 +81,7 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
     
     private static final Object startupWaitLock = new Object();
 
-    private final Logger logger = Logger.getLogger(UvmContextImpl.class);
+    private static final Logger logger = Logger.getLogger(UvmContextImpl.class);
 
     private static String uid;
     
@@ -130,8 +124,6 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
 
     private UvmContextImpl()
     {
-        initializeUvmAnnotatedClasses();
-
         state = UvmState.LOADED;
     }
 
@@ -489,22 +481,22 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
         return this.brandingManager.getCompanyName();
     }
 
-    public boolean addAnnotatedClass(String className)
-    {
-        if (className == null) {
-            logger.warn("Invalid argument: className is null");
-            return false;
-        }
+//     public boolean addAnnotatedClass(String className)
+//     {
+//         if (className == null) {
+//             logger.warn("Invalid argument: className is null");
+//             return false;
+//         }
 
-        for (String cname : this.annotatedClasses) {
-            if (className.equals(cname))
-                return false; /* already in list */
-        }
+//         for (String cname : this.annotatedClasses) {
+//             if (className.equals(cname))
+//                 return false; /* already in list */
+//         }
 
-        logger.info("Adding AnnotatedClass: " + className);
-        this.annotatedClasses.add(className);
-        return true;
-    }
+//         logger.info("Adding AnnotatedClass: " + className);
+//         this.annotatedClasses.add(className);
+//         return true;
+//     }
     
     public void logEvent(LogEvent evt)
     {
@@ -734,11 +726,6 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
         return result;
     }
 
-    SchemaUtil schemaUtil()
-    {
-        return main.schemaUtil();
-    }
-
     void fatalError(String throwingLocation, Throwable x)
     {
         main.fatalError(throwingLocation, x);
@@ -795,12 +782,6 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
         return this.alertManager;
     }
     
-    /* FIXME remove me after hibernate */
-    public boolean runTransaction(TransactionWork<?> tw)
-    {
-        return true;
-    }
-
     public ArrayList getEvents( final String query, final Long policyId, final int limit )
     {
         if (this.reportingNode == null)
@@ -814,12 +795,21 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
     public Connection getDBConnection()
     {
         try {
-            return DataSourceFactory.factory().getConnection();
-        } catch (SQLException e) {
-            logger.warn("Failed to create DB Connection.",e);
+            Class.forName("org.postgresql.Driver");
+            String url = "jdbc:postgresql://localhost/uvm?charset=unicode";
+            Properties props = new Properties();
+            props.setProperty( "user", "postgres" );
+            props.setProperty( "password", "foo" );
+            props.setProperty( "ssl", "false" );
+
+            return DriverManager.getConnection(url,props);
+        }
+        catch (Exception e) {
+            logger.warn("Failed to connect to DB", e);
             return null;
         }
     }
+
     // private methods --------------------------------------------------------
 
     private class RestoreUploadHandler implements UploadHandler
@@ -865,38 +855,21 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
             
     }
 
-    @SuppressWarnings("unchecked")
-	private AnnotationConfiguration buildAnnotationConfiguration(ClassLoader cl)
-    {
-        AnnotationConfiguration cfg = new AnnotationConfiguration();
-        try {
-            for (String clz : this.annotatedClasses) {
-                Class c = cl.loadClass(clz);
-                cfg.addAnnotatedClass(c);
-            }
-        }
-        catch (java.lang.ClassNotFoundException exc) {
-            logger.warn("Annotated Class not found", exc);
-        }
-
-        return cfg;
-    }
-
-    private void initializeUvmAnnotatedClasses()
-    {
-        /* api */
-        this.addAnnotatedClass("com.untangle.uvm.LanguageSettings");
-        this.addAnnotatedClass("com.untangle.uvm.MailSettings");
-        this.addAnnotatedClass("com.untangle.uvm.Period");
-        this.addAnnotatedClass("com.untangle.uvm.SkinSettings");
-        this.addAnnotatedClass("com.untangle.uvm.AdminSettings");
-        this.addAnnotatedClass("com.untangle.uvm.User");
-        this.addAnnotatedClass("com.untangle.uvm.logging.LoggingSettings");
-        this.addAnnotatedClass("com.untangle.uvm.networking.AccessSettings");
-        this.addAnnotatedClass("com.untangle.uvm.networking.AddressSettings");
-        this.addAnnotatedClass("com.untangle.uvm.snmp.SnmpSettings");
-        this.addAnnotatedClass("com.untangle.uvm.toolbox.UpgradeSettings");
-    }
+//     private void initializeUvmAnnotatedClasses()
+//     {
+//         /* api */
+//         this.addAnnotatedClass("com.untangle.uvm.LanguageSettings");
+//         this.addAnnotatedClass("com.untangle.uvm.MailSettings");
+//         this.addAnnotatedClass("com.untangle.uvm.Period");
+//         this.addAnnotatedClass("com.untangle.uvm.SkinSettings");
+//         this.addAnnotatedClass("com.untangle.uvm.AdminSettings");
+//         this.addAnnotatedClass("com.untangle.uvm.User");
+//         this.addAnnotatedClass("com.untangle.uvm.logging.LoggingSettings");
+//         this.addAnnotatedClass("com.untangle.uvm.networking.AccessSettings");
+//         this.addAnnotatedClass("com.untangle.uvm.networking.AddressSettings");
+//         this.addAnnotatedClass("com.untangle.uvm.snmp.SnmpSettings");
+//         this.addAnnotatedClass("com.untangle.uvm.toolbox.UpgradeSettings");
+//     }
     
     /**
      * This changes apache to show the regular screen again if it is currently showing the

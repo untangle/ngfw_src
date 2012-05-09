@@ -19,8 +19,6 @@ import java.util.Iterator;
 import org.apache.log4j.Logger;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.hibernate.Session;
-import org.hibernate.Query;
 
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.UvmState;

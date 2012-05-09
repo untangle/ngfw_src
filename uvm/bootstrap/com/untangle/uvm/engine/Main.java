@@ -37,8 +37,6 @@ public class Main
 
     private static Main MAIN;
 
-    private final SchemaUtil schemaUtil = new SchemaUtil();
-
     private final Logger logger = Logger.getLogger(getClass());
 
     private UvmClassLoader uvmCl;
@@ -48,12 +46,6 @@ public class Main
 
     private Main()
     {
-        /**
-         * Initialize the UVM schema
-         * XXX remove me when settings live in files FIXME
-         */
-        schemaUtil.initSchema("settings", "uvm");
-
         /**
          * Configure the basic logging setup
          */
@@ -120,14 +112,6 @@ public class Main
         }
     }
 
-    /**
-     * Provides UvmContext access to {@link SchemaUtil}.
-     */
-    public SchemaUtil schemaUtil()
-    {
-        return schemaUtil;
-    }
-
     public boolean loadUvmResource(String name)
     {
         return uvmCl.loadUvmResource(name);
@@ -189,11 +173,6 @@ public class Main
     private void destroy()
     {
         uvmContext.doDestroy();
-        try {
-            DataSourceFactory.factory().destroy();
-        } catch (SQLException exn) {
-            logger.warn("could not destory DataSourceFactory", exn);
-        }
         System.out.println("UVM shutdown complete.");
     }
 

@@ -7,13 +7,10 @@ import java.io.File;
 import java.io.FileOutputStream;
 
 import org.apache.log4j.Logger;
-import org.hibernate.Query;
-import org.hibernate.Session;
 
 import com.untangle.node.util.IOUtil;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.util.HasConfigFiles;
-import com.untangle.uvm.util.TransactionWork;
 
 /**
  * Implementation of the SnmpManager
@@ -36,33 +33,46 @@ public class SnmpManagerImpl implements SnmpManager, HasConfigFiles
     private SnmpManagerImpl()
     {
 
-        TransactionWork<Object> tw = new TransactionWork<Object>() {
-            public boolean doWork(Session s) {
-                Query q = s.createQuery("from SnmpSettings");
-                settings = (SnmpSettings)q.uniqueResult();
+//         TransactionWork<Object> tw = new TransactionWork<Object>() {
+//             public boolean doWork(Session s) {
+//                 Query q = s.createQuery("from SnmpSettings");
+//                 settings = (SnmpSettings)q.uniqueResult();
 
-                if(settings == null) {
-                    settings = new SnmpSettings();
+//                 if(settings == null) {
+//                     settings = new SnmpSettings();
 
-                    settings.setEnabled(false);
-                    settings.setPort(SnmpSettings.STANDARD_MSG_PORT);
-                    settings.setCommunityString("CHANGE_ME");
-                    settings.setSysContact("MY_CONTACT_INFO");
-                    settings.setSysLocation("MY_LOCATION");
-                    settings.setSendTraps(false);
-                    settings.setTrapHost("MY_TRAP_HOST");
-                    settings.setTrapCommunity("MY_TRAP_COMMUNITY");
-                    settings.setTrapPort(SnmpSettings.STANDARD_TRAP_PORT);
+//                     settings.setEnabled(false);
+//                     settings.setPort(SnmpSettings.STANDARD_MSG_PORT);
+//                     settings.setCommunityString("CHANGE_ME");
+//                     settings.setSysContact("MY_CONTACT_INFO");
+//                     settings.setSysLocation("MY_LOCATION");
+//                     settings.setSendTraps(false);
+//                     settings.setTrapHost("MY_TRAP_HOST");
+//                     settings.setTrapCommunity("MY_TRAP_COMMUNITY");
+//                     settings.setTrapPort(SnmpSettings.STANDARD_TRAP_PORT);
 
-                    s.save(settings);
-                }
-                return true;
-            }
+//                     s.save(settings);
+//                 }
+//                 return true;
+//             }
 
-            public Object getResult() { return null; }
-        };
-        UvmContextFactory.context().runTransaction(tw);
+//             public Object getResult() { return null; }
+//         };
+//         UvmContextFactory.context().runTransaction(tw);
 
+        if ( settings == null ) {
+            settings = new SnmpSettings();
+            settings.setEnabled(false);
+            settings.setPort(SnmpSettings.STANDARD_MSG_PORT);
+            settings.setCommunityString("CHANGE_ME");
+            settings.setSysContact("MY_CONTACT_INFO");
+            settings.setSysLocation("MY_LOCATION");
+            settings.setSendTraps(false);
+            settings.setTrapHost("MY_TRAP_HOST");
+            settings.setTrapCommunity("MY_TRAP_COMMUNITY");
+            settings.setTrapPort(SnmpSettings.STANDARD_TRAP_PORT);
+        }
+        
         logger.info("Initialized SnmpManager");
         if(!isSnmpInstalled()) {
             logger.warn("Snmpd is not installed");
@@ -81,15 +91,15 @@ public class SnmpManagerImpl implements SnmpManager, HasConfigFiles
 
     public void setSnmpSettings(final SnmpSettings settings)
     {
-        TransactionWork<Object> tw = new TransactionWork<Object>() {
-            public boolean doWork(Session s) {
-                s.merge(settings);
-                return true;
-            }
+//         TransactionWork<Object> tw = new TransactionWork<Object>() {
+//             public boolean doWork(Session s) {
+//                 s.merge(settings);
+//                 return true;
+//             }
 
-            public Object getResult() { return null; }
-        };
-        UvmContextFactory.context().runTransaction(tw);
+//             public Object getResult() { return null; }
+//         };
+//         UvmContextFactory.context().runTransaction(tw);
         this.settings = settings;
 
         if (!isSnmpInstalled()) {

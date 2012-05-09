@@ -28,8 +28,6 @@ import java.util.Iterator;
 
 import org.apache.commons.fileupload.FileItem;
 import org.apache.log4j.Logger;
-import org.hibernate.Query;
-import org.hibernate.Session;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
@@ -45,7 +43,6 @@ import com.untangle.uvm.node.NodeProperties;
 import com.untangle.uvm.node.NodeManager;
 import com.untangle.uvm.servlet.UploadHandler;
 import com.untangle.uvm.util.JsonClient;
-import com.untangle.uvm.util.TransactionWork;
 
 /**
  * Implementation of LanguageManagerImpl.
@@ -428,22 +425,24 @@ public class LanguageManagerImpl implements LanguageManager
     @SuppressWarnings("unchecked")
     private void saveSettings(final LanguageSettings settings)
     {
-        TransactionWork<Void> tw = new TransactionWork<Void>()
-            {
-                public boolean doWork(Session s)
-                {
-                    /* delete old settings */
-                    Query q = s.createQuery( "from " + "LanguageSettings" );
-                    for ( Iterator<LanguageSettings> iter = q.iterate() ; iter.hasNext() ; ) {
-                        LanguageSettings oldSettings = iter.next();
-                        s.delete( oldSettings );
-                    }
+//         TransactionWork<Void> tw = new TransactionWork<Void>()
+//             {
+//                 public boolean doWork(Session s)
+//                 {
+//                     /* delete old settings */
+//                     Query q = s.createQuery( "from " + "LanguageSettings" );
+//                     for ( Iterator<LanguageSettings> iter = q.iterate() ; iter.hasNext() ; ) {
+//                         LanguageSettings oldSettings = iter.next();
+//                         s.delete( oldSettings );
+//                     }
 
-                    languageSettings = (LanguageSettings)s.merge(settings);
-                    return true;
-                }
-            };
-        UvmContextFactory.context().runTransaction(tw);
+//                     languageSettings = (LanguageSettings)s.merge(settings);
+//                     return true;
+//                 }
+//             };
+//         UvmContextFactory.context().runTransaction(tw);
+
+        this.languageSettings = settings;
     }
 
     private ArrayList<String> loadBlacklist()

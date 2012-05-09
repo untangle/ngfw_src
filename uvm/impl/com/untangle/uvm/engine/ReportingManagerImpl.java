@@ -57,12 +57,12 @@ import com.untangle.uvm.toolbox.PackageDesc;
 
 class ReportingManagerImpl implements ReportingManager
 {
+    private static final Logger logger = Logger.getLogger(ReportingManagerImpl.class);
+
     private static final String UVM_REPORTS_DATA = System.getProperty("uvm.web.dir") + "/reports/data";
 
     private static final File REPORTS_DIR = new File(UVM_REPORTS_DATA);
     private static final String DATE_FORMAT = "yyyy-MM-dd";
-
-    private final Logger logger = Logger.getLogger(getClass());
 
     private static ReportingManagerImpl REPORTING_MANAGER = new ReportingManagerImpl();
 
@@ -605,4 +605,5 @@ class ReportingManagerImpl implements ReportingManager
     {
         return 0 < getDates().size();
     }
+
 }

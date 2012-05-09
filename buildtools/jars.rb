@@ -54,28 +54,12 @@ class Jars
   def Jars.findJars
     ## Named groups of jars
     const_set(:Log4j, [ Jars.downloadTarget('apache-log4j-1.2.16/log4j-1.2.16.jar') ])
-    const_set(:Hibernate, %w( hibernate-3.2/hibernate3.jar
-                      hibernate-3.2/lib/antlr-2.7.6.jar
-                      hibernate-3.2/lib/asm.jar
-                      hibernate-3.2/lib/cglib-2.1.3.jar
-                      hibernate-3.2/lib/commons-collections-2.1.1.jar
-                      hibernate-3.2/lib/dom4j-1.6.1.jar
-                      hibernate-3.2/lib/oscache-2.1.jar
-                      hibernate-3.2/lib/jta.jar
-                      hibernate-3.2/lib/xerces-2.6.2.jar
-                    ).map { |f| Jars.downloadTarget(f) })
-    const_set(:HibernateAnnotations, %w(
-      hibernate-annotations-3.3.0.GA/hibernate-annotations.jar
-      hibernate-annotations-3.3.0.GA/lib/ejb3-persistence.jar
-      hibernate-annotations-3.3.0.GA/lib/hibernate-commons-annotations.jar
-    ).map { |f| Jars.downloadTarget(f) })
-
-    const_set(:C3p0, [ Jars.downloadTarget('c3p0-0.9.1.2/lib/c3p0-0.9.1.2.jar') ])
     const_set(:Ant, [ Jars.downloadTarget('apache-ant-1.6.5/lib/ant.jar') ])
     const_set(:JavaMailApi, [ Jars.downloadTarget('javamail-1.3.3_01/lib/mailapi.jar') ])
     const_set(:Jabsorb, [ Jars.downloadTarget('jabsorb-1.2.2/jabsorb-1.2.2.jar')])
     const_set(:Json, [ Jars.downloadTarget('jabsorb-1.2.2/json.jar')])
     const_set(:GetText, [ Jars.downloadTarget('gettext-commons-0.9.1/gettext-commons-0.9.1.jar') ])
+    const_set(:Xerces, [ Jars.downloadTarget('xstream-distribution-1.3-bin/xstream-1.3/lib/jdk1.3/xercesImpl-2.8.1.jar') ])
     const_set(:Slf4j, [ Jars.downloadTarget( 'slf4j-1.4.3/slf4j-log4j12-1.4.3.jar'), 
                         Jars.downloadTarget( 'slf4j-1.4.3/slf4j-api-1.4.3.jar' ) ])
 
@@ -103,7 +87,7 @@ class Jars
                 Jars.downloadTarget("apache-tomcat-5.5.26/server/lib/#{n}")
               end)
 
-    const_set(:TomcatEmb, TomcatCommon + TomcatServer + [Jars.downloadTarget("hibernate-3.2/lib/commons-logging-1.0.4.jar")])
+    const_set(:TomcatEmb, TomcatCommon + TomcatServer + [Jars.downloadTarget("apache-tomcat-5.5.26/bin/commons-logging-api-1.1.1.jar")])
 
     ## XmlRpc Jars
     const_set(:XmlRpc, [ Jars.downloadTarget('xmlrpc-3.1/lib/xmlrpc-client-3.1.jar'),
@@ -116,7 +100,6 @@ class Jars
 
     ## Miscellaneous Jars
     const_set(:JavaMail, [ Jars.downloadTarget('javamail-1.3.3_01/mail.jar') ])
-    const_set(:Dom4j, [ Jars.downloadTarget('hibernate-3.2/lib/dom4j-1.6.1.jar') ])
     const_set(:Postgres, [ Jars.downloadTarget('postgresql-9.1-902.jdbc4/postgresql-9.1-902.jdbc4.jar')])
     const_set(:Velocity, [ Jars.downloadTarget('velocity-1.4/velocity-1.4.jar') ])
     const_set(:XStream, [ Jars.downloadTarget('xstream-distribution-1.3-bin/xstream-1.3/lib/xstream-1.3.jar'),
@@ -142,9 +125,8 @@ class Jars
 
     ## Groups used for compiling
     # This is available to everything?
-    const_set(:Base, Jars.makeGroup(Log4j, Hibernate, HibernateAnnotations, Postgres,
-                                   C3p0, 
-                                   JavaMailApi,
+    const_set(:Base, Jars.makeGroup(Log4j, Postgres,
+                                   JavaMailApi, Xerces,
                                    GetText, JavaMail, TomcatEmb, Velocity, 
                                    HttpClient, XmlRpc,
                                    Jstl, XStream, Json, Jabsorb, Slf4j, DnsJava,

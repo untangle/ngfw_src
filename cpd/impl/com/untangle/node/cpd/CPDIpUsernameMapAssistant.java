@@ -18,13 +18,10 @@ import java.util.LinkedList;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
-import org.hibernate.Query;
-import org.hibernate.Session;
 
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.node.NodeSettings;
 import com.untangle.uvm.user.IpUsernameMapAssistant;
-import com.untangle.uvm.util.TransactionWork;
 import com.untangle.uvm.util.Pulse;
 import com.untangle.uvm.node.DirectoryConnector;
 
@@ -214,99 +211,99 @@ public class CPDIpUsernameMapAssistant implements IpUsernameMapAssistant {
             if (this.cpd.getRunState() !=  NodeSettings.NodeState.RUNNING)
                 return;
 
-            TransactionWork<Void> tw = new TransactionWork<Void>()
-                {
-                    public boolean doWork(Session s)
-                    {
-                        if (!registered) {
-                            DirectoryConnector adconnector = (DirectoryConnector)UvmContextFactory.context().nodeManager().node("untangle-node-adconnector");
-                            if (adconnector != null) {
-                                adconnector.getIpUsernameMap().registerAssistant( assistant );
-                                logger.debug("CPDIpUsernameMapAssistant registered");
-                                registered = true;
-                            }
-                            else {
-                                logger.debug("CPDIpUsernameMapAssistant ignoring (adconnector not running)");
-                            }
-                        }
+//             TransactionWork<Void> tw = new TransactionWork<Void>()
+//                 {
+//                     public boolean doWork(Session s)
+//                     {
+//                         if (!registered) {
+//                             DirectoryConnector adconnector = (DirectoryConnector)UvmContextFactory.context().nodeManager().node("untangle-node-adconnector");
+//                             if (adconnector != null) {
+//                                 adconnector.getIpUsernameMap().registerAssistant( assistant );
+//                                 logger.debug("CPDIpUsernameMapAssistant registered");
+//                                 registered = true;
+//                             }
+//                             else {
+//                                 logger.debug("CPDIpUsernameMapAssistant ignoring (adconnector not running)");
+//                             }
+//                         }
 
-                        if (registered) {
-                            Query q = s.createQuery("from HostDatabaseEntry hde where hde.expirationDate > :now ORDER BY hde.expirationDate DESC");
-                            q.setDate("now", new Date());
+//                         if (registered) {
+//                             Query q = s.createQuery("from HostDatabaseEntry hde where hde.expirationDate > :now ORDER BY hde.expirationDate DESC");
+//                             q.setDate("now", new Date());
 
-                            List<HostDatabaseEntry> list = q.list();
+//                             List<HostDatabaseEntry> list = q.list();
 
-                            Date now = new Date();
+//                             Date now = new Date();
 
-                            for ( HostDatabaseEntry entry : list ) {
-                                InetAddress addr = entry.getIpv4Address();
-                                String username = entry.getUsername();
-                                Date expirationDate = entry.getExpirationDate();
+//                             for ( HostDatabaseEntry entry : list ) {
+//                                 InetAddress addr = entry.getIpv4Address();
+//                                 String username = entry.getUsername();
+//                                 Date expirationDate = entry.getExpirationDate();
 
-                                logger.debug( "Read from DB: (IP " + addr + ") (Username " + username + ") (Expiration Date " + expirationDate + ")");
+//                                 logger.debug( "Read from DB: (IP " + addr + ") (Username " + username + ") (Expiration Date " + expirationDate + ")");
 
-                                /* lookup in current cache */
-                                MapValue cacheEntry = cache.get(addr);
+//                                 /* lookup in current cache */
+//                                 MapValue cacheEntry = cache.get(addr);
 
-                                /* if cache miss - add to cache */
-                                /* don't count DEFAULT_USERNAME as a valid user */
-                                if ( cacheEntry == null ) {
-                                    /* cache miss */
+//                                 /* if cache miss - add to cache */
+//                                 /* don't count DEFAULT_USERNAME as a valid user */
+//                                 if ( cacheEntry == null ) {
+//                                     /* cache miss */
 
-                                    /* only add the is it isnt the default username (no login specified) */
-                                    if (! CPDImpl.DEFAULT_USERNAME.equals(username)) {
-                                        addCache(addr,username);
-                                    }
-                                }
-                                /* if cache hit - update expire time as its still in the database */
-                                else {
-                                    cacheEntry.expirationDate = new Date(now.getTime() + (cpd.getSettings().getTimeout()*1000));
-                                }
-                            }
+//                                     /* only add the is it isnt the default username (no login specified) */
+//                                     if (! CPDImpl.DEFAULT_USERNAME.equals(username)) {
+//                                         addCache(addr,username);
+//                                     }
+//                                 }
+//                                 /* if cache hit - update expire time as its still in the database */
+//                                 else {
+//                                     cacheEntry.expirationDate = new Date(now.getTime() + (cpd.getSettings().getTimeout()*1000));
+//                                 }
+//                             }
 
-                            LinkedList<InetAddress> toRemove = new LinkedList<InetAddress>();
+//                             LinkedList<InetAddress> toRemove = new LinkedList<InetAddress>();
 
-                            synchronized(cache) {
-                                Set<InetAddress> inets = cache.keySet();
+//                             synchronized(cache) {
+//                                 Set<InetAddress> inets = cache.keySet();
 
-                                /**
-                                 * Mark expired entries for removal
-                                 * Also remove entries far in future (this indicateds clock shift)
-                                 */
-                                for ( InetAddress inet : inets ) {
-                                    MapValue value = cache.get(inet);
+//                                 /**
+//                                  * Mark expired entries for removal
+//                                  * Also remove entries far in future (this indicateds clock shift)
+//                                  */
+//                                 for ( InetAddress inet : inets ) {
+//                                     MapValue value = cache.get(inet);
 
-                                    /**
-                                     * expiration time has lapsed
-                                     */
-                                    if (value.expirationDate.before(now)) {
-                                        toRemove.add(inet);
-                                    }
-                                    /**
-                                     * too far in future - oldest entries should expire in DATABASE_CACHE_TIME
-                                     */
-                                    if (value.expirationDate.after(new Date(now.getTime() + (cpd.getSettings().getTimeout()*1000)*10))) {
-                                        logger.warn("cache entry expires too far in the future - removing");
-                                        toRemove.add(inet);
-                                    }
-                                }
-                            }
+//                                     /**
+//                                      * expiration time has lapsed
+//                                      */
+//                                     if (value.expirationDate.before(now)) {
+//                                         toRemove.add(inet);
+//                                     }
+//                                     /**
+//                                      * too far in future - oldest entries should expire in DATABASE_CACHE_TIME
+//                                      */
+//                                     if (value.expirationDate.after(new Date(now.getTime() + (cpd.getSettings().getTimeout()*1000)*10))) {
+//                                         logger.warn("cache entry expires too far in the future - removing");
+//                                         toRemove.add(inet);
+//                                     }
+//                                 }
+//                             }
 
-                            /**
-                             * Actually remove the entries
-                             * We do this here to avoid concurrent modification issues
-                             */
-                            for ( InetAddress inet : toRemove ) {
-                                removeCache(inet);
-                            }
+//                             /**
+//                              * Actually remove the entries
+//                              * We do this here to avoid concurrent modification issues
+//                              */
+//                             for ( InetAddress inet : toRemove ) {
+//                                 removeCache(inet);
+//                             }
 
-                        }
+//                         }
 
-                        return true;
-                    }
-                };
+//                         return true;
+//                     }
+//                 };
 
-            UvmContextFactory.context().runTransaction(tw);
+//             UvmContextFactory.context().runTransaction(tw);
         }
     }
 
@@ -315,17 +312,17 @@ public class CPDIpUsernameMapAssistant implements IpUsernameMapAssistant {
     {
         if (this.cpd.getRunState() !=  NodeSettings.NodeState.RUNNING) return(null);
 
-            TransactionWork<Void> tw = new TransactionWork<Void>()
-            {
-                public boolean doWork(Session s)
-                {
-                    Query q = s.createQuery("from HostDatabaseEntry");
-                    localStatus = q.list();
-                    return true;
-                }
-            };
+//             TransactionWork<Void> tw = new TransactionWork<Void>()
+//             {
+//                 public boolean doWork(Session s)
+//                 {
+//                     Query q = s.createQuery("from HostDatabaseEntry");
+//                     localStatus = q.list();
+//                     return true;
+//                 }
+//             };
 
-        UvmContextFactory.context().runTransaction(tw);
+//         UvmContextFactory.context().runTransaction(tw);
         return(localStatus);
     }
 }

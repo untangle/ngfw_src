@@ -35,12 +35,6 @@ package com.untangle.uvm.snmp;
 
 import java.io.Serializable;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.Table;
-
 /**
  * For those not familiar with SNMP, here is a bit of an explanation
  * of the relationship between properties:
@@ -78,8 +72,6 @@ import javax.persistence.Table;
  * then {@link #setTrapHost TrapHost} and {@link #setTrapCommunity TrapCommunity} must be
  * set.
  */
-@Entity
-@Table(name="u_snmp_settings", schema="settings")
 @SuppressWarnings("serial")
 public class SnmpSettings implements Serializable {
 
@@ -106,9 +98,6 @@ public class SnmpSettings implements Serializable {
     private String m_trapCommunity;
     private int m_trapPort;
 
-    @Id
-    @Column(name="snmp_settings_id")
-    @GeneratedValue
     public Long getId() {
         return m_id;
     }
@@ -117,7 +106,6 @@ public class SnmpSettings implements Serializable {
         m_id = id;
     }
 
-    @Column(nullable=false)
     public boolean isEnabled() {
         return m_enabled;
     }
@@ -126,7 +114,6 @@ public class SnmpSettings implements Serializable {
         m_enabled = enabled;
     }
 
-    @Column(nullable=false)
     public int getPort() {
         return m_port;
     }
@@ -140,7 +127,6 @@ public class SnmpSettings implements Serializable {
      *
      * @return the community String
      */
-    @Column(name="com_str")
     public String getCommunityString() {
         return m_communityString;
     }
@@ -152,7 +138,6 @@ public class SnmpSettings implements Serializable {
     /**
      * @return the contact info
      */
-    @Column(name="sys_contact", nullable=false)
     public String getSysContact() {
         return m_sysContact;
     }
@@ -164,7 +149,6 @@ public class SnmpSettings implements Serializable {
     /**
      * @return the system location
      */
-    @Column(name="sys_location")
     public String getSysLocation() {
         return m_sysLocation;
     }
@@ -177,7 +161,6 @@ public class SnmpSettings implements Serializable {
         m_sendTraps = sendTraps;
     }
 
-    @Column(name="send_traps", nullable=false)
     public boolean isSendTraps() {
         return m_sendTraps;
     }
@@ -189,7 +172,6 @@ public class SnmpSettings implements Serializable {
     /**
      * @return the trap host
      */
-    @Column(name="trap_host")
     public String getTrapHost() {
         return m_trapHost;
     }
@@ -201,7 +183,6 @@ public class SnmpSettings implements Serializable {
     /**
      * @return the trap community String
      */
-    @Column(name="trap_com")
     public String getTrapCommunity() {
         return m_trapCommunity;
     }
@@ -211,7 +192,6 @@ public class SnmpSettings implements Serializable {
         m_trapPort = tp;
     }
 
-    @Column(name="trap_port", nullable=false)
     public int getTrapPort() {
         return m_trapPort;
     }
