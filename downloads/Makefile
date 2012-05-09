@@ -26,12 +26,12 @@ tarballs_gz=apache-ant-1.6.5.tar.gz \
 	python-jsonrpc-r19.tar.gz dnsjava-2.0.6.tar.gz \
 	jradius-1.1.0-client.tar.gz
 
-tarballs_bz2=postgres-jdbc-7.4_215.tar.bz2 
+tarballs_bz2=
 
 zips=javamail-1_3_3_01.zip xstream-distribution-1.3-bin.zip \
 	jabsorb-1.2.2-src.zip 
 
-jars=hibernate-client.jar gettext-commons-0.9.1.jar
+jars=hibernate-client.jar gettext-commons-0.9.1.jar postgresql-9.1-902.jdbc4.jar
 
 ###############################################################################
 ###############################################################################

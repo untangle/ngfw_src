@@ -896,13 +896,6 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
         this.addAnnotatedClass("com.untangle.uvm.networking.AddressSettings");
         this.addAnnotatedClass("com.untangle.uvm.snmp.SnmpSettings");
         this.addAnnotatedClass("com.untangle.uvm.toolbox.UpgradeSettings");
-
-        this.addAnnotatedClass("com.untangle.uvm.logging.SessionLogEventFromReports");
-        this.addAnnotatedClass("com.untangle.uvm.logging.HttpLogEventFromReports");
-        this.addAnnotatedClass("com.untangle.uvm.logging.MailLogEventFromReports");
-        this.addAnnotatedClass("com.untangle.uvm.logging.OpenvpnLogEventFromReports");
-        this.addAnnotatedClass("com.untangle.uvm.logging.CpdBlockEventsFromReports");
-        this.addAnnotatedClass("com.untangle.uvm.logging.CpdLoginEventsFromReports");
     }
     
     /**

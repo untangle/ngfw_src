@@ -114,7 +114,7 @@ class VirusTests(unittest.TestCase):
         assert(events['list'][0]['addr'] == "junk@test.untangle.com")
         assert(events['list'][0]['subject'] == str(fname))
         assert(events['list'][0]['virus' + self.vendorName() + 'Clean'] == False)
-        assert(datetime.fromtimestamp((events['list'][0]['timeStamp']['time'])/1000) > startTime)
+        assert(datetime.fromtimestamp((events['list'][0]['time_stamp']['time'])/1000) > startTime)
 
     def test_103_eventlog_smtpNonVirus(self):
         startTime = datetime.now()
@@ -138,7 +138,7 @@ class VirusTests(unittest.TestCase):
         assert(events['list'][0]['addr'] == "junk@test.untangle.com")
         assert(events['list'][0]['subject'] == str(fname))
         assert(events['list'][0]['virus' + self.vendorName() + 'Clean'] == True)
-        assert(datetime.fromtimestamp((events['list'][0]['timeStamp']['time'])/1000) > startTime)
+        assert(datetime.fromtimestamp((events['list'][0]['time_stamp']['time'])/1000) > startTime)
 
     def test_999_finalTearDown(self):
         global node

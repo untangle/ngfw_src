@@ -801,7 +801,7 @@ if (!Ung.hasResource["Ung.SpamAssassin"]) {
                 settingsCmp : this,
                 // the list of fields
                 fields : [{
-                    name : 'timeStamp',
+                    name : 'time_stamp',
                     sortType : Ung.SortTypes.asTimestamp
                 }, {
                     name : 'vendor',
@@ -832,10 +832,10 @@ if (!Ung.hasResource["Ung.SpamAssassin"]) {
                     },this)
                 }, {
                     name : 'client',
-                    mapping : 'CClientAddr'
+                    mapping : 'c_client_addr'
                 }, {
                     name : 'server',
-                    mapping : 'SServerAddr'
+                    mapping : 's_server_addr'
                 }, {
                     name : 'subject',
                     type : 'string'
@@ -857,7 +857,7 @@ if (!Ung.hasResource["Ung.SpamAssassin"]) {
                     header : this.i18n._("timestamp"),
                     width : Ung.Util.timestampFieldWidth,
                     sortable : true,
-                    dataIndex : 'timeStamp',
+                    dataIndex : 'time_stamp',
                     renderer : function(value) {
                         return i18n.timestampFormat(value);
                     }
@@ -910,7 +910,7 @@ if (!Ung.hasResource["Ung.SpamAssassin"]) {
                 title : this.i18n._("Tarpit Event Log"),
                 // the list of fields
                 fields : [{
-                    name : 'timeStamp',
+                    name : 'time_stamp',
                     sortType : Ung.SortTypes.asTimestamp
                 }, {
                     name : 'action',
@@ -933,7 +933,7 @@ if (!Ung.hasResource["Ung.SpamAssassin"]) {
                     header : this.i18n._("timestamp"),
                     width : Ung.Util.timestampFieldWidth,
                     sortable : true,
-                    dataIndex : 'timeStamp',
+                    dataIndex : 'time_stamp',
                     renderer : function(value) {
                         return i18n.timestampFormat(value);
                     }

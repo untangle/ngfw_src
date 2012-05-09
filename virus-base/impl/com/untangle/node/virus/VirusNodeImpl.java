@@ -157,25 +157,25 @@ public abstract class VirusNodeImpl extends NodeBase implements VirusNode
         this.httpInfectedEventQuery = new EventLogQuery(I18nUtil.marktr("Infected Web Events"),
                                                         "FROM HttpLogEventFromReports evt" + 
                                                         " WHERE evt.virus" + vendor + "Clean IS FALSE" + 
-                                                        " AND evt.policyId = :policyId" + 
-                                                        " ORDER BY evt.timeStamp DESC");
+                                                        " AND policy_id = :policyId" + 
+                                                        " ORDER BY time_stamp DESC");
         this.httpCleanEventQuery = new EventLogQuery(I18nUtil.marktr("Clean Web Events"),
                                                      "FROM HttpLogEventFromReports evt" + 
                                                      " WHERE evt.virus" + vendor + "Clean IS TRUE" + 
-                                                     " AND evt.policyId = :policyId" + 
-                                                     " ORDER BY evt.timeStamp DESC");
+                                                     " AND policy_id = :policyId" + 
+                                                     " ORDER BY time_stamp DESC");
         this.mailInfectedEventQuery = new EventLogQuery(I18nUtil.marktr("Infected Email Events"),
                                                         "FROM MailLogEventFromReports evt" + 
                                                         " WHERE evt.addrKind IN ('T', 'C')" +
                                                         " AND evt.virus" + vendor + "Clean IS FALSE" + 
-                                                        " AND evt.policyId = :policyId" + 
-                                                        " ORDER BY evt.timeStamp DESC");
+                                                        " AND policy_id = :policyId" + 
+                                                        " ORDER BY time_stamp DESC");
         this.mailCleanEventQuery = new EventLogQuery(I18nUtil.marktr("Clean Email Events"),
                                                      "FROM MailLogEventFromReports evt" + 
                                                      " WHERE evt.addrKind IN ('T', 'C')" +
                                                      " AND evt.virus" + vendor + "Clean IS TRUE" + 
-                                                     " AND evt.policyId = :policyId" + 
-                                                     " ORDER BY evt.timeStamp DESC");
+                                                     " AND policy_id = :policyId" + 
+                                                     " ORDER BY time_stamp DESC");
 
         this.addMetric(new NodeMetric(STAT_SCAN, I18nUtil.marktr("Documents scanned")));
         this.addMetric(new NodeMetric(STAT_BLOCK, I18nUtil.marktr("Documents blocked")));

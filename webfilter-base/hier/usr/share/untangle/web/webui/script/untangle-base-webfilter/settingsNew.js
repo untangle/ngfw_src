@@ -1049,12 +1049,12 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                     type : 'string'
                 }, {
                     name : 'client',
-                    mapping : 'CClientAddr'
+                    mapping : 'c_client_addr'
                 }, {
                     name : 'uid'
                 }, {
                     name : 'server',
-                    mapping : 'CServerAddr'
+                    mapping : 'c_server_addr'
                 }, {
                     name : 'host',
                     mapping : 'host'

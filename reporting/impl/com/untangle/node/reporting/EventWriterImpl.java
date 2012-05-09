@@ -49,7 +49,7 @@ public class EventWriterImpl implements Runnable
      */
     private final BlockingQueue<LogEvent> inputQueue = new LinkedBlockingQueue<LogEvent>();
 
-    public EventWriterImpl(ReportingNode node)
+    public EventWriterImpl( )
     {
         this.dbConnection = null;
     }

@@ -1,4 +1,4 @@
-/*
+/**
  * $Id$
  */
 package com.untangle.node.firewall;
@@ -109,16 +109,16 @@ public class FirewallImpl extends NodeBase implements Firewall
         this.pipeSpecs = new SoloPipeSpec[] { pipeSpec };
 
         this.allEventsQuery = new EventLogQuery(I18nUtil.marktr("All Events"),
-                                                "FROM SessionLogEventFromReports evt " +
-                                                "WHERE evt.policyId = :policyId " +
-                                                "AND firewallRuleIndex IS NOT NULL " +
-                                                "ORDER BY evt.timeStamp DESC");   
+                                                "SELECT * FROM reports.sessions " + 
+                                                "WHERE policy_id = :policyId " +
+                                                "AND firewall_rule_index IS NOT NULL " +
+                                                "ORDER BY time_stamp DESC");   
 
         this.blockedEventsQuery = new EventLogQuery(I18nUtil.marktr("Blocked Events"),
-                                                    "FROM SessionLogEventFromReports evt " +
-                                                    "WHERE evt.policyId = :policyId " +
-                                                    "AND firewallWasBlocked IS TRUE " +
-                                                    "ORDER BY evt.timeStamp DESC");
+                                                    "SELECT * FROM reports.sessions " + 
+                                                    "WHERE policy_id = :policyId " +
+                                                    "AND firewall_was_blocked IS TRUE " +
+                                                    "ORDER BY time_stamp DESC");
 
         this.addMetric(new NodeMetric(STAT_PASS, I18nUtil.marktr("Sessions passed")));
         this.addMetric(new NodeMetric(STAT_LOG, I18nUtil.marktr("Sessions logged")));

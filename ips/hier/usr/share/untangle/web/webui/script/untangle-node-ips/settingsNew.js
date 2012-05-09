@@ -328,28 +328,28 @@ if (!Ung.hasResource["Ung.Ips"]) {
             this.gridEventLog = Ext.create('Ung.GridEventLog',{
                 settingsCmp : this,
                 fields : [{
-                    name : 'timeStamp',
+                    name : 'time_stamp',
                     sortType : Ung.SortTypes.asTimestamp
                 }, {
                     name : 'blocked',
-                    mapping : 'ipsBlocked'
+                    mapping : 'ips_blocked'
                 }, {
                     name : 'name',
                     mapping : 'ipsName',
                     type : 'string'
                 }, {
                     name : 'description',
-                    mapping : 'ipsDescription',
+                    mapping : 'ips_description',
                     type : 'string'
                 }, {
                     name : 'client',
-                    mapping : 'CClientAddr'
+                    mapping : 'c_client_addr'
                 }, {
                     name : 'server',
-                    mapping : 'CServerAddr'
+                    mapping : 'c_server_addr'
                 }, {
                     name : 'server',
-                    mapping : 'CServerAddr'
+                    mapping : 'c_server_addr'
                 }, {
                     name : 'uid'
                 }],
@@ -357,7 +357,7 @@ if (!Ung.hasResource["Ung.Ips"]) {
                     header : this.i18n._("timestamp"),
                     width : Ung.Util.timestampFieldWidth,
                     sortable : true,
-                    dataIndex : 'timeStamp',
+                    dataIndex : 'time_stamp',
                     renderer : function(value) {
                         return i18n.timestampFormat(value);
                     }

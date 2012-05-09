@@ -7,6 +7,7 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -28,13 +29,33 @@ public class EventReaderImpl
 {
     private final Logger logger = Logger.getLogger(getClass());
 
-    public EventReaderImpl(ReportingNode node) { }
+    private Connection dbConnection;
+
+    private HashMap<String,Class<?>> columnTypeMap = new HashMap<String,Class<?>>();
+    
+    public EventReaderImpl( )
+    {
+        this.dbConnection = null;
+        this.columnTypeMap.put("inet",String.class);
+    }
 
     @SuppressWarnings("unchecked")
     public ArrayList getEvents( final String query, final Long policyId, final int limit )
     {
         logger.info("getEvents( query: " + query + " policyId: " + policyId + " limit: " + limit + " )");
 
+        if ( dbConnection == null ) {
+            try {
+                dbConnection = UvmContextFactory.context().getDBConnection();
+            } catch (Exception e) {
+                logger.warn("Unable to create connection to DB",e);
+            }
+        }
+        if ( dbConnection == null) {
+            logger.warn("Unable to connect to DB.");
+            throw new RuntimeException("Unable to connect to DB.");
+        }
+        
         try {
             String queryStr = query;
             if ( policyId == null || policyId == -1 ) {
@@ -44,13 +65,12 @@ public class EventReaderImpl
                 queryStr = queryStr.replace(":policyId", Long.toString( policyId ) );
             }
 
-            Connection conn = null;
-            Statement statement = null;
-            conn = UvmContextFactory.context().getDBConnection();
-            if (conn == null) {
-                throw new RuntimeException( "No connection to the database." );
+            Statement statement = dbConnection.createStatement();
+            if (statement == null) {
+                logger.warn("Unable to create Statement");
+                throw new RuntimeException("Unable to create Statement");
             }
-            statement = conn.createStatement();
+            
             ResultSet resultSet = statement.executeQuery( queryStr );
             ResultSetMetaData metadata = resultSet.getMetaData();
             int numColumns = metadata.getColumnCount();
@@ -62,9 +82,13 @@ public class EventReaderImpl
                 for ( int i = 1 ; i < numColumns+1 ; i++ ) {
                     try {
                         Object o = resultSet.getObject( i );
-                        //String oStr = null;
-                        //if (o != null)
-                        //    oStr = o.toString();
+
+                        // if its a special Postgres type - change it to string
+                        if (o instanceof org.postgresql.util.PGobject) {
+                            o = o.toString();
+                        }
+                        //logger.info( "getEvents( " + queryStr + " ) column[ " + metadata.getColumnName(i) + " ] = " + o);
+
                         row.put( metadata.getColumnName(i), o );
                     } catch (JSONException e) {
                         logger.warn("Failed to query database, bad column.", e );

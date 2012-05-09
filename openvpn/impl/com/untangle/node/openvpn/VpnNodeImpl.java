@@ -102,7 +102,7 @@ public class VpnNodeImpl extends NodeBase implements VpnNode
         this.addMetric(new NodeMetric(STAT_PASS, I18nUtil.marktr("Sessions passed")));
         this.addMetric(new NodeMetric(STAT_CONNECT, I18nUtil.marktr("Clients Connected")));
 
-        this.connectEventsQuery = new EventLogQuery(I18nUtil.marktr("Closed Sessions"), "FROM OpenvpnLogEventFromReports evt ORDER BY evt.timeStamp DESC");
+        this.connectEventsQuery = new EventLogQuery(I18nUtil.marktr("Closed Sessions"), "FROM OpenvpnLogEventFromReports evt ORDER BY time_stamp DESC");
     }
 
     private void readNodeSettings()

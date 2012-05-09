@@ -75,10 +75,10 @@ public class CPDImpl extends NodeBase implements CPD
         super( nodeSettings, nodeProperties );
 
         this.loginEventQuery = new EventLogQuery(I18nUtil.marktr("Login Events"),
-                                                 "FROM CpdLoginEventsFromReports evt ORDER BY evt.timeStamp DESC");
+                                                 "FROM CpdLoginEventsFromReports evt ORDER BY time_stamp DESC");
 
         this.blockEventQuery = new EventLogQuery(I18nUtil.marktr("Block Events"),
-                                                 "FROM CpdBlockEventsFromReports evt ORDER BY evt.timeStamp DESC");
+                                                 "FROM CpdBlockEventsFromReports evt ORDER BY time_stamp DESC");
 
         this.settings = new CPDSettings();
         this.pipeSpecs = new PipeSpec[0];

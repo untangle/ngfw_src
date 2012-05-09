@@ -60,7 +60,7 @@ class ShieldTests(unittest.TestCase):
         assert(events['list'] != None)
         assert(len(events['list']) > 0)
         assert(events['list'][0]['clientAddr'] == ClientControl.hostIP)
-        assert(datetime.fromtimestamp((events['list'][0]['timeStamp']['time'])/1000) > startTime)
+        assert(datetime.fromtimestamp((events['list'][0]['time_stamp']['time'])/1000) > startTime)
 
 
     def test_999_finalTearDown(self):

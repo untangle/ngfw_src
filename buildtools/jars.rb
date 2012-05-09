@@ -117,7 +117,7 @@ class Jars
     ## Miscellaneous Jars
     const_set(:JavaMail, [ Jars.downloadTarget('javamail-1.3.3_01/mail.jar') ])
     const_set(:Dom4j, [ Jars.downloadTarget('hibernate-3.2/lib/dom4j-1.6.1.jar') ])
-    const_set(:Postgres, [ Jars.downloadTarget('postgres-jdbc-7.4_215/pg74.215.jdbc3.jar')])
+    const_set(:Postgres, [ Jars.downloadTarget('postgresql-9.1-902.jdbc4/postgresql-9.1-902.jdbc4.jar')])
     const_set(:Velocity, [ Jars.downloadTarget('velocity-1.4/velocity-1.4.jar') ])
     const_set(:XStream, [ Jars.downloadTarget('xstream-distribution-1.3-bin/xstream-1.3/lib/xstream-1.3.jar'),
                          Jars.downloadTarget('xstream-distribution-1.3-bin/xstream-1.3/lib/xpp3_min-1.1.4c.jar')])

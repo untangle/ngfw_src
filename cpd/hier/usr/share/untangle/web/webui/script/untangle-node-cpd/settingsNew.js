@@ -218,7 +218,7 @@ if (!Ung.hasResource["Ung.CPD"]) {
                     "capture" : true,
                     "log" : false,
                     "clientInterface" : "1",
-                    "clientAddress" : "any",
+                    "client_address" : "any",
                     "serverAddress" : "any",
                     "days" : "mon,tue,wed,thu,fri,sat,sun",
                     "startTime" : "00:00",
@@ -244,7 +244,7 @@ if (!Ung.hasResource["Ung.CPD"]) {
                 },{
                     name : "clientInterface"
                 },{
-                    name : "clientAddress"
+                    name : "client_address"
                 },{
                     name : "serverAddress"
                 },{
@@ -345,8 +345,8 @@ if (!Ung.hasResource["Ung.CPD"]) {
                         html : this.i18n._("The IP addresses.")
                     },{
                         xtype : "textfield",
-                        name : "clientAddress",
-                        dataIndex : "clientAddress",
+                        name : "client_address",
+                        dataIndex : "client_address",
                         fieldLabel : this.i18n._("Client"),
                         allowBlank : false
                     },{
@@ -1067,10 +1067,10 @@ if (!Ung.hasResource["Ung.CPD"]) {
                 eventQueriesFn : this.getRpcNode().getLoginEventQueries,
                 settingsCmp : this,
                 fields : [{
-                    name : "timeStamp",
+                    name : "time_stamp",
                     sortType : Ung.SortTypes.asTimestamp
                 },{
-                    name : "clientAddr"
+                    name : "client_addr"
                 },{
                     name : "loginName"
                 },{
@@ -1083,7 +1083,7 @@ if (!Ung.hasResource["Ung.CPD"]) {
                     header : this.i18n._("timestamp"),
                     width : Ung.Util.timestampFieldWidth,
                     sortable : true,
-                    dataIndex : "timeStamp",
+                    dataIndex : "time_stamp",
                     renderer : function(value) {
                         return i18n.timestampFormat(value);
                     }
@@ -1091,7 +1091,7 @@ if (!Ung.hasResource["Ung.CPD"]) {
                     header : this.i18n._("client"),
                     width : Ung.Util.ipFieldWidth,
                     sortable : true,
-                    dataIndex : "clientAddr"
+                    dataIndex : "client_addr"
                 },{
                     header : this.i18n._("username"),
                     width : Ung.Util.usernameFieldWidth,
@@ -1146,10 +1146,10 @@ if (!Ung.hasResource["Ung.CPD"]) {
                 eventQueriesFn : this.getRpcNode().getBlockEventQueries,
                 settingsCmp : this,
                 fields : [{
-                    name : "timeStamp",
+                    name : "time_stamp",
                     sortType : Ung.SortTypes.asTimestamp
                 },{
-                    name : "clientAddress"
+                    name : "client_address"
                 },{
                     name : "clientPort"
                 },{
@@ -1159,7 +1159,7 @@ if (!Ung.hasResource["Ung.CPD"]) {
                 },{
                     name : "client",
                     convert : function(value, record) {
-                        return record.clientAddress + ":" + record.clientPort;
+                        return record.client_address + ":" + record.clientPort;
                     }
                 }, {
                     name : "server",
@@ -1172,7 +1172,7 @@ if (!Ung.hasResource["Ung.CPD"]) {
                     header : this.i18n._("timestamp"),
                     width : Ung.Util.timestampFieldWidth,
                     sortable : true,
-                    dataIndex : "timeStamp",
+                    dataIndex : "time_stamp",
                     renderer : function(value) {
                         return i18n.timestampFormat(value);
                     }

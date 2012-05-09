@@ -55,15 +55,15 @@ public class IpsNodeImpl extends NodeBase implements IpsNode
 
         this.allEventQuery = new EventLogQuery(I18nUtil.marktr("All Events"),
                                                "FROM SessionLogEventFromReports evt " +
-                                               "WHERE evt.policyId = :policyId " +
+                                               "WHERE policy_id = :policyId " +
                                                "AND ipsDescription IS NOT NULL " +
-                                               "ORDER BY evt.timeStamp DESC");
+                                               "ORDER BY time_stamp DESC");
 
         this.blockedEventQuery = new EventLogQuery(I18nUtil.marktr("Blocked Events"),
                                                    "FROM SessionLogEventFromReports evt " +
-                                                   "WHERE evt.policyId = :policyId " +
+                                                   "WHERE policy_id = :policyId " +
                                                    "AND ipsBlocked IS TRUE " +
-                                                   "ORDER BY evt.timeStamp DESC");
+                                                   "ORDER BY time_stamp DESC");
 
         List<RuleClassification> classifications = FileLoader.loadClassifications();
         engine.setClassifications(classifications);

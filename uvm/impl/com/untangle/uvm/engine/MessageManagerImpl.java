@@ -118,7 +118,11 @@ public class MessageManagerImpl implements MessageManager
         List<Long> nodeIds = new LinkedList<Long>();
 
         /* Add in the nodes with the null policy */
-        for ( Node node : UvmContextImpl.getInstance().nodeManager().nodeInstances() ) {
+        NodeManager nm = UvmContextImpl.getInstance().nodeManager();
+        if ( nm == null )
+            return null;
+        
+        for ( Node node : nm.nodeInstances() ) {
             nodeIds.add( node.getNodeSettings().getId() );
         }
         

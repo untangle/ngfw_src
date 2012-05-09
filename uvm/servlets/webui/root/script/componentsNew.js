@@ -758,7 +758,7 @@ Ung.Util= {
             }];
     },
     maxRowCount : 2147483647,
-    timestampFieldWidth : 130,
+    timestampFieldWidth : 135,
     ipFieldWidth : 100,
     portFieldWidth : 70,
     hostnameFieldWidth : 120,
@@ -904,7 +904,7 @@ Ung.SortTypes = {
      * @return {String} The comparison value
      */
     asClient : function(value) {
-        return value === null ? "" : value.CClientAddr + ":" + value.CClientPort;
+        return value === null ? "" : value.c_client_addr + ":" + value.c_client_port;
     },
 
     /**
@@ -912,7 +912,7 @@ Ung.SortTypes = {
      * @return {String} The comparison value
      */
     asServer : function(value) {
-        return value === null ? "" : value.SServerAddr + ":" + value.SServerPort;
+        return value === null ? "" : value.s_server_addr + ":" + value.s_server_port;
     },
     /**
      * @param value of the UID for users / groups

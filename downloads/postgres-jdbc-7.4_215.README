@@ -1,6 +1,0 @@
-I built this with this change in org.postgresql.jdbc1.AbstractJdbc1Statement
-with this change in setLong():
-
-        bind(parameterIndex, Long.toString(x) + "::" + PG_INT8, PG_INT8);
-
--- Aaron

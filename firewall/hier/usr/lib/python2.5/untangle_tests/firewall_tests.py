@@ -362,10 +362,10 @@ class FirewallTests(unittest.TestCase):
         assert(events != None)
         assert(events['list'] != None)
         assert(len(events['list']) > 0)
-        assert(events['list'][0]['CClientAddr'] == ClientControl.hostIP)
-        assert(events['list'][0]['SServerPort'] == 80)
-        assert(events['list'][0]['firewallRuleIndex'] != 0 and events['list'][0]['firewallRuleIndex'] != None)
-        assert(events['list'][0]['firewallWasBlocked'] == True)
+        assert(events['list'][0]['c_client_addr'] == ClientControl.hostIP)
+        assert(events['list'][0]['s_server_port'] == 80)
+        assert(events['list'][0]['firewall_rule_index'] != 0 and events['list'][0]['firewall_rule_index'] != None)
+        assert(events['list'][0]['firewall_was_blocked'] == True)
 
     # verify a log port 80 rule works
     def test_101_logDstPort80EventLog(self):
@@ -382,10 +382,10 @@ class FirewallTests(unittest.TestCase):
         assert(events != None)
         assert(events['list'] != None)
         assert(len(events['list']) > 0)
-        assert(events['list'][0]['CClientAddr'] == ClientControl.hostIP)
-        assert(events['list'][0]['SServerPort'] == 80)
-        assert(events['list'][0]['firewallRuleIndex'] != 0 and events['list'][0]['firewallRuleIndex'] != None)
-        assert(events['list'][0]['firewallWasBlocked'] == False)
+        assert(events['list'][0]['c_client_addr'] == ClientControl.hostIP)
+        assert(events['list'][0]['s_server_port'] == 80)
+        assert(events['list'][0]['firewall_rule_index'] != 0 and events['list'][0]['firewall_rule_index'] != None)
+        assert(events['list'][0]['firewall_was_blocked'] == False)
 
     def test_999_finalTearDown(self):
         global node

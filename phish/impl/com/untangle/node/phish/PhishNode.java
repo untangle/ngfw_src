@@ -84,8 +84,8 @@ public class PhishNode extends SpamNodeImpl implements Phish
         this.httpBlockedEventQuery = new EventLogQuery(I18nUtil.marktr("Blocked Web Events"),
                                                      "FROM HttpLogEventFromReports evt" + 
                                                      " WHERE evt.phishAction = 'B'" + 
-                                                     " AND evt.policyId = :policyId" + 
-                                                     " ORDER BY evt.timeStamp DESC");
+                                                     " AND policy_id = :policyId" + 
+                                                     " ORDER BY time_stamp DESC");
         
         synchronized (PhishNode.class) {
             updateMalwareList();

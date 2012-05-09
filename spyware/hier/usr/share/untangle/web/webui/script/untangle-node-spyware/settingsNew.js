@@ -461,7 +461,7 @@ if (!Ung.hasResource["Ung.Spyware"]) {
                 name : "Cookie Event Log",
                 title : i18n._('Cookie Event Log'),
                 fields : [{
-                    name : 'timeStamp',
+                    name : 'time_stamp',
                     sortType : Ung.SortTypes.asTimestamp
                 }, {
                     name : 'uid'
@@ -470,23 +470,23 @@ if (!Ung.hasResource["Ung.Spyware"]) {
                 }, {
                     name : 'swCookie'
                 }, {
-                    name : 'swAccessIdent'
+                    name : 'sw_access_ident'
                 }, {
                     name : 'uri'
                 }, {
                     name : 'host'
                 }, {
                     name : 'client',
-                    mapping : 'CClientAddr'
+                    mapping : 'c_client_addr'
                 }, {
                     name : 'server',
-                    mapping : 'CServerAddr'
+                    mapping : 'c_server_addr'
                 }],
                 columns : [{
                     header : this.i18n._("timestamp"),
                     width : Ung.Util.timestampFieldWidth,
                     sortable : true,
-                    dataIndex : 'timeStamp',
+                    dataIndex : 'time_stamp',
                     renderer : function(value) {
                         return i18n.timestampFormat(value);
                     }
@@ -531,7 +531,7 @@ if (!Ung.hasResource["Ung.Spyware"]) {
                 name : "Web Event Log",
                 title : i18n._('Web Event Log'),
                 fields : [{
-                    name : 'timeStamp',
+                    name : 'time_stamp',
                     sortType : Ung.SortTypes.asTimestamp
                 }, {
                     name : 'uid'
@@ -540,23 +540,23 @@ if (!Ung.hasResource["Ung.Spyware"]) {
                 }, {
                     name : 'swCookie'
                 }, {
-                    name : 'swAccessIdent'
+                    name : 'sw_access_ident'
                 }, {
                     name : 'uri'
                 }, {
                     name : 'host'
                 }, {
                     name : 'client',
-                    mapping : 'CClientAddr'
+                    mapping : 'c_client_addr'
                 }, {
                     name : 'server',
-                    mapping : 'CServerAddr'
+                    mapping : 'c_server_addr'
                 }],
                 columns : [{
                     header : this.i18n._("timestamp"),
                     width : Ung.Util.timestampFieldWidth,
                     sortable : true,
-                    dataIndex : 'timeStamp',
+                    dataIndex : 'time_stamp',
                     renderer : function(value) {
                         return i18n.timestampFormat(value);
                     }
@@ -598,7 +598,7 @@ if (!Ung.hasResource["Ung.Spyware"]) {
                 name : "Traffic Event Log",
                 title : i18n._('Traffic Event Log'),
                 fields : [{
-                    name : 'timeStamp',
+                    name : 'time_stamp',
                     sortType : Ung.SortTypes.asTimestamp
                 }, {
                     name : 'uid'
@@ -607,19 +607,19 @@ if (!Ung.hasResource["Ung.Spyware"]) {
                 }, {
                     name : 'swCookie'
                 }, {
-                    name : 'swAccessIdent'
+                    name : 'sw_access_ident'
                 }, {
                     name : 'client',
-                    mapping : 'CClientAddr'
+                    mapping : 'c_client_addr'
                 }, {
                     name : 'server',
-                    mapping : 'CServerAddr'
+                    mapping : 'c_server_addr'
                 }],
                 columns : [{
                     header : this.i18n._("timestamp"),
                     width : Ung.Util.timestampFieldWidth,
                     sortable : true,
-                    dataIndex : 'timeStamp',
+                    dataIndex : 'time_stamp',
                     renderer : function(value) {
                         return i18n.timestampFormat(value);
                     }
@@ -637,7 +637,7 @@ if (!Ung.hasResource["Ung.Spyware"]) {
                     header : this.i18n._("subnet"),
                     width : 120,
                     sortable : true,
-                    dataIndex : 'swAccessIdent'
+                    dataIndex : 'sw_access_ident'
                 }, {
                     header : this.i18n._("server"),
                     width : Ung.Util.ipFieldWidth,

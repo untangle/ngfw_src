@@ -186,12 +186,12 @@ if (!Ung.hasResource["Ung.Shield"]) {
                 eventQueriesFn : this.getRpcNode().getEventQueries,
                 // the list of fields
                 fields : [{
-                    name : 'timeStamp',
+                    name : 'time_stamp',
                     sortType : Ung.SortTypes.asTimestamp
                 }, {
-                    name : 'clientAddr'
+                    name : 'client_addr'
                 }, {
-                    name : 'clientIntf'
+                    name : 'client_intf'
                 }, {
                     name : 'reputation',
                     sortType : Ext.data.SortTypes.asFloat 
@@ -210,7 +210,7 @@ if (!Ung.hasResource["Ung.Shield"]) {
                     header : this.i18n._("Timestamp"),
                     width : Ung.Util.timestampFieldWidth,
                     sortable : true,
-                    dataIndex : 'timeStamp',
+                    dataIndex : 'time_stamp',
                     renderer : function(value) {
                         return i18n.timestampFormat(value);
                     }
@@ -218,12 +218,12 @@ if (!Ung.hasResource["Ung.Shield"]) {
                     header : this.i18n._("Client Address"),
                     width : Ung.Util.ipFieldWidth,
                     sortable : true,
-                    dataIndex : 'clientAddr'
+                    dataIndex : 'client_addr'
                 }, {
                     header : this.i18n._("Client Interface"),
                     width : Ung.Util.ipFieldWidth,
                     sortable : true,
-                    dataIndex : 'clientIntf'
+                    dataIndex : 'client_intf'
                 }, {
                     header : this.i18n._("reputation"),
                     width : 120,

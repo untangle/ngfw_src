@@ -62,10 +62,10 @@ public class ReportingNodeImpl extends NodeBase implements ReportingNode, Report
         super( nodeSettings, nodeProperties );
 
         if (eventWriter == null)
-            eventWriter = new EventWriterImpl(this);
+            eventWriter = new EventWriterImpl( );
 
         if (eventReader == null)
-            eventReader = new EventReaderImpl(this);
+            eventReader = new EventReaderImpl( );
     }
 
     public void setReportingSettings(final ReportingSettings settings)
