@@ -7,12 +7,6 @@
         "type" : "SERVICE",
         "viewPosition" : 1060,
         "singleInstance" : true,
-        "autoStart" : false,
-        "annotatedClasses" : {
-            "javaClass": "java.util.LinkedList",
-            "list": [
-                "com.untangle.node.cpd.HostDatabaseEntry"
-            ]
-        }
+        "autoStart" : false
 }
 

@@ -12,12 +12,6 @@
             "list": [
                 "untangle-casing-mail"
             ]
-        },
-        "annotatedClasses" : {
-            "javaClass": "java.util.LinkedList",
-            "list": [
-                "com.untangle.uvm.logging.TarpitEventsFromReports"
-            ]
         }
 }
 
