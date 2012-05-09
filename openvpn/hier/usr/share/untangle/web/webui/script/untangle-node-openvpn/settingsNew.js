@@ -660,11 +660,11 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                 title : i18n._('Connection Event Log'),
                 fields : [{
                     name : 'start',
-                    mapping : 'startTime',
+                    mapping : 'start_time',
                     sortType : Ung.SortTypes.asTimestamp
                 }, {
                     name : 'end',
-                    mapping : 'endTime',
+                    mapping : 'end_time',
                     sortType : Ung.SortTypes.asTimestamp
                 }, {
                     name : 'duration',
@@ -674,28 +674,28 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                     }
                 }, {
                     name : 'name',
-                    mapping : 'clientName'
+                    mapping : 'client_name'
                 }, {
                     name : 'port',
-                    mapping : 'remotePort'
+                    mapping : 'remote_port'
                 }, {
                     name : 'address',
-                    mapping : 'remoteAddress'
+                    mapping : 'remote_address'
                 }, {
                     name : 'bytesTxTotal',
-                    mapping : 'txBytes',
+                    mapping : 'tx_bytes',
                     convert : function(val) {
                         return parseFloat(val) / 1024;
                     }
                 }, {
                     name : 'bytesRxTotal',
-                    mapping : 'rxBytes',
+                    mapping : 'rx_bytes',
                     convert : function(val) {
                         return parseFloat(val) / 1024;
                     }
                 }],
                 columns : [{
-                    header : this.i18n._("start time"),
+                    header : this.i18n._("Start Time"),
                     width : Ung.Util.timestampFieldWidth,
                     sortable : true,
                     dataIndex : 'start',
@@ -703,7 +703,7 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                         return i18n.timestampFormat(value);
                     }, this )
                 }, {
-                    header : this.i18n._("end time"),
+                    header : this.i18n._("End Time"),
                     width : Ung.Util.timestampFieldWidth,
                     sortable : true,
                     dataIndex : 'end',
@@ -711,23 +711,23 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                         return i18n.timestampFormat(value);
                     },this )
                 }, {
-                    header : this.i18n._("client name"),
+                    header : this.i18n._("Client Name"),
                     sortable : true,
                     dataIndex : 'name'
                 }, {
-                    header : this.i18n._("client address"),
+                    header : this.i18n._("Client Address"),
                     sortable : true,
                     dataIndex : 'address'
                 }, {
-                    header : this.i18n._("port"),
+                    header : this.i18n._("Port"),
                     dataIndex : 'port'
                 }, {
-                    header : this.i18n._("duration (min)"),
+                    header : this.i18n._("Duration (min)"),
                     width : 130,
                     sortable : true,
                     dataIndex : 'duration'
                 }, {
-                    header : this.i18n._("KB sent"),
+                    header : this.i18n._("KB Sent"),
                     width : 80,
                     sortable : true,
                     dataIndex : 'bytesTxTotal',
@@ -735,7 +735,7 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                         return Math.round(( value + 0.0 ) * 10 ) / 10;
                     },this )
                 }, {
-                    header : this.i18n._("KB received"),
+                    header : this.i18n._("KB Received"),
                     width : 80,
                     sortable : true,
                     dataIndex : 'bytesRxTotal',
@@ -748,7 +748,7 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
         getDistributeColumn : function() {
             return Ext.create('Ext.grid.column.Action',{
                 width : 110,
-                header : this.i18n._("distribute"),
+                header : this.i18n._("Distribute"),
                 dataIndex : null,
                 i18n : this.i18n,
                 iconCls:'',
@@ -775,7 +775,7 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
         },
         getGroupsColumn : function() {
             return {
-                header : this.i18n._("address pool"),
+                header : this.i18n._("Address Pool"),
                 width : 160,
                 dataIndex : 'groupName',
                 editor : Ext.create('Ext.form.ComboBox',{
@@ -839,13 +839,13 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                 columns : [
                     {
                         xtype:'checkcolumn',
-                        header : this.i18n._("enabled"),
+                        header : this.i18n._("Anabled"),
                         dataIndex : 'live',
                         width : 80,
                         fixed : true
                     },
                     {
-                        header : this.i18n._("client name"),
+                        header : this.i18n._("Client Name"),
                         width : 130,
                         dataIndex : 'name',
                         flex:1,
@@ -858,7 +858,7 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                     groupsColumn, 
                     distributeColumn, 
                     {
-                        header : this.i18n._("virtual address"),
+                        header : this.i18n._("Virtual Address"),
                         width : 100,
                         dataIndex : 'address',
                         renderer : Ext.bind(function(value, metadata, record) {
@@ -967,14 +967,14 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                 columns : [
                     {
                         xtype:'checkcolumn',
-                        header : this.i18n._("enabled"),
+                        header : this.i18n._("Enabled"),
                         dataIndex : 'live',
                         width : 80,
                         fixed : true
                     }
                     , 
                     {
-                        header : this.i18n._("site name"),
+                        header : this.i18n._("Site Name"),
                         width : 130,
                         dataIndex : 'name',
                         flex:1,
@@ -987,7 +987,7 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                    , 
                    groupsColumn, 
                    {
-                        header : this.i18n._("network address"),
+                        header : this.i18n._("Network Address"),
                         width : 100,
                         dataIndex : 'network',
                         renderer : Ext.bind(function(value, metadata, record) {
@@ -1001,7 +1001,7 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                         }
                     }, 
                     {
-                        header : this.i18n._("network mask"),
+                        header : this.i18n._("Network Mask"),
                         width : 100,
                         dataIndex : 'netmask',
                         renderer : Ext.bind(function(value, metadata, record) {
@@ -1129,20 +1129,20 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                 columns : [
                     {
                         xtype:'checkcolumn',
-                        header : this.i18n._("enabled"),
+                        header : this.i18n._("Enabled"),
                         dataIndex : 'live',
                         width : 80,
                         fixed : true
                     },
                     {
-                        header : this.i18n._("host/network name"),
+                        header : this.i18n._("Host/Network Name"),
                         width : 250,
                         dataIndex : 'name',
                         flex:1,
                         editor: { xtype:'textfield'}
                     }, 
                     {
-                        header : this.i18n._("IP address"),
+                        header : this.i18n._("IP Address"),
                         width : inWizard?100:130,
                         dataIndex : 'network',
                         editor: { 
@@ -1152,7 +1152,7 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                             }
                     }, 
                     {
-                        header : this.i18n._("netmask"),
+                        header : this.i18n._("Netmask"),
                         width : 130,
                         dataIndex : 'netmask',
                         editor: {

@@ -1080,7 +1080,7 @@ if (!Ung.hasResource["Ung.CPD"]) {
                 }],
 
                 columns : [{
-                    header : this.i18n._("timestamp"),
+                    header : this.i18n._("Timestamp"),
                     width : Ung.Util.timestampFieldWidth,
                     sortable : true,
                     dataIndex : "time_stamp",
@@ -1088,18 +1088,18 @@ if (!Ung.hasResource["Ung.CPD"]) {
                         return i18n.timestampFormat(value);
                     }
                 },{
-                    header : this.i18n._("client"),
+                    header : this.i18n._("Client"),
                     width : Ung.Util.ipFieldWidth,
                     sortable : true,
                     dataIndex : "client_addr"
                 },{
-                    header : this.i18n._("username"),
+                    header : this.i18n._("Username"),
                     width : Ung.Util.usernameFieldWidth,
                     sortable : true,
                     dataIndex : "login_name",
                     flex:1
                 },{
-                    header : this.i18n._("action"),
+                    header : this.i18n._("Action"),
                     width : 165,
                     sortable : true,
                     dataIndex : "event",
@@ -1169,7 +1169,7 @@ if (!Ung.hasResource["Ung.CPD"]) {
                 }],
 
                 columns : [{
-                    header : this.i18n._("timestamp"),
+                    header : this.i18n._("Timestamp"),
                     width : Ung.Util.timestampFieldWidth,
                     sortable : true,
                     dataIndex : "time_stamp",
@@ -1177,19 +1177,19 @@ if (!Ung.hasResource["Ung.CPD"]) {
                         return i18n.timestampFormat(value);
                     }
                 },{
-                    header : this.i18n._("action"),
+                    header : this.i18n._("Action"),
                     width : 80,
                     sortable : false,
                     renderer : Ext.bind(function(value) {
                         return this.i18n._( "block" );
                     }, this )
                 },{
-                    header : this.i18n._("client"),
+                    header : this.i18n._("Client"),
                     width : Ung.Util.ipFieldWidth,
                     sortable : true,
                     dataIndex : "client"
                 },{
-                    header : this.i18n._("reason"),
+                    header : this.i18n._("Reason"),
                     width : 100,
                     sortable : false,
                     flex:1,
@@ -1197,7 +1197,7 @@ if (!Ung.hasResource["Ung.CPD"]) {
                         return this.i18n._( "unauthenticated" );
                     }, this )
                 },{
-                    header : this.i18n._("server"),
+                    header : this.i18n._("Server"),
                     width : Ung.Util.ipFieldWidth,
                     sortable : true,
                     dataIndex : "server"
