@@ -86,12 +86,12 @@ if (!Ung.hasResource["Ung.Shield"]) {
                 // the list of columns for the column model
                 columns : [{
                 	xtype: 'checkcolumn',
-                    header : this.i18n._("enable"),
+                    header : this.i18n._("Enable"),
                     dataIndex : 'enabled',
                     width: 55,
                     fixed : true
                 }, {
-                    header : this.i18n._("address"),
+                    header : this.i18n._("Address"),
                     width : 200,
                     dataIndex : 'address',
                     // this is a simple text editor
@@ -101,7 +101,7 @@ if (!Ung.hasResource["Ung.Shield"]) {
                         vtype : 'ipAddress'
                     }
                 }, {
-                    header : this.i18n._("user count"),
+                    header : this.i18n._("User Count"),
                     width : 100,
                     dataIndex : 'divider',
                     editor : Ext.create('Ext.form.ComboBox',{

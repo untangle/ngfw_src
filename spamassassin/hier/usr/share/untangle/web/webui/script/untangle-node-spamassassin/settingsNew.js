@@ -808,7 +808,7 @@ if (!Ung.hasResource["Ung.SpamAssassin"]) {
                     mapping : 'vendor'
                 }, {
                     name : 'displayAction',
-                    mapping :  this.getRpcNode().getVendor() + 'Action',
+                    mapping :  this.getRpcNode().getVendor() + '_action',
                     type : 'string',
                     convert : Ext.bind( function(value, rec ) { // FIXME: make that a switch
                             if (value == 'P') { // PASSED
@@ -840,7 +840,7 @@ if (!Ung.hasResource["Ung.SpamAssassin"]) {
                     name : 'subject',
                     type : 'string'
                 }, {
-                    name : 'addrName',
+                    name : 'addr_name',
                     type : 'string'
                 }, {
                     name : 'addr',
@@ -850,11 +850,11 @@ if (!Ung.hasResource["Ung.SpamAssassin"]) {
                     type : 'string'
                 }, {
                     name : 'score',
-                    mapping : this.getRpcNode().getVendor() + 'Score'
+                    mapping : this.getRpcNode().getVendor() + '_score'
                 }],
                 // the list of columns
                 columns : [{
-                    header : this.i18n._("timestamp"),
+                    header : this.i18n._("Timestamp"),
                     width : Ung.Util.timestampFieldWidth,
                     sortable : true,
                     dataIndex : 'time_stamp',
@@ -862,38 +862,38 @@ if (!Ung.hasResource["Ung.SpamAssassin"]) {
                         return i18n.timestampFormat(value);
                     }
                 }, {
-                    header : this.i18n._("receiver"),
+                    header : this.i18n._("Receiver"),
                     width : Ung.Util.emailFieldWidth,
                     sortable : true,
                     dataIndex : 'addr'
                 }, {
-                    header : this.i18n._("sender"),
+                    header : this.i18n._("Sender"),
                     width : Ung.Util.emailFieldWidth,
                     sortable : true,
                     dataIndex : 'sender'
                 }, {
-                    header : this.i18n._("subject"),
+                    header : this.i18n._("Subject"),
                     width : 150,
                     flex:1,
                     sortable : true,
                     dataIndex : 'subject'
                 }, {
-                    header : this.i18n._("action"),
+                    header : this.i18n._("Action"),
                     width : 125,
                     sortable : true,
                     dataIndex : 'displayAction'
                 }, {
-                    header : this.i18n._("spam score"),
+                    header : this.i18n._("Spam score"),
                     width : 70,
                     sortable : true,
                     dataIndex : 'score'
                 }, {
-                    header : this.i18n._("client"),
+                    header : this.i18n._("Client"),
                     width : Ung.Util.ipFieldWidth,
                     sortable : true,
                     dataIndex : 'client'
                 }, {
-                    header : this.i18n._("server"),
+                    header : this.i18n._("Server"),
                     width : Ung.Util.ipFieldWidth,
                     sortable : true,
                     dataIndex : 'server'
@@ -921,7 +921,7 @@ if (!Ung.hasResource["Ung.SpamAssassin"]) {
                     },this)
                 }, {
                     name : 'sender',
-                    mapping : 'IPAddr',
+                    mapping : 'ip_addr',
                     convert : function(value) {
                         return value == null ? "" : value;
                     }
@@ -930,7 +930,7 @@ if (!Ung.hasResource["Ung.SpamAssassin"]) {
                 }],
                 // the list of columns
                 columns : [{
-                    header : this.i18n._("timestamp"),
+                    header : this.i18n._("Timestamp"),
                     width : Ung.Util.timestampFieldWidth,
                     sortable : true,
                     dataIndex : 'time_stamp',
@@ -938,17 +938,17 @@ if (!Ung.hasResource["Ung.SpamAssassin"]) {
                         return i18n.timestampFormat(value);
                     }
                 }, {
-                    header : this.i18n._("action"),
+                    header : this.i18n._("Action"),
                     width : 120,
                     sortable : true,
                     dataIndex : 'action'
                 }, {
-                    header : this.i18n._("sender"),
+                    header : this.i18n._("Sender"),
                     width : 120,
                     sortable : true,
                     dataIndex : 'sender'
                 }, {
-                    header : this.i18n._("DNSBL server"),
+                    header : this.i18n._("DNSBL Server"),
                     width : 120,
                     sortable : true,
                     dataIndex : 'hostname'

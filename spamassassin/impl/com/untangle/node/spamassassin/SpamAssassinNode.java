@@ -111,7 +111,8 @@ public class SpamAssassinNode extends SpamNodeImpl
         initSpamDnsblList(ps);
     }
 
-    public String getVendor() {
+    public String getVendor()
+    {
         return "sa";
     }
 }

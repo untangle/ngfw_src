@@ -37,8 +37,7 @@ public class ShieldStatisticEvent extends LogEvent implements Serializable
         this.closed   = 0;
     }
 
-    public ShieldStatisticEvent( int accepted, int limited, int dropped, int rejected, int relaxed,
-                                 int lax, int tight, int closed )
+    public ShieldStatisticEvent( int accepted, int limited, int dropped, int rejected, int relaxed, int lax, int tight, int closed )
     {
         this.accepted = accepted;
         this.limited  = limited;

@@ -18,7 +18,7 @@ import com.untangle.uvm.util.WorkerRunner;
 public class ShieldManager
 {
     private static final int SLEEP_DELAY_MS = 5000;
-    private static final int STATISTIC_DELAY_MS = 10 * 60 * 1000; /* 10 minutes */
+    private static final int STATISTIC_DELAY_MS = 1 * 60 * 1000; /* 1 minutes */
 
     private static final String START_SCRIPT = System.getProperty( "uvm.bin.dir" ) + "/shield-start";
     private static final String STOP_SCRIPT = System.getProperty( "uvm.bin.dir" ) + "/shield-stop";
@@ -133,10 +133,17 @@ public class ShieldManager
 
                         if ( nextStatisticEvent < now ) {
                             node.logEvent( this.statisticEvent );
-                            statisticEvent = new ShieldStatisticEvent();
+
+                            node.adjustMetric( node.STAT_ACCEPT, new Long(this.statisticEvent.getAccepted()));
+                            node.adjustMetric( node.STAT_LIMIT, new Long(this.statisticEvent.getLimited()));
+                            node.adjustMetric( node.STAT_DROP, new Long(this.statisticEvent.getDropped()));
+                            node.adjustMetric( node.STAT_REJECT, new Long(this.statisticEvent.getRejected()));
+
+                            this.statisticEvent = new ShieldStatisticEvent();
                             nextStatisticEvent = now + STATISTIC_DELAY_MS;
                         }
 
+                        
                         for ( ShieldRejectionEvent r : iteration.getRejectionEvents()) {
                             node.logEvent( r );
                         }

@@ -18,6 +18,7 @@ import com.untangle.uvm.SettingsManager;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.node.NodeSettings;
 import com.untangle.uvm.node.EventLogQuery;
+import com.untangle.uvm.node.NodeMetric;
 import com.untangle.uvm.util.I18nUtil;
 import com.untangle.uvm.util.TransactionWork;
 import com.untangle.uvm.vnet.NodeBase;
@@ -26,6 +27,11 @@ import com.untangle.uvm.vnet.PipeSpec;
 public class ShieldNodeImpl extends NodeBase  implements ShieldNode
 
 {
+    protected static final String STAT_ACCEPT = "accept";
+    protected static final String STAT_LIMIT = "limit";
+    protected static final String STAT_DROP = "drop";
+    protected static final String STAT_REJECT = "reject";
+
     private static final String SHIELD_REJECTION_EVENT_QUERY
         = "SELECT time_stamp, client_addr, client_intf, reputation, limited, dropped, rejected"
         + " FROM n_shield_rejection_evt "
@@ -55,7 +61,12 @@ public class ShieldNodeImpl extends NodeBase  implements ShieldNode
     {
         super( nodeSettings, nodeProperties );
 
-        this.eventQuery = new EventLogQuery(I18nUtil.marktr("Events"),"FROM ShieldEventsFromReports evt ORDER BY time_stamp DESC");                                                 
+        this.eventQuery = new EventLogQuery(I18nUtil.marktr("Events"),"SELECT * FROM reports.n_shield_rejection_totals ORDER BY time_stamp DESC");                                                 
+
+        this.addMetric(new NodeMetric(STAT_ACCEPT, I18nUtil.marktr("Sessions accepted")));
+        this.addMetric(new NodeMetric(STAT_LIMIT, I18nUtil.marktr("Sessions limited")));
+        this.addMetric(new NodeMetric(STAT_DROP, I18nUtil.marktr("Sessions dropped")));
+        this.addMetric(new NodeMetric(STAT_REJECT, I18nUtil.marktr("Sessions rejected")));
         
         this.shieldManager = new ShieldManager( this );
     }

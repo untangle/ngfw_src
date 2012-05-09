@@ -82,8 +82,8 @@ public class PhishNode extends SpamNodeImpl implements Phish
         replacementGenerator = new PhishReplacementGenerator(getNodeSettings());
 
         this.httpBlockedEventQuery = new EventLogQuery(I18nUtil.marktr("Blocked Web Events"),
-                                                     "FROM HttpLogEventFromReports evt" + 
-                                                     " WHERE evt.phishAction = 'B'" + 
+                                                       "SELECT * from reports.n_http_events " +
+                                                     " WHERE phish_action = 'B'" + 
                                                      " AND policy_id = :policyId" + 
                                                      " ORDER BY time_stamp DESC");
         

@@ -2717,10 +2717,7 @@ Ext.define("Ung.GridEventLog", {
         }, {
             xtype : 'tbtext',
             text : '<div style="width:30px;"></div>'
-        }, this.pagingToolbar, {
-            xtype : 'tbtext',
-            text : '<i><font color="red">' + i18n._('Warning') + ':</font></i> ' + i18n._('Event logs are delayed by a few minutes.')
-        }];
+        }, this.pagingToolbar];
         Ung.GridEventLog.superclass.initComponent.call(this);
  
         var cmConfig = this.columns;

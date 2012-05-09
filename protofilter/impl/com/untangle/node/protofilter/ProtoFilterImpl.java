@@ -51,15 +51,15 @@ public class ProtoFilterImpl extends NodeBase implements ProtoFilter
         super( nodeSettings, nodeProperties );
 
         this.allEventQuery = new EventLogQuery(I18nUtil.marktr("All Events"),
-                                               "FROM SessionLogEventFromReports evt " +
+                                               "SELECT * FROM reports.sessions " + 
                                                "WHERE policy_id = :policyId " +
-                                               "AND pfProtocol IS NOT NULL " +
+                                               "AND pf_protocol IS NOT NULL " +
                                                "ORDER BY time_stamp DESC");
 
         this.blockedEventQuery = new EventLogQuery(I18nUtil.marktr("Blocked Events"),
-                                                   "FROM SessionLogEventFromReports evt " +
+                                                   "SELECT * FROM reports.sessions " + 
                                                    "WHERE policy_id = :policyId " +
-                                                   "AND pfBlocked IS TRUE " +
+                                                   "AND pf_blocked IS TRUE " +
                                                    "ORDER BY time_stamp DESC");
 
         this.addMetric(new NodeMetric(STAT_SCAN, I18nUtil.marktr("Chunks scanned")));

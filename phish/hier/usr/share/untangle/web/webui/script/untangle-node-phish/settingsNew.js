@@ -226,7 +226,7 @@ if (!Ung.hasResource["Ung.Phish"]) {
                     sortType : Ung.SortTypes.asTimestamp
                 }, {
                     name : 'displayAction',
-                    mapping : 'phishAction',
+                    mapping : 'phish_action',
                     type : 'string',
                     convert : Ext.bind(function(value) {
                         switch (value) {
@@ -254,7 +254,7 @@ if (!Ung.hasResource["Ung.Phish"]) {
                 }],
                 // the list of columns
                 columns : [{
-                    header : this.i18n._("timestamp"),
+                    header : this.i18n._("Timestamp"),
                     width : Ung.Util.timestampFieldWidth,
                     sortable : true,
                     dataIndex : 'time_stamp',
@@ -262,24 +262,24 @@ if (!Ung.hasResource["Ung.Phish"]) {
                         return i18n.timestampFormat(value);
                     }
                 }, {
-                    header : this.i18n._("client"),
+                    header : this.i18n._("Client"),
                     width : Ung.Util.ipFieldWidth,
                     dataIndex : 'client'
                 }, {
-                    header : this.i18n._("username"),
+                    header : this.i18n._("Username"),
                     width : Ung.Util.usernameFieldWidth,
                     dataIndex : 'uid'
                 }, {
-                    header : this.i18n._("host"),
+                    header : this.i18n._("Uost"),
                     width : Ung.Util.hostnameFieldWidth,
                     dataIndex : 'host'
                 }, {
-                    header : this.i18n._("uri"),
+                    header : this.i18n._("Uri"),
                     flex:1,
                     width : Ung.Util.uriFieldWidth,
                     dataIndex : 'uri'
                 }, {
-                    header : this.i18n._("action"),
+                    header : this.i18n._("Action"),
                     width : 120,
                     sortable : true,
                     dataIndex : 'displayAction'
@@ -301,7 +301,7 @@ if (!Ung.hasResource["Ung.Phish"]) {
                     mapping : 'vendor'
                 }, {
                     name : 'displayAction',
-                    mapping : 'phishAction',
+                    mapping : 'phish_action',
                     type : 'string',
                     convert : Ext.bind(function(value, rec ) { // FIXME: make that a switch
                             if (value == 'P') { // PASSED
@@ -344,7 +344,7 @@ if (!Ung.hasResource["Ung.Phish"]) {
                 }],
                 // the list of columns
                 columns : [{
-                    header : this.i18n._("timestamp"),
+                    header : this.i18n._("Timestamp"),
                     width : Ung.Util.timestampFieldWidth,
                     sortable : true,
                     dataIndex : 'time_stamp',
@@ -352,33 +352,33 @@ if (!Ung.hasResource["Ung.Phish"]) {
                         return i18n.timestampFormat(value);
                     }
                 }, {
-                    header : this.i18n._("receiver"),
+                    header : this.i18n._("Receiver"),
                     width : Ung.Util.emailFieldWidth,
                     sortable : true,
                     dataIndex : 'addr'
                 }, {
-                    header : this.i18n._("sender"),
+                    header : this.i18n._("Sender"),
                     width : Ung.Util.emailFieldWidth,
                     sortable : true,
                     dataIndex : 'sender'
                 }, {
-                    header : this.i18n._("subject"),
+                    header : this.i18n._("Subject"),
                     flex:1,
                     width : 150,
                     sortable : true,
                     dataIndex : 'subject'
                 }, {
-                    header : this.i18n._("action"),
+                    header : this.i18n._("Action"),
                     width : 125,
                     sortable : true,
                     dataIndex : 'displayAction'
                 }, {
-                    header : this.i18n._("client"),
+                    header : this.i18n._("Client"),
                     width : Ung.Util.ipFieldWidth,
                     sortable : true,
                     dataIndex : 'client'
                 }, {
-                    header : this.i18n._("server"),
+                    header : this.i18n._("Server"),
                     width : Ung.Util.ipFieldWidth,
                     sortable : true,
                     dataIndex : 'server'

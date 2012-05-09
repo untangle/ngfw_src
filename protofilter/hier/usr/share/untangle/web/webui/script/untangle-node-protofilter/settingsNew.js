@@ -128,7 +128,7 @@ if (!Ung.hasResource["Ung.Protofilter"]) {
                 }],
                 // the list of columns for the column model
                 columns : [{
-                    header : this.i18n._("protocol"),
+                    header : this.i18n._("Protocol"),
                     width : 200,
                     dataIndex : 'protocol',
 					editor: {
@@ -137,7 +137,7 @@ if (!Ung.hasResource["Ung.Protofilter"]) {
 					}
                 }, 
 				{
-                    header : this.i18n._("category"),
+                    header : this.i18n._("Category"),
                     width : 200,
                     dataIndex : 'category',
 					editor: {
@@ -147,20 +147,20 @@ if (!Ung.hasResource["Ung.Protofilter"]) {
                 }, 
 				{
 					xtype:'checkcolumn',
-					header : "<b>" + this.i18n._("block") + "</b>",
+					header : "<b>" + this.i18n._("Block") + "</b>",
 					dataIndex : 'blocked',
 					fixed : true,
 					width:55
 				},
 				{
 					xtype:'checkcolumn',
-					header : "<b>" + this.i18n._("log") + "</b>",
+					header : "<b>" + this.i18n._("Log") + "</b>",
 					dataIndex : 'log',
 					fixed : true,
 					width:55
 				},
 				{
-                    header : this.i18n._("description"),
+                    header : this.i18n._("Description"),
                     width : 200,
                     dataIndex : 'description',
                     flex: 1,
@@ -242,7 +242,7 @@ if (!Ung.hasResource["Ung.Protofilter"]) {
                     mapping : 'pf_protocol'
                 }],
                 columns : [{
-                    header : this.i18n._("timestamp"),
+                    header : this.i18n._("Timestamp"),
                     width : Ung.Util.timestampFieldWidth,
                     sortable : true,
                     dataIndex : 'time_stamp',
@@ -250,28 +250,28 @@ if (!Ung.hasResource["Ung.Protofilter"]) {
                         return i18n.timestampFormat(value);
                     }
                 }, {
-                    header : this.i18n._("client"),
+                    header : this.i18n._("Client"),
                     width : Ung.Util.ipFieldWidth,
                     sortable : true,
                     dataIndex : 'client'
                 }, {
-                    header : this.i18n._("username"),
+                    header : this.i18n._("Username"),
                     width : Ung.Util.usernameFieldWidth,
                     sortable : true,
                     dataIndex : 'uid'
                 }, {
-                    header : this.i18n._("protocol"),
+                    header : this.i18n._("Protocol"),
                     width : 120,
                     sortable : true,
                     flex:1,
                     dataIndex : 'protocol'
                 }, {
-                    header : this.i18n._("blocked"),
+                    header : this.i18n._("Blocked"),
                     width : Ung.Util.booleanFieldWidth,
                     sortable : true,
                     dataIndex : 'blocked'
                 }, {
-                    header : this.i18n._("server"),
+                    header : this.i18n._("Server"),
                     width : Ung.Util.ipFieldWidth,
                     sortable : true,
                     dataIndex : 'server'
