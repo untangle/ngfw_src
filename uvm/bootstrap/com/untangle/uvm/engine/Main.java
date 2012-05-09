@@ -103,11 +103,14 @@ public class Main
     public void fatalError(String throwingLocation, Throwable x)
     {
         try {
-            logger.error("FATAL ERROR: " + throwingLocation);
-            System.err.println("FATAL ERROR: " + throwingLocation);
             if (x != null) {
+                logger.error("FATAL ERROR: " + throwingLocation, x);
+                System.err.println("FATAL ERROR: " + throwingLocation);
                 System.err.println("Throwable: " + x.getMessage());
                 x.printStackTrace(System.err);
+            } else {
+                logger.error("FATAL ERROR: " + throwingLocation);
+                System.err.println("FATAL ERROR: " + throwingLocation);
             }
         } catch (Throwable y) {
             System.out.println("Throwable: " + x.getMessage());

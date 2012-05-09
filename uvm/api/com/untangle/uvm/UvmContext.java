@@ -357,6 +357,7 @@ public interface UvmContext
 
     /**
      * Hibernate transaction runner
+     * FIXME remove me
      */
     boolean runTransaction(TransactionWork<?> tw);
 
@@ -381,8 +382,6 @@ public interface UvmContext
      * Convenience method, log an event to the database
      */
     void logEvent(LogEvent evt);
-
-    Session makeHibernateSession();
 
     Connection getDBConnection();
     

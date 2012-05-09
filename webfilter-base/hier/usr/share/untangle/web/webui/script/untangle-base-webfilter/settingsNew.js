@@ -321,7 +321,7 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                 fields : this.genericRuleFields,
                 paginated : false,
                 columns : [{
-                    header : this.i18n._("category"),
+                    header : this.i18n._("Category"),
                     width : 200,
                     dataIndex : 'name'
                 }, 
@@ -348,7 +348,7 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
 					tooltip : this.i18n._("Flag as Violation")
 				},
 				{
-                    header : this.i18n._("description"),
+                    header : this.i18n._("Description"),
                     flex:1,
                     width : 400,
                     dataIndex : 'description',
@@ -445,7 +445,7 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                 recordJavaClass : "com.untangle.uvm.node.GenericRule",
                 fields : this.genericRuleFields,
                 columns : [{
-                    header : this.i18n._("site"),
+                    header : this.i18n._("Site"),
                     width : 200,
                     dataIndex : 'string',
 					editor: {
@@ -471,7 +471,7 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
 					tooltip : this.i18n._("Flag as Violation")
 				},
 				{
-                    header : this.i18n._("description"),
+                    header : this.i18n._("Description"),
                     width : 200,
                     flex:1,
                     dataIndex : 'description',
@@ -534,7 +534,7 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                 recordJavaClass : "com.untangle.uvm.node.GenericRule",
                 fields : this.genericRuleFields,
                 columns : [{
-                    header : this.i18n._("file type"),
+                    header : this.i18n._("File Type"),
                     width : 200,
                     dataIndex : 'string',
 					editor: {
@@ -558,7 +558,7 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
 					tooltip : this.i18n._("Flag as Violation")
 				},
 				{
-                    header : this.i18n._("category"),
+                    header : this.i18n._("Category"),
                     width : 200,
                     dataIndex : 'category',
 					editor: {
@@ -567,7 +567,7 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
 					}
                 }, 
 				{
-                    header : this.i18n._("description"),
+                    header : this.i18n._("Description"),
                     width : 200,
                     dataIndex : 'description',
                     flex:1,
@@ -659,7 +659,7 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
 					tooltip : this.i18n._("Flag as Violation")
 				}, 
 				{
-                    header : this.i18n._("category"),
+                    header : this.i18n._("Category"),
                     width : 100,
                     dataIndex : 'category',
 					editor: {
@@ -668,7 +668,7 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
 					}
                 }, 
 				{
-                    header : this.i18n._("description"),
+                    header : this.i18n._("Description"),
                     width : 200,
                     flex:1,
                     dataIndex : 'description',
@@ -904,7 +904,7 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                 recordJavaClass : "com.untangle.uvm.node.GenericRule",
                 fields : this.genericRuleFields,
                 columns : [{
-                    header : this.i18n._("site"),
+                    header : this.i18n._("Site"),
                     width : 200,
                     dataIndex : 'string',
 					editor: {
@@ -917,12 +917,12 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
 				{
 					xtype:'checkcolumn',
 					width:55,
-					header : this.i18n._("pass"),
+					header : this.i18n._("Pass"),
 					dataIndex : 'enabled',
 					fixed : true
 				},
 				{
-                    header : this.i18n._("description"),
+                    header : this.i18n._("Description"),
                     flex:1,
                     width : 200,
                     dataIndex : 'description',
@@ -987,12 +987,12 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
 				{
 					xtype:'checkcolumn',
 					width:55,
-					header : this.i18n._("pass"),
+					header : this.i18n._("Pass"),
 					dataIndex : 'enabled',
 					fixed : true
 				},
 				{
-                    header : this.i18n._("description"),
+                    header : this.i18n._("Description"),
                     flex:1,
                     width : 200,
                     dataIndex : 'description',
@@ -1033,19 +1033,19 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
             this.gridEventLog = new Ext.create('Ung.GridEventLog',{
                 settingsCmp : this,
                 fields : [{
-                    name : 'timeStamp',
+                    name : 'time_stamp',
                     sortType : Ung.SortTypes.asTimestamp
                 }, {
                     name : 'blocked',
-                    mapping : 'wf' + main.capitalize(this.getRpcNode().getVendor()) + 'Blocked',
+                    mapping : 'wf_' + this.getRpcNode().getVendor() + '_blocked',
                     type : 'boolean'
                 }, {
                     name : 'flagged',
-                    mapping : 'wf' + main.capitalize(this.getRpcNode().getVendor()) + 'Flagged',
+                    mapping : 'wf_' + this.getRpcNode().getVendor() + '_flagged',
                     type : 'boolean'
                 }, {
                     name : 'category',
-                    mapping : 'wf' + main.capitalize(this.getRpcNode().getVendor()) + 'Category',
+                    mapping : 'wf_' + this.getRpcNode().getVendor() + '_category',
                     type : 'string'
                 }, {
                     name : 'client',
@@ -1063,7 +1063,7 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                     mapping : 'uri'
                 }, {
                     name : 'reason',
-                    mapping : 'wf' + main.capitalize(this.getRpcNode().getVendor()) + 'Reason',
+                    mapping : 'wf_' + this.getRpcNode().getVendor() + '_reason',
                     type : 'string',
                     convert : Ext.bind(function(value) {
                         switch (value) {
@@ -1093,47 +1093,47 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                 }],
                 columnsDefaultSortable : true,
                 columns : [{
-                    header : this.i18n._("timestamp"),
+                    header : this.i18n._("Timestamp"),
                     width : Ung.Util.timestampFieldWidth,
-                    dataIndex : 'timeStamp',
+                    dataIndex : 'time_stamp',
                     renderer : function(value) {
                         return i18n.timestampFormat(value);
                     }
                 }, {
-                    header : this.i18n._("client"),
+                    header : this.i18n._("Client"),
                     width : Ung.Util.ipFieldWidth,
                     dataIndex : 'client'
                 }, {
-                    header : this.i18n._("username"),
+                    header : this.i18n._("Username"),
                     width : Ung.Util.usernameFieldWidth,
                     dataIndex : 'uid'
                 }, {
-                    header : this.i18n._("host"),
+                    header : this.i18n._("Host"),
                     width : Ung.Util.hostnameFieldWidth,
                     dataIndex : 'host'
                 }, {
-                    header : this.i18n._("uri"),
+                    header : this.i18n._("Uri"),
                     flex:1,
                     width : Ung.Util.uriFieldWidth,
                     dataIndex : 'uri'
                 }, {
-                    header : this.i18n._("blocked"),
+                    header : this.i18n._("Blocked"),
                     width : Ung.Util.booleanFieldWidth,
                     dataIndex : 'blocked'
                 }, {
-                    header : this.i18n._("flagged"),
+                    header : this.i18n._("Flagged"),
                     width : Ung.Util.booleanFieldWidth,
                     dataIndex : 'flagged'
                 }, {
-                    header : this.i18n._("reason for action"),
+                    header : this.i18n._("Reason For Action"),
                     width : 150,
                     dataIndex : 'reason'
                 }, {
-                    header : this.i18n._("category"),
+                    header : this.i18n._("Category"),
                     width : 120,
                     dataIndex : 'category'
                 }, {
-                    header : this.i18n._("server"),
+                    header : this.i18n._("Server"),
                     width : Ung.Util.ipFieldWidth,
                     dataIndex : 'server'
                 }]

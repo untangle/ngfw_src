@@ -31,7 +31,6 @@ import com.untangle.uvm.node.HostAddress;
 import com.untangle.uvm.node.ScriptWriter;
 import com.untangle.uvm.util.JsonClient;
 import com.untangle.uvm.util.XMLRPCUtil;
-import com.untangle.uvm.util.TransactionWork;
 
 class AddressManagerImpl implements LocalAddressManager
 {
@@ -73,29 +72,31 @@ class AddressManagerImpl implements LocalAddressManager
     @SuppressWarnings("unchecked")
     public void setSettings( final AddressSettings settings, boolean forceSave, boolean updateSuffix )
     {
-        logger.warn( "Got the settings: " + settings.getPublicAddress() + ":" + settings.getHttpsPort());
+        logger.info( "setSettings( " + settings.getPublicAddress() + ":" + settings.getHttpsPort() + ")" );
 
-        TransactionWork<Void> tw = new TransactionWork<Void>()
-            {
-                public boolean doWork(Session s)
-                {
-                    /* delete old settings */
-                    Query q = s.createQuery( "from " + "AddressSettings" );
-                    for ( Iterator<AddressSettings> iter = q.iterate() ; iter.hasNext() ; ) {
-                        AddressSettings oldSettings = iter.next();
-                        s.delete( oldSettings );
-                    }
+        this.addressSettings = settings;
+        
+//         TransactionWork<Void> tw = new TransactionWork<Void>()
+//             {
+//                 public boolean doWork(Session s)
+//                 {
+//                     /* delete old settings */
+//                     Query q = s.createQuery( "from " + "AddressSettings" );
+//                     for ( Iterator<AddressSettings> iter = q.iterate() ; iter.hasNext() ; ) {
+//                         AddressSettings oldSettings = iter.next();
+//                         s.delete( oldSettings );
+//                     }
 
-                    try{
-                        addressSettings = (AddressSettings)s.merge(settings);
-                    } catch (org.hibernate.ObjectNotFoundException exc) {
-                        s.save(settings);
-                        addressSettings = settings;
-                    }
-                    return true;
-                }
-            };
-        UvmContextFactory.context().runTransaction(tw);
+//                     try{
+//                         addressSettings = (AddressSettings)s.merge(settings);
+//                     } catch (org.hibernate.ObjectNotFoundException exc) {
+//                         s.save(settings);
+//                         addressSettings = settings;
+//                     }
+//                     return true;
+//                 }
+//             };
+//         UvmContextFactory.context().runTransaction(tw);
         
         synchronized ( this ) {
             /* Rebind https to the new port */
@@ -107,18 +108,18 @@ class AddressManagerImpl implements LocalAddressManager
     /* Initialize the settings, load at startup */
     synchronized void init()
     {
-        TransactionWork<Object> tw = new TransactionWork<Object>()
-            {
-                public boolean doWork(Session s)
-                {
-                    Query q = s.createQuery( "from " + "AddressSettings");
-                    addressSettings = (AddressSettings)q.uniqueResult();
+//         TransactionWork<Object> tw = new TransactionWork<Object>()
+//             {
+//                 public boolean doWork(Session s)
+//                 {
+//                     Query q = s.createQuery( "from " + "AddressSettings");
+//                     addressSettings = (AddressSettings)q.uniqueResult();
                     
-                    return true;
-                }
-            };
+//                     return true;
+//                 }
+//             };
 
-        UvmContextFactory.context().runTransaction(tw);
+//         UvmContextFactory.context().runTransaction(tw);
         
         if ( this.addressSettings == null ) {
             logger.warn( "There are no address settings in the database, initializing" );
@@ -199,12 +200,12 @@ class AddressManagerImpl implements LocalAddressManager
         int port = address.getHttpsPort();
 
         try {
-            logger.info("Rebinding HTTPS port ...");
+            logger.info("Rebinding HTTPS port: " + port);
             UvmContextFactory.context().localAppServerManager().rebindExternalHttpsPort( port );
             logger.info("Rebinding HTTPS port done.");
         } catch ( Exception e ) {
             if ( !UvmContextFactory.context().state().equals( UvmState.RUNNING )) {
-                logger.info( "unable to rebind port at startup, expected. " + e );
+                logger.info( "unable to rebind port at startup, expected. ");
             } else {
                 logger.warn( "unable to rebind https to port: " + port, e );
             }

@@ -70,7 +70,7 @@ class WebFilterBaseTests(unittest.TestCase):
 
     @staticmethod
     def vendorName():
-        return "Untangle"
+        return "untangle"
 
     def setUp(self):
         global node
@@ -347,16 +347,16 @@ class WebFilterBaseTests(unittest.TestCase):
         assert(events['list'] != None)
         assert(len(events['list']) > 0)
         print ("Event:" + 
-               " time_stamp: " + str(time.strftime("%Y-%m-%d %H:%M:%S",time.localtime((events['list'][0]['timeStamp']['time'])/1000))) + 
+               " time_stamp: " + str(time.strftime("%Y-%m-%d %H:%M:%S",time.localtime((events['list'][0]['time_stamp']['time'])/1000))) + 
                " host: " + str(events['list'][0]['host']) + 
                " uri: " + str(events['list'][0]['uri']) + 
-               " blocked: " + str(events['list'][0]['wf' + self.vendorName() + 'Blocked']) + 
-               " flagged: " + str(events['list'][0]['wf' + self.vendorName() + 'Flagged']) +
+               " blocked: " + str(events['list'][0]['wf_' + self.vendorName() + '_blocked']) + 
+               " flagged: " + str(events['list'][0]['wf_' + self.vendorName() + '_flagged']) +
                " now: " + str(datetime.datetime.now())) 
         assert(events['list'][0]['host'] == "test.untangle.com")
         assert(events['list'][0]['uri'] == ("/test/testPage1.html?arg=%s" % fname))
-        assert(events['list'][0]['wf' + self.vendorName() + 'Blocked'] == True)
-        assert(events['list'][0]['wf' + self.vendorName() + 'Flagged'] == True)
+        assert(events['list'][0]['wf_' + self.vendorName() + '_blocked'] == True)
+        assert(events['list'][0]['wf_' + self.vendorName() + '_flagged'] == True)
 
     def test_101_eventlog_flaggedUrl(self):
         fname = sys._getframe().f_code.co_name
@@ -376,8 +376,8 @@ class WebFilterBaseTests(unittest.TestCase):
         assert(len(events['list']) > 0)
         assert(events['list'][0]['host'] == "test.untangle.com")
         assert(events['list'][0]['uri'] == ("/test/testPage1.html?arg=%s" % fname))
-        assert(events['list'][0]['wf' + self.vendorName() + 'Blocked'] == False)
-        assert(events['list'][0]['wf' + self.vendorName() + 'Flagged'] == True)
+        assert(events['list'][0]['wf_' + self.vendorName() + '_blocked'] == False)
+        assert(events['list'][0]['wf_' + self.vendorName() + '_flagged'] == True)
 
     def test_102_eventlog_allUrls(self):
         fname = sys._getframe().f_code.co_name
@@ -395,8 +395,8 @@ class WebFilterBaseTests(unittest.TestCase):
         assert(len(events['list']) > 0)
         assert(events['list'][0]['host'] == "test.untangle.com")
         assert(events['list'][0]['uri'] == ("/test/testPage1.html?arg=%s" % fname))
-        assert(events['list'][0]['wf' + self.vendorName() + 'Blocked'] == False)
-        assert(events['list'][0]['wf' + self.vendorName() + 'Flagged'] == False)
+        assert(events['list'][0]['wf_' + self.vendorName() + '_blocked'] == False)
+        assert(events['list'][0]['wf_' + self.vendorName() + '_flagged'] == False)
 
     def test_999_finalTearDown(self):
         global node

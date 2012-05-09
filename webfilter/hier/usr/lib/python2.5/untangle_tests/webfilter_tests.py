@@ -19,5 +19,5 @@ class WebFilterTests(WebFilterBaseTests):
 
     @staticmethod
     def vendorName():
-        return "Untangle"
+        return "untangle"
 

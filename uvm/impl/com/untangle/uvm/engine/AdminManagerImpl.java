@@ -20,7 +20,6 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.transaction.TransactionRolledbackException;
 
 import org.apache.log4j.Logger;
 import org.hibernate.Query;
@@ -38,7 +37,6 @@ import com.untangle.uvm.snmp.SnmpManager;
 import com.untangle.uvm.snmp.SnmpManagerImpl;
 import com.untangle.uvm.util.FormUtil;
 import com.untangle.uvm.util.HasConfigFiles;
-import com.untangle.uvm.util.TransactionWork;
 
 /**
  * Remote interface for administrative user management.
@@ -70,25 +68,26 @@ public class AdminManagerImpl implements AdminManager, HasConfigFiles
         this.uvmContext = uvmContext;
         this.threadRequest = threadRequest;
 
-        TransactionWork<Void> tw = new TransactionWork<Void>()
-            {
-                public boolean doWork(Session s)
-                {
-                    Query q = s.createQuery("from AdminSettings");
-                    adminSettings = (AdminSettings)q.uniqueResult();
+        adminSettings = new AdminSettings();
+        adminSettings.addUser(new User(INITIAL_USER_LOGIN,
+                                       INITIAL_USER_PASSWORD,
+                                       INITIAL_USER_NAME));
 
-                    if (null == adminSettings) {
-                        adminSettings = new AdminSettings();
-                        adminSettings.addUser(new User(INITIAL_USER_LOGIN,
-                                                       INITIAL_USER_PASSWORD,
-                                                       INITIAL_USER_NAME));
-                        s.save(adminSettings);
+        //         TransactionWork<Void> tw = new TransactionWork<Void>()
+//             {
+//                 public boolean doWork(Session s)
+//                 {
+//                     Query q = s.createQuery("from AdminSettings");
+//                     adminSettings = (AdminSettings)q.uniqueResult();
 
-                    }
-                    return true;
-                }
-            };
-        uvmContext.runTransaction(tw);
+//                     if (null == adminSettings) {
+//                         s.save(adminSettings);
+
+//                     }
+//                     return true;
+//                 }
+//             };
+//         uvmContext.runTransaction(tw);
 
         snmpManager = SnmpManagerImpl.snmpManager();
 
@@ -136,16 +135,17 @@ public class AdminManagerImpl implements AdminManager, HasConfigFiles
     {
         updateUserPasswords(as);
 
-        // Do something with summaryPeriod? XXX
-        TransactionWork<Void> tw = new TransactionWork<Void>()
-            {
-                public boolean doWork(Session s)
-                {
-                    adminSettings = (AdminSettings)s.merge(as);
-                    return true;
-                }
-            };
-        uvmContext.runTransaction(tw);
+        this.adminSettings = as;
+
+        //         TransactionWork<Void> tw = new TransactionWork<Void>()
+//             {
+//                 public boolean doWork(Session s)
+//                 {
+//                     adminSettings = (AdminSettings)s.merge(as);
+//                     return true;
+//                 }
+//             };
+//         uvmContext.runTransaction(tw);
 
     }
 
@@ -186,24 +186,17 @@ public class AdminManagerImpl implements AdminManager, HasConfigFiles
     }
 
     public void setTimeZone(TimeZone timezone)
-        throws TransactionRolledbackException
     {
         String id = timezone.getID();
 
-        try {
-            Integer exitValue = uvmContext.execManager().execResult( SET_TIMEZONE_SCRIPT + " " + id );
-            if (0 != exitValue) {
-                String message = "Unable to set time zone (" + exitValue + ") to: " + id;
-                logger.error(message);
-                throw new TransactionRolledbackException(message);
-            } else {
-                logger.info("Time zone set to : " + id);
-                TimeZone.setDefault(timezone); // Note: Only works for threads who haven't yet cached the zone!  XX
-            }
-        } catch (IOException exn) {
-            String message = "Exception during set time zone to: " + id;
-            logger.error(message, exn);
-            throw new TransactionRolledbackException(message);
+        Integer exitValue = uvmContext.execManager().execResult( SET_TIMEZONE_SCRIPT + " " + id );
+        if (0 != exitValue) {
+            String message = "Unable to set time zone (" + exitValue + ") to: " + id;
+            logger.error(message);
+            throw new RuntimeException(message);
+        } else {
+            logger.info("Time zone set to : " + id);
+            TimeZone.setDefault(timezone); // Note: Only works for threads who haven't yet cached the zone!  XX
         }
     }
 

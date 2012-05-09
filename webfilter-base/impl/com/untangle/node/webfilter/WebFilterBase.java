@@ -75,25 +75,25 @@ public abstract class WebFilterBase extends NodeBase implements WebFilter
         String capitalizedVendorName = vendorName.substring(0, 1).toUpperCase() + vendorName.substring(1);
         
         this.blockedEventQuery = new EventLogQuery(I18nUtil.marktr("Blocked Web Events"),
-                                                   "FROM HttpLogEventFromReports evt " + 
-                                                   "WHERE evt.wf" + capitalizedVendorName + "Blocked IS TRUE " + 
-                                                   "AND evt.policyId = :policyId " +
-                                                   "ORDER BY evt.timeStamp DESC");
+                                                   "SELECT * from reports.n_http_events " +
+                                                   "WHERE wf_" + vendorName + "_blocked IS TRUE " +
+                                                   "AND policy_id = :policyId " +
+                                                   "ORDER BY time_stamp DESC");
         this.flaggedEventQuery = new EventLogQuery(I18nUtil.marktr("Flagged Web Events"),
-                                                   "FROM HttpLogEventFromReports evt " + 
-                                                   "WHERE evt.wf" + capitalizedVendorName + "Flagged IS TRUE " + 
-                                                   "AND evt.policyId = :policyId " +
-                                                   "ORDER BY evt.timeStamp DESC");
+                                                   "SELECT * from reports.n_http_events " +
+                                                   "WHERE wf_" + vendorName + "_flagged IS TRUE " +
+                                                   "AND policy_id = :policyId " +
+                                                   "ORDER BY time_stamp DESC");
         this.allEventQuery = new EventLogQuery(I18nUtil.marktr("All Web Events"),
-                                               "FROM HttpLogEventFromReports evt " + 
-                                               "WHERE evt.wf" + capitalizedVendorName + "Blocked IS NOT NULL " + 
-                                               "AND evt.policyId = :policyId " +
-                                               "ORDER BY evt.timeStamp DESC");
+                                                   "SELECT * from reports.n_http_events " +
+                                                   "WHERE wf_" + vendorName + "_blocked IS NOT NULL " +
+                                                   "AND policy_id = :policyId " +
+                                                   "ORDER BY time_stamp DESC");
         this.unblockEventQuery = new EventLogQuery(I18nUtil.marktr("Unblocked Web Events"),
-                                                   "FROM HttpLogEventFromReports evt " + 
-                                                   "WHERE evt.wf" + capitalizedVendorName + "Category = 'unblocked' " + 
-                                                   "AND evt.policyId = :policyId " + 
-                                                   "ORDER BY evt.timeStamp DESC");
+                                                   "SELECT * from reports.n_http_events " +
+                                                   "WHERE wf_" + vendorName + "_category = 'unblocked' " +
+                                                   "AND policy_id = :policyId " +
+                                                   "ORDER BY time_stamp DESC");
                                                    
         this.addMetric(new NodeMetric(STAT_SCAN, I18nUtil.marktr("Pages scanned")));
         this.addMetric(new NodeMetric(STAT_BLOCK, I18nUtil.marktr("Pages blocked")));

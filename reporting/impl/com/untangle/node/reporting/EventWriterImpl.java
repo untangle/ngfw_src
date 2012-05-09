@@ -23,7 +23,6 @@ import java.sql.Statement;
 import org.apache.log4j.Logger;
 
 import com.untangle.uvm.UvmContextFactory;
-import com.untangle.uvm.logging.EventWriter;
 import com.untangle.uvm.logging.LogEvent;
 import com.untangle.uvm.logging.SyslogManager;
 import com.untangle.uvm.util.TransactionWork;
@@ -31,7 +30,7 @@ import com.untangle.uvm.util.TransactionWork;
 /**
  * Worker that batches and flushes events to the database.
  */
-public class EventWriterImpl implements Runnable, EventWriter
+public class EventWriterImpl implements Runnable
 {
     private static final int SYNC_TIME = 60*1000; /* 60 seconds */
 
@@ -40,7 +39,9 @@ public class EventWriterImpl implements Runnable, EventWriter
     private static boolean forceFlush = false;
 
     private volatile Thread thread;
-    
+
+    private Connection dbConnection;
+
     private long lastLoggedWarningTime = System.currentTimeMillis();
 
     /**
@@ -48,7 +49,10 @@ public class EventWriterImpl implements Runnable, EventWriter
      */
     private final BlockingQueue<LogEvent> inputQueue = new LinkedBlockingQueue<LogEvent>();
 
-    public EventWriterImpl(ReportingNode node) { }
+    public EventWriterImpl(ReportingNode node)
+    {
+        this.dbConnection = null;
+    }
 
     public void run()
     {
@@ -56,7 +60,7 @@ public class EventWriterImpl implements Runnable, EventWriter
 
         List<LogEvent> logQueue = new LinkedList<LogEvent>();
         LogEvent event = null;
-        
+
         /**
          * Loop indefinitely and continue logging events
          */
@@ -67,6 +71,19 @@ public class EventWriterImpl implements Runnable, EventWriter
             if (!forceFlush)
                 try {Thread.sleep(SYNC_TIME);} catch (Exception e) {}
 
+            if ( dbConnection == null ) {
+                try {
+                    dbConnection = UvmContextFactory.context().getDBConnection();
+                } catch (Exception e) {
+                    logger.warn("Unable to create connection to DB",e);
+                }
+            }
+            if ( dbConnection == null) {
+                logger.warn("Unable to get connection to DB, dropping events...");
+                while ((event = inputQueue.poll()) != null) {}
+                continue;
+            }
+            
             synchronized( this ) {
                 /**
                  * Copy all events out of the queue
@@ -92,6 +109,11 @@ public class EventWriterImpl implements Runnable, EventWriter
                 }
             }
         }
+
+        if (dbConnection != null) {
+            try {dbConnection.close();} catch (SQLException e) { logger.warn("Exception during dbConnection close",e); }
+        }
+        
     }
 
     /**
@@ -156,7 +178,7 @@ public class EventWriterImpl implements Runnable, EventWriter
     /**
      * write the logQueue to the database
      */
-    private void persist(List<LogEvent> logQueue)
+    private void persist( List<LogEvent> logQueue )
     {
         /**
          * These map stores the type of objects being written and stats purely for debugging output
@@ -183,57 +205,55 @@ public class EventWriterImpl implements Runnable, EventWriter
         int count = logQueue.size();
         long t0 = System.currentTimeMillis();
 
-        Connection conn = null;
         Statement statement = null;
         try {
-            conn = UvmContextFactory.context().getDBConnection();
-            if (conn != null) 
-                statement = conn.createStatement();
+            statement = this.dbConnection.createStatement();
         } catch (Exception e) {
-            logger.warn("Unable to create connection to DB",e);
+            logger.warn("Unable to create statement.",e);
+            this.dbConnection = null;
+            return;
+        }
+        if ( statement == null ) {
+            logger.warn("Unable to create statement: null");
+            this.dbConnection = null;
+            return;
         }
         
         logger.debug("Writing events to database... (size: " + logQueue.size() + ")");
         for (Iterator<LogEvent> i = logQueue.iterator(); i.hasNext(); ) {
             LogEvent event = i.next();
 
-            if (conn != null && statement != null) {
-                /**
-                 * Write event to database using SQL
-                 * If fails, just move on
-                 */
-                List<String> sqls = event.getDirectEventSqls();
-                if (sqls != null) {
-                    long write_t0 = System.currentTimeMillis();
-                    for (String sqlStr : sqls) {
-                        logger.debug("Write direct event: " + sqlStr);
-                        try {
-                            statement.execute(sqlStr);
-                        } catch (SQLException e) {
-                            logger.warn("Failed SQL query: \"" + sqlStr + "\": " + e.getMessage());
-                        }
+            /**
+             * Write event to database using SQL
+             * If fails, just move on
+             */
+            List<String> sqls = event.getDirectEventSqls();
+            if (sqls != null) {
+                long write_t0 = System.currentTimeMillis();
+                for (String sqlStr : sqls) {
+                    logger.debug("Write direct event: " + sqlStr);
+                    try {
+                        statement.execute(sqlStr);
+                    } catch (SQLException e) {
+                        logger.warn("Failed SQL query: \"" + sqlStr + "\": " + e.getMessage());
                     }
-                    long write_t1 = System.currentTimeMillis();
+                }
+                long write_t1 = System.currentTimeMillis();
 
-                    if (logger.isInfoEnabled()) {
-                        /**
-                         * Update the stats
-                         */
-                        String eventTypeName = event.getClass().getSimpleName();
-                        Long currentTime = timeMap.get(eventTypeName);
-                        if (currentTime == null)
-                            currentTime = 0L;
-                        currentTime = currentTime+(write_t1-write_t0); //add time to write this instances
-                        timeMap.put(eventTypeName, currentTime);
-                    }
+                if (logger.isInfoEnabled()) {
+                    /**
+                     * Update the stats
+                     */
+                    String eventTypeName = event.getClass().getSimpleName();
+                    Long currentTime = timeMap.get(eventTypeName);
+                    if (currentTime == null)
+                        currentTime = 0L;
+                    currentTime = currentTime+(write_t1-write_t0); //add time to write this instances
+                    timeMap.put(eventTypeName, currentTime);
                 }
             } 
 
             i.remove();
-        }
-
-        if (conn != null) {
-            try {conn.close();} catch (SQLException e) { logger.warn("Exception during conn close",e); }
         }
 
         logger.debug("Writing events to database... Complete");

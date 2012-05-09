@@ -257,8 +257,6 @@ public class NodeManagerImpl implements NodeManager
                         classAdded |= UvmContextImpl.getInstance().addAnnotatedClass(clz);
                     }
                 }
-                if (classAdded)
-                    UvmContextImpl.getInstance().refreshSessionFactory();
             }
             /*
              * XXX remove me after settings conversion complete FIXME
@@ -533,7 +531,6 @@ public class NodeManagerImpl implements NodeManager
                         UvmContextImpl.getInstance().addAnnotatedClass(clz);
                     }
                 }
-                UvmContextImpl.getInstance().refreshSessionFactory();
             }
 
             if (packageDesc != null) {

@@ -87,29 +87,34 @@ public class LanguageManagerImpl implements LanguageManager
     {
         this.uvmContext = uvmContext;
 
-        TransactionWork<Void> tw = new TransactionWork<Void>()
-        {
-            public boolean doWork(Session s)
-            {
-                Query q = s.createQuery("from LanguageSettings");
-                languageSettings = (LanguageSettings)q.uniqueResult();
+        if (languageSettings == null) { 
+            languageSettings = new LanguageSettings();
+            languageSettings.setLanguage(DEFAULT_LANGUAGE);
+        }
+        
+//         TransactionWork<Void> tw = new TransactionWork<Void>()
+//         {
+//             public boolean doWork(Session s)
+//             {
+//                 Query q = s.createQuery("from LanguageSettings");
+//                 languageSettings = (LanguageSettings)q.uniqueResult();
 
-                if (languageSettings == null) {
-                    languageSettings = new LanguageSettings();
-                    languageSettings.setLanguage(DEFAULT_LANGUAGE);
-                    s.save(languageSettings);
-                }
+//                 if (languageSettings == null) {
+//                     languageSettings = new LanguageSettings();
+//                     languageSettings.setLanguage(DEFAULT_LANGUAGE);
+//                     s.save(languageSettings);
+//                 }
 
-                return true;
-            }
+//                 return true;
+//             }
             
-            @Override
-            public Void getResult()
-            {
-                return null;
-            }
-        };
-        uvmContext.runTransaction(tw);
+//             @Override
+//             public Void getResult()
+//             {
+//                 return null;
+//             }
+//         };
+//         uvmContext.runTransaction(tw);
 
         allLanguages = loadAllLanguages();
         blacklist = loadBlacklist();

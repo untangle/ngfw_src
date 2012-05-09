@@ -20,6 +20,7 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -32,15 +33,15 @@ import com.untangle.uvm.node.NodeSettings;
 import com.untangle.uvm.node.NodeProperties;
 import com.untangle.uvm.node.Validator;
 import com.untangle.uvm.node.IPMaskedAddress;
+import com.untangle.uvm.node.Reporting;
 import com.untangle.uvm.AdminManager;
 import com.untangle.uvm.User;
-import com.untangle.uvm.logging.EventWriter;
 import com.untangle.uvm.logging.LogEvent;
 import com.untangle.uvm.util.TransactionWork;
 import com.untangle.uvm.vnet.NodeBase;
 import com.untangle.uvm.vnet.PipeSpec;
 
-public class ReportingNodeImpl extends NodeBase implements ReportingNode, EventWriter
+public class ReportingNodeImpl extends NodeBase implements ReportingNode, Reporting
 {
     private static final Logger logger = Logger.getLogger(ReportingNodeImpl.class);
 
@@ -51,7 +52,8 @@ public class ReportingNodeImpl extends NodeBase implements ReportingNode, EventW
     private static final String CRON_STRING = "* * * root /usr/share/untangle/bin/reporting-generate-reports.py -d $(date \"+\\%Y-\\%m-\\%d\") > /dev/null 2>&1";
     private static final File CRON_FILE = new File("/etc/cron.d/untangle-reports-nightly");
 
-    private static EventWriterImpl logWorker = null;
+    private static EventWriterImpl eventWriter = null;
+    private static EventReaderImpl eventReader = null;
 
     private ReportingSettings settings;
 
@@ -59,8 +61,11 @@ public class ReportingNodeImpl extends NodeBase implements ReportingNode, EventW
     {
         super( nodeSettings, nodeProperties );
 
-        if (logWorker == null)
-            logWorker = new EventWriterImpl(this);
+        if (eventWriter == null)
+            eventWriter = new EventWriterImpl(this);
+
+        if (eventReader == null)
+            eventReader = new EventReaderImpl(this);
     }
 
     public void setReportingSettings(final ReportingSettings settings)
@@ -128,10 +133,9 @@ public class ReportingNodeImpl extends NodeBase implements ReportingNode, EventW
     public void flushEvents()
     {
         long currentTime  = System.currentTimeMillis();
-        
-        logger.info("Flushing queued events...");
-        if (this.logWorker != null)
-            this.logWorker.forceFlush();
+
+        if (this.eventWriter != null)
+            this.eventWriter.forceFlush();
     }
     
     public void initializeSettings()
@@ -178,12 +182,17 @@ public class ReportingNodeImpl extends NodeBase implements ReportingNode, EventW
 
     public void logEvent( LogEvent evt )
     {
-        this.logWorker.logEvent( evt );
+        this.eventWriter.logEvent( evt );
     }
 
     public void forceFlush()
     {
-        this.logWorker.forceFlush();
+        this.eventWriter.forceFlush();
+    }
+
+    public ArrayList getEvents( final String query, final Long policyId, final int limit )
+    {
+        return this.eventReader.getEvents( query, policyId, limit );
     }
     
     @Override
@@ -235,12 +244,12 @@ public class ReportingNodeImpl extends NodeBase implements ReportingNode, EventW
             postInit();
         }
 
-        this.logWorker.start();
+        this.eventWriter.start();
     }
 
     protected void postStop()
     {
-        this.logWorker.stop();
+        this.eventWriter.stop();
     }
 
     

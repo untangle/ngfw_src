@@ -1,4 +1,6 @@
-/* $HeadURL$*/
+/**
+ * $Id$
+ */
 package com.untangle.uvm.networking;
 
 import static com.untangle.uvm.networking.ShellFlags.FLAG_HTTPS_EXTERNAL;
@@ -18,7 +20,6 @@ import org.hibernate.Query;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.node.IPAddress;
 import com.untangle.uvm.node.ScriptWriter;
-import com.untangle.uvm.util.TransactionWork;
 
 class AccessManagerImpl implements LocalAccessManager
 {
@@ -48,27 +49,28 @@ class AccessManagerImpl implements LocalAccessManager
     @SuppressWarnings("unchecked")
     public synchronized void setSettings( final AccessSettings settings )
     {
-        TransactionWork<Void> tw = new TransactionWork<Void>()
-            {
-                public boolean doWork(Session s)
-                {
-                    /* delete old settings */
-                    Query q = s.createQuery( "from " + "AccessSettings" );
-                    for ( Iterator<AccessSettings> iter = q.iterate() ; iter.hasNext() ; ) {
-                        AccessSettings oldSettings = iter.next();
-                        s.delete( oldSettings );
-                    }
+//         TransactionWork<Void> tw = new TransactionWork<Void>()
+//             {
+//                 public boolean doWork(Session s)
+//                 {
+//                     /* delete old settings */
+//                     Query q = s.createQuery( "from " + "AccessSettings" );
+//                     for ( Iterator<AccessSettings> iter = q.iterate() ; iter.hasNext() ; ) {
+//                         AccessSettings oldSettings = iter.next();
+//                         s.delete( oldSettings );
+//                     }
 
-                    try {
-                        accessSettings = (AccessSettings)s.merge(settings);
-                    } catch (org.hibernate.ObjectNotFoundException exc) {
-                        s.save(settings);
-                        accessSettings = settings;
-                    }
-                    return true;
-                }
-            };
-        UvmContextFactory.context().runTransaction(tw);
+//                     try {
+//                         accessSettings = (AccessSettings)s.merge(settings);
+//                     } catch (org.hibernate.ObjectNotFoundException exc) {
+//                         s.save(settings);
+//                         accessSettings = settings;
+//                     }
+//                     return true;
+//                 }
+//             };
+//         UvmContextFactory.context().runTransaction(tw);
+        this.accessSettings = settings;
         
         setSupportAccess( this.accessSettings );
     }
@@ -77,18 +79,18 @@ class AccessManagerImpl implements LocalAccessManager
     /* Initialize the settings, load at startup */
     synchronized void init()
     {
-        TransactionWork<Object> tw = new TransactionWork<Object>()
-            {
-                public boolean doWork(Session s)
-                {
-                    Query q = s.createQuery( "from " + "AccessSettings");
-                    accessSettings = (AccessSettings)q.uniqueResult();
+//         TransactionWork<Object> tw = new TransactionWork<Object>()
+//             {
+//                 public boolean doWork(Session s)
+//                 {
+//                     Query q = s.createQuery( "from " + "AccessSettings");
+//                     accessSettings = (AccessSettings)q.uniqueResult();
                     
-                    return true;
-                }
-            };
+//                     return true;
+//                 }
+//             };
 
-        UvmContextFactory.context().runTransaction(tw);
+//         UvmContextFactory.context().runTransaction(tw);
         
         if ( accessSettings == null ) {
             logger.info( "There are no access settings in the database, must initialize from files." );
@@ -97,7 +99,10 @@ class AccessManagerImpl implements LocalAccessManager
             /* Load the defaults */
             settings.setIsInsideInsecureEnabled( true );
             settings.setIsOutsideAccessEnabled( true );
-            settings.setIsOutsideAdministrationEnabled( false );
+            if (UvmContextFactory.context().isDevel())
+                settings.setIsOutsideAdministrationEnabled( true );
+            else
+                settings.setIsOutsideAdministrationEnabled( false );
             settings.setIsOutsideQuarantineEnabled( true );
             settings.setIsOutsideReportingEnabled( false );
             

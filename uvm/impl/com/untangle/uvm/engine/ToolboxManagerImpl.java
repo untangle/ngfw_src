@@ -58,7 +58,6 @@ import com.untangle.uvm.toolbox.RackView;
 import com.untangle.uvm.toolbox.ToolboxManager;
 import com.untangle.uvm.toolbox.UpgradeSettings;
 import com.untangle.uvm.toolbox.UpgradeStatus;
-import com.untangle.uvm.util.TransactionWork;
 
 /**
  * Implements ToolboxManager.
@@ -642,50 +641,56 @@ class ToolboxManagerImpl implements ToolboxManager
 
     public void setUpgradeSettings(final UpgradeSettings us)
     {
-        TransactionWork<Object> tw = new TransactionWork<Object>()
-            {
-                public boolean doWork(Session s)
-                {
-                    s.merge(us);
-                    return true;
-                }
+//         TransactionWork<Object> tw = new TransactionWork<Object>()
+//             {
+//                 public boolean doWork(Session s)
+//                 {
+//                     s.merge(us);
+//                     return true;
+//                 }
 
-                public Object getResult() { return null; }
-            };
-        UvmContextFactory.context().runTransaction(tw);
+//                 public Object getResult() { return null; }
+//             };
+//         UvmContextFactory.context().runTransaction(tw);
 
         cronJob.reschedule(us.getPeriod());
     }
 
     public UpgradeSettings getUpgradeSettings()
     {
-        TransactionWork<UpgradeSettings> tw
-            = new TransactionWork<UpgradeSettings>()
-            {
-                private UpgradeSettings us;
+        Random rand = new Random();
+        Period period = new Period(23, rand.nextInt(60), true);
+        UpgradeSettings us = new UpgradeSettings(period);
+        us.setAutoUpgrade(true);
+        return us;
 
-                public boolean doWork(org.hibernate.Session s)
-                {
-                    Query q = s.createQuery("from UpgradeSettings us");
-                    us = (UpgradeSettings)q.uniqueResult();
+        //         TransactionWork<UpgradeSettings> tw
+//             = new TransactionWork<UpgradeSettings>()
+//             {
+//                 private UpgradeSettings us;
 
-                    if (null == us) {
-                        logger.info("creating new UpgradeSettings");
-                        // pick a random time.
-                        Random rand = new Random();
-                        Period period = new Period(23, rand.nextInt(60), true);
-                        us = new UpgradeSettings(period);
-                        us.setAutoUpgrade(true);
-                        s.save(us);
-                    }
-                    return true;
-                }
+//                 public boolean doWork(org.hibernate.Session s)
+//                 {
+//                     Query q = s.createQuery("from UpgradeSettings us");
+//                     us = (UpgradeSettings)q.uniqueResult();
 
-                public UpgradeSettings getResult() { return us; }
-            };
-        UvmContextFactory.context().runTransaction(tw);
+//                     if (null == us) {
+//                         logger.info("creating new UpgradeSettings");
+//                         // pick a random time.
+//                         Random rand = new Random();
+//                         Period period = new Period(23, rand.nextInt(60), true);
+//                         us = new UpgradeSettings(period);
+//                         us.setAutoUpgrade(true);
+//                         s.save(us);
+//                     }
+//                     return true;
+//                 }
 
-        return tw.getResult();
+//                 public UpgradeSettings getResult() { return us; }
+//             };
+//         UvmContextFactory.context().runTransaction(tw);
+
+//         return tw.getResult();
     }
 
     protected List<PackageDesc> getInstalledAndAutoStart()

@@ -51,8 +51,6 @@ import com.untangle.uvm.AdminSettings;
 import com.untangle.uvm.User;
 import com.untangle.uvm.util.HasConfigFiles;
 import com.untangle.uvm.util.I18nUtil;
-import com.untangle.uvm.util.TransactionRunner;
-import com.untangle.uvm.util.TransactionWork;
 
 /**
  * Note that this class is designed to be used <b>BOTH</b> inside the UVM and
@@ -113,18 +111,8 @@ class MailSenderImpl implements MailSender, HasConfigFiles
 
     private final Logger logger = Logger.getLogger(getClass());
 
-    // NOTE: Only used for stand-alone operation.
-    private final TransactionRunner transactionRunner;
-
     private MailSenderImpl()
     {
-        transactionRunner = null;
-        init();
-    }
-
-    private MailSenderImpl(org.hibernate.SessionFactory sessionFactory)
-    {
-        transactionRunner = new TransactionRunner(sessionFactory);
         init();
     }
 
@@ -133,27 +121,32 @@ class MailSenderImpl implements MailSender, HasConfigFiles
         mimetypesFileTypeMap.addMimeTypes("application/pdf pdf PDF");
         mimetypesFileTypeMap.addMimeTypes("text/css css CSS");
 
-        TransactionWork<Object> tw = new TransactionWork<Object>()
-            {
-                public boolean doWork(org.hibernate.Session s)
-                {
-                    Query q = s.createQuery("from MailSettings");
-                    mailSettings = (MailSettings)q.uniqueResult();
+        mailSettings = new MailSettings();
+        String fromSender = MailSender.DEFAULT_SENDER;
+        String fromHostname = UvmContextFactory.context().execManager().execOutput("/bin/cat /etc/mailname");
+        mailSettings.setFromAddress(fromSender + "@" + fromHostname);
 
-                    if (null == mailSettings) {
-                        logger.info("Creating initial default mail settings");
-                        mailSettings = new MailSettings();
-                        String fromSender = MailSender.DEFAULT_SENDER;
-                        String fromHostname = UvmContextFactory.context().execManager().execOutput("/bin/cat /etc/mailname");
-                        mailSettings.setFromAddress(fromSender + "@" + fromHostname);
-                        s.save(mailSettings);
-                    }
-                    return true;
-                }
+//         TransactionWork<Object> tw = new TransactionWork<Object>()
+//             {
+//                 public boolean doWork(org.hibernate.Session s)
+//                 {
+//                     Query q = s.createQuery("from MailSettings");
+//                     mailSettings = (MailSettings)q.uniqueResult();
 
-                public Object getResult() { return null; }
-            };
-        runTransaction(tw);
+//                     if (null == mailSettings) {
+//                         logger.info("Creating initial default mail settings");
+//                         mailSettings = new MailSettings();
+//                         String fromSender = MailSender.DEFAULT_SENDER;
+//                         String fromHostname = UvmContextFactory.context().execManager().execOutput("/bin/cat /etc/mailname");
+//                         mailSettings.setFromAddress(fromSender + "@" + fromHostname);
+//                         s.save(mailSettings);
+//                     }
+//                     return true;
+//                 }
+
+//                 public Object getResult() { return null; }
+//             };
+//         runTransaction(tw);
 
         // This is safe to do early, and it allows exception emails early.
         refreshSessions();
@@ -188,28 +181,28 @@ class MailSenderImpl implements MailSender, HasConfigFiles
         return MAIL_SENDER;
     }
 
-    private boolean runTransaction(TransactionWork<?> tw)
-    {
-        if (null == transactionRunner) {
-            return UvmContextFactory.context().runTransaction(tw);
-        } else {
-            return transactionRunner.runTransaction(tw);
-        }
-    }
+//     private boolean runTransaction(TransactionWork<?> tw)
+//     {
+//         if (null == transactionRunner) {
+//             return UvmContextFactory.context().runTransaction(tw);
+//         } else {
+//             return transactionRunner.runTransaction(tw);
+//         }
+//     }
 
     public void setMailSettings(final MailSettings settings)
     {
-        TransactionWork<Object> tw = new TransactionWork<Object>()
-            {
-                public boolean doWork(org.hibernate.Session s)
-                {
-                    s.merge(settings);
-                    return true;
-                }
+//         TransactionWork<Object> tw = new TransactionWork<Object>()
+//             {
+//                 public boolean doWork(org.hibernate.Session s)
+//                 {
+//                     s.merge(settings);
+//                     return true;
+//                 }
 
-                public Object getResult() { return null; }
-            };
-        runTransaction(tw);
+//                 public Object getResult() { return null; }
+//             };
+//         runTransaction(tw);
 
         mailSettings = settings;
         reconfigure();

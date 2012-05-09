@@ -47,7 +47,6 @@ import com.untangle.uvm.UvmException;
 import com.untangle.uvm.node.License;
 import com.untangle.uvm.servlet.UploadHandler;
 import com.untangle.uvm.util.JsonClient;
-import com.untangle.uvm.util.TransactionWork;
 
 /**
  * Implementation of SkinManager.
@@ -72,41 +71,49 @@ class SkinManagerImpl implements SkinManager
     {
     	this.uvmContext = uvmContext;    	
     	
-        TransactionWork<Object> tw = new TransactionWork<Object>()
-            {
-                public boolean doWork(Session s)
-                {
-                    Query q = s.createQuery("from SkinSettings");
-                    skinSettings = (SkinSettings)q.uniqueResult();
 
-                    if (skinSettings == null) {
-                        skinSettings = new SkinSettings();
-                        skinSettings.setAdministrationClientSkin(DEFAULT_ADMIN_SKIN);
-                        skinSettings.setUserPagesSkin(DEFAULT_USER_SKIN);
-                        s.save(skinSettings);
-                    }
+        if (skinSettings == null) {
+            skinSettings = new SkinSettings();
+            skinSettings.setAdministrationClientSkin(DEFAULT_ADMIN_SKIN);
+            skinSettings.setUserPagesSkin(DEFAULT_USER_SKIN);
+        }
 
-                    // check version of skins and revert to default if it is not compatible
-                    String userSkin = skinSettings.getUserPagesSkin();
-                    File userSkinXML = new File( SKINS_DIR + File.separator + userSkin + File.separator + "skin.xml" );
-                    SkinInfo userSkinInfo = getSkinInfo( userSkinXML, false, true );
-                    if ( userSkinInfo == null || userSkinInfo.isUserFacingSkinOutOfDate() ) {
-                        skinSettings.setUserPagesSkin( DEFAULT_USER_SKIN );
-                        skinSettings.setOutOfDate( true );
-                    }
+        // check version of skins and revert to default if it is not compatible
+        String userSkin = skinSettings.getUserPagesSkin();
+        File userSkinXML = new File( SKINS_DIR + File.separator + userSkin + File.separator + "skin.xml" );
+        SkinInfo userSkinInfo = getSkinInfo( userSkinXML, false, true );
+        if ( userSkinInfo == null || userSkinInfo.isUserFacingSkinOutOfDate() ) {
+            skinSettings.setUserPagesSkin( DEFAULT_USER_SKIN );
+            skinSettings.setOutOfDate( true );
+        }
 		    
-                    String adminSkin = skinSettings.getAdministrationClientSkin();
-                    File adminSkinXML = new File( SKINS_DIR + File.separator + adminSkin + File.separator + "skin.xml" );
-                    SkinInfo adminSkinInfo = getSkinInfo( adminSkinXML, false, true );
-                    if ( adminSkinInfo == null || adminSkinInfo.isAdminSkinOutOfDate() ) {
-                        skinSettings.setAdministrationClientSkin( DEFAULT_ADMIN_SKIN );
-                        skinSettings.setOutOfDate( true );
-                    }
+        String adminSkin = skinSettings.getAdministrationClientSkin();
+        File adminSkinXML = new File( SKINS_DIR + File.separator + adminSkin + File.separator + "skin.xml" );
+        SkinInfo adminSkinInfo = getSkinInfo( adminSkinXML, false, true );
+        if ( adminSkinInfo == null || adminSkinInfo.isAdminSkinOutOfDate() ) {
+            skinSettings.setAdministrationClientSkin( DEFAULT_ADMIN_SKIN );
+            skinSettings.setOutOfDate( true );
+        }
+
         
-                    return true;
-                }
-            };
-        uvmContext.runTransaction(tw);
+        //         TransactionWork<Object> tw = new TransactionWork<Object>()
+//             {
+//                 public boolean doWork(Session s)
+//                 {
+//                     Query q = s.createQuery("from SkinSettings");
+//                     skinSettings = (SkinSettings)q.uniqueResult();
+
+//                     if (skinSettings == null) {
+//                         skinSettings = new SkinSettings();
+//                         skinSettings.setAdministrationClientSkin(DEFAULT_ADMIN_SKIN);
+//                         skinSettings.setUserPagesSkin(DEFAULT_USER_SKIN);
+//                         s.save(skinSettings);
+//                     }
+
+//                     return true;
+//                 }
+//             };
+//         uvmContext.runTransaction(tw);
 
         /* Register a handler to upload skins */
         uvmContext.uploadManager().registerHandler(new SkinUploadHandler());
@@ -259,22 +266,24 @@ class SkinManagerImpl implements SkinManager
     @SuppressWarnings("unchecked")
     private void saveSettings(final SkinSettings settings)
     {
-        TransactionWork<Void> tw = new TransactionWork<Void>()
-            {
-                public boolean doWork(Session s)
-                {
-                    /* delete old settings */
-                    Query q = s.createQuery( "from " + "SkinSettings" );
-                    for ( Iterator<SkinSettings> iter = q.iterate() ; iter.hasNext() ; ) {
-                        SkinSettings oldSettings = iter.next();
-                        s.delete( oldSettings );
-                    }
+//         TransactionWork<Void> tw = new TransactionWork<Void>()
+//             {
+//                 public boolean doWork(Session s)
+//                 {
+//                     /* delete old settings */
+//                     Query q = s.createQuery( "from " + "SkinSettings" );
+//                     for ( Iterator<SkinSettings> iter = q.iterate() ; iter.hasNext() ; ) {
+//                         SkinSettings oldSettings = iter.next();
+//                         s.delete( oldSettings );
+//                     }
 
-                    skinSettings = (SkinSettings)s.merge(settings);
-                    return true;
-                }
-            };
-        UvmContextFactory.context().runTransaction(tw);
+//                     skinSettings = (SkinSettings)s.merge(settings);
+//                     return true;
+//                 }
+//             };
+//         UvmContextFactory.context().runTransaction(tw);
+
+        this.skinSettings = settings;
     }
     
     private void processSkinFolder(File dir, List<File> processedSkinFolders)

@@ -1,4 +1,4 @@
-/*
+/**
  * $Id$
  */
 package com.untangle.uvm.engine;
@@ -49,7 +49,7 @@ import com.untangle.uvm.SessionMonitor;
 import com.untangle.uvm.argon.Argon;
 import com.untangle.uvm.argon.ArgonManagerImpl;
 import com.untangle.uvm.node.LicenseManager;
-import com.untangle.uvm.logging.EventWriter;
+import com.untangle.uvm.node.Reporting;
 import com.untangle.uvm.logging.LogEvent;
 import com.untangle.uvm.message.MessageManager;
 import com.untangle.uvm.message.MessageManager;
@@ -64,7 +64,7 @@ import com.untangle.uvm.util.XMLRPCUtil;
 import com.untangle.uvm.util.JsonClient;
 
 /**
- * Implements UvmContext.
+ * This is the root API providing the Untangle VM functionality for applications and the user interface
  */
 public class UvmContextImpl extends UvmContextBase implements UvmContext
 {
@@ -121,12 +121,9 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
     private LocalDirectoryImpl localDirectory;
     private ExecManagerImpl execManager;
     private JSONSerializer serializer;
-    private EventWriter logWorker = null;
+    private Reporting reportingNode = null;
     private long lastLoggedWarningTime = System.currentTimeMillis();
     
-    private volatile boolean sessionFactoryNeedsRebuild = true;
-    private volatile SessionFactory sessionFactory;
-    private volatile TransactionRunner transactionRunner;
     private volatile List<String> annotatedClasses = new LinkedList<String>();
     
     // constructor ------------------------------------------------------------
@@ -134,7 +131,6 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
     private UvmContextImpl()
     {
         initializeUvmAnnotatedClasses();
-        refreshSessionFactory();
 
         state = UvmState.LOADED;
     }
@@ -284,33 +280,6 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
     }
 
     // service methods --------------------------------------------------------
-
-    public Session makeHibernateSession()
-    {
-        synchronized(this) {
-            if (this.sessionFactoryNeedsRebuild == true) {
-                this.sessionFactory = this.makeSessionFactory(getClass().getClassLoader());
-                this.transactionRunner = new TransactionRunner(sessionFactory);
-                this.sessionFactoryNeedsRebuild = false;
-            }
-        }
-
-        return this.sessionFactory.openSession();
-
-    }
-    
-    public boolean runTransaction(TransactionWork<?> tw)
-    {
-        synchronized(this) {
-            if (this.sessionFactoryNeedsRebuild == true) {
-                this.sessionFactory = this.makeSessionFactory(getClass().getClassLoader());
-                this.transactionRunner = new TransactionRunner(sessionFactory);
-                this.sessionFactoryNeedsRebuild = false;
-            }
-        }
-        
-        return transactionRunner.runTransaction(tw);
-    }
 
     /* For autonumbering anonymous threads. */
     private static class ThreadNumber
@@ -539,12 +508,12 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
     
     public void logEvent(LogEvent evt)
     {
-        if (this.logWorker == null)
-            getEventWriter();
-        if (this.logWorker == null)
+        if (this.reportingNode == null)
+            getReportingNode();
+        if (this.reportingNode == null)
             return;
 
-        this.logWorker.logEvent(evt);
+        this.reportingNode.logEvent(evt);
     }
 
     // UvmContextBase methods --------------------------------------------------
@@ -582,10 +551,6 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
 
         this.syslogManager = SyslogManagerImpl.manager();
         
-        if (!testHibernateConnection()) {
-            fatalError("Can not connect to database. Is postgres running?", null);
-        }
-
         this.loggingManager = new LoggingManagerImpl();
 
         InheritableThreadLocal<HttpServletRequest> threadRequest = new InheritableThreadLocal<HttpServletRequest>();
@@ -740,13 +705,6 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
         }
 
         try {
-            if (sessionFactory != null)
-                sessionFactory.close();
-        } catch (HibernateException exn) {
-            logger.warn("could not close Hibernate SessionFactory", exn);
-        }
-
-        try {
             if (cronManager != null)
                 cronManager.destroy();
             cronManager = null;
@@ -784,23 +742,6 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
     void fatalError(String throwingLocation, Throwable x)
     {
         main.fatalError(throwingLocation, x);
-    }
-
-    void refreshSessionFactory()
-    {
-        /**
-         * This no longer immediately rebuilds the sessionFactory and transaction Runner.
-         * It sets a flag that the sessionFactory needs to be rebuilt and next time
-         * the transactionRunner is used this flag is checked and it is rebuilt at that time if necessary.
-         *
-         * Rebuilding the session factory is extremely slow and lazily rebuilding it saves many rebuilds
-         * and reduces startup time significantly.
-         */
-        synchronized (this) {
-            this.sessionFactoryNeedsRebuild = true;
-            //this.sessionFactory = this.makeSessionFactory(getClass().getClassLoader());
-            //this.transactionRunner = new TransactionRunner(sessionFactory);
-        }
     }
 
     public LocalTomcatManager tomcatManager()
@@ -854,44 +795,20 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
         return this.alertManager;
     }
     
-    @SuppressWarnings("unchecked")
+    /* FIXME remove me after hibernate */
+    public boolean runTransaction(TransactionWork<?> tw)
+    {
+        return true;
+    }
+
     public ArrayList getEvents( final String query, final Long policyId, final int limit )
     {
-        final LinkedList list = new LinkedList();
+        if (this.reportingNode == null)
+            getReportingNode();
+        if (this.reportingNode == null)
+            return null;
 
-        logger.info("getEvents( query: " + query + " policyId: " + policyId + " limit: " + limit + " )");
-
-        TransactionWork<Void> tw = new TransactionWork<Void>()
-            {
-                public boolean doWork(Session s) throws SQLException
-                {
-                    String queryStr = query;
-                    Map<String,Object> params;
-                    // if no policyId is specified (or -1), just change all "= :policyID" to "is not null" so it matches all racks
-                    // if policyId is specified, set the variable
-                    if (policyId == null || policyId == -1) {
-                        params = Collections.emptyMap();
-                        queryStr = queryStr.replace("= :policyId","is not null");
-                        queryStr = queryStr.replace("=:policyId","is not null");
-                    } else {
-                        params = new HashMap<String,Object>();
-                        params.put("policyId", (Object)policyId);
-                    } 
-
-                    runQuery(queryStr, s, list, limit, params);
-
-                    return true;
-                }
-            };
-
-        long startTime = System.currentTimeMillis();
-        this.runTransaction(tw);
-        long elapsed = System.currentTimeMillis() - startTime;
-
-        logger.info("getEvents( query: " + query + " policyId: " + policyId + " limit: " + limit + " ) took " + elapsed + " ms");
-        
-        Collections.sort(list);
-        return new ArrayList(list);
+        return this.reportingNode.getEvents( query, policyId, limit );
     }
 
     public Connection getDBConnection()
@@ -905,25 +822,6 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
     }
     // private methods --------------------------------------------------------
 
-    private boolean testHibernateConnection()
-    {
-        TransactionWork<Void> tw = new TransactionWork<Void>()
-            {
-                public boolean doWork(Session s)
-                {
-                    org.hibernate.SQLQuery q = s.createSQLQuery("select 1");
-                    Object o = q.uniqueResult();
-
-                    if (null != o)
-                        return true;
-                    else
-                        return false;
-                }
-            };
-
-        return context().runTransaction(tw);
-    }
-    
     private class RestoreUploadHandler implements UploadHandler
     {
 
@@ -965,25 +863,6 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
             f.delete();
         }
             
-    }
-
-    private SessionFactory makeSessionFactory(ClassLoader cl)
-    {
-        SessionFactory sessionFactory = null;
-
-        try {
-            AnnotationConfiguration cfg = buildAnnotationConfiguration(cl);
-
-            long t0 = System.currentTimeMillis();
-            sessionFactory = cfg.buildSessionFactory();
-            long t1 = System.currentTimeMillis();
-
-            logger.info("Built new SessionFactory in " + (t1 - t0) + " millis");
-        } catch (HibernateException exn) {
-            logger.warn("Failed to create SessionFactory", exn);
-        }
-
-        return sessionFactory;
     }
 
     @SuppressWarnings("unchecked")
@@ -1056,45 +935,21 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
         }
     }
 
-    @SuppressWarnings("unchecked") //Query
-    private void runQuery(String query, Session s, List l, int limit, Map<String, Object> params)
-    {
-        logger.debug("runQuery: " + query);
-        Query q = s.createQuery(query);
-        for (String param : q.getNamedParameters()) {
-            Object o = params.get(param);
-            if (null != o) {
-                q.setParameter(param, o);
-            }
-        }
-
-        q.setMaxResults(limit);
-
-        int c = 0;
-        for (Iterator i = q.iterate(); i.hasNext() && c < limit; c++) {
-            Object sb = i.next();
-            if (sb == null)
-                logger.warn("Query (" + query + ") returned null item");
-            Hibernate.initialize(sb);
-            l.add(sb);
-        }
-    }
-
-    private void getEventWriter()
+    private void getReportingNode()
     {
         synchronized(this) {
-            if (this.logWorker == null) {
+            if (this.reportingNode == null) {
                 try {
-                    this.logWorker = (EventWriter) this.nodeManager().node("untangle-node-reporting");
-                    if (this.logWorker == null) {
+                    this.reportingNode = (Reporting) this.nodeManager().node("untangle-node-reporting");
+                    if (this.reportingNode == null) {
                         if (System.currentTimeMillis() - this.lastLoggedWarningTime > 10000) {
-                            logger.warn("EventWriter node not found, discarding event");
+                            logger.warn("Reporting node not found, discarding event");
                             this.lastLoggedWarningTime = System.currentTimeMillis();
                         }
                         return;
                     }
                 } catch (Exception e) {
-                    logger.warn("Unable to initialize logWorker", e);
+                    logger.warn("Unable to initialize reportingNode", e);
                     return;
                 }
             }
