@@ -218,7 +218,7 @@ if (!Ung.hasResource["Ung.CPD"]) {
                     "capture" : true,
                     "log" : false,
                     "clientInterface" : "1",
-                    "client_address" : "any",
+                    "clientAddress" : "any",
                     "serverAddress" : "any",
                     "days" : "mon,tue,wed,thu,fri,sat,sun",
                     "startTime" : "00:00",
@@ -244,7 +244,7 @@ if (!Ung.hasResource["Ung.CPD"]) {
                 },{
                     name : "clientInterface"
                 },{
-                    name : "client_address"
+                    name : "clientAddress"
                 },{
                     name : "serverAddress"
                 },{
@@ -345,8 +345,8 @@ if (!Ung.hasResource["Ung.CPD"]) {
                         html : this.i18n._("The IP addresses.")
                     },{
                         xtype : "textfield",
-                        name : "client_address",
-                        dataIndex : "client_address",
+                        name : "clientAddress",
+                        dataIndex : "clientAddress",
                         fieldLabel : this.i18n._("Client"),
                         allowBlank : false
                     },{
@@ -1072,9 +1072,9 @@ if (!Ung.hasResource["Ung.CPD"]) {
                 },{
                     name : "client_addr"
                 },{
-                    name : "loginName"
+                    name : "login_name"
                 },{
-                    name : "authType"
+                    name : "auth_type"
                 },{
                     name : "event"
                 }],
@@ -1096,7 +1096,7 @@ if (!Ung.hasResource["Ung.CPD"]) {
                     header : this.i18n._("username"),
                     width : Ung.Util.usernameFieldWidth,
                     sortable : true,
-                    dataIndex : "loginName",
+                    dataIndex : "login_name",
                     flex:1
                 },{
                     header : this.i18n._("action"),
@@ -1120,7 +1120,7 @@ if (!Ung.hasResource["Ung.CPD"]) {
                     header : this.i18n._("Authentication"),
                     width : 165,
                     sortable : true,
-                    dataIndex : "authType",
+                    dataIndex : "auth_type",
                     renderer : Ext.bind(function( value ) {
                         switch ( value ) {
                         case "NONE":
@@ -1151,20 +1151,20 @@ if (!Ung.hasResource["Ung.CPD"]) {
                 },{
                     name : "client_address"
                 },{
-                    name : "clientPort"
+                    name : "client_port"
                 },{
-                    name : "serverAddress"
+                    name : "server_address"
                 },{
-                    name : "serverPort"
+                    name : "server_port"
                 },{
                     name : "client",
                     convert : function(value, record) {
-                        return record.client_address + ":" + record.clientPort;
+                        return record.client_address + ":" + record.client_port;
                     }
                 }, {
                     name : "server",
                     convert : function(value, record) {
-                        return record.serverAddress + ":" + record.serverPort;
+                        return record.server_address + ":" + record.server_port;
                     }
                 }],
 
