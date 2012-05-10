@@ -10,8 +10,6 @@ import java.net.InetAddress;
 
 import com.untangle.uvm.node.SessionEvent;
 import com.untangle.uvm.logging.LogEvent;
-import com.untangle.uvm.logging.SyslogBuilder;
-import com.untangle.uvm.logging.SyslogPriority;
 import com.untangle.uvm.logging.LogEvent;
 import com.untangle.node.mail.papi.AddressKind;
 import com.untangle.node.mail.papi.MessageInfo;
@@ -184,32 +182,6 @@ public class SpamLogEvent extends LogEvent
         sqlList.add(sql);
 
         return sqlList;
-    }
-
-    public void appendSyslog(SyslogBuilder sb)
-    {
-        SessionEvent pe = getMessageInfo().getSessionEvent();
-        if (null != pe) {
-            pe.appendSyslog(sb);
-        }
-
-        sb.startSection("info");
-        sb.addField("vendor", getVendorName());
-        sb.addField("score", getScore());
-        sb.addField("spam", isSpam());
-        sb.addField("sender", getSender());
-        sb.addField("receiver", getReceiver());
-        sb.addField("subject", getSubject());
-    }
-
-    public String getSyslogId()
-    {
-        return "Mail";
-    }
-
-    public SyslogPriority getSyslogPriority()
-    {
-        return SyslogPriority.INFORMATIONAL;
     }
 
     // internal methods ---------------------------------------------------------

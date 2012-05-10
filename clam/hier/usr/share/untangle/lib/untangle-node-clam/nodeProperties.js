@@ -4,7 +4,6 @@
         "name" : "untangle-node-clam",
         "nodeBase" : "untangle-base-virus",
         "displayName" : "Virus Blocker Lite",
-        "syslogName" : "Virus_Blocker_Lite",
         "type" : "NODE",
         "viewPosition" : 40,
         "parents" : {

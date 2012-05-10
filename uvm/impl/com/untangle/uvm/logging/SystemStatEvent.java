@@ -89,31 +89,4 @@ public class SystemStatEvent extends LogEvent
             swapFree + ")";
         return sql;
     }
-
-    public void appendSyslog(SyslogBuilder sb)
-    {
-        sb.startSection("info");
-        sb.addField("cpuUser", String.format("%.2f", cpuUser));
-        sb.addField("load", String.format("%.2f", load1));
-        sb.addField("memFree", String.format("%dMB", memFree / 1000000));
-        sb.addField("swapFree", String.format("%dGB", swapFree / 1000000000));
-        sb.addField("diskFree", String.format("%dGB", diskFree / 1000000000));
-    }
-
-    public String getSyslogId()
-    {
-        return "System stat event";
-    }
-
-    public SyslogPriority getSyslogPriority()
-    {
-	    return SyslogPriority.INFORMATIONAL;
-    }
-
-    // Object methods ------------------------------------------------------
-
-    public String toString()
-    {
-        return "SystemStatEvent";
-    }
 }

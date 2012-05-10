@@ -9,16 +9,19 @@ import java.util.Date;
 import java.util.List;
 import java.util.LinkedList;
 
+import org.json.JSONObject;
+import org.json.JSONString;
+
 /**
  * A log event and message.
  * This is the base log event for most all events that untangle apps log to the database
  */
-public abstract class LogEvent implements Serializable
+public abstract class LogEvent implements Serializable, JSONString
 {
     public static final int DEFAULT_STRING_SIZE = 255;
     
     private Date timeStamp = new Date();
-    private String tag;
+    private String tag; /* syslog tag */
 
     protected LogEvent() { }
 
@@ -42,7 +45,7 @@ public abstract class LogEvent implements Serializable
         }
     }
 
-    abstract public String getDirectEventSql();
+    public abstract String getDirectEventSql();
 
     /**
      * Default just returns one item with the result of getDirectEventSql
@@ -56,20 +59,6 @@ public abstract class LogEvent implements Serializable
         return newList;
     }
     
-    public abstract void appendSyslog(SyslogBuilder a);
-
-    public String getSyslogId()
-    {
-        String[] s = getClass().getName().split("\\.");
-
-        return s[s.length - 1];
-    }
-
-    public SyslogPriority getSyslogPriority()
-    {
-        return SyslogPriority.INFORMATIONAL; // statistics or normal operation
-    }
-
     public String getTag()
     {
         return this.tag;
@@ -80,4 +69,9 @@ public abstract class LogEvent implements Serializable
         this.tag = tag;
     }
     
+    public String toJSONString()
+    {
+        JSONObject jO = new JSONObject(this);
+        return jO.toString();
+    }
 }

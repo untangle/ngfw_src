@@ -22,7 +22,6 @@ public class NodeProperties implements Serializable, JSONString
     private String displayName = null;
     private String className = null;
     private String nodeBase = null;
-    private String syslogName = null;
     private String type = null;
     
     private Boolean hasPowerButton = true;
@@ -84,14 +83,6 @@ public class NodeProperties implements Serializable, JSONString
     public String getDisplayName() { return displayName; }
     public void setDisplayName(String displayName) { this.displayName = displayName; }
     
-    /**
-     * The name of the node, for syslog purposes.
-     *
-     * @return syslog name.
-     */
-    public String getSyslogName() { return syslogName; }
-    public void setSyslogName(String syslogName) { this.syslogName = syslogName; }
-
     /**
      * The nodeBase is the name of the base node. For example
      * clam-node's nodeBase is untangle-base-virus.

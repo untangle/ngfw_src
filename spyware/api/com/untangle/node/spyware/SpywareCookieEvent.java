@@ -6,8 +6,6 @@ package com.untangle.node.spyware;
 import com.untangle.uvm.node.SessionEvent;
 import com.untangle.node.http.RequestLine;
 import com.untangle.uvm.logging.LogEvent;
-import com.untangle.uvm.logging.SyslogBuilder;
-import com.untangle.uvm.logging.SyslogPriority;
 
 /**
  * Log event for a spyware hit.
@@ -71,17 +69,4 @@ public class SpywareCookieEvent extends LogEvent
             ";";
         return sql;
     }
-
-    // Syslog methods ---------------------------------------------------------
-
-    public void appendSyslog(SyslogBuilder sb)
-    {
-        getSessionEvent().appendSyslog(sb);
-
-        sb.startSection("info");
-        sb.addField("info", getIdentification());
-        sb.addField("blocked", getBlocked());
-    }
-
-    // use SpywareEvent getSyslogId and getSyslogPriority
 }

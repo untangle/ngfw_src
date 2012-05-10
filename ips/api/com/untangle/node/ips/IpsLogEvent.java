@@ -4,8 +4,6 @@
 package com.untangle.node.ips;
 
 import com.untangle.uvm.logging.LogEvent;
-import com.untangle.uvm.logging.SyslogBuilder;
-import com.untangle.uvm.logging.SyslogPriority;
 import com.untangle.uvm.node.SessionEvent;
 
 /**
@@ -75,36 +73,5 @@ public class IpsLogEvent extends LogEvent
             " ips_description = '" + getRule().getDescription() + "' " +
             "WHERE session_id = '" + sessionEvent.getSessionId() + "'";
         return sql;
-    }
-
-    // Syslog methods ---------------------------------------------------------
-
-    public void appendSyslog(SyslogBuilder sb)
-    {
-        getSessionEvent().appendSyslog(sb);
-
-        sb.startSection("info");
-        sb.addField("snort-id", rule.getSid());
-        sb.addField("blocked", blocked);
-        sb.addField("message", message);
-    }
-
-    public String getSyslogId()
-    {
-        return "Log";
-    }
-
-    public SyslogPriority getSyslogPriority()
-    {
-        // NOTICE = ips event logged
-        // WARNING = traffic altered
-        return false == blocked ? SyslogPriority.NOTICE : SyslogPriority.WARNING;
-    }
-
-    // Object methods ---------------------------------------------------------
-
-    public String toString()
-    {
-        return "IpsLogEvent id: " + sessionEvent.getSessionId() + " Message: " + message;
     }
 }

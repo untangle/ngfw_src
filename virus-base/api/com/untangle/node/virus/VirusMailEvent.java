@@ -7,8 +7,6 @@ import java.util.List;
 import java.util.LinkedList;
 
 import com.untangle.uvm.logging.LogEvent;
-import com.untangle.uvm.logging.SyslogBuilder;
-import com.untangle.uvm.logging.SyslogPriority;
 import com.untangle.uvm.node.SessionEvent;
 import com.untangle.node.mail.papi.MessageInfo;
 
@@ -126,18 +124,5 @@ public class VirusMailEvent extends LogEvent
         sqlList.add(sql);
 
         return sqlList;
-    }
-
-    public void appendSyslog(SyslogBuilder sb)
-    {
-        SessionEvent pe = (null == messageInfo ? null : messageInfo.getSessionEvent());
-        if (pe != null) {
-            pe.appendSyslog(sb);
-        }
-
-        sb.startSection("info");
-        sb.addField("location", (null == messageInfo ? "" : messageInfo.getSubject()));
-        sb.addField("infected", !result.isClean());
-        sb.addField("virus-name", result.getVirusName());
     }
 }

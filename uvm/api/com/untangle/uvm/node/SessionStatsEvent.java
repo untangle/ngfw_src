@@ -9,7 +9,6 @@ import java.util.Date;
 
 
 import com.untangle.uvm.logging.LogEvent;
-import com.untangle.uvm.logging.SyslogBuilder;
 import com.untangle.uvm.node.SessionEvent;
 
 /**
@@ -213,26 +212,4 @@ public class SessionStatsEvent extends LogEvent
 
             return sql;
     }
-    
-    // Syslog methods ---------------------------------------------------------
-
-    public void appendSyslog(SyslogBuilder sb)
-    {
-        getSessionEvent().appendSyslog(sb);
-
-        sb.startSection("stats");
-        sb.addField("raze-date", getTimeStamp());
-        sb.addField("c2pBytes", c2pBytes);
-        sb.addField("p2sBytes", p2sBytes);
-        sb.addField("s2pBytes", s2pBytes);
-        sb.addField("p2cBytes", p2cBytes);
-        sb.addField("c2pChunks", c2pChunks);
-        sb.addField("p2sChunks", p2sChunks);
-        sb.addField("s2pChunks", s2pChunks);
-        sb.addField("p2cChunks", p2cChunks);
-        sb.addField("uid", uid);
-    }
-
-    // reuse default getSyslogId
-    // reuse default getSyslogPriority
 }

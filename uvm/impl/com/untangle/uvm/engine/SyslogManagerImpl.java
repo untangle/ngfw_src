@@ -11,14 +11,12 @@ import java.io.IOException;
 
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
-import org.apache.log4j.net.SyslogAppender;
 
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.NetworkManager;
 import com.untangle.uvm.logging.LogEvent;
 import com.untangle.uvm.logging.LoggingSettings;
 import com.untangle.uvm.logging.SyslogManager;
-import com.untangle.uvm.logging.SyslogPriority;
 import com.untangle.uvm.networking.NetworkConfigurationListener;
 import com.untangle.uvm.networking.NetworkConfiguration;
 
@@ -33,21 +31,11 @@ class SyslogManagerImpl implements SyslogManager
     private static final File CONF_FILE = new File("/etc/rsyslog.d/untangle-remote.conf");
     private static final String CONF_LINE = ":msg, regex, \"uvm\\[[0-9]*\\]:\" @";
 
-    private final ThreadLocal<SyslogSender> syslogSenders;
     private final Logger logger = Logger.getLogger(getClass());
 
-    private boolean isOn;
+    private boolean enabled;
 
-    private volatile int facility;
-    private volatile SyslogPriority threshold;
-    private volatile String hostname;
-    private volatile int port;
-    private volatile String protocol;
-
-    private SyslogManagerImpl()
-    {
-        syslogSenders = new ThreadLocal<SyslogSender>();
-    }
+    private SyslogManagerImpl() { }
 
     // static factories -------------------------------------------------------
 
@@ -58,51 +46,35 @@ class SyslogManagerImpl implements SyslogManager
 
     // SyslogManager methods --------------------------------------------------
 
-    public void sendSyslog(LogEvent e, String tag)
+    public void sendSyslog( LogEvent e, String tag )
     {
         synchronized (this) {
-            if (!isOn)
+            if (!enabled)
                 return;
         }
 
-        SyslogSender syslogSender = syslogSenders.get();
-        if (null == syslogSender) {
-            syslogSender = new SyslogSender();
-            syslogSenders.set(syslogSender);
-        }
-
-        syslogSender.sendSyslog(e, tag);
+        logger.log(org.apache.log4j.Level.INFO, tag + " " + e.toJSONString());
     }
 
     // package protected methods ----------------------------------------------
 
     void postInit()
     {
-        final NetworkManager nmi = UvmContextFactory.context().networkManager();
-
-        nmi.registerListener(new NetworkConfigurationListener() {
-                public void event(NetworkConfiguration s)
-                {
-                    hostname = nmi.getHostname().toString();
-                }
-            });
-        
-        hostname = nmi.getHostname().toString();
     }
 
     void reconfigure(LoggingSettings loggingSettings)
-    {
+     {
         if (loggingSettings != null && loggingSettings.isSyslogEnabled()) {
-            isOn = true;
-            hostname = loggingSettings.getSyslogHost();
-            port = loggingSettings.getSyslogPort();
-            facility = loggingSettings.getSyslogFacility().getFacilityValue();
-            threshold = loggingSettings.getSyslogThreshold();
-            protocol = loggingSettings.getSyslogProtocol();
+            this.enabled = true;
+            String hostname = loggingSettings.getSyslogHost();
+            int port = loggingSettings.getSyslogPort();
+            String protocol = loggingSettings.getSyslogProtocol();
 
-            SyslogAppender sa = (SyslogAppender)logger.getAppender("EVENTS");
-            sa.setFacility("LOCAL" + facility);
-            sa.setThreshold(threshold.getLevel());
+            /* int facility = loggingSettings.getSyslogFacility(); unused */
+            /* int threshold = loggingSettings.getSyslogThreshold(); unused */
+            // SyslogAppender sa = (SyslogAppender)logger.getAppender("EVENTS");
+            // sa.setFacility("LOCAL" + facility);
+            // sa.setThreshold(threshold);
 
             // set rsylsog conf
             String conf = CONF_LINE;
@@ -126,28 +98,11 @@ class SyslogManagerImpl implements SyslogManager
                 return;
             }
         } else {
-            isOn = false;
+            this.enabled = false;
             CONF_FILE.delete();            
         }
 
         // restart syslog
         UvmContextFactory.context().execManager().exec( RSYSLOG + " " + "restart" );
-    }
-
-    // private classes --------------------------------------------------------
-
-    private class SyslogSender
-    {
-        private final SyslogBuilderImpl sb = new SyslogBuilderImpl();
-
-        // public methods -----------------------------------------------------
-
-        public void sendSyslog(LogEvent e, String tag)
-        {
-            synchronized (SyslogManagerImpl.this) {
-                e.appendSyslog(sb);
-                logger.log(e.getSyslogPriority().getLevel(), tag + sb.getString());
-            }
-        }
     }
 }

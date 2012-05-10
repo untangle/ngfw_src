@@ -4,8 +4,6 @@
 package com.untangle.node.virus;
 
 import com.untangle.uvm.logging.LogEvent;
-import com.untangle.uvm.logging.SyslogBuilder;
-import com.untangle.uvm.logging.SyslogPriority;
 import com.untangle.node.http.RequestLine;
 import com.untangle.uvm.node.SessionEvent;
 
@@ -66,18 +64,5 @@ public class VirusHttpEvent extends LogEvent
             "request_id = " + getRequestId() +
             ";";
         return sql;
-    }
-
-    public void appendSyslog(SyslogBuilder sb)
-    {
-        SessionEvent pe = requestLine.getSessionEvent();
-        if (null != pe) {
-            pe.appendSyslog(sb);
-        }
-
-        sb.startSection("info");
-        sb.addField("location", (null == requestLine ? "" : requestLine.getUrl().toString()));
-        sb.addField("infected", !result.isClean());
-        sb.addField("virus-name", (null == result.getVirusName() ? "" : result.getVirusName()));
     }
 }

@@ -4,8 +4,6 @@
 package com.untangle.node.firewall;
 
 import com.untangle.uvm.logging.LogEvent;
-import com.untangle.uvm.logging.SyslogBuilder;
-import com.untangle.uvm.logging.SyslogPriority;
 import com.untangle.uvm.node.SessionEvent;
 
 /**
@@ -87,26 +85,5 @@ public class FirewallEvent extends LogEvent
             "    firewall_rule_index = '" + getRuleId() + "' " + 
             "WHERE session_id = '" + sessionEvent.getSessionId() + "'";
         return sql;
-    }
-
-    public void appendSyslog(SyslogBuilder sb)
-    {
-        getSessionEvent().appendSyslog(sb);
-
-        sb.startSection("info");
-        sb.addField("reason-rule#", getRuleId());
-        sb.addField("blocked", getWasBlocked());
-    }
-
-    public String getSyslogId()
-    {
-        return ""; // XXX
-    }
-
-    public SyslogPriority getSyslogPriority()
-    {
-        // INFORMATIONAL = statistics or normal operation
-        // WARNING = traffic altered
-        return false == getWasBlocked() ? SyslogPriority.INFORMATIONAL : SyslogPriority.WARNING;
     }
 }

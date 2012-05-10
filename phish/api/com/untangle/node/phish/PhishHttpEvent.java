@@ -4,8 +4,6 @@
 package com.untangle.node.phish;
 
 import com.untangle.uvm.logging.LogEvent;
-import com.untangle.uvm.logging.SyslogBuilder;
-import com.untangle.uvm.logging.SyslogPriority;
 import com.untangle.node.http.RequestLine;
 
 /**
@@ -38,8 +36,6 @@ public class PhishHttpEvent extends LogEvent
 
     /**
      * The action taken.
-     *
-     * @return the action.
      */
     public Action getAction() { return action; }
     public void setAction( Action action ) { this.action = action; }
@@ -70,35 +66,6 @@ public class PhishHttpEvent extends LogEvent
             "request_id = " + getRequestId() +
             ";";
         return sql;
-    }
-
-    public void appendSyslog(SyslogBuilder sb)
-    {
-        requestLine.getSessionEvent().appendSyslog(sb);
-
-        sb.startSection("info");
-        sb.addField("url", requestLine.getUrl().toString());
-        sb.addField("action", null == action ? "none" : action.getName());
-        sb.addField("category", null == category ? "none" : category);
-    }
-
-    public String getSyslogId()
-    {
-        return "Block";
-    }
-
-    public SyslogPriority getSyslogPriority()
-    {
-        switch(getActionType())
-            {
-            case PASSED:
-                // statistics or normal operation
-                return SyslogPriority.INFORMATIONAL;
-
-            default:
-            case BLOCKED:
-                return SyslogPriority.WARNING; // traffic altered
-            }
     }
 
     public String toString()

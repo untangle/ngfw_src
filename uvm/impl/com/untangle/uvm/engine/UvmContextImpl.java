@@ -295,28 +295,12 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
             {
                 public void run()
                 {
-                    // XXX is this necessary - shouldn't it be inherited?
-                    // comment out this region to see
-                    // ...
-                    
-                    //                     NodeContext nodeContext = (null == nodeManager ? null : nodeManager.threadContext());
-                    //                     if (nodeContext != null) {
-                    //                         LoggingInformation logInfo = new LoggingInformation("log4j-node.xml", nodeContext.getNodeSettings().getId().toString());
-                    //                         UvmRepositorySelector.instance().setThreadLoggingInformation(logInfo);
-                    //                     }
-
-
                     try {
                         runnable.run();
                     } catch (OutOfMemoryError exn) {
                         UvmContextImpl.getInstance().fatalError("UvmContextImpl", exn);
                     } catch (Exception exn) {
                         logger.error("Exception running: " + runnable, exn);
-                    } finally {
-                        //                         if (nodeContext != null) {
-                        //                             LoggingInformation logInfo = new LoggingInformation("log4j-uvm.xml", "uvm" );
-                        //                             UvmRepositorySelector.instance().setThreadLoggingInformation(logInfo);
-                        //                         }
                     }
                 }
             };
@@ -477,27 +461,11 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
         return languageManager.getTranslations(module);
     }
     
-    public String getCompanyName(){
+    public String getCompanyName()
+    {
         return this.brandingManager.getCompanyName();
     }
 
-//     public boolean addAnnotatedClass(String className)
-//     {
-//         if (className == null) {
-//             logger.warn("Invalid argument: className is null");
-//             return false;
-//         }
-
-//         for (String cname : this.annotatedClasses) {
-//             if (className.equals(cname))
-//                 return false; /* already in list */
-//         }
-
-//         logger.info("Adding AnnotatedClass: " + className);
-//         this.annotatedClasses.add(className);
-//         return true;
-//     }
-    
     public void logEvent(LogEvent evt)
     {
         if (this.reportingNode == null)
@@ -855,22 +823,6 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
             
     }
 
-//     private void initializeUvmAnnotatedClasses()
-//     {
-//         /* api */
-//         this.addAnnotatedClass("com.untangle.uvm.LanguageSettings");
-//         this.addAnnotatedClass("com.untangle.uvm.MailSettings");
-//         this.addAnnotatedClass("com.untangle.uvm.Period");
-//         this.addAnnotatedClass("com.untangle.uvm.SkinSettings");
-//         this.addAnnotatedClass("com.untangle.uvm.AdminSettings");
-//         this.addAnnotatedClass("com.untangle.uvm.User");
-//         this.addAnnotatedClass("com.untangle.uvm.logging.LoggingSettings");
-//         this.addAnnotatedClass("com.untangle.uvm.networking.AccessSettings");
-//         this.addAnnotatedClass("com.untangle.uvm.networking.AddressSettings");
-//         this.addAnnotatedClass("com.untangle.uvm.snmp.SnmpSettings");
-//         this.addAnnotatedClass("com.untangle.uvm.toolbox.UpgradeSettings");
-//     }
-    
     /**
      * This changes apache to show the regular screen again if it is currently showing the
      * upgrade log (which is displayed during upgrades)

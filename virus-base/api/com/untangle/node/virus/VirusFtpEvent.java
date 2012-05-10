@@ -4,8 +4,6 @@
 package com.untangle.node.virus;
 
 import com.untangle.uvm.logging.LogEvent;
-import com.untangle.uvm.logging.SyslogBuilder;
-import com.untangle.uvm.logging.SyslogPriority;
 import com.untangle.uvm.node.SessionEvent;
 
 /**
@@ -89,17 +87,5 @@ public class VirusFtpEvent extends LogEvent
          * FIXME there is currently no table in reports that stores FTP events
          */
         return null;
-    }
-
-    public void appendSyslog(SyslogBuilder sb)
-    {
-        if (sessionEvent != null) {
-            sessionEvent.appendSyslog(sb);
-        }
-
-        sb.startSection("info");
-        sb.addField("location", (sessionEvent == null ? "" : sessionEvent.getSServerAddr().getHostAddress()));
-        sb.addField("infected", !result.isClean());
-        sb.addField("virus-name", result.getVirusName());
     }
 }

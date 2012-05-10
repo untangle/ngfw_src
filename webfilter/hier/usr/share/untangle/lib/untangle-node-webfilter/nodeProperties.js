@@ -4,7 +4,6 @@
         "nodeBase" : "untangle-base-webfilter",
         "name" : "untangle-node-webfilter",
         "displayName" : "Web Filter Lite",
-        "syslogName" : "Web_Filter_Lite",
         "type" : "NODE",
         "viewPosition" : 20,
         "parents" : {

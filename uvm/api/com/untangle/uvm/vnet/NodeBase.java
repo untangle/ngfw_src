@@ -267,7 +267,7 @@ public abstract class NodeBase implements Node
 
     public void logEvent( LogEvent evt )
     {
-        String tag = nodeProperties.getSyslogName() + "[" + nodeSettings.getId() + "]: ";
+        String tag = nodeProperties.getDisplayName().replaceAll("\\s+","_") + " [" + nodeSettings.getId() + "]:";
         evt.setTag(tag);
         
         UvmContextFactory.context().logEvent(evt);

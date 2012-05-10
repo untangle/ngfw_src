@@ -4,8 +4,6 @@
 package com.untangle.node.protofilter;
 
 import com.untangle.uvm.logging.LogEvent;
-import com.untangle.uvm.logging.SyslogBuilder;
-import com.untangle.uvm.logging.SyslogPriority;
 import com.untangle.uvm.node.SessionEvent;
 
 /**
@@ -80,26 +78,5 @@ public class ProtoFilterLogEvent extends LogEvent
             "    pf_blocked = '" + getBlocked() + "' " + 
             "WHERE session_id = '" + sessionEvent.getSessionId() + "'";
         return sql;
-    }
-
-    public void appendSyslog(SyslogBuilder sb)
-    {
-        sessionEvent.appendSyslog(sb);
-
-        sb.startSection("info");
-        sb.addField("protocol", getProtocol());
-        sb.addField("blocked", getBlocked());
-    }
-
-    public String getSyslogId()
-    {
-        return ""; // XXX
-    }
-
-    public SyslogPriority getSyslogPriority()
-    {
-        // WARNING = traffic altered
-        // INFORMATIONAL = statistics or normal operation
-        return true == getBlocked() ? SyslogPriority.WARNING : SyslogPriority.INFORMATIONAL;
     }
 }

@@ -6,8 +6,6 @@ package com.untangle.node.shield;
 import java.io.Serializable;
 
 import com.untangle.uvm.logging.LogEvent;
-import com.untangle.uvm.logging.SyslogBuilder;
-import com.untangle.uvm.logging.SyslogPriority;
 
 /**
  * Log event for the shield rejection.
@@ -113,28 +111,4 @@ public class ShieldStatisticEvent extends LogEvent implements Serializable
             return sql;
     }
 
-    // Syslog methods ---------------------------------------------------------
-
-    public void appendSyslog(SyslogBuilder sb)
-    {
-        sb.startSection("info");
-        sb.addField("accepted", accepted);
-        sb.addField("limited", limited);
-        sb.addField("dropped", dropped);
-        sb.addField("rejected", rejected);
-        sb.addField("relaxed", relaxed);
-        sb.addField("lax", lax);
-        sb.addField("tight", tight);
-        sb.addField("closed", closed);
-    }
-
-    public String getSyslogId()
-    {
-        return "Shield_Statistic";
-    }
-
-    public SyslogPriority getSyslogPriority()
-    {
-        return SyslogPriority.INFORMATIONAL; // statistics or normal operation
-    }
 }

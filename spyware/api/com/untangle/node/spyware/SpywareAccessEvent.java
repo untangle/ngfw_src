@@ -6,8 +6,6 @@ package com.untangle.node.spyware;
 import com.untangle.uvm.logging.LogEvent;
 import com.untangle.uvm.node.IPMaskedAddress;
 import com.untangle.uvm.node.SessionEvent;
-import com.untangle.uvm.logging.SyslogBuilder;
-import com.untangle.uvm.logging.SyslogPriority;
 
 /**
  * Log event for a spyware hit.
@@ -70,23 +68,5 @@ public class SpywareAccessEvent extends LogEvent
             "SET sw_access_ident = '" + getIdentification() + "' " +
             "WHERE session_id = '" + sessionEvent.getSessionId() + "'";
         return sql;
-    }
-    
-    // Syslog methods ---------------------------------------------------------
-
-    public void appendSyslog(SyslogBuilder sb)
-    {
-        getSessionEvent().appendSyslog(sb);
-
-        sb.startSection("info");
-        sb.addField("ident", getIdentification());
-        sb.addField("blocked", isBlocked());
-    }
-
-    public SyslogPriority getSyslogPriority()
-    {
-        // NOTICE = spyware (access, blacklist, cookie) event logged
-        // WARNING = traffic altered
-        return false == isBlocked() ? SyslogPriority.NOTICE : SyslogPriority.WARNING;
     }
 }

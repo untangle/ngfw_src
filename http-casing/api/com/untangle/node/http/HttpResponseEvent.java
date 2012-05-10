@@ -4,8 +4,6 @@
 package com.untangle.node.http;
 
 import com.untangle.uvm.logging.LogEvent;
-import com.untangle.uvm.logging.SyslogBuilder;
-import com.untangle.uvm.logging.SyslogPriority;
 
 /**
  * Log event for response.
@@ -86,27 +84,5 @@ public class HttpResponseEvent extends LogEvent
             "request_id = " + getRequestLine().getRequestId() +
             ";";
         return sql;
-    }
-
-    // Syslog methods ---------------------------------------------------------
-
-    public void appendSyslog(SyslogBuilder sb)
-    {
-        requestLine.getSessionEvent().appendSyslog(sb);
-
-        sb.startSection("info");
-        sb.addField("url", requestLine.getUrl().toString());
-        sb.addField("content-type", contentType);
-        sb.addField("content-length", contentLength);
-    }
-
-    public String getSyslogId()
-    {
-        return "Response";
-    }
-
-    public SyslogPriority getSyslogPriority()
-    {
-        return SyslogPriority.INFORMATIONAL; // statistics or normal operation
     }
 }

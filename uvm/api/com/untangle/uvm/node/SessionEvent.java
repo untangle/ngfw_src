@@ -6,7 +6,6 @@ package com.untangle.uvm.node;
 import java.net.InetAddress;
 
 import com.untangle.uvm.logging.LogEvent;
-import com.untangle.uvm.logging.SyslogBuilder;
 
 /**
  * Used to record the Session endpoints at session end time.
@@ -352,27 +351,6 @@ public class SessionEvent extends LogEvent
             return sql;
     }
     
-    // Syslog methods ---------------------------------------------------------
-
-    public void appendSyslog(SyslogBuilder sb)
-    {
-        sb.startSection("endpoints");
-
-        sb.addField("create-date", getTimeStamp());
-        sb.addField("session-id", getSessionId());
-        sb.addField("protocol", getProtocolName());
-        sb.addField("policyId", getPolicyId());
-        sb.addField("client-addr", cClientAddr); //Client address, at the client side.
-        sb.addField("client-port", cClientPort); //Client port, at the client side.
-        sb.addField("server-addr", sServerAddr); //Server address, at the server side.
-        sb.addField("server-port", sServerPort); //Server port, at the server side.
-    }
-
-    // reuse default getSyslogId
-    // reuse default getSyslogPriority
-
-    // Object methods ---------------------------------------------------------
-
     public boolean equals(Object o)
     {
         if (o instanceof SessionEvent) {
@@ -391,8 +369,9 @@ public class SessionEvent extends LogEvent
         String serverPort = (getSServerPort() != null ? getSServerPort().toString() : "null");
         String protocol  = getProtocolName();
         
-        return "[" + protocol + "] " + clientAddr + ":" + clientPort + " -> " + serverAddr + ":" + serverPort;
+        return "SessionEvent: [" + protocol + "] " + clientAddr + ":" + clientPort + " -> " + serverAddr + ":" + serverPort;
     }
+
     public int hashCode()
     {
         return getSessionId().hashCode();

@@ -4,7 +4,6 @@
         "nodeBase" : "untangle-base-spam",
         "name" : "untangle-node-phish",
         "displayName" : "Phish Blocker",
-        "syslogName" : "Phish_Blocker",
         "type" : "NODE",
         "viewPosition" : 70,
         "parents" : {

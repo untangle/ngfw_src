@@ -13,8 +13,6 @@ import java.util.List;
 import java.util.Set;
 
 import com.untangle.uvm.logging.LogEvent;
-import com.untangle.uvm.logging.SyslogBuilder;
-import com.untangle.uvm.logging.SyslogPriority;
 import com.untangle.uvm.node.SessionEvent;
 
 /**
@@ -271,24 +269,4 @@ public class MessageInfo extends LogEvent implements Serializable
         
         return sqlList;
     }
-
-    // Syslog methods ---------------------------------------------------------
-
-    public void appendSyslog(SyslogBuilder sb)
-    {
-        sb.startSection("info");
-        sb.addField("subject", getSubject());;
-        sb.addField("sender", getSender());
-    }
-
-    public String getSyslogId()
-    {
-        return "Message";
-    }
-
-    public SyslogPriority getSyslogPriority()
-    {
-        return SyslogPriority.INFORMATIONAL; // statistics or normal operation
-    }
-    
 }

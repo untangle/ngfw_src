@@ -9,8 +9,6 @@ import java.net.URI;
 import java.net.URISyntaxException;
 
 import com.untangle.uvm.logging.LogEvent;
-import com.untangle.uvm.logging.SyslogBuilder;
-import com.untangle.uvm.logging.SyslogPriority;
 import com.untangle.uvm.node.SessionEvent;
 
 /**
@@ -229,25 +227,5 @@ public class HttpRequestEvent extends LogEvent
     public String toString()
     {
         return "HttpRequestEvent length: " + requestUri.toString().length() + " (" + super.toString() + ")";
-    }
-
-    // Syslog methods ---------------------------------------------------------
-
-    public void appendSyslog(SyslogBuilder sb)
-    {
-        sb.startSection("info");
-        sb.addField("host", host);
-        sb.addField("uri", getRequestUri().toString());;
-        sb.addField("content-length", contentLength);
-    }
-
-    public String getSyslogId()
-    {
-        return "Request";
-    }
-
-    public SyslogPriority getSyslogPriority()
-    {
-        return SyslogPriority.INFORMATIONAL; // statistics or normal operation
     }
 }

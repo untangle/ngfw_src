@@ -8,8 +8,6 @@ import java.sql.Timestamp;
 import java.util.Date;
 
 import com.untangle.uvm.logging.LogEvent;
-import com.untangle.uvm.logging.SyslogBuilder;
-import com.untangle.uvm.logging.SyslogPriority;
 import com.untangle.uvm.node.IPAddress;
 
 /**
@@ -119,8 +117,6 @@ public class ClientStatusEvent extends LogEvent implements Serializable
     public long getBytesTxDelta() { return this.bytesTxDelta; }
     public void setBytesTxDelta( long bytesTxDelta ) { this.bytesTxDelta = bytesTxDelta; }
     
-    // Syslog methods ---------------------------------------------------------
-
     @Override
     public String getDirectEventSql()
     {
@@ -138,27 +134,5 @@ public class ClientStatusEvent extends LogEvent implements Serializable
             "'" + getClientName() + "'" + ")" +
             ";";
             return sql;
-    }
-
-    public void appendSyslog(SyslogBuilder sb)
-    {
-        sb.startSection("info");
-        sb.addField("start", getStart());
-        sb.addField("end", getEnd());
-        sb.addField("client-name", getClientName());
-        sb.addField("client-addr", getAddress().getAddr());
-        sb.addField("client-port", getPort());
-        sb.addField("bytes-received", getBytesRxTotal());
-        sb.addField("bytes-transmitted", getBytesTxTotal());
-    }
-
-    public String getSyslogId()
-    {
-        return "Client_Status";
-    }
-
-    public SyslogPriority getSyslogPriority()
-    {
-        return SyslogPriority.INFORMATIONAL; // statistics or normal operation
     }
 }

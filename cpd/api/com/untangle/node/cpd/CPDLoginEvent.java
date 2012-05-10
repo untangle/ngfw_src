@@ -7,8 +7,6 @@ import java.net.InetAddress;
 
 import com.untangle.node.cpd.CPDSettings.AuthenticationType;
 import com.untangle.uvm.logging.LogEvent;
-import com.untangle.uvm.logging.SyslogBuilder;
-import com.untangle.uvm.logging.SyslogPriority;
 
 /**
  * Log event for a login/login-attempt.
@@ -75,33 +73,5 @@ public class CPDLoginEvent extends LogEvent
             "'" + getClientAddr().getHostAddress() + "'" + ") " +
             ";";
             return sql;
-    }
-    
-    // Syslog methods ------------------------------------------------------
-
-    public void appendSyslog(SyslogBuilder sb)
-    {
-        sb.startSection("info");
-        sb.addField("client-addr", clientAddr);
-        sb.addField("login-name", loginName);
-        sb.addField("auth-type", authenticationTypeValue);
-        sb.addField("type", eventValue);
-    }
-
-    public String getSyslogId()
-    {
-        return "CPD Login";
-    }
-
-    public SyslogPriority getSyslogPriority()
-    {
-        return SyslogPriority.INFORMATIONAL;
-    }
-
-    // Object methods ------------------------------------------------------
-
-    public String toString()
-    {
-        return "CPDLoginEvent login-name: " + loginName + " authenticationType: " + authenticationTypeValue +  " + event: " + eventValue;
     }
 }

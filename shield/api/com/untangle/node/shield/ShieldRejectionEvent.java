@@ -7,8 +7,6 @@ import java.io.Serializable;
 import java.net.InetAddress;
 
 import com.untangle.uvm.logging.LogEvent;
-import com.untangle.uvm.logging.SyslogBuilder;
-import com.untangle.uvm.logging.SyslogPriority;
 
 /**
  * Log event for the shield rejection.
@@ -98,29 +96,5 @@ public class ShieldRejectionEvent extends LogEvent implements Serializable
             "'" + getRejected() + "'" + ") " +
             ";";
             return sql;
-    }
-
-    // Syslog methods ---------------------------------------------------------
-
-    public void appendSyslog(SyslogBuilder sb)
-    {
-        sb.startSection("info");
-        sb.addField("client-addr", clientAddr);
-        sb.addField("client-iface", clientIntf);
-        sb.addField("reputation", reputation);
-        sb.addField("mode", mode);
-        sb.addField("limited", limited);
-        sb.addField("rejected", rejected);
-        sb.addField("dropped", dropped);
-    }
-
-    public String getSyslogId()
-    {
-        return "Shield_Rejection";
-    }
-
-    public SyslogPriority getSyslogPriority()
-    {
-        return SyslogPriority.WARNING; // traffic altered
     }
 }

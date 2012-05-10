@@ -1370,8 +1370,6 @@ if (!Ung.hasResource["Ung.Administration"]) {
                                     if (checked) {
                                         Ext.getCmp('administration_syslog_host').disable();
                                         Ext.getCmp('administration_syslog_port').disable();
-                                        Ext.getCmp('administration_syslog_facility').disable();
-                                        Ext.getCmp('administration_syslog_threshold').disable();
                                         Ext.getCmp('administration_syslog_protocol').disable();
                                     }
                                 },this)
@@ -1390,8 +1388,6 @@ if (!Ung.hasResource["Ung.Administration"]) {
                                     if (checked) {
                                         Ext.getCmp('administration_syslog_host').enable();
                                         Ext.getCmp('administration_syslog_port').enable();
-                                        Ext.getCmp('administration_syslog_facility').enable();
-                                        Ext.getCmp('administration_syslog_threshold').enable();
                                         Ext.getCmp('administration_syslog_protocol').enable();
                                     }
                                 },this)
@@ -1421,68 +1417,6 @@ if (!Ung.hasResource["Ung.Administration"]) {
                         vtype : 'port',
                         disabled : !this.getLoggingSettings().syslogEnabled
                     },{
-                        xtype : 'combo',
-                        name : 'syslogFacility',
-                        itemCls : 'left-indent-1',
-                        id : 'administration_syslog_facility',
-                        editable : false,
-                        fieldLabel : this.i18n._('Facility'),
-                        mode : 'local',
-                        triggerAction : 'all',
-                        listClass : 'x-combo-list-small',
-                        store : [
-                                ["KERNEL", this.i18n._("kernel")],
-                                ["USER", this.i18n._("user")],
-                                ["MAIL", this.i18n._("mail")],
-                                ["DAEMON", this.i18n._("daemon")],
-                                ["SECURITY", this.i18n._("security 0")],
-                                ["SYSLOG", this.i18n._("syslog")],
-                                ["PRINTER", this.i18n._("printer")],
-                                ["NEWS", this.i18n._("news")],
-                                ["UUCP", this.i18n._("UUCP")],
-                                ["CLOCK_0", this.i18n._("clock 0")],
-                                ["SECURITY_1", this.i18n._("security 1")],
-                                ["FTP", this.i18n._("FTP")],
-                                ["NTP", this.i18n._("NTP")],
-                                ["LOG_AUDIT", this.i18n._("log audit")],
-                                ["LOG_ALERT", this.i18n._("log alert")],
-                                ["CLOCK_1", this.i18n._("clock 1")],
-                                ["LOCAL_0", this.i18n._("local 0")],
-                                ["LOCAL_1", this.i18n._("local 1")],
-                                ["LOCAL_2", this.i18n._("local 2")],
-                                ["LOCAL_3", this.i18n._("local 3")],
-                                ["LOCAL_4", this.i18n._("local 4")],
-                                ["LOCAL_5", this.i18n._("local 5")],
-                                ["LOCAL_6", this.i18n._("local 6")],
-                                ["LOCAL_7", this.i18n._("local 7")]
-                        ],
-                        value : this.getLoggingSettings().syslogFacility,
-                        disabled : !this.getLoggingSettings().syslogEnabled
-                    },{
-                        xtype : 'combo',
-                        name : 'syslogThreshold',
-                        itemCls : 'left-indent-1',
-                        id : 'administration_syslog_threshold',
-                        editable : false,
-                        fieldLabel : this.i18n._('Threshold'),
-                        mode : 'local',
-                        triggerAction : 'all',
-                        listClass : 'x-combo-list-small',
-                        store : [
-                                ["EMERGENCY", this.i18n._("emergency")],
-                                ["ALERT", this.i18n._("alert")],
-                                ["CRITICAL", this.i18n._("critical")],
-                                ["ERROR", this.i18n._("error")],
-                                ["WARNING", this.i18n._("warning")],
-                                ["NOTICE", this.i18n._("notice")],
-                                ["INFORMATIONAL", this.i18n._("informational")],
-                                ["DEBUG", this.i18n._("debug")]
-                        ],
-                        displayField : 'name',
-                        valueField : 'key',
-                        value : this.getLoggingSettings().syslogThreshold,
-                        disabled : !this.getLoggingSettings().syslogEnabled
-                     },{
                         xtype : 'combo',
                         name : 'syslogProtocol',
                         itemCls : 'left-indent-1',

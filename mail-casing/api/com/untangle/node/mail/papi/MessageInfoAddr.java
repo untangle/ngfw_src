@@ -6,8 +6,6 @@ package com.untangle.node.mail.papi;
 import java.io.Serializable;
 
 import com.untangle.uvm.logging.LogEvent;
-import com.untangle.uvm.logging.SyslogBuilder;
-import com.untangle.uvm.logging.SyslogPriority;
 import com.untangle.uvm.node.SessionEvent;
 
 /**
@@ -158,40 +156,13 @@ public class MessageInfoAddr extends LogEvent implements Serializable
             "'" + messageInfo.getMessageId() + "'" + "," +
             "'" + messageInfo.getSubject() + "'" + "," +
             "'" + messageInfo.getServerType() + "'" + "," +
-
             "'" + position + "'" + "," +
             "'" + addr + "'" + "," +
             "'" + personal + "'" + "," +
             "'" + Character.toString(kind.getKey()) + "'" + "," +
-            
             "'" + messageInfo.getSender() + "'" + "," +
             "'" + (se.getHostname() == null ? "" : se.getHostname()) + "'" + " )" +
             ";";
         return sql;
     }
-
-    public String toString()
-    {
-        return kind + ": " + addr;
-    }
-
-    // Syslog methods ---------------------------------------------------------
-
-    public void appendSyslog(SyslogBuilder sb)
-    {
-        sb.startSection("info");
-        sb.addField("addr", addr);
-    }
-
-    public String getSyslogId()
-    {
-        return "MessageAddr";
-    }
-
-    public SyslogPriority getSyslogPriority()
-    {
-        return SyslogPriority.INFORMATIONAL; // statistics or normal operation
-    }
-    
-
 }

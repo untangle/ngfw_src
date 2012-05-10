@@ -5,8 +5,6 @@ package com.untangle.node.webfilter;
 
 import com.untangle.node.http.RequestLine;
 import com.untangle.uvm.logging.LogEvent;
-import com.untangle.uvm.logging.SyslogBuilder;
-import com.untangle.uvm.logging.SyslogPriority;
 
 /**
  * Log event for a web filter cation
@@ -133,34 +131,5 @@ public class WebFilterEvent extends LogEvent
             "request_id = " + getRequestId() +
             ";";
         return sql;
-    }
-
-    // Syslog methods ------------------------------------------------------
-
-    public void appendSyslog(SyslogBuilder sb)
-    {
-        sb.startSection("info");
-        sb.addField("id", requestId);
-        sb.addField("blocked", blocked);
-        sb.addField("flagged", flagged);
-        sb.addField("reason", null == reason ? "none" : reason.toString());
-        sb.addField("category", null == category ? "none" : category);
-    }
-
-    public String getSyslogId()
-    {
-        return "Block";
-    }
-
-    public SyslogPriority getSyslogPriority()
-    {
-        return SyslogPriority.WARNING; 
-    }
-
-    // Object methods ------------------------------------------------------
-
-    public String toString()
-    {
-        return "WebFilterEvent id: " + getRequestId();
     }
 }

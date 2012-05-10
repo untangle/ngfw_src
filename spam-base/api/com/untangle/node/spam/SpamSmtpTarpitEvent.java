@@ -6,8 +6,6 @@ package com.untangle.node.spam;
 import java.net.InetAddress;
 
 import com.untangle.uvm.logging.LogEvent;
-import com.untangle.uvm.logging.SyslogBuilder;
-import com.untangle.uvm.logging.SyslogPriority;
 import com.untangle.uvm.node.IPAddress;
 import com.untangle.uvm.node.ParseException;
 import com.untangle.uvm.node.SessionEvent;
@@ -84,32 +82,5 @@ public class SpamSmtpTarpitEvent extends LogEvent
             "'" + sessionEvent.getPolicyId() + "'" + ")" +
             ";";
             return sql;
-    }
-
-    // Syslog methods ---------------------------------------------------------
-
-    public void appendSyslog(SyslogBuilder sb)
-    {
-        // No longer log pipeline endpoints, they are not necessary anyway.
-        // SessionEvent pe = getSessionEvent();
-        /* unable to log this event */
-        // pe.appendSyslog(sb);
-
-        sb.startSection("info");
-        sb.addField("hostname", getHostname().toString());
-        sb.addField("ipaddr", getIPAddr().toString());
-        sb.addField("vendorName", getVendorName().toString());
-    }
-
-    public String getSyslogId()
-    {
-        return "SMTP_TARPIT";
-    }
-
-    public SyslogPriority getSyslogPriority()
-    {
-        // INFORMATIONAL = statistics or normal operation
-        // WARNING = traffic altered
-        return SyslogPriority.WARNING; // traffic altered
     }
 }
