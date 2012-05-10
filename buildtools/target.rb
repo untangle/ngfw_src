@@ -433,7 +433,7 @@ class ServletBuilder < Target
       return
     end
 
-    JavaCompiler.run(cp, "org.apache.jasper.JspC", *args)
+    JavaCompiler.run(cp, "org.apache.jasper.JspC", true, *args)
 
     FileList["#{@destRoot}/**/*.java"].each { |f| FileUtils.rm(f) }
 

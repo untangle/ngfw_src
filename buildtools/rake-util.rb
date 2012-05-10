@@ -246,13 +246,23 @@ class JavaCompiler
       Kernel.system(JavahCommand, "-d", destination, "-classpath", jar, *classes)
   end
 
-  def JavaCompiler.run(classpath, classname, *args)
+  def JavaCompiler.run(classpath, classname, silent = false, *args)
     cp = classpath.join(':')
-    info "[java    ] #{classname}"
+    info "[java    ] #{classname} ... #{args[-1]}"
     #info "[java    ] #{classname} #{args.inspect}"
     #info "[java    ] #{JavaCommand} -cp #{cp} #{classname} #{args.inspect}"
     raise "java #{classname} failed" unless
+      oldout = $stdout.dup
+      olderr = $stderr.dup
+      if silent:
+        $stdout.reopen("/dev/null", "w")
+        $stderr.reopen("/dev/null", "w")
+      end
       Kernel.system(JavaCommand, "-cp", cp, classname, *args)
+      if silent:
+        $stdout.reopen(oldout)
+        $stderr.reopen(olderr)
+      end
   end
   
   def JavaCompiler.runJar(classpath, jar, *args)
