@@ -52,15 +52,6 @@ copytruncate
 missingok
 }
 
-/var/log/uvm/schema.log {
-rotate 2
-size 500k
-compress
-notifempty
-copytruncate
-missingok
-}
-
 /var/log/uvm/wrapper.log {
 rotate 2
 size 500k
