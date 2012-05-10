@@ -328,7 +328,7 @@ class VmHighlight(Highlight):
         xml_escapes = { '&' : '&amp;',
                         '>' : '&gt;',
                         '<' : '&lt;',
-                        "'" : '&apos',
+                        "'" : '&apos;',
                         '"' : '&quot;' }
 
         for char, escape in xml_escapes.iteritems():
