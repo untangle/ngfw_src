@@ -88,7 +88,7 @@ deps = FileList["#{BuildEnv::downloads}/Ajax/jars/*jar"].exclude(/.*servlet-api.
 ServletBuilder.new(uvm_lib, 'com.untangle.uvm.blockpage.jsp',
                    "./uvm/servlets/blockpage", deps, [], [])
 
-BuildEnv::SRC.installTarget.install_jars(jts, "#{uvm_lib.distDirectory}/usr/share/untangle/lib", nil, false, true)
+BuildEnv::SRC.installTarget.install_jars(jts, "#{uvm_lib.distDirectory}/usr/share/untangle/lib", nil, true)
 
 thirdparty = BuildEnv::SRC['untangle-libuvmthirdparty']
 
@@ -98,23 +98,6 @@ BuildEnv::SRC.installTarget.install_jars(Jars::JRadius, "#{thirdparty.distDirect
 BuildEnv::SRC.installTarget.install_jars(Jars::Ant, "#{thirdparty.distDirectory}/usr/share/java/uvm")
 
 BuildEnv::SRC.installTarget.install_dirs("#{uvm_lib.distDirectory}/usr/share/untangle/toolbox")
-
-uvm_cacerts = "#{uvm_lib.distDirectory}/usr/share/untangle/conf/cacerts"
-java_cacerts = "#{BuildEnv::JAVA_HOME}/jre/lib/security/cacerts"
-mv_ca = "./uvm/resources/mv-ca.pem"
-ut_ca = "./uvm/resources/ut-ca.pem"
-
-file uvm_cacerts => [ java_cacerts, mv_ca, ut_ca ] do
-  ensureDirectory(File.dirname(uvm_cacerts))
-  FileUtils.cp(java_cacerts, uvm_cacerts)
-  FileUtils.chmod(0666, uvm_cacerts)
-  Kernel.system("#{BuildEnv::JAVA_HOME}/bin/keytool", '-import', '-noprompt',
-                '-keystore', uvm_cacerts, '-storepass', 'changeit', '-file',
-                mv_ca, '-alias', 'metavizeprivateca')
-  Kernel.system("#{BuildEnv::JAVA_HOME}/bin/keytool", '-import', '-noprompt',
-                '-keystore', uvm_cacerts, '-storepass', 'changeit', '-file',
-                ut_ca, '-alias', 'untangleprivateca')
-end
 
 if BuildEnv::SRC.isDevel
   BuildEnv::SRC.installTarget.install_files("./debian/control",
@@ -136,8 +119,6 @@ if BuildEnv::SRC.isDevel
   BuildEnv::SRC.installTarget.register_dependency(uidFile)
   BuildEnv::SRC.installTarget.register_dependency(wizardCompleteFile)
 end
-
-BuildEnv::SRC.installTarget.register_dependency(uvm_cacerts)
 
 deps  = Jars::Base + Jars::TomcatEmb + Jars::JavaMail +   
   [ uvm_lib['bootstrap'], uvm_lib['api'], uvm_lib['impl'], jnetcap['impl'], jvector['impl']]

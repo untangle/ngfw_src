@@ -358,8 +358,6 @@ while True:
         os.dup2(p.stdin.fileno(), sys.stderr.fileno())
 
         args = ("/usr/bin/java " + 
-                "-Djavax.net.ssl.trustStore=@UVM_CONF@/cacerts " + 
-                "-Djava.endorsed.dirs=@ENDORSED_LIB@ " +
                 "-Djava.library.path=@SRC_LIB@ " +
                 "-Duvm.home=@UVM_HOME@ " +
                 "-Djdbc.drivers=org.postgresql.Driver " +

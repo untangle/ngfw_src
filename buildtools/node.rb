@@ -74,7 +74,7 @@ class NodeBuilder
       end
     end
 
-    buildEnv.installTarget.install_jars(jt, "#{node.distDirectory}/usr/share/untangle/toolbox", nil, false, true)
+    buildEnv.installTarget.install_jars(jt, "#{node.distDirectory}/usr/share/untangle/toolbox", nil, true)
 
     hierFiles = FileList["#{home}/#{dirName}/hier/**/*"]
     if (0 < hierFiles.length)

@@ -112,7 +112,7 @@ class InstallTarget < Target
     register_install_targets(is)
   end
 
-  def install_jars(jarTargets, dest, name = nil, sign = false, explode = false)
+  def install_jars(jarTargets, dest, name = nil, explode = false)
 
     if (explode) then
       [jarTargets].flatten.each do |jt|
@@ -129,11 +129,7 @@ class InstallTarget < Target
         is << MoveSpec.fileMove(jt.filename, dest, name)
       end
 
-      register_install_targets(is) do |f|
-        if sign
-          JavaCompiler.jarSigner(f)
-        end
-      end
+      register_install_targets(is)
     end
   end
 
@@ -415,8 +411,8 @@ class ServletBuilder < Target
     cp += [SRC_HOME+"/buildtools"] unless SRC_HOME.nil?
 
     args = ["-s", "-die", "-l", "-v", "-compile", "-d", classroot,
-            "-p", @pkgname, "-webinc", webfrag.path, "-source", "1.5",
-            "-target", "1.5", "-uriroot", @destRoot]
+            "-p", @pkgname, "-webinc", webfrag.path, "-source", "1.6",
+            "-target", "1.6", "-uriroot", @destRoot]
 
     Dir.chdir(@destRoot) do |d|
       Find.find('.') do |f|
@@ -693,8 +689,7 @@ class JarTarget < Target
 
   private
 
-  def JarTarget.buildJavaCompilerTarget(package, jars, destination, suffix,
-                                        basepaths)
+  def JarTarget.buildJavaCompilerTarget(package, jars, destination, suffix, basepaths)
     JavaCompilerTarget.new(package, jars, destination, suffix, basepaths)
   end
 

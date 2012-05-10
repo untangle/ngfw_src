@@ -176,7 +176,6 @@ class BuildEnv
       /@THIRDPARTY_UVM_LIB@/ => "#{@prefix}/usr/share/java/uvm",
       /@THIRDPARTY_TOMCAT_LIB@/ => "#{@prefix}/usr/share/java/tomcat",
       /@THIRDPARTY_REPORTS_LIB@/ => "#{@prefix}/usr/share/java/reports",
-      /@ENDORSED_LIB@/ => "#{@prefix}/usr/share/java/endorsed",
       /@SRC_LIB@/ => "#{@prefix}/usr/lib/uvm",
       /@IS_DEVEL@/ => "#{@isDevel}"
     }
@@ -240,57 +239,6 @@ class JavaCompiler
     dest
   end
 
-  def JavaCompiler.jarSigner(jar)
-    # disabled
-    return 
-
-    ks = ENV['HADES_KEYSTORE']
-    defaultAlias = 'hermes'
-    defaultPasswd = 'hermes'
-    if not ks.nil? and File.file?(ks)
-      a = ENV['HADES_KEY_ALIAS']
-      pw = ENV['HADES_KEY_PASS']
-      puts "Using keystore from ENV['HADES_KEYSTORE']"
-    elsif File.file?("/usr/share/untangle/keystore")
-      ks = "/usr/share/untangle/keystore"
-      a = ENV['HADES_KEY_ALIAS']
-      pw = ENV['HADES_KEY_PASS']
-      puts "Using keystore from untangle-java-keystore"
-    elsif File.file?("/usr/share/untangle/keystore.selfsigned")
-      ks = "/usr/share/untangle/keystore.selfsigned"
-      a = defaultAlias
-      pw = defaultPasswd
-      puts "Using keystore from untangle-java-keystore-selfsigned"
-    else
-      ks = "#{BuildEnv::SRC.staging}/keystore"
-      a = defaultAlias
-      pw = defaultPasswd
-      JavaCompiler.selfSignedCert(ks, a, pw) if not File.file?(ks)
-      puts "Using dynamically generated keystore"
-    end
-
-    if a.nil? or pw.nil? then
-      info "The keystore alias or passwd is null (alias='#{a}', passwd='#{pw}'), reverting to using the dummy keystore"
-      ks = "#{BuildEnv::SRC.staging}/keystore"
-      a = defaultAlias
-      pw = defaultPasswd
-      JavaCompiler.selfSignedCert(ks, a, pw) if not File.file?(ks)
-    end
-
-    info "[jarsign ] #{jar}"
-
-    raise "JarSigner failed" unless
-      Kernel.system(JarSignerCommand, '-keystore', ks, '-storepass', pw, jar, a)
-  end
-
-  def JavaCompiler.selfSignedCert(keystore, aliaz, passwd)
-    info "[keytool ] keystore"
-    raise "KeyTool failed" unless
-      Kernel.system(KeyToolCommand, '-genkey', '-alias', aliaz,
-                    '-keypass', passwd, '-storepass', passwd,
-                    '-keystore', keystore, '-dname', 'cn=snakeoil')
-  end
-
   def JavaCompiler.javah(jar, destination, classes)
     info "[javah   ]"			      
     ensureDirectory destination
@@ -301,7 +249,8 @@ class JavaCompiler
   def JavaCompiler.run(classpath, classname, *args)
     cp = classpath.join(':')
     info "[java    ] #{classname}"
-#    info "[java    ] #{classname} #{args.inspect}"
+    #info "[java    ] #{classname} #{args.inspect}"
+    #info "[java    ] #{JavaCommand} -cp #{cp} #{classname} #{args.inspect}"
     raise "java #{classname} failed" unless
       Kernel.system(JavaCommand, "-cp", cp, classname, *args)
   end
@@ -309,7 +258,7 @@ class JavaCompiler
   def JavaCompiler.runJar(classpath, jar, *args)
     cp = classpath.join(':')
     info "[java    ] #{jar}"	      
-#    info "[java    ] #{jar} #{args.inspect}"	      
+    #info "[java    ] #{jar} #{args.inspect}"	      
     raise "java #{jar} failed" unless
       ret = Kernel.system(JavaCommand, "-cp", cp, "-jar", jar, *args)
     return ret
