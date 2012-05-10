@@ -20,7 +20,6 @@ import org.json.JSONException;
 
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.logging.LogEvent;
-import com.untangle.uvm.logging.SyslogManager;
 
 /**
  * Utility the reads events from the database

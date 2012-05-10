@@ -89,7 +89,6 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
     private AdminManagerImpl adminManager;
     private ArgonManagerImpl argonManager;
     private LoggingManagerImpl loggingManager;
-    private SyslogManagerImpl syslogManager;
     private MailSenderImpl mailSender;
     private NetworkManagerImpl networkManager;
     private ReportingManagerImpl reportingManager;
@@ -189,11 +188,6 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
     public LoggingManagerImpl loggingManager()
     {
         return this.loggingManager;
-    }
-
-    public SyslogManagerImpl syslogManager()
-    {
-        return this.syslogManager;
     }
 
     public MailSenderImpl mailSender()
@@ -509,8 +503,6 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
 
         this.cronManager = new CronManager();
 
-        this.syslogManager = SyslogManagerImpl.manager();
-        
         this.loggingManager = new LoggingManagerImpl();
 
         InheritableThreadLocal<HttpServletRequest> threadRequest = new InheritableThreadLocal<HttpServletRequest>();
@@ -584,8 +576,6 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
     @Override
     protected void postInit()
     {
-        syslogManager.postInit();
-
         // Mailsender can now query the hostname
         mailSender.postInit();
 

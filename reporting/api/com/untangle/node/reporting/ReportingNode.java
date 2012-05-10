@@ -11,9 +11,9 @@ import com.untangle.uvm.node.HostnameLookup;
 
 public interface ReportingNode extends Node, HostnameLookup
 {
-    void setReportingSettings(ReportingSettings settings);
+    void setSettings(ReportingSettings settings);
 
-    ReportingSettings getReportingSettings();
+    ReportingSettings getSettings();
 
     void runDailyReport() throws Exception;
 

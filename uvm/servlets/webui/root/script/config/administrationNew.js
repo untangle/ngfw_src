@@ -1355,86 +1355,6 @@ if (!Ung.hasResource["Ung.Administration"]) {
                         vtype : 'port',
                         disabled : !this.getSnmpSettings().enabled || !this.getSnmpSettings().sendTraps
                     }]
-                }, {
-                    title: this.i18n._('Syslog'),
-                    items: [{
-                        xtype : 'radio',
-                        boxLabel : Ext.String.format(this.i18n._('{0}Disable{1} Syslog Monitoring. (This is the default setting.)'), '<b>', '</b>'),
-                        hideLabel : true,
-                        name : 'syslogEnabled',
-                        checked : !this.getLoggingSettings().syslogEnabled,
-                        listeners : {
-                            "change" : {
-                                fn : Ext.bind(function(elem, checked) {
-                                    this.getLoggingSettings().syslogEnabled = !checked;
-                                    if (checked) {
-                                        Ext.getCmp('administration_syslog_host').disable();
-                                        Ext.getCmp('administration_syslog_port').disable();
-                                        Ext.getCmp('administration_syslog_protocol').disable();
-                                    }
-                                },this)
-                            }
-                        }
-                    },{
-                        xtype : 'radio',
-                        boxLabel : Ext.String.format(this.i18n._('{0}Enable{1} Syslog Monitoring.'), '<b>', '</b>'),
-                        hideLabel : true,
-                        name : 'syslogEnabled',
-                        checked : this.getLoggingSettings().syslogEnabled,
-                        listeners : {
-                            "change" : {
-                                fn : Ext.bind(function(elem, checked) {
-                                    this.getLoggingSettings().syslogEnabled = checked;
-                                    if (checked) {
-                                        Ext.getCmp('administration_syslog_host').enable();
-                                        Ext.getCmp('administration_syslog_port').enable();
-                                        Ext.getCmp('administration_syslog_protocol').enable();
-                                    }
-                                },this)
-                            }
-                        }
-                    },{
-                        xtype : 'textfield',
-                        fieldLabel : this.i18n._('Host'),
-                        name : 'syslogHost',
-                        itemCls : 'left-indent-1',
-                        id : 'administration_syslog_host',
-                        value : this.getLoggingSettings().syslogHost,
-                        allowBlank : false,
-                        blankText : this.i18n._("A \"Host\" must be specified."),
-                        disabled : !this.getLoggingSettings().syslogEnabled
-                    },{
-                        xtype : 'numberfield',
-                        fieldLabel : this.i18n._('Port'),
-                        name : 'syslogPort',
-                        itemCls : 'left-indent-1',
-                        id : 'administration_syslog_port',
-                        value : this.getLoggingSettings().syslogPort,
-                        allowDecimals: false,
-                        allowNegative: false,
-                        allowBlank : false,
-                        blankText : this.i18n._("You must provide a valid port."),
-                        vtype : 'port',
-                        disabled : !this.getLoggingSettings().syslogEnabled
-                    },{
-                        xtype : 'combo',
-                        name : 'syslogProtocol',
-                        itemCls : 'left-indent-1',
-                        id : 'administration_syslog_protocol',
-                        editable : false,
-                        fieldLabel : this.i18n._('Protocol'),
-                        mode : 'local',
-                        triggerAction : 'all',
-                        listClass : 'x-combo-list-small',
-                        store : [
-                                ["UDP", this.i18n._("UDP")],
-                                ["TCP", this.i18n._("TCP")]
-                        ],
-                        displayField : 'name',
-                        valueField : 'key',
-                        value : this.getLoggingSettings().syslogProtocol,
-                        disabled : !this.getLoggingSettings().syslogEnabled
-                    }]
                 }]
             });
         },
@@ -1572,7 +1492,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
         // validation function
         validateClient : function() {
             return  this.validateAdminAccounts() && this.validateExternalAdministration() &&
-                this.validatePublicAddress() && this.validateSnmp() && this.validateSyslog();
+                this.validatePublicAddress() && this.validateSnmp();
         },
 
         //validate Admin Accounts
@@ -1763,53 +1683,6 @@ if (!Ung.hasResource["Ung.Administration"]) {
                     this.getSnmpSettings().trapHost = snmpTrapHostCmp.getValue();
                     this.getSnmpSettings().trapPort = snmpTrapPortCmp.getValue();
                 }
-            }
-            return true;
-        },
-
-        //validate Syslog
-        validateSyslog : function() {
-            var isSyslogEnabled = this.getLoggingSettings().syslogEnabled;
-            if (isSyslogEnabled) {
-                var syslogHostCmp = Ext.getCmp('administration_syslog_host');
-                if (!syslogHostCmp.isValid()) {
-                    Ext.MessageBox.alert(this.i18n._('Warning'), this.i18n._("A \"Host\" must be specified."),
-                		Ext.bind(function () {
-                            this.tabs.setActiveTab(this.panelMonitoring);
-                            syslogHostCmp.focus(true);
-                        },this)
-                    );
-                    return false;
-                }
-                if (syslogHostCmp.getValue() == 'localhost' || syslogHostCmp.getValue() == '127.0.0.1') {
-                    Ext.MessageBox.alert(this.i18n._('Warning'), this.i18n._("The \"Host\" needs to be remote."),
-                		Ext.bind(function () {
-                            this.tabs.setActiveTab(this.panelMonitoring);
-                            syslogHostCmp.focus(true);
-                        },this)
-                    );
-                    return false;
-                }
-                var syslogPortCmp = Ext.getCmp('administration_syslog_port');
-                if (!syslogPortCmp.isValid()) {
-                    Ext.MessageBox.alert(this.i18n._('Warning'), Ext.String.format(this.i18n._("The port must be an integer number between {0} and {1}."), 1, 65535),
-                		Ext.bind(function () {
-                            this.tabs.setActiveTab(this.panelMonitoring);
-                            syslogPortCmp.focus(true);
-                        },this)
-                    );
-                    return false;
-                }
-                //prepare for save
-                var syslogFacilityCmp = Ext.getCmp('administration_syslog_facility');
-                var syslogThresholdCmp = Ext.getCmp('administration_syslog_threshold');
-                var syslogProtocolCmp = Ext.getCmp('administration_syslog_protocol');
-
-                this.getLoggingSettings().syslogHost = syslogHostCmp.getValue();
-                this.getLoggingSettings().syslogPort = syslogPortCmp.getValue();
-                this.getLoggingSettings().syslogFacility = syslogFacilityCmp.getValue();
-                this.getLoggingSettings().syslogThreshold = syslogThresholdCmp.getValue();
-                this.getLoggingSettings().syslogProtocol = syslogProtocolCmp.getValue();
             }
             return true;
         },

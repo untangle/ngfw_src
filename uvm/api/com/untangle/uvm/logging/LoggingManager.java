@@ -10,18 +10,22 @@ import com.untangle.uvm.logging.LogEvent;
  */
 public interface LoggingManager
 {
-    LoggingSettings getLoggingSettings();
-
-    void setLoggingSettings(LoggingSettings settings);
-
     /**
-     * <code>resetAllLogs</code> re-reads all log configuration files (jboss,
+     * resetAllLogs re-reads all log configuration files (jboss,
      * uvm, and all node instances). This allows changing logging levels,
      * etc. The old output files will be erased and new files begun.
      */
     void resetAllLogs();
 
-    void setLoggingNode(Long nodeId);
-
+    /**
+     * Set the logging context of this thread to the "uvm" configuration
+     * log4j log calls after this will go to the uvm.log file
+     */
     void setLoggingUvm();
+
+    /**
+     * Set the logging context of this thread to the "node" configuration
+     * log4j log calls after this will go to the associated node-nodeId.log file
+     */
+    void setLoggingNode(Long nodeId);
 }

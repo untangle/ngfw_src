@@ -11,7 +11,6 @@ import java.sql.Connection;
 
 import com.untangle.uvm.UvmContext;
 import com.untangle.uvm.logging.LoggingManager;
-import com.untangle.uvm.logging.SyslogManager;
 import com.untangle.uvm.logging.LogEvent;
 import com.untangle.uvm.message.MessageManager;
 import com.untangle.uvm.message.MessageManager;
@@ -165,13 +164,6 @@ public interface UvmContext
      */
     AlertManager alertManager();
     
-    /**
-     * Get the SyslogManager
-     *
-     * @return the SyslogManager
-     */
-    SyslogManager syslogManager();
-
     /**
      * Get the ArgonManager
      *

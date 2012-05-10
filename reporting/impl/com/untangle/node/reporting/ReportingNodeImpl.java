@@ -70,9 +70,9 @@ public class ReportingNodeImpl extends NodeBase implements ReportingNode, Report
             eventReader = new EventReaderImpl( );
     }
 
-    public void setReportingSettings(final ReportingSettings settings)
+    public void setSettings(final ReportingSettings settings)
     {
-        ReportingNodeImpl.this.settings = settings;
+        this.settings = settings;
 
         //         TransactionWork<Void> tw = new TransactionWork<Void>() {
         //             public boolean doWork(Session s)
@@ -87,10 +87,11 @@ public class ReportingNodeImpl extends NodeBase implements ReportingNode, Report
         //         };
         //         UvmContextFactory.context().runTransaction(tw);
 
+        SyslogManagerImpl.reconfigure(this.settings);
         writeCronFile();
     }
 
-    public ReportingSettings getReportingSettings()
+    public ReportingSettings getSettings()
     {
         return settings;
     }
@@ -142,22 +143,12 @@ public class ReportingNodeImpl extends NodeBase implements ReportingNode, Report
     
     public void initializeSettings()
     {
-        setReportingSettings(initSettings());
-    }
-
-    public Object getSettings()
-    {
-        return getReportingSettings();
-    }
-
-    public void setSettings(Object settings)
-    {
-        setReportingSettings((ReportingSettings)settings);
+        setSettings(initSettings());
     }
 
     public String lookupHostname( InetAddress address )
     {
-        ReportingSettings settings = this.getReportingSettings();
+        ReportingSettings settings = this.getSettings();
         if (settings == null)
             return null;
         /* XXX */
@@ -223,39 +214,8 @@ public class ReportingNodeImpl extends NodeBase implements ReportingNode, Report
 
     protected void postInit()
     {
-        //         TransactionWork<Void> tw = new TransactionWork<Void>() {
-        //             public boolean doWork(Session s) {
-        //                 Query q = s
-        //                 .createQuery("from ReportingSettings ts where ts.nodeId = :nodeId");
-        //                 q.setParameter("nodeId", getNodeSettings().getId());
-        //                 settings = (ReportingSettings) q.uniqueResult();
-
-        //                 if (null == settings) {
-        //                     settings = initSettings();
-        //                     s.save(settings.getSchedule());
-        //                     s.merge(settings);
-        //                 }
-
-        //                 if (null == settings.getSchedule()) {
-        //                     /* You have to save the schedule before continuing */
-        //                     settings.setSchedule(new Schedule());
-        //                     s.save(settings.getSchedule());
-        //                     s.merge(settings);
-        //                 }
-
-        //                 return true;
-        //             }
-
-        //             public Void getResult() {
-        //                 return null;
-        //             }
-        //         };
-        //UvmContextFactory.context().runTransaction(tw);
-
-        settings = initSettings();
-
-        if (!CRON_FILE.exists())
-            writeCronFile();
+        // intialize default settings
+        setSettings(initSettings());
     }
 
     protected void preStart()

@@ -24,7 +24,6 @@ import org.apache.log4j.Logger;
 
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.logging.LogEvent;
-import com.untangle.uvm.logging.SyslogManager;
 
 /**
  * Worker that batches and flushes events to the database.
@@ -169,7 +168,7 @@ public class EventWriterImpl implements Runnable
          * Send it to syslog (make best attempt - ignore errors)
          */
         try {
-            UvmContextFactory.context().syslogManager().sendSyslog(event, event.getTag());
+            SyslogManagerImpl.manager().sendSyslog(event, event.getTag());
         } catch (Exception exn) { 
             logger.warn("failed to send syslog", exn);
         }

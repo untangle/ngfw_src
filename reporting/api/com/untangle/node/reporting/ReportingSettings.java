@@ -32,6 +32,11 @@ public class ReportingSettings implements Serializable
 
     private Schedule schedule = new Schedule();
 
+    private boolean syslogEnabled = false;
+    private String syslogHost;
+    private int syslogPort = 514;
+    private String syslogProtocol = "UDP";
+    
     public ReportingSettings() { }
 
     public Long getId() { return id; }
@@ -39,16 +44,12 @@ public class ReportingSettings implements Serializable
 
     /**
      * Node id for these settings.
-     *
-     * @return tid for these settings
      */
     public Long getNodeId() { return nodeId; }
     public void setNodeId(Long nodeId) { this.nodeId = nodeId; }
 
     /**
      * Network Directory (maps IP addresses to reporting names)
-     *
-     * @return the network directory
      */
     public Map<IPMaskedAddress,String> getHostnameMap() { return hostnameMap; }
     public void setHostnameMap(Map<IPMaskedAddress,String> hostnameMap) { this.hostnameMap = hostnameMap; }
@@ -81,9 +82,29 @@ public class ReportingSettings implements Serializable
 
     /**
      * Schedule (daily, weekly, monthly) for reports
-     *
-     * @return schedule for reports
      */
     public Schedule getSchedule() { return schedule; }
     public void setSchedule(Schedule schedule) { this.schedule = schedule; }
+
+    public boolean isSyslogEnabled() { return syslogEnabled; }
+    public void setSyslogEnabled( boolean syslogEnabled ) { this.syslogEnabled = syslogEnabled; }
+
+    /**
+     * Syslog destination hostname.
+     */
+    public String getSyslogHost() { return syslogHost; }
+    public void setSyslogHost( String syslogHost ) { this.syslogHost = syslogHost; }
+
+    /**
+     * Syslog destination port.
+     */
+    public int getSyslogPort() { return syslogPort; }
+    public void setSyslogPort( int syslogPort ) { this.syslogPort = syslogPort; }
+
+    /**
+     * Syslog protocol.
+     */
+    public String getSyslogProtocol() { return syslogProtocol; }
+    public void setSyslogProtocol( String syslogProtocol ) { this.syslogProtocol = syslogProtocol; }
+
 }

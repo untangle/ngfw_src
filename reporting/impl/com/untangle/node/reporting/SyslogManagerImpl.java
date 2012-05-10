@@ -1,7 +1,7 @@
 /**
  * $Id$
  */
-package com.untangle.uvm.engine;
+package com.untangle.node.reporting;
 
 import java.net.InetSocketAddress;
 import java.io.BufferedWriter;
@@ -13,17 +13,12 @@ import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 
 import com.untangle.uvm.UvmContextFactory;
-import com.untangle.uvm.NetworkManager;
 import com.untangle.uvm.logging.LogEvent;
-import com.untangle.uvm.logging.LoggingSettings;
-import com.untangle.uvm.logging.SyslogManager;
-import com.untangle.uvm.networking.NetworkConfigurationListener;
-import com.untangle.uvm.networking.NetworkConfiguration;
 
 /**
- * Implements SyslogManager.
+ * Sends events to the syslog server (if enabled)
  */
-class SyslogManagerImpl implements SyslogManager
+class SyslogManagerImpl
 {
     private static final SyslogManagerImpl MANAGER = new SyslogManagerImpl();
 
@@ -31,47 +26,35 @@ class SyslogManagerImpl implements SyslogManager
     private static final File CONF_FILE = new File("/etc/rsyslog.d/untangle-remote.conf");
     private static final String CONF_LINE = ":msg, regex, \"uvm\\[[0-9]*\\]:\" @";
 
-    private final Logger logger = Logger.getLogger(getClass());
+    private static final Logger logger = Logger.getLogger(SyslogManagerImpl.class);
 
-    private boolean enabled;
+    private static boolean enabled;
 
     private SyslogManagerImpl() { }
-
-    // static factories -------------------------------------------------------
 
     static SyslogManagerImpl manager()
     {
         return MANAGER;
     }
 
-    // SyslogManager methods --------------------------------------------------
-
-    public void sendSyslog( LogEvent e, String tag )
+    public static void sendSyslog( LogEvent e, String tag )
     {
-        synchronized (this) {
-            if (!enabled)
-                return;
-        }
+        if (!enabled)
+            return;
 
         logger.log(org.apache.log4j.Level.INFO, tag + " " + e.toJSONString());
     }
 
-    // package protected methods ----------------------------------------------
-
-    void postInit()
+    public static void reconfigure(ReportingSettings reportingSettings)
     {
-    }
+        if (reportingSettings != null && reportingSettings.isSyslogEnabled()) {
+            enabled = true;
+            String hostname = reportingSettings.getSyslogHost();
+            int port = reportingSettings.getSyslogPort();
+            String protocol = reportingSettings.getSyslogProtocol();
 
-    void reconfigure(LoggingSettings loggingSettings)
-     {
-        if (loggingSettings != null && loggingSettings.isSyslogEnabled()) {
-            this.enabled = true;
-            String hostname = loggingSettings.getSyslogHost();
-            int port = loggingSettings.getSyslogPort();
-            String protocol = loggingSettings.getSyslogProtocol();
-
-            /* int facility = loggingSettings.getSyslogFacility(); unused */
-            /* int threshold = loggingSettings.getSyslogThreshold(); unused */
+            /* int facility = reportingSettings.getSyslogFacility(); unused */
+            /* int threshold = reportingSettings.getSyslogThreshold(); unused */
             // SyslogAppender sa = (SyslogAppender)logger.getAppender("EVENTS");
             // sa.setFacility("LOCAL" + facility);
             // sa.setThreshold(threshold);
@@ -98,7 +81,7 @@ class SyslogManagerImpl implements SyslogManager
                 return;
             }
         } else {
-            this.enabled = false;
+            enabled = false;
             CONF_FILE.delete();            
         }
 
