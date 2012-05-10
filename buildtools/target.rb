@@ -411,8 +411,8 @@ class ServletBuilder < Target
     cp += [SRC_HOME+"/buildtools"] unless SRC_HOME.nil?
 
     args = ["-s", "-die", "-l", "-v", "-compile", "-d", classroot,
-            "-p", @pkgname, "-webinc", webfrag.path, "-source", "1.6",
-            "-target", "1.6", "-uriroot", @destRoot]
+            "-p", @pkgname, "-webinc", webfrag.path, "-source", "1.5",
+            "-target", "1.5", "-uriroot", @destRoot]
 
     Dir.chdir(@destRoot) do |d|
       Find.find('.') do |f|

@@ -1,12 +1,5 @@
-/*
- * Copyright (c) 2003-2009 Untangle, Inc.
- * All rights reserved.
- *
- * This software is the confidential and proprietary information of
- * Untangle, Inc. ("Confidential Information"). You shall
- * not disclose such Confidential Information.
- *
- * $Id: CPDIpUsernameMapAssistant.java 25604 2010-01-26 03:55:59Z rbscott $
+/**
+ * $Id: CPDIpUsernameMapAssistant.java,v 1.00 2012/05/09 18:16:08 dmorris Exp $
  */
 package com.untangle.node.cpd;
 
@@ -26,16 +19,12 @@ import org.apache.log4j.Logger;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.node.NodeSettings;
 import com.untangle.uvm.user.IpUsernameMapAssistant;
-import com.untangle.uvm.util.TransactionWork;
 import com.untangle.uvm.util.Pulse;
 import com.untangle.uvm.node.DirectoryConnector;
 
 /**
  * Assistant for the Captive Portal. This fetches the current username for an ip
  * address from a postgres database.
- * 
- * @author rbscott
- * 
  */
 public class CPDIpUsernameMapAssistant implements IpUsernameMapAssistant
 {
