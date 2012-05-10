@@ -607,7 +607,7 @@ class Graph:
                 pass
 
             try:
-                ks_element.set('name', name)
+                ks_element.set('name', name.replace(',', ''))
             except:
                 logger.critical("Could not set name to '%s' (type '%s')" % (name, type(name)))
                 raise
@@ -842,7 +842,7 @@ class Chart:
 
         for t, c in self.__colors.iteritems():
             ce = Element('color')
-            ce.set('title', str(t).decode('utf-8'))
+            ce.set('title', str(t).decode('utf-8').replace(',', ''))
             ce.set('value', "%02x%02x%02x" % c.bitmap_rgb())
             element.append(ce)
 
