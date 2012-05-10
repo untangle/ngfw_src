@@ -201,11 +201,11 @@ public class ReportingNodeImpl extends NodeBase implements ReportingNode, Report
     {
         try {
             Class.forName("org.postgresql.Driver");
-            String url = "jdbc:postgresql://localhost/uvm?charset=unicode";
+            String url = "jdbc:postgresql://localhost/uvm";
             Properties props = new Properties();
             props.setProperty( "user", "postgres" );
             props.setProperty( "password", "foo" );
-            props.setProperty( "ssl", "false" );
+            props.setProperty( "charset", "unicode" );
 
             return DriverManager.getConnection(url,props);
         }

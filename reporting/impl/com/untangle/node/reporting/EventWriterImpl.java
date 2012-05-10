@@ -80,6 +80,7 @@ public class EventWriterImpl implements Runnable
             if ( dbConnection == null) {
                 logger.warn("Unable to get connection to DB, dropping events...");
                 while ((event = inputQueue.poll()) != null) {}
+                try {Thread.sleep(1);} catch (Exception e) {}
                 continue;
             }
             
