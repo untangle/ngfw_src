@@ -72,10 +72,10 @@ public class EventWriterImpl implements Runnable
 
             synchronized( this ) {
                 try {
-                    if ( dbConnection == null ) {
+                    if ( dbConnection == null || dbConnection.isClosed() ) {
                         dbConnection = ReportingNodeImpl.getDBConnection();
                     }
-                    if ( dbConnection == null) {
+                    if ( dbConnection == null || dbConnection.isClosed() ) {
                         logger.warn("Unable to get connection to DB, dropping events...");
                         while ((event = inputQueue.poll()) != null) {}
                         continue; 
