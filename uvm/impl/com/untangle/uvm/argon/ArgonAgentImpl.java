@@ -5,6 +5,7 @@ package com.untangle.uvm.argon;
 
 import java.util.HashSet;
 import java.util.Set;
+import java.util.Map;
 
 import org.apache.log4j.Logger;
 
@@ -163,7 +164,7 @@ public class ArgonAgentImpl implements ArgonAgent
         }
         /**
          * Tells if the session matches */
-        public boolean isMatch( Long policyId, com.untangle.uvm.node.IPSessionDesc clientSide, com.untangle.uvm.node.IPSessionDesc serverSide )
+        public boolean isMatch( Long policyId, com.untangle.uvm.node.IPSessionDesc clientSide, com.untangle.uvm.node.IPSessionDesc serverSide, Map<String,Object> attachments )
         {
             Long id = clientSide.id();
 

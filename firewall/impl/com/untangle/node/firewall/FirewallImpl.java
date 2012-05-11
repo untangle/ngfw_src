@@ -6,13 +6,13 @@ package com.untangle.node.firewall;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.log4j.Logger;
 
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.SettingsManager;
 import com.untangle.uvm.SessionMatcher;
-import com.untangle.uvm.SessionMatcherFactory;
 import com.untangle.uvm.node.NodeSettings;
 import com.untangle.uvm.node.NodeProperties;
 import com.untangle.uvm.node.NodeMetric;
@@ -23,6 +23,7 @@ import com.untangle.uvm.node.PortMatcher;
 import com.untangle.uvm.node.ProtocolMatcher;
 import com.untangle.uvm.node.IPSessionDesc;
 import com.untangle.uvm.node.EventLogQuery;
+import com.untangle.uvm.node.IPSessionDesc;
 import com.untangle.uvm.util.I18nUtil;
 import com.untangle.uvm.vnet.NodeBase;
 import com.untangle.uvm.vnet.Affinity;
@@ -30,6 +31,7 @@ import com.untangle.uvm.vnet.Fitting;
 import com.untangle.uvm.vnet.PipeSpec;
 import com.untangle.uvm.vnet.SoloPipeSpec;
 import com.untangle.uvm.vnet.Protocol;
+import com.untangle.uvm.vnet.Session;
 
 public class FirewallImpl extends NodeBase implements Firewall
 {
@@ -54,7 +56,7 @@ public class FirewallImpl extends NodeBase implements Firewall
     private final SessionMatcher FIREWALL_SESSION_MATCHER = new SessionMatcher() {
             
             /* Kill all sessions that should be blocked */
-            public boolean isMatch(Long sessionPolicyId, IPSessionDesc client, IPSessionDesc server)
+            public boolean isMatch(Long sessionPolicyId, IPSessionDesc client, IPSessionDesc server, Map<String,Object> attachments)
             {
                 if (handler == null)
                     return false;
@@ -69,7 +71,7 @@ public class FirewallImpl extends NodeBase implements Firewall
                                      client.clientIntf(), server.serverIntf(),
                                      client.clientAddr(),  client.serverAddr(),
                                      client.clientPort(), client.serverPort(),
-                                     null /* FIXME - username unknown here? */)) {
+                                     (String)attachments.get(Session.KEY_PLATFORM_ADCONNECTOR_USERNAME))) {
                         matchedRule = rule;
                         break;
                     }
@@ -202,14 +204,12 @@ public class FirewallImpl extends NodeBase implements Firewall
 
     protected void postStart()
     {
-        /* Kill all active sessions */
-        this.killMatchingSessions(SessionMatcherFactory.makePolicyInstance(getNodeSettings().getPolicyId()));
+        killSessions();
     }
 
     protected void postStop()
     {
-        /* Kill all active sessions */
-        this.killMatchingSessions(SessionMatcherFactory.makePolicyInstance(getNodeSettings().getPolicyId()));
+        killSessions();
     }
 
     protected void postInit()
@@ -355,5 +355,22 @@ public class FirewallImpl extends NodeBase implements Firewall
          */
         this.settings = newSettings;
         try {logger.debug("New Settings: \n" + new org.json.JSONObject(this.settings).toString(2));} catch (Exception e) {}
+    }
+
+    private void killSessions()
+    {
+        /* Kill all active sessions */
+        if (getNodeSettings().getPolicyId() == null)
+            this.killMatchingSessions(new SessionMatcher() { public boolean isMatch( Long policyId, IPSessionDesc client, IPSessionDesc server, Map<String, Object> attachments ) { return true; } });
+        else 
+            this.killMatchingSessions(new SessionMatcher() {
+                    public boolean isMatch( Long policyId, IPSessionDesc client, IPSessionDesc server, Map<String, Object> attachments )
+                    {
+                        if (getNodeSettings().getPolicyId().equals( policyId ))
+                            return true;
+                        else
+                            return false;
+                    }
+                });
     }
 }

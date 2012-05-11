@@ -10,6 +10,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.Map;
 
 import org.apache.catalina.Valve;
 import org.apache.log4j.Logger;
@@ -105,7 +106,7 @@ public abstract class VirusNodeImpl extends NodeBase implements VirusNode
     /* This can't be static because it uses policy which is per node */
     private final SessionMatcher VIRUS_SESSION_MATCHER = new SessionMatcher() {
             /* Kill all FTP, HTTP, SMTP, POP3, IMAP sessions */
-            public boolean isMatch(Long sessionPolicyId, com.untangle.uvm.node.IPSessionDesc client, com.untangle.uvm.node.IPSessionDesc server)
+            public boolean isMatch(Long sessionPolicyId, com.untangle.uvm.node.IPSessionDesc client, com.untangle.uvm.node.IPSessionDesc server, Map<String,Object> attachments)
             {
                 /* Don't kill any UDP Sessions */
                 if (client.protocol() == com.untangle.uvm.node.IPSessionDesc.PROTO_UDP) {

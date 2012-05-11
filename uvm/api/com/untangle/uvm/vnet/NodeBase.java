@@ -16,7 +16,6 @@ import org.apache.log4j.Logger;
 import com.untangle.uvm.UvmContext;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.SessionMatcher;
-import com.untangle.uvm.SessionMatcherFactory;
 import com.untangle.uvm.node.NodeSettings;
 import com.untangle.uvm.node.NodeSettings.NodeState;
 import com.untangle.uvm.message.MessageManager;
@@ -526,8 +525,9 @@ public abstract class NodeBase implements Node
     {
         if (matcher == null)
             return;
-        
-        UvmContextFactory.context().argonManager().shutdownMatches(matcher);
+
+        logger.info("killMatchingSessions()");
+        UvmContextFactory.context().argonManager().shutdownMatches( matcher );
     }
 
     private void addChild( Node child )

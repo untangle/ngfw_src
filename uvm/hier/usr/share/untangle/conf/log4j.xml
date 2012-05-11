@@ -297,6 +297,10 @@
     <priority value="INFO"/>
   </category>
 
+  <category name="com.untangle.uvm.vnet">
+    <priority value="INFO"/>
+  </category>
+
   <category name="com.untangle.uvm.vnet.NodeBase">
     <priority value="INFO"/>
   </category>

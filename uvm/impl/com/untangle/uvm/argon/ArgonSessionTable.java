@@ -13,7 +13,6 @@ import org.apache.log4j.Logger;
 
 import com.untangle.jvector.Vector;
 import com.untangle.uvm.SessionMatcher;
-import com.untangle.uvm.SessionMatcherFactory;
 
 /**
  * This table stores a global list of all currently active sessions being vectored
@@ -97,27 +96,15 @@ public class ArgonSessionTable
     {
         boolean isDebugEnabled = logger.isDebugEnabled();
 
-        logger.debug( "Shutting down matching sessions with: matcher " + matcher );
+        logger.info( "shutdownMatches() called" );
 
         if ( activeSessions.isEmpty()) return;
 
-        /* This matcher doesn't match anything */
-        if ( matcher == SessionMatcherFactory.getNullInstance()) {
-            logger.debug( "NULL Session matcher" );
-            return;
-        } else if ( matcher == SessionMatcherFactory.getAllInstance()) {
-            logger.debug( "ALL Session matcher" );
-
-            /* Just clear all, without checking for matches */
-            for ( Iterator<Vector> iter = activeSessions.keySet().iterator() ;
-                  iter.hasNext() ; ) {
-                Vector vector = iter.next();
-                vector.shutdown();
-            }
-            return;
-        }
-
-        /* XXXX THIS IS INCREDIBLY INEFFICIENT AND LOCKS THE CREATION OF NEW SESSIONS */
+        /**
+         * XXX
+         * THIS IS INCREDIBLY INEFFICIENT AND LOCKS THE CREATION OF NEW SESSIONS
+         * XXX
+         */
         for ( Iterator<Map.Entry<Vector,SessionGlobalState>> iter = activeSessions.entrySet().iterator() ; iter.hasNext() ; ) {
             Map.Entry<Vector,SessionGlobalState> e = iter.next();
             boolean isMatch;
@@ -127,14 +114,13 @@ public class ArgonSessionTable
 
             ArgonHook argonHook = session.argonHook();
 
-            isMatch = matcher.isMatch( argonHook.policyId, argonHook.clientSide, argonHook.serverSide );
+            isMatch = matcher.isMatch( argonHook.policyId, argonHook.clientSide, argonHook.serverSide, session.getAttachments() );
 
-            if ( isDebugEnabled )
-                logger.debug( "Tested session: " + session + " id: " + session.id() +
-                              " matched: " + isMatch );
-
-            if ( isMatch )
+            logger.info( "shutdownMatches(): Tested    session: " + session + " id: " + session.id() + " matched: " + isMatch );
+            if ( isMatch ) {
+                logger.info( "shutdownMatches(): Shutdown  session: " + session + " id: " + session.id() + " matched: " + isMatch );
                 vector.shutdown();
+            }
         }
     }
 
