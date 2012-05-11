@@ -55,21 +55,21 @@ public class PhishHttpEvent extends LogEvent
         }
     }
 
-    @Override
-    public String getDirectEventSql()
-    {
-        String sql =
-            "UPDATE reports.n_http_events " +
-            "SET " +
-            "phish_action = " + "'" + getAction().getKey() + "'" + " " +
-            "WHERE " +
-            "request_id = " + getRequestId() +
-            ";";
-        return sql;
-    }
+    private static String sql =
+        "UPDATE reports.n_http_events " +
+        "SET " +
+        "phish_action = ? " +
+        "WHERE " +
+        "request_id = ? ";
 
-    public String toString()
+    @Override
+    public java.sql.PreparedStatement getDirectEventSql( java.sql.Connection conn ) throws Exception
     {
-        return "PhishHttpEvent id: " + getRequestId() + " RequestLine: " + requestLine;
+        java.sql.PreparedStatement pstmt = conn.prepareStatement( sql );
+        
+        int i = 0;
+        pstmt.setString(++i, String.valueOf(getAction().getKey()));
+        pstmt.setLong(++i, getRequestId());
+        return pstmt;
     }
 }

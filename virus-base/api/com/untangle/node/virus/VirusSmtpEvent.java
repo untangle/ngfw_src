@@ -94,31 +94,44 @@ public class VirusSmtpEvent extends LogEvent
     }
 
     @Override
-    public String getDirectEventSql() {return null;}
+    public java.sql.PreparedStatement getDirectEventSql( java.sql.Connection conn ) throws Exception
+    {
+        return null;
+    }
 
     @Override
-    public List<String> getDirectEventSqls()
+    public List<java.sql.PreparedStatement> getDirectEventSqls( java.sql.Connection conn ) throws Exception
     {
-        List<String> sqlList = new LinkedList<String>();
+        List<java.sql.PreparedStatement> sqlList = new LinkedList<java.sql.PreparedStatement>();
         String sql;
+        int i=0;
+        java.sql.PreparedStatement pstmt;
         
         sql = "UPDATE reports.n_mail_msgs " +
             "SET " +
-            "virus_" + getVendorName().toLowerCase() + "_clean = " + "'" + getResult().isClean() + "'" + ", " +
-            "virus_" + getVendorName().toLowerCase() + "_name = "  + "'" + getResult().getVirusName() + "'" + " " +
+            "virus_" + getVendorName().toLowerCase() + "_clean = ?, " + 
+            "virus_" + getVendorName().toLowerCase() + "_name = ? " + 
             "WHERE " +
-            "msg_id = " + getMessageId() +
-            ";";
-        sqlList.add(sql);
+            "msg_id = ? " ;
+        pstmt = conn.prepareStatement( sql );
+        i=0;
+        pstmt.setBoolean(++i, getResult().isClean());
+        pstmt.setString(++i, getResult().getVirusName());
+        pstmt.setLong(++i, getMessageId());
+        sqlList.add(pstmt);
         
         sql = "UPDATE reports.n_mail_addrs " +
             "SET " +
-            "virus_" + getVendorName().toLowerCase() + "_clean = " + "'" + getResult().isClean() + "'" + ", " +
-            "virus_" + getVendorName().toLowerCase() + "_name = "  + "'" + getResult().getVirusName() + "'" + " " +
+            "virus_" + getVendorName().toLowerCase() + "_clean = ?, " + 
+            "virus_" + getVendorName().toLowerCase() + "_name = ? " + 
             "WHERE " +
-            "msg_id = " + getMessageId() +
-            ";";
-        sqlList.add(sql);
+            "msg_id = ? " ;
+        pstmt = conn.prepareStatement( sql );
+        i=0;
+        pstmt.setBoolean(++i, getResult().isClean());
+        pstmt.setString(++i, getResult().getVirusName());
+        pstmt.setLong(++i, getMessageId());
+        sqlList.add(pstmt);
 
         return sqlList;
     }

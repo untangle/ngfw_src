@@ -53,16 +53,21 @@ public class VirusHttpEvent extends LogEvent
     public void setVendorName( String vendorName ) { this.vendorName = vendorName; }
 
     @Override
-    public String getDirectEventSql()
+    public java.sql.PreparedStatement getDirectEventSql( java.sql.Connection conn ) throws Exception
     {
         String sql =
             "UPDATE reports.n_http_events " +
             "SET " +
-            "virus_" + getVendorName().toLowerCase() + "_clean = " + "'" + getResult().isClean() + "'" + ", " +
-            "virus_" + getVendorName().toLowerCase() + "_name = "  + "'" + getResult().getVirusName() + "'" + " " +
+            "virus_" + getVendorName().toLowerCase() + "_clean = ?, " + 
+            "virus_" + getVendorName().toLowerCase() + "_name = ? "  + 
             "WHERE " +
-            "request_id = " + getRequestId() +
-            ";";
-        return sql;
+            "request_id = ? ";
+        java.sql.PreparedStatement pstmt = conn.prepareStatement( sql );
+        
+        int i = 0;
+        pstmt.setBoolean(++i,getResult().isClean());
+        pstmt.setString(++i, getResult().getVirusName());
+        pstmt.setLong(++i, getRequestId());
+        return pstmt;
     }
 }

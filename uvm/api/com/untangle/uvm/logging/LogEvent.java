@@ -5,6 +5,8 @@ package com.untangle.uvm.logging;
 
 import java.io.Serializable;
 import java.sql.Timestamp;
+import java.sql.PreparedStatement;
+import java.sql.Connection;
 import java.util.Date;
 import java.util.List;
 import java.util.LinkedList;
@@ -20,7 +22,7 @@ public abstract class LogEvent implements Serializable, JSONString
 {
     public static final int DEFAULT_STRING_SIZE = 255;
     
-    private Date timeStamp = new Date();
+    protected Timestamp timeStamp = new Timestamp((new Date()).getTime());
     private String tag; /* syslog tag */
 
     protected LogEvent() { }
@@ -28,34 +30,27 @@ public abstract class LogEvent implements Serializable, JSONString
     /**
      * Time the event was logged, as filled in by logger.
      */
-    public Date getTimeStamp()
-    {
-        return timeStamp;
-    }
+    public Timestamp getTimeStamp() { return timeStamp; }
+    public void setTimeStamp( Timestamp timeStamp ) { this.timeStamp = timeStamp; }
 
-    /**
-     * 
-     */
-    public void setTimeStamp(Date timeStamp)
+    public Timestamp timeStampPlusHours( int hours )
     {
-        if (timeStamp instanceof Timestamp) {
-            this.timeStamp = new Date(timeStamp.getTime());
-        } else {
-            this.timeStamp = timeStamp;
-        }
+        long time = this.timeStamp.getTime();
+        time += hours*60*60*1000;
+        return new Timestamp(time);
     }
-
-    public abstract String getDirectEventSql();
+    
+    public abstract PreparedStatement getDirectEventSql( Connection conn ) throws Exception;
 
     /**
      * Default just returns one item with the result of getDirectEventSql
      */
-    public List<String> getDirectEventSqls()
+    public List<PreparedStatement> getDirectEventSqls( Connection conn ) throws Exception
     {
-        LinkedList<String> newList = new LinkedList<String>();
-        String sql = getDirectEventSql();
-        if (sql != null)
-            newList.add(sql);
+        LinkedList<PreparedStatement> newList = new LinkedList<PreparedStatement>();
+        PreparedStatement pstmt = getDirectEventSql( conn );
+        if (pstmt != null)
+            newList.add(pstmt);
         return newList;
     }
     

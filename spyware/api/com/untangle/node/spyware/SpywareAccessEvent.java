@@ -60,13 +60,20 @@ public class SpywareAccessEvent extends LogEvent
     public Boolean isBlocked() { return blocked; }
     public void setBlocked( Boolean blocked ) { this.blocked = blocked; }
 
+    private static String sql =
+        "UPDATE reports.sessions " + 
+        "SET sw_access_ident = ? " +
+        "WHERE session_id = ? ";
+
     @Override
-    public String getDirectEventSql()
+    public java.sql.PreparedStatement getDirectEventSql( java.sql.Connection conn ) throws Exception
     {
-        String sql =
-            "UPDATE reports.sessions " + 
-            "SET sw_access_ident = '" + getIdentification() + "' " +
-            "WHERE session_id = '" + sessionEvent.getSessionId() + "'";
-        return sql;
+        java.sql.PreparedStatement pstmt = conn.prepareStatement( sql );
+        
+        int i = 0;
+        pstmt.setString(++i,getIdentification());
+        pstmt.setLong(++i,getSessionId());
+        
+        return pstmt;
     }
 }

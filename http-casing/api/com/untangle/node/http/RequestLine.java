@@ -10,7 +10,6 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.sql.Timestamp;
-import java.util.Date;
 
 import org.apache.log4j.Logger;
 
@@ -28,7 +27,7 @@ public class RequestLine implements Serializable
     private URI requestUri;
     private SessionEvent sessionEvent;
     private HttpRequestEvent httpRequestEvent; // Filled in after creation time.
-    private Date timeStamp = new Date();
+    protected Timestamp timeStamp = new Timestamp((new java.util.Date()).getTime());
     private long requestId = 0;
 
     private static long nextId = 0;
@@ -149,7 +148,7 @@ public class RequestLine implements Serializable
      *
      * @return time logged.
      */
-    public Date getTimeStamp()
+    public Timestamp getTimeStamp()
     {
         return timeStamp;
     }
@@ -159,13 +158,9 @@ public class RequestLine implements Serializable
      * logging system unless you're doing tricky things (with Aaron's
      * approval).
      */
-    public void setTimeStamp(Date timeStamp)
+    public void setTimeStamp(Timestamp timeStamp)
     {
-        if (timeStamp instanceof Timestamp) {
-            this.timeStamp = new Date(timeStamp.getTime());
-        } else {
-            this.timeStamp = timeStamp;
-        }
+        this.timeStamp = timeStamp;
     }
 
     /**

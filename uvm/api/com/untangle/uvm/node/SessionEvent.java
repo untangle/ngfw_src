@@ -322,33 +322,36 @@ public class SessionEvent extends LogEvent
         }
     }
     
-    @Override
-    public String getDirectEventSql()
-    {
-        String sql = "INSERT INTO reports.sessions " +
-            "(event_id, session_id, time_stamp, end_time, hname, uid, policy_id, c_client_addr, c_client_port, c_server_addr, c_server_port, s_client_addr, s_client_port, s_server_addr, s_server_port, client_intf, server_intf) " +
-            "values " +
-            "( " +
-            getSessionId() + "," +
-            getSessionId() + "," +
-            "timestamp '" + new java.sql.Timestamp(getTimeStamp().getTime()) + "'" + "," +
-            "timestamp '" + new java.sql.Timestamp(getTimeStamp().getTime()) + "'" + " + interval '1 days'," +
-            "'" + (getHostname() == null ? "" : getHostname()) + "'" + "," + 
-            "'" + (getUsername() == null ? "" : getUsername()) + "'" + "," +
-            getPolicyId() + "," +
-            "'" + getCClientAddr().getHostAddress() + "'" + "," +
-            getCClientPort() + "," +
-            "'" + getCServerAddr().getHostAddress() + "'" + "," +
-            getCServerPort() + "," +
-            "'" + getSClientAddr().getHostAddress() + "'" + "," +
-            getSClientPort() + "," +
-            "'" + getSServerAddr().getHostAddress() + "'" + "," +
-            getSServerPort() + "," +
-            getClientIntf() + "," +
-            getServerIntf() + ")" +
-            ";";
+    private static String sql = "INSERT INTO reports.sessions " +
+        "(event_id, session_id, time_stamp, end_time, hname, uid, policy_id, c_client_addr, c_client_port, c_server_addr, c_server_port, s_client_addr, s_client_port, s_server_addr, s_server_port, client_intf, server_intf) " +
+        "values " +
+        "(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?); ";
 
-            return sql;
+    @Override
+    public java.sql.PreparedStatement getDirectEventSql( java.sql.Connection conn ) throws Exception
+    {
+        java.sql.PreparedStatement pstmt = conn.prepareStatement( sql );
+
+        int i=0;
+        pstmt.setLong(++i,getSessionId());
+        pstmt.setLong(++i,getSessionId());
+        pstmt.setTimestamp(++i,getTimeStamp());
+        pstmt.setTimestamp(++i,timeStampPlusHours(24));
+        pstmt.setString(++i, (getHostname() == null ? "" : getHostname()) );
+        pstmt.setString(++i, (getUsername() == null ? "" : getUsername()) );
+        pstmt.setLong(++i, getPolicyId() );
+        pstmt.setObject(++i, getCClientAddr().getHostAddress(), java.sql.Types.OTHER);
+        pstmt.setInt(++i, getCClientPort());
+        pstmt.setObject(++i, getCServerAddr().getHostAddress(), java.sql.Types.OTHER);
+        pstmt.setInt(++i, getCServerPort());
+        pstmt.setObject(++i, getSClientAddr().getHostAddress(), java.sql.Types.OTHER);
+        pstmt.setInt(++i, getSClientPort());
+        pstmt.setObject(++i, getSServerAddr().getHostAddress(), java.sql.Types.OTHER);
+        pstmt.setInt(++i, getSServerPort());
+        pstmt.setInt(++i, getClientIntf());
+        pstmt.setInt(++i, getServerIntf());
+
+        return pstmt;
     }
     
     public boolean equals(Object o)

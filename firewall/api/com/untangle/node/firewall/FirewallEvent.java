@@ -76,14 +76,22 @@ public class FirewallEvent extends LogEvent
         this.sessionEvent = sessionEvent;
     }
     
+    private static String sql =
+        "UPDATE reports.sessions " + 
+        "SET firewall_was_blocked = ?, " +
+        "    firewall_rule_index = ? " + 
+        "WHERE session_id = ? ";
+
     @Override
-    public String getDirectEventSql()
+    public java.sql.PreparedStatement getDirectEventSql( java.sql.Connection conn ) throws Exception
     {
-        String sql =
-            "UPDATE reports.sessions " + 
-            "SET firewall_was_blocked = '" + getWasBlocked() + "', " +
-            "    firewall_rule_index = '" + getRuleId() + "' " + 
-            "WHERE session_id = '" + sessionEvent.getSessionId() + "'";
-        return sql;
+        java.sql.PreparedStatement pstmt = conn.prepareStatement( sql );
+
+        int i=0;
+        pstmt.setBoolean(++i, getWasBlocked());
+        pstmt.setLong(++i, getRuleId());
+        pstmt.setLong(++i, getSessionId());
+
+        return pstmt;
     }
 }

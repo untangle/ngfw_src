@@ -57,16 +57,22 @@ public class SpywareCookieEvent extends LogEvent
     public String getIdentification() { return identification; }
     public void setIdentification( String identification ) { this.identification = identification; }
 
+    private static String sql =
+        "UPDATE reports.n_http_events " +
+        "SET " +
+        "sw_cookie_ident = ? " +
+        "WHERE " +
+        "request_id = ? ";
+
     @Override
-    public String getDirectEventSql()
+    public java.sql.PreparedStatement getDirectEventSql( java.sql.Connection conn ) throws Exception
     {
-        String sql =
-            "UPDATE reports.n_http_events " +
-            "SET " +
-            "sw_cookie_ident  = " + "'" + getIdentification() + "'" + " " +
-            "WHERE " +
-            "request_id = " + getRequestId() +
-            ";";
-        return sql;
+        java.sql.PreparedStatement pstmt = conn.prepareStatement( sql );
+        
+        int i = 0;
+        pstmt.setString(++i,getIdentification());
+        pstmt.setLong(++i,getRequestId());
+        
+        return pstmt;
     }
 }

@@ -17,13 +17,14 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import java.sql.Statement;
 
 import org.apache.log4j.Logger;
 
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.logging.LogEvent;
+
 
 /**
  * Worker that batches and flushes events to the database.
@@ -69,42 +70,42 @@ public class EventWriterImpl implements Runnable
             if (!forceFlush)
                 try {Thread.sleep(SYNC_TIME);} catch (Exception e) {}
 
-            if ( dbConnection == null ) {
-                try {
-                    dbConnection = ReportingNodeImpl.getDBConnection();
-                } catch (Exception e) {
-                    logger.warn("Unable to create connection to DB",e);
-                }
-            }
-            if ( dbConnection == null) {
-                logger.warn("Unable to get connection to DB, dropping events...");
-                while ((event = inputQueue.poll()) != null) {}
-                try {Thread.sleep(1);} catch (Exception e) {}
-                continue;
-            }
-            
             synchronized( this ) {
-                /**
-                 * Copy all events out of the queue
-                 */
-                while ((event = inputQueue.poll()) != null) {
-                    logQueue.add(event);
-                }
+                try {
+                    if ( dbConnection == null ) {
+                        dbConnection = ReportingNodeImpl.getDBConnection();
+                    }
+                    if ( dbConnection == null) {
+                        logger.warn("Unable to get connection to DB, dropping events...");
+                        while ((event = inputQueue.poll()) != null) {}
+                        continue; 
+                    }
+
+                    /**
+                     * Copy all events out of the queue
+                     */
+                    while ((event = inputQueue.poll()) != null) {
+                        logQueue.add(event);
+                    }
                 
-                /**
-                 * If there is anything to log, log it to the database
-                 */
-                if (logQueue.size() > 0)
-                    persist(logQueue);
-                else
-                    logger.info("persist(): 0 events");
+                    /**
+                     * If there is anything to log, log it to the database
+                     */
+                    if (logQueue.size() > 0)
+                        persist(logQueue);
+                    else
+                        logger.info("persist(): 0 events");
                 
-                /**
-                 * If the forceFlush flag was set, reset it and wake any interested parties
-                 */
-                if (forceFlush) {
-                    forceFlush = false; //reset global flag
-                    notifyAll(); /* notify any waiting threads that the flush is done */
+                } catch (Exception e) {
+                    logger.warn("Failed to write events.", e);
+                } finally {
+                    /**
+                     * If the forceFlush flag was set, reset it and wake any interested parties
+                     */
+                    if (forceFlush) {
+                        forceFlush = false; //reset global flag
+                        notifyAll(); /* notify any waiting threads that the flush is done */
+                    }
                 }
             }
         }
@@ -204,20 +205,6 @@ public class EventWriterImpl implements Runnable
         int count = logQueue.size();
         long t0 = System.currentTimeMillis();
 
-        Statement statement = null;
-        try {
-            statement = this.dbConnection.createStatement();
-        } catch (Exception e) {
-            logger.warn("Unable to create statement.",e);
-            this.dbConnection = null;
-            return;
-        }
-        if ( statement == null ) {
-            logger.warn("Unable to create statement: null");
-            this.dbConnection = null;
-            return;
-        }
-        
         logger.debug("Writing events to database... (size: " + logQueue.size() + ")");
         for (Iterator<LogEvent> i = logQueue.iterator(); i.hasNext(); ) {
             LogEvent event = i.next();
@@ -226,31 +213,36 @@ public class EventWriterImpl implements Runnable
              * Write event to database using SQL
              * If fails, just move on
              */
-            List<String> sqls = event.getDirectEventSqls();
-            if (sqls != null) {
-                long write_t0 = System.currentTimeMillis();
-                for (String sqlStr : sqls) {
-                    logger.debug("Write direct event: " + sqlStr);
-                    try {
-                        statement.execute(sqlStr);
-                    } catch (SQLException e) {
-                        logger.warn("Failed SQL query: \"" + sqlStr + "\": " + e.getMessage());
+            try {
+                List<PreparedStatement> pstmts = event.getDirectEventSqls( this.dbConnection );
+                if (pstmts != null) {
+                    long write_t0 = System.currentTimeMillis();
+                    for (PreparedStatement pstmt : pstmts) {
+                        logger.debug("Write direct event: " + pstmt);
+                        try {
+                            pstmt.execute();
+                        } catch (SQLException e) {
+                            logger.warn("Failed SQL query: \"" + pstmt + "\": " + e.getMessage());
+                        }
+                    }
+                    long write_t1 = System.currentTimeMillis();
+
+                    if (logger.isInfoEnabled()) {
+                        /**
+                         * Update the stats
+                         */
+                        String eventTypeName = event.getClass().getSimpleName();
+                        Long currentTime = timeMap.get(eventTypeName);
+                        if (currentTime == null)
+                            currentTime = 0L;
+                        currentTime = currentTime+(write_t1-write_t0); //add time to write this instances
+                        timeMap.put(eventTypeName, currentTime);
                     }
                 }
-                long write_t1 = System.currentTimeMillis();
+            } catch (Exception e) {
+                logger.warn("Failed SQL query(s) for event: \"" + event.getClass(), e);
+            }
 
-                if (logger.isInfoEnabled()) {
-                    /**
-                     * Update the stats
-                     */
-                    String eventTypeName = event.getClass().getSimpleName();
-                    Long currentTime = timeMap.get(eventTypeName);
-                    if (currentTime == null)
-                        currentTime = 0L;
-                    currentTime = currentTime+(write_t1-write_t0); //add time to write this instances
-                    timeMap.put(eventTypeName, currentTime);
-                }
-            } 
 
             i.remove();
         }

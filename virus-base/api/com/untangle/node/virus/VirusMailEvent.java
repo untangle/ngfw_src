@@ -38,90 +38,67 @@ public class VirusMailEvent extends LogEvent
 
     /**
      * Associate e-mail message info with event.
-     *
-     * @return e-mail message info.
      */
-    public Long getMessageId()
-    {
-        return messageId;
-    }
-
-    public void setMessageId(Long messageId)
-    {
-        this.messageId = messageId;
-    }
+    public Long getMessageId() { return messageId; }
+    public void setMessageId( Long messageId ) { this.messageId = messageId; }
 
     /**
      * Virus scan result.
-     *
-     * @return the scan result.
      */
-    public VirusScannerResult getResult()
-    {
-        return result;
-    }
-
-    public void setResult(VirusScannerResult result)
-    {
-        this.result = result;
-    }
+    public VirusScannerResult getResult() { return result; }
+    public void setResult( VirusScannerResult result ) { this.result = result; }
 
     /**
      * The action taken
-     *
-     * @return action.
      */
-    public String getAction()
-    {
-        return action;
-    }
-
-    public void setAction(String action)
-    {
-        this.action = action;
-    }
+    public String getAction() { return action; }
+    public void setAction( String action ) { this.action = action; }
 
     /**
      * Spam scanner vendor.
-     *
-     * @return the vendor
      */
-    public String getVendorName()
-    {
-        return vendorName;
-    }
+    public String getVendorName() { return vendorName; }
+    public void setVendorName( String vendorName ) { this.vendorName = vendorName; }
 
-    public void setVendorName(String vendorName)
+    @Override
+    public java.sql.PreparedStatement getDirectEventSql( java.sql.Connection conn ) throws Exception
     {
-        this.vendorName = vendorName;
+        return null;
     }
 
     @Override
-    public String getDirectEventSql() {return null;}
-
-    @Override
-    public List<String> getDirectEventSqls()
+    public List<java.sql.PreparedStatement> getDirectEventSqls( java.sql.Connection conn ) throws Exception
     {
-        List<String> sqlList = new LinkedList<String>();
+        List<java.sql.PreparedStatement> sqlList = new LinkedList<java.sql.PreparedStatement>();
         String sql;
+        int i=0;
+        java.sql.PreparedStatement pstmt;
         
         sql = "UPDATE reports.n_mail_msgs " +
             "SET " +
-            "virus_" + getVendorName().toLowerCase() + "_clean = " + "'" + getResult().isClean() + "'" + ", " +
-            "virus_" + getVendorName().toLowerCase() + "_name = "  + "'" + getResult().getVirusName() + "'" + " " +
+            "virus_" + getVendorName().toLowerCase() + "_clean = ?, " + 
+            "virus_" + getVendorName().toLowerCase() + "_name = ? " + 
             "WHERE " +
-            "msg_id = " + getMessageId() +
-            ";";
-        sqlList.add(sql);
+            "msg_id = ? " ;
+        pstmt = conn.prepareStatement( sql );
+        i=0;
+        pstmt.setBoolean(++i, getResult().isClean());
+        pstmt.setString(++i, getResult().getVirusName());
+        pstmt.setLong(++i, getMessageId());
+        sqlList.add(pstmt);
         
         sql = "UPDATE reports.n_mail_addrs " +
             "SET " +
-            "virus_" + getVendorName().toLowerCase() + "_clean = " + "'" + getResult().isClean() + "'" + ", " +
-            "virus_" + getVendorName().toLowerCase() + "_name = "  + "'" + getResult().getVirusName() + "'" + " " +
+            "virus_" + getVendorName().toLowerCase() + "_clean = ?, " + 
+            "virus_" + getVendorName().toLowerCase() + "_name = ? " + 
             "WHERE " +
-            "msg_id = " + getMessageId() +
-            ";";
-        sqlList.add(sql);
+            "msg_id = ? " ;
+        pstmt = conn.prepareStatement( sql );
+        i=0;
+        pstmt.setBoolean(++i, getResult().isClean());
+        pstmt.setString(++i, getResult().getVirusName());
+        pstmt.setLong(++i, getMessageId());
+        sqlList.add(pstmt);
 
         return sqlList;
     }

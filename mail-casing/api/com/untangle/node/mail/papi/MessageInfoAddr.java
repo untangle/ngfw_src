@@ -122,47 +122,51 @@ public class MessageInfoAddr extends LogEvent implements Serializable
         this.kind = kind;
     }
 
+    private static String sql = "INSERT INTO reports.n_mail_addrs " +
+        "(time_stamp, " + 
+        "session_id, client_intf, server_intf, " + 
+        "c_client_addr, c_client_port, c_server_addr, c_server_port, " + 
+        "s_client_addr, s_client_port, s_server_addr, s_server_port, " + 
+        "policy_id,  " + 
+        "uid,  " + 
+        "msg_id, subject, server_type,  " + 
+        "addr_pos, addr, addr_name, addr_kind,  " + 
+        "sender,  " + 
+        "hname) " + 
+        " VALUES " +
+        "( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? )";
+    
     @Override
-    public String getDirectEventSql()
+    public java.sql.PreparedStatement getDirectEventSql( java.sql.Connection conn ) throws Exception
     {
         SessionEvent se = messageInfo.getSessionEvent();
-        String sql = "INSERT INTO reports.n_mail_addrs " +
-            "(time_stamp, " + 
-            "session_id, client_intf, server_intf, " + 
-            "c_client_addr, c_client_port, c_server_addr, c_server_port, " + 
-            "s_client_addr, s_client_port, s_server_addr, s_server_port, " + 
-            "policy_id,  " + 
-            "uid,  " + 
-            "msg_id, subject, server_type,  " + 
-            "addr_pos, addr, addr_name, addr_kind,  " + 
-            "sender,  " + 
-            "hname) " + 
-            " VALUES " +
-            "( " +
-            "timestamp '" + new java.sql.Timestamp(getTimeStamp().getTime()) + "'" + "," +
-            se.getSessionId() + "," +
-            se.getClientIntf() + "," +
-            se.getServerIntf() + "," +
-            "'" + se.getCClientAddr().getHostAddress() + "'" + "," +
-            se.getCClientPort() + "," +
-            "'" + se.getCServerAddr().getHostAddress() + "'" + "," +
-            se.getCServerPort() + "," +
-            "'" + se.getSClientAddr().getHostAddress() + "'" + "," +
-            se.getSClientPort() + "," +
-            "'" + se.getSServerAddr().getHostAddress() + "'" + "," +
-            se.getSServerPort() + "," +
-            se.getPolicyId() + "," +
-            "'" + (se.getUsername() == null ? "" : se.getUsername()) + "'" + "," +
-            "'" + messageInfo.getMessageId() + "'" + "," +
-            "'" + messageInfo.getSubject() + "'" + "," +
-            "'" + messageInfo.getServerType() + "'" + "," +
-            "'" + position + "'" + "," +
-            "'" + addr + "'" + "," +
-            "'" + personal + "'" + "," +
-            "'" + Character.toString(kind.getKey()) + "'" + "," +
-            "'" + messageInfo.getSender() + "'" + "," +
-            "'" + (se.getHostname() == null ? "" : se.getHostname()) + "'" + " )" +
-            ";";
-        return sql;
+        java.sql.PreparedStatement pstmt = conn.prepareStatement( sql );
+
+        int i=0;
+        pstmt.setTimestamp(++i, getTimeStamp());
+        pstmt.setLong(++i, se.getSessionId());
+        pstmt.setInt(++i, se.getClientIntf());
+        pstmt.setInt(++i, se.getServerIntf());
+        pstmt.setObject(++i, se.getCClientAddr().getHostAddress(), java.sql.Types.OTHER);
+        pstmt.setInt(++i, se.getCClientPort());
+        pstmt.setObject(++i, se.getCServerAddr().getHostAddress(), java.sql.Types.OTHER);
+        pstmt.setInt(++i, se.getCServerPort());
+        pstmt.setObject(++i, se.getSClientAddr().getHostAddress(), java.sql.Types.OTHER);
+        pstmt.setInt(++i, se.getSClientPort());
+        pstmt.setObject(++i, se.getSServerAddr().getHostAddress(), java.sql.Types.OTHER);
+        pstmt.setInt(++i, se.getSServerPort());
+        pstmt.setLong(++i, se.getPolicyId());
+        pstmt.setString(++i, (se.getUsername() == null ? "" : se.getUsername()));
+        pstmt.setLong(++i, messageInfo.getMessageId());
+        pstmt.setString(++i, messageInfo.getSubject());
+        pstmt.setString(++i, String.valueOf(messageInfo.getServerType()));
+        pstmt.setInt(++i, position);
+        pstmt.setString(++i, addr);
+        pstmt.setString(++i, personal);
+        pstmt.setString(++i, Character.toString(kind.getKey()));
+        pstmt.setString(++i, messageInfo.getSender());
+        pstmt.setString(++i, (se.getHostname() == null ? "" : se.getHostname()));
+        
+        return pstmt;
     }
 }

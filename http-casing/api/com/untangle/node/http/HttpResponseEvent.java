@@ -72,17 +72,24 @@ public class HttpResponseEvent extends LogEvent
         this.contentLength = contentLength;
     }
 
+    private static String sql =
+        "UPDATE reports.n_http_events " +
+        "SET " +
+        "s2c_content_length = ?, " +
+        "s2c_content_type = ? " +
+        "WHERE " +
+        "request_id = ? ";
+    
     @Override
-    public String getDirectEventSql()
+    public java.sql.PreparedStatement getDirectEventSql( java.sql.Connection conn ) throws Exception
     {
-        String sql =
-            "UPDATE reports.n_http_events " +
-            "SET " +
-            "s2c_content_length = " + "'" + getContentLength() + "'" + ", " +
-            "s2c_content_type = " + "'" + getContentType() + "'" + " " +
-            "WHERE " +
-            "request_id = " + getRequestLine().getRequestId() +
-            ";";
-        return sql;
+        java.sql.PreparedStatement pstmt = conn.prepareStatement( sql );
+
+        int i=0;
+        pstmt.setInt(++i, getContentLength());
+        pstmt.setString(++i, getContentType());
+        pstmt.setLong(++i, getRequestLine().getRequestId());
+
+        return pstmt;
     }
 }

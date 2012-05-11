@@ -81,7 +81,7 @@ public class VirusFtpEvent extends LogEvent
     }
 
     @Override
-    public String getDirectEventSql()
+    public java.sql.PreparedStatement getDirectEventSql( java.sql.Connection conn ) throws Exception
     {
         /* 
          * FIXME there is currently no table in reports that stores FTP events

@@ -198,18 +198,27 @@ public class SessionStatsEvent extends LogEvent
         this.sessionEvent = sessionEvent;
     }
 
-    @Override
-    public String getDirectEventSql()
-    {
-        String sql = "UPDATE reports.sessions " +
-            "SET " +
-            " c2p_bytes = " + getC2pBytes() + ", " + 
-            " s2p_bytes = " + getS2pBytes() + ", " +
-            " p2c_bytes = " + getP2cBytes() + ", " +
-            " p2s_bytes = " + getP2sBytes() + 
-            " WHERE " + 
-            " session_id = " + getSessionId() + ";";
+    private static String sql = "UPDATE reports.sessions " +
+        "SET " +
+        " c2p_bytes = ?, " +
+        " s2p_bytes = ?, " +
+        " p2c_bytes = ?, " + 
+        " p2s_bytes = ? " + 
+        " WHERE " + 
+        " session_id = ?";
 
-            return sql;
+    @Override
+    public java.sql.PreparedStatement getDirectEventSql( java.sql.Connection conn ) throws Exception
+    {
+        java.sql.PreparedStatement pstmt = conn.prepareStatement( sql );
+        
+        int i = 0;
+        pstmt.setLong(++i,getC2pBytes());
+        pstmt.setLong(++i,getS2pBytes());
+        pstmt.setLong(++i,getP2cBytes());
+        pstmt.setLong(++i,getP2sBytes());
+        pstmt.setLong(++i,getSessionId());
+        
+        return pstmt;
     }
 }

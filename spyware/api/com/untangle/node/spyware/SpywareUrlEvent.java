@@ -58,16 +58,22 @@ public class SpywareUrlEvent extends LogEvent
         this.requestId = requestId;
     }
 
+    private static String sql =
+        "UPDATE reports.n_http_events " +
+        "SET " +
+        "sw_blacklisted = ? " +
+        "WHERE " +
+        "request_id = ? ";
+
     @Override
-    public String getDirectEventSql()
+    public java.sql.PreparedStatement getDirectEventSql( java.sql.Connection conn ) throws Exception
     {
-        String sql =
-            "UPDATE reports.n_http_events " +
-            "SET " +
-            "sw_blacklisted  = " + "'" + getBlocked() + "'" + " " +
-            "WHERE " +
-            "request_id = " + getRequestId() +
-            ";";
-        return sql;
+        java.sql.PreparedStatement pstmt = conn.prepareStatement( sql );
+        
+        int i = 0;
+        pstmt.setBoolean(++i,getBlocked());
+        pstmt.setLong(++i,getRequestId());
+        
+        return pstmt;
     }
 }

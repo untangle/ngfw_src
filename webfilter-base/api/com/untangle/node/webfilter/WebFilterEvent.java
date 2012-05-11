@@ -116,20 +116,25 @@ public class WebFilterEvent extends LogEvent
     }
 
     @Override
-    public String getDirectEventSql()
+    public java.sql.PreparedStatement getDirectEventSql( java.sql.Connection conn ) throws Exception
     {
-        String reasonKey = ((getReason() == null) ? "" : Character.toString(getReason().getKey()));
-        
         String sql =
             "UPDATE reports.n_http_events " +
             "SET " +
-            "wf_" + getVendorName().toLowerCase() + "_blocked = " + "'" + getBlocked() + "'" + ", " +
-            "wf_" + getVendorName().toLowerCase() + "_flagged = "  + "'" + getFlagged() + "'" + " " + ", " +
-            "wf_" + getVendorName().toLowerCase() + "_reason = "  + "'" + reasonKey + "'" + " " + ", " +
-            "wf_" + getVendorName().toLowerCase() + "_category = "  + "'" + getCategory() + "'" + " " +
+            "wf_" + getVendorName().toLowerCase() + "_blocked  = ?, " + 
+            "wf_" + getVendorName().toLowerCase() + "_flagged  = ?, " +
+            "wf_" + getVendorName().toLowerCase() + "_reason   = ?, " +
+            "wf_" + getVendorName().toLowerCase() + "_category = ? " +
             "WHERE " +
-            "request_id = " + getRequestId() +
-            ";";
-        return sql;
+            "request_id = ? ";
+        java.sql.PreparedStatement pstmt = conn.prepareStatement( sql );
+        
+        int i = 0;
+        pstmt.setBoolean(++i, getBlocked());
+        pstmt.setBoolean(++i, getFlagged());
+        pstmt.setString(++i, ((getReason() == null) ? "" : Character.toString(getReason().getKey())));
+        pstmt.setString(++i, getCategory());
+        pstmt.setLong(++i, getRequestId());
+        return pstmt;
     }
 }

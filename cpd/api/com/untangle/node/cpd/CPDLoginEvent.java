@@ -59,19 +59,22 @@ public class CPDLoginEvent extends LogEvent
     public AuthenticationType getAuthenticationType() { return AuthenticationType.valueOf(this.authenticationTypeValue); }
     public void setAuthenticationType( AuthenticationType newValue ) { this.authenticationTypeValue = newValue.toString(); }
 
+    private static String sql = "INSERT INTO reports.n_cpd_login_events " +
+        "(time_stamp, login_name, event, auth_type, client_addr) " +
+        "values " +
+        "( ?, ?, ?, ?, ? )";
+
     @Override
-    public String getDirectEventSql()
+    public java.sql.PreparedStatement getDirectEventSql( java.sql.Connection conn ) throws Exception
     {
-        String sql = "INSERT INTO reports.n_cpd_login_events " +
-            "(time_stamp, login_name, event, auth_type, client_addr) " +
-            "values " +
-            "( " +
-            "timestamp '" + new java.sql.Timestamp(getTimeStamp().getTime()) + "'" + "," +
-            "'" + getLoginName() + "'" + "," +
-            "'" + getEvent() + "'" + "," +
-            "'" + getAuthenticationTypeValue() + "'" + "," +
-            "'" + getClientAddr().getHostAddress() + "'" + ") " +
-            ";";
-            return sql;
+        java.sql.PreparedStatement pstmt = conn.prepareStatement( sql );
+        
+        int i = 0;
+        pstmt.setTimestamp(++i,getTimeStamp());
+        pstmt.setString(++i, getLoginName());
+        pstmt.setString(++i, getEvent().toString());
+        pstmt.setString(++i, getAuthenticationTypeValue());
+        pstmt.setObject(++i, getClientAddr().getHostAddress(), java.sql.Types.OTHER);
+        return pstmt;
     }
 }

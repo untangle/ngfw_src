@@ -20,6 +20,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.sql.Timestamp;
 
 import org.apache.log4j.Logger;
 
@@ -272,7 +273,7 @@ class OpenVpnMonitor implements Runnable
      * all of the active sessions have completed */
     private void flushLogEvents()
     {
-        Date now = new Date();
+        Timestamp now = new Timestamp((new Date()).getTime());
 
         for ( Stats stats : activeMap.values() ) {
             stats.fillEvent( now );
@@ -284,7 +285,7 @@ class OpenVpnMonitor implements Runnable
 
     private void logEvents()
     {
-        Date now = new Date();
+        Timestamp now = new Timestamp((new Date()).getTime());
 
         for ( Stats stats : statusMap.values()) {
             stats.fillEvent( now );
@@ -520,15 +521,15 @@ class Stats
         this.bytesTxDelta  = bytesTx;
         this.lastUpdate   = new Date();
         this.isActive     = true;
-        this.sessionEvent = new ClientStatusEvent( key.start, new IPAddress( this.key.address ), this.key.port, this.key.name );
+        this.sessionEvent = new ClientStatusEvent( new Timestamp(key.start.getTime()), new IPAddress( this.key.address ), this.key.port, this.key.name );
     }
 
-    void fillEvent( Date now )
+    void fillEvent( Timestamp now )
     {
         this.fillEvent( this.sessionEvent, now );
     }
 
-    void fillEvent( ClientStatusEvent event, Date now )
+    void fillEvent( ClientStatusEvent event, Timestamp now )
     {
         event.setEnd( now );
         event.setBytesTxTotal( this.bytesTxTotal );

@@ -63,15 +63,23 @@ public class IpsLogEvent extends LogEvent
     public SessionEvent getSessionEvent() { return sessionEvent; }
     public void setSessionEvent(SessionEvent sessionEvent) { this.sessionEvent = sessionEvent; }
 
+    private static String sql =
+        "UPDATE reports.sessions " + 
+        "SET " +
+        " ips_blocked = ?, " + 
+        " ips_description = ? " + 
+        "WHERE session_id = ? " ;
+
     @Override
-    public String getDirectEventSql()
+    public java.sql.PreparedStatement getDirectEventSql( java.sql.Connection conn ) throws Exception
     {
-        String sql =
-            "UPDATE reports.sessions " + 
-            "SET " +
-            " ips_blocked = '" + getBlocked() + "', " +
-            " ips_description = '" + getRule().getDescription() + "' " +
-            "WHERE session_id = '" + sessionEvent.getSessionId() + "'";
-        return sql;
+        java.sql.PreparedStatement pstmt = conn.prepareStatement( sql );
+
+        int i=0;
+        pstmt.setBoolean(++i, getBlocked());
+        pstmt.setString(++i, getRule().getDescription());
+        pstmt.setLong(++i, sessionEvent.getSessionId());
+
+        return pstmt;
     }
 }

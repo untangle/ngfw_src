@@ -67,26 +67,31 @@ public class SystemStatEvent extends LogEvent
     public long getSwapTotal() { return swapTotal; }
     public void setSwapTotal(final long newSwapTotal) { this.swapTotal = newSwapTotal; }
 
+    private static String sql =
+        "INSERT INTO reports.n_server_events " +
+        "(time_stamp, mem_free, mem_cache, mem_buffers, load_1, load_5, load_15, cpu_user, cpu_system, disk_total, disk_free, swap_total, swap_free) " +
+        " values " +
+        "( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? )";
+
     @Override
-    public String getDirectEventSql()
+    public java.sql.PreparedStatement getDirectEventSql( java.sql.Connection conn ) throws Exception
     {
-        String sql =
-            "INSERT INTO reports.n_server_events " +
-            "(time_stamp, mem_free, mem_cache, mem_buffers, load_1, load_5, load_15, cpu_user, cpu_system, disk_total, disk_free, swap_total, swap_free) " +
-            " values " + "(" + 
-            "timestamp '" + new java.sql.Timestamp(getTimeStamp().getTime()) + "'" + "," +
-            memFree + "," + 
-            memCache + "," +
-            memBuffers + "," +
-            load1 + "," +
-            load5  + "," +
-            load15  + "," +
-            cpuUser  + "," +
-            cpuSystem  + "," +
-            diskTotal + "," +
-            diskFree + "," +
-            swapTotal + "," +
-            swapFree + ")";
-        return sql;
+        java.sql.PreparedStatement pstmt = conn.prepareStatement( sql );
+
+        int i=0;
+        pstmt.setTimestamp(++i, getTimeStamp());
+        pstmt.setLong(++i, memFree);
+        pstmt.setLong(++i, memCache);
+        pstmt.setLong(++i, memBuffers);
+        pstmt.setFloat(++i, load1);
+        pstmt.setFloat(++i, load5);
+        pstmt.setFloat(++i, load15);
+        pstmt.setFloat(++i, cpuUser);
+        pstmt.setFloat(++i, cpuSystem);
+        pstmt.setLong(++i, diskTotal);
+        pstmt.setLong(++i, diskFree);
+        pstmt.setLong(++i, swapTotal);
+        pstmt.setLong(++i, swapFree);
+        return pstmt;
     }
 }

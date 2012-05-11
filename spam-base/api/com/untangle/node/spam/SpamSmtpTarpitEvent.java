@@ -68,19 +68,23 @@ public class SpamSmtpTarpitEvent extends LogEvent
     public SessionEvent getSessionEvent() { return sessionEvent; }
     public void setSessionEvent( SessionEvent sessionEvent ) { this.sessionEvent = sessionEvent; }
 
+    private static String sql = "INSERT INTO reports.n_spam_smtp_tarpit_events " +
+        "(time_stamp, ipaddr, hostname, vendor_name, policy_id) " +
+        "values " +
+        "( ?, ?, ?, ?, ? ) ";
+
     @Override
-    public String getDirectEventSql()
+    public java.sql.PreparedStatement getDirectEventSql( java.sql.Connection conn ) throws Exception
     {
-        String sql = "INSERT INTO reports.n_spam_smtp_tarpit_events " +
-            "(time_stamp, ipaddr, hostname, vendor_name, policy_id) " +
-            "values " +
-            "( " +
-            "timestamp '" + new java.sql.Timestamp(getTimeStamp().getTime()) + "'" + "," +
-            "'" + getIPAddr() + "'" + "," +
-            "'" + getHostname() + "'" + "," +
-            "'" + getVendorName() + "'" + "," +
-            "'" + sessionEvent.getPolicyId() + "'" + ")" +
-            ";";
-            return sql;
+        java.sql.PreparedStatement pstmt = conn.prepareStatement( sql );
+
+        int i=0;
+        pstmt.setTimestamp(++i,getTimeStamp());
+        pstmt.setObject(++i, getIPAddr().getAddr().getHostAddress(), java.sql.Types.OTHER);
+        pstmt.setString(++i, getHostname());
+        pstmt.setString(++i, getVendorName());
+        pstmt.setLong(++i, sessionEvent.getPolicyId());
+
+        return pstmt;
     }
 }

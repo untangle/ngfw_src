@@ -144,14 +144,19 @@ public class SpamLogEvent extends LogEvent
     public void setVendorName(String vendorName) { this.vendorName = vendorName; }
 
     @Override
-    public String getDirectEventSql() {return null;}
+    public java.sql.PreparedStatement getDirectEventSql( java.sql.Connection conn ) throws Exception
+    {
+        return null;
+    }
 
     @Override
-    public List<String> getDirectEventSqls()
+    public List<java.sql.PreparedStatement> getDirectEventSqls( java.sql.Connection conn ) throws Exception
     {
-        List<String> sqlList = new LinkedList<String>();
+        List<java.sql.PreparedStatement> sqlList = new LinkedList<java.sql.PreparedStatement>();
         String sql;
-
+        int i=0;
+        java.sql.PreparedStatement pstmt;
+        
         String prefix = ""; /* FIXME this is a hack - we should use proper column names */
         if ("spamassassin".equals(getVendorName().toLowerCase()))
             prefix = "sa";
@@ -163,24 +168,35 @@ public class SpamLogEvent extends LogEvent
         
         sql = "UPDATE reports.n_mail_msgs " +
             "SET " +
-            prefix + "_is_spam = " + "'" + isSpam() + "'" + ", " +
-            prefix + "_score = "  + "'" + getScore() + "'" + ", " +
-            prefix + "_action = "  + "'" + getAction().getKey() + "'" + " " +
+            prefix + "_is_spam = ?, " +
+            prefix + "_score = ?, " + 
+            prefix + "_action = ? " +
             "WHERE " +
-            "msg_id = " + getMessageId() +
-            ";";
-        sqlList.add(sql);
+            "msg_id = ? ";
+
+        pstmt = conn.prepareStatement( sql );
+        i=0;
+        pstmt.setBoolean(++i, isSpam());
+        pstmt.setFloat(++i, getScore());
+        pstmt.setString(++i, String.valueOf(getAction().getKey()));
+        pstmt.setLong(++i, getMessageId());
+        sqlList.add(pstmt);
         
         sql = "UPDATE reports.n_mail_addrs " +
             "SET " +
-            prefix + "_is_spam = " + "'" + isSpam() + "'" + ", " +
-            prefix + "_score = "  + "'" + getScore() + "'" + ", " +
-            prefix + "_action = "  + "'" + getAction().getKey() + "'" + " " +
+            prefix + "_is_spam = ?, " +
+            prefix + "_score = ?, " +
+            prefix + "_action = ? " +
             "WHERE " +
-            "msg_id = " + getMessageId() +
-            ";";
-        sqlList.add(sql);
-
+            "msg_id = ? ";
+        pstmt = conn.prepareStatement( sql );
+        i=0;
+        pstmt.setBoolean(++i, isSpam());
+        pstmt.setFloat(++i, getScore());
+        pstmt.setString(++i, String.valueOf(getAction().getKey()));
+        pstmt.setLong(++i, getMessageId());
+        sqlList.add(pstmt);
+        
         return sqlList;
     }
 

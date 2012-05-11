@@ -34,7 +34,6 @@ public class MessageInfo extends LogEvent implements Serializable
     private SessionEvent sessionEvent;
     private String subject;
     private char serverType;
-    private Date timeStamp = new Date();
     private String sender;
     private Long messageId;
     
@@ -203,68 +202,56 @@ public class MessageInfo extends LogEvent implements Serializable
         this.sender = sender;
     }
     
-    /**
-     * Identify approximate datetime that this message was received.
-     *
-     * @return datetime of message.
-     */
-    public Date getTimeStamp()
-    {
-        return timeStamp;
-    }
+    private static String sql = "INSERT INTO reports.n_mail_msgs " +
+        "(time_stamp, session_id, client_intf, server_intf, " +
+        "c_client_addr, c_client_port, c_server_addr, c_server_port, " + 
+        "s_client_addr, s_client_port, s_server_addr, s_server_port, " + 
+        "policy_id, " +
+        "uid, " +
+        "msg_id, subject, server_type, " + 
+        "sender, " +
+        "hname " + ")" +
+        " VALUES " +
+        "( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? )";
 
-    public void setTimeStamp(Date timeStamp)
-    {
-        this.timeStamp = timeStamp;
-        return;
-    }
 
-    public String getDirectEventSql()
+    @Override
+    public java.sql.PreparedStatement getDirectEventSql( java.sql.Connection conn ) throws Exception
     {
         return null;
     }
     
     @Override
-    public List<String> getDirectEventSqls()
+    public List<java.sql.PreparedStatement> getDirectEventSqls( java.sql.Connection conn ) throws Exception
     {
-        List<String> sqlList = new LinkedList<String>();
-        
-        String sql = "INSERT INTO reports.n_mail_msgs " +
-            "(time_stamp, session_id, client_intf, server_intf, " +
-            "c_client_addr, c_client_port, c_server_addr, c_server_port, " + 
-            "s_client_addr, s_client_port, s_server_addr, s_server_port, " + 
-            "policy_id, " +
-            "uid, " +
-            "msg_id, subject, server_type, " + 
-            "sender, " +
-            "hname " + ")" +
-            " VALUES " +
-            "( " +
-            "timestamp '" + new java.sql.Timestamp(getTimeStamp().getTime()) + "'" + "," +
-            getSessionEvent().getSessionId() + "," +
-            getSessionEvent().getClientIntf() + "," +
-            getSessionEvent().getServerIntf() + "," +
-            "'" + getSessionEvent().getCClientAddr().getHostAddress() + "'" + "," +
-            getSessionEvent().getCClientPort() + "," +
-            "'" + getSessionEvent().getCServerAddr().getHostAddress() + "'" + "," +
-            getSessionEvent().getCServerPort() + "," +
-            "'" + getSessionEvent().getSClientAddr().getHostAddress() + "'" + "," +
-            getSessionEvent().getSClientPort() + "," +
-            "'" + getSessionEvent().getSServerAddr().getHostAddress() + "'" + "," +
-            getSessionEvent().getSServerPort() + "," +
-            getSessionEvent().getPolicyId() + "," +
-            "'" + (getSessionEvent().getUsername() == null ? "" : getSessionEvent().getUsername()) + "'" + "," +
-            "'" + getMessageId() + "'" + "," +
-            "'" + getSubject() + "'" + "," +
-            "'" + getServerType() + "'" + "," +
-            "'" + getSender() + "'" + "," +
-            "'" + (getSessionEvent().getHostname() == null ? "" : getSessionEvent().getHostname()) + "'" + " )" +
-            ";";
+        List<java.sql.PreparedStatement> sqlList = new LinkedList<java.sql.PreparedStatement>();
+        java.sql.PreparedStatement pstmt = conn.prepareStatement( sql );
 
-        sqlList.add(sql);
+        int i=0;
+        pstmt.setTimestamp(++i, getTimeStamp());
+        pstmt.setLong(++i, getSessionEvent().getSessionId());
+        pstmt.setInt(++i, getSessionEvent().getClientIntf());
+        pstmt.setInt(++i, getSessionEvent().getServerIntf());
+        pstmt.setObject(++i, getSessionEvent().getCClientAddr().getHostAddress(), java.sql.Types.OTHER);
+        pstmt.setInt(++i, getSessionEvent().getCClientPort());
+        pstmt.setObject(++i, getSessionEvent().getCServerAddr().getHostAddress(), java.sql.Types.OTHER);
+        pstmt.setInt(++i, getSessionEvent().getCServerPort());
+        pstmt.setObject(++i, getSessionEvent().getSClientAddr().getHostAddress(), java.sql.Types.OTHER);
+        pstmt.setInt(++i, getSessionEvent().getSClientPort());
+        pstmt.setObject(++i, getSessionEvent().getSServerAddr().getHostAddress(), java.sql.Types.OTHER);
+        pstmt.setInt(++i, getSessionEvent().getSServerPort());
+        pstmt.setLong(++i, getSessionEvent().getPolicyId());
+        pstmt.setString(++i, (getSessionEvent().getUsername() == null ? "" : getSessionEvent().getUsername()));
+        pstmt.setLong(++i, getMessageId());
+        pstmt.setString(++i, getSubject());
+        pstmt.setString(++i, String.valueOf(getServerType()));
+        pstmt.setString(++i, getSender());
+        pstmt.setString(++i, getSessionEvent().getHostname() == null ? "" : getSessionEvent().getHostname());
+
+        sqlList.add(pstmt);
         
         for (MessageInfoAddr addr : this.addresses) {
-            sqlList.add(addr.getDirectEventSql());
+            sqlList.add( addr.getDirectEventSql( conn ) );
         }
         
         return sqlList;

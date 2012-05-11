@@ -79,22 +79,26 @@ public class ShieldRejectionEvent extends LogEvent implements Serializable
     public int getDropped() { return dropped; }
     public void setDropped(  int dropped  ) { this.dropped = dropped; }
 
+    private static String sql = "INSERT INTO reports.n_shield_rejection_totals " +
+        "(time_stamp, client_addr, client_intf, mode, reputation, limited, dropped, rejected) " +
+        "values " +
+        "( ?, ?, ?, ?, ?, ?, ?, ? )" ;
+    
     @Override
-    public String getDirectEventSql()
+    public java.sql.PreparedStatement getDirectEventSql( java.sql.Connection conn ) throws Exception
     {
-        String sql = "INSERT INTO reports.n_shield_rejection_totals " +
-            "(time_stamp, client_addr, client_intf, mode, reputation, limited, dropped, rejected) " +
-            "values " +
-            "( " +
-            "timestamp '" + new java.sql.Timestamp(getTimeStamp().getTime()) + "'" + "," +
-            "'" + getClientAddr().getHostAddress() + "'" + "," +
-            "'" + getClientIntf() + "'" + "," +
-            "'" + getMode() + "'" + "," +
-            "'" + getRejected() + "'" + "," +
-            "'" + getLimited() + "'" + "," +
-            "'" + getDropped() + "'" + "," +
-            "'" + getRejected() + "'" + ") " +
-            ";";
-            return sql;
+        java.sql.PreparedStatement pstmt = conn.prepareStatement( sql );
+
+        int i=0;
+        pstmt.setTimestamp(++i, getTimeStamp());
+        pstmt.setObject(++i, getClientAddr().getHostAddress(), java.sql.Types.OTHER);
+        pstmt.setInt(++i, getClientIntf());
+        pstmt.setInt(++i, getMode());
+        pstmt.setInt(++i, getRejected());
+        pstmt.setInt(++i, getLimited());
+        pstmt.setInt(++i, getDropped());
+        pstmt.setInt(++i, getRejected());
+
+        return pstmt;
     }
 }

@@ -95,20 +95,24 @@ public class ShieldStatisticEvent extends LogEvent implements Serializable
     public int getClosed() { return closed; }
     public void setClosed(  int closed  ) { this.closed = closed; }
 
+    private static String sql = "INSERT INTO reports.n_shield_totals " +
+        "(time_stamp, accepted, limited, dropped, rejected) " + 
+        "values " +
+        "( ?, ?, ?, ?, ? ) ";
+
     @Override
-    public String getDirectEventSql()
+    public java.sql.PreparedStatement getDirectEventSql( java.sql.Connection conn ) throws Exception
     {
-        String sql = "INSERT INTO reports.n_shield_totals " +
-            "(time_stamp, accepted, limited, dropped, rejected) " + 
-            "values " +
-            "( " +
-            "timestamp '" + new java.sql.Timestamp(getTimeStamp().getTime()) + "'" + "," +
-            "'" + getAccepted() + "'" + "," +
-            "'" + getLimited() + "'" + "," +
-            "'" + getDropped() + "'" + "," +
-            "'" + getRejected() + "'" + ") " +
-            ";";
-            return sql;
+        java.sql.PreparedStatement pstmt = conn.prepareStatement( sql );
+
+        int i=0;
+        pstmt.setTimestamp(++i,getTimeStamp());
+        pstmt.setInt(++i,getAccepted());
+        pstmt.setInt(++i,getLimited());
+        pstmt.setInt(++i,getDropped());
+        pstmt.setInt(++i,getRejected());
+
+        return pstmt;
     }
 
 }
