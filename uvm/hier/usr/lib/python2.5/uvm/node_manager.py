@@ -54,13 +54,15 @@ class NodeManager(Manager):
         if ( nodeIdString != None ): nodeIds = [ int(nodeIdString) ]
         else: nodeIds = self.__nodeManager.nodeInstances()["list"]
 
-        for nodeId in nodeIds: self.__print_sessions(nodeId)
+        for nodeId in nodeIds: 
+            self.__print_sessions(nodeId)
 
     def __print_sessions( self, nodeId ):
         node = self.__get_node( nodeId )
         if ( node == None ): 
             return
-        sessions = node.liveSessionDescs()["list"]
+
+        sessions = node.liveSessions()["list"]
         if ( sessions == None ):
             print "NULL Session Desc (nodeId:%i)" % ( nodeId )
             return
@@ -70,9 +72,7 @@ class NodeManager(Manager):
         for session in sessions: self.__print_session(session)
 
     def __print_session(self,session):
-        stats = session["stats"]
-        print "%s\t%-6s\t%-6s\t%15s:%-5d -> %15s:%-5d" % ( self.formatProtocol(session["protocol"])[1], self.formatState( session["clientState"] ), self.formatState( session["serverState"] ), session["clientAddr"],session["clientPort"], session["serverAddr"],session["serverPort"] ),
-        print "\t%s\t%s\n" % ( self.formatTime( stats["creationDate"] ), self.formatTime( stats["lastActivityDate"] )),
+        print "%s\t%15s : %-5d  -> %15s : %-5d\n" % ( self.formatProtocol(session["protocol"])[1], session["clientAddr"],session["clientPort"], session["serverAddr"],session["serverPort"] ),
 
     def __get_node( self, nodeId, raiseException = False ):
         node = self.__nodeManager.node( nodeId )

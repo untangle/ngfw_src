@@ -26,6 +26,8 @@ import com.untangle.uvm.node.NodeProperties;
 import com.untangle.uvm.node.NodeSettings;
 import com.untangle.uvm.node.DeployException;
 import com.untangle.uvm.node.NodeMetric;
+import com.untangle.uvm.node.SessionTuple;
+import com.untangle.uvm.node.SessionTupleImpl;
 import com.untangle.uvm.util.I18nUtil;
 import com.untangle.uvm.logging.LogEvent;
 import com.untangle.uvm.toolbox.PackageDesc;
@@ -355,14 +357,15 @@ public abstract class NodeBase implements Node
         }
     }
     
-    public List<NodeIPSession> liveSessions()
+    public List<SessionTuple> liveSessions()
     {
-        List<NodeIPSession> sessions = new LinkedList<NodeIPSession>();
+        List<SessionTuple> sessions = new LinkedList<SessionTuple>();
 
         if (null != pipeSpecs) {
             for (PipeSpec ps : pipeSpecs) {
                 for (NodeIPSession sess : ps.liveSessions()) {
-                    sessions.add(sess);
+                    /* create a new sessiontupleimpl so the list will be serialized properly */
+                    sessions.add( new SessionTupleImpl(sess) );
                 }
             }
         }

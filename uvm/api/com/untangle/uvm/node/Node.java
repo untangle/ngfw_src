@@ -64,7 +64,7 @@ public interface Node
     /**
      * Retrieve a list of sessions currently being processed by this node
      */
-    List<NodeIPSession> liveSessions();
+    List<SessionTuple> liveSessions();
 
     /**
      * Log an event

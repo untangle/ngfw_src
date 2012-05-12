@@ -35,7 +35,18 @@ public class SessionTupleImpl implements SessionTuple
         this.serverIntf = serverIntf;
         this.serverPort = serverPort;
     }
-                             
+
+    public SessionTupleImpl( SessionTuple tuple )
+    {
+        this.protocol = tuple.getProtocol();
+        this.clientAddr = tuple.getClientAddr();
+        this.clientIntf = tuple.getClientIntf();
+        this.clientPort = tuple.getClientPort();
+        this.serverAddr = tuple.getServerAddr();
+        this.serverIntf = tuple.getServerIntf();
+        this.serverPort = tuple.getServerPort();
+    }
+    
     public short getProtocol() { return this.protocol; }
     public void setProtocol( short protocol ) { this.protocol = protocol; }
 
