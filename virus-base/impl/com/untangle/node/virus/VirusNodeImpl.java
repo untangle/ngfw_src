@@ -110,7 +110,7 @@ public abstract class VirusNodeImpl extends NodeBase implements VirusNode
             public boolean isMatch(Long sessionPolicyId, SessionTuple client, SessionTuple server, Map<String,Object> attachments)
             {
                 /* Don't kill any UDP NodeSession s */
-                if (client.protocol() == SessionTuple.PROTO_UDP) {
+                if (client.getProtocol() == SessionTuple.PROTO_UDP) {
                     return false;
                 }
 
@@ -120,7 +120,7 @@ public abstract class VirusNodeImpl extends NodeBase implements VirusNode
                     return false;
                 }
 
-                if (testServerPort(client.serverPort()) || testServerPort(server.serverPort())) {
+                if (testServerPort(client.getServerPort()) || testServerPort(server.getServerPort())) {
                     return true;
                 }
 

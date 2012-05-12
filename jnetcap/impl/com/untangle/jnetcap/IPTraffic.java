@@ -121,7 +121,7 @@ public class IPTraffic
         return (byte)getIntValue( FLAG_TOS );
     }
 
-    public int protocol()
+    public int getProtocol()
     {
         return getIntValue( FLAG_PROTOCOL );
     }

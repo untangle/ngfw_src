@@ -7,7 +7,7 @@ package com.untangle.uvm.argon;
 /**
  * The interface <code>Session</code> here.
  */
-public interface ArgonIPSession extends ArgonSession, ArgonIPSessionDesc
+public interface ArgonIPSession extends ArgonSession
 {
     /**
      * <code>release</code> releases all interest in further events for this session.

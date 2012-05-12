@@ -67,13 +67,13 @@ public abstract class ArgonIPNewSessionRequestImpl extends ArgonNewSessionReques
         super( session.sessionGlobalState(), agent);
 
         /* Get the server and client from the previous request */
-        clientAddr = session.clientAddr();
-        clientPort = session.clientPort();
-        clientIntf = session.clientIntf();
+        clientAddr = session.getClientAddr();
+        clientPort = session.getClientPort();
+        clientIntf = session.getClientIntf();
 
-        serverAddr = session.serverAddr();
-        serverPort = session.serverPort();
-        serverIntf = session.serverIntf();
+        serverAddr = session.getServerAddr();
+        serverPort = session.getServerPort();
+        serverIntf = session.getServerIntf();
 
         natFromHost = sessionGlobalState.netcapSession.natInfo.fromHost;
         natFromPort = sessionGlobalState.netcapSession.natInfo.fromPort;
@@ -83,57 +83,57 @@ public abstract class ArgonIPNewSessionRequestImpl extends ArgonNewSessionReques
         this.sessionEvent = pe;
     }
 
-    public short protocol()
+    public short getProtocol()
     {
-        return sessionGlobalState.protocol();
+        return sessionGlobalState.getProtocol();
     }
 
-    public InetAddress clientAddr()
+    public InetAddress getClientAddr()
     {
         return clientAddr;
     }
 
-    public void clientAddr( InetAddress addr )
+    public void getClientAddr( InetAddress addr )
     {
         clientAddr = addr;
     }
 
-    public int clientPort()
+    public int getClientPort()
     {
         return clientPort;
     }
 
-    public void clientPort( int port )
+    public void getClientPort( int port )
     {
         clientPort = port;
     }
 
-    public int clientIntf()
+    public int getClientIntf()
     {
         return clientIntf;
     }
 
-    public InetAddress serverAddr()
+    public InetAddress getServerAddr()
     {
         return serverAddr;
     }
 
-    public void serverAddr( InetAddress addr )
+    public void getServerAddr( InetAddress addr )
     {
         serverAddr = addr;
     }
 
-    public int serverPort()
+    public int getServerPort()
     {
         return serverPort;
     }
 
-    public void serverPort( int port )
+    public void getServerPort( int port )
     {
         serverPort = port;
     }
 
-    public int serverIntf()
+    public int getServerIntf()
     {
         return serverIntf;
     }

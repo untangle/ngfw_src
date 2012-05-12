@@ -78,14 +78,14 @@ public class SpywareHttpHandler extends HttpStateMachine
         if (null == host) {
             host = requestHeader.getValue("host");
             if (null == host) {
-                InetAddress clientIp = getSession().clientAddr();
+                InetAddress clientIp = getSession().getClientAddr();
                 host = clientIp.getHostAddress();
             }
         }
         host = host.toLowerCase();
 
         node.incrementHttpScan();
-        if (node.isDomainPasslisted(host, session.clientAddr())) {
+        if (node.isDomainPasslisted(host, session.getClientAddr())) {
             node.incrementHttpWhitelisted();
             getSession().release();
             releaseRequest();
@@ -96,7 +96,7 @@ public class SpywareHttpHandler extends HttpStateMachine
             // XXX we could send a page back instead, this isn't really right
             logger.debug("detected spyware, shutting down");
 
-            InetAddress addr = getSession().clientAddr();
+            InetAddress addr = getSession().getClientAddr();
             String uriStr = uri.toString();
             SpywareBlockDetails bd = new SpywareBlockDetails(host, uriStr, addr);
 

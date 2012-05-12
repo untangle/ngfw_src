@@ -66,7 +66,7 @@ public class SpamSmtpFactory implements TokenHandlerFactory
 
         int activeCount = m_spamImpl.getScanner().getActiveScanCount();
         if (SpamLoadChecker.reject(activeCount, m_logger, spamConfig.getScanLimit(), spamConfig.getLoadLimit())) {
-            m_logger.warn("Load too high, rejecting connection from: " + tsr.clientAddr());
+            m_logger.warn("Load too high, rejecting connection from: " + tsr.getClientAddr());
             tsr.rejectReturnRst();
         }
     }

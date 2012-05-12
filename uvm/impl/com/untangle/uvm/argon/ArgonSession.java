@@ -3,11 +3,12 @@
  */
 package com.untangle.uvm.argon;
 
+import com.untangle.uvm.node.SessionTuple;
 import com.untangle.jnetcap.NetcapSession;
 import com.untangle.jvector.IncomingSocketQueue;
 import com.untangle.jvector.OutgoingSocketQueue;
 
-public interface ArgonSession extends ArgonSessionDesc
+public interface ArgonSession extends SessionTuple
 {
     /**
      * return the globally unique session ID

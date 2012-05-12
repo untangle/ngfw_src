@@ -18,8 +18,7 @@
 
 package com.untangle.uvm.argon;
 
-
-public interface ArgonTCPNewSessionRequest extends ArgonIPNewSessionRequest, ArgonIPSessionDesc
+public interface ArgonTCPNewSessionRequest extends ArgonIPNewSessionRequest
 {
     /**
      * <code>acked</code> returns true if the new session has already been ACKed to the client.

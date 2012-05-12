@@ -488,7 +488,7 @@ class SmtpClientParser extends SmtpParser
 
         MessageInfo ret = MessageInfoFactory.fromMIMEMessage(headers,
                                                              getSession().sessionEvent(),
-                                                             getSession().serverPort());
+                                                             getSession().getServerPort());
 
         UvmContextFactory.context().logEvent(ret);
 

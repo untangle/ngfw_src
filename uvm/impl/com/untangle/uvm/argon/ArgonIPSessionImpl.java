@@ -34,48 +34,48 @@ public abstract class ArgonIPSessionImpl extends ArgonSessionImpl implements Arg
     {
         super( request, request.state() == ArgonIPNewSessionRequest.REQUESTED || request.state() == ArgonIPNewSessionRequest.ENDPOINTED );
 
-        protocol      = request.protocol();
-        clientAddr    = request.clientAddr();
-        clientPort    = request.clientPort();
-        clientIntf    = request.clientIntf();
+        protocol      = request.getProtocol();
+        clientAddr    = request.getClientAddr();
+        clientPort    = request.getClientPort();
+        clientIntf    = request.getClientIntf();
 
-        serverPort    = request.serverPort();
-        serverAddr    = request.serverAddr();
-        serverIntf    = request.serverIntf();
+        serverPort    = request.getServerPort();
+        serverAddr    = request.getServerAddr();
+        serverIntf    = request.getServerIntf();
     }
 
     /** This should be abstract and reference the sub functions. */
-    public short protocol()
+    public short getProtocol()
     {
         return protocol;
     }
 
-    public InetAddress clientAddr() 
+    public InetAddress getClientAddr() 
     {
         return clientAddr;
     }
     
-    public InetAddress serverAddr()
+    public InetAddress getServerAddr()
     {
         return serverAddr;
     }
 
-    public int clientPort()
+    public int getClientPort()
     {
         return clientPort;
     }
     
-    public int serverPort()
+    public int getServerPort()
     {
         return serverPort;
     }
 
-    public int clientIntf()
+    public int getClientIntf()
     {     
         return clientIntf;
     }
     
-    public int serverIntf()
+    public int getServerIntf()
     {
         return serverIntf;
     }

@@ -295,7 +295,7 @@ public class PopServerParser extends AbstractParser
                             try {
                                 MIMEMessageHeaders zMMHeader = MIMEMessageHeaders.parseMMHeaders(zMMessageT.getInputStream(), zMMessageT.getFileMIMESource());
 
-                                MessageInfo zMsgInfo = MessageInfoFactory.fromMIMEMessage(zMMHeader, session.sessionEvent(), session.serverPort());
+                                MessageInfo zMsgInfo = MessageInfoFactory.fromMIMEMessage(zMMHeader, session.sessionEvent(), session.getServerPort());
                                 zMsgInfo.addAddress(AddressKind.USER, zCasing.getUser(), null);
 
                                 zMMessageT.setMIMEMessageHeader(zMMHeader);

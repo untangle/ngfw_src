@@ -109,11 +109,11 @@ public class UDPHook implements NetcapHook
 
                 if ( logger.isInfoEnabled()) {
                     logger.info( "UDP: Completing session:" );
-                    logger.info( "Client: " + session.clientAddr() + ":" + session.clientPort());
-                    logger.info( "Server: " + session.serverAddr() + ":" + session.serverPort());
+                    logger.info( "Client: " + session.getClientAddr() + ":" + session.getClientPort());
+                    logger.info( "Server: " + session.getServerAddr() + ":" + session.getServerPort());
                 }
 
-                serverTraffic = new IPTraffic( session.clientAddr(), session.clientPort(), session.serverAddr(), session.serverPort());
+                serverTraffic = new IPTraffic( session.getClientAddr(), session.getClientPort(), session.getServerAddr(), session.getServerPort());
 
                 serverTraffic.ttl( session.ttl());
                 serverTraffic.tos( session.tos());
@@ -123,13 +123,13 @@ public class UDPHook implements NetcapHook
             /* Setup the marking */
             serverTraffic.isMarkEnabled( true );
             
-            serverTraffic.mark( clientSide.clientIntf() );
+            serverTraffic.mark( clientSide.getClientIntf() );
 
             serverTraffic.lock();
 
             this.netcapUDPSession.setServerTraffic(serverTraffic);
 
-            int intf = serverSide.serverIntf();
+            int intf = serverSide.getServerIntf();
 
             if ( !netcapUDPSession.merge( serverTraffic, intf )) {
                 /* Merged out and indicate that the session was rejected */
@@ -156,7 +156,7 @@ public class UDPHook implements NetcapHook
             clientTraffic.isMarkEnabled( true );
                 
             /* Packets cannot go back out on the server interface */
-            clientTraffic.mark( serverSide.serverIntf() );
+            clientTraffic.mark( serverSide.getServerIntf() );
 
             clientTraffic.lock();
 
@@ -214,7 +214,7 @@ public class UDPHook implements NetcapHook
                 /* Only advance the previous session if the node requested the session */
                 if (( request.state() == ArgonIPNewSessionRequest.REQUESTED ) ||
                     ( request.state() == ArgonIPNewSessionRequest.RELEASED && session != null )) {
-                    logger.debug( "Passing new session data client: " + session.clientAddr());
+                    logger.debug( "Passing new session data client: " + session.getClientAddr());
                     prevSession = session;
                 } else {
                     logger.debug( "Reusing session data" );

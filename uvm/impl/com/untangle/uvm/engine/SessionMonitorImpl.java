@@ -121,17 +121,17 @@ class SessionMonitorImpl implements SessionMonitor
 
                         session.setBypassed(Boolean.FALSE);
                         session.setLocalTraffic(Boolean.FALSE);
-                        session.setClientIntf(new Integer(clientSide.clientIntf()));
-                        session.setServerIntf(new Integer(serverSide.serverIntf()));
+                        session.setClientIntf(new Integer(clientSide.getClientIntf()));
+                        session.setServerIntf(new Integer(serverSide.getServerIntf()));
 
                         /**
                          * The conntrack entry shows that this session has been redirect to the local host
                          * We need to overwrite that with the correct info
                          */
-                        session.setPostNatClient(serverSide.clientAddr());
-                        session.setPostNatServer(serverSide.serverAddr());
-                        session.setPostNatClientPort(serverSide.clientPort());
-                        session.setPostNatServerPort(serverSide.serverPort());
+                        session.setPostNatClient(serverSide.getClientAddr());
+                        session.setPostNatServer(serverSide.getServerAddr());
+                        session.setPostNatClientPort(serverSide.getClientPort());
+                        session.setPostNatServerPort(serverSide.getServerPort());
 
                         /**
                          * Only have one priority per session
@@ -309,7 +309,7 @@ class SessionMonitorImpl implements SessionMonitor
      */
     private boolean _matches(com.untangle.uvm.node.SessionTuple sessionDesc, SessionMonitorEntry session)
     {
-        switch (sessionDesc.protocol()) {
+        switch (sessionDesc.getProtocol()) {
         case SessionTuple.PROTO_TCP:
             if (! "TCP".equals(session.getProtocol())) {
                 return false;
@@ -322,17 +322,17 @@ class SessionMonitorImpl implements SessionMonitor
             break;
         }
 
-        if (! sessionDesc.clientAddr().equals(session.getPreNatClient())) {
+        if (! sessionDesc.getClientAddr().equals(session.getPreNatClient())) {
             return false;
         }
-        if (! sessionDesc.serverAddr().equals(session.getPreNatServer())) {
+        if (! sessionDesc.getServerAddr().equals(session.getPreNatServer())) {
             return false;
         }
 
-        if (sessionDesc.clientPort() != session.getPreNatClientPort()) {
+        if (sessionDesc.getClientPort() != session.getPreNatClientPort()) {
             return false;
         }
-        if (sessionDesc.serverPort() != session.getPreNatServerPort()) {
+        if (sessionDesc.getServerPort() != session.getPreNatServerPort()) {
             return false;
         }
 

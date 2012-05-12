@@ -135,11 +135,11 @@ public class IpsDetectionEngine
     public void processNewSessionRequest(IPNewSessionRequest request, Protocol protocol)
     {
         //Get Mapped list
-        List<IpsRuleHeader> c2sList = portC2SMap.get(request.serverPort());
-        List<IpsRuleHeader> s2cList = portS2CMap.get(request.serverPort());
+        List<IpsRuleHeader> c2sList = portC2SMap.get(request.getServerPort());
+        List<IpsRuleHeader> s2cList = portS2CMap.get(request.getServerPort());
 
         if(c2sList == null) {
-            c2sList = manager.matchingPortsList(request.serverPort(), IpsRuleManager.TO_SERVER);
+            c2sList = manager.matchingPortsList(request.getServerPort(), IpsRuleManager.TO_SERVER);
             // bug1443 -- save memory by reusing value.
             synchronized(allPortMapLists) {
                 boolean found = false;
@@ -153,15 +153,15 @@ public class IpsDetectionEngine
                 }
                 if (!found)
                     allPortMapLists.add(c2sList);
-                portC2SMap.put(request.serverPort(),c2sList);
+                portC2SMap.put(request.getServerPort(),c2sList);
             }
 
             if (logger.isDebugEnabled())
-                logger.debug("c2sHeader list Size: "+c2sList.size() + " For port: "+request.serverPort());
+                logger.debug("c2sHeader list Size: "+c2sList.size() + " For port: "+request.getServerPort());
         }
 
         if(s2cList == null) {
-            s2cList = manager.matchingPortsList(request.serverPort(), IpsRuleManager.TO_CLIENT);
+            s2cList = manager.matchingPortsList(request.getServerPort(), IpsRuleManager.TO_CLIENT);
             synchronized(allPortMapLists) {
                 boolean found = false;
                 for (Iterator<List<IpsRuleHeader>> iter = allPortMapLists.iterator(); iter.hasNext();) {
@@ -174,11 +174,11 @@ public class IpsDetectionEngine
                 }
                 if (!found)
                     allPortMapLists.add(s2cList);
-                portS2CMap.put(request.serverPort(),s2cList);
+                portS2CMap.put(request.getServerPort(),s2cList);
             }
 
             if (logger.isDebugEnabled())
-                logger.debug("s2cHeader list Size: "+s2cList.size() + " For port: "+request.serverPort());
+                logger.debug("s2cHeader list Size: "+s2cList.size() + " For port: "+request.getServerPort());
         }
 
         //Check matches

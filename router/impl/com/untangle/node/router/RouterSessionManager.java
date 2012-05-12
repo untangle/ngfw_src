@@ -35,9 +35,9 @@ class RouterSessionManager
     {
         RouterSessionData data =
             new RouterSessionData( clientAddr, clientPort,
-                                   request.clientAddr(), request.clientPort(),
+                                   request.getClientAddr(), request.getClientPort(),
                                    serverAddr, serverPort,
-                                   request.serverAddr(), request.serverPort());
+                                   request.getServerAddr(), request.getServerPort());
 
         if (logger.isDebugEnabled()) {
             logger.debug( "Registering session: " + request.id());
@@ -151,17 +151,17 @@ class SessionRedirectKey
 
     SessionRedirectKey( IPNewSessionRequest request, Protocol protocol )
     {
-        this( protocol, request.serverAddr(), request.serverPort());
+        this( protocol, request.getServerAddr(), request.getServerPort());
     }
 
     SessionRedirectKey( NodeTCPSession session )
     {
-        this( Protocol.TCP, session.serverAddr(), session.serverPort());
+        this( Protocol.TCP, session.getServerAddr(), session.getServerPort());
     }
 
     SessionRedirectKey( NodeIPSession session, Protocol protocol )
     {
-        this( protocol, session.serverAddr(), session.serverPort());
+        this( protocol, session.getServerAddr(), session.getServerPort());
     }
 
     public int hashCode()

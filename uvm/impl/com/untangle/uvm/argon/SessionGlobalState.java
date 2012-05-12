@@ -39,7 +39,7 @@ public class SessionGlobalState
         this.netcapSession = netcapSession;
 
         id = netcapSession.id();
-        protocol = netcapSession.protocol();
+        protocol = netcapSession.getProtocol();
         user = null;
 
         this.clientSideListener = clientSideListener;
@@ -53,7 +53,7 @@ public class SessionGlobalState
         return id;
     }
     
-    public short protocol()
+    public short getProtocol()
     {
         return protocol;
     }

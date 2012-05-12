@@ -54,10 +54,10 @@ class TarpitEventHandler extends AbstractEventHandler
                 }
             }
             
-            logger.debug("Check DNSBL(s) for connection from: " + tsr.clientAddr());
+            logger.debug("Check DNSBL(s) for connection from: " + tsr.getClientAddr());
 
             if ( dnsblChecker.check(tsr, spamConfig.getTarpitTimeout()) == true ) {
-                logger.debug("DNSBL hit confirmed, rejecting connection from: " + tsr.clientAddr());
+                logger.debug("DNSBL hit confirmed, rejecting connection from: " + tsr.getClientAddr());
                 /* get finalization in order to log rejection */
                 tsr.rejectReturnRst(true);
                 /* don't reject and release */

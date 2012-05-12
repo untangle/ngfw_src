@@ -102,11 +102,6 @@ public interface NodeIPSession extends NodeSession
     byte clientState();
     byte serverState();
 
-    /**
-     * The <code>stats</code> method returns statistics for this session.
-     *
-     * @return a <code>SessionStats</code> giving the current statistics for this session
-     */
     SessionStats stats();
     
 }

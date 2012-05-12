@@ -61,10 +61,10 @@ class EventHandler extends AbstractEventHandler
          * Find the matching rule compute block/log verdicts
          */
         for (FirewallRule rule : firewallRuleList) {
-            if (rule.isMatch(request.protocol(),
-                             request.clientIntf(), request.serverIntf(),
-                             request.clientAddr(), request.getNatToHost(),
-                             request.clientPort(), request.getNatToPort(),
+            if (rule.isMatch(request.getProtocol(),
+                             request.getClientIntf(), request.getServerIntf(),
+                             request.getClientAddr(), request.getNatToHost(),
+                             request.getClientPort(), request.getNatToPort(),
                              (String)request.globalAttachment(NodeSession.KEY_PLATFORM_ADCONNECTOR_USERNAME))) {
                 matchedRule = rule;
                 break;

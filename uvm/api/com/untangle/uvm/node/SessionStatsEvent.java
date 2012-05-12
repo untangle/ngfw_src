@@ -36,162 +36,66 @@ public class SessionStatsEvent extends LogEvent
 
     public SessionStatsEvent() { }
 
-    public SessionStatsEvent(SessionStats begin, SessionStats end, SessionEvent pe)
+    public SessionStatsEvent( SessionEvent pe )
     {
         this.sessionEvent = pe;
-
-        c2pBytes = begin.c2tBytes();
-        p2cBytes = begin.t2cBytes();
-        c2pChunks = begin.c2tChunks();
-        p2cChunks = begin.t2cChunks();
-
-        p2sBytes = end.t2sBytes();
-        s2pBytes = end.s2tBytes();
-        p2sChunks = end.t2sChunks();
-        s2pChunks = end.s2tChunks();
     }
 
     // accessors --------------------------------------------------------------
 
     /**
      * Total bytes send from client to pipeline
-     *
-     * @return the number of bytes sent from the client into the pipeline
      */
-    public long getC2pBytes()
-    {
-        return c2pBytes;
-    }
-
-    public void setC2pBytes(long c2pBytes)
-    {
-        this.c2pBytes = c2pBytes;
-    }
+    public long getC2pBytes() { return c2pBytes; }
+    public void setC2pBytes( long c2pBytes ) { this.c2pBytes = c2pBytes; }
 
     /**
      * Total bytes send from server to pipeline
-     *
-     * @return the number of bytes sent from the server into the pipeline
      */
-    public long getS2pBytes()
-    {
-        return s2pBytes;
-    }
-
-    public void setS2pBytes(long s2pBytes)
-    {
-        this.s2pBytes = s2pBytes;
-    }
+    public long getS2pBytes() { return s2pBytes; }
+    public void setS2pBytes( long s2pBytes ) { this.s2pBytes = s2pBytes; }
 
     /**
      * Total bytes send from pipeline to client
-     *
-     * @return the number of bytes sent from the pipeline to the client
      */
-    public long getP2cBytes()
-    {
-        return p2cBytes;
-    }
-
-    public void setP2cBytes(long p2cBytes)
-    {
-        this.p2cBytes = p2cBytes;
-    }
+    public long getP2cBytes() { return p2cBytes; }
+    public void setP2cBytes( long p2cBytes ) { this.p2cBytes = p2cBytes; }
 
     /**
      * Total bytes send from pipeline to server
-     *
-     * @return the number of bytes sent from the pipeline to the server
      */
-    public long getP2sBytes()
-    {
-        return p2sBytes;
-    }
-
-    public void setP2sBytes(long p2sBytes)
-    {
-        this.p2sBytes = p2sBytes;
-    }
+    public long getP2sBytes() { return p2sBytes; }
+    public void setP2sBytes( long p2sBytes ) { this.p2sBytes = p2sBytes; }
 
     /**
      * Total chunks send from client to pipeline
-     *
-     * @return the number of chunks sent from the client into the pipeline
      */
-    public long getC2pChunks()
-    {
-        return c2pChunks;
-    }
-
-    public void setC2pChunks(long c2pChunks)
-    {
-        this.c2pChunks = c2pChunks;
-    }
+    public long getC2pChunks() { return c2pChunks; }
+    public void setC2pChunks( long c2pChunks ) { this.c2pChunks = c2pChunks; }
 
     /**
      * Total chunks send from server to pipeline
-     *
-     * @return the number of chunks sent from the server into the pipeline
      */
-    public long getS2pChunks()
-    {
-        return s2pChunks;
-    }
-
-    public void setS2pChunks(long s2pChunks)
-    {
-        this.s2pChunks = s2pChunks;
-    }
+    public long getS2pChunks() { return s2pChunks; }
+    public void setS2pChunks( long s2pChunks ) { this.s2pChunks = s2pChunks; }
 
     /**
      * Total chunks send from pipeline to client
-     *
-     * @return the number of chunks sent from the pipeline to the client
      */
-    public long getP2cChunks()
-    {
-        return p2cChunks;
-    }
-
-    public void setP2cChunks(long p2cChunks)
-    {
-        this.p2cChunks = p2cChunks;
-    }
+    public long getP2cChunks() { return p2cChunks; }
+    public void setP2cChunks( long p2cChunks ) { this.p2cChunks = p2cChunks; }
 
     /**
      * Total chunks send from pipeline to server
-     *
-     * @return the number of chunks sent from the pipeline to the server
      */
-    public long getP2sChunks()
-    {
-        return p2sChunks;
-    }
+    public long getP2sChunks() { return p2sChunks; }
+    public void setP2sChunks( long p2sChunks ) { this.p2sChunks = p2sChunks; }
 
-    public void setP2sChunks(long p2sChunks)
-    {
-        this.p2sChunks = p2sChunks;
-    }
+    public Long getSessionId() { return sessionEvent.getSessionId(); }
+    public void setSessionId( Long sessionId ) { this.sessionEvent.setSessionId(sessionId); }
 
-    public Long getSessionId()
-    {
-        return sessionEvent.getSessionId();
-    }
-
-    public void setSessionId( Long sessionId )
-    {
-        this.sessionEvent.setSessionId(sessionId);
-    }
-
-    public SessionEvent getSessionEvent()
-    {
-        return sessionEvent;
-    }
-
-    public void setSessionEvent(SessionEvent sessionEvent)
-    {
-        this.sessionEvent = sessionEvent;
-    }
+    public SessionEvent getSessionEvent() { return sessionEvent; }
+    public void setSessionEvent(SessionEvent sessionEvent) { this.sessionEvent = sessionEvent; }
 
     private static String sql = "UPDATE reports.sessions " +
         "SET " +

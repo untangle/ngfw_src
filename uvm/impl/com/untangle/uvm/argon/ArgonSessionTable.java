@@ -61,7 +61,7 @@ public class ArgonSessionTable
         int count = 0;
         
         for ( SessionGlobalState state : activeSessions.values() ) {
-            if (state.protocol() == protocol)
+            if (state.getProtocol() == protocol)
                 count++;
         }
 

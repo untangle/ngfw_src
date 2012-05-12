@@ -107,10 +107,10 @@ public class TCPHook implements NetcapHook
                 /* Complete with the parameters from the last node */
                 ArgonTCPSession session = (ArgonTCPSession)sessionList.get( sessionList.size() - 1 );
 
-                clientAddr = session.clientAddr();
-                clientPort = session.clientPort();
-                serverAddr = session.serverAddr();
-                serverPort = session.serverPort();
+                clientAddr = session.getClientAddr();
+                clientPort = session.getClientPort();
+                serverAddr = session.getServerAddr();
+                serverPort = session.getServerPort();
             }
 
             /* XXX Have to check if it is destined locally, if so, you don't create two
@@ -129,7 +129,7 @@ public class TCPHook implements NetcapHook
             }
 
             try {
-                int intfId = clientSide.serverIntf();
+                int intfId = clientSide.getServerIntf();
                 netcapTCPSession.serverComplete( clientAddr, clientPort, serverAddr, serverPort, intfId, flags );
                 netcapTCPSession.tcpServerSide().blocking( false );
                 ifServerComplete = true;

@@ -83,13 +83,13 @@ class RouterEventHandler extends AbstractEventHandler
     private void handleNewSessionRequest(IPNewSessionRequest request, Protocol protocol)
         
     {
-        InetAddress origClientAddr = request.clientAddr();
+        InetAddress origClientAddr = request.getClientAddr();
         InetAddress newClientAddr = request.getNatFromHost();
-        InetAddress origServerAddr = request.serverAddr();
+        InetAddress origServerAddr = request.getServerAddr();
         InetAddress newServerAddr = request.getNatToHost();
-        int origClientPort = request.clientPort();
+        int origClientPort = request.getClientPort();
         int newClientPort  = request.getNatFromPort();
-        int origServerPort = request.serverPort();
+        int origServerPort = request.getServerPort();
         int newServerPort  = request.getNatToPort();
 
         if ( logger.isDebugEnabled()) {
@@ -120,7 +120,7 @@ class RouterEventHandler extends AbstractEventHandler
 
             /* Update the session information so it matches what is in the NAT info */
             /* Here is where we have to insert the magic, just for TCP */
-            request.clientAddr( newClientAddr );
+            request.getClientAddr( newClientAddr );
             if( protocol == Protocol.TCP && !origClientAddr.equals(newClientAddr)){
                 // if we changed the source addr of a TCP connection,
                 // we will need to allocate client port manually because the kernel will not know about
@@ -129,13 +129,13 @@ class RouterEventHandler extends AbstractEventHandler
                 if ( logger.isDebugEnabled()) {
                     logger.debug( "Mangling client port from " + origClientPort + " to " + port );
                 }
-                request.clientPort( port );
+                request.getClientPort( port );
                 attachment.releasePort( port );
             } else {
-                request.clientPort( newClientPort );
+                request.getClientPort( newClientPort );
             }
-            request.serverAddr( newServerAddr );
-            request.serverPort( newServerPort );
+            request.getServerAddr( newServerAddr );
+            request.getServerPort( newServerPort );
 
 
             if (isFtp(request,protocol)){
@@ -236,7 +236,7 @@ class RouterEventHandler extends AbstractEventHandler
         int releasePort = attachment.releasePort();
 
         if ( releasePort != 0 ) {
-            if ( releasePort != session.clientPort() && releasePort != session.serverPort()) {
+            if ( releasePort != session.getClientPort() && releasePort != session.getServerPort()) {
                 /* This happens for all NAT ftp PORT sessions */
                 logger.info("Release port " + releasePort +" is neither client nor server port");
             }
@@ -246,7 +246,7 @@ class RouterEventHandler extends AbstractEventHandler
             getPortList( protocol).releasePort( releasePort );
         } else {
             if ( logger.isDebugEnabled()) {
-                logger.debug("Ignoring non-natd port: " + session.clientPort() + "/" + session.serverPort());
+                logger.debug("Ignoring non-natd port: " + session.getClientPort() + "/" + session.getServerPort());
             }
         }
 
@@ -270,7 +270,7 @@ class RouterEventHandler extends AbstractEventHandler
 
     private boolean isFtp(IPNewSessionRequest request, Protocol protocol)
     {
-        if ((protocol == Protocol.TCP) && (request.serverPort() == FTP_SERVER_PORT)) {
+        if ((protocol == Protocol.TCP) && (request.getServerPort() == FTP_SERVER_PORT)) {
             return true;
         }
 

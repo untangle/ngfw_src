@@ -8,6 +8,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.ListIterator;
+import java.net.InetAddress;
 
 import org.apache.log4j.Logger;
 
@@ -23,7 +24,10 @@ import com.untangle.uvm.IntfConstants;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.NetworkManager;
 import com.untangle.uvm.engine.PipelineFoundryImpl;
+import com.untangle.uvm.node.SessionTuple;
+import com.untangle.uvm.node.SessionTupleImpl;
 import com.untangle.uvm.node.SessionEvent;
+import com.untangle.uvm.node.SessionStatsEvent;
 import com.untangle.uvm.node.PolicyManager;
 import com.untangle.uvm.vnet.NodeSession;
 import com.untangle.uvm.node.DirectoryConnector;
@@ -59,8 +63,8 @@ public abstract class ArgonHook implements Runnable
 
     protected SessionGlobalState sessionGlobalState;
 
-    protected ArgonIPSessionDesc clientSide = null;
-    protected ArgonIPSessionDesc serverSide = null;
+    protected SessionTuple clientSide = null;
+    protected SessionTuple serverSide = null;
 
     protected static final PipelineFoundryImpl pipelineFoundry = (PipelineFoundryImpl)UvmContextFactory.context().pipelineFoundry();
     
@@ -83,11 +87,13 @@ public abstract class ArgonHook implements Runnable
 
             sessionGlobalState = new SessionGlobalState( netcapSession(), clientSideListener(), serverSideListener(), this );
             NetcapSession netcapSession = sessionGlobalState.netcapSession();
-            if ( logger.isDebugEnabled()) {
-                logger.debug( "New thread for session id: " + netcapSession.id() + " " + sessionGlobalState );
-            }
             int clientIntf = netcapSession.clientSide().interfaceId();
             int serverIntf = netcapSession.serverSide().interfaceId();
+            InetAddress clientAddr = netcapSession.clientSide().client().host();
+            long sessionId = sessionGlobalState.id();
+            if ( logger.isDebugEnabled()) {
+                logger.debug( "New thread for session id: " + sessionId + " " + sessionGlobalState );
+            }
 
             /**
              * If the interface is not known immediately (from the marks)
@@ -131,14 +137,24 @@ public abstract class ArgonHook implements Runnable
                 return;
             }
 
-            clientSide = new NetcapSessionTupleImpl( sessionGlobalState, true );
-            serverSide = clientSide; /* initially serverside looks just like client side - not NAT or anything */
+            /**
+             * Create the initial tuples based on current information
+             * Set the current serverSide = clientSide, the apps (like router) will change the tuple if it gets NATd or port forwarded
+             */
+            clientSide = new SessionTupleImpl( sessionGlobalState.getProtocol(),
+                                               netcapSession.clientSide().interfaceId(), /* always get clientIntf from client side */
+                                               netcapSession.serverSide().interfaceId(), /* always get serverIntf from server side */
+                                               netcapSession.clientSide().client().host(),
+                                               netcapSession.clientSide().server().host(),
+                                               netcapSession.clientSide().client().port(),
+                                               netcapSession.clientSide().server().port());
+            serverSide = clientSide;
 
             /* lookup the user information */
             DirectoryConnector adconnector = (DirectoryConnector)UvmContextFactory.context().nodeManager().node("untangle-node-adconnector");
             String username = null;
             if (adconnector != null)
-                username = adconnector.getIpUsernameMap().tryLookupUser( clientSide.clientAddr() );
+                username = adconnector.getIpUsernameMap().tryLookupUser( clientSide.getClientAddr() );
             if (username != null && username.length() > 0 ) { 
                 logger.debug( "user information: " + username );
                 sessionGlobalState.setUser( username );
@@ -149,11 +165,11 @@ public abstract class ArgonHook implements Runnable
             HostnameLookup reporting = (HostnameLookup) UvmContextFactory.context().nodeManager().node("untangle-node-reporting");
             String hostname = null;
             if ((hostname == null || "".equals(hostname)) && reporting != null)
-                hostname = reporting.lookupHostname( clientSide.clientAddr() );
+                hostname = reporting.lookupHostname( clientAddr );
             if ((hostname == null || "".equals(hostname)) && router != null)
-                hostname = router.lookupHostname( clientSide.clientAddr() );
+                hostname = router.lookupHostname( clientAddr );
             if ((hostname == null || "".equals(hostname)))
-                hostname = clientSide.clientAddr().getHostAddress();
+                hostname = clientAddr.getHostAddress();
             if (hostname != null && hostname.length() > 0 ) {
                 logger.debug( "hostname information: " + hostname );
                 sessionGlobalState.attach( NodeSession.KEY_PLATFORM_HOSTNAME, hostname );
@@ -183,7 +199,13 @@ public abstract class ArgonHook implements Runnable
              * modified the sessionEvent (we can't do it until we connect
              * to the server since that is what actually modifies the
              * session global state. */
-            serverSide = new NetcapSessionTupleImpl( sessionGlobalState, false );
+            serverSide = new SessionTupleImpl( sessionGlobalState.getProtocol(),
+                                               netcapSession.clientSide().interfaceId(), /* always get clientIntf from client side */
+                                               netcapSession.serverSide().interfaceId(), /* always get serverIntf from server side */
+                                               netcapSession.serverSide().client().host(),
+                                               netcapSession.serverSide().server().host(),
+                                               netcapSession.serverSide().client().port(),
+                                               netcapSession.serverSide().server().port());
 
             /* Connect to the client */
             boolean clientActionCompleted = connectClient();
@@ -271,10 +293,26 @@ public abstract class ArgonHook implements Runnable
             /* Let the pipeline foundry know */
             if (clientSide != null) {
                 /* Don't log sessionEvent that don't complete properly */
-                if (( sessionEvent != null ) && ( sessionEvent.getCClientAddr() == null ))
+                if (( sessionEvent != null ) && ( sessionEvent.getCClientAddr() == null )) 
                     sessionEvent = null;
+
+                if (sessionEvent != null) {
+                    SessionStatsEvent statEvent = new SessionStatsEvent(sessionEvent);
+
+                    statEvent.setC2pBytes(sessionGlobalState.clientSideListener().rxBytes);
+                    statEvent.setP2cBytes(sessionGlobalState.clientSideListener().txBytes);
+                    statEvent.setC2pChunks(sessionGlobalState.clientSideListener().rxChunks);
+                    statEvent.setP2cChunks(sessionGlobalState.clientSideListener().txChunks);
+
+                    statEvent.setS2pBytes(sessionGlobalState.serverSideListener().rxBytes);
+                    statEvent.setP2sBytes(sessionGlobalState.serverSideListener().txBytes);
+                    statEvent.setS2pChunks(sessionGlobalState.serverSideListener().rxChunks);
+                    statEvent.setP2sChunks(sessionGlobalState.serverSideListener().txChunks);
+                        
+                    UvmContextFactory.context().logEvent( statEvent );
+                }
                 /* log and destroy the session */
-                pipelineFoundry.destroy(clientSide, serverSide, sessionEvent);
+                pipelineFoundry.destroy( sessionGlobalState.id() );
             }
 
             /* Remove the vector from the vectron table */
@@ -299,12 +337,12 @@ public abstract class ArgonHook implements Runnable
         }
     }
 
-    public ArgonIPSessionDesc getClientSide()
+    public SessionTuple getClientSide()
     {
         return this.clientSide;
     }
 
-    public ArgonIPSessionDesc getServerSide()
+    public SessionTuple getServerSide()
     {
         return this.serverSide;
     }

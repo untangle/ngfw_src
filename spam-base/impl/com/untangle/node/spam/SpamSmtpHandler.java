@@ -133,7 +133,7 @@ public class SpamSmtpHandler extends BufferingSessionHandler
         }
 
         try {
-            boolean isWan = UvmContextFactory.context().networkManager().getNetworkConfiguration().findById(session.serverIntf()).isWAN();
+            boolean isWan = UvmContextFactory.context().networkManager().getNetworkConfiguration().findById(session.getServerIntf()).isWAN();
             if (!config.getScanWanMail() && isWan) {
                 logger.debug("Ignoring WAN-bound SMTP mail");
                 postSpamEvent(msgInfo, cleanReport(), SpamMessageAction.OUTBOUND);
@@ -266,7 +266,7 @@ public class SpamSmtpHandler extends BufferingSessionHandler
         }
 
         try {
-            boolean isWan = UvmContextFactory.context().networkManager().getNetworkConfiguration().findById(session.serverIntf()).isWAN();
+            boolean isWan = UvmContextFactory.context().networkManager().getNetworkConfiguration().findById(session.getServerIntf()).isWAN();
             if (!config.getScanWanMail() && isWan) {
                 logger.debug("Ignoring WAN-bound SMTP mail");
                 postSpamEvent(msgInfo, cleanReport(), SpamMessageAction.SAFELIST);
@@ -297,7 +297,7 @@ public class SpamSmtpHandler extends BufferingSessionHandler
         SpamMessageAction action = config.getMsgAction();
 
         // Anything going out External MARK instead of QUARANTINE
-        boolean isWan = UvmContextFactory.context().networkManager().getNetworkConfiguration().findById(session.serverIntf()).isWAN();
+        boolean isWan = UvmContextFactory.context().networkManager().getNetworkConfiguration().findById(session.getServerIntf()).isWAN();
         if (action == SpamMessageAction.QUARANTINE && isWan) {
             // Change action now, as it'll make the event logs
             // more accurate

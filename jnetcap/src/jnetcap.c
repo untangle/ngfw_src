@@ -582,7 +582,7 @@ static void              _hook( int protocol, netcap_session_t* netcap_sess, voi
         case IPPROTO_UDP:  global_hook = _jnetcap.java.udp_hook; break;
         case IPPROTO_TCP:  global_hook = _jnetcap.java.tcp_hook; break;
         default: 
-            return errlog( ERR_CRITICAL, "_hook: invalid protocol(%d)\n", protocol );
+            return errlog( ERR_CRITICAL, "_hook: invalid getProtocol(%d)\n", protocol );
         }
 
         if ( NULL == global_hook ) return errlog( ERR_CRITICAL, "_hook: invalid hook\n" );
@@ -648,7 +648,7 @@ static int              _register_hook( JNIEnv* env, int protocol, jobject hook 
     switch( protocol ) {
     case IPPROTO_UDP: global_hook = &_jnetcap.java.udp_hook; break;
     case IPPROTO_TCP: global_hook = &_jnetcap.java.tcp_hook; break;
-    default: return errlog( ERR_CRITICAL, "_register_hook: invalid protocol(%d)\n", protocol );
+    default: return errlog( ERR_CRITICAL, "_register_hook: invalid getProtocol(%d)\n", protocol );
     }
         
     /* If necessary, remove the previous global reference */
@@ -700,7 +700,7 @@ static int               _unregister_hook( JNIEnv* env, int protocol )
         netcap_tcp_hook_unregister();
         break;
         
-    default: return errlog( ERR_CRITICAL, "_register_hook: invalid protocol(%d)\n", protocol );
+    default: return errlog( ERR_CRITICAL, "_register_hook: invalid getProtocol(%d)\n", protocol );
     }
     
     if ( *global_hook != NULL ) {

@@ -219,8 +219,8 @@ public class EventHandler extends AbstractEventHandler
 
             if (logger.isDebugEnabled()) {
                 logger.debug( (elem.isBlocked() ? "Blocked: " : "Logged: ") + sessInfo.protocol + ": [" + l4prot + "] " +
-                              sess.clientAddr().getHostAddress() + ":" + sess.clientPort() + " -> " +
-                              sess.serverAddr().getHostAddress() + ":" + sess.serverPort());
+                              sess.getClientAddr().getHostAddress() + ":" + sess.getClientPort() + " -> " +
+                              sess.getServerAddr().getHostAddress() + ":" + sess.getServerPort());
             }
 
             if (elem.isBlocked()) {

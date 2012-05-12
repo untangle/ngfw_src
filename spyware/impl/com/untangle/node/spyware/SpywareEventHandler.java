@@ -99,7 +99,7 @@ public class SpywareEventHandler extends AbstractEventHandler
 
     void detectSpyware(IPNewSessionRequest ipr, boolean release)
     {
-        IPMaskedAddress ipm = new IPMaskedAddress(ipr.serverAddr().getHostAddress());
+        IPMaskedAddress ipm = new IPMaskedAddress(ipr.getServerAddr().getHostAddress());
 
         GenericRule ir = (GenericRule)this.subnetSet.getMostSpecific(ipm);
 
@@ -120,8 +120,8 @@ public class SpywareEventHandler extends AbstractEventHandler
         if (logger.isDebugEnabled()) {
             logger.debug("-------------------- Detected Subnet --------------------");
             logger.debug("Subnet Name  : " + ir.getName());
-            logger.debug("Host          : " + ipr.clientAddr().getHostAddress() + ":" + ipr.clientPort());
-            logger.debug("Suspicious IP : " + ipr.serverAddr().getHostAddress() + ":" + ipr.serverPort());
+            logger.debug("Host          : " + ipr.getClientAddr().getHostAddress() + ":" + ipr.getClientPort());
+            logger.debug("Suspicious IP : " + ipr.getServerAddr().getHostAddress() + ":" + ipr.getServerPort());
             logger.debug("Matches       : " + ir.getString());
             if (ipr instanceof TCPNewSessionRequest)
                 logger.debug("Protocol      : TCP");

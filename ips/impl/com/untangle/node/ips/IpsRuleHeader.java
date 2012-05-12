@@ -121,14 +121,14 @@ public class IpsRuleHeader
 
     private boolean matches(SessionTuple sess, boolean sessInbound, boolean forward, boolean swapFlag)
     {
-        if(this.protocol != Protocol.getInstance(sess.protocol()))
+        if(this.protocol != Protocol.getInstance(sess.getProtocol()))
             return false;
 
         // logger.debug("protocol match succeeded");
 
         /**Check Port Match*/
-        boolean clientPortMatch = clientPortRange.contains(forward ? sess.clientPort() : sess.serverPort());
-        boolean serverPortMatch = serverPortRange.contains(forward ? sess.serverPort() : sess.clientPort());
+        boolean clientPortMatch = clientPortRange.contains(forward ? sess.getClientPort() : sess.getServerPort());
+        boolean serverPortMatch = serverPortRange.contains(forward ? sess.getServerPort() : sess.getClientPort());
 
         boolean portMatch = (clientPortMatch ^ clientPortFlag) && (serverPortMatch ^ serverPortFlag);
 
@@ -149,7 +149,7 @@ public class IpsRuleHeader
         boolean isInbound = forward ? sessInbound : !sessInbound;
 
         /**Check IP Match*/
-        InetAddress cAddr = forward ? sess.clientAddr() : sess.serverAddr();
+        InetAddress cAddr = forward ? sess.getClientAddr() : sess.getServerAddr();
         boolean clientIPMatch = false;
         Iterator<IPMatcher> clientIt = clientIpSet.iterator();
 
@@ -167,7 +167,7 @@ public class IpsRuleHeader
             // logger.debug("client matcher: " + matcher + " sez: " + clientIPMatch);
         }
 
-        InetAddress sAddr = forward ? sess.serverAddr() : sess.clientAddr();
+        InetAddress sAddr = forward ? sess.getServerAddr() : sess.getClientAddr();
         boolean serverIPMatch = false;
         Iterator<IPMatcher> serverIt = serverIpSet.iterator();
         while(serverIt.hasNext() && !serverIPMatch) {

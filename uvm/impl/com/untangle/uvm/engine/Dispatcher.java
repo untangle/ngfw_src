@@ -295,8 +295,8 @@ class Dispatcher implements com.untangle.uvm.argon.NewSessionEventListener
             // Send the new session event.  
             if (logger.isInfoEnabled())
                 logger.info("New TCP session " +
-                            session.clientAddr().getHostAddress() + ":" + session.clientPort() + " -> " +
-                            session.serverAddr().getHostAddress() + ":" + session.serverPort());
+                            session.getClientAddr().getHostAddress() + ":" + session.getClientPort() + " -> " +
+                            session.getServerAddr().getHostAddress() + ":" + session.getServerPort());
             if (treq.state() == ArgonIPNewSessionRequest.RELEASED) {
                 session.release(treq.needsFinalization());
             } else {
@@ -383,8 +383,8 @@ class Dispatcher implements com.untangle.uvm.argon.NewSessionEventListener
             // thread instead?  XX
             if (logger.isInfoEnabled())
                 logger.info("New UDP session " +
-                            session.clientAddr().getHostAddress() + ":" + session.clientPort() + " -> " +
-                            session.serverAddr().getHostAddress() + ":" + session.serverPort());
+                            session.getClientAddr().getHostAddress() + ":" + session.getClientPort() + " -> " +
+                            session.getServerAddr().getHostAddress() + ":" + session.getServerPort());
             if (ureq.state() == ArgonIPNewSessionRequest.RELEASED) {
                 session.release(ureq.needsFinalization());
             } else {

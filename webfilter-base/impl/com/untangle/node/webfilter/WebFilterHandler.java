@@ -49,7 +49,7 @@ public class WebFilterHandler extends HttpStateMachine
 
         NodeTCPSession sess = getSession();
 
-        String nonce = node.getDecisionEngine().checkRequest(sess, sess.clientAddr(), 80, getRequestLine(),requestHeader);
+        String nonce = node.getDecisionEngine().checkRequest(sess, sess.getClientAddr(), 80, getRequestLine(),requestHeader);
         if (logger.isDebugEnabled()) {
             logger.debug("in doRequestHeader(): " + requestHeader
                          + "check request returns: " + nonce);
@@ -95,7 +95,7 @@ public class WebFilterHandler extends HttpStateMachine
             NodeTCPSession sess = getSession();
 
             String nonce = node.getDecisionEngine()
-                .checkResponse(sess.clientAddr(), getResponseRequest(),
+                .checkResponse(sess.getClientAddr(), getResponseRequest(),
                                responseHeader);
             if (logger.isDebugEnabled()) {
                 logger.debug("in doResponseHeader: " + responseHeader

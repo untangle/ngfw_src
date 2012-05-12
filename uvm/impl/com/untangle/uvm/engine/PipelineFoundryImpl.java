@@ -19,13 +19,13 @@ import org.apache.log4j.Logger;
 
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.argon.ArgonAgent;
-import com.untangle.uvm.argon.ArgonIPSessionDesc;
 import com.untangle.uvm.logging.LogEvent;
 import com.untangle.uvm.node.SessionTuple;
 import com.untangle.uvm.node.NodeManager;
 import com.untangle.uvm.node.SessionEvent;
 import com.untangle.uvm.node.SessionStatsEvent;
 import com.untangle.uvm.node.PolicyManager;
+import com.untangle.uvm.argon.ArgonSession;
 import com.untangle.uvm.vnet.CasingPipeSpec;
 import com.untangle.uvm.vnet.Fitting;
 import com.untangle.uvm.vnet.ArgonConnector;
@@ -68,13 +68,13 @@ public class PipelineFoundryImpl implements PipelineFoundry
     {
         Long t0 = System.nanoTime();
 
-        InetAddress sAddr = sessionTuple.serverAddr();
-        int sPort = sessionTuple.serverPort();
+        InetAddress sAddr = sessionTuple.getServerAddr();
+        int sPort = sessionTuple.getServerPort();
 
         InetSocketAddress socketAddress = new InetSocketAddress(sAddr, sPort);
         Fitting start = connectionFittings.remove(socketAddress);
 
-        if (SessionTuple.PROTO_TCP == sessionTuple.protocol()) {
+        if (SessionTuple.PROTO_TCP == sessionTuple.getProtocol()) {
             if (null == start) {
                 switch (sPort) {
                 case 21:
@@ -175,18 +175,13 @@ public class PipelineFoundryImpl implements PipelineFoundry
         UvmContextFactory.context().logEvent(pe);
     }
 
-    public void destroy(ArgonIPSessionDesc start, ArgonIPSessionDesc end, SessionEvent pe)
+    public void destroy( long sessionId )
     {
-        PipelineImpl pipeline = pipelines.remove(start.id());
+        PipelineImpl pipeline = pipelines.remove( sessionId );
 
         if (logger.isDebugEnabled()) {
-            logger.debug("removed: " + pipeline + " for: " + start.id());
+            logger.debug("removed: " + pipeline + " for: " + sessionId);
         }
-
-        // Endpoints can be null, if the session was never properly
-        // set up at all (unknown server interface for example)
-        if (pe != null)
-            UvmContextFactory.context().logEvent(new SessionStatsEvent(start, end, pe));
 
         pipeline.destroy();
     }

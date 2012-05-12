@@ -64,7 +64,7 @@ public abstract class PacketCrumb extends DataCrumb
     
     static PacketCrumb makeCrumb( Packet packet ) throws JVectorException
     {
-        int protocol = packet.traffic().protocol();
+        int protocol = packet.traffic().getProtocol();
 
         switch ( protocol ) {
         case Netcap.IPPROTO_UDP:

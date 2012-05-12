@@ -132,7 +132,7 @@ public class SmtpTokenStream
      * Get the client IP address
      */
     public InetAddress getClientAddress() {
-        return getSession().clientAddr();
+        return getSession().getClientAddr();
     }
 
     /**

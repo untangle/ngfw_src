@@ -67,29 +67,29 @@ abstract class NodeIPSessionImpl extends NodeSessionImpl implements NodeIPSessio
         return ((ArgonIPSession)argonSession).id();
     }
     
-    public short protocol()
+    public short getProtocol()
     {
-        return ((ArgonIPSession)argonSession).protocol();
+        return ((ArgonIPSession)argonSession).getProtocol();
     }
 
-    public InetAddress clientAddr()
+    public InetAddress getClientAddr()
     {
-        return ((ArgonIPSession)argonSession).clientAddr();
+        return ((ArgonIPSession)argonSession).getClientAddr();
     }
 
-    public InetAddress serverAddr()
+    public InetAddress getServerAddr()
     {
-        return ((ArgonIPSession)argonSession).serverAddr();
+        return ((ArgonIPSession)argonSession).getServerAddr();
     }
 
-    public int clientPort()
+    public int getClientPort()
     {
-        return ((ArgonIPSession)argonSession).clientPort();
+        return ((ArgonIPSession)argonSession).getClientPort();
     }
 
-    public int serverPort()
+    public int getServerPort()
     {
-        return ((ArgonIPSession)argonSession).serverPort();
+        return ((ArgonIPSession)argonSession).getServerPort();
     }
 
     public SessionStats stats()
@@ -118,14 +118,14 @@ abstract class NodeIPSessionImpl extends NodeSessionImpl implements NodeIPSessio
         this.needsFinalization = needsFinalization;
     }
 
-    public int clientIntf()
+    public int getClientIntf()
     {
-        return ((ArgonIPSession)argonSession).clientIntf();
+        return ((ArgonIPSession)argonSession).getClientIntf();
     }
 
-    public int serverIntf()
+    public int getServerIntf()
     {
-        return ((ArgonIPSession)argonSession).serverIntf();
+        return ((ArgonIPSession)argonSession).getServerIntf();
     }
 
     public boolean released()

@@ -63,39 +63,39 @@ abstract class IPNewSessionRequestImpl implements IPNewSessionRequest
         return argonRequest.id();
     }
 
-    public short protocol()
+    public short getProtocol()
     {
-        return argonRequest.protocol();
+        return argonRequest.getProtocol();
     }
 
-    public InetAddress clientAddr()
+    public InetAddress getClientAddr()
     {
-        return argonRequest.clientAddr();
+        return argonRequest.getClientAddr();
     }
 
-    public InetAddress serverAddr()
+    public InetAddress getServerAddr()
     {
-        return argonRequest.serverAddr();
+        return argonRequest.getServerAddr();
     }
 
-    public int clientPort()
+    public int getClientPort()
     {
-        return argonRequest.clientPort();
+        return argonRequest.getClientPort();
     }
 
-    public int serverPort()
+    public int getServerPort()
     {
-        return argonRequest.serverPort();
+        return argonRequest.getServerPort();
     }
 
-    public int clientIntf()
+    public int getClientIntf()
     {
-        return argonRequest.clientIntf();
+        return argonRequest.getClientIntf();
     }
 
-    public int serverIntf()
+    public int getServerIntf()
     {
-        return argonRequest.serverIntf();
+        return argonRequest.getServerIntf();
     }
 
     public SessionEvent sessionEvent()
@@ -103,27 +103,27 @@ abstract class IPNewSessionRequestImpl implements IPNewSessionRequest
         return argonRequest.sessionEvent();
     }
 
-    public void clientAddr(InetAddress addr)
+    public void getClientAddr(InetAddress addr)
     {
-        argonRequest.clientAddr(addr);
+        argonRequest.getClientAddr(addr);
         modified = true;
     }
 
-    public void serverAddr(InetAddress addr)
+    public void getServerAddr(InetAddress addr)
     {
-        argonRequest.serverAddr(addr);
+        argonRequest.getServerAddr(addr);
         modified = true;
     }
 
-    public void clientPort(int port)
+    public void getClientPort(int port)
     {
-        argonRequest.clientPort(port);
+        argonRequest.getClientPort(port);
         modified = true;
     }
 
-    public void serverPort(int port)
+    public void getServerPort(int port)
     {
-        argonRequest.serverPort(port);
+        argonRequest.getServerPort(port);
         modified = true;
     }
 

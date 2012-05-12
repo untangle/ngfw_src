@@ -395,9 +395,9 @@ public class CasingAdaptor extends AbstractEventHandler
         } catch (Throwable exn) {
             if (releaseParseExceptions) {
                 String sessionEndpoints = "[" +
-                    s.protocol() + " : " + 
-                    s.clientAddr() + ":" + s.clientPort() + " -> " +
-                    s.serverAddr() + ":" + s.serverPort() + "]";
+                    s.getProtocol() + " : " + 
+                    s.getClientAddr() + ":" + s.getClientPort() + " -> " +
+                    s.getServerAddr() + ":" + s.getServerPort() + "]";
 
                 /**
                  * Some Special handling for semi-common parse exceptions

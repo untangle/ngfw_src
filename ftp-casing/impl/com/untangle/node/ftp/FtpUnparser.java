@@ -76,7 +76,7 @@ class FtpUnparser extends AbstractUnparser
                     address.getHostAddress().equals("0.0.0.0")) {
                     NodeTCPSession session = getSession();
 
-                    socketAddress = new InetSocketAddress( session.serverAddr(), socketAddress.getPort());
+                    socketAddress = new InetSocketAddress( session.getServerAddr(), socketAddress.getPort());
                 } /* otherwise use the data from nat */
             }
         } else if (token instanceof FtpCommand) { // XXX tacky

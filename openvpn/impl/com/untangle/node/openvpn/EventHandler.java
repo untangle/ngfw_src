@@ -55,26 +55,26 @@ class EventHandler extends AbstractEventHandler
     {
         if ( logger.isDebugEnabled()) logger.debug( "New session: [" + request.id() + "]" );
 
-        if ( request.clientIntf() != IntfConstants.OPENVPN_INTF &&
-             request.serverIntf() != IntfConstants.OPENVPN_INTF ) {
+        if ( request.getClientIntf() != IntfConstants.OPENVPN_INTF &&
+             request.getServerIntf() != IntfConstants.OPENVPN_INTF ) {
             /* Nothing to do */
             request.release();
             return;
         }
-        else if ( request.clientIntf() == IntfConstants.OPENVPN_INTF &&
-                  request.serverIntf() == IntfConstants.OPENVPN_INTF ) {
+        else if ( request.getClientIntf() == IntfConstants.OPENVPN_INTF &&
+                  request.getServerIntf() == IntfConstants.OPENVPN_INTF ) {
             /* XXXXXXXXXX sort this out */
             request.release();
             return;
         }
         /* XXXX Handle bridging */
-        else if ( request.clientIntf() == IntfConstants.OPENVPN_INTF ) {
+        else if ( request.getClientIntf() == IntfConstants.OPENVPN_INTF ) {
             /* OPENVPN client going to another interface */
-            checkAddress( request, request.clientAddr(), request.serverAddr());
+            checkAddress( request, request.getClientAddr(), request.getServerAddr());
         }
         else {
             /* Local user trying to reach a OPENVPN client */
-            checkAddress( request, request.serverAddr(), request.clientAddr());
+            checkAddress( request, request.getServerAddr(), request.getClientAddr());
         }
     }
 

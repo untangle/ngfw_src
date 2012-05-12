@@ -138,46 +138,46 @@ public interface NodeSession extends SessionTuple
      * Returns the protocol for the session.</p>
      * @return a <code>short</code> giving one of the protocols (right now always TCP or UDP)
      */
-    short protocol();
+    short getProtocol();
 
     /**
      * Returns an argon interface for the client.</p>
      *
      * @return a <code>int</code> giving the client interface of the session.
      */
-    int clientIntf();
+    int getClientIntf();
 
     /**
      * Returns an argon interface for the server.</p>
      *
      * @return a <code>int</code> giving the server interface of the session.
      */
-    int serverIntf();
+    int getServerIntf();
 
     /**
      * Gets the Client Address of this session. </p>
      *
      * @return  the client address
      */
-    InetAddress clientAddr();
+    InetAddress getClientAddr();
 
     /**
      * Gets the Server Address of this session. </p>
      *
      * @return  the server addr.
      */
-    InetAddress serverAddr();
+    InetAddress getServerAddr();
 
     /**
      * Gets the client port for this session.</p>
      * @return the client port.
      */
-    int clientPort();
+    int getClientPort();
 
     /**
      * Gets the server port for this session.</p>
      * @return the server port.
      */
-    int serverPort();
+    int getServerPort();
 }
 

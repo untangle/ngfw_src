@@ -55,7 +55,7 @@ public class Subscription
 
     public boolean matches( SessionTuple tuple )
     {
-        switch (tuple.protocol()) {
+        switch (tuple.getProtocol()) {
         case SessionTuple.PROTO_TCP:
             if (Protocol.TCP != protocol) { return false; }
             break;
@@ -65,17 +65,17 @@ public class Subscription
             break;
 
         default:
-            logger.warn("unsupported protocol: " + tuple.protocol());
+            logger.warn("unsupported protocol: " + tuple.getProtocol());
             return false;
         }
 
-        if (!clientAddress.contains(tuple.clientAddr())) {
+        if (!clientAddress.contains(tuple.getClientAddr())) {
             return false;
-        } else if (!clientRange.contains(tuple.clientPort())) {
+        } else if (!clientRange.contains(tuple.getClientPort())) {
             return false;
-        } else if (!serverAddress.contains(tuple.serverAddr())) {
+        } else if (!serverAddress.contains(tuple.getServerAddr())) {
             return false;
-        } else if (!serverRange.contains(tuple.serverPort())) {
+        } else if (!serverRange.contains(tuple.getServerPort())) {
             return false;
         } else {
             return true;

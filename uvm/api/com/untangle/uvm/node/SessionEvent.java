@@ -42,23 +42,23 @@ public class SessionEvent extends LogEvent
     {
         super();
         this.sessionId = sessionId;
-        protocol = clientSide.protocol();
-        clientIntf = clientSide.clientIntf();
+        protocol = clientSide.getProtocol();
+        clientIntf = clientSide.getClientIntf();
         this.username = username;
         this.hostname = hostname;
     }
 
     public void completeEndpoints( SessionTuple clientSide, SessionTuple serverSide, Long policyId )
     {
-        cClientAddr = clientSide.clientAddr();
-        cClientPort = clientSide.clientPort();
-        cServerAddr = clientSide.serverAddr();
-        cServerPort = clientSide.serverPort();
-        sClientAddr = serverSide.clientAddr();
-        sClientPort = serverSide.clientPort();
-        sServerAddr = serverSide.serverAddr();
-        sServerPort = serverSide.serverPort();
-        serverIntf = serverSide.serverIntf();
+        cClientAddr = clientSide.getClientAddr();
+        cClientPort = clientSide.getClientPort();
+        cServerAddr = clientSide.getServerAddr();
+        cServerPort = clientSide.getServerPort();
+        sClientAddr = serverSide.getClientAddr();
+        sClientPort = serverSide.getClientPort();
+        sServerAddr = serverSide.getServerAddr();
+        sServerPort = serverSide.getServerPort();
+        serverIntf = serverSide.getServerIntf();
         this.policyId = policyId;
     }
 

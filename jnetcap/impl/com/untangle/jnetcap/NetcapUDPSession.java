@@ -197,8 +197,8 @@ public class NetcapUDPSession extends NetcapSession
             
             IPTraffic ipTraffic = new IPTraffic( packetPointer );
             
-            if (ipTraffic.protocol() != Netcap.IPPROTO_UDP) {
-                int tmp = ipTraffic.protocol();
+            if (ipTraffic.getProtocol() != Netcap.IPPROTO_UDP) {
+                int tmp = ipTraffic.getProtocol();
                 /* Must free the packet */
                 ipTraffic.raze();
 

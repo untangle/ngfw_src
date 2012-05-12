@@ -22,27 +22,27 @@ import java.net.InetAddress;
 
 import com.untangle.uvm.node.SessionEvent;
 
-public interface ArgonIPNewSessionRequest extends ArgonNewSessionRequest, ArgonIPSessionDesc
+public interface ArgonIPNewSessionRequest extends ArgonNewSessionRequest
 {
     /**
      * Sets the client address for this session.</p>
      */
-    void clientAddr( InetAddress addr );
+    void getClientAddr( InetAddress addr );
 
     /**
      * Sets the client port for this session.</p>
      */
-    void clientPort( int port );
+    void getClientPort( int port );
 
     /**
      * Sets the server address for this session.</p>
      */
-    void serverAddr( InetAddress addr );
+    void getServerAddr( InetAddress addr );
 
     /**
      * Sets the server port for this session.</p>
      */
-    void serverPort( int port );
+    void getServerPort( int port );
 
     SessionEvent sessionEvent();
 

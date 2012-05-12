@@ -66,10 +66,10 @@ public class FirewallImpl extends NodeBase implements Firewall
                  * Find the matching rule compute block/log verdicts
                  */
                 for (FirewallRule rule : settings.getRules()) {
-                    if (rule.isMatch(client.protocol(),
-                                     client.clientIntf(), server.serverIntf(),
-                                     client.clientAddr(),  client.serverAddr(),
-                                     client.clientPort(), client.serverPort(),
+                    if (rule.isMatch(client.getProtocol(),
+                                     client.getClientIntf(), server.getServerIntf(),
+                                     client.getClientAddr(),  client.getServerAddr(),
+                                     client.getClientPort(), client.getServerPort(),
                                      (String)attachments.get(NodeSession.KEY_PLATFORM_ADCONNECTOR_USERNAME))) {
                         matchedRule = rule;
                         break;
@@ -80,8 +80,8 @@ public class FirewallImpl extends NodeBase implements Firewall
                     return false;
 
                 logger.info("Firewall Save Setting Matcher: " +
-                            client.clientAddr() + ":" + client.clientPort() + " -> " +
-                            server.serverAddr() + ":" + server.serverPort() + " :: block:" + matchedRule.getBlock());
+                            client.getClientAddr() + ":" + client.getClientPort() + " -> " +
+                            server.getServerAddr() + ":" + server.getServerPort() + " :: block:" + matchedRule.getBlock());
                 
                 return matchedRule.getBlock();
             }

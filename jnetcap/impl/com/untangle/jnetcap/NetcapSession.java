@@ -49,7 +49,7 @@ public abstract class NetcapSession
     }
     
     /* Returns one of Netcap.IPPROTO_UDP, Netcap.IPPROTO_TCP */
-    public short protocol()
+    public short getProtocol()
     {
         short protocol = (short)getIntValue( FLAG_PROTOCOL, pointer.value());
         

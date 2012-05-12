@@ -391,7 +391,7 @@ public class ImapServerParser extends ImapParser
 
         MessageInfo ret = MessageInfoFactory.fromMIMEMessage(headers,
                                                              getSession().sessionEvent(),
-                                                             getSession().serverPort());
+                                                             getSession().getServerPort());
 
         UvmContextFactory.context().logEvent(ret);
         

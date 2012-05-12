@@ -56,13 +56,13 @@ public class PhishHttpHandler extends HttpStateMachine
         if (host == null) {
             host = requestHeader.getValue("host");
             if (host == null) {
-                InetAddress clientIp = getSession().clientAddr();
+                InetAddress clientIp = getSession().getClientAddr();
                 host = clientIp.getHostAddress();
             }
         }
         host = host.toLowerCase();
 
-        if (!node.getSettings().getEnableGooglePhishList() || node.isDomainUnblocked(host, getSession().clientAddr())) 
+        if (!node.getSettings().getEnableGooglePhishList() || node.isDomainUnblocked(host, getSession().getClientAddr())) 
             isBlocked = false;
         else {
             /**
@@ -87,7 +87,7 @@ public class PhishHttpHandler extends HttpStateMachine
                 
             node.logEvent(new PhishHttpEvent(rlToken.getRequestLine(), Action.BLOCK, "Google Safe Browsing"));
 
-            InetAddress clientIp = getSession().clientAddr();
+            InetAddress clientIp = getSession().getClientAddr();
 
             PhishBlockDetails bd = new PhishBlockDetails
                 (host, uri.toString(), clientIp);

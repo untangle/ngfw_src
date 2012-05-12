@@ -74,7 +74,7 @@ public class DnsblChecker
 
     public boolean check(TCPNewSessionRequest tsr, long timeoutSec)
     {
-        String ipAddr = tsr.clientAddr().getHostAddress();
+        String ipAddr = tsr.getClientAddr().getHostAddress();
         String invertedIPAddr = invertIPAddress(ipAddr);
 
         DnsblClient[] clients = createClients(ipAddr, invertedIPAddr); // create checkers
@@ -143,7 +143,7 @@ public class DnsblChecker
                 isBlacklisted = false;
             } else {
                 logger.debug(cContext.getHostname() + " confirmed that " + ipAddr + " is on its blacklist");
-                tsr.attach(new SpamSmtpTarpitEvent(tsr.sessionEvent(), cContext.getHostname(), tsr.clientAddr(), this.m_spamImpl.getVendor()));
+                tsr.attach(new SpamSmtpTarpitEvent(tsr.sessionEvent(), cContext.getHostname(), tsr.getClientAddr(), this.m_spamImpl.getVendor()));
 
                 /* Indicate that there was a block event */
                 this.m_spamImpl.incrementBlockCount();

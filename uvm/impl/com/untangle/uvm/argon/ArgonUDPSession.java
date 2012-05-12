@@ -3,10 +3,8 @@
  */
 package com.untangle.uvm.argon;
 
-public interface ArgonUDPSession extends ArgonIPSession, ArgonIPSessionDesc 
+public interface ArgonUDPSession extends ArgonIPSession
 {
-
-
     /**
      * Retrieve the TTL for a session, this only has an "impact" for
      * the last session in the chain when passing data crumbs
