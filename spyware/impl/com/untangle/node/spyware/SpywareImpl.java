@@ -46,7 +46,7 @@ import com.untangle.uvm.vnet.Affinity;
 import com.untangle.uvm.vnet.Fitting;
 import com.untangle.uvm.vnet.PipeSpec;
 import com.untangle.uvm.vnet.SoloPipeSpec;
-import com.untangle.uvm.vnet.TCPSession;
+import com.untangle.uvm.vnet.NodeTCPSession;
 import com.untangle.node.token.Header;
 import com.untangle.node.token.Token;
 import com.untangle.node.token.TokenAdaptor;
@@ -441,7 +441,7 @@ public class SpywareImpl extends NodeBase implements Spyware
         this.incrementMetric(STAT_PASS);
     }
 
-    Token[] generateResponse(SpywareBlockDetails bd, TCPSession sess, String uri, Header header, boolean persistent)
+    Token[] generateResponse(SpywareBlockDetails bd, NodeTCPSession sess, String uri, Header header, boolean persistent)
     {
         String n = replacementGenerator.generateNonce(bd);
         return replacementGenerator.generateResponse(n, sess, uri, header, persistent);

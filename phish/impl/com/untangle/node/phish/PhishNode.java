@@ -34,7 +34,7 @@ import com.untangle.uvm.vnet.Affinity;
 import com.untangle.uvm.vnet.Fitting;
 import com.untangle.uvm.vnet.PipeSpec;
 import com.untangle.uvm.vnet.SoloPipeSpec;
-import com.untangle.uvm.vnet.TCPSession;
+import com.untangle.uvm.vnet.NodeTCPSession;
 import com.untangle.uvm.node.EventLogQuery;
 import com.untangle.uvm.SettingsManager;
 
@@ -281,7 +281,7 @@ public class PhishNode extends SpamNodeImpl implements Phish
 
     // package private methods ------------------------------------------------
 
-    Token[] generateResponse(PhishBlockDetails bd, TCPSession session, boolean persistent)
+    Token[] generateResponse(PhishBlockDetails bd, NodeTCPSession session, boolean persistent)
     {
         return replacementGenerator.generateResponse(bd, session, persistent);
     }

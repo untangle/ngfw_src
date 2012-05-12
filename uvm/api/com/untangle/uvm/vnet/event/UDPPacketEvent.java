@@ -7,7 +7,7 @@ import java.nio.ByteBuffer;
 
 import com.untangle.uvm.vnet.IPPacketHeader;
 import com.untangle.uvm.vnet.ArgonConnector;
-import com.untangle.uvm.vnet.UDPSession;
+import com.untangle.uvm.vnet.NodeUDPSession;
 
 /**
  * UDP packet event -- packet received.
@@ -18,7 +18,7 @@ public class UDPPacketEvent extends UDPSessionEvent implements IPDataEvent
     private ByteBuffer packetBuffer;
     private IPPacketHeader header;
 
-    public UDPPacketEvent( ArgonConnector argonConnector, UDPSession session, ByteBuffer packetBuffer, IPPacketHeader header )
+    public UDPPacketEvent( ArgonConnector argonConnector, NodeUDPSession session, ByteBuffer packetBuffer, IPPacketHeader header )
     {
         super(argonConnector, session);
         this.header = header;

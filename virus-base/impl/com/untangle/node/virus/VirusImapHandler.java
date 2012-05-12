@@ -15,7 +15,7 @@ import com.untangle.node.mime.MIMEPart;
 import com.untangle.node.mime.MIMEUtil;
 import com.untangle.node.util.TempFileFactory;
 import com.untangle.uvm.UvmContextFactory;
-import com.untangle.uvm.vnet.TCPSession;
+import com.untangle.uvm.vnet.NodeTCPSession;
 
 /**
  * ProtocolHandler for Imap.
@@ -37,7 +37,7 @@ public class VirusImapHandler extends BufferingImapTokenStreamHandler
 
     private final WrappedMessageGenerator generator;
     
-    protected VirusImapHandler(TCPSession session, long maxClientWait, long maxServerWait, VirusNodeImpl node)
+    protected VirusImapHandler(NodeTCPSession session, long maxClientWait, long maxServerWait, VirusNodeImpl node)
     {
         super(maxClientWait, maxServerWait, Integer.MAX_VALUE);
         this.virusImpl = node;

@@ -59,7 +59,7 @@ public abstract class AbstractEventHandler implements SessionEventListener
     {
         // Just go ahead and shut down the other side.  The node will override
         // this method if it wants to keep the other side open.
-        TCPSession sess = event.session();
+        NodeTCPSession sess = event.session();
         sess.shutdownServer();
     }
 
@@ -74,7 +74,7 @@ public abstract class AbstractEventHandler implements SessionEventListener
     {
         // Just go ahead and shut down the other side.  The node will override
         // this method if it wants to keep the other side open.
-        TCPSession sess = event.session();
+        NodeTCPSession sess = event.session();
         sess.shutdownClient();
     }
 
@@ -83,7 +83,7 @@ public abstract class AbstractEventHandler implements SessionEventListener
     {
         // Just go ahead and reset the other side.  The node will override
         // this method if it wants to keep the other side open.
-        TCPSession sess = event.session();
+        NodeTCPSession sess = event.session();
         sess.resetServer();
     }
 
@@ -92,7 +92,7 @@ public abstract class AbstractEventHandler implements SessionEventListener
     {
         // Just go ahead and reset the other side.  The node will override
         // this method if it wants to keep the other side open.
-        TCPSession sess = event.session();
+        NodeTCPSession sess = event.session();
         sess.resetClient();
     }
 
@@ -109,10 +109,10 @@ public abstract class AbstractEventHandler implements SessionEventListener
     public IPDataResult handleTCPClientChunk(TCPChunkEvent event)
         
     {
-        TCPSession session = event.session();
+        NodeTCPSession session = event.session();
         byte serverState = session.serverState();
         // Default just sends the bytes onwards if the output is open.
-        if (serverState == VnetSessionDesc.OPEN || serverState == VnetSessionDesc.HALF_OPEN_OUTPUT)
+        if (serverState == NodeTCPSession.OPEN || serverState == NodeTCPSession.HALF_OPEN_OUTPUT)
             return IPDataResult.PASS_THROUGH;
         else
             return IPDataResult.DO_NOT_PASS;
@@ -121,10 +121,10 @@ public abstract class AbstractEventHandler implements SessionEventListener
     public IPDataResult handleTCPServerChunk(TCPChunkEvent event)
         
     {
-        TCPSession session = event.session();
+        NodeTCPSession session = event.session();
         byte clientState = session.clientState();
         // Default just sends the bytes onwards if the output is open.
-        if (clientState == VnetSessionDesc.OPEN || clientState == VnetSessionDesc.HALF_OPEN_OUTPUT)
+        if (clientState == NodeTCPSession.OPEN || clientState == NodeTCPSession.HALF_OPEN_OUTPUT)
             return IPDataResult.PASS_THROUGH;
         else
             return IPDataResult.DO_NOT_PASS;
@@ -169,7 +169,7 @@ public abstract class AbstractEventHandler implements SessionEventListener
         // Another possibility would be to hit them all at once.  Just
         // go ahead and expire the other side.  The node will override
         // this method if it wants to keep the other side open.
-        UDPSession sess = event.session();
+        NodeUDPSession sess = event.session();
         sess.expireServer();
     }
 
@@ -181,7 +181,7 @@ public abstract class AbstractEventHandler implements SessionEventListener
         // Another possibility would be to hit them all at once.  Just
         // go ahead and expire the other side.  The node will override
         // this method if it wants to keep the other side open.
-        UDPSession sess = event.session();
+        NodeUDPSession sess = event.session();
         sess.expireClient();
     }
 
@@ -211,20 +211,20 @@ public abstract class AbstractEventHandler implements SessionEventListener
     public void handleUDPClientPacket(UDPPacketEvent event)
         
     {
-        UDPSession session = event.session();
+        NodeUDPSession session = event.session();
         byte serverState = session.serverState();
         // Default just sends the bytes onwards if the output is open.
-        if (serverState == VnetSessionDesc.OPEN)
+        if (serverState == NodeIPSession.OPEN)
             session.sendServerPacket(event.packet(), event.header());
     }
 
     public void handleUDPServerPacket(UDPPacketEvent event)
         
     {
-        UDPSession session = event.session();
+        NodeUDPSession session = event.session();
         byte clientState = session.clientState();
         // Default just sends the bytes onwards if the output is open.
-        if (clientState == VnetSessionDesc.OPEN)
+        if (clientState == NodeIPSession.OPEN)
             session.sendClientPacket(event.packet(), event.header());
     }
 

@@ -30,7 +30,7 @@ import com.untangle.node.mail.papi.imap.UnparsableMIMEChunk;
 import com.untangle.node.token.Chunk;
 import com.untangle.node.token.Token;
 import com.untangle.node.token.UnparseResult;
-import com.untangle.uvm.vnet.TCPSession;
+import com.untangle.uvm.vnet.NodeTCPSession;
 
 /**
  * ...name says it all...
@@ -41,7 +41,7 @@ class ImapClientUnparser
     private final Logger m_logger =
         Logger.getLogger(ImapClientUnparser.class);
 
-    ImapClientUnparser(TCPSession session,
+    ImapClientUnparser(NodeTCPSession session,
                        ImapCasing parent) {
         super(session, parent, true);
         m_logger.debug("Created");

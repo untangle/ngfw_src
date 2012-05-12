@@ -77,8 +77,7 @@ public abstract class PipeSpec
 
     public abstract void connectArgonConnector();
     public abstract void disconnectArgonConnector();
-    public abstract List<IPSession> liveSessions();
-    public abstract List<VnetSessionDesc> liveSessionDescs();
+    public abstract List<NodeIPSession> liveSessions();
 
     // accessors --------------------------------------------------------------
 
@@ -124,7 +123,7 @@ public abstract class PipeSpec
         }
     }
     
-    public boolean matches(com.untangle.uvm.node.IPSessionDesc sd)
+    public boolean matches(com.untangle.uvm.node.SessionTuple tuple)
     {
         if ( !enabled ) {
             return false;
@@ -133,7 +132,7 @@ public abstract class PipeSpec
         Set<Subscription> s = subscriptions;
 
         for ( Subscription subscription : s ) {
-            if (subscription.matches(sd)) {
+            if ( subscription.matches( tuple ) ) {
                 return true;
             }
         }

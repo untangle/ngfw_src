@@ -17,11 +17,10 @@ import com.untangle.uvm.node.SessionEvent;
 import com.untangle.uvm.argon.ArgonUDPSession;
 import com.untangle.uvm.util.MetaEnv;
 import com.untangle.uvm.vnet.IPPacketHeader;
-import com.untangle.uvm.vnet.VnetSessionDesc;
 import com.untangle.uvm.vnet.SessionStats;
-import com.untangle.uvm.vnet.UDPSession;
-import com.untangle.uvm.node.SessionEndpoints;
-import com.untangle.uvm.vnet.VnetSessionDescImpl;
+import com.untangle.uvm.vnet.NodeIPSession;
+import com.untangle.uvm.vnet.NodeUDPSession;
+import com.untangle.uvm.node.SessionTuple;
 import com.untangle.uvm.vnet.event.IPStreamer;
 import com.untangle.uvm.vnet.event.UDPErrorEvent;
 import com.untangle.uvm.vnet.event.UDPPacketEvent;
@@ -30,13 +29,13 @@ import com.untangle.uvm.vnet.event.UDPSessionEvent;
 /**
  * This is the primary implementation class for UDP live sessions.
  */
-class UDPSessionImpl extends IPSessionImpl implements UDPSession
+class NodeUDPSessionImpl extends NodeIPSessionImpl implements NodeUDPSession
 {
     protected int[] maxPacketSize;
 
     private final String logPrefix;
     
-    protected UDPSessionImpl(Dispatcher disp,
+    protected NodeUDPSessionImpl(Dispatcher disp,
                              ArgonUDPSession argonSession,
                              SessionEvent pe,
                              int clientMaxPacketSize,
@@ -81,22 +80,14 @@ class UDPSessionImpl extends IPSessionImpl implements UDPSession
         maxPacketSize[CLIENT] = numBytes;
     }
 
-    public VnetSessionDesc makeDesc()
-    {
-        return new VnetSessionDescImpl(id(), SessionEndpoints.PROTO_UDP, new SessionStats(stats),
-                                       clientState(), serverState(),
-                                       clientIntf(), serverIntf(), clientAddr(),
-                                       serverAddr(), clientPort(), serverPort());
-    }
-
     public byte clientState()
     {
         if ((argonSession).clientIncomingSocketQueue() == null) {
             assert (argonSession).clientOutgoingSocketQueue() == null;
-            return VnetSessionDesc.EXPIRED;
+            return NodeIPSession.EXPIRED;
         } else {
             assert (argonSession).clientOutgoingSocketQueue() != null;
-            return VnetSessionDesc.OPEN;
+            return NodeIPSession.OPEN;
         }
     }
 
@@ -104,10 +95,10 @@ class UDPSessionImpl extends IPSessionImpl implements UDPSession
     {
         if ((argonSession).serverIncomingSocketQueue() == null) {
             assert (argonSession).serverOutgoingSocketQueue() == null;
-            return VnetSessionDesc.EXPIRED;
+            return NodeIPSession.EXPIRED;
         } else {
             assert (argonSession).serverOutgoingSocketQueue() != null;
-            return VnetSessionDesc.OPEN;
+            return NodeIPSession.OPEN;
         }
     }
 
@@ -199,11 +190,6 @@ class UDPSessionImpl extends IPSessionImpl implements UDPSession
             PacketCrumb packet2send = (PacketCrumb) nc;
             assert packet2send != null;
             int numWritten = sendCrumb(packet2send, out);
-            if (RWSessionStats.DoDetailedTimes) {
-                long[] times = stats.times();
-                if (times[SessionStats.FIRST_BYTE_WROTE_TO_CLIENT + side] == 0)
-                    times[SessionStats.FIRST_BYTE_WROTE_TO_CLIENT + side] = MetaEnv.currentTimeMillis();
-            }
             argonConnector.lastSessionWriteFailed(false);
 
             stats.wroteData(side, numWritten);
@@ -281,11 +267,6 @@ class UDPSessionImpl extends IPSessionImpl implements UDPSession
         }
 
         Crumb crumb = in.read();
-        if (RWSessionStats.DoDetailedTimes) {
-            long[] times = stats.times();
-            if (times[SessionStats.FIRST_BYTE_READ_FROM_CLIENT + side] == 0)
-                times[SessionStats.FIRST_BYTE_READ_FROM_CLIENT + side] = MetaEnv.currentTimeMillis();
-        }
 
         switch (crumb.type()) {
         case Crumb.TYPE_SHUTDOWN:

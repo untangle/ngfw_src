@@ -4,7 +4,7 @@
 package com.untangle.uvm.vnet.event;
 
 import com.untangle.uvm.vnet.ArgonConnector;
-import com.untangle.uvm.vnet.Session;
+import com.untangle.uvm.vnet.NodeSession;
 
 /**
  * Base event class for all VNet session events
@@ -14,10 +14,8 @@ import com.untangle.uvm.vnet.Session;
 @SuppressWarnings("serial")
 public abstract class SessionEvent extends ArgonConnectorEvent
 {
-
-    protected SessionEvent(ArgonConnector argonConnector, Session session)
+    protected SessionEvent(ArgonConnector argonConnector, NodeSession session)
     {
         super(argonConnector, session);
     }
-
 }

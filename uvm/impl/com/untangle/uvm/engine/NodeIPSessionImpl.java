@@ -25,8 +25,7 @@ import com.untangle.uvm.argon.ArgonIPSession;
 import com.untangle.uvm.node.Node;
 import com.untangle.uvm.node.SessionEvent;
 import com.untangle.uvm.util.MetaEnv;
-import com.untangle.uvm.vnet.IPSession;
-import com.untangle.uvm.vnet.VnetSessionDesc;
+import com.untangle.uvm.vnet.NodeIPSession;
 import com.untangle.uvm.vnet.SessionStats;
 import com.untangle.uvm.vnet.event.IPStreamer;
 import com.untangle.uvm.node.NodeManager;
@@ -34,15 +33,13 @@ import com.untangle.uvm.node.NodeManager;
 /**
  * Abstract base class for all IP live sessions
  */
-abstract class IPSessionImpl
-    extends SessionImpl
-    implements IPSession, PipelineListener
+abstract class NodeIPSessionImpl extends NodeSessionImpl implements NodeIPSession, PipelineListener
 {
     protected boolean released = false;
     protected boolean needsFinalization = true;
 
     private static DateFormat formatter = new AbsoluteTimeDateFormat();
-    
+
     protected final Dispatcher dispatcher;
 
     protected final SessionEvent sessionEvent;
@@ -54,24 +51,22 @@ abstract class IPSessionImpl
 
     protected Logger logger;
 
-    protected final RWSessionStats stats;
+    protected final SessionStats stats;
 
-    private final Logger timesLogger;
-
-    protected IPSessionImpl(Dispatcher disp, ArgonIPSession argonSession, SessionEvent pe)
+    protected NodeIPSessionImpl(Dispatcher disp, ArgonIPSession argonSession, SessionEvent pe)
     {
         super(disp.argonConnector(), argonSession);
         this.dispatcher = disp;
-        this.stats = new RWSessionStats();
+        this.stats = new SessionStats();
         this.sessionEvent = pe;
-        if (RWSessionStats.DoDetailedTimes) {
-            timesLogger = Logger.getLogger("com.untangle.uvm.vnet.SessionTimes");
-        } else {
-            timesLogger = null;
-        }
         logger = disp.argonConnector().sessionLogger();
     }
 
+    public long id()
+    {
+        return ((ArgonIPSession)argonSession).id();
+    }
+    
     public short protocol()
     {
         return ((ArgonIPSession)argonSession).protocol();
@@ -613,13 +608,6 @@ abstract class IPSessionImpl
     {
         cancelTimer();
         
-        if (RWSessionStats.DoDetailedTimes) {
-            long[] times = stats().times();
-            times[SessionStats.FINAL_CLOSE] = MetaEnv.currentTimeMillis();
-            if (timesLogger.isInfoEnabled())
-                reportTimes(times);
-        }
-
         dispatcher.removeSession(this);
     }
 
@@ -726,30 +714,6 @@ abstract class IPSessionImpl
         }
         return didSomething;
     }
-
-    private void reportTimes(long[] times)
-    {
-        StringBuffer result = new StringBuffer("times for ");
-        result.append(id());
-        result.append("\n");
-
-        for (int i = SessionStats.MIN_TIME_INDEX; i < SessionStats.MAX_TIME_INDEX; i++) {
-            if (times[i] == 0)
-                continue;
-            String name = SessionStats.TimeNames[i];
-            int len = name.length();
-            int pad = 30 - len;
-            result.append(name);
-            result.append(": ");
-            for (int j = 0; j < pad; j++)
-                result.append(' ');
-            formatter.format(new Date(times[i]), result, null);
-            result.append("\n");
-        }
-        timesLogger.info(result.toString());
-    }
-
-    abstract public VnetSessionDesc makeDesc();
 
     /**
      * <code>isSideDieing</code> returns true if the incoming socket queue

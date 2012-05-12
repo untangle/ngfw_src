@@ -35,7 +35,7 @@ import com.untangle.node.util.AsciiCharBuffer;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.vnet.Fitting;
 import com.untangle.uvm.vnet.Pipeline;
-import com.untangle.uvm.vnet.TCPSession;
+import com.untangle.uvm.vnet.NodeTCPSession;
 
 /**
  * Parser for the server side of FTP connection.
@@ -54,7 +54,7 @@ public class FtpServerParser extends AbstractParser
 
     private final Logger logger = Logger.getLogger(FtpServerParser.class);
 
-    FtpServerParser(TCPSession session)
+    FtpServerParser(NodeTCPSession session)
     {
         super(session, false);
         lineBuffering(true);

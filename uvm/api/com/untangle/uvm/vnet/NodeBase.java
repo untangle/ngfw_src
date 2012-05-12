@@ -355,28 +355,13 @@ public abstract class NodeBase implements Node
         }
     }
     
-    public List<VnetSessionDesc> liveSessionDescs()
+    public List<NodeIPSession> liveSessions()
     {
-        List<VnetSessionDesc> sessList = new LinkedList<VnetSessionDesc>();
+        List<NodeIPSession> sessions = new LinkedList<NodeIPSession>();
 
         if (null != pipeSpecs) {
             for (PipeSpec ps : pipeSpecs) {
-                for (VnetSessionDesc isd : ps.liveSessionDescs()) {
-                    sessList.add(isd);
-                }
-            }
-        }
-
-        return sessList;
-    }
-
-    public List<IPSession> liveSessions()
-    {
-        List<IPSession> sessions = new LinkedList<IPSession>();
-
-        if (null != pipeSpecs) {
-            for (PipeSpec ps : pipeSpecs) {
-                for (IPSession sess : ps.liveSessions()) {
+                for (NodeIPSession sess : ps.liveSessions()) {
                     sessions.add(sess);
                 }
             }

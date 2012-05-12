@@ -20,7 +20,7 @@ package com.untangle.node.ftp;
 
 import com.untangle.node.token.Casing;
 import com.untangle.node.token.CasingFactory;
-import com.untangle.uvm.vnet.TCPSession;
+import com.untangle.uvm.vnet.NodeTCPSession;
 
 /**
  * FTP Casing factory.
@@ -47,7 +47,7 @@ class FtpCasingFactory implements CasingFactory
         return FTP_CASING_FACTORY;
     }
 
-    public Casing casing(TCPSession session, boolean inside)
+    public Casing casing(NodeTCPSession session, boolean inside)
     {
         return new FtpCasing(session, inside);
     }

@@ -19,7 +19,7 @@
 package com.untangle.node.phish;
 
 import com.untangle.uvm.vnet.TCPNewSessionRequest;
-import com.untangle.uvm.vnet.TCPSession;
+import com.untangle.uvm.vnet.NodeTCPSession;
 import com.untangle.node.mail.papi.MailExport;
 import com.untangle.node.mail.papi.MailExportFactory;
 import com.untangle.node.token.TokenHandler;
@@ -40,7 +40,7 @@ public class PhishPopFactory implements TokenHandlerFactory
 
     // TokenHandlerFactory methods --------------------------------------------
 
-    public TokenHandler tokenHandler(TCPSession session)
+    public TokenHandler tokenHandler(NodeTCPSession session)
     {
         return new PhishPopHandler(session, node, zMExport);
     }

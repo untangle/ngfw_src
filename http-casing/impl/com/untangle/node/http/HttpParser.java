@@ -20,8 +20,7 @@ import com.untangle.node.token.Token;
 import com.untangle.node.token.TokenStreamer;
 import com.untangle.node.util.AsciiCharBuffer;
 import com.untangle.uvm.node.MimeType;
-import com.untangle.uvm.vnet.TCPSession;
-import com.untangle.uvm.vnet.VnetSessionDesc;
+import com.untangle.uvm.vnet.NodeTCPSession;
 
 /**
  * An HTTP <code>Parser</code>.
@@ -78,7 +77,7 @@ public class HttpParser extends AbstractParser
 
     // constructors -----------------------------------------------------------
 
-    HttpParser(TCPSession session, boolean clientSide, HttpCasing casing)
+    HttpParser(NodeTCPSession session, boolean clientSide, HttpCasing casing)
     {
         super(session, clientSide);
         HttpNodeImpl node = casing.getNode();
@@ -560,8 +559,8 @@ public class HttpParser extends AbstractParser
             logger.debug(sessStr + "handling timer cs=" + cs + " ss=" + ss);
         }
 
-        if (cs == VnetSessionDesc.HALF_OPEN_OUTPUT
-            && ss == VnetSessionDesc.HALF_OPEN_INPUT) {
+        if (cs == NodeTCPSession.HALF_OPEN_OUTPUT
+            && ss == NodeTCPSession.HALF_OPEN_INPUT) {
             if (logger.isDebugEnabled()) {
                 logger.debug(sessStr + "closing session in halfstate");
             }

@@ -20,9 +20,8 @@ import org.apache.log4j.Logger;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.argon.ArgonAgent;
 import com.untangle.uvm.argon.ArgonIPSessionDesc;
-import com.untangle.uvm.argon.SessionEndpoints;
 import com.untangle.uvm.logging.LogEvent;
-import com.untangle.uvm.node.IPSessionDesc;
+import com.untangle.uvm.node.SessionTuple;
 import com.untangle.uvm.node.NodeManager;
 import com.untangle.uvm.node.SessionEvent;
 import com.untangle.uvm.node.SessionStatsEvent;
@@ -65,17 +64,17 @@ public class PipelineFoundryImpl implements PipelineFoundry
         return PIPELINE_FOUNDRY_IMPL;
     }
 
-    public List<ArgonAgent> weld(IPSessionDesc sessionDesc, Long policyId)
+    public List<ArgonAgent> weld(Long sessionId, SessionTuple sessionTuple, Long policyId)
     {
         Long t0 = System.nanoTime();
 
-        InetAddress sAddr = sessionDesc.serverAddr();
-        int sPort = sessionDesc.serverPort();
+        InetAddress sAddr = sessionTuple.serverAddr();
+        int sPort = sessionTuple.serverPort();
 
         InetSocketAddress socketAddress = new InetSocketAddress(sAddr, sPort);
         Fitting start = connectionFittings.remove(socketAddress);
 
-        if (SessionEndpoints.PROTO_TCP == sessionDesc.protocol()) {
+        if (SessionTuple.PROTO_TCP == sessionTuple.protocol()) {
             if (null == start) {
                 switch (sPort) {
                 case 21:
@@ -109,7 +108,7 @@ public class PipelineFoundryImpl implements PipelineFoundry
         }
 
         long ct0 = System.nanoTime();
-        List<ArgonConnectorFitting> chain = makeChain(sessionDesc, policyId, start);
+        List<ArgonConnectorFitting> chain = makeChain(sessionTuple, policyId, start);
         long ct1 = System.nanoTime();
 
         // filter list
@@ -135,7 +134,7 @@ public class PipelineFoundryImpl implements PipelineFoundry
                 // We want the node if its policy matches (this policy or one of
                 // is parents), or the node has no
                 // policy (is a service).
-                if (pipeSpec.matches(sessionDesc)) {
+                if (pipeSpec.matches(sessionTuple)) {
                     acFittingList.add(acFitting);
                     argonAgentList.add(((ArgonConnectorImpl) argonConnector).getArgonAgent());
                     nodeList += pipeSpec.getName() + " ";
@@ -148,15 +147,15 @@ public class PipelineFoundryImpl implements PipelineFoundry
 
         long ft1 = System.nanoTime();
 
-        PipelineImpl pipeline = new PipelineImpl(sessionDesc.id(), acFittingList);
-        pipelines.put(sessionDesc.id(), pipeline);
+        PipelineImpl pipeline = new PipelineImpl(sessionId, acFittingList);
+        pipelines.put(sessionId, pipeline);
 
         Long t1 = System.nanoTime();
         if (logger.isDebugEnabled()) {
-            logger.debug("session_id: " + sessionDesc.id() +
+            logger.debug("session_id: " + sessionId +
                          " policyId: " + policyId + " " +
                          nodeList );
-            logger.debug("session_id: " + sessionDesc.id() +
+            logger.debug("session_id: " + sessionId +
                          " pipe in " + (t1 - t0) +
                          " made: " + (ct1 - ct0) +
                          " filtered: " + (ft1 - ft0) +
@@ -166,9 +165,9 @@ public class PipelineFoundryImpl implements PipelineFoundry
         return argonAgentList;
     }
 
-    public SessionEvent createInitialSessionEvent(IPSessionDesc start, String username, String hostname)
+    public SessionEvent createInitialSessionEvent(Long sessionId, SessionTuple start, String username, String hostname)
     {
-        return new SessionEvent(start, username, hostname);
+        return new SessionEvent(sessionId, start, username, hostname);
     }
 
     public void registerEndpoints(SessionEvent pe)
@@ -281,7 +280,7 @@ public class PipelineFoundryImpl implements PipelineFoundry
     
     // private methods --------------------------------------------------------
 
-    private List<ArgonConnectorFitting> makeChain(IPSessionDesc sessionDesc, Long policyId, Fitting start)
+    private List<ArgonConnectorFitting> makeChain(SessionTuple sessionTuple, Long policyId, Fitting start)
     {
         List<ArgonConnectorFitting> argonConnectorFittings = null;
 

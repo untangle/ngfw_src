@@ -26,7 +26,7 @@ import com.untangle.node.spam.SpamImapConfig;
 import com.untangle.node.token.TokenHandler;
 import com.untangle.node.token.TokenHandlerFactory;
 import com.untangle.uvm.vnet.TCPNewSessionRequest;
-import com.untangle.uvm.vnet.TCPSession;
+import com.untangle.uvm.vnet.NodeTCPSession;
 import org.apache.log4j.Logger;
 
 public class PhishImapFactory implements TokenHandlerFactory
@@ -46,7 +46,7 @@ public class PhishImapFactory implements TokenHandlerFactory
 
     // TokenHandlerFactory methods --------------------------------------------
 
-    public TokenHandler tokenHandler(TCPSession session) {
+    public TokenHandler tokenHandler(NodeTCPSession session) {
 
         SpamImapConfig config = m_node.getSettings().getImapConfig();
 

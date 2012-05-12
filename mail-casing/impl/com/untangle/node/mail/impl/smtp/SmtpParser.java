@@ -21,7 +21,7 @@ package com.untangle.node.mail.impl.smtp;
 import java.nio.ByteBuffer;
 
 import com.untangle.node.mail.impl.AbstractMailParser;
-import com.untangle.uvm.vnet.TCPSession;
+import com.untangle.uvm.vnet.NodeTCPSession;
 
 
 /**
@@ -32,7 +32,7 @@ abstract class SmtpParser
 
     private CasingSessionTracker m_tracker;
 
-    protected  SmtpParser(TCPSession session,
+    protected  SmtpParser(NodeTCPSession session,
                           SmtpCasing parent,
                           CasingSessionTracker tracker,
                           boolean clientSide) {

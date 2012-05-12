@@ -12,7 +12,7 @@ import org.apache.log4j.Logger;
 import com.untangle.uvm.UvmContext;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.node.Node;
-import com.untangle.uvm.vnet.IPSession;
+import com.untangle.uvm.vnet.NodeIPSession;
 import com.untangle.uvm.vnet.event.SessionEventListener;
 
 /**
@@ -142,17 +142,7 @@ public class SoloPipeSpec extends PipeSpec
     }
 
     @Override
-    public List<VnetSessionDesc> liveSessionDescs()
-    {
-        if (null != argonConnector) {
-            return argonConnector.liveSessionDescs();
-        } else {
-            return new LinkedList<VnetSessionDesc>();
-        }
-    }
-
-    @Override
-    public List<IPSession> liveSessions()
+    public List<NodeIPSession> liveSessions()
     {
         if (null != argonConnector) {
             return argonConnector.liveSessions();

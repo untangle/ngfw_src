@@ -34,7 +34,7 @@ import com.untangle.node.token.TokenStreamer;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.vnet.Fitting;
 import com.untangle.uvm.vnet.Pipeline;
-import com.untangle.uvm.vnet.TCPSession;
+import com.untangle.uvm.vnet.NodeTCPSession;
 
 /**
  * Parses FTP traffic.
@@ -54,7 +54,7 @@ public class FtpClientParser extends AbstractParser
 
     // constructors -----------------------------------------------------------
 
-    FtpClientParser(TCPSession session)
+    FtpClientParser(NodeTCPSession session)
     {
         super(session, true);
         lineBuffering(true);

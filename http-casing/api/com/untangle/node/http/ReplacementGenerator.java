@@ -15,7 +15,7 @@ import com.untangle.node.util.NonceFactory;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.NetworkManager;
 import com.untangle.uvm.node.NodeSettings;
-import com.untangle.uvm.vnet.TCPSession;
+import com.untangle.uvm.vnet.NodeTCPSession;
 
 /**
  * Generates a replacement page for Nodes that block traffic.
@@ -64,29 +64,29 @@ public abstract class ReplacementGenerator<T extends BlockDetails>
         return nonceFactory.removeNonce(nonce);
     }
 
-    public Token[] generateResponse(T o, TCPSession session, boolean persistent)
+    public Token[] generateResponse(T o, NodeTCPSession session, boolean persistent)
     {
         return generateResponse(o, session, null, null, persistent);
     }
 
-    public Token[] generateResponse(T o, TCPSession session, String uri, Header requestHeader, boolean persistent)
+    public Token[] generateResponse(T o, NodeTCPSession session, String uri, Header requestHeader, boolean persistent)
     {
         String n = generateNonce(o);
         return generateResponse(n, session, uri, requestHeader, persistent);
     }
 
-    public Token[] generateResponse(String nonce, TCPSession session, boolean persistent)
+    public Token[] generateResponse(String nonce, NodeTCPSession session, boolean persistent)
     {
         return generateResponse(nonce, session, null, null, persistent);
     }
 
-    public Token[] generateResponse(String nonce, TCPSession session, String uri, Header requestHeader, boolean persistent)
+    public Token[] generateResponse(String nonce, NodeTCPSession session, String uri, Header requestHeader, boolean persistent)
     {
         if (imagePreferred(uri, requestHeader)) {
             return generateSimplePage(nonce, persistent, true);
         } else {
             NetworkManager nm = UvmContextFactory.context().networkManager();
-            InetAddress addr = nm.getInternalHttpAddress(session);
+            InetAddress addr = nm.getInternalHttpAddress( session.clientIntf() );
                 
             if (addr == null) {
                 return generateSimplePage(nonce, persistent, false);
@@ -103,7 +103,7 @@ public abstract class ReplacementGenerator<T extends BlockDetails>
         }
     }
 
-    public Token[] generateSimpleResponse(String nonce, TCPSession session, String uri, Header requestHeader, boolean persistent)
+    public Token[] generateSimpleResponse(String nonce, NodeTCPSession session, String uri, Header requestHeader, boolean persistent)
     {
         return generateSimplePage(nonce, persistent, imagePreferred(uri, requestHeader));
     }

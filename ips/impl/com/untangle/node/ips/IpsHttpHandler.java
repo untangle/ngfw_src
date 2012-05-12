@@ -1,21 +1,6 @@
-/*
- * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License, version 2,
- * as published by the Free Software Foundation.
- *
- * This program is distributed in the hope that it will be useful, but
- * AS-IS and WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE, TITLE, or
- * NONINFRINGEMENT.  See the GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
+/**
+ * $Id$
  */
-
 package com.untangle.node.ips;
 
 import com.untangle.node.http.HttpStateMachine;
@@ -23,18 +8,20 @@ import com.untangle.node.http.RequestLineToken;
 import com.untangle.node.http.StatusLine;
 import com.untangle.node.token.Chunk;
 import com.untangle.node.token.Header;
-import com.untangle.uvm.vnet.TCPSession;
+import com.untangle.uvm.vnet.NodeTCPSession;
 
 class IpsHttpHandler extends HttpStateMachine {
 
     private IpsDetectionEngine engine;
 
-    IpsHttpHandler(TCPSession session, IpsNodeImpl node) {
+    IpsHttpHandler(NodeTCPSession session, IpsNodeImpl node)
+    {
         super(session);
         engine = node.getEngine();
     }
 
-    protected RequestLineToken doRequestLine(RequestLineToken requestLine) {
+    protected RequestLineToken doRequestLine(RequestLineToken requestLine)
+    {
         IpsSessionInfo info = engine.getSessionInfo(getSession());
         if (info != null) {
             // Null is no longer unusual, it happens whenever we've released the
@@ -46,7 +33,8 @@ class IpsHttpHandler extends HttpStateMachine {
         return requestLine;
     }
 
-    protected Header doRequestHeader(Header requestHeader) {
+    protected Header doRequestHeader(Header requestHeader)
+    {
         return requestHeader;
     }
 
@@ -54,19 +42,23 @@ class IpsHttpHandler extends HttpStateMachine {
 
     protected void doResponseBodyEnd() { }
 
-    protected Chunk doResponseBody(Chunk chunk) {
+    protected Chunk doResponseBody(Chunk chunk)
+    {
         return chunk;
     }
 
-    protected Header doResponseHeader(Header header) {
+    protected Header doResponseHeader(Header header)
+    {
         return header;
     }
 
-    protected Chunk doRequestBody(Chunk chunk) {
+    protected Chunk doRequestBody(Chunk chunk)
+    {
         return chunk;
     }
 
-    protected StatusLine doStatusLine(StatusLine statusLine) {
+    protected StatusLine doStatusLine(StatusLine statusLine)
+    {
         releaseResponse();
         return statusLine;
     }

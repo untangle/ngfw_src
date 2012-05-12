@@ -124,26 +124,7 @@ public class CasingPipeSpec extends PipeSpec
     }
 
     @Override
-    public List<VnetSessionDesc> liveSessionDescs()
-    {
-        List<VnetSessionDesc> l = new ArrayList<VnetSessionDesc>();
-        if (null != insideArgonConnector) {
-            for (VnetSessionDesc isd : insideArgonConnector.liveSessionDescs()) {
-                l.add(isd);
-            }
-        }
-
-        if (null != outsideArgonConnector) {
-            for (VnetSessionDesc isd : outsideArgonConnector.liveSessionDescs()) {
-                l.add(isd);
-            }
-        }
-
-        return l;
-    }
-
-    @Override
-    public List<IPSession> liveSessions()
+    public List<NodeIPSession> liveSessions()
     {
         if (null != insideArgonConnector) {
             return insideArgonConnector.liveSessions();

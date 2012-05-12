@@ -3,7 +3,6 @@
  */
 package com.untangle.node.virus;
 
-
 import org.apache.log4j.Logger;
 
 import com.untangle.node.mail.papi.MailExport;
@@ -12,7 +11,7 @@ import com.untangle.node.mail.papi.imap.ImapTokenStream;
 import com.untangle.node.token.TokenHandler;
 import com.untangle.node.token.TokenHandlerFactory;
 import com.untangle.uvm.vnet.TCPNewSessionRequest;
-import com.untangle.uvm.vnet.TCPSession;
+import com.untangle.uvm.vnet.NodeTCPSession;
 
 /**
  * Factory to create the protocol handler for IMAP
@@ -32,7 +31,7 @@ public final class VirusImapFactory implements TokenHandlerFactory
         this.mailExport = MailExportFactory.factory().getExport();
     }
 
-    public TokenHandler tokenHandler(TCPSession session)
+    public TokenHandler tokenHandler(NodeTCPSession session)
     {
         if(!node.getSettings().getScanImap()) {
             m_logger.debug("Scanning disabled.  Return passthrough token handler");

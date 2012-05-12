@@ -30,7 +30,7 @@ import com.untangle.node.mime.MIMEOutputStream;
 import com.untangle.node.mime.MIMEUtil;
 import com.untangle.node.util.TempFileFactory;
 import com.untangle.uvm.UvmContextFactory;
-import com.untangle.uvm.vnet.TCPSession;
+import com.untangle.uvm.vnet.NodeTCPSession;
 
 /**
  * Protocol Handler which is called-back as scannable messages are encountered.
@@ -53,11 +53,11 @@ public class SpamSmtpHandler extends BufferingSessionHandler
     private final SpamSmtpConfig config;
     private final QuarantineNodeView quarantine;
     private final SafelistNodeView safelist;
-    private final TCPSession session;
+    private final NodeTCPSession session;
 
     private String receivedBy; // Now we also keep the salutation to help SpamAssassin evaluate.
 
-    public SpamSmtpHandler(TCPSession session, long maxClientWait, long maxSvrWait, SpamNodeImpl impl, SpamSmtpConfig config, QuarantineNodeView quarantine, SafelistNodeView safelist)
+    public SpamSmtpHandler(NodeTCPSession session, long maxClientWait, long maxSvrWait, SpamNodeImpl impl, SpamSmtpConfig config, QuarantineNodeView quarantine, SafelistNodeView safelist)
     {
         super(config.getMsgSizeLimit(), maxClientWait, maxSvrWait, false);
 

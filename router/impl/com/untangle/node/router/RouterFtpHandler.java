@@ -21,7 +21,7 @@ import java.net.InetSocketAddress;
 import org.apache.log4j.Logger;
 
 import com.untangle.uvm.vnet.Protocol;
-import com.untangle.uvm.vnet.TCPSession;
+import com.untangle.uvm.vnet.NodeTCPSession;
 import com.untangle.node.ftp.FtpCommand;
 import com.untangle.node.ftp.FtpEpsvReply;
 import com.untangle.node.ftp.FtpFunction;
@@ -48,7 +48,7 @@ class RouterFtpHandler extends FtpStateMachine
     //unused// private static final TokenResult ERROR_REPLY = new TokenResult( new Token[] { FtpReply.makeReply( 500, "Syntax error, command unrecognized") }, null );
     private static final TokenResult SYNTAX_REPLY = new TokenResult( new Token[] { FtpReply.makeReply( 501, "Syntax error in parameters or arguments") }, null );
 
-    RouterFtpHandler( TCPSession session, RouterImpl node )
+    RouterFtpHandler( NodeTCPSession session, RouterImpl node )
     {
         super(session);
 

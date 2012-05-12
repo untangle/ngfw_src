@@ -25,7 +25,7 @@ import com.untangle.node.sasl.SASLObserver;
 import com.untangle.node.sasl.SASLObserverFactory;
 import com.untangle.node.token.Parser;
 import com.untangle.node.token.Unparser;
-import com.untangle.uvm.vnet.TCPSession;
+import com.untangle.uvm.vnet.NodeTCPSession;
 
 
 public class SmtpCasing
@@ -42,7 +42,7 @@ public class SmtpCasing
 
     // constructors -----------------------------------------------------------
 
-    public SmtpCasing(TCPSession session,
+    public SmtpCasing(NodeTCPSession session,
                       boolean clientSide) {
 
         super(session, clientSide, "smtp");

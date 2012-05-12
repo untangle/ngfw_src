@@ -76,7 +76,7 @@ class AddressManagerImpl implements LocalAddressManager
         
 //         TransactionWork<Void> tw = new TransactionWork<Void>()
 //             {
-//                 public boolean doWork(Session s)
+//                 public boolean doWork(NodeSession s)
 //                 {
 //                     /* delete old settings */
 //                     Query q = s.createQuery( "from " + "AddressSettings" );
@@ -108,7 +108,7 @@ class AddressManagerImpl implements LocalAddressManager
     {
 //         TransactionWork<Object> tw = new TransactionWork<Object>()
 //             {
-//                 public boolean doWork(Session s)
+//                 public boolean doWork(NodeSession s)
 //                 {
 //                     Query q = s.createQuery( "from " + "AddressSettings");
 //                     addressSettings = (AddressSettings)q.uniqueResult();

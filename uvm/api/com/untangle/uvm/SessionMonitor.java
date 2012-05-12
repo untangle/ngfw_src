@@ -5,18 +5,12 @@ package com.untangle.uvm;
 
 import java.util.List;
 
-import com.untangle.uvm.vnet.VnetSessionDesc;
 import com.untangle.uvm.SessionMonitorEntry;
 import com.untangle.uvm.node.NodeSettings;
+import com.untangle.uvm.vnet.NodeSession;
 
 public interface SessionMonitor
 {
-
-    /**
-     * This returns a list of descriptors for a certain node
-     */
-    public List<VnetSessionDesc> getNodeSessions(NodeSettings id);
-
     /**
      * This returns a list of descriptors for all sessions in the conntrack table
      * It also pulls the list of current "pipelines" from the foundry and adds the UVM informations

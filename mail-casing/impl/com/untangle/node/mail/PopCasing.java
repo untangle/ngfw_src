@@ -24,7 +24,7 @@ import com.untangle.node.mail.impl.pop.PopUnparser;
 import com.untangle.node.token.Casing;
 import com.untangle.node.token.Parser;
 import com.untangle.node.token.Unparser;
-import com.untangle.uvm.vnet.TCPSession;
+import com.untangle.uvm.vnet.NodeTCPSession;
 
 public class PopCasing implements Casing
 {
@@ -46,7 +46,7 @@ public class PopCasing implements Casing
 
     // constructors -----------------------------------------------------------
 
-    PopCasing(TCPSession session, boolean clientSide)
+    PopCasing(NodeTCPSession session, boolean clientSide)
     {
         parser = true == clientSide ? new PopClientParser(session, this) : new PopServerParser(session, this);
         unparser = new PopUnparser(session, clientSide, this);

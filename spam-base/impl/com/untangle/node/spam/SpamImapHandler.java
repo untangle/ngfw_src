@@ -17,7 +17,7 @@ import com.untangle.node.mime.LCString;
 import com.untangle.node.mime.MIMEMessage;
 import com.untangle.node.util.TempFileFactory;
 import com.untangle.uvm.UvmContextFactory;
-import com.untangle.uvm.vnet.TCPSession;
+import com.untangle.uvm.vnet.NodeTCPSession;
 
 public class SpamImapHandler extends BufferingImapTokenStreamHandler
 {
@@ -38,7 +38,7 @@ public class SpamImapHandler extends BufferingImapTokenStreamHandler
 
     private static WrappedMessageGenerator msgGenerator = new WrappedMessageGenerator(MOD_SUB_TEMPLATE,MOD_BODY_TEMPLATE);
     
-    public SpamImapHandler(TCPSession session, long maxClientWait, long maxSvrWait, SpamNodeImpl impl, SpamImapConfig config, SafelistNodeView safelist)
+    public SpamImapHandler(NodeTCPSession session, long maxClientWait, long maxSvrWait, SpamNodeImpl impl, SpamImapConfig config, SafelistNodeView safelist)
     {
         super(maxClientWait, maxSvrWait, config.getMsgSizeLimit());
 

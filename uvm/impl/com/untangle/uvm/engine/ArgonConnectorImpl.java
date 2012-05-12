@@ -1,21 +1,6 @@
-/*
- * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc.
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License, version 2,
- * as published by the Free Software Foundation.
- *
- * This program is distributed in the hope that it will be useful, but
- * AS-IS and WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE, TITLE, or
- * NONINFRINGEMENT.  See the GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
+/**
+ * $Id$
  */
-
 package com.untangle.uvm.engine;
 
 import org.apache.log4j.Logger;
@@ -27,22 +12,18 @@ import com.untangle.uvm.argon.ArgonAgentImpl;
 import com.untangle.uvm.node.Node;
 import com.untangle.uvm.node.NodeProperties;
 import com.untangle.uvm.util.MetaEnv;
-import com.untangle.uvm.vnet.VnetSessionDesc;
 import com.untangle.uvm.vnet.ArgonConnector;
 import com.untangle.uvm.vnet.PipeSpec;
-import com.untangle.uvm.vnet.Session;
-import com.untangle.uvm.vnet.TCPSession;
-import com.untangle.uvm.vnet.UDPSession;
-import com.untangle.uvm.vnet.IPSession;
+import com.untangle.uvm.vnet.NodeSession;
+import com.untangle.uvm.vnet.NodeTCPSession;
+import com.untangle.uvm.vnet.NodeUDPSession;
+import com.untangle.uvm.vnet.NodeIPSession;
 import com.untangle.uvm.vnet.event.SessionEventListener;
 
 /**
  * ArgonConnectorImpl is the implementation of a single ArgonConnector.
  * Status and control of a pipe happen here.
  * Events are handled in Dispatcher instead.
- *
- * @author <a href="mailto:jdi@untangle.com">John Irwin</a>
- * @version 1.0
  */
 class ArgonConnectorImpl implements ArgonConnector
 {
@@ -74,10 +55,10 @@ class ArgonConnectorImpl implements ArgonConnector
         this.pipeSpec = pipeSpec;
 
         logger = Logger.getLogger(ArgonConnector.class);
-        sessionLogger = Logger.getLogger(Session.class);
-        sessionEventLogger = Logger.getLogger("com.untangle.uvm.vnet.SessionEvent");
-        sessionLoggerTCP = Logger.getLogger(TCPSession.class);
-        sessionLoggerUDP = Logger.getLogger(UDPSession.class);
+        sessionLogger = Logger.getLogger(NodeSession.class);
+        sessionEventLogger = Logger.getLogger(NodeSession.class);
+        sessionLoggerTCP = Logger.getLogger(NodeTCPSession.class);
+        sessionLoggerUDP = Logger.getLogger(NodeUDPSession.class);
 
         lastSessionWriteTime = MetaEnv.currentTimeMillis();
 
@@ -146,14 +127,7 @@ class ArgonConnectorImpl implements ArgonConnector
         return disp.liveSessionIds();
     }
 
-    public List<VnetSessionDesc> liveSessionDescs()
-    {
-        if (disp == null)
-            return new LinkedList<VnetSessionDesc>();
-        return disp.liveSessionDescs();
-    }
-
-    public List<IPSession> liveSessions()
+    public List<NodeIPSession> liveSessions()
     {
         if (disp != null)
             return disp.liveSessions();

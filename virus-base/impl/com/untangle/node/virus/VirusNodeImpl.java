@@ -27,6 +27,7 @@ import com.untangle.uvm.SessionMatcher;
 import com.untangle.uvm.node.GenericRule;
 import com.untangle.uvm.node.EventLogQuery;
 import com.untangle.uvm.node.NodeMetric;
+import com.untangle.uvm.node.SessionTuple;
 import com.untangle.uvm.util.I18nUtil;
 import com.untangle.uvm.util.OutsideValve;
 import com.untangle.uvm.vnet.NodeBase;
@@ -36,7 +37,7 @@ import com.untangle.uvm.vnet.PipeSpec;
 import com.untangle.uvm.vnet.Protocol;
 import com.untangle.uvm.vnet.SoloPipeSpec;
 import com.untangle.uvm.vnet.Subscription;
-import com.untangle.uvm.vnet.TCPSession;
+import com.untangle.uvm.vnet.NodeTCPSession;
 
 /**
  * Virus Node.
@@ -106,10 +107,10 @@ public abstract class VirusNodeImpl extends NodeBase implements VirusNode
     /* This can't be static because it uses policy which is per node */
     private final SessionMatcher VIRUS_SESSION_MATCHER = new SessionMatcher() {
             /* Kill all FTP, HTTP, SMTP, POP3, IMAP sessions */
-            public boolean isMatch(Long sessionPolicyId, com.untangle.uvm.node.IPSessionDesc client, com.untangle.uvm.node.IPSessionDesc server, Map<String,Object> attachments)
+            public boolean isMatch(Long sessionPolicyId, SessionTuple client, SessionTuple server, Map<String,Object> attachments)
             {
-                /* Don't kill any UDP Sessions */
-                if (client.protocol() == com.untangle.uvm.node.IPSessionDesc.PROTO_UDP) {
+                /* Don't kill any UDP NodeSession s */
+                if (client.protocol() == SessionTuple.PROTO_UDP) {
                     return false;
                 }
 
@@ -227,7 +228,7 @@ public abstract class VirusNodeImpl extends NodeBase implements VirusNode
         return replacementGenerator.generateNonce(details);
     }
 
-    public Token[] generateResponse( String nonce, TCPSession session, String uri, boolean persistent )
+    public Token[] generateResponse( String nonce, NodeTCPSession session, String uri, boolean persistent )
     {
         return replacementGenerator.generateResponse(nonce, session, uri, null, persistent);
     }

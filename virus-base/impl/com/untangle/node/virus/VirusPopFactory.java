@@ -22,7 +22,7 @@ import com.untangle.node.mail.papi.MailExportFactory;
 import com.untangle.node.token.TokenHandler;
 import com.untangle.node.token.TokenHandlerFactory;
 import com.untangle.uvm.vnet.TCPNewSessionRequest;
-import com.untangle.uvm.vnet.TCPSession;
+import com.untangle.uvm.vnet.NodeTCPSession;
 
 /**
  * Filter for POP virus events.
@@ -41,7 +41,7 @@ public class VirusPopFactory implements TokenHandlerFactory
         zMExport = MailExportFactory.factory().getExport();
     }
 
-    public TokenHandler tokenHandler(TCPSession session)
+    public TokenHandler tokenHandler(NodeTCPSession session)
     {
         return new VirusPopHandler(session, node, zMExport);
     }

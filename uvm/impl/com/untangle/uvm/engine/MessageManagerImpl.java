@@ -32,7 +32,7 @@ import com.untangle.uvm.networking.NetworkConfiguration;
 import com.untangle.uvm.networking.InterfaceConfiguration;
 import com.untangle.uvm.node.Node;
 import com.untangle.uvm.node.NodeManager;
-import com.untangle.uvm.node.SessionEndpoints;
+import com.untangle.uvm.node.SessionTuple;
 import com.untangle.uvm.node.NodeSettings;
 import com.untangle.uvm.node.NodeMetric;
 import com.untangle.uvm.util.Pulse;
@@ -512,8 +512,8 @@ public class MessageManagerImpl implements MessageManager
             ArgonManager am = UvmContextImpl.getInstance().argonManager();
 
             m.put("uvmSessions",am.getSessionCount());
-            m.put("uvmTCPSessions",am.getSessionCount(SessionEndpoints.PROTO_TCP));
-            m.put("uvmUDPSessions",am.getSessionCount(SessionEndpoints.PROTO_UDP));
+            m.put("uvmTCPSessions",am.getSessionCount(SessionTuple.PROTO_TCP));
+            m.put("uvmUDPSessions",am.getSessionCount(SessionTuple.PROTO_UDP));
             
             long currentTime = System.currentTimeMillis();
 

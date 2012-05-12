@@ -12,7 +12,7 @@ import com.untangle.node.mail.papi.smtp.sapi.Session;
 import com.untangle.node.token.TokenHandler;
 import com.untangle.node.token.TokenHandlerFactory;
 import com.untangle.uvm.vnet.TCPNewSessionRequest;
-import com.untangle.uvm.vnet.TCPSession;
+import com.untangle.uvm.vnet.NodeTCPSession;
 
 public class VirusSmtpFactory implements TokenHandlerFactory
 {
@@ -27,7 +27,7 @@ public class VirusSmtpFactory implements TokenHandlerFactory
         m_mailExport = MailExportFactory.factory().getExport();
     }
 
-    public TokenHandler tokenHandler(TCPSession session)
+    public TokenHandler tokenHandler(NodeTCPSession session)
     {
         if(!m_virusImpl.getSettings().getScanSmtp()) {
             m_logger.debug("Scanning disabled.  Return passthrough token handler");

@@ -54,7 +54,7 @@ import com.untangle.node.mail.papi.smtp.SmtpTransaction;
 import com.untangle.node.mail.papi.smtp.UnparsableCommand;
 import com.untangle.node.token.Chunk;
 import com.untangle.node.token.TokenResultBuilder;
-import com.untangle.uvm.vnet.TCPSession;
+import com.untangle.uvm.vnet.NodeTCPSession;
 
 
 /**
@@ -306,10 +306,10 @@ public final class Session
     /**
      * Construct a new Session
      *
-     * @param session the TCPSession to listen-on
+     * @param session the NodeTCPSession to listen-on
      * @param handler the Session handler
      */
-    public Session(TCPSession session,
+    public Session(NodeTCPSession session,
                    SessionHandler handler,
 		   boolean allowTLS) {
         super(session);
@@ -364,11 +364,11 @@ public final class Session
      * Create a Session which will simply pass-thru all
      * commands (yet continue to do any SMTP fixup goodness).
      *
-     * @param session the TCPSession
+     * @param session the NodeTCPSession
      *
      * @return the passthru session.
      */
-    public static Session createPassthruSession(TCPSession session)
+    public static Session createPassthruSession(NodeTCPSession session)
     {
         return new Session(session, new SimpleSessionHandler(), true);
     }

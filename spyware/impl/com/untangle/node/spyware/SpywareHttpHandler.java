@@ -22,7 +22,7 @@ import com.untangle.node.token.Chunk;
 import com.untangle.node.token.Header;
 import com.untangle.node.token.Token;
 import com.untangle.node.util.AsciiCharBuffer;
-import com.untangle.uvm.vnet.TCPSession;
+import com.untangle.uvm.vnet.NodeTCPSession;
 import com.untangle.node.util.UrlHashSet;
 import com.untangle.node.util.GoogleSafeBrowsingHashSet;
 
@@ -31,7 +31,7 @@ public class SpywareHttpHandler extends HttpStateMachine
     private static final String MALWARE_SITE_DB_FILE  = "/usr/share/untangle-webfilter-init/spyware-url";
     private static final String GOOGLE_HASH_DB_FILE  = "/usr/share/untangle-google-safebrowsing/lib/goog-malware-hash";
 
-    private final TCPSession session;
+    private final NodeTCPSession session;
 
     private final Map<RequestLineToken, List<String>> killers = new HashMap<RequestLineToken, List<String>>();
 
@@ -46,7 +46,7 @@ public class SpywareHttpHandler extends HttpStateMachine
 
     // constructors -----------------------------------------------------------
 
-    SpywareHttpHandler(TCPSession session, SpywareImpl node)
+    SpywareHttpHandler(NodeTCPSession session, SpywareImpl node)
     {
         super(session);
 

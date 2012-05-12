@@ -29,7 +29,7 @@ import com.untangle.node.spam.SpamLoadChecker;
 import com.untangle.node.token.TokenHandler;
 import com.untangle.node.token.TokenHandlerFactory;
 import com.untangle.uvm.vnet.TCPNewSessionRequest;
-import com.untangle.uvm.vnet.TCPSession;
+import com.untangle.uvm.vnet.NodeTCPSession;
 import org.apache.log4j.Logger;
 
 public class PhishSmtpFactory implements TokenHandlerFactory
@@ -47,7 +47,7 @@ public class PhishSmtpFactory implements TokenHandlerFactory
         m_safelist = m_mailExport.getSafelistNodeView();
     }
 
-    public TokenHandler tokenHandler(TCPSession session)
+    public TokenHandler tokenHandler(NodeTCPSession session)
     {
         SpamSmtpConfig spamConfig = m_phishImpl.getSettings().getSmtpConfig();
 

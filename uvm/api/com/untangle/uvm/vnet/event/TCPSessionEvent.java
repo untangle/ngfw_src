@@ -4,7 +4,7 @@
 package com.untangle.uvm.vnet.event;
 
 import com.untangle.uvm.vnet.ArgonConnector;
-import com.untangle.uvm.vnet.TCPSession;
+import com.untangle.uvm.vnet.NodeTCPSession;
 
 /**
  * Base class for all TCP live session events
@@ -12,13 +12,13 @@ import com.untangle.uvm.vnet.TCPSession;
 @SuppressWarnings("serial")
 public class TCPSessionEvent extends IPSessionEvent
 {
-    public TCPSessionEvent(ArgonConnector argonConnector, TCPSession session)
+    public TCPSessionEvent(ArgonConnector argonConnector, NodeTCPSession session)
     {
         super(argonConnector, session);
     }
 
-    public TCPSession session()
+    public NodeTCPSession session()
     {
-        return (TCPSession)getSource();
+        return (NodeTCPSession)getSource();
     }
 }

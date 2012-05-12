@@ -26,7 +26,7 @@ import com.untangle.node.token.TokenStreamer;
 import com.untangle.node.token.TokenStreamerAdaptor;
 import com.untangle.node.util.TempFileFactory;
 import com.untangle.uvm.vnet.Pipeline;
-import com.untangle.uvm.vnet.TCPSession;
+import com.untangle.uvm.vnet.NodeTCPSession;
 import com.untangle.uvm.vnet.event.TCPStreamer;
 
 /**
@@ -47,7 +47,7 @@ class VirusFtpHandler extends FtpStateMachine
 
     // constructors -----------------------------------------------------------
 
-    VirusFtpHandler(TCPSession session, VirusNodeImpl node)
+    VirusFtpHandler(NodeTCPSession session, VirusNodeImpl node)
     {
         super(session);
 
@@ -212,7 +212,7 @@ class VirusFtpHandler extends FtpStateMachine
         } else {
             node.incrementBlockCount();
             // Todo: Quarantine (for now, don't delete the file) XXX
-            TCPSession s = getSession();
+            NodeTCPSession s = getSession();
             s.shutdownClient();
             s.shutdownServer();
             return null;

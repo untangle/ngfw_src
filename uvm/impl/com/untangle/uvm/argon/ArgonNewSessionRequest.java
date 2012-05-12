@@ -23,7 +23,17 @@ import com.untangle.jnetcap.NetcapSession;
 public interface ArgonNewSessionRequest extends ArgonSessionDesc
 {
     /**
-     * Gets the Netcap Session associated with this session request.</p>
+     * return the globally unique session ID
+     */
+    long id();
+
+    /**
+     * Return the user associated with this session
+     */
+    String user();
+
+    /**
+     * Gets the Netcap NodeSession associated with this session request.</p>
      *
      * @return the Netcap Session.
      */
@@ -41,5 +51,4 @@ public interface ArgonNewSessionRequest extends ArgonSessionDesc
      * @return session global state.
      */
     public SessionGlobalState sessionGlobalState();
-
 }

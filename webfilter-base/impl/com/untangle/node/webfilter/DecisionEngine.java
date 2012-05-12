@@ -26,8 +26,8 @@ import com.untangle.uvm.node.MimeType;
 import com.untangle.uvm.node.GenericRule;
 import com.untangle.node.util.GlobUtil;
 import com.untangle.uvm.util.I18nUtil;
-import com.untangle.uvm.vnet.Session;
-import com.untangle.uvm.vnet.TCPSession;
+import com.untangle.uvm.vnet.NodeSession;
+import com.untangle.uvm.vnet.NodeTCPSession;
 import com.untangle.uvm.vnet.event.TCPNewSessionRequestEvent;
 
 /**
@@ -72,7 +72,7 @@ public abstract class DecisionEngine
     /**
      * Checks if the request should be blocked, giving an appropriate response if it should.
      */
-    public String checkRequest( TCPSession sess, InetAddress clientIp, int port, RequestLineToken requestLine, Header header)
+    public String checkRequest( NodeTCPSession sess, InetAddress clientIp, int port, RequestLineToken requestLine, Header header)
     {
         return checkRequest(sess, clientIp, port, requestLine, header, null);
     }
@@ -87,7 +87,7 @@ public abstract class DecisionEngine
      * @param event This is the new sessions request associated with this request, (or null if this is later.)
      * @return an HTML response (null means the site is passed and no response is given).
      */
-    public String checkRequest( TCPSession sess, InetAddress clientIp, int port, RequestLineToken requestLine, Header header, TCPNewSessionRequestEvent event )
+    public String checkRequest( NodeTCPSession sess, InetAddress clientIp, int port, RequestLineToken requestLine, Header header, TCPNewSessionRequestEvent event )
     {
         URI uri = null;
         try {
@@ -107,7 +107,7 @@ public abstract class DecisionEngine
 
         String username = null;
         if (sess != null)
-            username = (String) sess.globalAttachment(Session.KEY_PLATFORM_ADCONNECTOR_USERNAME);
+            username = (String) sess.globalAttachment(NodeSession.KEY_PLATFORM_ADCONNECTOR_USERNAME);
 
         // check client IP address pass list
         // If a client is on the pass list is is passed regardless of any other settings
@@ -495,7 +495,7 @@ public abstract class DecisionEngine
     /**
      * Check the given URL against the categories (and their settings)
      */
-    private GenericRule checkCategory( TCPSession sess, InetAddress clientIp, String host, int port, RequestLineToken requestLine, TCPNewSessionRequestEvent event, String username )
+    private GenericRule checkCategory( NodeTCPSession sess, InetAddress clientIp, String host, int port, RequestLineToken requestLine, TCPNewSessionRequestEvent event, String username )
     {
         URI reqUri = requestLine.getRequestUri();
 

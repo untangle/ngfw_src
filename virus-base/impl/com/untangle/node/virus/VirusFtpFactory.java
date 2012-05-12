@@ -21,7 +21,7 @@ package com.untangle.node.virus;
 import com.untangle.node.token.TokenHandler;
 import com.untangle.node.token.TokenHandlerFactory;
 import com.untangle.uvm.vnet.TCPNewSessionRequest;
-import com.untangle.uvm.vnet.TCPSession;
+import com.untangle.uvm.vnet.NodeTCPSession;
 
 /**
  * Factory for FTP <code>TokenHandler</code>s.
@@ -38,7 +38,7 @@ public class VirusFtpFactory implements TokenHandlerFactory
         this.node = node;
     }
 
-    public TokenHandler tokenHandler(TCPSession session)
+    public TokenHandler tokenHandler(NodeTCPSession session)
     {
         return new VirusFtpHandler(session, node);
     }

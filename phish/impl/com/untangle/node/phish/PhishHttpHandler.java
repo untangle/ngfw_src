@@ -13,7 +13,7 @@ import com.untangle.node.http.StatusLine;
 import com.untangle.node.token.Chunk;
 import com.untangle.node.token.Header;
 import com.untangle.node.token.Token;
-import com.untangle.uvm.vnet.TCPSession;
+import com.untangle.uvm.vnet.NodeTCPSession;
 import com.untangle.node.util.GoogleSafeBrowsingHashSet;
 
 public class PhishHttpHandler extends HttpStateMachine
@@ -28,7 +28,7 @@ public class PhishHttpHandler extends HttpStateMachine
     
     // constructors -----------------------------------------------------------
 
-    PhishHttpHandler(TCPSession session, PhishNode node)
+    PhishHttpHandler(NodeTCPSession session, PhishNode node)
     {
         super(session);
 

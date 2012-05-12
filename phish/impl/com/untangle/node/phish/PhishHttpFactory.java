@@ -19,7 +19,7 @@
 package com.untangle.node.phish;
 
 import com.untangle.uvm.vnet.TCPNewSessionRequest;
-import com.untangle.uvm.vnet.TCPSession;
+import com.untangle.uvm.vnet.NodeTCPSession;
 import com.untangle.node.token.TokenHandler;
 import com.untangle.node.token.TokenHandlerFactory;
 
@@ -36,7 +36,7 @@ class PhishHttpFactory implements TokenHandlerFactory
 
     // TokenHandlerFactory methods --------------------------------------------
 
-    public TokenHandler tokenHandler(TCPSession session)
+    public TokenHandler tokenHandler(NodeTCPSession session)
     {
         return new PhishHttpHandler(session, node);
     }

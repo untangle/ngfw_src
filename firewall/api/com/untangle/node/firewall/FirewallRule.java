@@ -11,8 +11,8 @@ import org.json.JSONObject;
 import org.json.JSONString;
 import org.apache.log4j.Logger;
 
-import com.untangle.uvm.vnet.Session;
-import com.untangle.uvm.vnet.IPSession;
+import com.untangle.uvm.vnet.NodeSession;
+import com.untangle.uvm.vnet.NodeIPSession;
 
 /**
  * This in the implementation of a Firewall Rule

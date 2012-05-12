@@ -7,7 +7,6 @@ import java.net.InetAddress;
 import java.sql.Timestamp;
 import java.util.Date;
 
-
 import com.untangle.uvm.logging.LogEvent;
 import com.untangle.uvm.node.SessionEvent;
 
@@ -15,10 +14,6 @@ import com.untangle.uvm.node.SessionEvent;
  * Used to record the Session stats at session end time.
  * SessionStatsEvent and SessionEvent used to be the PiplineInfo
  * object.
- *
- * @author <a href="mailto:jdi@untangle.com">John Irwin</a>
- * @author <a href="mailto:amread@untangle.com">Aaron Read</a>
- * @version 1.0
  */
 @SuppressWarnings("serial")
 public class SessionStatsEvent extends LogEvent

@@ -29,7 +29,7 @@ import com.untangle.node.token.Chunk;
 import com.untangle.node.token.ParseResult;
 import com.untangle.node.token.PassThruToken;
 import com.untangle.node.token.Token;
-import com.untangle.uvm.vnet.TCPSession;
+import com.untangle.uvm.vnet.NodeTCPSession;
 
 /**
  * 'name says it all...
@@ -42,7 +42,7 @@ class ImapClientParser
 
     private final IMAPTokenizer m_tokenizer;
 
-    ImapClientParser(TCPSession session,
+    ImapClientParser(NodeTCPSession session,
                      ImapCasing parent) {
 
         super(session, parent, true);

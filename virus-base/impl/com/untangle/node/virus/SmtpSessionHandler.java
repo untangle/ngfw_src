@@ -18,7 +18,7 @@ import com.untangle.node.mime.MIMEUtil;
 import com.untangle.node.util.TempFileFactory;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.vnet.Pipeline;
-import com.untangle.uvm.vnet.TCPSession;
+import com.untangle.uvm.vnet.NodeTCPSession;
 
 
 /**
@@ -43,7 +43,7 @@ public class SmtpSessionHandler extends BufferingSessionHandler
 
     private final WrappedMessageGenerator generator;
     
-    public SmtpSessionHandler(TCPSession session, long maxClientWait, long maxSvrWait, VirusNodeImpl impl)
+    public SmtpSessionHandler(NodeTCPSession session, long maxClientWait, long maxSvrWait, VirusNodeImpl impl)
     {
         super(Integer.MAX_VALUE, maxClientWait, maxSvrWait, true);
 

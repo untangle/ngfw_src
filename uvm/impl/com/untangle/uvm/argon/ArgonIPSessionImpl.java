@@ -80,7 +80,7 @@ public abstract class ArgonIPSessionImpl extends ArgonSessionImpl implements Arg
         return serverIntf;
     }
     
-    /* IPSession */
+    /* NodeIPSession */
     public void release()
     {
         /* Maybe someday */

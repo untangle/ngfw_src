@@ -19,7 +19,7 @@ import com.untangle.node.token.Token;
 import com.untangle.node.token.TokenException;
 import com.untangle.node.token.TokenResult;
 import com.untangle.node.util.TempFileFactory;
-import com.untangle.uvm.vnet.TCPSession;
+import com.untangle.uvm.vnet.NodeTCPSession;
 
 public class VirusPopHandler extends PopStateMachine
 {
@@ -41,7 +41,7 @@ public class VirusPopHandler extends PopStateMachine
 
     // constructors -----------------------------------------------------------
 
-    VirusPopHandler(TCPSession session, VirusNodeImpl node, MailExport zMExport)
+    VirusPopHandler(NodeTCPSession session, VirusNodeImpl node, MailExport zMExport)
     {
         super(session);
 

@@ -1,33 +1,18 @@
-/*
- * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc.
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License, version 2,
- * as published by the Free Software Foundation.
- *
- * This program is distributed in the hope that it will be useful, but
- * AS-IS and WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE, TITLE, or
- * NONINFRINGEMENT.  See the GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
+/**
+ * $Id$
  */
-
 package com.untangle.node.ips;
 
 import java.util.Set;
 
-import com.untangle.uvm.vnet.IPSession;
-import com.untangle.uvm.vnet.TCPSession;
-import com.untangle.uvm.vnet.UDPSession;
+import com.untangle.uvm.vnet.NodeIPSession;
+import com.untangle.uvm.vnet.NodeTCPSession;
+import com.untangle.uvm.vnet.NodeUDPSession;
 import com.untangle.uvm.vnet.event.IPDataEvent;
 
 public class IpsSessionInfo
 {
-    private final IPSession session;
+    private final NodeIPSession session;
     private final IpsNodeImpl ips;
 
     private Set<IpsRuleSignature> c2sSignatures;
@@ -41,7 +26,7 @@ public class IpsSessionInfo
     public int end;
     public int indexOfLastMatch;
 
-    public IpsSessionInfo(IpsNodeImpl ips, IPSession session,
+    public IpsSessionInfo(IpsNodeImpl ips, NodeIPSession session,
                           Set<IpsRuleSignature> c2sSignatures,
                           Set<IpsRuleSignature> s2cSignatures)
     {
@@ -63,7 +48,7 @@ public class IpsSessionInfo
 
     // Do i need to set sessionion data? I dont think so.. Check
     // later.
-    public IPSession getSession()
+    public NodeIPSession getSession()
     {
         return session;
     }
@@ -114,13 +99,13 @@ public class IpsSessionInfo
 
     public void blockSession()
     {
-        if(session instanceof TCPSession) {
-            ((TCPSession)session).resetClient();
-            ((TCPSession)session).resetServer();
+        if(session instanceof NodeTCPSession) {
+            ((NodeTCPSession)session).resetClient();
+            ((NodeTCPSession)session).resetServer();
         }
-        else if(session instanceof UDPSession) {
-            ((UDPSession)session).expireClient();
-            ((UDPSession)session).expireServer();
+        else if(session instanceof NodeUDPSession) {
+            ((NodeUDPSession)session).expireClient();
+            ((NodeUDPSession)session).expireServer();
         }
         session.release();
     }

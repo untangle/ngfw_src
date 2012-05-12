@@ -6,12 +6,12 @@ package com.untangle.uvm.vnet;
 import java.net.InetAddress;
 
 import com.untangle.uvm.node.SessionEvent;
-import com.untangle.uvm.node.SessionEndpoints;
+import com.untangle.uvm.node.SessionTuple;
 
 /**
  * The new IP session request interface
  */
-public interface IPNewSessionRequest extends NewSessionRequest, SessionEndpoints
+public interface IPNewSessionRequest extends NewSessionRequest, SessionTuple
 {
     /**
      * Sets the client address for this session.
@@ -100,4 +100,51 @@ public interface IPNewSessionRequest extends NewSessionRequest, SessionEndpoints
     int getNatFromPort();
     InetAddress getNatToHost();
     int getNatToPort();
+
+    /**
+     * Returns the protocol for the session.</p>
+     * @return a <code>short</code> giving one of the protocols (right now always TCP or UDP)
+     */
+    short protocol();
+
+    /**
+     * Returns an argon interface for the client.</p>
+     *
+     * @return a <code>int</code> giving the client interface of the session.
+     */
+    int clientIntf();
+
+    /**
+     * Returns an argon interface for the server.</p>
+     *
+     * @return a <code>int</code> giving the server interface of the session.
+     */
+    int serverIntf();
+
+    /**
+     * Gets the Client Address of this session. </p>
+     *
+     * @return  the client address
+     */
+    InetAddress clientAddr();
+
+    /**
+     * Gets the Server Address of this session. </p>
+     *
+     * @return  the server addr.
+     */
+    InetAddress serverAddr();
+
+    /**
+     * Gets the client port for this session.</p>
+     * @return the client port.
+     */
+    int clientPort();
+
+    /**
+     * Gets the server port for this session.</p>
+     * @return the server port.
+     */
+    int serverPort();
+
 }

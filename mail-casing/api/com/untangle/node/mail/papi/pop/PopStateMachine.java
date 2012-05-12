@@ -59,7 +59,7 @@ import com.untangle.node.token.EndMarker;
 import com.untangle.node.token.Token;
 import com.untangle.node.token.TokenException;
 import com.untangle.node.token.TokenResult;
-import com.untangle.uvm.vnet.TCPSession;
+import com.untangle.uvm.vnet.NodeTCPSession;
 
 public abstract class PopStateMachine extends AbstractTokenHandler
 {
@@ -107,7 +107,7 @@ public abstract class PopStateMachine extends AbstractTokenHandler
 
     // constructors -----------------------------------------------------------
 
-    public PopStateMachine(TCPSession session)
+    public PopStateMachine(NodeTCPSession session)
     {
         super(session);
 

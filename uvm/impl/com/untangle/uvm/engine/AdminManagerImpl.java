@@ -73,7 +73,7 @@ public class AdminManagerImpl implements AdminManager, HasConfigFiles
 
         //         TransactionWork<Void> tw = new TransactionWork<Void>()
 //             {
-//                 public boolean doWork(Session s)
+//                 public boolean doWork(NodeSession s)
 //                 {
 //                     Query q = s.createQuery("from AdminSettings");
 //                     adminSettings = (AdminSettings)q.uniqueResult();
@@ -137,7 +137,7 @@ public class AdminManagerImpl implements AdminManager, HasConfigFiles
 
         //         TransactionWork<Void> tw = new TransactionWork<Void>()
 //             {
-//                 public boolean doWork(Session s)
+//                 public boolean doWork(NodeSession s)
 //                 {
 //                     adminSettings = (AdminSettings)s.merge(as);
 //                     return true;

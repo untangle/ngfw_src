@@ -34,7 +34,7 @@ public class SnmpManagerImpl implements SnmpManager, HasConfigFiles
     {
 
 //         TransactionWork<Object> tw = new TransactionWork<Object>() {
-//             public boolean doWork(Session s) {
+//             public boolean doWork(NodeSession s) {
 //                 Query q = s.createQuery("from SnmpSettings");
 //                 settings = (SnmpSettings)q.uniqueResult();
 
@@ -92,7 +92,7 @@ public class SnmpManagerImpl implements SnmpManager, HasConfigFiles
     public void setSnmpSettings(final SnmpSettings settings)
     {
 //         TransactionWork<Object> tw = new TransactionWork<Object>() {
-//             public boolean doWork(Session s) {
+//             public boolean doWork(NodeSession s) {
 //                 s.merge(settings);
 //                 return true;
 //             }

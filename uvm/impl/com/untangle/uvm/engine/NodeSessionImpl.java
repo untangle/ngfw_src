@@ -4,25 +4,18 @@
 package com.untangle.uvm.engine;
 
 import com.untangle.uvm.vnet.ArgonConnector;
-import com.untangle.uvm.vnet.Session;
+import com.untangle.uvm.vnet.NodeSession;
 import com.untangle.uvm.argon.ArgonSession;
 
 import org.apache.log4j.Logger;
 
 /**
  * Abstract base class for all live sessions
- *
- * @author <a href="mailto:jdi@untangle.com">John Irwin</a>
- * @version 1.0
  */
-abstract class SessionImpl implements Session
+abstract class NodeSessionImpl implements NodeSession
 {
-    private final Logger logger = Logger.getLogger(SessionImpl.class);
+    private final Logger logger = Logger.getLogger(NodeSessionImpl.class);
     
-    // For when we use a two-element array to store state for both sides.
-    protected static final int CLIENT = 0;
-    protected static final int SERVER = 1;
-
     protected ArgonConnectorImpl argonConnector;
 
     /**
@@ -32,7 +25,7 @@ abstract class SessionImpl implements Session
 
     protected volatile Object attachment = null;
 
-    protected SessionImpl(ArgonConnectorImpl argonConnector, ArgonSession argonSession)
+    protected NodeSessionImpl(ArgonConnectorImpl argonConnector, ArgonSession argonSession)
     {
         this.argonConnector = argonConnector;
         this.argonSession = argonSession;

@@ -41,7 +41,7 @@ import com.untangle.node.token.Chunk;
 import com.untangle.node.token.PassThruToken;
 import com.untangle.node.token.Token;
 import com.untangle.node.token.TokenResult;
-import com.untangle.uvm.vnet.TCPSession;
+import com.untangle.uvm.vnet.NodeTCPSession;
 
 
 /**
@@ -64,20 +64,20 @@ public final class ImapTokenStream
      * Construct an ImapTokenStream with an initial
      * passthru handler.
      *
-     * @param session the TCPSession
+     * @param session the NodeTCPSession
      * @param handler the handler for callbacks
      */
-    public ImapTokenStream(TCPSession session) {
+    public ImapTokenStream(NodeTCPSession session) {
         this(session, new PassthruImapTokenStreamHandler());
     }
 
     /**
      * Construct an ImapTokenStream
      *
-     * @param session the TCPSession
+     * @param session the NodeTCPSession
      * @param handler the handler for callbacks
      */
-    public ImapTokenStream(TCPSession session,
+    public ImapTokenStream(NodeTCPSession session,
                            ImapTokenStreamHandler handler) {
         super(session);
         updateTimestamps(true, true);
@@ -85,11 +85,11 @@ public final class ImapTokenStream
     }
 
     /**
-     * Access the underlying TCPSession for this TokenStream
+     * Access the underlying NodeTCPSession for this TokenStream
      *
-     * @return the underlying TCPSession
+     * @return the underlying NodeTCPSession
      */
-    public TCPSession getTCPSession() {
+    public NodeTCPSession getNodeTCPSession() {
         return getSession();
     }
 
@@ -214,12 +214,12 @@ public final class ImapTokenStream
 
     public void handleClientFin() {
         if(m_handler.handleClientFin()) {
-            getTCPSession().shutdownServer();
+            getNodeTCPSession().shutdownServer();
         }
     }
     public void handleServerFin() {
         if(m_handler.handleServerFin()) {
-            getTCPSession().shutdownClient();
+            getNodeTCPSession().shutdownClient();
         }
     }
     public void handleFinalized() {

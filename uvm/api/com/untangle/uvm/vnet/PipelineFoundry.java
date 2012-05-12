@@ -5,7 +5,6 @@ package com.untangle.uvm.vnet;
 
 import java.net.InetSocketAddress;
 
-import com.untangle.uvm.node.IPSessionDesc;
 import com.untangle.uvm.node.SessionEvent;
 import com.untangle.uvm.vnet.event.SessionEventListener;
 

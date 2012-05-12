@@ -641,7 +641,7 @@ class ToolboxManagerImpl implements ToolboxManager
     {
 //         TransactionWork<Object> tw = new TransactionWork<Object>()
 //             {
-//                 public boolean doWork(Session s)
+//                 public boolean doWork(NodeSession s)
 //                 {
 //                     s.merge(us);
 //                     return true;

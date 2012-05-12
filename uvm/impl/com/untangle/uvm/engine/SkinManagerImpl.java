@@ -96,7 +96,7 @@ class SkinManagerImpl implements SkinManager
         
         //         TransactionWork<Object> tw = new TransactionWork<Object>()
 //             {
-//                 public boolean doWork(Session s)
+//                 public boolean doWork(NodeSession s)
 //                 {
 //                     Query q = s.createQuery("from SkinSettings");
 //                     skinSettings = (SkinSettings)q.uniqueResult();
@@ -266,7 +266,7 @@ class SkinManagerImpl implements SkinManager
     {
 //         TransactionWork<Void> tw = new TransactionWork<Void>()
 //             {
-//                 public boolean doWork(Session s)
+//                 public boolean doWork(NodeSession s)
 //                 {
 //                     /* delete old settings */
 //                     Query q = s.createQuery( "from " + "SkinSettings" );

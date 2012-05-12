@@ -10,6 +10,8 @@ import java.util.Map;
 import org.apache.log4j.Logger;
 
 import com.untangle.uvm.SessionMatcher;
+import com.untangle.uvm.node.SessionTuple;
+import com.untangle.uvm.UvmContextFactory;
 
 /**
  * The <code>ArgonAgent</code> interface represents an active Node as seen by
@@ -95,7 +97,7 @@ public class ArgonAgentImpl implements ArgonAgent
      */
     public synchronized void destroy()
     {
-        /* Session is already dead, no need to do anything */
+        /* NodeSession is already dead, no need to do anything */
         if ( deadState() == DEAD_ARGON ) return;
 
         /* This means DO not remove sessions in raze, they are cleared at the end */
@@ -104,17 +106,16 @@ public class ArgonAgentImpl implements ArgonAgent
         /* Remove the listener */
         listener = NULL_NEW_SESSION_LISTENER;
 
-        /* Create a session matcher to shutdown all active sessions */
-        ActiveSessionMatcher matcher = new ActiveSessionMatcher( this.activeSessions );
+        UvmContextFactory.context().argonManager().shutdownMatches(
+                                                                   new SessionMatcher()
+                                                                   {
+                                                                       public boolean isMatch( Long policyId, SessionTuple client, SessionTuple server, Map<String, Object> attachments )
+                                                                       {
+                                                                           return true;
+                                                                       }
+                                                                   }
+                                                                   );
 
-        ArgonSessionTable.getInstance().shutdownMatches( matcher );
-
-        int numActiveSessions = matcher.getNumberActiveSessions();
-        if ( numActiveSessions == 0 ) {
-            logger.info( "Shutdown all active sessions" );
-        } else {
-            logger.warn( "There were " + numActiveSessions + "that where not shutdown." );
-        }
 
         /* Remove all of the active sessions */
         activeSessions.clear();
@@ -148,42 +149,5 @@ public class ArgonAgentImpl implements ArgonAgent
     public String toString()
     {
         return "ArgonAgent[" + name + "]";
-    }
-
-    private class ActiveSessionMatcher implements SessionMatcher
-    {
-        private final Set<Long> activeSessionIds;
-        private final Set<Long> shutdownSessionIds;
-
-        private ActiveSessionMatcher( Set<ArgonSession> sessionSet )
-        {
-            this.activeSessionIds = new HashSet<Long>( sessionSet.size());
-            this.shutdownSessionIds = new HashSet<Long>( sessionSet.size());
-
-            for ( ArgonSession session : sessionSet ) this.activeSessionIds.add( session.id());
-        }
-        /**
-         * Tells if the session matches */
-        public boolean isMatch( Long policyId, com.untangle.uvm.node.IPSessionDesc clientSide, com.untangle.uvm.node.IPSessionDesc serverSide, Map<String,Object> attachments )
-        {
-            Long id = clientSide.id();
-
-            /* Get the id from the client side (should match the client side one) */
-            if ( this.activeSessionIds.remove( id )) {
-                this.shutdownSessionIds.add( id );
-                return true;
-            } else if ( this.shutdownSessionIds.contains( id )) {
-                logger.warn( "session id: [" + id + "] appears to have been shutdown twice." );
-                return true;
-            }
-
-            return false;
-        }
-
-        int getNumberActiveSessions()
-        {
-            return this.activeSessionIds.size();
-        }
-
     }
 }

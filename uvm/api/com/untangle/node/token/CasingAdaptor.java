@@ -15,8 +15,8 @@ import com.untangle.uvm.node.Node;
 import com.untangle.uvm.vnet.AbstractEventHandler;
 import com.untangle.uvm.vnet.Pipeline;
 import com.untangle.uvm.vnet.PipelineFoundry;
-import com.untangle.uvm.vnet.Session;
-import com.untangle.uvm.vnet.TCPSession;
+import com.untangle.uvm.vnet.NodeSession;
+import com.untangle.uvm.vnet.NodeTCPSession;
 import com.untangle.uvm.vnet.event.IPDataResult;
 import com.untangle.uvm.vnet.event.IPSessionEvent;
 import com.untangle.uvm.vnet.event.TCPChunkEvent;
@@ -38,7 +38,7 @@ public class CasingAdaptor extends AbstractEventHandler
     private final CasingFactory casingFactory;
     private final boolean clientSide;
 
-    private final Map<Session,CasingDesc> casings = new ConcurrentHashMap<Session,CasingDesc>();
+    private final Map<NodeSession,CasingDesc> casings = new ConcurrentHashMap<NodeSession,CasingDesc>();
 
     private final PipelineFoundry pipeFoundry = UvmContextFactory.context().pipelineFoundry();
 
@@ -71,7 +71,7 @@ public class CasingAdaptor extends AbstractEventHandler
     @Override
     public void handleTCPNewSession(TCPSessionEvent e)
     {
-        TCPSession session = e.session();
+        NodeTCPSession session = e.session();
 
         Casing casing = casingFactory.casing(session, clientSide);
         Pipeline pipeline = pipeFoundry.getPipeline(session.id());
@@ -157,7 +157,7 @@ public class CasingAdaptor extends AbstractEventHandler
     {
         TCPStreamer tcpStream = null;
 
-        TCPSession s = (TCPSession)e.ipsession();
+        NodeTCPSession s = (NodeTCPSession)e.ipsession();
         Casing c = getCasing(s);
 
         if (clientSide) {
@@ -181,7 +181,7 @@ public class CasingAdaptor extends AbstractEventHandler
     {
         TCPStreamer ts = null;
 
-        TCPSession s = (TCPSession)e.ipsession();
+        NodeTCPSession s = (NodeTCPSession)e.ipsession();
         Casing c = getCasing(s);
 
         if (clientSide) {
@@ -215,7 +215,7 @@ public class CasingAdaptor extends AbstractEventHandler
     @Override
     public void handleTimer(IPSessionEvent e)
     {
-        TCPSession s = (TCPSession)e.ipsession();
+        NodeTCPSession s = (NodeTCPSession)e.ipsession();
 
         Parser p = getCasing(s).parser();
         p.handleTimer();
@@ -236,30 +236,30 @@ public class CasingAdaptor extends AbstractEventHandler
         }
     }
 
-    private void addCasing(Session session, Casing casing, Pipeline pipeline)
+    private void addCasing(NodeSession session, Casing casing, Pipeline pipeline)
     {
         casings.put(session, new CasingDesc(casing, pipeline));
     }
 
-    private CasingDesc getCasingDesc(Session session)
+    private CasingDesc getCasingDesc(NodeSession session)
     {
         CasingDesc casingDesc = casings.get(session);
         return casingDesc;
     }
 
-    private Casing getCasing(Session session)
+    private Casing getCasing(NodeSession session)
     {
         CasingDesc casingDesc = casings.get(session);
         return casingDesc.casing;
     }
 
-    private Pipeline getPipeline(Session session)
+    private Pipeline getPipeline(NodeSession session)
     {
         CasingDesc casingDesc = casings.get(session);
         return casingDesc.pipeline;
     }
 
-    private void removeCasingDesc(Session session)
+    private void removeCasingDesc(NodeSession session)
     {
         casings.remove(session);
     }
@@ -282,7 +282,7 @@ public class CasingAdaptor extends AbstractEventHandler
             return new TCPChunkResult(null, null, b);
         }
 
-        TCPSession s = e.session();
+        NodeTCPSession s = e.session();
         CasingDesc casingDesc = getCasingDesc(s);
         Casing casing = casingDesc.casing;
         Pipeline pipeline = casingDesc.pipeline;
@@ -349,7 +349,7 @@ public class CasingAdaptor extends AbstractEventHandler
         }
     }
 
-    private UnparseResult unparseToken(TCPSession s, Casing c, Token token)
+    private UnparseResult unparseToken(NodeTCPSession s, Casing c, Token token)
         throws UnparseException
     {
         Unparser u = c.unparser();
@@ -377,7 +377,7 @@ public class CasingAdaptor extends AbstractEventHandler
 
     private IPDataResult parse(TCPChunkEvent e, boolean s2c, boolean last)
     {
-        TCPSession s = e.session();
+        NodeTCPSession s = e.session();
         CasingDesc casingDesc = getCasingDesc(s);
         Casing casing = casingDesc.casing;
         Pipeline pipeline = casingDesc.pipeline;

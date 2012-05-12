@@ -29,7 +29,7 @@ import com.untangle.node.token.UnparseException;
 import com.untangle.node.token.UnparseResult;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.vnet.Fitting;
-import com.untangle.uvm.vnet.TCPSession;
+import com.untangle.uvm.vnet.NodeTCPSession;
 import com.untangle.uvm.vnet.event.TCPStreamer;
 
 /**
@@ -40,7 +40,7 @@ import com.untangle.uvm.vnet.event.TCPStreamer;
  */
 class FtpUnparser extends AbstractUnparser
 {
-    public FtpUnparser(TCPSession session, boolean clientSide)
+    public FtpUnparser(NodeTCPSession session, boolean clientSide)
     {
         super(session, clientSide);
     }
@@ -74,7 +74,7 @@ class FtpUnparser extends AbstractUnparser
                 InetAddress address = socketAddress.getAddress();
                 if ((null == address)||
                     address.getHostAddress().equals("0.0.0.0")) {
-                    TCPSession session = getSession();
+                    NodeTCPSession session = getSession();
 
                     socketAddress = new InetSocketAddress( session.serverAddr(), socketAddress.getPort());
                 } /* otherwise use the data from nat */

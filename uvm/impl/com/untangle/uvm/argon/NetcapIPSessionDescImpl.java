@@ -11,7 +11,7 @@ import com.untangle.jnetcap.Endpoint;
 import com.untangle.jnetcap.Endpoints;
 import com.untangle.jnetcap.NetcapSession;
 
-class NetcapIPSessionDescImpl implements ArgonIPSessionDesc
+class NetcapSessionTupleImpl implements ArgonIPSessionDesc
 {
     protected final SessionGlobalState sessionGlobalState;
     protected final Logger logger =  Logger.getLogger(getClass());
@@ -25,7 +25,7 @@ class NetcapIPSessionDescImpl implements ArgonIPSessionDesc
     protected final int clientIntf;
     protected final int serverIntf;
 
-    NetcapIPSessionDescImpl( SessionGlobalState sessionGlobalState, boolean ifClientSide )
+    NetcapSessionTupleImpl( SessionGlobalState sessionGlobalState, boolean ifClientSide )
     {
         Endpoints side;
 

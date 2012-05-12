@@ -16,8 +16,8 @@ import com.untangle.uvm.node.Node;
 import com.untangle.uvm.vnet.AbstractEventHandler;
 import com.untangle.uvm.vnet.Pipeline;
 import com.untangle.uvm.vnet.PipelineFoundry;
-import com.untangle.uvm.vnet.Session;
-import com.untangle.uvm.vnet.TCPSession;
+import com.untangle.uvm.vnet.NodeSession;
+import com.untangle.uvm.vnet.NodeTCPSession;
 import com.untangle.uvm.vnet.event.IPDataResult;
 import com.untangle.uvm.vnet.event.IPSessionEvent;
 import com.untangle.uvm.vnet.event.TCPChunkEvent;
@@ -41,7 +41,7 @@ public class TokenAdaptor extends AbstractEventHandler
     private static final ByteBuffer[] BYTE_BUFFER_PROTO = new ByteBuffer[0];
 
     private final TokenHandlerFactory handlerFactory;
-    private final Map<Session,HandlerDesc> handlers = new ConcurrentHashMap<Session,HandlerDesc>();
+    private final Map<NodeSession,HandlerDesc> handlers = new ConcurrentHashMap<NodeSession,HandlerDesc>();
 
     private final PipelineFoundry pipeFoundry = UvmContextFactory.context().pipelineFoundry();
 
@@ -64,7 +64,7 @@ public class TokenAdaptor extends AbstractEventHandler
     public void handleTCPNewSession(TCPSessionEvent e)
         
     {
-        TCPSession s = e.session();
+        NodeTCPSession s = e.session();
         TokenHandler h = handlerFactory.tokenHandler(s);
         Pipeline pipeline = pipeFoundry.getPipeline(s.id());
         addHandler(s, h, pipeline);
@@ -97,7 +97,7 @@ public class TokenAdaptor extends AbstractEventHandler
     public void handleTCPClientFIN(TCPSessionEvent e)
         
     {
-        TCPSession session = e.session();
+        NodeTCPSession session = e.session();
         HandlerDesc handlerDesc = getHandlerDesc(session);
 
         try {
@@ -113,7 +113,7 @@ public class TokenAdaptor extends AbstractEventHandler
     public void handleTCPServerFIN(TCPSessionEvent e)
         
     {
-        TCPSession session = e.session();
+        NodeTCPSession session = e.session();
         HandlerDesc handlerDesc = getHandlerDesc(session);
 
         try {
@@ -128,7 +128,7 @@ public class TokenAdaptor extends AbstractEventHandler
     @Override
     public void handleTCPFinalized(TCPSessionEvent e) 
     {
-        TCPSession session = e.session();
+        NodeTCPSession session = e.session();
         HandlerDesc handlerDesc = getHandlerDesc(session);
 
         try {
@@ -215,31 +215,31 @@ public class TokenAdaptor extends AbstractEventHandler
         }
     }
 
-    private void addHandler(Session session, TokenHandler handler, Pipeline pipeline)
+    private void addHandler(NodeSession session, TokenHandler handler, Pipeline pipeline)
     {
         handlers.put(session, new HandlerDesc(handler, pipeline));
     }
 
-    private HandlerDesc getHandlerDesc(Session session)
+    private HandlerDesc getHandlerDesc(NodeSession session)
     {
         HandlerDesc handlerDesc = handlers.get(session);
         return handlerDesc;
     }
 
-    private TokenHandler getHandler(Session session)
+    private TokenHandler getHandler(NodeSession session)
     {
         HandlerDesc handlerDesc = handlers.get(session);
         return handlerDesc.handler;
     }
 
     @SuppressWarnings("unused")
-	private Pipeline getPipeline(Session session)
+	private Pipeline getPipeline(NodeSession session)
     {
         HandlerDesc handlerDesc = handlers.get(session);
         return handlerDesc.pipeline;
     }
 
-    private void removeHandler(Session session)
+    private void removeHandler(NodeSession session)
     {
         handlers.remove(session);
     }
@@ -267,7 +267,7 @@ public class TokenAdaptor extends AbstractEventHandler
         if (logger.isDebugEnabled())
             logger.debug("RETRIEVED object " + token + " with key: " + key);
 
-        TCPSession session = e.session();
+        NodeTCPSession session = e.session();
 
         TokenResult tr;
         try {
@@ -316,7 +316,7 @@ public class TokenAdaptor extends AbstractEventHandler
         }
     }
 
-    public TokenResult doToken(TCPSession session, boolean s2c, Pipeline pipeline, TokenHandler handler, Token token)
+    public TokenResult doToken(NodeTCPSession session, boolean s2c, Pipeline pipeline, TokenHandler handler, Token token)
         throws TokenException
     {
         if (token instanceof Release) {
@@ -368,7 +368,7 @@ public class TokenAdaptor extends AbstractEventHandler
         }
     }
 
-    private ByteBuffer[] processResults(Token[] results, Pipeline pipeline, Session session, boolean s2c)
+    private ByteBuffer[] processResults(Token[] results, Pipeline pipeline, NodeSession session, boolean s2c)
     {
         // XXX factor out token writing
         ByteBuffer bb = ByteBuffer.allocate(TOKEN_SIZE * results.length);

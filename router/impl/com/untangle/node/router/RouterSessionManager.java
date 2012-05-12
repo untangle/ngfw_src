@@ -10,9 +10,9 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import com.untangle.uvm.util.JsonClient;
 import com.untangle.uvm.vnet.IPNewSessionRequest;
-import com.untangle.uvm.vnet.IPSession;
+import com.untangle.uvm.vnet.NodeIPSession;
 import com.untangle.uvm.vnet.Protocol;
-import com.untangle.uvm.vnet.TCPSession;
+import com.untangle.uvm.vnet.NodeTCPSession;
 import org.apache.log4j.Logger;
 
 import org.json.JSONObject;
@@ -51,7 +51,7 @@ class RouterSessionManager
 
     }
 
-    void releaseSession( IPSession session, Protocol protocol )
+    void releaseSession( NodeIPSession session, Protocol protocol )
     {
         RouterSessionData sessionData;
         if (logger.isDebugEnabled()) {
@@ -83,7 +83,7 @@ class RouterSessionManager
         }
     }
 
-    RouterSessionData getSessionData( TCPSession session )
+    RouterSessionData getSessionData( NodeTCPSession session )
     {
         return map.get( session.id());
     }
@@ -154,12 +154,12 @@ class SessionRedirectKey
         this( protocol, request.serverAddr(), request.serverPort());
     }
 
-    SessionRedirectKey( TCPSession session )
+    SessionRedirectKey( NodeTCPSession session )
     {
         this( Protocol.TCP, session.serverAddr(), session.serverPort());
     }
 
-    SessionRedirectKey( IPSession session, Protocol protocol )
+    SessionRedirectKey( NodeIPSession session, Protocol protocol )
     {
         this( protocol, session.serverAddr(), session.serverPort());
     }

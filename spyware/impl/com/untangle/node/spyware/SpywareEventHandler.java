@@ -13,7 +13,7 @@ import com.untangle.uvm.node.GenericRule;
 import com.untangle.uvm.node.IPMaskedAddress;
 import com.untangle.uvm.vnet.AbstractEventHandler;
 import com.untangle.uvm.vnet.IPNewSessionRequest;
-import com.untangle.uvm.vnet.Session;
+import com.untangle.uvm.vnet.NodeSession;
 import com.untangle.uvm.vnet.TCPNewSessionRequest;
 import com.untangle.uvm.vnet.UDPNewSessionRequest;
 import com.untangle.uvm.vnet.event.TCPNewSessionRequestEvent;
@@ -80,7 +80,7 @@ public class SpywareEventHandler extends AbstractEventHandler
     @Override
     public void handleTCPComplete(TCPSessionEvent event)
     {
-        Session s = event.session();
+        NodeSession s = event.session();
         SpywareAccessEvent spe = (SpywareAccessEvent)s.attachment();
         if (null != spe) {
             node.logEvent(spe);
@@ -90,7 +90,7 @@ public class SpywareEventHandler extends AbstractEventHandler
     @Override
     public void handleUDPComplete(UDPSessionEvent event)
     {
-        Session s = event.session();
+        NodeSession s = event.session();
         SpywareAccessEvent spe = (SpywareAccessEvent)s.attachment();
         if (null != spe) {
             node.logEvent(spe);

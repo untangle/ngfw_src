@@ -91,7 +91,7 @@ public class LanguageManagerImpl implements LanguageManager
         
 //         TransactionWork<Void> tw = new TransactionWork<Void>()
 //         {
-//             public boolean doWork(Session s)
+//             public boolean doWork(NodeSession s)
 //             {
 //                 Query q = s.createQuery("from LanguageSettings");
 //                 languageSettings = (LanguageSettings)q.uniqueResult();
@@ -427,7 +427,7 @@ public class LanguageManagerImpl implements LanguageManager
     {
 //         TransactionWork<Void> tw = new TransactionWork<Void>()
 //             {
-//                 public boolean doWork(Session s)
+//                 public boolean doWork(NodeSession s)
 //                 {
 //                     /* delete old settings */
 //                     Query q = s.createQuery( "from " + "LanguageSettings" );

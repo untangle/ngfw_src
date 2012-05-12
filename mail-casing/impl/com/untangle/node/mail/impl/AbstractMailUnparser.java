@@ -28,7 +28,7 @@ import com.untangle.node.token.Token;
 import com.untangle.node.token.UnparseResult;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.vnet.Pipeline;
-import com.untangle.uvm.vnet.TCPSession;
+import com.untangle.uvm.vnet.NodeTCPSession;
 import com.untangle.uvm.vnet.event.TCPStreamer;
 
 /**
@@ -45,7 +45,7 @@ public abstract class AbstractMailUnparser
     private boolean m_passthru = false;
     private final String m_protocol;
 
-    protected AbstractMailUnparser(TCPSession session,
+    protected AbstractMailUnparser(NodeTCPSession session,
                                    AbstractMailCasing parent,
                                    boolean clientSide,
                                    String protocolName) {

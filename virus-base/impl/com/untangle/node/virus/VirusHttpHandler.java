@@ -28,7 +28,7 @@ import com.untangle.node.token.TokenException;
 import com.untangle.node.util.TempFileFactory;
 import com.untangle.node.util.GlobUtil;
 import com.untangle.uvm.node.GenericRule;
-import com.untangle.uvm.vnet.TCPSession;
+import com.untangle.uvm.vnet.NodeTCPSession;
 
 /**
  * Virus handler for HTTP.
@@ -60,7 +60,7 @@ class VirusHttpHandler extends HttpStateMachine
 
     // constructors -----------------------------------------------------------
 
-    VirusHttpHandler(TCPSession session, VirusNodeImpl node)
+    VirusHttpHandler(NodeTCPSession session, VirusNodeImpl node)
     {
         super(session);
 
@@ -239,7 +239,7 @@ class VirusHttpHandler extends HttpStateMachine
                 VirusBlockDetails bd = new VirusBlockDetails(host,uri,null,this.vendor);
                                                              
                 String nonce = node.generateNonce(bd);
-                TCPSession sess = getSession();
+                NodeTCPSession sess = getSession();
 
                 //bug #9164 - always close connection after writing redirect despite if the connection is persistent
                 //Token[] response = node.generateResponse(nonce, sess, uri, isRequestPersistent());
@@ -248,7 +248,7 @@ class VirusHttpHandler extends HttpStateMachine
                 blockResponse(response);
             } else {
                 logger.info("Virus found: " + result.getVirusName());
-                TCPSession s = getSession();
+                NodeTCPSession s = getSession();
                 s.shutdownClient();
                 s.shutdownServer();
                 s.release();

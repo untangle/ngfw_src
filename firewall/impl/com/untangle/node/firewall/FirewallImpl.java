@@ -21,9 +21,8 @@ import com.untangle.uvm.node.IntfMatcher;
 import com.untangle.uvm.node.IPMatcher;
 import com.untangle.uvm.node.PortMatcher;
 import com.untangle.uvm.node.ProtocolMatcher;
-import com.untangle.uvm.node.IPSessionDesc;
+import com.untangle.uvm.node.SessionTuple;
 import com.untangle.uvm.node.EventLogQuery;
-import com.untangle.uvm.node.IPSessionDesc;
 import com.untangle.uvm.util.I18nUtil;
 import com.untangle.uvm.vnet.NodeBase;
 import com.untangle.uvm.vnet.Affinity;
@@ -31,7 +30,7 @@ import com.untangle.uvm.vnet.Fitting;
 import com.untangle.uvm.vnet.PipeSpec;
 import com.untangle.uvm.vnet.SoloPipeSpec;
 import com.untangle.uvm.vnet.Protocol;
-import com.untangle.uvm.vnet.Session;
+import com.untangle.uvm.vnet.NodeSession;
 
 public class FirewallImpl extends NodeBase implements Firewall
 {
@@ -56,7 +55,7 @@ public class FirewallImpl extends NodeBase implements Firewall
     private final SessionMatcher FIREWALL_SESSION_MATCHER = new SessionMatcher() {
             
             /* Kill all sessions that should be blocked */
-            public boolean isMatch(Long sessionPolicyId, IPSessionDesc client, IPSessionDesc server, Map<String,Object> attachments)
+            public boolean isMatch(Long sessionPolicyId, SessionTuple client, SessionTuple server, Map<String,Object> attachments)
             {
                 if (handler == null)
                     return false;
@@ -71,7 +70,7 @@ public class FirewallImpl extends NodeBase implements Firewall
                                      client.clientIntf(), server.serverIntf(),
                                      client.clientAddr(),  client.serverAddr(),
                                      client.clientPort(), client.serverPort(),
-                                     (String)attachments.get(Session.KEY_PLATFORM_ADCONNECTOR_USERNAME))) {
+                                     (String)attachments.get(NodeSession.KEY_PLATFORM_ADCONNECTOR_USERNAME))) {
                         matchedRule = rule;
                         break;
                     }
@@ -361,10 +360,10 @@ public class FirewallImpl extends NodeBase implements Firewall
     {
         /* Kill all active sessions */
         if (getNodeSettings().getPolicyId() == null)
-            this.killMatchingSessions(new SessionMatcher() { public boolean isMatch( Long policyId, IPSessionDesc client, IPSessionDesc server, Map<String, Object> attachments ) { return true; } });
+            this.killMatchingSessions(new SessionMatcher() { public boolean isMatch( Long policyId, SessionTuple client, SessionTuple server, Map<String, Object> attachments ) { return true; } });
         else 
             this.killMatchingSessions(new SessionMatcher() {
-                    public boolean isMatch( Long policyId, IPSessionDesc client, IPSessionDesc server, Map<String, Object> attachments )
+                    public boolean isMatch( Long policyId, SessionTuple client, SessionTuple server, Map<String, Object> attachments )
                     {
                         if (getNodeSettings().getPolicyId().equals( policyId ))
                             return true;

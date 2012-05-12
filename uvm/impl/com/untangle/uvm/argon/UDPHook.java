@@ -113,8 +113,7 @@ public class UDPHook implements NetcapHook
                     logger.info( "Server: " + session.serverAddr() + ":" + session.serverPort());
                 }
 
-                serverTraffic = new IPTraffic( session.clientAddr(), session.clientPort(),
-                                               session.serverAddr(), session.serverPort());
+                serverTraffic = new IPTraffic( session.clientAddr(), session.clientPort(), session.serverAddr(), session.serverPort());
 
                 serverTraffic.ttl( session.ttl());
                 serverTraffic.tos( session.tos());

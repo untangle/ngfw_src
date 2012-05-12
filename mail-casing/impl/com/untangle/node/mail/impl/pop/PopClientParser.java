@@ -20,7 +20,7 @@ import com.untangle.node.token.ParseResult;
 import com.untangle.node.token.Release;
 import com.untangle.node.token.Token;
 import com.untangle.node.util.AsciiCharBuffer;
-import com.untangle.uvm.vnet.TCPSession;
+import com.untangle.uvm.vnet.NodeTCPSession;
 
 public class PopClientParser extends AbstractParser
 {
@@ -38,7 +38,7 @@ public class PopClientParser extends AbstractParser
 
     // constructors -----------------------------------------------------------
 
-    public PopClientParser(TCPSession session, PopCasing zCasing)
+    public PopClientParser(NodeTCPSession session, PopCasing zCasing)
     {
         super(session, true);
         lineBuffering(false);

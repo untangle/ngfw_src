@@ -13,7 +13,7 @@ import java.util.Map;
 import org.apache.log4j.Logger;
 
 import com.untangle.node.ips.options.IpsOption;
-import com.untangle.uvm.vnet.IPSession;
+import com.untangle.uvm.vnet.NodeIPSession;
 
 public class IpsRuleSignatureImpl
 {
@@ -204,7 +204,7 @@ public class IpsRuleSignatureImpl
 
     private void doAction(IpsNodeImpl ips, IpsSessionInfo info)
     {
-        IPSession session = info.getSession();
+        NodeIPSession session = info.getSession();
         if (null == session) {
             log.error("Session is null; cannot act on event: " + classification + ", " + message);
             return;

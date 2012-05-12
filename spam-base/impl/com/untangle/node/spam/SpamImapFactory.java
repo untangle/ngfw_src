@@ -12,7 +12,7 @@ import com.untangle.node.mail.papi.safelist.SafelistNodeView;
 import com.untangle.node.token.TokenHandler;
 import com.untangle.node.token.TokenHandlerFactory;
 import com.untangle.uvm.vnet.TCPNewSessionRequest;
-import com.untangle.uvm.vnet.TCPSession;
+import com.untangle.uvm.vnet.NodeTCPSession;
 
 public class SpamImapFactory implements TokenHandlerFactory
 {
@@ -29,7 +29,7 @@ public class SpamImapFactory implements TokenHandlerFactory
         m_safelist = m_mailExport.getSafelistNodeView();
     }
 
-    public TokenHandler tokenHandler(TCPSession session)
+    public TokenHandler tokenHandler(NodeTCPSession session)
     {
 
         SpamImapConfig config = m_impl.getSettings().getImapConfig();

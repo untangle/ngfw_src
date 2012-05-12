@@ -1,5 +1,3 @@
-
-
 /**
  * $Id: FirewallRuleMatcher.java,v 1.00 2011/08/24 14:54:43 dmorris Exp $
  */
@@ -16,14 +14,13 @@ import org.json.JSONObject;
 import org.json.JSONString;
 
 import com.untangle.uvm.UvmContextFactory;
-import com.untangle.uvm.vnet.Session;
-import com.untangle.uvm.vnet.IPSession;
+import com.untangle.uvm.vnet.NodeSession;
+import com.untangle.uvm.vnet.NodeIPSession;
 import com.untangle.uvm.node.IPMatcher;
 import com.untangle.uvm.node.PortMatcher;
 import com.untangle.uvm.node.IntfMatcher;
 import com.untangle.uvm.node.UserMatcher;
 import com.untangle.uvm.node.ProtocolMatcher;
-import com.untangle.uvm.node.SessionEndpoints;
 import com.untangle.uvm.node.DirectoryConnector;
 import com.untangle.node.util.GlobUtil;
 

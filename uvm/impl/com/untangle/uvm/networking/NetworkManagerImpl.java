@@ -26,7 +26,7 @@ import com.untangle.uvm.IntfConstants;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.UvmState;
 import com.untangle.uvm.NetworkManager;
-import com.untangle.uvm.node.IPSessionDesc;
+import com.untangle.uvm.node.SessionTuple;
 import com.untangle.uvm.node.IPAddress;
 import com.untangle.uvm.node.ValidateException;
 import com.untangle.uvm.node.IPMatcher;
@@ -614,7 +614,7 @@ public class NetworkManagerImpl implements NetworkManager
      * This returns an address where the host should be able to access
      * HTTP.  if HTTP is not reachable, this returns NULL
      */
-    public InetAddress getInternalHttpAddress( IPSessionDesc session )
+    public InetAddress getInternalHttpAddress( int clientIntf )
     {
         /* Retrieve the network settings */
         NetworkConfiguration netConf = this.networkConfiguration;
@@ -623,14 +623,14 @@ public class NetworkManagerImpl implements NetworkManager
             return null;
         }
 
-        InterfaceConfiguration intfConf = netConf.findById(session.clientIntf());
+        InterfaceConfiguration intfConf = netConf.findById( clientIntf );
         if ( intfConf == null ) {
             logger.warn("Failed to fetch interface configuration");
             return null;
         }
 
         /* WAN ports never have HTTP open */
-        boolean isWan = UvmContextFactory.context().networkManager().getNetworkConfiguration().findById(session.clientIntf()).isWAN();
+        boolean isWan = intfConf.isWAN();
         if ( isWan ) {
             //this is normal no error logged
             return null;

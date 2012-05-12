@@ -8,8 +8,14 @@ import com.untangle.uvm.node.SessionEvent;
 /**
  * The IP Session interface
  */
-public interface IPSession extends VnetSessionDesc, Session
+public interface NodeIPSession extends NodeSession
 {
+    static final byte CLOSED = 0;
+    static final byte EXPIRED = 0;
+    static final byte OPEN = 4;
+    static final byte HALF_OPEN_INPUT = 5; /* for TCP */
+    static final byte HALF_OPEN_OUTPUT = 6; /* for TCP */
+
     /**
      * <code>release</code> releases all interest in all non-final events for this session.  Only
      * the finalization event will be delievered, when the resulting session ends.
@@ -93,5 +99,14 @@ public interface IPSession extends VnetSessionDesc, Session
      */
     SessionEvent sessionEvent();
 
+    byte clientState();
+    byte serverState();
+
+    /**
+     * The <code>stats</code> method returns statistics for this session.
+     *
+     * @return a <code>SessionStats</code> giving the current statistics for this session
+     */
+    SessionStats stats();
     
 }

@@ -27,7 +27,7 @@ import com.untangle.node.mail.papi.smtp.SASLExchangeToken;
 import com.untangle.node.token.MetadataToken;
 import com.untangle.node.token.Token;
 import com.untangle.node.token.UnparseResult;
-import com.untangle.uvm.vnet.TCPSession;
+import com.untangle.uvm.vnet.NodeTCPSession;
 
 /**
  * ...name says it all...
@@ -38,7 +38,7 @@ class SmtpClientUnparser
     private final Logger m_logger =
         Logger.getLogger(SmtpClientUnparser.class);
 
-    SmtpClientUnparser(TCPSession session,
+    SmtpClientUnparser(NodeTCPSession session,
                        SmtpCasing parent,
                        CasingSessionTracker tracker) {
         super(session, parent, tracker, true);

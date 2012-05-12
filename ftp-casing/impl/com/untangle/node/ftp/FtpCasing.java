@@ -21,7 +21,7 @@ package com.untangle.node.ftp;
 import com.untangle.node.token.Casing;
 import com.untangle.node.token.Parser;
 import com.untangle.node.token.Unparser;
-import com.untangle.uvm.vnet.TCPSession;
+import com.untangle.uvm.vnet.NodeTCPSession;
 
 /**
  * FTP casing.
@@ -36,7 +36,7 @@ class FtpCasing implements Casing
 
     // constructors -----------------------------------------------------------
 
-    FtpCasing(TCPSession session, boolean clientSide)
+    FtpCasing(NodeTCPSession session, boolean clientSide)
     {
         parser = clientSide ? new FtpClientParser(session)
             : new FtpServerParser(session);

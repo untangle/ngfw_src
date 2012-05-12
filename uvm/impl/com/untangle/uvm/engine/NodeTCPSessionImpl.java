@@ -15,22 +15,21 @@ import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.node.SessionEvent;
 import com.untangle.uvm.util.MetaEnv;
 import com.untangle.uvm.argon.ArgonTCPSession;
-import com.untangle.uvm.vnet.VnetSessionDesc;
 import com.untangle.uvm.vnet.SessionStats;
-import com.untangle.uvm.vnet.TCPSession;
-import com.untangle.uvm.vnet.VnetSessionDescImpl;
+import com.untangle.uvm.vnet.NodeIPSession;
+import com.untangle.uvm.vnet.NodeTCPSession;
 import com.untangle.uvm.vnet.event.IPDataResult;
 import com.untangle.uvm.vnet.event.IPStreamer;
 import com.untangle.uvm.vnet.event.TCPChunkEvent;
 import com.untangle.uvm.vnet.event.TCPChunkResult;
 import com.untangle.uvm.vnet.event.TCPSessionEvent;
 import com.untangle.uvm.vnet.event.TCPStreamer;
-import com.untangle.uvm.node.SessionEndpoints;
+import com.untangle.uvm.node.SessionTuple;
 
 /**
  * This is the primary implementation class for TCP live sessions.
  */
-class TCPSessionImpl extends IPSessionImpl implements TCPSession
+class NodeTCPSessionImpl extends NodeIPSessionImpl implements NodeTCPSession
 {
     protected static final ByteBuffer SHUTDOWN_COOKIE_BUF = ByteBuffer.allocate(1);
 
@@ -43,7 +42,7 @@ class TCPSessionImpl extends IPSessionImpl implements TCPSession
     protected boolean[] lineBuffering = new boolean[] { false, false };
     protected ByteBuffer[] readBuf = new ByteBuffer[] { null, null };
 
-    protected TCPSessionImpl(Dispatcher disp,
+    protected NodeTCPSessionImpl(Dispatcher disp,
                              ArgonTCPSession argonSession,
                              SessionEvent pe,
                              int clientReadBufferSize,
@@ -143,39 +142,32 @@ class TCPSessionImpl extends IPSessionImpl implements TCPSession
         super.release();
     }
 
-    public VnetSessionDesc makeDesc()
-    {
-        return new VnetSessionDescImpl(id(), SessionEndpoints.PROTO_TCP, new SessionStats(stats),
-                                       clientState(), serverState(), clientIntf(), serverIntf(),
-                                       clientAddr(), serverAddr(), clientPort(), serverPort());
-    }
-
     public byte clientState()
     {
         if ((argonSession).clientIncomingSocketQueue() == null)
             if ((argonSession).clientOutgoingSocketQueue() == null)
-                return VnetSessionDesc.CLOSED;
+                return NodeIPSession.CLOSED;
             else
-                return VnetSessionDesc.HALF_OPEN_OUTPUT;
+                return NodeIPSession.HALF_OPEN_OUTPUT;
         else
             if ((argonSession).clientOutgoingSocketQueue() == null)
-                return VnetSessionDesc.HALF_OPEN_INPUT;
+                return NodeIPSession.HALF_OPEN_INPUT;
             else
-                return VnetSessionDesc.OPEN;
+                return NodeIPSession.OPEN;
     }
 
     public byte serverState()
     {
         if ((argonSession).serverIncomingSocketQueue() == null)
             if ((argonSession).serverOutgoingSocketQueue() == null)
-                return VnetSessionDesc.CLOSED;
+                return NodeIPSession.CLOSED;
             else
-                return VnetSessionDesc.HALF_OPEN_OUTPUT;
+                return NodeIPSession.HALF_OPEN_OUTPUT;
         else
             if ((argonSession).serverOutgoingSocketQueue() == null)
-                return VnetSessionDesc.HALF_OPEN_INPUT;
+                return NodeIPSession.HALF_OPEN_INPUT;
             else
-                return VnetSessionDesc.OPEN;
+                return NodeIPSession.OPEN;
     }
 
     public void shutdownServer()
@@ -319,11 +311,7 @@ class TCPSessionImpl extends IPSessionImpl implements TCPSession
             Crumb crumb2send = getNextCrumb2Send(side);
             assert crumb2send != null;
             int numWritten = sendCrumb(crumb2send, out);
-            if (RWSessionStats.DoDetailedTimes) {
-                long[] times = stats.times();
-                if (times[SessionStats.FIRST_BYTE_WROTE_TO_CLIENT + side] == 0)
-                    times[SessionStats.FIRST_BYTE_WROTE_TO_CLIENT + side] = MetaEnv.currentTimeMillis();
-            }
+
             argonConnector.lastSessionWriteFailed(false);
             stats.wroteData(side, numWritten);
 
@@ -491,11 +479,6 @@ class TCPSessionImpl extends IPSessionImpl implements TCPSession
             }
 
             Crumb crumb = in.peek();
-            if (RWSessionStats.DoDetailedTimes) {
-                long[] times = stats.times();
-                if (times[SessionStats.FIRST_BYTE_READ_FROM_CLIENT + side] == 0)
-                    times[SessionStats.FIRST_BYTE_READ_FROM_CLIENT + side] = MetaEnv.currentTimeMillis();
-            }
             switch (crumb.type()) {
             case Crumb.TYPE_SHUTDOWN:
                 logger.debug("read FIN");

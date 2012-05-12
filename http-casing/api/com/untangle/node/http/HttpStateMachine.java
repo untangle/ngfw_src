@@ -51,8 +51,8 @@ import com.untangle.node.token.Token;
 import com.untangle.node.token.TokenException;
 import com.untangle.node.token.TokenResult;
 import com.untangle.node.token.TokenStreamer;
-import com.untangle.uvm.vnet.Session;
-import com.untangle.uvm.vnet.TCPSession;
+import com.untangle.uvm.vnet.NodeSession;
+import com.untangle.uvm.vnet.NodeTCPSession;
 
 /**
  * Adapts a stream of HTTP tokens to methods relating to the protocol
@@ -121,11 +121,11 @@ public abstract class HttpStateMachine extends AbstractTokenHandler
     private boolean requestPersistent;
     private boolean responsePersistent;
 
-    private final TCPSession session;
+    private final NodeTCPSession session;
 
     // constructors -----------------------------------------------------------
 
-    protected HttpStateMachine(TCPSession session)
+    protected HttpStateMachine(NodeTCPSession session)
     {
         super(session);
         this.session = session;
@@ -458,9 +458,9 @@ public abstract class HttpStateMachine extends AbstractTokenHandler
                 /**
                  * Attach metadata
                  */
-                this.session.globalAttach(Session.KEY_HTTP_HOSTNAME,host);
+                this.session.globalAttach(NodeSession.KEY_HTTP_HOSTNAME,host);
                 String uri = getRequestLine().getRequestUri().normalize().getPath();
-                this.session.globalAttach(Session.KEY_HTTP_URI,uri);
+                this.session.globalAttach(NodeSession.KEY_HTTP_URI,uri);
 
                 switch (requestMode) {
                 case QUEUEING:

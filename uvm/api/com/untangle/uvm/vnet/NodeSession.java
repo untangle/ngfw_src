@@ -3,14 +3,20 @@
  */
 package com.untangle.uvm.vnet;
 
+import com.untangle.uvm.node.SessionTuple;
+
+import java.net.InetAddress;
+
 /**
  * The base Sessoin interface
- *
- * @author <a href="mailto:jdi@untangle.com">John Irwin</a>
- * @version 1.0
  */
-public interface Session
+public interface NodeSession extends SessionTuple
 {
+    public static final int CLIENT = 0;
+    public static final int SERVER = 1;
+
+    public static final short PROTO_TCP = 6;
+    public static final short PROTO_UDP = 17;
 
     /**
      * <code>argonConnector</code> returns the Meta Pipe <code>ArgonConnector</code>
@@ -72,7 +78,23 @@ public interface Session
      */
     Object globalAttachment(String key);
 
+    /**
+     * <code>id</code> returns the session's unique identifier, a positive integer >= 1.
+     * All sessions have a unique id assigned by Argon.  This will eventually, of course,
+     * wrap around.  This will take long enough, and any super-long-lived sessions that
+     * get wrapped to will not be duplicated, so the rollover is ok.
+     *
+     * @return an <code>int</code> giving the unique ID of the session.
+     */
+    long id();
 
+    /**
+     * User identified for the session.  May be null, which means
+     * that no user could be idenitifed for the session.
+     *
+     */
+    String user();
+    
     /**
      * The following are attachment keys used by various nodes to
      * share information with other nodes.
@@ -111,5 +133,51 @@ public interface Session
     public final String KEY_CLASSD_CONFIDENCE = "classd-confidence"; /* Integer */
     public final String KEY_CLASSD_PRODUCTIVITY = "classd-productivity"; /* Integer */
     public final String KEY_CLASSD_RISK = "classd-risk"; /* Integer */
+
+    /**
+     * Returns the protocol for the session.</p>
+     * @return a <code>short</code> giving one of the protocols (right now always TCP or UDP)
+     */
+    short protocol();
+
+    /**
+     * Returns an argon interface for the client.</p>
+     *
+     * @return a <code>int</code> giving the client interface of the session.
+     */
+    int clientIntf();
+
+    /**
+     * Returns an argon interface for the server.</p>
+     *
+     * @return a <code>int</code> giving the server interface of the session.
+     */
+    int serverIntf();
+
+    /**
+     * Gets the Client Address of this session. </p>
+     *
+     * @return  the client address
+     */
+    InetAddress clientAddr();
+
+    /**
+     * Gets the Server Address of this session. </p>
+     *
+     * @return  the server addr.
+     */
+    InetAddress serverAddr();
+
+    /**
+     * Gets the client port for this session.</p>
+     * @return the client port.
+     */
+    int clientPort();
+
+    /**
+     * Gets the server port for this session.</p>
+     * @return the server port.
+     */
+    int serverPort();
 }
 

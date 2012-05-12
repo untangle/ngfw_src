@@ -23,7 +23,7 @@ import org.apache.log4j.Logger;
 import com.untangle.node.mail.impl.AbstractMailCasing;
 import com.untangle.node.token.Parser;
 import com.untangle.node.token.Unparser;
-import com.untangle.uvm.vnet.TCPSession;
+import com.untangle.uvm.vnet.NodeTCPSession;
 
 
 /**
@@ -41,7 +41,7 @@ class ImapCasing
 
     private final ImapSessionMonitor m_sessionMonitor;
 
-    ImapCasing(TCPSession session,
+    ImapCasing(NodeTCPSession session,
                boolean clientSide) {
 
         super(session, clientSide, "imap");

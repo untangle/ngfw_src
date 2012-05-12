@@ -8,8 +8,13 @@ import com.untangle.uvm.vnet.event.TCPStreamer;
 /**
  * A TCPSession is the most specific interface for VNet TCP sessions
  */
-public interface TCPSession extends VnetSessionDesc, IPSession
+public interface NodeTCPSession extends NodeIPSession
 {
+    static final byte CLOSED = 0;
+    static final byte EXPIRED = 0;
+    static final byte OPEN = 4;
+    static final byte HALF_OPEN_INPUT = 5; /* for TCP */
+    static final byte HALF_OPEN_OUTPUT = 6; /* for TCP */
 
     static final int TCP_MAX_CHUNK_SIZE = 65536;
 

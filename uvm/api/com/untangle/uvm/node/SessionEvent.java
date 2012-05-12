@@ -6,6 +6,7 @@ package com.untangle.uvm.node;
 import java.net.InetAddress;
 
 import com.untangle.uvm.logging.LogEvent;
+import com.untangle.uvm.node.SessionTuple;
 
 /**
  * Used to record the Session endpoints at session end time.
@@ -31,49 +32,23 @@ public class SessionEvent extends LogEvent
     private String username;
     private String hostname;
     
-
     public SessionEvent() { }
 
-    public SessionEvent( IPSessionDesc clientSide, IPSessionDesc serverSide, Long policyId, String username, String hostname )
-    {
-        super();
-        
-        this.sessionId = clientSide.id();
-        protocol  = clientSide.protocol();
-
-        cClientAddr = clientSide.clientAddr();
-        cClientPort = clientSide.clientPort();
-        cServerAddr = clientSide.serverAddr();
-        cServerPort = clientSide.serverPort();
-
-        sClientAddr = serverSide.clientAddr();
-        sClientPort = serverSide.clientPort();
-        sServerAddr = serverSide.serverAddr();
-        sServerPort = serverSide.serverPort();
-
-        clientIntf = clientSide.clientIntf();
-        serverIntf = serverSide.serverIntf();
-
-        this.username = username;
-        this.hostname = hostname;
-        this.policyId = policyId;
-    }
-
     /**
-     *  This constructor is called by ArgonHook, just to get an object which is
-     * filled in later.
+     * This constructor is called by ArgonHook
+     * The other fields are completed later
      */
-    public SessionEvent( IPSessionDesc clientSide, String username, String hostname )
+    public SessionEvent( Long sessionId, SessionTuple clientSide, String username, String hostname )
     {
         super();
-        this.sessionId = clientSide.id();
+        this.sessionId = sessionId;
         protocol = clientSide.protocol();
         clientIntf = clientSide.clientIntf();
         this.username = username;
         this.hostname = hostname;
     }
 
-    public void completeEndpoints( IPSessionDesc clientSide, IPSessionDesc serverSide, Long policyId )
+    public void completeEndpoints( SessionTuple clientSide, SessionTuple serverSide, Long policyId )
     {
         cClientAddr = clientSide.clientAddr();
         cClientPort = clientSide.clientPort();
@@ -316,8 +291,8 @@ public class SessionEvent extends LogEvent
     public String getProtocolName()
     {
         switch (protocol) {
-        case SessionEndpoints.PROTO_TCP: return "TCP";
-        case SessionEndpoints.PROTO_UDP: return "UDP";
+        case SessionTuple.PROTO_TCP: return "TCP";
+        case SessionTuple.PROTO_UDP: return "UDP";
         default: return "unknown";
         }
     }

@@ -23,7 +23,7 @@ import com.untangle.node.token.Token;
 import com.untangle.node.token.TokenException;
 import com.untangle.node.token.TokenResult;
 import com.untangle.node.util.TempFileFactory;
-import com.untangle.uvm.vnet.TCPSession;
+import com.untangle.uvm.vnet.NodeTCPSession;
 
 public class SpamPopHandler extends PopStateMachine
 {
@@ -50,7 +50,7 @@ public class SpamPopHandler extends PopStateMachine
     private final int strength;
     private final int giveUpSize;
 
-    protected SpamPopHandler(TCPSession session, SpamNodeImpl node, MailExport zMExport)
+    protected SpamPopHandler(NodeTCPSession session, SpamNodeImpl node, MailExport zMExport)
     {
         super(session);
 

@@ -15,7 +15,7 @@ import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.vnet.AbstractEventHandler;
 import com.untangle.uvm.vnet.IPNewSessionRequest;
 import com.untangle.uvm.vnet.Protocol;
-import com.untangle.uvm.vnet.Session;
+import com.untangle.uvm.vnet.NodeSession;
 import com.untangle.uvm.vnet.TCPNewSessionRequest;
 import com.untangle.uvm.vnet.event.TCPNewSessionRequestEvent;
 import com.untangle.uvm.vnet.event.TCPSessionEvent;
@@ -65,7 +65,7 @@ class EventHandler extends AbstractEventHandler
                              request.clientIntf(), request.serverIntf(),
                              request.clientAddr(), request.getNatToHost(),
                              request.clientPort(), request.getNatToPort(),
-                             (String)request.globalAttachment(Session.KEY_PLATFORM_ADCONNECTOR_USERNAME))) {
+                             (String)request.globalAttachment(NodeSession.KEY_PLATFORM_ADCONNECTOR_USERNAME))) {
                 matchedRule = rule;
                 break;
             }
@@ -126,7 +126,7 @@ class EventHandler extends AbstractEventHandler
     @Override
     public void handleTCPComplete(TCPSessionEvent event)
     {
-        Session s = event.session();
+        NodeSession s = event.session();
         FirewallEvent fe = (FirewallEvent)s.attachment();
         if (null != fe) {
             node.logEvent(fe);
@@ -136,7 +136,7 @@ class EventHandler extends AbstractEventHandler
     @Override
     public void handleUDPComplete(UDPSessionEvent event)
     {
-        Session s = event.session();
+        NodeSession s = event.session();
         FirewallEvent fe = (FirewallEvent)s.attachment();
         if (null != fe) {
             node.logEvent(fe);

@@ -11,7 +11,7 @@ import org.apache.log4j.Logger;
 import com.untangle.node.token.Casing;
 import com.untangle.node.token.Parser;
 import com.untangle.node.token.Unparser;
-import com.untangle.uvm.vnet.TCPSession;
+import com.untangle.uvm.vnet.NodeTCPSession;
 
 /**
  * An HTTP <code>Casing</code>.
@@ -30,7 +30,7 @@ class HttpCasing implements Casing
 
     // constructors -----------------------------------------------------------
 
-    HttpCasing(TCPSession session, boolean clientSide,
+    HttpCasing(NodeTCPSession session, boolean clientSide,
                HttpNodeImpl node)
     {
         this.node = node;

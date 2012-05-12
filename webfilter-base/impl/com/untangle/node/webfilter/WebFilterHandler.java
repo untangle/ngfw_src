@@ -11,7 +11,7 @@ import com.untangle.node.http.StatusLine;
 import com.untangle.node.token.Chunk;
 import com.untangle.node.token.Header;
 import com.untangle.node.token.Token;
-import com.untangle.uvm.vnet.TCPSession;
+import com.untangle.uvm.vnet.NodeTCPSession;
 
 /**
  * Blocks HTTP traffic that is on an active block list.
@@ -27,7 +27,7 @@ public class WebFilterHandler extends HttpStateMachine
 
     // constructors -----------------------------------------------------------
 
-    protected WebFilterHandler(TCPSession session, WebFilterBase node)
+    protected WebFilterHandler(NodeTCPSession session, WebFilterBase node)
     {
         super(session);
 
@@ -47,7 +47,7 @@ public class WebFilterHandler extends HttpStateMachine
     {
         node.incrementScanCount();
 
-        TCPSession sess = getSession();
+        NodeTCPSession sess = getSession();
 
         String nonce = node.getDecisionEngine().checkRequest(sess, sess.clientAddr(), 80, getRequestLine(),requestHeader);
         if (logger.isDebugEnabled()) {
@@ -92,7 +92,7 @@ public class WebFilterHandler extends HttpStateMachine
         if (100 == getStatusLine().getStatusCode()) {
             releaseResponse();
         } else {
-            TCPSession sess = getSession();
+            NodeTCPSession sess = getSession();
 
             String nonce = node.getDecisionEngine()
                 .checkResponse(sess.clientAddr(), getResponseRequest(),

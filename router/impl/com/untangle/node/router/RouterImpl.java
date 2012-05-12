@@ -13,7 +13,7 @@ import com.untangle.uvm.logging.LogEvent;
 import com.untangle.uvm.NetworkManager;
 import com.untangle.uvm.networking.NetworkConfigurationListener;
 import com.untangle.uvm.networking.NetworkConfiguration;
-import com.untangle.uvm.node.IPSessionDesc;
+import com.untangle.uvm.node.SessionTuple;
 import com.untangle.uvm.vnet.NodeBase;
 import com.untangle.uvm.vnet.Affinity;
 import com.untangle.uvm.vnet.Fitting;
@@ -123,13 +123,13 @@ public class RouterImpl extends NodeBase implements Router
     protected void postStart()
     {
         /* Kill all active sessions */
-        killMatchingSessions(new SessionMatcher() { public boolean isMatch( Long policyId, IPSessionDesc client, IPSessionDesc server, Map<String, Object> attachments ) { return true; } });
+        killMatchingSessions(new SessionMatcher() { public boolean isMatch( Long policyId, SessionTuple client, SessionTuple server, Map<String, Object> attachments ) { return true; } });
     }
 
     protected void postStop() 
     {
         /* Kill all active sessions */
-        killMatchingSessions(new SessionMatcher() { public boolean isMatch( Long policyId, IPSessionDesc client, IPSessionDesc server, Map<String, Object> attachments ) { return true; } });
+        killMatchingSessions(new SessionMatcher() { public boolean isMatch( Long policyId, SessionTuple client, SessionTuple server, Map<String, Object> attachments ) { return true; } });
 
         dhcpMonitor.stop();
     }

@@ -22,7 +22,7 @@ import java.net.InetAddress;
 import com.untangle.uvm.logging.LogEvent;
 import com.untangle.uvm.vnet.AbstractEventHandler;
 import com.untangle.uvm.vnet.IPNewSessionRequest;
-import com.untangle.uvm.vnet.IPSession;
+import com.untangle.uvm.vnet.NodeIPSession;
 import com.untangle.uvm.vnet.Protocol;
 import com.untangle.uvm.vnet.event.TCPNewSessionRequestEvent;
 import com.untangle.uvm.vnet.event.TCPSessionEvent;
@@ -165,7 +165,7 @@ class RouterEventHandler extends AbstractEventHandler
     public void handleTCPComplete(TCPSessionEvent event)
         
     {
-        IPSession s = event.session();
+        NodeIPSession s = event.session();
         RouterAttachment na = (RouterAttachment)s.attachment();
         if (na != null) {
             LogEvent eventToLog = na.eventToLog();
@@ -180,7 +180,7 @@ class RouterEventHandler extends AbstractEventHandler
     public void handleUDPComplete(UDPSessionEvent event)
         
     {
-        IPSession s = event.session();
+        NodeIPSession s = event.session();
         RouterAttachment na = (RouterAttachment)s.attachment();
         if (na != null) {
             LogEvent eventToLog = na.eventToLog();
@@ -224,7 +224,7 @@ class RouterEventHandler extends AbstractEventHandler
      * Cleanup any of the information associated with a UDP or TCP session.
      * Presently not implemented to handle ICMP sessions.
      */
-    private void cleanupSession(Protocol protocol, IPSession session)
+    private void cleanupSession(Protocol protocol, NodeIPSession session)
     {
         RouterAttachment attachment = (RouterAttachment)session.attachment();
 

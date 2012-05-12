@@ -35,7 +35,7 @@ import com.untangle.node.token.PassThruToken;
 import com.untangle.node.token.Token;
 import com.untangle.node.util.ASCIIUtil;
 import com.untangle.uvm.UvmContextFactory;
-import com.untangle.uvm.vnet.TCPSession;
+import com.untangle.uvm.vnet.NodeTCPSession;
 
 /**
  * SMTP client parser
@@ -57,7 +57,7 @@ class SmtpClientParser extends SmtpParser
     private ScannerAndAccumulator m_sac;
 
 
-    SmtpClientParser(TCPSession session, SmtpCasing parent, CasingSessionTracker tracker)
+    SmtpClientParser(NodeTCPSession session, SmtpCasing parent, CasingSessionTracker tracker)
     {
         super(session, parent, tracker, true);
 

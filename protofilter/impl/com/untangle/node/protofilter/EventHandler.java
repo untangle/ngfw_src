@@ -10,10 +10,10 @@ import java.util.regex.Pattern;
 
 import com.untangle.node.util.AsciiCharBuffer;
 import com.untangle.uvm.vnet.AbstractEventHandler;
-import com.untangle.uvm.vnet.Session;
-import com.untangle.uvm.vnet.IPSession;
-import com.untangle.uvm.vnet.TCPSession;
-import com.untangle.uvm.vnet.UDPSession;
+import com.untangle.uvm.vnet.NodeSession;
+import com.untangle.uvm.vnet.NodeIPSession;
+import com.untangle.uvm.vnet.NodeTCPSession;
+import com.untangle.uvm.vnet.NodeUDPSession;
 import com.untangle.uvm.vnet.event.IPDataEvent;
 import com.untangle.uvm.vnet.event.IPDataResult;
 import com.untangle.uvm.vnet.event.TCPChunkEvent;
@@ -56,7 +56,7 @@ public class EventHandler extends AbstractEventHandler
 
     public void handleTCPNewSession (TCPSessionEvent event)
     {
-        TCPSession sess = event.session();
+        NodeTCPSession sess = event.session();
 
         SessionInfo sessInfo = new SessionInfo();
         // We now don't allocate memory until we need it.
@@ -67,7 +67,7 @@ public class EventHandler extends AbstractEventHandler
 
     public void handleUDPNewSession (UDPSessionEvent event)
     {
-        UDPSession sess = event.session();
+        NodeUDPSession sess = event.session();
 
         SessionInfo sessInfo = new SessionInfo();
         // We now don't allocate memory until we need it.
@@ -90,7 +90,7 @@ public class EventHandler extends AbstractEventHandler
 
     public void handleUDPClientPacket (UDPPacketEvent e) 
     {
-        UDPSession sess = e.session();
+        NodeUDPSession sess = e.session();
         ByteBuffer packet = e.packet().duplicate(); // Save position/limit for sending.
         _handleChunk(e, e.session(), false);
         sess.sendServerPacket(packet, e.header());
@@ -98,7 +98,7 @@ public class EventHandler extends AbstractEventHandler
 
     public void handleUDPServerPacket (UDPPacketEvent e) 
     {
-        UDPSession sess = e.session();
+        NodeUDPSession sess = e.session();
         ByteBuffer packet = e.packet().duplicate(); // Save position/limit for sending.
         _handleChunk(e, e.session(), true);
         sess.sendClientPacket(packet, e.header());
@@ -124,7 +124,7 @@ public class EventHandler extends AbstractEventHandler
         _stripZeros = stripZeros;
     }
 
-    private void _handleChunk (IPDataEvent event, IPSession sess, boolean server)
+    private void _handleChunk (IPDataEvent event, NodeIPSession sess, boolean server)
     {
         ByteBuffer chunk = event.data();
         SessionInfo sessInfo = (SessionInfo)sess.attachment();
@@ -202,18 +202,18 @@ public class EventHandler extends AbstractEventHandler
         if (elem != null) {
             sessInfo.protocol = elem.getProtocol();
             String l4prot = "";
-            if (sess instanceof TCPSession)
+            if (sess instanceof NodeTCPSession)
                 l4prot = "TCP";
-            if (sess instanceof UDPSession)
+            if (sess instanceof NodeUDPSession)
                 l4prot = "UDP";
 
             /**
              * Tag the session with metadata
              */
-            sess.globalAttach(Session.KEY_PROTOFILTER_SIGNATURE,elem.getProtocol());
-            sess.globalAttach(Session.KEY_PROTOFILTER_SIGNATURE_CATEGORY,elem.getCategory());
-            sess.globalAttach(Session.KEY_PROTOFILTER_SIGNATURE_DESCRIPTION,elem.getDescription());
-            sess.globalAttach(Session.KEY_PROTOFILTER_SIGNATURE_MATCHED,Boolean.TRUE);
+            sess.globalAttach(NodeSession.KEY_PROTOFILTER_SIGNATURE,elem.getProtocol());
+            sess.globalAttach(NodeSession.KEY_PROTOFILTER_SIGNATURE_CATEGORY,elem.getCategory());
+            sess.globalAttach(NodeSession.KEY_PROTOFILTER_SIGNATURE_DESCRIPTION,elem.getDescription());
+            sess.globalAttach(NodeSession.KEY_PROTOFILTER_SIGNATURE_MATCHED,Boolean.TRUE);
                               
             node.incrementDetectCount();
 
@@ -226,13 +226,13 @@ public class EventHandler extends AbstractEventHandler
             if (elem.isBlocked()) {
                 node.incrementBlockCount();
 
-                if (sess instanceof TCPSession) {
-                    ((TCPSession)sess).resetClient();
-                    ((TCPSession)sess).resetServer();
+                if (sess instanceof NodeTCPSession) {
+                    ((NodeTCPSession)sess).resetClient();
+                    ((NodeTCPSession)sess).resetServer();
                 }
-                else if (sess instanceof UDPSession) {
-                    ((UDPSession)sess).expireClient(); /* XXX correct? */
-                    ((UDPSession)sess).expireServer(); /* XXX correct? */
+                else if (sess instanceof NodeUDPSession) {
+                    ((NodeUDPSession)sess).expireClient(); /* XXX correct? */
+                    ((NodeUDPSession)sess).expireServer(); /* XXX correct? */
                 }
 
             }
@@ -250,13 +250,13 @@ public class EventHandler extends AbstractEventHandler
             if (logger.isDebugEnabled())
                 logger.debug("Giving up after " + bufferSize + " bytes and " + (sessInfo.clientChunkCount+sessInfo.serverChunkCount) + " chunks");
 
-            sess.globalAttach(Session.KEY_PROTOFILTER_SIGNATURE_MATCHED,Boolean.FALSE);
+            sess.globalAttach(NodeSession.KEY_PROTOFILTER_SIGNATURE_MATCHED,Boolean.FALSE);
             sess.attach(null);
             sess.release();
         }
     }
 
-    private ProtoFilterPattern _findMatch (SessionInfo sessInfo, IPSession sess, boolean server)
+    private ProtoFilterPattern _findMatch (SessionInfo sessInfo, NodeIPSession sess, boolean server)
     {
         AsciiCharBuffer buffer = server ? sessInfo.serverBuffer : sessInfo.clientBuffer;
         AsciiCharBuffer toScan = buffer.asReadOnlyBuffer();

@@ -47,31 +47,31 @@ public interface ArgonIPNewSessionRequest extends ArgonNewSessionRequest, ArgonI
     SessionEvent sessionEvent();
 
     /**
-     * Session requests have a state of <code>REQUESTED</code> when the session request has not
+     * NodeSession requests have a state of <code>REQUESTED</code> when the session request has not
      * been rejected or released by the node.
      */
     static final byte REQUESTED = 2;
 
     /**
-     * Session requests have a state of <code>REJECTED</code> when the session request has
+     * NodeSession requests have a state of <code>REJECTED</code> when the session request has
      * been rejected by the node.  It cannot aftwards be released.
      */
     static final byte REJECTED = 99;
 
     /**
-     * Session requests have a state of <code>RELEASED</code> when the session request has been
+     * NodeSession requests have a state of <code>RELEASED</code> when the session request has been
      * been released by the node.  It cannot aftarwards be rejected.
      */
     static final byte RELEASED = 98;
 
     /**
-     * Session requests have a state of <code>ENDPOINTED</code> when the session request 
+     * NodeSession requests have a state of <code>ENDPOINTED</code> when the session request 
      * wants to endpoint the connection.  The current state must be REQUESTED.
      */
     static final byte ENDPOINTED = 100;
 
     /**
-     * Session requests have a state of <code>REJECTED_SILENT</code> when the session request
+     * NodeSession requests have a state of <code>REJECTED_SILENT</code> when the session request
      * has been rejected silently by the node.  The curren state must be REQUESTED.
      */
     static final byte REJECTED_SILENT = 101;

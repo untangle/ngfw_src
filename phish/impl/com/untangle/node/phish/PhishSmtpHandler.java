@@ -18,7 +18,7 @@
 
 package com.untangle.node.phish;
 
-import com.untangle.uvm.vnet.TCPSession;
+import com.untangle.uvm.vnet.NodeTCPSession;
 import com.untangle.node.mail.papi.quarantine.QuarantineNodeView;
 import com.untangle.node.mail.papi.safelist.SafelistNodeView;
 import com.untangle.node.mail.papi.WrappedMessageGenerator;
@@ -40,7 +40,7 @@ public class PhishSmtpHandler extends com.untangle.node.spam.SpamSmtpHandler {
         "found was $SPAMReport:FULL$";
     private static WrappedMessageGenerator msgGenerator = new WrappedMessageGenerator(MOD_SUB_TEMPLATE,MOD_BODY_TEMPLATE);
     
-    PhishSmtpHandler(TCPSession session,
+    PhishSmtpHandler(NodeTCPSession session,
                      long maxClientWait,
                      long maxSvrWait,
                      PhishNode impl,

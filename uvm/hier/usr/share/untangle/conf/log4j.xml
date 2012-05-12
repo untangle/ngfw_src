@@ -297,10 +297,6 @@
     <priority value="INFO"/>
   </category>
 
-  <category name="com.untangle.uvm.vnet">
-    <priority value="INFO"/>
-  </category>
-
   <category name="com.untangle.uvm.vnet.NodeBase">
     <priority value="INFO"/>
   </category>
@@ -312,19 +308,19 @@
   <!-- #      WARN            excep                   -->
   <!-- ============================================== -->
 
+  <category name="com.untangle.uvm.vnet">
+    <priority value="INFO"/>
+  </category>
+
   <category name="com.untangle.uvm.vnet.ArgonConnector">
     <priority value="WARN"/>
   </category>
 
-  <category name="com.untangle.uvm.vnet.TCPSession">
+  <category name="com.untangle.uvm.vnet.NodeTCPSession">
     <priority value="WARN"/>
   </category>
 
-  <category name="com.untangle.uvm.vnet.UDPSession">
-    <priority value="WARN"/>
-  </category>
-
-  <category name="com.untangle.uvm.vnet.SessionTimes">
+  <category name="com.untangle.uvm.vnet.NodeUDPSession">
     <priority value="WARN"/>
   </category>
 

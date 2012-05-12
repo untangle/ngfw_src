@@ -14,7 +14,7 @@ import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.node.ParseException;
 import com.untangle.uvm.node.SessionEvent;
 import com.untangle.uvm.vnet.IPNewSessionRequest;
-import com.untangle.uvm.vnet.IPSession;
+import com.untangle.uvm.vnet.NodeIPSession;
 import com.untangle.uvm.vnet.Protocol;
 import com.untangle.uvm.vnet.SessionStats;
 import com.untangle.uvm.vnet.event.IPDataEvent;
@@ -132,8 +132,7 @@ public class IpsDetectionEngine
         return false;
     }
 
-    public void processNewSessionRequest(IPNewSessionRequest request,
-                                         Protocol protocol)
+    public void processNewSessionRequest(IPNewSessionRequest request, Protocol protocol)
     {
         //Get Mapped list
         List<IpsRuleHeader> c2sList = portC2SMap.get(request.serverPort());
@@ -209,26 +208,25 @@ public class IpsDetectionEngine
         }
     }
 
-    public IpsSessionInfo getSessionInfo(IPSession session) 
+    public IpsSessionInfo getSessionInfo(NodeIPSession session) 
     {
         return sessionInfoMap.get(session.id());
     }
 
     @SuppressWarnings("unchecked") //attachment
-    public void processNewSession(IPSession session, Protocol protocol) 
+    public void processNewSession(NodeIPSession session, Protocol protocol) 
     {
         Object[] sigs = (Object[]) session.attachment();
         Set<IpsRuleSignature> c2sSignatures = (Set<IpsRuleSignature>) sigs[0];
         Set<IpsRuleSignature> s2cSignatures = (Set<IpsRuleSignature>) sigs[1];
 
         logger.debug("registering IpsSessionInfo");
-        IpsSessionInfo info = new IpsSessionInfo(node, session, c2sSignatures,
-                                                 s2cSignatures);
+        IpsSessionInfo info = new IpsSessionInfo(node, session, c2sSignatures, s2cSignatures);
         sessionInfoMap.put(session.id(), info);
         session.attach(null);
     }
 
-    public void processFinalized(IPSession session, Protocol protocol) 
+    public void processFinalized(NodeIPSession session, Protocol protocol) 
     {
         logger.debug("unregistering IpsSessionInfo");
         sessionInfoMap.remove(session.id());
@@ -245,7 +243,7 @@ public class IpsDetectionEngine
     }
 
     //In process of fixing this
-    public void handleChunk(IPDataEvent event, IPSession session, boolean isFromServer)
+    public void handleChunk(IPDataEvent event, NodeIPSession session, boolean isFromServer)
     {
         try {
             long startTime = System.currentTimeMillis();

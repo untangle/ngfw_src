@@ -30,11 +30,10 @@ import com.untangle.uvm.node.NodeMetric;
 import com.untangle.uvm.util.I18nUtil;
 import com.untangle.uvm.util.MetaEnv;
 import com.untangle.uvm.vnet.NodeBase;
-import com.untangle.uvm.vnet.IPSession;
-import com.untangle.uvm.vnet.VnetSessionDesc;
+import com.untangle.uvm.vnet.NodeIPSession;
 import com.untangle.uvm.vnet.SessionStats;
-import com.untangle.uvm.vnet.TCPSession;
-import com.untangle.uvm.vnet.UDPSession;
+import com.untangle.uvm.vnet.NodeTCPSession;
+import com.untangle.uvm.vnet.NodeUDPSession;
 import com.untangle.uvm.vnet.event.IPDataResult;
 import com.untangle.uvm.vnet.event.IPSessionEvent;
 import com.untangle.uvm.vnet.event.SessionEventListener;
@@ -121,7 +120,7 @@ class Dispatcher implements com.untangle.uvm.argon.NewSessionEventListener
      * The set of active sessions (both TCP and UDP), kept as weak
      * references to SessionState object (both TCP/UDP)
      */
-    private ConcurrentHashMap<IPSession,IPSession> liveSessions;
+    private ConcurrentHashMap<NodeIPSession,NodeIPSession> liveSessions;
 
     /**
      * This one is for the command socket.
@@ -146,7 +145,7 @@ class Dispatcher implements com.untangle.uvm.argon.NewSessionEventListener
         sessionEventLogger = argonConnector.sessionEventLogger();
         releasedHandler = new ReleasedEventHandler(node);
 
-        liveSessions = new ConcurrentHashMap<IPSession,IPSession>();
+        liveSessions = new ConcurrentHashMap<NodeIPSession,NodeIPSession>();
 
         this.node.addMetric(new NodeMetric(STAT_LIVE_SESSIONS, I18nUtil.marktr("Current Sessions")));
         this.node.addMetric(new NodeMetric(STAT_TCP_LIVE_SESSIONS, I18nUtil.marktr("Current TCP Sessions")));
@@ -155,12 +154,12 @@ class Dispatcher implements com.untangle.uvm.argon.NewSessionEventListener
         this.node.addMetric(new NodeMetric(STAT_TCP_SESSIONS, I18nUtil.marktr("TCP Sessions")));
         this.node.addMetric(new NodeMetric(STAT_UDP_SESSIONS, I18nUtil.marktr("UDP Sessions")));
         this.node.addMetric(new NodeMetric(STAT_SESSION_REQUESTS, I18nUtil.marktr("Session Requests")));
-        this.node.addMetric(new NodeMetric(STAT_TCP_SESSION_REQUESTS, I18nUtil.marktr("TCP Session Requests")));
-        this.node.addMetric(new NodeMetric(STAT_UDP_SESSION_REQUESTS, I18nUtil.marktr("UDP Session Requests")));
+        this.node.addMetric(new NodeMetric(STAT_TCP_SESSION_REQUESTS, I18nUtil.marktr("TCP NodeSession Requests")));
+        this.node.addMetric(new NodeMetric(STAT_UDP_SESSION_REQUESTS, I18nUtil.marktr("UDP NodeSession Requests")));
     }
 
     // Called by the new session handler thread.
-    void addSession(TCPSession sess)
+    void addSession(NodeTCPSession sess)
         throws InterruptedException
     {
         this.node.incrementMetric(STAT_LIVE_SESSIONS);
@@ -173,7 +172,7 @@ class Dispatcher implements com.untangle.uvm.argon.NewSessionEventListener
     }
 
     // Called by the new session handler thread.
-    void addSession(UDPSession sess) throws InterruptedException
+    void addSession(NodeUDPSession sess) throws InterruptedException
     {
         this.node.incrementMetric(STAT_LIVE_SESSIONS);
         this.node.incrementMetric(STAT_UDP_LIVE_SESSIONS);
@@ -184,8 +183,8 @@ class Dispatcher implements com.untangle.uvm.argon.NewSessionEventListener
         liveSessions.put(sess, sess);
     }
 
-    // Called by IPSessionImpl at closeFinal (raze) time.
-    void removeSession(IPSessionImpl sess)
+    // Called by NodeIPSessionImpl at closeFinal (raze) time.
+    void removeSession(NodeIPSessionImpl sess)
     {
         liveSessions.remove(sess);
         ArgonAgent agent = (argonConnector).getArgonAgent();
@@ -196,9 +195,9 @@ class Dispatcher implements com.untangle.uvm.argon.NewSessionEventListener
         }
 
         this.node.decrementMetric(STAT_LIVE_SESSIONS);
-        if (sess instanceof UDPSession) {
+        if (sess instanceof NodeUDPSession) {
             this.node.decrementMetric(STAT_UDP_LIVE_SESSIONS);
-        } else if (sess instanceof TCPSession) {
+        } else if (sess instanceof NodeTCPSession) {
             this.node.decrementMetric(STAT_TCP_LIVE_SESSIONS);
         }
     }
@@ -234,18 +233,10 @@ class Dispatcher implements com.untangle.uvm.argon.NewSessionEventListener
         long sessionId = -1L;
 
         try {
-            long firstRequestHandleTime = 0, dispatchRequestTime = 0,
-                requestHandledTime = 0, madeSessionTime = 0,
-                dispatchNewTime = 0, newHandledTime = 0, finishNewTime = 0;
-            if (RWSessionStats.DoDetailedTimes)
-                firstRequestHandleTime = MetaEnv.currentTimeMillis();
-
             NodeProperties td = node.getNodeProperties();
             sessionId = request.id();
 
             TCPNewSessionRequestImpl treq = new TCPNewSessionRequestImpl(this, request);
-            if (RWSessionStats.DoDetailedTimes)
-                dispatchRequestTime = MetaEnv.currentTimeMillis();
 
             this.node.incrementMetric(STAT_SESSION_REQUESTS);
             this.node.incrementMetric(STAT_TCP_SESSION_REQUESTS);
@@ -255,9 +246,6 @@ class Dispatcher implements com.untangle.uvm.argon.NewSessionEventListener
             logger.debug("sending TCP new session request event");
             TCPNewSessionRequestEvent revent = new TCPNewSessionRequestEvent(argonConnector, treq);
             dispatchTCPNewSessionRequest(revent);
-
-            if (RWSessionStats.DoDetailedTimes)
-                requestHandledTime = MetaEnv.currentTimeMillis();
 
             // Check the session only if it was not rejected.
             switch (treq.state()) {
@@ -299,44 +287,26 @@ class Dispatcher implements com.untangle.uvm.argon.NewSessionEventListener
 
             // Create the session, client and server channels
             ArgonTCPSession argonSession = new ArgonTCPSessionImpl(request);
-            TCPSessionImpl session = new TCPSessionImpl(this, argonSession, request.sessionEvent(), TCP_READ_BUFFER_SIZE, TCP_READ_BUFFER_SIZE);
+            NodeTCPSessionImpl session = new NodeTCPSessionImpl(this, argonSession, request.sessionEvent(), TCP_READ_BUFFER_SIZE, TCP_READ_BUFFER_SIZE);
             
             session.attach(treq.attachment());
             registerPipelineListener(argonSession, session);
-            if (RWSessionStats.DoDetailedTimes)
-                madeSessionTime = MetaEnv.currentTimeMillis();
 
             // Send the new session event.  
             if (logger.isInfoEnabled())
                 logger.info("New TCP session " +
                             session.clientAddr().getHostAddress() + ":" + session.clientPort() + " -> " +
                             session.serverAddr().getHostAddress() + ":" + session.serverPort());
-            if (RWSessionStats.DoDetailedTimes)
-                dispatchNewTime = MetaEnv.currentTimeMillis();
             if (treq.state() == ArgonIPNewSessionRequest.RELEASED) {
                 session.release(treq.needsFinalization());
             } else {
                 TCPSessionEvent tevent = new TCPSessionEvent(argonConnector, session);
                 dispatchTCPNewSession(tevent);
             }
-            if (RWSessionStats.DoDetailedTimes)
-                newHandledTime = MetaEnv.currentTimeMillis();
 
             // Finally it to our set of owned sessions.
             addSession(session);
 
-            if (RWSessionStats.DoDetailedTimes) {
-                finishNewTime = MetaEnv.currentTimeMillis();
-
-                long[] times = session.stats().times();
-                times[SessionStats.NEW_SESSION_RECEIVED] = firstRequestHandleTime;
-                times[SessionStats.DISPATCH_REQUEST] = dispatchRequestTime;
-                times[SessionStats.REQUEST_HANDLED] = requestHandledTime;
-                times[SessionStats.MADE_SESSION] = madeSessionTime;
-                times[SessionStats.DISPATCH_NEW] = dispatchNewTime;
-                times[SessionStats.NEW_HANDLED] = newHandledTime;
-                times[SessionStats.FINISH_NEW] = finishNewTime;
-            }
             return argonSession;
         } catch (Exception x) {
             String message = "" + x.getClass().getName() + " building TCP session " + sessionId;
@@ -351,18 +321,10 @@ class Dispatcher implements com.untangle.uvm.argon.NewSessionEventListener
         long sessionId = -1;
 
         try {
-            long firstRequestHandleTime = 0, dispatchRequestTime = 0,
-                requestHandledTime = 0, madeSessionTime = 0,
-                dispatchNewTime = 0, newHandledTime = 0, finishNewTime = 0;
-            if (RWSessionStats.DoDetailedTimes)
-                firstRequestHandleTime = MetaEnv.currentTimeMillis();
-
             NodeProperties td = node.getNodeProperties();
             sessionId = request.id();
 
             UDPNewSessionRequestImpl ureq = new UDPNewSessionRequestImpl(this, request);
-            if (RWSessionStats.DoDetailedTimes)
-                dispatchRequestTime = MetaEnv.currentTimeMillis();
 
             this.node.incrementMetric(STAT_SESSION_REQUESTS);
             this.node.incrementMetric(STAT_UDP_SESSION_REQUESTS);
@@ -371,9 +333,6 @@ class Dispatcher implements com.untangle.uvm.argon.NewSessionEventListener
             logger.debug("sending UDP new session request event");
             UDPNewSessionRequestEvent revent = new UDPNewSessionRequestEvent(argonConnector, ureq);
             dispatchUDPNewSessionRequest(revent);
-
-            if (RWSessionStats.DoDetailedTimes)
-                requestHandledTime = MetaEnv.currentTimeMillis();
 
             // Check the session only if it was not rejected.
             switch (ureq.state()) {
@@ -415,12 +374,10 @@ class Dispatcher implements com.untangle.uvm.argon.NewSessionEventListener
 
             // Create the session, client and server channels
             ArgonUDPSession argonSession = new ArgonUDPSessionImpl(request);
-            UDPSessionImpl session = new UDPSessionImpl(this, argonSession, request.sessionEvent(), UDP_MAX_PACKET_SIZE, UDP_MAX_PACKET_SIZE);
+            NodeUDPSessionImpl session = new NodeUDPSessionImpl(this, argonSession, request.sessionEvent(), UDP_MAX_PACKET_SIZE, UDP_MAX_PACKET_SIZE);
             
             session.attach(ureq.attachment());
             registerPipelineListener(argonSession, session);
-            if (RWSessionStats.DoDetailedTimes)
-                madeSessionTime = MetaEnv.currentTimeMillis();
 
             // Send the new session event.  Maybe this should be done on the session handler
             // thread instead?  XX
@@ -428,32 +385,16 @@ class Dispatcher implements com.untangle.uvm.argon.NewSessionEventListener
                 logger.info("New UDP session " +
                             session.clientAddr().getHostAddress() + ":" + session.clientPort() + " -> " +
                             session.serverAddr().getHostAddress() + ":" + session.serverPort());
-            if (RWSessionStats.DoDetailedTimes)
-                dispatchNewTime = MetaEnv.currentTimeMillis();
             if (ureq.state() == ArgonIPNewSessionRequest.RELEASED) {
                 session.release(ureq.needsFinalization());
             } else {
                 UDPSessionEvent tevent = new UDPSessionEvent(argonConnector, session);
                 dispatchUDPNewSession(tevent);
             }
-            if (RWSessionStats.DoDetailedTimes)
-                newHandledTime = MetaEnv.currentTimeMillis();
 
             // Finally add it to our set of owned sessions.
             addSession(session);
 
-            if (RWSessionStats.DoDetailedTimes) {
-                finishNewTime = MetaEnv.currentTimeMillis();
-
-                long[] times = session.stats().times();
-                times[SessionStats.NEW_SESSION_RECEIVED] = firstRequestHandleTime;
-                times[SessionStats.DISPATCH_REQUEST] = dispatchRequestTime;
-                times[SessionStats.REQUEST_HANDLED] = requestHandledTime;
-                times[SessionStats.MADE_SESSION] = madeSessionTime;
-                times[SessionStats.DISPATCH_NEW] = dispatchNewTime;
-                times[SessionStats.NEW_HANDLED] = newHandledTime;
-                times[SessionStats.FINISH_NEW] = finishNewTime;
-            }
             return argonSession;
         } catch (Exception x) {
             String message = "" + x.getClass().getName() + " building UDP session " + sessionId;
@@ -463,7 +404,7 @@ class Dispatcher implements com.untangle.uvm.argon.NewSessionEventListener
         }
     }
 
-    void registerPipelineListener(ArgonIPSession argonSession, IPSessionImpl session)
+    void registerPipelineListener(ArgonIPSession argonSession, NodeIPSessionImpl session)
     {
         argonSession.registerListener(session);
     }
@@ -558,10 +499,10 @@ class Dispatcher implements com.untangle.uvm.argon.NewSessionEventListener
         int size = liveSessions.size();
         long[] idlist = new long[size];
         
-        for (Iterator<IPSession> i = liveSessions.keySet().iterator(); i.hasNext(); ) {
+        for (Iterator<NodeIPSession> i = liveSessions.keySet().iterator(); i.hasNext(); ) {
             if (count == size) /* just in case */
                 break;
-            IPSession sess = i.next();
+            NodeIPSession sess = i.next();
             idlist[count] = sess.id();
             count++;
         }
@@ -569,22 +510,11 @@ class Dispatcher implements com.untangle.uvm.argon.NewSessionEventListener
         return idlist;
     }
 
-    List<VnetSessionDesc> liveSessionDescs()
+    List<NodeIPSession> liveSessions()
     {
-        List<VnetSessionDesc> l = new ArrayList<VnetSessionDesc>(liveSessions.size());
-        for (Iterator<IPSession> i = liveSessions.keySet().iterator(); i.hasNext(); ) {
-            IPSessionImpl sess = (IPSessionImpl)i.next();
-            l.add(sess.makeDesc());
-        }
-
-        return l;
-    }
-
-    List<IPSession> liveSessions()
-    {
-        LinkedList<IPSession> sessions = new LinkedList<IPSession>();
+        LinkedList<NodeIPSession> sessions = new LinkedList<NodeIPSession>();
         
-        for (Iterator<IPSession> i = liveSessions.keySet().iterator(); i.hasNext(); ) {
+        for (Iterator<NodeIPSession> i = liveSessions.keySet().iterator(); i.hasNext(); ) {
             sessions.add(i.next());
         }
 
@@ -600,8 +530,6 @@ class Dispatcher implements com.untangle.uvm.argon.NewSessionEventListener
         if (sessionEventListener == null) {
             releasedHandler.handleTCPNewSessionRequest(event);
         } else {
-            long startTime = 0;
-
             sessionEventListener.handleTCPNewSessionRequest(event);
         }
     }
@@ -613,8 +541,6 @@ class Dispatcher implements com.untangle.uvm.argon.NewSessionEventListener
         if (sessionEventListener == null) {
             releasedHandler.handleUDPNewSessionRequest(event);
         } else {
-            long startTime = 0;
-
             sessionEventListener.handleUDPNewSessionRequest(event);
         }
     }
@@ -622,7 +548,7 @@ class Dispatcher implements com.untangle.uvm.argon.NewSessionEventListener
     void dispatchTCPNewSession(TCPSessionEvent event)
         
     {
-        IPSessionImpl session = (IPSessionImpl) event.session();
+        NodeIPSessionImpl session = (NodeIPSessionImpl) event.session();
         elog(Level.DEBUG, "TCPNewSession", session.id());
         if (sessionEventListener == null || session.released())
             releasedHandler.handleTCPNewSession(event);
@@ -633,7 +559,7 @@ class Dispatcher implements com.untangle.uvm.argon.NewSessionEventListener
     void dispatchUDPNewSession(UDPSessionEvent event)
         
     {
-        IPSessionImpl session = (IPSessionImpl) event.session();
+        NodeIPSessionImpl session = (NodeIPSessionImpl) event.session();
         elog(Level.DEBUG, "UDPNewSession", session.id());
         if (sessionEventListener == null || session.released())
             releasedHandler.handleUDPNewSession(event);
@@ -642,73 +568,52 @@ class Dispatcher implements com.untangle.uvm.argon.NewSessionEventListener
     }
 
     IPDataResult dispatchTCPClientChunk(TCPChunkEvent event)
-        
     {
-        IPSessionImpl session = (IPSessionImpl) event.session();
+        NodeIPSessionImpl session = (NodeIPSessionImpl) event.session();
         elog(Level.DEBUG, "TCPClientChunk", session.id(), event.chunk().remaining());
         if (sessionEventListener == null || session.released()) {
             return releasedHandler.handleTCPClientChunk(event);
         } else {
-            long startTime = 0;
-
-            IPDataResult result = sessionEventListener.handleTCPClientChunk(event);
-
-            return result;
+            return sessionEventListener.handleTCPClientChunk(event);
         }
     }
 
     IPDataResult dispatchTCPServerChunk(TCPChunkEvent event)
-        
     {
-        IPSessionImpl session = (IPSessionImpl) event.session();
+        NodeIPSessionImpl session = (NodeIPSessionImpl) event.session();
         elog(Level.DEBUG, "TCPServerChunk", session.id(), event.chunk().remaining());
         if (sessionEventListener == null || session.released()) {
             return releasedHandler.handleTCPServerChunk(event);
         } else {
-            long startTime = 0;
-
-            IPDataResult result = sessionEventListener.handleTCPServerChunk(event);
-            
-            return result;
+            return sessionEventListener.handleTCPServerChunk(event);
         }
     }
 
     IPDataResult dispatchTCPClientWritable(TCPSessionEvent event)
-        
     {
-        IPSessionImpl session = (IPSessionImpl) event.session();
+        NodeIPSessionImpl session = (NodeIPSessionImpl) event.session();
         elog(Level.DEBUG, "TCPClientWritable", session.id());
         if (sessionEventListener == null || session.released()) {
             return releasedHandler.handleTCPClientWritable(event);
         } else {
-            long startTime = 0;
-            
-            IPDataResult result = sessionEventListener.handleTCPClientWritable(event);
-            
-            return result;
+            return  sessionEventListener.handleTCPClientWritable(event);
         }
     }
 
     IPDataResult dispatchTCPServerWritable(TCPSessionEvent event)
-        
     {
-        IPSessionImpl session = (IPSessionImpl) event.session();
+        NodeIPSessionImpl session = (NodeIPSessionImpl) event.session();
         elog(Level.DEBUG, "TCPServerWritable", session.id());
         if (sessionEventListener == null || session.released()) {
             return releasedHandler.handleTCPServerWritable(event);
         } else {
-            long startTime = 0;
-            
-            IPDataResult result = sessionEventListener.handleTCPServerWritable(event);
-
-            return result;
+            return  sessionEventListener.handleTCPServerWritable(event);
         }
     }
 
     void dispatchUDPClientPacket(UDPPacketEvent event)
-        
     {
-        IPSessionImpl session = (IPSessionImpl) event.session();
+        NodeIPSessionImpl session = (NodeIPSessionImpl) event.session();
         elog(Level.DEBUG, "UDPClientPacket", session.id(), event.packet().remaining());
         if (sessionEventListener == null || session.released()) {
             releasedHandler.handleUDPClientPacket(event);
@@ -721,24 +626,19 @@ class Dispatcher implements com.untangle.uvm.argon.NewSessionEventListener
     }
 
     void dispatchUDPServerPacket(UDPPacketEvent event)
-        
     {
-        IPSessionImpl session = (IPSessionImpl) event.session();
+        NodeIPSessionImpl session = (NodeIPSessionImpl) event.session();
         elog(Level.DEBUG, "UDPServerPacket", session.id(), event.packet().remaining());
         if (sessionEventListener == null || session.released()) {
             releasedHandler.handleUDPServerPacket(event);
         } else {
-            long startTime = 0;
-            
             sessionEventListener.handleUDPServerPacket(event);
-
         }
     }
 
     IPDataResult dispatchTCPClientDataEnd(TCPChunkEvent event)
-        
     {
-        IPSessionImpl session = (IPSessionImpl) event.session();
+        NodeIPSessionImpl session = (NodeIPSessionImpl) event.session();
         elog(Level.DEBUG, "TCPClientDataEnd", session.id());
         if (sessionEventListener == null || session.released())
             return releasedHandler.handleTCPClientDataEnd(event);
@@ -747,9 +647,8 @@ class Dispatcher implements com.untangle.uvm.argon.NewSessionEventListener
     }
 
     void dispatchTCPClientFIN(TCPSessionEvent event)
-        
     {
-        IPSessionImpl session = (IPSessionImpl) event.session();
+        NodeIPSessionImpl session = (NodeIPSessionImpl) event.session();
         elog(Level.DEBUG, "TCPClientFIN", session.id());
         if (sessionEventListener == null || session.released())
             releasedHandler.handleTCPClientFIN(event);
@@ -758,9 +657,8 @@ class Dispatcher implements com.untangle.uvm.argon.NewSessionEventListener
     }
 
     IPDataResult dispatchTCPServerDataEnd(TCPChunkEvent event)
-        
     {
-        IPSessionImpl session = (IPSessionImpl) event.session();
+        NodeIPSessionImpl session = (NodeIPSessionImpl) event.session();
         elog(Level.DEBUG, "TCPServerDataEnd", session.id());
         if (sessionEventListener == null || session.released())
             return releasedHandler.handleTCPServerDataEnd(event);
@@ -769,9 +667,8 @@ class Dispatcher implements com.untangle.uvm.argon.NewSessionEventListener
     }
 
     void dispatchTCPServerFIN(TCPSessionEvent event)
-        
     {
-        IPSessionImpl session = (IPSessionImpl) event.session();
+        NodeIPSessionImpl session = (NodeIPSessionImpl) event.session();
         elog(Level.DEBUG, "TCPServerFIN", session.id());
         if (sessionEventListener == null || session.released())
             releasedHandler.handleTCPServerFIN(event);
@@ -780,9 +677,8 @@ class Dispatcher implements com.untangle.uvm.argon.NewSessionEventListener
     }
 
     void dispatchTCPClientRST(TCPSessionEvent event)
-        
     {
-        IPSessionImpl session = (IPSessionImpl) event.session();
+        NodeIPSessionImpl session = (NodeIPSessionImpl) event.session();
         elog(Level.DEBUG, "TCPClientRST", session.id());
         if (sessionEventListener == null || session.released())
             releasedHandler.handleTCPClientRST(event);
@@ -791,9 +687,8 @@ class Dispatcher implements com.untangle.uvm.argon.NewSessionEventListener
     }
 
     void dispatchTCPServerRST(TCPSessionEvent event)
-        
     {
-        IPSessionImpl session = (IPSessionImpl) event.session();
+        NodeIPSessionImpl session = (NodeIPSessionImpl) event.session();
         elog(Level.DEBUG, "TCPServerRST", session.id());
         if (sessionEventListener == null || session.released())
             releasedHandler.handleTCPServerRST(event);
@@ -802,9 +697,8 @@ class Dispatcher implements com.untangle.uvm.argon.NewSessionEventListener
     }
 
     void dispatchTCPFinalized(TCPSessionEvent event)
-        
     {
-        IPSessionImpl session = (IPSessionImpl) event.session();
+        NodeIPSessionImpl session = (NodeIPSessionImpl) event.session();
         elog(Level.DEBUG, "TCPFinalized", session.id());
         if (sessionEventListener == null || (session.released() && !session.needsFinalization()))
             releasedHandler.handleTCPFinalized(event);
@@ -813,9 +707,8 @@ class Dispatcher implements com.untangle.uvm.argon.NewSessionEventListener
     }
 
     void dispatchTCPComplete(TCPSessionEvent event)
-        
     {
-        IPSessionImpl session = (IPSessionImpl) event.session();
+        NodeIPSessionImpl session = (NodeIPSessionImpl) event.session();
         elog(Level.DEBUG, "TCPComplete", session.id());
         if (sessionEventListener == null || (session.released() && !session.needsFinalization()))
             releasedHandler.handleTCPComplete(event);
@@ -824,9 +717,8 @@ class Dispatcher implements com.untangle.uvm.argon.NewSessionEventListener
     }
 
     void dispatchUDPClientExpired(UDPSessionEvent event)
-        
     {
-        IPSessionImpl session = (IPSessionImpl) event.session();
+        NodeIPSessionImpl session = (NodeIPSessionImpl) event.session();
         elog(Level.DEBUG, "UDPClientExpired", session.id());
         if (sessionEventListener == null || session.released())
             releasedHandler.handleUDPClientExpired(event);
@@ -835,9 +727,8 @@ class Dispatcher implements com.untangle.uvm.argon.NewSessionEventListener
     }
 
     void dispatchUDPServerExpired(UDPSessionEvent event)
-        
     {
-        IPSessionImpl session = (IPSessionImpl) event.session();
+        NodeIPSessionImpl session = (NodeIPSessionImpl) event.session();
         elog(Level.DEBUG, "UDPServerExpired", session.id());
         if (sessionEventListener == null || session.released())
             releasedHandler.handleUDPServerExpired(event);
@@ -846,9 +737,8 @@ class Dispatcher implements com.untangle.uvm.argon.NewSessionEventListener
     }
 
     void dispatchUDPClientWritable(UDPSessionEvent event)
-        
     {
-        IPSessionImpl session = (IPSessionImpl) event.session();
+        NodeIPSessionImpl session = (NodeIPSessionImpl) event.session();
         elog(Level.DEBUG, "UDPClientWritable", session.id());
         if (sessionEventListener == null || session.released())
             releasedHandler.handleUDPClientWritable(event);
@@ -857,9 +747,8 @@ class Dispatcher implements com.untangle.uvm.argon.NewSessionEventListener
     }
 
     void dispatchUDPServerWritable(UDPSessionEvent event)
-        
     {
-        IPSessionImpl session = (IPSessionImpl) event.session();
+        NodeIPSessionImpl session = (NodeIPSessionImpl) event.session();
         elog(Level.DEBUG, "UDPServerWritable", session.id());
         if (sessionEventListener == null || session.released())
             releasedHandler.handleUDPServerWritable(event);
@@ -868,9 +757,8 @@ class Dispatcher implements com.untangle.uvm.argon.NewSessionEventListener
     }
 
     void dispatchUDPFinalized(UDPSessionEvent event)
-        
     {
-        IPSessionImpl session = (IPSessionImpl) event.session();
+        NodeIPSessionImpl session = (NodeIPSessionImpl) event.session();
         elog(Level.DEBUG, "UDPFinalized", session.id());
         if (sessionEventListener == null || (session.released() && !session.needsFinalization()))
             releasedHandler.handleUDPFinalized(event);
@@ -879,9 +767,8 @@ class Dispatcher implements com.untangle.uvm.argon.NewSessionEventListener
     }
 
     void dispatchUDPComplete(UDPSessionEvent event)
-        
     {
-        IPSessionImpl session = (IPSessionImpl) event.session();
+        NodeIPSessionImpl session = (NodeIPSessionImpl) event.session();
         elog(Level.DEBUG, "UDPComplete", session.id());
         if (sessionEventListener == null || (session.released() && !session.needsFinalization()))
             releasedHandler.handleUDPComplete(event);
@@ -891,7 +778,7 @@ class Dispatcher implements com.untangle.uvm.argon.NewSessionEventListener
 
     void dispatchTimer(IPSessionEvent event)
     {
-        IPSessionImpl session = (IPSessionImpl) event.ipsession();
+        NodeIPSessionImpl session = (NodeIPSessionImpl) event.ipsession();
         elog(Level.DEBUG, "Timer", session.id());
         if (sessionEventListener == null || session.released())
             releasedHandler.handleTimer(event);

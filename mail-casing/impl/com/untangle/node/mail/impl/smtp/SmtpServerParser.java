@@ -31,7 +31,7 @@ import com.untangle.node.token.Chunk;
 import com.untangle.node.token.ParseResult;
 import com.untangle.node.token.PassThruToken;
 import com.untangle.node.token.Token;
-import com.untangle.uvm.vnet.TCPSession;
+import com.untangle.uvm.vnet.NodeTCPSession;
 
 
 /**
@@ -41,7 +41,7 @@ class SmtpServerParser extends SmtpParser
 {
     private final Logger m_logger = Logger.getLogger(SmtpServerParser.class);
 
-    SmtpServerParser(TCPSession session, SmtpCasing parent, CasingSessionTracker tracker)
+    SmtpServerParser(NodeTCPSession session, SmtpCasing parent, CasingSessionTracker tracker)
     {
         super(session, parent, tracker, false);
 

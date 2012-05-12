@@ -28,7 +28,7 @@ import com.untangle.uvm.vnet.Affinity;
 import com.untangle.uvm.vnet.Fitting;
 import com.untangle.uvm.vnet.PipeSpec;
 import com.untangle.uvm.vnet.SoloPipeSpec;
-import com.untangle.uvm.vnet.TCPSession;
+import com.untangle.uvm.vnet.NodeTCPSession;
 import com.untangle.uvm.vnet.event.TCPNewSessionRequestEvent;
 
 /**
@@ -266,7 +266,7 @@ public abstract class WebFilterBase extends NodeBase implements WebFilter
 
     public abstract String getName();
 
-    public Token[] generateResponse( String nonce, TCPSession session, String uri, Header header, boolean persistent )
+    public Token[] generateResponse( String nonce, NodeTCPSession session, String uri, Header header, boolean persistent )
     {
         return replacementGenerator.generateResponse(nonce, session, uri,header, persistent);
     }
@@ -414,7 +414,7 @@ public abstract class WebFilterBase extends NodeBase implements WebFilter
         return replacementGenerator.generateNonce(details);
     }
 
-    protected Token[] generateResponse( String nonce, TCPSession session, boolean persistent )
+    protected Token[] generateResponse( String nonce, NodeTCPSession session, boolean persistent )
     {
         return replacementGenerator.generateResponse(nonce, session, persistent);
     }

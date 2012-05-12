@@ -20,7 +20,7 @@ package com.untangle.node.mail.impl.smtp;
 
 import com.untangle.node.token.Casing;
 import com.untangle.node.token.CasingFactory;
-import com.untangle.uvm.vnet.TCPSession;
+import com.untangle.uvm.vnet.NodeTCPSession;
 
 public class SmtpCasingFactory implements CasingFactory
 {
@@ -34,7 +34,7 @@ public class SmtpCasingFactory implements CasingFactory
         return SMTP_CASING_FACTORY;
     }
 
-    public Casing casing(TCPSession session, boolean clientSide)
+    public Casing casing(NodeTCPSession session, boolean clientSide)
     {
         return new SmtpCasing(session, clientSide);
     }

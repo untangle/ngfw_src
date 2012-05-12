@@ -50,7 +50,7 @@ import com.untangle.node.token.Token;
 import com.untangle.node.token.TokenException;
 import com.untangle.node.token.TokenResult;
 import com.untangle.node.token.TokenResultBuilder;
-import com.untangle.uvm.vnet.TCPSession;
+import com.untangle.uvm.vnet.NodeTCPSession;
 
 
 
@@ -83,12 +83,12 @@ public class SmtpTokenStream
     /**
      * Note that withouth a handler, everything just passes through
      */
-    public SmtpTokenStream(TCPSession session) 
+    public SmtpTokenStream(NodeTCPSession session) 
     {
         this(session, null);
     }
     
-    public SmtpTokenStream(TCPSession session, SmtpTokenStreamHandler handler) 
+    public SmtpTokenStream(NodeTCPSession session, SmtpTokenStreamHandler handler) 
     {
         super(session);
         setHandler(handler);

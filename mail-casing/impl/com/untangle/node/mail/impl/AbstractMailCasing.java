@@ -25,7 +25,7 @@ import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 
 import com.untangle.node.token.Casing;
-import com.untangle.uvm.vnet.TCPSession;
+import com.untangle.uvm.vnet.NodeTCPSession;
 import com.untangle.uvm.vnet.event.TCPStreamer;
 
 
@@ -38,7 +38,7 @@ public abstract class AbstractMailCasing implements Casing
         Logger.getLogger(AbstractMailCasing.class);
 
 
-    public AbstractMailCasing(TCPSession session,
+    public AbstractMailCasing(NodeTCPSession session,
                               boolean clientSide,
                               String protocolString)
     {

@@ -20,7 +20,7 @@ import com.untangle.uvm.UvmContext;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.node.Node;
 import com.untangle.uvm.node.NodeManager;
-import com.untangle.uvm.node.SessionEndpoints;
+import com.untangle.uvm.node.SessionTuple;
 import com.untangle.uvm.argon.SessionGlobalState;
 import com.untangle.uvm.argon.ArgonHook;
 import com.untangle.uvm.argon.ArgonSessionTable;
@@ -45,18 +45,6 @@ class SessionMonitorImpl implements SessionMonitor
     public SessionMonitorImpl ()
     {
         uvmContext = UvmContextFactory.context();
-    }
-
-    /**
-     * This returns a list of descriptors for a certain node
-     */
-    public List<com.untangle.uvm.vnet.VnetSessionDesc> getNodeSessions(NodeSettings nodeSettings)
-    {
-        NodeManager nodeManager = uvmContext.nodeManager();
-
-        Node node = nodeManager.node( nodeSettings.getId() );
-
-        return node.liveSessionDescs();
     }
 
     /**
@@ -114,8 +102,8 @@ class SessionMonitorImpl implements SessionMonitor
             boolean foundUvmSession = false;
             
             for (SessionGlobalState argonSession : argonSessions) {
-                com.untangle.uvm.node.IPSessionDesc clientSide = argonSession.argonHook().getClientSide();
-                com.untangle.uvm.node.IPSessionDesc serverSide = argonSession.argonHook().getServerSide();
+                com.untangle.uvm.node.SessionTuple clientSide = argonSession.argonHook().getClientSide();
+                com.untangle.uvm.node.SessionTuple serverSide = argonSession.argonHook().getServerSide();
                 int priority = argonSession.netcapSession().clientQosMark();
 
                 try {
@@ -319,15 +307,15 @@ class SessionMonitorImpl implements SessionMonitor
      * Check if the entry matches the sessionDesc
      * This checks the 5-tuple (protocol, src, dst, src_port, dst_port)
      */
-    private boolean _matches(com.untangle.uvm.node.IPSessionDesc sessionDesc, SessionMonitorEntry session)
+    private boolean _matches(com.untangle.uvm.node.SessionTuple sessionDesc, SessionMonitorEntry session)
     {
         switch (sessionDesc.protocol()) {
-        case SessionEndpoints.PROTO_TCP:
+        case SessionTuple.PROTO_TCP:
             if (! "TCP".equals(session.getProtocol())) {
                 return false;
             }
             break;
-        case SessionEndpoints.PROTO_UDP:
+        case SessionTuple.PROTO_UDP:
             if (! "UDP".equals(session.getProtocol())) {
                 return false;
             }

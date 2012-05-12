@@ -53,7 +53,7 @@ import com.untangle.node.token.Token;
 import com.untangle.node.util.AsciiCharBuffer;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.vnet.Pipeline;
-import com.untangle.uvm.vnet.TCPSession;
+import com.untangle.uvm.vnet.NodeTCPSession;
 
 public class PopServerParser extends AbstractParser
 {
@@ -83,7 +83,7 @@ public class PopServerParser extends AbstractParser
 
     // constructors -----------------------------------------------------------
 
-    public PopServerParser(TCPSession session, PopCasing zCasing)
+    public PopServerParser(NodeTCPSession session, PopCasing zCasing)
     {
         super(session, true);
         lineBuffering(false);

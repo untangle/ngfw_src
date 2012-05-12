@@ -51,7 +51,7 @@ import com.untangle.node.token.UnparseResult;
 import com.untangle.node.util.AsciiCharBuffer;
 import com.untangle.node.util.TempFileFactory;
 import com.untangle.uvm.UvmContextFactory;
-import com.untangle.uvm.vnet.TCPSession;
+import com.untangle.uvm.vnet.NodeTCPSession;
 import com.untangle.uvm.vnet.event.TCPStreamer;
 
 public class PopUnparser extends AbstractUnparser
@@ -68,7 +68,7 @@ public class PopUnparser extends AbstractUnparser
 
     private TempFileFactory zTempFactory;
 
-    public PopUnparser(TCPSession session, boolean clientSide, PopCasing zCasing)
+    public PopUnparser(NodeTCPSession session, boolean clientSide, PopCasing zCasing)
     {
         super(session, clientSide);
         this.zCasing = zCasing;

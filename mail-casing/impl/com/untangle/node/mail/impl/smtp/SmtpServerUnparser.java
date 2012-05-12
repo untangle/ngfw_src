@@ -37,7 +37,7 @@ import com.untangle.node.token.Chunk;
 import com.untangle.node.token.MetadataToken;
 import com.untangle.node.token.Token;
 import com.untangle.node.token.UnparseResult;
-import com.untangle.uvm.vnet.TCPSession;
+import com.untangle.uvm.vnet.NodeTCPSession;
 
 
 /**
@@ -52,7 +52,7 @@ class SmtpServerUnparser
     private ByteBufferByteStuffer m_byteStuffer;
     private MIMEAccumulator m_accumulator;
 
-    SmtpServerUnparser(TCPSession session,
+    SmtpServerUnparser(NodeTCPSession session,
                        SmtpCasing parent,
                        CasingSessionTracker tracker) {
         super(session, parent, tracker, false);

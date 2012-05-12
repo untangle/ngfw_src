@@ -7,7 +7,6 @@ import java.util.List;
 
 import com.untangle.uvm.node.Node;
 
-
 /**
  * The <code>ArgonConnector</code> interface represents an active ArgonConnector.
  * Most nodes only have one active <code>ArgonConnector</code> at a time, the
@@ -16,9 +15,6 @@ import com.untangle.uvm.node.Node;
  * This class's instances represent and contain the subscription
  * state, pipeline state, and accessors to get the live sessions for
  * the pipe, as well as
- *
- * @author <a href="mailto:jdi@untangle.com">John Irwin</a>
- * @version 1.0
  */
 public interface ArgonConnector
 {
@@ -36,9 +32,7 @@ public interface ArgonConnector
 
     long[] liveSessionIds();
 
-    List<VnetSessionDesc> liveSessionDescs();
-
-    List<IPSession> liveSessions();
+    List<NodeIPSession> liveSessions();
     
     Node node();
 }

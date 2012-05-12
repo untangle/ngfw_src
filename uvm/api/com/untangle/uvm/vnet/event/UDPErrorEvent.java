@@ -8,7 +8,7 @@ import java.nio.ByteBuffer;
 
 import com.untangle.uvm.vnet.IPPacketHeader;
 import com.untangle.uvm.vnet.ArgonConnector;
-import com.untangle.uvm.vnet.UDPSession;
+import com.untangle.uvm.vnet.NodeUDPSession;
 
 /**
  * The class <code>UDPErrorEvent</code> is for events from incoming ICMP messages that are
@@ -21,7 +21,7 @@ public class UDPErrorEvent extends UDPPacketEvent
     private byte icmpCode;
     private InetAddress icmpSource;
     
-    public UDPErrorEvent(ArgonConnector argonConnector, UDPSession src, ByteBuffer icmpData, IPPacketHeader header, byte icmpType, byte icmpCode, InetAddress icmpSource)
+    public UDPErrorEvent(ArgonConnector argonConnector, NodeUDPSession src, ByteBuffer icmpData, IPPacketHeader header, byte icmpType, byte icmpCode, InetAddress icmpSource)
     {
         super(argonConnector, src, icmpData, header);
         this.icmpType   = icmpType;

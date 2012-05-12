@@ -21,7 +21,7 @@ package com.untangle.node.mail.impl.imap;
 import java.nio.ByteBuffer;
 
 import com.untangle.node.mail.impl.AbstractMailParser;
-import com.untangle.uvm.vnet.TCPSession;
+import com.untangle.uvm.vnet.NodeTCPSession;
 
 /**
  * Base class for the ImapClient/ServerParser
@@ -29,7 +29,7 @@ import com.untangle.uvm.vnet.TCPSession;
 abstract class ImapParser
     extends AbstractMailParser {
 
-    ImapParser(TCPSession session,
+    ImapParser(NodeTCPSession session,
                ImapCasing parent,
                boolean clientSide) {
 

@@ -6,7 +6,7 @@ package com.untangle.node.spam;
 import org.apache.log4j.Logger;
 
 import com.untangle.uvm.vnet.AbstractEventHandler;
-import com.untangle.uvm.vnet.Session;
+import com.untangle.uvm.vnet.NodeSession;
 import com.untangle.uvm.vnet.TCPNewSessionRequest;
 import com.untangle.uvm.vnet.event.TCPNewSessionRequestEvent;
 import com.untangle.uvm.vnet.event.TCPSessionEvent;
@@ -28,7 +28,7 @@ class TarpitEventHandler extends AbstractEventHandler
     @Override
     public void handleTCPComplete(TCPSessionEvent event)
     {
-        Session s = event.session();
+        NodeSession s = event.session();
         SpamSmtpTarpitEvent tarpitEvent = (SpamSmtpTarpitEvent)s.attachment();
         if (null != tarpitEvent) {
             spamImpl.logEvent(tarpitEvent);

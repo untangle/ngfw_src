@@ -15,7 +15,6 @@ import com.untangle.uvm.networking.IPNetwork;
 import com.untangle.uvm.networking.NetworkConfigurationListener;
 import com.untangle.uvm.node.IPAddress;
 import com.untangle.uvm.node.ValidateException;
-import com.untangle.uvm.node.IPSessionDesc;
 import com.untangle.uvm.NetworkManager;
 
 public interface NetworkManager
@@ -124,10 +123,10 @@ public interface NetworkManager
     void unregisterService( String name );
 
     /**
-     * This returns an address where the host should be able to access
-     * HTTP.  if HTTP is not reachable, this returns NULL
+     * This returns an address where the host on the given interface should be able to access HTTP.
+     # if HTTP is not reachable, this returns NULL
      */
-    InetAddress getInternalHttpAddress( IPSessionDesc session );
+    InetAddress getInternalHttpAddress( int clientIntf );
 
     void registerListener( NetworkConfigurationListener networkListener );
 

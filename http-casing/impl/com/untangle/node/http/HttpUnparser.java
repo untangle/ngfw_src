@@ -31,7 +31,7 @@ import com.untangle.node.token.EndMarker;
 import com.untangle.node.token.Header;
 import com.untangle.node.token.Token;
 import com.untangle.node.token.UnparseResult;
-import com.untangle.uvm.vnet.TCPSession;
+import com.untangle.uvm.vnet.NodeTCPSession;
 import com.untangle.uvm.vnet.event.TCPStreamer;
 
 /**
@@ -62,7 +62,7 @@ class HttpUnparser extends AbstractUnparser
     private int transferEncoding;
     private String sessStr;
 
-    HttpUnparser(TCPSession session, boolean clientSide, HttpCasing httpCasing)
+    HttpUnparser(NodeTCPSession session, boolean clientSide, HttpCasing httpCasing)
     {
         super(session, clientSide);
         this.httpCasing = httpCasing;

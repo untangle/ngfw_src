@@ -19,7 +19,7 @@
 package com.untangle.node.mail.impl.imap;
 
 import com.untangle.node.mail.impl.AbstractMailUnparser;
-import com.untangle.uvm.vnet.TCPSession;
+import com.untangle.uvm.vnet.NodeTCPSession;
 
 /**
  * Base class for the ImapClient/ServerUnparser
@@ -29,7 +29,7 @@ abstract class ImapUnparser
 
     //  private final Logger m_logger = Logger.getLogger(ImapUnparser.class);
 
-    protected ImapUnparser(TCPSession session,
+    protected ImapUnparser(NodeTCPSession session,
                            ImapCasing parent,
                            boolean clientSide) {
 

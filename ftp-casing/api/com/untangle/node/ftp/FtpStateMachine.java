@@ -41,7 +41,7 @@ import com.untangle.node.token.TokenException;
 import com.untangle.node.token.TokenResult;
 import com.untangle.uvm.vnet.Fitting;
 import com.untangle.uvm.vnet.Pipeline;
-import com.untangle.uvm.vnet.TCPSession;
+import com.untangle.uvm.vnet.NodeTCPSession;
 
 /**
  * State machine for FTP traffic.
@@ -56,7 +56,7 @@ public abstract class FtpStateMachine extends AbstractTokenHandler
 
     // constructors -----------------------------------------------------------
 
-    protected FtpStateMachine(TCPSession session)
+    protected FtpStateMachine(NodeTCPSession session)
     {
         super(session);
 

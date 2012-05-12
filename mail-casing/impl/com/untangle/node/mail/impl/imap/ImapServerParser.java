@@ -26,7 +26,7 @@ import com.untangle.node.token.PassThruToken;
 import com.untangle.node.token.Token;
 import com.untangle.node.util.UtLogger;
 import com.untangle.uvm.UvmContextFactory;
-import com.untangle.uvm.vnet.TCPSession;
+import com.untangle.uvm.vnet.NodeTCPSession;
 
 /**
  * IMAP Server Parser
@@ -50,7 +50,7 @@ public class ImapServerParser extends ImapParser
     private ISPState m_state = ISPState.SCANNING;
     private MessageGrabber m_msgGrabber;
 
-    ImapServerParser(TCPSession session,
+    ImapServerParser(NodeTCPSession session,
                      ImapCasing parent) {
 
         super(session, parent, false);

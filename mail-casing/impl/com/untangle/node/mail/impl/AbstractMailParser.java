@@ -30,7 +30,7 @@ import com.untangle.node.token.ParseResult;
 import com.untangle.node.token.TokenStreamer;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.vnet.Pipeline;
-import com.untangle.uvm.vnet.TCPSession;
+import com.untangle.uvm.vnet.NodeTCPSession;
 
 /**
  * Base class for the mail parsers
@@ -53,7 +53,7 @@ public abstract class AbstractMailParser
      * @param clientSide true if this is a client-side casing
      * @param protocolName the name of the protocol (i.e. "smtp").
      */
-    protected  AbstractMailParser(TCPSession session,
+    protected  AbstractMailParser(NodeTCPSession session,
                                   AbstractMailCasing parent,
                                   boolean clientSide,
                                   String protocolName) {

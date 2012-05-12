@@ -25,7 +25,7 @@ import org.apache.log4j.Logger;
 import com.untangle.node.token.Chunk;
 import com.untangle.node.token.Token;
 import com.untangle.node.token.UnparseResult;
-import com.untangle.uvm.vnet.TCPSession;
+import com.untangle.uvm.vnet.NodeTCPSession;
 
 /**
  * ...name says it all...
@@ -36,7 +36,7 @@ class ImapServerUnparser
     private final Logger m_logger =
         Logger.getLogger(ImapServerUnparser.class);
 
-    ImapServerUnparser(TCPSession session,
+    ImapServerUnparser(NodeTCPSession session,
                        ImapCasing parent) {
         super(session, parent, false);
         m_logger.debug("Created");

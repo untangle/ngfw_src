@@ -6,9 +6,10 @@ package com.untangle.uvm.node;
 import java.net.InetAddress;
 
 /**
- * Gives information about a sessions endpoints.
+ * This is a generic 5-tuple that describes sessions
+ * (Protocol, Client, Client Port, Server, Server Port)
  */
-public interface SessionEndpoints
+public interface SessionTuple
 {
     public static final short PROTO_TCP = 6;
     public static final short PROTO_UDP = 17;

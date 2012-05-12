@@ -25,7 +25,7 @@ import com.untangle.uvm.NetworkManager;
 import com.untangle.uvm.engine.PipelineFoundryImpl;
 import com.untangle.uvm.node.SessionEvent;
 import com.untangle.uvm.node.PolicyManager;
-import com.untangle.uvm.vnet.Session;
+import com.untangle.uvm.vnet.NodeSession;
 import com.untangle.uvm.node.DirectoryConnector;
 import com.untangle.uvm.node.HostnameLookup;
 import com.untangle.uvm.networking.InterfaceConfiguration;
@@ -131,7 +131,7 @@ public abstract class ArgonHook implements Runnable
                 return;
             }
 
-            clientSide = new NetcapIPSessionDescImpl( sessionGlobalState, true );
+            clientSide = new NetcapSessionTupleImpl( sessionGlobalState, true );
             serverSide = clientSide; /* initially serverside looks just like client side - not NAT or anything */
 
             /* lookup the user information */
@@ -142,7 +142,7 @@ public abstract class ArgonHook implements Runnable
             if (username != null && username.length() > 0 ) { 
                 logger.debug( "user information: " + username );
                 sessionGlobalState.setUser( username );
-                sessionGlobalState.attach( Session.KEY_PLATFORM_ADCONNECTOR_USERNAME, username );
+                sessionGlobalState.attach( NodeSession.KEY_PLATFORM_ADCONNECTOR_USERNAME, username );
             }
             /* lookup the hostname information */
             HostnameLookup router = (HostnameLookup) UvmContextFactory.context().nodeManager().node("untangle-node-router");
@@ -156,7 +156,7 @@ public abstract class ArgonHook implements Runnable
                 hostname = clientSide.clientAddr().getHostAddress();
             if (hostname != null && hostname.length() > 0 ) {
                 logger.debug( "hostname information: " + hostname );
-                sessionGlobalState.attach( Session.KEY_PLATFORM_HOSTNAME, hostname );
+                sessionGlobalState.attach( NodeSession.KEY_PLATFORM_HOSTNAME, hostname );
             }
             
             PolicyManager policyManager = (PolicyManager) UvmContextFactory.context().nodeManager().node("untangle-node-policy");
@@ -166,11 +166,11 @@ public abstract class ArgonHook implements Runnable
                 this.policyId = 1L; /* Default Policy */
             }
 
-            pipelineAgents = pipelineFoundry.weld( clientSide, policyId );
+            pipelineAgents = pipelineFoundry.weld( sessionGlobalState.id(), clientSide, policyId );
 
             /* Create the (fake) sessionEvent early so they can be
              * available at request time. */
-            sessionEvent = pipelineFoundry.createInitialSessionEvent(clientSide, username, hostname);
+            sessionEvent = pipelineFoundry.createInitialSessionEvent( sessionGlobalState.id(), clientSide, username, hostname );
 
             /* Initialize all of the nodes, sending the request events
              * to each in turn */
@@ -183,7 +183,7 @@ public abstract class ArgonHook implements Runnable
              * modified the sessionEvent (we can't do it until we connect
              * to the server since that is what actually modifies the
              * session global state. */
-            serverSide = new NetcapIPSessionDescImpl( sessionGlobalState, false );
+            serverSide = new NetcapSessionTupleImpl( sessionGlobalState, false );
 
             /* Connect to the client */
             boolean clientActionCompleted = connectClient();
@@ -325,7 +325,7 @@ public abstract class ArgonHook implements Runnable
             if ( state == ArgonIPNewSessionRequest.REQUESTED ) {
                 newSessionRequest( agent, iter, pe );
             } else {
-                /* Session has been rejected or endpointed, remaining
+                /* NodeSession has been rejected or endpointed, remaining
                  * nodes need not be informed 
                  * Don't need to remove anything from the pipeline, it
                  * is just used here iter.remove();

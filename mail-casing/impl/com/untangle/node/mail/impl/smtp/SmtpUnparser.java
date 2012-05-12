@@ -19,7 +19,7 @@
 package com.untangle.node.mail.impl.smtp;
 
 import com.untangle.node.mail.impl.AbstractMailUnparser;
-import com.untangle.uvm.vnet.TCPSession;
+import com.untangle.uvm.vnet.NodeTCPSession;
 
 /**
  * Base class for the SmtpClient/ServerUnparser
@@ -29,7 +29,7 @@ abstract class SmtpUnparser extends AbstractMailUnparser
 
     private CasingSessionTracker m_tracker;
 
-    protected SmtpUnparser(TCPSession session,
+    protected SmtpUnparser(NodeTCPSession session,
                            SmtpCasing parent,
                            CasingSessionTracker tracker,
                            boolean clientSide) {

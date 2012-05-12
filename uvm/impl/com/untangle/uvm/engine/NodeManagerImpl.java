@@ -37,7 +37,7 @@ import com.untangle.uvm.node.NodeManagerSettings;
 import com.untangle.uvm.node.LicenseManager;
 import com.untangle.uvm.node.PolicyManager;
 import com.untangle.uvm.node.DeployException;
-import com.untangle.uvm.node.IPSessionDesc;
+import com.untangle.uvm.node.SessionTuple;
 import com.untangle.uvm.node.NodeManager;
 import com.untangle.uvm.node.Node;
 import com.untangle.uvm.node.NodeProperties;
