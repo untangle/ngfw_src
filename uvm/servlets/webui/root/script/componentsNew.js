@@ -1351,7 +1351,6 @@ Ext.define("Ung.Node", {
     metrics : null,
     // which metrics are shown on the facebplate
     activeMetrics : [0,1,2,3],
-    //activityBlinger: null,             // OLD_BLINGER
     faceplateMetrics: null,
     buttonsPanel: null,
     subCmps : null,
@@ -1520,10 +1519,6 @@ Ext.define("Ung.Node", {
     },
     updateMetrics : function() {
         if (this.powerOn && this.metrics) {
-            // OLD_BLINGER
-            //             if(this.activityBlinger!=null) {
-            //                 this.activityBlinger.update(this.metrics);
-            //             }
             if(this.faceplateMetrics!=null) {
                 this.faceplateMetrics.update(this.metrics);
             }
@@ -1532,10 +1527,6 @@ Ext.define("Ung.Node", {
         }
     },
     resetMetrics : function() {
-        // OLD_BLINGER
-        //         if(this.activityBlinger!=null) {
-        //             this.activityBlinger.reset();
-        //         }
         if(this.faceplateMetrics!=null) {
             this.faceplateMetrics.reset();
         }
@@ -1723,23 +1714,9 @@ Ext.define("Ung.Node", {
             }
         },this));
     },
-    // initialize blingers
+    // initialize faceplate metrics
     initMetrics : function() {
         if(this.metrics != null && this.metrics.list != null) {
-            // OLD_BLINGER
-            //             if(this.blingers.activityDescs!=null && this.blingers.activityDescs.list.length>0) {
-            //                 this.activityBlinger=new Ung.ActivityBlinger({
-            //                    parentId : this.getId(),
-            //                    bars: this.blingers.activityDescs.list
-            //                 });
-            //                 this.activityBlinger.render('node-blingers_' + this.getId());
-            //                 this.subCmps.push(this.activityBlinger);
-            //             }
-//             var dispMetricDescs=[];
-//             for(var i=0;i<this.metrics.list.length;i++) {
-//                 dispMetricDescs.push(this.metrics.list[i]);
-//             }
-//            this.metrics.dispMetricDescs = dispMetricDescs;
             if( this.metrics.list.length > 0 ) {
                 this.faceplateMetrics=new Ung.FaceplateMetric({
                     parentId : this.getId(),
@@ -2072,7 +2049,7 @@ Ung.MessageManager = {
                 if(!Ung.MessageManager.upgradeMode) {
                     // update system stats
                     main.systemStats.update(messageQueue.systemStats);
-                    // upgrade nodes blingers
+                    // upgrade node metrics
                     for (var i = 0; i < main.nodes.length; i++) {
                         var nodeCmp = Ung.Node.getCmp(main.nodes[i].nodeId);
                         if (nodeCmp && nodeCmp.isRunning()) {
@@ -2312,85 +2289,7 @@ Ext.define("Ung.SystemStats", {
     }
 });
 
-           // OLD_BLINGER
-// Activity Blinger Class
-// Ext.define("Ung.ActivityBlinger", {
-//     extend: "Ext.Component",
-//     autoEl: "div",
-//     parentId : null,
-//     bars : null,
-//     lastValues : null,
-//     decays : null,
-//     constructor : function(config) {
-//         this.id = "blinger_activity_" + config.parentId;
-//         Ung.ActivityBlinger.superclass.constructor.apply(this, arguments);
-//     },
-//     onRender : function(container, position) {
-//         Ung.ActivityBlinger.superclass.onRender.call(this, container, position);
-//         this.getEl().addCls("activity-blinger");
-//         var templateHTML = Ung.ActivityBlinger.template.applyTemplate({
-//             'id' : this.getId(),
-//             'blingerName' : i18n._("activity")
-//         });
-//         this.getEl().insertHtml("afterBegin", templateHTML);
-//         this.lastValues = [];
-//         this.decays = [];
-//         if (this.bars !== null) {
-//             var out = [];
-//             for (var i = 0; i < this.bars.length; i++) {
-//                 var bar = this.bars[i].action;
-//                 var top = 3 + i * 15;
-//                 this.lastValues.push(null);
-//                 this.decays.push(0);
-//                 out.push('<div class="blinger-text activity-blinger-text" style="top:' + top + 'px;">' + i18n._(bar) + '</div>');
-//                 out.push('<div class="activity-blinger-bar" style="top:' + top + 'px;width:0px;display:none;" id="activityBar_'
-//                         + this.getId() + '_' + i + '"></div>');
-//             }
-//             Ext.get("blingerBox_" + this.getId()).insertHtml("afterBegin", out.join(""));
-//         }
-//     },
-
-//     update : function(stats) {
-//         for (var i = 0; i < this.bars.length; i++) {
-//             var top = 3 + i * 15;
-//             var bar = this.bars[i];
-//             var barPixelWidth=0;
-//             if(stats.activities.map[bar.name]!=null) {
-//                 var newValue = stats.activities.map[bar.name].count;
-//                 this.decays[i] = Ung.ActivityBlinger.decayValue(newValue, this.lastValues[i], this.decays[i]);
-//                 this.lastValues[i] = newValue;
-//                 barPixelWidth = Math.floor(this.decays[i]);
-//             }
-//             var barDiv = document.getElementById('activityBar_' + this.getId() + '_' + i);
-//             barDiv.style.width = barPixelWidth + "px";
-//             barDiv.style.display = (barPixelWidth === 0) ? "none" : "";
-//         }
-//     },
-//     reset : function() {
-//         for (var i = 0; i < this.bars.length; i++) {
-//             this.lastValues[i] = null;
-//             this.decays[i] = 0;
-//             var barDiv = document.getElementById('activityBar_' + this.getId() + '_' + i);
-//             barDiv.style.width = "0px";
-//             barDiv.style.display = "none";
-//         }
-//     }
-
-// });
-// Ung.ActivityBlinger.template = new Ext.Template('<div class="blinger-name">{blingerName}</div>',
-//         '<div class="activity-blinger-box" id="blingerBox_{id}"></div>');
-// Ung.ActivityBlinger.decayFactor = Math.pow(0.94, Ung.MessageManager.normalFrequency / 1000);
-// Ung.ActivityBlinger.decayValue = function(newValue, lastValue, decay) {
-//     if (lastValue !== null && newValue != lastValue) {
-//         decay = 98;
-//     } else {
-//         decay = decay * Ung.ActivityBlinger.decayFactor;
-//     }
-//     return decay;
-// };
-// Ext.ComponentMgr.registerType('ungActivityBlinger', Ung.ActivityBlinger);
-
-// System Blinger Class
+// Faceplate Metric Class
 Ext.define("Ung.FaceplateMetric", {
     extend: "Ext.Component",
     autoEl:"div",
@@ -2426,7 +2325,7 @@ Ext.define("Ung.FaceplateMetric", {
         blingerBoxEl.insertHtml("afterBegin", out.join(""));
         this.buildActiveMetrics();
 
-        blingerBoxEl.on("click", this.showBlingerSettings , this);
+        blingerBoxEl.on("click", this.showMetricSettings , this);
 
     },
     buildActiveMetrics : function () {
@@ -2459,100 +2358,100 @@ Ext.define("Ung.FaceplateMetric", {
             }
         }
     },
-    //     showBlingerSettings : function() {
-        //         var nodeCmp = Ext.getCmp(this.parentId);
-    //         this.newActiveMetrics=[];
-    //         if(this.configWin==null) {
-    //             var configItems=[];
-    //             for(var i=0;i<nodeCmp.metrics.list.length;i++) {
-    //                 var metric = nodeCmp.metrics.list[i];
-    //                 configItems.push({
-    //                     xtype : 'checkbox',
-    //                     boxLabel : i18n._(metric.displayName),
-    //                     hideLabel : true,
-    //                     name : metric.displayName,
-    //                     dataIndex: i,
-    //                     checked : false,
-    //                     listeners : {
-    //                         "change" : {
-    //                             fn : Ext.bind(function(elem, checked) {
-    //                                 if(checked && this.newActiveMetrics.length>=4) {
-    //                                     Ext.MessageBox.alert(i18n._("Warning"),i18n._("Please set up to four items."));
-    //                                     elem.setValue(false);
-    //                                     return;
-    //                                 }
-    //                                 var itemIndex=-1;
-    //                                 for(var i=0;i<this.newActiveMetrics.length;i++) {
-    //                                     if(this.newActiveMetrics[i]==elem.dataIndex) {
-    //                                         itemIndex=i;
-    //                                         break;
-    //                                     }
-    //                                 }
-    //                                 if(checked) {
-    //                                     if(itemIndex==-1) {
-    //                                         // add element
-    //                                         this.newActiveMetrics.push(elem.dataIndex);
-    //                                     }
-    //                                 } else {
-    //                                     if(itemIndex!=-1) {
-    //                                         // remove element
-    //                                         this.newActiveMetrics.splice(itemIndex,1);
-    //                                     }
-    //                                 }
+    showMetricSettings : function() {
+        var nodeCmp = Ext.getCmp(this.parentId);
+        this.newActiveMetrics=[];
+        if(this.configWin==null) {
+            var configItems=[];
+            for(var i=0;i<nodeCmp.metrics.list.length;i++) {
+                var metric = nodeCmp.metrics.list[i];
+                configItems.push({
+                    xtype : 'checkbox',
+                    boxLabel : i18n._(metric.displayName),
+                    hideLabel : true,
+                    name : metric.displayName,
+                    dataIndex: i,
+                    checked : false,
+                    listeners : {
+                        "change" : {
+                            fn : Ext.bind(function(elem, checked) {
+                                if(checked && this.newActiveMetrics.length>=4) {
+                                    Ext.MessageBox.alert(i18n._("Warning"),i18n._("Please set up to four items."));
+                                    elem.setValue(false);
+                                    return;
+                                }
+                                var itemIndex=-1;
+                                for(var i=0;i<this.newActiveMetrics.length;i++) {
+                                    if(this.newActiveMetrics[i]==elem.dataIndex) {
+                                        itemIndex=i;
+                                        break;
+                                    }
+                                }
+                                if(checked) {
+                                    if(itemIndex==-1) {
+                                        // add element
+                                        this.newActiveMetrics.push(elem.dataIndex);
+                                    }
+                                } else {
+                                    if(itemIndex!=-1) {
+                                        // remove element
+                                        this.newActiveMetrics.splice(itemIndex,1);
+                                    }
+                                }
 
-    //                             },this)
-    //                         }
-    //                     }
-    //                 });
-    //             }
-    //             this.configWin= Ext.create("Ung.Window", {
-    //                 blingerCmp: this,
-    //                 modal : true,
-    //                 title : i18n._("Set up to four"),
-    //                 bodyStyle : "padding: 5px 5px 5px 15px;",
-    //                 defaults: {},
-    //                 items: configItems,
-    //                 autoScroll : true,
-    //                 draggable : true,
-    //                 resizable : true,
-    //                 buttons: [{
-    //                     name : 'Ok',
-    //                     text : i18n._("Ok"),
-    //                     handler : Ext.bind(function() {
-    //                         this.updateActiveMetrics();
-    //                         this.configWin.hide();
-    //                     },this)
-    //                 },{
-    //                     name : 'Cancel',
-    //                     text : i18n._("Cancel"),
-    //                     handler : Ext.bind(function() {
-    //                         this.configWin.hide();
-    //                     },this)
-    //                 }],
-    //                 show : function() {
-    //                     Ung.Window.superclass.show.call(this);
-    //                     this.setSize({width:260,height:280});
-    //                     this.alignTo(this.blingerCmp.getEl(),"tr-br");
-    //                     var pos=this.getPosition();
-    //                     var sub=pos[1]+280-main.viewport.getSize().height;
-    //                     if(sub>0) {
-    //                         this.setPosition( pos[0],pos[1]-sub);
-    //                     }
-    //                 }
-    //             });
-    //         }
+                            },this)
+                        }
+                    }
+                });
+            }
+            this.configWin= Ext.create("Ung.Window", {
+                blingerCmp: this,
+                modal : true,
+                title : i18n._("Set up to four"),
+                bodyStyle : "padding: 5px 5px 5px 15px;",
+                defaults: {},
+                items: configItems,
+                autoScroll : true,
+                draggable : true,
+                resizable : true,
+                buttons: [{
+                    name : 'Ok',
+                    text : i18n._("Ok"),
+                    handler : Ext.bind(function() {
+                        this.updateActiveMetrics();
+                        this.configWin.hide();
+                    },this)
+                },{
+                    name : 'Cancel',
+                    text : i18n._("Cancel"),
+                    handler : Ext.bind(function() {
+                        this.configWin.hide();
+                    },this)
+                }],
+                show : function() {
+                    Ung.Window.superclass.show.call(this);
+                    this.setSize({width:260,height:280});
+                    this.alignTo(this.blingerCmp.getEl(),"tr-br");
+                    var pos=this.getPosition();
+                    var sub=pos[1]+280-main.viewport.getSize().height;
+                    if(sub>0) {
+                        this.setPosition( pos[0],pos[1]-sub);
+                    }
+                }
+            });
+        }
 
-    //         for(var i=0;i<this.configWin.items.length;i++) {
-    //             this.configWin.items.get(i).setValue(false);
-    //         }
-    //         for( var j=0 ; j<nodeCmp.activeMetrics.length ; j++ ) {
-    //             var metricIndex = nodeCmp.activeMetrics[j];
-    //             var metricItem=this.configWin.items.get(metricIndex);
-    //             if (metricItem != null)
-    //                 metricItem.setValue(true);
-    //         }
-    //         this.configWin.show();
-    //     },
+        for(var i=0;i<this.configWin.items.length;i++) {
+            this.configWin.items.get(i).setValue(false);
+        }
+        for( var j=0 ; j<nodeCmp.activeMetrics.length ; j++ ) {
+            var metricIndex = nodeCmp.activeMetrics[j];
+            var metricItem=this.configWin.items.get(metricIndex);
+            if (metricItem != null)
+                metricItem.setValue(true);
+        }
+        this.configWin.show();
+    },
     updateActiveMetrics : function() {
         var nodeCmp = Ext.getCmp(this.parentId);
         nodeCmp.activeMetrics = this.newActiveMetrics;
