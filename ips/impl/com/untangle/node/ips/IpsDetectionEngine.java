@@ -16,7 +16,7 @@ import com.untangle.uvm.node.SessionEvent;
 import com.untangle.uvm.vnet.IPNewSessionRequest;
 import com.untangle.uvm.vnet.NodeIPSession;
 import com.untangle.uvm.vnet.Protocol;
-import com.untangle.uvm.vnet.SessionStats;
+import com.untangle.uvm.vnet.NodeSessionStats;
 import com.untangle.uvm.vnet.event.IPDataEvent;
 import com.untangle.uvm.networking.InterfaceConfiguration;
 
@@ -248,7 +248,7 @@ public class IpsDetectionEngine
         try {
             long startTime = System.currentTimeMillis();
 
-            SessionStats stats = session.stats();
+            NodeSessionStats stats = session.stats();
 
             IpsSessionInfo info = sessionInfoMap.get(session.id());
 

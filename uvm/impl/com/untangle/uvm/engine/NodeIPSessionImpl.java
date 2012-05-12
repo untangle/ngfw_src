@@ -26,7 +26,7 @@ import com.untangle.uvm.node.Node;
 import com.untangle.uvm.node.SessionEvent;
 import com.untangle.uvm.util.MetaEnv;
 import com.untangle.uvm.vnet.NodeIPSession;
-import com.untangle.uvm.vnet.SessionStats;
+import com.untangle.uvm.vnet.NodeSessionStats;
 import com.untangle.uvm.vnet.event.IPStreamer;
 import com.untangle.uvm.node.NodeManager;
 
@@ -51,13 +51,13 @@ abstract class NodeIPSessionImpl extends NodeSessionImpl implements NodeIPSessio
 
     protected Logger logger;
 
-    protected final SessionStats stats;
+    protected final NodeSessionStats stats;
 
     protected NodeIPSessionImpl(Dispatcher disp, ArgonIPSession argonSession, SessionEvent pe)
     {
         super(disp.argonConnector(), argonSession);
         this.dispatcher = disp;
-        this.stats = new SessionStats();
+        this.stats = new NodeSessionStats();
         this.sessionEvent = pe;
         logger = disp.argonConnector().sessionLogger();
     }
@@ -92,7 +92,7 @@ abstract class NodeIPSessionImpl extends NodeSessionImpl implements NodeIPSessio
         return ((ArgonIPSession)argonSession).getServerPort();
     }
 
-    public SessionStats stats()
+    public NodeSessionStats stats()
     {
         return stats;
     }

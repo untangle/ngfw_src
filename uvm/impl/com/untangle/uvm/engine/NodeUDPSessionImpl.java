@@ -17,7 +17,7 @@ import com.untangle.uvm.node.SessionEvent;
 import com.untangle.uvm.argon.ArgonUDPSession;
 import com.untangle.uvm.util.MetaEnv;
 import com.untangle.uvm.vnet.IPPacketHeader;
-import com.untangle.uvm.vnet.SessionStats;
+import com.untangle.uvm.vnet.NodeSessionStats;
 import com.untangle.uvm.vnet.NodeIPSession;
 import com.untangle.uvm.vnet.NodeUDPSession;
 import com.untangle.uvm.node.SessionTuple;

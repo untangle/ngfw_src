@@ -6,18 +6,11 @@ package com.untangle.uvm.vnet;
 import java.io.Serializable;
 import java.util.Date;
 
-import org.json.JSONBean;
-
 /**
- * <code>SessionStats</code> records vital statistics for a live session.
- * It is contained within a Session (or a SessionDesc when used by the GUI).
- *
- * XXX if this is for the client, it should probably be moved to
- * com.untangle.uvm.node.
+ * <code>NodeSessionStats</code> records statistics for a node session.
  */
-@JSONBean.Marker
 @SuppressWarnings("serial")
-public class SessionStats implements Serializable
+public class NodeSessionStats implements Serializable
 {
 
     protected long c2tBytes = 0;
@@ -33,14 +26,14 @@ public class SessionStats implements Serializable
     protected Date creationDate;
     protected Date lastActivityDate;
 
-    public SessionStats()
+    public NodeSessionStats()
     {
         long now = System.currentTimeMillis();
         creationDate = new Date(now);
         lastActivityDate = new Date(now);
     }
 
-    public SessionStats(SessionStats oldStats)
+    public NodeSessionStats(NodeSessionStats oldStats)
     {
         this.c2tBytes = oldStats.c2tBytes;
         this.t2sBytes = oldStats.t2sBytes;
@@ -60,7 +53,6 @@ public class SessionStats implements Serializable
      *
      * @return a <code>long</code> giving the number of bytes transferred from the client to the node.
      */
-    @JSONBean.Getter
     public long c2tBytes()
     {
         return c2tBytes;
@@ -72,7 +64,6 @@ public class SessionStats implements Serializable
      *
      * @return a <code>long</code> giving the number of bytes transferred from the node to the server.
      */
-    @JSONBean.Getter
     public long t2sBytes()
     {
         return t2sBytes;
@@ -84,7 +75,6 @@ public class SessionStats implements Serializable
      *
      * @return a <code>long</code> giving the number of bytes transferred from the server to the node.
      */
-    @JSONBean.Getter
     public long s2tBytes()
     {
         return s2tBytes;
@@ -96,32 +86,27 @@ public class SessionStats implements Serializable
      *
      * @return a <code>long</code> giving the number of bytes transferred from the node to the client.
      */
-    @JSONBean.Getter
     public long t2cBytes()
     {
         return t2cBytes;
     }
 
     // Chunks for tcp, packets for udp (icmp)
-    @JSONBean.Getter
     public long c2tChunks()
     {
         return c2tChunks;
     }
 
-    @JSONBean.Getter
     public long t2sChunks()
     {
         return t2sChunks;
     }
 
-    @JSONBean.Getter
     public long s2tChunks()
     {
         return s2tChunks;
     }
 
-    @JSONBean.Getter
     public long t2cChunks()
     {
         return t2cChunks;
@@ -133,7 +118,6 @@ public class SessionStats implements Serializable
      *
      * @return a <code>Date</code> giving the time of the session's creation
      */
-    @JSONBean.Getter
     public Date creationDate()
     {
         return creationDate;
@@ -145,7 +129,6 @@ public class SessionStats implements Serializable
      *
      * @return a <code>Date</code> giving the time of the last activity on this session
      */
-    @JSONBean.Getter
     public Date lastActivityDate()
     {
         return lastActivityDate;

@@ -102,6 +102,6 @@ public interface NodeIPSession extends NodeSession
     byte clientState();
     byte serverState();
 
-    SessionStats stats();
+    NodeSessionStats stats();
     
 }

@@ -31,7 +31,7 @@ import com.untangle.uvm.util.I18nUtil;
 import com.untangle.uvm.util.MetaEnv;
 import com.untangle.uvm.vnet.NodeBase;
 import com.untangle.uvm.vnet.NodeIPSession;
-import com.untangle.uvm.vnet.SessionStats;
+import com.untangle.uvm.vnet.NodeSessionStats;
 import com.untangle.uvm.vnet.NodeTCPSession;
 import com.untangle.uvm.vnet.NodeUDPSession;
 import com.untangle.uvm.vnet.event.IPDataResult;
