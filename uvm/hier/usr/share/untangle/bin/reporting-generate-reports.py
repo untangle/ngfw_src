@@ -18,7 +18,6 @@ Options:
   -t | --trial-report           only report on given trial
   -r | --report-length          number of days to report on
   -l | --locale                 locale
-  -b <load> | --behave <load>   do not run if load is greated than the specified amount
   -s <cs> | --simulate=<cs>     run reports of the remote DB specified by the connection string
   -d <y-m-d> | --date=<y-m-d>   run reports for the specific date
 """ % sys.argv[0]
@@ -62,7 +61,6 @@ attachment_size_limit = 10
 end_date = mx.DateTime.today()
 start_time = mx.DateTime.now()
 locale = None
-maxLoad = None
 db_retention = None
 file_retention = None
 trial_report = None
@@ -90,8 +88,6 @@ for opt in opts:
           trial_report = v
           ## Disable cleanup on trial reports
           no_cleanup = True
-     elif k == '-b' or k == '--behave':
-          maxLoad = float(v)
      elif k == '-r' or k == '--report-length':
           report_lengths = [int(v)]
      elif k == '-v' or k == '--verbose':
@@ -149,9 +145,6 @@ if simulate:
      sql_helper.SCHEMA = 'reports_simulation'
      sql_helper.CONNECTION_STRING = simulate
 
-def getLoad():
-     return float(open("/proc/loadavg").read().split(" ")[0])
-     
 def get_report_lengths(date):
     lengths = []
 
@@ -288,14 +281,6 @@ INSERT INTO reports.reports_state (last_cutoff) VALUES (%s)""", (date,))
 ## main
 total_start_time = time.time()
 
-currentLoad = getLoad()
-if maxLoad is not None:
-     if currentLoad >= maxLoad:
-          logger.warning("Current load (%.2f) is higher than %.2f, exiting" % (currentLoad, maxLoad))
-          sys.exit(0)
-     else:
-          logger.info("Current load (%.2f) is lower than %.2f, going ahead" % (currentLoad, maxLoad))
-
 running = False
 for instance in Popen([PREFIX + "/usr/bin/ucli", "instances"], stdout=PIPE).communicate()[0].split('\n'):
      if re.search(r'untangle-node-reporting.+RUNNING', instance):
@@ -389,27 +374,20 @@ if not create_schemas:
 
      try:
          for report_days in report_lengths:
-              reports.engine.export_static_data(reports_output_base,
-                                                end_date, report_days)
+              reports.engine.export_static_data(reports_output_base, end_date, report_days)
 
               if not no_data_gen:
                    logger.info("Generating reports for %s days" % (report_days,))
-                   mail_reports = reports.engine.generate_reports(reports_output_base,
-                                                                  end_date, report_days)
+                   mail_reports = reports.engine.generate_reports(reports_output_base, end_date, report_days)
 
               if not no_plot_gen:
                    logger.info("Generating plots for %s days" % (report_days,))          
-                   reports.engine.generate_plots(reports_output_base, end_date,
-                                                 report_days)
+                   reports.engine.generate_plots(reports_output_base, end_date, report_days)
 
               if not no_mail and not simulate:
                    logger.info("About to email report summaries for %s days" % (report_days,))          
-                   f = reports.pdf.generate_pdf(reports_output_base, end_date,
-                                                report_days, mail_reports,
-                                                trial_report)
-                   reports.mailer.mail_reports(end_date, report_days, f, mail_reports,
-                                               attach_csv=attach_csv,
-                                               attachment_size_limit=attachment_size_limit)
+                   f = reports.pdf.generate_pdf(reports_output_base, end_date, report_days, mail_reports, trial_report)
+                   reports.mailer.mail_reports(end_date, report_days, f, mail_reports, attach_csv=attach_csv, attachment_size_limit=attachment_size_limit)
                    os.remove(f)
      except Exception, e:
           logger.critical("Exception while building report: %s" % (e,),

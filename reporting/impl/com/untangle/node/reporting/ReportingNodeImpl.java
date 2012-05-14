@@ -96,6 +96,17 @@ public class ReportingNodeImpl extends NodeBase implements ReportingNode, Report
         return settings;
     }
 
+    public void createSchemas()
+    {
+        String cmd = REPORTS_SCRIPT + " -c";
+        synchronized (this) {
+            int exitCode = UvmContextFactory.context().execManager().execResult(cmd);
+            if (exitCode != 0) {
+                logger.warn("Failed to create schemas: \"" + cmd + "\" -> "  + exitCode);
+            }
+        }
+    }
+
     public void runDailyReport() throws Exception
     {
         Calendar cal = Calendar.getInstance();
@@ -114,7 +125,7 @@ public class ReportingNodeImpl extends NodeBase implements ReportingNode, Report
                 tries++;
                 tryAgain = false;
             
-                exitCode = UvmContextFactory.context().execManager().execResult(REPORTS_SCRIPT + " -m -i -r -1 ");
+                exitCode = UvmContextFactory.context().execManager().execResult(REPORTS_SCRIPT + " -r 1 -m -d " + ts);
 
                 /* exitCode == 1 means another reports process is running, just wait and try again. */
                 if (exitCode == 1)  {
@@ -215,6 +226,7 @@ public class ReportingNodeImpl extends NodeBase implements ReportingNode, Report
     protected void postInit()
     {
         // intialize default settings
+        this.createSchemas();
         setSettings(initSettings());
     }
 
