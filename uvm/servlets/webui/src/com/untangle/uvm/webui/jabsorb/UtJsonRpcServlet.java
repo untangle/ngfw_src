@@ -19,9 +19,6 @@ import com.untangle.uvm.servlet.ServletUtils;
 
 /**
  * Initializes the JSONRPCBridge.
- *
- * @author <a href="mailto:amread@untangle.com">Aaron Read</a>
- * @version 1.0
  */
 @SuppressWarnings("serial")
 public class UtJsonRpcServlet extends JSONRPCServlet

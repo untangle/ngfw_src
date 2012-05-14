@@ -248,56 +248,10 @@ public class ReportingNodeImpl extends NodeBase implements ReportingNode, Report
     private ReportingSettings initSettings()
     {
         ReportingSettings settings = new ReportingSettings();
-        settings.setNodeId(getNodeSettings().getId());
-
-        loadReportingUsers(settings);
 
         return settings;
     }
     
-    /*
-     * Add admin users to the list of reporting users, and set them up for
-     * emailed reports.
-     *
-     * The list is maintained in the DB as a comma-separated string, so we
-     * split it first, deal with the resulting HashSet, and spit out another
-     * comma-separated string at the very end of this method. */
-    private void loadReportingUsers(ReportingSettings s)
-    {
-        AdminManager adminManager = UvmContextFactory.context().adminManager();
-        String reportEmail = adminManager.getMailSettings().getReportEmail();
-        Set<String> res = new HashSet<String>();
-        if ((reportEmail != null) && (!reportEmail.isEmpty())) {
-            reportEmail = reportEmail.trim();
-            res.addAll(Arrays.asList(reportEmail.split(",")));
-        }
-
-        /* add in all other admins with an email */
-        for (User user : adminManager.getAdminSettings().getUsers()) {
-            String email = user.getEmail();
-            if ((email != null) && (!email.equals("[no email]")
-                    && (!email.isEmpty()))) {
-                res.add(email);
-            }
-        }
-
-        // assemble back the comma-separated string
-        StringBuilder sb = new StringBuilder();
-        for ( String email : res ) {
-            if ( sb.length() > 0 ) {
-                sb.append(",");
-            }
-            sb.append(email);
-        }
-
-        reportEmail = sb.toString();
-        // modify the passed-in ReportingSettings, so the users we gathered
-        // are now known to the report node
-        s.setReportingUsers(reportEmail);
-        // also sign them up for emailed reports
-        adminManager.getMailSettings().setReportEmail(reportEmail);
-    }
-
     /**
      * This attempts to a read line
      *

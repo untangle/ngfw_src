@@ -237,11 +237,21 @@ public class NodeManagerImpl implements NodeManager
                 throw new DeployException("NodeManager is shut down");
 
             /**
+             * Check all the basics
+             */
+            if (nodeSettings == null) 
+                throw new DeployException("Null nodeSettings: " + nodeName);
+            if (nodeProperties == null) 
+                throw new DeployException("Null nodeProperties: " + nodeName);
+            if (packageDesc == null) 
+                throw new DeployException("Null packageDesc: " + nodeName);
+
+            /**
              * Check instance count - don't allow dupes
              */
-            if (nodeInstances( nodeProperties.getName(), nodeSettings.getPolicyId(), false ).size() >= 1) 
+            if ( nodeInstances( nodeProperties.getName(), nodeSettings.getPolicyId(), false ).size() >= 1 ) 
                 throw new DeployException("too many instances: " + nodeName);
-
+            
             node = NodeBase.loadClass(nodeProperties, nodeSettings, packageDesc, true);
 
             if (node != null) {
