@@ -19,8 +19,8 @@ class HttpCasing(Node):
         return ['untangle-vm']
 
     @print_timing
-    def setup(self, start_date, end_date, start_time):
-        self.__create_n_http_events(start_date, end_date, start_time)
+    def setup(self):
+        self.__create_n_http_events()
 
         ft = FactTable('reports.n_http_totals', 'reports.n_http_events',
                        'time_stamp',
@@ -39,7 +39,7 @@ class HttpCasing(Node):
         reports.engine.register_fact_table(ft)
 
     @print_timing
-    def __create_n_http_events(self, start_date, end_date, start_time):
+    def __create_n_http_events(self):
         sql_helper.create_fact_table("""\
 CREATE TABLE reports.n_http_events (
     time_stamp timestamp without time zone,
@@ -71,7 +71,7 @@ CREATE TABLE reports.n_http_events (
     wf_esoft_blocked boolean,
     wf_esoft_flagged boolean,
     virus_commtouch_clean boolean,
-    virus_commtouch_name text)""", 'time_stamp', start_date, end_date)
+    virus_commtouch_name text)""", 'time_stamp', None, None)
 
         sql_helper.add_column('reports', 'n_http_events', 'event_id', 'bigserial')
         sql_helper.add_column('reports', 'n_http_events', 'ab_action', 'character(1)')

@@ -47,7 +47,7 @@ class VirusBaseNode(Node):
         return ['untangle-casing-http', 'untangle-casing-mail']
 
     @sql_helper.print_timing
-    def setup(self, start_date, end_date, start_time):
+    def setup(self):
 
         ft = reports.engine.get_fact_table('reports.n_http_totals')
 

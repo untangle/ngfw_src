@@ -356,13 +356,13 @@ def init_engine(node_module_dir):
     __get_nodes(node_module_dir)
 
 @print_timing
-def setup(start_date, end_date, start_time):
+def setup():
     global __nodes
 
     count = 0.0
     for name in __get_available_nodes():
         try:
-            logger.debug('doing setup for: %s (%s -> %s)' % (name, start_date, end_date))
+            logger.debug('doing setup for: %s' % (name))
             node = __nodes.get(name, None)
 
             if not node:
@@ -372,7 +372,7 @@ def setup(start_date, end_date, start_time):
                     node.alter_fact_tables()
                 except Exception, e: # that table didn't exist
                     logger.info("Could not alter fact tables for %s: %s" % (name, e.message,))
-                node.setup(start_date, end_date, start_time)
+                node.setup()
 
             count = count+1.0 
         except:

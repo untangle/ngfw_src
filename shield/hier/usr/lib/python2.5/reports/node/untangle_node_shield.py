@@ -35,7 +35,7 @@ class Shield(Node):
         Node.__init__(self, 'untangle-node-shield')
 
     @print_timing
-    def setup(self, start_date, end_date, start_time):
+    def setup(self):
         self.__create_n_shield_rejection_totals()
         self.__create_n_shield_totals()
 

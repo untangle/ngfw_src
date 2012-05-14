@@ -45,23 +45,19 @@ class WebFilterBaseNode(Node):
         return ['untangle-casing-http']
 
     @print_timing
-    def setup(self, start_date, end_date, start_time):
-
+    def setup(self):
         ft = reports.engine.get_fact_table('reports.n_http_totals')
 
         ft.measures.append(Column('wf_%s_blocks' % self.__vendor_name,
                                   'integer',
                                   "count(CASE WHEN wf_%s_blocked THEN 1 ELSE null END)"
                                   % self.__vendor_name))
-
         ft.measures.append(Column('wf_%s_violations' % self.__vendor_name,
                                   'integer',
                                   "count(CASE WHEN wf_%s_flagged THEN 1 ELSE null END)"
                                   % self.__vendor_name))
-
         ft.dimensions.append(Column('wf_%s_category' % self.__vendor_name,
                                     'text'))
-
         ft.dimensions.append(Column('wf_%s_reason' % self.__vendor_name,
                                     'text'))
 

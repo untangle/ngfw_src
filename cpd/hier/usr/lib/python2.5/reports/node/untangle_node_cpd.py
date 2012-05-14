@@ -51,7 +51,7 @@ class Cpd(Node):
     def __init__(self):
         Node.__init__(self, 'untangle-node-cpd')
 
-    def setup(self, start_date, end_date, start_time):
+    def setup(self):
         self.__make_n_cpd_login_events_table()
         self.__make_n_cpd_block_events_table()
         

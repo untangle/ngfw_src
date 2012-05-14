@@ -41,7 +41,7 @@ class UvmNode(Node):
         Node.__init__(self, 'untangle-vm')
 
     @print_timing
-    def setup(self, start_date, end_date, start_time):
+    def setup(self):
 
         self.__do_housekeeping()
 

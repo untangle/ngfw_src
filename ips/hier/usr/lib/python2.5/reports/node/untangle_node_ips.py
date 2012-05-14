@@ -41,12 +41,9 @@ class Ips(Node):
         self.__vendor_name = vendor_name
 
     @print_timing
-    def setup(self, start_date, end_date, start_time):
-
+    def setup(self):
         ft = reports.engine.get_fact_table('reports.session_totals')
-
         ft.measures.append(Column('ips_blocks', 'integer', "count(CASE WHEN NOT ips_blocked ISNULL THEN 1 ELSE null END)"))
-
         ft.dimensions.append(Column('ips_description', 'text'))
 
     def get_toc_membership(self):

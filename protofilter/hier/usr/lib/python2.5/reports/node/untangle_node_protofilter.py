@@ -38,12 +38,10 @@ class Protofilter(Node):
     def __init__(self):
         Node.__init__(self, 'untangle-node-protofilter')
 
-    def setup(self, start_date, end_date, start_time):
+    def setup(self):
         ft = reports.engine.get_fact_table('reports.session_totals')
 
-        ft.measures.append(Column('pf_blocks', 'integer',
-                                  "count(CASE WHEN pf_blocked THEN 1 ELSE null END)"))
-
+        ft.measures.append(Column('pf_blocks', 'integer', "count(CASE WHEN pf_blocked THEN 1 ELSE null END)"))
         ft.dimensions.append(Column('pf_protocol', 'text'))
 
     def parents(self):

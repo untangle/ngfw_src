@@ -36,10 +36,16 @@ class Spyware(Node):
     def __init__(self):
         Node.__init__(self, 'untangle-node-spyware')
 
-    def setup(self, start_date, end_date, start_time):
-        self.__update_access()
-        self.__update_url(start_date, end_date)
-        self.__update_cookie(start_date, end_date)
+    def setup(self):
+        ft = reports.engine.get_fact_table('reports.session_totals')
+        ft.measures.append(Column('sw_accesses', 'integer', 'count(sw_access_ident)'))
+        ft.dimensions.append(Column('sw_access_ident', 'text'))
+
+        ft = reports.engine.get_fact_table('reports.n_http_totals')
+        ft.measures.append(Column('sw_blacklisted', 'integer', 'count(sw_blacklisted)'))
+
+        ft.measures.append(Column('sw_cookies', 'integer', 'count(sw_cookie_ident)'))
+        ft.dimensions.append(Column('sw_cookie_ident', 'text'))
 
     def get_toc_membership(self):
         return [TOP_LEVEL, HOST_DRILLDOWN, USER_DRILLDOWN]
@@ -71,25 +77,6 @@ class Spyware(Node):
         sections.append(SubnetDetail())
 
         return Report(self, sections)
-
-    @print_timing
-    def __update_access(self):
-        ft = reports.engine.get_fact_table('reports.session_totals')
-        ft.measures.append(Column('sw_accesses', 'integer',
-                                  'count(sw_access_ident)'))
-        ft.dimensions.append(Column('sw_access_ident', 'text'))
-
-    @print_timing
-    def __update_url(self, start_date, end_date):
-        ft = reports.engine.get_fact_table('reports.n_http_totals')
-        ft.measures.append(Column('sw_blacklisted', 'integer', 'count(sw_blacklisted)'))
-
-    @print_timing
-    def __update_cookie(self, start_date, end_date):
-        ft = reports.engine.get_fact_table('reports.n_http_totals')
-        ft.measures.append(Column('sw_cookies', 'integer',
-                                  'count(sw_cookie_ident)'))
-        ft.dimensions.append(Column('sw_cookie_ident', 'text'))
 
 class SpywareHighlight(Highlight):
     def __init__(self, name):

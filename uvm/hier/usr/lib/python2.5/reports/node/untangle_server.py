@@ -35,48 +35,21 @@ class ServerNode(Node):
         Node.__init__(self, 'untangle-node-reporting')
 
     @print_timing
-    def setup(self, start_date, end_date, start_time):
-        self.__create_n_server_events(start_date, end_date)
-
-        ft = FactTable('reports.n_server_totals',
-                       'reports.n_server_events',
-                       'time_stamp', [], [])
-        ft.measures.append(Column('mem_free',
-                                  'int8',
-                                  "avg(mem_free)"))
-        ft.measures.append(Column('mem_cache',
-                                  'int8',
-                                  "avg(mem_cache)"))
-        ft.measures.append(Column('mem_buffers',
-                                  'int8',
-                                  "avg(mem_buffers)"))
-        ft.measures.append(Column('load_1',
-                                  'DECIMAL(6, 2)',
-                                  "avg(load_1)"))
-        ft.measures.append(Column('load_5',
-                                  'DECIMAL(6, 2)',
-                                  "avg(load_5)"))
-        ft.measures.append(Column('load_15',
-                                  'DECIMAL(6, 2)',
-                                  "avg(load_15)"))
-        ft.measures.append(Column('cpu_user',
-                                  'DECIMAL(6, 2)',
-                                  "avg(cpu_user)"))
-        ft.measures.append(Column('cpu_system',
-                                  'DECIMAL(6, 2)',
-                                  "avg(cpu_system)"))
-        ft.measures.append(Column('disk_total',
-                                  'int8',
-                                  "avg(disk_total)"))
-        ft.measures.append(Column('disk_free',
-                                  'int8',
-                                  "avg(disk_free)"))
-        ft.measures.append(Column('swap_total',
-                                  'int8',
-                                  "avg(swap_total)"))
-        ft.measures.append(Column('swap_free',
-                                  'int8',
-                                  "avg(swap_free)"))
+    def setup(self):
+        self.__create_n_server_events()
+        ft = FactTable('reports.n_server_totals', 'reports.n_server_events', 'time_stamp', [], [])
+        ft.measures.append(Column('mem_free', 'int8', "avg(mem_free)"))
+        ft.measures.append(Column('mem_cache', 'int8', "avg(mem_cache)"))
+        ft.measures.append(Column('mem_buffers', 'int8', "avg(mem_buffers)"))
+        ft.measures.append(Column('load_1', 'DECIMAL(6, 2)', "avg(load_1)"))
+        ft.measures.append(Column('load_5', 'DECIMAL(6, 2)', "avg(load_5)"))
+        ft.measures.append(Column('load_15', 'DECIMAL(6, 2)', "avg(load_15)"))
+        ft.measures.append(Column('cpu_user', 'DECIMAL(6, 2)', "avg(cpu_user)"))
+        ft.measures.append(Column('cpu_system', 'DECIMAL(6, 2)', "avg(cpu_system)"))
+        ft.measures.append(Column('disk_total', 'int8', "avg(disk_total)"))
+        ft.measures.append(Column('disk_free', 'int8', "avg(disk_free)"))
+        ft.measures.append(Column('swap_total', 'int8', "avg(swap_total)"))
+        ft.measures.append(Column('swap_free', 'int8', "avg(swap_free)"))
         reports.engine.register_fact_table(ft)
 
     def reports_cleanup(self, cutoff):
@@ -93,7 +66,7 @@ class ServerNode(Node):
         return Report(self, sections)
 
     @print_timing
-    def __create_n_server_events(self, start_date, end_date):
+    def __create_n_server_events(self):
         sql_helper.create_fact_table("""\
 CREATE TABLE reports.n_server_events (
     time_stamp  TIMESTAMP,
@@ -108,7 +81,7 @@ CREATE TABLE reports.n_server_events (
     disk_total 	INT8,
     disk_free 	INT8,
     swap_total 	INT8,
-    swap_free 	INT8)""", 'time_stamp', start_date, end_date)
+    swap_free 	INT8)""", 'time_stamp', None, None)
 
     def teardown(self):
         pass

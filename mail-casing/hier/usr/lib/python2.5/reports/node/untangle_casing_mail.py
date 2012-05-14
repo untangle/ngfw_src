@@ -19,9 +19,9 @@ class MailCasing(Node):
         return ['untangle-vm']
 
     @print_timing
-    def setup(self, start_date, end_date, start_time):
-        self.__create_n_mail_msgs(start_date, end_date, start_time)
-        self.__create_n_mail_addrs(start_date, end_date, start_time)
+    def setup(self):
+        self.__create_n_mail_msgs()
+        self.__create_n_mail_addrs()
 
         ft = FactTable('reports.n_mail_msg_totals', 'reports.n_mail_msgs',
                        'time_stamp',
@@ -54,7 +54,7 @@ class MailCasing(Node):
         sql_helper.drop_fact_table("email", cutoff)        
 
     @print_timing
-    def __create_n_mail_addrs(self, start_date, end_date, start_time):
+    def __create_n_mail_addrs(self):
         sql_helper.create_fact_table("""\
 CREATE TABLE reports.n_mail_addrs (
     time_stamp timestamp without time zone,
@@ -93,7 +93,7 @@ CREATE TABLE reports.n_mail_addrs (
     phish_action character,
     vendor text,
     virus_commtouch_clean boolean,
-    virus_commtouch_name text)""", 'time_stamp', start_date, end_date)
+    virus_commtouch_name text)""", 'time_stamp', None, None)
 
         # remove obsolete columns
         sql_helper.drop_column('reports', 'n_mail_addrs', 'policy_inbound')
@@ -179,7 +179,7 @@ INSERT INTO reports.email (date, email)
             raise e
 
     @print_timing
-    def __create_n_mail_msgs(self, start_date, end_date, start_time):
+    def __create_n_mail_msgs(self):
 
         sql_helper.create_fact_table("""\
 CREATE TABLE reports.n_mail_msgs (
@@ -215,7 +215,7 @@ CREATE TABLE reports.n_mail_msgs (
     phish_action character,
     vendor text,
     virus_commtouch_clean boolean,
-    virus_commtouch_name text)""", 'time_stamp', start_date, end_date)
+    virus_commtouch_name text)""", 'time_stamp', None, None)
 
         # remove obsolete columns
         sql_helper.drop_column('reports', 'n_mail_msgs', 'policy_inbound')

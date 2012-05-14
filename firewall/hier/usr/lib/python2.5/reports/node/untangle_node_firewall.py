@@ -38,13 +38,9 @@ class Firewall(Node):
         Node.__init__(self, 'untangle-node-firewall')
 
     @sql_helper.print_timing
-    def setup(self, start_date, end_date, start_time):
-
+    def setup(self):
         ft = reports.engine.get_fact_table('reports.session_totals')
-
-        ft.measures.append(Column('firewall_blocks', 'integer',
-                                  "count(CASE WHEN firewall_was_blocked THEN 1 ELSE null END)"))
-
+        ft.measures.append(Column('firewall_blocks', 'integer', "count(CASE WHEN firewall_was_blocked THEN 1 ELSE null END)"))
         ft.dimensions.append(Column('firewall_rule_index', 'integer'))
 
     def get_toc_membership(self):
