@@ -93,7 +93,7 @@ CREATE TABLE reports.n_mail_addrs (
     phish_action character,
     vendor text,
     virus_commtouch_clean boolean,
-    virus_commtouch_name text)""", 'time_stamp', None, None)
+    virus_commtouch_name text)""")
 
         # remove obsolete columns
         sql_helper.drop_column('reports', 'n_mail_addrs', 'policy_inbound')
@@ -159,7 +159,7 @@ CREATE TABLE reports.email (
         date date NOT NULL,
         email text NOT NULL,
         PRIMARY KEY (date, email));
-""", 'date', start_date, end_date)
+""")
 
         sd = sql_helper.get_max_timestamp_with_interval('reports.email')
 
@@ -215,7 +215,7 @@ CREATE TABLE reports.n_mail_msgs (
     phish_action character,
     vendor text,
     virus_commtouch_clean boolean,
-    virus_commtouch_name text)""", 'time_stamp', None, None)
+    virus_commtouch_name text)""")
 
         # remove obsolete columns
         sql_helper.drop_column('reports', 'n_mail_msgs', 'policy_inbound')

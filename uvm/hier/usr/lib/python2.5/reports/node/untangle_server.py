@@ -81,7 +81,7 @@ CREATE TABLE reports.n_server_events (
     disk_total 	INT8,
     disk_free 	INT8,
     swap_total 	INT8,
-    swap_free 	INT8)""", 'time_stamp', None, None)
+    swap_free 	INT8)""")
 
     def teardown(self):
         pass

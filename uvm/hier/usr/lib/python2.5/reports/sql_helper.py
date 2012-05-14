@@ -257,7 +257,7 @@ def drop_fact_table(tablename, cutoff_date):
               (cutoff_date,),
               force_propagate=True)
 
-def create_fact_table(table_ddl, timestamp_column, start_date, end_date):
+def create_fact_table(table_ddl):
     (schema, tablename) = __get_tablename(table_ddl)
     
     if schema:
@@ -271,8 +271,6 @@ def create_fact_table(table_ddl, timestamp_column, start_date, end_date):
 
     for t, date in find_fact_tables(tablename):
         drop_table(t, schema=SCHEMA)
-
-    __drop_trigger(schema, tablename, timestamp_column)
 
 def get_update_info(tablename, default=None, delay=0):
     conn = get_connection()
@@ -506,76 +504,6 @@ ORDER BY time ASC"""
         logger.debug((query % params_regular) % params_to_quote)
     
     return query % params_regular, params_to_quote
-
-def __drop_trigger(schema, tablename, timestamp_column):
-    full_tablename = '%s.%s' % (schema, tablename)
-    for trigger in ('%s_insert_trigger', 'insert_%s_trigger'):
-        trigger = trigger % tablename
-        trigger_exists = run_sql_one("select 1 from pg_trigger where tgname = '%s'" % trigger);
-        if not trigger_exists:
-            continue;
-        run_sql("DROP TRIGGER IF EXISTS %s ON %s.%s CASCADE" % (trigger, schema, tablename), force_propagate=True)
-        run_sql("DROP FUNCTION IF EXISTS %s() CASCADE" % trigger, force_propagate=True)
-
-def __make_trigger(schema, tablename, timestamp_column, all_dates):
-    full_tablename = '%s.%s' % (schema, tablename)
-
-    trigger_function_name = '%s_insert_trigger()' % tablename
-
-    trigger_function = """\
-CREATE OR REPLACE FUNCTION %s
-RETURNS TRIGGER AS $$
-BEGIN
-""" % trigger_function_name
-
-    first = True
-    for d in all_dates:
-        trigger_function += """\
-    %s (NEW.%s >= '%s' AND NEW.%s < '%s') THEN
-        INSERT INTO %s VALUES (NEW.*);""" % ('IF' if first else "ELSIF",
-                                             timestamp_column, d,
-                                             timestamp_column,
-                                             d + mx.DateTime.DateTimeDelta(1),
-                                             __tablename_for_date(full_tablename, d))
-        first = False
-
-    trigger_function += """\
-    ELSE
-        RAISE NOTICE 'Date out of range: %%', NEW.%s;
-    END IF;
-    RETURN NULL;
-END;
-$$
-LANGUAGE plpgsql;""" % timestamp_column
-
-    run_sql(trigger_function);
-
-    trigger_name = "insert_%s_trigger" % tablename
-
-    if not __trigger_exists(schema, tablename, trigger_name):
-        run_sql("""\
-CREATE TRIGGER %s
-    BEFORE INSERT ON %s.%s
-    FOR EACH ROW EXECUTE PROCEDURE %s
-""" % (trigger_name, schema, tablename, trigger_function_name))
-
-def __trigger_exists(schema, tablename, trigger_name):
-    conn = get_connection()
-
-    try:
-        curs = conn.cursor()
-
-        curs.execute("""
-SELECT 1 FROM information_schema.triggers
-WHERE trigger_schema = %s AND event_object_table = %s AND trigger_name = %s
-""", (schema, tablename, trigger_name))
-
-        rv = curs.rowcount
-    finally:
-        conn.commit()
-
-    return rv
-
 
 def __tablename_for_date(tablename, date):
     return "%s_%d_%02d_%02d" % ((tablename,) + date.timetuple()[0:3])

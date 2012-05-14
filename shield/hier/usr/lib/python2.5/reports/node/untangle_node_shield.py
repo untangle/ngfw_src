@@ -55,7 +55,7 @@ CREATE TABLE reports.n_shield_rejection_totals (
     limited     integer,
     dropped     integer,
     rejected    integer,
-    event_id bigserial)""",  'time_stamp', None, None)
+    event_id bigserial)""")
 
         # old tables did not have event_id
         sql_helper.add_column('reports', 'n_shield_rejection_totals', 'event_id', 'bigserial')
@@ -75,7 +75,7 @@ CREATE TABLE reports.n_shield_totals (
     accepted   integer,
     limited    integer,
     dropped    integer,
-    rejected   integer)""",  'time_stamp', None, None)
+    rejected   integer)""")
 
         # convert from old name
         sql_helper.rename_column("reports","n_shield_totals","trunc_time","time_stamp");

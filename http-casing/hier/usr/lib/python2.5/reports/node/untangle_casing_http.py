@@ -71,7 +71,7 @@ CREATE TABLE reports.n_http_events (
     wf_esoft_blocked boolean,
     wf_esoft_flagged boolean,
     virus_commtouch_clean boolean,
-    virus_commtouch_name text)""", 'time_stamp', None, None)
+    virus_commtouch_name text)""")
 
         sql_helper.add_column('reports', 'n_http_events', 'event_id', 'bigserial')
         sql_helper.add_column('reports', 'n_http_events', 'ab_action', 'character(1)')

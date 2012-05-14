@@ -119,7 +119,7 @@ CREATE TABLE reports.n_cpd_login_events (
     event text,
     auth_type text,
     client_addr inet,
-    event_id bigserial)""",  'time_stamp', None, None)
+    event_id bigserial)""")
 
         sql_helper.add_column('reports', 'n_cpd_login_events', 'event_id', 'bigserial')
 
@@ -140,7 +140,7 @@ CREATE TABLE reports.n_cpd_block_events (
     client_port INT4,
     server_address INET,
     server_port INT4,
-    event_id bigserial)""",  'time_stamp', None, None)
+    event_id bigserial)""")
 
         sql_helper.add_column('reports', 'n_cpd_block_events', 'event_id', 'bigserial')
 

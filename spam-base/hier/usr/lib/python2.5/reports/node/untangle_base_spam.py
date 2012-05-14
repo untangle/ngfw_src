@@ -109,7 +109,7 @@ CREATE TABLE reports.n_spam_smtp_tarpit_events (
     hostname text,
     policy_id int8,
     vendor_name varchar(255),
-    event_id bigserial)""", 'time_stamp', None, None)
+    event_id bigserial)""")
 
         sql_helper.create_index("reports","n_spam_smtp_tarpit_events","event_id");
         sql_helper.create_index("reports","n_spam_smtp_tarpit_events","time_stamp");

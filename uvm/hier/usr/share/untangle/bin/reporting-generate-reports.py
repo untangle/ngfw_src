@@ -403,7 +403,7 @@ if not create_schemas:
                                                  report_days)
 
               if not no_mail and not simulate:
-                   logger.info("About to email reports for %s days" % (report_days,))          
+                   logger.info("About to email report summaries for %s days" % (report_days,))          
                    f = reports.pdf.generate_pdf(reports_output_base, end_date,
                                                 report_days, mail_reports,
                                                 trial_report)

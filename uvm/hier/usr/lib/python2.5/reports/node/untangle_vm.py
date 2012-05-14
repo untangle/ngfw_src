@@ -93,7 +93,7 @@ CREATE TABLE reports.n_admin_logins (
     local boolean,
     client_addr inet,
     succeeded boolean,
-    reason char(1) )""", 'time_stamp', None, None)
+    reason char(1) )""")
 
     def post_facttable_setup(self, start_date, end_date):
         self.__make_session_counts_table(start_date, end_date)
@@ -129,7 +129,7 @@ CREATE TABLE reports.users (
         date date NOT NULL,
         username text NOT NULL,
         PRIMARY KEY (date, username));
-""", 'date', start_date, end_date)
+""")
 
         sd = sql_helper.get_max_timestamp_with_interval('reports.users')
 
@@ -154,7 +154,7 @@ CREATE TABLE reports.hnames (
         date date NOT NULL,
         hname text NOT NULL,
         PRIMARY KEY (date, hname));
-""", 'date', start_date, end_date)
+""")
 
         sd = sql_helper.get_max_timestamp_with_interval('reports.hnames')
 
@@ -199,7 +199,7 @@ CREATE TABLE reports.sessions (
         c2p_bytes int8,
         p2c_bytes int8,
         s2p_bytes int8,
-        p2s_bytes int8)""", 'time_stamp', None, None)
+        p2s_bytes int8)""")
 
         sql_helper.add_column('reports', 'sessions', 'event_id', 'bigserial')
         sql_helper.add_column('reports', 'sessions', 'policy_id', 'bigint')
@@ -280,7 +280,7 @@ CREATE TABLE reports.session_counts (
         hname text,
         client_intf smallint,
         server_intf smallint,
-        num_sessions int8)""", 'trunc_time', start_date, end_date)
+        num_sessions int8)""")
 
         sql_helper.add_column('reports', 'session_counts', 'client_intf', 'smallint')
         sql_helper.add_column('reports', 'session_counts', 'server_intf', 'smallint')

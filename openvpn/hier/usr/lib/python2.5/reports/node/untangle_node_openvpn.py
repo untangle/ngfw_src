@@ -84,7 +84,7 @@ CREATE TABLE reports.n_openvpn_stats (
     remote_port integer,
     client_name text,
     event_id bigserial
-)""", 'time_stamp', None, None)
+)""")
 
         sql_helper.add_column('reports', 'n_openvpn_stats', 'event_id', 'bigserial')
         sql_helper.add_column('reports', 'n_openvpn_stats', 'start_time', 'timestamp without time zone')
