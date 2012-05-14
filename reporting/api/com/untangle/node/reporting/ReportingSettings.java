@@ -27,23 +27,18 @@ public class ReportingSettings implements Serializable, JSONString
     private Integer attachmentSizeLimit = 10; // MB
 
     private HashMap<IPMaskedAddress,String> hostnameMap = new HashMap<IPMaskedAddress,String>();
-    private LinkedList<ReportingUser> reportingUsers;
+    private LinkedList<ReportingUser> reportingUsers = new LinkedList<ReportingUser>();
 
-    private DayOfWeekMatcher generateDailyReports;
-    private DayOfWeekMatcher generateWeeklyReports;
-    private DayOfWeekMatcher generateMonthlyReports;
+    private DayOfWeekMatcher generateDailyReports = new DayOfWeekMatcher("any");;
+    private DayOfWeekMatcher generateWeeklyReports = new DayOfWeekMatcher("sunday");;
+    private DayOfWeekMatcher generateMonthlyReports = new DayOfWeekMatcher("sunday");;
 
     private boolean syslogEnabled = false;
     private String syslogHost;
     private int syslogPort = 514;
     private String syslogProtocol = "UDP";
     
-    public ReportingSettings()
-    {
-        this.generateDailyReports = new DayOfWeekMatcher("any");
-        this.generateWeeklyReports = new DayOfWeekMatcher("sunday");
-        this.generateMonthlyReports = new DayOfWeekMatcher("sunday");
-    }
+    public ReportingSettings() { }
 
     public HashMap<IPMaskedAddress,String> getHostnameMap() { return hostnameMap; }
     public void setHostnameMap( HashMap<IPMaskedAddress,String> hostnameMap ) { this.hostnameMap = hostnameMap; }
