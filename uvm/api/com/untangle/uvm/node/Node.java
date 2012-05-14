@@ -67,6 +67,11 @@ public interface Node
     List<SessionTuple> liveSessions();
 
     /**
+     * Retrieve a list of node sessions currently being processed by this node
+     */
+    List<NodeIPSession> liveNodeSessions();
+    
+    /**
      * Log an event
      * This is just a convenience method for different parts of the node to log events
      */

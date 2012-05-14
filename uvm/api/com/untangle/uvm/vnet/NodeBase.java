@@ -356,16 +356,27 @@ public abstract class NodeBase implements Node
             UvmContextFactory.context().loggingManager().setLoggingUvm();
         }
     }
-    
+
     public List<SessionTuple> liveSessions()
     {
         List<SessionTuple> sessions = new LinkedList<SessionTuple>();
+
+        for (NodeSession sess : liveNodeSessions()) {
+            sessions.add( new SessionTupleImpl(sess) );
+        }
+
+        return sessions;
+    }
+
+    public List<NodeIPSession> liveNodeSessions()
+    {
+        List<NodeIPSession> sessions = new LinkedList<NodeIPSession>();
 
         if (null != pipeSpecs) {
             for (PipeSpec ps : pipeSpecs) {
                 for (NodeIPSession sess : ps.liveSessions()) {
                     /* create a new sessiontupleimpl so the list will be serialized properly */
-                    sessions.add( new SessionTupleImpl(sess) );
+                    sessions.add( sess );
                 }
             }
         }

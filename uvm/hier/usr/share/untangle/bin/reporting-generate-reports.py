@@ -13,7 +13,7 @@ Options:
   -g | --no-data-gen            skip graph data processing
   -p | --no-plot-gen            skip graph image processing
   -m | --no-mail                skip mailing
-  -i | --incremental            only update fact tables, do not generate reports themselves
+  -c | --create-schemas         create the SQL schemas
   -a | --attach-csv             attach events as csv
   -t | --trial-report           only report on given trial
   -r | --report-length          number of days to report on
@@ -39,7 +39,7 @@ logger = getLogger(__name__)
 try:
      opts, args = getopt.getopt(sys.argv[1:], "hncgpmiaver:d:l:t:s:b:",
                                 ['help', 'no-migration', 'no-cleanup',
-                                 'no-data-gen', 'no-mail', 'incremental',
+                                 'no-data-gen', 'no-mail', 'create-schemas',
                                  'no-plot-gen', 'verbose', 'attach-csv',
                                  'events-retention', 'report-length',
                                  'date=', 'locale=', 'trial-report=',
@@ -56,7 +56,7 @@ no_cleanup = False
 no_data_gen = False
 no_plot_gen = False
 no_mail = False
-incremental = False
+create_schemas = False
 attach_csv = False
 attachment_size_limit = 10
 end_date = mx.DateTime.today()
@@ -82,8 +82,8 @@ for opt in opts:
           no_plot_gen = True
      elif k == '-m' or k == '--no-mail':
           no_mail = True
-     elif k == '-i' or k == '--incremental':
-          incremental = True
+     elif k == '-i' or k == '--create-schemas':
+          create_schemas = True
      elif k == '-a' or k == '--attach-csv':
           attach_csv = True
      elif k == '-t' or k == '--trial-report':
@@ -120,14 +120,14 @@ if os.path.isfile(LOCKFILE):
      pid = verifyPidFile()
      if pid:
           logger.warning("Reports are already running (pid %s)..." % pid)
-          if incremental:
-               logger.error("... we were trying an incremental run, aborting")
+          if create_schemas:
+               logger.error("... aborting create-schemas call.")
                sys.exit(1)
           else:
                slept = 0
                while pid:
                     if (slept % 60) == 0:
-                         logger.warning("... we are trying a nightly run, waiting on pid %s" % pid)
+                         logger.warning("... waiting on pid %s" % pid)
                     time.sleep(1)
                     pid = verifyPidFile()
                     slept += 1
@@ -380,11 +380,11 @@ if trial_report:
 if not no_migration:
      init_date = end_date - mx.DateTime.DateTimeDelta(max(report_lengths))
      reports.engine.setup(init_date, end_date, start_time)
-     if not incremental:
+     if not create_schemas:
           reports.engine.process_fact_tables(init_date, start_time)
           reports.engine.post_facttable_setup(init_date, start_time)
 
-if not incremental:
+if not create_schemas:
      mail_reports = []
 
      try:
@@ -415,7 +415,7 @@ if not incremental:
           logger.critical("Exception while building report: %s" % (e,),
                       exc_info=True)
 else:
-     logger.info("Incremental mode, not generating reports themselves")
+     logger.info("Create schemas mode, not generating reports themselves")
 
 if not no_cleanup and not simulate:
     events_cutoff = start_time
