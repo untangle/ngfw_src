@@ -148,10 +148,6 @@ CREATE TABLE reports.n_http_events (
         # sql_helper.create_index("reports","n_http_events","sw_blacklisted");
         # sql_helper.create_index("reports","n_http_events","sw_cookie_ident");
 
-    @sql_helper.print_timing
-    def events_cleanup(self, cutoff):
-        return
-
     def reports_cleanup(self, cutoff):
         sql_helper.drop_fact_table("n_http_events", cutoff)
         sql_helper.drop_fact_table("n_http_totals", cutoff)        

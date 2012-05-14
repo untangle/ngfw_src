@@ -82,7 +82,7 @@ for opt in opts:
           no_plot_gen = True
      elif k == '-m' or k == '--no-mail':
           no_mail = True
-     elif k == '-i' or k == '--create-schemas':
+     elif k == '-c' or k == '--create-schemas':
           create_schemas = True
      elif k == '-a' or k == '--attach-csv':
           attach_csv = True
@@ -302,7 +302,7 @@ for instance in Popen([PREFIX + "/usr/bin/ucli", "instances"], stdout=PIPE).comm
           running = True
           break
 
-if not running:
+if not running and not create_schemas:
      logger.error("Reports node is not installed or not running, exiting.")
      sys.exit(0)
 
@@ -417,22 +417,13 @@ if not create_schemas:
 else:
      logger.info("Create schemas mode, not generating reports themselves")
 
-if not no_cleanup and not simulate:
-    events_cutoff = start_time
-    reports.engine.events_cleanup(events_cutoff)
-
-    if not incremental:
-      reports_cutoff = end_date - mx.DateTime.DateTimeDelta(db_retention)
-      reports.engine.reports_cleanup(reports_cutoff)     
-      write_cutoff_date(DateFromMx(reports_cutoff))
-
-      files_cutoff = end_date - mx.DateTime.DateTimeDelta(file_retention)
-      reports.engine.delete_old_reports('%s/data' % REPORTS_OUTPUT_BASE, files_cutoff)
-
-# These are only for end of trial, a reboot will delete these files since they are in /tmp
-# if trial_report and ( reports_output_base != REPORTS_OUTPUT_BASE ):
-#    try:
-#          shutil.rmtree(reports_output_base)
+if not no_cleanup and not simulate and not create_schemas:
+     reports_cutoff = end_date - mx.DateTime.DateTimeDelta(db_retention)
+     reports.engine.reports_cleanup(reports_cutoff)     
+     write_cutoff_date(DateFromMx(reports_cutoff))
+    
+     files_cutoff = end_date - mx.DateTime.DateTimeDelta(file_retention)
+     reports.engine.delete_old_reports('%s/data' % REPORTS_OUTPUT_BASE, files_cutoff)
 
 total_end_time = time.time()
 logger.debug('%s took %0.1f sec' % (sys.argv[0], (total_end_time-total_start_time)))

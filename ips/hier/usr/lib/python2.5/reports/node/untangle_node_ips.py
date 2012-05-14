@@ -68,10 +68,6 @@ class Ips(Node):
     def parents(self):
         return ['untangle-vm']
 
-    @sql_helper.print_timing
-    def events_cleanup(self, cutoff):
-        return
-
     def reports_cleanup(self, cutoff):
         pass
 

@@ -46,10 +46,6 @@ class MailCasing(Node):
     def post_facttable_setup(self, start_date, end_date):
         self.__make_email_table(start_date, end_date)
 
-    @sql_helper.print_timing
-    def events_cleanup(self, cutoff):
-        return
-
     def reports_cleanup(self, cutoff):
         sql_helper.drop_fact_table("n_mail_addrs", cutoff)
         sql_helper.drop_fact_table("n_mail_addr_totals", cutoff)        

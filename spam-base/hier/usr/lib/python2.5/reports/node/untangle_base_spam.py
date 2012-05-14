@@ -52,10 +52,6 @@ class SpamBaseNode(Node):
 
     @print_timing
     def setup(self, start_date, end_date, start_time):
-        self.__update_n_mail_events('events.n_spam_evt',      'reports.n_mail_addrs', 'pop/imap', start_date, end_date)
-        self.__update_n_mail_events('events.n_spam_evt_smtp', 'reports.n_mail_addrs', 'smtp',     start_date, end_date)
-        self.__update_n_mail_events('events.n_spam_evt',      'reports.n_mail_msgs',  'pop/imap', start_date, end_date)
-        self.__update_n_mail_events('events.n_spam_evt_smtp', 'reports.n_mail_msgs',  'smtp',     start_date, end_date)
         self.__create_n_spam_smtp_tarpit_events( start_date, end_date, start_time )
 
         column = Column('%s_spam_msgs' % self.__short_name, 'integer',
@@ -101,38 +97,8 @@ class SpamBaseNode(Node):
 
         return Report(self, sections)
 
-    @sql_helper.print_timing
-    def events_cleanup(self, cutoff):
-        sql_helper.clean_table("events", "n_spam_evt ", cutoff);
-        sql_helper.clean_table("events", "n_spam_evt_smtp ", cutoff);
-        sql_helper.clean_table("events", "n_spam_smtp_tarpit_evt ", cutoff);
-
     def reports_cleanup(self, cutoff):
         sql_helper.drop_fact_table('n_spam_smtp_tarpit_events', cutoff)
-
-    @print_timing
-    def __update_n_mail_events(self, src_table, target_table, protocol, start_date, end_date):
-
-        conn = sql_helper.get_connection()
-        try:
-            sql_helper.run_sql("""\
-UPDATE %s
-SET %s_score = score,
-  %s_is_spam = is_spam,
-  %s_action = action
-FROM %s
-WHERE %s.vendor_name = %%s
-AND %s.msg_id = %s.msg_id""" % (target_table, self.__short_name,
-                                self.__short_name, self.__short_name,
-                                src_table, src_table,
-                                target_table, src_table),
-                               (self.__vendor_name,), connection=conn,
-                               auto_commit=False)
-
-            conn.commit()
-        except Exception, e:
-            conn.rollback()
-            raise e
 
     @print_timing
     def __create_n_spam_smtp_tarpit_events(self, start_date, end_date, start_time):

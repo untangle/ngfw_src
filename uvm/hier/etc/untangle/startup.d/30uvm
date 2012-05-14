@@ -20,29 +20,21 @@ if [ $MEM -gt 4900000 ] ; then
     MAX_VIRTUAL_SIZE=`echo $MEM | awk '{printf int($1 * 1.5  / 1000) "m"}'`
     GC_SAFETY_FACTOR=10
     GC_MIN_CYCLE=1
-    REPORTS_INTERVAL_MIN=5 # minutes
-    REPORTS_INTERVAL_HOUR=1 # hour
 elif [ $MEM -gt 3900000 ] ; then
     MAX_HEAP_SIZE=2000m
     MAX_VIRTUAL_SIZE=6000m
     GC_SAFETY_FACTOR=10
     GC_MIN_CYCLE=2
-    REPORTS_INTERVAL_MIN=10 # minutes
-    REPORTS_INTERVAL_HOUR=1 # hour
 elif [ $MEM -gt 2900000 ] ; then
     MAX_HEAP_SIZE=1500m
     MAX_VIRTUAL_SIZE=4500m
     GC_SAFETY_FACTOR=20
     GC_MIN_CYCLE=5
-    REPORTS_INTERVAL_MIN=10 # minutes
-    REPORTS_INTERVAL_HOUR=1 # hour
 elif [ $MEM -gt 1900000 ] ; then
     MAX_HEAP_SIZE=820m
     MAX_VIRTUAL_SIZE=3000m
     GC_SAFETY_FACTOR=50
     GC_MIN_CYCLE=10
-    REPORTS_INTERVAL_MIN=15 # minutes
-    REPORTS_INTERVAL_HOUR=1 # hour
 elif [ $MEM -gt 900000 ] ; then
     if [ $ARCH = 'x86_64' ]; then
         MAX_HEAP_SIZE=420m
@@ -53,8 +45,6 @@ elif [ $MEM -gt 900000 ] ; then
     fi
     GC_SAFETY_FACTOR=90
     GC_MIN_CYCLE=10
-    REPORTS_INTERVAL_MIN=30 # minutes
-    REPORTS_INTERVAL_HOUR=1 # hour
 else
     if [ $ARCH = 'x86_64' ]; then
         MAX_HEAP_SIZE=320m
@@ -65,8 +55,6 @@ else
     fi
     GC_SAFETY_FACTOR=90
     GC_MIN_CYCLE=10
-    REPORTS_INTERVAL_MIN=60 # minutes
-    REPORTS_INTERVAL_HOUR=1 # hour
 fi
 
 MAX_VIRTUAL_SIZE=$(( ${MAX_VIRTUAL_SIZE/m} * 1000 ))
@@ -75,16 +63,11 @@ echo "    Maximum heap size        -> ${MAX_HEAP_SIZE}"
 echo "    Maximum virtual size     -> ${MAX_VIRTUAL_SIZE}"
 echo "    GC safety factor         -> ${GC_SAFETY_FACTOR}"
 echo "    GC minimum cycle         -> ${GC_MIN_CYCLE}"
-echo "    Reports interval (hour)  -> ${REPORTS_INTERVAL_HOUR}"
-echo "    Reports interval (min)   -> ${REPORTS_INTERVAL_MIN}"
 echo "    Max load for reports     -> ${REPORTS_MAX_LOAD}"
-
 
 #
 # Apply the settings
 #
-
-perl -i -pe 's|(?<=\*/)\d+|'${REPORTS_INTERVAL_MIN}'| ; s|(?<= \*/)\d+|'${REPORTS_INTERVAL_HOUR}'|' /etc/cron.d/untangle-reports-incremental
 
 mkdir -p `dirname $FILE`
 cat >| $FILE <<EOF

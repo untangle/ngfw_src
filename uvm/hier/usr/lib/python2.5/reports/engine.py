@@ -67,9 +67,6 @@ class Node:
     def post_facttable_setup(self, start_date, end_date):
         pass
 
-    def events_cleanup(self, cutoff):
-        pass
-
     def reports_cleanup(self, cutoff):
         pass
 
@@ -333,23 +330,6 @@ def generate_plots(report_base, end_date, report_days=1):
     __generate_plots(report_base, date_base)
 
 @print_timing
-def events_cleanup(cutoff):
-    logger.info("Cleaning-up events data for all dates < %s" % (cutoff,))
-
-    # clean in reverse order
-    nodeList = __get_node_partial_order()
-    nodeList.reverse()
-
-    for name in nodeList:
-        try:
-            node = __nodes.get(name, None)
-            logger.debug("** about to clean events for %s" % (name,))            
-            node.events_cleanup(cutoff)
-        except:
-            logger.warn('could not cleanup events for: %s' % name,
-                         exc_info=True)
-
-@print_timing
 def reports_cleanup(cutoff):
     logger.info("Cleaning-up reports data for all dates < %s" % (cutoff,))
 
@@ -380,7 +360,7 @@ def setup(start_date, end_date, start_time):
     global __nodes
 
     count = 0.0
-    for name in __get_node_partial_order():
+    for name in __get_available_nodes():
         try:
             logger.debug('doing setup for: %s (%s -> %s)' % (name, start_date, end_date))
             node = __nodes.get(name, None)
@@ -576,6 +556,18 @@ def __get_emails(start_date, end_date):
     logger.debug("Emails between %s and %s: %s" % (start_date, end_date, rv))
 
     return rv
+
+def __get_available_nodes():
+    global __nodes
+    installed = __get_installed_nodes()
+    available = sets.Set(__nodes.keys());
+    list = []
+
+    while len(available):
+        name = available.pop()
+        __add_node(name, list, available)
+
+    return list;
 
 # do care about uninstalled nodes
 def __get_node_partial_order(exclude_uninstalled=True):

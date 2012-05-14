@@ -100,9 +100,6 @@ CREATE TABLE reports.n_admin_logins (
         self.__make_hnames_table(start_date, end_date)
         self.__make_users_table(start_date, end_date)
 
-    def events_cleanup(self, cutoff):
-        return
-
     def reports_cleanup(self, cutoff):
         sql_helper.drop_fact_table("n_admin_logins", cutoff)
         sql_helper.drop_fact_table("users", cutoff)

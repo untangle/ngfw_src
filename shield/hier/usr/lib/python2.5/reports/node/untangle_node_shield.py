@@ -39,10 +39,6 @@ class Shield(Node):
         self.__create_n_shield_rejection_totals()
         self.__create_n_shield_totals()
 
-    @sql_helper.print_timing
-    def events_cleanup(self, cutoff):
-        return
-
     def reports_cleanup(self, cutoff):
         sql_helper.drop_fact_table("n_shield_rejection_totals", cutoff)
         sql_helper.drop_fact_table("n_shield_totals", cutoff)        

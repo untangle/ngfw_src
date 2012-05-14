@@ -98,10 +98,6 @@ class WebFilterBaseNode(Node):
 
         return Report(self, sections)
 
-    @sql_helper.print_timing
-    def events_cleanup(self, cutoff):
-        pass
-
     def reports_cleanup(self, cutoff):
         pass
 

@@ -104,9 +104,6 @@ class Cpd(Node):
         
         return Report(self, sections)
 
-    def events_cleanup(self, cutoff):
-        return
-
     def reports_cleanup(self, cutoff):
         sql_helper.drop_fact_table("n_cpd_login_events", cutoff)
         sql_helper.drop_fact_table("n_cpd_login_totals", cutoff)        
