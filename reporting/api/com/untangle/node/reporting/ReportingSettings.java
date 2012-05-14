@@ -7,71 +7,76 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.io.Serializable;
 
-import com.untangle.uvm.node.NodeSettings;
+import org.json.JSONObject;
+import org.json.JSONString;
+
 import com.untangle.uvm.node.IPMaskedAddress;
+import com.untangle.uvm.node.DayOfWeekMatcher;
 
 /**
  * Settings for the Reporting Node.
  */
 @SuppressWarnings("serial")
-public class ReportingSettings implements Serializable
+public class ReportingSettings implements Serializable, JSONString
 {
-    private HashMap<IPMaskedAddress,String> hostnameMap = new HashMap<IPMaskedAddress,String>();
     private Integer dbRetention = 7; // days
     private Integer fileRetention = 30; // days
-    private Boolean emailDetail = false;
-    private Integer nightlyHour = 2;
-    private Integer nightlyMinute = 0;
+    private Integer generationHour = 2;
+    private Integer generationMinute = 0;
+    private boolean emailDetail = false;
     private Integer attachmentSizeLimit = 10; // MB
 
+    private HashMap<IPMaskedAddress,String> hostnameMap = new HashMap<IPMaskedAddress,String>();
     private LinkedList<ReportingUser> reportingUsers;
 
-    private Schedule schedule = new Schedule();
+    private DayOfWeekMatcher generateDailyReports;
+    private DayOfWeekMatcher generateWeeklyReports;
+    private DayOfWeekMatcher generateMonthlyReports;
 
     private boolean syslogEnabled = false;
     private String syslogHost;
     private int syslogPort = 514;
     private String syslogProtocol = "UDP";
     
-    public ReportingSettings() { }
+    public ReportingSettings()
+    {
+        this.generateDailyReports = new DayOfWeekMatcher("any");
+        this.generateWeeklyReports = new DayOfWeekMatcher("sunday");
+        this.generateMonthlyReports = new DayOfWeekMatcher("sunday");
+    }
 
-    /**
-     * Network Directory (maps IP addresses to reporting names)
-     */
     public HashMap<IPMaskedAddress,String> getHostnameMap() { return hostnameMap; }
-    public void setHostnameMap(HashMap<IPMaskedAddress,String> hostnameMap) { this.hostnameMap = hostnameMap; }
+    public void setHostnameMap( HashMap<IPMaskedAddress,String> hostnameMap ) { this.hostnameMap = hostnameMap; }
 
     public int getDbRetention() { return dbRetention; }
-    public void setDbRetention(int dbRetention) { this.dbRetention = dbRetention; }
+    public void setDbRetention( int dbRetention ) { this.dbRetention = dbRetention; }
 
-    public int getNightlyHour() { return nightlyHour; }
-    public void setNightlyHour(int nightlyHour) { this.nightlyHour = nightlyHour; }
+    public int getGenerationHour() { return generationHour; }
+    public void setGenerationHour( int generationHour ) { this.generationHour = generationHour; }
 
-    public int getNightlyMinute() { return nightlyMinute; }
-    public void setNightlyMinute(int nightlyMinute) { this.nightlyMinute = nightlyMinute; }
+    public int getGenerationMinute() { return generationMinute; }
+    public void setGenerationMinute( int generationMinute ) { this.generationMinute = generationMinute; }
 
     public int getFileRetention() { return fileRetention; }
-    public void setFileRetention(int fileRetention) { this.fileRetention = fileRetention; }
+    public void setFileRetention( int fileRetention ) { this.fileRetention = fileRetention; }
 
     public boolean getEmailDetail() { return emailDetail; }
-    public void setEmailDetail(boolean emailDetail) { this.emailDetail = emailDetail; }
+    public void setEmailDetail( boolean emailDetail ) { this.emailDetail = emailDetail; }
 
     public int getAttachmentSizeLimit() { return attachmentSizeLimit; }
-    public void setAttachmentSizeLimit(int limit) { attachmentSizeLimit = limit; }
+    public void setAttachmentSizeLimit( int limit ) { attachmentSizeLimit = limit; }
 
-    /**
-     * Email address of all of the reporting users (these are both
-     * users that get emails + users who can access the online
-     * reports.
-     */
     public LinkedList<ReportingUser> getReportingUsers() { return this.reportingUsers; }
-    public void setReportingUsers(LinkedList<ReportingUser> reportingUsers) { this.reportingUsers = reportingUsers; }
+    public void setReportingUsers( LinkedList<ReportingUser> reportingUsers ) { this.reportingUsers = reportingUsers; }
 
-    /**
-     * Schedule (daily, weekly, monthly) for reports
-     */
-    public Schedule getSchedule() { return schedule; }
-    public void setSchedule(Schedule schedule) { this.schedule = schedule; }
+    public DayOfWeekMatcher getGenerateDailyReports() { return this.generateDailyReports; }
+    public void setGenerateDailyReports( DayOfWeekMatcher generateDailyReports ) { this.generateDailyReports = generateDailyReports; }
+
+    public DayOfWeekMatcher getGenerateWeeklyReports() { return this.generateWeeklyReports; }
+    public void setGenerateWeeklyReports( DayOfWeekMatcher generateWeeklyReports ) { this.generateWeeklyReports = generateWeeklyReports; }
+
+    public DayOfWeekMatcher getGenerateMonthlyReports() { return this.generateMonthlyReports; }
+    public void setGenerateMonthlyReports( DayOfWeekMatcher generateMonthlyReports ) { this.generateMonthlyReports = generateMonthlyReports; }
 
     public boolean isSyslogEnabled() { return syslogEnabled; }
     public void setSyslogEnabled( boolean syslogEnabled ) { this.syslogEnabled = syslogEnabled; }
@@ -94,4 +99,9 @@ public class ReportingSettings implements Serializable
     public String getSyslogProtocol() { return syslogProtocol; }
     public void setSyslogProtocol( String syslogProtocol ) { this.syslogProtocol = syslogProtocol; }
 
+    public String toJSONString()
+    {
+        JSONObject jO = new JSONObject(this);
+        return jO.toString();
+    }
 }

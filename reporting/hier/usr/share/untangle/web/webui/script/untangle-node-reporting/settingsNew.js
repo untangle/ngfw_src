@@ -18,41 +18,6 @@ if (!Ung.hasResource["Ung.Reporting"]) {
             this.tabs.setActiveTab(this.panelStatus);
             Ung.Reporting.superclass.initComponent.call(this);
         },
-        getReportingSettings: function(forceReload) {
-            if (forceReload || this.rpc.reportingSettings === undefined) {
-                try {
-                    this.rpc.reportingSettings = this.getRpcNode().getReportingSettings();
-                } catch (e) {
-                    console.log("rpc.getReportingSettings error");
-                    Ung.Util.rpcExHandler(e);
-                }
-            }
-            return this.rpc.reportingSettings;
-        },
-        // get mail settings
-        getMailSettings: function(forceReload) {
-            if (forceReload || this.rpc.mailSettings === undefined) {
-                try {
-                    this.rpc.mailSettings = rpc.adminManager.getMailSettings();
-                } catch (e) {
-                    console.log("rpc.getMailSettings error");
-                    Ung.Util.rpcExHandler(e);
-                }
-            }
-            return this.rpc.mailSettings;
-        },
-        getAdminSettings : function(forceReload) {
-            if (forceReload || this.rpc.adminSettings === undefined) {
-                try {
-                    this.rpc.adminSettings = rpc.adminManager.getAdminSettings();
-                } catch (e) {
-                    console.log("rpc.getAdminSettings error");
-                    Ung.Util.rpcExHandler(e);
-                }
-
-            }
-            return this.rpc.adminSettings;
-        },
         // Status Panel
         buildStatus: function() {
             this.panelStatus = Ext.create('Ext.panel.Panel',{
@@ -135,7 +100,7 @@ if (!Ung.hasResource["Ung.Reporting"]) {
             var weeklyThursdayCurrent = false;
             var weeklyFridayCurrent = false;
             var weeklySaturdayCurrent = false;
-            var weeklySched = this.getReportingSettings().schedule.weeklySched.list;
+            var weeklySched = this.getSettings().schedule.weeklySched.list;
             for(var i=0; i<weeklySched.length;i++) {
                 switch (weeklySched[i].day)
                 {
@@ -164,7 +129,7 @@ if (!Ung.hasResource["Ung.Reporting"]) {
             }
 
             // MONTHLY SCHEDULE
-            var schedule = this.getReportingSettings().schedule;
+            var schedule = this.getSettings().schedule;
             var monthlyFirstCurrent = schedule.monthlyNFirst;
             var monthlyEverydayCurrent = schedule.monthlyNDaily;
             var monthlyOnceCurrent = ( schedule.monthlyNDayOfWk != -1 /*Schedule.NONE*/ );
@@ -192,8 +157,8 @@ if (!Ung.hasResource["Ung.Reporting"]) {
 
             var generationTime=new Date();
             generationTime.setTime(0);
-            generationTime.setHours(this.getReportingSettings().nightlyHour);
-            generationTime.setMinutes(this.getReportingSettings().nightlyMinute);
+            generationTime.setHours(this.getSettings().generationHour);
+            generationTime.setMinutes(this.getSettings().generationMinute);
 
             this.panelGeneration = Ext.create('Ext.panel.Panel',{
                 // private fields
@@ -341,11 +306,11 @@ if (!Ung.hasResource["Ung.Reporting"]) {
                         boxLabel : this.i18n._('Attach Detailed Report Logs to Email (CSV Zip File)'),
                         name : 'Email Detail',
                         hideLabel : true,
-                        checked : this.getReportingSettings().emailDetail,
+                        checked : this.getSettings().emailDetail,
                         listeners : {
                             "change" : {
                                 fn : Ext.bind(function(elem, newValue) {
-                                    this.getReportingSettings().emailDetail = newValue;
+                                    this.getSettings().emailDetail = newValue;
                                 },this)
                             }
                         }
@@ -354,7 +319,7 @@ if (!Ung.hasResource["Ung.Reporting"]) {
                         fieldLabel : this.i18n._('Attachment size limit (MB)'),
                         name : 'Attachement size limit',
                         id: 'reporting_attachment_size_limit',
-                        value : this.getReportingSettings().attachmentSizeLimit,
+                        value : this.getSettings().attachmentSizeLimit,
                         labelWidth:150,
                         labelAlign:'right',
                         width: 200,
@@ -366,7 +331,7 @@ if (!Ung.hasResource["Ung.Reporting"]) {
                         listeners : {
                             "change" : {
                                 fn : Ext.bind(function(elem, newValue) {
-                                    this.getReportingSettings().attachmentSizeLimit = newValue;
+                                    this.getSettings().attachmentSizeLimit = newValue;
                                 },this)
                             }
                         }
@@ -385,11 +350,11 @@ if (!Ung.hasResource["Ung.Reporting"]) {
                         labelWidth: 150,                        
                         labelAlign:'right',
                         boxLabel : this.i18n._('Every Day'),
-                        checked : this.getReportingSettings().schedule.daily,
+                        checked : this.getSettings().schedule.daily,
                         listeners : {
                             "change" : {
                                 fn : Ext.bind(function(elem, newValue) {
-                                    this.getReportingSettings().schedule.daily = newValue;
+                                    this.getSettings().schedule.daily = newValue;
                                 },this)
                             }
                         }
@@ -560,7 +525,7 @@ if (!Ung.hasResource["Ung.Reporting"]) {
                         fieldLabel : this.i18n._('Limit Data Retention'),
                         name : 'Limit Data Retention',
                         id: 'reporting_daysToKeepDB',
-                        value : this.getReportingSettings().dbRetention,
+                        value : this.getSettings().dbRetention,
                         labelWidth:150,
                         labelAlign:'right',
                         width: 200,
@@ -572,7 +537,7 @@ if (!Ung.hasResource["Ung.Reporting"]) {
                         listeners : {
                             "change" : {
                                 fn : Ext.bind(function(elem, newValue) {
-                                    this.getReportingSettings().dbRetention = newValue;
+                                    this.getSettings().dbRetention = newValue;
                                 },this)
                             }
                         }
@@ -589,7 +554,7 @@ if (!Ung.hasResource["Ung.Reporting"]) {
                         fieldLabel : this.i18n._('Reports Retention days'),
                         name : 'Reports Retention days',
                         id: 'reporting_daysToKeepFiles',
-                        value : this.getReportingSettings().fileRetention,
+                        value : this.getSettings().fileRetention,
                         labelWidth:150,
                         labelAlign:'right',
                         width: 200,
@@ -601,7 +566,7 @@ if (!Ung.hasResource["Ung.Reporting"]) {
                         listeners : {
                             "change" : {
                                 fn : Ext.bind(function(elem, newValue) {
-                                    this.getReportingSettings().fileRetention = newValue;
+                                    this.getSettings().fileRetention = newValue;
                                 },this)
                             }
                         }
@@ -626,8 +591,8 @@ if (!Ung.hasResource["Ung.Reporting"]) {
                                 fn : Ext.bind(function(elem, newValue) {
                                     // newValue;
                                     if (newValue != null) {
-                                        this.getReportingSettings().nightlyMinute = newValue.getMinutes();
-                                        this.getReportingSettings().nightlyHour   = newValue.getHours();
+                                        this.getSettings().generationMinute = newValue.getMinutes();
+                                        this.getSettings().generationHour   = newValue.getHours();
                                     }
                                 },this)
                             }
@@ -696,7 +661,7 @@ if (!Ung.hasResource["Ung.Reporting"]) {
                 // the column is autoexpanded if the grid width permits
                 recordJavaClass: "com.untangle.uvm.node.IPMaskedAddressRule",
 
-                data: this.getReportingSettings().networkDirectory.entries.list,
+                data: this.getSettings().networkDirectory.entries.list,
                 // the list of fields
                 fields: [{
                     name: 'id'
@@ -761,9 +726,7 @@ if (!Ung.hasResource["Ung.Reporting"]) {
         },
         reloadSettings : function()
         {
-            this.getMailSettings(true);
-            this.getReportingSettings(true);
-            this.getAdminSettings(true);
+            this.getSettings(true);
 
             this.gridRecipients.clearChangedData();
             this.gridRecipients.store.loadData( this.buildReportingUsersData());
@@ -775,7 +738,7 @@ if (!Ung.hasResource["Ung.Reporting"]) {
             }
 
             this.gridIpMap.clearChangedData();
-            this.gridIpMap.store.loadData( this.getReportingSettings().networkDirectory.entries );
+            this.gridIpMap.store.loadData( this.getSettings().networkDirectory.entries );
 
             Ext.MessageBox.hide();
         },
@@ -809,23 +772,22 @@ if (!Ung.hasResource["Ung.Reporting"]) {
                 if (Ext.getCmp('reporting_weeklyThursday').getValue())  weeklySched.push({javaClass:"com.untangle.node.reporting.WeeklyScheduleRule", day:5});
                 if (Ext.getCmp('reporting_weeklyFriday').getValue())  weeklySched.push({javaClass:"com.untangle.node.reporting.WeeklyScheduleRule", day:6});
                 if (Ext.getCmp('reporting_weeklySaturday').getValue())  weeklySched.push({javaClass:"com.untangle.node.reporting.WeeklyScheduleRule", day:7});
-                this.getReportingSettings().schedule.weeklySched.list = weeklySched;
+                this.getSettings().schedule.weeklySched.list = weeklySched;
                 
                 // set monthly schedule
-                var schedule = this.getReportingSettings().schedule;
+                var schedule = this.getSettings().schedule;
                 schedule.monthlyNFirst = Ext.getCmp('reporting_monthlyFirst').getValue();
                 schedule.monthlyNDaily = Ext.getCmp('reporting_monthlyEveryday').getValue();
                 var monthlyOnce = Ext.getCmp('reporting_monthlyOnce').getValue();
                 schedule.monthlyNDayOfWk = monthlyOnce ? Ext.getCmp('reporting_monthlyOnceCombo').getValue() : -1; //NONE 
                 
                 // set Ip Map list
-                this.getReportingSettings().networkDirectory.entries.list = this.gridIpMap.getFullSaveList();
+                this.getSettings().networkDirectory.entries.list = this.gridIpMap.getFullSaveList();
 
                 // save email recipients
                 var gridRecipientsValues = this.gridRecipients.getFullSaveList();
-                var adminSettings = this.getAdminSettings();
-                var users = adminSettings.users.set, recipientsList = [], reportingUsers = [], user = null;
-
+                // FIXME
+                
                 for(var i=0; i<gridRecipientsValues.length; i++) {
                     var recipient = gridRecipientsValues[i];
                     reportingUsers.push(recipient.emailAddress);
@@ -881,21 +843,11 @@ if (!Ung.hasResource["Ung.Reporting"]) {
                 }
                 adminSettings.users.set = users;
 
-                this.getMailSettings().reportEmail = recipientsList.join(",");
-                this.getReportingSettings().reportingUsers = reportingUsers.join(",");
+                this.getSettings().reportingUsers = reportingUsers.join(",");
 
-                this.getRpcNode().setReportingSettings(Ext.bind(function(result, exception) {
+                this.getRpcNode().setSettings(Ext.bind(function(result, exception) {
                     this.afterSave(exception, callback);
-                },this), this.getReportingSettings());
-
-                // do the save
-                rpc.adminManager.setMailSettings(Ext.bind(function(result, exception) {
-                    this.afterSave(exception, callback);
-                },this), this.getMailSettings());
-
-                rpc.adminManager.setAdminSettings(Ext.bind(function(result, exception) {
-                    this.afterSave(exception, callback);
-                },this), this.getAdminSettings());
+                },this), this.getSettings());
             }
         },
         afterRun: function(exception, callback)
@@ -937,9 +889,9 @@ if (!Ung.hasResource["Ung.Reporting"]) {
         buildReportingUsersData : function()
         {
             var storeData = [];
-            var reportEmail = this.getMailSettings().reportEmail || "";
+            var reportEmail = "";
             var adminUsers = this.getAdminSettings().users.set;
-            var reportingUsers = this.getReportingSettings().reportingUsers || "", reportingUsersSet = {};
+            var reportingUsers = this.getSettings().reportingUsers || "", reportingUsersSet = {};
 
             /* Convert the two comma separated lists to sets. */
             var temp = {}, values, c;

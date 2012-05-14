@@ -18,6 +18,7 @@ import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.ArrayList;
@@ -32,6 +33,7 @@ import java.sql.DriverManager;
 import org.apache.log4j.Logger;
 
 import com.untangle.uvm.UvmContextFactory;
+import com.untangle.uvm.SettingsManager;
 import com.untangle.uvm.node.NodeSettings;
 import com.untangle.uvm.node.NodeProperties;
 import com.untangle.uvm.node.Validator;
@@ -47,6 +49,8 @@ public class ReportingNodeImpl extends NodeBase implements ReportingNode, Report
 {
     private static final Logger logger = Logger.getLogger(ReportingNodeImpl.class);
 
+    private static final String SETTINGS_CONVERSION_SCRIPT = System.getProperty( "uvm.bin.dir" ) + "/reporting-convert-settings.py";
+    
     private static final String  REPORTS_SCRIPT = System.getProperty("uvm.home") + "/bin/reporting-generate-reports.py";
     private static final String  REPORTER_LOG_FILE = "/var/log/uvm/reporter.log";
     private static final long    REPORTER_LOG_FILE_READ_TIMEOUT = 180 * 1000; /* 180 seconds */
@@ -72,20 +76,7 @@ public class ReportingNodeImpl extends NodeBase implements ReportingNode, Report
 
     public void setSettings(final ReportingSettings settings)
     {
-        this.settings = settings;
-
-        //         TransactionWork<Void> tw = new TransactionWork<Void>() {
-        //             public boolean doWork(Session s)
-        //             {
-        //                 s.saveOrUpdate(settings);
-        //                 return true;
-        //             }
-
-        //             public Void getResult() {
-        //                 return null;
-        //             };
-        //         };
-        //         UvmContextFactory.context().runTransaction(tw);
+        this._setSettings( settings );
 
         SyslogManagerImpl.reconfigure(this.settings);
         writeCronFile();
@@ -162,14 +153,7 @@ public class ReportingNodeImpl extends NodeBase implements ReportingNode, Report
         ReportingSettings settings = this.getSettings();
         if (settings == null)
             return null;
-        /* XXX */
-        /* XXX */
-        /* XXX */
-        /* Map<IPMaskedAddress,String> nameMap = settings.getHostnameMap(); FIXME */
-        Map<IPMaskedAddress,String> nameMap = null;
-        /* XXX */
-        /* XXX */
-        /* XXX */
+        HashMap<IPMaskedAddress,String> nameMap = settings.getHostnameMap(); 
         if (nameMap == null)
             return null;
         
@@ -225,6 +209,58 @@ public class ReportingNodeImpl extends NodeBase implements ReportingNode, Report
 
     protected void postInit()
     {
+        SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
+        String nodeID = this.getNodeSettings().getId().toString();
+        ReportingSettings readSettings = null;
+        String settingsFileName = System.getProperty("uvm.settings.dir") + "/untangle-node-reporting/" + "settings_" + nodeID;
+
+        try {
+            readSettings = settingsManager.load( ReportingSettings.class, settingsFileName );
+        } catch (SettingsManager.SettingsException e) {
+            logger.warn("Failed to load settings:",e);
+        }
+        
+        /**
+         * If there are no settings, run the conversion script to see if there are any in the database
+         * Then check again for the file
+         */
+        if (readSettings == null) {
+            logger.warn("No settings found - Running conversion script to check DB");
+            try {
+                String convertCmd = SETTINGS_CONVERSION_SCRIPT + " " + nodeID.toString() + " " + settingsFileName + ".js";
+                logger.warn("Running: " + convertCmd);
+                UvmContextFactory.context().execManager().exec( convertCmd );
+            } catch ( Exception e ) {
+                logger.warn( "Conversion script failed.", e );
+            } 
+
+            try {
+                readSettings = settingsManager.load( ReportingSettings.class, settingsFileName );
+                if (readSettings != null) {
+                    logger.warn("Found settings imported from database");
+                }
+            } catch (SettingsManager.SettingsException e) {
+                logger.warn("Failed to load settings:",e);
+            }
+        }
+
+        /**
+         * If there are still no settings, just initialize
+         */
+        if (readSettings == null) {
+            logger.warn("No settings found - Initializing new settings.");
+
+            this.initializeSettings();
+        }
+        else {
+            logger.info("Loading Settings...");
+
+            // UPDATE settings if necessary
+            
+            this.settings = readSettings;
+            logger.info("Settings: " + this.settings.toJSONString());
+        }
+
         // intialize default settings
         this.createSchemas();
         setSettings(initSettings());
@@ -252,66 +288,30 @@ public class ReportingNodeImpl extends NodeBase implements ReportingNode, Report
         return settings;
     }
     
-    /**
-     * This attempts to a read line
-     *
-     * It returns a line if successful
-     * null if the process exits
-     * null if the timeout expires
-     */
-    private String readLine(RandomAccessFile raf, long timeout, Process proc)
+    private void _setSettings( ReportingSettings newSettings )
     {
-        long lastActivity = -1;
-
+        /**
+         * Save the settings
+         */
+        SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
+        String nodeID = this.getNodeSettings().getId().toString();
         try {
-            while (true) {
-                long currentTime = System.currentTimeMillis();
-                if (0 > lastActivity) {
-                    lastActivity = currentTime;
-                }
-                String line = raf.readLine();
-
-                if (line == null) {
-                    try {
-                        if (currentTime - lastActivity > timeout) {
-                            // just end the thread adding TimeoutEvent
-                            logger.warn("readLine timing out: " + (currentTime - lastActivity));
-                            return null;
-                        } else {
-                            Thread.sleep(100);
-
-                            if (isProcessComplete(proc)) 
-                                return null; // if no more is coming just return
-                        }
-                    } catch (InterruptedException exn) { }
-                } else {
-                    lastActivity = currentTime;
-                    return line;
-                } 
-            }
-        } catch (IOException exn) {
-            logger.warn("could not read apt.log", exn);
-            throw new RuntimeException("could not read apt-log", exn);
-        } catch (Exception exn) {
-            logger.warn("could not read apt.log", exn);
-            throw new RuntimeException("could not read apt-log", exn);
+            settingsManager.save(ReportingSettings.class, System.getProperty("uvm.settings.dir") + "/" + "untangle-node-reporting/" + "settings_"  + nodeID, newSettings);
+        } catch (SettingsManager.SettingsException e) {
+            logger.warn("Failed to save settings.",e);
         }
-    }
 
-    private boolean isProcessComplete(Process proc)
-    {
-        try {
-            int foo = proc.exitValue();
-            return true;
-        } catch (java.lang.IllegalThreadStateException e) {
-            return false;
-        }
+        /**
+         * Change current settings
+         */
+        this.settings = newSettings;
+        try {logger.debug("New Settings: \n" + new org.json.JSONObject(this.settings).toString(2));} catch (Exception e) {}
     }
-
+    
     private void writeCronFile()
     {
         // write the cron file for nightly runs
-        String conf = settings.getNightlyMinute() + " " + settings.getNightlyHour() + " " + CRON_STRING;
+        String conf = settings.getGenerationMinute() + " " + settings.getGenerationHour() + " " + CRON_STRING;
         BufferedWriter out = null;
         try {
             out = new BufferedWriter(new FileWriter(CRON_FILE));
