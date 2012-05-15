@@ -56,15 +56,15 @@ class AppServerManagerImpl implements LocalAppServerManager, AppServerManager
 
     public void postInit()
     {
-        //TODO check for expiration and call regenCert if expired
+        UvmRepositorySelector.instance().setLoggingUvm();
+
         try {
-            String disableTomcat = System.getProperty("uvm.devel.notomcat");
-            if (null == disableTomcat || !Boolean.valueOf(disableTomcat)) {
-                tomcatManager.startTomcat(DEFAULT_HTTP_PORT,
-                                          DEFAULT_HTTPS_PORT,
-                                          externalHttpsPort,
-                                          NetworkUtil.INTERNAL_OPEN_HTTPS_PORT);
-            }
+            logger.warn("TEST");
+            tomcatManager.startTomcat(DEFAULT_HTTP_PORT,
+                                      DEFAULT_HTTPS_PORT,
+                                      externalHttpsPort,
+                                      NetworkUtil.INTERNAL_OPEN_HTTPS_PORT);
+            logger.warn("TEST");
         } catch (Exception exn) {
             logger.warn("could not start Tomcat", exn);
         }

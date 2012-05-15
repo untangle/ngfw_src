@@ -106,11 +106,6 @@ def prepareSystem():
         os.system('/usr/bin/keytool -genkey -keyalg RSA -keystore @UVM_CONF@/keystore -alias tomcat -keypass changeit -storepass changeit -dname "cn=$(hostname), ou=devices"')
         debug("Generating keystore... done")
 
-    # prepare postgres
-    os.system('createuser -U postgres -dSR untangle 2>/dev/null');
-    os.system('createdb -O postgres -U postgres uvm 2>/dev/null');
-    os.system('createlang -U postgres plpgsql uvm 2>/dev/null');
-
     # setup environment variables
     
     # build classpath

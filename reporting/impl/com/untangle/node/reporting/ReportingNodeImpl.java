@@ -89,6 +89,11 @@ public class ReportingNodeImpl extends NodeBase implements ReportingNode, Report
 
     public void createSchemas()
     {
+        // run commands to create user just in case
+        UvmContextFactory.context().execManager().execResult("createuser -U postgres -dSR untangle");
+        UvmContextFactory.context().execManager().execResult("createdb -O postgres -U postgres uvm");
+        UvmContextFactory.context().execManager().execResult("createlang -U postgres plpgsql uvm");
+
         String cmd = REPORTS_SCRIPT + " -c";
         synchronized (this) {
             int exitCode = UvmContextFactory.context().execManager().execResult(cmd);
