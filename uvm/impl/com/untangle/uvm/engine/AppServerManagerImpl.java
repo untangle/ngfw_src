@@ -59,12 +59,10 @@ class AppServerManagerImpl implements LocalAppServerManager, AppServerManager
         UvmRepositorySelector.instance().setLoggingUvm();
 
         try {
-            logger.warn("TEST");
             tomcatManager.startTomcat(DEFAULT_HTTP_PORT,
                                       DEFAULT_HTTPS_PORT,
                                       externalHttpsPort,
                                       NetworkUtil.INTERNAL_OPEN_HTTPS_PORT);
-            logger.warn("TEST");
         } catch (Exception exn) {
             logger.warn("could not start Tomcat", exn);
         }
