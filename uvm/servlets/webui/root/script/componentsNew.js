@@ -1319,7 +1319,7 @@ Ext.define("Ung.Node", {
         },
         template: new Ext.Template('<div class="node-cap" style="display:{isNodeEditable}"></div><div class="node-image"><img src="{image}"/></div>', '<div class="node-label">{displayName}</div>',
             '<div class="node-faceplate-info">{licenseMessage}</div>',
-            '<div class="node-blingers" id="node-blingers_{id}"></div>',
+            '<div class="node-metrics" id="node-metrics_{id}"></div>',
             '<div class="node-state" id="node-state_{id}" name="State"></div>',
             '<div class="{nodePowerCls}" id="node-power_{id}" name="Power"></div>',
             '<div class="node-buttons" id="node-buttons_{id}"></div>')
@@ -1722,7 +1722,7 @@ Ext.define("Ung.Node", {
                     parentId : this.getId(),
                     metric: this.metrics.list
                 });
-                this.faceplateMetrics.render('node-blingers_' + this.getId());
+                this.faceplateMetrics.render('node-metrics_' + this.getId());
                 this.subCmps.push(this.faceplateMetrics);
             }
         }
@@ -2292,7 +2292,7 @@ Ext.define("Ung.SystemStats", {
 // Faceplate Metric Class
 Ext.define("Ung.FaceplateMetric", {
     extend: "Ext.Component",
-    autoEl:"div",
+    html:'<div class="chart"></div><div class="system"><div class="system-box"></div></div>',
     parentId : null,
     data : null,
     byteCountCurrent : null,
@@ -2301,32 +2301,52 @@ Ext.define("Ung.FaceplateMetric", {
     sessionCountTotal : null,
     sessionRequestLast : null,
     sessionRequestTotal : null,
-    constructor : function(config) {
-        this.id = "blinger_system_" + config.parentId;
-        Ung.FaceplateMetric.superclass.constructor.apply(this, arguments);
-    },
-
-    onRender : function(container, position) {
-        Ung.FaceplateMetric.superclass.onRender.call(this, container, position);
-        this.getEl().addCls("system-blinger");
-        var templateHTML = Ung.FaceplateMetric.template.applyTemplate({
-            'id' : this.getId(),
-            'blingerName' : i18n._("system")
-        });
-        this.getEl().insertHtml("afterBegin", templateHTML);
-
+    chart: null,
+    chartData: null,
+    afterRender: function() {
+    	this.callParent(arguments);
         var out = [];
         for (var i = 0; i < 4; i++) {
             var top = 1 + i * 15;
-            out.push('<div class="blinger-text system-blinger-label" style="top:' + top + 'px;" id="systemName_' + this.getId() + '_' + i + '"></div>');
-            out.push('<div class="blinger-text system-blinger-value" style="top:' + top + 'px;" id="systemValue_' + this.getId() + '_' + i + '"></div>');
+            out.push('<div class="system-label" style="top:' + top + 'px;" id="systemName_' + this.getId() + '_' + i + '"></div>');
+            out.push('<div class="system-value" style="top:' + top + 'px;" id="systemValue_' + this.getId() + '_' + i + '"></div>');
         }
-        var blingerBoxEl=Ext.get("blingerBox_" + this.getId());
-        blingerBoxEl.insertHtml("afterBegin", out.join(""));
+        var systemBoxEl=this.getEl().down("div[class=system-box]");
+        systemBoxEl.insertHtml("afterBegin", out.join(""));
         this.buildActiveMetrics();
-
-        blingerBoxEl.on("click", this.showMetricSettings , this);
-
+        systemBoxEl.on("click", this.showMetricSettings , this);
+        this.buildChart();
+    },
+    buildChart: function() {
+    	this.chartData = [];
+    	for(var i=0;i<20;i++) {
+    		this.chartData.push({time:i, sessions:0});
+    	}
+    	this.chart = Ext.create('Ext.chart.Chart', {
+    	    renderTo: this.getEl().down("div[class=chart]"),
+    	    width: 120,
+    	    height: 80,
+    	    animate: false,
+    	    store: Ext.create('Ext.data.JsonStore', {
+        	    fields: ['time', 'sessions'],
+        	    data: this.chartData
+        	}),
+    	    axes: [{
+	            type: 'Numeric',
+	            position: 'left',
+	            fields: ['sessions'],
+	            minimum: 0
+	        }],
+    	    series: [{
+	            type: 'line',
+	            axis: 'left',
+	            smooth: true,
+	            showMarkers: false,
+	            fill:true,
+	            xField: 'time',
+	            yField: 'sessions'
+	        }]
+    	});
     },
     buildActiveMetrics : function () {
         var nodeCmp = Ext.getCmp(this.parentId);
@@ -2398,14 +2418,13 @@ Ext.define("Ung.FaceplateMetric", {
                                         this.newActiveMetrics.splice(itemIndex,1);
                                     }
                                 }
-
                             },this)
                         }
                     }
                 });
             }
             this.configWin= Ext.create("Ung.Window", {
-                blingerCmp: this,
+                metricsCmp: this,
                 modal : true,
                 title : i18n._("Set up to four"),
                 bodyStyle : "padding: 5px 5px 5px 15px;",
@@ -2431,7 +2450,7 @@ Ext.define("Ung.FaceplateMetric", {
                 show : function() {
                     Ung.Window.superclass.show.call(this);
                     this.setSize({width:260,height:280});
-                    this.alignTo(this.blingerCmp.getEl(),"tr-br");
+                    this.alignTo(this.metricsCmp.getEl(),"tr-br");
                     var pos=this.getPosition();
                     var sub=pos[1]+280-main.viewport.getSize().height;
                     if(sub>0) {
@@ -2452,12 +2471,13 @@ Ext.define("Ung.FaceplateMetric", {
         }
         this.configWin.show();
     },
-    updateActiveMetrics : function() {
+    updateActiveMetrics: function() {
         var nodeCmp = Ext.getCmp(this.parentId);
         nodeCmp.activeMetrics = this.newActiveMetrics;
         this.buildActiveMetrics();
     },
-    update : function(metrics) {
+    update: function(metrics) {
+    	
         // UPDATE COUNTS
         var nodeCmp = Ext.getCmp(this.parentId);
         var activeMetrics = nodeCmp.activeMetrics;
@@ -2473,17 +2493,40 @@ Ext.define("Ung.FaceplateMetric", {
                 }
             }
         }
+    	for(var i=0;i<this.chartData.length-1;i++) {
+    		this.chartData[i].sessions=this.chartData[i+1].sessions;
+    	}
+    	this.chartData[this.chartData.length-1].sessions=this.getCurrentSessions(nodeCmp.metrics);
+    	this.chart.store.loadData(this.chartData);
+
     },
-    reset : function() {
+    getCurrentSessions: function(metrics) {
+    	//Just for test generate random data
+    	return Math.floor((Math.random()*100)); //Random Data
+    	
+    	
+    	if(this.currentSessionsMetricIndex == null) {
+    		this.currentSessionsMetricIndex = -1;
+    		for(var i=0;i<metrics.list.length; i++) {
+    			if(metrics.list[i].name=="live-sessions") {
+    				this.currentSessionsMetricIndex = i;
+    				break;
+    			}
+    		}
+    	}
+    	return this.currentSessionsMetricIndex>=0?metrics.list[this.currentSessionsMetricIndex].value:0;
+    },
+    reset: function() {
+    	for(var i=0;i<this.chartData.length;i++) {
+    		this.chartData[i].sessions=0;
+    	}
+    	this.chart.store.loadData(this.chartData);
         for (var i = 0; i < 4; i++) {
             var valueDiv = document.getElementById('systemValue_' + this.getId() + '_' + i);
             valueDiv.innerHTML = "&nbsp;";
         }
-}
+    }
 });
-Ung.FaceplateMetric.template = new Ext.Template('<div class="blinger-name">{blingerName}</div>',
-        '<div class="system-blinger-box" id="blingerBox_{id}"></div>',
-        '<div class="systemStatSettings" id="systemStatSettings_{id}"></div>');
 Ext.ComponentMgr.registerType('ungFaceplateMetric', Ung.FaceplateMetric);
 
 // Event Log class
