@@ -213,7 +213,7 @@ if (!Ung.hasResource["Ung.Reporting"]) {
                             "change" : {
                                 fn : Ext.bind(function(elem, newValue) {
                                     // newValue;
-                                    if (newValue != null) {
+                                    if (newValue && newValue instanceof Date) {
                                         this.getSettings().generationMinute = newValue.getMinutes();
                                         this.getSettings().generationHour   = newValue.getHours();
                                     }

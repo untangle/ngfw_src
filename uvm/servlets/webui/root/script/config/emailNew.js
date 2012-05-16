@@ -768,7 +768,7 @@ if (!Ung.hasResource["Ung.Email"]) {
                         listeners : {
                             "change" : {
                                 fn : Ext.bind(function(elem, newValue) {
-                                    var dt = Ext.Date.parse(newValue, "H:i");
+                                    var dt = Ext.Date.parse(newValue, "g:i A");
                                     if (dt) { 
                                         this.getMailNodeSettings().quarantineSettings.digestHourOfDay = dt.getHours();
                                         this.getMailNodeSettings().quarantineSettings.digestMinuteOfDay = dt.getMinutes();
