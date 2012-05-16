@@ -39,6 +39,8 @@ public class EventWriterImpl implements Runnable
 
     private volatile Thread thread;
 
+    private ReportingNodeImpl node;
+
     private Connection dbConnection;
 
     private long lastLoggedWarningTime = System.currentTimeMillis();
@@ -48,8 +50,9 @@ public class EventWriterImpl implements Runnable
      */
     private final BlockingQueue<LogEvent> inputQueue = new LinkedBlockingQueue<LogEvent>();
 
-    public EventWriterImpl( )
+    public EventWriterImpl( ReportingNodeImpl node )
     {
+        this.node = node;
         this.dbConnection = null;
     }
 
@@ -73,7 +76,7 @@ public class EventWriterImpl implements Runnable
             synchronized( this ) {
                 try {
                     if ( dbConnection == null || dbConnection.isClosed() ) {
-                        dbConnection = ReportingNodeImpl.getDBConnection();
+                        dbConnection = this.node.getDbConnection();
                     }
                     if ( dbConnection == null || dbConnection.isClosed() ) {
                         logger.warn("Unable to get connection to DB, dropping events...");

@@ -28,12 +28,15 @@ public class EventReaderImpl
 {
     private final Logger logger = Logger.getLogger(getClass());
 
+    private ReportingNodeImpl node;
+
     private Connection dbConnection;
 
     private HashMap<String,Class<?>> columnTypeMap = new HashMap<String,Class<?>>();
     
-    public EventReaderImpl( )
+    public EventReaderImpl( ReportingNodeImpl node )
     {
+        this.node = node;
         this.dbConnection = null;
         this.columnTypeMap.put("inet",String.class);
     }
@@ -45,7 +48,7 @@ public class EventReaderImpl
 
         if ( dbConnection == null ) {
             try {
-                dbConnection = ReportingNodeImpl.getDBConnection();
+                dbConnection = this.node.getDbConnection();
             } catch (Exception e) {
                 logger.warn("Unable to create connection to DB",e);
             }

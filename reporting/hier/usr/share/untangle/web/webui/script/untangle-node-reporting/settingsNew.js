@@ -8,6 +8,7 @@ if (!Ung.hasResource["Ung.Reporting"]) {
         panelGeneration: null,
         panelEmail: null,
         panelSyslog: null,
+        panelDatabase: null,
         gridReportingUsers: null,
         gridHostnameMap: null,
         initComponent: function(container, position) {
@@ -17,8 +18,14 @@ if (!Ung.hasResource["Ung.Reporting"]) {
             this.buildEmail();
             this.buildSyslog();
             this.buildHostnameMap();
-            // builds the tab panel with the tabs
-            this.buildTabPanel([this.panelStatus, this.panelGeneration, this.panelEmail, this.panelSyslog, this.gridHostnameMap]);
+            this.buildDatabase();
+
+            // only show DB settings if set to something other than localhost
+            if (this.getSettings().dbHost != "localhost") 
+                this.buildTabPanel([this.panelStatus, this.panelGeneration, this.panelEmail, this.panelSyslog, this.gridHostnameMap, this.panelDatabase]);
+            else
+                this.buildTabPanel([this.panelStatus, this.panelGeneration, this.panelEmail, this.panelSyslog, this.gridHostnameMap]);
+                
             this.tabs.setActiveTab(this.panelStatus);
             Ung.Reporting.superclass.initComponent.call(this);
         },
@@ -794,6 +801,82 @@ if (!Ung.hasResource["Ung.Reporting"]) {
                 }]
             });
         },
+        // database panel
+        buildDatabase: function() {
+            this.panelDatabase = Ext.create('Ext.panel.Panel',{
+                // private fields
+                name: 'Database',
+                helpSource: 'database',
+                parentId: this.getId(),
+                title: this.i18n._('Database'),
+                layout: "anchor",
+                cls: 'ung-panel',
+                autoScroll: true,
+                defaults: {
+                    anchor: "98%",
+                    xtype: 'fieldset',
+                    autoHeight: true
+                },
+                items: [{
+                    title: this.i18n._('Database'),
+                    height: 350,
+                    items: [{
+                        xtype : 'textfield',
+                        fieldLabel : this.i18n._('Host'),
+                        name : 'databaseHost',
+                        width : 300,
+                        itemCls : 'left-indent-1',
+                        id : 'reporting_database_host',
+                        value : this.getSettings().dbHost,
+                        allowBlank : false,
+                        blankText : this.i18n._("A \"Host\" must be specified.")
+                    },{
+                        xtype : 'numberfield',
+                        fieldLabel : this.i18n._('Port'),
+                        name : 'databasePort',
+                        width: 200,
+                        itemCls : 'left-indent-1',
+                        id : 'reporting_database_port',
+                        value : this.getSettings().dbPort,
+                        allowDecimals: false,
+                        allowNegative: false,
+                        allowBlank : false,
+                        blankText : this.i18n._("You must provide a valid port."),
+                        vtype : 'port'
+                    },{
+                        xtype : 'textfield',
+                        fieldLabel : this.i18n._('User'),
+                        name : 'databaseUser',
+                        width : 300,
+                        itemCls : 'left-indent-1',
+                        id : 'reporting_database_user',
+                        value : this.getSettings().dbUser,
+                        allowBlank : false,
+                        blankText : this.i18n._("A \"User\" must be specified.")
+                    },{
+                        xtype : 'textfield',
+                        fieldLabel : this.i18n._('Password'),
+                        name : 'databasePassword',
+                        width : 300,
+                        itemCls : 'left-indent-1',
+                        id : 'reporting_database_password',
+                        value : this.getSettings().dbPassword,
+                        allowBlank : false,
+                        blankText : this.i18n._("A \"Password\" must be specified.")
+                    },{
+                        xtype : 'textfield',
+                        fieldLabel : this.i18n._('Name'),
+                        name : 'databaseName',
+                        width : 300,
+                        itemCls : 'left-indent-1',
+                        id : 'reporting_database_name',
+                        value : this.getSettings().dbName,
+                        allowBlank : false,
+                        blankText : this.i18n._("A \"Name\" must be specified.")
+                    }]
+                }]
+            });
+        },
         // Hostname Map grid
         buildHostnameMap: function() {
             this.gridHostnameMap = Ext.create('Ung.EditorGrid',{
@@ -941,6 +1024,12 @@ if (!Ung.hasResource["Ung.Reporting"]) {
                 this.getSettings().syslogHost     = Ext.getCmp('reporting_syslog_host').getValue();
                 this.getSettings().syslogPort     = Ext.getCmp('reporting_syslog_port').getValue();
                 this.getSettings().syslogProtocol = Ext.getCmp('reporting_syslog_protocol').getValue();
+
+                this.getSettings().dbHost     = Ext.getCmp('reporting_database_host').getValue();
+                this.getSettings().dbPort     = Ext.getCmp('reporting_database_port').getValue();
+                this.getSettings().dbUser     = Ext.getCmp('reporting_database_user').getValue();
+                this.getSettings().dbPassword = Ext.getCmp('reporting_database_password').getValue();
+                this.getSettings().dbName     = Ext.getCmp('reporting_database_name').getValue();
 
                 this.getRpcNode().setSettings(Ext.bind(function(result, exception) {
                     this.afterSave(exception, callback);

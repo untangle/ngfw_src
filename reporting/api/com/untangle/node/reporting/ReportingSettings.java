@@ -28,10 +28,16 @@ public class ReportingSettings implements Serializable, JSONString
     private LinkedList<ReportingHostnameMapEntry> hostnameMap = new LinkedList<ReportingHostnameMapEntry>();
     private LinkedList<ReportingUser> reportingUsers = new LinkedList<ReportingUser>();
 
-    private DayOfWeekMatcher generateDailyReports = new DayOfWeekMatcher("any");;
-    private DayOfWeekMatcher generateWeeklyReports = new DayOfWeekMatcher("sunday");;
-    private DayOfWeekMatcher generateMonthlyReports = new DayOfWeekMatcher("");;
+    private DayOfWeekMatcher generateDailyReports = new DayOfWeekMatcher("any");
+    private DayOfWeekMatcher generateWeeklyReports = new DayOfWeekMatcher("sunday");
+    private DayOfWeekMatcher generateMonthlyReports = new DayOfWeekMatcher("");
 
+    private String dbHost = "localhost";
+    private int    dbPort = 5432;
+    private String dbUser = "postgres";
+    private String dbPassword = "foo";
+    private String dbName = "uvm";
+        
     private boolean syslogEnabled = false;
     private String syslogHost;
     private int syslogPort = 514;
@@ -93,6 +99,21 @@ public class ReportingSettings implements Serializable, JSONString
     public String getSyslogProtocol() { return syslogProtocol; }
     public void setSyslogProtocol( String syslogProtocol ) { this.syslogProtocol = syslogProtocol; }
 
+    public String getDbHost() { return dbHost; }
+    public void setDbHost( String dbHost ) { this.dbHost = dbHost; }
+
+    public int getDbPort() { return dbPort; }
+    public void setDbPort( int dbPort ) { this.dbPort = dbPort; }
+    
+    public String getDbUser() { return dbUser; }
+    public void setDbUser( String dbUser ) { this.dbUser = dbUser; }
+
+    public String getDbPassword() { return dbPassword; }
+    public void setDbPassword( String dbPassword ) { this.dbPassword = dbPassword; }
+
+    public String getDbName() { return dbName; }
+    public void setDbName( String dbName ) { this.dbName = dbName; }
+    
     public String toJSONString()
     {
         JSONObject jO = new JSONObject(this);

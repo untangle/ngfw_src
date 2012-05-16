@@ -68,10 +68,10 @@ public class ReportingNodeImpl extends NodeBase implements ReportingNode, Report
         super( nodeSettings, nodeProperties );
 
         if (eventWriter == null)
-            eventWriter = new EventWriterImpl( );
+            eventWriter = new EventWriterImpl( this );
 
         if (eventReader == null)
-            eventReader = new EventReaderImpl( );
+            eventReader = new EventReaderImpl( this );
     }
 
     public void setSettings(final ReportingSettings settings)
@@ -80,8 +80,7 @@ public class ReportingNodeImpl extends NodeBase implements ReportingNode, Report
 
         this._setSettings( settings );
 
-        SyslogManagerImpl.reconfigure(this.settings);
-        writeCronFile();
+        this.reconfigure();
     }
 
     public ReportingSettings getSettings()
@@ -152,7 +151,7 @@ public class ReportingNodeImpl extends NodeBase implements ReportingNode, Report
     
     public void initializeSettings()
     {
-        setSettings(initSettings());
+        setSettings( initSettings() );
     }
 
     public String lookupHostname( InetAddress address )
@@ -186,14 +185,14 @@ public class ReportingNodeImpl extends NodeBase implements ReportingNode, Report
         return this.eventReader.getEvents( query, policyId, limit );
     }
 
-    protected static Connection getDBConnection()
+    protected Connection getDbConnection()
     {
         try {
             Class.forName("org.postgresql.Driver");
-            String url = "jdbc:postgresql://localhost/uvm";
+            String url = "jdbc:postgresql://" + settings.getDbHost() + ":" + settings.getDbPort() + "/" + settings.getDbName();
             Properties props = new Properties();
-            props.setProperty( "user", "postgres" );
-            props.setProperty( "password", "foo" );
+            props.setProperty( "user", settings.getDbUser() );
+            props.setProperty( "password", settings.getDbPassword() );
             props.setProperty( "charset", "unicode" );
 
             return DriverManager.getConnection(url,props);
@@ -258,9 +257,8 @@ public class ReportingNodeImpl extends NodeBase implements ReportingNode, Report
         else {
             logger.info("Loading Settings...");
 
-            // UPDATE settings if necessary
-            
-            this.setSettings(readSettings);
+            this.settings = readSettings;
+            this.reconfigure();
             logger.info("Settings: " + this.settings.toJSONString());
         }
 
@@ -339,7 +337,15 @@ public class ReportingNodeImpl extends NodeBase implements ReportingNode, Report
         }
     }
 
-    public void sanityCheck( ReportingSettings settings )
+    private void reconfigure() 
+    {
+        logger.info("Reconfigure()");
+
+        SyslogManagerImpl.reconfigure(this.settings);
+        writeCronFile();
+    }
+
+    private void sanityCheck( ReportingSettings settings )
     {
         if ( settings.getReportingUsers() != null) {
             for ( ReportingUser user : settings.getReportingUsers() ) {
