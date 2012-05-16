@@ -10,6 +10,34 @@ import os
 import string
 import traceback
 
+def get_users(userlist, debug=False):
+    if (debug):
+        print "Getting user list from: ",userlist
+
+    str = '\t{\n'
+    str += '\t\t"javaClass": "java.util.LinkedList",\n'
+    str += '\t\t"list": [\n'
+    
+    first = True
+    id = 0
+    for email in userlist.split(","):
+        if not first:
+            str += '\t\t\t,\n'
+        str += '\t\t\t{\n';
+        str += '\t\t\t"javaClass": "com.untangle.node.reporting.ReportingUser",\n';
+        str += '\t\t\t"emailAddress": "%s",\n' % email;
+        str += '\t\t\t"emailSummaries": "True",\n';
+        str += '\t\t\t"onlineAccess": "False",\n';
+        str += '\t\t\t"password": ""\n';
+        str += '\t\t\t}\n';
+        first = False
+        
+    str += '\t\t]\n'
+    str += '\t}'
+
+    return str
+
+
 def get_hostname_map(ipmaddr_dir_id, debug=False):
     if (debug):
         print "Getting hostname map for ipmaddr_dir_id: ",ipmaddr_dir_id
@@ -45,7 +73,7 @@ def get_settings(tid, debug=False):
     if (debug):
         print "Getting settings for TID: ",tid
 
-    settings_list = sql_helper.run_sql("select email_detail, attachment_size_limit, network_directory, schedule, nightly_hour, nightly_minute, db_retention, file_retention from n_reporting_settings where tid = '%s'" % tid, debug=debug)
+    settings_list = sql_helper.run_sql("select email_detail, attachment_size_limit, network_directory, schedule, nightly_hour, nightly_minute, db_retention, file_retention, reporting_users from n_reporting_settings where tid = '%s'" % tid, debug=debug)
 
     if settings_list == None:
         print "WARNING: missing results for TID %s" % tid
@@ -62,6 +90,7 @@ def get_settings(tid, debug=False):
     generation_minute = settings_list[0][5]
     db_retention = settings_list[0][6]
     file_retention = settings_list[0][7]
+    reporting_users = settings_list[0][8]
 
     str = '{\n'
     str += '\t"javaClass": "com.untangle.node.reporting.ReportingSettings",\n'
@@ -70,6 +99,7 @@ def get_settings(tid, debug=False):
     str += '\t"generationHour": "%s",\n' % generation_hour
     str += '\t"generationMinute": "%s",\n' % generation_minute
     str += '\t"hostnameMap": %s,\n' % get_hostname_map(network_directory, debug)
+    str += '\t"reportingUsers": %s,\n' % get_users(reporting_users, debug)
     str += '\t"dbRetention": "%s",\n' % db_retention
     str += '\t"fileRetention": "%s"\n' % file_retention
     str += '}\n'
