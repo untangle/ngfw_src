@@ -7,14 +7,15 @@ if (!Ung.hasResource["Ung.Reporting"]) {
         panelStatus: null,
         panelGeneration: null,
         gridReportingUsers: null,
-        gridIpMap: null,
+        gridHostnameMap: null,
         initComponent: function(container, position) {
             // builds the 3 tabs
             this.buildStatus();
             this.buildGeneration();
-            this.buildIpMap();
+            this.buildEmail();
+            this.buildHostnameMap();
             // builds the tab panel with the tabs
-            this.buildTabPanel([this.panelStatus, this.panelGeneration, this.gridIpMap]);
+            this.buildTabPanel([this.panelStatus, this.panelGeneration, this.panelEmail, this.gridHostnameMap]);
             this.tabs.setActiveTab(this.panelStatus);
             Ung.Reporting.superclass.initComponent.call(this);
         },
@@ -24,7 +25,7 @@ if (!Ung.hasResource["Ung.Reporting"]) {
                 title: this.i18n._('Status'),
                 name: 'Status',
                 helpSource: 'status',
-               // layout: "form",
+                // layout: "form",
                 autoScroll: true,
                 cls: 'ung-panel',
                 items: [{
@@ -92,6 +93,378 @@ if (!Ung.hasResource["Ung.Reporting"]) {
         buildGeneration: function() {
             var fieldID = "" + Math.round( Math.random() * 1000000 );
 
+            // DAILY SCHEDULE
+            var dailySched = this.getSettings().generateDailyReports;
+            var dailySundayCurrent = false;
+            var dailyMondayCurrent = false;
+            var dailyTuesdayCurrent = false;
+            var dailyWednesdayCurrent = false;
+            var dailyThursdayCurrent = false;
+            var dailyFridayCurrent = false;
+            var dailySaturdayCurrent = false;
+            if (dailySched.indexOf("sunday") != -1 || dailySched.indexOf("any") != -1)
+                dailySundayCurrent = true;
+            if (dailySched.indexOf("monday") != -1 || dailySched.indexOf("any") != -1)
+                dailyMondayCurrent = true;
+            if (dailySched.indexOf("tuesday") != -1 || dailySched.indexOf("any") != -1)
+                dailyTuesdayCurrent = true;
+            if (dailySched.indexOf("wednesday") != -1 || dailySched.indexOf("any") != -1)
+                dailyWednesdayCurrent = true;
+            if (dailySched.indexOf("thursday") != -1 || dailySched.indexOf("any") != -1)
+                dailyThursdayCurrent = true;
+            if (dailySched.indexOf("friday") != -1 || dailySched.indexOf("any") != -1)
+                dailyFridayCurrent = true;
+            if (dailySched.indexOf("saturday") != -1 || dailySched.indexOf("any") != -1)
+                dailySaturdayCurrent = true;
+
+            // WEEKLY SCHEDULE
+            var weeklySched = this.getSettings().generateWeeklyReports;
+            var weeklySundayCurrent = false;
+            var weeklyMondayCurrent = false;
+            var weeklyTuesdayCurrent = false;
+            var weeklyWednesdayCurrent = false;
+            var weeklyThursdayCurrent = false;
+            var weeklyFridayCurrent = false;
+            var weeklySaturdayCurrent = false;
+            if (weeklySched.indexOf("sunday") != -1 || weeklySched.indexOf("any") != -1)
+                weeklySundayCurrent = true;
+            if (weeklySched.indexOf("monday") != -1 || weeklySched.indexOf("any") != -1)
+                weeklyMondayCurrent = true;
+            if (weeklySched.indexOf("tuesday") != -1 || weeklySched.indexOf("any") != -1)
+                weeklyTuesdayCurrent = true;
+            if (weeklySched.indexOf("wednesday") != -1 || weeklySched.indexOf("any") != -1)
+                weeklyWednesdayCurrent = true;
+            if (weeklySched.indexOf("thursday") != -1 || weeklySched.indexOf("any") != -1)
+                weeklyThursdayCurrent = true;
+            if (weeklySched.indexOf("friday") != -1 || weeklySched.indexOf("any") != -1)
+                weeklyFridayCurrent = true;
+            if (weeklySched.indexOf("saturday") != -1 || weeklySched.indexOf("any") != -1)
+                weeklySaturdayCurrent = true;
+
+            // MONTHLY SCHEDULE
+            var monthlySched = this.getSettings().generateMonthlyReports;
+            var monthlySundayCurrent = false;
+            var monthlyMondayCurrent = false;
+            var monthlyTuesdayCurrent = false;
+            var monthlyWednesdayCurrent = false;
+            var monthlyThursdayCurrent = false;
+            var monthlyFridayCurrent = false;
+            var monthlySaturdayCurrent = false;
+            if (monthlySched.indexOf("sunday") != -1 || monthlySched.indexOf("any") != -1)
+                monthlySundayCurrent = true;
+            if (monthlySched.indexOf("monday") != -1 || monthlySched.indexOf("any") != -1)
+                monthlyMondayCurrent = true;
+            if (monthlySched.indexOf("tuesday") != -1 || monthlySched.indexOf("any") != -1)
+                monthlyTuesdayCurrent = true;
+            if (monthlySched.indexOf("wednesday") != -1 || monthlySched.indexOf("any") != -1)
+                monthlyWednesdayCurrent = true;
+            if (monthlySched.indexOf("thursday") != -1 || monthlySched.indexOf("any") != -1)
+                monthlyThursdayCurrent = true;
+            if (monthlySched.indexOf("friday") != -1 || monthlySched.indexOf("any") != -1)
+                monthlyFridayCurrent = true;
+            if (monthlySched.indexOf("saturday") != -1 || monthlySched.indexOf("any") != -1)
+                monthlySaturdayCurrent = true;
+            
+            var generationTime=new Date();
+            generationTime.setTime(0);
+            generationTime.setHours(this.getSettings().generationHour);
+            generationTime.setMinutes(this.getSettings().generationMinute);
+
+            this.panelGeneration = Ext.create('Ext.panel.Panel',{
+                // private fields
+                name: 'Generation',
+                helpSource: 'generation',
+                parentId: this.getId(),
+                title: this.i18n._('Generation'),
+                layout: "anchor",
+                cls: 'ung-panel',
+                autoScroll: true,
+                defaults: {
+                    anchor: "98%",
+                    xtype: 'fieldset',
+                    autoHeight: true
+                },
+                items: [{
+                    title: this.i18n._("Generation Time"),
+                    labelWidth: 150,
+                    items: [{
+                        border: false,
+                        cls: 'description',
+                        html: this.i18n._("Scheduled time to generate the reports.")
+                    }, {
+                        xtype : 'timefield',
+                        fieldLabel : this.i18n._('Generation Time'),
+                        name : 'Generation Time',
+                        width : 90,
+                        hideLabel : true,
+                        // format : "H:i",
+                        value : generationTime,
+                        listeners : {
+                            "change" : {
+                                fn : Ext.bind(function(elem, newValue) {
+                                    // newValue;
+                                    if (newValue != null) {
+                                        this.getSettings().generationMinute = newValue.getMinutes();
+                                        this.getSettings().generationHour   = newValue.getHours();
+                                    }
+                                },this)
+                            }
+                        }
+                    }]
+                }, {
+                    title: this.i18n._("Data Retention"),
+                    labelWidth: 150,
+                    items: [{
+                        border: false,
+                        cls: 'description',
+                        html: this.i18n._("Keep event data for this number of days. The smaller the number the lower the disk space requirements and resource usage during report generation.")
+                    },{
+                        xtype : 'numberfield',
+                        fieldLabel : this.i18n._('Data Retention days'),
+                        name : 'Data Retention days',
+                        id: 'reporting_daysToKeepDB',
+                        value : this.getSettings().dbRetention,
+                        labelWidth:150,
+                        labelAlign:'right',
+                        width: 200,
+                        allowDecimals: false,
+                        allowNegative: false,
+                        minValue: 1,
+                        maxValue: 65,
+                        hideTrigger:true,
+                        listeners : {
+                            "change" : {
+                                fn : Ext.bind(function(elem, newValue) {
+                                    this.getSettings().dbRetention = newValue;
+                                },this)
+                            }
+                        }
+                    }]
+                },  {
+                    title: this.i18n._("Reports Retention"),
+                    labelWidth: 150,
+                    items: [{
+                        border: false,
+                        cls: 'description',
+                        html: this.i18n._("Keep old reports on the server for this number of days.")
+                    },{
+                        xtype : 'numberfield',
+                        fieldLabel : this.i18n._('Reports Retention days'),
+                        name : 'Reports Retention days',
+                        id: 'reporting_daysToKeepFiles',
+                        value : this.getSettings().fileRetention,
+                        labelWidth:150,
+                        labelAlign:'right',
+                        width: 200,
+                        allowDecimals: false,
+                        allowNegative: false,
+                        minValue: 1,
+                        maxValue: 90,
+                        hideTrigger:true,
+                        listeners : {
+                            "change" : {
+                                fn : Ext.bind(function(elem, newValue) {
+                                    this.getSettings().fileRetention = newValue;
+                                },this)
+                            }
+                        }
+                    }]
+                }, {
+                    title : this.i18n._("Daily Reports"),
+                    items : [{
+                        border : false,
+                        cls: 'description',
+                        html : this.i18n._('Daily Reports covers the previous day. Daily reports will be generated on the selected days.')
+                    },  {
+                        xtype : 'checkbox',
+                        name : 'Sunday',
+                        id : 'reporting_dailySunday',
+                        boxLabel : this.i18n._('Sunday'),
+                        hasLabel : false,
+                        labelSeparator : '',
+                        checked : dailySundayCurrent
+                    },  {
+                        xtype : 'checkbox',
+                        name : 'Monday',
+                        id : 'reporting_dailyMonday',
+                        boxLabel : this.i18n._('Monday'),
+                        hasLabel : false,
+                        labelSeparator : '',
+                        checked : dailyMondayCurrent
+                    },  {
+                        xtype : 'checkbox',
+                        name : 'Tuesday',
+                        id : 'reporting_dailyTuesday',
+                        boxLabel : this.i18n._('Tuesday'),
+                        hasLabel : false,
+                        labelSeparator : '',
+                        checked : dailyTuesdayCurrent
+                    },  {
+                        xtype : 'checkbox',
+                        name : 'Wednesday',
+                        id : 'reporting_dailyWednesday',
+                        boxLabel : this.i18n._('Wednesday'),
+                        hasLabel : false,
+                        labelSeparator : '',
+                        checked : dailyWednesdayCurrent
+                    },  {
+                        xtype : 'checkbox',
+                        name : 'Thursday',
+                        id : 'reporting_dailyThursday',
+                        boxLabel : this.i18n._('Thursday'),
+                        hasLabel : false,
+                        labelSeparator : '',
+                        checked : dailyThursdayCurrent
+                    },  {
+                        xtype : 'checkbox',
+                        name : 'Friday',
+                        id : 'reporting_dailyFriday',
+                        boxLabel : this.i18n._('Friday'),
+                        hasLabel : false,
+                        labelSeparator : '',
+                        checked : dailyFridayCurrent
+                    },  {
+                        xtype : 'checkbox',
+                        name : 'Saturday',
+                        id : 'reporting_dailySaturday',
+                        boxLabel : this.i18n._('Saturday'),
+                        hasLabel : false,
+                        labelSeparator : '',
+                        checked : dailySaturdayCurrent
+                    }]
+                },{
+                    title : this.i18n._("Weekly Reports"),
+                    items : [{
+                        border : false,
+                        cls: 'description',
+                        html : this.i18n._('Weekly Reports covers the previous week. Weekly reports will be generated on the selected days.')
+                    },  {
+                        xtype : 'checkbox',
+                        name : 'Sunday',
+                        id : 'reporting_weeklySunday',
+                        boxLabel : this.i18n._('Sunday'),
+                        hasLabel : false,
+                        labelSeparator : '',
+                        checked : weeklySundayCurrent
+                    },  {
+                        xtype : 'checkbox',
+                        name : 'Monday',
+                        id : 'reporting_weeklyMonday',
+                        boxLabel : this.i18n._('Monday'),
+                        hasLabel : false,
+                        labelSeparator : '',
+                        checked : weeklyMondayCurrent
+                    },  {
+                        xtype : 'checkbox',
+                        name : 'Tuesday',
+                        id : 'reporting_weeklyTuesday',
+                        boxLabel : this.i18n._('Tuesday'),
+                        hasLabel : false,
+                        labelSeparator : '',
+                        checked : weeklyTuesdayCurrent
+                    },  {
+                        xtype : 'checkbox',
+                        name : 'Wednesday',
+                        id : 'reporting_weeklyWednesday',
+                        boxLabel : this.i18n._('Wednesday'),
+                        hasLabel : false,
+                        labelSeparator : '',
+                        checked : weeklyWednesdayCurrent
+                    },  {
+                        xtype : 'checkbox',
+                        name : 'Thursday',
+                        id : 'reporting_weeklyThursday',
+                        boxLabel : this.i18n._('Thursday'),
+                        hasLabel : false,
+                        labelSeparator : '',
+                        checked : weeklyThursdayCurrent
+                    },  {
+                        xtype : 'checkbox',
+                        name : 'Friday',
+                        id : 'reporting_weeklyFriday',
+                        boxLabel : this.i18n._('Friday'),
+                        hasLabel : false,
+                        labelSeparator : '',
+                        checked : weeklyFridayCurrent
+                    },  {
+                        xtype : 'checkbox',
+                        name : 'Saturday',
+                        id : 'reporting_weeklySaturday',
+                        boxLabel : this.i18n._('Saturday'),
+                        hasLabel : false,
+                        labelSeparator : '',
+                        checked : weeklySaturdayCurrent
+                    }]
+                },{
+                    title : this.i18n._("Monthly Reports"),
+                    items : [{
+                        border : false,
+                        cls: 'description',
+                        html : this.i18n._('Monthly Reports covers the previous month. Monthly reports will be generated on the selected days.')
+                    },  {
+                        xtype : 'checkbox',
+                        name : 'Sunday',
+                        id : 'reporting_monthlySunday',
+                        boxLabel : this.i18n._('Sunday'),
+                        hasLabel : false,
+                        labelSeparator : '',
+                        checked : monthlySundayCurrent
+                    },  {
+                        xtype : 'checkbox',
+                        name : 'Monday',
+                        id : 'reporting_monthlyMonday',
+                        boxLabel : this.i18n._('Monday'),
+                        hasLabel : false,
+                        labelSeparator : '',
+                        checked : monthlyMondayCurrent
+                    },  {
+                        xtype : 'checkbox',
+                        name : 'Tuesday',
+                        id : 'reporting_monthlyTuesday',
+                        boxLabel : this.i18n._('Tuesday'),
+                        hasLabel : false,
+                        labelSeparator : '',
+                        checked : monthlyTuesdayCurrent
+                    },  {
+                        xtype : 'checkbox',
+                        name : 'Wednesday',
+                        id : 'reporting_monthlyWednesday',
+                        boxLabel : this.i18n._('Wednesday'),
+                        hasLabel : false,
+                        labelSeparator : '',
+                        checked : monthlyWednesdayCurrent
+                    },  {
+                        xtype : 'checkbox',
+                        name : 'Thursday',
+                        id : 'reporting_monthlyThursday',
+                        boxLabel : this.i18n._('Thursday'),
+                        hasLabel : false,
+                        labelSeparator : '',
+                        checked : monthlyThursdayCurrent
+                    },  {
+                        xtype : 'checkbox',
+                        name : 'Friday',
+                        id : 'reporting_monthlyFriday',
+                        boxLabel : this.i18n._('Friday'),
+                        hasLabel : false,
+                        labelSeparator : '',
+                        checked : monthlyFridayCurrent
+                    },  {
+                        xtype : 'checkbox',
+                        name : 'Saturday',
+                        id : 'reporting_monthlySaturday',
+                        boxLabel : this.i18n._('Saturday'),
+                        hasLabel : false,
+                        labelSeparator : '',
+                        checked : monthlySaturdayCurrent
+                    }]
+                }]
+            });
+        },
+        // Email panel
+        buildEmail: function() {
+            var fieldID = "" + Math.round( Math.random() * 1000000 );
+
             // Change the password for a user.
             var changePasswordColumn = Ext.create('Ung.grid.EditColumn',{
                 header : this.i18n._("change password"),
@@ -106,17 +479,12 @@ if (!Ung.hasResource["Ung.Reporting"]) {
                 }
             });
 
-            var generationTime=new Date();
-            generationTime.setTime(0);
-            generationTime.setHours(this.getSettings().generationHour);
-            generationTime.setMinutes(this.getSettings().generationMinute);
-
-            this.panelGeneration = Ext.create('Ext.panel.Panel',{
+            this.panelEmail = Ext.create('Ext.panel.Panel',{
                 // private fields
-                name: 'Generation',
-                helpSource: 'generation',
+                name: 'Email',
+                helpSource: 'email',
                 parentId: this.getId(),
-                title: this.i18n._('Generation'),
+                title: this.i18n._('Email'),
                 layout: "anchor",
                 cls: 'ung-panel',
                 autoScroll: true,
@@ -173,66 +541,66 @@ if (!Ung.hasResource["Ung.Reporting"]) {
                             },
                             flex:1
                         },
-                        {
-                            xtype:'checkcolumn',
-                            header : this.i18n._("Email Reports"),
-                            dataIndex : "emailReports",
-                            width : 100,
-                            fixed : true
-                        },
-                        { 
-                            xtype:'checkcolumn',
-                            header : this.i18n._("Online Reports"),
-                            dataIndex : "onlineReports",
-                            width : 100,
-                            fixed : true
-                        },                      
-                            changePasswordColumn
-                        ],
+                                  {
+                                      xtype:'checkcolumn',
+                                      header : this.i18n._("Email Reports"),
+                                      dataIndex : "emailReports",
+                                      width : 100,
+                                      fixed : true
+                                  },
+                                  { 
+                                      xtype:'checkcolumn',
+                                      header : this.i18n._("Online Reports"),
+                                      dataIndex : "onlineReports",
+                                      width : 100,
+                                      fixed : true
+                                  },                      
+                                  changePasswordColumn
+                                 ],
                         rowEditorInputLines : [
-                        {
-                            xtype:'textfield',
-                            dataIndex : "emailAddress",
-                            fieldLabel : this.i18n._("Email Address (username)"),
-                            allowBlank : false,
-                            blankText : this.i18n._("The email address name cannot be blank."),
-                            width : 300
-                        },
-                        {
-                            xtype:'checkbox',
-                            dataIndex : "emailReports",
-                            fieldLabel : this.i18n._("Email Reports"),
-                            width : 300
-                        },
-                         {
-                            xtype:'checkbox',
-                            dataIndex : "onlineReports",
-                            id : "add_reporting_online_reports_" + fieldID,
-                            fieldLabel : this.i18n._("Online Reports"),
-                            width : 300
-                        },
-                        {
-                            xtype:'textfield',
-                            inputType: "password",
-                            name : "Password",
-                            dataIndex : "clearPassword",
-                            id : "add_reporting_user_password_" + fieldID,
-                            msgTarget : "title",
-                            fieldLabel : this.i18n._("Password"),
-                            boxLabel : this.i18n._("(required for 'Online Reports')"),
-                            width : 300,
-                            minLength : 3,
-                            minLengthText : Ext.String.format(this.i18n._("The password is shorter than the minimum {0} characters."), 3)
-                        },
-                        {
-                            xtype:'textfield',
-                            inputType: "password",
-                            name : "Confirm Password",
-                            dataIndex : "clearPassword",
-                            id : "add_reporting_confirm_password_" + fieldID,
-                            fieldLabel : this.i18n._("Confirm Password"),
-                            width : 300
-                        }],
+                            {
+                                xtype:'textfield',
+                                dataIndex : "emailAddress",
+                                fieldLabel : this.i18n._("Email Address (username)"),
+                                allowBlank : false,
+                                blankText : this.i18n._("The email address name cannot be blank."),
+                                width : 300
+                            },
+                            {
+                                xtype:'checkbox',
+                                dataIndex : "emailReports",
+                                fieldLabel : this.i18n._("Email Reports"),
+                                width : 300
+                            },
+                            {
+                                xtype:'checkbox',
+                                dataIndex : "onlineReports",
+                                id : "add_reporting_online_reports_" + fieldID,
+                                fieldLabel : this.i18n._("Online Reports"),
+                                width : 300
+                            },
+                            {
+                                xtype:'textfield',
+                                inputType: "password",
+                                name : "Password",
+                                dataIndex : "clearPassword",
+                                id : "add_reporting_user_password_" + fieldID,
+                                msgTarget : "title",
+                                fieldLabel : this.i18n._("Password"),
+                                boxLabel : this.i18n._("(required for 'Online Reports')"),
+                                width : 300,
+                                minLength : 3,
+                                minLengthText : Ext.String.format(this.i18n._("The password is shorter than the minimum {0} characters."), 3)
+                            },
+                            {
+                                xtype:'textfield',
+                                inputType: "password",
+                                name : "Confirm Password",
+                                dataIndex : "clearPassword",
+                                id : "add_reporting_confirm_password_" + fieldID,
+                                fieldLabel : this.i18n._("Confirm Password"),
+                                width : 300
+                            }],
                         rowEditorValidate: Ext.bind(function (inputLines) {
                         	//validate password match
                         	var pwd = Ext.getCmp("add_reporting_user_password_" + fieldID);
@@ -286,156 +654,33 @@ if (!Ung.hasResource["Ung.Reporting"]) {
                                 },this)
                             }
                         }
-                    }
-                            ]
-                },{
-                    title : this.i18n._("Daily Reports"),
-                    items : [{
-                        border : false,
-                        cls: 'description',
-                        html : this.i18n._('Daily Reports covers the previous day. Daily reports will be generated on the selected days.')
-                    },  {
-                        xtype : 'textfield',
-                        id : 'reporting_daily',
-                        fieldLabel : this.i18n._('Generate Daily Reports'),
-                        value: this.getSettings().generateDailyReports
-                    }]
-                },{
-                    title : this.i18n._("Weekly Reports"),
-                    items : [{
-                        border : false,
-                        cls: 'description',
-                        html : this.i18n._('Daily Reports covers the previous week. Weekly reports will be generated on the selected days.')
-                    },  {
-                        xtype : 'textfield',
-                        id : 'reporting_weekly',
-                        fieldLabel : this.i18n._('Generate Weekly Reports'),
-                        value: this.getSettings().generateWeeklyReports
-                    }]
-                },{
-                    title : this.i18n._("Monthly Reports"),
-                    items : [{
-                        border : false,
-                        cls: 'description',
-                        html : this.i18n._('Daily Reports covers the previous month. Monthly reports will be generated on the selected days.')
-                    },  {
-                        xtype : 'textfield',
-                        id : 'reporting_monthly',
-                        fieldLabel : this.i18n._('Generate Monthly Reports'),
-                        value: this.getSettings().generateMonthlyReports
-                    }]
-                },{
-                    title: this.i18n._("Data Retention"),
-                    labelWidth: 150,
-                    items: [{
-                        border: false,
-                        cls: 'description',
-                        html: this.i18n._("Limit Data Retention to a number of days. The smaller the number the lower the disk space requirements and resource usage during report generation.")
-                    },{
-                        xtype : 'numberfield',
-                        fieldLabel : this.i18n._('Limit Data Retention'),
-                        name : 'Limit Data Retention',
-                        id: 'reporting_daysToKeepDB',
-                        value : this.getSettings().dbRetention,
-                        labelWidth:150,
-                        labelAlign:'right',
-                        width: 200,
-                        allowDecimals: false,
-                        allowNegative: false,
-                        minValue: 1,
-                        maxValue: 65,
-                        hideTrigger:true,
-                        listeners : {
-                            "change" : {
-                                fn : Ext.bind(function(elem, newValue) {
-                                    this.getSettings().dbRetention = newValue;
-                                },this)
-                            }
-                        }
-                    }]
-                },  {
-                    title: this.i18n._("Reports Retention"),
-                    labelWidth: 150,
-                    items: [{
-                        border: false,
-                        cls: 'description',
-                        html: this.i18n._("Keep old reports on the server for this number of days.")
-                    },{
-                        xtype : 'numberfield',
-                        fieldLabel : this.i18n._('Reports Retention days'),
-                        name : 'Reports Retention days',
-                        id: 'reporting_daysToKeepFiles',
-                        value : this.getSettings().fileRetention,
-                        labelWidth:150,
-                        labelAlign:'right',
-                        width: 200,
-                        allowDecimals: false,
-                        allowNegative: false,
-                        minValue: 1,
-                        maxValue: 90,
-                        hideTrigger:true,
-                        listeners : {
-                            "change" : {
-                                fn : Ext.bind(function(elem, newValue) {
-                                    this.getSettings().fileRetention = newValue;
-                                },this)
-                            }
-                        }
-                    }]
-                }, {
-                    title: this.i18n._("Generation Time"),
-                    labelWidth: 150,
-                    items: [{
-                        border: false,
-                        cls: 'description',
-                        html: this.i18n._("Scheduled time to generate the reports.")
-                    }, {
-                        xtype : 'timefield',
-                        fieldLabel : this.i18n._('Generation Time'),
-                        name : 'Generation Time',
-                        width : 90,
-                        hideLabel : true,
-                        // format : "H:i",
-                        value : generationTime,
-                        listeners : {
-                            "change" : {
-                                fn : Ext.bind(function(elem, newValue) {
-                                    // newValue;
-                                    if (newValue != null) {
-                                        this.getSettings().generationMinute = newValue.getMinutes();
-                                        this.getSettings().generationHour   = newValue.getHours();
-                                    }
-                                },this)
-                            }
-                        }
                     }]
                 }]
             });
-
             /* Create the row editor for updating the password */
             this.gridReportingUsers.rowEditorChangePassword = Ext.create('Ung.RowEditorWindow',{
                 grid : this.gridReportingUsers,
                 inputLines : [
-                {
-                    xtype:'textfield',
-                    inputType: "password",
-                    name : "Password",
-                    dataIndex : "clearPassword",
-                    id : "edit_reporting_user_password_"  + fieldID,
-                    fieldLabel : this.i18n._("Password"),
-                    width : 300,
-                    minLength : 3,
-                    minLengthText : Ext.String.format(this.i18n._("The password is shorter than the minimum {0} characters."), 3)
-                }, 
-                {
-                    xtype:'textfield',
-                    inputType: "password",
-                    name : "Confirm Password",
-                    dataIndex : "clearPassword",
-                    id : "edit_reporting_confirm_password_"  + fieldID,
-                    fieldLabel : this.i18n._("Confirm Password"),
-                    width : 300
-                }],
+                    {
+                        xtype:'textfield',
+                        inputType: "password",
+                        name : "Password",
+                        dataIndex : "clearPassword",
+                        id : "edit_reporting_user_password_"  + fieldID,
+                        fieldLabel : this.i18n._("Password"),
+                        width : 300,
+                        minLength : 3,
+                        minLengthText : Ext.String.format(this.i18n._("The password is shorter than the minimum {0} characters."), 3)
+                    }, 
+                    {
+                        xtype:'textfield',
+                        inputType: "password",
+                        name : "Confirm Password",
+                        dataIndex : "clearPassword",
+                        id : "edit_reporting_confirm_password_"  + fieldID,
+                        fieldLabel : this.i18n._("Confirm Password"),
+                        width : 300
+                    }],
                 validate: Ext.bind(function(inputLines) {
                 	//validate password match
                 	var pwd = Ext.getCmp("edit_reporting_user_password_" + fieldID);
@@ -454,12 +699,10 @@ if (!Ung.hasResource["Ung.Reporting"]) {
                 	
                 },this)
             });
-
-           // this.gridReportingUsers.rowEditorChangePassword.render("containter");
         },
-        // IP Map grid
-        buildIpMap: function() {
-            this.gridIpMap = Ext.create('Ung.EditorGrid',{
+        // Hostname Map grid
+        buildHostnameMap: function() {
+            this.gridHostnameMap = Ext.create('Ung.EditorGrid',{
                 settingsCmp: this,
                 name: 'Name Map',
                 helpSource: 'ip_addresses',
@@ -468,9 +711,6 @@ if (!Ung.hasResource["Ung.Reporting"]) {
                     "ipMaskedAddress": "1.2.3.4",
                     "name": this.i18n._("[no name]")
                 },
-                // the column is autoexpanded if the grid width permits
-                recordJavaClass: "com.untangle.uvm.node.IPMaskedAddressRule",
-
                 data: this.getSettings().hostnameMap.map,
                 // the list of fields
                 fields: [{
@@ -500,22 +740,22 @@ if (!Ung.hasResource["Ung.Reporting"]) {
                 columnsDefaultSortable: true,
                 // the row input lines used by the row editor window
                 rowEditorInputLines: [
-                  {
-                    xtype:'textfield',
-                    name: "Subnet",
-                    dataIndex: "ipMaskedAddress",
-                    fieldLabel: this.i18n._("Name Map"),
-                    allowBlank: false,
-                    width: 300
-                }, 
-                {
-                    xtype:'textfield',
-                    name: "Name",
-                    dataIndex: "name",
-                    fieldLabel: this.i18n._("Name"),
-                    allowBlank: false,
-                    width: 300
-                }]
+                    {
+                        xtype:'textfield',
+                        name: "Subnet",
+                        dataIndex: "ipMaskedAddress",
+                        fieldLabel: this.i18n._("Name Map"),
+                        allowBlank: false,
+                        width: 300
+                    }, 
+                    {
+                        xtype:'textfield',
+                        name: "Name",
+                        dataIndex: "name",
+                        fieldLabel: this.i18n._("Name"),
+                        allowBlank: false,
+                        width: 300
+                    }]
             });
         },
         applyAction : function()
@@ -526,7 +766,7 @@ if (!Ung.hasResource["Ung.Reporting"]) {
         {
             this.getSettings(true);
 
-            this.gridReportingUsers.clearChangedData();
+            //this.gridReportingUsers.clearChangedData();
             this.gridReportingUsers.store.loadData( this.getSettings().reportingUsers.list );
             var cmpIds = this.getEditableFields();
             for (var i = 0; i < cmpIds.length; i++) {
@@ -535,8 +775,8 @@ if (!Ung.hasResource["Ung.Reporting"]) {
                 }
             }
 
-            this.gridIpMap.clearChangedData();
-            this.gridIpMap.store.loadData( this.getSettings().hostnameMap.map );
+            //this.gridHostnameMap.clearChangedData();
+            this.gridHostnameMap.store.loadData( this.getSettings().hostnameMap.map );
 
             Ext.MessageBox.hide();
         },
@@ -549,25 +789,60 @@ if (!Ung.hasResource["Ung.Reporting"]) {
             Ext.MessageBox.hide();
             this.closeWindow();
         },
+        scheduleListToString : function(list)
+        {
+            var first = true;
+            var str = "";
+            for (var i = 0 ; i < list.length ; i++ ) {
+                if (!first)
+                    str += ",";
+                else
+                    first = false;
+                str += list[i];
+            }
+
+            return str;
+        },
         // save function
         commitSettings : function(callback)
         {
             if (this.validate()) {
-                this.saveSemaphore = 3;
                 Ext.MessageBox.wait(i18n._("Saving..."), i18n._("Please wait"));
 
-                // FIXME daily
-                this.getSettings().generateDailyReports = "any";
-                // FIXME weekly
-                this.getSettings().generateWeeklyReports = "sunday";
-                // FIXME monthly
-                this.getSettings().generateMonthlyReports = "sunday";
+                var dailySched = [];
+                if (Ext.getCmp('reporting_dailySunday').getValue())    dailySched.push("sunday");
+                if (Ext.getCmp('reporting_dailyMonday').getValue())    dailySched.push("monday");
+                if (Ext.getCmp('reporting_dailyTuesday').getValue())   dailySched.push("tuesday");
+                if (Ext.getCmp('reporting_dailyWednesday').getValue()) dailySched.push("wednesday");
+                if (Ext.getCmp('reporting_dailyThursday').getValue())  dailySched.push("thursday");
+                if (Ext.getCmp('reporting_dailyFriday').getValue())    dailySched.push("friday");
+                if (Ext.getCmp('reporting_dailySaturday').getValue())  dailySched.push("saturday");
+                this.getSettings().generateDailyReports = this.scheduleListToString(dailySched);
 
-                // set Ip Map list
-                this.getSettings().hostnameMap.map = this.gridIpMap.getFullSaveList();
+                var weeklySched = [];
+                if (Ext.getCmp('reporting_weeklySunday').getValue())    weeklySched.push("sunday");
+                if (Ext.getCmp('reporting_weeklyMonday').getValue())    weeklySched.push("monday");
+                if (Ext.getCmp('reporting_weeklyTuesday').getValue())   weeklySched.push("tuesday");
+                if (Ext.getCmp('reporting_weeklyWednesday').getValue()) weeklySched.push("wednesday");
+                if (Ext.getCmp('reporting_weeklyThursday').getValue())  weeklySched.push("thursday");
+                if (Ext.getCmp('reporting_weeklyFriday').getValue())    weeklySched.push("friday");
+                if (Ext.getCmp('reporting_weeklySaturday').getValue())  weeklySched.push("saturday");
+                this.getSettings().generateWeeklyReports = this.scheduleListToString(weeklySched);
 
+                var monthlySched = [];
+                if (Ext.getCmp('reporting_monthlySunday').getValue())    monthlySched.push("sunday");
+                if (Ext.getCmp('reporting_monthlyMonday').getValue())    monthlySched.push("monday");
+                if (Ext.getCmp('reporting_monthlyTuesday').getValue())   monthlySched.push("tuesday");
+                if (Ext.getCmp('reporting_monthlyWednesday').getValue()) monthlySched.push("wednesday");
+                if (Ext.getCmp('reporting_monthlyThursday').getValue())  monthlySched.push("thursday");
+                if (Ext.getCmp('reporting_monthlyFriday').getValue())    monthlySched.push("friday");
+                if (Ext.getCmp('reporting_monthlySaturday').getValue())  monthlySched.push("saturday");
+                this.getSettings().generateMonthlyReports = this.scheduleListToString(monthlySched);
+                
+                // FIXME set Ip Map list
+                this.getSettings().hostnameMap.map = {};
                 // FIXME save email recipients
-                this.getSettings().reportingUsers = this.gridReportingUsers.getFullSaveList();
+                this.getSettings().reportingUsers.list = this.gridReportingUsers.getFullSaveList();
 
                 this.getRpcNode().setSettings(Ext.bind(function(result, exception) {
                     this.afterSave(exception, callback);
@@ -587,10 +862,7 @@ if (!Ung.hasResource["Ung.Reporting"]) {
                 return;
             }
 
-            this.saveSemaphore--;
-            if (this.saveSemaphore == 0) {
-                callback();
-            }
+            callback();
         },
         getEditableFields : function(){
             return this.panelGeneration.query('checkbox radiogroup numberfield textfield');        
@@ -607,7 +879,7 @@ if (!Ung.hasResource["Ung.Reporting"]) {
                     return true;
                 }
             }
-            return this.gridIpMap.isDirty();
+            return this.gridHostnameMap.isDirty();
         }
     });
 }

@@ -31,7 +31,7 @@ public class ReportingSettings implements Serializable, JSONString
 
     private DayOfWeekMatcher generateDailyReports = new DayOfWeekMatcher("any");;
     private DayOfWeekMatcher generateWeeklyReports = new DayOfWeekMatcher("sunday");;
-    private DayOfWeekMatcher generateMonthlyReports = new DayOfWeekMatcher("sunday");;
+    private DayOfWeekMatcher generateMonthlyReports = new DayOfWeekMatcher("");;
 
     private boolean syslogEnabled = false;
     private String syslogHost;

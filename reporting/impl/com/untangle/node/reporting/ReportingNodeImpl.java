@@ -290,6 +290,11 @@ public class ReportingNodeImpl extends NodeBase implements ReportingNode, Report
     {
         ReportingSettings settings = new ReportingSettings();
 
+        /* XXX for testing */
+        HashMap<IPMaskedAddress,String> foo  = settings.getHostnameMap();
+        foo.put(new IPMaskedAddress("192.168.1.100/32"),"foobar");
+        settings.setHostnameMap(foo);
+        
         return settings;
     }
     
