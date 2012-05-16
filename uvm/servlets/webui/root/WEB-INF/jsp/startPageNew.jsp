@@ -62,12 +62,10 @@
 		</c:if>
         var isWizardComplete = ${isWizardComplete};
         function init() {
-            console.log("init(2)");
             main=new Ung.Main({debugMode:${isDebug}});
             main.buildStamp='${buildStamp}';
             main.init();
         }
-        console.log("init(1)");
         Ext.onReady(init);
     </script>
  </head>

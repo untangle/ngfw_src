@@ -2163,7 +2163,6 @@ Ext.define("Ung.SystemStats", {
 
         // memory tooltip
         var memoryArr=[
-
             '<div class="title">'+i18n._("Total Memory:")+'</div>',
             '<div class="values"><span name="memory_total"></span> MB</div>',
             '<div class="title">'+i18n._("Memory Used:")+'</div>',
@@ -2194,7 +2193,7 @@ Ext.define("Ung.SystemStats", {
             '<div class="title">'+i18n._("Data write:")+'</div>',
             '<div class="values"><span name="disk_writes"></span> MB, <span name="disk_writes_per_second"></span> b/sec</div>'
         ];
-        this.diskToolTip= Ext.create('Ext.tip.ToolTip',{
+        this.diskToolTip = Ext.create('Ext.tip.ToolTip',{
             target: this.getEl().down("div[class=disk]"),
             dismissDelay:0,
             hideDelay :400,
@@ -2303,6 +2302,8 @@ Ext.define("Ung.FaceplateMetric", {
     sessionRequestTotal : null,
     chart: null,
     chartData: null,
+    chartDataLength: 20,
+    chartTip: null,
     afterRender: function() {
     	this.callParent(arguments);
         var out = [];
@@ -2317,15 +2318,21 @@ Ext.define("Ung.FaceplateMetric", {
         systemBoxEl.on("click", this.showMetricSettings , this);
         this.buildChart();
     },
+    beforeDestroy : function() {
+    	Ext.destroy(this.chartTip);
+    	Ext.destroy(this.chart);
+        this.callParent(arguments);
+    },
     buildChart: function() {
+    	var chartContainerEl = this.getEl().down("div[class=chart]")
     	this.chartData = [];
-    	for(var i=0;i<20;i++) {
+    	for(var i=0; i<this.chartDataLength; i++) {
     		this.chartData.push({time:i, sessions:0});
     	}
     	this.chart = Ext.create('Ext.chart.Chart', {
-    	    renderTo: this.getEl().down("div[class=chart]"),
-    	    width: 120,
-    	    height: 80,
+    	    renderTo: chartContainerEl,
+    	    width: 133,
+    	    height: 92,
     	    animate: false,
     	    store: Ext.create('Ext.data.JsonStore', {
         	    fields: ['time', 'sessions'],
@@ -2344,9 +2351,27 @@ Ext.define("Ung.FaceplateMetric", {
 	            showMarkers: false,
 	            fill:true,
 	            xField: 'time',
-	            yField: 'sessions'
+	            yField: 'sessions',
+	            style: {
+	            	'stroke': '#6AA332',
+	                'stroke-width': 1,
+	                'fill': '#8ED349'
+	            }
 	        }]
     	});
+        var chartTipArr=[
+           '<div class="title">'+i18n._("Session History. Current Sessions:")+' <span name="current_sessions">0</span></div>',
+        ];
+    	this.chartTip=Ext.create('Ext.tip.ToolTip',{
+            target: chartContainerEl,
+            dismissDelay:0,
+            hideDelay :400,
+            width: 330,
+            cls: 'extended-stats',
+            renderTo: Ext.getBody(),
+            html: chartTipArr.join('')
+        });
+    	
     },
     buildActiveMetrics : function () {
         var nodeCmp = Ext.getCmp(this.parentId);
@@ -2477,7 +2502,6 @@ Ext.define("Ung.FaceplateMetric", {
         this.buildActiveMetrics();
     },
     update: function(metrics) {
-    	
         // UPDATE COUNTS
         var nodeCmp = Ext.getCmp(this.parentId);
         var activeMetrics = nodeCmp.activeMetrics;
@@ -2493,17 +2517,24 @@ Ext.define("Ung.FaceplateMetric", {
                 }
             }
         }
+        var reloadChart = this.chartData[0].sessions != 0;
     	for(var i=0;i<this.chartData.length-1;i++) {
     		this.chartData[i].sessions=this.chartData[i+1].sessions;
+    		reloadChart = reloadChart || (this.chartData[i].sessions != 0)
     	}
-    	this.chartData[this.chartData.length-1].sessions=this.getCurrentSessions(nodeCmp.metrics);
-    	this.chart.store.loadData(this.chartData);
-
+    	var currentSessions = this.getCurrentSessions(nodeCmp.metrics);
+    	reloadChart = reloadChart || (currentSessions!=0);
+    	this.chartData[this.chartData.length-1].sessions=currentSessions;
+    	if(reloadChart) {
+    		this.chart.store.loadData(this.chartData);
+        	if(this.chartTip.rendered) {
+        		this.chartTip.getEl().down("span[name=current_sessions]").dom.innerHTML=currentSessions;
+        	}
+    	}
     },
     getCurrentSessions: function(metrics) {
     	//Just for test generate random data
-    	return Math.floor((Math.random()*100)); //Random Data
-    	
+    	//return Math.floor((Math.random()*100)); //Random Data
     	
     	if(this.currentSessionsMetricIndex == null) {
     		this.currentSessionsMetricIndex = -1;
