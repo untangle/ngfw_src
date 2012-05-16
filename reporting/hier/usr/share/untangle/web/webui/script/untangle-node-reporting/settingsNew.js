@@ -6,6 +6,8 @@ if (!Ung.hasResource["Ung.Reporting"]) {
         extend:'Ung.NodeWin',
         panelStatus: null,
         panelGeneration: null,
+        panelEmail: null,
+        panelSyslog: null,
         gridReportingUsers: null,
         gridHostnameMap: null,
         initComponent: function(container, position) {
@@ -13,9 +15,10 @@ if (!Ung.hasResource["Ung.Reporting"]) {
             this.buildStatus();
             this.buildGeneration();
             this.buildEmail();
+            this.buildSyslog();
             this.buildHostnameMap();
             // builds the tab panel with the tabs
-            this.buildTabPanel([this.panelStatus, this.panelGeneration, this.panelEmail, this.gridHostnameMap]);
+            this.buildTabPanel([this.panelStatus, this.panelGeneration, this.panelEmail, this.panelSyslog, this.gridHostnameMap]);
             this.tabs.setActiveTab(this.panelStatus);
             Ung.Reporting.superclass.initComponent.call(this);
         },
@@ -700,6 +703,111 @@ if (!Ung.hasResource["Ung.Reporting"]) {
                 },this)
             });
         },
+        // syslog panel
+        buildSyslog: function() {
+            this.panelSyslog = Ext.create('Ext.panel.Panel',{
+                // private fields
+                name: 'Syslog',
+                helpSource: 'syslog',
+                parentId: this.getId(),
+                title: this.i18n._('Syslog'),
+                layout: "anchor",
+                cls: 'ung-panel',
+                autoScroll: true,
+                defaults: {
+                    anchor: "98%",
+                    xtype: 'fieldset',
+                    autoHeight: true
+                },
+                items: [{
+                    xtype : 'radio',
+                    boxLabel : Ext.String.format(this.i18n._('{0}Disable{1} Syslog Monitoring. (This is the default setting.)'), '<b>', '</b>'),
+                    hideLabel : true,
+                    name : 'syslogEnabled',
+                    checked : !this.getSettings().syslogEnabled,
+                    listeners : {
+                        "change" : {
+                            fn : Ext.bind( function(elem, checked) {
+                                this.getSettings().syslogEnabled = !checked;
+                                if (checked) {
+                                    Ext.getCmp('reporting_syslog_host').disable();
+                                    Ext.getCmp('reporting_syslog_port').disable();
+                                    Ext.getCmp('reporting_syslog_protocol').disable();
+                                }
+                            }, this)
+                        }
+                    }
+                },{
+                    xtype : 'radio',
+                    boxLabel : Ext.String.format(this.i18n._('{0}Enable{1} Syslog Monitoring.'), '<b>', '</b>'),
+                    hideLabel : true,
+                    name : 'syslogEnabled',
+                    checked : this.getSettings().syslogEnabled,
+                    listeners : {
+                        "change" : {
+                            fn : Ext.bind( function(elem, checked) {
+                                this.getSettings().syslogEnabled = checked;
+                                if (checked) {
+                                    Ext.getCmp('reporting_syslog_host').enable();
+                                    Ext.getCmp('reporting_syslog_port').enable();
+                                    Ext.getCmp('reporting_syslog_protocol').enable();
+                                }
+                            }, this)
+                        }
+                    }
+                }, {
+                    border: false,
+                    autoWidth : true,
+                    items: [{
+                        xtype : 'textfield',
+                        fieldLabel : this.i18n._('Host'),
+                        name : 'syslogHost',
+                        width : 300,
+                        itemCls : 'left-indent-1',
+                        id : 'reporting_syslog_host',
+                        value : this.getSettings().syslogHost,
+                        allowBlank : false,
+                        blankText : this.i18n._("A \"Host\" must be specified."),
+                        disabled : !this.getSettings().syslogEnabled
+                    },{
+                        xtype : 'numberfield',
+                        fieldLabel : this.i18n._('Port'),
+                        name : 'syslogPort',
+                        width: 200,
+                        itemCls : 'left-indent-1',
+                        id : 'reporting_syslog_port',
+                        value : this.getSettings().syslogPort,
+                        allowDecimals: false,
+                        allowNegative: false,
+                        allowBlank : false,
+                        blankText : this.i18n._("You must provide a valid port."),
+                        vtype : 'port',
+                        disabled : !this.getSettings().syslogEnabled
+                    },{
+                        xtype : 'combo',
+                        name : 'syslogProtocol',
+                        itemCls : 'left-indent-1',
+                        id : 'reporting_syslog_protocol',
+                        editable : false,
+                        fieldLabel : this.i18n._('Protocol'),
+                        mode : 'local',
+                        triggerAction : 'all',
+                        listClass : 'x-combo-list-small',
+                        store : new Ext.data.SimpleStore({
+                            fields : ['key', 'name'],
+                            data :[
+                                ["UDP", this.i18n._("UDP")],
+                                ["TCP", this.i18n._("TCP")]
+                            ]
+                        }),
+                        displayField : 'name',
+                        valueField : 'key',
+                        value : this.getSettings().syslogProtocol,
+                        disabled : !this.getSettings().syslogEnabled
+                    }]
+                }]
+            });
+        },
         // Hostname Map grid
         buildHostnameMap: function() {
             this.gridHostnameMap = Ext.create('Ung.EditorGrid',{
@@ -839,6 +947,10 @@ if (!Ung.hasResource["Ung.Reporting"]) {
                 if (Ext.getCmp('reporting_monthlySaturday').getValue())  monthlySched.push("saturday");
                 this.getSettings().generateMonthlyReports = this.scheduleListToString(monthlySched);
                 
+                this.getSettings().syslogHost     = Ext.getCmp('reporting_syslog_host').getValue();
+                this.getSettings().syslogPort     = Ext.getCmp('reporting_syslog_port').getValue();
+                this.getSettings().syslogProtocol = Ext.getCmp('reporting_syslog_protocol').getValue();
+
                 // FIXME set Ip Map list
                 this.getSettings().hostnameMap.map = {};
                 // FIXME save email recipients
