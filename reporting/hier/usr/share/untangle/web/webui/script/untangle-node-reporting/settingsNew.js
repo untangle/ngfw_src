@@ -802,30 +802,32 @@ if (!Ung.hasResource["Ung.Reporting"]) {
                 helpSource: 'ip_addresses',
                 title: this.i18n._("Name Map"),
                 emptyRow: {
-                    "ipMaskedAddress": "1.2.3.4",
-                    "name": this.i18n._("[no name]")
+                    javaClass : "com.untangle.node.reporting.ReportingUser",
+                    "address": "1.2.3.4",
+                    "hostname": this.i18n._("[no name]")
                 },
-                data: this.getSettings().hostnameMap.map,
+                data: this.getSettings().hostnameMap.list,
+                recordJavaClass : "com.untangle.node.reporting.ReportingHostnameMapEntry",
                 // the list of fields
                 fields: [{
                     name: 'id'
                 }, {
-                    name: 'ipMaskedAddress'
+                    name: 'address'
                 }, {
-                    name: 'name'
+                    name: 'hostname'
                 }],
                 // the list of columns for the column model
                 columns: [{
                     header: this.i18n._("Name Map"),
                     width: 200,
-                    dataIndex: 'ipMaskedAddress',
+                    dataIndex: 'address',
                     editor: {
                         xtype:'textfield'
                     }
                 }, {
-                    header: this.i18n._("name"),
+                    header: this.i18n._("Name"),
                     width: 200,
-                    dataIndex: 'name',
+                    dataIndex: 'hostname',
                     flex:1,
                     editor: {
                         xtype:'textfield'
@@ -837,15 +839,15 @@ if (!Ung.hasResource["Ung.Reporting"]) {
                     {
                         xtype:'textfield',
                         name: "Subnet",
-                        dataIndex: "ipMaskedAddress",
-                        fieldLabel: this.i18n._("Name Map"),
+                        dataIndex: "address",
+                        fieldLabel: this.i18n._("IP Address"),
                         allowBlank: false,
                         width: 300
                     }, 
                     {
                         xtype:'textfield',
                         name: "Name",
-                        dataIndex: "name",
+                        dataIndex: "hostname",
                         fieldLabel: this.i18n._("Name"),
                         allowBlank: false,
                         width: 300
@@ -870,7 +872,7 @@ if (!Ung.hasResource["Ung.Reporting"]) {
             }
 
             //this.gridHostnameMap.clearChangedData();
-            this.gridHostnameMap.store.loadData( this.getSettings().hostnameMap.map );
+            this.gridHostnameMap.store.loadData( this.getSettings().hostnameMap.list );
 
             Ext.MessageBox.hide();
         },
@@ -934,14 +936,11 @@ if (!Ung.hasResource["Ung.Reporting"]) {
                 this.getSettings().generateMonthlyReports = this.scheduleListToString(monthlySched);
                 
                 this.getSettings().reportingUsers.list = this.gridReportingUsers.getFullSaveList();
+                this.getSettings().hostnameMap.list = this.gridHostnameMap.getFullSaveList();
 
                 this.getSettings().syslogHost     = Ext.getCmp('reporting_syslog_host').getValue();
                 this.getSettings().syslogPort     = Ext.getCmp('reporting_syslog_port').getValue();
                 this.getSettings().syslogProtocol = Ext.getCmp('reporting_syslog_protocol').getValue();
-
-                // FIXME set Ip Map list
-                this.getSettings().hostnameMap.map = {};
-
 
                 this.getRpcNode().setSettings(Ext.bind(function(result, exception) {
                     this.afterSave(exception, callback);

@@ -18,10 +18,9 @@ import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashSet;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Set;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Properties;
 import java.util.regex.Matcher;
@@ -161,17 +160,13 @@ public class ReportingNodeImpl extends NodeBase implements ReportingNode, Report
         ReportingSettings settings = this.getSettings();
         if (settings == null)
             return null;
-        HashMap<IPMaskedAddress,String> nameMap = settings.getHostnameMap(); 
+        LinkedList<ReportingHostnameMapEntry> nameMap = settings.getHostnameMap(); 
         if (nameMap == null)
             return null;
         
-        Set<IPMaskedAddress> nameMapList = nameMap.keySet();
-        if (nameMapList == null)
-            return null;
-        
-        for (IPMaskedAddress addr : nameMapList) {
-            if (addr != null && addr.contains(address))
-                return nameMap.get(addr);
+        for ( ReportingHostnameMapEntry entry : nameMap ) {
+            if ( entry.getAddress() != null && entry.getAddress().contains(address))
+                return entry.getHostname();
         }
         return null;
     }
@@ -265,13 +260,12 @@ public class ReportingNodeImpl extends NodeBase implements ReportingNode, Report
 
             // UPDATE settings if necessary
             
-            this.settings = readSettings;
+            this.setSettings(readSettings);
             logger.info("Settings: " + this.settings.toJSONString());
         }
 
         // intialize default settings
         this.createSchemas();
-        setSettings(initSettings());
     }
 
     protected void preStart()
@@ -294,8 +288,11 @@ public class ReportingNodeImpl extends NodeBase implements ReportingNode, Report
         ReportingSettings settings = new ReportingSettings();
 
         /* XXX for testing */
-        HashMap<IPMaskedAddress,String> foo  = settings.getHostnameMap();
-        foo.put(new IPMaskedAddress("192.168.1.100/32"),"foobar");
+        LinkedList<ReportingHostnameMapEntry> foo  = settings.getHostnameMap();
+        ReportingHostnameMapEntry bar = new ReportingHostnameMapEntry();
+        bar.setAddress(new IPMaskedAddress("192.168.1.100/32"));
+        bar.setHostname("foobar");
+        foo.add(bar);
         settings.setHostnameMap(foo);
         
         return settings;

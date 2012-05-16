@@ -3,7 +3,6 @@
  */
 package com.untangle.node.reporting;
 
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.io.Serializable;
 
@@ -26,7 +25,7 @@ public class ReportingSettings implements Serializable, JSONString
     private boolean emailDetail = false;
     private Integer attachmentSizeLimit = 10; // MB
 
-    private HashMap<IPMaskedAddress,String> hostnameMap = new HashMap<IPMaskedAddress,String>();
+    private LinkedList<ReportingHostnameMapEntry> hostnameMap = new LinkedList<ReportingHostnameMapEntry>();
     private LinkedList<ReportingUser> reportingUsers = new LinkedList<ReportingUser>();
 
     private DayOfWeekMatcher generateDailyReports = new DayOfWeekMatcher("any");;
@@ -40,8 +39,8 @@ public class ReportingSettings implements Serializable, JSONString
     
     public ReportingSettings() { }
 
-    public HashMap<IPMaskedAddress,String> getHostnameMap() { return hostnameMap; }
-    public void setHostnameMap( HashMap<IPMaskedAddress,String> hostnameMap ) { this.hostnameMap = hostnameMap; }
+    public LinkedList<ReportingHostnameMapEntry> getHostnameMap() { return hostnameMap; }
+    public void setHostnameMap( LinkedList<ReportingHostnameMapEntry> hostnameMap ) { this.hostnameMap = hostnameMap; }
 
     public int getDbRetention() { return dbRetention; }
     public void setDbRetention( int dbRetention ) { this.dbRetention = dbRetention; }
