@@ -498,7 +498,6 @@ if (!Ung.hasResource["Ung.Reporting"]) {
                 },
                 items: [{
                     title: this.i18n._('Email'),
-                    layout:'column',
                     height: 350,
                     items: [ this.gridReportingUsers = Ext.create('Ung.EditorGrid',{
                         width : 710,
@@ -720,90 +719,98 @@ if (!Ung.hasResource["Ung.Reporting"]) {
                     autoHeight: true
                 },
                 items: [{
-                    xtype : 'radio',
-                    boxLabel : Ext.String.format(this.i18n._('{0}Disable{1} Syslog Monitoring. (This is the default setting.)'), '<b>', '</b>'),
-                    hideLabel : true,
-                    name : 'syslogEnabled',
-                    checked : !this.getSettings().syslogEnabled,
-                    listeners : {
-                        "change" : {
-                            fn : Ext.bind( function(elem, checked) {
-                                this.getSettings().syslogEnabled = !checked;
-                                if (checked) {
-                                    Ext.getCmp('reporting_syslog_host').disable();
-                                    Ext.getCmp('reporting_syslog_port').disable();
-                                    Ext.getCmp('reporting_syslog_protocol').disable();
-                                }
-                            }, this)
-                        }
-                    }
-                },{
-                    xtype : 'radio',
-                    boxLabel : Ext.String.format(this.i18n._('{0}Enable{1} Syslog Monitoring.'), '<b>', '</b>'),
-                    hideLabel : true,
-                    name : 'syslogEnabled',
-                    checked : this.getSettings().syslogEnabled,
-                    listeners : {
-                        "change" : {
-                            fn : Ext.bind( function(elem, checked) {
-                                this.getSettings().syslogEnabled = checked;
-                                if (checked) {
-                                    Ext.getCmp('reporting_syslog_host').enable();
-                                    Ext.getCmp('reporting_syslog_port').enable();
-                                    Ext.getCmp('reporting_syslog_protocol').enable();
-                                }
-                            }, this)
-                        }
-                    }
-                }, {
-                    border: false,
-                    autoWidth : true,
+                    title: this.i18n._('Syslog'),
+                    height: 350,
                     items: [{
-                        xtype : 'textfield',
-                        fieldLabel : this.i18n._('Host'),
-                        name : 'syslogHost',
-                        width : 300,
-                        itemCls : 'left-indent-1',
-                        id : 'reporting_syslog_host',
-                        value : this.getSettings().syslogHost,
-                        allowBlank : false,
-                        blankText : this.i18n._("A \"Host\" must be specified."),
-                        disabled : !this.getSettings().syslogEnabled
+                        html: this.i18n._('If enabled logged events will be sent in real-time to a remote syslog for custom processing.') + "<br/>",
+                        cls: 'description',
+                        border: false
+                    }, {
+                        xtype : 'radio',
+                        boxLabel : Ext.String.format(this.i18n._('{0}Disable{1} Syslog Events. (This is the default setting.)'), '<b>', '</b>'),
+                        hideLabel : true,
+                        name : 'syslogEnabled',
+                        checked : !this.getSettings().syslogEnabled,
+                        listeners : {
+                            "change" : {
+                                fn : Ext.bind( function(elem, checked) {
+                                    this.getSettings().syslogEnabled = !checked;
+                                    if (checked) {
+                                        Ext.getCmp('reporting_syslog_host').disable();
+                                        Ext.getCmp('reporting_syslog_port').disable();
+                                        Ext.getCmp('reporting_syslog_protocol').disable();
+                                    }
+                                }, this)
+                            }
+                        }
                     },{
-                        xtype : 'numberfield',
-                        fieldLabel : this.i18n._('Port'),
-                        name : 'syslogPort',
-                        width: 200,
-                        itemCls : 'left-indent-1',
-                        id : 'reporting_syslog_port',
-                        value : this.getSettings().syslogPort,
-                        allowDecimals: false,
-                        allowNegative: false,
-                        allowBlank : false,
-                        blankText : this.i18n._("You must provide a valid port."),
-                        vtype : 'port',
-                        disabled : !this.getSettings().syslogEnabled
-                    },{
-                        xtype : 'combo',
-                        name : 'syslogProtocol',
-                        itemCls : 'left-indent-1',
-                        id : 'reporting_syslog_protocol',
-                        editable : false,
-                        fieldLabel : this.i18n._('Protocol'),
-                        mode : 'local',
-                        triggerAction : 'all',
-                        listClass : 'x-combo-list-small',
-                        store : new Ext.data.SimpleStore({
-                            fields : ['key', 'name'],
-                            data :[
-                                ["UDP", this.i18n._("UDP")],
-                                ["TCP", this.i18n._("TCP")]
-                            ]
-                        }),
-                        displayField : 'name',
-                        valueField : 'key',
-                        value : this.getSettings().syslogProtocol,
-                        disabled : !this.getSettings().syslogEnabled
+                        xtype : 'radio',
+                        boxLabel : Ext.String.format(this.i18n._('{0}Enable{1} Syslog Events.'), '<b>', '</b>'),
+                        hideLabel : true,
+                        name : 'syslogEnabled',
+                        checked : this.getSettings().syslogEnabled,
+                        listeners : {
+                            "change" : {
+                                fn : Ext.bind( function(elem, checked) {
+                                    this.getSettings().syslogEnabled = checked;
+                                    if (checked) {
+                                        Ext.getCmp('reporting_syslog_host').enable();
+                                        Ext.getCmp('reporting_syslog_port').enable();
+                                        Ext.getCmp('reporting_syslog_protocol').enable();
+                                    }
+                                }, this)
+                            }
+                        }
+                    }, {
+                        border: false,
+                        autoWidth : true,
+                        items: [{
+                            xtype : 'textfield',
+                            fieldLabel : this.i18n._('Host'),
+                            name : 'syslogHost',
+                            width : 300,
+                            itemCls : 'left-indent-1',
+                            id : 'reporting_syslog_host',
+                            value : this.getSettings().syslogHost,
+                            allowBlank : false,
+                            blankText : this.i18n._("A \"Host\" must be specified."),
+                            disabled : !this.getSettings().syslogEnabled
+                        },{
+                            xtype : 'numberfield',
+                            fieldLabel : this.i18n._('Port'),
+                            name : 'syslogPort',
+                            width: 200,
+                            itemCls : 'left-indent-1',
+                            id : 'reporting_syslog_port',
+                            value : this.getSettings().syslogPort,
+                            allowDecimals: false,
+                            allowNegative: false,
+                            allowBlank : false,
+                            blankText : this.i18n._("You must provide a valid port."),
+                            vtype : 'port',
+                            disabled : !this.getSettings().syslogEnabled
+                        },{
+                            xtype : 'combo',
+                            name : 'syslogProtocol',
+                            itemCls : 'left-indent-1',
+                            id : 'reporting_syslog_protocol',
+                            editable : false,
+                            fieldLabel : this.i18n._('Protocol'),
+                            mode : 'local',
+                            triggerAction : 'all',
+                            listClass : 'x-combo-list-small',
+                            store : new Ext.data.SimpleStore({
+                                fields : ['key', 'name'],
+                                data :[
+                                    ["UDP", this.i18n._("UDP")],
+                                    ["TCP", this.i18n._("TCP")]
+                                ]
+                            }),
+                            displayField : 'name',
+                            valueField : 'key',
+                            value : this.getSettings().syslogProtocol,
+                            disabled : !this.getSettings().syslogEnabled
+                        }]
                     }]
                 }]
             });
