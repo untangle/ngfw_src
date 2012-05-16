@@ -801,7 +801,7 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                         i18n : this.settingsCmp.i18n,
                         node : this.settingsCmp.getRpcNode()
                     });
-                    this.subCmps.push(this.distributeWindow.window);
+                    this.subCmps.push(this.distributeWindow);
                     Ung.EditorGrid.prototype.initComponent.call(this);
                 },
                 settingsCmp : this,
@@ -913,7 +913,7 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                         node : this.settingsCmp.getRpcNode(),
                         isVpnSite : true
                     });
-                    this.subCmps.push(this.distributeWindow.window);
+                    this.subCmps.push(this.distributeWindow);
                     Ung.EditorGrid.prototype.initComponent.call(this);
                 },
                 settingsCmp : this,
