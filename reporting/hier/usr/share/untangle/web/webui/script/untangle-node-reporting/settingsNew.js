@@ -508,26 +508,25 @@ if (!Ung.hasResource["Ung.Reporting"]) {
                         paginated: false,
                         height: 300,
                         emptyRow: {
-                            emailAddress : "reportrecipient@example.com",
-                            emailReports : true,
-                            onlineReports : true,
-                            clearPassword : null,
-                            user : null
+                            javaClass : "com.untangle.node.reporting.ReportingUser",
+                            emailAddress   : "reportrecipient@example.com",
+                            emailSummaries : true,
+                            onlineAccess   : false,
+                            password  : null
                         },
                         data: this.getSettings().reportingUsers.list,
+                        recordJavaClass : "com.untangle.node.reporting.ReportingUser",
                         dataRoot: null,
                         autoGenerateId: true,
                         plugins:[changePasswordColumn],
                         fields: [{
                             name: "emailAddress"
                         },{
-                            name: "emailReports"
+                            name: "emailSummaries"
                         },{
-                            name: "onlineReports"
+                            name: "onlineAccess"
                         },{
-                            name: "clearPassword"
-                        },{
-                            name: "user"
+                            name: "password"
                         }],
                         sortField: "emailAddress",
                         columnsDefaultSortable: true,
@@ -542,23 +541,19 @@ if (!Ung.hasResource["Ung.Reporting"]) {
                                 blankText: this.i18n._("The email address cannot be blank.")
                             },
                             flex:1
-                        },
-                                  {
-                                      xtype:'checkcolumn',
-                                      header : this.i18n._("Email Reports"),
-                                      dataIndex : "emailReports",
-                                      width : 100,
-                                      fixed : true
-                                  },
-                                  { 
-                                      xtype:'checkcolumn',
-                                      header : this.i18n._("Online Reports"),
-                                      dataIndex : "onlineReports",
-                                      width : 100,
-                                      fixed : true
-                                  },                      
-                                  changePasswordColumn
-                                 ],
+                        }, {
+                            xtype:'checkcolumn',
+                            header : this.i18n._("Email Summaries"),
+                            dataIndex : "emailSummaries",
+                            width : 100,
+                            fixed : true
+                        }, { 
+                            xtype:'checkcolumn',
+                            header : this.i18n._("Online Access"),
+                            dataIndex : "onlineAccess",
+                            width : 100,
+                            fixed : true
+                        }, changePasswordColumn ],
                         rowEditorInputLines : [
                             {
                                 xtype:'textfield',
@@ -570,26 +565,26 @@ if (!Ung.hasResource["Ung.Reporting"]) {
                             },
                             {
                                 xtype:'checkbox',
-                                dataIndex : "emailReports",
-                                fieldLabel : this.i18n._("Email Reports"),
+                                dataIndex : "emailSummaries",
+                                fieldLabel : this.i18n._("Email Summaries"),
                                 width : 300
                             },
                             {
                                 xtype:'checkbox',
-                                dataIndex : "onlineReports",
+                                dataIndex : "onlineAccess",
                                 id : "add_reporting_online_reports_" + fieldID,
-                                fieldLabel : this.i18n._("Online Reports"),
+                                fieldLabel : this.i18n._("Online Access"),
                                 width : 300
                             },
                             {
                                 xtype:'textfield',
                                 inputType: "password",
                                 name : "Password",
-                                dataIndex : "clearPassword",
+                                dataIndex : "password",
                                 id : "add_reporting_user_password_" + fieldID,
                                 msgTarget : "title",
                                 fieldLabel : this.i18n._("Password"),
-                                boxLabel : this.i18n._("(required for 'Online Reports')"),
+                                boxLabel : this.i18n._("(required for 'Online Access')"),
                                 width : 300,
                                 minLength : 3,
                                 minLengthText : Ext.String.format(this.i18n._("The password is shorter than the minimum {0} characters."), 3)
@@ -598,27 +593,11 @@ if (!Ung.hasResource["Ung.Reporting"]) {
                                 xtype:'textfield',
                                 inputType: "password",
                                 name : "Confirm Password",
-                                dataIndex : "clearPassword",
+                                dataIndex : "password",
                                 id : "add_reporting_confirm_password_" + fieldID,
                                 fieldLabel : this.i18n._("Confirm Password"),
                                 width : 300
-                            }],
-                        rowEditorValidate: Ext.bind(function (inputLines) {
-                        	//validate password match
-                        	var pwd = Ext.getCmp("add_reporting_user_password_" + fieldID);
-                        	var confirmPwd = Ext.getCmp("add_reporting_confirm_password_" + fieldID);
-                        	if(pwd.getValue() != confirmPwd.getValue()) {
-                        		pwd.markInvalid();
-                        		return this.i18n._('Passwords do not match');
-                        	}
-                        	// validate password not empty if onlineReports checked
-                        	var onlineReports=Ext.getCmp("add_reporting_online_reports_" + fieldID);
-                        	if(onlineReports.getValue() &&  pwd.getValue().length==0) {
-                        		return this.i18n._("A password must be set to enable Online Reports!");
-                        	} else {
-                        		return true;
-                        	}
-                        },this)
+                            }]
                     })]
                 },{
                     title : this.i18n._("Email Attachment Settings"),
@@ -667,7 +646,7 @@ if (!Ung.hasResource["Ung.Reporting"]) {
                         xtype:'textfield',
                         inputType: "password",
                         name : "Password",
-                        dataIndex : "clearPassword",
+                        dataIndex : "password",
                         id : "edit_reporting_user_password_"  + fieldID,
                         fieldLabel : this.i18n._("Password"),
                         width : 300,
@@ -678,7 +657,7 @@ if (!Ung.hasResource["Ung.Reporting"]) {
                         xtype:'textfield',
                         inputType: "password",
                         name : "Confirm Password",
-                        dataIndex : "clearPassword",
+                        dataIndex : "password",
                         id : "edit_reporting_confirm_password_"  + fieldID,
                         fieldLabel : this.i18n._("Confirm Password"),
                         width : 300
@@ -691,10 +670,10 @@ if (!Ung.hasResource["Ung.Reporting"]) {
                 		pwd.markInvalid();
                 		return this.i18n._('Passwords do not match');
                 	}
-                	// validate password not empty if onlineReports checked
-                	var onlineReports=Ext.getCmp("add_reporting_online_reports_" + fieldID);
-                	if(onlineReports.getValue() &&  pwd.getValue().length==0) {
-                		return this.i18n._("A password must be set to enable Online Reports!");
+                	// validate password not empty if onlineAccess checked
+                	var onlineAccess=Ext.getCmp("add_reporting_online_reports_" + fieldID);
+                	if(onlineAccess.getValue() &&  pwd.getValue().length==0) {
+                		return this.i18n._("A password must be set to enable Online Access!");
                 	} else {
                 		return true;
                 	}
@@ -954,14 +933,15 @@ if (!Ung.hasResource["Ung.Reporting"]) {
                 if (Ext.getCmp('reporting_monthlySaturday').getValue())  monthlySched.push("saturday");
                 this.getSettings().generateMonthlyReports = this.scheduleListToString(monthlySched);
                 
+                this.getSettings().reportingUsers.list = this.gridReportingUsers.getFullSaveList();
+
                 this.getSettings().syslogHost     = Ext.getCmp('reporting_syslog_host').getValue();
                 this.getSettings().syslogPort     = Ext.getCmp('reporting_syslog_port').getValue();
                 this.getSettings().syslogProtocol = Ext.getCmp('reporting_syslog_protocol').getValue();
 
                 // FIXME set Ip Map list
                 this.getSettings().hostnameMap.map = {};
-                // FIXME save email recipients
-                this.getSettings().reportingUsers.list = this.gridReportingUsers.getFullSaveList();
+
 
                 this.getRpcNode().setSettings(Ext.bind(function(result, exception) {
                     this.afterSave(exception, callback);

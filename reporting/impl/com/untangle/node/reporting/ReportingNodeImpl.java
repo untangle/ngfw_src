@@ -34,6 +34,7 @@ import org.apache.log4j.Logger;
 
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.SettingsManager;
+import com.untangle.uvm.util.I18nUtil;
 import com.untangle.uvm.node.NodeSettings;
 import com.untangle.uvm.node.NodeProperties;
 import com.untangle.uvm.node.Validator;
@@ -76,6 +77,8 @@ public class ReportingNodeImpl extends NodeBase implements ReportingNode, Report
 
     public void setSettings(final ReportingSettings settings)
     {
+        this.sanityCheck( settings );
+
         this._setSettings( settings );
 
         SyslogManagerImpl.reconfigure(this.settings);
@@ -339,4 +342,19 @@ public class ReportingNodeImpl extends NodeBase implements ReportingNode, Report
         }
     }
 
+    public void sanityCheck( ReportingSettings settings )
+    {
+        if ( settings.getReportingUsers() != null) {
+            for ( ReportingUser user : settings.getReportingUsers() ) {
+                if ( user.getOnlineAccess() ) {
+                    if ( user.getPassword() == null )
+                        throw new RuntimeException(I18nUtil.marktr("Invalid Settings") + ": \"" + user.getEmailAddress() + "\" " + I18nUtil.marktr("has online access, but no password is set."));
+                    if ( user.getPassword().equals("") )
+                        throw new RuntimeException(I18nUtil.marktr("Invalid Settings") + ": \"" + user.getEmailAddress() + "\" " + I18nUtil.marktr("has online access, but no password is set."));
+                }
+            }
+        }
+
+
+    }
 }
