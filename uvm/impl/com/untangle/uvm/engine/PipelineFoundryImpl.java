@@ -194,18 +194,18 @@ public class PipelineFoundryImpl implements PipelineFoundry
     public void registerArgonConnector(ArgonConnector argonConnector)
     {
         SoloPipeSpec sps = (SoloPipeSpec) argonConnector.getPipeSpec();
-        Fitting f = sps.getFitting();
+        Fitting fitting = sps.getFitting();
 
-        List<ArgonConnector> l = argonConnectors.get(f);
+        List<ArgonConnector> argonConnectorList = argonConnectors.get(fitting);
 
-        if (null == l) {
-            l = new ArrayList<ArgonConnector>();
-            l.add(null);
-            argonConnectors.put(f, l);
+        if (argonConnectorList == null) {
+            argonConnectorList = new ArrayList<ArgonConnector>();
+            argonConnectorList.add(null);
+            argonConnectors.put(fitting, argonConnectorList);
         }
 
-        int i = Collections.binarySearch(l, argonConnector, ArgonConnectorComparator.COMPARATOR);
-        l.add(0 > i ? -i - 1 : i, argonConnector);
+        int i = Collections.binarySearch(argonConnectorList, argonConnector, ArgonConnectorComparator.COMPARATOR);
+        argonConnectorList.add(0 > i ? -i - 1 : i, argonConnector);
 
         clearCache();
     }
@@ -213,15 +213,15 @@ public class PipelineFoundryImpl implements PipelineFoundry
     public void deregisterArgonConnector(ArgonConnector argonConnector)
     {
         SoloPipeSpec sps = (SoloPipeSpec) argonConnector.getPipeSpec();
-        Fitting f = sps.getFitting();
+        Fitting fitting = sps.getFitting();
 
-        List<ArgonConnector> l = argonConnectors.get(f);
+        List<ArgonConnector> argonConnectorList = argonConnectors.get(fitting);
 
-        int i = Collections.binarySearch(l, argonConnector, ArgonConnectorComparator.COMPARATOR);
-        if (0 > i) {
-            logger.warn("deregistering nonregistered pipe");
+        int i = Collections.binarySearch(argonConnectorList, argonConnector, ArgonConnectorComparator.COMPARATOR);
+        if ( i < 0 ) {
+            logger.warn("Deregistering non-registered pipe: " + argonConnector, new Exception());
         } else {
-            l.remove(i);
+            argonConnectorList.remove(i);
         }
 
         clearCache();
