@@ -27,6 +27,7 @@ from reports.engine import FactTable
 from reports.engine import Node
 from reports.engine import get_wan_clause
 from reports.sql_helper import print_timing
+from uvm.settings.reader import get_node_settings_item
 
 EVT_TYPE_REGISTER = 0
 EVT_TYPE_RENEW    = 1
@@ -69,21 +70,11 @@ class UvmNode(Node):
 
     @print_timing
     def __get_branded_name(self):
-        conn = sql_helper.get_connection()
-        curs = conn.cursor()
-        try:
-            curs.execute("SELECT company_name FROM n_branding_settings")
-            while 1:
-                r = curs.fetchone()
-                if not r:
-                    break
-                return r[0]
-        except Exception, e:
-            return self.name
-        finally:
-            conn.commit()
+        brandco = get_node_settings_item('untangle-node-branding','companyName')
+        if (brandco != None):
+            return brandco
         return None
-        
+
     @print_timing
     def __make_n_admin_logins_table(self):
         sql_helper.create_fact_table("""\
@@ -105,7 +96,7 @@ CREATE TABLE reports.n_admin_logins (
         sql_helper.drop_fact_table("users", cutoff)
         sql_helper.drop_fact_table("hnames", cutoff)
         sql_helper.drop_fact_table("sessions", cutoff)
-        sql_helper.drop_fact_table("session_totals", cutoff)        
+        sql_helper.drop_fact_table("session_totals", cutoff)
         sql_helper.drop_fact_table("session_counts", cutoff)
 
     def get_report(self):
@@ -225,7 +216,7 @@ CREATE TABLE reports.sessions (
         sql_helper.add_column('reports', 'sessions', 's_server_addr', 'inet')
         sql_helper.add_column('reports', 'sessions', 's_server_port', 'int4')
         sql_helper.add_column('reports', 'sessions', 's_client_port', 'int4')
-        
+
         # drop obsolete column
         sql_helper.drop_column('reports', 'sessions', 'ips_name')
 
@@ -304,7 +295,7 @@ WHERE time_stamp >= %s::timestamp without time zone
 GROUP BY time, uid, hname, client_intf, server_intf
 """, (sd,), connection=conn, auto_commit=False)
 
-            sql_helper.set_update_info('reports.session_counts', 
+            sql_helper.set_update_info('reports.session_counts',
                                        TimestampFromMx(mx.DateTime.now()),
                                        connection=conn, auto_commit=False,
                                        origin_table='reports.sessions')
@@ -364,7 +355,7 @@ SELECT (SELECT round((COALESCE(sum(s2c_bytes + c2s_bytes), 0) / 1000000000)::num
             curs.execute(query, (one_week, ed, one_week, ed))
 
             h = sql_helper.get_result_dictionary(curs)
-                
+
         finally:
             conn.commit()
 
@@ -424,7 +415,7 @@ class BandwidthUsage(Graph):
             ks = KeyStatistic(_('Data Transferred'), sum(throughput) * time_interval, N_('kB'))
             lks.append(ks)
 
-                
+
         finally:
             conn.commit()
 
@@ -467,7 +458,7 @@ class SessionsPerMinute(Graph):
                                                  extra_where = extra_where)
 
             curs = conn.cursor()
-            
+
             curs.execute(q, h)
 
             dates = []
