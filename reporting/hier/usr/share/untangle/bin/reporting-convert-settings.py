@@ -10,6 +10,31 @@ import os
 import string
 import traceback
 
+def get_syslog_setting(debug=False):
+    if (debug):
+        print "Getting syslog setting. "
+
+    settings_list = sql_helper.run_sql("select syslog_enabled, syslog_host, syslog_port, syslog_protocol from settings.u_logging_settings", debug=debug)
+
+    if settings_list == None:
+        print "WARNING: missing syslog setting"
+        return
+    if len(settings_list) != 1:
+        print "WARNING: dupe syslog settings"
+
+    syslog_enabled = settings_list[0][0];
+    syslog_host = settings_list[0][1];
+    syslog_port = settings_list[0][2];
+    syslog_protocol = settings_list[0][3];
+
+    str = ""
+    str += '\t"syslogEnabled": "%s",\n' % syslog_enabled
+    str += '\t"syslogHost": "%s",\n' % syslog_host
+    str += '\t"syslogPort": "%s",\n' % syslog_port
+    str += '\t"syslogProtocol": "%s",\n' % syslog_protocol
+
+    return str;
+
 def get_users(userlist, debug=False):
     if (debug):
         print "Getting user list from: ",userlist
@@ -78,7 +103,6 @@ def get_settings(tid, debug=False):
     if settings_list == None:
         print "WARNING: missing results for TID %s" % tid
         return ""
-
     if len(settings_list) > 1:
         print "WARNING: too many results (%i) for TID %s" % (len(settings),tid)
         
@@ -100,6 +124,7 @@ def get_settings(tid, debug=False):
     str += '\t"generationMinute": "%s",\n' % generation_minute
     str += '\t"hostnameMap": %s,\n' % get_hostname_map(network_directory, debug)
     str += '\t"reportingUsers": %s,\n' % get_users(reporting_users, debug)
+    str += get_syslog_setting()
     str += '\t"dbRetention": "%s",\n' % db_retention
     str += '\t"fileRetention": "%s"\n' % file_retention
     str += '}\n'
