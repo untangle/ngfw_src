@@ -45,3 +45,16 @@ def get_node_settings(nodename):
     return(settings)
 
 #-----------------------------------------------------------------------------
+
+def get_node_settings_item(nodename,itemname):
+
+    settings = get_node_settings(nodename)
+
+    if (settings == None):
+        return(None)
+
+    if (not settings.has_key(itemname)):
+        return(None)
+
+    value = settings[itemname]
+    return(value)
