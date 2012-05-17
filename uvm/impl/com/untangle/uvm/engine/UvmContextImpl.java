@@ -669,6 +669,8 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
         } catch (Exception exn) {
             logger.warn("unable to stop the heap monitor",exn);
         }
+
+        logger.info("UvmContext destroyed");
     }
 
     // package protected methods ----------------------------------------------
