@@ -76,7 +76,6 @@ public class EventReaderImpl
             ResultSet resultSet = statement.executeQuery( queryStr );
             ResultSetMetaData metadata = resultSet.getMetaData();
             int numColumns = metadata.getColumnCount();
-            logger.info( "getEvents( " + queryStr + " ) columnCount: " + numColumns);
                 
             ArrayList newList = new ArrayList();
             while (resultSet.next()) {
