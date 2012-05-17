@@ -39,7 +39,7 @@ class NodeManager(Manager):
             if ( policyId == None or policyId == "null" ): 
                 policy = "Service"
             else: 
-                policy = self.getPolicyString( policyId )
+                policy = self.__get_policy_name( policyId )
             
             nodes.append( (nodeSettings['id'], nodeProperties['name'], policy, nodeRunState ) )
         
@@ -56,6 +56,15 @@ class NodeManager(Manager):
 
         for nodeId in nodeIds: 
             self.__print_sessions(nodeId)
+
+    def __get_policy_name(self,policyId):
+        node = self.__nodeManager.node( "untangle-node-policy" )
+        if node == None:
+            if (policyId == 1):
+                return "Default Rack"
+            return "Policy-%i" % policyId
+        else:
+            return node.getPolicyName( policyId )
 
     def __print_sessions( self, nodeId ):
         node = self.__get_node( nodeId )

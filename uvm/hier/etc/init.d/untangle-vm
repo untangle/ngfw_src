@@ -212,7 +212,7 @@ case "$1" in
         rm -f ${UVM_RUNDIR}/${UVM_PID_FILE}  &> /dev/null
 
         # Wait for completion
-        for i in `seq 1 10` ; do
+        for i in `seq 1 20` ; do
             echo -n "."
             sleep 1
             # If the log contains "shutdown complete" and the PID is gone - it was a clean shutdown

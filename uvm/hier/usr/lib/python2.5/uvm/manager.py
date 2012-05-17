@@ -23,13 +23,6 @@ class Manager(object):
     def buildDate(self,seconds):
         return { 'javaClass' : 'java.util.Date', 'time' : ( seconds * 1000 ) }
 
-    def getPolicyString(self,policyId):
-        #return "Policy (%s: %s)" % ( [ "non-default", "default" ][policy["default"]], policy["name"] )
-        #return "%s" % ( policy["name"] )
-        if (policyId == 1):
-            return "Default Rack"
-        return "Policy-%i" % policyId
-
     def formatProtocol(self,protocol):
         return Manager.__protocols[int(protocol)]
     
