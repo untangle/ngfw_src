@@ -568,8 +568,6 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
         if (isFactoryDefaults())
             initializeWizard();
 
-        hideUpgradeSplash();
-        
         state = UvmState.INITIALIZED;
     }
 
@@ -595,6 +593,8 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
         //Inform the AppServer manager that everything
         //else is started.
         appServerManager.postInit();
+
+        hideUpgradeSplash();
     }
 
     @Override
