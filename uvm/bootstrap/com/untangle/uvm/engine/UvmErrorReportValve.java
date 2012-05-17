@@ -1,21 +1,6 @@
-/*
- * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc.
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License, version 2,
- * as published by the Free Software Foundation.
- *
- * This program is distributed in the hope that it will be useful, but
- * AS-IS and WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE, TITLE, or
- * NONINFRINGEMENT.  See the GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
+/**
+ * $Id$
  */
-
 package com.untangle.uvm.engine;
 
 import java.io.IOException;
@@ -35,9 +20,6 @@ import org.apache.log4j.Logger;
  * The error message is supplied by either setting the system property
  * {@link #UVM_WEB_MESSAGE_ATTR} or by using the {@link
  * HttpServletResponse.sendError(int, String))} method.
- *
- * @author <a href="mailto:amread@untangle.com">Aaron Read</a>
- * @version 1.0
  */
 public class UvmErrorReportValve extends ErrorReportValve
 {
@@ -45,8 +27,7 @@ public class UvmErrorReportValve extends ErrorReportValve
 
     private static final Logger logger = Logger.getLogger(UvmErrorReportValve.class);
 
-    protected void report(Request request, Response response,
-                          Throwable throwable)
+    protected void report(Request request, Response response, Throwable throwable)
         throws IOException
     {
         try {
@@ -56,8 +37,7 @@ public class UvmErrorReportValve extends ErrorReportValve
         }
     }
 
-    protected void doReport(Request request, Response response,
-                            Throwable throwable)
+    protected void doReport(Request request, Response response, Throwable throwable)
         throws IOException
     {
         int statusCode = response.getStatus();
@@ -89,8 +69,7 @@ public class UvmErrorReportValve extends ErrorReportValve
         }
     }
 
-    private void writeReport(PrintWriter w, Map<String, String> i18nMap,
-                             String errorMessage)
+    private void writeReport(PrintWriter w, Map<String, String> i18nMap, String errorMessage)
         throws IOException
     {
         String companyName = Main.getMain().getCompanyName();

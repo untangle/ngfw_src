@@ -172,7 +172,7 @@ public class Main
     
     private void destroy()
     {
-        uvmContext.doDestroy();
+        uvmContext.destroy();
         logger.info("UVM shutdown complete.");
         System.out.println("UVM shutdown complete.");
     }
@@ -216,11 +216,12 @@ public class Main
     private void startUvm() throws Exception
     {
         uvmContext = (UvmContextBase)uvmCl.loadClass(UVM_CONTEXT_CLASSNAME).getMethod("context").invoke(null);
-        uvmContext.doInit(this);
+        uvmContext.main = this;
+        uvmContext.init();
     }
 
     private void restartNodes() throws Exception
     {
-        uvmContext.doPostInit();
+        uvmContext.postInit();
     }
 }
