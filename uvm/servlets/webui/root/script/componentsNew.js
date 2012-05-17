@@ -148,12 +148,13 @@ Ext.override( Ext.form.Field, {
 
 Ext.override( Ext.form.TextField, {
     afterRender : Ext.Function.createSequence(Ext.form.TextField.prototype.afterRender, function(){
-        var parent = this.el.parent();
+        //var parent = this.el.parent();
         if( this.boxLabel ) {
-            this.labelEl = parent.createChild({
+            this.labelEl = this.el.down("div").createChild({
                 tag: 'label',
                 htmlFor: this.el.id,
                 cls: 'x-form-textfield-detail',
+                style: 'position: absolute; top: 5px;',
                 html: this.boxLabel
             });
         }
@@ -1394,7 +1395,7 @@ Ext.define("Ung.Node", {
         if(this.fadeIn) {
             this.getEl().scrollIntoView(Ext.getCmp("center").body);
             this.getEl().setOpacity(0.5);
-            this.getEl().syncFx().frame(null, 1, { duration: 1000 }).fadeIn({duration: 6000});
+            this.getEl().syncFx().frame("#63BE4A", 1, { duration: 1000 }).fadeIn({opacity: 1, duration: 6000});
         }
         var nodeButtons=[{
             xtype: "button",
@@ -2340,13 +2341,15 @@ Ext.define("Ung.FaceplateMetric", {
         	}),
     	    axes: [{
 	            type: 'Numeric',
-	            position: 'left',
+	            position: 'right',
 	            fields: ['sessions'],
-	            minimum: 0
+	            minimum: 0,
+	            majorTickSteps: 0,
+	            minorTickSteps: 3
 	        }],
     	    series: [{
 	            type: 'line',
-	            axis: 'left',
+	            axis: 'right',
 	            smooth: true,
 	            showMarkers: false,
 	            fill:true,
@@ -2534,7 +2537,7 @@ Ext.define("Ung.FaceplateMetric", {
     },
     getCurrentSessions: function(metrics) {
     	//Just for test generate random data
-    	//return Math.floor((Math.random()*100)); //Random Data
+    	//return Math.floor((Math.random()*15)); //Random Data
     	
     	if(this.currentSessionsMetricIndex == null) {
     		this.currentSessionsMetricIndex = -1;
