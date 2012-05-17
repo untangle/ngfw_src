@@ -65,6 +65,7 @@ from email.MIMEBase import MIMEBase
 from email.MIMEImage import MIMEImage
 from email.MIMEMultipart import MIMEMultipart
 from email.MIMEText import MIMEText
+from uvm.settings_reader import get_node_settings_item
 
 _ = reports.i18n_helper.get_translation('untangle-vm').lgettext
 
@@ -207,22 +208,9 @@ def __get_branding_info():
         import oem
         company = oem.oemName()
 
-    conn = sql_helper.get_connection()
-
-    try:
-        curs = conn.cursor()
-
-        curs.execute("""\
-SELECT company_name FROM settings.n_branding_settings""")
-
-        row = curs.fetchone()
-
-        if row:
-            company = row[0]
-    except Exception, e:
-        pass
-    finally:
-        conn.commit()
+    brandco = get_node_settings_item('untangle-node-branding','companyName')
+    if (brandco != None):
+        company = brandco
 
     return company
 
