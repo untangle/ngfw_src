@@ -44,19 +44,19 @@ public class OurSingleSignOn extends ValveBase
     {
 
         // Has a valid user already been authenticated?
-        //if (containerLog.isDebugEnabled())
-        //containerLog.debug("Process request for '" + request.getRequestURI() + "'");
+        if (containerLog.isDebugEnabled())
+        containerLog.debug("Process request for '" + request.getRequestURI() + "'");
         if (request.getUserPrincipal() != null) {
-            //if (containerLog.isDebugEnabled())
-            //containerLog.debug(" Principal '" + request.getUserPrincipal().getName() +
-            //"' has already been authenticated");
+            if (containerLog.isDebugEnabled())
+            containerLog.debug(" Principal '" + request.getUserPrincipal().getName() +
+            "' has already been authenticated");
             getNext().invoke(request, response);
             return;
         }
 
         // Check for the single sign on cookie
-        //if (containerLog.isDebugEnabled())
-        //containerLog.debug(" Checking for SSO cookie");
+        if (containerLog.isDebugEnabled())
+        containerLog.debug(" Checking for SSO cookie");
         Cookie cookie = null;
         String ssoVal = null;
         Cookie cookies[] = request.getCookies();
