@@ -2755,7 +2755,7 @@ Ext.define("Ung.GridEventLog", {
             var selQuery = this.getSelectedQuery();
             var selPolicy = this.getSelectedPolicy();
             if (selQuery != null && selPolicy != null) {
-                rpc.jsonrpc.UvmContext.getEvents(Ext.bind(this.autoRefreshCallback,this), selQuery, selPolicy, 1000 );
+                rpc.jsonrpc.UvmContext.getEvents(Ext.bind(this.autoRefreshCallback,this), selQuery, selPolicy, 50 );
             }
         }, this));
     },

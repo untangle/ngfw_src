@@ -44,8 +44,6 @@ public class EventReaderImpl
     @SuppressWarnings("unchecked")
     public ArrayList getEvents( final String query, final Long policyId, final int limit )
     {
-        logger.info("getEvents( query: " + query + " policyId: " + policyId + " limit: " + limit + " )");
-
         if ( dbConnection == null ) {
             try {
                 dbConnection = this.node.getDbConnection();
@@ -66,7 +64,11 @@ public class EventReaderImpl
             } else {
                 queryStr = queryStr.replace(":policyId", Long.toString( policyId ) );
             }
+            queryStr += " LIMIT " + limit + " ";
 
+            logger.debug("getEvents( query: " + query + " policyId: " + policyId + " limit: " + limit + " )");
+            logger.info("getEvents( queryStr: \"" + queryStr + "\")");
+            
             Statement statement = dbConnection.createStatement();
             if (statement == null) {
                 logger.warn("Unable to create Statement");
