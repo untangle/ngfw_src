@@ -519,7 +519,8 @@ if (!Ung.hasResource["Ung.Reporting"]) {
                             emailAddress   : "reportrecipient@example.com",
                             emailSummaries : true,
                             onlineAccess   : false,
-                            password  : null
+                            password       : null,
+                            passwordHash   : null
                         },
                         data: this.getSettings().reportingUsers.list,
                         recordJavaClass : "com.untangle.node.reporting.ReportingUser",
@@ -534,6 +535,8 @@ if (!Ung.hasResource["Ung.Reporting"]) {
                             name: "onlineAccess"
                         },{
                             name: "password"
+                        },{
+                            name: "passwordHashBase64"
                         }],
                         sortField: "emailAddress",
                         columnsDefaultSortable: true,

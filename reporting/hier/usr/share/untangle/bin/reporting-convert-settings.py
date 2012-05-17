@@ -36,6 +36,8 @@ def get_syslog_setting(debug=False):
     return str;
 
 def get_users(userlist, debug=False):
+    user_list = userlist.split(",")
+
     if (debug):
         print "Getting user list from: ",userlist
 
@@ -45,15 +47,27 @@ def get_users(userlist, debug=False):
     
     first = True
     id = 0
-    for email in userlist.split(","):
+    for email in user_list:
+        user = sql_helper.run_sql("select email, reports_access, encode(password,'base64') from settings.u_user join settings.u_admin_settings on settings.u_user.admin_setting_id = settings.u_admin_settings.admin_settings_id where email = '%s'" % email, debug=debug)
+
+        if user == None or len(user) == 0:
+            online_access = False
+            password = ""
+            email_summaries = True;
+        else:
+            print user
+            online_access = user[0][1]
+            password = user[0][2]
+            email_summaries = (email in userlist);
+
         if not first:
             str += '\t\t\t,\n'
         str += '\t\t\t{\n';
         str += '\t\t\t"javaClass": "com.untangle.node.reporting.ReportingUser",\n';
         str += '\t\t\t"emailAddress": "%s",\n' % email;
-        str += '\t\t\t"emailSummaries": "True",\n';
-        str += '\t\t\t"onlineAccess": "False",\n';
-        str += '\t\t\t"password": ""\n';
+        str += '\t\t\t"emailSummaries": "%s",\n' % email_summaries;
+        str += '\t\t\t"onlineAccess": "%s",\n' % online_access;
+        str += '\t\t\t"passwordHashBase64": "%s"\n' % password;
         str += '\t\t\t}\n';
         first = False
         

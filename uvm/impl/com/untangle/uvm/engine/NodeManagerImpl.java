@@ -512,12 +512,12 @@ public class NodeManagerImpl implements NodeManager
                                 loadedNodesMap.put( nodeSettings.getId(), node );
                                 logger.info("Restarted : " + name + " (" + nodeSettings.getId() + ")");
                             } catch (Exception exn) {
-                                logger.error("Could not restart: " + nodeSettings, exn);
+                                logger.error("Could not restart: " + name, exn);
                             } catch (LinkageError err) {
-                                logger.error("Could not restart: " + nodeSettings, err);
+                                logger.error("Could not restart: " + name, err);
                             }
                             if ( node == null ) {
-                                logger.warn("node == null, removing node...");
+                                logger.error("Failed to load node:" + name);
                                 loadedNodesMap.remove(nodeSettings);
                             }
                         }

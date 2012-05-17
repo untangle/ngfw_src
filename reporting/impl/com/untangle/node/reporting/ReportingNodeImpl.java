@@ -258,6 +258,7 @@ public class ReportingNodeImpl extends NodeBase implements ReportingNode, Report
             logger.info("Loading Settings...");
 
             this.settings = readSettings;
+
             this.reconfigure();
             logger.info("Settings: " + this.settings.toJSONString());
         }
@@ -350,9 +351,7 @@ public class ReportingNodeImpl extends NodeBase implements ReportingNode, Report
         if ( settings.getReportingUsers() != null) {
             for ( ReportingUser user : settings.getReportingUsers() ) {
                 if ( user.getOnlineAccess() ) {
-                    if ( user.getPassword() == null )
-                        throw new RuntimeException(I18nUtil.marktr("Invalid Settings") + ": \"" + user.getEmailAddress() + "\" " + I18nUtil.marktr("has online access, but no password is set."));
-                    if ( user.getPassword().equals("") )
+                    if ( user.trans_getPasswordHash() == null )
                         throw new RuntimeException(I18nUtil.marktr("Invalid Settings") + ": \"" + user.getEmailAddress() + "\" " + I18nUtil.marktr("has online access, but no password is set."));
                 }
             }
