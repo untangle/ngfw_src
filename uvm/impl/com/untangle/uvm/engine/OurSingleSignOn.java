@@ -13,7 +13,6 @@ import org.apache.catalina.connector.Request;
 import org.apache.catalina.connector.Response;
 import org.apache.catalina.valves.ValveBase;
 
-
 /**
  * Sits in front of the Tomcat SingleSignOn to allow query string to contain
  * sso id, since we can't get cookies through jnlp.

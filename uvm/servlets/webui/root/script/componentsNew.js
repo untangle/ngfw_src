@@ -2653,14 +2653,6 @@ Ext.define("Ung.GridEventLog", {
             id: "refresh_"+this.getId(),
             text : i18n._('Refresh'),
             name : "Refresh",
-            tooltip : i18n._('Refresh'),
-            iconCls : 'icon-refresh',
-            handler : Ext.bind(this.refreshHandler,this, [false])
-        }, {
-            xtype : 'button',
-            id: "flush_"+this.getId(),
-            text : i18n._('Full Refresh'),
-            name : "Flush",
             tooltip : i18n._('Flush Events from Memory to Database and then Refresh'),
             iconCls : 'icon-refresh',
             handler : Ext.bind(this.flushHandler,this, [true])
@@ -2672,7 +2664,7 @@ Ext.define("Ung.GridEventLog", {
             enableToggle: true,
             pressed: false,
             name : "Auto Refresh",
-            tooltip : i18n._('Auto Refresh every 5 seconds (does not flush)'),
+            tooltip : i18n._('Auto Refresh every 5 seconds'),
             iconCls : 'icon-autorefresh',
             handler : Ext.bind(function() {
                 var autoRefreshButton=Ext.getCmp("auto_refresh_"+this.getId());
@@ -2721,7 +2713,7 @@ Ext.define("Ung.GridEventLog", {
         }
         var refreshButton=Ext.getCmp("refresh_"+this.getId());
         refreshButton.disable();
-        this.autorefreshList();
+        this.autoRefreshList();
     },
     stopAutoRefresh: function(setButton) {
         this.autoRefreshEnabled=false;
@@ -2737,7 +2729,7 @@ Ext.define("Ung.GridEventLog", {
         var refreshButton=Ext.getCmp("refresh_"+this.getId());
         refreshButton.enable();
     },
-    autorefreshCallback : function(result, exception) {
+    autoRefreshCallback : function(result, exception) {
         if(Ung.Util.handleException(exception)) return;
         var events = result;
         if (this.settingsCmp !== null) {
@@ -2752,18 +2744,20 @@ Ext.define("Ung.GridEventLog", {
         //this.makeSelectable();
         if(this!=null && this.rendered && this.autoRefreshEnabled) {
             if(this==this.settingsCmp.tabs.getActiveTab()) {
-                Ext.Function.defer(this.autorefreshList,5000,this);
+                Ext.Function.defer(this.autoRefreshList,5000,this);
             } else {
                 this.stopAutoRefresh(true);
             }
         }
     },
-    autorefreshList : function() {
-        var selQuery = this.getSelectedQuery();
-        var selPolicy = this.getSelectedPolicy();
-        if (selQuery != null && selPolicy != null) {
-            rpc.jsonrpc.UvmContext.getEvents(Ext.bind(this.autoRefreshCallback,this), selQuery, selPolicy, 1000 );
-        }
+    autoRefreshList : function() {
+        this.getUntangleNodeReporting().flushEvents(Ext.bind(function(result, exception) {
+            var selQuery = this.getSelectedQuery();
+            var selPolicy = this.getSelectedPolicy();
+            if (selQuery != null && selPolicy != null) {
+                rpc.jsonrpc.UvmContext.getEvents(Ext.bind(this.autoRefreshCallback,this), selQuery, selPolicy, 1000 );
+            }
+        }, this));
     },
     exportHandler : function() {
         var selQuery = this.getSelectedQuery();
