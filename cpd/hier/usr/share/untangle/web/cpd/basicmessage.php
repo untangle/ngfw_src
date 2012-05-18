@@ -9,15 +9,15 @@
   <script src="json2-min.js" type="text/javascript"></script>
   <script src="portal.js?nocache=2" type="text/javascript"></script>
   <title>
-    <?= trim( $branding_settings["company_name"] ) ?> | Captive Portal
+    <?= trim( $branding_settings["companyName"] ) ?> | Captive Portal
   </title>
   <link type="text/css" rel="stylesheet" href="/skins/<?= trim( $skin_settings["user_skin"] ) ?>/css/user.css"></link>
-  
+
   </head>
   <body class="captive-portal" id="simple">
     <div id="content">
       <div id="header">
-        <a href="<?= trim( $branding_settings["company_url"] ) ?>"><img alt="" src="/images/BrandingLogo.gif"/></a>
+        <a href="<?= trim( $branding_settings["companyUrl"] ) ?>"><img alt="" src="/images/BrandingLogo.gif"/></a>
         <div class="title">
           <?= trim( $cpd_settings["basicMessagePageTitle"] ) ?>
         </div>
@@ -26,7 +26,7 @@
         <p class="icon-captive-portal">
           <br/>
         </p>
-        <p id="logout-success" class="success" <?php if($logout_success===true){echo 'style="display:block"';}?>>You have successfully logged out.</p>        
+        <p id="logout-success" class="success" <?php if($logout_success===true){echo 'style="display:block"';}?>>You have successfully logged out.</p>
         <p class="description">
           <span>
             <b>
@@ -34,7 +34,7 @@
             </b>
           </span>
         </p>
-        <p id="agree-error" class="error">In order to continue, you must check the box below.</p>        
+        <p id="agree-error" class="error">In order to continue, you must check the box below.</p>
         <div class="info-list-captive-portal">
         <div id="basic-message-text" class="message-text">
           <?= trim( $cpd_settings["basicMessageMessageText"] ) ?>
@@ -45,12 +45,12 @@
                 <input class="u-form-text u-form-field" type="checkbox"  id="agree"/>
               <label for="agree"> <?= trim( $cpd_settings["basicMessageAgreeText"] ) ?></label>
           </div>
-          
+
      <?php } else { ?>
-     
+
           <div class="u-form-item">
             <input class="u-form-text u-form-field" type="hidden" id="agree" value="on"/>
-          </div>     
+          </div>
      <?php } ?>
           <div id="agree-message" style="display: none">
             You must accept the conditions before continuing.
@@ -60,8 +60,8 @@
             Continue
             </a>
             <span id="please-wait" style="display:none">
-                Please Wait ...            
-            </span>           
+                Please Wait ...
+            </span>
           </div>
         </div>
         <p class="contact">
@@ -73,7 +73,7 @@
       <div id="footer">
         <p>
           <span>
-            <?= trim( $branding_settings["company_name"] ) ?> Captive Portal
+            <?= trim( $branding_settings["companyName"] ) ?> Captive Portal
           </span>
         </p>
       </div>

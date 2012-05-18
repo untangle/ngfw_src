@@ -9,15 +9,15 @@
   <script src="json2-min.js" type="text/javascript"></script>
   <script src="portal.js?nocache=2" type="text/javascript"></script>
   <title>
-    <?= trim( $branding_settings["company_name"] ) ?> | Captive Portal
+    <?= trim( $branding_settings["companyName"] ) ?> | Captive Portal
   </title>
   <link type="text/css" rel="stylesheet" href="/skins/<?= trim( $skin_settings["user_skin"] ) ?>/css/user.css"></link>
-  
+
   </head>
   <body class="captive-portal" id="simple">
     <div id="content">
       <div id="header">
-        <a href="<?= trim( $branding_settings["company_url"] ) ?>"><img alt="" src="/images/BrandingLogo.gif"/></a>
+        <a href="<?= trim( $branding_settings["companyUrl"] ) ?>"><img alt="" src="/images/BrandingLogo.gif"/></a>
         <div class="title">
           <?= trim( $cpd_settings["basicLoginPageTitle"] ) ?>
         </div>
@@ -26,14 +26,14 @@
         <p class="icon-captive-portal">
           <br/>
         </p>
-          <p id="logout-success" class="success" <?php if($logout_success===true){echo 'style="display:block"';}?>>You have successfully logged out.</p>        
+          <p id="logout-success" class="success" <?php if($logout_success===true){echo 'style="display:block"';}?>>You have successfully logged out.</p>
         <p class="description">
           <span>
             <b>
               <?= trim( $cpd_settings["basicLoginPageWelcome"] ) ?>
             </b>
           </span>
-        </p>        
+        </p>
           <p id="login-error" class="error">Unable to authenticate you, please try again.</p>
         <div class="info-list-captive-portal">
           <div class="u-form-item">
@@ -51,20 +51,20 @@
 
           </div>
           <div class="u-form-item text-field">
-            <input class="u-form-text u-form-field" type="password" id="password"/>          
-          </div>          
+            <input class="u-form-text u-form-field" type="password" id="password"/>
+          </div>
           <div class="u-form-item">
               <a href="#" onclick="return authenticateUserWrapper('login-error')" class="img-background" id="authenticateUser">
               Login
             </a>
             <span id="please-wait" style="display:none">
-                Please Wait ...            
-            </span>             
+                Please Wait ...
+            </span>
           </div>
           <div class="message-text">
               <p>
               <?= $cpd_settings["basicLoginMessageText"] ?>
-              </p> 
+              </p>
           </div>
         </div>
         <p class="contact">
@@ -76,7 +76,7 @@
       <div id="footer">
         <p>
           <span>
-            <?= trim( $branding_settings["company_name"] ) ?> Captive Portal
+            <?= trim( $branding_settings["companyName"] ) ?> Captive Portal
           </span>
         </p>
       </div>
@@ -101,6 +101,6 @@
     </div>
     <script type="text/javascript">
         document.getElementsByTagName('body')[0].onkeyup = submitOnEnter;
-    </script>    
+    </script>
   </body>
 </html>

@@ -17,28 +17,6 @@ function get_skin_settings()
     return $row;
 }
 
-function get_branding_settings()
-{
-    global $uvm_db;
-    $result = @pg_query($uvm_db, "SELECT * FROM n_branding_settings ORDER BY settings_id DESC LIMIT 1");
-    if ($result) {
-        $row = pg_fetch_assoc($result);
-	pg_free_result($result);
-	return $row;
-    } else {
-       $oem_name = "Untangle";
-       $oem_url = "http://untangle.com";
-
-       $oem_file = "/etc/untangle/oem/oem.php";
-       if (is_file($oem_file)) {
-       	  include($oem_file);
-       }
-
-       $row = array("company_url" => $oem_url, "company_name" => $oem_name);
-       return $row;
-    }
-}
-
 function get_cpd_settings()
 {
 	$data = file_get_contents("/etc/untangle-cpd/config.js");
@@ -157,6 +135,58 @@ function get_time_remaining()
     }
 
     return $cpd_settings["timeout_s"] - $row[0];
+}
+
+function get_node_settings($nodename)
+{
+    /* look for the first part of our known path */
+    $homefind = strpos($_ENV["SCRIPT_FILENAME"],"/usr/share/untangle");
+
+        /* script filename not found so we'll assume the root as our home */
+        if ($homefind === false)
+        {
+            $homepath = "";
+        }
+
+        /* use any prefix from the script filename as our home */
+        else
+        {
+        if ($homefind != 0) $homepath = substr($_ENV["SCRIPT_FILENAME"],0,$homefind);
+        else $homepath = "";
+        }
+
+    /* read the node manager settings */
+    $listfile = $homepath . "/usr/share/untangle/settings/untangle-vm/node_manager.js";
+    $data = file_get_contents($listfile);
+    $nodeinfo = json_decode($data,true);
+
+    $nodeid = null;
+
+        /* look for the target node name and grab the node id */
+        foreach($nodeinfo["nodes"]["list"] as $node)
+        {
+        if ($node["nodeName"] != $nodename) continue;
+        $nodeid = $node["id"];
+        }
+
+    /* node not found so return null */
+    if ($nodeid == null) return(null);
+
+    /* load the settings for the argumented node */
+    $nodefile = $homepath . "/usr/share/untangle/settings/" . $nodename . "/settings_" . $nodeid . ".js";
+    $data = file_get_contents($nodefile);
+    $settings = json_decode($data,true);
+
+    return($settings);
+}
+
+function get_node_settings_item($nodename,$itemname)
+{
+    $settings = get_node_settings($nodename);
+    if ($settings == null) return(null);
+
+    $value = $settings[$itemname];
+    return($value);
 }
 
 ?>

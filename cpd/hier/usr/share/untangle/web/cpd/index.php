@@ -23,7 +23,7 @@ session_write_close();
 
 open_db_connection();
 $skin_settings = get_skin_settings();
-$branding_settings = get_branding_settings();
+$branding_settings = get_node_settings('untangle-node-branding');
 $cpd_settings = get_cpd_settings();
 
 $redirectUrl = $cpd_settings["redirect_url"];
