@@ -155,18 +155,6 @@ if (!Ung.hasResource["Ung.Administration"]) {
             }
             return this.rpc.snmpSettings;
         },
-        // get logging settings
-        getLoggingSettings : function(forceReload) {
-            if (forceReload || this.rpc.loggingSettings === undefined) {
-                try {
-                    this.rpc.loggingSettings = main.getLoggingManager().getLoggingSettings();
-                } catch (e) {
-                    Ung.Util.rpcExHandler(e);
-                }
-
-            }
-            return this.rpc.loggingSettings;
-        },
         // get Current Server CertInfo
         getCurrentServerCertInfo : function(forceReload) {
             if (forceReload || this.rpc.currentServerCertInfo === undefined) {
@@ -246,7 +234,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
                         "clearPassword" : "",
                         "javaClass" : "com.untangle.uvm.User"
                     },
-                    ignoreServerIds:false,
+                    ignoreServerIds: true,
                     dataFn : Ext.bind(function() { 
                         return this.buildUserList(false);
                     }, this),
@@ -1188,7 +1176,6 @@ if (!Ung.hasResource["Ung.Administration"]) {
         buildMonitoring : function() {
             // keep initial settings
             this.initialSnmpSettings = Ung.Util.clone(this.getSnmpSettings());
-            this.initialLoggingSettings = Ung.Util.clone(this.getLoggingSettings());
 
             this.panelMonitoring = Ext.create('Ext.panel.Panel',{
                 name : 'panelMonitoring',
@@ -1702,7 +1689,6 @@ if (!Ung.hasResource["Ung.Administration"]) {
             this.initialAccessSettings = Ung.Util.clone(this.getAccessSettings(true));
             this.initialAddressSettings = Ung.Util.clone(this.getAddressSettings(true));
             this.initialSnmpSettings = Ung.Util.clone(this.getSnmpSettings(true));
-            this.initialLoggingSettings = Ung.Util.clone(this.getLoggingSettings(true));
             this.getCurrentServerCertInfo(true);
             this.getHostname(true);
             this.gridAdminAccounts.clearDirty();
@@ -1745,7 +1731,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
         completeCommitSettings : function(callback)
         {
             if (this.validate()) {
-                this.saveSemaphore = 5;
+                this.saveSemaphore = 4;
                 Ext.MessageBox.wait(i18n._("Saving..."), i18n._("Please wait"));
 
                 var listAdministration=this.gridAdminAccounts.getFullSaveList();
@@ -1778,10 +1764,6 @@ if (!Ung.hasResource["Ung.Administration"]) {
                 rpc.adminManager.getSnmpManager().setSnmpSettings(Ext.bind(function(result, exception) {
                    this.afterSave(exception, callback);
                 },this), this.getSnmpSettings());
-
-                main.getLoggingManager().setLoggingSettings(Ext.bind(function(result, exception) {
-                    this.afterSave(exception, callback);
-                },this), this.getLoggingSettings());
 
                 rpc.skinManager.setSkinSettings(Ext.bind(function(result, exception) {
                     this.afterSave(exception, callback);

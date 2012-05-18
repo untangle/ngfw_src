@@ -2538,7 +2538,7 @@ Ext.define("Ung.FaceplateMetric", {
     },
     getCurrentSessions: function(metrics) {
     	//Just for test generate random data
-    	return Math.floor((Math.random()*150)); //Random Data
+    	//return Math.floor((Math.random()*150)); //Random Data
     	
     	if(this.currentSessionsMetricIndex == null) {
     		this.currentSessionsMetricIndex = -1;
@@ -3890,12 +3890,12 @@ Ext.define('Ung.EditorGrid', {
     enableColumnMove: false,
     dirtyFlag: false,
     //This add a new column called id
-    //To be used for entities wit no id property
+    //To be used for entities with no id property
     autoGenerateId: false,
     addedId : 0,
     generatedId:1,
     //Ignore ids generatedfrom the server and records with missing ids.
-    //if this is set the ids will be generated on thi client usint Ung.Util.generateListIds
+    //if this is set the ids will be generated on the client using Ung.Util.generateListIds
     ignoreServerIds:true,
     sortingDisabled:false,
     constructor : function(config) {
