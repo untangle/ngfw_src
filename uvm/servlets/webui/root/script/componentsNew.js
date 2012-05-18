@@ -2524,10 +2524,10 @@ Ext.define("Ung.FaceplateMetric", {
         var reloadChart = this.chartData[0].sessions != 0;
     	for(var i=0;i<this.chartData.length-1;i++) {
     		this.chartData[i].sessions=this.chartData[i+1].sessions;
-    		reloadChart = reloadChart || (this.chartData[i].sessions != 0)
+    		reloadChart = (reloadChart || (this.chartData[i].sessions != 0));
     	}
     	var currentSessions = this.getCurrentSessions(nodeCmp.metrics);
-    	reloadChart = reloadChart || (currentSessions!=0);
+    	reloadChart = (reloadChart || (currentSessions!=0));
     	this.chartData[this.chartData.length-1].sessions=currentSessions;
     	if(reloadChart) {
     		this.chart.store.loadData(this.chartData);
