@@ -2333,15 +2333,16 @@ Ext.define("Ung.FaceplateMetric", {
     	this.chart = Ext.create('Ext.chart.Chart', {
     	    renderTo: chartContainerEl,
     	    width: 133,
-    	    height: 92,
+    	    height: 88,
     	    animate: false,
+    	    //insetPadding: 11,
     	    store: Ext.create('Ext.data.JsonStore', {
         	    fields: ['time', 'sessions'],
         	    data: this.chartData
         	}),
     	    axes: [{
 	            type: 'Numeric',
-	            position: 'right',
+	            position: 'left',
 	            fields: ['sessions'],
 	            minimum: 0,
 	            majorTickSteps: 0,
@@ -2349,7 +2350,7 @@ Ext.define("Ung.FaceplateMetric", {
 	        }],
     	    series: [{
 	            type: 'line',
-	            axis: 'right',
+	            axis: 'left',
 	            smooth: true,
 	            showMarkers: false,
 	            fill:true,
@@ -2537,7 +2538,7 @@ Ext.define("Ung.FaceplateMetric", {
     },
     getCurrentSessions: function(metrics) {
     	//Just for test generate random data
-    	//return Math.floor((Math.random()*15)); //Random Data
+    	return Math.floor((Math.random()*150)); //Random Data
     	
     	if(this.currentSessionsMetricIndex == null) {
     		this.currentSessionsMetricIndex = -1;
