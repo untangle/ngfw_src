@@ -2092,10 +2092,10 @@ Ext.define("Ung.SystemStats", {
 
         // network tooltip
         var networkArr=[
-            '<div class="title">'+i18n._("RX Speed:")+'</div>',
-            '<div class="values"><span name="rx_speed"></span> KB/sec</div>',
             '<div class="title">'+i18n._("TX Speed:")+'</div>',
-            '<div class="values"><span name="tx_speed"></span> KB/sec</div>'
+            '<div class="values"><span name="tx_speed"></span> KB/sec</div>',
+            '<div class="title">'+i18n._("RX Speed:")+'</div>',
+            '<div class="values"><span name="rx_speed"></span> KB/sec</div>'
         ];
         this.networkToolTip= Ext.create('Ext.tip.ToolTip',{
             target: this.getEl().down("div[class=network]"),
