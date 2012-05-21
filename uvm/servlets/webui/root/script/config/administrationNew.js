@@ -819,202 +819,189 @@ if (!Ung.hasResource["Ung.Administration"]) {
                 onGenerateSelfSignedCertificate : function() {
                     var settingsCmp = Ext.getCmp(this.parentId);
 
-                    if (!this.winGenerateSelfSignedCertificate) {
-                        settingsCmp.buildGenerateSelfSignedCertificate();
-                        this.winGenerateSelfSignedCertificate = Ext.create('Ung.CertGenerateWindow',{
-                            breadcrumbs : [{
-                                title : i18n._("Configuration"),
-                                action : Ext.bind(function() {
-                                    this.panelCertificates.winGenerateSelfSignedCertificate.cancelAction();
-                                    this.cancelAction();
-                                },settingsCmp)
-                            }, {
-                                title : i18n._('Administration'),
-                                action : Ext.bind(function() {
-                                    this.panelCertificates.winGenerateSelfSignedCertificate.cancelAction();
-                                },settingsCmp)
-                            }, {
-                                title : i18n._('Certificates'),
-                                action : Ext.bind(function() {
-                                    this.panelCertificates.winGenerateSelfSignedCertificate.cancelAction();
-                                },settingsCmp)
-                            }, {
-                                title : settingsCmp.i18n._("Generate a Self-Signed Certificate")
-                            }],
-                            items : settingsCmp.panelGenerateSelfSignedCertificate,
-
-                            proceedAction : Ext.bind(function() {
-                                Ext.MessageBox.wait(this.i18n._("Generating Certificate..."), i18n._("Please wait"));
-
-                                //validation
-                                var organizationCmp = Ext.getCmp('administration_organization');
-                                var organizationUnitCmp = Ext.getCmp('administration_organizationUnit');
-                                var cityCmp = Ext.getCmp('administration_city');
-                                var stateCmp = Ext.getCmp('administration_state');
-                                var countryCmp = Ext.getCmp('administration_country');
-                                if (this.isBlankField(organizationCmp, this.i18n._("You must specify an organization.")) ||
-                                    this.isBlankField(organizationUnitCmp, this.i18n._("You must specify an organization unit.")) ||
-                                    this.isBlankField(cityCmp, this.i18n._("You must specify a city.")) ||
-                                    this.isBlankField(stateCmp, this.i18n._("You must specify a state.")) ||
-                                    this.isBlankField(countryCmp, this.i18n._("You must specify a country."))) {
-                                        return;
-                                }
-
-                                //get user values
-                                var organization = organizationCmp.getValue();
-                                var organizationUnit = organizationUnitCmp.getValue();
-                                var city = cityCmp.getValue();
-                                var state = stateCmp.getValue();
-                                var country = countryCmp.getValue();
-                                var distinguishedName = Ext.String.format("C={4},ST={3},L={2},OU={1},O={0}",
-                                        organization, organizationUnit, city, state, country);
-
-                                // generate certificate
-                                main.getAppServerManager().regenCert(Ext.bind(function(result, exception) {
-                                    if(Ung.Util.handleException(exception)) return;
-                                    if (result) { //true or false
-                                        //success
-
-                                        //update status
-                                        this.updateCertificatesStatus();
-
-                                        Ext.MessageBox.alert(this.i18n._("Succeeded"), this.i18n._("Certificate Successfully Generated"),
-                                        		Ext.bind(function () {
-                                                this.panelCertificates.winGenerateSelfSignedCertificate.cancelAction();
-                                            },this)
-                                        );
-                                    } else {
-                                        //failed
-                                        Ext.MessageBox.alert(i18n._("Failed"), this.i18n._("Error generating self-signed certificate"));
-                                        return;
-                                    }
-                                },this), distinguishedName, 5*365);
-
+                    settingsCmp.buildGenerateSelfSignedCertificate();
+                    this.winGenerateSelfSignedCertificate = Ext.create('Ung.CertGenerateWindow',{
+                        breadcrumbs : [{
+                            title : i18n._("Configuration"),
+                            action : Ext.bind(function() {
+                                this.panelCertificates.winGenerateSelfSignedCertificate.cancelAction();
+                                this.cancelAction();
                             },settingsCmp)
-                        });
-                    } else {
-                        /* Refresh the hostname */
-                        var hostnameField = null;
-                        hostnameField = settingsCmp.panelGenerateSelfSignedCertificate.find( "name", "hostname" )[0];
-                        if ( hostnameField != null ) {
-                            hostnameField.setValue( settingsCmp.getHostname( true ));
-                        }
-                    }
+                        }, {
+                            title : i18n._('Administration'),
+                            action : Ext.bind(function() {
+                                this.panelCertificates.winGenerateSelfSignedCertificate.cancelAction();
+                            },settingsCmp)
+                        }, {
+                            title : i18n._('Certificates'),
+                            action : Ext.bind(function() {
+                                this.panelCertificates.winGenerateSelfSignedCertificate.cancelAction();
+                            },settingsCmp)
+                        }, {
+                            title : settingsCmp.i18n._("Generate a Self-Signed Certificate")
+                        }],
+                        items : settingsCmp.panelGenerateSelfSignedCertificate,
+
+                        proceedAction : Ext.bind(function() {
+                            Ext.MessageBox.wait(this.i18n._("Generating Certificate..."), i18n._("Please wait"));
+
+                            //validation
+                            var organizationCmp = Ext.getCmp('administration_organization');
+                            var organizationUnitCmp = Ext.getCmp('administration_organizationUnit');
+                            var cityCmp = Ext.getCmp('administration_city');
+                            var stateCmp = Ext.getCmp('administration_state');
+                            var countryCmp = Ext.getCmp('administration_country');
+                            if (this.isBlankField(organizationCmp, this.i18n._("You must specify an organization.")) ||
+                                this.isBlankField(organizationUnitCmp, this.i18n._("You must specify an organization unit.")) ||
+                                this.isBlankField(cityCmp, this.i18n._("You must specify a city.")) ||
+                                this.isBlankField(stateCmp, this.i18n._("You must specify a state.")) ||
+                                this.isBlankField(countryCmp, this.i18n._("You must specify a country."))) {
+                                    return;
+                            }
+
+                            //get user values
+                            var organization = organizationCmp.getValue();
+                            var organizationUnit = organizationUnitCmp.getValue();
+                            var city = cityCmp.getValue();
+                            var state = stateCmp.getValue();
+                            var country = countryCmp.getValue();
+                            var distinguishedName = Ext.String.format("C={4},ST={3},L={2},OU={1},O={0}",
+                                    organization, organizationUnit, city, state, country);
+
+                            // generate certificate
+                            main.getAppServerManager().regenCert(Ext.bind(function(result, exception) {
+                                if(Ung.Util.handleException(exception)) return;
+                                if (result) { //true or false
+                                    //success
+
+                                    //update status
+                                    this.updateCertificatesStatus();
+
+                                    Ext.MessageBox.alert(this.i18n._("Succeeded"), this.i18n._("Certificate Successfully Generated"),
+                                    		Ext.bind(function () {
+                                            this.panelCertificates.winGenerateSelfSignedCertificate.cancelAction();
+                                        },this)
+                                    );
+                                } else {
+                                    //failed
+                                    Ext.MessageBox.alert(i18n._("Failed"), this.i18n._("Error generating self-signed certificate"));
+                                    return;
+                                }
+                            },this), distinguishedName, 5*365);
+
+                        },settingsCmp)
+                    });
                     
                     this.winGenerateSelfSignedCertificate.show();
                 },
 
                 onGenerateCertGenTrusted : function() {
-                    if (!this.winGenerateCertGenTrusted) {
-                        var settingsCmp = Ext.getCmp(this.parentId);
-                        settingsCmp.buildGenerateCertGenTrusted();
-                        this.winGenerateCertGenTrusted = Ext.create('Ung.CertGenerateWindow',{
-                            breadcrumbs : [{
-                                title : i18n._("Configuration"),
-                                action : Ext.bind(function() {
-                                    this.panelCertificates.winGenerateCertGenTrusted.cancelAction();
-                                    this.cancelAction();
-                                },settingsCmp)
-                            }, {
-                                title : i18n._('Administration'),
-                                action : Ext.bind(function() {
-                                    this.panelCertificates.winGenerateCertGenTrusted.cancelAction();
-                                },settingsCmp)
-                            }, {
-                                title : i18n._('Certificates'),
-                                action : Ext.bind(function() {
-                                    this.panelCertificates.winGenerateCertGenTrusted.cancelAction();
-                                },settingsCmp)
-                            }, {
-                                title : settingsCmp.i18n._("Generate a Certificate Signature Request")
-                            }],
-                            items : settingsCmp.panelGenerateCertGenTrusted,
-
-                            proceedAction : Ext.bind(function() {
-                                Ext.MessageBox.wait(this.i18n._("Generating Certificate..."), i18n._("Please wait"));
-
-                                // generate certificate request
-                                main.getAppServerManager().generateCSR(Ext.bind(function(result, exception) {
-                                    if(Ung.Util.handleException(exception)) return;
-                                    if (result != null) {
-                                        //success
-                                        Ext.MessageBox.alert(this.i18n._("Succeeded"), this.i18n._("Certificate Signature Request Successfully Generated"),
-                                    		Ext.bind(function () {
-                                                var crsCmp = Ext.getCmp('administration_crs');
-                                                crsCmp.setValue(result);
-                                                crsCmp.focus(true);
-                                            },this)
-                                        );
-                                    } else {
-                                        //failed
-                                        Ext.MessageBox.alert(i18n._("Failed"), this.i18n._("Error generating certificate signature request"));
-                                        return;
-                                    }
-                                },this));
-
+                    var settingsCmp = Ext.getCmp(this.parentId);
+                    settingsCmp.buildGenerateCertGenTrusted();
+                    this.winGenerateCertGenTrusted = Ext.create('Ung.CertGenerateWindow',{
+                        breadcrumbs : [{
+                            title : i18n._("Configuration"),
+                            action : Ext.bind(function() {
+                                this.panelCertificates.winGenerateCertGenTrusted.cancelAction();
+                                this.cancelAction();
                             },settingsCmp)
-                        });
-                    }
+                        }, {
+                            title : i18n._('Administration'),
+                            action : Ext.bind(function() {
+                                this.panelCertificates.winGenerateCertGenTrusted.cancelAction();
+                            },settingsCmp)
+                        }, {
+                            title : i18n._('Certificates'),
+                            action : Ext.bind(function() {
+                                this.panelCertificates.winGenerateCertGenTrusted.cancelAction();
+                            },settingsCmp)
+                        }, {
+                            title : settingsCmp.i18n._("Generate a Certificate Signature Request")
+                        }],
+                        items : settingsCmp.panelGenerateCertGenTrusted,
+
+                        proceedAction : Ext.bind(function() {
+                            Ext.MessageBox.wait(this.i18n._("Generating Certificate..."), i18n._("Please wait"));
+
+                            // generate certificate request
+                            main.getAppServerManager().generateCSR(Ext.bind(function(result, exception) {
+                                if(Ung.Util.handleException(exception)) return;
+                                if (result != null) {
+                                    //success
+                                    Ext.MessageBox.alert(this.i18n._("Succeeded"), this.i18n._("Certificate Signature Request Successfully Generated"),
+                                		Ext.bind(function () {
+                                            var crsCmp = Ext.getCmp('administration_crs');
+                                            crsCmp.setValue(result);
+                                            crsCmp.focus(true);
+                                        },this)
+                                    );
+                                } else {
+                                    //failed
+                                    Ext.MessageBox.alert(i18n._("Failed"), this.i18n._("Error generating certificate signature request"));
+                                    return;
+                                }
+                            },this));
+
+                        },settingsCmp)
+                    });
                     this.winGenerateCertGenTrusted.show();
                 },
 
                 onCertImportTrusted : function() {
-                    if (!this.winCertImportTrusted) {
-                        var settingsCmp = Ext.getCmp(this.parentId);
-                        settingsCmp.buildCertImportTrusted();
-                        this.winCertImportTrusted = Ext.create('Ung.CertGenerateWindow',{
-                            breadcrumbs : [{
-                                title : i18n._("Configuration"),
-                                action : Ext.bind(function() {
-                                    this.panelCertificates.winCertImportTrusted.cancelAction();
-                                    this.cancelAction();
-                                },settingsCmp)
-                            }, {
-                                title : i18n._('Administration'),
-                                action : Ext.bind(function() {
-                                    this.panelCertificates.winCertImportTrusted.cancelAction();
-                                },settingsCmp)
-                            }, {
-                                title : i18n._('Certificates'),
-                                action : Ext.bind(function() {
-                                    this.panelCertificates.winCertImportTrusted.cancelAction();
-                                },settingsCmp)
-                            }, {
-                                title : settingsCmp.i18n._("Import Signed Certificate")
-                            }],
-                            items : settingsCmp.panelCertImportTrusted,
-
-                            proceedAction : Ext.bind(function() {
-                                Ext.MessageBox.wait(this.i18n._("Importing Certificate..."), i18n._("Please wait"));
-
-                                //get user values
-                                var cert = Ext.getCmp('administration_import_cert').getValue();
-                                var caCert = Ext.getCmp('administration_import_caCert').getValue();
-
-                                // import certificate
-                                main.getAppServerManager().importServerCert(Ext.bind(function(result, exception) {
-                                    if(Ung.Util.handleException(exception)) return;
-                                    if (result) { //true or false
-                                        //success
-
-                                        //update status
-                                        this.updateCertificatesStatus();
-
-                                        Ext.MessageBox.alert(this.i18n._("Succeeded"), this.i18n._("Certificate Successfully Imported"),
-                                    		Ext.bind(function () {
-                                                this.panelCertificates.winCertImportTrusted.cancelAction();
-                                            },this)
-                                        );
-                                    } else {
-                                        //failed
-                                        Ext.MessageBox.alert(i18n._("Failed"), this.i18n._("Error importing certificate"));
-                                        return;
-                                    }
-                                },this), cert, caCert.length==0?null:caCert );
-
+                    var settingsCmp = Ext.getCmp(this.parentId);
+                    settingsCmp.buildCertImportTrusted();
+                    this.winCertImportTrusted = Ext.create('Ung.CertGenerateWindow',{
+                        breadcrumbs : [{
+                            title : i18n._("Configuration"),
+                            action : Ext.bind(function() {
+                                this.panelCertificates.winCertImportTrusted.cancelAction();
+                                this.cancelAction();
                             },settingsCmp)
-                        });
-                    }
+                        }, {
+                            title : i18n._('Administration'),
+                            action : Ext.bind(function() {
+                                this.panelCertificates.winCertImportTrusted.cancelAction();
+                            },settingsCmp)
+                        }, {
+                            title : i18n._('Certificates'),
+                            action : Ext.bind(function() {
+                                this.panelCertificates.winCertImportTrusted.cancelAction();
+                            },settingsCmp)
+                        }, {
+                            title : settingsCmp.i18n._("Import Signed Certificate")
+                        }],
+                        items : settingsCmp.panelCertImportTrusted,
+
+                        proceedAction : Ext.bind(function() {
+                            Ext.MessageBox.wait(this.i18n._("Importing Certificate..."), i18n._("Please wait"));
+
+                            //get user values
+                            var cert = Ext.getCmp('administration_import_cert').getValue();
+                            var caCert = Ext.getCmp('administration_import_caCert').getValue();
+
+                            // import certificate
+                            main.getAppServerManager().importServerCert(Ext.bind(function(result, exception) {
+                                if(Ung.Util.handleException(exception)) return;
+                                if (result) { //true or false
+                                    //success
+
+                                    //update status
+                                    this.updateCertificatesStatus();
+
+                                    Ext.MessageBox.alert(this.i18n._("Succeeded"), this.i18n._("Certificate Successfully Imported"),
+                                		Ext.bind(function () {
+                                            this.panelCertificates.winCertImportTrusted.cancelAction();
+                                        },this)
+                                    );
+                                } else {
+                                    //failed
+                                    Ext.MessageBox.alert(i18n._("Failed"), this.i18n._("Error importing certificate"));
+                                    return;
+                                }
+                            },this), cert, caCert.length==0?null:caCert );
+
+                        },settingsCmp)
+                    });
                     this.winCertImportTrusted.show();
                 },
 
@@ -1458,6 +1445,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
                     var skinCombo=Ext.getCmp('administration_admin_client_skin_combo');
                     if(skinCombo!=null) {
                         skinCombo.setValue(this.getSkinSettings().administrationClientSkin);
+                        skinCombo.clearDirty();
                     }
                 },this)
             });
