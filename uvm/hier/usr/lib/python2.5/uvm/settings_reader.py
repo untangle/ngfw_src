@@ -58,3 +58,42 @@ def get_node_settings_item(nodename,itemname):
 
     value = settings[itemname]
     return(value)
+
+#-----------------------------------------------------------------------------
+
+def get_uvm_settings(basename):
+
+    basefile = "@PREFIX@/usr/share/untangle/settings/untangle-vm/" + basename + ".js"
+
+    # find the settings for the argumented base name
+    try:
+
+        # read the settings
+        file = open(basefile, "r")
+        data = file.read()
+        file.close()
+
+        # pares the settings
+        baseinfo = json.loads(data)
+
+    # for all exceptions we just return empty
+    except:
+        return(None)
+
+    # return the settings
+    return(baseinfo)
+
+#-----------------------------------------------------------------------------
+
+def get_uvm_settings_item(basename,itemname):
+
+    settings = get_uvm_settings(basename)
+
+    if (settings == None):
+        return(None)
+
+    if (not settings.has_key(itemname)):
+        return(None)
+
+    value = settings[itemname]
+    return(value)
