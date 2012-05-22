@@ -224,17 +224,14 @@ if (!Ung.hasResource["Ung.Administration"]) {
                     name : 'gridAdminAccounts',
                     recordJavaClass : "com.untangle.uvm.AdminUserSettings",
                     emptyRow : {
-                        "username" : this.i18n._("[no login]"),
+                        "username" : this.i18n._("[no username]"),
                         "description" : this.i18n._("[no description]"),
                         "emailAddress" : this.i18n._("[no email]"),
                         "password"       : null,
-                        "passwordHash"   : null
+                        "passwordHashBase64"   : null
                     },
                     ignoreServerIds: true,
-                    dataFn : Ext.bind(function() { 
-                        return this.buildUserList(false);
-                    }, this),
-                    dataRoot:'',
+                    data : this.getAdminSettings().users.list,
                     // the list of fields; we need all as we get/set all records once
                     fields : [{
                         name : 'id'
@@ -247,7 +244,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
                     }, {
                         name : 'password'
                     }, {
-                        name : 'passwordHash'
+                        name : 'passwordHashBase64'
                     }],
                     // the list of columns for the column model
                     columns : [{
@@ -317,30 +314,8 @@ if (!Ung.hasResource["Ung.Administration"]) {
                     	xtype: "textfield",
                         inputType: 'password',
                         name : "Confirm Password",
-                        dataIndex : "clearPassword",
-                        vtype: 'password',
-                        initialPassField: 'administration_rowEditor_password_'+ fieldID, // id of the initial password field
-                        fieldLabel : this.i18n._("Confirm Password"),
-                        width : 400
-                    }],
-                    // the row input lines used by the change password window
-                    rowEditorChangePassInputLines : [{
-                    	xtype: "textfield",
-                        inputType: 'password',
-                        name : "Password",
                         dataIndex : "password",
-                        id : 'administration_rowEditor1_password_'+ fieldID,
-                        fieldLabel : this.i18n._("Password"),
-                        width : 400,
-                        minLength : 3,
-                        minLengthText : Ext.String.format(this.i18n._("The password is shorter than the minimum {0} characters."), 3)
-                    }, {
-                    	xtype: "textfield",
-                        inputType: 'password',
-                        name : "Confirm Password",
-                        dataIndex : "password",
-                        vtype: 'password',
-                        initialPassField: 'administration_rowEditor1_password_'+ fieldID, // id of the initial password field
+                        id : 'administration_rowEditor_confirm_password_'+ fieldID,
                         fieldLabel : this.i18n._("Confirm Password"),
                         width : 400
                     }]
@@ -513,12 +488,39 @@ if (!Ung.hasResource["Ung.Administration"]) {
                     }]
                 }]
             });
-            if ( this.gridAdminAccounts.rowEditorChangePassInputLines != null) {
-                 this.gridAdminAccounts.rowEditorChangePass = Ext.create("Ung.RowEditorWindow",{
-                    grid : this.gridAdminAccounts,
-                    inputLines : this.gridAdminAccounts.rowEditorChangePassInputLines
-                });
-            }
+            this.gridAdminAccounts.rowEditorChangePass = Ext.create("Ung.RowEditorWindow",{
+                grid : this.gridAdminAccounts,
+                inputLines : [{
+                    xtype: "textfield",
+                    inputType: 'password',
+                    name : "Password",
+                    dataIndex : "password",
+                    id : 'administration_rowEditor1_password_'+ fieldID,
+                    fieldLabel : this.i18n._("Password"),
+                    width : 400,
+                    minLength : 3,
+                    minLengthText : Ext.String.format(this.i18n._("The password is shorter than the minimum {0} characters."), 3)
+                }, {
+                    xtype: "textfield",
+                    inputType: 'password',
+                    name : "Confirm Password",
+                    dataIndex : "password",
+                    id : 'administration_rowEditor1_confirm_password_'+ fieldID,
+                    fieldLabel : this.i18n._("Confirm Password"),
+                    width : 400
+                }],
+                validate: Ext.bind(function(inputLines) {
+                	//validate password match
+                	var pwd = Ext.getCmp("administration_rowEditor1_password_" + fieldID);
+                	var confirmPwd = Ext.getCmp("administration_rowEditor1_confirm_password_" + fieldID);
+                	if(pwd.getValue() != confirmPwd.getValue()) {
+                		pwd.markInvalid();
+                		return this.i18n._('Passwords do not match');
+                	} else {
+                        return true;
+                    }
+                },this)
+            });
         },
         buildPublicAddress : function() {
             var hostname = this.getHostname(true);
@@ -1465,11 +1467,11 @@ if (!Ung.hasResource["Ung.Administration"]) {
             var listAdminAccounts = this.gridAdminAccounts.getFullSaveList();
             var oneWritableAccount = false;
 
-            // verify that the login name is not duplicated
+            // verify that the username is not duplicated
             for(var i=0; i<listAdminAccounts.length;i++) {
                 for(var j=i+1; j<listAdminAccounts.length;j++) {
-                    if (listAdminAccounts[i].login == listAdminAccounts[j].login) {
-                        Ext.MessageBox.alert(this.i18n._('Warning'), Ext.String.format(this.i18n._("The login name: \"{0}\" in row: {1}  already exists."), listAdminAccounts[j].login, j+1),
+                    if (listAdminAccounts[i].username == listAdminAccounts[j].username) {
+                        Ext.MessageBox.alert(this.i18n._('Warning'), Ext.String.format(this.i18n._("The username name: \"{0}\" in row: {1}  already exists."), listAdminAccounts[j].username, j+1),
                     		Ext.bind(function () {
                                 this.tabs.setActiveTab(this.panelAdministration);
                             },this)
@@ -1662,14 +1664,13 @@ if (!Ung.hasResource["Ung.Administration"]) {
                 return;
             }
 
-            this.initialSkinSettings = Ung.Util.clone(this.getSkinSettings(true));
-            this.getAdminSettings(true);
+            this.initialSkinSettings = Ung.Util.clone( this.getSkinSettings(true) );
+            this.gridAdminAccounts.store.loadData( this.getAdminSettings(true).users.list );
             this.initialAccessSettings = Ung.Util.clone(this.getAccessSettings(true));
             this.initialAddressSettings = Ung.Util.clone(this.getAddressSettings(true));
             this.initialSnmpSettings = Ung.Util.clone(this.getSnmpSettings(true));
             this.getCurrentServerCertInfo(true);
             this.getHostname(true);
-            this.gridAdminAccounts.clearDirty();
 
             Ext.MessageBox.hide();
         },
@@ -1712,26 +1713,9 @@ if (!Ung.hasResource["Ung.Administration"]) {
                 this.saveSemaphore = 4;
                 Ext.MessageBox.wait(i18n._("Saving..."), i18n._("Please wait"));
 
-                var listAdministration=this.gridAdminAccounts.getFullSaveList();
-                var setAdministration={};
-                for(var i=0; i<listAdministration.length;i++) {
-                    setAdministration[i]=listAdministration[i];
-                }
+                this.getAdminSettings().users.list=this.gridAdminAccounts.getFullSaveList();
                 
-                /* Add in the reporting only users */
-                var storeDataSet=this.getAdminSettings().users.list;
-                for ( var id in storeDataSet ) {
-                    i++;
-
-                    var user = storeDataSet[id];
-                    if ( !user.hasWriteAccess ) {
-                        /* So the settings always parse */
-                        delete( user.password );
-                        setAdministration[i] = user;
-                    }
-                }
-                this.getAdminSettings().users.list=setAdministration;
-                rpc.adminManager.setAdminSettings(Ext.bind(function(result, exception) {
+                rpc.adminManager.setSettings(Ext.bind(function(result, exception) {
                     this.afterSave(exception, callback);
                 },this), this.getAdminSettings());
 
@@ -1739,7 +1723,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
                     this.afterSave(exception, callback);
                  },this), this.getAddressSettings());
 
-                rpc.adminManager.getSnmpManager().setSnmpSettings(Ext.bind(function(result, exception) {
+                rpc.snmpManager.setSnmpSettings(Ext.bind(function(result, exception) {
                    this.afterSave(exception, callback);
                 },this), this.getSnmpSettings());
 
@@ -1767,29 +1751,12 @@ if (!Ung.hasResource["Ung.Administration"]) {
             this.needRefresh = this.initialSkin != this.getSkinSettings().administrationClientSkin;
             callback();
         },
-
         closeWindow : function() {
             Ung.Administration.superclass.closeWindow.call(this);
             if (this.needRefresh) {
                 Ung.Util.goToStartPage();
             }
         },
-
-
-        buildUserList : function(forceReload)
-        {
-            var storeData=[];
-            var storeDataSet=this.getAdminSettings(forceReload).users.list;
-            for(var id in storeDataSet) {
-                var user = storeDataSet[id];
-                
-                if ( user.hasWriteAccess ) {
-                    storeData.push(user);
-                }
-            }
-            return storeData;
-        },
-
         hasRemoteChanges : function()
         {
             i_accessSettings = this.initialAccessSettings;

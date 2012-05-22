@@ -520,7 +520,7 @@ if (!Ung.hasResource["Ung.Reporting"]) {
                             emailSummaries : true,
                             onlineAccess   : false,
                             password       : null,
-                            passwordHash   : null
+                            passwordHashBase64   : null
                         },
                         data: this.getSettings().reportingUsers.list,
                         recordJavaClass : "com.untangle.node.reporting.ReportingUser",
