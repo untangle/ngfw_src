@@ -40,7 +40,6 @@ import com.untangle.uvm.node.Validator;
 import com.untangle.uvm.node.IPMaskedAddress;
 import com.untangle.uvm.node.Reporting;
 import com.untangle.uvm.AdminManager;
-import com.untangle.uvm.User;
 import com.untangle.uvm.logging.LogEvent;
 import com.untangle.uvm.vnet.NodeBase;
 import com.untangle.uvm.vnet.PipeSpec;

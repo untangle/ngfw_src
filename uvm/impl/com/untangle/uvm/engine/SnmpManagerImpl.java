@@ -1,7 +1,7 @@
 /**
  * $HeadURL$
  */
-package com.untangle.uvm.snmp;
+package com.untangle.uvm.engine;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -9,13 +9,14 @@ import java.io.FileOutputStream;
 import org.apache.log4j.Logger;
 
 import com.untangle.node.util.IOUtil;
+import com.untangle.uvm.SnmpManager;
+import com.untangle.uvm.SnmpSettings;
 import com.untangle.uvm.UvmContextFactory;
-import com.untangle.uvm.util.HasConfigFiles;
 
 /**
  * Implementation of the SnmpManager
  */
-public class SnmpManagerImpl implements SnmpManager, HasConfigFiles
+public class SnmpManagerImpl implements SnmpManager
 {
 
     private static final String EOL = "\n";

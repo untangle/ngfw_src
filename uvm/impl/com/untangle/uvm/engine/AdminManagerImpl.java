@@ -23,25 +23,26 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.apache.log4j.Logger;
 
+import com.untangle.uvm.UvmContextFactory;
+import com.untangle.uvm.SettingsManager;
 import com.untangle.uvm.LanguageSettings;
 import com.untangle.uvm.MailSender;
 import com.untangle.uvm.MailSettings;
 import com.untangle.uvm.AdminManager;
 import com.untangle.uvm.AdminSettings;
-import com.untangle.uvm.User;
+import com.untangle.uvm.AdminUserSettings;
 import com.untangle.uvm.ExecManagerResult;
 import com.untangle.uvm.security.UvmPrincipal;
-import com.untangle.uvm.snmp.SnmpManager;
-import com.untangle.uvm.snmp.SnmpManagerImpl;
 import com.untangle.uvm.util.FormUtil;
-import com.untangle.uvm.util.HasConfigFiles;
 
 /**
  * Remote interface for administrative user management.
  */
-public class AdminManagerImpl implements AdminManager, HasConfigFiles
+public class AdminManagerImpl implements AdminManager
 {
-    private static final String INITIAL_USER_NAME = "System Administrator";
+    private static final String SETTINGS_CONVERSION_SCRIPT = System.getProperty( "uvm.bin.dir" ) + "/untangle-vm-convert-admin-settings.py";
+
+    private static final String INITIAL_USER_DESCRIPTION = "System Administrator";
     private static final String INITIAL_USER_LOGIN = "admin";
     private static final String INITIAL_USER_PASSWORD = "passwd";
 
@@ -58,113 +59,77 @@ public class AdminManagerImpl implements AdminManager, HasConfigFiles
 
     private final Logger logger = Logger.getLogger(this.getClass());
 
-    private AdminSettings adminSettings;
-    private SnmpManagerImpl snmpManager;
+    private AdminSettings settings;
 
     AdminManagerImpl(UvmContextImpl uvmContext, InheritableThreadLocal<HttpServletRequest> threadRequest)
     {
         this.uvmContext = uvmContext;
         this.threadRequest = threadRequest;
 
-        adminSettings = new AdminSettings();
-        adminSettings.addUser(new User(INITIAL_USER_LOGIN,
-                                       INITIAL_USER_PASSWORD,
-                                       INITIAL_USER_NAME));
+        SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
+        AdminSettings readSettings = null;
+        String settingsFileName = System.getProperty("uvm.settings.dir") + "/untangle-vm/" + "admin";
 
-        //         TransactionWork<Void> tw = new TransactionWork<Void>()
-//             {
-//                 public boolean doWork(NodeSession s)
-//                 {
-//                     Query q = s.createQuery("from AdminSettings");
-//                     adminSettings = (AdminSettings)q.uniqueResult();
+        try {
+            readSettings = settingsManager.load( AdminSettings.class, settingsFileName );
+        } catch (SettingsManager.SettingsException e) {
+            logger.warn("Failed to load settings:",e);
+        }
 
-//                     if (null == adminSettings) {
-//                         s.save(adminSettings);
-
-//                     }
-//                     return true;
-//                 }
-//             };
-//         uvmContext.runTransaction(tw);
-
-        snmpManager = SnmpManagerImpl.snmpManager();
-
-        // If timezone on box is different (example: kernel upgrade), reset it:
-        TimeZone currentZone = getTimeZone();
-        if (!currentZone.equals(TimeZone.getDefault()))
+        /**
+         * If there are no settings, run the conversion script to see if there are any in the database
+         * Then check again for the file
+         */
+        if (readSettings == null) {
+            logger.warn("No settings found - Running conversion script to check DB");
             try {
-                setTimeZone(currentZone);
-            } catch (Exception x) {
-                // Already logged.
+                String convertCmd = SETTINGS_CONVERSION_SCRIPT + " " + settingsFileName + ".js";
+                logger.warn("Running: " + convertCmd);
+                UvmContextFactory.context().execManager().exec( convertCmd );
+            } catch ( Exception e ) {
+                logger.warn( "Conversion script failed.", e );
+            } 
+
+            try {
+                readSettings = settingsManager.load( AdminSettings.class, settingsFileName );
+                if (readSettings != null) {
+                    logger.warn("Found settings imported from database");
+                }
+            } catch (SettingsManager.SettingsException e) {
+                logger.warn("Failed to load settings:",e);
             }
+        }
+
+        /**
+         * If there are still no settings, just initialize
+         */
+        if (readSettings == null) {
+            logger.warn("No settings found - Initializing new settings.");
+
+            AdminSettings newSettings = new AdminSettings();
+            newSettings.addUser(new AdminUserSettings(INITIAL_USER_LOGIN, INITIAL_USER_PASSWORD, INITIAL_USER_DESCRIPTION));
+            this.setSettings(newSettings);
+        }
+        else {
+            logger.info("Loading Settings...");
+
+            this.settings = readSettings;
+
+            this.reconfigure();
+            logger.info("Settings: " + this.settings.toJSONString());
+        }
 
         logger.info("Initialized AdminManager");
     }
 
-    public void syncConfigFiles()
+    public AdminSettings getSettings()
     {
-        snmpManager.syncConfigFiles();
+        return this.settings;
     }
 
-    public MailSettings getMailSettings()
+    public void setSettings(final AdminSettings settings)
     {
-        MailSender ms = uvmContext.mailSender();
-        return ms.getMailSettings();
-    }
-
-    public void setMailSettings(MailSettings settings)
-    {
-        MailSender ms = uvmContext.mailSender();
-        ms.setMailSettings(settings);
-    }
-
-    public boolean sendTestMessage(String recipient)
-    {
-        MailSender ms = uvmContext.mailSender();
-        return ms.sendTestMessage(recipient);
-    }
-
-    public AdminSettings getAdminSettings()
-    {
-        return adminSettings;
-    }
-
-    public void setAdminSettings(final AdminSettings as)
-    {
-        updateUserPasswords(as);
-
-        this.adminSettings = as;
-
-        //         TransactionWork<Void> tw = new TransactionWork<Void>()
-//             {
-//                 public boolean doWork(NodeSession s)
-//                 {
-//                     adminSettings = (AdminSettings)s.merge(as);
-//                     return true;
-//                 }
-//             };
-//         uvmContext.runTransaction(tw);
-
-    }
-
-    private void updateUserPasswords(final AdminSettings as) {
-        for ( Iterator<User> i = adminSettings.getUsers().iterator(); i.hasNext(); ) {
-            User user = i.next();
-            User mUser = null;
-            if ( ( mUser = modifiedUser( user, as.getUsers() )) != null &&
-                    mUser.getPassword() == null) {
-                mUser.updatePassword(user);
-            }
-        }
-    }
-
-    private User modifiedUser( User user, Set<User> updatedUsers )
-    {
-        for ( User currentUser : updatedUsers ) {
-            if( user.getId().equals(currentUser.getId())) return currentUser;
-        }
-
-        return null;
+        this._setSettings( settings );
     }
 
     @Override
@@ -201,10 +166,6 @@ public class AdminManagerImpl implements AdminManager, HasConfigFiles
     public String getDate()
     {
         return (new Date(System.currentTimeMillis())).toString();
-    }
-
-    public SnmpManager getSnmpManager() {
-        return snmpManager;
     }
 
     public String getAlpacaNonce()
@@ -312,4 +273,38 @@ public class AdminManagerImpl implements AdminManager, HasConfigFiles
 
         return "Unknown";
     }
+
+    private void _setSettings( AdminSettings newSettings )
+    {
+        /**
+         * Save the settings
+         */
+        SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
+        try {
+            settingsManager.save(AdminSettings.class, System.getProperty("uvm.settings.dir") + "/" + "untangle-vm/" + "admin", newSettings);
+        } catch (SettingsManager.SettingsException e) {
+            logger.warn("Failed to save settings.",e);
+        }
+
+        /**
+         * Change current settings
+         */
+        this.settings = newSettings;
+        try {logger.debug("New Settings: \n" + new org.json.JSONObject(this.settings).toString(2));} catch (Exception e) {}
+    }
+
+    private void reconfigure() 
+    {
+        logger.info("reconfigure()");
+
+        // If timezone on box is different (example: kernel upgrade), reset it:
+        TimeZone currentZone = getTimeZone();
+        if (!currentZone.equals(TimeZone.getDefault()))
+            try {
+                setTimeZone(currentZone);
+            } catch (Exception x) {
+                // Already logged.
+            }
+    }
+
 }

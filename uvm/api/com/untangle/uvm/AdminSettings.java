@@ -4,8 +4,10 @@
 package com.untangle.uvm;
 
 import java.io.Serializable;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.LinkedList;
+
+import org.json.JSONObject;
+import org.json.JSONString;
 
 import com.untangle.uvm.Period;
 
@@ -13,33 +15,26 @@ import com.untangle.uvm.Period;
  * Uvm administrator settings.
  */
 @SuppressWarnings("serial")
-public class AdminSettings implements Serializable
+public class AdminSettings implements Serializable, JSONString
 {
-
-    private Long id;
-    private Set<User> users = new HashSet<User>();
-    private Period summaryPeriod;
+    private LinkedList<AdminUserSettings> users = new LinkedList<AdminUserSettings>();
 
     public AdminSettings() { }
 
-    public Long getId() { return id; }
-    public void setId( Long id ) { this.id = id; }
-
     /**
-     * Specifies a set of system administrators with login access to
-     * the system.
+     * Specifies a set of system administrators with login access to the system
      */
-    public Set<User> getUsers() { return users; }
-    public void setUsers( Set<User > users) { this.users = users; }
+    public LinkedList<AdminUserSettings> getUsers() { return users; }
+    public void setUsers( LinkedList<AdminUserSettings> users ) { this.users = users; }
 
-    public void addUser(User user)
+    public void addUser(AdminUserSettings user)
     {
-        users.add(user);
+        this.users.add(user);
     }
 
-    /**
-     * Specifies how often summary alerts/reports are generated.
-     */
-    public Period getSummaryPeriod() { return summaryPeriod; }
-    public void setSummaryPeriod( Period summaryPeriod ) { this.summaryPeriod = summaryPeriod; }
+    public String toJSONString()
+    {
+        JSONObject jO = new JSONObject(this);
+        return jO.toString();
+    }
 }

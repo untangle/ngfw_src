@@ -1,5 +1,7 @@
-/* $HeadURL$ */
-package com.untangle.uvm.snmp;
+/**
+ * $HeadURL$
+ */
+package com.untangle.uvm;
 
 /**
  * Interface for the singleton which

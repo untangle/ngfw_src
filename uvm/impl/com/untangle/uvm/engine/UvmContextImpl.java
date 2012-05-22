@@ -38,6 +38,7 @@ import com.untangle.uvm.OemManager;
 import com.untangle.uvm.AlertManager;
 import com.untangle.uvm.AppServerManager;
 import com.untangle.uvm.NetworkManager;
+import com.untangle.uvm.SnmpManager;
 import com.untangle.uvm.ExecManager;
 import com.untangle.uvm.UvmException;
 import com.untangle.uvm.UvmState;
@@ -113,6 +114,7 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
     private BackupManager backupManager;
     private LocalDirectoryImpl localDirectory;
     private ExecManagerImpl execManager;
+    private SnmpManagerImpl snmpManager;
     private JSONSerializer serializer;
     private Reporting reportingNode = null;
     private long lastLoggedWarningTime = System.currentTimeMillis();
@@ -200,6 +202,11 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
         return this.adminManager;
     }
 
+    public SnmpManager snmpManager()
+    {
+        return snmpManager;
+    }
+    
     public NetworkManager networkManager()
     {
         return this.networkManager;
@@ -368,10 +375,8 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
 
     public void syncConfigFiles()
     {
-        // Here it would be nice if we had a list of managers.  Then we could
-        // just go through the list, testing 'instanceof HasConfigFiles'. XXX 
-        adminManager.syncConfigFiles();
         mailSender.syncConfigFiles();
+        snmpManager.syncConfigFiles();
     }
 
     public byte[] createBackup() throws IOException
@@ -380,13 +385,13 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
     }
 
     public void restoreBackup(byte[] backupBytes)
-    throws IOException, IllegalArgumentException
+        throws IOException, IllegalArgumentException
     {
         backupManager.restoreBackup(backupBytes);
     }
 
     public void restoreBackup(String fileName)
-    throws IOException, IllegalArgumentException
+        throws IOException, IllegalArgumentException
     {
         backupManager.restoreBackup(fileName);
     }
@@ -515,6 +520,8 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
         // start services:
         this.adminManager = new AdminManagerImpl(this, threadRequest);
 
+        this.snmpManager = SnmpManagerImpl.snmpManager();
+        
         // initialize the network Manager
         this.networkManager = NetworkManagerImpl.getInstance();
 
@@ -725,7 +732,7 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
     }
     
     @Override 
-    public SettingsManager settingsManager()
+        public SettingsManager settingsManager()
     {
         return this.settingsManager;
     }

@@ -32,15 +32,6 @@ public interface MailSender
     MailSettings getMailSettings();
 
     /**
-     * Sends an email to all administrative users who have selected to
-     * receive alert emails.
-     *
-     * @param subject subject of the mail.
-     * @param bodyText text of the mail.
-     */
-    void sendAlert(String subject, String bodyText);
-
-    /**
      * Sends a normal report email (with attachments) to the
      * reportEmail address (from the mail settings).  This is a
      * convenience function that just calls

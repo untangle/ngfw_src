@@ -113,7 +113,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
         getAdminSettings : function(forceReload) {
             if (forceReload || this.rpc.adminSettings === undefined) {
                 try {
-                    this.rpc.adminSettings = rpc.adminManager.getAdminSettings();
+                    this.rpc.adminSettings = rpc.adminManager.getSettings();
                 } catch (e) {
                     Ung.Util.rpcExHandler(e);
                 }
@@ -147,7 +147,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
         getSnmpSettings : function(forceReload) {
             if (forceReload || this.rpc.snmpSettings === undefined) {
                 try {
-                    this.rpc.snmpSettings = rpc.adminManager.getSnmpManager().getSnmpSettings();
+                    this.rpc.snmpSettings = rpc.snmpManager.getSnmpSettings();
                 } catch (e) {
                     Ung.Util.rpcExHandler(e);
                 }
@@ -222,17 +222,13 @@ if (!Ung.hasResource["Ung.Administration"]) {
                     autoScroll : true,
                     hasEdit : false,
                     name : 'gridAdminAccounts',
-                    recordJavaClass : "com.untangle.uvm.User",
+                    recordJavaClass : "com.untangle.uvm.AdminUserSettings",
                     emptyRow : {
-                        "login" : this.i18n._("[no login]"),
-                        "name" : this.i18n._("[no description]"),
-                        "hasWriteAccess" : true,
-                        "hasReportsAccess" : true,
-                        "sendAlerts":false,
-                        "notes":this.i18n._("[no description]"),
-                        "email" : this.i18n._("[no email]"),
-                        "clearPassword" : "",
-                        "javaClass" : "com.untangle.uvm.User"
+                        "username" : this.i18n._("[no login]"),
+                        "description" : this.i18n._("[no description]"),
+                        "emailAddress" : this.i18n._("[no email]"),
+                        "password"       : null,
+                        "passwordHash"   : null
                     },
                     ignoreServerIds: true,
                     dataFn : Ext.bind(function() { 
@@ -243,81 +239,75 @@ if (!Ung.hasResource["Ung.Administration"]) {
                     fields : [{
                         name : 'id'
                     }, {
-                        name : 'login'
+                        name : 'username'
                     }, {
-                        name : 'name'
+                        name : 'description'
                     }, {
-                        name : 'email'
+                        name : 'emailAddress'
                     }, {
-                        name : 'notes'
+                        name : 'password'
                     }, {
-                        name : 'sendAlerts'
-                    }, {
-                        name : 'hasWriteAccess'
-                    },{
-                        name : "hasReportsAccess"
-                    },{
-                        name : 'javaClass' //needed as users is a set
+                        name : 'passwordHash'
                     }],
                     // the list of columns for the column model
                     columns : [{
-                        header : this.i18n._("login"),
+                        header : this.i18n._("Username"),
                         width : 200,
-                        dataIndex : 'login',
+                        dataIndex : 'username',
                         field :{
                             xtype:'textfield',
                             allowBlank : false,
-                            blankText : this.i18n._("The login name cannot be blank.")
+                            blankText : this.i18n._("The username cannot be blank.")
                         }
                     }, {
-                        header : this.i18n._("description"),
+                        header : this.i18n._("Description"),
                         width : 200,
-                        dataIndex : 'name',
+                        dataIndex : 'description',
                         flex: 1,
                         editor:{
                             xtype:'textfield',
                             allowBlank : false
                         }
                     },{
-                        header : this.i18n._("email"),
+                        header : this.i18n._("Email"),
                         width : 200,
-                        dataIndex : 'email',
+                        dataIndex : 'emailAddress',
                         editor: {
                             xtype:'textfield',
                             allowBlank : false
                         }
                     }, changePasswordColumn
                     ],
-                    sortField : 'login',
+                    sortField : 'username',
                     columnsDefaultSortable : true,
                     plugins : [changePasswordColumn],
                     // the row input lines used by the row editor window
                     rowEditorInputLines : [{
                     	xtype: "textfield",
-                        name : "Login",
-                        dataIndex : "login",
-                        fieldLabel : this.i18n._("Login"),
+                        name : "Username",
+                        dataIndex : "username",
+                        fieldLabel : this.i18n._("Username"),
                         allowBlank : false,
-                        blankText : this.i18n._("The login name cannot be blank."),
+                        blankText : this.i18n._("The username cannot be blank."),
                         width : 400
                     }, {
                     	xtype: "textfield",
-                        name : "Name",
-                        dataIndex : "name",
+                        name : "Description",
+                        dataIndex : "description",
                         fieldLabel : this.i18n._("Description"),
                         allowBlank : false,
                         width : 400
                     },{
                     	xtype: "textfield",
                         name : "Email",
-                        dataIndex : "email",
+                        dataIndex : "emailAddress",
                         fieldLabel : this.i18n._("Email"),
                         width : 400
                     },{
                     	xtype: "textfield",
                         inputType: 'password',
                         name : "Password",
-                        dataIndex : "clearPassword",
+                        dataIndex : "password",
                         id : 'administration_rowEditor_password_'+ fieldID,
                         fieldLabel : this.i18n._("Password"),
                         width : 400,
@@ -338,7 +328,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
                     	xtype: "textfield",
                         inputType: 'password',
                         name : "Password",
-                        dataIndex : "clearPassword",
+                        dataIndex : "password",
                         id : 'administration_rowEditor1_password_'+ fieldID,
                         fieldLabel : this.i18n._("Password"),
                         width : 400,
@@ -348,7 +338,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
                     	xtype: "textfield",
                         inputType: 'password',
                         name : "Confirm Password",
-                        dataIndex : "clearPassword",
+                        dataIndex : "password",
                         vtype: 'password',
                         initialPassField: 'administration_rowEditor1_password_'+ fieldID, // id of the initial password field
                         fieldLabel : this.i18n._("Confirm Password"),
@@ -1729,7 +1719,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
                 }
                 
                 /* Add in the reporting only users */
-                var storeDataSet=this.getAdminSettings().users.set;
+                var storeDataSet=this.getAdminSettings().users.list;
                 for ( var id in storeDataSet ) {
                     i++;
 
@@ -1740,7 +1730,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
                         setAdministration[i] = user;
                     }
                 }
-                this.getAdminSettings().users.set=setAdministration;
+                this.getAdminSettings().users.list=setAdministration;
                 rpc.adminManager.setAdminSettings(Ext.bind(function(result, exception) {
                     this.afterSave(exception, callback);
                 },this), this.getAdminSettings());
@@ -1789,7 +1779,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
         buildUserList : function(forceReload)
         {
             var storeData=[];
-            var storeDataSet=this.getAdminSettings(forceReload).users.set;
+            var storeDataSet=this.getAdminSettings(forceReload).users.list;
             for(var id in storeDataSet) {
                 var user = storeDataSet[id];
                 

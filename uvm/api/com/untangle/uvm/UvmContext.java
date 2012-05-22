@@ -58,6 +58,13 @@ public interface UvmContext
     AdminManager adminManager();
 
     /**
+     * Get the <code>SnmpManager</code> singleton.
+     *
+     * @return the SnmpManager.
+     */
+    SnmpManager snmpManager();
+    
+    /**
      * Get the <code>NetworkManager</code> singleton.
      *
      * @return the NetworkManager.

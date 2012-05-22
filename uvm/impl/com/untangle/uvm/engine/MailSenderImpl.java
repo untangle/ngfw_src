@@ -47,8 +47,6 @@ import com.untangle.uvm.networking.NetworkManagerImpl;
 import com.untangle.uvm.networking.NetworkConfigurationListener;
 import com.untangle.uvm.networking.NetworkConfiguration;
 import com.untangle.uvm.AdminSettings;
-import com.untangle.uvm.User;
-import com.untangle.uvm.util.HasConfigFiles;
 import com.untangle.uvm.util.I18nUtil;
 
 /**
@@ -56,7 +54,7 @@ import com.untangle.uvm.util.I18nUtil;
  * as a stand-alone application. The stand-alone mode is used for mailing out
  * Untangle Reports.
  */
-class MailSenderImpl implements MailSender, HasConfigFiles
+class MailSenderImpl implements MailSender
 {
     public static final String UNTANGLE_SMTP_RELAY = "mail.untangle.com";
 
@@ -340,43 +338,6 @@ class MailSenderImpl implements MailSender, HasConfigFiles
     }
 
     private static final String[] RECIPIENTS_PROTO = new String[0];
-
-    public void sendAlert(String subject, String bodyText) {
-        sendAlertWithAttachment(subject, bodyText, null);
-    }
-
-    private void sendAlertWithAttachment(String subject, String bodyText, List<ByteBuffer> attachment) {
-        // Compute the list of recipients from the user list.
-        AdminSettings adminSettings = UvmContextFactory.context().adminManager().getAdminSettings();
-        Set<User> users = adminSettings.getUsers();
-        List<String> alertableUsers = new ArrayList<String>();
-
-        for (Iterator<User> iter = users.iterator(); iter.hasNext();) {
-            User user = iter.next();
-            String userEmail = user.getEmail();
-            if (userEmail == null) {
-                if (logger.isDebugEnabled())
-                    logger.debug("Skipping user " + user.getLogin()
-                                 + " with no email address");
-            } else {
-                if (!user.getSendAlerts())
-                    logger.debug("Skipping user " + user.getLogin()
-                                 + " with sendAlerts off");
-                else
-                    alertableUsers.add(userEmail);
-            }
-        }
-
-        String[] recipients = alertableUsers.toArray(RECIPIENTS_PROTO);
-        if (recipients.length == 0) {
-            logger.warn("Not sending alert email, no recipients");
-        } else if (attachment == null) {
-            sendSimple(alertSession, recipients, subject, bodyText, null);
-        } else {
-            MimeBodyPart part = makeAttachmentFromList(attachment);
-            sendSimple(alertSession, recipients, subject, bodyText, part);
-        }
-    }
 
     private MimeBodyPart makeAttachmentFromList(List<ByteBuffer> list) {
         if (list == null) return null;

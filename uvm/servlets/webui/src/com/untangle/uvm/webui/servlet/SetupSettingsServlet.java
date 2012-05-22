@@ -1,4 +1,6 @@
-/* $HeadURL$ */
+/**
+ * $Id$
+ */
 package com.untangle.uvm.webui.servlet;
 
 import java.io.IOException;
@@ -54,7 +56,7 @@ public class SetupSettingsServlet extends HttpServlet
         try {
             request.setAttribute( "addressSettings", js.toJSON( addressSettings ));
             request.setAttribute( "interfaceArray", js.toJSON( networkConfiguration.getInterfaceList()));
-            request.setAttribute( "users", js.toJSON( context.adminManager().getAdminSettings()));
+            //request.setAttribute( "users", js.toJSON( context.adminManager().getSettings()));
             request.setAttribute( "upgradeSettings", js.toJSON( upgrade ));
             request.setAttribute( "mailSettings", js.toJSON( context.mailSender().getMailSettings()));
             request.setAttribute( "wanConfiguration", js.toJSON( wanConfig ));
