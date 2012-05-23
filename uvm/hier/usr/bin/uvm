@@ -73,6 +73,12 @@ def resetIptables():
 def prepareSystem():
     #debug("prepareSystem()")
 
+    # change /usr/share/untangle/settings to point to dev env
+    if developmentEnv:
+        os.system('rm -rf /usr/share/untangle/settings.old');
+        os.system('mv /usr/share/untangle/settings /usr/share/untangle/settings.old');
+        os.system('ln -s @PREFIX@/usr/share/untangle/settings /usr/share/untangle/settings');
+
     # load nfnetlink_queue (if not already loaded)
     os.system('/sbin/modprobe -q nfnetlink_queue');
 
