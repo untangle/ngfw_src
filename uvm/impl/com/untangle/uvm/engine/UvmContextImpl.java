@@ -316,9 +316,7 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
                 {
                     try {
                         Thread.sleep(200);
-                    } catch (InterruptedException exn) {
-                        
-                    }
+                    } catch (InterruptedException exn) { }
                     logger.info("thank you for choosing uvm");
                     System.exit(0);
                 }
@@ -588,12 +586,6 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
         nodeManager.init();
         pipelineFoundry.clearChains();
 
-        logger.debug("postInit complete");
-        synchronized (startupWaitLock) {
-            state = UvmState.RUNNING;
-            startupWaitLock.notifyAll();
-        }
-        
         /* Reload Apache */
         tomcatManager.setRootWelcome(tomcatManager.getRootWelcome());
 
@@ -601,6 +593,12 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
         //else is started.
         appServerManager.postInit();
 
+        logger.debug("postInit complete");
+        synchronized (startupWaitLock) {
+            state = UvmState.RUNNING;
+            startupWaitLock.notifyAll();
+        }
+        
         hideUpgradeSplash();
     }
 
