@@ -27,7 +27,7 @@ from reports.engine import FactTable
 from reports.engine import Node
 from reports.engine import get_wan_clause
 from reports.sql_helper import print_timing
-from uvm.settings.reader import get_node_settings_item
+from uvm.settings_reader import get_node_settings_item
 
 EVT_TYPE_REGISTER = 0
 EVT_TYPE_RENEW    = 1
