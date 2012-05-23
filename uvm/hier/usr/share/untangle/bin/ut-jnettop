@@ -19,7 +19,7 @@ echo -n "{ javaClass: java.util.LinkedList, list : ["
 jnettop $ARG -n --display text -t 5 --format CSV 2>/dev/null | grep -v '127.0.0.1' | egrep 'TCP|UDP' | sed 's/\"//g' | while read i ; do
     if [ $first -eq 0 ] ; then first=1 ; else echo -n "," ; fi
 
-    echo $i | awk -F, '{printf "{ protocol:\"%s\", preNatClient:\"%s\", preNatServer:\"%s\", preNatClientPort:\"%s\", preNatServerPort:\"%s\", clientKBps:\"%s\", serverKBps:\"%s\", totalKBps:\"%s\", javaClass:\"com.untangle.uvm.SessionMonitorEntry\" }\n",$3,$1,$2,$4,$5,$14/1000,$15/1000,$16/1000}'
+    echo $i | LC_ALL=en awk -F, '{printf "{ protocol:\"%s\", preNatClient:\"%s\", preNatServer:\"%s\", preNatClientPort:\"%s\", preNatServerPort:\"%s\", clientKBps:\"%s\", serverKBps:\"%s\", totalKBps:\"%s\", javaClass:\"com.untangle.uvm.SessionMonitorEntry\" }\n",$3,$1,$2,$4,$5,$14/1000,$15/1000,$16/1000}'
 
 done
 
