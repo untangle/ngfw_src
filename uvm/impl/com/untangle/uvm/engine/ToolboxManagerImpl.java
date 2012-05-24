@@ -44,6 +44,7 @@ import com.untangle.uvm.node.NodeProperties;
 import com.untangle.uvm.node.NodeManager;
 import com.untangle.uvm.node.NodeSettings;
 import com.untangle.uvm.node.NodeMetric;
+import com.untangle.uvm.node.Reporting;
 import com.untangle.uvm.toolbox.Application;
 import com.untangle.uvm.toolbox.InstallAndInstantiateComplete;
 import com.untangle.uvm.toolbox.PackageDesc;
@@ -59,9 +60,6 @@ import com.untangle.uvm.toolbox.UpgradeStatus;
 
 /**
  * Implements ToolboxManager.
- *
- * @author <a href="mailto:amread@untangle.com">Aaron Read</a>
- * @version 1.0
  */
 class ToolboxManagerImpl implements ToolboxManager
 {
@@ -617,7 +615,11 @@ class ToolboxManagerImpl implements ToolboxManager
 
         UvmContextImpl uvmContext = UvmContextImpl.getInstance();
         uvmContext.refreshToolbox();
-
+        Reporting reporting = (Reporting) UvmContextFactory.context().nodeManager().node("untangle-node-reporting");
+        if ( reporting != null ) {
+            reporting.createSchemas();
+        }
+        
         NodeManagerImpl nm = (NodeManagerImpl)UvmContextFactory.context().nodeManager();
         nm.restart(pkgName);
         nm.startAutoStart(packageDesc(pkgName));

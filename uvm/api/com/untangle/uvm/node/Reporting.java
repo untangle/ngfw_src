@@ -14,4 +14,6 @@ public interface Reporting
     void forceFlush();
 
     ArrayList getEvents( final String query, final Long policyId, final int limit );
+
+    void createSchemas();
 }
