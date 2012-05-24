@@ -435,12 +435,6 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
             }
             return this.rpc.vpnServerAddress;
         },
-        getOpenVpnValidator : function(forceReload) {
-            if (forceReload || this.rpc.openVpnValidator === undefined) {
-                this.rpc.openVpnValidator = this.getRpcNode().getValidator();
-            }
-            return this.rpc.openVpnValidator;
-        },
         getExportedAddressList : function(forceReload) {
             if (forceReload || this.rpc.exportedAddressList === undefined) {
                 this.rpc.exportedAddressList = this.getRpcNode().getExportedAddressList();
@@ -1622,96 +1616,10 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
         },
 
         validateServer : function() {
-            var validateData = {
-                map : {},
-                javaClass : "java.util.HashMap"
-            };
-            var groupList=this.gridGroups.getFullSaveList();
-            if (groupList.length > 0) {
-                validateData.map["GROUP_LIST"] = {"javaClass" : "java.util.ArrayList", list : groupList};
-            }
-            var siteList=this.gridSites.getFullSaveList();
-            if (siteList.length > 0) {
-                validateData.map["SITE_LIST"] = {"javaClass" : "java.util.ArrayList", list : siteList};
-            }
-            var exportList=this.gridExports.getFullSaveList();
-            if (exportList.length > 0) {
-                validateData.map["EXPORT_LIST"] = {"javaClass" : "java.util.ArrayList", list : exportList};
-            }
-
-            // now let the server validate
-            if (Ung.Util.hasData(validateData.map)) {
-                try {
-                    var result=null;
-                    try {
-                        result = this.getValidator().validate(validateData);
-                    } catch (e) {
-                        Ung.Util.rpcExHandler(e);
-                    }
-
-                    if (!result.valid) {
-                        var errorMsg = "";
-                        var tabToActivate = null;
-                        switch (result.errorCode) {
-                        case 'ERR_GROUP_LIST_OVERLAP' :
-                            errorMsg = Ext.String.format(this.i18n._("The two networks: {0} and {1} cannot overlap"),result.cause[0],result.cause[1]);
-                            tabToActivate = this.panelAdvanced;
-                            break;
-                        case 'ERR_SITE_LIST_OVERLAP' :
-                            errorMsg = Ext.String.format(this.i18n._("The two networks: {0} and {1} cannot overlap"),result.cause[0],result.cause[1]);
-                            tabToActivate = this.panelClients;
-                            break;
-                        case 'ERR_EXPORT_LIST_OVERLAP' :
-                            errorMsg = Ext.String.format(this.i18n._("The two networks: {0} and {1} cannot overlap"),result.cause[0],result.cause[1]);
-                            tabToActivate = this.gridExports;
-                            break;
-                        default :
-                            errorMsg = this.i18n._(result.errorCode) + ": " + result.cause;
-                        }
-                        Ext.MessageBox.alert(this.i18n._("Validation failed"), errorMsg,
-                                             Ext.bind(function() {
-                                                 this.settingsCmp.tabs.setActiveTab(this.tabToActivate);
-                                             },{settingsCmp:this,tabToActivate:tabToActivate} )
-                                            );
-                        return false;
-                    }
-                } catch (e) {
-                    Ext.MessageBox.alert(this.i18n._("Failed"), e.message);
-                    return false;
-                }
-            }
-
             return true;
         },
 
         validateExports : function(exportList) {
-            if (exportList.length > 0) {
-                var validateData = {
-                    map : {},
-                    javaClass : "java.util.HashMap"
-                };
-                validateData.map["EXPORT_LIST"] = {"javaClass" : "java.util.ArrayList", list : exportList};
-
-                // now let the server validate
-                try {
-                    var result = this.getValidator().validate(validateData);
-                    if (!result.valid) {
-                        var errorMsg = "";
-                        switch (result.errorCode) {
-                            case 'ERR_EXPORT_LIST_OVERLAP' :
-                                errorMsg = Ext.String.format(this.i18n._("The two networks: {0} and {1} cannot overlap"),result.cause[0],result.cause[1]);
-                            break;
-                            default :
-                                errorMsg = this.i18n._(result.errorCode) + ": " + result.cause;
-                        }
-                        Ext.MessageBox.alert(this.i18n._("Validation failed"), errorMsg);
-                        return false;
-                    }
-                } catch (e) {
-                    Ext.MessageBox.alert(this.i18n._("Failed"), e.message);
-                    return false;
-                }
-            }
             return true;
         },
 

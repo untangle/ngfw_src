@@ -1,4 +1,6 @@
-/* $HeadURL$ */
+/**
+ * $Id$
+ */
 package com.untangle.uvm.networking;
 
 import java.io.BufferedReader;
@@ -19,7 +21,6 @@ import com.untangle.uvm.IntfConstants;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.node.IPAddress;
 import com.untangle.uvm.node.ParseException;
-import com.untangle.uvm.node.ValidateException;
 import com.untangle.uvm.node.MACAddress;
 
 /* Utilities that are only required inside of this package */

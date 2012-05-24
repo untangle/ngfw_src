@@ -12,7 +12,6 @@ import javax.xml.bind.ValidationException;
 
 import com.untangle.uvm.node.IPAddress;
 import com.untangle.uvm.node.ParseException;
-import com.untangle.uvm.node.ValidateException;
 import com.untangle.uvm.node.IPMatcher;
 
 /**
@@ -157,7 +156,7 @@ public class NetworkUtil
      * @exception ValidationException Occurs if there is an error in
      * <code>route</code>.
      */
-    public void validate( IPNetwork network ) throws ValidateException
+    public void validate( IPNetwork network ) throws Exception
     {
         /* implement me, test if the netmask is okay, etc. */
     }

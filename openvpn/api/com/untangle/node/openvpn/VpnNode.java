@@ -1,3 +1,6 @@
+/**
+ * $Id$
+ */
 package com.untangle.node.openvpn;
 
 import java.util.List;
@@ -5,8 +8,6 @@ import java.util.List;
 import com.untangle.uvm.node.HostAddress;
 import com.untangle.uvm.node.IPAddress;
 import com.untangle.uvm.node.Node;
-import com.untangle.uvm.node.ValidateException;
-import com.untangle.uvm.node.Validator;
 import com.untangle.uvm.node.EventLogQuery;
 
 public interface VpnNode extends Node
@@ -17,7 +18,7 @@ public interface VpnNode extends Node
         ZIP;
     };
     
-    public void setSettings( VpnSettings settings ) throws ValidateException;
+    public void setSettings( VpnSettings settings );
     public VpnSettings getSettings();
 
     /* Create a client certificate, if the client already has a certificate
@@ -45,7 +46,7 @@ public interface VpnNode extends Node
     public ConfigState getConfigState();
     public HostAddress getVpnServerAddress();
 
-    public void startConfig(ConfigState state) throws ValidateException;
+    public void startConfig(ConfigState state) throws Exception;
 
     /* Retrieve the link to use as a post to upload client configuration files. */
     public String getAdminClientUploadLink();
@@ -67,6 +68,4 @@ public interface VpnNode extends Node
     public List<ClientStatusEvent> getActiveClients();
 
     public EventLogQuery[] getStatusEventsQueries();
-
-    public Validator getValidator();
 }

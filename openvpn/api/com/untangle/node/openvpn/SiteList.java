@@ -9,11 +9,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
-import com.untangle.uvm.node.Validatable;
-import com.untangle.uvm.node.ValidateException;
-
 @SuppressWarnings("serial")
-public class SiteList implements Serializable, Validatable
+public class SiteList implements Serializable
 {
 
     List<VpnSite> siteList;
@@ -50,38 +47,5 @@ public class SiteList implements Serializable, Validatable
         }
 
         return checkList;
-    }
-
-    /**
-     * Validate the object, throw an exception if it is not valid */
-    public void validate() throws ValidateException
-    {
-        validate( null );
-    }
-
-    void validate( ClientList clientList ) throws ValidateException
-    {
-        Set<String> nameSet = new HashSet<String>();
-
-        for ( VpnSite site : getSiteList()) {
-            site.validate();
-            String name = site.trans_getInternalName();
-            if ( !nameSet.add( name )) {
-                throw new ValidateException( "Client and site names must all be unique: '" + name + "'" );
-            }
-        }
-
-        /* XXX This assumes that the client list is saved before the site list */
-        if ( clientList != null ) {
-            for ( VpnClient client : clientList.getClientList()) {
-                String name = client.trans_getInternalName();
-                if ( !nameSet.add( name )) {
-                    throw new ValidateException( "Client and site names must all be unique: '" + name + "'");
-                }
-            }
-        }
-
-        /* XXX Check for overlap, and check for conflicts with the network settings */
-        AddressValidator.getInstance().validateOverlap( buildAddressRange());
     }
 }

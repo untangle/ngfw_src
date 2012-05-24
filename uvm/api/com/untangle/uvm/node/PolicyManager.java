@@ -6,7 +6,6 @@ package com.untangle.uvm.node;
 import java.util.List;
 
 import com.untangle.uvm.node.Node;
-import com.untangle.uvm.node.Validator;
 import com.untangle.uvm.node.SessionTuple;
 
 public interface PolicyManager

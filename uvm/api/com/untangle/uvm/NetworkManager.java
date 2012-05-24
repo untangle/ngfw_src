@@ -1,4 +1,4 @@
-/*
+/**
  * $Id$
  */
 package com.untangle.uvm;
@@ -14,7 +14,6 @@ import com.untangle.uvm.networking.InterfaceConfiguration;
 import com.untangle.uvm.networking.IPNetwork;
 import com.untangle.uvm.networking.NetworkConfigurationListener;
 import com.untangle.uvm.node.IPAddress;
-import com.untangle.uvm.node.ValidateException;
 import com.untangle.uvm.NetworkManager;
 
 public interface NetworkManager
@@ -28,14 +27,14 @@ public interface NetworkManager
      * Save the network settings during the wizard
      */
     void setSetupSettings( AddressSettings address, InterfaceConfiguration settings )
-        throws Exception, ValidateException;
+        throws Exception;
 
     /**
      * Save the network settings during the wizard.
      * This can double for refresh because it returns the new, populated network settings.
      */
     InterfaceConfiguration setSetupSettings( InterfaceConfiguration settings )
-        throws Exception, ValidateException;
+        throws Exception;
 
     /**
      * Retrieve the settings related to limiting access to the box.
@@ -60,13 +59,11 @@ public interface NetworkManager
     void remapInterfaces( String[] osArray, String[] userArray ) throws Exception;
 
     /* Set the access and address settings, used by the Remote Panel */
-    void setSettings( AccessSettings access, AddressSettings address )
-        throws Exception, ValidateException;
+    void setSettings( AccessSettings access, AddressSettings address ) throws Exception;
 
     /* Set the Access, Misc and Network settings at once.  Used by the
      * support panel */
-    void setSettings( AccessSettings access )
-        throws Exception, ValidateException;
+    void setSettings( AccessSettings access ) throws Exception;
 
     /** Update the internal representation of the address */
     void refreshNetworkConfig() throws Exception;

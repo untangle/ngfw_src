@@ -9,11 +9,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
-import com.untangle.uvm.node.Validatable;
-import com.untangle.uvm.node.ValidateException;
-
 @SuppressWarnings("serial")
-public class GroupList implements Serializable, Validatable
+public class GroupList implements Serializable
 {
 
     List<VpnGroup> groupList;
@@ -47,22 +44,5 @@ public class GroupList implements Serializable, Validatable
         }
         
         return checkList;
-    }
-   
-    /** 
-     * Validate the object, throw an exception if it is not valid */
-    public void validate() throws ValidateException
-    {
-        Set<String> nameSet = new HashSet<String>();
-        
-        for ( VpnGroup group : this.groupList ) {
-            String name = group.trans_getInternalName();
-            if ( !nameSet.add( name )) {
-                throw new ValidateException( "Group names must be unique: '" + name + "'" );
-            }
-        }
-
-        /* Determine if all of the addresses are unique */
-        AddressValidator.getInstance().validateOverlap( buildAddressRange());
     }
 }

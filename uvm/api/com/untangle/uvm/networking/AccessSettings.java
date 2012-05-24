@@ -5,18 +5,14 @@ package com.untangle.uvm.networking;
 
 import java.io.Serializable;
 
-
-
 import com.untangle.uvm.node.IPAddress;
-import com.untangle.uvm.node.Validatable;
-import com.untangle.uvm.node.ValidateException;
 
 /**
  * These are settings related to limitting and granting remote access
  * to the untangle.
  */
 @SuppressWarnings("serial")
-public class AccessSettings implements Serializable, Validatable
+public class AccessSettings implements Serializable
 {
     /* boolean which can be used by the untangle to determine if the
      * object returned by a user interface has been modified. */
@@ -293,7 +289,7 @@ public class AccessSettings implements Serializable, Validatable
     /**
      * Validate that the settings are free of errors.
      */
-    public void validate() throws ValidateException
+    public void validate() throws Exception
     {
         /* nothing appears to be necessary here for now */
     }

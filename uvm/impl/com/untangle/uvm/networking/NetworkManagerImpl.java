@@ -28,7 +28,6 @@ import com.untangle.uvm.UvmState;
 import com.untangle.uvm.NetworkManager;
 import com.untangle.uvm.node.SessionTuple;
 import com.untangle.uvm.node.IPAddress;
-import com.untangle.uvm.node.ValidateException;
 import com.untangle.uvm.node.IPMatcher;
 import com.untangle.uvm.node.ScriptWriter;
 import com.untangle.uvm.node.OpenVpn;
@@ -233,8 +232,7 @@ public class NetworkManagerImpl implements NetworkManager
     }
 
     /* Set the access and address settings, used by the Remote Panel */
-    public void setSettings( AccessSettings access, AddressSettings address )
-        throws Exception, ValidateException
+    public void setSettings( AccessSettings access, AddressSettings address ) throws Exception
     {
         this.accessManager.setSettings( access );
         this.addressManager.setSettings( address );
@@ -246,8 +244,7 @@ public class NetworkManagerImpl implements NetworkManager
 
     /* Set the Access, Misc and Network settings at once.  Used by the
      * support panel */
-    public void setSettings( AccessSettings access )
-        throws Exception, ValidateException
+    public void setSettings( AccessSettings access ) throws Exception
     {
         this.accessManager.setSettings( access );
 
@@ -284,16 +281,14 @@ public class NetworkManagerImpl implements NetworkManager
     }
 
     /* Save the network settings during the wizard */
-    public void setSetupSettings( AddressSettings address, InterfaceConfiguration settings )
-        throws Exception, ValidateException
+    public void setSetupSettings( AddressSettings address, InterfaceConfiguration settings ) throws Exception
     {
         this.addressManager.setWizardSettings( address );
 
         setSetupSettings( settings );
     }
 
-    public InterfaceConfiguration setSetupSettings( InterfaceConfiguration wan )
-        throws Exception, ValidateException
+    public InterfaceConfiguration setSetupSettings( InterfaceConfiguration wan ) throws Exception
     {
         /* Send the call onto the alpaca */
 
@@ -754,7 +749,7 @@ public class NetworkManagerImpl implements NetworkManager
     /* ----------------- Package ----------------- */
 
     /* ----------------- Private ----------------- */
-    private void initPriv() throws Exception, ValidateException
+    private void initPriv() throws Exception
     {
         loadAllSettings();
 

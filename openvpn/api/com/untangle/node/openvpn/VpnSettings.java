@@ -11,15 +11,13 @@ import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 import com.untangle.uvm.node.HostAddress;
 import com.untangle.uvm.node.IPAddress;
-import com.untangle.uvm.node.Validatable;
-import com.untangle.uvm.node.ValidateException;
 import com.untangle.uvm.node.NodeSettings;
 
 /**
  * Settings for the open vpn node.
  */
 @SuppressWarnings("serial")
-public class VpnSettings implements Serializable, Validatable
+public class VpnSettings implements Serializable
 {
     private static final String INVALID_CHARACTERS_STRING = "[^-a-zA-Z0-9- ]";
     private static final Pattern INVALID_CHARACTERS_PATTERN;
@@ -79,33 +77,6 @@ public class VpnSettings implements Serializable, Validatable
     private String siteName = "";
 
     public VpnSettings() { }
-
-    public void validate() throws ValidateException
-    {
-        /* That is the only setting required for edgeguard client */
-        if ( isUntanglePlatformClient ) return;
-
-        if (( groupList == null ) || ( groupList.size() == 0 )) throw new ValidateException( "No groups" );
-
-        GroupList validateGroupList = new GroupList( this.groupList );
-        validateGroupList.validate();
-
-        ClientList validateClientList = new ClientList( this.clientList );
-        validateClientList.validate();
-
-        SiteList validateSiteList = new SiteList( this.siteList );
-        validateSiteList.validate( validateClientList );
-
-        ExportList validateExportList = new ExportList( this.exportedAddressList );
-        validateExportList.validate();
-
-        /* If DNS override is enabled, either DNS 1 or DNS 2 must be set */
-        if ( this.isDnsOverrideEnabled ) {
-            if ( trans_getDnsServerList().isEmpty()) {
-                throw new ValidateException( "A DNS server is required when overriding DNS list." );
-            }
-        }
-    }
 
     /* Typically private, but package access so the ID can be reused */
 

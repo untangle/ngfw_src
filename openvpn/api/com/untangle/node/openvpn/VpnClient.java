@@ -7,14 +7,12 @@ import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
 import com.untangle.uvm.node.IPAddress;
-import com.untangle.uvm.node.Validatable;
-import com.untangle.uvm.node.ValidateException;
 
 /**
  * the configuration for a vpn client.
  */
 @SuppressWarnings("serial")
-public class VpnClient implements Validatable
+public class VpnClient
 {
     private static final Pattern NAME_PATTERN;
 
@@ -103,7 +101,7 @@ public class VpnClient implements Validatable
         return getName().trim().toLowerCase().replace( " ", "_" );
     }
 
-    public void validate() throws ValidateException
+    public void validate() throws Exception
     {
         String name = getName();
 
@@ -143,22 +141,20 @@ public class VpnClient implements Validatable
         return getLive() && ( this.address != null );
     }
 
-    static void validateName( String name ) throws ValidateException
+    static void validateName( String name ) throws Exception
     {
-        if ( name == null ) throw new ValidateException( "Name cannot be null" );
+        if ( name == null ) throw new Exception( "Name cannot be null" );
 
         if ( name.length() == 0 ) {
-            throw new ValidateException( "A client cannot have an empty name" );
+            throw new Exception( "A client cannot have an empty name" );
         }
 
         if ( name.length() > MAX_NAME_LENGTH ) {
-            throw new ValidateException( "A client's name is limited to " +
-                                         MAX_NAME_LENGTH + " characters." );
+            throw new Exception( "A client's name is limited to " + MAX_NAME_LENGTH + " characters." );
         }
 
         if ( !NAME_PATTERN.matcher( name ).matches()) {
-            throw new ValidateException( "A client name should only contains numbers, letters, " +
-                                         "dashes and periods.  Spaces are not allowed. " + name );
+            throw new Exception( "A client name should only contains numbers, letters, " + "dashes and periods.  Spaces are not allowed. " + name );
         }
     }
 

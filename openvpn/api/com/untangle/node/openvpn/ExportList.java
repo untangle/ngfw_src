@@ -7,11 +7,8 @@ import java.io.Serializable;
 import java.util.LinkedList;
 import java.util.List;
 
-import com.untangle.uvm.node.Validatable;
-import com.untangle.uvm.node.ValidateException;
-
 @SuppressWarnings("serial")
-public class ExportList implements Serializable, Validatable
+public class ExportList implements Serializable
 { 
     
     List<SiteNetwork> exportList;
@@ -47,5 +44,5 @@ public class ExportList implements Serializable, Validatable
         return checkList;
     }
 
-    public void validate() throws ValidateException { }
+    public void validate() throws Exception { }
 }

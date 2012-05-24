@@ -16,7 +16,6 @@ import com.untangle.uvm.SessionMatcher;
 import com.untangle.uvm.node.NodeSettings;
 import com.untangle.uvm.node.NodeProperties;
 import com.untangle.uvm.node.NodeMetric;
-import com.untangle.uvm.node.Validator;
 import com.untangle.uvm.node.IntfMatcher;
 import com.untangle.uvm.node.IPMatcher;
 import com.untangle.uvm.node.PortMatcher;

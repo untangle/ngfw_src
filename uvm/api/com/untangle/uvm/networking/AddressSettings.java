@@ -9,8 +9,6 @@ import org.apache.log4j.Logger;
 
 import com.untangle.uvm.node.IPAddress;
 import com.untangle.uvm.node.ParseException;
-import com.untangle.uvm.node.Validatable;
-import com.untangle.uvm.node.ValidateException;
 import com.untangle.uvm.node.HostAddress;
 
 /**
@@ -18,7 +16,7 @@ import com.untangle.uvm.node.HostAddress;
  * used to connect to box.
  */
 @SuppressWarnings("serial")
-public class AddressSettings implements Serializable, Validatable
+public class AddressSettings implements Serializable
 {
     private final Logger logger = Logger.getLogger(getClass());
 
@@ -245,7 +243,7 @@ public class AddressSettings implements Serializable, Validatable
     /**
      * Validate that the settings are free of errors.
      */
-    public void validate() throws ValidateException
+    public void validate() throws Exception
     {
         /* nothing appears to be necessary here for now */
     }

@@ -25,7 +25,6 @@ import com.untangle.uvm.networking.InterfaceConfiguration;
 import com.untangle.uvm.node.HostAddress;
 import com.untangle.uvm.node.IPAddress;
 import com.untangle.uvm.node.ParseException;
-import com.untangle.uvm.node.ValidateException;
 import com.untangle.uvm.node.NodeSettings;
 import com.untangle.uvm.util.I18nUtil;
 
@@ -140,14 +139,12 @@ public class Sandbox
     }
 
     GroupList getGroupList() throws Exception {
-        if ( this.groupList == null ) throw new ValidateException( "Groups haven't been created yet" );
+        if ( this.groupList == null ) throw new Exception( "Groups haven't been created yet" );
         return this.groupList;
     }
     
-    void setGroupList( GroupList parameters ) throws ValidateException
+    void setGroupList( GroupList parameters ) throws Exception
     {
-        parameters.validate();
-        
         this.groupList = parameters;
 
         /* Update the resolve group map */
@@ -156,14 +153,14 @@ public class Sandbox
         for ( VpnGroup group : this.groupList.getGroupList()) {
             if ( resolveGroupMap.put( group.getName(), group ) != null ) {
                 /* This shouldn't happen because this is validated in parameters.validate */
-                throw new ValidateException( "Group name must be unique: '" + group.getName() + "'" );
+                throw new Exception( "Group name must be unique: '" + group.getName() + "'" );
             }
         }        
     }
 
     /* This will automatically pick a valid address group based on the
      * network settings. */
-    void autoDetectAddressPool() throws ValidateException
+    void autoDetectAddressPool() throws Exception
     {
         NetworkConfiguration networkSettings = UvmContextFactory.context().networkManager().getNetworkConfiguration();
         
@@ -225,22 +222,20 @@ public class Sandbox
         return this.exportList;
     }
     
-    void setExportList( ExportList parameters ) throws ValidateException
+    void setExportList( ExportList parameters ) throws Exception
     {
         parameters.validate();
 
         this.exportList = parameters;
     }
 
-    void autoDetectExportList() throws ValidateException
+    void autoDetectExportList() throws Exception
     {
         /* Load the list of networks. */
         NetworkConfiguration networkSettings = UvmContextFactory.context().networkManager().getNetworkConfiguration();
         
         List<SiteNetwork> networkList = new LinkedList<SiteNetwork>();
         LinkedList<AddressRange> rangeList = new LinkedList<AddressRange>();
-        
-        AddressValidator av = AddressValidator.getInstance();
         
         for (InterfaceConfiguration intf : networkSettings.getInterfaceList()) {
             if (! intf.isWAN() ) {
@@ -251,11 +246,6 @@ public class Sandbox
                 
                 rangeList.addFirst( AddressRange.makeNetwork( network.getNetwork().getAddr(), network.getNetmask().getAddr()));
             
-                if ( !av.validate( rangeList ).isValid()) {
-                    rangeList.removeFirst();
-                    continue;
-                }
-
                 SiteNetwork ssn = new SiteNetwork();
                 ssn.setNetwork( network.getNetwork());
                 ssn.setNetmask( network.getNetmask());
@@ -282,7 +272,7 @@ public class Sandbox
         setExportList( new ExportList( networkList ));
     }
 
-    void setClientList( ClientList parameters ) throws ValidateException
+    void setClientList( ClientList parameters ) throws Exception
     {
         parameters.validate();
         
@@ -290,24 +280,21 @@ public class Sandbox
         this.clientList = parameters;
     }
 
-    void setSiteList( SiteList parameters ) throws ValidateException
+    void setSiteList( SiteList parameters ) throws Exception
     {
-        /* Validate the site list against the client list */
-        parameters.validate( clientList );
-
         fixGroups( parameters.getSiteList());
         this.siteList = parameters;
     }
 
     @SuppressWarnings("unchecked")
     private void fixGroups( List newClientList )
-        throws ValidateException
+        throws Exception
     {
         for ( VpnClient client : (List<VpnClient>)newClientList ) {
             String name = client.getGroupName();
             VpnGroup newGroup = resolveGroupMap.get( name );
             if ( newGroup == null ) {
-                throw new ValidateException( "The group '" + name + "' is not in the group list" );
+                throw new Exception( "The group '" + name + "' is not in the group list" );
             }
         }
     }
@@ -319,7 +306,7 @@ public class Sandbox
 
         switch ( configState ) {
         case SERVER_BRIDGE:
-            throw new ValidateException( "Bridge mode is presently unsupported" );
+            throw new Exception( "Bridge mode is presently unsupported" );
             // settings.setBridgeMode( true );
             // break;
         case SERVER_ROUTE:
@@ -336,7 +323,7 @@ public class Sandbox
             return settings;
             
         default:
-            throw new ValidateException( "Invalid state for sandbox: " + this.configState );
+            throw new Exception( "Invalid state for sandbox: " + this.configState );
         }
 
         /* Certificate parameters */
@@ -364,8 +351,6 @@ public class Sandbox
         settings.setMaxClients( DEFAULT_MAX_CLIENTS );
         settings.setKeepAlive( DEFAULT_KEEP_ALIVE );
         settings.setExposeClients( DEFAULT_EXPOSE_CLIENTS );
-        
-        settings.validate();
         
         return settings;
     }

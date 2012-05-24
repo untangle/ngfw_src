@@ -22,8 +22,6 @@ import com.untangle.uvm.SettingsManager;
 import com.untangle.uvm.node.NodeSettings;
 import com.untangle.uvm.node.HostAddress;
 import com.untangle.uvm.node.IPAddress;
-import com.untangle.uvm.node.ValidateException;
-import com.untangle.uvm.node.Validator;
 import com.untangle.uvm.node.EventLogQuery;
 import com.untangle.uvm.node.NodeMetric;
 import com.untangle.uvm.util.I18nUtil;
@@ -184,7 +182,7 @@ public class VpnNodeImpl extends NodeBase implements VpnNode, com.untangle.uvm.n
 
         try {
             setSettings( settings );
-        } catch ( ValidateException e ) {
+        } catch ( Exception e ) {
             logger.error( "Unable to initialize VPN settings.", e );
         }
 
@@ -194,11 +192,19 @@ public class VpnNodeImpl extends NodeBase implements VpnNode, com.untangle.uvm.n
     }
 
     // VpnNode methods --------------------------------------------------
-    public void setSettings( final VpnSettings newSettings ) throws ValidateException
+    public void setSettings( final VpnSettings newSettings )
     {
+        sanityCheck(newSettings);
+
         /* Verify that all of the client names are valid. */
         for ( VpnClient client : newSettings.trans_getCompleteClientList()) {
-            VpnClient.validateName( client.getName());
+            try {
+                VpnClient.validateName( client.getName());
+            }
+            catch (Exception exn) {
+                logger.warn("Invalid client name:" + client.getName());
+                throw new RuntimeException(exn);
+            }
         }
 
         /* Attempt to assign all of the clients addresses only if in server mode */
@@ -589,8 +595,6 @@ public class VpnNodeImpl extends NodeBase implements VpnNode, com.untangle.uvm.n
         }
 
         try {
-            settings.validate();
-
             this.openVpnManager.configure( settings );
             this.handler.configure( settings );
             this.openVpnManager.restart( settings );
@@ -704,10 +708,10 @@ public class VpnNodeImpl extends NodeBase implements VpnNode, com.untangle.uvm.n
         return address;
     }
 
-    public void startConfig( ConfigState state ) throws ValidateException
+    public void startConfig( ConfigState state ) throws Exception
     {
         if ( state == ConfigState.UNCONFIGURED || state == ConfigState.SERVER_BRIDGE ) {
-            throw new ValidateException( "Cannot run wizard for the selected state: " + state );
+            throw new Exception( "Cannot run wizard for the selected state: " + state );
         }
 
         this.sandbox = new Sandbox( state );
@@ -825,11 +829,6 @@ public class VpnNodeImpl extends NodeBase implements VpnNode, com.untangle.uvm.n
         this.incrementMetric(this.STAT_CONNECT);
     }
 
-    public Validator getValidator()
-    {
-        return new OpenVpnValidator();
-    }
-
     private void generateAdminClientKey()
     {
         long now = System.currentTimeMillis();
@@ -848,6 +847,41 @@ public class VpnNodeImpl extends NodeBase implements VpnNode, com.untangle.uvm.n
         }
     }
 
+    private void sanityCheck( VpnSettings newSettings )
+    {
+        List<String> nameSet;
+        nameSet = new LinkedList<String>();
+        for ( VpnGroup group : newSettings.getGroupList() ) {
+            String name = group.trans_getInternalName();
+            if ( !nameSet.add( name )) {
+                throw new RuntimeException( "Group names must be unique: '" + name + "'" );
+            }
+        }
+
+        nameSet = new LinkedList<String>();
+        for ( VpnClient client : newSettings.getClientList() ) {
+            String name = client.trans_getInternalName();
+            if ( !nameSet.add( name )) {
+                throw new RuntimeException( "Client names must all be unique: '" + name + "'");
+            }
+        }
+
+        nameSet = new LinkedList<String>();
+        for ( VpnSite site : newSettings.getSiteList() ) {
+            String name = site.trans_getInternalName();
+            if ( !nameSet.add( name )) {
+                throw new RuntimeException( "Site names must all be unique: '" + name + "'");
+            }
+        }
+
+        if ( newSettings.getIsDnsOverrideEnabled() ) {
+            if ( newSettings.trans_getDnsServerList().isEmpty()) {
+                throw new RuntimeException( "A DNS server is required when overriding DNS list." );
+            }
+        }
+
+    }
+    
     class GenerateRules implements Runnable
     {
         private final Runnable callback;
