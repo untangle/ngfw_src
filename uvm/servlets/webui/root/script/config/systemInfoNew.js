@@ -2,7 +2,7 @@ if (!Ung.hasResource["Ung.SystemInfo"]) {
     Ung.hasResource["Ung.SystemInfo"] = true;
 
      Ext.define("Ung.SystemInfo", {
-    	extend: "Ung.ConfigWin",
+    	extend: "Ung.StatusWin",
         panelVersion : null,
         panelLicenses : null,
         panelLicenseAgreement : null,

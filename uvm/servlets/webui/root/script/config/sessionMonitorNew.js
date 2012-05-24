@@ -2,7 +2,7 @@ if (!Ung.hasResource["Ung.SessionMonitor"]) {
     Ung.hasResource["Ung.SessionMonitor"] = true;
 
     Ext.define('Ung.SessionMonitor', {
-        extend:'Ung.ConfigWin',
+        extend:'Ung.StatusWin',
         fnCallback : null,
         panelPolicyManagement : null,
         gridRacks : null,
@@ -23,12 +23,6 @@ if (!Ung.hasResource["Ung.SessionMonitor"]) {
             //this.buildTabPanel([this.gridCurrentSessions]);
             this.buildTabPanel( [this.sessionPanel] );
             Ung.SessionMonitor.superclass.initComponent.call(this);
-        },
-        saveAction : function(){
-            this.cancelAction();
-        },
-        applyAction : function(){
-            this.cancelAction();
         },
         getSessions : function(){
             var sessions = rpc.jsonrpc.UvmContext.sessionMonitor().getMergedSessions();

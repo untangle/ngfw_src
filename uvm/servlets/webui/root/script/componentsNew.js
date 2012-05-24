@@ -3352,7 +3352,7 @@ Ung.NodeWin.registerClassName = function(name, className) {
     Ung.NodeWin.classNames[name] = className;
 };
 
-// Config Window
+// Config Window (Save/Cancel/Apply)
 Ext.define("Ung.ConfigWin", {
     extend: "Ung.SettingsWin",
     // class constructor
@@ -3402,6 +3402,43 @@ Ext.define("Ung.ConfigWin", {
             },"-"];
         }
         Ung.ConfigWin.superclass.initComponent.call(this);
+    }
+});
+
+// Status Window (just a close button)
+Ext.define("Ung.StatusWin", {
+    extend: "Ung.SettingsWin",
+    // class constructor
+    constructor : function(config) {
+        this.id = "statusWin_" + config.name;
+        // for config elements we have the untangle-libuvm translation map
+        this.i18n = i18n;
+        Ung.StatusWin.superclass.constructor.apply(this, arguments);
+    },
+    initComponent : function() {
+        if (!this.name) {
+            this.name = "statusWin_" + this.name;
+        }
+        if(this.bbar==null) {
+            this.bbar=['-',{
+                name : 'Help',
+                id : this.getId() + "_helpBtn",
+                iconCls : 'icon-help',
+                text : i18n._("Help"),
+                handler : Ext.bind(function() {
+                    this.helpAction();
+                },this)
+            },"->",{
+                name : 'Close',
+                id : this.getId() + "_closeBtn",
+                iconCls : 'cancel-icon',
+                text : i18n._("Close"),
+                handler : Ext.bind(function() {
+                    this.cancelAction();
+                },this)
+            },"-"];
+        }
+        Ung.StatusWin.superclass.initComponent.call(this);
     }
 });
 
