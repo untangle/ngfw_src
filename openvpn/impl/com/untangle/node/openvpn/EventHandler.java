@@ -107,22 +107,20 @@ class EventHandler extends AbstractEventHandler
         }
 
         /* The local address must be one of the exported addresses if proxy isn't enabled */
-        if ( ! this.settings.getAllowProxy() ) {
-            isValid = false;
-            for ( IPMatcher matcher : this.exportedAddressList ) {
-                if ( logger.isDebugEnabled()) {
-                    logger.debug( "Testing local " + local.getHostAddress() + " against " + matcher );
-                }
-                if ( matcher.isMatch( local )) {
-                    isValid = true;
-                    break;
-                }
+        isValid = false;
+        for ( IPMatcher matcher : this.exportedAddressList ) {
+            if ( logger.isDebugEnabled()) {
+                logger.debug( "Testing local " + local.getHostAddress() + " against " + matcher );
             }
+            if ( matcher.isMatch( local )) {
+                isValid = true;
+                break;
+            }
+        }
 
-            if ( !isValid ) {
-                reject( request );
-                return;
-            }
+        if ( !isValid ) {
+            reject( request );
+            return;
         }
 
         /* Accept the request */

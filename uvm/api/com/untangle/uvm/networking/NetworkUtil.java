@@ -10,8 +10,6 @@ import java.util.Set;
 
 import javax.xml.bind.ValidationException;
 
-import com.untangle.uvm.node.AddressRange;
-import com.untangle.uvm.node.AddressValidator;
 import com.untangle.uvm.node.IPAddress;
 import com.untangle.uvm.node.ParseException;
 import com.untangle.uvm.node.ValidateException;

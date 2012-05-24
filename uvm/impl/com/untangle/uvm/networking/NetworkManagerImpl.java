@@ -31,6 +31,7 @@ import com.untangle.uvm.node.IPAddress;
 import com.untangle.uvm.node.ValidateException;
 import com.untangle.uvm.node.IPMatcher;
 import com.untangle.uvm.node.ScriptWriter;
+import com.untangle.uvm.node.OpenVpn;
 import com.untangle.uvm.util.JsonClient;
 import com.untangle.uvm.util.XMLRPCUtil;
 import com.untangle.uvm.SettingsManager;
@@ -647,6 +648,26 @@ public class NetworkManagerImpl implements NetworkManager
                 logger.warn("No Interface found for name: " + bridgedTo );
                 return null;
             }
+        }
+
+        /**
+         * The primary IP of OpenVPN interface is not in the config
+         * Must query the openVPN node
+         */
+        if (intfConf.getInterfaceId() == 250) {
+            OpenVpn openvpn = (OpenVpn) UvmContextFactory.context().nodeManager().node("untangle-node-openvpn");
+            if (openvpn == null) {
+                logger.warn("OpenVPN node not found");
+                return null;
+            }
+            
+            IPAddress addr = openvpn.getVpnServerAddress().getIp();
+            if (addr == null) {
+                logger.warn("VPN Server address not found");
+                return null;
+            }
+
+            return addr.getAddr();
         }
 
         IPNetwork network = intfConf.getPrimaryAddress();

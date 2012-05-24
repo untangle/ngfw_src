@@ -17,9 +17,6 @@ import com.untangle.uvm.node.NodeSettings;
 
 /**
  * Settings for the open vpn node.
- *
- * @author <a href="mailto:rbscott@untangle.com">Robert Scott</a>
- * @version 1.0
  */
 @SuppressWarnings("serial")
 public class VpnSettings implements Serializable, Validatable
@@ -77,7 +74,6 @@ public class VpnSettings implements Serializable, Validatable
     private String  organizationUnit = "";
     private String  email;
     private boolean caKeyOnUsb;
-    private boolean allowProxy = false;
     
     /* This is the name of the site for distinguishing the VPN client on user machines */
     private String siteName = "";
@@ -109,8 +105,6 @@ public class VpnSettings implements Serializable, Validatable
                 throw new ValidateException( "A DNS server is required when overriding DNS list." );
             }
         }
-
-        /* XXX Check for overlap in all of the settings */
     }
 
     /* Typically private, but package access so the ID can be reused */
@@ -468,19 +462,6 @@ public class VpnSettings implements Serializable, Validatable
         this.email = email;
     }
 
-    /**
-     * @return the allow proxy settings
-     */
-    public boolean getAllowProxy()
-    {
-        return this.allowProxy;
-    }
-
-    public void setAllowProxy( boolean allowProxy )
-    {
-        this.allowProxy = allowProxy;
-    }
-    
     /**
      * @return true if the CA private key is on a USB key.
      */

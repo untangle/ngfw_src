@@ -7,8 +7,6 @@ import java.io.Serializable;
 import java.util.LinkedList;
 import java.util.List;
 
-import com.untangle.uvm.node.AddressRange;
-import com.untangle.uvm.node.AddressValidator;
 import com.untangle.uvm.node.Validatable;
 import com.untangle.uvm.node.ValidateException;
 
@@ -43,19 +41,11 @@ public class ExportList implements Serializable, Validatable
         List<AddressRange> checkList = new LinkedList<AddressRange>();
 
         for ( SiteNetwork export : this.exportList ) {
-            checkList.add( AddressRange.makeNetwork( export.getNetwork().getAddr(), 
-                                                     export.getNetmask().getAddr()));
+            checkList.add( AddressRange.makeNetwork( export.getNetwork().getAddr(), export.getNetmask().getAddr()));
         }
 
         return checkList;
     }
 
-   
-    /** 
-     * Validate the object, throw an exception if it is not valid */
-    public void validate() throws ValidateException
-    {
-        /* Determine if all of the addresses are unique */
-        AddressValidator.getInstance().validateOverlap( buildAddressRange());
-    }
+    public void validate() throws ValidateException { }
 }

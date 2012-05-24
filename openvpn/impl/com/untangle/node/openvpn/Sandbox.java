@@ -5,6 +5,7 @@ package com.untangle.node.openvpn;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
+import java.net.InetAddress;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -19,11 +20,8 @@ import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.NetworkManager;
 import com.untangle.uvm.ExecManagerResult;
 import com.untangle.uvm.networking.IPNetwork;
-import com.untangle.uvm.networking.NetworkUtil;
 import com.untangle.uvm.networking.NetworkConfiguration;
 import com.untangle.uvm.networking.InterfaceConfiguration;
-import com.untangle.uvm.node.AddressRange;
-import com.untangle.uvm.node.AddressValidator;
 import com.untangle.uvm.node.HostAddress;
 import com.untangle.uvm.node.IPAddress;
 import com.untangle.uvm.node.ParseException;
@@ -251,8 +249,6 @@ public class Sandbox
                 if (network == null)
                     continue;
                 
-                if ( NetworkUtil.getInstance().isBogus( network.getNetwork()) ) continue;
-
                 rangeList.addFirst( AddressRange.makeNetwork( network.getNetwork().getAddr(), network.getNetmask().getAddr()));
             
                 if ( !av.validate( rangeList ).isValid()) {
@@ -269,6 +265,20 @@ public class Sandbox
             }
         }
 
+        /**
+         * Add an option for full-tunnel
+         */
+        SiteNetwork ssn = new SiteNetwork();
+        try {
+            ssn.setNetwork( new IPAddress( InetAddress.getByName("0.0.0.0") ) );
+            ssn.setNetmask( new IPAddress( InetAddress.getByName("0.0.0.0") ) );
+        } catch (java.net.UnknownHostException e) {
+            logger.warn("Unknown host 0.0.0.0");
+        }
+        ssn.setLive( false );
+        ssn.setName( i18nUtil.tr("entire internet (full tunnel VPN)") );
+        networkList.add( ssn );
+        
         setExportList( new ExportList( networkList ));
     }
 

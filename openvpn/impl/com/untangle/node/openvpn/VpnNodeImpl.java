@@ -35,7 +35,7 @@ import com.untangle.uvm.vnet.Fitting;
 import com.untangle.uvm.vnet.PipeSpec;
 import com.untangle.uvm.vnet.SoloPipeSpec;
 
-public class VpnNodeImpl extends NodeBase implements VpnNode
+public class VpnNodeImpl extends NodeBase implements VpnNode, com.untangle.uvm.node.OpenVpn
 {
     private static final String SETTINGS_CONVERSION_SCRIPT = System.getProperty( "uvm.bin.dir" ) + "/openvpn-convert-settings.py";
 
@@ -689,7 +689,7 @@ public class VpnNodeImpl extends NodeBase implements VpnNode
     public HostAddress getVpnServerAddress()
     {
         /* Return the empty address */
-        if (( this.settings == null ) || ( getConfigState() != ConfigState.CLIENT )) {
+        if (( this.settings == null )) {
             logger.info( "non-client state, and request for server address" );
             return EMPTY_HOST_ADDRESS;
         }

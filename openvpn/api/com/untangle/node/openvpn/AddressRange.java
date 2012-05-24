@@ -1,7 +1,7 @@
-/*
- * $HeadURL$
+/**
+ * $Id$
  */
-package com.untangle.uvm.node;
+package com.untangle.node.openvpn;
 
 import java.net.InetAddress;
 
