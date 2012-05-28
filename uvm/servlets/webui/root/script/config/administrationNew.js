@@ -68,7 +68,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
     });
 
     Ext.define("Ung.Administration", {
-    	extend: "Ung.ConfigWin",
+        extend: "Ung.ConfigWin",
         panelAdministration : null,
         panelPublicAddress : null,
         panelCertificates : null,
@@ -190,7 +190,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
                 iconClass : 'icon-edit-row',
                 handler : function(view, rowIndex, colIndex) {
                     // populate row editor
-                	var rec = view.getStore().getAt(rowIndex);
+                    var rec = view.getStore().getAt(rowIndex);
                     this.grid.rowEditorChangePass.populate(rec);
                     this.grid.rowEditorChangePass.show();
                 }
@@ -280,7 +280,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
                     plugins : [changePasswordColumn],
                     // the row input lines used by the row editor window
                     rowEditorInputLines : [{
-                    	xtype: "textfield",
+                        xtype: "textfield",
                         name : "Username",
                         dataIndex : "username",
                         fieldLabel : this.i18n._("Username"),
@@ -288,20 +288,20 @@ if (!Ung.hasResource["Ung.Administration"]) {
                         blankText : this.i18n._("The username cannot be blank."),
                         width : 400
                     }, {
-                    	xtype: "textfield",
+                        xtype: "textfield",
                         name : "Description",
                         dataIndex : "description",
                         fieldLabel : this.i18n._("Description"),
                         allowBlank : false,
                         width : 400
                     },{
-                    	xtype: "textfield",
+                        xtype: "textfield",
                         name : "Email",
                         dataIndex : "emailAddress",
                         fieldLabel : this.i18n._("Email"),
                         width : 400
                     },{
-                    	xtype: "textfield",
+                        xtype: "textfield",
                         inputType: 'password',
                         name : "Password",
                         dataIndex : "password",
@@ -311,7 +311,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
                         minLength : 3,
                         minLengthText : Ext.String.format(this.i18n._("The password is shorter than the minimum {0} characters."), 3)
                     },{
-                    	xtype: "textfield",
+                        xtype: "textfield",
                         inputType: 'password',
                         name : "Confirm Password",
                         dataIndex : "password",
@@ -510,13 +510,13 @@ if (!Ung.hasResource["Ung.Administration"]) {
                     width : 400
                 }],
                 validate: Ext.bind(function(inputLines) {
-                	//validate password match
-                	var pwd = Ext.getCmp("administration_rowEditor1_password_" + fieldID);
-                	var confirmPwd = Ext.getCmp("administration_rowEditor1_confirm_password_" + fieldID);
-                	if(pwd.getValue() != confirmPwd.getValue()) {
-                		pwd.markInvalid();
-                		return this.i18n._('Passwords do not match');
-                	} else {
+                    //validate password match
+                    var pwd = Ext.getCmp("administration_rowEditor1_password_" + fieldID);
+                    var confirmPwd = Ext.getCmp("administration_rowEditor1_confirm_password_" + fieldID);
+                    if(pwd.getValue() != confirmPwd.getValue()) {
+                        pwd.markInvalid();
+                        return this.i18n._('Passwords do not match');
+                    } else {
                         return true;
                     }
                 },this)
@@ -527,7 +527,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
 
             var currentHostnameMessage = Ext.String.format( this.i18n._( 'Current Hostname: {0}'), '<i>' + hostname + '</i>' );
             if ( hostname.indexOf( "." ) < 0 ) {
-            	currentHostnameMessage += Ext.String.format( this.i18n._( '{0}The current hostname is not a qualified hostname, click {1}here{2} to fix it{3}' ),
+                currentHostnameMessage += Ext.String.format( this.i18n._( '{0}The current hostname is not a qualified hostname, click {1}here{2} to fix it{3}' ),
                                           '<br/><span class="warning">',
                                           '<a href="/alpaca/hostname/index" target="_blank">',
                                           '</a>', '</span>');
@@ -719,11 +719,11 @@ if (!Ung.hasResource["Ung.Administration"]) {
                         layout:'column'
                     },
                     items : [{
-	                        cls: 'description',
-	                        html : this.i18n._('You must complete each of these steps in order every time you import a new signed certificate!'),
-	                        bodyStyle : 'padding-bottom:10px;',
-	                        border : false
-                    	},{
+                            cls: 'description',
+                            html : this.i18n._('You must complete each of these steps in order every time you import a new signed certificate!'),
+                            bodyStyle : 'padding-bottom:10px;',
+                            border : false
+                        },{
                         items: [{
                             border: false,
                             width: 30,
@@ -870,7 +870,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
                                     this.updateCertificatesStatus();
 
                                     Ext.MessageBox.alert(this.i18n._("Succeeded"), this.i18n._("Certificate Successfully Generated"),
-                                    		Ext.bind(function () {
+                                            Ext.bind(function () {
                                             this.panelCertificates.winGenerateSelfSignedCertificate.cancelAction();
                                         },this)
                                     );
@@ -921,7 +921,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
                                 if (result != null) {
                                     //success
                                     Ext.MessageBox.alert(this.i18n._("Succeeded"), this.i18n._("Certificate Signature Request Successfully Generated"),
-                                		Ext.bind(function () {
+                                        Ext.bind(function () {
                                             var crsCmp = Ext.getCmp('administration_crs');
                                             crsCmp.setValue(result);
                                             crsCmp.focus(true);
@@ -981,7 +981,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
                                     this.updateCertificatesStatus();
 
                                     Ext.MessageBox.alert(this.i18n._("Succeeded"), this.i18n._("Certificate Successfully Imported"),
-                                		Ext.bind(function () {
+                                        Ext.bind(function () {
                                             this.panelCertificates.winCertImportTrusted.cancelAction();
                                         },this)
                                     );
@@ -1329,7 +1329,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
             this.initialSkinSettings = Ung.Util.clone(this.getSkinSettings());
 
             var adminSkinsStore = Ext.create("Ext.data.Store",{
-            	fields: [{
+                fields: [{
                     name: 'name'
                 },{
                     name: 'displayName',
@@ -1339,14 +1339,14 @@ if (!Ung.hasResource["Ung.Administration"]) {
                     },this)
                 }],
                 proxy: Ext.create("Ext.data.proxy.Server",{
-                	doRequest: function(operation, callback, scope) {
-                		rpc.skinManager.getSkinsList(Ext.bind(function(result, exception) {
+                    doRequest: function(operation, callback, scope) {
+                        rpc.skinManager.getSkinsList(Ext.bind(function(result, exception) {
                             if(Ung.Util.handleException(exception)) return;
-                    		this.processResponse(exception==null, operation, null, result, callback, scope);
-                		},this),true,false);
-                	},
+                            this.processResponse(exception==null, operation, null, result, callback, scope);
+                        },this),true,false);
+                    },
                     reader : {
-                    	type: 'json',
+                        type: 'json',
                         root : 'list'
                     }
                 })
@@ -1472,7 +1472,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
                 for(var j=i+1; j<listAdminAccounts.length;j++) {
                     if (listAdminAccounts[i].username == listAdminAccounts[j].username) {
                         Ext.MessageBox.alert(this.i18n._('Warning'), Ext.String.format(this.i18n._("The username name: \"{0}\" in row: {1}  already exists."), listAdminAccounts[j].username, j+1),
-                    		Ext.bind(function () {
+                            Ext.bind(function () {
                                 this.tabs.setActiveTab(this.panelAdministration);
                             },this)
                         );
@@ -1489,7 +1489,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
             // verify that there is at least one valid entry after all operations
             if(listAdminAccounts.length <= 0 ){
                 Ext.MessageBox.alert(this.i18n._('Warning'), this.i18n._("There must always be at least one valid account."),
-            		Ext.bind(function () {
+                    Ext.bind(function () {
                         this.tabs.setActiveTab(this.panelAdministration);
                     },this)
                 );
@@ -1499,7 +1499,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
             // verify that there was at least one non-read-only account
             if(!oneWritableAccount){
                 Ext.MessageBox.alert(this.i18n._('Warning'), this.i18n._("There must always be at least one non-read-only (writable) account."),
-            		Ext.bind(function () {
+                    Ext.bind(function () {
                         this.tabs.setActiveTab(this.panelAdministration);
                     },this)
                 );
@@ -1514,7 +1514,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
             var httpsPortCmp = Ext.getCmp('administration_httpsPort');
             if (!httpsPortCmp.isValid()) {
                 Ext.MessageBox.alert(this.i18n._('Warning'), Ext.String.format(this.i18n._("The port must be an integer number between {0} and {1}."), 1, 65535),
-            		Ext.bind(function () {
+                    Ext.bind(function () {
                         this.tabs.setActiveTab(this.panelAdministration);
                         httpsPortCmp.focus(true);
                     },this)
@@ -1527,7 +1527,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
                 var outsideNetworkCmp = Ext.getCmp('administration_outsideNetwork');
                 if (!outsideNetworkCmp.isValid()) {
                     Ext.MessageBox.alert(this.i18n._('Warning'), this.i18n._('Invalid External Remote Administration \"IP Address\" specified.'),
-                		Ext.bind(function () {
+                        Ext.bind(function () {
                             this.tabs.setActiveTab(this.panelAdministration);
                             outsideNetworkCmp.focus(true);
                         },this)
@@ -1537,7 +1537,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
                 var outsideNetmaskCmp = Ext.getCmp('administration_outsideNetmask');
                 if (!outsideNetmaskCmp.isValid()) {
                     Ext.MessageBox.alert(this.i18n._('Warning'), this.i18n._("Invalid External Remote Administration \"Netmask\" specified."),
-                		Ext.bind(function () {
+                        Ext.bind(function () {
                             this.tabs.setActiveTab(this.panelAdministration);
                             outsideNetmaskCmp.focus(true);
                         },this)
@@ -1559,7 +1559,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
                 var publicIPAddressCmp = Ext.getCmp('administration_publicIPAddress');
                 if (!publicIPAddressCmp.isValid()) {
                     Ext.MessageBox.alert(this.i18n._('Warning'), this.i18n._("You must provide a valid IP Address."),
-                		Ext.bind(function () {
+                        Ext.bind(function () {
                             this.tabs.setActiveTab(this.panelPublicAddress);
                             publicIPAddressCmp.focus(true);
                         },this)
@@ -1569,7 +1569,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
                 var publicPortCmp = Ext.getCmp('administration_publicPort');
                 if (!publicPortCmp.isValid()) {
                     Ext.MessageBox.alert(this.i18n._('Warning'), Ext.String.format(this.i18n._("The port must be an integer number between {0} and {1}."), 1, 65535),
-                		Ext.bind(function () {
+                        Ext.bind(function () {
                             this.tabs.setActiveTab(this.panelPublicAddress);
                             publicPortCmp.focus(true);
                         },this)
@@ -1591,7 +1591,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
                 var snmpCommunityCmp = Ext.getCmp('administration_snmp_communityString');
                 if (!snmpCommunityCmp.isValid()) {
                     Ext.MessageBox.alert(this.i18n._('Warning'), this.i18n._("An SNMP \"Community\" must be specified."),
-                		Ext.bind(function () {
+                        Ext.bind(function () {
                             this.tabs.setActiveTab(this.panelMonitoring);
                             snmpCommunityCmp.focus(true);
                         },this)
@@ -1606,7 +1606,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
                     snmpTrapCommunityCmp = Ext.getCmp('administration_snmp_trapCommunity');
                     if (!snmpTrapCommunityCmp.isValid()) {
                         Ext.MessageBox.alert(this.i18n._('Warning'), this.i18n._("An Trap \"Community\" must be specified."),
-                    		Ext.bind(function () {
+                            Ext.bind(function () {
                                 this.tabs.setActiveTab(this.panelMonitoring);
                                 snmpTrapCommunityCmp.focus(true);
                             },this)
@@ -1617,7 +1617,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
                     snmpTrapHostCmp = Ext.getCmp('administration_snmp_trapHost');
                     if (!snmpTrapHostCmp.isValid()) {
                         Ext.MessageBox.alert(this.i18n._('Warning'), this.i18n._("An Trap \"Host\" must be specified."),
-                    		Ext.bind(function () {
+                            Ext.bind(function () {
                                 this.tabs.setActiveTab(this.panelMonitoring);
                                 snmpTrapHostCmp.focus(true);
                             },this)
@@ -1628,7 +1628,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
                     snmpTrapPortCmp = Ext.getCmp('administration_snmp_trapPort');
                     if (!snmpTrapPortCmp.isValid()) {
                         Ext.MessageBox.alert(this.i18n._('Warning'), Ext.String.format(this.i18n._("The port must be an integer number between {0} and {1}."), 1, 65535),
-                    		Ext.bind(function () {
+                            Ext.bind(function () {
                                 this.tabs.setActiveTab(this.panelMonitoring);
                                 snmpTrapPortCmp.focus(true);
                             },this)
@@ -1793,7 +1793,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
 
     // certificate generation window
     Ext.define("Ung.CertGenerateWindow", {
-    	extend: "Ung.Window",
+        extend: "Ung.Window",
         initComponent : function() {
             var settingsCmp = Ext.getCmp(this.items.parentId);
             this.bbar= ['->',{

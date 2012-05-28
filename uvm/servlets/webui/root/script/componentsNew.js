@@ -196,58 +196,58 @@ Ext.define("Ung.form.TimeField", {
 });
 
 Ung.Util= {
-	isDirty: function (item, depth) {
-		if(depth==null) {
-			depth=0;
-		} else if(depth>30) {
-			return false;
-		}
-		if(item==null) {
-			return false;
-		}
-		if(Ext.isFunction(item.isDirty)) {
-			return item.isDirty();
-		}
-		if(item.items!=null) {
-			var isDirty=false;
-			item.items.each(function(item) {
-				if(Ung.Util.isDirty(item, depth++)) {
-					isDirty=true;
-					return false;
-				} else {
-					return true;
-				}
-				
-			});
-			return isDirty;
-		}
-		return false;
-	},
-	clearDirty: function(item, depth) {
-		if(depth==null) {
-			depth=0;
-		} else if(depth>30) {
-			return;
-		}
-		if(item==null) {
-			return;
-		}
-		if(Ext.isFunction(item.isDirty)) {
-			if(!item.isDirty()) {
-				return;
-			}
-		}
-		if(Ext.isFunction(item.clearDirty)) {
-			item.clearDirty();
-			return;
-		}
-		if(item.items!=null) {
-			item.items.each(function(item) {
-				Ung.Util.clearDirty(item, depth++);
-				return true;
-			});
-		}
-	},
+    isDirty: function (item, depth) {
+        if(depth==null) {
+            depth=0;
+        } else if(depth>30) {
+            return false;
+        }
+        if(item==null) {
+            return false;
+        }
+        if(Ext.isFunction(item.isDirty)) {
+            return item.isDirty();
+        }
+        if(item.items!=null) {
+            var isDirty=false;
+            item.items.each(function(item) {
+                if(Ung.Util.isDirty(item, depth++)) {
+                    isDirty=true;
+                    return false;
+                } else {
+                    return true;
+                }
+                
+            });
+            return isDirty;
+        }
+        return false;
+    },
+    clearDirty: function(item, depth) {
+        if(depth==null) {
+            depth=0;
+        } else if(depth>30) {
+            return;
+        }
+        if(item==null) {
+            return;
+        }
+        if(Ext.isFunction(item.isDirty)) {
+            if(!item.isDirty()) {
+                return;
+            }
+        }
+        if(Ext.isFunction(item.clearDirty)) {
+            item.clearDirty();
+            return;
+        }
+        if(item.items!=null) {
+            item.items.each(function(item) {
+                Ung.Util.clearDirty(item, depth++);
+                return true;
+            });
+        }
+    },
     goToStartPage: function () {
         Ext.MessageBox.wait(i18n._("Redirecting to the start page..."), i18n._("Please wait"));
         window.location.href="/webui";
@@ -2306,7 +2306,7 @@ Ext.define("Ung.FaceplateMetric", {
     chartDataLength: 20,
     chartTip: null,
     afterRender: function() {
-    	this.callParent(arguments);
+        this.callParent(arguments);
         var out = [];
         for (var i = 0; i < 4; i++) {
             var top = 1 + i * 15;
@@ -2320,53 +2320,53 @@ Ext.define("Ung.FaceplateMetric", {
         this.buildChart();
     },
     beforeDestroy : function() {
-    	Ext.destroy(this.chartTip);
-    	Ext.destroy(this.chart);
+        Ext.destroy(this.chartTip);
+        Ext.destroy(this.chart);
         this.callParent(arguments);
     },
     buildChart: function() {
-    	var chartContainerEl = this.getEl().down("div[class=chart]")
-    	this.chartData = [];
-    	for(var i=0; i<this.chartDataLength; i++) {
-    		this.chartData.push({time:i, sessions:0});
-    	}
-    	this.chart = Ext.create('Ext.chart.Chart', {
-    	    renderTo: chartContainerEl,
-    	    width: 133,
-    	    height: 88,
-    	    animate: false,
-    	    //insetPadding: 11,
-    	    store: Ext.create('Ext.data.JsonStore', {
-        	    fields: ['time', 'sessions'],
-        	    data: this.chartData
-        	}),
-    	    axes: [{
-	            type: 'Numeric',
-	            position: 'left',
-	            fields: ['sessions'],
-	            minimum: 0,
-	            majorTickSteps: 0,
-	            minorTickSteps: 3
-	        }],
-    	    series: [{
-	            type: 'line',
-	            axis: 'left',
-	            smooth: true,
-	            showMarkers: false,
-	            fill:true,
-	            xField: 'time',
-	            yField: 'sessions',
-	            style: {
-	            	'stroke': '#6AA332',
-	                'stroke-width': 1,
-	                'fill': '#8ED349'
-	            }
-	        }]
-    	});
+        var chartContainerEl = this.getEl().down("div[class=chart]")
+        this.chartData = [];
+        for(var i=0; i<this.chartDataLength; i++) {
+            this.chartData.push({time:i, sessions:0});
+        }
+        this.chart = Ext.create('Ext.chart.Chart', {
+            renderTo: chartContainerEl,
+            width: 133,
+            height: 88,
+            animate: false,
+            //insetPadding: 11,
+            store: Ext.create('Ext.data.JsonStore', {
+                fields: ['time', 'sessions'],
+                data: this.chartData
+            }),
+            axes: [{
+                type: 'Numeric',
+                position: 'left',
+                fields: ['sessions'],
+                minimum: 0,
+                majorTickSteps: 0,
+                minorTickSteps: 3
+            }],
+            series: [{
+                type: 'line',
+                axis: 'left',
+                smooth: true,
+                showMarkers: false,
+                fill:true,
+                xField: 'time',
+                yField: 'sessions',
+                style: {
+                    'stroke': '#6AA332',
+                    'stroke-width': 1,
+                    'fill': '#8ED349'
+                }
+            }]
+        });
         var chartTipArr=[
            '<div class="title">'+i18n._("Session History. Current Sessions:")+' <span name="current_sessions">0</span></div>',
         ];
-    	this.chartTip=Ext.create('Ext.tip.ToolTip',{
+        this.chartTip=Ext.create('Ext.tip.ToolTip',{
             target: chartContainerEl,
             dismissDelay:0,
             hideDelay :400,
@@ -2375,7 +2375,7 @@ Ext.define("Ung.FaceplateMetric", {
             renderTo: Ext.getBody(),
             html: chartTipArr.join('')
         });
-    	
+        
     },
     buildActiveMetrics : function () {
         var nodeCmp = Ext.getCmp(this.parentId);
@@ -2522,40 +2522,40 @@ Ext.define("Ung.FaceplateMetric", {
             }
         }
         var reloadChart = this.chartData[0].sessions != 0;
-    	for(var i=0;i<this.chartData.length-1;i++) {
-    		this.chartData[i].sessions=this.chartData[i+1].sessions;
-    		reloadChart = (reloadChart || (this.chartData[i].sessions != 0));
-    	}
-    	var currentSessions = this.getCurrentSessions(nodeCmp.metrics);
-    	reloadChart = (reloadChart || (currentSessions!=0));
-    	this.chartData[this.chartData.length-1].sessions=currentSessions;
-    	if(reloadChart) {
-    		this.chart.store.loadData(this.chartData);
-        	if(this.chartTip.rendered) {
-        		this.chartTip.getEl().down("span[name=current_sessions]").dom.innerHTML=currentSessions;
-        	}
-    	}
+        for(var i=0;i<this.chartData.length-1;i++) {
+            this.chartData[i].sessions=this.chartData[i+1].sessions;
+            reloadChart = (reloadChart || (this.chartData[i].sessions != 0));
+        }
+        var currentSessions = this.getCurrentSessions(nodeCmp.metrics);
+        reloadChart = (reloadChart || (currentSessions!=0));
+        this.chartData[this.chartData.length-1].sessions=currentSessions;
+        if(reloadChart) {
+            this.chart.store.loadData(this.chartData);
+            if(this.chartTip.rendered) {
+                this.chartTip.getEl().down("span[name=current_sessions]").dom.innerHTML=currentSessions;
+            }
+        }
     },
     getCurrentSessions: function(metrics) {
-    	//Just for test generate random data
-    	//return Math.floor((Math.random()*150)); //Random Data
-    	
-    	if(this.currentSessionsMetricIndex == null) {
-    		this.currentSessionsMetricIndex = -1;
-    		for(var i=0;i<metrics.list.length; i++) {
-    			if(metrics.list[i].name=="live-sessions") {
-    				this.currentSessionsMetricIndex = i;
-    				break;
-    			}
-    		}
-    	}
-    	return this.currentSessionsMetricIndex>=0?metrics.list[this.currentSessionsMetricIndex].value:0;
+        //Just for test generate random data
+        //return Math.floor((Math.random()*150)); //Random Data
+        
+        if(this.currentSessionsMetricIndex == null) {
+            this.currentSessionsMetricIndex = -1;
+            for(var i=0;i<metrics.list.length; i++) {
+                if(metrics.list[i].name=="live-sessions") {
+                    this.currentSessionsMetricIndex = i;
+                    break;
+                }
+            }
+        }
+        return this.currentSessionsMetricIndex>=0?metrics.list[this.currentSessionsMetricIndex].value:0;
     },
     reset: function() {
-    	for(var i=0;i<this.chartData.length;i++) {
-    		this.chartData[i].sessions=0;
-    	}
-    	this.chart.store.loadData(this.chartData);
+        for(var i=0;i<this.chartData.length;i++) {
+            this.chartData[i].sessions=0;
+        }
+        this.chart.store.loadData(this.chartData);
         for (var i = 0; i < 4; i++) {
             var valueDiv = document.getElementById('systemValue_' + this.getId() + '_' + i);
             valueDiv.innerHTML = "&nbsp;";
@@ -2973,7 +2973,7 @@ Ext.define("Ung.GridEventLog", {
         }
     },
     isDirty: function() {
-    	return false;
+        return false;
     }
 });
 
@@ -3139,20 +3139,20 @@ Ext.define("Ung.SettingsWin", {
         Ext.destroy(this);
     },
     isDirty : function() {
-    	return this.dirtyFlag || Ung.Util.isDirty(this.tabs);
+        return this.dirtyFlag || Ung.Util.isDirty(this.tabs);
     },
     markDirty: function() {
-    	this.dirtyFlag=true;
+        this.dirtyFlag=true;
     },
     clearDirty: function() {
-    	this.dirtyFlag=false;
-    	Ung.Util.clearDirty(this.tabs);
+        this.dirtyFlag=false;
+        Ung.Util.clearDirty(this.tabs);
     },
     //To override
     saveAction: function (isApply) {
     },
     applyAction: function() {
-    	this.saveAction(true);
+        this.saveAction(true);
     },
     
     //TODO: remove this
@@ -3282,37 +3282,37 @@ Ext.define("Ung.NodeWin", {
         return this.node.rpcNode.validator;
     },
     saveAction: function (isApply) {
-    	if(!this.isDirty()) {
-    		if(!isApply) {
-    			this.closeWindow();
-    		}
-    		return;
-    	}
-    	if(!this.validate()) {
-    		return;
-    	}
-    	Ext.MessageBox.wait(i18n._("Saving..."), i18n._("Please wait"));
-    	if(Ext.isFunction(this.beforeSave)) {
-    		this.beforeSave(isApply, this.saveActionContinue);
-    	} else {
-    		this.saveActionContinue.call(this, isApply);
-    	}
+        if(!this.isDirty()) {
+            if(!isApply) {
+                this.closeWindow();
+            }
+            return;
+        }
+        if(!this.validate()) {
+            return;
+        }
+        Ext.MessageBox.wait(i18n._("Saving..."), i18n._("Please wait"));
+        if(Ext.isFunction(this.beforeSave)) {
+            this.beforeSave(isApply, this.saveActionContinue);
+        } else {
+            this.saveActionContinue.call(this, isApply);
+        }
     },
     saveActionContinue:function(isApply) {
-    	this.getRpcNode().setSettings( Ext.bind(function(result,exception) {
-			Ext.MessageBox.hide();
-			if(Ung.Util.handleException(exception)) return;
-			if (!isApply) {
+        this.getRpcNode().setSettings( Ext.bind(function(result,exception) {
+            Ext.MessageBox.hide();
+            if(Ung.Util.handleException(exception)) return;
+            if (!isApply) {
                 this.closeWindow();
-				return;
-			} else {
-				this.getSettings(true);
-				this.clearDirty();
-		    	if(Ext.isFunction(this.afterSave)) {
-		    		this.afterSave.call(this);
-		    	}
-			}
-    	},this),this.getSettings());
+                return;
+            } else {
+                this.getSettings(true);
+                this.clearDirty();
+                if(Ext.isFunction(this.afterSave)) {
+                    this.afterSave.call(this);
+                }
+            }
+        },this),this.getSettings());
     }
 
 });
@@ -3945,7 +3945,7 @@ Ext.define('Ung.EditorGrid', {
                 listeners: {
                     "drop": {
                         fn: Ext.bind(function() {
-                        	this.markDirty();
+                            this.markDirty();
                         },this)
                     }
                 }
@@ -3963,7 +3963,7 @@ Ext.define('Ung.EditorGrid', {
     
     initComponent : function() {
         if(this.hasInlineEditor) {
-        	this.plugins.push(Ext.create('Ext.grid.plugin.CellEditing', {
+            this.plugins.push(Ext.create('Ext.grid.plugin.CellEditing', {
                 clicksToEdit: 1
             }))
         }
@@ -4010,12 +4010,12 @@ Ext.define('Ung.EditorGrid', {
             var data=this.dataFn();
             this.data = (this.dataRoot!=null && this.dataRoot.length>0) ? data[this.dataRoot]:data;
         } else if(this.dataProperty) {
-        	this.data=this.settingsCmp.settings[this.dataProperty].list;
+            this.data=this.settingsCmp.settings[this.dataProperty].list;
         } else if(this.dataExpression) {
-        	this.data=eval("this.settingsCmp."+this.dataExpression);
+            this.data=eval("this.settingsCmp."+this.dataExpression);
         }
         if(this.ignoreServerIds) {
-        	Ung.Util.generateListIds(this.data);
+            Ung.Util.generateListIds(this.data);
         }
         this.totalRecords = this.data.length;
         this.store=Ext.create('Ext.data.Store',{
@@ -4332,16 +4332,16 @@ Ext.define('Ung.EditorGrid', {
         return this.dirtyFlag || Ung.Util.hasData(this.changedData);
     },
     markDirty: function() {
-    	this.dirtyFlag=true;
+        this.dirtyFlag=true;
     },
     clearDirty: function() {
         if(this.dataFn) {
             var data=this.dataFn();
             this.data = (this.dataRoot!=null && this.dataRoot.length>0) ? data[this.dataRoot]:data;
         } else if(this.dataProperty) {
-        	this.data=this.settingsCmp.settings[this.dataProperty].list;
+            this.data=this.settingsCmp.settings[this.dataProperty].list;
         } else if(this.dataExpression) {
-        	this.data=eval("this.settingsCmp."+this.dataExpression);
+            this.data=eval("this.settingsCmp."+this.dataExpression);
         }
         this.changedData = {};
         this.dirtyFlag=false;

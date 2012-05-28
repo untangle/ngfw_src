@@ -144,7 +144,7 @@ Ext.define("Ung.Main", {
       this.startApplication();
     },
     setDocumentTitle: function() {
-    	document.title=main.companyName + ((main.hostName!=null)?(" - " + main.hostName):"");
+    document.title=main.companyName + ((main.hostName!=null)?(" - " + main.hostName):"");
     },
     warnOnUpgrades : function(handler) {
         if(main.upgradeStatus!=null && main.upgradeStatus.upgradesAvailable ) {
@@ -757,7 +757,7 @@ Ext.define("Ung.Main", {
             Ung.MessageManager.start(true);
         }
         if(Ext.MessageBox.isVisible() && Ext.MessageBox.title==i18n._("Please wait")) {
-        	Ext.Function.defer(Ext.MessageBox.hide,30,Ext.MessageBox);
+        Ext.Function.defer(Ext.MessageBox.hide,30,Ext.MessageBox);
         }
     },
     // load the rack view for current policy
@@ -795,7 +795,7 @@ Ext.define("Ung.Main", {
     },
     loadLicenses: function() {
         //force re-sync with server
-        main.getLicenseManager().reloadLicenses();    	
+        main.getLicenseManager().reloadLicenses();
         var callback = Ext.bind(function(result,exception)
         {
             if(Ung.Util.handleException(exception)) return;
@@ -1227,7 +1227,7 @@ Ext.define("Ung.Main", {
     showInitialScreen : function (){
       
         try{
-        	Ext.Function.defer(Ext.MessageBox.wait,40,Ext.MessageBox,[i18n._("Determining Connectivity..."), i18n._("Please wait")]);        
+            Ext.Function.defer(Ext.MessageBox.wait,40,Ext.MessageBox,[i18n._("Determining Connectivity..."), i18n._("Please wait")]);        
             rpc.toolboxManager.isUpgradeServerAvailable(Ext.bind(function (result, exception) {
                 if(Ung.Util.handleException(exception)) throw Exception("failure");
                     this.updateInitialScreen(result);

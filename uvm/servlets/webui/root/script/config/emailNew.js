@@ -70,15 +70,17 @@ if (!Ung.hasResource["Ung.Email"]) {
                 Ext.getCmp('email_smtpLogin').enable();
                 Ext.getCmp('email_smtpPassword').enable();
             }
+            Ung.Util.clearDirty(this.panelOutgoingServer);
 
-        if ( this.isMailLoaded() ) {
-        var sendDigest = Ext.getCmp('quarantine_sendDailyDigest').getValue();
-        if (sendDigest) {
+            if ( this.isMailLoaded() ) {
+                var sendDigest = Ext.getCmp('quarantine_sendDailyDigest').getValue();
+                if (sendDigest) {
                     Ext.getCmp('quarantine_dailySendingTime').enable();
-        } else {
+                } else {
                     Ext.getCmp('quarantine_dailySendingTime').disable();
-        }
-        }
+                }
+                Ung.Util.clearDirty(this.panelQuarantine);
+            }
         },
         
         getMailNode : function(forceReload) {
@@ -88,7 +90,6 @@ if (!Ung.hasResource["Ung.Email"]) {
                 } catch (e) {
                     Ung.Util.rpcExHandler(e);
                 }
-                
             }
             return this.rpc.mailNode;
         },
@@ -154,7 +155,7 @@ if (!Ung.hasResource["Ung.Email"]) {
         },
         
         sendTestMessage: function(emailAddress){
-            var message = rpc.adminManager.sendTestMessage( Ext.bind(function(result, exception) {
+            var message = main.getMailSender().sendTestMessage( Ext.bind(function(result, exception) {
                 if(Ung.Util.handleException(exception)) return;
                 this.testEmailResultMessage = (( result == true ) ? this.i18n._( 'Test email sent.  Check your mailbox for successful delivery.' ) : this.i18n._('Warning!  Test failed.  Check your settings.' ));
                 var color = result === true ? 'green' : 'red';
@@ -232,12 +233,12 @@ if (!Ung.hasResource["Ung.Email"]) {
                                         validateOnBlur : true,
                                         allowBlank : false,
                                         fieldLabel : this.i18n._('Email Address'),
-                                        width : 200
+                                        width : 380
                                     },{
                                         xtype : 'label',
                                         style : 'font-weight:bold;color:green;font-size:11px;display:block;',
                                         width: 300,
-                                        height:100,
+                                        height: 100,
                                         id : 'email-test-success',
                                         visible : false
                                     }] 
@@ -397,7 +398,7 @@ if (!Ung.hasResource["Ung.Email"]) {
                         vtype : 'email',
                         hideLabel : true,
                         allowBlank : false,
-                        width : 200,
+                        width : 300,
                         value : this.getMailSettings().fromAddress
                      
                         
