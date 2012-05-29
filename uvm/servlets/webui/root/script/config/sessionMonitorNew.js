@@ -3,13 +3,6 @@ if (!Ung.hasResource["Ung.SessionMonitor"]) {
 
     Ext.define('Ung.SessionMonitor', {
         extend:'Ung.StatusWin',
-        fnCallback : null,
-        panelPolicyManagement : null,
-        gridRacks : null,
-        gridRules : null,
-        policyStore : null,
-        node:null,
-        rackKey: 1,
         helpSource: 'session_monitor',
 
         initComponent : function()
@@ -19,8 +12,6 @@ if (!Ung.hasResource["Ung.SessionMonitor"]) {
             }];
 
             this.buildPanel();
-            
-            //this.buildTabPanel([this.gridCurrentSessions]);
             this.buildTabPanel( [this.sessionPanel] );
             Ung.SessionMonitor.superclass.initComponent.call(this);
         },
@@ -38,29 +29,14 @@ if (!Ung.hasResource["Ung.SessionMonitor"]) {
             return sessions;
         },
         buildPanel : function() {
-            this.buildColumnSelector();
-
-            this.sessionPanel = Ext.create('Ext.panel.Panel',{
-                title : this.i18n._('Session Viewer'),
-                name : 'Session Viewer',
-                helpSource : 'session_monitor',
-                layout : "anchor",
-                defaults: {
-                    anchor: '98%',
-                    autoScroll: true
-                },
-                autoScroll : true,
-                cls: 'ung-panel',
-                items : [this.panelColumnSelector, this.gridCurrentSessions]
-            });
-        },
-        buildColumnSelector : function() {
             this.enabledColumns = {};
             this.columns = [];
-            this.buildColumns = Ext.bind(function() {
+            this.groupField = null;
+            this.reRenderGrid = Ext.bind(function() {
                 Ext.MessageBox.wait(this.i18n._("Refreshing..."), this.i18n._("Please wait"));
                 this.columns = [];
                 this.enabledColumns = {};
+                this.groupField = null;
                 for ( var i = 0 ; i < this.panelColumnSelector.items.items.length ; i++ ) {
                     var item = this.panelColumnSelector.items.items[i];
                     if ( item.xtype == "checkbox" ) {
@@ -77,20 +53,63 @@ if (!Ung.hasResource["Ung.SessionMonitor"]) {
                         }
                     }
                 }
+                // add grouping if enabled
+                for ( var i = 0 ; i < this.panelGroupSelector.items.items.length ; i++ ) {
+                    var item = this.panelGroupSelector.items.items[i];
+                    if ( item.xtype == "checkbox" ) {
+                        if (item.checked) {
+                            this.groupField = 'preNatClient';
+                        }
+                    }
+                }
                 // if the grid is already rendered it - force re-render it
                 if ( this.gridCurrentSessions !== undefined ) {
+                    this.gridCurrentSessions.groupField = this.groupField;
+                    this.buildGridCurrentSessions(this.columns, this.groupField);
+                    // FIXME 
+                    // XXX need to re-render (or substitute) this.gridCurrentSessions here, how to do this?
+                    // FIXME 
+
+                    // the code below changes the column on the current grid.
+                    // it works, but only for column selection (not grouping)
+                    
                     // this code came from
                     // http://www.sencha.com/forum/showthread.php?134529-How-to-add-columns-in-grid-panel-by-clicking-on-add-column-button-in-extjs-4
-                    var headerCt = this.gridCurrentSessions.headerCt;
-                    headerCt.suspendLayout = true;
-                    headerCt.removeAll();
-                    headerCt.add(this.columns);
-                    this.gridCurrentSessions.getView().refresh();
-                    headerCt.suspendLayout = false;
-                    this.gridCurrentSessions.forceComponentLayout();
-                } 
+                    //                     var headerCt = this.gridCurrentSessions.headerCt;
+                    //                     headerCt.suspendLayout = true;
+                    //                     headerCt.removeAll();
+                    //                     headerCt.add(this.columns);
+                    //                     this.gridCurrentSessions.getView().refresh();
+                    //                     headerCt.suspendLayout = false;
+                    //                     this.gridCurrentSessions.forceComponentLayout();
+                 } 
                 Ext.MessageBox.hide();
             }, this);
+            
+            // manually call the renderer for the first render
+            this.buildGroupSelectorPanel();
+            this.buildColumnSelectorPanel();
+            this.reRenderGrid();
+            this.buildGridCurrentSessions(this.columns, this.groupField);
+            this.buildSessionPanel();
+        },
+        buildSessionPanel: function() {
+
+            this.sessionPanel = Ext.create('Ext.panel.Panel',{
+                title : this.i18n._('Session Viewer'),
+                name : 'Session Viewer',
+                helpSource : 'session_monitor',
+                layout : "anchor",
+                defaults: {
+                    anchor: '98%',
+                    autoScroll: true
+                },
+                autoScroll : true,
+                cls: 'ung-panel',
+                items : [this.panelColumnSelector, this.panelGroupSelector, this.gridCurrentSessions]
+            });
+        },
+        buildColumnSelectorPanel : function() {
             this.panelColumnSelector = Ext.create('Ext.panel.Panel',{
                 name:'advanced',
                 xtype:'fieldset',
@@ -415,15 +434,32 @@ if (!Ung.hasResource["Ung.SessionMonitor"]) {
                     name : "Render Columns",
                     tooltip : i18n._('Render the grid with the selected columns'),
                     iconCls : 'icon-refresh',
-                    handler : this.buildColumns
+                    handler : this.reRenderGrid
                 }]
             });
-            // manually call the renderer for the first render
-            this.buildColumns();
-            this.buildGridCurrentSessions(this.columns);
+        },
+        // build the column selection panel (hidden by default)
+        buildGroupSelectorPanel : function() {
+            this.panelGroupSelector = Ext.create('Ext.panel.Panel',{
+                name:'advanced',
+                xtype:'fieldset',
+                title:i18n._("Group Selection"),
+                collapsible : true,
+                collapsed : true,
+                autoHeight : true,
+                bodyStyle : 'padding:5px 5px 5px 5px;',
+                items : [{
+                    xtype : 'checkbox',
+                    checked : false,
+                    boxLabel : this.i18n._("Group"),
+                    columnHeader : this.i18n._("Group"),
+                    columnDataIndex: "group",
+                    columnWidth : 70
+                }]
+            });
         },
         // Current Sessions Grid
-        buildGridCurrentSessions : function(columns) {
+        buildGridCurrentSessions : function(columns, groupField) {
             this.gridCurrentSessions = Ext.create('Ung.EditorGrid',{
                 name : "gridCurrentSessions",
                 settingsCmp : this,
@@ -436,6 +472,7 @@ if (!Ung.hasResource["Ung.SessionMonitor"]) {
                 hasDelete : false,
                 configDelete : null,
                 sortField : 'bypassed',
+                groupField : groupField,
                 columnsDefaultSortable : true,
                 title : this.i18n._("Current Sessions"),
                 qtip : this.i18n._("This shows all current sessions."),

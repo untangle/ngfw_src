@@ -3913,6 +3913,8 @@ Ext.define('Ung.EditorGrid', {
     sortField : null,
     // the default sort order
     sortOrder : null,
+    // the default group field
+    groupField : null,
     // the columns are sortable by default, if sortable is not specified
     columnsDefaultSortable : null,
     // paginate the grid by default
@@ -3935,6 +3937,7 @@ Ext.define('Ung.EditorGrid', {
     //if this is set the ids will be generated on the client using Ung.Util.generateListIds
     ignoreServerIds:true,
     sortingDisabled:false,
+    features: [{ftype: "grouping"}],
     constructor : function(config) {
         var defaults = {
             data:[],
@@ -4033,7 +4036,8 @@ Ext.define('Ung.EditorGrid', {
                 property : this.sortField,
                 direction : this.sortOrder ? this.sortOrder : "ASC"
             } : null,
-            remoteSort:this.paginated,
+            groupField : this.groupField,
+            remoteSort: this.paginated,
             listeners : {
                 "update" : {
                     fn : Ext.bind(function(store, record, operation) {
