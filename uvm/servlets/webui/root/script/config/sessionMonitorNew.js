@@ -430,9 +430,9 @@ if (!Ung.hasResource["Ung.SessionMonitor"]) {
                 },{
                     xtype : 'button',
                     id: "refresh_columns",
-                    text : i18n._('Render Columns'),
-                    name : "Render Columns",
-                    tooltip : i18n._('Render the grid with the selected columns'),
+                    text : i18n._('Render'),
+                    name : "Render",
+                    tooltip : i18n._('Render the grid with the configured view'),
                     iconCls : 'icon-refresh',
                     handler : this.reRenderGrid
                 }]
@@ -451,10 +451,18 @@ if (!Ung.hasResource["Ung.SessionMonitor"]) {
                 items : [{
                     xtype : 'checkbox',
                     checked : false,
-                    boxLabel : this.i18n._("Group"),
-                    columnHeader : this.i18n._("Group"),
+                    boxLabel : this.i18n._("Group by Client IP"),
+                    columnHeader : this.i18n._("Group by Client IP"),
                     columnDataIndex: "group",
                     columnWidth : 70
+                },{
+                    xtype : 'button',
+                    id: "refresh_columns",
+                    text : i18n._('Render'),
+                    name : "Render Columns",
+                    tooltip : i18n._('Render the grid with the configured view'),
+                    iconCls : 'icon-refresh',
+                    handler : this.reRenderGrid
                 }]
             });
         },
