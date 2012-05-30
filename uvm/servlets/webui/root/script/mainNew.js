@@ -797,7 +797,7 @@ Ext.define("Ung.Main", {
         }
         /* Sanity check to see if the node is already installed. */
         node = main.getNode(packageDesc.name);
-        if (( node !== null ) && ( node.nodeSettings.policy.id == rpc.currentPolicy.policyId )) {
+        if (( node !== null ) && ( node.nodeSettings.policyId == rpc.currentPolicy.policyId )) {
             appItem.hide();
             return;
         }

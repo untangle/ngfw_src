@@ -18,8 +18,6 @@ import org.apache.log4j.Logger;
  * "Monday,Tuesday"
  *
  * DayOfWeekMatcher it is case insensitive
- *
- * @author <a href="mailto:dmorris@untangle.com">Dirk Morris</a>
  */
 public class DayOfWeekMatcher
 {
