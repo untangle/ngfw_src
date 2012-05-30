@@ -4,7 +4,6 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <c:set var="isDebug" value="true"/>
 <head>
-
     <title>${companyName}</title>
     <META content="IE=9.0000" http-equiv="X-UA-Compatible"/>
     <style type="text/css">
@@ -16,14 +15,10 @@
 	<script type="text/javascript" src="/ext4/examples/ux/data/PagingMemoryProxy.js?s=${buildStamp}"></script>
 	<script type="text/javascript" src="/ext4/examples/ux/CheckColumn.js?s=${buildStamp}"></script>
 
-
     <script type="text/javascript" src="/jsonrpc/jsonrpc-min.js?s=${buildStamp}"></script>
     <script type="text/javascript" src="/script/i18n.js?s=${buildStamp}"></script>
     <script type="text/javascript" src="script/componentsNew.js?s=${buildStamp}"></script>
-    <script type="text/javascript" src="script/rulevalidator.js?s=${buildStamp}"></script>
     <script type="text/javascript" src="script/mainNew.js?s=${buildStamp}"></script>
-    <script type="text/javascript" src="script/rulebuilder.js?s=${buildStamp}"></script>
-
 
     <!-- todo, move this to a place where it is loaded dynamically. -->
     <script type="text/javascript" src="/script/timezone.js?s=${buildStamp}"></script>
@@ -38,16 +33,12 @@
     <script type="text/javascript" src="/jsonrpc/jsonrpc.js?s=${buildStamp}"></script>
     <script type="text/javascript" src="/script/i18nNew.js?s=${buildStamp}"></script>
     <script type="text/javascript" src="script/componentsNew.js?s=${buildStamp}"></script>
-    <script type="text/javascript" src="script/rulevalidator.js?s=${buildStamp}"></script>
     <script type="text/javascript" src="script/mainNew.js?s=${buildStamp}"></script>
-   
-   <script type="text/javascript" src="script/rulebuilder.js?s=${buildStamp}"></script>
  
     <!-- todo, move this to a place where it is loaded dynamically. -->
     <script type="text/javascript" src="/script/timezone.js?s=${buildStamp}"></script>
     <script type="text/javascript" src="/script/country.js?s=${buildStamp}"></script>
     <script type="text/javascript" src="/script/wizardNew.js?s=${buildStamp}"></script>
-  
 </c:if>
 
 <c:if test="${param['console']==1}">
@@ -57,13 +48,17 @@
 </c:if>
     <script type="text/javascript">
         var storeWindowName='store_window_${storeWindowId}';
-		<c:if test="${isCompat==true}">		
-			Ext.Compat.showErrors=true;
-		</c:if>
         var isWizardComplete = ${isWizardComplete};
+        if(typeof console === "undefined") {
+        	//Prevent console.log triggering errors on browserw without console support
+        	console = {
+       			log: function() {},
+                error: function() {},
+                debug: function() {}
+        	}
+        }
         function init() {
-            main=new Ung.Main({debugMode:${isDebug}});
-            main.buildStamp='${buildStamp}';
+            main=new Ung.Main({debugMode:${isDebug},buildStamp:'${buildStamp}'});
             main.init();
         }
         Ext.onReady(init);
