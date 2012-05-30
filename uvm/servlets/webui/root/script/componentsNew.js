@@ -3815,7 +3815,7 @@ Ext.define('Ung.grid.EditColumn', {
         }
         Ung.grid.EditColumn.superclass.constructor.call(this,config);
     },
-    init:function(grid) {
+    init: function(grid) {
         this.grid = grid;
     },
     handler: function(view, rowIndex, colIndex) {

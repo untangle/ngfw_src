@@ -2,7 +2,7 @@ if (!Ung.hasResource["Ung.Email"]) {
     Ung.hasResource["Ung.Email"] = true;
 
     Ext.define('Ung.Email', {
-        extend:'Ung.ConfigWin',
+        extend: 'Ung.ConfigWin',
         panelOutgoingServer: null,
         panelFromSafeList: null,
         panelQuarantine: null,
@@ -207,15 +207,15 @@ if (!Ung.hasResource["Ung.Email"]) {
                             height: 300,
                             modal: true,
                             title: this.i18n._('Email Test'),
-                            closeAction:'hide',
+                            closeAction: 'hide',
                             plain: false,
-                            items: new Ext.Panel({
+                            items: Ext.create('Ext.panel.Panel',{
                                 header: false,
                                 border: false,
                                 items: [{
                                     xtype: 'fieldset',
                                     height: 300,
-                                    items:[{
+                                    items: [{
                                         xtype: 'label',
                                         html: '<strong style="margin-bottom:20px;font-size:11px;display:block;">'+emailTestMessage+'</strong>',
                                         width: 400,
@@ -359,7 +359,7 @@ if (!Ung.hasResource["Ung.Email"]) {
                             }
                         }, {
                             xtype: 'textfield',
-                            hidden:true,
+                            hidden: true,
                             name: 'Login',
                             id: 'email_smtpLogin',
                             fieldLabel: this.i18n._('Login'),
@@ -369,7 +369,7 @@ if (!Ung.hasResource["Ung.Email"]) {
                             value: this.getMailSettings().authUser
                         }, {
                             xtype: 'textfield',
-                            hidden:true,
+                            hidden: true,
                             name: 'Password',
                             labelWidth: 230,
                             labelAlign: 'right',                        
@@ -413,7 +413,7 @@ if (!Ung.hasResource["Ung.Email"]) {
                         handler: Ext.bind(function() {
                             if (Ung.Util.isDirty(this.panelOutgoingServer)) {
                                 Ext.Msg.show({
-                                   title:this.i18n._('Save Changes?'),
+                                   title: this.i18n._('Save Changes?'),
                                    msg: Ext.String.format(this.i18n._("Your current settings have not been saved yet.{0}Would you like to save your settings before executing the test?"), '<br>'),
                                    buttons: Ext.Msg.YESNOCANCEL,
                                    fn: Ext.bind(function(btnId) {
@@ -445,14 +445,17 @@ if (!Ung.hasResource["Ung.Email"]) {
         
         },
         buildFromSafeList: function() {
-            var smUserSafelist = Ext.create('Ext.selection.CheckboxModel',{singleSelect:false});
             var showDetailColumn = Ext.create('Ext.grid.column.Action',{
                 header: this.i18n._("Show Detail"),
                 width: 100,
                 iconCls: 'icon-detail-row',
-                handler: function(record, index) {
+                init: function(grid) {
+                    this.grid = grid;
+                },
+                handler: function(view, rowIndex) {
+                    var record = view.getStore().getAt(rowIndex);
                     // select current row
-                    this.grid.getSelectionModel().selectRow(index);
+                    this.grid.getSelectionModel().select(record);
                     // show details
                     this.grid.onShowDetail(record);
                 }
@@ -471,7 +474,7 @@ if (!Ung.hasResource["Ung.Email"]) {
                 emptyRow: {
                     "emailAddress": this.i18n._("[no email address]")
                 },
-                fields:[ 
+                fields: [ 
                 {
                     name: 'id'
                 },
@@ -488,20 +491,20 @@ if (!Ung.hasResource["Ung.Email"]) {
                 columnsDefaultSortable: true,
                 rowEditorInputLines: [
                     {
-                        xtype:'textfield',
+                        xtype: 'textfield',
                         name: "Email Address",
                         dataIndex: "emailAddress",
                         fieldLabel: this.i18n._("Email Address"),
                         allowBlank: false,
                         width: 300
                     }],
-                dataRoot:'',
-                dataFn:Ext.bind(function() { 
+                dataRoot: '',
+                dataFn: Ext.bind(function() { 
                     var safeListContents = this.getSafelistAdminView().getSafelistContents('GLOBAL');
                     var results=[]
                     if ( safeListContents && safeListContents.length > 0) {
                         for ( var i = 0; i < safeListContents.length; i++) {
-                            results.push({emailAddress:safeListContents[i]});
+                            results.push({emailAddress: safeListContents[i]});
                         }
                     }
                     this.loadedGlobalSafelist = true;
@@ -512,7 +515,7 @@ if (!Ung.hasResource["Ung.Email"]) {
             this.gridSafelistUser = Ext.create('Ung.EditorGrid', {
                 name: 'Per User',
                 title: this.i18n._('Per User'),
-                selModel: smUserSafelist,
+                selModel: Ext.create('Ext.selection.CheckboxModel', {singleSelect: false}),
                 hasEdit: false,
                 hasAdd: false,
                 hasDelete: false,
@@ -521,9 +524,10 @@ if (!Ung.hasResource["Ung.Email"]) {
                 anchor: "100% 50%",
                 height: 250,
                 autoScroll: true,
-                dataFn: this.getSafelistAdminView().getUserSafelistCounts,
+                //dataFn: this.getSafelistAdminView().getUserSafelistCounts,
+                data: [{id: 34, emailAddress: "aaa", count: 353}],
                 tbar: [{
-                    xtype:'button',
+                    xtype: 'button',
                     text: this.i18n._('Purge Selected'),
                     tooltip: this.i18n._('Purge Selected'),
                     iconCls: 'purge-icon',
@@ -565,11 +569,12 @@ if (!Ung.hasResource["Ung.Email"]) {
                         width: 150,
                         dataIndex: 'count'
                     }, showDetailColumn],
+                plugins: [showDetailColumn],
                 sortField: 'emailAddress',
                 columnsDefaultSortable: true,
                 onShowDetail: Ext.bind(function(record) {
                     this.buildGridSafelistUserDetails();
-                    this.safelistDetailsWin = Ext.create('Ung.EmailAddressDetails',{
+                    this.safelistDetailsWin = Ext.create('Ung.EmailAddressDetails', {
                         detailsPanel: this.gridSafelistUserDetails,
                         settingsCmp: this,
                         showForCurrentAccount: function(emailAddress) {
@@ -594,7 +599,7 @@ if (!Ung.hasResource["Ung.Email"]) {
                 }, this)
             });
                 
-            this.panelFromSafeList = Ext.create('Ext.panel.Panel',{
+            this.panelFromSafeList = Ext.create('Ext.panel.Panel', {
                 name: 'From-Safe List',
                 helpSource: 'from_safe_list',
                 parentId: this.getId(),
@@ -606,16 +611,14 @@ if (!Ung.hasResource["Ung.Email"]) {
             });
         },
         buildGridSafelistUserDetails: function() {
-            var smUserSafelistDetails = Ext.create('Ext.selection.CheckboxModel',{singleSelect:false});
             this.gridSafelistUserDetails = Ext.create('Ung.EditorGrid',{
                 anchor: "100% 100%",
                 name: 'gridSafelistUserDetails',
-                selModel: smUserSafelistDetails,
+                selModel: Ext.create('Ext.selection.CheckboxModel', {singleSelect: false}),
                 hasEdit: false,
                 hasAdd: false,
                 hasDelete: false,
                 paginated: false,
-                
                 tbar: [{
                     text: this.i18n._('Purge Selected'),
                     tooltip: this.i18n._('Purge Selected'),
@@ -642,33 +645,30 @@ if (!Ung.hasResource["Ung.Email"]) {
                         this.gridSafelistUser.store.load();
                     }, this)
                 }],
-                fields:['sender'],
-                columns: [smUserSafelistDetails, {
+                data: [],
+                fields: ['sender'],
+                columns: [{
                     header: this.i18n._("email address"),
                     width: 200,
                     dataIndex: 'sender'
                 }],
                 sortField: 'sender',
                 columnsDefaultSortable: true
-                /*store: new Ext.data.Store({
-                    proxy: new Ext.data.MemoryProxy(),
-                    reader: new Ung.JsonListReader({
-                        root: null,
-                        fields: ['sender']
-                    })
-                }) */
             });
         },
 
         buildQuarantine: function() {
-            var sm = Ext.create('Ext.selection.CheckboxModel',{singleSelect:false});
-            var showDetailColumn = Ext.create('Ext.grid.column.Action',{
+            var showDetailColumn = Ext.create('Ext.grid.column.Action', {
                 header: this.i18n._("Show Detail"),
                 width: 100,
                 iconCls: 'icon-detail-row',
-                handler: function(record, index) {
+                init: function(grid) {
+                    this.grid = grid;
+                },
+                handler: function(view, rowIndex) {
+                    var record = view.getStore().getAt(rowIndex);
                     // select current row
-                    this.grid.getSelectionModel().selectRow(index);
+                    this.grid.getSelectionModel().select(record);
                     // show details
                     this.grid.onShowDetail(record);
                 }
@@ -692,7 +692,7 @@ if (!Ung.hasResource["Ung.Email"]) {
                     items: [{
                         xtype: 'textfield',
                         labelWidth: 230,
-                        labelAlign:'left',
+                        labelAlign: 'left',
                         name: 'Maximum Holding Time (days) (max 36)',
                         fieldLabel: this.i18n._('Maximum Holding Time (days) (max 36)'),
                         allowBlank: false,
@@ -774,7 +774,7 @@ if (!Ung.hasResource["Ung.Email"]) {
                     items: [ this.userQuarantinesGrid = Ext.create('Ung.EditorGrid',{
                         anchor: "100% 100%",
                         name: 'User Quarantines',
-                        selModel: sm,
+                        selModel: Ext.create('Ext.selection.CheckboxModel', {singleSelect: false}),
                         hasEdit: false,
                         hasAdd: false,
                         hasDelete: false,
@@ -784,7 +784,6 @@ if (!Ung.hasResource["Ung.Email"]) {
                         height: 250,
                         autoScroll: true,
                         dataFn: this.getQuarantineMaintenenceView().listInboxes,
- 
                         tbar: [{
                             text: this.i18n._('Purge Selected'),
                             tooltip: this.i18n._('Purge Selected'),
@@ -848,7 +847,7 @@ if (!Ung.hasResource["Ung.Email"]) {
                         }, {
                             name: 'totalSz'
                         }],
-                        columns: [//sm,
+                        columns: [
                         {
                             header: this.i18n._("account address"),
                             width: 200,
@@ -867,12 +866,13 @@ if (!Ung.hasResource["Ung.Email"]) {
                                 return i18n.numberFormat((value /1024.0).toFixed(3));
                             }
                         }, showDetailColumn],
+                        plugins: [showDetailColumn],
                         sortField: 'address',
                         columnsDefaultSortable: true,
                         
                         onShowDetail: Ext.bind(function(record) {
                             this.buildUserQuarantinesGrid();
-                            this.quarantinesDetailsWin = new Ung.EmailAddressDetails({
+                            this.quarantinesDetailsWin = Ext.create('Ung.EmailAddressDetails', {
                                 detailsPanel: this.userQuarantinesDetailsGrid,
                                 settingsCmp: this,
                                 showForCurrentAccount: function(emailAddress) {
@@ -938,7 +938,7 @@ if (!Ung.hasResource["Ung.Email"]) {
                         }, 
                         {
                             header: this.i18n._("description"),
-                            flex:1,
+                            flex: 1,
                             width: 200,
                             dataIndex: 'description',
                             editor: {
@@ -947,7 +947,7 @@ if (!Ung.hasResource["Ung.Email"]) {
                         }],
                         rowEditorInputLines: [
                         {
-                            xtype:'textfield',
+                            xtype: 'textfield',
                             name: "Category",
                             dataIndex: "category",
                             fieldLabel: this.i18n._("Category"),
@@ -955,7 +955,7 @@ if (!Ung.hasResource["Ung.Email"]) {
                             width: 300
                         },
                         {
-                            xtype:'textfield',
+                            xtype: 'textfield',
                             name: "Address",
                             dataIndex: "address",
                             fieldLabel: this.i18n._("Address"),
@@ -963,7 +963,7 @@ if (!Ung.hasResource["Ung.Email"]) {
                             width: 300
                         },
                         {
-                            xtype:'textfield',
+                            xtype: 'textfield',
                             name: "Description",
                             dataIndex: "description",
                             fieldLabel: this.i18n._("Description"),
@@ -1011,7 +1011,7 @@ if (!Ung.hasResource["Ung.Email"]) {
                             width: 250,
                             dataIndex: 'address1',
                             editor: {
-                                xtype:'textfield'
+                                xtype: 'textfield'
                             }
                         }, 
                         {
@@ -1020,7 +1020,7 @@ if (!Ung.hasResource["Ung.Email"]) {
                             dataIndex: 'address2',
                             flex:1,
                             editor: {
-                                xtype:'textfield'
+                                xtype: 'textfield'
                             }
                         }],
                         rowEditorInputLines: [
@@ -1032,21 +1032,21 @@ if (!Ung.hasResource["Ung.Email"]) {
                             width: 400
                         },
                         {
-                            xtype:'textfield',
+                            xtype: 'textfield',
                             name: "Send To Address",
                             dataIndex: "address2",
                             fieldLabel: this.i18n._("Send To Address"),
                             width: 400
                         },
                         {
-                            xtype:'textfield',
+                            xtype: 'textfield',
                             name: "Category",
                             dataIndex: "category",
                             fieldLabel: this.i18n._("Category"),
                             width: 400
                         }, 
                         {
-                            xtype:'textfield',
+                            xtype: 'textfield',
                             name: "Description",
                             dataIndex: "description",
                             fieldLabel: this.i18n._("Description"),
@@ -1058,15 +1058,13 @@ if (!Ung.hasResource["Ung.Email"]) {
         },
         
         buildUserQuarantinesGrid: function() {
-            var smUserQuarantinesDetails = Ext.create('Ext.selection.CheckboxModel', {singleSelect:false});
-            this.userQuarantinesDetailsGrid = Ext.create('Ung.EditorGrid',{
+            this.userQuarantinesDetailsGrid = Ext.create('Ung.EditorGrid', {
                 anchor: "100% 100%",
                 name: 'userQuarantinesDetailsGrid',
-                selModel: smUserQuarantinesDetails,
+                selModel: Ext.create('Ext.selection.CheckboxModel', {singleSelect: false}),
                 hasEdit: false,
                 hasAdd: false,
                 hasDelete: false,
-                //paginated: false,
                 autoGenerateId: true,
                 
                 tbar: [{
@@ -1144,7 +1142,7 @@ if (!Ung.hasResource["Ung.Email"]) {
                     name: 'quarantineDetail',
                     mapping: 'mailSummary'
                 }],
-                columns: [smUserQuarantinesDetails, {
+                columns: [{
                     header: this.i18n._("MailID"),
                     width: 150,
                     dataIndex: 'mailID',
@@ -1363,7 +1361,8 @@ if (!Ung.hasResource["Ung.Email"]) {
     });
     
     //email address details window for Safe List and Quarantine
-    Ung.EmailAddressDetails = Ext.extend(Ung.Window, {
+    Ext.define('Ung.EmailAddressDetails', {
+        extend: 'Ung.Window',
         settingsCmp: null,
         // the certPanel
         detailsPanel: null,
@@ -1385,7 +1384,7 @@ if (!Ung.hasResource["Ung.Email"]) {
                 }, this)
             },'-'];
             this.items=this.detailsPanel;
-            Ung.EmailAddressDetails.superclass.initComponent.call(this);
+            this.callParent(arguments);
         },
         // to override
         showForCurrentAccount: function(emailAddress) {
