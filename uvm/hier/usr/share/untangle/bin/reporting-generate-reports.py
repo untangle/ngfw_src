@@ -17,7 +17,6 @@ Options:
   -m | --no-mail                skip mailing
   -c | --create-schemas         create the SQL schemas
   -a | --attach-csv             attach events as csv
-  -t | --trial-report           only report on given trial
   -r | --report-length          number of days to report on
   -s <cs> | --simulate=<cs>     run reports of the remote DB specified by the connection string
   -d <y-m-d> | --date=<y-m-d>   run reports for the specific date
