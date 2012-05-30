@@ -25,13 +25,20 @@ public class DayOfWeekMatcher
     private static final String MARKER_ALL = "all";
     private static final String MARKER_NONE = "none";
     private static final String MARKER_SEPERATOR = ",";
-    private static final String MARKER_MONDAY    = "monday";
-    private static final String MARKER_TUESDAY   = "tuesday";
-    private static final String MARKER_WEDNESDAY = "wednesday";
-    private static final String MARKER_THURSDAY  = "thursday";
-    private static final String MARKER_FRIDAY    = "friday";
-    private static final String MARKER_SATURDAY  = "saturday";
-    private static final String MARKER_SUNDAY    = "sunday";
+    private static final String MARKER_SUNDAY     = "sunday";
+    private static final String MARKER_SUNDAY2    = "1";
+    private static final String MARKER_MONDAY     = "monday";
+    private static final String MARKER_MONDAY2    = "2";
+    private static final String MARKER_TUESDAY    = "tuesday";
+    private static final String MARKER_TUESDAY2   = "3";
+    private static final String MARKER_WEDNESDAY  = "wednesday";
+    private static final String MARKER_WEDNESDAY2 = "4";
+    private static final String MARKER_THURSDAY   = "thursday";
+    private static final String MARKER_THURSDAY2  = "5";
+    private static final String MARKER_FRIDAY     = "friday";
+    private static final String MARKER_FRIDAY2    = "6";
+    private static final String MARKER_SATURDAY   = "saturday";
+    private static final String MARKER_SATURDAY2  = "7";
 
     private static DayOfWeekMatcher ANY_MATCHER = new DayOfWeekMatcher(MARKER_ANY);
 
@@ -91,19 +98,19 @@ public class DayOfWeekMatcher
             int calDay = cal.get(Calendar.DAY_OF_WEEK);
             switch (calDay) {
             case Calendar.MONDAY:
-                return (this.single.equals(MARKER_MONDAY));
+                return (this.single.equals(MARKER_MONDAY) || this.single.equals(MARKER_MONDAY2));
             case Calendar.TUESDAY:
-                return (this.single.equals(MARKER_TUESDAY));
+                return (this.single.equals(MARKER_TUESDAY) || this.single.equals(MARKER_TUESDAY2));
             case Calendar.WEDNESDAY:
-                return (this.single.equals(MARKER_WEDNESDAY));
+                return (this.single.equals(MARKER_WEDNESDAY) || this.single.equals(MARKER_WEDNESDAY2));
             case Calendar.THURSDAY:
-                return (this.single.equals(MARKER_THURSDAY));
+                return (this.single.equals(MARKER_THURSDAY) || this.single.equals(MARKER_THURSDAY2));
             case Calendar.FRIDAY:
-                return (this.single.equals(MARKER_FRIDAY));
+                return (this.single.equals(MARKER_FRIDAY) || this.single.equals(MARKER_FRIDAY2));
             case Calendar.SATURDAY:
-                return (this.single.equals(MARKER_SATURDAY));
+                return (this.single.equals(MARKER_SATURDAY) || this.single.equals(MARKER_SATURDAY2));
             case Calendar.SUNDAY:
-                return (this.single.equals(MARKER_SUNDAY));
+                return (this.single.equals(MARKER_SUNDAY) || this.single.equals(MARKER_SUNDAY2));
             default:
                 return false;
             }
@@ -171,10 +178,20 @@ public class DayOfWeekMatcher
             this.type = DayOfWeekMatcherType.NONE;
             return;
         }
-        if (MARKER_SUNDAY.equals(matcher) || MARKER_MONDAY.equals(matcher) ||
-            MARKER_TUESDAY.equals(matcher) || MARKER_WEDNESDAY.equals(matcher) ||
-            MARKER_THURSDAY.equals(matcher) || MARKER_FRIDAY.equals(matcher) ||
-            MARKER_SATURDAY.equals(matcher)) {
+        if (MARKER_SUNDAY.equals(matcher) ||
+            MARKER_SUNDAY2.equals(matcher) ||
+            MARKER_MONDAY.equals(matcher) ||
+            MARKER_MONDAY2.equals(matcher) ||
+            MARKER_TUESDAY.equals(matcher) ||
+            MARKER_TUESDAY2.equals(matcher) ||
+            MARKER_WEDNESDAY.equals(matcher) ||
+            MARKER_WEDNESDAY2.equals(matcher) ||
+            MARKER_THURSDAY.equals(matcher) ||
+            MARKER_THURSDAY2.equals(matcher) ||
+            MARKER_FRIDAY.equals(matcher) ||
+            MARKER_FRIDAY2.equals(matcher) ||
+            MARKER_SATURDAY.equals(matcher) ||
+            MARKER_SATURDAY2.equals(matcher)) {
             this.type = DayOfWeekMatcherType.SINGLE;
             this.single = matcher;
             return;
