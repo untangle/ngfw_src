@@ -3,6 +3,8 @@
 import getopt, logging, mx, os, os.path, re, sys, tempfile, time, shutil
 from subprocess import Popen, PIPE
 from psycopg2.extensions import DateFromMx, TimestampFromMx
+from uvm.settings_reader import get_node_settings_item
+from uvm.settings_reader import get_node_settings
 
 def usage():
      print """\
@@ -17,7 +19,6 @@ Options:
   -a | --attach-csv             attach events as csv
   -t | --trial-report           only report on given trial
   -r | --report-length          number of days to report on
-  -l | --locale                 locale
   -s <cs> | --simulate=<cs>     run reports of the remote DB specified by the connection string
   -d <y-m-d> | --date=<y-m-d>   run reports for the specific date
 """ % sys.argv[0]
@@ -41,8 +42,7 @@ try:
                                  'no-data-gen', 'no-mail', 'create-schemas',
                                  'no-plot-gen', 'verbose', 'attach-csv',
                                  'events-retention', 'report-length',
-                                 'date=', 'locale=', 'trial-report=',
-                                 'simulate=', 'behave='])
+                                 'date=', 'simulate=', 'behave='])
 
 except getopt.GetoptError, err:
      print str(err)
@@ -60,10 +60,8 @@ attach_csv = False
 attachment_size_limit = 10
 end_date = mx.DateTime.today()
 start_time = mx.DateTime.now()
-locale = None
 db_retention = None
 file_retention = None
-trial_report = None
 simulate = None
 no_cleanup = False
 
@@ -84,10 +82,6 @@ for opt in opts:
           create_schemas = True
      elif k == '-a' or k == '--attach-csv':
           attach_csv = True
-     elif k == '-t' or k == '--trial-report':
-          trial_report = v
-          ## Disable cleanup on trial reports
-          no_cleanup = True
      elif k == '-r' or k == '--report-length':
           report_lengths = [int(v)]
      elif k == '-v' or k == '--verbose':
@@ -96,8 +90,6 @@ for opt in opts:
           end_date = mx.DateTime.strptime(v, "%Y-%m-%d")
      elif k == '-s' or k == '--simulate':
           simulate = v
-     elif k == '-l' or k == '--locale':
-          locale = v
 
 def verifyPidFile():
      if not os.path.isfile(LOCKFILE):
@@ -145,100 +137,42 @@ if simulate:
      sql_helper.SCHEMA = 'reports_simulation'
      sql_helper.CONNECTION_STRING = simulate
 
+def get_day_name(num):
+     if num == 1:
+          return "sunday"
+     if num == 2:
+          return "monday"
+     if num == 3:
+          return "tuesday"
+     if num == 4:
+          return "wednesday"
+     if num == 5:
+          return "thursday"
+     if num == 6:
+          return "friday"
+     if num == 7:
+          return "saturday"
+
 def get_report_lengths(date):
     lengths = []
 
-    day_of_week = ((date.day_of_week + 1) % 7) + 1
-    logger.debug("day_of_week: %s" % (day_of_week,))
+    current_day_of_week = ((date.day_of_week + 1) % 7) + 1
+    logger.debug("current_day_of_week: %s" % (current_day_of_week,))
     conn = sql_helper.get_connection()
 
-# FIXME - read reporting settings from active reports only
-# This no longer checks which entry is the correct one
-    try:
-        curs = conn.cursor()
-        curs.execute("""
-SELECT sched.id, daily, monthly_n_daily, monthly_n_day_of_wk, monthly_n_first
-FROM settings.n_reporting_sched sched
-JOIN settings.n_reporting_settings ON (schedule = sched.id)
-""")
-        r = curs.fetchone()
-        if r:
-            setting_id = r[0]
-            daily = r[1]
-            monthly_n_daily = r[2]
-            monthly_n_day_of_wk = r[3]
-            monthly_n_first = r[4]
+    dailySched = get_node_settings_item('untangle-node-reporting','generateDailyReports').lower()
+    weeklySched = get_node_settings_item('untangle-node-reporting','generateWeeklyReports').lower()
+    monthlySched = get_node_settings_item('untangle-node-reporting','generateMonthlyReports').lower()
 
-            if daily:
-                lengths.append(1)
-
-            if monthly_n_daily:
-                lengths.append(30)
-            elif monthly_n_day_of_wk == day_of_week:
-                lengths.append(30)
-            elif monthly_n_first and date.day == 1:
-                lengths.append(30)
-            conn.commit()
-
-            curs = conn.cursor()
-            curs.execute("""
-SELECT day
-FROM settings.n_reporting_wk_sched_rule rule
-JOIN settings.n_reporting_wk_sched sched ON (sched.rule_id = rule.id)
-WHERE sched.setting_id = %s AND day = %s
-""", (setting_id, day_of_week))
-            r = curs.fetchone()
-            if r:
-                lengths.append(7)
-            conn.commit()
-    except Exception, e:
-        conn.rollback()
-        raise e
+    if str(current_day_of_week) in dailySched or get_day_name(current_day_of_week) in dailySched or "any" in dailySched:
+         lengths.append(1)
+    if str(current_day_of_week) in weeklySched or get_day_name(current_day_of_week) in weeklySched or "any" in weeklySched:
+         lengths.append(7)
+    if str(current_day_of_week) in monthlySched or get_day_name(current_day_of_week) in monthlySched or "any" in monthlySched:
+         lengths.append(30)
 
     logger.info("Generating reports for the following lengths: %s" % (lengths,))
     return lengths
-
-def get_locale():
-     locale = None
-
-     conn = sql_helper.get_connection()
-     try:
-          curs = conn.cursor()
-          curs.execute("SELECT language FROM settings.u_language_settings")
-          r = curs.fetchone()
-          if r:
-               locale = r[0]
-     except Exception, e:
-          logger.warn("could not get locale");
-
-     return locale
-
-def get_settings():
-     settings = {}
-
-# FIXME - read reporting settings from active reports only
-# This no longer checks which entry is the correct one
-     conn = sql_helper.get_connection()
-     try:
-          curs = conn.cursor()
-          curs.execute("""\
-SELECT db_retention, file_retention, email_detail, attachment_size_limit
-FROM settings.n_reporting_settings
-""")
-          r = curs.fetchone()
-          if r:
-               settings['db_retention'] = r[0]
-               settings['file_retention'] = r[1]
-               settings['email_detail'] = r[2]
-               settings['attachment_size_limit'] = r[3]
-          conn.commit()
-     except Exception, e:
-          conn.rollback()
-          logger.critical("Could not get report settings", exc_info=True)
-          sys.exit(3)
-
-     logger.info("db_settings: %s" % (settings,))
-     return settings
 
 def write_cutoff_date(date):
      sql_helper.run_sql("""
@@ -294,16 +228,6 @@ if not running and not create_schemas:
 if not report_lengths:
      report_lengths = get_report_lengths(end_date)
      
-if not locale:
-     locale = get_locale()
-
-# set locale
-if locale:
-     logger.info('using locale: %s' % locale);
-     os.environ['LANGUAGE'] = locale
-else:
-     logger.info('locale not set')
-
 # if old reports schema detected, drop the schema
 if not simulate:
      if (sql_helper.table_exists('reports', 'daystoadd')
@@ -336,31 +260,18 @@ CREATE TABLE reports.table_updates (
 except Exception:
      pass
 
-settings = get_settings()
-
 if not db_retention:
-     db_retention = settings.get('db_retention', 7)
+     db_retention = get_node_settings('untangle-node-reporting').get('dbRetention', 7)
 if not file_retention:
-     file_retention = settings.get('file_retention', 30)
-attach_csv = attach_csv or settings.get('email_detail')
-attachment_size_limit = settings.get('attachment_size_limit')
+     file_retention = get_node_settings('untangle-node-reporting').get('fileRetention', 30)
+attach_csv = attach_csv or get_node_settings('untangle-node-reporting').get('emailDetail')
+attachment_size_limit = get_node_settings('untangle-node-reporting').get('attachmentSizeLimit')
 
 reports_output_base=REPORTS_OUTPUT_BASE
-
-if trial_report:
-     reports_output_base=tempfile.mkdtemp(prefix="trial-report-")
-     if db_retention >= 14:
-          report_lengths = (14,)
-     else:
-          report_lengths = (db_retention,)
 
 reports.engine.fix_hierarchy(REPORTS_OUTPUT_BASE)
 
 reports.engine.init_engine(NODE_MODULE_DIR)
-
-if trial_report:
-     trial_report = reports.engine.get_node(trial_report)
-     reports.engine.limit_nodes(trial_report)
 
 if not no_migration:
      init_date = end_date - mx.DateTime.DateTimeDelta(max(report_lengths))
@@ -386,12 +297,11 @@ if not create_schemas:
 
               if not no_mail and not simulate:
                    logger.info("About to email report summaries for %s days" % (report_days,))          
-                   f = reports.pdf.generate_pdf(reports_output_base, end_date, report_days, mail_reports, trial_report)
+                   f = reports.pdf.generate_pdf(reports_output_base, end_date, report_days, mail_reports)
                    reports.mailer.mail_reports(end_date, report_days, f, mail_reports, attach_csv=attach_csv, attachment_size_limit=attachment_size_limit)
                    os.remove(f)
      except Exception, e:
-          logger.critical("Exception while building report: %s" % (e,),
-                      exc_info=True)
+          logger.critical("Exception while building report: %s" % (e,), exc_info=True)
 else:
      logger.info("Create schemas mode, not generating reports themselves")
 
@@ -400,7 +310,7 @@ if not no_cleanup and not simulate and not create_schemas:
      reports.engine.reports_cleanup(reports_cutoff)     
      write_cutoff_date(DateFromMx(reports_cutoff))
     
-     files_cutoff = end_date - mx.DateTime.DateTimeDelta(file_retention)
+     files_cutoff = end_date - mx.DateTime.DateTimeDelta(float(file_retention))
      reports.engine.delete_old_reports('%s/data' % REPORTS_OUTPUT_BASE, files_cutoff)
 
 total_end_time = time.time()

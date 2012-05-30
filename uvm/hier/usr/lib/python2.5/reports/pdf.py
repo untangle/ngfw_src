@@ -257,7 +257,7 @@ class BodyTemplate(PageTemplate):
         canvas.restoreState()
 
 @print_timing
-def generate_pdf(report_base, end_date, report_days, mail_reports, trial_report_node):
+def generate_pdf(report_base, end_date, report_days, mail_reports):
     file = tempfile.mktemp()
 
     date_base = 'data/%d-%02d-%02d' % (end_date.year, end_date.month,
@@ -269,10 +269,7 @@ def generate_pdf(report_base, end_date, report_days, mail_reports, trial_report_
     else:
         days = _('days')
 
-    if trial_report_node:
-        title = trial_report_node.display_title + " " + _('trial report')
-    else:
-        title = '%s %s %s' % (_('Report for'), report_days, days)
+    title = '%s %s %s' % (_('Report for'), report_days, days)
     logger.debug('PDF Title: "%s"' % (title,))
 
     doc = ReportDocTemplate(file, title=title)
@@ -285,21 +282,10 @@ def generate_pdf(report_base, end_date, report_days, mail_reports, trial_report_
     story.append(Spacer(1, 0.5 * inch))
     story.append(Paragraph(title, STYLESHEET['MainTitle']))
 
-    if trial_report_node:
-        logger.info('End-of-trial mode')
-        start_date = end_date - mx.DateTime.DateTimeDelta(report_days)
-        start_date_str = start_date.strftime("%d %B %Y")
-        story.append(Paragraph(start_date_str + " -> " + date_str, STYLESHEET['SubTitle']))
-        story.append(Paragraph(platform.node(), STYLESHEET['SubTitle']))
-        story.append(Paragraph(_("Thank you for trying") + " " + trial_report_node.display_title,
-                               STYLESHEET['SubTitle']))
-        story.append(Paragraph(_("The trial period has now expired. To continue using") + " " + trial_report_node.display_title + ", " + _('click on "Buy Now" in the administrator interface and follow directions.'),
-                               STYLESHEET['SubTitle']))
-    else:
-        logger.info('Regular mode')
-        story.append(Paragraph(date_str, STYLESHEET['SubTitle']))
-        story.append(Paragraph(platform.node(), STYLESHEET['SubTitle']))
-        story.append(NextPageTemplate('TOC'))
+    logger.info('Regular mode')
+    story.append(Paragraph(date_str, STYLESHEET['SubTitle']))
+    story.append(Paragraph(platform.node(), STYLESHEET['SubTitle']))
+    story.append(NextPageTemplate('TOC'))
         
     story.append(PageBreak())
 

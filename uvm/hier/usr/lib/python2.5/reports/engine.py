@@ -128,8 +128,7 @@ class FactTable:
         return self.__dimensions
 
     def process(self, start_date, end_date):
-        tables = sql_helper.create_fact_table(self.__ddl(), 'trunc_time',
-                                                     start_date, end_date)
+        tables = sql_helper.create_fact_table(self.__ddl())
 
         for c in (self.measures + self.dimensions):
             schema, tablename = self.__name.split(".")
@@ -140,11 +139,8 @@ class FactTable:
         conn = sql_helper.get_connection()
 
         try:
-            sql_helper.run_sql(self.__insert_stmt(), (sd, end_date), connection=conn,
-                               auto_commit=False)
-            sql_helper.set_update_info(self.__name, end_date, connection=conn,
-                                       auto_commit=False,
-                                       origin_table=self.__detail_table)
+            sql_helper.run_sql(self.__insert_stmt(), (sd, end_date), connection=conn, auto_commit=False)
+            sql_helper.set_update_info(self.__name, end_date, connection=conn, auto_commit=False, origin_table=self.__detail_table)
             conn.commit()
         except Exception, e:
             conn.rollback()
