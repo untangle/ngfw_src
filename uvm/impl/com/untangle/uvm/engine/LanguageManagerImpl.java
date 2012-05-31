@@ -43,6 +43,7 @@ import com.untangle.uvm.node.NodeProperties;
 import com.untangle.uvm.node.NodeManager;
 import com.untangle.uvm.servlet.UploadHandler;
 import com.untangle.uvm.util.JsonClient;
+import com.untangle.uvm.SettingsManager;
 
 /**
  * Implementation of LanguageManagerImpl.
@@ -52,6 +53,7 @@ import com.untangle.uvm.util.JsonClient;
  */
 public class LanguageManagerImpl implements LanguageManager
 {
+    private static final String SETTINGS_CONVERSION_SCRIPT = System.getProperty( "uvm.bin.dir" ) + "/language-convert-settings.py";
     private static final String LANGUAGES_DIR;
     private static final String LANGUAGES_COMMUNITY_DIR;
     private static final String LANGUAGES_OFFICIAL_DIR;
@@ -83,40 +85,10 @@ public class LanguageManagerImpl implements LanguageManager
     public LanguageManagerImpl(UvmContextImpl uvmContext)
     {
         this.uvmContext = uvmContext;
-
-        if (languageSettings == null) { 
-            languageSettings = new LanguageSettings();
-            languageSettings.setLanguage(DEFAULT_LANGUAGE);
-        }
-        
-//         TransactionWork<Void> tw = new TransactionWork<Void>()
-//         {
-//             public boolean doWork(NodeSession s)
-//             {
-//                 Query q = s.createQuery("from LanguageSettings");
-//                 languageSettings = (LanguageSettings)q.uniqueResult();
-
-//                 if (languageSettings == null) {
-//                     languageSettings = new LanguageSettings();
-//                     languageSettings.setLanguage(DEFAULT_LANGUAGE);
-//                     s.save(languageSettings);
-//                 }
-
-//                 return true;
-//             }
-            
-//             @Override
-//             public Void getResult()
-//             {
-//                 return null;
-//             }
-//         };
-//         uvmContext.runTransaction(tw);
-
+        readLanguageSettings();
         allLanguages = loadAllLanguages();
         blacklist = loadBlacklist();
         allCountries = loadAllCountries();
-        
         UvmContextFactory.context().uploadManager().registerHandler(new LanguageUploadHandler());
     }
 
@@ -129,10 +101,8 @@ public class LanguageManagerImpl implements LanguageManager
 
     public void setLanguageSettings(LanguageSettings settings)
     {
-        /* delete whatever is in the db, and just make a fresh
-         * settings object */
-        saveSettings(settings);
         this.languageSettings = settings;
+        writeLanguageSettings();
 
         try {
             /* This is asynchronous */
@@ -422,29 +392,6 @@ public class LanguageManagerImpl implements LanguageManager
         return locale;
     }
 
-    @SuppressWarnings("unchecked")
-    private void saveSettings(final LanguageSettings settings)
-    {
-//         TransactionWork<Void> tw = new TransactionWork<Void>()
-//             {
-//                 public boolean doWork(NodeSession s)
-//                 {
-//                     /* delete old settings */
-//                     Query q = s.createQuery( "from " + "LanguageSettings" );
-//                     for ( Iterator<LanguageSettings> iter = q.iterate() ; iter.hasNext() ; ) {
-//                         LanguageSettings oldSettings = iter.next();
-//                         s.delete( oldSettings );
-//                     }
-
-//                     languageSettings = (LanguageSettings)s.merge(settings);
-//                     return true;
-//                 }
-//             };
-//         UvmContextFactory.context().runTransaction(tw);
-
-        this.languageSettings = settings;
-    }
-
     private ArrayList<String> loadBlacklist()
     {
         ArrayList<String> bl = new ArrayList<String>();
@@ -545,7 +492,7 @@ public class LanguageManagerImpl implements LanguageManager
     {
         return allCountries.containsKey(code);
     }
-    
+
     private class LanguageUploadHandler implements UploadHandler
     {
         @Override
@@ -553,7 +500,7 @@ public class LanguageManagerImpl implements LanguageManager
         {
             return "language";
         }
-        
+
         @Override
         public String handleFile(FileItem fileItem) throws Exception
         {
@@ -564,4 +511,70 @@ public class LanguageManagerImpl implements LanguageManager
         }
     }
 
+    private void readLanguageSettings()
+    {
+        SettingsManager setman = UvmContextFactory.context().settingsManager();
+        String settingsName = System.getProperty("uvm.settings.dir") + "/untangle-vm/language_settings";
+        String settingsFile = settingsName + ".js";
+        LanguageSettings readSettings = null;
+
+        logger.info("Loading language settings from " + settingsFile);
+
+        try {
+            readSettings =  setman.load( LanguageSettings.class, settingsName);
+        }
+
+        catch (Exception exn) {
+            logger.error("Could not read language settings", exn);
+        }
+
+        // if no settings found try getting them from the database
+        if (readSettings == null) {
+            logger.warn("No json language settings found... attempting to import from database");
+
+            try {
+                String convertCmd = SETTINGS_CONVERSION_SCRIPT + " " + settingsFile;
+                logger.warn("Running: " + convertCmd);
+                UvmContextFactory.context().execManager().exec( convertCmd );
+            }
+
+            catch (Exception exn) {
+                logger.error("Conversion script failed", exn);
+            }
+
+            try {
+                readSettings = setman.load( LanguageSettings.class, settingsName);
+            }
+
+            catch (Exception exn) {
+                logger.error("Could not read language settings", exn);
+            }
+
+        if (readSettings != null) logger.warn("Database language settings successfully imported");
+        }
+
+        if (readSettings == null) {
+            logger.warn("No database or json language settings found... initializing with defaults");
+            languageSettings = new LanguageSettings();
+            languageSettings.setLanguage(DEFAULT_LANGUAGE);
+            writeLanguageSettings();
+        }
+        else {
+            languageSettings = readSettings;
+        }
+    }
+
+    private void writeLanguageSettings()
+    {
+        SettingsManager setman = UvmContextFactory.context().settingsManager();
+        String settingsName = System.getProperty("uvm.settings.dir") + "/untangle-vm/language_settings";
+
+        try {
+            setman.save( LanguageSettings.class, settingsName, languageSettings);
+        }
+
+        catch (Exception exn) {
+            logger.error("Could not save language settings", exn);
+        }
+    }
 }

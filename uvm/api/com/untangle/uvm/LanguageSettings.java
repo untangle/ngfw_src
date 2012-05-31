@@ -11,21 +11,10 @@ import java.io.Serializable;
 @SuppressWarnings("serial")
 public class LanguageSettings implements Serializable
 {
-    private Long id;
     private String language = "en";
 
     public LanguageSettings() { }
 
-    private Long getId()
-    {
-        return id;
-    }
-
-	private void setId(Long id)
-    {
-        this.id = id;
-    }
-    
 	public String getLanguage()
     {
 		return language;
@@ -40,5 +29,4 @@ public class LanguageSettings implements Serializable
     {
         settings.setLanguage(this.language);
     }
-
 }
