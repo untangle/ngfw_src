@@ -85,14 +85,13 @@ public abstract class ReplacementGenerator<T extends BlockDetails>
         if (imagePreferred(uri, requestHeader)) {
             return generateSimplePage(nonce, persistent, true);
         } else {
-            NetworkManager nm = UvmContextFactory.context().networkManager();
-            InetAddress addr = nm.getInternalHttpAddress( session.getClientIntf() );
+            InetAddress addr = UvmContextFactory.context().networkManager().getInternalHttpAddress( session.getClientIntf() );
                 
             if (addr == null) {
                 return generateSimplePage(nonce, persistent, false);
             } else {
                 String host = addr.getHostAddress();
-                int port = nm.getAccessSettings().getBlockPagePort();
+                int port = UvmContextFactory.context().systemManager().getSettings().getBlockPagePort();
 
                 if ( port != 80 ) {
                     host = host + ":" + port;

@@ -3,8 +3,6 @@
  */
 package com.untangle.uvm.networking;
 
-import static com.untangle.uvm.networking.ShellFlags.FILE_RULE_CFG;
-
 import java.net.ConnectException;
 import java.net.InetAddress;
 import java.util.ArrayList;
@@ -29,7 +27,6 @@ import com.untangle.uvm.NetworkManager;
 import com.untangle.uvm.node.SessionTuple;
 import com.untangle.uvm.node.IPAddress;
 import com.untangle.uvm.node.IPMatcher;
-import com.untangle.uvm.node.ScriptWriter;
 import com.untangle.uvm.node.OpenVpn;
 import com.untangle.uvm.util.JsonClient;
 import com.untangle.uvm.util.XMLRPCUtil;
@@ -42,15 +39,10 @@ public class NetworkManagerImpl implements NetworkManager
 {
     private static NetworkManagerImpl INSTANCE = null;
 
-    static final String ETC_INTERFACES_FILE = "/etc/network/interfaces";
-    static final String ETC_RESOLV_FILE = "/etc/resolv.conf";
+    private static final String ETC_INTERFACES_FILE = "/etc/network/interfaces";
+    private static final String ETC_RESOLV_FILE = "/etc/resolv.conf";
 
     private final Logger logger = Logger.getLogger(getClass());
-
-    static final String UVM_BASE = System.getProperty( "uvm.home" );
-    static final String UVM_CONF = System.getProperty( "uvm.conf.dir" );
-
-    static final String ALPACA_SCRIPT = "/usr/share/untangle-net-alpaca/scripts/";
 
     private static final long ALPACA_RETRY_COUNT = 3;
     private static final long ALPACA_RETRY_DELAY_MS = 6000;
@@ -58,15 +50,11 @@ public class NetworkManagerImpl implements NetworkManager
     /* Inidicates whether or not the networking manager has been initialized */
     private boolean isInitialized = false;
 
-    /* Manager for the iptables rules */
-    private final RuleManager ruleManager;
-
-    /* Manager for AccessSettings */
-    private final AccessManagerImpl accessManager;
-
     /* Manager for AddressSettings */
     private final AddressManagerImpl addressManager;
 
+    private static final Object lock = new Object();
+    
     /* networkListeners stores parties interested in being notified of network changes */
     private Set<NetworkConfigurationListener> networkListeners = new HashSet<NetworkConfigurationListener>();
 
@@ -74,13 +62,8 @@ public class NetworkManagerImpl implements NetworkManager
      * should never be null */
     private NetworkConfiguration networkConfiguration = null;
 
-    /* Flag to indicate when the UVM has been shutdown */
-    private boolean isShutdown = false;
-
     private NetworkManagerImpl()
     {
-        this.ruleManager = RuleManager.getInstance();
-        this.accessManager = new AccessManagerImpl();
         this.addressManager = new AddressManagerImpl();
     }
 
@@ -101,8 +84,6 @@ public class NetworkManagerImpl implements NetworkManager
             initPriv();
         } catch ( Exception e ) {
             logger.error( "Exception initializing settings, using reasonable defaults", e );
-
-            /* !!!!!!!! use reasonable defaults */
         }
 
         this.isInitialized = true;
@@ -139,29 +120,6 @@ public class NetworkManagerImpl implements NetworkManager
     }
 
     /**
-     * Retrieve the settings related to limiting access to the box.
-     */
-    @Override
-    public AccessSettings getAccessSettings()
-    {
-        return this.accessManager.getSettings();
-    }
-
-    @Override
-    public void setAccessSettings( AccessSettings access )
-    {
-        this.accessManager.setSettings( access );
-
-        refreshNetworkConfig();
-
-        try {
-            generateRules();
-        } catch ( Exception e ) {
-            logger.warn( "Unable to generate rules.", e );
-        }
-    }
-
-    /**
      * Retrieve the settings related to the hostname and the address used to access to the box.
      */
     @Override
@@ -176,36 +134,6 @@ public class NetworkManagerImpl implements NetworkManager
         this.addressManager.setSettings( address );
 
         refreshNetworkConfig();
-
-        try {
-            generateRules();
-        } catch ( Exception e ) {
-            logger.warn( "Unable to generate rules.", e );
-        }
-    }
-
-    /* Register a service that needs outside access to HTTPs, the name should be unique */
-    public synchronized void registerService( String name )
-    {
-        this.accessManager.registerService( name );
-
-        try {
-            generateRules();
-        } catch ( Exception e ) {
-            logger.error( "Unable to create rules", e );
-        }
-    }
-
-    /* Remove a service that needs outside access to HTTPs, the name should be unique */
-    public synchronized void unregisterService( String name )
-    {
-        this.accessManager.unregisterService( name );
-
-        try {
-            generateRules();
-        } catch ( Exception e ) {
-            logger.error( "Unable to create rules", e );
-        }
     }
 
     public NetworkConfiguration getNetworkConfiguration()
@@ -232,25 +160,11 @@ public class NetworkManagerImpl implements NetworkManager
     }
 
     /* Set the access and address settings, used by the Remote Panel */
-    public void setSettings( AccessSettings access, AddressSettings address ) throws Exception
+    public void setSettings( AddressSettings address )
     {
-        this.accessManager.setSettings( access );
         this.addressManager.setSettings( address );
 
         refreshNetworkConfig();
-
-        generateRules();
-    }
-
-    /* Set the Access, Misc and Network settings at once.  Used by the
-     * support panel */
-    public void setSettings( AccessSettings access ) throws Exception
-    {
-        this.accessManager.setSettings( access );
-
-        refreshNetworkConfig();
-
-        generateRules();
     }
 
     /* Get the current hostname */
@@ -534,42 +448,15 @@ public class NetworkManagerImpl implements NetworkManager
             logger.debug( "New network settings: " + this.networkConfiguration );
         }
 
-        /**
-         * Write networking.sh
-         */
-        try {
-            ScriptWriter scriptWriter = new ScriptWriter();
-            scriptWriter.appendLine("#");
-            scriptWriter.appendLine("# This file is written by the untangle-vm and used by various system scripts");
-            scriptWriter.appendLine("# to quickly fetch some of the system settings");
-            scriptWriter.appendLine("#");
-            scriptWriter.appendLine("");
-
-            this.accessManager.commit( scriptWriter );
-            this.addressManager.commit( scriptWriter );
-            this.ruleManager.commit( scriptWriter );
-            /* Save out the script */
-            scriptWriter.writeFile( FILE_RULE_CFG );
-        } catch ( Exception e ) {
-            logger.warn( "Error committing the networking.sh file", e );
-        }
-
         try {
             callNetworkListeners();
         } catch ( Exception e ) {
             logger.error( "Exception in a listener", e );
         }
 
-        logger.info("Refreshed  Network Configuration.");
-    }
+        refreshIptablesRules();
 
-    public void refreshIptablesRules()
-    {
-        try {
-            this.generateRules();
-        } catch (Exception e) {
-            logger.warn("Failed to refresh IPtables: ",e);
-        }
+        logger.info("Refreshed  Network Configuration.");
     }
 
     public String[] getPossibleInterfaces()
@@ -687,39 +574,6 @@ public class NetworkManagerImpl implements NetworkManager
         return address.getAddr();
     }
 
-    /* Update all of the iptables rules and the inside address database */
-    private void generateRules() throws Exception
-    {
-        if ( this.isShutdown ) return;
-
-        ScriptWriter scriptWriter = new ScriptWriter();
-        scriptWriter.appendLine("#");
-        scriptWriter.appendLine("# This file is written by the untangle-vm and used by various system scripts");
-        scriptWriter.appendLine("# to quickly fetch some of the system settings");
-        scriptWriter.appendLine("#");
-        scriptWriter.appendLine("");
-
-        this.accessManager.commit( scriptWriter );
-        this.addressManager.commit( scriptWriter );
-        this.ruleManager.commit( scriptWriter );
-
-        /* Save out the script */
-        scriptWriter.writeFile( FILE_RULE_CFG );
-
-        this.ruleManager.generateIptablesRules();
-    }
-
-    public void isShutdown()
-    {
-        this.isShutdown = true;
-        this.ruleManager.isShutdown();
-    }
-
-    public void flushIPTables() throws Exception
-    {
-        this.ruleManager.destroyIptablesRules();
-    }
-
     /* Listener functions */
     private void callNetworkListeners()
     {
@@ -746,21 +600,18 @@ public class NetworkManagerImpl implements NetworkManager
         this.networkListeners.remove( networkListener );
     }
 
-    /* ----------------- Package ----------------- */
+    public synchronized void refreshIptablesRules()
+    {
+        /* Make an asynchronous request */
+        UvmContextFactory.context().newThread( new GenerateRules( null )).start();
+    }
 
-    /* ----------------- Private ----------------- */
     private void initPriv() throws Exception
     {
         loadAllSettings();
 
-        refreshNetworkConfig();
-
-        try {
-            generateRules();
-        } catch ( Exception e ) {
-            logger.error( "Exception generating rules", e );
-        }
-
+        this.networkConfiguration = loadNetworkConfiguration( );
+        
         /* Update the link status for all of the interfaces */
         updateLinkStatus();
     }
@@ -768,9 +619,6 @@ public class NetworkManagerImpl implements NetworkManager
     /* Methods for saving and loading the settings files from the database at startup */
     private void loadAllSettings()
     {
-        /* Load the access settings. */
-        this.accessManager.init();
-
         /* Load the address/hostname settings */
         this.addressManager.init();
     }
@@ -820,7 +668,8 @@ public class NetworkManagerImpl implements NetworkManager
         return null;
     }
 
-    /* Create a networking manager, this is a first come first serve
+    /**
+     * Create a networking manager, this is a first come first serve
      * basis.  The first class to create the network manager gets a
      * networking manager, all other classes get AccessException.  Done
      * this way so only the UvmContextImpl can create a networking manager
@@ -853,5 +702,53 @@ public class NetworkManagerImpl implements NetworkManager
         } 
         
         return settings;
+    }
+
+    class GenerateRules implements Runnable
+    {
+        private Exception exception;
+        private final Runnable callback;
+        
+        public GenerateRules( Runnable callback )
+        {
+            this.callback = callback;
+        }
+
+        public void run()
+        {
+            int tryCount = 0;
+            boolean success = false;
+
+            synchronized(NetworkManagerImpl.lock) {
+                logger.info("Refreshing iptables Rules...");
+                do {
+                    try {
+                        JsonClient.getInstance().callAlpaca( XMLRPCUtil.CONTROLLER_UVM, "generate_rules", null );
+                        success = true;
+                        break;
+                    } catch ( Exception e ) {
+                        logger.warn( "Error while generating iptables rules (trying again...)", e );
+                        this.exception = e;
+                    }
+
+                    try {Thread.sleep(3000);} catch(Exception e) {}
+                    tryCount++;
+                }
+                while (tryCount < 5);
+            }
+            
+            if (!success) {
+                logger.error( "Failed to generate iptables rules.");
+            } else {
+                logger.info("Refreshing iptables Rules... done");
+            }
+
+            if ( this.callback != null ) this.callback.run();
+        }
+        
+        public Exception getException()
+        {
+            return this.exception;
+        }
     }
 }

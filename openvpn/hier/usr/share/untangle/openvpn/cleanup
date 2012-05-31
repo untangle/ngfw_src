@@ -4,8 +4,6 @@ exec >> @UVM_LOG@/openvpn.log 2>&1
 
 GLOBALS=@UVM_HOME@/openvpn/globals
 
-baseNotRequired="true"
-
 ## There must be a configuration file 
 if [ -r ${GLOBALS} ]; then
     . ${GLOBALS}

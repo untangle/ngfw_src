@@ -32,8 +32,6 @@ import com.untangle.uvm.AdminManager;
 import com.untangle.uvm.AdminSettings;
 import com.untangle.uvm.AdminUserSettings;
 import com.untangle.uvm.ExecManagerResult;
-import com.untangle.uvm.security.UvmPrincipal;
-import com.untangle.uvm.util.FormUtil;
 
 /**
  * Remote interface for administrative user management.
@@ -54,18 +52,12 @@ public class AdminManagerImpl implements AdminManager
     
     private static final String ALPACA_NONCE_FILE = "/etc/untangle-net-alpaca/nonce";
 
-    private final UvmContextImpl uvmContext;
-    private final InheritableThreadLocal<HttpServletRequest> threadRequest;
-
     private final Logger logger = Logger.getLogger(this.getClass());
 
     private AdminSettings settings;
 
-    AdminManagerImpl(UvmContextImpl uvmContext, InheritableThreadLocal<HttpServletRequest> threadRequest)
+    protected AdminManagerImpl()
     {
-        this.uvmContext = uvmContext;
-        this.threadRequest = threadRequest;
-
         SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
         AdminSettings readSettings = null;
         String settingsFileName = System.getProperty("uvm.settings.dir") + "/untangle-vm/" + "admin";
@@ -152,7 +144,7 @@ public class AdminManagerImpl implements AdminManager
     {
         String id = timezone.getID();
 
-        Integer exitValue = uvmContext.execManager().execResult( SET_TIMEZONE_SCRIPT + " " + id );
+        Integer exitValue = UvmContextImpl.context().execManager().execResult( SET_TIMEZONE_SCRIPT + " " + id );
         if (0 != exitValue) {
             String message = "Unable to set time zone (" + exitValue + ") to: " + id;
             logger.error(message);
@@ -199,7 +191,7 @@ public class AdminManagerImpl implements AdminManager
     public String getFullVersionAndRevision()
     {
         try {
-            String version = uvmContext.execManager().execOutput(UVM_VERSION_SCRIPT);
+            String version = UvmContextImpl.context().execManager().execOutput(UVM_VERSION_SCRIPT);
 
             if (version == null)
                 return "";
@@ -213,7 +205,7 @@ public class AdminManagerImpl implements AdminManager
          * that method probably timed out
          * fall back to this method
          */
-        return uvmContext.getFullVersion();
+        return UvmContextImpl.context().getFullVersion();
     }
 
     public String getModificationState()
@@ -229,7 +221,7 @@ public class AdminManagerImpl implements AdminManager
         if (blessedFile.exists() && blessedFile.lastModified() > zshHistoryFile.lastModified())
             return "blessed";
 
-        ExecManagerResult result = uvmContext.execManager().exec("cat /root/.zsh_history | /usr/bin/wc -l");
+        ExecManagerResult result = UvmContextImpl.context().execManager().exec("cat /root/.zsh_history | /usr/bin/wc -l");
         int exitCode = result.getResult();
         String output = result.getOutput();
 
@@ -245,7 +237,7 @@ public class AdminManagerImpl implements AdminManager
     public String getRebootCount()
     {
         try {
-            String count = uvmContext.execManager().execOutput(REBOOT_COUNT_SCRIPT);
+            String count = UvmContextImpl.context().execManager().execOutput(REBOOT_COUNT_SCRIPT);
 	    
             if (count == null)
                 return "";
@@ -261,7 +253,7 @@ public class AdminManagerImpl implements AdminManager
     public String getKernelVersion()
     {
         try {
-            String version = uvmContext.execManager().execOutput(KERNEL_VERSION_SCRIPT);
+            String version = UvmContextImpl.context().execManager().execOutput(KERNEL_VERSION_SCRIPT);
 	    
             if (version == null)
                 return "";

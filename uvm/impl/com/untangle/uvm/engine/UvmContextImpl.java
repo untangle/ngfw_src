@@ -115,6 +115,7 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
     private LocalDirectoryImpl localDirectory;
     private ExecManagerImpl execManager;
     private SnmpManagerImpl snmpManager;
+    private SystemManagerImpl systemManager;
     private JSONSerializer serializer;
     private Reporting reportingNode = null;
     private long lastLoggedWarningTime = System.currentTimeMillis();
@@ -202,6 +203,11 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
         return this.adminManager;
     }
 
+    public SystemManagerImpl systemManager()
+    {
+        return this.systemManager;
+    }
+    
     public SnmpManager snmpManager()
     {
         return snmpManager;
@@ -516,7 +522,7 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
                                                    System.getProperty("uvm.log.dir"));
 
         // start services:
-        this.adminManager = new AdminManagerImpl(this, threadRequest);
+        this.adminManager = new AdminManagerImpl();
 
         this.snmpManager = SnmpManagerImpl.snmpManager();
         
@@ -543,6 +549,8 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
         // start nodes:
         this.nodeManager = new NodeManagerImpl();
 
+        this.systemManager = new SystemManagerImpl();
+        
         this.messageManager = new MessageManagerImpl();
 
         // Retrieve the reporting configuration manager
@@ -598,8 +606,10 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
             state = UvmState.RUNNING;
             startupWaitLock.notifyAll();
         }
-        
+
         hideUpgradeSplash();
+
+        networkManager.refreshIptablesRules();
     }
 
     @Override

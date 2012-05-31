@@ -1,19 +1,5 @@
-/*
- * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License, version 2,
- * as published by the Free Software Foundation.
- *
- * This program is distributed in the hope that it will be useful, but
- * AS-IS and WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE, TITLE, or
- * NONINFRINGEMENT.  See the GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
+/**
+ * $Id$
  */
 package com.untangle.node.openvpn;
 
@@ -30,7 +16,6 @@ import java.util.Set;
 import org.apache.log4j.Logger;
 
 import com.untangle.uvm.UvmContextFactory;
-import com.untangle.uvm.node.ScriptWriter;
 
 class CertificateManager
 {
@@ -75,7 +60,6 @@ class CertificateManager
     private static final String OPENSSL_VALID_FLAG = "V";
 
     private static final String VPN_CLIENT_STATUS_FILE = Constants.MISC_DIR + "/client_status.txt";
-    private static final String CONFIG_FILE            = Constants.MISC_DIR + "/base_cfg";
 
     private final Logger logger = Logger.getLogger( this.getClass());
 
@@ -87,38 +71,8 @@ class CertificateManager
 
     void createBase( VpnSettings settings ) throws Exception
     {
-        ScriptWriter sw = new ScriptWriter( HEADER );
-
         setDefaults( settings );
 
-        /* Need to use reasonable defaults */
-        sw.appendVariable( DOMAIN_FLAG,   settings.getDomain());
-
-        sw.appendComment( "Certificate configuration parameters" );
-        sw.appendGlobalEscapedVariable( COUNTRY_FLAG,  settings.getCountry());
-        sw.appendGlobalEscapedVariable( PROVINCE_FLAG, settings.getProvince());
-        sw.appendGlobalEscapedVariable( LOCALITY_FLAG, settings.getLocality());
-        sw.appendGlobalEscapedVariable( ORGANIZATION_FLAG, settings.getOrganization());
-        sw.appendGlobalEscapedVariable( ORG_UNIT_FLAG, settings.getOrganizationUnit());
-        sw.appendGlobalEscapedVariable( EMAIL_FLAG, settings.getEmail());
-
-        sw.appendComment( "Key size" );
-        sw.appendVariable( KEY_SIZE_FLAG, String.valueOf( settings.getKeySize()), true );
-
-        sw.appendLines( DEFAULTS );
-
-        try {
-            /* Just in case it doesn't already exist */
-            File directory = new File( Constants.CONF_DIR );
-            directory.mkdir();
-            directory = new File( Constants.MISC_DIR );
-            directory.mkdir();
-        } catch ( Exception e ) {
-            throw new Exception( "Unable to create misc directory", e );
-        }
-
-        sw.writeFile( CONFIG_FILE );
-        
         UvmContextFactory.context().execManager().exec( GENERATE_BASE_SCRIPT );
     }
 

@@ -1,7 +1,7 @@
 /**
  * $Id$
  */
-package com.untangle.uvm.node;
+package com.untangle.node.openvpn;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;

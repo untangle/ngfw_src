@@ -227,16 +227,6 @@ if not running and not create_schemas:
 if not report_lengths:
      report_lengths = get_report_lengths(end_date)
      
-# if old reports schema detected, drop the schema
-if not simulate:
-     if (sql_helper.table_exists('reports', 'daystoadd')
-         or sql_helper.table_exists('reports', 'webpages')
-         or sql_helper.table_exists('reports', 'emails')):
-          try:
-               sql_helper.run_sql('DROP SCHEMA reports CASCADE')
-          except psycopg2.ProgrammingError, e:
-               logger.warn(e, exc_info=True)
-
 try:
      sql_helper.create_schema(sql_helper.SCHEMA);
 except Exception:

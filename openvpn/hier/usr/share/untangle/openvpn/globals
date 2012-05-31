@@ -8,8 +8,6 @@ MISC_DIR="${CONF_DIR}/misc"
 
 ZIP_BASE="untangle-vpn"
 
-BASE_CONFIG_FILE="${MISC_DIR}/base_cfg"
-
 PACKAGE_DIR=${CONF_DIR}/client-packages
 
 ## This is where all of the keys (client and server) are generated.
@@ -27,14 +25,16 @@ OPENVPN_CCD_DIR="${OPENVPN_CONF_DIR}/ccd"
 ## This is the client status file that java uses to check the certificate status for each client
 CLIENT_STATUS_FILE="${MISC_DIR}/client_status.txt"
 
-## There must be a configuration file 
-if [ -r ${BASE_CONFIG_FILE} ]; then
-    . ${BASE_CONFIG_FILE}
-else
-    echo "[`date`,globals] Unable to load the openvpn configuration file ${BASE_CONFIG_FILE}"
-    ## Exit only if the base is required.
-    if [ -z "${baseNotRequired}" ]; then exit -2 ; fi
-fi
+## Default Key Size
+KEY_SIZE=1536
+
+DOMAIN='does.not.exists'
+export KEY_COUNTRY="`/usr/share/untangle/bin/ut-settings-reader.py node untangle-node-openvpn country`"
+export KEY_PROVINCE="`/usr/share/untangle/bin/ut-settings-reader.py node untangle-node-openvpn province`"
+export KEY_CITY="`/usr/share/untangle/bin/ut-settings-reader.py node untangle-node-openvpn locality`"
+export KEY_ORG="`/usr/share/untangle/bin/ut-settings-reader.py node untangle-node-openvpn organization`"
+export KEY_ORG_UNIT="`/usr/share/untangle/bin/ut-settings-reader.py node untangle-node-openvpn organizationUnit`"
+export KEY_EMAIL='vpn@does.not.exists'
 
 OPENSSL="openssl"
 RM_CMD="rm"

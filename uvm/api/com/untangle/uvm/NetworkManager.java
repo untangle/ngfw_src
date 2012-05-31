@@ -26,22 +26,13 @@ public interface NetworkManager
     /**
      * Save the network settings during the wizard
      */
-    void setSetupSettings( AddressSettings address, InterfaceConfiguration settings )
-        throws Exception;
+    void setSetupSettings( AddressSettings address, InterfaceConfiguration settings ) throws Exception;
 
     /**
      * Save the network settings during the wizard.
      * This can double for refresh because it returns the new, populated network settings.
      */
-    InterfaceConfiguration setSetupSettings( InterfaceConfiguration settings )
-        throws Exception;
-
-    /**
-     * Retrieve the settings related to limiting access to the box.
-     */
-    AccessSettings getAccessSettings();
-
-    void setAccessSettings( AccessSettings access );
+    InterfaceConfiguration setSetupSettings( InterfaceConfiguration settings ) throws Exception;
 
     /**
      * Retrieve the settings related to the hostname and the address
@@ -59,14 +50,10 @@ public interface NetworkManager
     void remapInterfaces( String[] osArray, String[] userArray ) throws Exception;
 
     /* Set the access and address settings, used by the Remote Panel */
-    void setSettings( AccessSettings access, AddressSettings address ) throws Exception;
-
-    /* Set the Access, Misc and Network settings at once.  Used by the
-     * support panel */
-    void setSettings( AccessSettings access ) throws Exception;
+    void setSettings( AddressSettings address ) throws Exception;
 
     /** Update the internal representation of the address */
-    void refreshNetworkConfig() throws Exception;
+    void refreshNetworkConfig();
 
     /* Get the external HTTPS port */
     int getPublicHttpsPort();
@@ -80,13 +67,11 @@ public interface NetworkManager
     IPAddress getPrimaryAddress();
 
     /* Allow the setup wizard to setup NAT properly, or disable it. */
-    void setWizardNatEnabled(IPAddress address, IPAddress netmask, boolean enableDhcpServer ) 
-        throws Exception;
+    void setWizardNatEnabled(IPAddress address, IPAddress netmask, boolean enableDhcpServer ) throws Exception;
 
-    void setWizardNatDisabled()
-        throws Exception;
+    void setWizardNatDisabled() throws Exception;
 
-    public InterfaceConfiguration getWizardWAN();
+    InterfaceConfiguration getWizardWAN();
     
     /* returns a recommendation for the internal network. */
     /* @param externalAddress The external address, if null, this uses
@@ -97,27 +82,15 @@ public interface NetworkManager
      * have changed */
     void updateLinkStatus();
 
-    public Boolean isQosEnabled();
+    Boolean isQosEnabled();
 
-    public JSONArray getWANSettings();
+    JSONArray getWANSettings();
 
-    public void setWANDownloadBandwidth(String name, int speed);
+    void setWANDownloadBandwidth(String name, int speed);
 
-    public void setWANUploadBandwidth(String name, int speed);
+    void setWANUploadBandwidth(String name, int speed);
     
-    public void enableQos();
-
-    /**
-     * Register a service that needs outside access to HTTPs, the name
-     * should be unique
-     */
-    void registerService( String name );
-
-    /**
-     * Remove a service that needs outside access to HTTPs, the name
-     * should be unique
-     */
-    void unregisterService( String name );
+    void enableQos();
 
     /**
      * This returns an address where the host on the given interface should be able to access HTTP.
@@ -128,8 +101,6 @@ public interface NetworkManager
     void registerListener( NetworkConfigurationListener networkListener );
 
     void unregisterListener( NetworkConfigurationListener networkListener );
-
-    void refreshIptablesRules();
 
     String[] getPossibleInterfaces();
 

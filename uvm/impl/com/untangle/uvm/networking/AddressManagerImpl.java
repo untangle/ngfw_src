@@ -3,12 +3,6 @@
  */
 package com.untangle.uvm.networking;
 
-import static com.untangle.uvm.networking.ShellFlags.FLAG_EXTERNAL_HTTPS_PORT;
-import static com.untangle.uvm.networking.ShellFlags.FLAG_EXTERNAL_PUBLIC_ADDR;
-import static com.untangle.uvm.networking.ShellFlags.FLAG_EXTERNAL_PUBLIC_ENABLED;
-import static com.untangle.uvm.networking.ShellFlags.FLAG_EXTERNAL_PUBLIC_HTTPS_PORT;
-import static com.untangle.uvm.networking.ShellFlags.FLAG_PUBLIC_URL;
-
 import java.io.File;
 import java.io.FileOutputStream;
 import java.util.HashSet;
@@ -26,7 +20,6 @@ import com.untangle.uvm.node.HostAddress;
 import com.untangle.uvm.node.IPAddress;
 import com.untangle.uvm.node.ParseException;
 import com.untangle.uvm.node.HostAddress;
-import com.untangle.uvm.node.ScriptWriter;
 import com.untangle.uvm.util.JsonClient;
 import com.untangle.uvm.util.XMLRPCUtil;
 
@@ -130,62 +123,6 @@ class AddressManagerImpl implements LocalAddressManager
 
             setSettings( settings, true );
         } 
-    }
-
-    /* Invoked at the very end to actually make the necessary changes for the settings to take effect. */
-    /* This should also be synchronized from its callers. */
-    synchronized void commit( ScriptWriter scriptWriter )
-    {
-        if ( this.addressSettings == null ) {
-            logger.warn( "AddressSettings have not been initialized, not saving settings." );
-            return;
-        }
-        
-        updateShellScript( scriptWriter, this.addressSettings );
-    }
-
-    private void updateShellScript( ScriptWriter scriptWriter, AddressSettings address )
-    {
-        if ( address == null ) {
-            logger.warn( "unable to complete shell script, address settings are not initialized." );
-            return;
-        }
-
-        /* The address and port of the external router that is in front of us */
-        IPAddress ip = NetworkUtil.BOGUS_DHCP_ADDRESS;
-
-        HostAddress currentAddress = this.addressSettings.getCurrentPublicAddress();
-        if (( currentAddress != null ) && ( currentAddress.getIp() != null ) && 
-            !currentAddress.getIp().isEmpty()) {
-            ip = currentAddress.getIp();
-        } else {
-            logger.warn( "The current address is not properly initialized: <" + currentAddress + ">" );
-        }
-
-        int port = this.addressSettings.getCurrentPublicPort();
-        if ( port < 0 || port > 0xFFFF ) {
-            logger.warn( "The current port is not properly initialized: <" + port + ">" );
-            port = 443;
-        }
-        
-        scriptWriter.appendLine("# Public IP of Untangle server (if set)");
-        scriptWriter.appendVariable( FLAG_EXTERNAL_PUBLIC_ADDR, ip.toString());
-
-        scriptWriter.appendLine("# Public Port of Untangle server (if set)");
-        scriptWriter.appendVariable( FLAG_EXTERNAL_PUBLIC_HTTPS_PORT, String.valueOf( port ));
-
-        scriptWriter.appendLine("# Public URL of Untangle server");
-        scriptWriter.appendVariable( FLAG_PUBLIC_URL, this.addressSettings.getCurrentURL());
-        
-        /* This is used to know what to redirect to 443 */
-        scriptWriter.appendLine("# HTTPS port of Untangle server");
-        scriptWriter.appendVariable( FLAG_EXTERNAL_HTTPS_PORT, this.addressSettings.getHttpsPort());
-
-
-        if ( this.addressSettings.getIsPublicAddressEnabled()) {
-            scriptWriter.appendLine("# Are Public IP/Port settingsenabled?");
-            scriptWriter.appendVariable( FLAG_EXTERNAL_PUBLIC_ENABLED, "true" );
-        }        
     }
 
     private void rebindHttps( AddressSettings address )

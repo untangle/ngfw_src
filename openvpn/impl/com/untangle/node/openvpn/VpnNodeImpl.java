@@ -537,7 +537,7 @@ public class VpnNodeImpl extends NodeBase implements VpnNode, com.untangle.uvm.n
         isWebAppDeployed = true;
 
         /* Make sure to leave this in because it reloads the iptables rules. */
-        UvmContextFactory.context().networkManager().refreshIptablesRules();
+        UvmContextFactory.context().networkManager().refreshNetworkConfig();
     }
 
     private synchronized void unDeployWebApp()
@@ -641,10 +641,7 @@ public class VpnNodeImpl extends NodeBase implements VpnNode, com.untangle.uvm.n
             logger.warn( "Error stopping openvpn manager", e );
         }
 
-        /* unregister the service with the UVM */
-        /* Make sure to leave this in because it reloads the iptables rules. */
-        //UvmContextFactory.context().networkManager().unregisterService( SERVICE_NAME );
-        UvmContextFactory.context().networkManager().refreshIptablesRules();
+        UvmContextFactory.context().networkManager().refreshNetworkConfig();
     }
 
     @Override protected void postDestroy()
@@ -740,6 +737,8 @@ public class VpnNodeImpl extends NodeBase implements VpnNode, com.untangle.uvm.n
     {
         VpnSettings newSettings = this.sandbox.completeConfig( this.getNodeSettings());
 
+        setSettings( newSettings );
+
         /* Generate new settings */
         if ( newSettings.isUntanglePlatformClient()) {
             /* Finish the configuration for clients, nothing left to do,
@@ -757,8 +756,6 @@ public class VpnNodeImpl extends NodeBase implements VpnNode, com.untangle.uvm.n
             /* Distribute emails */
             distributeAllClientFiles( newSettings );
         }
-
-        setSettings( newSettings );
 
         /* No reusing the sanbox */
         this.sandbox = null;

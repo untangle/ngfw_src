@@ -200,21 +200,29 @@ def __get_branding_info():
 def __get_url(date):
     rv = None
 
-    try:
-        f = open( "%s/usr/share/untangle/conf/networking.sh" % PREFIX )
-        for line in f:
-            if ( line.startswith( "UVM_PUBLIC_URL=" )):
-                public_host = line.replace( "UVM_PUBLIC_URL=", "" )
-                public_host = public_host.replace( "\"", "" )
-                public_host = public_host.strip()
-                rv = 'https://%s/reports?time=%s' \
-                     % ( public_host, date.strftime(locale.nl_langinfo(locale.D_FMT)), )
-                break
+    print "FIXME"
+    print "FIXME"
+    print "FIXME"
+    print "FIXME"
+    print "FIXME"
+    print "FIXME"
+# read this from the system settings file
+#
 
-    except Exception, e:
-        logger.warn('could not get hostname', exc_info=True)
+#     try:
+#         f = open( "%s/usr/share/untangle/conf/networking.sh" % PREFIX )
+#         for line in f:
+#             if ( line.startswith( "UVM_PUBLIC_URL=" )):
+#                 public_host = line.replace( "UVM_PUBLIC_URL=", "" )
+#                 public_host = public_host.replace( "\"", "" )
+#                 public_host = public_host.strip()
+#                 rv = 'https://%s/reports?time=%s' \
+#                      % ( public_host, date.strftime(locale.nl_langinfo(locale.D_FMT)), )
+#                 break
 
-    return rv
+#     except Exception, e:
+#         logger.warn('could not get hostname', exc_info=True)
+    return "FIXME"
 
 def __get_report_users():
     rv = set()

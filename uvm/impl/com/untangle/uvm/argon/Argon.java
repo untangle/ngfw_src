@@ -166,7 +166,6 @@ public class Argon
     public void destroy()
     {
         logger.debug( "Shutting down" );
-        networkManager.isShutdown();
 
         /* Remove both of the hooks to guarantee that no new sessions are created */
         Netcap.unregisterTCPHook();
@@ -191,12 +190,6 @@ public class Argon
         }
 
         Netcap.cleanup();
-
-        try {
-            networkManager.flushIPTables();
-        } catch ( Exception e ) {
-            logger.error( "Unable to flush iptables rules!", e );
-        }
     }
 
     public static Argon getInstance()

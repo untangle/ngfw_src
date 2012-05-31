@@ -52,39 +52,6 @@ class NetworkUtilPriv extends NetworkUtil
         return properties;
     }
 
-    List<IPAddress> getDnsServers()
-    {
-        List<IPAddress> dnsServers = new LinkedList<IPAddress>();
-
-        BufferedReader in = null;
-
-        /* Open up the interfaces file */
-        try {
-            in = new BufferedReader( new FileReader( NetworkManagerImpl.ETC_RESOLV_FILE ));
-            String str;
-            while (( str = in.readLine()) != null ) {
-                str = str.trim();
-                if ( str.startsWith( "nameserver" )) {
-                    String server = str.substring( "nameserver".length() ).trim();
-                    
-                    /* ignore anything that uses the localhost */
-                    if ( "127.0.0.1".equals( server )) continue;
-                    dnsServers.add( IPAddress.parse( server ));
-                }
-            }
-        } catch ( Exception ex ) {
-            logger.error( "Error reading file: ", ex );
-        }
-
-        try {
-            if ( in != null ) in.close();
-        } catch ( Exception ex ) {
-            logger.error( "Unable to close file", ex );
-        }
-
-        return dnsServers;
-    }
-
     static NetworkUtilPriv getPrivInstance()
     {
         return INSTANCE;
