@@ -4609,13 +4609,13 @@ Ext.define('Ung.EditorGrid', {
             }
             //reload grid
             this.getStore().loadPage(1, {
-                limit:Ung.Util.maxRowCount
+                limit: Ung.Util.maxRowCount
             });
             data=this.getFullSaveList();
             this.changedData = oldSettings.changedData;
             //reload grid context
             this.getStore().loadPage(oldSettings.page, {
-                limit:this.isPaginated() ? this.recordsPerPage : Ung.Util.maxRowCount
+                limit: this.isPaginated() ? this.recordsPerPage : Ung.Util.maxRowCount
             });
         } else {
             data=this.getFullSaveList();  

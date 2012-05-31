@@ -146,14 +146,8 @@ if (!Ung.hasResource["Ung.Email"]) {
             return hh + ":" + mm;
         },
         loadQuarantinesDetails: function() {
-            var account = this.quarantinesDetailsWin.account;
-            var totalRecords = this.getQuarantineMaintenenceView().getInboxTotalRecords(account);
-            
-            this.userQuarantinesDetailsGrid.store.proxy.rpcFnArgs = [account];
-            this.userQuarantinesDetailsGrid.setTotalRecords(totalRecords);
-            this.userQuarantinesDetailsGrid.loadPage(0);
+            this.userQuarantinesDetailsGrid.reloadGrid();
         },
-        
         sendTestMessage: function(emailAddress){
             var message = main.getMailSender().sendTestMessage( Ext.bind(function(result, exception) {
                 if(Ung.Util.handleException(exception)) return;
@@ -166,7 +160,7 @@ if (!Ung.hasResource["Ung.Email"]) {
             }, this), emailAddress);                
         },        
         buildOutgoingServer: function() {
-            this.panelOutgoingServer = Ext.create('Ext.panel.Panel',{
+            this.panelOutgoingServer = Ext.create('Ext.panel.Panel', {
                 name: 'Outgoing Server',
                 helpSource: 'outgoing_server',
                 parentId: this.getId(),
@@ -524,8 +518,8 @@ if (!Ung.hasResource["Ung.Email"]) {
                 anchor: "100% 50%",
                 height: 250,
                 autoScroll: true,
-                //dataFn: this.getSafelistAdminView().getUserSafelistCounts,
-                data: [{id: 34, emailAddress: "aaa", count: 353}],
+                dataFn: this.getSafelistAdminView().getUserSafelistCounts,
+                //data: [{id: 34, emailAddress: "aaa@bbb.com", count: 353}],//TODO: remove this after testing
                 tbar: [{
                     xtype: 'button',
                     text: this.i18n._('Purge Selected'),
@@ -581,7 +575,7 @@ if (!Ung.hasResource["Ung.Email"]) {
                             this.account = emailAddress;  
                             var newTitle = this.settingsCmp.i18n._('Email From-SafeList Details for: ') + emailAddress;
                             this.setTitle(newTitle);
-                            this.detailsPanel.setTitle(newTitle);
+                            //this.detailsPanel.setTitle(newTitle);
                             
                             this.show();
                             
@@ -590,7 +584,7 @@ if (!Ung.hasResource["Ung.Email"]) {
                                 Ext.bind(function(result, exception) {
                                     Ext.MessageBox.hide();
                                     if(Ung.Util.handleException(exception)) return;
-                                    this.settingsCmp.gridSafelistUserDetails.store.loadData(result);
+                                    this.settingsCmp.gridSafelistUserDetails.reloadGrid({data: result});
                                 }, this), emailAddress); 
                         }          
                     });
@@ -784,6 +778,7 @@ if (!Ung.hasResource["Ung.Email"]) {
                         height: 250,
                         autoScroll: true,
                         dataFn: this.getQuarantineMaintenenceView().listInboxes,
+                        //data: [{id: 34, address: "hhh@ddd.com", numMails: 115, totalSz:150124}],//TODO: remove this after testing
                         tbar: [{
                             text: this.i18n._('Purge Selected'),
                             tooltip: this.i18n._('Purge Selected'),
@@ -879,7 +874,7 @@ if (!Ung.hasResource["Ung.Email"]) {
                                     this.account = emailAddress;  
                                     var newTitle = this.settingsCmp.i18n._('Email Quarantine Details for: ') + emailAddress;
                                     this.setTitle(newTitle);
-                                    this.detailsPanel.setTitle(newTitle);
+                                    //this.detailsPanel.setTitle(newTitle);
                                     
                                     this.show();
                                     
@@ -1120,7 +1115,15 @@ if (!Ung.hasResource["Ung.Email"]) {
                         this.userQuarantinesGrid.store.load();
                     }, this)
                 }],
-                dataFn: this.getQuarantineMaintenenceView().getInboxRecords,
+                dataRoot: '',
+                dataFn: Ext.bind(function() {
+                    //return [{mailID:"aaa", mailSummary: {subject:"bbb", sender: "hhh@fff.com", category: "cat", size: 10354}}];//just for test
+                    if(this.userQuarantinesDetailsGrid != null) {
+                        return this.getQuarantineMaintenenceView().getInboxRecords(this.quarantinesDetailsWin.account, 0, Ung.Util.maxRowCount, []);
+                    } else {
+                        return [];
+                    }
+                }, this),
                 initialLoad: function() {}, //do nothing here
                 fields: [{
                     name: 'mailID'
