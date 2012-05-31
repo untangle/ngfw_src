@@ -53,7 +53,7 @@ import com.untangle.uvm.SettingsManager;
  */
 public class LanguageManagerImpl implements LanguageManager
 {
-    private static final String SETTINGS_CONVERSION_SCRIPT = System.getProperty( "uvm.bin.dir" ) + "/language-convert-settings.py";
+    private static final String SETTINGS_CONVERSION_SCRIPT = System.getProperty( "uvm.bin.dir" ) + "/untangle-vm-convert-language-settings.py";
     private static final String LANGUAGES_DIR;
     private static final String LANGUAGES_COMMUNITY_DIR;
     private static final String LANGUAGES_OFFICIAL_DIR;
