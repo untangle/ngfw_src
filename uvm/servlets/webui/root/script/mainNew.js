@@ -120,6 +120,9 @@ Ext.define("Ung.Main", {
         // get version
         rpc.version=rpc.jsonrpc.UvmContext.version();
 
+        // get system manager
+        rpc.systemManager=rpc.jsonrpc.UvmContext.systemManager();
+
         // get network manager
         rpc.networkManager=rpc.jsonrpc.UvmContext.networkManager();
         this.hostName = rpc.networkManager.getNetworkConfiguration().hostname; 
