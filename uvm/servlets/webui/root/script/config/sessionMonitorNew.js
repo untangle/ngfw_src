@@ -63,26 +63,23 @@ if (!Ung.hasResource["Ung.SessionMonitor"]) {
                     }
                 }
                 // if the grid is already rendered it - force re-render it
-                if ( this.gridCurrentSessions !== undefined ) {
-                    this.gridCurrentSessions.groupField = this.groupField;
+                if ( this.gridCurrentSessions == undefined ) {
                     this.buildGridCurrentSessions(this.columns, this.groupField);
-                    // FIXME 
-                    // XXX need to re-render (or substitute) this.gridCurrentSessions here, how to do this?
-                    // FIXME 
-
-                    // the code below changes the column on the current grid.
-                    // it works, but only for column selection (not grouping)
-                    
-                    // this code came from
-                    // http://www.sencha.com/forum/showthread.php?134529-How-to-add-columns-in-grid-panel-by-clicking-on-add-column-button-in-extjs-4
-                    //                     var headerCt = this.gridCurrentSessions.headerCt;
-                    //                     headerCt.suspendLayout = true;
-                    //                     headerCt.removeAll();
-                    //                     headerCt.add(this.columns);
-                    //                     this.gridCurrentSessions.getView().refresh();
-                    //                     headerCt.suspendLayout = false;
-                    //                     this.gridCurrentSessions.forceComponentLayout();
-                 } 
+                 } else {
+                        if ( this.groupField) {
+                            this.gridCurrentSessions.getStore().group(this.groupField);
+                        } else {
+                            this.gridCurrentSessions.getStore().clearGrouping();
+                        }
+                        var headerCt = this.gridCurrentSessions.headerCt;
+                        headerCt.suspendLayout = true;
+                        headerCt.removeAll();
+                        headerCt.add(this.columns);
+                        this.gridCurrentSessions.groupField = this.groupField;
+                        this.gridCurrentSessions.getView().refresh();
+                        headerCt.suspendLayout = false;
+                        this.gridCurrentSessions.forceComponentLayout();
+                 }
                 Ext.MessageBox.hide();
             }, this);
             
