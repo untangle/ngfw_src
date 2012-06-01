@@ -9,6 +9,8 @@ import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.SettingsManager;
 import com.untangle.uvm.SystemManager;
 import com.untangle.uvm.SystemSettings;
+import com.untangle.uvm.UvmState;
+import com.untangle.uvm.node.IPAddress;
 
 /**
  * The Manager for system-related settings
@@ -75,6 +77,10 @@ public class SystemManagerImpl implements SystemManager
             newSettings.setIsOutsideHttpsEnabled( true );
             newSettings.setHttpsPort( 443 );
 
+            newSettings.setPublicUrlMethod( SystemSettings.PUBLIC_URL_EXTERNAL_IP );
+            newSettings.setPublicUrlAddress( "hostname.example.com" );
+            newSettings.setPublicUrlPort( 443 );
+
             this.setSettings(newSettings);
         }
         else {
@@ -95,6 +101,42 @@ public class SystemManagerImpl implements SystemManager
         this._setSettings( settings );
     }
 
+    /**
+     * @return the public url for the box, this is the address (may be hostname or ip address)
+     */
+    public String getPublicUrl()
+    {
+        String httpsPortStr = Integer.toString(this.settings.getHttpsPort());
+        String primaryAddressStr = "unconfigured.example.com";
+        
+        if ( SystemSettings.PUBLIC_URL_EXTERNAL_IP.equals(this.settings.getPublicUrlMethod()) ) {
+            IPAddress primaryAddress = UvmContextFactory.context().networkManager().getPrimaryAddress();
+            if ( primaryAddress == null ) {
+                logger.warn("No WAN IP found");
+            } else {
+                primaryAddressStr = primaryAddress.getAddr().getHostAddress();
+            }
+        } else if ( SystemSettings.PUBLIC_URL_HOSTNAME.equals(this.settings.getPublicUrlMethod()) ) {
+            if ( UvmContextFactory.context().networkManager().getHostname() == null ) {
+                logger.warn("No hostname is configured");
+            } else {
+                primaryAddressStr = UvmContextFactory.context().networkManager().getHostname();
+            }
+        } else if ( SystemSettings.PUBLIC_URL_ADDRESS_AND_PORT.equals(this.settings.getPublicUrlMethod()) ) {
+            if ( this.settings.getPublicUrlAddress() == null ) {
+                logger.warn("No public address configured");
+            } else {
+                primaryAddressStr = this.settings.getPublicUrlAddress();
+                httpsPortStr = Integer.toString(this.settings.getPublicUrlPort());
+            }
+        } else {
+            logger.warn("Unknown public URL method: " + this.settings.getPublicUrlMethod() );
+        }
+        
+        return primaryAddressStr + ":" + httpsPortStr;
+    }
+
+    
     private void _setSettings( SystemSettings newSettings )
     {
         /**
@@ -121,7 +163,10 @@ public class SystemManagerImpl implements SystemManager
         logger.info("reconfigure()");
 
         setSupportAccess( this.settings );
+        rebindHttps( this.settings );
+
         UvmContextImpl.context().networkManager().refreshNetworkConfig();
+
     }
 
     private void setSupportAccess( SystemSettings systemSettings )
@@ -139,6 +184,28 @@ public class SystemManagerImpl implements SystemManager
             }
         } catch ( Exception ex ) {
             logger.error( "Unable to enable support", ex );
+        }
+    }
+
+    private void rebindHttps( SystemSettings address )
+    {
+        if ( address == null ) {
+            logger.warn( "unable to rebind https port, address settings are not initialized." );
+            return;
+        }
+
+        int port = address.getHttpsPort();
+
+        try {
+            logger.info("Rebinding HTTPS port: " + port);
+            UvmContextFactory.context().localAppServerManager().rebindExternalHttpsPort( port );
+            logger.info("Rebinding HTTPS port done.");
+        } catch ( Exception e ) {
+            if ( !UvmContextFactory.context().state().equals( UvmState.RUNNING )) {
+                logger.info( "unable to rebind port at startup, expected. ");
+            } else {
+                logger.warn( "unable to rebind https to port: " + port, e );
+            }
         }
     }
 }

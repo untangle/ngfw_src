@@ -23,7 +23,6 @@ import com.untangle.uvm.UvmContext;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.SystemSettings;
 import com.untangle.uvm.networking.NetworkUtil;
-import com.untangle.uvm.networking.AddressSettings;
 
 /* the name outside valve is no longer legit, since this controls access to port 80 on the inside */
 public abstract class OutsideValve extends ValveBase
@@ -64,12 +63,6 @@ public abstract class OutsideValve extends ValveBase
     {
         return UvmContextFactory.context().systemManager().getSettings();
     }
-
-    protected AddressSettings getAddressSettings()
-    {
-        return UvmContextFactory.context().networkManager().getAddressSettings();
-    }
-
 
     /* Unified way to determine if access to port 80 is allowed, override if behavior is different */
     protected boolean isInsecureAccessAllowed()
@@ -128,7 +121,7 @@ public abstract class OutsideValve extends ValveBase
         if (port == NetworkUtil.INTERNAL_OPEN_HTTPS_PORT) return true;
 
         /* This is secure access on the external port */
-        if (port == getAddressSettings().getHttpsPort()) return isOutsideAccessAllowed;
+        if (port == getSystemSettings().getHttpsPort()) return isOutsideAccessAllowed;
 
         if (request.getScheme().equals("https")) return isOutsideAccessAllowed;
 

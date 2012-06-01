@@ -527,7 +527,7 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
         this.snmpManager = SnmpManagerImpl.snmpManager();
         
         // initialize the network Manager
-        this.networkManager = NetworkManagerImpl.getInstance();
+        this.networkManager = new NetworkManagerImpl();
 
         this.defaultLicenseManager = new DefaultLicenseManagerImpl();
 
@@ -567,7 +567,7 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
         this.alertManager = new AlertManagerImpl();
         
         // start vectoring:
-        Argon.getInstance().run( networkManager );
+        Argon.getInstance().run( );
 
         // Start statistic gathering
         messageManager.start();

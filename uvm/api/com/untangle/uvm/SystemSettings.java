@@ -22,6 +22,14 @@ public class SystemSettings implements Serializable, JSONString
     private boolean isOutsideAdministrationEnabled;
     private boolean isOutsideQuarantineEnabled;
     private int httpsPort;
+
+    public static final String PUBLIC_URL_EXTERNAL_IP = "external";
+    public static final String PUBLIC_URL_HOSTNAME = "hostname";
+    public static final String PUBLIC_URL_ADDRESS_AND_PORT = "address_and_port";
+    
+    private String publicUrlMethod;
+    private String publicUrlAddress;
+    private int publicUrlPort;
     
     public SystemSettings() { }
 
@@ -79,4 +87,22 @@ public class SystemSettings implements Serializable, JSONString
      */
     public boolean getIsOutsideQuarantineEnabled() { return this.isOutsideQuarantineEnabled; }
     public void setIsOutsideQuarantineEnabled( boolean newValue ) { this.isOutsideQuarantineEnabled = newValue; }
+
+    /**
+     * This determines the method used to calculate the publicy available URL used to reach Untangle resources
+     */
+    public String getPublicUrlMethod() { return this.publicUrlMethod; }
+    public void setPublicUrlMethod( String newValue ) { this.publicUrlMethod = newValue; }
+
+    /**
+     * This stores the hostname/IP used to reach Untangle publicly (if specified)
+     */
+    public String getPublicUrlAddress() { return this.publicUrlAddress; }
+    public void setPublicUrlAddress( String newValue ) { this.publicUrlAddress = newValue; }
+
+    /**
+     * This stores the port used to reach Untangle publicly (if specified)
+     */
+    public int getPublicUrlPort() { return this.publicUrlPort; }
+    public void setPublicUrlPort( int newValue ) { this.publicUrlPort = newValue; }
 }

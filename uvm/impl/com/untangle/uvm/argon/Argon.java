@@ -21,9 +21,6 @@ public class Argon
     public static final int SCHED_NORMAL = 0;
     public static final int SCHED_SOFTREAL = 4;
 
-    /* The networking manager impl is passed in at init time */
-    private NetworkManagerImpl networkManager = null;
-
     /* Singleton */
     private static final Argon INSTANCE = new Argon();
 
@@ -44,14 +41,10 @@ public class Argon
     private final Logger logger = Logger.getLogger( this.getClass());
 
     /* Singleton */
-    private Argon()
-    {
-    }
+    private Argon() { }
 
-    public void run( NetworkManagerImpl networkManager )
+    public void run()
     {
-        this.networkManager = networkManager;
-
         /* Parse all of the properties */
         parseProperties();
 
@@ -147,9 +140,6 @@ public class Argon
         } catch ( Exception e ) {
             logger.warn( "Failed to write UVM config files. (net-alpaca returned an error)", e );
         }
-
-        /* Initialize the network manager, this has to be done after netcap init. */
-        networkManager.init();
 
         Vector.mvutilDebugLevel( mvutilDebugLevel );
         Vector.vectorDebugLevel( vectorDebugLevel );

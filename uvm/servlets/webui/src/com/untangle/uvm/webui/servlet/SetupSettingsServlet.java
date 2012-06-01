@@ -18,7 +18,6 @@ import org.jabsorb.serializer.MarshallException;
 import com.untangle.uvm.UvmContext;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.NetworkManager;
-import com.untangle.uvm.networking.AddressSettings;
 import com.untangle.uvm.networking.NetworkConfiguration;
 import com.untangle.uvm.networking.InterfaceConfiguration;
 import com.untangle.uvm.networking.NetworkUtil;
@@ -27,8 +26,6 @@ import com.untangle.uvm.toolbox.UpgradeSettings;
 
 /**
  * A servlet which will display the start page
- *
- * @author Catalin Matei <cmatei@untangle.com>
  */
 @SuppressWarnings("serial")
 public class SetupSettingsServlet extends HttpServlet
@@ -47,19 +44,15 @@ public class SetupSettingsServlet extends HttpServlet
 
         NetworkManager nm = context.networkManager();
 
-        AddressSettings addressSettings = nm.getAddressSettings();
         NetworkConfiguration networkConfiguration = nm.getNetworkConfiguration();
         InterfaceConfiguration wanConfig = networkConfiguration.findFirstWAN();
         // pick a random time.
-        UpgradeSettings upgrade = context.toolboxManager().getUpgradeSettings();
+        UpgradeSettings upgradeSettings = context.toolboxManager().getUpgradeSettings();
 
         try {
-            request.setAttribute( "addressSettings", js.toJSON( addressSettings ));
             request.setAttribute( "interfaceArray", js.toJSON( networkConfiguration.getInterfaceList()));
-            //request.setAttribute( "users", js.toJSON( context.adminManager().getSettings()));
-            request.setAttribute( "upgradeSettings", js.toJSON( upgrade ));
-            request.setAttribute( "mailSettings", js.toJSON( context.mailSender().getMailSettings()));
             request.setAttribute( "wanConfiguration", js.toJSON( wanConfig ));
+            request.setAttribute( "upgradeSettings", js.toJSON( upgradeSettings ));
         } catch ( MarshallException e ) {
             throw new ServletException( "Unable to serializer JSON", e );
         }

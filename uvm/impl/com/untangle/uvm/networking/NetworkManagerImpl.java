@@ -37,8 +37,6 @@ import com.untangle.uvm.SettingsManager;
  */
 public class NetworkManagerImpl implements NetworkManager
 {
-    private static NetworkManagerImpl INSTANCE = null;
-
     private static final String ETC_INTERFACES_FILE = "/etc/network/interfaces";
     private static final String ETC_RESOLV_FILE = "/etc/resolv.conf";
 
@@ -46,12 +44,6 @@ public class NetworkManagerImpl implements NetworkManager
 
     private static final long ALPACA_RETRY_COUNT = 3;
     private static final long ALPACA_RETRY_DELAY_MS = 6000;
-
-    /* Inidicates whether or not the networking manager has been initialized */
-    private boolean isInitialized = false;
-
-    /* Manager for AddressSettings */
-    private final AddressManagerImpl addressManager;
 
     private static final Object lock = new Object();
     
@@ -62,31 +54,16 @@ public class NetworkManagerImpl implements NetworkManager
      * should never be null */
     private NetworkConfiguration networkConfiguration = null;
 
-    private NetworkManagerImpl()
+    public NetworkManagerImpl()
     {
-        this.addressManager = new AddressManagerImpl();
-    }
-
-    /**
-     * The init function cannot fail, if it does, reasonable defaults
-     * must be used, so if initPriv fails(which is why it throws
-     * Exception), then this function grabs reasonable defaults and
-     * moves on
-     */
-    public synchronized void init()
-    {
-        if ( isInitialized ) {
-            logger.error( "Attempt to reinitialize the networking manager", new Exception());
-            return;
-        }
-
         try {
-            initPriv();
+            this.networkConfiguration = loadNetworkConfiguration( );
+        
+            /* Update the link status for all of the interfaces */
+            updateLinkStatus();
         } catch ( Exception e ) {
             logger.error( "Exception initializing settings, using reasonable defaults", e );
         }
-
-        this.isInitialized = true;
     }
 
     public void updateLinkStatus()
@@ -119,23 +96,6 @@ public class NetworkManagerImpl implements NetworkManager
         return primary.getNetwork();
     }
 
-    /**
-     * Retrieve the settings related to the hostname and the address used to access to the box.
-     */
-    @Override
-    public AddressSettings getAddressSettings()
-    {
-        return this.addressManager.getSettings();
-    }
-
-    @Override
-    public void setAddressSettings( AddressSettings address )
-    {
-        this.addressManager.setSettings( address );
-
-        refreshNetworkConfig();
-    }
-
     public NetworkConfiguration getNetworkConfiguration()
     {
         return this.networkConfiguration;
@@ -159,47 +119,10 @@ public class NetworkManagerImpl implements NetworkManager
         }
     }
 
-    /* Set the access and address settings, used by the Remote Panel */
-    public void setSettings( AddressSettings address )
-    {
-        this.addressManager.setSettings( address );
-
-        refreshNetworkConfig();
-    }
-
     /* Get the current hostname */
     public String getHostname()
     {
         return this.networkConfiguration.getHostname();
-    }
-
-    public String getPublicAddress()
-    {
-        String publicAddr = this.addressManager.getSettings().getCurrentURL();
-
-        //try never to return null
-        if (publicAddr == null) {
-            publicAddr = this.networkConfiguration.getHostname();
-        }
-        if (publicAddr == null) {
-            logger.warn("Unable to determine public address\n");
-        }
-
-        return publicAddr;
-    }
-
-    /* Get the external HTTPS port */
-    public int getPublicHttpsPort()
-    {
-        return this.addressManager.getSettings().getPublicPort();
-    }
-
-    /* Save the network settings during the wizard */
-    public void setSetupSettings( AddressSettings address, InterfaceConfiguration settings ) throws Exception
-    {
-        this.addressManager.setWizardSettings( address );
-
-        setSetupSettings( settings );
     }
 
     public InterfaceConfiguration setSetupSettings( InterfaceConfiguration wan ) throws Exception
@@ -608,19 +531,6 @@ public class NetworkManagerImpl implements NetworkManager
 
     private void initPriv() throws Exception
     {
-        loadAllSettings();
-
-        this.networkConfiguration = loadNetworkConfiguration( );
-        
-        /* Update the link status for all of the interfaces */
-        updateLinkStatus();
-    }
-
-    /* Methods for saving and loading the settings files from the database at startup */
-    private void loadAllSettings()
-    {
-        /* Load the address/hostname settings */
-        this.addressManager.init();
     }
 
     /* Retry a call to the alpaca in case it was restarted. */
@@ -666,22 +576,6 @@ public class NetworkManagerImpl implements NetworkManager
         }
 
         return null;
-    }
-
-    /**
-     * Create a networking manager, this is a first come first serve
-     * basis.  The first class to create the network manager gets a
-     * networking manager, all other classes get AccessException.  Done
-     * this way so only the UvmContextImpl can create a networking manager
-     * and then give out access to those classes (argon) that need it.
-     * RBS (2/19/06) this is kind of silly, and annoying, switching to getInstance.
-     */
-    public synchronized static NetworkManagerImpl getInstance()
-    {
-        if ( INSTANCE != null ) return INSTANCE;
-
-        INSTANCE = new NetworkManagerImpl();
-        return INSTANCE;
     }
 
     /* Load the network configuration */

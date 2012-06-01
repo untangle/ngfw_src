@@ -132,17 +132,6 @@ if (!Ung.hasResource["Ung.Administration"]) {
             }
             return this.rpc.systemSettings;
         },
-        // get address settings
-        getAddressSettings : function(forceReload) {
-            if (forceReload || this.rpc.addressSettings === undefined) {
-                try {
-                    this.rpc.addressSettings = rpc.networkManager.getAddressSettings();
-                } catch (e) {
-                    Ung.Util.rpcExHandler(e);
-                }
-            }
-            return this.rpc.addressSettings;
-        },
         // get snmp settings
         getSnmpSettings : function(forceReload) {
             if (forceReload || this.rpc.snmpSettings === undefined) {
@@ -182,7 +171,6 @@ if (!Ung.hasResource["Ung.Administration"]) {
         buildAdministration : function() {
             // keep initial system and address settings
             this.initialSystemSettings = Ung.Util.clone(this.getSystemSettings());
-            this.initialAddressSettings = Ung.Util.clone(this.getAddressSettings());
 
             var changePasswordColumn = Ext.create("Ung.grid.EditColumn",{
                 header : this.i18n._("change password"),
@@ -217,7 +205,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
                 items : [this.gridAdminAccounts=Ext.create("Ung.EditorGrid",{
                     settingsCmp : this,
                     title : this.i18n._("Admin Accounts"),
-                    height : 300,
+                    height : 200,
                     bodyStyle : 'padding-bottom:30px;',
                     autoScroll : true,
                     hasEdit : false,
@@ -330,7 +318,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
                         fieldLabel : this.i18n._('HTTPS port'),
                         name : 'httpsPort',
                         id: 'administration_httpsPort',
-                        value : this.getAddressSettings().httpsPort,
+                        value : this.getSystemSettings().httpsPort,
                         allowDecimals: false,
                         allowNegative: false,
                         allowBlank : false,
@@ -339,7 +327,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
                         listeners : {
                             "change" : {
                                 fn : Ext.bind(function(elem, newValue) {
-                                    this.getAddressSettings().httpsPort = newValue;
+                                    this.getSystemSettings().httpsPort = newValue;
                                 },this)
                             }
                         }
@@ -503,45 +491,44 @@ if (!Ung.hasResource["Ung.Administration"]) {
                     autoHeight : true,
                     items : [{
                         cls: 'description',
-                        html : Ext.String.format(this.i18n._('The Public Address is the address or hostname that provides a public routable address for the {0} Server. This address will be used in emails sent by the {0} Server to link back to services hosted on the {0} Server such as Quarantine Digests and OpenVPN Client emails.'),
-                                             main.getBrandingManager().getCompanyName()),
+                        html : Ext.String.format(this.i18n._('The Public Address is the address/URL that provides a public location for the {0} Server. This address will be used in emails sent by the {0} Server to link back to services hosted on the {0} Server such as Quarantine Digests and OpenVPN Client emails.'), main.getBrandingManager().getCompanyName()),
                         bodyStyle : 'padding-bottom:10px;',
                         border : false
                     },{
                         xtype : 'radio',
                         boxLabel : this.i18n._('Use External IP address (default)'),
                         hideLabel : true,
-                        name : 'publicAddress',
-                        checked : !this.getAddressSettings().isPublicAddressEnabled && !this.getAddressSettings().isHostNamePublic,
+                        name : 'publicUrl',
+                        checked : this.getSystemSettings().publicUrlMethod == "external",
                         listeners : {
                             "change" : {
                                 fn : Ext.bind(function(elem, checked) {
                                     if (checked) {
-                                        Ext.getCmp('administration_publicIPAddress').disable();
-                                        Ext.getCmp('administration_publicPort').disable();
+                                        this.getSystemSettings().publicUrlMethod = "external";
+                                        Ext.getCmp('administration_publicUrlAddress').disable();
+                                        Ext.getCmp('administration_publicUrlPort').disable();
                                     }
                                 },this)
                             }
                         }
                     },{
                         cls: 'description',
-                        html : Ext.String.format(this.i18n._('This works if your {0} Server has a public static IP address.'),
-                                   main.getBrandingManager().getCompanyName()),
+                        html : Ext.String.format(this.i18n._('This works if your {0} Server has a routable public static IP address.'), main.getBrandingManager().getCompanyName()),
                         bodyStyle : 'padding:0px 5px 10px 25px;',
                         border : false
                     },{
                         xtype : 'radio',
                         boxLabel : this.i18n._('Use Hostname'),
                         hideLabel : true,
-                        name : 'publicAddress',
-                        checked : this.getAddressSettings().isHostNamePublic,
+                        name : 'publicUrl',
+                        checked : this.getSystemSettings().publicUrlMethod == "hostname",
                         listeners : {
                             "change" : {
                                 fn : Ext.bind(function(elem, checked) {
-                                    this.getAddressSettings().isHostNamePublic = checked;
                                     if (checked) {
-                                        Ext.getCmp('administration_publicIPAddress').disable();
-                                        Ext.getCmp('administration_publicPort').disable();
+                                        this.getSystemSettings().publicUrlMethod = "hostname";
+                                        Ext.getCmp('administration_publicUrlAddress').disable();
+                                        Ext.getCmp('administration_publicUrlPort').disable();
                                     }
                                 },this)
                             }
@@ -549,7 +536,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
                     },{
                         cls: 'description',
                         html : Ext.String.format(this.i18n._('This is recommended if the {0} Server\'s fully qualified domain name looks up to its IP address both internally and externally.'),
-                                             main.getBrandingManager().getCompanyName()),
+                                                 main.getBrandingManager().getCompanyName()),
                         bodyStyle : 'padding:0px 5px 5px 25px;',
                         border : false
                     }, {
@@ -559,25 +546,36 @@ if (!Ung.hasResource["Ung.Administration"]) {
                         border : false
                     }, {
                         xtype : 'radio',
-                        boxLabel : this.i18n._('Use Manually Specified IP'),
+                        boxLabel : this.i18n._('Use Manually Specified Address'),
                         hideLabel : true,
-                        name : 'publicAddress',
-                        checked : this.getAddressSettings().isPublicAddressEnabled,
+                        name : 'publicUrl',
+                        checked : this.getSystemSettings().publicUrlMethod == "address_and_port",
                         listeners : {
+                            "render" : {
+                                fn : Ext.bind(function(elem) {
+                                    if(elem.getValue()){
+                                        Ext.getCmp('administration_publicUrlAddress').enable();
+                                        Ext.getCmp('administration_publicUrlPort').enable();
+                                    }else{
+                                        Ext.getCmp('administration_publicUrlAddress').disable();
+                                        Ext.getCmp('administration_publicUrlPort').disable();
+                                    }
+                                },this)
+                            },
                             "change" : {
                                 fn : Ext.bind(function(elem, checked) {
-                                    this.getAddressSettings().isPublicAddressEnabled = checked;
                                     if (checked) {
-                                        Ext.getCmp('administration_publicIPAddress').enable();
-                                        Ext.getCmp('administration_publicPort').enable();
+                                        this.getSystemSettings().publicUrlMethod = "address_and_port";
+                                        Ext.getCmp('administration_publicUrlAddress').enable();
+                                        Ext.getCmp('administration_publicUrlPort').enable();
                                     }
                                 },this)
                             }
                         }
                     },{
                         cls: 'description',
-                        html : Ext.String.format(this.i18n._('This is recommended if the {0} Server is installed behind another firewall with a port forward from the specified IP that redirects traffic to the {0} Server.'),
-                                    main.getBrandingManager().getCompanyName()),
+                        html : Ext.String.format(this.i18n._('This is recommended if the {0} Server is installed behind another firewall with a port forward from the specified hostname/IP that redirects traffic to the {0} Server.'),
+                                                 main.getBrandingManager().getCompanyName()),
                         bodyStyle : 'padding:0px 5px 5px 25px;',
                         border : false
                     },{
@@ -586,26 +584,25 @@ if (!Ung.hasResource["Ung.Administration"]) {
                         border : false,
                         items : [{
                             xtype : 'textfield',
-                            fieldLabel : this.i18n._('Address'),
-                            name : 'publicIPAddress',
-                            id: 'administration_publicIPAddress',
-                            value : this.getAddressSettings().publicIPAddress,
+                            fieldLabel : this.i18n._('IP/Hostname'),
+                            name : 'publicUrlAddress',
+                            id: 'administration_publicUrlAddress',
+                            value : this.getSystemSettings().publicUrlAddress,
                             allowBlank : false,
-                            blankText : this.i18n._("You must provide a valid IP Address."),
-                            vtype : 'ipAddress',
-                            disabled : !this.getAddressSettings().isPublicAddressEnabled
+                            blankText : this.i18n._("You must provide a valid IP Address or hostname."),
+                            disabled : !this.getSystemSettings().publicUrlMethod == "address_and_port"
                         },{
                             xtype : 'numberfield',
                             fieldLabel : this.i18n._('Port'),
-                            name : 'publicPort',
-                            id: 'administration_publicPort',
-                            value : this.getAddressSettings().publicPort,
+                            name : 'publicUrlPort',
+                            id: 'administration_publicUrlPort',
+                            value : this.getSystemSettings().publicUrlPort,
                             allowDecimals: false,
                             allowNegative: false,
                             allowBlank : false,
                             blankText : this.i18n._("You must provide a valid port."),
                             vtype : 'port',
-                            disabled : !this.getAddressSettings().isPublicAddressEnabled
+                            disabled : !this.getSystemSettings().publicUrlMethod == "address_and_port"
                         }]
                     }]
                 }
@@ -1511,31 +1508,30 @@ if (!Ung.hasResource["Ung.Administration"]) {
 
         //validate Public Address
         validatePublicAddress : function() {
-            var isPublicAddressEnabled = this.getAddressSettings().isPublicAddressEnabled;
-            if (isPublicAddressEnabled) {
-                var publicIPAddressCmp = Ext.getCmp('administration_publicIPAddress');
-                if (!publicIPAddressCmp.isValid()) {
-                    Ext.MessageBox.alert(this.i18n._('Warning'), this.i18n._("You must provide a valid IP Address."),
+            if (this.getSystemSettings().publicUrlMethod == "address_and_port") {
+                var publicUrlAddressCmp = Ext.getCmp('administration_publicUrlAddress');
+                if (!publicUrlAddressCmp.isValid()) {
+                    Ext.MessageBox.alert(this.i18n._('Warning'), this.i18n._("You must provide a valid IP Address or hostname."),
                         Ext.bind(function () {
                             this.tabs.setActiveTab(this.panelPublicAddress);
-                            publicIPAddressCmp.focus(true);
+                            publicUrlAddressCmp.focus(true);
                         },this)
                     );
                     return false;
                 }
-                var publicPortCmp = Ext.getCmp('administration_publicPort');
-                if (!publicPortCmp.isValid()) {
+                var publicUrlPortCmp = Ext.getCmp('administration_publicUrlPort');
+                if (!publicUrlPortCmp.isValid()) {
                     Ext.MessageBox.alert(this.i18n._('Warning'), Ext.String.format(this.i18n._("The port must be an integer number between {0} and {1}."), 1, 65535),
                         Ext.bind(function () {
                             this.tabs.setActiveTab(this.panelPublicAddress);
-                            publicPortCmp.focus(true);
+                            publicUrlPortCmp.focus(true);
                         },this)
                     );
                     return false;
                 }
                 //prepare for save
-                this.getAddressSettings().publicIPAddress = publicIPAddressCmp.getValue();
-                this.getAddressSettings().publicPort = publicPortCmp.getValue();
+                this.getSystemSettings().publicUrlAddress = publicUrlAddressCmp.getValue();
+                this.getSystemSettings().publicUrlPort = publicUrlPortCmp.getValue();
             }
 
             return true;
@@ -1624,7 +1620,6 @@ if (!Ung.hasResource["Ung.Administration"]) {
             this.initialSkinSettings = Ung.Util.clone( this.getSkinSettings(true) );
             this.gridAdminAccounts.store.loadData( this.getAdminSettings(true).users.list );
             this.initialSystemSettings = Ung.Util.clone(this.getSystemSettings(true));
-            this.initialAddressSettings = Ung.Util.clone(this.getAddressSettings(true));
             this.initialSnmpSettings = Ung.Util.clone(this.getSnmpSettings(true));
             this.getCurrentServerCertInfo(true);
             this.getHostname(true);
@@ -1646,9 +1641,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
             /* A hook for doing something in a node before attempting to save */
 
             //check to see if the remote administrative settings were changed in order to inform the user
-            var remoteChanges = this.hasRemoteChanges();
-
-            if (remoteChanges) {
+            if (this.hasDangerousChanges()) {
                 Ext.Msg.show({
                     title : this.i18n._("Warning"),
                     msg : Ext.String.format(this.i18n._("Changing the administration settings may disconnect you. Do you want to proceed?")),
@@ -1667,7 +1660,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
         completeCommitSettings : function(callback)
         {
             if (this.validate()) {
-                this.saveSemaphore = 4;
+                this.saveSemaphore = 3;
                 Ext.MessageBox.wait(i18n._("Saving..."), i18n._("Please wait"));
 
                 this.getAdminSettings().users.list=this.gridAdminAccounts.getFullSaveList();
@@ -1675,10 +1668,6 @@ if (!Ung.hasResource["Ung.Administration"]) {
                 rpc.adminManager.setSettings(Ext.bind(function(result, exception) {
                     this.afterSave(exception, callback);
                 },this), this.getAdminSettings());
-
-                rpc.networkManager.setAddressSettings(Ext.bind(function(result, exception) {
-                    this.afterSave(exception, callback);
-                 },this), this.getAddressSettings());
 
                 rpc.snmpManager.setSnmpSettings(Ext.bind(function(result, exception) {
                    this.afterSave(exception, callback);
@@ -1714,11 +1703,11 @@ if (!Ung.hasResource["Ung.Administration"]) {
                 Ung.Util.goToStartPage();
             }
         },
-        hasRemoteChanges : function()
+        // tests for changes that might disconnect the UI from the server if saved
+        hasDangerousChanges : function()
         {
             var i_systemSettings = this.initialSystemSettings;
             var c_systemSettings = this.getSystemSettings();
-            var i_addressSettings = this.initialAddressSettings;
             
             //external administration
             if ( i_systemSettings.isOutsideAdministrationEnabled != c_systemSettings.isOutsideAdministrationEnabled ) {
@@ -1730,13 +1719,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
                 return true;
             }
             
-            if ( c_systemSettings.isOutsideAccessRestricted 
-                 && (i_systemSettings.outsideNetwork != Ext.getCmp('administration_outsideNetwork').getValue()
-                     || i_systemSettings.outsideNetmask != Ext.getCmp('administration_outsideNetmask').getValue())) {
-                return true;
-            }
-            
-            if ( i_addressSettings.httpsPort != this.getAddressSettings().httpsPort ) {
+            if ( i_systemSettings.httpsPort != this.getSystemSettings().httpsPort ) {
                 return true;
             }
             

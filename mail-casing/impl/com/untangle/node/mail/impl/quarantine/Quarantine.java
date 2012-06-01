@@ -266,7 +266,7 @@ public class Quarantine
 
         //If we do not have an internal IP, then
         //don't even bother quarantining
-        if(UvmContextFactory.context().networkManager().getPublicAddress() == null) {
+        if(UvmContextFactory.context().systemManager().getPublicUrl() == null) {
             m_logger.warn("No valid IP, so no way for folks to connect to quarantine.  Abort quarantining");
             return false;
         }
@@ -740,12 +740,11 @@ public class Quarantine
      * false if there was an error in sending of template
      * merging
      */
-    private boolean sendDigestEmail(String account,
-                                    InboxIndex index) {
-
+    private boolean sendDigestEmail(String account, InboxIndex index)
+    {
         Map<String,String> i18nMap = UvmContextFactory.context().languageManager().getTranslations("untangle-casing-mail");
         I18nUtil i18nUtil = new I18nUtil(i18nMap);
-        String internalHost = UvmContextFactory.context().networkManager().getPublicAddress();
+        String internalHost = UvmContextFactory.context().systemManager().getPublicUrl();
 
         if(internalHost == null) {
             m_logger.warn("Unable to determine internal interface");

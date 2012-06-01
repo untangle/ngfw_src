@@ -294,10 +294,7 @@ public class OpenVpnManager
     void writeClientConfigurationFiles( VpnSettings settings, VpnClient client, String method )
         throws Exception
     {
-        UvmContext uvm = UvmContextFactory.context();
-        NetworkManager nm = uvm.networkManager();
-
-        Map<String,String> i18nMap = uvm.languageManager().getTranslations("untangle-node-openvpn");
+        Map<String,String> i18nMap = UvmContextFactory.context().languageManager().getTranslations("untangle-node-openvpn");
         I18nUtil i18nUtil = new I18nUtil(i18nMap);
         String title = "OpenVPN";
         String msgBody1 = "", msgBody2 = "", msgBody3 = "";
@@ -310,7 +307,7 @@ public class OpenVpnManager
             msgBody2 = i18nUtil.tr("Or copy and paste the following link into your Web Browser.");
         }
 
-        String publicAddress = nm.getPublicAddress();
+        String publicUrl = UvmContextFactory.context().systemManager().getPublicUrl();
         writeClientConfigurationFile( settings, client, UNIX_CLIENT_DEFAULTS, UNIX_EXTENSION );
         writeClientConfigurationFile( settings, client, WIN_CLIENT_DEFAULTS,  WIN_EXTENSION );
 
@@ -325,7 +322,7 @@ public class OpenVpnManager
             String cmdStr = GENERATE_DISTRO_SCRIPT + " " +
                 "\"" + client.trans_getInternalName() + "\"" + " " +
                 "\"" + key + "\"" + " " +
-                "\"" + publicAddress + "\"" + " " +
+                "\"" + publicUrl + "\"" + " " +
                 "\"" + method + "\"" + " " +
                 "\"" + String.valueOf( client.trans_isUntanglePlatform()) + "\"" + " " +
                 "\"" + settings.trans_getInternalSiteName() + "\"" + " " +
@@ -366,20 +363,13 @@ public class OpenVpnManager
         sw.appendVariable( FLAG_KEY,  CLI_KEY_DIR + "/" + siteName + "-" + name + ".key" );
         sw.appendVariable( FLAG_CA,   CLI_KEY_DIR + "/" + siteName + "-ca.crt" );
 
-        /* VPN configuratoins needs information from the networking settings. */
-        NetworkManager networkManager = UvmContextFactory.context().networkManager();
+        String publicAddress = UvmContextFactory.context().systemManager().getPublicUrl();
 
-        /* This is kind of janky */
-        String publicAddress = networkManager.getPublicAddress();
-
-        /* Strip off the port, (This guarantees if they set it to a hostname the value will be
-         * correct) */
+        /* Strip off the port, (This guarantees if they set it to a hostname the value will be correct) */
         publicAddress = publicAddress.split( ":" )[0];
-
         publicAddress = publicAddress.trim();
 
         sw.appendVariable( FLAG_REMOTE, publicAddress + " " + OPENVPN_PORT );
-
         sw.writeFile( CLIENT_CONF_FILE_BASE + name + "." + extension );
     }
 

@@ -44,7 +44,7 @@ class AppServerManagerImpl implements LocalAppServerManager, AppServerManager
         this.uvmContext = uvmContext;
         this.tomcatManager = (TomcatManagerImpl) uvmContext.tomcatManager();
 
-        int p = uvmContext.networkManager().getAddressSettings().getHttpsPort();
+        int p = uvmContext.systemManager().getSettings().getHttpsPort();
 
         /* Illegal range */
         if (p <= 0 || p >= 0xFFFF || p == 80 ) {

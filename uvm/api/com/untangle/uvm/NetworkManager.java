@@ -7,8 +7,6 @@ import java.util.List;
 import java.net.InetAddress;
 import org.json.JSONArray;
 
-import com.untangle.uvm.networking.AccessSettings;
-import com.untangle.uvm.networking.AddressSettings;
 import com.untangle.uvm.networking.NetworkConfiguration;
 import com.untangle.uvm.networking.InterfaceConfiguration;
 import com.untangle.uvm.networking.IPNetwork;
@@ -24,23 +22,10 @@ public interface NetworkManager
     NetworkConfiguration getNetworkConfiguration();
 
     /**
-     * Save the network settings during the wizard
-     */
-    void setSetupSettings( AddressSettings address, InterfaceConfiguration settings ) throws Exception;
-
-    /**
      * Save the network settings during the wizard.
      * This can double for refresh because it returns the new, populated network settings.
      */
     InterfaceConfiguration setSetupSettings( InterfaceConfiguration settings ) throws Exception;
-
-    /**
-     * Retrieve the settings related to the hostname and the address
-     * used to access to the box.
-     */
-    AddressSettings getAddressSettings();
-
-    void setAddressSettings( AddressSettings address );
 
     /**
      * Remap the interfaces
@@ -49,20 +34,11 @@ public interface NetworkManager
      */
     void remapInterfaces( String[] osArray, String[] userArray ) throws Exception;
 
-    /* Set the access and address settings, used by the Remote Panel */
-    void setSettings( AddressSettings address ) throws Exception;
-
     /** Update the internal representation of the address */
     void refreshNetworkConfig();
 
-    /* Get the external HTTPS port */
-    int getPublicHttpsPort();
-
     /* Get the hostname of the box */
     String getHostname();
-
-    /* Get the public URL of the box */
-    String getPublicAddress();
 
     IPAddress getPrimaryAddress();
 
