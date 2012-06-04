@@ -1,7 +1,7 @@
 /**
  * $Id$
  */
-package com.untangle.uvm.networking;
+package com.untangle.uvm.engine;
 
 import java.net.ConnectException;
 import java.net.InetAddress;
@@ -24,6 +24,10 @@ import com.untangle.uvm.IntfConstants;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.UvmState;
 import com.untangle.uvm.NetworkManager;
+import com.untangle.uvm.networking.InterfaceConfiguration;
+import com.untangle.uvm.networking.NetworkConfiguration;
+import com.untangle.uvm.networking.NetworkConfigurationListener;
+import com.untangle.uvm.networking.IPNetwork;
 import com.untangle.uvm.node.SessionTuple;
 import com.untangle.uvm.node.IPAddress;
 import com.untangle.uvm.node.IPMatcher;
@@ -486,11 +490,6 @@ public class NetworkManagerImpl implements NetworkManager
 
         if ( address == null ) {
             logger.warn("No address for: " + network);
-            return null;
-        }
-
-        if ( NetworkUtilPriv.getPrivInstance().isBogus( address ) ) {
-            logger.warn("Bogus address: " + address);
             return null;
         }
 

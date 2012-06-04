@@ -1,7 +1,7 @@
 /**
  * $Id$
  */
-package com.untangle.uvm.networking;
+package com.untangle.uvm.engine;
 
 import java.util.HashMap;
 import java.util.List;
@@ -10,8 +10,11 @@ import java.util.Map;
 import org.apache.log4j.Logger;
 
 import com.untangle.uvm.UvmContextFactory;
+import com.untangle.uvm.networking.InterfaceConfiguration;
+import com.untangle.uvm.networking.NetworkConfiguration;
+import com.untangle.uvm.networking.EthernetMedia;
 
-class InterfaceTester
+public class InterfaceTester
 {
     private static final InterfaceTester INSTANCE = new InterfaceTester();
 
