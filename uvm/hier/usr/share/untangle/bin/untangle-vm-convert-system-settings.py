@@ -73,7 +73,7 @@ def get_settings(debug=False):
     str += pad(4) + '"httpsPort": "%s",\n' % https_port
     str += pad(4) + '"publicUrlMethod": "%s",\n' % public_url_method
     str += pad(4) + '"publicUrlAddress": "%s",\n' % public_ip_addr
-    str += pad(4) + '"publicUrlPort": "%s",\n' % public_port
+    str += pad(4) + '"publicUrlPort": "%s"\n' % public_port
 
     str += '}\n'
 
