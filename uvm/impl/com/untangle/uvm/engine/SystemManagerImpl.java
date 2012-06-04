@@ -85,7 +85,7 @@ public class SystemManagerImpl implements SystemManager
         }
         else {
             this.settings = readSettings;
-            logger.info("Loading Settings: " + this.settings.toJSONString());
+            logger.debug("Loading Settings: " + this.settings.toJSONString());
         }
 
         logger.info("Initialized SystemManager");
@@ -186,7 +186,6 @@ public class SystemManagerImpl implements SystemManager
                 logger.warn( "unable to rebind https to port: " + port, e );
             }
         }
-
 
         UvmContextImpl.context().networkManager().refreshNetworkConfig();
 

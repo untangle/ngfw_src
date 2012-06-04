@@ -518,7 +518,7 @@ public class LanguageManagerImpl implements LanguageManager
         String settingsFile = settingsName + ".js";
         LanguageSettings readSettings = null;
 
-        logger.info("Loading language settings from " + settingsFile);
+        logger.debug("Loading language settings from " + settingsFile);
 
         try {
             readSettings =  setman.load( LanguageSettings.class, settingsName);

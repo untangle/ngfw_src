@@ -339,6 +339,8 @@ public class NodeManagerImpl implements NodeManager
         loadSettings();
 
         restartUnloaded();
+
+        logger.info("Initialized NodeManager");
     }
 
     protected void destroy()
@@ -465,10 +467,14 @@ public class NodeManagerImpl implements NodeManager
         Map<NodeSettings, NodeProperties> nodePropertiess = loadNodePropertiess(unloaded);
         Set<String> loadedParents = new HashSet<String>(unloaded.size());
 
-        while (0 < unloaded.size()) {
+        while ( unloaded.size() > 0 ) {
+
             List<NodeSettings> startQueue = getLoadable(unloaded, nodePropertiess, loadedParents);
-            logger.info("loadable in this pass: " + startQueue);
-            if (0 == startQueue.size()) {
+
+            for (NodeSettings ns : startQueue) 
+                logger.info("Loading in this pass: " + ns.getNodeName() + " (" + ns.getId() + ")");
+
+            if ( startQueue.size() == 0 ) {
                 logger.info("not all parents loaded, proceeding");
                 for (NodeSettings n : unloaded) {
                     List<NodeSettings> l = Collections.singletonList(n);
@@ -612,7 +618,7 @@ public class NodeManagerImpl implements NodeManager
 
         for (NodeSettings nodeSettings : unloaded) {
             String name = nodeSettings.getNodeName();
-            logger.info("Getting mackage desc for: " + name);
+            logger.debug("Getting mackage desc for: " + name);
             PackageDesc md = tbm.packageDesc(name);
             if (null == md) {
                 logger.warn("could not get mackage desc for: " + name);
@@ -622,7 +628,7 @@ public class NodeManagerImpl implements NodeManager
             nodeSettings.setNodeName(name);
 
             try {
-                logger.info("initializing node properties for: " + name);
+                logger.debug("Initializing node properties for: " + name);
                 NodeProperties nodeProperties = initNodeProperties( md );
                 nodePropertiess.put(nodeSettings, nodeProperties);
             } catch (DeployException exn) {
@@ -679,12 +685,12 @@ public class NodeManagerImpl implements NodeManager
             this.initializeSettings();
         }
         else {
-            logger.info("Loading Settings...");
+            logger.debug("Loading Settings...");
 
             // UPDATE settings if necessary
             
             this.settings = readSettings;
-            logger.info("Settings: " + this.settings.toJSONString());
+            logger.debug("Settings: " + this.settings.toJSONString());
         }
 
         return this.settings;

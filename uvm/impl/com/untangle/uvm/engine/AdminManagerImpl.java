@@ -103,12 +103,12 @@ public class AdminManagerImpl implements AdminManager
             this.setSettings(newSettings);
         }
         else {
-            logger.info("Loading Settings...");
+            logger.debug("Loading Settings...");
 
             this.settings = readSettings;
 
             this.reconfigure();
-            logger.info("Settings: " + this.settings.toJSONString());
+            logger.debug("Settings: " + this.settings.toJSONString());
         }
 
         logger.info("Initialized AdminManager");

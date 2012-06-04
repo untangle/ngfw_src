@@ -162,11 +162,10 @@ public class ExecManagerImpl implements ExecManager
     {
         close();
 
-        logger.info("Launching ut-exec-launcher...");
         String launcher = System.getProperty("uvm.bin.dir") + "/ut-exec-launcher";
 
         try {
-            logger.info("About to start daemon " + launcher);
+            logger.info("Launching ut-exec-launcher: " + launcher);
             proc = Runtime.getRuntime().exec(launcher);
         } catch (IOException e) {
             logger.error("Couldn't start ut-exec-launcher", e);
