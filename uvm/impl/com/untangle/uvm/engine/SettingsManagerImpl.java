@@ -219,11 +219,10 @@ public class SettingsManagerImpl implements SettingsManager
     {
         File link = new File(fileName + ".js");
         String versionString = String.valueOf(DATE_FORMATTER.format(new Date()));
-        String outputFile    = fileName + ".js" + "-version-" + versionString + ".js";
-        String outputFileTmp = outputFile + ".tmp";
-        File outputTmp = new File(outputFileTmp);
+        String outputFileName = fileName + ".js" + "-version-" + versionString + ".js";
+        File   outputFile = new File(outputFileName);
 
-        Object lock = this.getLock(outputTmp.getParentFile().getAbsolutePath());
+        Object lock = this.getLock(outputFile.getParentFile().getAbsolutePath());
 
         /*
          * Synchronized on the name of the parent directory, so two files cannot
@@ -242,27 +241,25 @@ public class SettingsManagerImpl implements SettingsManager
 
             FileWriter fileWriter = null;
             try {
-                File parentFile = outputTmp.getParentFile();
+                File parentFile = outputFile.getParentFile();
 
                 /* Create the directory structure */
                 parentFile.mkdirs();
 
-                fileWriter = new FileWriter(outputTmp);
+                fileWriter = new FileWriter(outputFile);
                 String json = this.serializer.toJSON(value);
                 logger.debug("Saving Settings: \n" + json);
                 fileWriter.write(json);
                 fileWriter.close();
                 fileWriter = null;
 
-                String formatCmd = "python -m simplejson.tool " + outputFileTmp + " > " + outputFile ;
+                String formatCmd = new String(System.getProperty("uvm.bin.dir") + "/" + "ut-format-json" + " " + outputFileName);
                 UvmContextImpl.context().execManager().execResult(formatCmd);
-                outputTmp.delete();
                 
                 /*
-                 * Why must SUN/Oracle try everyone's patience; The API for
-                 * creating symbolic links is in Java 1.7
+                 * The API for creating symbolic links is in Java 7
                  */
-                String[] chops = outputFile.split(File.separator);
+                String[] chops = outputFileName.split(File.separator);
                 String filename = chops[chops.length - 1];
                 String linkCmd = "ln -sf ./"+filename + " " + link.toString();
                 UvmContextImpl.context().execManager().exec(linkCmd);
