@@ -13,7 +13,7 @@ public class ReportingOutsideAccessValve extends OutsideValve
 
     protected boolean isOutsideAccessAllowed()
     {
-        return getSystemSettings().getIsOutsideReportingEnabled();
+        return getSystemSettings().getOutsideHttpsReportingEnabled();
     }
 
     protected String outsideErrorMessage()

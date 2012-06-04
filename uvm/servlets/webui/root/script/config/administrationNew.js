@@ -333,79 +333,79 @@ if (!Ung.hasResource["Ung.Administration"]) {
                         }
                     }, {
                         xtype : 'checkbox',
-                        name : 'Enable WAN HTTPS',
+                        name : 'Enable Outside HTTPS',
                         id : 'enable-wan-https',
-                        boxLabel : this.i18n._('Enable WAN HTTPS'),
+                        boxLabel : this.i18n._('Enable Outside HTTPS'),
                         hideLabel : true,
-                        checked : this.getSystemSettings().isOutsideHttpsEnabled,
+                        checked : this.getSystemSettings().outsideHttpsEnabled,
                         listeners : {
                             "render" : {
                                 fn : Ext.bind(function(elem) {
                                     if(elem.getValue()){
-                                        Ext.getCmp('administration_isOutsideAdministrationEnabled').enable();
-                                        Ext.getCmp('administration_isOutsideReportingEnabled').enable();
-                                        Ext.getCmp('administration_isOutsideQuarantineEnabled').enable();
+                                        Ext.getCmp('administration_outsideHttpsAdministrationEnabled').enable();
+                                        Ext.getCmp('administration_outsideHttpsReportingEnabled').enable();
+                                        Ext.getCmp('administration_outsideHttpsQuarantineEnabled').enable();
                                     }else{
-                                        Ext.getCmp('administration_isOutsideAdministrationEnabled').disable();
-                                        Ext.getCmp('administration_isOutsideReportingEnabled').disable();
-                                        Ext.getCmp('administration_isOutsideQuarantineEnabled').disable();
+                                        Ext.getCmp('administration_outsideHttpsAdministrationEnabled').disable();
+                                        Ext.getCmp('administration_outsideHttpsReportingEnabled').disable();
+                                        Ext.getCmp('administration_outsideHttpsQuarantineEnabled').disable();
                                     }
                                 },this)
                             },
                             "change" : {
                                 fn : Ext.bind(function(elem, newValue) {
-                                    this.getSystemSettings().isOutsideHttpsEnabled = newValue;
+                                    this.getSystemSettings().outsideHttpsEnabled = newValue;
                                     if(newValue){
-                                        Ext.getCmp('administration_isOutsideAdministrationEnabled').enable();
-                                        Ext.getCmp('administration_isOutsideReportingEnabled').enable();
-                                        Ext.getCmp('administration_isOutsideQuarantineEnabled').enable();
+                                        Ext.getCmp('administration_outsideHttpsAdministrationEnabled').enable();
+                                        Ext.getCmp('administration_outsideHttpsReportingEnabled').enable();
+                                        Ext.getCmp('administration_outsideHttpsQuarantineEnabled').enable();
                                     }else{
-                                        Ext.getCmp('administration_isOutsideAdministrationEnabled').disable();
-                                        Ext.getCmp('administration_isOutsideReportingEnabled').disable();
-                                        Ext.getCmp('administration_isOutsideQuarantineEnabled').disable();
+                                        Ext.getCmp('administration_outsideHttpsAdministrationEnabled').disable();
+                                        Ext.getCmp('administration_outsideHttpsReportingEnabled').disable();
+                                        Ext.getCmp('administration_outsideHttpsQuarantineEnabled').disable();
                                     }
                                 },this)
                             }
                         }
                     }, {
                         xtype : 'checkbox',
-                        id : 'administration_isOutsideAdministrationEnabled',
-                        name : 'isOutsideAdministrationEnabled',
-                        boxLabel : this.i18n._('Enable WAN HTTPS Administration'),
+                        id : 'administration_outsideHttpsAdministrationEnabled',
+                        name : 'outsideHttpsAdministrationEnabled',
+                        boxLabel : this.i18n._('Enable Outside HTTPS Administration'),
                         hideLabel : true,
-                        checked : this.getSystemSettings().isOutsideAdministrationEnabled,
+                        checked : this.getSystemSettings().outsideHttpsAdministrationEnabled,
                         listeners : {
                             "change" : {
                                 fn : Ext.bind(function(elem, newValue) {
-                                    this.getSystemSettings().isOutsideAdministrationEnabled = newValue;
+                                    this.getSystemSettings().outsideHttpsAdministrationEnabled = newValue;
                                 },this)
                             }
                         }
                     },{
                         xtype : 'checkbox',
-                        id : 'administration_isOutsideReportingEnabled',
-                        name : 'isOutsideReportingEnabled',
-                        boxLabel : this.i18n._('Enable WAN HTTPS Report Viewing'),
+                        id : 'administration_outsideHttpsReportingEnabled',
+                        name : 'outsideHttpsReportingEnabled',
+                        boxLabel : this.i18n._('Enable Outside HTTPS Report Viewing'),
                         hideLabel : true,
-                        checked : this.getSystemSettings().isOutsideReportingEnabled,
+                        checked : this.getSystemSettings().outsideHttpsReportingEnabled,
                         listeners : {
                             "change" : {
                                 fn : Ext.bind(function(elem, newValue) {
-                                    this.getSystemSettings().isOutsideReportingEnabled = newValue;
+                                    this.getSystemSettings().outsideHttpsReportingEnabled = newValue;
                                 },this)
                             }
                         }
                     },{
                         xtype : 'checkbox',
-                        id : 'administration_isOutsideQuarantineEnabled',
-                        name : 'isOutsideQuarantineEnabled',
-                        boxLabel : this.i18n._('Enable WAN HTTPS Quarantine Viewing'),
+                        id : 'administration_outsideHttpsQuarantineEnabled',
+                        name : 'outsideHttpsQuarantineEnabled',
+                        boxLabel : this.i18n._('Enable Outside HTTPS Quarantine Viewing'),
                         hideLabel : true,
-                        checked : this.getSystemSettings().isOutsideQuarantineEnabled,
+                        checked : this.getSystemSettings().outsideHttpsQuarantineEnabled,
                         listeners : {
                             "change" : {
                                 fn : Ext.bind(function(elem, newValue) {
-                                    this.getSystemSettings().isOutsideQuarantineEnabled = newValue;
+                                    this.getSystemSettings().outsideHttpsQuarantineEnabled = newValue;
                                 },this)
                             }
                         }
@@ -413,7 +413,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
                         xtype : 'checkbox',
                         id : 'administration_isInsideInsecureEnabled',
                         name : 'isInsideInsecureEnabled',
-                        boxLabel : this.i18n._('Enable LAN HTTP Administration'),
+                        boxLabel : this.i18n._('Enable Inside HTTP Administration'),
                         hideLabel : true,
                         checked : this.getSystemSettings().isInsideInsecureEnabled,
                         listeners : {
@@ -427,9 +427,9 @@ if (!Ung.hasResource["Ung.Administration"]) {
                         border: false,
                         cls: 'description',
                         html : this.i18n._('Note:') + "<br/>" +
-                            this.i18n._('HTTP  WAN administration is always disabled.') + "<br/>" +
-                            this.i18n._('HTTPS LAN administration is always enabled.') + "<br/>" +
-                            this.i18n._('HTTP  LAN port is always open for block pages even when administration is disabled.') + "<br/>"
+                            this.i18n._('HTTP  Outside administration is always disabled.') + "<br/>" +
+                            this.i18n._('HTTPS Inside administration is always enabled.') + "<br/>" +
+                            this.i18n._('HTTP  Inside port is always open for block pages even when administration is disabled.') + "<br/>"
                     }]
                 }]
             });
@@ -1476,8 +1476,8 @@ if (!Ung.hasResource["Ung.Administration"]) {
                 return false;
             }
 
-            var isOutsideAccessRestricted = this.getSystemSettings().isOutsideAccessRestricted;
-            if (isOutsideAccessRestricted) {
+            var outsideAccessRestricted = this.getSystemSettings().outsideAccessRestricted;
+            if (outsideAccessRestricted) {
                 var outsideNetworkCmp = Ext.getCmp('administration_outsideNetwork');
                 if (!outsideNetworkCmp.isValid()) {
                     Ext.MessageBox.alert(this.i18n._('Warning'), this.i18n._('Invalid External Remote Administration \"IP Address\" specified.'),
@@ -1710,7 +1710,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
             var c_systemSettings = this.getSystemSettings();
             
             //external administration
-            if ( i_systemSettings.isOutsideAdministrationEnabled != c_systemSettings.isOutsideAdministrationEnabled ) {
+            if ( i_systemSettings.outsideHttpsAdministrationEnabled != c_systemSettings.outsideHttpsAdministrationEnabled ) {
                 return true;
             }
             
@@ -1723,7 +1723,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
                 return true;
             }
             
-            if ( !i_systemSettings.isOutsideAccessRestricted && c_systemSettings.isOutsideAccessRestricted ) {
+            if ( !i_systemSettings.outsideAccessRestricted && c_systemSettings.outsideAccessRestricted ) {
                 return true;
             }
             

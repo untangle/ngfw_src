@@ -9,6 +9,6 @@ public class AdministrationOutsideAccessValve extends OutsideValve
 
     protected boolean isOutsideAccessAllowed()
     {
-        return getSystemSettings().getIsOutsideAdministrationEnabled();
+        return getSystemSettings().getOutsideHttpsAdministrationEnabled();
     }
 }

@@ -91,8 +91,8 @@ public abstract class ReplacementGenerator<T extends BlockDetails>
                 return generateSimplePage(nonce, persistent, false);
             } else {
                 String host = addr.getHostAddress();
-                int port = UvmContextFactory.context().systemManager().getSettings().getBlockPagePort();
-
+                //int port = UvmContextFactory.context().systemManager().getSettings().getBlockPagePort();
+                int port = 80;
                 if ( port != 80 ) {
                     host = host + ":" + port;
                 }

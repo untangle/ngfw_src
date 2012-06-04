@@ -66,15 +66,15 @@ public class SystemManagerImpl implements SystemManager
             logger.warn("No settings found - Initializing new settings.");
 
             SystemSettings newSettings = new SystemSettings();
-            newSettings.setIsInsideInsecureEnabled( true );
-            newSettings.setIsOutsideHttpsEnabled( true );
+            newSettings.setInsideHttpEnabled( true );
+            newSettings.setOutsideHttpsEnabled( true );
             if (UvmContextFactory.context().isDevel())
-                newSettings.setIsOutsideAdministrationEnabled( true );
+                newSettings.setOutsideHttpsAdministrationEnabled( true );
             else
-                newSettings.setIsOutsideAdministrationEnabled( false );
-            newSettings.setIsOutsideQuarantineEnabled( true );
-            newSettings.setIsOutsideReportingEnabled( false );
-            newSettings.setIsOutsideHttpsEnabled( true );
+                newSettings.setOutsideHttpsAdministrationEnabled( false );
+            newSettings.setOutsideHttpsQuarantineEnabled( true );
+            newSettings.setOutsideHttpsReportingEnabled( false );
+            newSettings.setOutsideHttpsEnabled( true );
             newSettings.setHttpsPort( 443 );
 
             newSettings.setPublicUrlMethod( SystemSettings.PUBLIC_URL_EXTERNAL_IP );
@@ -162,22 +162,9 @@ public class SystemManagerImpl implements SystemManager
     {
         logger.info("reconfigure()");
 
-        setSupportAccess( this.settings );
-        rebindHttps( this.settings );
-
-        UvmContextImpl.context().networkManager().refreshNetworkConfig();
-
-    }
-
-    private void setSupportAccess( SystemSettings systemSettings )
-    {
-        if ( systemSettings == null ) {
-            logger.warn( "unable to set support access, address settings are not initialized." );            
-            return;
-        }
-        
+        /* install support if necessary */
         try {
-            if ( systemSettings.getIsSupportEnabled()) {
+            if ( this.settings.getSupportEnabled()) {
                 UvmContextFactory.context().toolboxManager().install("untangle-support-agent");
             } else {
                 UvmContextFactory.context().toolboxManager().uninstall("untangle-support-agent");
@@ -185,17 +172,9 @@ public class SystemManagerImpl implements SystemManager
         } catch ( Exception ex ) {
             logger.error( "Unable to enable support", ex );
         }
-    }
 
-    private void rebindHttps( SystemSettings address )
-    {
-        if ( address == null ) {
-            logger.warn( "unable to rebind https port, address settings are not initialized." );
-            return;
-        }
-
-        int port = address.getHttpsPort();
-
+        /* rebind HTTPS port if necessary */
+        int port = this.settings.getHttpsPort();
         try {
             logger.info("Rebinding HTTPS port: " + port);
             UvmContextFactory.context().localAppServerManager().rebindExternalHttpsPort( port );
@@ -207,5 +186,9 @@ public class SystemManagerImpl implements SystemManager
                 logger.warn( "unable to rebind https to port: " + port, e );
             }
         }
+
+
+        UvmContextImpl.context().networkManager().refreshNetworkConfig();
+
     }
 }

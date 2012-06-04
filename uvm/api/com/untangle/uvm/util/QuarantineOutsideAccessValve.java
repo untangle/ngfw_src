@@ -9,6 +9,6 @@ public class QuarantineOutsideAccessValve extends OutsideValve
 
     protected boolean isOutsideAccessAllowed()
     {
-        return getSystemSettings().getIsOutsideQuarantineEnabled();
+        return getSystemSettings().getOutsideHttpsQuarantineEnabled();
     }
 }

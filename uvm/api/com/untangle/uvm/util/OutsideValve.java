@@ -65,9 +65,9 @@ public abstract class OutsideValve extends ValveBase
     }
 
     /* Unified way to determine if access to port 80 is allowed, override if behavior is different */
-    protected boolean isInsecureAccessAllowed()
+    protected boolean isHttpAccessAllowed()
     {
-        return getSystemSettings().getIsInsideInsecureEnabled();
+        return getSystemSettings().getInsideHttpEnabled();
     }
 
     /* Unified way to determine which parameter to check */
@@ -88,12 +88,12 @@ public abstract class OutsideValve extends ValveBase
         return I18nUtil.tr("standard access", i18n_map);
     }
 
-    private boolean isAccessAllowed(boolean isOutsideAccessAllowed, ServletRequest request)
+    private boolean isAccessAllowed(boolean outsideAccessAllowed, ServletRequest request)
     {
         String address = request.getRemoteAddr();
-        boolean isInsecureAccessAllowed = isInsecureAccessAllowed();
+        boolean isHttpAccessAllowed = isHttpAccessAllowed();
 
-        if (isOutsideAccessAllowed && isInsecureAccessAllowed) return true;
+        if (outsideAccessAllowed && isHttpAccessAllowed) return true;
 
         try {
             if (null != address && InetAddress.getByName( address ).isLoopbackAddress()) return true;
@@ -105,25 +105,25 @@ public abstract class OutsideValve extends ValveBase
 
         /* This is insecure access on port 80 */
         if (port == DEFAULT_HTTP_PORT) {
-            return isInsecureAccessAllowed;
+            return isHttpAccessAllowed;
         }
         if (port == SECONDARY_HTTP_PORT) {
-            return isInsecureAccessAllowed;
+            return isHttpAccessAllowed;
         }
 
         int blockPagePort = DEFAULT_HTTP_PORT;
         
         if ( port == blockPagePort ) {
-            return isInsecureAccessAllowed;
+            return isHttpAccessAllowed;
         }
         
         /* This is secure access on the internal port */
         if (port == NetworkUtil.INTERNAL_OPEN_HTTPS_PORT) return true;
 
         /* This is secure access on the external port */
-        if (port == getSystemSettings().getHttpsPort()) return isOutsideAccessAllowed;
+        if (port == getSystemSettings().getHttpsPort()) return outsideAccessAllowed;
 
-        if (request.getScheme().equals("https")) return isOutsideAccessAllowed;
+        if (request.getScheme().equals("https")) return outsideAccessAllowed;
 
         return false;
     }

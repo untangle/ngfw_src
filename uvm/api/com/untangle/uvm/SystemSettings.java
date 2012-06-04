@@ -15,12 +15,12 @@ import org.json.JSONString;
 @SuppressWarnings("serial")
 public class SystemSettings implements Serializable, JSONString
 {
-    private boolean isSupportEnabled;
-    private boolean isInsideInsecureEnabled;
-    private boolean isOutsideHttpsEnabled;
-    private boolean isOutsideReportingEnabled;
-    private boolean isOutsideAdministrationEnabled;
-    private boolean isOutsideQuarantineEnabled;
+    private boolean supportEnabled;
+    private boolean insideHttpEnabled;
+    private boolean outsideHttpsEnabled;
+    private boolean outsideHttpsReportingEnabled;
+    private boolean outsideHttpsAdministrationEnabled;
+    private boolean outsideHttpsQuarantineEnabled;
     private int httpsPort;
 
     public static final String PUBLIC_URL_EXTERNAL_IP = "external";
@@ -42,14 +42,8 @@ public class SystemSettings implements Serializable, JSONString
     /**
      * untangle support access flag
      */
-    public boolean getIsSupportEnabled() { return this.isSupportEnabled; }
-    public void setIsSupportEnabled( boolean newValue ) { this.isSupportEnabled = newValue; }
-
-    /**
-     * The block page port (currently unsettable)
-     */
-    public int getBlockPagePort() { return 80; }
-    public void setBlockPagePort( int port ) { return; }
+    public boolean getSupportEnabled() { return this.supportEnabled; }
+    public void setSupportEnabled( boolean newValue ) { this.supportEnabled = newValue; }
 
     /**
      * This is the port that the HTTPS server lives on
@@ -60,33 +54,33 @@ public class SystemSettings implements Serializable, JSONString
     /**
      * Get whether or not local insecure access is enabled.
      */
-    public boolean getIsInsideInsecureEnabled() { return this.isInsideInsecureEnabled; }
-    public void setIsInsideInsecureEnabled( boolean newValue ) { this.isInsideInsecureEnabled = newValue; }
+    public boolean getInsideHttpEnabled() { return this.insideHttpEnabled; }
+    public void setInsideHttpEnabled( boolean newValue ) { this.insideHttpEnabled = newValue; }
 
     /**
      * Retrieve whether or not administration from the internet is allowed.
      */
-    public boolean getIsOutsideHttpsEnabled() { return this.isOutsideHttpsEnabled; }
-    public void setIsOutsideHttpsEnabled( boolean newValue ) { this.isOutsideHttpsEnabled = newValue; }
+    public boolean getOutsideHttpsEnabled() { return this.outsideHttpsEnabled; }
+    public void setOutsideHttpsEnabled( boolean newValue ) { this.outsideHttpsEnabled = newValue; }
 
     /**
      * Retrieve whether access is allowed to reports from the internet.
      */
-    public boolean getIsOutsideReportingEnabled() { return this.isOutsideReportingEnabled; }
-    public void setIsOutsideReportingEnabled( boolean newValue ) { this.isOutsideReportingEnabled = newValue; }
+    public boolean getOutsideHttpsReportingEnabled() { return this.outsideHttpsReportingEnabled; }
+    public void setOutsideHttpsReportingEnabled( boolean newValue ) { this.outsideHttpsReportingEnabled = newValue; }
 
     /**
      * Get whether or not external administration is allowed.
      */
-    public boolean getIsOutsideAdministrationEnabled() { return this.isOutsideAdministrationEnabled; }
-    public void setIsOutsideAdministrationEnabled( boolean newValue ) { this.isOutsideAdministrationEnabled = newValue; }
+    public boolean getOutsideHttpsAdministrationEnabled() { return this.outsideHttpsAdministrationEnabled; }
+    public void setOutsideHttpsAdministrationEnabled( boolean newValue ) { this.outsideHttpsAdministrationEnabled = newValue; }
 
     /**
      * Retrieve whether or not to access the user quarantine from the
      * internet is allowed.
      */
-    public boolean getIsOutsideQuarantineEnabled() { return this.isOutsideQuarantineEnabled; }
-    public void setIsOutsideQuarantineEnabled( boolean newValue ) { this.isOutsideQuarantineEnabled = newValue; }
+    public boolean getOutsideHttpsQuarantineEnabled() { return this.outsideHttpsQuarantineEnabled; }
+    public void setOutsideHttpsQuarantineEnabled( boolean newValue ) { this.outsideHttpsQuarantineEnabled = newValue; }
 
     /**
      * This determines the method used to calculate the publicy available URL used to reach Untangle resources
