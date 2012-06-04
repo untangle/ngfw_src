@@ -1,6 +1,7 @@
 #!/usr/bin/python
 # $Id: mailer.py,v 1.00 2012/05/30 11:51:31 dmorris Exp $
 
+
 PREFIX = '@PREFIX@'
 REPORTS_PYTHON_DIR = '%s/usr/lib/python2.5' % PREFIX
 REPORTS_OUTPUT_BASE = '%s/usr/share/untangle/web/reports' % PREFIX
@@ -33,6 +34,7 @@ import gettext
 import locale
 import mx
 import os.path
+import os
 import smtplib
 import reports
 import reports.i18n_helper
@@ -49,6 +51,7 @@ from email.MIMEImage import MIMEImage
 from email.MIMEMultipart import MIMEMultipart
 from email.MIMEText import MIMEText
 from uvm.settings_reader import get_node_settings_item
+from uvm.settings_reader import get_uvm_settings_item
 
 _ = reports.i18n_helper.get_translation('untangle-vm').lgettext
 
@@ -68,14 +71,12 @@ def mail_reports(end_date, report_days, file, mail_reports,
 
     for receiver in receivers:
         has_web_access = receiver in report_users
-        mail(file, zip_file, sender, receiver, end_date, company_name,
-             has_web_access, url, report_days, attachment_size_limit)
+        mail(file, zip_file, sender, receiver, end_date, company_name, has_web_access, url, report_days, attachment_size_limit)
 
     if zip_file:
         shutil.rmtree(zip_dir)
 
-def mail(file, zip_file, sender, receiver, date, company_name,
-         has_web_access, url, report_days, attachment_size_limit):
+def mail(file, zip_file, sender, receiver, date, company_name, has_web_access, url, report_days, attachment_size_limit):
     msgRoot = MIMEMultipart('alternative')
 
     h = { 'company': company_name,
@@ -198,31 +199,19 @@ def __get_branding_info():
     return company
 
 def __get_url(date):
-    rv = None
-
-    print "FIXME"
-    print "FIXME"
-    print "FIXME"
-    print "FIXME"
-    print "FIXME"
-    print "FIXME"
-# read this from the system settings file
-#
-
-#     try:
-#         f = open( "%s/usr/share/untangle/conf/networking.sh" % PREFIX )
-#         for line in f:
-#             if ( line.startswith( "UVM_PUBLIC_URL=" )):
-#                 public_host = line.replace( "UVM_PUBLIC_URL=", "" )
-#                 public_host = public_host.replace( "\"", "" )
-#                 public_host = public_host.strip()
-#                 rv = 'https://%s/reports?time=%s' \
-#                      % ( public_host, date.strftime(locale.nl_langinfo(locale.D_FMT)), )
-#                 break
-
-#     except Exception, e:
-#         logger.warn('could not get hostname', exc_info=True)
-    return "FIXME"
+    url = "unknown.ip"
+    publicUrlMethod = get_node_settings_item('system','publicUrlMethod')
+    httpsPort = get_node_settings_item('system','httpsPort')
+    if publicUrlMethod == "external":
+        url = get_wan_ip() + ":" + httpsPort
+    elif publicUrlMethod == "hostname":
+        url = os.uname()[1] + ":" + httpsPort
+    elif publicUrlMethod == "address_and_port":
+        publicUrlAddress = get_node_settings_item('system','publicUrlAddress')
+        publicUrlPort = get_node_settings_item('system','publicUrlPort')
+        url = publicUrlAddress + ":" + publicUrlPort
+        
+    return 'https://%s/reports?time=%s' % ( url, date.strftime(locale.nl_langinfo(locale.D_FMT)), )
 
 def __get_report_users():
     rv = set()

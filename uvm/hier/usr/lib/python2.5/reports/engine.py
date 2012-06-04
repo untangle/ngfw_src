@@ -47,6 +47,16 @@ def get_wan_names_map():
 
     return map
 
+def get_wan_ip():
+    wans = []
+    for intf in NETCONFIG_JSON_OBJ['interfaceList']['list']:
+        if intf['WAN'] is not None and intf['WAN'].lower() == 'true':
+            addr = intf['primaryAddressStr']
+            if addr == None:
+                return "unknown.ip"
+            else:
+                return addr.split("/")[0]
+
 class Node:
     def __init__(self, name):
         self.__name = name
