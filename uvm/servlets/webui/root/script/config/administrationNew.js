@@ -72,7 +72,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
         panelAdministration : null,
         panelPublicAddress : null,
         panelCertificates : null,
-        panelMonitoring : null,
+        panelSnmp : null,
         panelSkins : null,
         uploadedCustomLogo : false,
         initComponent : function() {
@@ -89,11 +89,11 @@ if (!Ung.hasResource["Ung.Administration"]) {
             this.buildAdministration();
             this.buildPublicAddress();
             this.buildCertificates();
-            this.buildMonitoring();
+            this.buildSnmp();
             this.buildSkins();
 
             // builds the tab panel with the tabs
-            var adminTabs = [this.panelAdministration, this.panelPublicAddress, this.panelCertificates, this.panelMonitoring, this.panelSkins];
+            var adminTabs = [this.panelAdministration, this.panelPublicAddress, this.panelCertificates, this.panelSnmp, this.panelSkins];
             this.buildTabPanel(adminTabs);
             this.tabs.setActiveTab(this.panelAdministration);
             Ung.Administration.superclass.initComponent.call(this);
@@ -131,18 +131,6 @@ if (!Ung.hasResource["Ung.Administration"]) {
                 }
             }
             return this.rpc.systemSettings;
-        },
-        // get snmp settings
-        getSnmpSettings : function(forceReload) {
-            if (forceReload || this.rpc.snmpSettings === undefined) {
-                try {
-                    this.rpc.snmpSettings = rpc.snmpManager.getSnmpSettings();
-                } catch (e) {
-                    Ung.Util.rpcExHandler(e);
-                }
-
-            }
-            return this.rpc.snmpSettings;
         },
         // get Current Server CertInfo
         getCurrentServerCertInfo : function(forceReload) {
@@ -1106,16 +1094,13 @@ if (!Ung.hasResource["Ung.Administration"]) {
             }
         },
 
-        buildMonitoring : function() {
-            // keep initial settings
-            this.initialSnmpSettings = Ung.Util.clone(this.getSnmpSettings());
-
-            this.panelMonitoring = Ext.create('Ext.panel.Panel',{
-                name : 'panelMonitoring',
+        buildSnmp : function() {
+            this.panelSnmp = Ext.create('Ext.panel.Panel',{
+                name : 'panelSnmp',
                 helpSource : 'monitoring',
                 // private fields
                 parentId : this.getId(),
-                title : this.i18n._('Monitoring'),
+                title : this.i18n._('SNMP'),
                 cls: 'ung-panel',
                 autoScroll : true,
                 defaults : {
@@ -1130,11 +1115,11 @@ if (!Ung.hasResource["Ung.Administration"]) {
                         boxLabel : Ext.String.format(this.i18n._('{0}Disable{1} SNMP Monitoring. (This is the default setting.)'), '<b>', '</b>'),
                         hideLabel : true,
                         name : 'snmpEnabled',
-                        checked : !this.getSnmpSettings().enabled,
+                        checked : !this.getSystemSettings().snmpSettings.enabled,
                         listeners : {
                             "change" : {
                                 fn : Ext.bind(function(elem, checked) {
-                                    this.getSnmpSettings().enabled = !checked;
+                                    this.getSystemSettings().snmpSettings.enabled = !checked;
                                     if (checked) {
                                         Ext.getCmp('administration_snmp_communityString').disable();
                                         Ext.getCmp('administration_snmp_sysContact').disable();
@@ -1153,11 +1138,11 @@ if (!Ung.hasResource["Ung.Administration"]) {
                         boxLabel : Ext.String.format(this.i18n._('{0}Enable{1} SNMP Monitoring.'), '<b>', '</b>'),
                         hideLabel : true,
                         name : 'snmpEnabled',
-                        checked : this.getSnmpSettings().enabled,
+                        checked : this.getSystemSettings().snmpSettings.enabled,
                         listeners : {
                             "change" : {
                                 fn : Ext.bind(function(elem, checked) {
-                                    this.getSnmpSettings().enabled = checked;
+                                    this.getSystemSettings().snmpSettings.enabled = checked;
                                     if (checked) {
                                         Ext.getCmp('administration_snmp_communityString').enable();
                                         Ext.getCmp('administration_snmp_sysContact').enable();
@@ -1180,18 +1165,18 @@ if (!Ung.hasResource["Ung.Administration"]) {
                         name : 'communityString',
                         itemCls : 'left-indent-1',
                         id: 'administration_snmp_communityString',
-                        value : this.getSnmpSettings().communityString == 'CHANGE_ME' ? this.i18n._('CHANGE_ME') : this.getSnmpSettings().communityString,
+                        value : this.getSystemSettings().snmpSettings.communityString == 'CHANGE_ME' ? this.i18n._('CHANGE_ME') : this.getSystemSettings().snmpSettings.communityString,
                         allowBlank : false,
                         blankText : this.i18n._("An SNMP \"Community\" must be specified."),
-                        disabled : !this.getSnmpSettings().enabled
+                        disabled : !this.getSystemSettings().snmpSettings.enabled
                     },{
                         xtype : 'textfield',
                         itemCls : 'left-indent-1',
                         fieldLabel : this.i18n._('System Contact'),
                         name : 'sysContact',
                         id: 'administration_snmp_sysContact',
-                        value : this.getSnmpSettings().sysContact == 'MY_CONTACT_INFO' ? this.i18n._('MY_CONTACT_INFO') : this.getSnmpSettings().sysContact,
-                        disabled : !this.getSnmpSettings().enabled
+                        value : this.getSystemSettings().snmpSettings.sysContact == 'MY_CONTACT_INFO' ? this.i18n._('MY_CONTACT_INFO') : this.getSystemSettings().snmpSettings.sysContact,
+                        disabled : !this.getSystemSettings().snmpSettings.enabled
                         //vtype : 'email'
                     },{
                         xtype : 'textfield',
@@ -1199,8 +1184,8 @@ if (!Ung.hasResource["Ung.Administration"]) {
                         fieldLabel : this.i18n._('System Location'),
                         name : 'sysLocation',
                         id: 'administration_snmp_sysLocation',
-                        value : this.getSnmpSettings().sysLocation == 'MY_LOCATION' ? this.i18n._('MY_LOCATION') : this.getSnmpSettings().sysLocation,
-                        disabled : !this.getSnmpSettings().enabled
+                        value : this.getSystemSettings().snmpSettings.sysLocation == 'MY_LOCATION' ? this.i18n._('MY_LOCATION') : this.getSystemSettings().snmpSettings.sysLocation,
+                        disabled : !this.getSystemSettings().snmpSettings.enabled
                     },{
                         xtype : 'radio',
                         itemCls : 'left-indent-1',
@@ -1208,8 +1193,8 @@ if (!Ung.hasResource["Ung.Administration"]) {
                         hideLabel : true,
                         name : 'sendTraps',
                         id: 'administration_snmp_sendTraps_disable',
-                        checked : !this.getSnmpSettings().sendTraps,
-                        disabled : !this.getSnmpSettings().enabled,
+                        checked : !this.getSystemSettings().snmpSettings.sendTraps,
+                        disabled : !this.getSystemSettings().snmpSettings.enabled,
                         listeners : {
                             "change" : {
                                 fn : Ext.bind(function(elem, checked) {
@@ -1228,12 +1213,12 @@ if (!Ung.hasResource["Ung.Administration"]) {
                         hideLabel : true,
                         name : 'sendTraps',
                         id: 'administration_snmp_sendTraps_enable',
-                        checked : this.getSnmpSettings().sendTraps,
-                        disabled : !this.getSnmpSettings().enabled,
+                        checked : this.getSystemSettings().snmpSettings.sendTraps,
+                        disabled : !this.getSystemSettings().snmpSettings.enabled,
                         listeners : {
                             "change" : {
                                 fn : Ext.bind(function(elem, checked) {
-                                    if (this.getSnmpSettings().enabled && checked) {
+                                    if (this.getSystemSettings().snmpSettings.enabled && checked) {
                                         Ext.getCmp('administration_snmp_trapCommunity').enable();
                                         Ext.getCmp('administration_snmp_trapHost').enable();
                                         Ext.getCmp('administration_snmp_trapPort').enable();
@@ -1247,33 +1232,33 @@ if (!Ung.hasResource["Ung.Administration"]) {
                         fieldLabel : this.i18n._('Community'),
                         name : 'trapCommunity',
                         id: 'administration_snmp_trapCommunity',
-                        value : this.getSnmpSettings().trapCommunity == 'MY_TRAP_COMMUNITY' ? this.i18n._('MY_TRAP_COMMUNITY') : this.getSnmpSettings().trapCommunity,
+                        value : this.getSystemSettings().snmpSettings.trapCommunity == 'MY_TRAP_COMMUNITY' ? this.i18n._('MY_TRAP_COMMUNITY') : this.getSystemSettings().snmpSettings.trapCommunity,
                         allowBlank : false,
                         blankText : this.i18n._("An Trap \"Community\" must be specified."),
-                        disabled : !this.getSnmpSettings().enabled || !this.getSnmpSettings().sendTraps
+                        disabled : !this.getSystemSettings().snmpSettings.enabled || !this.getSystemSettings().snmpSettings.sendTraps
                     },{
                         xtype : 'textfield',
                         fieldLabel : this.i18n._('Host'),
                         itemCls : 'left-indent-2',
                         name : 'trapHost',
                         id: 'administration_snmp_trapHost',
-                        value : this.getSnmpSettings().trapHost == 'MY_TRAP_HOST' ? this.i18n._('MY_TRAP_HOST') : this.getSnmpSettings().trapHost,
+                        value : this.getSystemSettings().snmpSettings.trapHost == 'MY_TRAP_HOST' ? this.i18n._('MY_TRAP_HOST') : this.getSystemSettings().snmpSettings.trapHost,
                         allowBlank : false,
                         blankText : this.i18n._("An Trap \"Host\" must be specified."),
-                        disabled : !this.getSnmpSettings().enabled || !this.getSnmpSettings().sendTraps
+                        disabled : !this.getSystemSettings().snmpSettings.enabled || !this.getSystemSettings().snmpSettings.sendTraps
                     },{
                         xtype : 'numberfield',
                         itemCls : 'left-indent-2',
                         fieldLabel : this.i18n._('Port'),
                         name : 'trapPort',
                         id: 'administration_snmp_trapPort',
-                        value : this.getSnmpSettings().trapPort,
+                        value : this.getSystemSettings().snmpSettings.trapPort,
                         allowDecimals: false,
                         allowNegative: false,
                         allowBlank : false,
                         blankText : this.i18n._("You must provide a valid port."),
                         vtype : 'port',
-                        disabled : !this.getSnmpSettings().enabled || !this.getSnmpSettings().sendTraps
+                        disabled : !this.getSystemSettings().snmpSettings.enabled || !this.getSystemSettings().snmpSettings.sendTraps
                     }]
                 }]
             });
@@ -1539,13 +1524,13 @@ if (!Ung.hasResource["Ung.Administration"]) {
 
         //validate SNMP
         validateSnmp : function() {
-            var isSnmpEnabled = this.getSnmpSettings().enabled;
+            var isSnmpEnabled = this.getSystemSettings().snmpSettings.enabled;
             if (isSnmpEnabled) {
                 var snmpCommunityCmp = Ext.getCmp('administration_snmp_communityString');
                 if (!snmpCommunityCmp.isValid()) {
                     Ext.MessageBox.alert(this.i18n._('Warning'), this.i18n._("An SNMP \"Community\" must be specified."),
                         Ext.bind(function () {
-                            this.tabs.setActiveTab(this.panelMonitoring);
+                            this.tabs.setActiveTab(this.panelSnmp);
                             snmpCommunityCmp.focus(true);
                         },this)
                     );
@@ -1560,7 +1545,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
                     if (!snmpTrapCommunityCmp.isValid()) {
                         Ext.MessageBox.alert(this.i18n._('Warning'), this.i18n._("An Trap \"Community\" must be specified."),
                             Ext.bind(function () {
-                                this.tabs.setActiveTab(this.panelMonitoring);
+                                this.tabs.setActiveTab(this.panelSnmp);
                                 snmpTrapCommunityCmp.focus(true);
                             },this)
                         );
@@ -1571,7 +1556,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
                     if (!snmpTrapHostCmp.isValid()) {
                         Ext.MessageBox.alert(this.i18n._('Warning'), this.i18n._("An Trap \"Host\" must be specified."),
                             Ext.bind(function () {
-                                this.tabs.setActiveTab(this.panelMonitoring);
+                                this.tabs.setActiveTab(this.panelSnmp);
                                 snmpTrapHostCmp.focus(true);
                             },this)
                         );
@@ -1582,7 +1567,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
                     if (!snmpTrapPortCmp.isValid()) {
                         Ext.MessageBox.alert(this.i18n._('Warning'), Ext.String.format(this.i18n._("The port must be an integer number between {0} and {1}."), 1, 65535),
                             Ext.bind(function () {
-                                this.tabs.setActiveTab(this.panelMonitoring);
+                                this.tabs.setActiveTab(this.panelSnmp);
                                 snmpTrapPortCmp.focus(true);
                             },this)
                         );
@@ -1594,14 +1579,14 @@ if (!Ung.hasResource["Ung.Administration"]) {
                 var snmpSysContactCmp = Ext.getCmp('administration_snmp_sysContact');
                 var snmpSysLocationCmp = Ext.getCmp('administration_snmp_sysLocation');
 
-                this.getSnmpSettings().communityString = snmpCommunityCmp.getValue();
-                this.getSnmpSettings().sysContact = snmpSysContactCmp.getValue();
-                this.getSnmpSettings().sysLocation = snmpSysLocationCmp.getValue();
-                this.getSnmpSettings().sendTraps = isTrapEnabled;
+                this.getSystemSettings().snmpSettings.communityString = snmpCommunityCmp.getValue();
+                this.getSystemSettings().snmpSettings.sysContact = snmpSysContactCmp.getValue();
+                this.getSystemSettings().snmpSettings.sysLocation = snmpSysLocationCmp.getValue();
+                this.getSystemSettings().snmpSettings.sendTraps = isTrapEnabled;
                 if (isTrapEnabled) {
-                    this.getSnmpSettings().trapCommunity = snmpTrapCommunityCmp.getValue();
-                    this.getSnmpSettings().trapHost = snmpTrapHostCmp.getValue();
-                    this.getSnmpSettings().trapPort = snmpTrapPortCmp.getValue();
+                    this.getSystemSettings().snmpSettings.trapCommunity = snmpTrapCommunityCmp.getValue();
+                    this.getSystemSettings().snmpSettings.trapHost = snmpTrapHostCmp.getValue();
+                    this.getSystemSettings().snmpSettings.trapPort = snmpTrapPortCmp.getValue();
                 }
             }
             return true;
@@ -1620,7 +1605,6 @@ if (!Ung.hasResource["Ung.Administration"]) {
             this.initialSkinSettings = Ung.Util.clone( this.getSkinSettings(true) );
             this.gridAdminAccounts.store.loadData( this.getAdminSettings(true).users.list );
             this.initialSystemSettings = Ung.Util.clone(this.getSystemSettings(true));
-            this.initialSnmpSettings = Ung.Util.clone(this.getSnmpSettings(true));
             this.getCurrentServerCertInfo(true);
             this.getHostname(true);
 
@@ -1660,7 +1644,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
         completeCommitSettings : function(callback)
         {
             if (this.validate()) {
-                this.saveSemaphore = 3;
+                this.saveSemaphore = 2;
                 Ext.MessageBox.wait(i18n._("Saving..."), i18n._("Please wait"));
 
                 this.getAdminSettings().users.list=this.gridAdminAccounts.getFullSaveList();
@@ -1668,10 +1652,6 @@ if (!Ung.hasResource["Ung.Administration"]) {
                 rpc.adminManager.setSettings(Ext.bind(function(result, exception) {
                     this.afterSave(exception, callback);
                 },this), this.getAdminSettings());
-
-                rpc.snmpManager.setSnmpSettings(Ext.bind(function(result, exception) {
-                   this.afterSave(exception, callback);
-                },this), this.getSnmpSettings());
 
                 rpc.skinManager.setSkinSettings(Ext.bind(function(result, exception) {
                     this.afterSave(exception, callback);

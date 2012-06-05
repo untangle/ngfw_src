@@ -167,7 +167,6 @@ class MailSenderImpl implements MailSender
                 });
     }
 
-    
     static MailSenderImpl mailSender() {
         synchronized (LOCK) {
             if (null == MAIL_SENDER) {
@@ -176,15 +175,6 @@ class MailSenderImpl implements MailSender
         }
         return MAIL_SENDER;
     }
-
-//     private boolean runTransaction(TransactionWork<?> tw)
-//     {
-//         if (null == transactionRunner) {
-//             return UvmContextFactory.context().runTransaction(tw);
-//         } else {
-//             return transactionRunner.runTransaction(tw);
-//         }
-//     }
 
     public void setMailSettings(final MailSettings settings)
     {

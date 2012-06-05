@@ -30,6 +30,8 @@ public class SystemSettings implements Serializable, JSONString
     private String publicUrlMethod;
     private String publicUrlAddress;
     private int publicUrlPort;
+
+    private SnmpSettings snmpSettings;
     
     public SystemSettings() { }
 
@@ -99,4 +101,11 @@ public class SystemSettings implements Serializable, JSONString
      */
     public int getPublicUrlPort() { return this.publicUrlPort; }
     public void setPublicUrlPort( int newValue ) { this.publicUrlPort = newValue; }
+
+    /**
+     * The SMNP settings
+     */
+    public SnmpSettings getSnmpSettings() { return this.snmpSettings; }
+    public void setSnmpSettings( SnmpSettings newValue ) { this.snmpSettings = newValue; }
+    
 }

@@ -38,7 +38,6 @@ import com.untangle.uvm.OemManager;
 import com.untangle.uvm.AlertManager;
 import com.untangle.uvm.AppServerManager;
 import com.untangle.uvm.NetworkManager;
-import com.untangle.uvm.SnmpManager;
 import com.untangle.uvm.ExecManager;
 import com.untangle.uvm.UvmException;
 import com.untangle.uvm.UvmState;
@@ -113,7 +112,6 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
     private BackupManager backupManager;
     private LocalDirectoryImpl localDirectory;
     private ExecManagerImpl execManager;
-    private SnmpManagerImpl snmpManager;
     private SystemManagerImpl systemManager;
     private JSONSerializer serializer;
     private Reporting reportingNode = null;
@@ -205,11 +203,6 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
     public SystemManagerImpl systemManager()
     {
         return this.systemManager;
-    }
-    
-    public SnmpManager snmpManager()
-    {
-        return snmpManager;
     }
     
     public NetworkManager networkManager()
@@ -379,7 +372,6 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
     public void syncConfigFiles()
     {
         mailSender.syncConfigFiles();
-        snmpManager.syncConfigFiles();
     }
 
     public byte[] createBackup() throws IOException
@@ -523,8 +515,6 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
         // start services:
         this.adminManager = new AdminManagerImpl();
 
-        this.snmpManager = SnmpManagerImpl.snmpManager();
-        
         // initialize the network Manager
         this.networkManager = new NetworkManagerImpl();
 

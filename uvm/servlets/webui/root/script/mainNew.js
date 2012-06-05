@@ -114,9 +114,6 @@ Ext.define("Ung.Main", {
         // get admin manager
         rpc.adminManager=rpc.jsonrpc.UvmContext.adminManager();
 
-        // get admin manager
-        rpc.snmpManager=rpc.jsonrpc.UvmContext.snmpManager();
-        
         // get version
         rpc.version=rpc.jsonrpc.UvmContext.version();
 
