@@ -99,7 +99,7 @@ if (!Ung.hasResource["Ung.Email"]) {
         getMailSettings: function(forceReload) {
             if (forceReload || this.rpc.mailSettings === undefined) {
                 try {
-                    this.rpc.mailSettings = main.getMailSender().getMailSettings();
+                    this.rpc.mailSettings = main.getMailSender().getSettings();
                 } catch (e) {
                     Ung.Util.rpcExHandler(e);
                 }
@@ -412,7 +412,7 @@ if (!Ung.hasResource["Ung.Email"]) {
                                                if (this.validateOutgoingServer()) {
                                                 Ext.MessageBox.wait(this.i18n._('Saving...'), this.i18n._('Please wait'));
                                                 // save mail settings
-                                                main.getMailSender().setMailSettings(Ext.bind(function(result, exception) {
+                                                main.getMailSender().setSettings(Ext.bind(function(result, exception) {
                                                     if(Ung.Util.handleException(exception)) return;
                                                     Ext.MessageBox.hide();
                                                     Ung.Util.clearDirty(this.panelOutgoingServer);
@@ -1297,7 +1297,7 @@ if (!Ung.hasResource["Ung.Email"]) {
             });
                 
             // save mail settings
-            main.getMailSender().setMailSettings(Ext.bind(function(result, exception) {
+            main.getMailSender().setSettings(Ext.bind(function(result, exception) {
                 this.afterSave(exception,callback);
             }, this), this.getMailSettings());
             

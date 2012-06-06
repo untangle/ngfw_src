@@ -1,4 +1,6 @@
-/* $HeadURL$ */
+/**
+ * $Id$
+ */
 package com.untangle.uvm;
 
 import java.io.File;
@@ -9,9 +11,6 @@ import javax.mail.internet.MimeBodyPart;
 
 /**
  * Interface for sending email.
- *
- * @author <a href="mailto:jdi@untangle.com">John Irwin</a>
- * @version 1.0
  */
 public interface MailSender
 {
@@ -22,31 +21,14 @@ public interface MailSender
      *
      * @param settings the new mail settings.
      */
-    void setMailSettings(MailSettings settings);
+    void setSettings(MailSettings settings);
 
     /**
      * Get the mail settings.
      *
      * @return the current mail settings.
      */
-    MailSettings getMailSettings();
-
-    /**
-     * Sends a normal report email (with attachments) to the
-     * reportEmail address (from the mail settings).  This is a
-     * convenience function that just calls
-     * sendMessageWithAttachments.
-     *
-     * @param subject subject of the email.
-     * @param bodyHTML HTML for the "main page" that will become the
-     * first extra.
-     * @param extraLocations URI for the corresponding extra.  This
-     * could be part of the trailing path, or some arbitrary string
-     * unrelated to the file name.
-     * @param extras additional extras with a MIME filename that
-     * matches the File's name
-     */
-    void sendReports(String subject, String bodyHTML, List<String> extraLocations, List<File> extras);
+    MailSettings getSettings();
 
     /**
      * Sends an email message to the given recipients.
