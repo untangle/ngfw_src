@@ -106,7 +106,6 @@ public class AdminManagerImpl implements AdminManager
             logger.debug("Loading Settings...");
 
             this.settings = readSettings;
-
             this.reconfigure();
             logger.debug("Settings: " + this.settings.toJSONString());
         }
@@ -283,12 +282,12 @@ public class AdminManagerImpl implements AdminManager
          */
         this.settings = newSettings;
         try {logger.debug("New Settings: \n" + new org.json.JSONObject(this.settings).toString(2));} catch (Exception e) {}
+
+        this.reconfigure();
     }
 
     private void reconfigure() 
     {
-        logger.info("reconfigure()");
-
         // If timezone on box is different (example: kernel upgrade), reset it:
         TimeZone currentZone = getTimeZone();
         if (!currentZone.equals(TimeZone.getDefault()))

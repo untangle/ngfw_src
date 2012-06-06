@@ -18,10 +18,8 @@ public class MailSettings implements Serializable, JSONString
     private boolean useMxRecords = true;
     private String smtpHost;
     private int smtpPort = 25;
-    private boolean useTls = false;
     private String authUser;
     private String authPass;
-    private String localHostName;
 
     public MailSettings() {}
     
@@ -53,12 +51,6 @@ public class MailSettings implements Serializable, JSONString
     public void setSmtpPort(int smtpPort) { this.smtpPort = smtpPort; }
 
     /**
-     * Specifies if we should use TLS if the mail server supports it.
-     */
-    public boolean isUseTls() { return useTls; }
-    public void setUseTls(boolean useTls) { this.useTls = useTls; }
-
-    /**
      * The <code>From</code> address for mail sent by the Untangle
      * Platform.
      */
@@ -78,11 +70,4 @@ public class MailSettings implements Serializable, JSONString
      */
     public String getAuthPass() { return authPass; }
     public void setAuthPass(String authPass) { this.authPass = authPass; }
-
-    /**
-     * The Local host name for sending (SMTP HELO).  If null, use the
-     * actual local host name.
-     */
-    public String getLocalHostName() { return localHostName; }
-    public void setLocalHostName(String localHostName) { this.localHostName = localHostName; }
 }

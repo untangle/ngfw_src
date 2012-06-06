@@ -779,8 +779,8 @@ class MailSenderImpl implements MailSender
                     user = null;
                     pass = null;
                 }
-                transport.setStartTLS(settings.isUseTls());
-                transport.setLocalHost(settings.getLocalHostName());
+                transport.setStartTLS(false);
+                transport.setLocalHost("");
                 transport.connect(host, port, user, pass);
             }
             transport.sendMessage(msg, recipients);
