@@ -1,21 +1,6 @@
-/*
- * $HeadURL: svn://chef/branch/prod/web-ui/work/src/uvm/servlets/webui/src/com/untangle/uvm/webui/jabsorb/UtJsonRpcServlet.java $
- * Copyright (c) 2003-2007 Untangle, Inc.
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License, version 2,
- * as published by the Free Software Foundation.
- *
- * This program is distributed in the hope that it will be useful, but
- * AS-IS and WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE, TITLE, or
- * NONINFRINGEMENT.  See the GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
+/**
+ * $Id: SetupServlet.java,v 1.00 2012/06/05 18:54:27 dmorris Exp $
  */
-
 package com.untangle.uvm.setup.servlet;
 
 import java.io.IOException;
@@ -39,8 +24,6 @@ import com.untangle.uvm.UvmContext;
 
 /**
  * A servlet which will display the start page
- *
- * @author Catalin Matei <cmatei@untangle.com>
  */
 @SuppressWarnings("serial")
 public class SetupServlet extends HttpServlet
@@ -51,7 +34,7 @@ public class SetupServlet extends HttpServlet
         throws ServletException, IOException 
     {
         UvmContext context = UvmContextFactory.context();
-        request.setAttribute( "ss", context.skinManager().getSkinSettings());
+        request.setAttribute( "skinSettings", context.skinManager().getSettings());
         request.setAttribute( "timezone", context.adminManager().getTimeZone());
 
         Map<String,String> languageMap = context.languageManager().getTranslations( "untangle-libuvm" );

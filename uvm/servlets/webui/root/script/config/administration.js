@@ -1581,7 +1581,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
                         html : this.i18n._("This skin will used in the administration client")
                     }, {
                         xtype : 'combo',
-                        name : "administrationClientSkin",
+                        name : "skinName",
                         id : "administration_admin_client_skin_combo",
                         store : adminSkinsStore,
                         displayField : 'displayName',
@@ -1597,7 +1597,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
                         listeners : {
                             "select" : {
                                 fn : function(elem, record) {
-                                    this.getSkinSettings().administrationClientSkin = record.data.name;
+                                    this.getSkinSettings().skinName = record.data.name;
                                 }.createDelegate(this)
                             }
                         }
@@ -1641,7 +1641,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
                 callback : function() {
                     var skinCombo=Ext.getCmp('administration_admin_client_skin_combo');
                     if(skinCombo!=null) {
-                        skinCombo.setValue(this.getSkinSettings().administrationClientSkin);
+                        skinCombo.setValue(this.getSkinSettings().skinName);
                     }
                 }.createDelegate(this)
             });
@@ -2026,7 +2026,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
         },
         finalizeSave : function(callback)
         {
-            this.needRefresh = this.initialSkinSettings.administrationClientSkin != this.getSkinSettings().administrationClientSkin;
+            this.needRefresh = this.initialSkinSettings.skinName != this.getSkinSettings().skinName;
             callback();
         },
 

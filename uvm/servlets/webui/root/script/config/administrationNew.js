@@ -85,7 +85,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
                 title : i18n._('Administration')
             }];
             this.skinManager = Ext.create('Ung.Config.Administration.SkinManager',{ 'i18n' :  i18n });
-            this.initialSkin = this.getSkinSettings().administrationClientSkin;
+            this.initialSkin = this.getSkinSettings().skinName;
             this.buildAdministration();
             this.buildPublicAddress();
             this.buildCertificates();
@@ -1315,7 +1315,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
                         html : this.i18n._("This skin will used in the administration client")
                     }, {
                         xtype : 'combo',
-                        name : "administrationClientSkin",
+                        name : "skinName",
                         id : "administration_admin_client_skin_combo",
                         store : adminSkinsStore,
                         displayField : 'displayName',
@@ -1331,7 +1331,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
                         listeners : {
                             "select" : {
                                 fn : Ext.bind(function(elem, record) {
-                                    this.getSkinSettings().administrationClientSkin = record[0].data.name;
+                                    this.getSkinSettings().skinName = record[0].data.name;
                                 },this)
                             }
                         }
@@ -1375,7 +1375,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
                 callback : Ext.bind(function() {
                     var skinCombo=Ext.getCmp('administration_admin_client_skin_combo');
                     if(skinCombo!=null) {
-                        skinCombo.setValue(this.getSkinSettings().administrationClientSkin);
+                        skinCombo.setValue(this.getSkinSettings().skinName);
                         skinCombo.clearDirty();
                     }
                 },this)
@@ -1674,7 +1674,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
         },
         finalizeSave : function(callback)
         {
-            this.needRefresh = this.initialSkin != this.getSkinSettings().administrationClientSkin;
+            this.needRefresh = this.initialSkin != this.getSkinSettings().skinName;
             callback();
         },
         closeWindow : function() {

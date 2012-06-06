@@ -124,7 +124,7 @@ Ext.define('Ung.Reports',{
             }
         }
         rpc.skinManager = result;
-        rpc.skinManager.getSkinSettings(Ext.bind(this.completeGetSkinSettings,this));
+        rpc.skinManager.getSettings(Ext.bind(this.completeGetSkinSettings,this));
     },
 
     completeGetSkinSettings : function( result, exception)
@@ -137,8 +137,7 @@ Ext.define('Ung.Reports',{
         }
         rpc.skinSettings = result;
         var rand = Math.floor(Math.random()*121221121);
-        //Ung.Util.loadCss("/skins/" + rpc.skinSettings.userPagesSkin + "/css/ext-skin.css?r="+rand);
-        Ung.Util.loadCss("/skins/"+rpc.skinSettings.userPagesSkin+"/css/reports.css?r="+rand);
+        Ung.Util.loadCss("/skins/"+rpc.skinSettings.skinName+"/css/reports.css?r="+rand);
         this.postinit();
     },
 

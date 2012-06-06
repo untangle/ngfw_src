@@ -42,7 +42,7 @@ public class BlockPageUtil
 
         /* These have to be registered against the request, otherwise
          * the included template cannot see them. */
-        request.setAttribute( "ss", uvm.skinManager().getSkinSettings());
+        request.setAttribute( "skinSettings", uvm.skinManager().getSettings());
         request.setAttribute( "pageTitle", params.getPageTitle( bm, i18n_map ));
         request.setAttribute( "title", params.getTitle( bm, i18n_map ));
         request.setAttribute( "footer", params.getFooter( bm, i18n_map ));

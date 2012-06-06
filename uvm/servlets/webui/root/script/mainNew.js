@@ -76,10 +76,10 @@ Ext.define("Ung.Main", {
         // get the skin manager
         rpc.skinManager = rpc.jsonrpc.UvmContext.skinManager();
         // load the current skin
-        var skinSettings = rpc.skinManager.getSkinSettings();
+        var skinSettings = rpc.skinManager.getSettings();
         //TODO: find gray theme for extjs4
-        //Ung.Util.loadCss("/skins/"+skinSettings.administrationClientSkin+"/css/ext-skin.css");
-        Ung.Util.loadCss("/skins/"+skinSettings.administrationClientSkin+"/css/adminNew.css");
+        //Ung.Util.loadCss("/skins/"+skinSettings.skinName+"/css/ext-skin.css");
+        Ung.Util.loadCss("/skins/"+skinSettings.skinName+"/css/adminNew.css");
         if (skinSettings.outOfDate) {
             var win = new Ext.Window({
                 layout: 'fit',

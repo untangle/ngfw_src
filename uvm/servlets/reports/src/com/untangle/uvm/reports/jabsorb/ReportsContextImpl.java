@@ -66,9 +66,9 @@ public class ReportsContextImpl implements UtJsonRpcServlet.ReportsContext
          *
          * @return the settings.
          */
-        public SkinSettings getSkinSettings()
+        public SkinSettings getSettings()
         {
-            return context.skinManager().getSkinSettings();
+            return context.skinManager().getSettings();
         }
 
         /**
@@ -76,7 +76,7 @@ public class ReportsContextImpl implements UtJsonRpcServlet.ReportsContext
          *
          * @param skinSettings the settings.
          */
-        public void setSkinSettings(SkinSettings skinSettings)
+        public void setSettings( SkinSettings skinSettings )
         {
             throw new RuntimeException("Unable to change the skin settings.");
         }
@@ -90,11 +90,9 @@ public class ReportsContextImpl implements UtJsonRpcServlet.ReportsContext
         }
 
 
-        public List<SkinInfo> getSkinsList(boolean fetchAdminSkins,
-                                           boolean fetchUserFacingSkins)
+        public List<SkinInfo> getSkinsList( )
         {
-            return context.skinManager().getSkinsList(fetchAdminSkins,
-                                                      fetchUserFacingSkins);
+            return context.skinManager().getSkinsList();
         }
     }
 

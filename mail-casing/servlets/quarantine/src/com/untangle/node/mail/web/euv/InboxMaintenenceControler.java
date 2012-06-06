@@ -138,7 +138,7 @@ public class InboxMaintenenceControler extends HttpServlet
         req.setAttribute( "companyUrl", uvm.brandingManager().getCompanyUrl());
         
         /* setup the skinning settings */
-        req.setAttribute( "ss", uvm.skinManager().getSkinSettings());
+        req.setAttribute( "skinSettings", uvm.skinManager().getSettings());
         serviceImpl(req, resp, account, quarantine, safelist);
     }
 

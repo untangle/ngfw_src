@@ -73,8 +73,8 @@ Ung.Main=Ext.extend(Object, {
         rpc.skinManager=rpc.jsonrpc.UvmContext.skinManager();
         // load the current skin
         var skinSettings=rpc.skinManager.getSkinSettings();
-        Ung.Util.loadCss("/skins/"+skinSettings.administrationClientSkin+"/css/ext-skin.css");
-        Ung.Util.loadCss("/skins/"+skinSettings.administrationClientSkin+"/css/admin.css");
+        Ung.Util.loadCss("/skins/"+skinSettings.skinName+"/css/ext-skin.css");
+        Ung.Util.loadCss("/skins/"+skinSettings.skinName+"/css/admin.css");
         if (skinSettings.outOfDate) {
             var win;
             win = new Ext.Window({

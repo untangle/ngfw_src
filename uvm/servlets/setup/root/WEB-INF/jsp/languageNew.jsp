@@ -13,8 +13,8 @@
         @import "/ext4/examples/ux/css/CheckHeader.css?s=${buildStamp}";
     </style>
     
-<!--     <uvm:skin src="ext-skin.css"  name="${ss.administrationClientSkin}"/> -->
-    <uvm:skin src="adminNew.css?s=${buildStamp}"  name="${ss.administrationClientSkin}"/>
+<!--     <uvm:skin src="ext-skin.css"  name="${skinSettings.skinName}"/> -->
+    <uvm:skin src="adminNew.css?s=${buildStamp}"  name="${skinSettings.skinName}"/>
 
     <script type="text/javascript" src="/ext4/builds/ext-core-debug.js?s=${buildStamp}"></script>
     <script type="text/javascript" src="/ext4/ext-all-debug.js?s=${buildStamp}"></script>
@@ -42,7 +42,7 @@
 </c:if>
     
     <script type="text/javascript">
-      Ung.SetupWizard.currentSkin = "${ss.administrationClientSkin}";
+      Ung.SetupWizard.currentSkin = "${skinSettings.skinName}";
       console.log("start");
       Ung.SetupWizard.CurrentValues = {
         languageList : ${languageList},

@@ -12,8 +12,8 @@
       @import "/ext/resources/css/ext-all.css";
     </style>
     
-    <uvm:skin src="ext-skin.css"  name="${ss.administrationClientSkin}"/>
-    <uvm:skin src="admin.css"      name="${ss.administrationClientSkin}"/>
+    <uvm:skin src="ext-skin.css"  name="${skinSettings.skinName}"/>
+    <uvm:skin src="admin.css"      name="${skinSettings.skinName}"/>
 
     <script type="text/javascript" src="/ext/source/core/Ext.js"></script>
     <script type="text/javascript" src="/ext/source/adapter/ext-base.js"></script>
@@ -42,7 +42,7 @@
 </c:if>
     
     <script type="text/javascript">
-      Ung.SetupWizard.currentSkin = "${ss.administrationClientSkin}";
+      Ung.SetupWizard.currentSkin = "${skinSettings.skinName}";
 
       Ung.SetupWizard.CurrentValues = {
           timezone : "${timezone.ID}",
