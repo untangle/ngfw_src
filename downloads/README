@@ -17,6 +17,5 @@ postgres-jdbc: used to connect to postgres
 javamail: used to send mail
 xstream-distribution: ??
 jabsorb: used by the UI/uvm
-hibernate-client: used by the untangle-vm
 gettext-commons: unsed by the untangle-vm for I18n/localization
 AjaxTK: jsp utilities
