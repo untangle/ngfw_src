@@ -103,78 +103,6 @@ if (!Ung.hasResource["Ung.Reporting"]) {
         buildGeneration: function() {
             var fieldID = "" + Math.round( Math.random() * 1000000 );
 
-            // DAILY SCHEDULE
-            var dailySched = this.getSettings().generateDailyReports;
-            var dailySundayCurrent = false;
-            var dailyMondayCurrent = false;
-            var dailyTuesdayCurrent = false;
-            var dailyWednesdayCurrent = false;
-            var dailyThursdayCurrent = false;
-            var dailyFridayCurrent = false;
-            var dailySaturdayCurrent = false;
-            if (dailySched.indexOf("sunday") != -1 || dailySched.indexOf("any") != -1)
-                dailySundayCurrent = true;
-            if (dailySched.indexOf("monday") != -1 || dailySched.indexOf("any") != -1)
-                dailyMondayCurrent = true;
-            if (dailySched.indexOf("tuesday") != -1 || dailySched.indexOf("any") != -1)
-                dailyTuesdayCurrent = true;
-            if (dailySched.indexOf("wednesday") != -1 || dailySched.indexOf("any") != -1)
-                dailyWednesdayCurrent = true;
-            if (dailySched.indexOf("thursday") != -1 || dailySched.indexOf("any") != -1)
-                dailyThursdayCurrent = true;
-            if (dailySched.indexOf("friday") != -1 || dailySched.indexOf("any") != -1)
-                dailyFridayCurrent = true;
-            if (dailySched.indexOf("saturday") != -1 || dailySched.indexOf("any") != -1)
-                dailySaturdayCurrent = true;
-
-            // WEEKLY SCHEDULE
-            var weeklySched = this.getSettings().generateWeeklyReports;
-            var weeklySundayCurrent = false;
-            var weeklyMondayCurrent = false;
-            var weeklyTuesdayCurrent = false;
-            var weeklyWednesdayCurrent = false;
-            var weeklyThursdayCurrent = false;
-            var weeklyFridayCurrent = false;
-            var weeklySaturdayCurrent = false;
-            if (weeklySched.indexOf("sunday") != -1 || weeklySched.indexOf("any") != -1)
-                weeklySundayCurrent = true;
-            if (weeklySched.indexOf("monday") != -1 || weeklySched.indexOf("any") != -1)
-                weeklyMondayCurrent = true;
-            if (weeklySched.indexOf("tuesday") != -1 || weeklySched.indexOf("any") != -1)
-                weeklyTuesdayCurrent = true;
-            if (weeklySched.indexOf("wednesday") != -1 || weeklySched.indexOf("any") != -1)
-                weeklyWednesdayCurrent = true;
-            if (weeklySched.indexOf("thursday") != -1 || weeklySched.indexOf("any") != -1)
-                weeklyThursdayCurrent = true;
-            if (weeklySched.indexOf("friday") != -1 || weeklySched.indexOf("any") != -1)
-                weeklyFridayCurrent = true;
-            if (weeklySched.indexOf("saturday") != -1 || weeklySched.indexOf("any") != -1)
-                weeklySaturdayCurrent = true;
-
-            // MONTHLY SCHEDULE
-            var monthlySched = this.getSettings().generateMonthlyReports;
-            var monthlySundayCurrent = false;
-            var monthlyMondayCurrent = false;
-            var monthlyTuesdayCurrent = false;
-            var monthlyWednesdayCurrent = false;
-            var monthlyThursdayCurrent = false;
-            var monthlyFridayCurrent = false;
-            var monthlySaturdayCurrent = false;
-            if (monthlySched.indexOf("sunday") != -1 || monthlySched.indexOf("any") != -1)
-                monthlySundayCurrent = true;
-            if (monthlySched.indexOf("monday") != -1 || monthlySched.indexOf("any") != -1)
-                monthlyMondayCurrent = true;
-            if (monthlySched.indexOf("tuesday") != -1 || monthlySched.indexOf("any") != -1)
-                monthlyTuesdayCurrent = true;
-            if (monthlySched.indexOf("wednesday") != -1 || monthlySched.indexOf("any") != -1)
-                monthlyWednesdayCurrent = true;
-            if (monthlySched.indexOf("thursday") != -1 || monthlySched.indexOf("any") != -1)
-                monthlyThursdayCurrent = true;
-            if (monthlySched.indexOf("friday") != -1 || monthlySched.indexOf("any") != -1)
-                monthlyFridayCurrent = true;
-            if (monthlySched.indexOf("saturday") != -1 || monthlySched.indexOf("any") != -1)
-                monthlySaturdayCurrent = true;
-            
             var generationTime=new Date();
             generationTime.setTime(0);
             generationTime.setHours(this.getSettings().generationHour);
@@ -286,61 +214,16 @@ if (!Ung.hasResource["Ung.Reporting"]) {
                         cls: 'description',
                         html : this.i18n._('Daily Reports covers the previous day. Daily reports will be generated on the selected days.')
                     },  {
-                        xtype : 'checkbox',
-                        name : 'Sunday',
-                        id : 'reporting_dailySunday',
-                        boxLabel : this.i18n._('Sunday'),
-                        hasLabel : false,
-                        labelSeparator : '',
-                        checked : dailySundayCurrent
-                    },  {
-                        xtype : 'checkbox',
-                        name : 'Monday',
-                        id : 'reporting_dailyMonday',
-                        boxLabel : this.i18n._('Monday'),
-                        hasLabel : false,
-                        labelSeparator : '',
-                        checked : dailyMondayCurrent
-                    },  {
-                        xtype : 'checkbox',
-                        name : 'Tuesday',
-                        id : 'reporting_dailyTuesday',
-                        boxLabel : this.i18n._('Tuesday'),
-                        hasLabel : false,
-                        labelSeparator : '',
-                        checked : dailyTuesdayCurrent
-                    },  {
-                        xtype : 'checkbox',
-                        name : 'Wednesday',
-                        id : 'reporting_dailyWednesday',
-                        boxLabel : this.i18n._('Wednesday'),
-                        hasLabel : false,
-                        labelSeparator : '',
-                        checked : dailyWednesdayCurrent
-                    },  {
-                        xtype : 'checkbox',
-                        name : 'Thursday',
-                        id : 'reporting_dailyThursday',
-                        boxLabel : this.i18n._('Thursday'),
-                        hasLabel : false,
-                        labelSeparator : '',
-                        checked : dailyThursdayCurrent
-                    },  {
-                        xtype : 'checkbox',
-                        name : 'Friday',
-                        id : 'reporting_dailyFriday',
-                        boxLabel : this.i18n._('Friday'),
-                        hasLabel : false,
-                        labelSeparator : '',
-                        checked : dailyFridayCurrent
-                    },  {
-                        xtype : 'checkbox',
-                        name : 'Saturday',
-                        id : 'reporting_dailySaturday',
-                        boxLabel : this.i18n._('Saturday'),
-                        hasLabel : false,
-                        labelSeparator : '',
-                        checked : dailySaturdayCurrent
+                        xtype : 'udayfield',
+                        name : 'Daily Days',
+                        value: this.getSettings().generateDailyReports,
+                        listeners : {
+                            "change" : {
+                                fn : Ext.bind(function(elem, newValue) {
+                                    this.getSettings().generateDailyReports = elem.getValue();
+                                },this)
+                            }
+                        }
                     }]
                 },{
                     title : this.i18n._("Weekly Reports"),
@@ -349,61 +232,16 @@ if (!Ung.hasResource["Ung.Reporting"]) {
                         cls: 'description',
                         html : this.i18n._('Weekly Reports covers the previous week. Weekly reports will be generated on the selected days.')
                     },  {
-                        xtype : 'checkbox',
-                        name : 'Sunday',
-                        id : 'reporting_weeklySunday',
-                        boxLabel : this.i18n._('Sunday'),
-                        hasLabel : false,
-                        labelSeparator : '',
-                        checked : weeklySundayCurrent
-                    },  {
-                        xtype : 'checkbox',
-                        name : 'Monday',
-                        id : 'reporting_weeklyMonday',
-                        boxLabel : this.i18n._('Monday'),
-                        hasLabel : false,
-                        labelSeparator : '',
-                        checked : weeklyMondayCurrent
-                    },  {
-                        xtype : 'checkbox',
-                        name : 'Tuesday',
-                        id : 'reporting_weeklyTuesday',
-                        boxLabel : this.i18n._('Tuesday'),
-                        hasLabel : false,
-                        labelSeparator : '',
-                        checked : weeklyTuesdayCurrent
-                    },  {
-                        xtype : 'checkbox',
-                        name : 'Wednesday',
-                        id : 'reporting_weeklyWednesday',
-                        boxLabel : this.i18n._('Wednesday'),
-                        hasLabel : false,
-                        labelSeparator : '',
-                        checked : weeklyWednesdayCurrent
-                    },  {
-                        xtype : 'checkbox',
-                        name : 'Thursday',
-                        id : 'reporting_weeklyThursday',
-                        boxLabel : this.i18n._('Thursday'),
-                        hasLabel : false,
-                        labelSeparator : '',
-                        checked : weeklyThursdayCurrent
-                    },  {
-                        xtype : 'checkbox',
-                        name : 'Friday',
-                        id : 'reporting_weeklyFriday',
-                        boxLabel : this.i18n._('Friday'),
-                        hasLabel : false,
-                        labelSeparator : '',
-                        checked : weeklyFridayCurrent
-                    },  {
-                        xtype : 'checkbox',
-                        name : 'Saturday',
-                        id : 'reporting_weeklySaturday',
-                        boxLabel : this.i18n._('Saturday'),
-                        hasLabel : false,
-                        labelSeparator : '',
-                        checked : weeklySaturdayCurrent
+                        xtype : 'udayfield',
+                        name : 'Weekly Days',
+                        value: this.getSettings().generateWeeklyReports,
+                        listeners : {
+                            "change" : {
+                                fn : Ext.bind(function(elem, newValue) {
+                                    this.getSettings().generateWeeklyReports = elem.getValue();
+                                },this)
+                            }
+                        }
                     }]
                 },{
                     title : this.i18n._("Monthly Reports"),
@@ -412,61 +250,16 @@ if (!Ung.hasResource["Ung.Reporting"]) {
                         cls: 'description',
                         html : this.i18n._('Monthly Reports covers the previous month. Monthly reports will be generated on the selected days.')
                     },  {
-                        xtype : 'checkbox',
-                        name : 'Sunday',
-                        id : 'reporting_monthlySunday',
-                        boxLabel : this.i18n._('Sunday'),
-                        hasLabel : false,
-                        labelSeparator : '',
-                        checked : monthlySundayCurrent
-                    },  {
-                        xtype : 'checkbox',
-                        name : 'Monday',
-                        id : 'reporting_monthlyMonday',
-                        boxLabel : this.i18n._('Monday'),
-                        hasLabel : false,
-                        labelSeparator : '',
-                        checked : monthlyMondayCurrent
-                    },  {
-                        xtype : 'checkbox',
-                        name : 'Tuesday',
-                        id : 'reporting_monthlyTuesday',
-                        boxLabel : this.i18n._('Tuesday'),
-                        hasLabel : false,
-                        labelSeparator : '',
-                        checked : monthlyTuesdayCurrent
-                    },  {
-                        xtype : 'checkbox',
-                        name : 'Wednesday',
-                        id : 'reporting_monthlyWednesday',
-                        boxLabel : this.i18n._('Wednesday'),
-                        hasLabel : false,
-                        labelSeparator : '',
-                        checked : monthlyWednesdayCurrent
-                    },  {
-                        xtype : 'checkbox',
-                        name : 'Thursday',
-                        id : 'reporting_monthlyThursday',
-                        boxLabel : this.i18n._('Thursday'),
-                        hasLabel : false,
-                        labelSeparator : '',
-                        checked : monthlyThursdayCurrent
-                    },  {
-                        xtype : 'checkbox',
-                        name : 'Friday',
-                        id : 'reporting_monthlyFriday',
-                        boxLabel : this.i18n._('Friday'),
-                        hasLabel : false,
-                        labelSeparator : '',
-                        checked : monthlyFridayCurrent
-                    },  {
-                        xtype : 'checkbox',
-                        name : 'Saturday',
-                        id : 'reporting_monthlySaturday',
-                        boxLabel : this.i18n._('Saturday'),
-                        hasLabel : false,
-                        labelSeparator : '',
-                        checked : monthlySaturdayCurrent
+                        xtype : 'udayfield',
+                        name : 'Monthly Days',
+                        value: this.getSettings().generateMonthlyReports,
+                        listeners : {
+                            "change" : {
+                                fn : Ext.bind(function(elem, newValue) {
+                                    this.getSettings().generateMonthlyReports = elem.getValue();
+                                },this)
+                            }
+                        }
                     }]
                 }]
             });
@@ -991,36 +784,6 @@ if (!Ung.hasResource["Ung.Reporting"]) {
             if (this.validate()) {
                 Ext.MessageBox.wait(i18n._("Saving..."), i18n._("Please wait"));
 
-                var dailySched = [];
-                if (Ext.getCmp('reporting_dailySunday').getValue())    dailySched.push("sunday");
-                if (Ext.getCmp('reporting_dailyMonday').getValue())    dailySched.push("monday");
-                if (Ext.getCmp('reporting_dailyTuesday').getValue())   dailySched.push("tuesday");
-                if (Ext.getCmp('reporting_dailyWednesday').getValue()) dailySched.push("wednesday");
-                if (Ext.getCmp('reporting_dailyThursday').getValue())  dailySched.push("thursday");
-                if (Ext.getCmp('reporting_dailyFriday').getValue())    dailySched.push("friday");
-                if (Ext.getCmp('reporting_dailySaturday').getValue())  dailySched.push("saturday");
-                this.getSettings().generateDailyReports = this.scheduleListToString(dailySched);
-
-                var weeklySched = [];
-                if (Ext.getCmp('reporting_weeklySunday').getValue())    weeklySched.push("sunday");
-                if (Ext.getCmp('reporting_weeklyMonday').getValue())    weeklySched.push("monday");
-                if (Ext.getCmp('reporting_weeklyTuesday').getValue())   weeklySched.push("tuesday");
-                if (Ext.getCmp('reporting_weeklyWednesday').getValue()) weeklySched.push("wednesday");
-                if (Ext.getCmp('reporting_weeklyThursday').getValue())  weeklySched.push("thursday");
-                if (Ext.getCmp('reporting_weeklyFriday').getValue())    weeklySched.push("friday");
-                if (Ext.getCmp('reporting_weeklySaturday').getValue())  weeklySched.push("saturday");
-                this.getSettings().generateWeeklyReports = this.scheduleListToString(weeklySched);
-
-                var monthlySched = [];
-                if (Ext.getCmp('reporting_monthlySunday').getValue())    monthlySched.push("sunday");
-                if (Ext.getCmp('reporting_monthlyMonday').getValue())    monthlySched.push("monday");
-                if (Ext.getCmp('reporting_monthlyTuesday').getValue())   monthlySched.push("tuesday");
-                if (Ext.getCmp('reporting_monthlyWednesday').getValue()) monthlySched.push("wednesday");
-                if (Ext.getCmp('reporting_monthlyThursday').getValue())  monthlySched.push("thursday");
-                if (Ext.getCmp('reporting_monthlyFriday').getValue())    monthlySched.push("friday");
-                if (Ext.getCmp('reporting_monthlySaturday').getValue())  monthlySched.push("saturday");
-                this.getSettings().generateMonthlyReports = this.scheduleListToString(monthlySched);
-                
                 this.getSettings().reportingUsers.list = this.gridReportingUsers.getFullSaveList();
                 this.getSettings().hostnameMap.list = this.gridHostnameMap.getFullSaveList();
 

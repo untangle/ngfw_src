@@ -292,10 +292,11 @@ Ext.define("Ung.form.DayOfWeekMatcherField", {
              initValue = this.value.split(",");
         }
         this.value = null;
+        for (var i = 0 ; i < this.items.length ; i++)
+            this.items[i].checked = false;
         for (var i = 0 ; i < this.items.length ; i++) {
             var item = this.items[i];
             if ( this.arrayContains(initValue, item.dayId) || this.arrayContains(initValue, item.name) || this.arrayContains(initValue, "any")) {
-                item.value = true;
                 item.checked = true;
             }
         }
