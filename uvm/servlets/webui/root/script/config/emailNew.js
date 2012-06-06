@@ -145,9 +145,6 @@ if (!Ung.hasResource["Ung.Email"]) {
             var mm = minutes < 10 ? "0" + minutes : minutes;
             return hh + ":" + mm;
         },
-        loadQuarantinesDetails: function() {
-            this.userQuarantinesDetailsGrid.reloadGrid();
-        },
         sendTestMessage: function(emailAddress){
             var message = main.getMailSender().sendTestMessage( Ext.bind(function(result, exception) {
                 if(Ung.Util.handleException(exception)) return;
@@ -519,7 +516,10 @@ if (!Ung.hasResource["Ung.Email"]) {
                 height: 250,
                 autoScroll: true,
                 dataFn: this.getSafelistAdminView().getUserSafelistCounts,
-                //data: [{id: 34, emailAddress: "aaa@bbb.com", count: 353}],//TODO: remove this after testing
+                /*data: [//TODO: remove this after testing
+                    {id: 5, emailAddress: "aaa@aaa.com", count: 353},
+                    {id: 6, emailAddress: "bbb@bbb.com", count: 890}
+                ],*/
                 tbar: [{
                     xtype: 'button',
                     text: this.i18n._('Purge Selected'),
@@ -528,22 +528,21 @@ if (!Ung.hasResource["Ung.Email"]) {
                     name: 'Purge Selected',
                     parentId: this.getId(),
                     handler: Ext.bind(function() {
-                        var selectedRecords = this.gridSafelistUser.getSelectionModel().getSelections();
+                        var selectedRecords = this.gridSafelistUser.getSelectionModel().selected;
                         if(selectedRecords === undefined || selectedRecords.length == 0) {
                             return;
                         }
                         var accounts = [];
-                        for(var i=0; i<selectedRecords.length; i++) {
-                            accounts[i] = selectedRecords[i].data.emailAddress;
-                        }
+                        selectedRecords.each(function(item, index, length) {
+                            accounts.push(item.data.emailAddress);
+                        });
                         
                         Ext.MessageBox.wait(this.i18n._("Purging..."), this.i18n._("Please wait"));
                         this.getSafelistAdminView().deleteSafelists(Ext.bind(function(result, exception) {
                             Ext.MessageBox.hide();
                             if(Ung.Util.handleException(exception)) return;
+                            this.gridSafelistUser.reloadGrid();
                         }, this), accounts);
-                        
-                        this.gridSafelistUser.store.load();
                     }, this)
                 }],
                 fields: [{
@@ -561,33 +560,36 @@ if (!Ung.hasResource["Ung.Email"]) {
                     }, {
                         header: this.i18n._("safe list size"),
                         width: 150,
+                        align: 'right',
                         dataIndex: 'count'
                     }, showDetailColumn],
                 plugins: [showDetailColumn],
                 sortField: 'emailAddress',
                 columnsDefaultSortable: true,
+                
                 onShowDetail: Ext.bind(function(record) {
-                    this.buildGridSafelistUserDetails();
-                    this.safelistDetailsWin = Ext.create('Ung.EmailAddressDetails', {
-                        detailsPanel: this.gridSafelistUserDetails,
-                        settingsCmp: this,
-                        showForCurrentAccount: function(emailAddress) {
-                            this.account = emailAddress;  
-                            var newTitle = this.settingsCmp.i18n._('Email From-SafeList Details for: ') + emailAddress;
-                            this.setTitle(newTitle);
-                            //this.detailsPanel.setTitle(newTitle);
-                            
-                            this.show();
-                            
-                            Ext.MessageBox.wait(i18n._("Loading..."), i18n._("Please wait"));
-                            this.settingsCmp.getSafelistAdminView().getSafelistContents(
-                                Ext.bind(function(result, exception) {
-                                    Ext.MessageBox.hide();
-                                    if(Ung.Util.handleException(exception)) return;
-                                    this.settingsCmp.gridSafelistUserDetails.reloadGrid({data: result});
-                                }, this), emailAddress); 
-                        }          
-                    });
+                    if(!this.safelistDetailsWin) {
+                        this.buildGridSafelistUserDetails();
+                        this.safelistDetailsWin = Ext.create('Ung.EmailAddressDetails', {
+                            detailsPanel: this.gridSafelistUserDetails,
+                            settingsCmp: this,
+                            showForCurrentAccount: function(emailAddress) {
+                                this.account = emailAddress;  
+                                var newTitle = this.settingsCmp.i18n._('Email From-SafeList Details for: ') + emailAddress;
+                                this.setTitle(newTitle);
+                                
+                                this.show();
+                                Ext.MessageBox.wait(i18n._("Loading..."), i18n._("Please wait"));
+                                this.settingsCmp.getSafelistAdminView().getSafelistContents(
+                                    Ext.bind(function(result, exception) {
+                                        Ext.MessageBox.hide();
+                                        if(Ung.Util.handleException(exception)) return;
+                                        this.settingsCmp.gridSafelistUserDetails.reloadGrid({data: result});
+                                    }, this), emailAddress); 
+                            }          
+                        });
+                        this.subCmps.push(this.safelistDetailsWin);
+                    }
 
                     this.safelistDetailsWin.showForCurrentAccount(record.get('emailAddress'));
                 }, this)
@@ -620,30 +622,31 @@ if (!Ung.hasResource["Ung.Email"]) {
                     name: 'Purge Selected',
                     parentId: this.getId(),
                     handler: Ext.bind(function() {
-                        var selectedRecords = this.gridSafelistUserDetails.getSelectionModel().getSelections();
+                        var selectedRecords = this.gridSafelistUserDetails.getSelectionModel().selected;
                         if(selectedRecords === undefined || selectedRecords.length == 0) {
                             return;
                         }
                         var senders = [];
-                        for(var i=0; i<selectedRecords.length; i++) {
-                            senders[i] = selectedRecords[i].data.sender;
-                        }
+                        selectedRecords.each(function(item, index, length) {
+                            senders.push(item.data.sender);
+                        });
                         
                         Ext.MessageBox.wait(this.i18n._("Purging..."), this.i18n._("Please wait"));
                         this.getSafelistAdminView().removeFromSafelists(Ext.bind(function(result, exception) {
                             if(Ung.Util.handleException(exception)) return;
-                            this.gridSafelistUserDetails.store.loadData(result);
+                            this.gridSafelistUserDetails.reloadGrid({data: result});
                             Ext.MessageBox.hide();
                         }, this), this.safelistDetailsWin.account, senders);
                         
-                        this.gridSafelistUser.store.load();
+                        this.gridSafelistUser.reloadGrid();
                     }, this)
                 }],
                 data: [],
                 fields: ['sender'],
                 columns: [{
                     header: this.i18n._("email address"),
-                    width: 200,
+                    flex: 1,
+                    width: 400,
                     dataIndex: 'sender'
                 }],
                 sortField: 'sender',
@@ -760,7 +763,7 @@ if (!Ung.hasResource["Ung.Email"]) {
                         cls: 'description',
                         border: false,
                         html: Ext.String.format(this.i18n._('Users can also request Quarantine Digest Emails manually at this link: <b>https://{0}/quarantine/</b>'),
-                         rpc.networkManager.getPublicAddress())
+                         /*rpc.networkManager.getPublicAddress()*/"TODO:replace with valid PublicAddress string after networkManager refactoring!")
                     }]
                 }, {
                     title: this.i18n._('User Quarantines'),
@@ -778,7 +781,10 @@ if (!Ung.hasResource["Ung.Email"]) {
                         height: 250,
                         autoScroll: true,
                         dataFn: this.getQuarantineMaintenenceView().listInboxes,
-                        //data: [{id: 34, address: "hhh@ddd.com", numMails: 115, totalSz:150124}],//TODO: remove this after testing
+                        /*data: [//TODO: remove this after testing
+                            {id: 34, address: "aaa@ddd.com", numMails: 115, totalSz: 150124},
+                            {id: 35, address: "bbb@ddd.com", numMails: 76, totalSz: 560777}
+                        ],*/
                         tbar: [{
                             text: this.i18n._('Purge Selected'),
                             tooltip: this.i18n._('Purge Selected'),
@@ -786,23 +792,21 @@ if (!Ung.hasResource["Ung.Email"]) {
                             name: 'Purge Selected',
                             parentId: this.getId(),
                             handler: Ext.bind(function() {
-                                var selectedRecords = this.userQuarantinesGrid.getSelectionModel().getSelections();
+                                var selectedRecords = this.userQuarantinesGrid.getSelectionModel().selected;
                                 if(selectedRecords === undefined || selectedRecords.length == 0) {
                                     return;
                                 }
                                 var accounts = [];
-                                for(var i=0; i<selectedRecords.length; i++) {
-                                    accounts[i] = selectedRecords[i].data.address;
-                                }
+                                selectedRecords.each(function(item, index, length) {
+                                    accounts.push(item.data.address);
+                                });
                                 
                                 Ext.MessageBox.wait(this.i18n._("Purging..."), this.i18n._("Please wait"));
                                 this.getQuarantineMaintenenceView().deleteInboxes(Ext.bind(function(result, exception) {
-                                    if(Ung.Util.handleException(exception)) return;
                                     Ext.MessageBox.hide();
+                                    if(Ung.Util.handleException(exception)) return;
+                                    this.userQuarantinesGrid.reloadGrid();
                                 }, this), accounts);
-                                
-                                this.userQuarantinesGrid.store.load();
-                                
                             }, this)
                         }, {
                             text: this.i18n._('Release Selected'),
@@ -811,23 +815,21 @@ if (!Ung.hasResource["Ung.Email"]) {
                             name: 'Release Selected',
                             parentId: this.getId(),
                             handler: Ext.bind(function() {
-                                var selectedRecords = this.userQuarantinesGrid.getSelectionModel().getSelections();
+                                var selectedRecords = this.userQuarantinesGrid.getSelectionModel().selected;
                                 if(selectedRecords === undefined || selectedRecords.length == 0) {
                                     return;
                                 }
                                 var accounts = [];
-                                for(var i=0; i<selectedRecords.length; i++) {
-                                    accounts[i] = selectedRecords[i].data.address;
-                                }
+                                selectedRecords.each(function(item, index, length) {
+                                    accounts.push(item.data.address);
+                                });
                                 
                                 Ext.MessageBox.wait(this.i18n._("Releasing..."), this.i18n._("Please wait"));
                                 this.getQuarantineMaintenenceView().rescueInboxes(Ext.bind(function(result, exception) {
-                                    if(Ung.Util.handleException(exception)) return;
                                     Ext.MessageBox.hide();
+                                    if(Ung.Util.handleException(exception)) return;
+                                    this.userQuarantinesGrid.reloadGrid();
                                 }, this), accounts);
-                                
-                                this.userQuarantinesGrid.store.load();
-                                
                             }, this)
                         }, {
                             xtype: 'tbfill'
@@ -852,10 +854,12 @@ if (!Ung.hasResource["Ung.Email"]) {
                         }, {
                             header: this.i18n._("message count"),
                             width: 185,
+                            align: 'right',
                             dataIndex: 'numMails'
                         }, {
                             header: this.i18n._("data size (kB)"),
                             width: 185,
+                            align: 'right',
                             dataIndex: 'totalSz',
                             renderer: function(value) {
                                 return i18n.numberFormat((value /1024.0).toFixed(3));
@@ -866,23 +870,22 @@ if (!Ung.hasResource["Ung.Email"]) {
                         columnsDefaultSortable: true,
                         
                         onShowDetail: Ext.bind(function(record) {
-                            this.buildUserQuarantinesGrid();
-                            this.quarantinesDetailsWin = Ext.create('Ung.EmailAddressDetails', {
-                                detailsPanel: this.userQuarantinesDetailsGrid,
-                                settingsCmp: this,
-                                showForCurrentAccount: function(emailAddress) {
-                                    this.account = emailAddress;  
-                                    var newTitle = this.settingsCmp.i18n._('Email Quarantine Details for: ') + emailAddress;
-                                    this.setTitle(newTitle);
-                                    //this.detailsPanel.setTitle(newTitle);
-                                    
-                                    this.show();
-                                    
-                                    //load Quarantines Details
-                                    this.settingsCmp.loadQuarantinesDetails();
-                                    
-                                }          
-                            });
+                            if(!this.quarantinesDetailsWin) {
+                                this.buildUserQuarantinesGrid();
+                                this.quarantinesDetailsWin = Ext.create('Ung.EmailAddressDetails', {
+                                    detailsPanel: this.userQuarantinesDetailsGrid,
+                                    settingsCmp: this,
+                                    showForCurrentAccount: function(emailAddress) {
+                                        this.account = emailAddress;  
+                                        var newTitle = this.settingsCmp.i18n._('Email Quarantine Details for: ') + emailAddress;
+                                        this.setTitle(newTitle);
+                                        this.show();
+                                        //load Quarantines Details
+                                        this.settingsCmp.userQuarantinesDetailsGrid.reloadGrid();
+                                    }          
+                                });
+                                this.subCmps.push(this.quarantinesDetailsWin);
+                            }
                             this.quarantinesDetailsWin.showForCurrentAccount(record.get('address'));
                         }, this)
                     })
@@ -893,12 +896,14 @@ if (!Ung.hasResource["Ung.Email"]) {
                         cls: 'description',
                         border: false,
                         html: this.i18n._('Email addresses on this list will have quarantines automatically created. All other emails will be marked and not quarantined.')
-                    },  this.quarantinableAddressesGrid = Ext.create('Ung.EditorGrid',{
+                    },
+                    this.quarantinableAddressesGrid = Ext.create('Ung.EditorGrid',{
                         anchor: "100%",
                         name: 'Quarantinable Addresses',
                         settingsCmp: this,
                         height: 250,
                         autoScroll: true,
+                        autoGenerateId: true,
                         paginated: false,
                         emptyRow: {
                             "address": "email@example.com",
@@ -912,58 +917,25 @@ if (!Ung.hasResource["Ung.Email"]) {
                         }, this),
                         fields: [{
                             name: 'id'
-                        }, {
+                        },{
                             name: 'address'
-                        }, {
-                            name: 'category'
-                        }, {
-                            name: 'description',
-                            convert: Ext.bind(function(value, rec) {
-                                return rec.address == "*" ? this.i18n._("All addresses have quarantines") : value;
-                            }, this)
                         }],
-                        columns: [
-                        {
+                        columns: [{
                             header: this.i18n._("quarantinable address"),
-                            width: 200,
+                            flex: 1,
+                            width: 400,
                             dataIndex: 'address',
                             editor: {
                                 xtype: 'textfield'
                             }
-                        }, 
-                        {
-                            header: this.i18n._("description"),
-                            flex: 1,
-                            width: 200,
-                            dataIndex: 'description',
-                            editor: {
-                                xtype: 'textfield'
-                            }
                         }],
-                        rowEditorInputLines: [
-                        {
-                            xtype: 'textfield',
-                            name: "Category",
-                            dataIndex: "category",
-                            fieldLabel: this.i18n._("Category"),
-                            allowBlank: false,
-                            width: 300
-                        },
-                        {
+                        rowEditorInputLines: [{
                             xtype: 'textfield',
                             name: "Address",
                             dataIndex: "address",
                             fieldLabel: this.i18n._("Address"),
                             allowBlank: false,
-                            width: 300
-                        },
-                        {
-                            xtype: 'textfield',
-                            name: "Description",
-                            dataIndex: "description",
-                            fieldLabel: this.i18n._("Description"),
-                            allowBlank: false,
-                            width: 400
+                            width: 450
                         }]
                     })]
                 }, {
@@ -1018,34 +990,35 @@ if (!Ung.hasResource["Ung.Email"]) {
                                 xtype: 'textfield'
                             }
                         }],
+                        rowEditorLabelWidth: 160,
                         rowEditorInputLines: [
                         {
                             xtype: 'textfield',
                             name: "Distribution List Address",
                             dataIndex: "address1",
                             fieldLabel: this.i18n._("Distribution List Address"),
-                            width: 400
+                            width: 450
                         },
                         {
                             xtype: 'textfield',
                             name: "Send To Address",
                             dataIndex: "address2",
                             fieldLabel: this.i18n._("Send To Address"),
-                            width: 400
+                            width: 450
                         },
                         {
                             xtype: 'textfield',
                             name: "Category",
                             dataIndex: "category",
                             fieldLabel: this.i18n._("Category"),
-                            width: 400
+                            width: 450
                         }, 
                         {
                             xtype: 'textfield',
                             name: "Description",
                             dataIndex: "description",
                             fieldLabel: this.i18n._("Description"),
-                            width: 400
+                            width: 450
                         }]
                     })]
                 }]
@@ -1069,24 +1042,24 @@ if (!Ung.hasResource["Ung.Email"]) {
                     name: 'Purge Selected',
                     parentId: this.getId(),
                     handler: Ext.bind(function() {
-                        var selectedRecords = this.userQuarantinesDetailsGrid.getSelectionModel().getSelections();
+                        var selectedRecords = this.userQuarantinesDetailsGrid.getSelectionModel().selected;
                         if(selectedRecords === undefined || selectedRecords.length == 0) {
                             return;
                         }
                         var emails = [];
-                        for(var i=0; i<selectedRecords.length; i++) {
-                            emails[i] = selectedRecords[i].data.mailID;
-                        }
+                        selectedRecords.each(function(item, index, length) {
+                            emails.push(item.data.mailID);
+                        });
                         
                         Ext.MessageBox.wait(this.i18n._("Purging..."), this.i18n._("Please wait"));
                         this.getQuarantineMaintenenceView().purge(Ext.bind(function(result, exception) {
                             Ext.MessageBox.hide();
                             if(Ung.Util.handleException(exception)) return;
                             //load Quarantines Details
-                            this.loadQuarantinesDetails();
+                            this.userQuarantinesDetailsGrid.reloadGrid();
+                            this.userQuarantinesGrid.reloadGrid();
                         }, this), this.quarantinesDetailsWin.account, emails);
                         
-                        this.userQuarantinesGrid.store.load();
                     }, this)
                 }, {
                     text: this.i18n._('Release Selected'),
@@ -1095,29 +1068,32 @@ if (!Ung.hasResource["Ung.Email"]) {
                     name: 'Release Selected',
                     parentId: this.getId(),
                     handler: Ext.bind(function() {
-                        var selectedRecords = this.userQuarantinesDetailsGrid.getSelectionModel().getSelections();
+                        var selectedRecords = this.userQuarantinesDetailsGrid.getSelectionModel().selected;
                         if(selectedRecords === undefined || selectedRecords.length == 0) {
                             return;
                         }
                         var emails = [];
-                        for(var i=0; i<selectedRecords.length; i++) {
-                            emails[i] = selectedRecords[i].data.mailID;
-                        }
+                        selectedRecords.each(function(item, index, length) {
+                            emails.push(item.data.mailID);
+                        });
                         
                         Ext.MessageBox.wait(this.i18n._("Releasing..."), this.i18n._("Please wait"));
                         this.getQuarantineMaintenenceView().rescue(Ext.bind(function(result, exception) {
                             Ext.MessageBox.hide();
                             if(Ung.Util.handleException(exception)) return;
                             //load Quarantines Details
-                            this.loadQuarantinesDetails();
+                            this.userQuarantinesDetailsGrid.reloadGrid();
+                            this.userQuarantinesGrid.reloadGrid();
                         }, this), this.quarantinesDetailsWin.account, emails);
                         
-                        this.userQuarantinesGrid.store.load();
                     }, this)
                 }],
                 dataRoot: '',
                 dataFn: Ext.bind(function() {
-                    //return [{mailID:"aaa", mailSummary: {subject:"bbb", sender: "hhh@fff.com", category: "cat", size: 10354}}];//just for test
+                    /*return [//just for test
+                        {mailID:"aaa", mailSummary: {subject:"a aaa"+Math.random(), sender: "aaa@fff.com", category: "cat a", size: 10354}},
+                        {mailID:"bbb", mailSummary: {subject:"b bbb"+Math.random(), sender: "bbb@fff.com", category: "cat b", size: 40300}}
+                    ];*/
                     if(this.userQuarantinesDetailsGrid != null) {
                         return this.getQuarantineMaintenenceView().getInboxRecords(this.quarantinesDetailsWin.account, 0, Ung.Util.maxRowCount, []);
                     } else {
@@ -1328,6 +1304,7 @@ if (!Ung.hasResource["Ung.Email"]) {
             if( this.isMailLoaded() ) {
                 var quarantineSettings = this.getMailNodeSettings().quarantineSettings;
                 // save mail node settings 
+                quarantineSettings.allowedAddressPatterns.javaClass="java.util.ArrayList";
                 quarantineSettings.allowedAddressPatterns.list = this.quarantinableAddressesGrid.getFullSaveList();
                 quarantineSettings.addressRemaps.list = this.quarantineForwardsGrid.getFullSaveList();
                 
@@ -1388,6 +1365,9 @@ if (!Ung.hasResource["Ung.Email"]) {
             },'-'];
             this.items=this.detailsPanel;
             this.callParent(arguments);
+        },
+        closeWindow: function() {
+            this.hide();
         },
         // to override
         showForCurrentAccount: function(emailAddress) {
