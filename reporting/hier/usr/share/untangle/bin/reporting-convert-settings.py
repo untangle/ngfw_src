@@ -112,7 +112,7 @@ def get_settings(tid, debug=False):
     if (debug):
         print "Getting settings for TID: ",tid
 
-    settings_list = sql_helper.run_sql("select email_detail, attachment_size_limit, network_directory, schedule, nightly_hour, nightly_minute, db_retention, file_retention, reporting_users from n_reporting_settings where tid = '%s'" % tid, debug=debug)
+    settings_list = sql_helper.run_sql("select email_detail, attachment_size_limit, network_directory, schedule, nightly_hour, nightly_minute, db_retention, file_retention, reporting_users, daily, monthly_n_daily, monthly_n_day_of_wk, monthly_n_first from n_reporting_settings join n_reporting_sched on (n_reporting_settings.schedule = n_reporting_sched.id) where tid = '%s'" % tid, debug=debug)
 
     if settings_list == None:
         print "WARNING: missing results for TID %s" % tid
@@ -130,6 +130,26 @@ def get_settings(tid, debug=False):
     file_retention = settings_list[0][7]
     reporting_users = settings_list[0][8]
 
+    daily = settings_list[0][9]
+    monthly_n_daily = settings_list[0][10]
+    monthly_n_day_of_wk = settings_list[0][11]
+    monthly_n_first = settings_list[0][12]
+
+    if daily:
+        dailySched = "any"
+    else:
+        dailySched = "none"
+
+    # reading the weekly schedule from the DB is just a disaster
+    # just revert to sunday-only
+    weeklySched = "1"
+
+    monthlySched = "1"
+    if monthly_n_day_of_wk != -1:
+        monthlySched = str(monthly_n_day_of_wk)
+    if monthly_n_daily:
+        monthlySched = "any"
+
     str = '{\n'
     str += '\t"javaClass": "com.untangle.node.reporting.ReportingSettings",\n'
     str += '\t"emailDetail": "%s",\n' % email_detail
@@ -139,6 +159,9 @@ def get_settings(tid, debug=False):
     str += '\t"hostnameMap": %s,\n' % get_hostname_map(network_directory, debug)
     str += '\t"reportingUsers": %s,\n' % get_users(reporting_users, debug)
     str += get_syslog_setting()
+    str += '\t"generateDailyReports": "%s",\n' % dailySched
+    str += '\t"generateWeeklyReports": "%s",\n' % weeklySched
+    str += '\t"generateMonthlyReports": "%s",\n' % monthlySched
     str += '\t"dbRetention": "%s",\n' % db_retention
     str += '\t"fileRetention": "%s"\n' % file_retention
     str += '}\n'
