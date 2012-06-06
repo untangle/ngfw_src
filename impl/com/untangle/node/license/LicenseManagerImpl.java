@@ -105,11 +105,6 @@ public class LicenseManagerImpl extends NodeBase implements LicenseManager
     {
         logger.debug("postStart()");
 
-        /* save the current license state on every start */
-        /* We do this just in case local changes have been made to the file */
-        /* Some applications read settings from the file directly */
-        this._saveSettings(this.settings);
-        
         /* Reload the licenses */
         try {
             UvmContextFactory.context().licenseManager().reloadLicenses();
@@ -282,7 +277,7 @@ public class LicenseManagerImpl extends NodeBase implements LicenseManager
             changed |= _revokeLicense(revoke);
         }
 
-        if (changed)
+        if ( changed )
             _saveSettings(settings);
 
         logger.info("REFRESH: Checking Revocations... done (modified: " + changed + ")");
@@ -356,7 +351,7 @@ public class LicenseManagerImpl extends NodeBase implements LicenseManager
             changed |= _insertOrUpdate(lic);
         }
 
-        if (changed)
+        if ( changed ) 
             _saveSettings(settings);
 
         logger.info("REFRESH: Downloading new Licenses... done (changed: " + changed + ")");
