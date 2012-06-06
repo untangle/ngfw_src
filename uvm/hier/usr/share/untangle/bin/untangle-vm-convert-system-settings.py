@@ -3,6 +3,7 @@ import conversion.sql_helper as sql_helper
 import simplejson
 import sys
 import os
+import string
 
 #------------------------------------------------------------------------------
 
@@ -41,6 +42,12 @@ def get_settings(debug=False):
     if len(address_settings) > 1:
         print "WARNING: too many u_address_settings results (%i)" % (len(address_settings))
 
+    upgrade_settings = sql_helper.run_sql("select auto_upgrade, hour, minute, sunday, monday, tuesday, wednesday, thursday, friday, saturday from u_upgrade_settings join u_period on (u_upgrade_settings.period = u_period.period_id)", debug=debug)
+    if upgrade_settings == None:
+        print "WARNING: missing u_upgrade_settings result"
+    if len(upgrade_settings) > 1:
+        print "WARNING: too many u_upgrade_settings results (%i)" % (len(upgrade_settings))
+
     inside_http_enabled = access_settings[0][0]
     outside_https_admin_enabled = access_settings[0][1]
     outside_https_quarantine_enabled = access_settings[0][2]
@@ -53,6 +60,35 @@ def get_settings(debug=False):
     has_public_address = address_settings[0][2]
     public_ip_addr = address_settings[0][3]
     public_port = address_settings[0][4]
+
+    auto_upgrade = upgrade_settings[0][0]
+    auto_upgrade_hour = upgrade_settings[0][1]
+    auto_upgrade_minute = upgrade_settings[0][2]
+
+    auto_upgrade_sunday = upgrade_settings[0][2]
+    auto_upgrade_monday = upgrade_settings[0][3]
+    auto_upgrade_tuesday = upgrade_settings[0][4]
+    auto_upgrade_wednesday = upgrade_settings[0][5]
+    auto_upgrade_thursday = upgrade_settings[0][6]
+    auto_upgrade_friday = upgrade_settings[0][7]
+    auto_upgrade_saturday = upgrade_settings[0][8]
+
+    days = []
+    if auto_upgrade_sunday:
+        days.append("1")
+    if auto_upgrade_monday:
+        days.append("2")
+    if auto_upgrade_tuesday:
+        days.append("3")
+    if auto_upgrade_wednesday:
+        days.append("4")
+    if auto_upgrade_thursday:
+        days.append("5")
+    if auto_upgrade_friday:
+        days.append("6")
+    if auto_upgrade_saturday:
+        days.append("7")
+    auto_upgrade_days = string.join(days,",")
 
     public_url_method = "external"
     if is_hostname_public:
@@ -73,7 +109,12 @@ def get_settings(debug=False):
     str += pad(4) + '"httpsPort": "%s",\n' % https_port
     str += pad(4) + '"publicUrlMethod": "%s",\n' % public_url_method
     str += pad(4) + '"publicUrlAddress": "%s",\n' % public_ip_addr
-    str += pad(4) + '"publicUrlPort": "%s"\n' % public_port
+    str += pad(4) + '"publicUrlPort": "%s",\n' % public_port
+
+    str += pad(4) + '"autoUpgrade": "%s",\n' % auto_upgrade
+    str += pad(4) + '"autoUpgradeDays": "%s",\n' % auto_upgrade_days
+    str += pad(4) + '"autoUpgradeHour": "%s",\n' % auto_upgrade_hour
+    str += pad(4) + '"autoUpgradeMinute": "%s"\n' % auto_upgrade_minute
 
     str += '}\n'
 

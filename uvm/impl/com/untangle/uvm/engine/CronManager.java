@@ -1,21 +1,6 @@
-/*
- * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc.
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License, version 2,
- * as published by the Free Software Foundation.
- *
- * This program is distributed in the hope that it will be useful, but
- * AS-IS and WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE, TITLE, or
- * NONINFRINGEMENT.  See the GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
+/**
+ * $Id$
  */
-
 package com.untangle.uvm.engine;
 
 import java.util.Calendar;
@@ -23,13 +8,10 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 import com.untangle.uvm.CronJob;
-import com.untangle.uvm.Period;
+import com.untangle.uvm.node.DayOfWeekMatcher;
 
 /**
- * Schedules and runs tasks at a given <code>Period</code>.
- *
- * @author <a href="mailto:amread@untangle.com">Aaron Read</a>
- * @version 1.0
+ * Schedules and runs tasks at a given time
  */
 class CronManager
 {
@@ -37,9 +19,9 @@ class CronManager
 
     // CronManager methods ----------------------------------------------------
 
-    CronJob makeCronJob(Period p, final Runnable r)
+    CronJob makeCronJob( DayOfWeekMatcher days, int hour, int minute, final Runnable r )
     {
-        final CronJobImpl cronJob = new CronJobImpl(this, r, p);
+        final CronJobImpl cronJob = new CronJobImpl(this, r, days, hour, minute);
         return schedule(cronJob);
     }
 
@@ -85,11 +67,38 @@ class CronManager
 
         cronJob.setTask(task);
 
-        Calendar next = cronJob.getPeriod().nextTime();
+        Calendar next = nextTime(cronJob.getDays(), cronJob.getHour(), cronJob.getMinute());
         if (null != next) {
             timer.schedule(task, next.getTime());
         }
 
         return cronJob;
     }
+
+    private Calendar nextTime(DayOfWeekMatcher days, int hour, int minute)
+    {
+        Calendar c = Calendar.getInstance();
+
+        if (c.get(Calendar.HOUR_OF_DAY) > hour) {
+            c.add(Calendar.DAY_OF_WEEK, 1);
+        }
+
+        if (c.get(Calendar.HOUR_OF_DAY) == hour && c.get(Calendar.MINUTE) >= minute) {
+            c.add(Calendar.DAY_OF_WEEK, 1);
+        }
+
+        c.set(Calendar.HOUR_OF_DAY, hour);
+        c.set(Calendar.MINUTE, minute);
+
+        for (int i = 0; i < 7; i++) {
+            if (days.isMatch(c.get(Calendar.DAY_OF_WEEK))) {
+                return c;
+            } else {
+                c.add(Calendar.DAY_OF_WEEK, 1);
+            }
+        }
+
+        return null;
+    }
+
 }

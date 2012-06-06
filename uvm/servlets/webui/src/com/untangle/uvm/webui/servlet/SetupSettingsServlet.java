@@ -22,7 +22,6 @@ import com.untangle.uvm.networking.NetworkConfiguration;
 import com.untangle.uvm.networking.InterfaceConfiguration;
 import com.untangle.uvm.networking.NetworkUtil;
 import com.untangle.uvm.servlet.ServletUtils;
-import com.untangle.uvm.toolbox.UpgradeSettings;
 
 /**
  * A servlet which will display the start page
@@ -46,13 +45,10 @@ public class SetupSettingsServlet extends HttpServlet
 
         NetworkConfiguration networkConfiguration = nm.getNetworkConfiguration();
         InterfaceConfiguration wanConfig = networkConfiguration.findFirstWAN();
-        // pick a random time.
-        UpgradeSettings upgradeSettings = context.toolboxManager().getUpgradeSettings();
 
         try {
             request.setAttribute( "interfaceArray", js.toJSON( networkConfiguration.getInterfaceList()));
             request.setAttribute( "wanConfiguration", js.toJSON( wanConfig ));
-            request.setAttribute( "upgradeSettings", js.toJSON( upgradeSettings ));
         } catch ( MarshallException e ) {
             throw new ServletException( "Unable to serializer JSON", e );
         }

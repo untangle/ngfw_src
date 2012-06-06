@@ -9,6 +9,8 @@ import java.util.LinkedList;
 import org.json.JSONObject;
 import org.json.JSONString;
 
+import com.untangle.uvm.node.DayOfWeekMatcher;
+
 /**
  * System settings.
  */
@@ -30,6 +32,11 @@ public class SystemSettings implements Serializable, JSONString
     private String publicUrlMethod;
     private String publicUrlAddress;
     private int publicUrlPort;
+
+    private boolean autoUpgrade;
+    private DayOfWeekMatcher autoUpgradeDays;
+    private int autoUpgradeHour   = 2;
+    private int autoUpgradeMinute = 0;
 
     private SnmpSettings snmpSettings;
     
@@ -107,5 +114,30 @@ public class SystemSettings implements Serializable, JSONString
      */
     public SnmpSettings getSnmpSettings() { return this.snmpSettings; }
     public void setSnmpSettings( SnmpSettings newValue ) { this.snmpSettings = newValue; }
+    
+    /**
+     * Specifies if apt-get upgrade should be run automatically after
+     * an update.
+     */
+    public boolean getAutoUpgrade() { return autoUpgrade; }
+    public void setAutoUpgrade( boolean newValue ) { this.autoUpgrade = newValue; }
+
+    /**
+     * What days to auto-upgrade
+     */
+    public DayOfWeekMatcher getAutoUpgradeDays() { return autoUpgradeDays; }
+    public void setAutoUpgradeDays( DayOfWeekMatcher newValue) { this.autoUpgradeDays = newValue; }
+
+    /**
+     * What time to auto-upgrade
+     */
+    public int getAutoUpgradeHour() { return autoUpgradeHour; }
+    public void setAutoUpgradeHour( int newValue) { this.autoUpgradeHour = newValue; }
+
+    /**
+     * What time to auto-upgrade
+     */
+    public int getAutoUpgradeMinute() { return autoUpgradeMinute; }
+    public void setAutoUpgradeMinute( int newValue) { this.autoUpgradeMinute = newValue; }
     
 }

@@ -9,12 +9,14 @@ import java.io.FileOutputStream;
 import org.apache.log4j.Logger;
 
 import com.untangle.uvm.UvmContextFactory;
+import com.untangle.uvm.CronJob;
 import com.untangle.uvm.SettingsManager;
 import com.untangle.uvm.SystemManager;
 import com.untangle.uvm.SystemSettings;
 import com.untangle.uvm.SnmpSettings;
 import com.untangle.uvm.UvmState;
 import com.untangle.uvm.node.IPAddress;
+import com.untangle.uvm.node.DayOfWeekMatcher;
 import com.untangle.node.util.IOUtil;
 
 /**
@@ -36,6 +38,8 @@ public class SystemManagerImpl implements SystemManager
 
     private SystemSettings settings;
 
+    private final UpdateTask updateTask = new UpdateTask();
+    private CronJob autoUpgradeCronJob;
     
     protected SystemManagerImpl()
     {
@@ -94,6 +98,12 @@ public class SystemManagerImpl implements SystemManager
         if (settingsFile.lastModified() > snmpConfFile.lastModified() ||
             settingsFile.lastModified() > snmpDefaultFile.lastModified())
             syncSnmpSettings(this.settings.getSnmpSettings());
+
+
+        this.autoUpgradeCronJob = UvmContextFactory.context().makeCronJob(this.settings.getAutoUpgradeDays(),
+                                                                          this.settings.getAutoUpgradeHour(),
+                                                                          this.settings.getAutoUpgradeMinute(),
+                                                                          updateTask);
         
         logger.info("Initialized SystemManager");
     }
@@ -199,44 +209,57 @@ public class SystemManagerImpl implements SystemManager
     
         UvmContextImpl.context().networkManager().refreshNetworkConfig();
 
+        if (this.autoUpgradeCronJob != null)
+            this.autoUpgradeCronJob.reschedule(this.settings.getAutoUpgradeDays(),
+                                               this.settings.getAutoUpgradeHour(),
+                                               this.settings.getAutoUpgradeMinute());
+
     }
 
     private SystemSettings defaultSettings()
     {
-            SystemSettings newSettings = new SystemSettings();
-            newSettings.setInsideHttpEnabled( true );
-            newSettings.setOutsideHttpsEnabled( true );
-            if (UvmContextFactory.context().isDevel())
-                newSettings.setOutsideHttpsAdministrationEnabled( true );
-            else
-                newSettings.setOutsideHttpsAdministrationEnabled( false );
-            newSettings.setOutsideHttpsQuarantineEnabled( true );
-            newSettings.setOutsideHttpsReportingEnabled( false );
-            newSettings.setOutsideHttpsEnabled( true );
-            newSettings.setHttpsPort( 443 );
+        SystemSettings newSettings = new SystemSettings();
+        newSettings.setInsideHttpEnabled( true );
+        newSettings.setOutsideHttpsEnabled( true );
+        if (UvmContextFactory.context().isDevel())
+            newSettings.setOutsideHttpsAdministrationEnabled( true );
+        else
+            newSettings.setOutsideHttpsAdministrationEnabled( false );
+        newSettings.setOutsideHttpsQuarantineEnabled( true );
+        newSettings.setOutsideHttpsReportingEnabled( false );
+        newSettings.setOutsideHttpsEnabled( true );
+        newSettings.setHttpsPort( 443 );
 
-            newSettings.setPublicUrlMethod( SystemSettings.PUBLIC_URL_EXTERNAL_IP );
-            newSettings.setPublicUrlAddress( "hostname.example.com" );
-            newSettings.setPublicUrlPort( 443 );
+        newSettings.setPublicUrlMethod( SystemSettings.PUBLIC_URL_EXTERNAL_IP );
+        newSettings.setPublicUrlAddress( "hostname.example.com" );
+        newSettings.setPublicUrlPort( 443 );
 
-            SnmpSettings snmpSettings = new SnmpSettings();
-            snmpSettings.setEnabled(false);
-            snmpSettings.setPort(SnmpSettings.STANDARD_MSG_PORT);
-            snmpSettings.setCommunityString("CHANGE_ME");
-            snmpSettings.setSysContact("MY_CONTACT_INFO");
-            snmpSettings.setSysLocation("MY_LOCATION");
-            snmpSettings.setSendTraps(false);
-            snmpSettings.setTrapHost("MY_TRAP_HOST");
-            snmpSettings.setTrapCommunity("MY_TRAP_COMMUNITY");
-            snmpSettings.setTrapPort(SnmpSettings.STANDARD_TRAP_PORT);
+        SnmpSettings snmpSettings = new SnmpSettings();
+        snmpSettings.setEnabled(false);
+        snmpSettings.setPort(SnmpSettings.STANDARD_MSG_PORT);
+        snmpSettings.setCommunityString("CHANGE_ME");
+        snmpSettings.setSysContact("MY_CONTACT_INFO");
+        snmpSettings.setSysLocation("MY_LOCATION");
+        snmpSettings.setSendTraps(false);
+        snmpSettings.setTrapHost("MY_TRAP_HOST");
+        snmpSettings.setTrapCommunity("MY_TRAP_COMMUNITY");
+        snmpSettings.setTrapPort(SnmpSettings.STANDARD_TRAP_PORT);
 
-            newSettings.setSnmpSettings(snmpSettings);
+        newSettings.setSnmpSettings(snmpSettings);
 
-            return newSettings;
+        newSettings.setAutoUpgrade(true);
+        newSettings.setAutoUpgradeHour(23);
+        newSettings.setAutoUpgradeMinute((new java.util.Random()).nextInt(60));
+        newSettings.setAutoUpgradeDays(DayOfWeekMatcher.getAnyMatcher());
+            
+        return newSettings;
     }
 
     private void syncSnmpSettings(SnmpSettings snmpSettings)
     {
+        if (snmpSettings == null)
+            return;
+        
         writeDefaultSnmpCtlFile(snmpSettings);
         writeSnmpdConfFile(snmpSettings);
         restartDaemon();
@@ -244,7 +267,6 @@ public class SystemManagerImpl implements SystemManager
 
     private void writeDefaultSnmpCtlFile(SnmpSettings settings)
     {
-
         StringBuilder snmpdCtl = new StringBuilder();
         snmpdCtl.append("# Generated by Untangle").append(EOL);
         snmpdCtl.append("export MIBDIRS=/usr/share/snmp/mibs").append(EOL);
@@ -367,5 +389,27 @@ public class SystemManagerImpl implements SystemManager
     private String qqOrNullToDefault(String str, String def)
     {
         return isNotNullOrBlank(str)? str:def;
+    }
+
+    private class UpdateTask implements Runnable
+    {
+        public void run()
+        {
+            logger.debug("doing automatic update");
+            try {
+                UvmContextImpl.context().toolboxManager().update();
+            } catch (Exception exn) {
+                logger.warn("could not update", exn);
+            }
+
+            if (getSettings().getAutoUpgrade()) {
+                logger.debug("doing automatic upgrade");
+                try {
+                    UvmContextImpl.context().toolboxManager().upgrade();
+                } catch (Exception exn) {
+                    logger.warn("could not upgrade", exn);
+                }
+            }
+        }
     }
 }

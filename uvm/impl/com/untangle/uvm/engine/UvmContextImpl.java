@@ -32,7 +32,6 @@ import com.untangle.uvm.SettingsManager;
 import com.untangle.uvm.UvmContext;
 import com.untangle.uvm.LocalTomcatManager;
 import com.untangle.uvm.LocalDirectory;
-import com.untangle.uvm.Period;
 import com.untangle.uvm.BrandingManager;
 import com.untangle.uvm.OemManager;
 import com.untangle.uvm.AlertManager;
@@ -46,6 +45,7 @@ import com.untangle.uvm.argon.Argon;
 import com.untangle.uvm.argon.ArgonManagerImpl;
 import com.untangle.uvm.node.LicenseManager;
 import com.untangle.uvm.node.Reporting;
+import com.untangle.uvm.node.DayOfWeekMatcher;
 import com.untangle.uvm.logging.LogEvent;
 import com.untangle.uvm.message.MessageManager;
 import com.untangle.uvm.message.MessageManager;
@@ -435,9 +435,9 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
         System.gc();
     }
 
-    public CronJob makeCronJob(Period p, Runnable r)
+    public CronJob makeCronJob(DayOfWeekMatcher days, int hour, int minute, Runnable r)
     {
-        return cronManager.makeCronJob(p, r);
+        return cronManager.makeCronJob(days, hour, minute, r);
     }
 
     public void loadLibrary(String libname)
@@ -523,7 +523,6 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
         this.mailSender = MailSenderImpl.mailSender();
 
         this.toolboxManager = ToolboxManagerImpl.toolboxManager();
-        this.toolboxManager.start();
 
         this.pipelineFoundry = PipelineFoundryImpl.foundry();
 
@@ -628,22 +627,11 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
         // XXX destroy methods for:
         // - pipelineFoundry
         // - networkingManager
-        // - reportingManager
-        // - connectivityTester (Doesn't really need one)
         // - argonManager
-
-        // stop services:
-        try {
-            if (toolboxManager != null)
-                toolboxManager.destroy();
-        } catch (Exception exn) {
-            logger.warn("could not destroy ToolboxManager", exn);
-        }
         toolboxManager = null;
 
         // XXX destroy methods for:
         // - mailSender
-        // - adminManager
 
         try {
             tomcatManager.stopTomcat();

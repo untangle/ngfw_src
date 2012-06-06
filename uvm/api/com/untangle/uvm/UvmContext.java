@@ -10,6 +10,8 @@ import java.sql.Connection;
 
 
 import com.untangle.uvm.UvmContext;
+import com.untangle.uvm.AdminManager;
+import com.untangle.uvm.LocalTomcatManager;
 import com.untangle.uvm.logging.LoggingManager;
 import com.untangle.uvm.logging.LogEvent;
 import com.untangle.uvm.message.MessageManager;
@@ -17,12 +19,11 @@ import com.untangle.uvm.message.MessageManager;
 import com.untangle.uvm.node.NodeManager;
 import com.untangle.uvm.node.LicenseManager;
 import com.untangle.uvm.node.PolicyManager;
+import com.untangle.uvm.node.DayOfWeekMatcher;
 import com.untangle.uvm.reports.ReportingManager;
-import com.untangle.uvm.AdminManager;
 import com.untangle.uvm.servlet.UploadManager;
 import com.untangle.uvm.toolbox.ToolboxManager;
 import com.untangle.uvm.vnet.PipelineFoundry;
-import com.untangle.uvm.LocalTomcatManager;
 
 /**
  * The top-level untangle-vm API
@@ -335,7 +336,7 @@ public interface UvmContext
     /**
      * Cronjab utilities
      */
-    CronJob makeCronJob(Period p, Runnable r);
+    CronJob makeCronJob(DayOfWeekMatcher days, int hour, int minute, Runnable r);
 
     /**
      * The pipeline compiler.

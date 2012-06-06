@@ -82,6 +82,32 @@ public class DayOfWeekMatcher
         return isMatch(new Date());
     }
     
+    public boolean isMatch( int day )
+    {
+       switch (this.type) {
+
+        case ANY:
+            return true;
+
+        case NONE:
+            return false;
+
+        case SINGLE:
+            return includesDay( day );
+
+        case LIST:
+            for (DayOfWeekMatcher child : this.children) {
+                if (child.isMatch( day ))
+                    return true;
+            }
+            return false;
+
+        default:
+            logger.warn("Unknown port matcher type: " + this.type);
+            return false;
+        }
+    }
+
     public boolean isMatch( Date when )
     {
        switch (this.type) {
@@ -96,24 +122,7 @@ public class DayOfWeekMatcher
             Calendar cal = Calendar.getInstance();
             cal.setTime(when);
             int calDay = cal.get(Calendar.DAY_OF_WEEK);
-            switch (calDay) {
-            case Calendar.MONDAY:
-                return (this.single.equals(MARKER_MONDAY) || this.single.equals(MARKER_MONDAY2));
-            case Calendar.TUESDAY:
-                return (this.single.equals(MARKER_TUESDAY) || this.single.equals(MARKER_TUESDAY2));
-            case Calendar.WEDNESDAY:
-                return (this.single.equals(MARKER_WEDNESDAY) || this.single.equals(MARKER_WEDNESDAY2));
-            case Calendar.THURSDAY:
-                return (this.single.equals(MARKER_THURSDAY) || this.single.equals(MARKER_THURSDAY2));
-            case Calendar.FRIDAY:
-                return (this.single.equals(MARKER_FRIDAY) || this.single.equals(MARKER_FRIDAY2));
-            case Calendar.SATURDAY:
-                return (this.single.equals(MARKER_SATURDAY) || this.single.equals(MARKER_SATURDAY2));
-            case Calendar.SUNDAY:
-                return (this.single.equals(MARKER_SUNDAY) || this.single.equals(MARKER_SUNDAY2));
-            default:
-                return false;
-            }
+            return includesDay( calDay );
 
         case LIST:
             for (DayOfWeekMatcher child : this.children) {
@@ -195,6 +204,28 @@ public class DayOfWeekMatcher
             this.type = DayOfWeekMatcherType.SINGLE;
             this.single = matcher;
             return;
+        }
+    }
+
+    private boolean includesDay( int day )
+    {
+        switch (day) {
+        case 1:
+            return (this.single.equals(MARKER_SUNDAY) || this.single.equals(MARKER_SUNDAY2));
+        case 2:
+            return (this.single.equals(MARKER_MONDAY) || this.single.equals(MARKER_MONDAY2));
+        case 3:
+            return (this.single.equals(MARKER_TUESDAY) || this.single.equals(MARKER_TUESDAY2));
+        case 4:
+            return (this.single.equals(MARKER_WEDNESDAY) || this.single.equals(MARKER_WEDNESDAY2));
+        case 5:
+            return (this.single.equals(MARKER_THURSDAY) || this.single.equals(MARKER_THURSDAY2));
+        case 6:
+            return (this.single.equals(MARKER_FRIDAY) || this.single.equals(MARKER_FRIDAY2));
+        case 7:
+            return (this.single.equals(MARKER_SATURDAY) || this.single.equals(MARKER_SATURDAY2));
+        default:
+            return false;
         }
     }
 }

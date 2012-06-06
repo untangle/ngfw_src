@@ -163,16 +163,4 @@ public interface ToolboxManager
      * @throws DeployException if deployment fails.
      */
     void unregister(String packageName) throws PackageInstallException;
-
-    /**
-     * save Upgrade Settings
-     */
-    void setUpgradeSettings(UpgradeSettings u);
-
-    /**
-     * get Upgrade Settings
-     *
-     * @return 
-     */
-    UpgradeSettings getUpgradeSettings();
 }

@@ -1430,13 +1430,13 @@ Ext.define('Ung.SetupWizard.AutoUpgrades', {
     {
         var delegate = Ext.bind(this.complete, this, [ handler ], true );
         var value = this.panel.query('radio[name="autoUpgradesRadio"]')[0].getGroupValue();
-        var upgradeSettings = rpc.toolboxManager.getUpgradeSettings();
+        var systemSettings = rpc.systemManager.getSettings();
         if ( value == "yes" ) {
-            upgradeSettings.autoUpgrade = true;
-            rpc.toolboxManager.setUpgradeSettings( delegate, upgradeSettings );
+            systemSettings.autoUpgrade = true;
+            rpc.systemManager.setSettings( delegate, systemSettings );
         } else {
-            upgradeSettings.autoUpgrade = false;
-            rpc.toolboxManager.setUpgradeSettings( delegate, upgradeSettings );
+            systemSettings.autoUpgrade = false;
+            rpc.systemManager.setSettings( delegate, systemSettings );
         }
     },
     complete : function( result, exception, foo, handler )

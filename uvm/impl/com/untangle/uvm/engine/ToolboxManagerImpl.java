@@ -29,9 +29,7 @@ import java.util.concurrent.TimeoutException;
 
 import org.apache.log4j.Logger;
 
-import com.untangle.uvm.CronJob;
 import com.untangle.uvm.UvmContextFactory;
-import com.untangle.uvm.Period;
 import com.untangle.uvm.ExecManagerResult;
 import com.untangle.uvm.ExecManager;
 import com.untangle.uvm.message.MessageManager;
@@ -55,7 +53,6 @@ import com.untangle.uvm.toolbox.PackageUninstallException;
 import com.untangle.uvm.toolbox.PackageUninstallRequest;
 import com.untangle.uvm.toolbox.RackView;
 import com.untangle.uvm.toolbox.ToolboxManager;
-import com.untangle.uvm.toolbox.UpgradeSettings;
 import com.untangle.uvm.toolbox.UpgradeStatus;
 
 /**
@@ -84,8 +81,6 @@ class ToolboxManagerImpl implements ToolboxManager
         }
     }
 
-    private CronJob cronJob;
-    private final UpdateTask updateTask = new UpdateTask();
     private final Map<Long, AptLogTail> tails = new HashMap<Long, AptLogTail>();
 
     private volatile Map<String, PackageDesc> packageMap;
@@ -120,22 +115,6 @@ class ToolboxManagerImpl implements ToolboxManager
             }
         }
         return TOOLBOX_MANAGER;
-    }
-
-    void start()
-    {
-        UpgradeSettings us = getUpgradeSettings();
-        Period p = us.getPeriod();
-
-        cronJob = UvmContextFactory.context().makeCronJob(p, updateTask);
-    }
-
-    void destroy()
-    {
-        logger.info("ToolboxManager destroyed");
-        if (cronJob != null) {
-            cronJob.cancel();
-        }
     }
 
     // ToolboxManager implementation ------------------------------------
@@ -639,60 +618,6 @@ class ToolboxManagerImpl implements ToolboxManager
         }
     }
 
-    public void setUpgradeSettings(final UpgradeSettings us)
-    {
-//         TransactionWork<Object> tw = new TransactionWork<Object>()
-//             {
-//                 public boolean doWork(NodeSession s)
-//                 {
-//                     s.merge(us);
-//                     return true;
-//                 }
-
-//                 public Object getResult() { return null; }
-//             };
-//         UvmContextFactory.context().runTransaction(tw);
-
-        cronJob.reschedule(us.getPeriod());
-    }
-
-    public UpgradeSettings getUpgradeSettings()
-    {
-        Random rand = new Random();
-        Period period = new Period(23, rand.nextInt(60), true);
-        UpgradeSettings us = new UpgradeSettings(period);
-        us.setAutoUpgrade(true);
-        return us;
-
-        //         TransactionWork<UpgradeSettings> tw
-//             = new TransactionWork<UpgradeSettings>()
-//             {
-//                 private UpgradeSettings us;
-
-//                 public boolean doWork(org.hibernate.Session s)
-//                 {
-//                     Query q = s.createQuery("from UpgradeSettings us");
-//                     us = (UpgradeSettings)q.uniqueResult();
-
-//                     if (null == us) {
-//                         logger.info("creating new UpgradeSettings");
-//                         // pick a random time.
-//                         Random rand = new Random();
-//                         Period period = new Period(23, rand.nextInt(60), true);
-//                         us = new UpgradeSettings(period);
-//                         us.setAutoUpgrade(true);
-//                         s.save(us);
-//                     }
-//                     return true;
-//                 }
-
-//                 public UpgradeSettings getResult() { return us; }
-//             };
-//         UvmContextFactory.context().runTransaction(tw);
-
-//         return tw.getResult();
-    }
-
     protected List<PackageDesc> getInstalledAndAutoStart()
     {
         List<PackageDesc> mds = new ArrayList<PackageDesc>();
@@ -707,28 +632,6 @@ class ToolboxManagerImpl implements ToolboxManager
     }
 
     // private classes --------------------------------------------------------
-
-    private class UpdateTask implements Runnable
-    {
-        public void run()
-        {
-            logger.debug("doing automatic update");
-            try {
-                update();
-            } catch (PackageException exn) {
-                logger.warn("could not update", exn);
-            }
-
-            if (getUpgradeSettings().getAutoUpgrade()) {
-                logger.debug("doing automatic upgrade");
-                try {
-                    upgrade();
-                } catch (PackageException exn) {
-                    logger.warn("could not upgrade", exn);
-                }
-            }
-        }
-    }
 
     // package list functions -------------------------------------------------
 

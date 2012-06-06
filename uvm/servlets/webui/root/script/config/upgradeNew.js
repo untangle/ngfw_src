@@ -30,16 +30,16 @@ if (!Ung.hasResource["Ung.Upgrade"]) {
         {
             this.loadGridUpgrade();
         },
-        getUpgradeSettings : function(forceReload) {
-            if (forceReload || this.rpc.upgradeSettings === undefined) {
+        getSystemSettings : function(forceReload) {
+            if (forceReload || this.rpc.systemSettings === undefined) {
                 try {
-                    this.rpc.upgradeSettings = rpc.toolboxManager.getUpgradeSettings();
+                    this.rpc.systemSettings = rpc.systemManager.getSettings();
                 } catch (e) {
                     Ung.Util.rpcExHandler(e);
                 }
                 
             }
-            return this.rpc.upgradeSettings;
+            return this.rpc.systemSettings;
         },
         loadGridUpgrade : function() {
             Ext.MessageBox.wait(i18n._("Checking for available upgrades..."), i18n._("Please wait"));
@@ -219,8 +219,8 @@ if (!Ung.hasResource["Ung.Upgrade"]) {
            
             var upgradeTime=new Date();
             upgradeTime.setTime(0);
-            upgradeTime.setHours(this.getUpgradeSettings().period.hour);
-            upgradeTime.setMinutes(this.getUpgradeSettings().period.minute);
+            upgradeTime.setHours(this.getSystemSettings().autoUpgradeHour);
+            upgradeTime.setMinutes(this.getSystemSettings().autoUpgradeMinute);
             this.panelSettings = Ext.create('Ext.panel.Panel',{
                 // private fields
                 name : 'Upgrade Settings',
@@ -240,151 +240,66 @@ if (!Ung.hasResource["Ung.Upgrade"]) {
                         boxLabel : this.i18n._('Automatically Install Upgrades'),
                         hideLabel : true,
                         name : 'Automatically Install Upgrades',
-                        checked : this.getUpgradeSettings().autoUpgrade,
+                        checked : this.getSystemSettings().autoUpgrade,
                         listeners : {
                             "change" : {
                                 fn : Ext.bind(function(elem, checked) {
-                                    this.getUpgradeSettings().autoUpgrade = checked;
+                                    this.getSystemSettings().autoUpgrade = checked;
                                 },this)
                             }
                         }
                     }, {
                         cls: 'description',
                         border : false,
-                        html : this.i18n
-                                ._("If new upgrades are available at the specified upgrade time they will be automatically downloaded and installed. During the install the system may be rebooted resulting in momentary loss of connectivicty.")
+                        html : this.i18n._("If new upgrades are available at the specified upgrade time they will be automatically downloaded and installed. During the install the system may be rebooted resulting in momentary loss of connectivicty.")
                     }, {
                         xtype : 'radio',
                         boxLabel : this.i18n._('Do Not Automatically Install Upgrades'),
                         hideLabel : true,
                         name : 'Automatically Install Upgrades',
-                        checked : !this.getUpgradeSettings().autoUpgrade,
+                        checked : !this.getSystemSettings().autoUpgrade,
                         listeners : {
                             "change" : {
                                 fn : Ext.bind(function(elem, checked) {
-                                    this.getUpgradeSettings().autoUpgrade = !checked;
+                                    this.getSystemSettings().autoUpgrade = !checked;
                                 },this)
                             }
                         }
                     }, {
                         cls: 'description',
                         border : false,
-                        html : this.i18n
-                                ._("If new upgrades are available at the specified upgrade time they will be not be installed. All upgrades must be manually installed using the button on the Upgrade tab.")
+                        html : this.i18n._("If new upgrades are available at the specified upgrade time they will be not be installed. All upgrades must be manually installed using the button on the Upgrade tab.")
                     }, {
                         cls: 'description',
                         border : false,
-                        html : "<i>" + this.i18n._("Note: Turning off Automatic Upgrades does not disable signature & list updates")
-                                + "</i>"
+                        html : "<i>" + this.i18n._("Note: Turning off Automatic Upgrades does not disable signature & list updates") + "</i>"
                     }]
                 }, {
-                    title : this.i18n._('Upgrade Time'),
+                    title : this.i18n._('Automatic Upgrade Schedule'),
                     items : [{
-                        xtype : 'checkbox',
-                        name : 'Sunday',
-                        boxLabel : this.i18n._('Sunday'),
-                        hideLabel : true,
-                        checked : this.getUpgradeSettings().period.sunday,
+                        xtype : 'udayfield',
+                        name : 'Upgrade Days',
+                        value: this.getSystemSettings().autoUpgradeDays,
                         listeners : {
                             "change" : {
                                 fn : Ext.bind(function(elem, newValue) {
-                                    this.getUpgradeSettings().period.sunday = newValue;
-                                },this)
-                            }
-                        }
-                    }, {
-                        xtype : 'checkbox',
-                        name : 'Monday',
-                        boxLabel : this.i18n._('Monday'),
-                        hideLabel : true,
-                        checked : this.getUpgradeSettings().period.monday,
-                        listeners : {
-                            "change" : {
-                                fn : Ext.bind(function(elem, newValue) {
-                                    this.getUpgradeSettings().period.monday = newValue;
-                                },this)
-                            }
-                        }
-                    }, {
-                        xtype : 'checkbox',
-                        name : 'Tuesday',
-                        boxLabel : this.i18n._('Tuesday'),
-                        hideLabel : true,
-                        checked : this.getUpgradeSettings().period.tuesday,
-                        listeners : {
-                            "change" : {
-                                fn : Ext.bind(function(elem, newValue) {
-                                    this.getUpgradeSettings().period.tuesday = newValue;
-                                },this)
-                            }
-                        }
-                    }, {
-                        xtype : 'checkbox',
-                        name : 'Wednesday',
-                        boxLabel : this.i18n._('Wednesday'),
-                        hideLabel : true,
-                        checked : this.getUpgradeSettings().period.wednesday,
-                        listeners : {
-                            "change" : {
-                                fn : Ext.bind(function(elem, newValue) {
-                                    this.getUpgradeSettings().period.wednesday = newValue;
-                                },this)
-                            }
-                        }
-                    }, {
-                        xtype : 'checkbox',
-                        name : 'Thursday',
-                        boxLabel : this.i18n._('Thursday'),
-                        hideLabel : true,
-                        checked : this.getUpgradeSettings().period.thursday,
-                        listeners : {
-                            "change" : {
-                                fn : Ext.bind(function(elem, newValue) {
-                                    this.getUpgradeSettings().period.thursday = newValue;
-                                },this)
-                            }
-                        }
-                    }, {
-                        xtype : 'checkbox',
-                        name : 'Friday',
-                        boxLabel : this.i18n._('Friday'),
-                        hideLabel : true,
-                        checked : this.getUpgradeSettings().period.friday,
-                        listeners : {
-                            "change" : {
-                                fn : Ext.bind(function(elem, newValue) {
-                                    this.getUpgradeSettings().period.friday = newValue;
-                                },this)
-                            }
-                        }
-                    }, {
-                        xtype : 'checkbox',
-                        name : 'Saturday',
-                        boxLabel : this.i18n._('Saturday'),
-                        hideLabel : true,
-                        checked : this.getUpgradeSettings().period.saturday,
-                        listeners : {
-                            "change" : {
-                                fn : Ext.bind(function(elem, newValue) {
-                                    this.getUpgradeSettings().period.saturday = newValue;
+                                    this.getSystemSettings().autoUpgradeDays = elem.getValue();
                                 },this)
                             }
                         }
                     }, {
                         xtype : 'timefield',
-                        name : 'Update Time',
+                        name : 'Upgrade Time',
                         width : 90,
                         hideLabel : true,
-                        // format : "H:i",
                         value : upgradeTime,
-                        isDirty:function() { return this.originalValue.getHours() != this.getValue().getHours() || this.originalValue.getMinutes() != this.getValue().getMinutes();},
                         listeners : {
                             "change" : {
                                 fn : Ext.bind(function(elem, newValue) {
                                     if (newValue != "") {
                                         var v = elem.parseDate(newValue);
-                                        this.getUpgradeSettings().period.minute = Ext.Date.format( v,"i");
-                                        this.getUpgradeSettings().period.hour = Ext.Date.format( v,"H");
+                                        this.getSystemSettings().autoUpgradeMinute = Ext.Date.format( v,"i");
+                                        this.getSystemSettings().autoUpgradeHour = Ext.Date.format( v,"H");
                                     }
                                 },this)
                             }
@@ -393,47 +308,47 @@ if (!Ung.hasResource["Ung.Upgrade"]) {
                 }]
             });
         },
-        
-        applyAction : function()
-        {
-            this.commitSettings(Ext.bind(this.reloadSettings,this));
-        },
-        reloadSettings : function()
-        {
-            this.loadGridUpgrade();
-            this.clearDirty();
-        },
-        saveAction : function()
-        {
-            this.commitSettings(Ext.bind(this.completeSaveAction,this));
-        },
-        completeSaveAction : function()
-        {
-            Ext.MessageBox.hide();
-            this.closeWindow();
-        },
-        // save function
-        commitSettings : function(callback)
-        {
-            if (this.validate()) {
-                Ext.MessageBox.wait(i18n._("Saving..."), i18n._("Please wait"));
-                this.saveSemaphore = 1;
-                // save language settings
+         
+         applyAction : function()
+         {
+             this.commitSettings(Ext.bind(this.reloadSettings,this));
+         },
+         reloadSettings : function()
+         {
+             this.loadGridUpgrade();
+             this.clearDirty();
+         },
+         saveAction : function()
+         {
+             this.commitSettings(Ext.bind(this.completeSaveAction,this));
+         },
+         completeSaveAction : function()
+         {
+             Ext.MessageBox.hide();
+             this.closeWindow();
+         },
+         // save function
+         commitSettings : function(callback)
+         {
+             if (this.validate()) {
+                 Ext.MessageBox.wait(i18n._("Saving..."), i18n._("Please wait"));
+                 this.saveSemaphore = 1;
+                 // save language settings
 
-                rpc.toolboxManager.setUpgradeSettings(Ext.bind(function(result, exception) {
-                    this.afterSave(exception,callback);
-                },this), this.getUpgradeSettings());
-            }
-        },
-        afterSave : function(exception, callback)
-        {
-            if(Ung.Util.handleException(exception)) return;
+                 rpc.systemManager.setSettings(Ext.bind(function(result, exception) {
+                     this.afterSave(exception,callback);
+                 },this), this.getSystemSettings());
+             }
+         },
+         afterSave : function(exception, callback)
+         {
+             if(Ung.Util.handleException(exception)) return;
 
-            this.saveSemaphore--;
-            if (this.saveSemaphore == 0) {
-                callback();
-            }
-        }
-    });
+             this.saveSemaphore--;
+             if (this.saveSemaphore == 0) {
+                 callback();
+             }
+         }
+     });
 }
 //@ sourceURL=upgradeNew.js

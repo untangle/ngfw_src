@@ -193,6 +193,133 @@ Ext.define("Ung.form.TimeField", {
     }
 });
 
+Ext.define("Ung.form.DayOfWeekMatcherField", {
+    extend: "Ext.form.CheckboxGroup",
+    alias: "widget.udayfield",
+    columns: 7,
+    width: 700,
+    isDayEnabled : function (dayOfWeekMatcher, dayInt) {
+        if (dayOfWeekMatcher.indexOf("any") != -1)
+            return true;
+        if (dayOfWeekMatcher.indexOf(dayInt.toString()) != -1)
+            return true;
+        switch (dayInt) {
+          case 1:
+            if (dayOfWeekMatcher.indexOf("sunday") != -1)
+                return true;
+            break;
+          case 2:
+            if (dayOfWeekMatcher.indexOf("monday") != -1)
+                return true;
+            break;
+          case 3:
+            if (dayOfWeekMatcher.indexOf("tuesday") != -1)
+                return true;
+            break;
+          case 4:
+            if (dayOfWeekMatcher.indexOf("wednesday") != -1)
+                return true;
+            break;
+          case 5:
+            if (dayOfWeekMatcher.indexOf("thursday") != -1)
+                return true;
+            break;
+          case 6:
+            if (dayOfWeekMatcher.indexOf("friday") != -1)
+                return true;
+            break;
+          case 7:
+            if (dayOfWeekMatcher.indexOf("saturday") != -1)
+                return true;
+            break;
+        }
+        return false;
+    },
+    items: [{
+        xtype : 'checkbox',
+        name : 'sunday',
+        dayId : '1',
+        boxLabel : this.i18n._('Sunday'),
+        hideLabel : true
+    },{
+        xtype : 'checkbox',
+        name : 'monday',
+        dayId : '2',
+        boxLabel : this.i18n._('Monday'),
+        hideLabel : true
+    },{
+        xtype : 'checkbox',
+        name : 'tuesday',
+        dayId : '3',
+        boxLabel : this.i18n._('Tuesday'),
+        hideLabel : true
+    },{
+        xtype : 'checkbox',
+        name : 'wednesday',
+        dayId : '4',
+        boxLabel : this.i18n._('Wednesday'),
+        hideLabel : true
+    },{
+        xtype : 'checkbox',
+        name : 'thursday',
+        dayId : '5',
+        boxLabel : this.i18n._('Thursday'),
+        hideLabel : true
+    },{
+        xtype : 'checkbox',
+        name : 'friday',
+        dayId : '6',
+        checked : true,
+        boxLabel : this.i18n._('Friday'),
+        hideLabel : true
+    },{
+        xtype : 'checkbox',
+        name : 'saturday',
+        dayId : '7',
+        boxLabel : this.i18n._('Saturday'),
+        hideLabel : true
+    }],
+    arrayContains: function(array, value) {
+        for (var i = 0 ; i < array.length ; i++) {
+            if (array[i] === value) 
+                return true;
+        }
+        return false;
+    },
+    initComponent: function() {
+        var initValue = "none";
+        if ((typeof this.value) == "string") {
+             initValue = this.value.split(",");
+        }
+        this.value = null;
+        for (var i = 0 ; i < this.items.length ; i++) {
+            var item = this.items[i];
+            if ( this.arrayContains(initValue, item.dayId) || this.arrayContains(initValue, item.name) || this.arrayContains(initValue, "any")) {
+                item.value = true;
+                item.checked = true;
+            }
+        }
+
+        Ung.form.DayOfWeekMatcherField.superclass.initComponent.call(this);
+    },
+    getValue: function() {
+        var checkCount = 0;
+        for (var i = 0 ; i < this.items.length ; i++) 
+            if (this.items.items[i].checked)
+                checkCount++;
+        if (checkCount == 7)
+            return "any";
+        var arr = [];
+        for (var i = 0 ; i < this.items.length ; i++) 
+            if (this.items.items[i].checked)
+                arr.push(this.items.items[i].dayId);
+        if (arr.length == 0)
+            return "none";
+        else
+            return arr.join();
+    }
+});
+
 Ung.Util = {
     isDirty: function (item, depth) {
         if(depth==null) {

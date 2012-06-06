@@ -1,21 +1,6 @@
-/*
- * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc.
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License, version 2,
- * as published by the Free Software Foundation.
- *
- * This program is distributed in the hope that it will be useful, but
- * AS-IS and WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE, TITLE, or
- * NONINFRINGEMENT.  See the GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
+/**
+ * $Id$
  */
-
 package com.untangle.node.mail.impl.quarantine;
 
 import java.io.BufferedInputStream;
@@ -64,7 +49,7 @@ import com.untangle.node.util.IOUtil;
 import com.untangle.node.util.Pair;
 import com.untangle.uvm.CronJob;
 import com.untangle.uvm.UvmContextFactory;
-import com.untangle.uvm.Period;
+import com.untangle.uvm.node.DayOfWeekMatcher;
 import com.untangle.uvm.util.I18nUtil;
 
 /**
@@ -145,8 +130,7 @@ public class Quarantine
         if (null != m_cronJob) {
             int h = m_settings.getDigestHourOfDay();
             int m = m_settings.getDigestMinuteOfDay();
-            Period p = new Period(h, m, true);
-            m_cronJob.reschedule(p);
+            m_cronJob.reschedule(DayOfWeekMatcher.getAnyMatcher(), h, m);
         }
     }
 
@@ -159,13 +143,11 @@ public class Quarantine
             synchronized(this) {
                 if(!m_opened) {
                     m_opened = true;
-                    Period p;
-                    if (null == m_settings) {
-                        p = new Period(6, 0, true);
-                    } else {
-                        int h = m_settings.getDigestHourOfDay();
-                        int m = m_settings.getDigestMinuteOfDay();
-                        p = new Period(h, m, true);
+                    int hour = 6;
+                    int minute = 0;
+                    if (m_settings != null) {
+                        hour = m_settings.getDigestHourOfDay();
+                        minute = m_settings.getDigestMinuteOfDay();
                     }
 
                     Runnable r = new Runnable()
@@ -175,7 +157,7 @@ public class Quarantine
                                 cronCallback();
                             }
                         };
-                    m_cronJob = UvmContextFactory.context().makeCronJob(p, r);
+                    m_cronJob = UvmContextFactory.context().makeCronJob(DayOfWeekMatcher.getAnyMatcher(), hour, minute, r);
                 }
             }
         }
