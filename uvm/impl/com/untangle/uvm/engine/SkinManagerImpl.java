@@ -23,6 +23,7 @@ import org.apache.log4j.Logger;
 
 import com.thoughtworks.xstream.XStream;
 import com.untangle.uvm.UvmContextFactory;
+import com.untangle.uvm.SettingsManager;
 import com.untangle.uvm.SkinManager;
 import com.untangle.uvm.SkinInfo;
 import com.untangle.uvm.SkinSettings;
@@ -33,12 +34,11 @@ import com.untangle.uvm.util.JsonClient;
 
 /**
  * Implementation of SkinManager.
- *
- * @author <a href="mailto:cmatei@untangle.com">Catalin Matei</a>
- * @version 1.0
  */
 class SkinManagerImpl implements SkinManager
 {
+    private static final String SETTINGS_CONVERSION_SCRIPT = System.getProperty( "uvm.bin.dir" ) + "/untangle-vm-convert-skin-settings.py";
+
     private static final String SKINS_DIR = System.getProperty("uvm.skins.dir");;
     private static final String DEFAULT_SKIN = "default";
     private static final String DEFAULT_ADMIN_SKIN = DEFAULT_SKIN;
@@ -47,66 +47,87 @@ class SkinManagerImpl implements SkinManager
 
     private final Logger logger = Logger.getLogger(getClass());
 
-    private final UvmContextImpl uvmContext;
-    private SkinSettings skinSettings;
+    private SkinSettings settings;
 
-    public SkinManagerImpl(UvmContextImpl uvmContext)
+    public SkinManagerImpl()
     {
-    	this.uvmContext = uvmContext;    	
+        SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
+        SkinSettings readSettings = null;
+        String settingsFileName = System.getProperty("uvm.settings.dir") + "/untangle-vm/" + "skin";
     	
+        try {
+            readSettings = settingsManager.load( SkinSettings.class, settingsFileName );
+        } catch (SettingsManager.SettingsException e) {
+            logger.warn("Failed to load settings:",e);
+        }
 
-        if (skinSettings == null) {
-            skinSettings = new SkinSettings();
+        /**
+         * If there are no settings, run the conversion script to see if there are any in the database
+         * Then check again for the file
+         */
+        if (readSettings == null) {
+            logger.warn("No settings found - Running conversion script to check DB");
+            try {
+                String convertCmd = SETTINGS_CONVERSION_SCRIPT + " " + settingsFileName + ".js";
+                logger.warn("Running: " + convertCmd);
+                UvmContextFactory.context().execManager().exec( convertCmd );
+            } catch ( Exception e ) {
+                logger.warn( "Conversion script failed.", e );
+            } 
+
+            try {
+                readSettings = settingsManager.load( SkinSettings.class, settingsFileName );
+                if (readSettings != null) {
+                    logger.warn("Found settings imported from database");
+                }
+            } catch (SettingsManager.SettingsException e) {
+                logger.warn("Failed to load settings:",e);
+            }
+        }
+
+        /**
+         * If there are still no settings, just initialize
+         */
+        if (readSettings == null) {
+            logger.warn("No settings found - Initializing new settings.");
+
+            SkinSettings skinSettings = new SkinSettings();
             skinSettings.setSkinName(DEFAULT_ADMIN_SKIN);
+
+            this.setSettings(skinSettings);
+        }
+        else {
+            this.settings = readSettings;
+            logger.debug("Loading Settings: " + this.settings.toJSONString());
         }
 
-        String adminSkin = skinSettings.getSkinName();
-        File adminSkinXML = new File( SKINS_DIR + File.separator + adminSkin + File.separator + "skin.xml" );
-        SkinInfo adminSkinInfo = getSkinInfo( adminSkinXML );
-        if ( adminSkinInfo == null || adminSkinInfo.isAdminSkinOutOfDate() ) {
-            skinSettings.setSkinName( DEFAULT_ADMIN_SKIN );
+
+        /**
+         * If the skin is out of date, revert to default
+         */
+        String skin = this.settings.getSkinName();
+        File skinXML = new File( SKINS_DIR + File.separator + skin + File.separator + "skin.xml" );
+        SkinInfo skinInfo = getSkinInfo( skinXML );
+        if ( skinInfo == null || skinInfo.isAdminSkinOutOfDate() ) {
+            this.settings.setSkinName( DEFAULT_ADMIN_SKIN );
+            this.setSettings( this.settings );
         }
 
-        //         TransactionWork<Object> tw = new TransactionWork<Object>()
-        //             {
-        //                 public boolean doWork(NodeSession s)
-        //                 {
-        //                     Query q = s.createQuery("from SkinSettings");
-        //                     skinSettings = (SkinSettings)q.uniqueResult();
-
-        //                     if (skinSettings == null) {
-        //                         skinSettings = new SkinSettings();
-        //                         skinSettings.setSkinName(DEFAULT_ADMIN_SKIN);
-        //                         s.save(skinSettings);
-        //                     }
-
-        //                     return true;
-        //                 }
-        //             };
-        //         uvmContext.runTransaction(tw);
-
-        /* Register a handler to upload skins */
-        uvmContext.uploadManager().registerHandler(new SkinUploadHandler());
+        this.reconfigure();
     }
 
     // public methods ---------------------------------------------------------
 
     public SkinSettings getSettings()
     {
-        return skinSettings;
+        return settings;
     }
 
     public void setSettings(SkinSettings newSettings)
     {
-        saveSettings(newSettings);
-        this.skinSettings = newSettings;
+        this._setSettings( newSettings );
 
-        try {
-            /* This is asynchronous */
-            JsonClient.getInstance().updateAlpacaSettings();
-        } catch ( Exception e ) {
-            logger.warn( "Unable to update alpaca settings." );
-        }
+        this.reconfigure();
     }
 	
     public void uploadSkin(FileItem item) throws UvmException
@@ -227,27 +248,37 @@ class SkinManagerImpl implements SkinManager
     }
     
     // private methods --------------------------------------------------------
-    @SuppressWarnings("unchecked")
-    private void saveSettings(final SkinSettings settings)
+
+    private void _setSettings( SkinSettings newSettings )
     {
-        //         TransactionWork<Void> tw = new TransactionWork<Void>()
-        //             {
-        //                 public boolean doWork(NodeSession s)
-        //                 {
-        //                     /* delete old settings */
-        //                     Query q = s.createQuery( "from " + "SkinSettings" );
-        //                     for ( Iterator<SkinSettings> iter = q.iterate() ; iter.hasNext() ; ) {
-        //                         SkinSettings oldSettings = iter.next();
-        //                         s.delete( oldSettings );
-        //                     }
+        /**
+         * Save the settings
+         */
+        SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
+        try {
+            settingsManager.save(SkinSettings.class, System.getProperty("uvm.settings.dir") + "/" + "untangle-vm/" + "skin", newSettings);
+        } catch (SettingsManager.SettingsException e) {
+            logger.warn("Failed to save settings.",e);
+        }
 
-        //                     skinSettings = (SkinSettings)s.merge(settings);
-        //                     return true;
-        //                 }
-        //             };
-        //         UvmContextFactory.context().runTransaction(tw);
+        /**
+         * Change current settings
+         */
+        this.settings = newSettings;
+        try {logger.debug("New Settings: \n" + new org.json.JSONObject(this.settings).toString(2));} catch (Exception e) {}
+    }
+    
+    private void reconfigure() 
+    {
+        /* Register a handler to upload skins */
+        UvmContextImpl.context().uploadManager().registerHandler(new SkinUploadHandler());
 
-        this.skinSettings = settings;
+        try {
+            /* This is asynchronous */
+            JsonClient.getInstance().updateAlpacaSettings();
+        } catch ( Exception e ) {
+            logger.warn( "Unable to update alpaca settings." );
+        }
     }
     
     private void processSkinFolder(File dir, List<File> processedSkinFolders)

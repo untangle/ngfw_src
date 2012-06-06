@@ -531,9 +531,9 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
         
         this.brandingManager = new BrandingManagerImpl();
 
-        //Skins and Language managers
-        this.skinManager = new SkinManagerImpl(this);
-        this.languageManager = new LanguageManagerImpl(this);
+        this.skinManager = new SkinManagerImpl();
+        
+        this.languageManager = new LanguageManagerImpl();
 
         // start nodes:
         this.nodeManager = new NodeManagerImpl();

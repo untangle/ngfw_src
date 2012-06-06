@@ -102,7 +102,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
         getSkinSettings : function(forceReload) {
             if (forceReload || this.rpc.skinSettings === undefined) {
                 try {
-                    this.rpc.skinSettings = rpc.skinManager.getSkinSettings();
+                    this.rpc.skinSettings = rpc.skinManager.getSettings();
                 } catch (e) {
                     Ung.Util.rpcExHandler(e);
                 }
@@ -1282,7 +1282,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
                         rpc.skinManager.getSkinsList(Ext.bind(function(result, exception) {
                             if(Ung.Util.handleException(exception)) return;
                             this.processResponse(exception==null, operation, null, result, callback, scope);
-                        },this),true,false);
+                        },this));
                     },
                     reader : {
                         type: 'json',
@@ -1653,7 +1653,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
                     this.afterSave(exception, callback);
                 },this), this.getAdminSettings());
 
-                rpc.skinManager.setSkinSettings(Ext.bind(function(result, exception) {
+                rpc.skinManager.setSettings(Ext.bind(function(result, exception) {
                     this.afterSave(exception, callback);
                 },this), this.getSkinSettings());
 

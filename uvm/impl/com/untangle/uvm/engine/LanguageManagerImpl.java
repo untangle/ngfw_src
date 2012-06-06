@@ -69,7 +69,6 @@ public class LanguageManagerImpl implements LanguageManager
 
     private final Logger logger = Logger.getLogger(getClass());
 
-    private final UvmContextImpl uvmContext;
     private LanguageSettings languageSettings;
     private Map<String, String> allLanguages;
     private ArrayList<String> blacklist;
@@ -82,9 +81,8 @@ public class LanguageManagerImpl implements LanguageManager
         LOCALE_DIR = "/usr/share/locale"; // place for .mo files
     }
 
-    public LanguageManagerImpl(UvmContextImpl uvmContext)
+    public LanguageManagerImpl()
     {
-        this.uvmContext = uvmContext;
         readLanguageSettings();
         allLanguages = loadAllLanguages();
         blacklist = loadBlacklist();
