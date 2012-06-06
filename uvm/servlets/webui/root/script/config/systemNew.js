@@ -45,18 +45,18 @@ if (!Ung.hasResource["Ung.System"]) {
                 } catch (e) {
                     Ung.Util.rpcExHandler(e);
                 }
-                
+
             }
             return this.rpc.languageSettings;
         },
         getAccessSettings : function(forceReload) {
             if (forceReload || this.rpc.accessSettings === undefined) {
                 try {
-                    this.rpc.accessSettings = rpc.networkManager.getAccessSettings();
+                    this.rpc.accessSettings = rpc.systemManager.getSettings();
                 } catch (e) {
                     Ung.Util.rpcExHandler(e);
                 }
-                
+
             }
             return this.rpc.accessSettings;
         },
@@ -67,7 +67,7 @@ if (!Ung.hasResource["Ung.System"]) {
                 } catch (e) {
                     Ung.Util.rpcExHandler(e);
                 }
-                
+
             }
             return this.rpc.httpNode;
         },
@@ -81,7 +81,7 @@ if (!Ung.hasResource["Ung.System"]) {
                 } catch (e) {
                     Ung.Util.rpcExHandler(e);
                 }
-                
+
             }
             return this.rpc.httpSettings;
         },
@@ -92,7 +92,7 @@ if (!Ung.hasResource["Ung.System"]) {
                 } catch (e) {
                     Ung.Util.rpcExHandler(e);
                 }
-                    
+
             }
             return this.rpc.ftpNode;
         },
@@ -106,7 +106,7 @@ if (!Ung.hasResource["Ung.System"]) {
                 } catch (e) {
                     Ung.Util.rpcExHandler(e);
                 }
-                
+
             }
             return this.rpc.ftpSettings;
         },
@@ -117,7 +117,7 @@ if (!Ung.hasResource["Ung.System"]) {
                 } catch (e) {
                     Ung.Util.rpcExHandler(e);
                 }
-                    
+
             }
             return this.rpc.mailNode;
         },
@@ -131,7 +131,7 @@ if (!Ung.hasResource["Ung.System"]) {
                 } catch (e) {
                     Ung.Util.rpcExHandler(e);
                 }
-                    
+
             }
             return this.rpc.mailSettings;
         },
@@ -143,19 +143,19 @@ if (!Ung.hasResource["Ung.System"]) {
                     if ( tz != null && typeof ( tz ) != "string" ) {
                         tz = tz.ID;
                     }
-                    
+
                     this.rpc.timeZone = tz;
                 } catch (e) {
                     Ung.Util.rpcExHandler(e);
                 }
-                    
+
             }
             return this.rpc.timeZone;
         },
         buildSupport : function() {
             // keep initial settings
             this.initialAccessSettings = Ung.Util.clone(this.getAccessSettings());
-            
+
             this.panelSupport = Ext.create('Ext.panel.Panel',{
                 // private fields
                 name : "Support",
@@ -173,11 +173,11 @@ if (!Ung.hasResource["Ung.System"]) {
                         name : "Allow secure access to your server for support purposes",
                         boxLabel : Ext.String.format(this.i18n._("{0}Allow{1} secure access to your server for support purposes."), "<b>", "</b>"),
                         hideLabel : true,
-                        checked : this.getAccessSettings().isSupportEnabled,
+                        checked : this.getAccessSettings().supportEnabled,
                         listeners : {
                             "change" : {
                                 fn : Ext.bind(function(elem, newValue) {
-                                    this.getAccessSettings().isSupportEnabled = newValue;
+                                    this.getAccessSettings().supportEnabled = newValue;
                                 },this)
                             }
                         }
@@ -189,7 +189,7 @@ if (!Ung.hasResource["Ung.System"]) {
                     items : [{
                         border: false,
                         cls: "description",
-                        html: Ext.String.format(this.i18n._("{0}Warning:{1} Clicking this button will reboot the {2} Server, temporarily interrupting network activity."),"<b>","</b>",this.companyName)                      
+                        html: Ext.String.format(this.i18n._("{0}Warning:{1} Clicking this button will reboot the {2} Server, temporarily interrupting network activity."),"<b>","</b>",this.companyName)
                     },{
                         xtype : "button",
                         text : this.i18n._("Reboot"),
@@ -197,12 +197,12 @@ if (!Ung.hasResource["Ung.System"]) {
                         iconCls : "reboot-icon",
                         handler : Ext.bind(function() {
                             Ext.MessageBox.confirm(this.i18n._("Manual Reboot Warning"),
-                                Ext.String.format(this.i18n._("You are about to manually reboot.  This will interrupt normal network operations until the {0} Server is finished automatically restarting. This may take up to several minutes to complete."), this.companyName ), 
+                                Ext.String.format(this.i18n._("You are about to manually reboot.  This will interrupt normal network operations until the {0} Server is finished automatically restarting. This may take up to several minutes to complete."), this.companyName ),
                                 Ext.bind(function(btn) {
                                 if (btn == "yes") {
                                     rpc.jsonrpc.UvmContext.rebootBox(Ext.bind(function (result, exception) {
                                         if(exception) {
-                                            Ext.MessageBox.alert(this.i18n._("Manual Reboot Failure Warning"),Ext.String.format(this.i18n._("Error: Unable to reboot {0} Server"),this.companyName)); 
+                                            Ext.MessageBox.alert(this.i18n._("Manual Reboot Failure Warning"),Ext.String.format(this.i18n._("Error: Unable to reboot {0} Server"),this.companyName));
                                         } else {
                                             Ext.MessageBox.wait(Ext.String.format(this.i18n._("The {0} Server is rebooting."),this.companyName), i18n._("Please wait"));
                                         }
@@ -218,7 +218,7 @@ if (!Ung.hasResource["Ung.System"]) {
                     items : [{
                         border: false,
                         cls: "description",
-                        html: Ext.String.format(this.i18n._("{0}Warning:{1} Clicking this button will shutdown the {2} Server, stopping all network activity."),"<b>","</b>",this.companyName)                      
+                        html: Ext.String.format(this.i18n._("{0}Warning:{1} Clicking this button will shutdown the {2} Server, stopping all network activity."),"<b>","</b>",this.companyName)
                     },{
                         xtype : "button",
                         text : this.i18n._("Shutdown"),
@@ -226,12 +226,12 @@ if (!Ung.hasResource["Ung.System"]) {
                         iconCls : "reboot-icon",
                         handler : Ext.bind(function() {
                             Ext.MessageBox.confirm(this.i18n._("Manual Shutdown Warning"),
-                                Ext.String.format(this.i18n._("You are about to shutdown the {0} Server.  This will stop all network operations."), this.companyName ), 
+                                Ext.String.format(this.i18n._("You are about to shutdown the {0} Server.  This will stop all network operations."), this.companyName ),
                                 Ext.bind(function(btn) {
                                 if (btn == "yes") {
                                     rpc.jsonrpc.UvmContext.shutdownBox(Ext.bind(function (result, exception) {
                                         if(exception) {
-                                            Ext.MessageBox.alert(this.i18n._("Manual Shutdown Failure Warning"),Ext.String.format(this.i18n._("Error: Unable to shutdown {0} Server"),this.companyName)); 
+                                            Ext.MessageBox.alert(this.i18n._("Manual Shutdown Failure Warning"),Ext.String.format(this.i18n._("Error: Unable to shutdown {0} Server"),this.companyName));
                                         } else {
                                             Ext.MessageBox.wait(Ext.String.format(this.i18n._("The {0} Server is shutting down."),this.companyName), i18n._("Please wait"));
                                         }
@@ -255,7 +255,7 @@ if (!Ung.hasResource["Ung.System"]) {
                         iconCls : "reboot-icon",
                         handler : Ext.bind(function() {
                             Ext.MessageBox.confirm(this.i18n._("Setup Wizard Warning"),
-                               Ext.String.format(this.i18n._("You are about to re-run the Setup Wizard.  This may reconfigure the {0} Server and {1}overwrite your current settings.{2}"), this.companyName, "<b>", "</b>" ), 
+                               Ext.String.format(this.i18n._("You are about to re-run the Setup Wizard.  This may reconfigure the {0} Server and {1}overwrite your current settings.{2}"), this.companyName, "<b>", "</b>" ),
                                Ext.bind(function(btn) {
                                    if (btn == "yes") {
                                        main.showSetupWizardScreen();
@@ -277,7 +277,7 @@ if (!Ung.hasResource["Ung.System"]) {
                 cls: "ung-panel",
                 autoScroll : true,
                 onBackupToFile: Ext.bind(function() {
-                    // A two step process: first asks the server for permission to download the file (the outer ajax request) 
+                    // A two step process: first asks the server for permission to download the file (the outer ajax request)
                     // and then if successful opens the iframe which initiates the download.
                     Ext.MessageBox.wait(this.i18n._("Generating Backup File..."), i18n._("Please wait"));
                     Ext.Ajax.request({
@@ -300,9 +300,9 @@ if (!Ung.hasResource["Ung.System"]) {
                             Ext.MessageBox.hide();
                         },
                         failure: function() {
-                            Ext.MessageBox.alert(this.i18n._("Backup Failure Warning"),this.i18n._("Error:  The local file backup procedure failed.  Please try again.")); 
+                            Ext.MessageBox.alert(this.i18n._("Backup Failure Warning"),this.i18n._("Error:  The local file backup procedure failed.  Please try again."));
                         }
-                    });                    
+                    });
                 },this),
                 items : [{
                     xtype : "fieldset",
@@ -351,7 +351,7 @@ if (!Ung.hasResource["Ung.System"]) {
                             var cmp = Ext.getCmp(action.options.parentId);
                             Ung.MessageManager.stop();
                             Ext.MessageBox.alert(cmp.i18n._("Restore In Progress"),
-                         cmp.i18n._("The restore procedure is running. The server may be unavailable during this time. Once the process is complete you will be able to log in again."), 
+                         cmp.i18n._("The restore procedure is running. The server may be unavailable during this time. Once the process is complete you will be able to log in again."),
                          Ung.Util.goToStartPage);
                             },
                         failure : function(form, action) {
@@ -359,16 +359,16 @@ if (!Ung.hasResource["Ung.System"]) {
                             var errorMsg = cmp.i18n._("The Local File restore procedure failed.");
                             if (action.result && action.result.msg) {
                                 switch (action.result.msg) {
-                                    case "File does not seem to be valid backup" : 
+                                    case "File does not seem to be valid backup" :
                                         errorMsg = Ext.String.format(cmp.i18n._("File does not seem to be valid {0} backup"), main.getBrandingManager().getCompanyName());
                                     break;
-                                    case "Error in processing restore itself (yet file seems valid)" : 
+                                    case "Error in processing restore itself (yet file seems valid)" :
                                         errorMsg = cmp.i18n._("Error in processing restore itself (yet file seems valid)");
                                     break;
-                                    case "File is from an older version and cannot be used" : 
+                                    case "File is from an older version and cannot be used" :
                                         errorMsg = Ext.String.format(cmp.i18n._("File is from an older version of {0} and cannot be used"), main.getBrandingManager().getCompanyName());
                                     break;
-                                    case "Unknown error in local processing" : 
+                                    case "Unknown error in local processing" :
                                         errorMsg = cmp.i18n._("Unknown error in local processing");
                                     break;
                                     default :
@@ -419,18 +419,18 @@ if (!Ung.hasResource["Ung.System"]) {
         buildProtocolSettings : function()
         {
             var protocolSettingsItems = [];
-            
+
             protocolSettingsItems.push({
                 autoHeight : true,
                 border: false,
                 cls: "description",
                 html: this.i18n._("Warning: These settings should not be changed unless instructed to do so by support.")
             });
-            
+
             if (this.isHttpLoaded()) {
                 // keep initial http settings
                 this.initialHttpSettings = Ung.Util.clone(this.getHttpSettings());
-                
+
                 protocolSettingsItems.push({
                     xtype : "fieldset",
                     collapsible: true,
@@ -445,7 +445,7 @@ if (!Ung.hasResource["Ung.System"]) {
                         title: this.i18n._("Web Override"),
                         items : [{
                             xtype : "radio",
-                            boxLabel : Ext.String.format(this.i18n._("{0}Enable Processing{1} of web traffic.  (This is the default setting)"), "<b>", "</b>"), 
+                            boxLabel : Ext.String.format(this.i18n._("{0}Enable Processing{1} of web traffic.  (This is the default setting)"), "<b>", "</b>"),
                             hideLabel : true,
                             name : "Web Override",
                             checked : this.getHttpSettings().enabled,
@@ -458,7 +458,7 @@ if (!Ung.hasResource["Ung.System"]) {
                             }
                         },{
                             xtype : "radio",
-                            boxLabel : Ext.String.format(this.i18n._("{0}Disable Processing{1} of web traffic."), "<b>", "</b>"), 
+                            boxLabel : Ext.String.format(this.i18n._("{0}Disable Processing{1} of web traffic."), "<b>", "</b>"),
                             hideLabel : true,
                             name : "Web Override",
                             checked : !this.getHttpSettings().enabled,
@@ -472,10 +472,10 @@ if (!Ung.hasResource["Ung.System"]) {
                         }]
                     },{
                         title: this.i18n._("Long URIs"),
-                        labelWidth: 250,                      
+                        labelWidth: 250,
                         items : [{
                             xtype : "radio",
-                            boxLabel : Ext.String.format(this.i18n._("{0}Enable Processing{1} of long URIs.  The traffic is considered \"Non-Http\".  (This is the default setting)"), "<b>", "</b>"), 
+                            boxLabel : Ext.String.format(this.i18n._("{0}Enable Processing{1} of long URIs.  The traffic is considered \"Non-Http\".  (This is the default setting)"), "<b>", "</b>"),
                             hideLabel : true,
                             name : "Long URIs",
                             checked : !this.getHttpSettings().blockLongUris,
@@ -488,7 +488,7 @@ if (!Ung.hasResource["Ung.System"]) {
                             }
                         },{
                             xtype : "radio",
-                            boxLabel : Ext.String.format(this.i18n._("{0}Disable Processing{1} of long URIs."), "<b>", "</b>"), 
+                            boxLabel : Ext.String.format(this.i18n._("{0}Disable Processing{1} of long URIs."), "<b>", "</b>"),
                             hideLabel : true,
                             name : "Long URIs",
                             checked : this.getHttpSettings().blockLongUris,
@@ -508,7 +508,7 @@ if (!Ung.hasResource["Ung.System"]) {
                             labelWidth: 200,
                             allowDecimals: false,
                             allowNegative: false,
-                            minValue: 1024,                        
+                            minValue: 1024,
                             maxValue: 4096,
                             listeners : {
                                 "change" : {
@@ -520,10 +520,10 @@ if (!Ung.hasResource["Ung.System"]) {
                         }]
                     },{
                         title: this.i18n._("Long Headers"),
-                        labelWidth: 250,                      
+                        labelWidth: 250,
                         items : [{
                             xtype : "radio",
-                            boxLabel : Ext.String.format(this.i18n._("{0}Enable Processing{1} of long headers.  The traffic is considered \"Non-Http\".  (This is the default setting)"), "<b>", "</b>"), 
+                            boxLabel : Ext.String.format(this.i18n._("{0}Enable Processing{1} of long headers.  The traffic is considered \"Non-Http\".  (This is the default setting)"), "<b>", "</b>"),
                             hideLabel : true,
                             name : "Long Headers",
                             checked : !this.getHttpSettings().blockLongHeaders,
@@ -536,7 +536,7 @@ if (!Ung.hasResource["Ung.System"]) {
                             }
                         },{
                             xtype : "radio",
-                            boxLabel : Ext.String.format(this.i18n._("{0}Disable Processing{1} of long headers."), "<b>", "</b>"), 
+                            boxLabel : Ext.String.format(this.i18n._("{0}Disable Processing{1} of long headers."), "<b>", "</b>"),
                             hideLabel : true,
                             name : "Long Headers",
                             checked : this.getHttpSettings().blockLongHeaders,
@@ -556,7 +556,7 @@ if (!Ung.hasResource["Ung.System"]) {
                             labelWidth: 200,
                             allowDecimals: false,
                             allowNegative: false,
-                            minValue: 1024,                        
+                            minValue: 1024,
                             maxValue: 8192,
                             listeners : {
                                 "change" : {
@@ -570,7 +570,7 @@ if (!Ung.hasResource["Ung.System"]) {
                         title: this.i18n._("Non-Http Blocking"),
                         items : [{
                             xtype : "radio",
-                            boxLabel : Ext.String.format(this.i18n._("{0}Allow{1} non-Http traffic to travel over port 80.  (This is the default setting)"), "<b>", "</b>"), 
+                            boxLabel : Ext.String.format(this.i18n._("{0}Allow{1} non-Http traffic to travel over port 80.  (This is the default setting)"), "<b>", "</b>"),
                             hideLabel : true,
                             name : "Non-Http Blocking",
                             checked : !this.getHttpSettings().nonHttpBlocked,
@@ -583,7 +583,7 @@ if (!Ung.hasResource["Ung.System"]) {
                             }
                         },{
                             xtype : "radio",
-                            boxLabel : Ext.String.format(this.i18n._("{0}Stop{1} non-Http traffic to travel over port 80."), "<b>", "</b>"), 
+                            boxLabel : Ext.String.format(this.i18n._("{0}Stop{1} non-Http traffic to travel over port 80."), "<b>", "</b>"),
                             hideLabel : true,
                             name : "Non-Http Blocking",
                             checked : this.getHttpSettings().nonHttpBlocked,
@@ -598,11 +598,11 @@ if (!Ung.hasResource["Ung.System"]) {
                     }]
                 });
             }
-            
+
             if (this.isFtpLoaded()) {
                 // keep initial ftp settings
                 this.initialFtpSettings = Ung.Util.clone(this.getFtpSettings());
-                
+
                 protocolSettingsItems.push({
                     collapsible: true,
                     collapsed: true,
@@ -610,7 +610,7 @@ if (!Ung.hasResource["Ung.System"]) {
                     autoHeight : true,
                     items : [{
                         xtype : "radio",
-                        boxLabel : Ext.String.format(this.i18n._("{0}Enable Processing{1} of File Transfer traffic.  (This is the default setting)"), "<b>", "</b>"), 
+                        boxLabel : Ext.String.format(this.i18n._("{0}Enable Processing{1} of File Transfer traffic.  (This is the default setting)"), "<b>", "</b>"),
                         hideLabel : true,
                         name : "FTP",
                         checked : this.getFtpSettings().enabled,
@@ -623,7 +623,7 @@ if (!Ung.hasResource["Ung.System"]) {
                         }
                     },{
                         xtype : "radio",
-                        boxLabel : Ext.String.format(this.i18n._("{0}Disable Processing{1} of File Transfer traffic."), "<b>", "</b>"), 
+                        boxLabel : Ext.String.format(this.i18n._("{0}Disable Processing{1} of File Transfer traffic."), "<b>", "</b>"),
                         hideLabel : true,
                         name : "FTP",
                         checked : !this.getFtpSettings().enabled,
@@ -637,20 +637,20 @@ if (!Ung.hasResource["Ung.System"]) {
                     }]
                 });
             }
-            
+
             if (this.isMailLoaded()) {
                 // keep initial mail settings
                 this.initialMailSettings = Ung.Util.clone(this.getMailNodeSettings());
-                
+
                 protocolSettingsItems.push({
                     collapsible: true,
                     collapsed: true,
                     title: this.i18n._("SMTP"),
                     autoHeight : true,
-                    labelWidth: 200,                      
+                    labelWidth: 200,
                     items : [{
                         xtype : "radio",
-                        boxLabel : Ext.String.format(this.i18n._("{0}Enable SMTP{1} email processing.  (This is the default setting)"), "<b>", "</b>"), 
+                        boxLabel : Ext.String.format(this.i18n._("{0}Enable SMTP{1} email processing.  (This is the default setting)"), "<b>", "</b>"),
                         hideLabel : true,
                         name : "SMTP",
                         checked : this.getMailNodeSettings().smtpEnabled,
@@ -663,7 +663,7 @@ if (!Ung.hasResource["Ung.System"]) {
                         }
                     },{
                         xtype : "radio",
-                        boxLabel : Ext.String.format(this.i18n._("{0}Disable SMTP{1} email processing."), "<b>", "</b>"), 
+                        boxLabel : Ext.String.format(this.i18n._("{0}Disable SMTP{1} email processing."), "<b>", "</b>"),
                         hideLabel : true,
                         name : "SMTP",
                         checked : !this.getMailNodeSettings().smtpEnabled,
@@ -683,7 +683,7 @@ if (!Ung.hasResource["Ung.System"]) {
                         labelWidth: 200,
                         allowDecimals: false,
                         allowNegative: false,
-                        minValue: 0,                        
+                        minValue: 0,
                         maxValue: 86400,
                         listeners : {
                             "change" : {
@@ -694,7 +694,7 @@ if (!Ung.hasResource["Ung.System"]) {
                         }
                     },{
                         xtype : "radio",
-                        boxLabel : Ext.String.format(this.i18n._("{0}Allow TLS{1} encryption over SMTP."), "<b>", "</b>"), 
+                        boxLabel : Ext.String.format(this.i18n._("{0}Allow TLS{1} encryption over SMTP."), "<b>", "</b>"),
                         hideLabel : true,
                         name : "AllowTLS",
                         checked : this.getMailNodeSettings().smtpAllowTLS,
@@ -707,7 +707,7 @@ if (!Ung.hasResource["Ung.System"]) {
                         }
                     },{
                         xtype : "radio",
-                        boxLabel : Ext.String.format(this.i18n._("{0}Stop TLS{1} encryption over SMTP.  (This is the default setting)"), "<b>", "</b>"), 
+                        boxLabel : Ext.String.format(this.i18n._("{0}Stop TLS{1} encryption over SMTP.  (This is the default setting)"), "<b>", "</b>"),
                         hideLabel : true,
                         name : "AllowTLS",
                         checked : !this.getMailNodeSettings().smtpAllowTLS,
@@ -726,10 +726,10 @@ if (!Ung.hasResource["Ung.System"]) {
                     xtype : "fieldset",
                     title: this.i18n._("POP3"),
                     autoHeight : true,
-                    labelWidth: 200,                      
+                    labelWidth: 200,
                     items : [{
                         xtype : "radio",
-                        boxLabel : Ext.String.format(this.i18n._("{0}Enable POP3{1} email processing.  (This is the default setting)"), "<b>", "</b>"), 
+                        boxLabel : Ext.String.format(this.i18n._("{0}Enable POP3{1} email processing.  (This is the default setting)"), "<b>", "</b>"),
                         hideLabel : true,
                         name : "POP3",
                         checked : this.getMailNodeSettings().popEnabled,
@@ -742,7 +742,7 @@ if (!Ung.hasResource["Ung.System"]) {
                         }
                     },{
                         xtype : "radio",
-                        boxLabel : Ext.String.format(this.i18n._("{0}Disable POP3{1} email processing."), "<b>", "</b>"), 
+                        boxLabel : Ext.String.format(this.i18n._("{0}Disable POP3{1} email processing."), "<b>", "</b>"),
                         hideLabel : true,
                         name : "POP3",
                         checked : !this.getMailNodeSettings().popEnabled,
@@ -762,7 +762,7 @@ if (!Ung.hasResource["Ung.System"]) {
                         labelWidth: 200,
                         allowDecimals: false,
                         allowNegative: false,
-                        minValue: 0,                        
+                        minValue: 0,
                         maxValue: 86400,
                         listeners : {
                             "change" : {
@@ -778,10 +778,10 @@ if (!Ung.hasResource["Ung.System"]) {
                     collapsed: true,
                     title: this.i18n._("IMAP"),
                     autoHeight : true,
-                    labelWidth: 200,                      
+                    labelWidth: 200,
                     items : [{
                         xtype : "radio",
-                        boxLabel : Ext.String.format(this.i18n._("{0}Enable IMAP{1} email processing.  (This is the default setting)"), "<b>", "</b>"), 
+                        boxLabel : Ext.String.format(this.i18n._("{0}Enable IMAP{1} email processing.  (This is the default setting)"), "<b>", "</b>"),
                         hideLabel : true,
                         name : "IMAP",
                         checked : this.getMailNodeSettings().imapEnabled,
@@ -794,7 +794,7 @@ if (!Ung.hasResource["Ung.System"]) {
                         }
                     },{
                         xtype : "radio",
-                        boxLabel : Ext.String.format(this.i18n._("{0}Disable IMAP{1} email processing."), "<b>", "</b>"), 
+                        boxLabel : Ext.String.format(this.i18n._("{0}Disable IMAP{1} email processing."), "<b>", "</b>"),
                         hideLabel : true,
                         name : "IMAP",
                         checked : !this.getMailNodeSettings().imapEnabled,
@@ -814,7 +814,7 @@ if (!Ung.hasResource["Ung.System"]) {
                         labelWidth: 200,
                         allowDecimals: false,
                         allowNegative: false,
-                        minValue: 0,                        
+                        minValue: 0,
                         maxValue: 86400,
                         listeners : {
                             "change" : {
@@ -825,8 +825,8 @@ if (!Ung.hasResource["Ung.System"]) {
                         }
                     }]
                 });
-            }                
-            
+            }
+
             this.panelProtocolSettings = Ext.create('Ext.panel.Panel',{
                 name : "Protocol Settings",
                 helpSource : "protocol_settings",
@@ -923,7 +923,7 @@ if (!Ung.hasResource["Ung.System"]) {
                         listeners : {
                             "select" : {
                                 fn : Ext.bind(function(elem, record) {
-                                    this.getLanguageSettings().language = record.data.code;
+                                    this.getLanguageSettings().language = record[0].data.code;
                                 },this)
                             },
                             "render" : {
@@ -998,7 +998,7 @@ if (!Ung.hasResource["Ung.System"]) {
 
                                                                if(result != 0) {
                                                                    Ext.MessageBox.hide();
-                                                                   Ext.MessageBox.alert(this.i18n._("Warning"),this.i18n._("Time synchronization failed. Return code: ") + result); 
+                                                                   Ext.MessageBox.alert(this.i18n._("Warning"),this.i18n._("Time synchronization failed. Return code: ") + result);
                                                                } else {
                                                                    Ext.MessageBox.hide();
                                                                }
@@ -1020,17 +1020,17 @@ if (!Ung.hasResource["Ung.System"]) {
                             languagesStore.load();
                             var cmp = Ext.getCmp(action.options.parentId);
                             if(action.result.success===true){
-                                Ext.MessageBox.alert(cmp.i18n._("Succeeded"), cmp.i18n._("Upload language pack succeeded"), 
+                                Ext.MessageBox.alert(cmp.i18n._("Succeeded"), cmp.i18n._("Upload language pack succeeded"),
                                     function() {
                                         Ext.getCmp("upload_language_file_textfield").reset();
-                                    } 
+                                    }
                                 );
                             }else{
                                 var msg = "An error occured while uploading the language pack";
                                 if(action.result.msg){
                                     msg = action.result.msg;
                                 }
-                                Ext.MessageBox.alert(cmp.i18n._("Warning"), cmp.i18n._(msg));                                
+                                Ext.MessageBox.alert(cmp.i18n._("Warning"), cmp.i18n._(msg));
                             }
                         },
                         failure : function(form, action) {
@@ -1075,10 +1075,10 @@ if (!Ung.hasResource["Ung.System"]) {
         // validation function
         validateClient : function() {
             //validate timeout
-            return  (!this.isHttpLoaded() || this.validateMaxHeaderLength() && this.validateMaxUriLength()) && 
-               (!this.isMailLoaded() || this.validateSMTP() && this.validatePOP() && this.validateIMAP()); 
+            return  (!this.isHttpLoaded() || this.validateMaxHeaderLength() && this.validateMaxUriLength()) &&
+               (!this.isMailLoaded() || this.validateSMTP() && this.validatePOP() && this.validateIMAP());
         },
-        
+
         //validate Max URI Length
         validateMaxUriLength : function() {
             var maxUriLengthCmp = Ext.getCmp("system_protocolSettings_maxUriLength");
@@ -1089,7 +1089,7 @@ if (!Ung.hasResource["Ung.System"]) {
             		Ext.bind(function () {
                         this.tabs.setActiveTab(this.panelProtocolSettings);
                         maxUriLengthCmp.focus(true);
-                    },this) 
+                    },this)
                 );
                 return false;
             }
@@ -1104,7 +1104,7 @@ if (!Ung.hasResource["Ung.System"]) {
             		Ext.bind(function () {
                         this.tabs.setActiveTab(this.panelProtocolSettings);
                         maxHeaderLengthCmp.focus(true);
-                    },this) 
+                    },this)
                 );
                 return false;
             }
@@ -1119,7 +1119,7 @@ if (!Ung.hasResource["Ung.System"]) {
             		Ext.bind(function () {
                         this.tabs.setActiveTab(this.panelProtocolSettings);
                         smtpTimeoutCmp.focus(true);
-                    },this) 
+                    },this)
                 );
                 return false;
             }
@@ -1134,7 +1134,7 @@ if (!Ung.hasResource["Ung.System"]) {
             		Ext.bind(function () {
                         this.tabs.setActiveTab(this.panelProtocolSettings);
                         popTimeoutCmp.focus(true);
-                    },this) 
+                    },this)
                 );
                 return false;
             }
@@ -1149,7 +1149,7 @@ if (!Ung.hasResource["Ung.System"]) {
             		Ext.bind(function () {
                         this.tabs.setActiveTab(this.panelProtocolSettings);
                         imapTimeoutCmp.focus(true);
-                    },this) 
+                    },this)
                 );
                 return false;
             }
@@ -1198,12 +1198,12 @@ if (!Ung.hasResource["Ung.System"]) {
                 rpc.languageManager.setLanguageSettings(Ext.bind(function(result, exception) {
                     this.afterSave(exception,callback);
                 },this), this.getLanguageSettings());
-                
+
                 // save network settings
-                rpc.networkManager.setSettings(Ext.bind(function(result, exception) {
+                rpc.systemManager.setSettings(Ext.bind(function(result, exception) {
                     this.afterSave(exception,callback);
                 },this), this.getAccessSettings());
-                
+
                 // save http settings
                 if (this.isHttpLoaded()) {
                     this.getHttpNode().setHttpSettings(Ext.bind(function(result, exception) {
@@ -1212,7 +1212,7 @@ if (!Ung.hasResource["Ung.System"]) {
                 } else {
                     this.saveSemaphore--;
                 }
-                
+
                 // save ftp settings
                 if (this.isFtpLoaded()) {
                     this.getFtpNode().setFtpSettings(Ext.bind(function(result, exception) {
@@ -1221,7 +1221,7 @@ if (!Ung.hasResource["Ung.System"]) {
                 } else {
                     this.saveSemaphore--;
                 }
-                
+
                 // save mail settings
                 if (this.isMailLoaded()) {
                     var quarantineSettings = this.getMailNodeSettings().quarantineSettings;
@@ -1233,7 +1233,7 @@ if (!Ung.hasResource["Ung.System"]) {
                 } else {
                     this.saveSemaphore--;
                 }
-                
+
                 //save timezone
                 rpc.adminManager.setTimeZone(Ext.bind(function(result, exception) {
                     this.afterSave(exception,callback);
@@ -1248,7 +1248,7 @@ if (!Ung.hasResource["Ung.System"]) {
             if (this.saveSemaphore == 0) {
                 var needRefresh = this.initialLanguageSettings.language != this.getLanguageSettings().language;
 
-                if (needRefresh) {                    
+                if (needRefresh) {
                     Ung.Util.goToStartPage();
                     return;
                 }
