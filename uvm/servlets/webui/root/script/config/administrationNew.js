@@ -46,7 +46,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
 
         uploadSkinFailure : function( form, action )
         {
-            var cmp = Ext.getCmp(action.options.parentId);
+            var cmp = Ext.getCmp(action.parentId);
             var errorMsg = cmp.i18n._("Upload Skin Failed");
             if (action.result && action.result.msg) {
                 switch (action.result.msg) {

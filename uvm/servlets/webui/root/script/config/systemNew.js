@@ -348,14 +348,14 @@ if (!Ung.hasResource["Ung.System"]) {
                         parentId : cmp.getId(),
                         waitMsg : cmp.i18n._("Please wait while Restoring..."),
                         success : function(form, action) {
-                            var cmp = Ext.getCmp(action.options.parentId);
+                            var cmp = Ext.getCmp(action.parentId);
                             Ung.MessageManager.stop();
                             Ext.MessageBox.alert(cmp.i18n._("Restore In Progress"),
                          cmp.i18n._("The restore procedure is running. The server may be unavailable during this time. Once the process is complete you will be able to log in again."),
                          Ung.Util.goToStartPage);
                             },
                         failure : function(form, action) {
-                            var cmp = Ext.getCmp(action.options.parentId);
+                            var cmp = Ext.getCmp(action.parentId);
                             var errorMsg = cmp.i18n._("The Local File restore procedure failed.");
                             if (action.result && action.result.msg) {
                                 switch (action.result.msg) {
@@ -1018,7 +1018,7 @@ if (!Ung.hasResource["Ung.System"]) {
                         waitMsg : cmp.i18n._("Please wait while your language pack is uploaded..."),
                         success : function(form, action) {
                             languagesStore.load();
-                            var cmp = Ext.getCmp(action.options.parentId);
+                            var cmp = Ext.getCmp(action.parentId);
                             if(action.result.success===true){
                                 Ext.MessageBox.alert(cmp.i18n._("Succeeded"), cmp.i18n._("Upload language pack succeeded"),
                                     function() {
@@ -1034,7 +1034,7 @@ if (!Ung.hasResource["Ung.System"]) {
                             }
                         },
                         failure : function(form, action) {
-                            var cmp = Ext.getCmp(action.options.parentId);
+                            var cmp = Ext.getCmp(action.parentId);
                             var errorMsg = cmp.i18n._("Upload language pack failed");
                             if (action.result && action.result.msg) {
                                 msg = action.result.msg;
