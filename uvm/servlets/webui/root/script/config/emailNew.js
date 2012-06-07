@@ -487,6 +487,7 @@ if (!Ung.hasResource["Ung.Email"]) {
                         dataIndex: "emailAddress",
                         fieldLabel: this.i18n._("Email Address"),
                         allowBlank: false,
+                        vtype: 'email',
                         width: 300
                     }],
                 dataRoot: '',
