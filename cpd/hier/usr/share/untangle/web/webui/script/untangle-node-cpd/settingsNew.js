@@ -67,7 +67,7 @@ if (!Ung.hasResource["Ung.CPD"]) {
                     xtype : 'fieldset',
                     autoHeight : true,
                     items: [{
-                        html : Ext.String.format(this.i18n._('Captive Portal allows administrators to require network users to complete a defined process, such as logging in or accepting a network usage policy, before accessing the internet.'),'<b>','</b>'),
+                        html : this.i18n._('Captive Portal allows administrators to require network users to complete a defined process, such as logging in or accepting a network usage policy, before accessing the internet.'),
                         cls: 'description',
                         border : false}
                     ]
@@ -184,7 +184,7 @@ if (!Ung.hasResource["Ung.CPD"]) {
                     title : this.i18n._("Note"),
                     cls: "description",
                     bodyStyle : "padding: 5px 5px 5px; 5px;",
-                    html : this.i18n._("The <b>Capture Rules</b> are a  set of rules to define which hosts and traffic are subject to the Captive Portal.  The rules are evaluated in order.")
+                    html : this.i18n._("The Capture Rules are a  set of rules to define which hosts and traffic are subject to the Captive Portal.  The rules are evaluated in order.")
                 }, this.gridCaptureRules, {
                     xtype : "fieldset",
                     autoHeight : true,
