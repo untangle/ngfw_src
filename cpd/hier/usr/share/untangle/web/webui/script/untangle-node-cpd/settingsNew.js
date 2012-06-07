@@ -328,11 +328,10 @@ if (!Ung.hasResource["Ung.CPD"]) {
                         cls: "description",
                         border : false,
                         html : this.i18n._("The ethernet interface (NIC).")
-                    },new Ung.Util.InterfaceCombo({
+                    }, new Ung.Util.InterfaceCombo({
                         name : "Client",
                         dataIndex : "clientInterface",
                         fieldLabel : this.i18n._("Client"),
-                        /* Exclude the UVM specific matchers like More Trusted and Less Trusted. */
                         simpleMatchers : true
                     })]
                 },{

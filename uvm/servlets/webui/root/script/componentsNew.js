@@ -992,7 +992,7 @@ Ext.define("Ung.Util.InterfaceCombo", {
 
         Ung.Util.InterfaceCombo.superclass.initComponent.call(this);
     },
-    displayFiel: 'name',
+    displayField: 'name',
     valueField: 'key',
     editable: false,
     mode: 'local',
