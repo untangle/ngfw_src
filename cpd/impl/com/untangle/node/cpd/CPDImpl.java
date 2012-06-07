@@ -426,7 +426,8 @@ public class CPDImpl extends NodeBase implements CPD
             else
             {
                 logger.info("Loaded settings from " + settingsFile);
-                setSettings(readSettings);
+                this.settings = settings;
+                reconfigure();
             }
         }
 
