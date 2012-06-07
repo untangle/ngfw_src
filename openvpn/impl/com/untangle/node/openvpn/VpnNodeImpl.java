@@ -99,7 +99,7 @@ public class VpnNodeImpl extends NodeBase implements VpnNode, com.untangle.uvm.n
         this.addMetric(new NodeMetric(STAT_PASS, I18nUtil.marktr("Sessions passed")));
         this.addMetric(new NodeMetric(STAT_CONNECT, I18nUtil.marktr("Clients Connected")));
 
-        this.connectEventsQuery = new EventLogQuery(I18nUtil.marktr("Closed Sessions"), "FROM reports.n_openvpn_stats evt ORDER BY time_stamp DESC");
+        this.connectEventsQuery = new EventLogQuery(I18nUtil.marktr("Closed Sessions"), "SELECT * FROM reports.n_openvpn_stats evt ORDER BY time_stamp DESC");
     }
 
     private void readNodeSettings()
