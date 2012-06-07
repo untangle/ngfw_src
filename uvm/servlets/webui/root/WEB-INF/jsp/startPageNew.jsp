@@ -49,14 +49,6 @@
     <script type="text/javascript">
         var storeWindowName='store_window_${storeWindowId}';
         var isWizardComplete = ${isWizardComplete};
-        if(typeof console === "undefined") {
-        	//Prevent console.log triggering errors on browserw without console support
-        	console = {
-       			log: function() {},
-                error: function() {},
-                debug: function() {}
-        	}
-        }
         function init() {
             main=new Ung.Main({debugMode:${isDebug},buildStamp:'${buildStamp}'});
             main.init();
@@ -73,7 +65,9 @@
 </form>
 <form name="exportEventLogEvents" id="exportEventLogEvents" method="post" action="eventLogExport" style="display:none;">
 <input type="hidden" name="name" value=""/>
-<input type="hidden" name="data" value=""/>
+<input type="hidden" name="query" value=""/>
+<input type="hidden" name="policyId" value=""/>
+<input type="hidden" name="columnList" value=""/>
 </form>
 </div>
 <div id="extra-div-1" style="display:none;"><span></span></div>

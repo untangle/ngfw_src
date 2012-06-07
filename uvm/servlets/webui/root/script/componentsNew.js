@@ -3,6 +3,15 @@ Ext.namespace('Ung.form');
 Ext.namespace('Ung.grid');
 Ext.BLANK_IMAGE_URL = '/ext4/resources/themes/images/default/tree/s.gif'; // The location of the blank pixel image
 
+if(typeof console === "undefined") {
+    //Prevent console.log triggering errors on browserw without console support
+    console = {
+        log: function() {},
+        error: function() {},
+        debug: function() {}
+    }
+}
+
 var i18n=Ext.create('Ung.I18N',{"map":null}); // the main internationalization object
 var rpc=null; // the main json rpc object
 
@@ -120,15 +129,13 @@ Ext.override(Ext.TabPanel, {
 });
 
 Ext.override( Ext.form.Field, {
-    showContainer: function()
-    {
+    showContainer: function() {
         this.show();
         this.enable();
         /* show entire container and children (including label if applicable) */
         this.getEl().up('.x-form-item').setDisplayed( true );
     },
-    hideContainer: function()
-    {
+    hideContainer: function() {
         this.disable();
         this.hide();
         this.getEl().up('.x-form-item').setDisplayed( false );
@@ -2711,7 +2718,7 @@ Ext.define("Ung.GridEventLog", {
          });
          config.modelName = modelName;
 
-        this.callParent([config]);
+        this.callParent(arguments);
     },
     initComponent: function() {
         this.rpc = {};
@@ -2748,9 +2755,6 @@ Ext.define("Ung.GridEventLog", {
         });
         
         this.pagingToolbar = Ext.create('Ext.toolbar.Paging',{
-            //y: -2,//TODO: no longer supported in extjs4
-            //height: 21,
-            //pageSize: this.recordsPerPage,//TODO: move this to store
             width: 250,
             store: this.store,
             style: "border:0; top:1px;"
@@ -2907,10 +2911,8 @@ Ext.define("Ung.GridEventLog", {
             var i;
             var out;
             
-            displayStyle="";
-            // if(repList.length==0) { displayStyle="display:none;"; } // commented out - always show selector
             out = [];
-            out.push('<select name="Event Type" id="selectQuery_' + this.getId() + '_' + this.settingsCmp.node.nodeId + '" style="'+displayStyle+'">');
+            out.push('<select name="Event Type" id="selectQuery_' + this.getId() + '_' + this.settingsCmp.node.nodeId + '">');
             for (i = 0; i < queryList.length; i++) {
                 var queryDesc = queryList[i];
                 var selOpt = (i === 0) ? "selected" : "";
@@ -2918,7 +2920,6 @@ Ext.define("Ung.GridEventLog", {
             }
             out.push('</select>');
             Ext.getCmp('querySelector_' + this.getId()).setText(out.join(""));
-            
 
             displayStyle="";
             if (this.settingsCmp.node.nodeProperties.type == "SERVICE") displayStyle = "display:none;"; //hide rack selector for services
@@ -3006,9 +3007,17 @@ Ext.define("Ung.GridEventLog", {
             //Add sample events for test
             /*
             for(var i=0; i<250; i++) {
-                events.list.push({ id:i+1, timeStamp:{javaClass:"java.util.Date", time: (new Date(i*10000000)).getTime()}, client:"1.1.1."+i, uid:"4"+i,swCookie:i,server:"" });
-            }
-            */
+                events.list.push({
+                    id:i+1,
+                    time_stamp: {javaClass:"java.util.Date", time: (new Date(i*10000)).getTime()},
+                    client:"1.1.1."+i,
+                    uid:"4"+i,
+                    swCookie:i,
+                    server:"",
+                    ip_addr: "2.1.1."+i,
+                    hostname: "Host_"+i 
+                });
+            }*/
             if (this.settingsCmp !== null) {
                 this.getStore().getProxy().data = events;
                 this.getStore().loadPage(1, {
@@ -3283,7 +3292,20 @@ Ext.define("Ung.SettingsWin", {
             this.doSaveAction.call(this, isApply);
         }
     },
-    
+    //To Override
+    doSaveAction: function(isApply) {
+        Ext.MessageBox.hide();
+        if(Ung.Util.handleException(exception)) return;
+        if (!isApply) {
+            this.closeWindow();
+            return;
+        } else {
+            this.clearDirty();
+            if(Ext.isFunction(this.afterSave)) {
+                this.afterSave.call(this);
+            }
+        }
+    },
     //TODO: remove this
     // validation functions, to override if needed
     validate: function() {
