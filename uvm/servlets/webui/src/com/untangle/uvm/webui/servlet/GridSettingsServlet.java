@@ -1,21 +1,6 @@
-/*
- * $HeadURL: svn://chef/work/src/uvm/servlets/webui/src/com/untangle/uvm/webui/servlet/SetupSettingsServlet.java $
- * Copyright (c) 2003-2007 Untangle, Inc.
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License, version 2,
- * as published by the Free Software Foundation.
- *
- * This program is distributed in the hope that it will be useful, but
- * AS-IS and WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE, TITLE, or
- * NONINFRINGEMENT.  See the GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
+/**
+ * $Id: GridSettingsServlet.java,v 1.00 2012/06/07 13:13:44 dmorris Exp $
  */
-
 package com.untangle.uvm.webui.servlet;
 
 import java.io.IOException;
@@ -24,6 +9,8 @@ import java.text.CharacterIterator;
 import java.text.StringCharacterIterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Calendar;
+import java.text.SimpleDateFormat;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -44,19 +31,19 @@ import com.untangle.uvm.util.I18nUtil;
 
 /**
  * A servlet for import / export grid settings 
- * 
- * @author Vlad Dumitrescu <vdumitrescu@untangle.com>
  */
 @SuppressWarnings({ "serial", "unchecked" })
-public class GridSettingsServlet extends HttpServlet {
-
+public class GridSettingsServlet extends HttpServlet
+{
 	private final Logger logger = Logger.getLogger(getClass());
-	
-    /** character encoding */
+
+    private static final String DATE_FORMAT_NOW = "yyyy-MM-dd_HH-mm-ss";
+    
     private static final String CHARACTER_ENCODING = "utf-8";
 
 	protected void doPost(HttpServletRequest req, HttpServletResponse resp)
-			throws ServletException, IOException {
+			throws ServletException, IOException
+    {
 		boolean isExport = "export".equals(req.getParameter("type"));
 		if (isExport) {
 			processExport(req, resp);
@@ -67,7 +54,8 @@ public class GridSettingsServlet extends HttpServlet {
 	}
 
 	private void processImport(HttpServletRequest req, HttpServletResponse resp)
-			throws ServletException, IOException {
+			throws ServletException, IOException
+    {
 
 		// Create a factory for disk-based file items
 		DiskFileItemFactory factory = new DiskFileItemFactory();
@@ -104,8 +92,8 @@ public class GridSettingsServlet extends HttpServlet {
 
 	}
 	
-	private void createImportRespose(HttpServletResponse resp, boolean success,
-			Object msg) throws IOException {
+	private void createImportRespose(HttpServletResponse resp, boolean success, Object msg) throws IOException
+    {
 		resp.setContentType("text/html");
 		PrintWriter out = resp.getWriter();
 		try {
@@ -132,13 +120,20 @@ public class GridSettingsServlet extends HttpServlet {
 	
 	
 	private void processExport(HttpServletRequest req, HttpServletResponse resp)
-			throws ServletException, IOException {
+			throws ServletException, IOException
+    {
 		String gridData = req.getParameter("gridData");
+        String oemName = UvmContextFactory.context().oemManager().getOemName();
+        String version = UvmContextFactory.context().version().replace(".","_");
+        String hostName = UvmContextFactory.context().networkManager().getHostname().replace(".","_");
+        String dateStr = (new SimpleDateFormat(DATE_FORMAT_NOW)).format((Calendar.getInstance()).getTime());
         String gridName = req.getParameter("gridName");
+
+        String filename = oemName + "-" + version + "-" + gridName + "-" + hostName + "-" + dateStr + ".json";
 
         // Write content type and also length (determined via byte array).
         resp.setCharacterEncoding(CHARACTER_ENCODING);
-        resp.setHeader("Content-Disposition","attachment; filename="+gridName+".json");
+        resp.setHeader("Content-Disposition","attachment; filename="+filename);
 
         try {
             JSONArray json = new JSONArray(gridData);
@@ -148,7 +143,9 @@ public class GridSettingsServlet extends HttpServlet {
             throw new ServletException("Export failed. Settings must be formatted as a JSON Array.");
         }
 	}
-	private static String encodeHtml(String aText){
+
+	private static String encodeHtml(String aText)
+    {
 	     final StringBuilder result = new StringBuilder();
 	     final StringCharacterIterator iterator = new StringCharacterIterator(aText);
 	     char character =  iterator.current();

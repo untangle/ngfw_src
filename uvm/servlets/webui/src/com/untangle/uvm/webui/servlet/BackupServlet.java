@@ -1,7 +1,12 @@
+/**
+ * $Id: BackupServlet.java,v 1.00 2012/06/07 13:05:57 dmorris Exp $
+ */
 package com.untangle.uvm.webui.servlet;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.Calendar;
+import java.text.SimpleDateFormat;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -13,20 +18,18 @@ import com.untangle.uvm.UvmContext;
 
 /**
  * A servlet for backup UVM configuration
- * 
- * @author Catalin Matei <cmatei@untangle.com>
  */
 @SuppressWarnings("serial")
-public class BackupServlet extends HttpServlet {
-	
-	private static final String DEFAULT_BACKUP_FILENAME = "ung.backup";
+public class BackupServlet extends HttpServlet
+{
+    private static final String DATE_FORMAT_NOW = "yyyy-MM-dd_HH-mm-ss";
 	private static final String ACTION_REQUEST_BACKUP = "requestBackup";
 	private static final String ACTION_INITIATE_DOWNLOAD = "initiateDownload";
 	private static final String ATTR_BACKUP_DATA = "backupData";
 
 	protected void doPost(HttpServletRequest req, HttpServletResponse resp)
-			throws ServletException, IOException {
-
+			throws ServletException, IOException
+    {
 		String action = req.getParameter("action");
 		if (ACTION_REQUEST_BACKUP.equals(action)) {
 			UvmContext uvm = UvmContextFactory.context();
@@ -39,9 +42,15 @@ public class BackupServlet extends HttpServlet {
 	}
 
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp)
-			throws ServletException, IOException {
+			throws ServletException, IOException
+    {
+        String oemName = UvmContextFactory.context().oemManager().getOemName();
+        String version = UvmContextFactory.context().version().replace(".","_");
+        String hostName = UvmContextFactory.context().networkManager().getHostname().replace(".","_");
+        String dateStr = (new SimpleDateFormat(DATE_FORMAT_NOW)).format((Calendar.getInstance()).getTime());
+        String filename = oemName + "-" + version + "-" + "backup" + "-" + hostName + "-" + dateStr + ".backup";
 
-		String action = req.getParameter("action");
+        String action = req.getParameter("action");
 		if (ACTION_INITIATE_DOWNLOAD.equals(action)) {
 			byte[] backupData = (byte[]) req.getSession().getAttribute(ATTR_BACKUP_DATA);
 			req.getSession().removeAttribute("backupData");
@@ -52,7 +61,7 @@ public class BackupServlet extends HttpServlet {
 
 			// Set the headers.
 			resp.setContentType("application/x-download");
-			resp.setHeader("Content-Disposition", "attachment; filename=" + DEFAULT_BACKUP_FILENAME);
+			resp.setHeader("Content-Disposition", "attachment; filename=" + filename);
 
 			// Send to client
 			OutputStream out = resp.getOutputStream();

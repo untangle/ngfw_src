@@ -126,7 +126,10 @@ public class NetworkManagerImpl implements NetworkManager
     /* Get the current hostname */
     public String getHostname()
     {
-        return this.networkConfiguration.getHostname();
+        String hostname = this.networkConfiguration.getHostname();
+        if (hostname == null)
+            return "";
+        return hostname;
     }
 
     public InterfaceConfiguration setSetupSettings( InterfaceConfiguration wan ) throws Exception

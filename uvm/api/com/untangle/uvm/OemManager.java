@@ -5,7 +5,6 @@ package com.untangle.uvm;
 
 public interface OemManager
 {
-
     /**
      * Return the OEM Name
      */
@@ -15,5 +14,4 @@ public interface OemManager
      * Return the OEM Url
      */
     public String getOemUrl();
-
 }
