@@ -386,7 +386,11 @@ Ung.Util = {
         window.location.href="/webui";
     },
     rpcExHandler: function(exception) {
-        console.error("In rpcExHandler:"+exception);
+        if (exception != null)
+            console.error("In rpcExHandler: " + exception);
+        else
+            console.error("In rpcExHandler: null");
+            
         if(exception instanceof JSONRpcClient.Exception)
         {
             if(exception.code == 550 || exception.code == 12029 || exception.code == 12019 )
@@ -2892,7 +2896,6 @@ Ext.define("Ung.GridEventLog", {
             exportForm["query"].value=selQuery;
             exportForm["policyId"].value=selPolicy;
             exportForm["columnList"].value=this.getColumnList();
-            //exportForm["data"].value=Ext.encode(rpc.jsonrpc.UvmContext.getEvents( selQuery, selPolicy, 1000000 ));
             exportForm.submit();
             Ext.MessageBox.hide();
         }
