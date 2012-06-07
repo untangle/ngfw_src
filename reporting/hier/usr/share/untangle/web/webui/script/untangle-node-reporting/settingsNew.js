@@ -64,7 +64,7 @@ if (!Ung.hasResource["Ung.Reporting"]) {
                                         this.cancelAction();
                                     },this)
                                 }, {
-                                    title: this.node.nodeContext.nodeProperties.displayName,
+                                    title: this.node.nodeProperties.displayName,
                                     action: Ext.bind(function() {
                                         main.iframeWin.closeActionFn();
                                     },this)
