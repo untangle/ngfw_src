@@ -257,12 +257,13 @@ public class LicenseManagerImpl extends NodeBase implements LicenseManager
         LinkedList<LicenseRevocation> revocations;
         boolean changed = false;
 
+        int numDevices = _getEstimatedNumDevices();
         String uvmVersion = UvmContextFactory.context().version();
         
         logger.info("REFRESH: Checking Revocations...");
         
         try {
-            String urlStr = _getLicenseUrl() + "?" + "action=getRevocations" + "&" + "uid=" + UvmContextFactory.context().getServerUID() + "&" + "version=" + uvmVersion;
+            String urlStr = _getLicenseUrl() + "?" + "action=getRevocations" + "&" + "uid=" + UvmContextFactory.context().getServerUID() + "&" + "numDevices=" + numDevices + "&" + "version=" + uvmVersion;
             logger.info("Downloading: \"" + urlStr + "\"");
 
             Object o = settingsManager.loadUrl(LinkedList.class, urlStr);
