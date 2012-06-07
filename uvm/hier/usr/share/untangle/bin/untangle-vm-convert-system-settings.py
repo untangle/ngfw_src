@@ -26,6 +26,42 @@ def escape(arg):
 
 #------------------------------------------------------------------------------
 
+def get_snmp_settings(debug=False):
+    if (debug):
+        print "Getting u_snmp_settings"
+    
+    snmp_settings = sql_helper.run_sql("select enabled, port, com_str, sys_contact, send_traps, trap_host, trap_com, trap_port from u_snmp_settings ", debug=debug)
+    if snmp_settings == None:
+        print "WARNING: missing u_snmp_settings result"
+    if len(snmp_settings) > 1:
+        print "WARNING: too many u_snmp_settings results (%i)" % (len(snmp_settings))
+
+    enabled = snmp_settings[0][0]
+    port = snmp_settings[0][1]
+    com_str = snmp_settings[0][2]
+    sys_contact = snmp_settings[0][3]
+    send_traps = snmp_settings[0][4]
+    trap_host = snmp_settings[0][5]
+    trap_com = snmp_settings[0][6]
+    trap_port = snmp_settings[0][7]
+
+    str = ""
+    str += pad(4) + '{\n'
+    str += pad(8) + '"javaClass": "com.untangle.uvm.SnmpSettings",\n'
+    str += pad(8) + '"enabled": "%s",\n' % enabled
+    str += pad(8) + '"port": "%s",\n' % port
+    str += pad(8) + '"communityString": "%s",\n' % com_str
+    str += pad(8) + '"sysContact": "%s",\n' % sys_contact
+    str += pad(8) + '"sendTraps": "%s",\n' % send_traps
+    str += pad(8) + '"trapHost": "%s",\n' % trap_host
+    str += pad(8) + '"trapCommunity": "%s",\n' % trap_com
+    str += pad(8) + '"trapPort": "%s"\n' % trap_port
+    str += pad(4) + '}'
+
+    return str
+
+#------------------------------------------------------------------------------
+
 def get_settings(debug=False):
     if (debug):
         print "Getting u_access_settings"
@@ -114,7 +150,9 @@ def get_settings(debug=False):
     str += pad(4) + '"autoUpgrade": "%s",\n' % auto_upgrade
     str += pad(4) + '"autoUpgradeDays": "%s",\n' % auto_upgrade_days
     str += pad(4) + '"autoUpgradeHour": "%s",\n' % auto_upgrade_hour
-    str += pad(4) + '"autoUpgradeMinute": "%s"\n' % auto_upgrade_minute
+    str += pad(4) + '"autoUpgradeMinute": "%s",\n' % auto_upgrade_minute
+
+    str += pad(4) + '"snmpSettings": %s\n' % get_snmp_settings(debug)
 
     str += '}\n'
 
