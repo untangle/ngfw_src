@@ -306,21 +306,14 @@ public abstract class NodeBase implements Node
                 node.initializeSettings( );
                 node.init( );
             } else {
-                node.resumeState(nodeSettings.getTargetState());
+                try {
+                    node.resumeState(nodeSettings.getTargetState());
+                }
+                catch (Exception exn) {
+                    staticLogger.error("Exception during node resumeState", exn);
+                    // still return the initialized node
+                }
             }
-        } catch (ClassNotFoundException exn) {
-            staticLogger.error("Exception during node initialization", exn);
-            throw new DeployException(exn);
-        } catch (InstantiationException exn) {
-            staticLogger.error("Exception during node initialization", exn);
-            throw new DeployException(exn);
-        } catch (IllegalAccessException exn) {
-            staticLogger.error("Exception during node initialization", exn);
-            throw new DeployException(exn);
-        } catch (java.lang.reflect.InvocationTargetException exn) {
-            staticLogger.error("Exception during node initialization", exn);
-            staticLogger.error("Exception during node initialization cause:", exn.getCause());
-            throw new DeployException(exn);
         } catch (Exception exn) {
             staticLogger.error("Exception during node initialization", exn);
             throw new DeployException(exn);
