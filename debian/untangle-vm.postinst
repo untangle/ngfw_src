@@ -97,4 +97,10 @@ rm -rf /usr/share/untangle/db
 rm -rf /usr/share/untangle/pycli/uvm
 rm -f /var/log/uvm/report.log*
 
+# 9.3 upgrade - remove kav conversion cron job
+rm -f /var/spool/cron/atjobs/* 
+if [ -x "/etc/init.d/atd" ]; then
+    ourInit atd restart
+fi
+
 exit 0
