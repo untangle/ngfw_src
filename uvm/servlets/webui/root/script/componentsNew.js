@@ -3263,11 +3263,25 @@ Ext.define("Ung.SettingsWin", {
         this.dirtyFlag=false;
         Ung.Util.clearDirty(this.tabs);
     },
-    //To override
-    saveAction: function (isApply) {
-    },
     applyAction: function() {
         this.saveAction(true);
+    },
+    saveAction: function (isApply) {
+        if(!this.isDirty()) {
+            if(!isApply) {
+                this.closeWindow();
+            }
+            return;
+        }
+        if(!this.validate()) {
+            return;
+        }
+        Ext.MessageBox.wait(i18n._("Saving..."), i18n._("Please wait"));
+        if(Ext.isFunction(this.beforeSave)) {
+            this.beforeSave(isApply, this.doSaveAction);
+        } else {
+            this.doSaveAction.call(this, isApply);
+        }
     },
     
     //TODO: remove this
@@ -3396,24 +3410,7 @@ Ext.define("Ung.NodeWin", {
         }
         return this.node.rpcNode.validator;
     },
-    saveAction: function (isApply) {
-        if(!this.isDirty()) {
-            if(!isApply) {
-                this.closeWindow();
-            }
-            return;
-        }
-        if(!this.validate()) {
-            return;
-        }
-        Ext.MessageBox.wait(i18n._("Saving..."), i18n._("Please wait"));
-        if(Ext.isFunction(this.beforeSave)) {
-            this.beforeSave(isApply, this.saveActionContinue);
-        } else {
-            this.saveActionContinue.call(this, isApply);
-        }
-    },
-    saveActionContinue:function(isApply) {
+    doSaveAction: function(isApply) {
         this.getRpcNode().setSettings( Ext.bind(function(result,exception) {
             Ext.MessageBox.hide();
             if(Ung.Util.handleException(exception)) return;
@@ -3429,7 +3426,6 @@ Ext.define("Ung.NodeWin", {
             }
         }, this), this.getSettings());
     }
-
 });
 Ung.NodeWin._nodeScripts = {};
 

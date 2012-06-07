@@ -751,11 +751,16 @@ if (!Ung.hasResource["Ung.Email"]) {
                         listeners: {
                             "change": {
                                 fn: Ext.bind(function(elem, newValue) {
+                                    if (newValue && newValue instanceof Date) {
+                                        this.getMailNodeSettings().quarantineSettings.digestMinuteOfDay = newValue.getMinutes();
+                                        this.getMailNodeSettings().quarantineSettings.digestHourOfDay   = newValue.getHours();
+                                    }
+                                    /*
                                     var dt = Ext.Date.parse(newValue, "g:i A");
                                     if (dt) { 
                                         this.getMailNodeSettings().quarantineSettings.digestHourOfDay = dt.getHours();
                                         this.getMailNodeSettings().quarantineSettings.digestMinuteOfDay = dt.getMinutes();
-                                    }
+                                    }*/
                                 }, this)
                             }
                         }
@@ -1260,45 +1265,11 @@ if (!Ung.hasResource["Ung.Email"]) {
             return true;
         },
         
-        applyAction: function()
-        {
-            this.commitSettings(Ext.bind(this.reloadSettings, this));
-        },
-        reloadSettings: function()
-        {
-            this.getMailSettings(true);
-            this.clearDirty();
-            Ext.MessageBox.hide();
-        },
-        // save function
-        saveAction: function()
-        {
-            this.commitSettings(Ext.bind(this.completeSaveAction, this));
-        },
-        completeSaveAction: function()
-        {
-            Ext.MessageBox.hide();
-            this.closeWindow();
-        },
-        commitSettings: function(callback) {
-            if (!this.validate()) {
-                return;
-            }
-
+        doSaveAction: function (isApply) {
             this.saveSemaphore = this.isMailLoaded() ? 3 : 1;
-            Ext.MessageBox.show({
-                title: this.i18n._('Please wait'),
-                msg: this.i18n._('Saving...'),
-                modal: true,
-                wait: true,
-                waitConfig: {interval: 100},
-                progressText: " ",
-                width: 200
-            });
-                
             // save mail settings
             main.getMailSender().setSettings(Ext.bind(function(result, exception) {
-                this.afterSave(exception,callback);
+                this.afterSave(exception, isApply);
             }, this), this.getMailSettings());
             
             if( this.isMailLoaded() ) {
@@ -1311,7 +1282,7 @@ if (!Ung.hasResource["Ung.Email"]) {
                 delete quarantineSettings.secretKey;
 
                 this.getMailNode().setMailNodeSettingsWithoutSafelists(Ext.bind(function(result, exception) {
-                    this.afterSave(exception,callback);
+                    this.afterSave(exception, isApply);
                 }, this), this.getMailNodeSettings());
                 
                 // save global safelist
@@ -1322,20 +1293,27 @@ if (!Ung.hasResource["Ung.Email"]) {
                         globalList.push(gridSafelistGlobalValues[i].emailAddress);
                     }
                     this.getSafelistAdminView().replaceSafelist(Ext.bind(function(result, exception) {
-                        this.afterSave(exception,callback);
+                        this.afterSave(exception, isApply);
                     }, this), 'GLOBAL', globalList);
                 } else {
                     /* Decrement the save semaphore */
-                    this.afterSave(null,callback);
+                    this.afterSave(null, isApply);
                 }
             }            
         },
-        afterSave: function(exception,callback) {
+        afterSave: function(exception, isApply) {
             if(Ung.Util.handleException(exception)) return;
 
             this.saveSemaphore--;
             if (this.saveSemaphore == 0) {
-                callback();
+                if(isApply) {
+                    this.getMailSettings(true);
+                    this.clearDirty();
+                    Ext.MessageBox.hide();
+                } else {
+                    Ext.MessageBox.hide();
+                    this.closeWindow();
+                };
             }
         }
     });
