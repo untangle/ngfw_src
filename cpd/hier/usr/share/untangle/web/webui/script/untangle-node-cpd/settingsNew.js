@@ -13,7 +13,7 @@ if (!Ung.hasResource["Ung.CPD"]) {
         panelCaptiveStatus : null,
         gridCaptiveStatus : null,
 
-        panelCaptiveHosts: null,
+        panelCaptureRules: null,
         gridCaptureRules : null,
 
         panelPassedHosts : null,
@@ -33,7 +33,7 @@ if (!Ung.hasResource["Ung.CPD"]) {
 
             // builds the tabs
             this.buildCaptiveStatus();
-            this.buildCaptiveHosts();
+            this.buildCaptureRules();
             this.buildPassedHosts();
             this.buildCaptivePage();
             this.buildUserAuthentication();
@@ -41,7 +41,7 @@ if (!Ung.hasResource["Ung.CPD"]) {
             this.buildBlockEventLog();
 
             // builds the tab panel with the tabs
-            this.buildTabPanel([ this.panelCaptiveStatus, this.panelCaptiveHosts, this.panelPassedHosts, this.panelCaptivePage,
+            this.buildTabPanel([ this.panelCaptiveStatus, this.panelCaptureRules, this.panelPassedHosts, this.panelCaptivePage,
                                  this.panelUserAuthentication, this.gridLoginEventLog, this.gridBlockEventLog ]);
 
             Ung.CPD.superclass.initComponent.call(this);
@@ -167,16 +167,16 @@ if (!Ung.hasResource["Ung.CPD"]) {
         },
 
         // Rules Panel
-        buildCaptiveHosts : function()
+        buildCaptureRules : function()
         {
             this.buildGridCaptureRules();
 
-            this.panelCaptiveHosts = Ext.create('Ext.panel.Panel',{
-                name : "panelCaptiveHosts",
+            this.panelCaptureRules = Ext.create('Ext.panel.Panel',{
+                name : "panelCaptureRules",
                 helpSource : "captive_hosts",
                 // private fields
                 parentId : this.getId(),
-                title : this.i18n._("Captive Hosts"),
+                title : this.i18n._("Capture Rules"),
                 autoScroll : true,
                 border : false,
                 cls: "ung-panel",
@@ -228,7 +228,7 @@ if (!Ung.hasResource["Ung.CPD"]) {
                     "description" : this.i18n._("[no description]"),
                     "javaClass" : "com.untangle.node.cpd.CaptureRule"
                 },
-                title : this.i18n._("Capture Rules"),
+                title : this.i18n._("Rules"),
                 qtip : this.i18n._("The Capture Rules are a set of rules to define which hosts and traffic are subject to the Captive Portal. All enabled rules are evaluated in order."),
                 recordJavaClass : "com.untangle.node.cpd.CaptureRule",
                 paginated : false,
