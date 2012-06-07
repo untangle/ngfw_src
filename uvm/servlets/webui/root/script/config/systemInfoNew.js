@@ -165,8 +165,7 @@ if (!Ung.hasResource["Ung.SystemInfo"]) {
                 columns : [{
                     header : this.i18n._("Name"),
                     dataIndex: "displayName",
-                    width : 150,
-                    flex: 1
+                    width : 150
                 },{
                     header : this.i18n._("App"),
                     dataIndex: "name",
