@@ -1413,7 +1413,7 @@ Ext.define('Ung.SetupWizard.AutoUpgrades', {
     },
     onLoadAutoSuggestion : function( complete )
     {
-        var autoUpgradesEnabled = rpc.systemManager.getSystemSettings().autoUpgrade;
+        var autoUpgradesEnabled = rpc.systemManager.getSettings().autoUpgrade;
         if (!autoUpgradesEnabled) {
             this.panel.query('radio[name="autoUpgradesRadio"]')[0].setValue(false);
             this.panel.query('radio[name="autoUpgradesRadio"]')[1].setValue(true);
