@@ -20,6 +20,7 @@ if(typeof console === "undefined") {
         debug: function() {}
     };
 }
+
 Ung.SetupWizard.LabelWidth = 200;
 Ung.SetupWizard.LabelWidth2 = 214;
 Ung.SetupWizard.LabelWidth3 = 120;
@@ -1412,7 +1413,7 @@ Ext.define('Ung.SetupWizard.AutoUpgrades', {
     },
     onLoadAutoSuggestion : function( complete )
     {
-        var autoUpgradesEnabled = rpc.toolboxManager.getUpgradeSettings().autoUpgrade;
+        var autoUpgradesEnabled = rpc.systemManager.getSystemSettings().autoUpgrade;
         if (!autoUpgradesEnabled) {
             this.panel.query('radio[name="autoUpgradesRadio"]')[0].setValue(false);
             this.panel.query('radio[name="autoUpgradesRadio"]')[1].setValue(true);
