@@ -5,11 +5,11 @@ Ext.BLANK_IMAGE_URL = '/ext4/resources/themes/images/default/tree/s.gif'; // The
 
 if(typeof console === "undefined") {
     //Prevent console.log triggering errors on browserw without console support
-    console = {
+    var console = {
         log: function() {},
         error: function() {},
         debug: function() {}
-    }
+    };
 }
 
 var i18n=Ext.create('Ung.I18N',{"map":null}); // the main internationalization object
