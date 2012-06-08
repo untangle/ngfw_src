@@ -1,9 +1,3 @@
-/*
-TODO: server side: high priority fix issue when saving:
-  An exception has occurred:
-  java.io.FileNotFoundException
-  /etc/untangle-cpd/settings.file (No such file or directory)
- */
 if (!Ung.hasResource["Ung.CPD"]) {
     Ung.hasResource["Ung.CPD"] = true;
     Ung.NodeWin.registerClassName("untangle-node-cpd", "Ung.CPD");
