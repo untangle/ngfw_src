@@ -274,6 +274,7 @@ Ext.define('Ung.SetupWizard.SettingsSaver', {
             rpc.networkManager = rpc.jsonrpc.UvmContext.networkManager();
             rpc.connectivityTester = rpc.jsonrpc.UvmContext.getConnectivityTester();
             rpc.toolboxManager = rpc.jsonrpc.UvmContext.toolboxManager();
+            rpc.systemManager = rpc.jsonrpc.UvmContext.systemManager();
             rpc.mailSender = rpc.jsonrpc.UvmContext.mailSender();
 
             if (Ext.MessageBox.rendered) {
