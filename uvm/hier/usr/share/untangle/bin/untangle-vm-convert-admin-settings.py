@@ -28,10 +28,10 @@ def get_users(debug=False):
 
     first = True
     for user in user_list:
-        username = user[0]
-        emailAddress = user[1]
+        username = sql_helper.sanitize_string(user[0])
+        emailAddress = sql_helper.sanitize_string(user[1])
         passwordHashBase64 = user[2]
-        description = user[3]
+        description = sql_helper.sanitize_string(user[3])
 
         if not first:
             str += '\t\t\t,\n'

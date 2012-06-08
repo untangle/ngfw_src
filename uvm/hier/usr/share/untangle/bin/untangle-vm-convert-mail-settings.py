@@ -36,11 +36,11 @@ def get_settings(debug=False):
     if len(mail_settings) > 1:
         print "WARNING: too many u_mail_settings results (%i)" % (len(mail_settings))
 
-    smtp_host = mail_settings[0][0]
-    from_address = mail_settings[0][1]
+    smtp_host = sql_helper.sanitize_string(mail_settings[0][0])
+    from_address = sql_helper.sanitize_string(mail_settings[0][1])
     smtp_port = mail_settings[0][2]
-    auth_user = mail_settings[0][3]
-    auth_pass = mail_settings[0][4]
+    auth_user = sql_helper.sanitize_string(mail_settings[0][3])
+    auth_pass = sql_helper.sanitize_string(mail_settings[0][4])
     use_mx_records = mail_settings[0][5]
 
     str = '{\n'

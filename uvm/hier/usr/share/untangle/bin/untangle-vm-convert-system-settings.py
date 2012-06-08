@@ -39,10 +39,10 @@ def get_snmp_settings(debug=False):
     enabled = snmp_settings[0][0]
     port = snmp_settings[0][1]
     com_str = snmp_settings[0][2]
-    sys_contact = snmp_settings[0][3]
+    sys_contact = sql_helper.sanitize_string(snmp_settings[0][3])
     send_traps = snmp_settings[0][4]
-    trap_host = snmp_settings[0][5]
-    trap_com = snmp_settings[0][6]
+    trap_host = sql_helper.sanitize_string(snmp_settings[0][5])
+    trap_com = sql_helper.sanitize_string(snmp_settings[0][6])
     trap_port = snmp_settings[0][7]
 
     str = ""
