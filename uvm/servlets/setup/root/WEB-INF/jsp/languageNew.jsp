@@ -43,7 +43,6 @@
     
     <script type="text/javascript">
       Ung.SetupWizard.currentSkin = "${skinSettings.skinName}";
-      console.log("start");
       Ung.SetupWizard.CurrentValues = {
         languageList : ${languageList},
         language : "${language}"

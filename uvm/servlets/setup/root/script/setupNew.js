@@ -12,6 +12,14 @@ var rpc = {};
 
 var oemName = "Untangle";
 
+if(typeof console === "undefined") {
+    //Prevent console.log triggering errors on browserw without console support
+    var console = {
+        log: function() {},
+        error: function() {},
+        debug: function() {}
+    };
+}
 Ung.SetupWizard.LabelWidth = 200;
 Ung.SetupWizard.LabelWidth2 = 214;
 Ung.SetupWizard.LabelWidth3 = 120;
