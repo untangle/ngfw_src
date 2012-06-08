@@ -3,16 +3,16 @@ if (!Ung.hasResource["Ung.Upgrade"]) {
 
      Ext.define('Ung.Upgrade', {
     	extend: 'Ung.ConfigWin',
-        gridUpgrade : null,
-        panelSettings : null,
-        initComponent : function() {
+        gridUpgrade: null,
+        panelSettings: null,
+        initComponent: function() {
             this.breadcrumbs = [{
-                title : i18n._("Configuration"),
-                action : Ext.bind(function() {
+                title: i18n._("Configuration"),
+                action: Ext.bind(function() {
                     this.cancelAction();
-                },this)
+                }, this)
             }, {
-                title : i18n._('Upgrade')
+                title: i18n._('Upgrade')
             }];
             this.buildUpgrade();
             this.buildSettings();
@@ -20,28 +20,26 @@ if (!Ung.hasResource["Ung.Upgrade"]) {
             this.buildTabPanel([this.gridUpgrade, this.panelSettings]);
             this.callParent(arguments);
         },
-
-        onRender : function(container, position) {
+        onRender: function(container, position) {
             // call parent renderer first
             this.callParent(arguments);
             Ext.Function.defer(this.initSubCmps,1, this);
         },
-        initSubCmps : function()
-        {
+        initSubCmps: function() {
             this.loadGridUpgrade();
+            Ung.Util.clearDirty(this.panelSettings);
         },
-        getSystemSettings : function(forceReload) {
+        getSystemSettings: function(forceReload) {
             if (forceReload || this.rpc.systemSettings === undefined) {
                 try {
                     this.rpc.systemSettings = rpc.systemManager.getSettings();
                 } catch (e) {
                     Ung.Util.rpcExHandler(e);
                 }
-                
             }
             return this.rpc.systemSettings;
         },
-        loadGridUpgrade : function() {
+        loadGridUpgrade: function() {
             Ext.MessageBox.wait(i18n._("Checking for available upgrades..."), i18n._("Please wait"));
             rpc.toolboxManager.getUpgradeStatus(Ext.bind(function(result, exception) {
                 if(Ung.Util.handleException(exception)) return;
@@ -97,22 +95,22 @@ if (!Ung.hasResource["Ung.Upgrade"]) {
 				                    }
 				                    somethingVisibleAdded = true;
 					                    upgradeData.push({
-					                    image : "image?name=" + md.name,
-					                    name : md.name,
-					                    displayName : displayName,
-					                    availableVersion : md.availableVersion,
-					                    type : mtype,
-					                    size : Math.round(md.size / 1000)
+					                    image: "image?name=" + md.name,
+					                    name: md.name,
+					                    displayName: displayName,
+					                    availableVersion: md.availableVersion,
+					                    type: mtype,
+					                    size: Math.round(md.size / 1000)
 				                    });
                                 }
                                 if (!somethingVisibleAdded) {
                                     upgradeData.push({
-                                        image : "image?name=unknown",
-                                        name : md.name,
-                                        displayName : this.i18n._("Various Updates"),
-                                        availableVersion : this.i18n._("N/A"),
-                                        type : this.i18n._("Misc."),
-                                        size : Math.round(totalSize / 1000)
+                                        image: "image?name=unknown",
+                                        name: md.name,
+                                        displayName: this.i18n._("Various Updates"),
+                                        availableVersion: this.i18n._("N/A"),
+                                        type: this.i18n._("Misc."),
+                                        size: Math.round(totalSize / 1000)
                                     });
                                 }
                                 this.gridUpgrade.getDockedItems('toolbar[dock="top"]')[0].items.get(0).getEl().dom.innerHTML=Ext.String.format(i18n._("Upgrades are available. There are {0} packages. Total size is {1} MBs."),upgradeList.length,Ung.Util.bytesToMBs(totalSize));
@@ -122,25 +120,25 @@ if (!Ung.hasResource["Ung.Upgrade"]) {
                             }
                             this.gridUpgrade.getStore().proxy.data = upgradeData;
                             this.gridUpgrade.getStore().load();
-                        },this));
-                    },this),true);
+                        }, this));
+                    }, this),true);
                 }
-            },this), false);
+            }, this), false);
 
         },
-        buildUpgrade : function() {
+        buildUpgrade: function() {
             this.gridUpgrade = Ext.create('Ext.grid.Panel',{
                 // private fields
-                name : 'Upgrade',
-                helpSource : 'upgrade',
-                parentId : this.getId(),
-                title : this.i18n._('Upgrade'),
-                enableColumnHide : false,
+                name: 'Upgrade',
+                helpSource: 'upgrade',
+                parentId: this.getId(),
+                title: this.i18n._('Upgrade'),
+                enableColumnHide: false,
                 enableColumnMove: false,
                 disableSelection: true, //TODO: find extjs4 solution
                 tbar: [{xtype: 'tbtext', text: i18n._("Checking for upgrades...")}],
                 isDirty: function() { return false;},
-                store : Ext.create('Ext.data.Store', {
+                store: Ext.create('Ext.data.Store', {
                 	data:[],
                 	proxy: {
     					type: 'memory',
@@ -149,206 +147,176 @@ if (!Ung.hasResource["Ung.Upgrade"]) {
     						root: ''
     					}
     				},
-    				fields : [{
-	                        name : 'image'
+    				fields: [{
+	                        name: 'image'
 	                    }, {
-	                        name : 'name'
+	                        name: 'name'
 	                    }, {
-	                        name : 'displayName'
+	                        name: 'displayName'
 	                    }, {
-	                        name : 'availableVersion'
+	                        name: 'availableVersion'
 	                    }, {
-	                        name : 'type'
+	                        name: 'type'
 	                    }, {
-	                        name : 'size'
+	                        name: 'size'
                     }]
                 }),
-                columns : [{
-                    header : "",
-                    width : 70,
+                columns: [{
+                    header: "",
+                    width: 70,
                     menuDisabled: true,
-                    sortable : true,
-                    dataIndex : 'image',
-                    renderer : function(value) {
+                    sortable: true,
+                    dataIndex: 'image',
+                    renderer: function(value) {
                         return "<img src='" + value + "'/>";
                     }
                 }, {
-                    header : this.i18n._("name"),
-                    width : 190,
-                    sortable : true,
+                    header: this.i18n._("name"),
+                    width: 190,
+                    sortable: true,
                     menuDisabled: true,
                     flex: 1,
-                    dataIndex : 'displayName'
+                    dataIndex: 'displayName'
 
                 }, {
-                    header : this.i18n._("new version"),
-                    width : 230,
-                    sortable : true,
+                    header: this.i18n._("new version"),
+                    width: 230,
+                    sortable: true,
                     menuDisabled: true,
-                    dataIndex : 'availableVersion'
+                    dataIndex: 'availableVersion'
 
                 }, {
-                    header : this.i18n._("type"),
-                    width : 150,
-                    sortable : true,
+                    header: this.i18n._("type"),
+                    width: 150,
+                    sortable: true,
                     menuDisabled: true,
-                    dataIndex : 'type'
+                    dataIndex: 'type'
                 }, {
-                    header : this.i18n._("size (kb)"),
-                    width : 110,
+                    header: this.i18n._("size (kb)"),
+                    width: 110,
                     menuDisabled: true,
-                    sortable : true,
+                    sortable: true,
                     align: 'right', 
-                    dataIndex : 'size'
+                    dataIndex: 'size'
                 }],
-                buttonAlign : 'center',
-                buttons : [{
-                    id : 'config_start_upgrade_button',
-                    text : i18n._('Upgrade'),
-                    name : "Upgrade",
-                    iconCls : 'icon-upgrade',
-                    disabled : true,
-                    handler : function() {
+                buttonAlign: 'center',
+                buttons: [{
+                    id: 'config_start_upgrade_button',
+                    text: i18n._('Upgrade'),
+                    name: "Upgrade",
+                    iconCls: 'icon-upgrade',
+                    disabled: true,
+                    handler: function() {
                         main.upgrade();
                     }
                 }]
             });
 
         },
-        buildSettings : function() {
-           
+        buildSettings: function() {
             var upgradeTime=new Date();
             upgradeTime.setTime(0);
             upgradeTime.setHours(this.getSystemSettings().autoUpgradeHour);
             upgradeTime.setMinutes(this.getSystemSettings().autoUpgradeMinute);
             this.panelSettings = Ext.create('Ext.panel.Panel',{
                 // private fields
-                name : 'Upgrade Settings',
-                helpSource : 'upgrade_setup',
-                parentId : this.getId(),
-                title : this.i18n._('Upgrade Settings'),
+                name: 'Upgrade Settings',
+                helpSource: 'upgrade_setup',
+                parentId: this.getId(),
+                title: this.i18n._('Upgrade Settings'),
                 cls: 'ung-panel',
-                autoScroll : true,
-                defaults : {
-                    xtype : 'fieldset',
-                    autoHeight : true
+                autoScroll: true,
+                defaults: {
+                    xtype: 'fieldset',
+                    autoHeight: true
                 },
-                items : [{
-                    title : this.i18n._('Automatic Upgrade'),
-                    items : [{
-                        xtype : 'radio',
-                        boxLabel : this.i18n._('Automatically Install Upgrades'),
-                        hideLabel : true,
-                        name : 'Automatically Install Upgrades',
-                        checked : this.getSystemSettings().autoUpgrade,
-                        listeners : {
-                            "change" : {
-                                fn : Ext.bind(function(elem, checked) {
+                items: [{
+                    title: this.i18n._('Automatic Upgrade'),
+                    items: [{
+                        xtype: 'radio',
+                        boxLabel: this.i18n._('Automatically Install Upgrades'),
+                        hideLabel: true,
+                        name: 'Automatically Install Upgrades',
+                        checked: this.getSystemSettings().autoUpgrade,
+                        listeners: {
+                            "change": {
+                                fn: Ext.bind(function(elem, checked) {
                                     this.getSystemSettings().autoUpgrade = checked;
-                                },this)
+                                }, this)
                             }
                         }
                     }, {
                         cls: 'description',
-                        border : false,
-                        html : this.i18n._("If new upgrades are available at the specified upgrade time they will be automatically downloaded and installed. During the install the system may be rebooted resulting in momentary loss of connectivicty.")
+                        border: false,
+                        html: this.i18n._("If new upgrades are available at the specified upgrade time they will be automatically downloaded and installed. During the install the system may be rebooted resulting in momentary loss of connectivicty.")
                     }, {
-                        xtype : 'radio',
-                        boxLabel : this.i18n._('Do Not Automatically Install Upgrades'),
-                        hideLabel : true,
-                        name : 'Automatically Install Upgrades',
-                        checked : !this.getSystemSettings().autoUpgrade,
-                        listeners : {
-                            "change" : {
-                                fn : Ext.bind(function(elem, checked) {
+                        xtype: 'radio',
+                        boxLabel: this.i18n._('Do Not Automatically Install Upgrades'),
+                        hideLabel: true,
+                        name: 'Automatically Install Upgrades',
+                        checked: !this.getSystemSettings().autoUpgrade,
+                        listeners: {
+                            "change": {
+                                fn: Ext.bind(function(elem, checked) {
                                     this.getSystemSettings().autoUpgrade = !checked;
-                                },this)
+                                }, this)
                             }
                         }
                     }, {
                         cls: 'description',
-                        border : false,
-                        html : this.i18n._("If new upgrades are available at the specified upgrade time they will be not be installed. All upgrades must be manually installed using the button on the Upgrade tab.")
+                        border: false,
+                        html: this.i18n._("If new upgrades are available at the specified upgrade time they will be not be installed. All upgrades must be manually installed using the button on the Upgrade tab.")
                     }, {
                         cls: 'description',
-                        border : false,
-                        html : "<i>" + this.i18n._("Note: Turning off Automatic Upgrades does not disable signature & list updates") + "</i>"
+                        border: false,
+                        html: "<i>" + this.i18n._("Note: Turning off Automatic Upgrades does not disable signature & list updates") + "</i>"
                     }]
                 }, {
-                    title : this.i18n._('Automatic Upgrade Schedule'),
-                    items : [{
-                        xtype : 'udayfield',
-                        name : 'Upgrade Days',
+                    title: this.i18n._('Automatic Upgrade Schedule'),
+                    items: [{
+                        xtype: 'udayfield',
+                        name: 'Upgrade Days',
                         value: this.getSystemSettings().autoUpgradeDays,
-                        listeners : {
-                            "change" : {
-                                fn : Ext.bind(function(elem, newValue) {
+                        listeners: {
+                            "change": {
+                                fn: Ext.bind(function(elem, newValue) {
                                     this.getSystemSettings().autoUpgradeDays = elem.getValue();
-                                },this)
+                                }, this)
                             }
                         }
                     }, {
-                        xtype : 'timefield',
-                        name : 'Upgrade Time',
-                        width : 90,
-                        hideLabel : true,
-                        value : upgradeTime,
-                        listeners : {
-                            "change" : {
-                                fn : Ext.bind(function(elem, newValue) {
+                        xtype: 'timefield',
+                        name: 'Upgrade Time',
+                        width: 90,
+                        hideLabel: true,
+                        value: upgradeTime,
+                        listeners: {
+                            "change": {
+                                fn: Ext.bind(function(elem, newValue) {
                                     if (newValue != "") {
                                         var v = elem.parseDate(newValue);
                                         this.getSystemSettings().autoUpgradeMinute = Ext.Date.format( v,"i");
                                         this.getSystemSettings().autoUpgradeHour = Ext.Date.format( v,"H");
                                     }
-                                },this)
+                                }, this)
                             }
                         }
                     }]
                 }]
             });
         },
-         
-         applyAction : function()
-         {
-             this.commitSettings(Ext.bind(this.reloadSettings,this));
-         },
-         reloadSettings : function()
-         {
-             this.loadGridUpgrade();
-             this.clearDirty();
-         },
-         saveAction : function()
-         {
-             this.commitSettings(Ext.bind(this.completeSaveAction,this));
-         },
-         completeSaveAction : function()
-         {
-             Ext.MessageBox.hide();
-             this.closeWindow();
-         },
-         // save function
-         commitSettings : function(callback)
-         {
-             if (this.validate()) {
-                 Ext.MessageBox.wait(i18n._("Saving..."), i18n._("Please wait"));
-                 this.saveSemaphore = 1;
-                 // save language settings
-
-                 rpc.systemManager.setSettings(Ext.bind(function(result, exception) {
-                     this.afterSave(exception,callback);
-                 },this), this.getSystemSettings());
-             }
-         },
-         afterSave : function(exception, callback)
-         {
-             if(Ung.Util.handleException(exception)) return;
-
-             this.saveSemaphore--;
-             if (this.saveSemaphore == 0) {
-                 callback();
-             }
-         }
+        doSaveAction: function (isApply) {
+            rpc.systemManager.setSettings(Ext.bind(function(result, exception) {
+                Ext.MessageBox.hide();
+                if(Ung.Util.handleException(exception)) return;
+                if (!isApply) {
+                    this.closeWindow();
+                } else {
+                    this.loadGridUpgrade();
+                    this.clearDirty();
+                }
+            }, this), this.getSystemSettings());
+        }         
      });
 }
 //@ sourceURL=upgradeNew.js

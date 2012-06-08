@@ -718,9 +718,9 @@ if (!Ung.hasResource["Ung.Email"]) {
                         listeners: {
                             "render": {
                                 fn: Ext.bind(function(elem) {
-                                        if(elem.getValue()){
+                                    if(elem.getValue()){
                                         Ext.getCmp('quarantine_dailySendingTime').enable();
-                                    }else{
+                                    } else {
                                         Ext.getCmp('quarantine_dailySendingTime').disable();
                                     }
                                 }, this)
@@ -728,9 +728,9 @@ if (!Ung.hasResource["Ung.Email"]) {
                             "change": {
                                 fn: Ext.bind(function(elem, newValue) {
                                     this.getMailNodeSettings().quarantineSettings.sendDailyDigests = newValue;
-                                    if(newValue){
+                                    if(newValue) {
                                         Ext.getCmp('quarantine_dailySendingTime').enable();
-                                    }else{
+                                    } else {
                                         Ext.getCmp('quarantine_dailySendingTime').disable();
                                     }
                                 }, this)
@@ -756,12 +756,6 @@ if (!Ung.hasResource["Ung.Email"]) {
                                         this.getMailNodeSettings().quarantineSettings.digestMinuteOfDay = newValue.getMinutes();
                                         this.getMailNodeSettings().quarantineSettings.digestHourOfDay   = newValue.getHours();
                                     }
-                                    /*
-                                    var dt = Ext.Date.parse(newValue, "g:i A");
-                                    if (dt) { 
-                                        this.getMailNodeSettings().quarantineSettings.digestHourOfDay = dt.getHours();
-                                        this.getMailNodeSettings().quarantineSettings.digestMinuteOfDay = dt.getMinutes();
-                                    }*/
                                 }, this)
                             }
                         }

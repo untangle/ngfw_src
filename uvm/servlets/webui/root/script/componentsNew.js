@@ -3295,10 +3295,8 @@ Ext.define("Ung.SettingsWin", {
     //To Override
     doSaveAction: function(isApply) {
         Ext.MessageBox.hide();
-        if(Ung.Util.handleException(exception)) return;
         if (!isApply) {
             this.closeWindow();
-            return;
         } else {
             this.clearDirty();
             if(Ext.isFunction(this.afterSave)) {
@@ -4842,7 +4840,7 @@ Ext.define('Ung.Breadcrumbs', {
                 }
                 var crumb = this.elements[i];
                 if (crumb.action) {
-                    var crumbEl = document.createElement("span");;
+                    var crumbEl = document.createElement("span");
                     crumbEl.className = 'breadcrumb-link';
                     crumbEl.innerHTML = crumb.title;
                     crumbEl = Ext.get(crumbEl);
@@ -5104,7 +5102,7 @@ Ext.define('Ung.RuleBuilder', {
             width: 600,
             anchor: "98%"
         });
-        this.selModel= Ext.create('Ext.selection.Model',{});;
+        this.selModel= Ext.create('Ext.selection.Model',{});
         this.tbar = [{
             iconCls: 'icon-add-row',
             text: this.settingsCmp.i18n._("Add"),

@@ -2,114 +2,107 @@ if (!Ung.hasResource["Ung.LocalDirectory"]) {
     Ung.hasResource["Ung.LocalDirectory"] = true;
 
     Ext.define('Ung.LocalDirectory', {
-        extend:'Ung.ConfigWin',
-        fnCallback:null,
-        gridUsers : null,
-        initComponent : function() {
+        extend: 'Ung.ConfigWin',
+        fnCallback: null,
+        gridUsers: null,
+        initComponent: function() {
             this.breadcrumbs = [{
-                title : i18n._("Configuration"),
-                action : Ext.bind(function() {
+                title: i18n._("Configuration"),
+                action: Ext.bind(function() {
                     this.cancelAction();
-                },this)
-            }, 
-            {
-                title : i18n._('Local Directory')
+                }, this)
+            }, {
+                title: i18n._('Local Directory')
             }];
             this.buildLocalDirectory();
             // builds the tab panel with the tabs
             this.buildTabPanel([this.gridUsers]);
             this.tabs.setActiveTab(this.gridUsers);
-            Ung.LocalDirectory.superclass.initComponent.call(this);
+            this.callParent(arguments);
         },
-        
-        buildLocalDirectory : function() {
-                        
+        buildLocalDirectory: function() {
             this.gridUsers = Ext.create('Ung.EditorGrid',{
-                name : 'Local Users',
-                helpSource : 'local_directory',
-                title : this.i18n._('Local Users'),
+                name: 'Local Users',
+                helpSource: 'local_directory',
+                title: this.i18n._('Local Users'),
                 hasImportExport: false, /* password not actually in grid - cant export */
-                settingsCmp : this,
-                height : 500,
-                paginated : false,
-                emptyRow : {
-                    "username" : this.i18n._('[no ID/login]'),
-                    "firstName" : this.i18n._('[firstName ]'),
-                    "lastName" : this.i18n._('[lastName]'),
-                    "email" : this.i18n._('[no email]'),
-                    "password" : "",
-                    "javaClass" : "com.untangle.uvm.LocalDirectoryUser"
+                settingsCmp: this,
+                height: 500,
+                paginated: false,
+                emptyRow: {
+                    "username": this.i18n._('[no ID/login]'),
+                    "firstName": this.i18n._('[firstName ]'),
+                    "lastName": this.i18n._('[lastName]'),
+                    "email": this.i18n._('[no email]'),
+                    "password": "",
+                    "javaClass": "com.untangle.uvm.LocalDirectoryUser"
                 },
-                recordJavaClass : "com.untangle.uvm.LocalDirectoryUser",
-                dataFn :Ext.bind( function() {
+                recordJavaClass: "com.untangle.uvm.LocalDirectoryUser",
+                dataFn:Ext.bind( function() {
                     var storeData=main.getLocalDirectory().getUsers().list;
                     for(var i=0; i<storeData.length; i++) {
                         storeData[i].password = "***UNCHANGED***";
                     }
                     return storeData;
-                },this),            
+                }, this),            
                 dataRoot: null,
                 autoGenerateId: true,
-                fields : [{
-                    name : 'username'
+                fields: [{
+                    name: 'username'
                 }, {
-                    name : 'firstName'
+                    name: 'firstName'
                 }, {
-                    name : 'lastName'
+                    name: 'lastName'
                 }, {
-                    name : 'email'
+                    name: 'email'
                 }, {
-                    name : 'password'
+                    name: 'password'
                 }, {
-                    name : 'javaClass'
+                    name: 'javaClass'
                 }],
-                columns : [{
-                    header : this.i18n._("user/login ID"),
-                    width : 140,
-                    dataIndex : 'username',
+                columns: [{
+                    header: this.i18n._("user/login ID"),
+                    width: 140,
+                    dataIndex: 'username',
                     editor: {
-                        xtype:'textfield',
-                        allowBlank : false,
+                        xtype: 'textfield',
+                        allowBlank: false,
                         regex: /^[\w ]+$/,
                         regexText: this.i18n._("The field user/login ID can have only alphanumeric characters.")
                     }
-                }, 
-                {
-                    header : this.i18n._("first name"),
-                    width : 120,
-                    dataIndex : 'firstName',
+                }, {
+                    header: this.i18n._("first name"),
+                    width: 120,
+                    dataIndex: 'firstName',
                     editor: {
                         xtype:'textfield',
-                        allowBlank : false
+                        allowBlank: false
                     }
-                }, 
-                {
-                    header : this.i18n._("last name"),
-                    width : 120,
-                    dataIndex : 'lastName',
+                }, {
+                    header: this.i18n._("last name"),
+                    width: 120,
+                    dataIndex: 'lastName',
                     editor: {
-                        xtype:'textfield'
+                        xtype: 'textfield'
                     }                    
-                }
-                ,
-                {
-                    header : this.i18n._("email address"),
-                    width : 250,
-                    dataIndex : 'email',
+                }, {
+                    header: this.i18n._("email address"),
+                    width: 250,
+                    dataIndex: 'email',
                     flex:1,
                     editor: {
-                        xtype:'textfield'
+                        xtype:'textfield',
+                        vtype: 'email'
                     }
-                }, 
-                {
-                    header : this.i18n._("password"),
-                    width : 150,
-                    dataIndex : 'password',
+                }, {
+                    header: this.i18n._("password"),
+                    width: 150,
+                    dataIndex: 'password',
                     editor: {
                         xtype:'textfield',
                         inputType:'password'
                     },
-                    renderer : function(value, metadata, record) {
+                    renderer: function(value, metadata, record) {
                         var result = "";
                         for(var i=0; value != null && i<value.length; i++) {
                             result = result + "*";
@@ -117,60 +110,55 @@ if (!Ung.hasResource["Ung.LocalDirectory"]) {
                         return result;
                     }
                 }],
-                sortField : 'username',
-                columnsDefaultSortable : true,
-                rowEditorInputLines : [
+                sortField: 'username',
+                columnsDefaultSortable: true,
+                rowEditorInputLines: [
                 {
                     xtype:'textfield',
-                    name : "User/Login ID",
+                    name: "User/Login ID",
                     dataIndex: "username",
-                    fieldLabel : this.i18n._("User/Login ID"),
-                    allowBlank : false,
+                    fieldLabel: this.i18n._("User/Login ID"),
+                    allowBlank: false,
                     regex: /^[\w ]+$/,
                     regexText: this.i18n._("The field user/login ID can have only alphanumeric character."),
-                    width : 300
+                    width: 300
                 }, 
                 {
                     xtype:'textfield',
-                    name : "First Name",
+                    name: "First Name",
                     dataIndex: "firstName",
-                    fieldLabel : this.i18n._("First Name"),
-                    allowBlank : false,
-                    width : 300
+                    fieldLabel: this.i18n._("First Name"),
+                    allowBlank: false,
+                    width: 300
                 },
                 {
                     xtype:'textfield',
-                    name : "Last Name",
+                    name: "Last Name",
                     dataIndex: "lastName",
-                    fieldLabel : this.i18n._("Last Name"),
-                    width : 300
+                    fieldLabel: this.i18n._("Last Name"),
+                    width: 300
                 },
                 {
                     xtype:'textfield',
-                    name : "Email Address",
+                    name: "Email Address",
                     dataIndex: "email",
-                    fieldLabel : this.i18n._("Email Address"),
-                    width : 300
+                    fieldLabel: this.i18n._("Email Address"),
+                    vtype: 'email',
+                    width: 300
                 },
                 {
                     xtype:'textfield',
                     inputType: 'password',
-                    name : "Password",
+                    name: "Password",
                     dataIndex: "password",
-                    fieldLabel : this.i18n._("Password"),
-                    width : 300
+                    fieldLabel: this.i18n._("Password"),
+                    width: 300
                 }]
             });
 
         },
-        
-        validateClient : function()
-        {
-            return  this.validateLocalDirectoryUsers();
-        },
-        
-        //validate local directory users
-        validateLocalDirectoryUsers : function() {
+        validate: function() {
+            //validate local directory users
             var listUsers = this.gridUsers.getFullSaveList();
             
             for(var i=0; i<listUsers.length;i++) {
@@ -180,7 +168,7 @@ if (!Ung.hasResource["Ung.LocalDirectory"]) {
                         Ext.MessageBox.alert(this.i18n._('Warning'), Ext.String.format(this.i18n._('The login name "{0}" at row {1} has already been taken.'), listUsers[j].username, j+1),
                             Ext.bind(function () {
                                 this.tabs.setActiveTab(this.gridUsers);
-                            },this) 
+                            }, this) 
                         );
                         return false;
                     }
@@ -190,7 +178,7 @@ if (!Ung.hasResource["Ung.LocalDirectory"]) {
                     Ext.MessageBox.alert(this.i18n._('Warning'), Ext.String.format(this.i18n._('The login name at row {0} must not contain forward slash character.'), i+1),
                         Ext.bind(function () {
                             this.tabs.setActiveTab(this.gridUsers);
-                        },this) 
+                        }, this) 
                     );
                     return false;
                 }
@@ -199,7 +187,7 @@ if (!Ung.hasResource["Ung.LocalDirectory"]) {
                     Ext.MessageBox.alert(this.i18n._('Warning'), Ext.String.format(this.i18n._('The first name at row {0} must not contain any space characters.'), i+1),
                         Ext.bind(function () {
                             this.tabs.setActiveTab(this.gridUsers);
-                        },this) 
+                        }, this) 
                     );
                     return false;
                 }
@@ -208,7 +196,7 @@ if (!Ung.hasResource["Ung.LocalDirectory"]) {
                     Ext.MessageBox.alert(this.i18n._('Warning'), Ext.String.format(this.i18n._('The last name at row {0} must not contain any space characters.'), i+1),
                         Ext.bind(function () {
                             this.tabs.setActiveTab(this.gridUsers);
-                        },this) 
+                        }, this) 
                     );
                     return false;
                 }
@@ -217,7 +205,7 @@ if (!Ung.hasResource["Ung.LocalDirectory"]) {
                     Ext.MessageBox.alert(this.i18n._('Warning'), Ext.String.format(this.i18n._('The password at row {0} must be at least 1 character long.'), i+1),
                         Ext.bind(function () {
                             this.tabs.setActiveTab(this.gridUsers);
-                        },this) 
+                        }, this) 
                     );
                     return false;
                 }
@@ -226,57 +214,27 @@ if (!Ung.hasResource["Ung.LocalDirectory"]) {
                     Ext.MessageBox.alert(this.i18n._('Warning'), Ext.String.format(this.i18n._('The password at row {0} must not contain any space characters.'), i+1),
                         Ext.bind(function () {
                             this.tabs.setActiveTab(this.gridUsers);
-                        },this) 
+                        }, this) 
                     );
                     return false;
                 }
             }
-            
             return true;
         },
-
-        applyAction : function()
-        {
-            this.commitSettings(Ext.bind(function(){ this.gridUsers.clearDirty();},this));
-        },
-        saveAction : function()
-        {
-            this.commitSettings(Ext.bind(this.completeSaveAction,this));
-        },
-
-        completeSaveAction : function()
-        {
-            // exit settings screen
-            Ext.MessageBox.hide();
-            this.closeWindow();
-            if(this.fnCallback) {
-                this.fnCallback.call();
-            }
-        },
-        
-        // save function
-        commitSettings : function(callback)
-        {
-            if (!this.validate()) {
-                return;
-            }
-            Ext.MessageBox.show({
-                title : this.i18n._('Please wait'),
-                msg : this.i18n._('Saving...'),
-                modal : true,
-                wait : true,
-                waitConfig: {interval: 100},
-                progressText : " ",
-                width : 200
-            });
-            //save local users            
+        doSaveAction: function (isApply) {
             main.getLocalDirectory().setUsers(Ext.bind(function(result, exception) {
+                Ext.MessageBox.hide();
                 if(Ung.Util.handleException(exception)) return;
-                callback();
-            },this), this.gridUsers ? {javaClass:"java.util.LinkedList",list:this.gridUsers.getFullSaveList()} : null);
+                if (!isApply) {
+                    this.closeWindow();
+                    if(this.fnCallback) {
+                        this.fnCallback.call();
+                    }
+                } else {
+                    this.clearDirty();
+                }
+            }, this), {javaClass:"java.util.LinkedList",list:this.gridUsers.getFullSaveList()});
         }
-       
     });
-
 }
 //@ sourceURL=localDirectoryNew.js
