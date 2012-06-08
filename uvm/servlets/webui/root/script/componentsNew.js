@@ -184,7 +184,7 @@ Ext.define("Ung.form.TimeField", {
         /* Save the store before init to determin if one was passed in */
         var store = this.store;
 
-        Ung.form.TimeField.superclass.initComponent.call(this);
+        this.callParent(arguments);
         
         /* If necesary, add the last minute of the day. */
         if ( this.endTime && store != null && this.maxValue == null && this.minValue == null && this.format == "H:i" ) {
@@ -192,7 +192,7 @@ Ext.define("Ung.form.TimeField", {
         }
     },
     getValue: function() {
-        var retVal = Ung.form.TimeField.superclass.getValue.call(this);
+        var retVal = this.callParent(arguments);
         if ( retVal instanceof Date) {
             return Ext.Date.format(retVal,"H:i");
         }
@@ -307,8 +307,7 @@ Ext.define("Ung.form.DayOfWeekMatcherField", {
                 item.checked = true;
             }
         }
-
-        Ung.form.DayOfWeekMatcherField.superclass.initComponent.call(this);
+        this.callParent(arguments);
     },
     getValue: function() {
         var checkCount = 0;
@@ -990,7 +989,7 @@ Ext.define("Ung.Util.InterfaceCombo", {
         }
         this.store = Ung.Util.getInterfaceStore( this.simpleMatchers );
 
-        Ung.Util.InterfaceCombo.superclass.initComponent.call(this);
+        this.callParent(arguments);
     },
     displayField: 'name',
     valueField: 'key',
@@ -1004,7 +1003,7 @@ Ext.define("Ung.Util.ProtocolCombo", {
     extend: "Ext.form.ComboBox",
     initComponent: function() {
         this.store = Ung.Util.getProtocolStore();
-        Ung.Util.ProtocolCombo.superclass.initComponent.call(this);
+        this.callParent(arguments);
     },
     displayField: 'name',
     valueField: 'key',
@@ -1782,12 +1781,12 @@ Ext.define("Ung.Node", {
                 }]
             });
         }
-        this.settingsWin.addListener("hide",Ext.bind(function() { 
-                                                if ( Ext.isFunction(this.beforeClose)) {
-                                                    this.beforeClose();
-                                                }
-                                                this.destroy();
-                                            }, this.settingsWin));
+        this.settingsWin.addListener("hide", Ext.bind(function() {
+            if ( Ext.isFunction(this.beforeClose)) {
+                this.beforeClose();
+            }
+            this.destroy();
+        }, this.settingsWin));
         this.settingsWin.show();
         Ext.MessageBox.hide();
     },
@@ -2611,6 +2610,9 @@ Ext.define("Ung.FaceplateMetric", {
                     if(sub>0) {
                         this.setPosition( pos[0],pos[1]-sub);
                     }
+                },
+                closeWindow: function() {
+                    this.hide();
                 }
             });
         }
@@ -3112,8 +3114,6 @@ Ext.define('Ung.Window', {
     title: null,
     // breadcrumbs
     breadcrumbs: null,
-    // function called by close action
-    closeAction: 'cancelAction',
     draggable: false,
     resizable: false,
     // sub componetns - used by destroy function
@@ -3126,19 +3126,22 @@ Ext.define('Ung.Window', {
         autoScroll: true,
         autoWidth: true
     },
-
     constructor: function(config) {
+        var defaults = {
+            closeAction: 'cancelAction' 
+        }
+        Ext.applyIf(config, defaults)
         this.subCmps = [];
-        Ung.Window.superclass.constructor.apply(this, arguments);
+        this.callParent(arguments);
     },
     initComponent: function() {
         if (!this.title) {
             this.title = '<span id="title_' + this.getId() + '"></span>';
         }
-        Ung.Window.superclass.initComponent.call(this);
+        this.callParent(arguments);
     },
     afterRender: function() {
-        Ung.Window.superclass.afterRender.call(this);
+        this.callParent(arguments);
         if (this.name && this.getEl()) {
             this.getEl().set({
                 'name': this.name
@@ -3155,7 +3158,7 @@ Ext.define('Ung.Window', {
 
     beforeDestroy: function() {
         Ext.each(this.subCmps, Ext.destroy);
-        Ung.Window.superclass.beforeDestroy.call(this);
+        this.callParent(arguments);
     },
     // on show position and size
     show: function() {
@@ -3180,13 +3183,19 @@ Ext.define('Ung.Window', {
     cancelAction: function() {
         if (this.isDirty()) {
             Ext.MessageBox.confirm(i18n._('Warning'), i18n._('There are unsaved settings which will be lost. Do you want to continue?'),
-                    Ext.bind(function(btn) {
-                    if (btn == 'yes') {
-                        this.closeWindow();
-                    }
-                }, this));
+                Ext.bind(function(btn) {
+                if (btn == 'yes') {
+                    this.closeWindow();
+                }
+            }, this));
         } else {
             this.closeWindow();
+        }
+    },
+    close: function() {
+        //Need to override default Ext.Window method to fix issue #10238
+        if (this.fireEvent('beforeclose', this) !== false) {
+            this.cancelAction();
         }
     },
     // the close window action
@@ -3260,10 +3269,6 @@ Ext.define("Ung.SettingsWin", {
             }
         }
         main.openHelp(helpSource);
-    },
-    closeWindow: function() {
-        this.hide();
-        Ext.destroy(this);
     },
     isDirty: function() {
         return this.dirtyFlag || Ung.Util.isDirty(this.tabs);
@@ -3391,10 +3396,6 @@ Ext.define("Ung.NodeWin", {
     },
     removeAction: function() {
         this.node.removeAction();
-    },
-    closeWindow: function() {
-        this.hide();
-        Ext.destroy(this);
     },
     // get rpcNode object
     getRpcNode: function() {
@@ -3549,7 +3550,7 @@ Ext.define("Ung.StatusWin", {
         this.id = "statusWin_" + config.name;
         // for config elements we have the untangle-libuvm translation map
         this.i18n = i18n;
-        Ung.StatusWin.superclass.constructor.apply(this, arguments);
+        this.callParent(arguments);
     },
     initComponent: function() {
         if (!this.name) {
@@ -3574,7 +3575,7 @@ Ext.define("Ung.StatusWin", {
                 }, this)
             },"-"];
         }
-        Ung.StatusWin.superclass.initComponent.call(this);
+        this.callParent(arguments);
     }
 });
 
@@ -3612,7 +3613,7 @@ Ext.define('Ung.UpdateWindow', {
                 }, this)
             },'-'];
         }
-        Ung.UpdateWindow.superclass.initComponent.call(this);
+        this.callParent(arguments);
     },
     // the update actions
     // to override
@@ -3962,7 +3963,7 @@ Ext.define('Ung.grid.EditColumn', {
         if (!config.width) {
             config.width = 50;
         }
-        Ung.grid.EditColumn.superclass.constructor.call(this,config);
+        this.callParent(arguments);
     },
     init: function(grid) {
         this.grid = grid;
@@ -3986,7 +3987,7 @@ Ext.define('Ung.grid.DeleteColumn', {
         if (!config.width) {
             config.width = 55;
         }
-        Ung.grid.DeleteColumn.superclass.constructor.call(this,config);
+        this.callParent(arguments);
     },
     init:function(grid) {
         this.grid=grid;
@@ -4243,7 +4244,7 @@ Ext.define('Ung.EditorGrid', {
                 handler: Ext.bind(this.exportHandler, this)
             },'-');        
         }
-        Ung.EditorGrid.superclass.initComponent.call(this);
+        this.callParent(arguments);
     },
     stopEditing: function() {
         //added for compatimbilty
@@ -4393,10 +4394,10 @@ Ext.define('Ung.EditorGrid', {
     },
     beforeDestroy: function() {
         Ext.each(this.subCmps, Ext.destroy);
-        Ung.EditorGrid.superclass.beforeDestroy.call(this);
+        this.callParent(arguments);
     },
     afterRender: function() {
-        Ung.EditorGrid.superclass.afterRender.call(this);
+        this.callParent(arguments);
         var grid=this;
         this.getView().getRowClass = function(record, index, rowParams, store) {
             var id = record.get("id");
@@ -4837,7 +4838,7 @@ Ext.define('Ung.Breadcrumbs', {
     // ---Node specific attributes------
     elements: null,
     onRender: function(container, position) {
-        Ung.Breadcrumbs.superclass.onRender.call(this, container, position);
+        this.callParent(arguments);
         if (this.elements != null) {
             for (var i = 0; i < this.elements.length; i++) {
                 if (i > 0) {
