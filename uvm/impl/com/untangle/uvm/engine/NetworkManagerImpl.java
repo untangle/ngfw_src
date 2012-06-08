@@ -67,7 +67,14 @@ public class NetworkManagerImpl implements NetworkManager
             updateLinkStatus();
         } catch ( Exception e ) {
             logger.error( "Exception initializing settings, using reasonable defaults", e );
+            this.networkConfiguration = new NetworkConfiguration();
+            this.networkConfiguration.setHostname("hostname.example.com");
+            this.networkConfiguration.setInterfaceList(new LinkedList<InterfaceConfiguration>());
+            this.networkConfiguration.setDnsServerEnabled(true);
+            this.networkConfiguration.setDnsLocalDomain("example.com");
+            this.networkConfiguration.setDhcpServerEnabled(true);
         }
+
     }
 
     public void updateLinkStatus()

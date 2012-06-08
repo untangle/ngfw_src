@@ -58,6 +58,9 @@ public class InterfaceTester
     {
         logger.debug( "Updating link status" );
 
+        if (settings == null)
+            return;
+        
         String[] args = getArgs( settings );
 
         Map<String,String> statusMap;

@@ -360,7 +360,10 @@ class MailSenderImpl implements MailSender
         File exim_dir = new File(EXIM_CONF_DIR);
         if (exim_dir.isDirectory()) {
 
-            String hostName = UvmContextFactory.context().networkManager().getNetworkConfiguration().getHostname().toString();
+            NetworkConfiguration netConf = UvmContextFactory.context().networkManager().getNetworkConfiguration();
+            String hostName = null;
+            if (netConf != null)
+                hostName = netConf.getHostname();
             if (hostName == null) {
                 logger.warn("null hostname, using untangle-server");
                 hostName = "untangle-server";
