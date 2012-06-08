@@ -2253,16 +2253,8 @@ Ext.define("Ung.SystemStats", {
                 xtype: 'button',
                 name: 'Sessions',
                 text: i18n._('Show Sessions'),
-                handler: function() {
-                    Ext.MessageBox.wait(i18n._("Loading..."), i18n._("Please wait"));
-                    Ext.Function.defer(Ung.Util.loadResourceAndExecute,1, this,["Ung.SessionMonitor",Ung.Util.getScriptSrc("script/config/sessionMonitorNew.js"), function() {
-                        main.sessionMonitorWin=new Ung.SessionMonitor({"name":"sessionMonitor", "helpSource":"session_viewer"});
-                        main.sessionMonitorWin.show();
-                        Ext.MessageBox.hide();
-                    }]);
-                }
+                handler: main.showSessions
             }
-            
         });
 
         // cpu tooltip
@@ -2601,8 +2593,8 @@ Ext.define("Ung.FaceplateMetric", {
                         this.configWin.hide();
                     }, this)
                 }],
-                show: function() {
-                    Ung.Window.superclass.show.call(this);
+                onShow: function() {
+                    Ung.Window.superclass.onShow.call(this);
                     this.setSize({width:260,height:280});
                     this.alignTo(this.metricsCmp.getEl(),"tr-br");
                     var pos=this.getPosition();
@@ -3161,11 +3153,11 @@ Ext.define('Ung.Window', {
         this.callParent(arguments);
     },
     // on show position and size
-    show: function() {
+    onShow: function() {
         if (this.sizeToRack) {
             this.setSizeToRack();
         }
-        Ung.Window.superclass.show.call(this);
+        this.callParent(arguments);
     },
     setSizeToRack: function () {
         var objSize = main.viewport.getSize();
@@ -3576,7 +3568,11 @@ Ext.define("Ung.StatusWin", {
             },"-"];
         }
         this.callParent(arguments);
+    },
+    isDirty: function() {
+        return false;   
     }
+
 });
 
 // update window

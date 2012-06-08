@@ -1155,7 +1155,7 @@ Ext.define("Ung.Main", {
         Ext.MessageBox.wait(i18n._("Loading..."), i18n._("Please wait"));
         if ( main.sessionMonitorWin == null) {
             Ext.Function.defer(Ung.Util.loadResourceAndExecute,1, this,["Ung.SessionMonitor",Ung.Util.getScriptSrc("script/config/sessionMonitorNew.js"), function() {
-                main.sessionMonitorWin=new Ung.SessionMonitor({"name":"sessionMonitor", "helpSource":"session_viewer"});
+                main.sessionMonitorWin=Ext.create('Ung.SessionMonitor', {"name":"sessionMonitor", "helpSource":"session_viewer"});
                 main.sessionMonitorWin.show();
                 Ext.MessageBox.hide();
             }]);
