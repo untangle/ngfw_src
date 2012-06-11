@@ -30,8 +30,8 @@ import java.util.concurrent.TimeoutException;
 import org.apache.log4j.Logger;
 
 import com.untangle.uvm.UvmContextFactory;
-import com.untangle.uvm.ExecManagerResult;
 import com.untangle.uvm.ExecManager;
+import com.untangle.uvm.ExecManagerResult;
 import com.untangle.uvm.message.MessageManager;
 import com.untangle.uvm.message.Message;
 import com.untangle.uvm.node.License;
@@ -869,9 +869,9 @@ class ToolboxManagerImpl implements ToolboxManager
         String cmdStr = System.getProperty("uvm.bin.dir") + "/ut-apt " + (0 > key ? "" : "-k " + key + " ") + command;
 
         synchronized(this) {
-            Integer exitCode = this.execManager.execResult(cmdStr);
-            if (exitCode != 0) {
-                throw new PackageException("ut-apt " + command + " exited with: " + exitCode);
+            ExecManagerResult result = this.execManager.exec(cmdStr);
+            if (result.getResult() != 0) {
+                throw new PackageException("ut-apt " + command + " error (" + result.getResult() + ") :" + result.getOutput());
             }
         }
 
