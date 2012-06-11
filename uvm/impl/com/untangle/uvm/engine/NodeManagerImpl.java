@@ -246,12 +246,6 @@ public class NodeManagerImpl implements NodeManager
             if (packageDesc == null) 
                 throw new DeployException("Null packageDesc: " + nodeName);
 
-            /**
-             * Check instance count - don't allow dupes
-             */
-            if ( nodeInstances( nodeProperties.getName(), nodeSettings.getPolicyId(), false ).size() >= 1 ) 
-                throw new DeployException("too many instances: " + nodeName);
-            
             node = NodeBase.loadClass(nodeProperties, nodeSettings, packageDesc, true);
 
             if (node != null) {
