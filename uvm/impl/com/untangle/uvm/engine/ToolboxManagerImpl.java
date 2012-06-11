@@ -748,8 +748,9 @@ class ToolboxManagerImpl implements ToolboxManager
         StringBuilder key = new StringBuilder();
         StringBuilder value = new StringBuilder();
         List<String> hidePkgs = new LinkedList<String>();
-        if (System.getProperty("uvm.hidden.libitems") != null) {
-            String[] libitems = System.getProperty("uvm.hidden.libitems").split(",");
+        String hiddenLibitems = UvmContextFactory.context().oemManager().getHiddenLibitems();
+        if (hiddenLibitems != null) {
+            String[] libitems = hiddenLibitems.split(",");
             hidePkgs = Arrays.asList(libitems);
         }
 

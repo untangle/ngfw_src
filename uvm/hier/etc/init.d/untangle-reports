@@ -12,12 +12,7 @@
 
 source /lib/lsb/init-functions
 
-if [ -f @PREFIX@/etc/untangle/oem/oem.sh ] ; then
-    source @PREFIX@/etc/untangle/oem/oem.sh
-else
-    OEM_NAME="Untangle"
-fi
-
+OEM_NAME="Untangle"
 DESC="${OEM_NAME} Reports"
 NAME="reports"
 DAEMON="@PREFIX@/usr/share/untangle/bin/reporting-wrapper.sh"

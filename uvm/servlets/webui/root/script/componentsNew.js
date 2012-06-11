@@ -411,7 +411,7 @@ Ung.Util = {
             /* special text for apt error */
             if (exception.name == "com.untangle.uvm.toolbox.PackageInstallException" && (exception.message.indexOf("exited with") >= 0)) {
                 message  = i18n._("The server is unable to properly communicate with the app store.") + "<br/>";
-                message += i18n._("Check internet connectivity and network settings.") + "<br/>";
+                message += i18n._("Check internet connectivity and the network/DNS settings.") + "<br/>";
                 message += i18n._("Check that the server is fully up to date.") + "<br/>";
                 message += i18n._("<br/>");
                 message =  i18n._("Unable to contact app store") + ":<br/>";
@@ -422,7 +422,7 @@ Ung.Util = {
                 message  = i18n._("Unable to contact the app store") + ":<br/>";
                 message += i18n._("Connection timed out") + "<br/>";
                 message += i18n._("<br/>");
-                message += i18n._("Check internet connectivity and network settings.") + "<br/>";
+                message += i18n._("Check internet connectivity and network/DNS settings.") + "<br/>";
                 message += i18n._("An error has occured: ") + exception.message + "<br/>";
             }
             /* special text for rack error */

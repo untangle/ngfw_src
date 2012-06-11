@@ -5,83 +5,56 @@ package com.untangle.uvm.engine;
 
 import org.apache.log4j.Logger;
 
-import java.util.Enumeration;
-import java.util.Properties;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.FileNotFoundException;
-
+import com.untangle.uvm.UvmContextFactory;
+import com.untangle.uvm.SettingsManager;
 import com.untangle.uvm.OemManager;
+import com.untangle.uvm.OemSettings;
 
 /**
- * OemManagerImpl opens up the OEM properties file and overwrites any current properties with the OEM settings
+ * OemManagerImpl determines the OEM name and URL
  */
 class OemManagerImpl implements OemManager
 {
-    private static final String OEM_PROPERTIES_FILE = "/etc/untangle/oem/oem.properties";
-
-    private static final String OEM_PROPERTY_NAME = "uvm.oem.name";
-    private static final String OEM_PROPERTY_URL = "uvm.oem.url";
-
     private final Logger logger = Logger.getLogger(getClass());
 
-    private final Properties props;
+    private OemSettings settings;
     
     public OemManagerImpl()
     {
-        /**
-         * FIXME Need to check for a valid OEM license here
-         */
-        boolean validOemLicense = true; 
-        
-        this.props = new Properties();
+        SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
+        OemSettings readSettings = null;
+        String settingsFileName = System.getProperty("uvm.conf.dir") + "/" + "oem";
 
-        if (validOemLicense) {
-            try {
-                logger.info("Loading OEM properties file: " + OEM_PROPERTIES_FILE);
-                File propsFile = new File(OEM_PROPERTIES_FILE);
-                FileInputStream is = new FileInputStream(propsFile);
-                props.load(is);
-                is.close();
-            } catch (FileNotFoundException e) {
-                logger.info("No OEM properties file found.");
-            }
-            catch (IOException e) {
-                logger.error("Exception reading OEM properties file",e); 
-            }
+        try {
+            readSettings = settingsManager.load( OemSettings.class, settingsFileName );
+        } catch (SettingsManager.SettingsException e) {
+            logger.warn("Failed to load settings:",e);
         }
 
-        /**
-         * Set the defaults if they have not been set
-         */
-        if (props.getProperty(OEM_PROPERTY_NAME) == null) {
-            logger.info("Loading OEM Name default");
-            props.setProperty(OEM_PROPERTY_NAME,"Untangle");
-        }
-        if (props.getProperty(OEM_PROPERTY_URL) == null) {
-            logger.info("Loading OEM URL  default");
-            props.setProperty(OEM_PROPERTY_URL,"http://untangle.com/");
-        }
+        if (readSettings != null)
+            this.settings = readSettings;
+        else
+            this.settings = new OemSettings("Untangle","http://untangle.com");
 
-        Enumeration<Object> e = props.keys();
-        while(e.hasMoreElements()) {
-            String key = (String)e.nextElement();
-            logger.info("Setting OEM property " + key +  " = " + props.getProperty(key));
-            System.setProperty(key,props.getProperty(key));
-        }
+        logger.info("OEM: " + this.settings.getOemName());
     }
 
     @Override
     public String getOemName()
     {
-        return props.getProperty(OEM_PROPERTY_NAME);
+        return this.settings.getOemName();
     }
 
     @Override
     public String getOemUrl()
     {
-        return props.getProperty(OEM_PROPERTY_URL);
+        return this.settings.getOemUrl();
+    }
+
+    @Override
+    public String getHiddenLibitems()
+    {
+        return this.settings.getHiddenLibitems();
     }
     
 }

@@ -11,12 +11,7 @@
 
 . /lib/lsb/init-functions
 
-if [ -f @PREFIX@/etc/untangle/oem/oem.sh ] ; then
-    source @PREFIX@/etc/untangle/oem/oem.sh
-else
-    OEM_NAME="Untangle"
-fi
-
+OEM_NAME="Untangle"
 DESC="${OEM_NAME} VM"
 UVM_LOGDIR=${UVM_LOGDIR:-/var/log/uvm}
 UVM_RUNDIR=${UVM_RUNDIR:-/var/run}

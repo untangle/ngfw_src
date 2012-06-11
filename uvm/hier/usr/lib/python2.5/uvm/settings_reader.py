@@ -47,33 +47,29 @@ def get_node_settings(nodename):
 #-----------------------------------------------------------------------------
 
 def get_node_settings_item(nodename,itemname):
-
-    settings = get_node_settings(nodename)
-
-    if (settings == None):
-        return(None)
-
-    if (not settings.has_key(itemname)):
-        return(None)
-
-    value = settings[itemname]
-    return(value)
+    return get_settings_item(get_node_settings(nodename), itemname)
 
 #-----------------------------------------------------------------------------
 
 def get_uvm_settings(basename):
-
     basefile = "@PREFIX@/usr/share/untangle/settings/untangle-vm/" + basename + ".js"
+    return get_settings(basefile)
 
-    # find the settings for the argumented base name
+#-----------------------------------------------------------------------------
+
+def get_uvm_settings_item(basename,itemname):
+    return get_settings_item(get_uvm_settings(basename), itemname)
+
+#-----------------------------------------------------------------------------
+
+def get_settings(filename):
     try:
-
         # read the settings
-        file = open(basefile, "r")
+        file = open(filename, "r")
         data = file.read()
         file.close()
 
-        # pares the settings
+        # parse the settings
         baseinfo = json.loads(data)
 
     # for all exceptions we just return empty
@@ -85,15 +81,13 @@ def get_uvm_settings(basename):
 
 #-----------------------------------------------------------------------------
 
-def get_uvm_settings_item(basename,itemname):
+def get_settings_item(jsonObj,itemname):
 
-    settings = get_uvm_settings(basename)
-
-    if (settings == None):
+    if (jsonObj == None):
         return(None)
 
-    if (not settings.has_key(itemname)):
+    if (not jsonObj.has_key(itemname)):
         return(None)
 
-    value = settings[itemname]
+    value = jsonObj[itemname]
     return(value)

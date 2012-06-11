@@ -475,21 +475,16 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
     @Override
     protected void init()
     {
-        this.execManager = new ExecManagerImpl();
-
-        this.oemManager = new OemManagerImpl();
-
-        this.backupManager = new BackupManager();
-        
-        this.uploadManager = new UploadManagerImpl();
-        
-        this.settingsManager = new SettingsManagerImpl();
-        
-        this.sessionMonitor = new SessionMonitorImpl();
-        
         this.serializer = new JSONSerializer();
         serializer.setFixupDuplicates(false);
         serializer.setMarshallNullAttributes(false);
+
+        this.execManager = new ExecManagerImpl();
+
+        this.settingsManager = new SettingsManagerImpl();
+        
+        this.sessionMonitor = new SessionMonitorImpl();
+
         try {
             ServletUtils.getInstance().registerSerializers(serializer);
             settingsManager.setSerializer(serializer);
@@ -499,7 +494,12 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
             throw new IllegalStateException("register serializers should never fail!", e);
         }
         
+        this.backupManager = new BackupManager();
+        
+        this.uploadManager = new UploadManagerImpl();
         uploadManager.registerHandler(new RestoreUploadHandler());
+        
+        this.oemManager = new OemManagerImpl();
 
         this.cronManager = new CronManager();
 
@@ -507,15 +507,10 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
 
         InheritableThreadLocal<HttpServletRequest> threadRequest = new InheritableThreadLocal<HttpServletRequest>();
 
-        this.tomcatManager = new TomcatManagerImpl(this, threadRequest,
-                                                   System.getProperty("uvm.home"),
-                                                   System.getProperty("uvm.web.dir"),
-                                                   System.getProperty("uvm.log.dir"));
+        this.tomcatManager = new TomcatManagerImpl(this, threadRequest, System.getProperty("uvm.home"), System.getProperty("uvm.web.dir"), System.getProperty("uvm.log.dir"));
 
-        // start services:
         this.adminManager = new AdminManagerImpl();
 
-        // initialize the network Manager
         this.networkManager = new NetworkManagerImpl();
 
         this.defaultLicenseManager = new DefaultLicenseManagerImpl();
@@ -534,11 +529,10 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
         
         this.languageManager = new LanguageManagerImpl();
 
-        // start nodes:
+        this.systemManager = new SystemManagerImpl();
+
         this.nodeManager = new NodeManagerImpl();
 
-        this.systemManager = new SystemManagerImpl();
-        
         this.messageManager = new MessageManagerImpl();
 
         // Retrieve the reporting configuration manager
@@ -554,7 +548,7 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
 
         this.alertManager = new AlertManagerImpl();
         
-        // start vectoring:
+        // start vectoring
         Argon.getInstance().run( );
 
         // Start statistic gathering

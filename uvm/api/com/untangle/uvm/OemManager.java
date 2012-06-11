@@ -14,4 +14,9 @@ public interface OemManager
      * Return the OEM Url
      */
     public String getOemUrl();
+
+    /**
+     * Return a comma separated list of libitems to be hidden
+     */
+    public String getHiddenLibitems();
 }

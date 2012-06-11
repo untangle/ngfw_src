@@ -2,11 +2,7 @@
 #
 # OEM configuration
 #
-if [ -f @PREFIX@/etc/untangle/oem/oem.sh ] ; then
-    source @PREFIX@/etc/untangle/oem/oem.sh
-else
-    OEM_NAME="Untangle"
-fi
+OEM_NAME="Untangle"
 
 
 

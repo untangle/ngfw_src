@@ -50,6 +50,7 @@ from email.MIMEBase import MIMEBase
 from email.MIMEImage import MIMEImage
 from email.MIMEMultipart import MIMEMultipart
 from email.MIMEText import MIMEText
+from uvm.settings_reader import get_settings_item
 from uvm.settings_reader import get_node_settings_item
 from uvm.settings_reader import get_uvm_settings_item
 
@@ -187,10 +188,9 @@ WHERE target_state = 'running' OR target_state = 'initialized'
 def __get_branding_info():
     company = "Untangle"
 
-    if (os.path.isfile("/etc/untangle/oem/oem.py")):
-        sys.path.append("/etc/untangle/oem")
-        import oem
-        company = oem.oemName()
+    oemName = get_settings_item("/usr/share/untangle/conf/oem.js","oemName")
+    if oemName != None:
+        company = oemName
 
     brandco = get_node_settings_item('untangle-node-branding','companyName')
     if (brandco != None):
