@@ -798,7 +798,11 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
         if (f.exists()) {
             f.delete();
         }
-            
+
+        /**
+         * Re-read network config
+         */
+        networkManager.refreshNetworkConfig();
     }
 
     /**

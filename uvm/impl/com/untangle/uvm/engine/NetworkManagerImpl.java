@@ -66,7 +66,7 @@ public class NetworkManagerImpl implements NetworkManager
             /* Update the link status for all of the interfaces */
             updateLinkStatus();
         } catch ( Exception e ) {
-            logger.error( "Exception initializing settings, using reasonable defaults", e );
+            logger.error( "Exception initializing settings, using blank defaults", e );
             this.networkConfiguration = new NetworkConfiguration();
             this.networkConfiguration.setHostname("hostname.example.com");
             this.networkConfiguration.setInterfaceList(new LinkedList<InterfaceConfiguration>());
