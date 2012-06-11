@@ -1,21 +1,6 @@
-/*
- * $HeadURL: svn://chef/work/src/uvm/impl/com/untangle/uvm/engine/ReportingManagerImpl.java $
- * Copyright (c) 2003-2007 Untangle, Inc.
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License, version 2,
- * as published by the Free Software Foundation.
- *
- * This program is distributed in the hope that it will be useful, but
- * AS-IS and WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE, TITLE, or
- * NONINFRINGEMENT.  See the GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
+/**
+ * $Id: ImageServlet.java,v 1.00 2012/06/11 14:54:05 dmorris Exp $
  */
-
 package com.untangle.uvm.servlet;
 
 import java.io.IOException;
@@ -37,8 +22,6 @@ import com.untangle.uvm.UvmContextFactory;
 
 /**
  * A servlet that renders an image
- *
- * @author Catalin Matei <cmatei@untangle.com>
  */
 @SuppressWarnings("serial")
 public class ImageServlet extends HttpServlet

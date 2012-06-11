@@ -33,8 +33,6 @@ import org.jfree.data.time.Minute;
 import org.jfree.data.time.TimeSeries;
 import org.jfree.data.time.TimeSeriesCollection;
 
-import com.untangle.uvm.util.DateTruncator;
-
 public class TimeSeriesChart extends Plot
 {
     private static final DateFormat DF = new SimpleDateFormat("yyyy-MM-dd HH:mm");
@@ -91,8 +89,8 @@ public class TimeSeriesChart extends Plot
             trunc = Calendar.DATE;
             dateFormatStr = "MM-dd";
         }
-        min = DateTruncator.truncateDate(min, trunc, true);
-        max = DateTruncator.truncateDate(max, trunc, false);
+        min = truncateDate(min, trunc, true);
+        max = truncateDate(max, trunc, false);
         logger.debug("... adapted to: " + min + " -> " + max);
         da.setMinimumDate(min);
         da.setMaximumDate(max);
@@ -163,8 +161,8 @@ public class TimeSeriesChart extends Plot
             tickFrequency = 7;
         }
 
-        min = DateTruncator.truncateDate(min, trunc, true);
-        max = DateTruncator.truncateDate(max, trunc, true);
+        min = truncateDate(min, trunc, true);
+        max = truncateDate(max, trunc, true);
         logger.debug("... adapted to: " + min + " -> " + max + " (tickUnit=" + tickUnit + ", tickFrequency=" + tickFrequency);
         da.setMinimumDate(min);
         da.setMaximumDate(max);
@@ -256,4 +254,29 @@ public class TimeSeriesChart extends Plot
         ChartUtilities.saveChartAsPNG(new File(reportBase + "/" + imageUrl), jfChart, CHART_WIDTH, CHART_HEIGHT, null, false, CHART_COMPRESSION_PNG);
 
     }
+
+    private static Date truncateDate(Date date, int where, boolean down)
+    {
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(date);
+	
+        int count = -1;
+        if (where == Calendar.DATE) {
+            count = 4;
+        } else if (where == Calendar.HOUR) {
+            count = 3;
+        } else if (where == Calendar.MINUTE) {
+            count = 2;
+        }
+	    
+        for (int i = 0 ; i <= count ; i++) {
+            cal.set(Calendar.MILLISECOND - i, 0);
+        }
+
+        if (!down)
+            cal.add(where, 1);
+
+        return cal.getTime();
+    }
+
 }

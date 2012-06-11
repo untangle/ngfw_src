@@ -8,9 +8,6 @@ import java.util.List;
 
 /**
  * Manages report generation.
- *
- * @author <a href="mailto:jdi@untangle.com">John Irwin</a>
- * @version 1.0
  */
 public interface ReportingManager
 {
@@ -41,8 +38,6 @@ public interface ReportingManager
     List<List<Object>> getDetailData(Date d, int numDays, String appName, String detailName, String type, String value);
 
     List<List<Object>> getAllDetailData(Date d, int numDays, String appName, String detailName, String type, String value);
-
-    // old stuff ---------------------------------------------------------------
 
     /**
      * Tests if reporting is enabled, that is if reports will be

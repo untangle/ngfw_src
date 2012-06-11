@@ -34,8 +34,6 @@ import org.jfree.data.time.SimpleTimePeriod;
 import org.jfree.data.time.TimePeriod;
 import org.jfree.data.time.TimeTableXYDataset;
 
-import com.untangle.uvm.util.DateTruncator;
-
 public class StackedBarChart extends Plot
 {
     private static DateFormat DF = new SimpleDateFormat("yyyy-MM-dd");
@@ -139,8 +137,8 @@ public class StackedBarChart extends Plot
             tickFrequency = 7;
         }
 
-        min = DateTruncator.truncateDate(min, trunc, true);
-        max = DateTruncator.truncateDate(max, trunc, true);
+        min = truncateDate(min, trunc, true);
+        max = truncateDate(max, trunc, true);
         logger.debug("... adapted to: " + min + " -> " + max + " (tickUnit=" + tickUnit + ", tickFrequency=" + tickFrequency + ")");
         da.setMinimumDate(min);
         da.setMaximumDate(max);
@@ -257,4 +255,29 @@ public class StackedBarChart extends Plot
 
         ChartUtilities.saveChartAsPNG(new File(reportBase + "/" + imageUrl), jfChart, CHART_WIDTH, CHART_HEIGHT, null, false, CHART_COMPRESSION_PNG);
     }
+
+    private static Date truncateDate(Date date, int where, boolean down)
+    {
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(date);
+	
+        int count = -1;
+        if (where == Calendar.DATE) {
+            count = 4;
+        } else if (where == Calendar.HOUR) {
+            count = 3;
+        } else if (where == Calendar.MINUTE) {
+            count = 2;
+        }
+	    
+        for (int i = 0 ; i <= count ; i++) {
+            cal.set(Calendar.MILLISECOND - i, 0);
+        }
+
+        if (!down)
+            cal.add(where, 1);
+
+        return cal.getTime();
+    }
+
 }
