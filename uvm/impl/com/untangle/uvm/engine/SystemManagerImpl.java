@@ -221,12 +221,15 @@ public class SystemManagerImpl implements SystemManager
         SystemSettings newSettings = new SystemSettings();
         newSettings.setInsideHttpEnabled( true );
         newSettings.setOutsideHttpsEnabled( true );
-        if (UvmContextFactory.context().isDevel())
+        if (UvmContextFactory.context().isDevel()) {
             newSettings.setOutsideHttpsAdministrationEnabled( true );
-        else
+            newSettings.setOutsideHttpsQuarantineEnabled( true );
+            newSettings.setOutsideHttpsReportingEnabled( true );
+        } else {
             newSettings.setOutsideHttpsAdministrationEnabled( false );
-        newSettings.setOutsideHttpsQuarantineEnabled( true );
-        newSettings.setOutsideHttpsReportingEnabled( false );
+            newSettings.setOutsideHttpsQuarantineEnabled( true );
+            newSettings.setOutsideHttpsReportingEnabled( false );
+        }
         newSettings.setOutsideHttpsEnabled( true );
         newSettings.setHttpsPort( 443 );
 

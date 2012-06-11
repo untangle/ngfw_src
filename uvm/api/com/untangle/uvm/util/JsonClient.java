@@ -119,18 +119,22 @@ public class JsonClient
         try {
             UvmContext context = UvmContextFactory.context();
             JSONObject object = new JSONObject();
+
             object.put( "language", context.languageManager().getLanguageSettings().getLanguage());
-            object.put( "skin", context.skinManager().getSettings().getSkinName());
+
+            object.put( "skin", "default");
+            // ignore alpaca skin options - deprecated
+            //object.put( "skin", context.skinManager().getSettings().getSkinName());
 
             callAlpacaAsync( "uvm", "set_uvm_settings", object );
         } catch (JSONException e ) {
-            logger.warn( "Unable to build json object" );
+            logger.warn( "Unable to build json object", e );
         } catch ( ConnectionException e ) {
-            logger.warn( "Unable to build json object" );
+            logger.warn( "Unable to build json object", e );
         } catch ( IOException e ) {
-            logger.warn( "Unable to build json object" );
+            logger.warn( "Unable to build json object", e );
         } catch ( Exception e ) {
-            logger.warn( "Unable to build json object" );
+            logger.warn( "Unable to build json object", e );
         }
     }
 

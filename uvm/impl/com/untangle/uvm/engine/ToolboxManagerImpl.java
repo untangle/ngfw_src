@@ -468,6 +468,9 @@ class ToolboxManagerImpl implements ToolboxManager
     {
         // stop intances
         NodeManagerImpl nm = (NodeManagerImpl)UvmContextFactory.context().nodeManager();
+        if (nm == null)
+            return;
+        
         List<Node> nodeList = nm.nodeInstances(name);
         logger.debug("unloading " + nodeList.size() + " nodes");
 

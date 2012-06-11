@@ -1,20 +1,5 @@
 # -*-ruby-*-
-# $HeadURL$
-# Copyright (c) 2003-2007 Untangle, Inc.
-#
-# This program is free software; you can redistribute it and/or modify
-# it under the terms of the GNU General Public License, version 2,
-# as published by the Free Software Foundation.
-#
-# This program is distributed in the hope that it will be useful, but
-# AS-IS and WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE, TITLE, or
-# NONINFRINGEMENT.  See the GNU General Public License for more details.
-#
-# You should have received a copy of the GNU General Public License
-# along with this program; if not, write to the Free Software
-# Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
-#
+# $Id$
 
 jnetcap = BuildEnv::SRC['jnetcap']
 jvector = BuildEnv::SRC['jvector']
@@ -55,18 +40,8 @@ jts << JarTarget.build_target(uvm_lib, deps, 'impl', "./uvm/impl")
 taglib = JarTarget.build_target(uvm_lib, deps, 'taglib', "./uvm/taglib")
 BuildEnv::SRC.installTarget.install_jars(taglib, "#{uvm_lib.distDirectory}/usr/share/java/uvm" )
 
-# servlets
-components_js = CopyFiles.new(uvm_lib,
-                              MoveSpec.fileMove("./uvm/servlets/reports/components.js",
-                                                "#{uvm_lib.distDirectory}/usr/share/untangle/web/reports/script/",
-                                                "components.js" ),
-                              "servlet-reports-apache")
-
-ServletBuilder.new(uvm_lib, 'com.untangle.uvm.reports.jsp', "./uvm/servlets/reports", [uvm_lib['bootstrap'], components_js])
-
 ServletBuilder.new(uvm_lib, 'com.untangle.uvm.alpaca.jsp', "./uvm/servlets/alpaca")
 
-# library
 ServletBuilder.new(uvm_lib, "com.untangle.uvm.installer.servlet", "uvm/servlets/library", [])
 
 deps = %w(
@@ -85,8 +60,7 @@ ServletBuilder.new(uvm_lib, "com.untangle.uvm.setup.servlet", "./uvm/servlets/se
 
 # Ajax Tk
 deps = FileList["#{BuildEnv::downloads}/Ajax/jars/*jar"].exclude(/.*servlet-api.jar/).map { |n| ThirdpartyJar.get(n) }
-ServletBuilder.new(uvm_lib, 'com.untangle.uvm.blockpage.jsp',
-                   "./uvm/servlets/blockpage", deps, [], [])
+ServletBuilder.new(uvm_lib, 'com.untangle.uvm.blockpage.jsp', "./uvm/servlets/blockpage", deps, [], [])
 
 BuildEnv::SRC.installTarget.install_jars(jts, "#{uvm_lib.distDirectory}/usr/share/untangle/lib", nil, true)
 

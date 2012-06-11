@@ -47,9 +47,6 @@ import com.untangle.uvm.SettingsManager;
 
 /**
  * Implementation of LanguageManagerImpl.
- *
- * @author <a href="mailto:cmatei@untangle.com">Catalin Matei</a>
- * @version 1.0
  */
 public class LanguageManagerImpl implements LanguageManager
 {

@@ -83,7 +83,7 @@ if (!reportsAvailable || !reportingEnabled) {
 
     <script type="text/javascript" src="/jsonrpc/jsonrpc.js?s=<%=buildStamp%>"></script>
     <script type="text/javascript" src="/script/i18nNew.js?s=<%=buildStamp%>"></script>
-    <script type="text/javascript" src="/webui/script/componentsNew.js?s=<%=buildStamp%>"></script>
+    <script type="text/javascript" src="script/componentsNew.js?s=<%=buildStamp%>"></script>
     <script type="text/javascript" src="script/reports-componentsNew.js?s=<%=buildStamp%>"></script>
     <script type="text/javascript" src="script/reportsNew.js?s=<%=buildStamp%>"></script>
 
