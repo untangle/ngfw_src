@@ -68,6 +68,7 @@ static int _netcap_init();
 static int _tls_init   ( void* buf, size_t size );
 
 static int ip_nonlocal = 30; 
+static int ip_saddr_option = 21; 
 
 int netcap_init()
 {
@@ -134,10 +135,12 @@ static int _netcap_init()
     }
     if ( strstr(utsn.release,"2.6.26") != NULL) {
         ip_nonlocal = 19;
+        ip_saddr_option = 20;
     }
     else {
         /* 2.6.32 or later */ 
         ip_nonlocal = 30;
+        ip_saddr_option = 21;
     }
     debug(2,"Kernel Version: %s IP_NONLOCAL: %i\n",utsn.release, ip_nonlocal);
 
@@ -227,9 +230,14 @@ netcap_tls_t* netcap_tls_get( void )
     return tls;
 }
 
-int IP_NONLOCAL ( )
+int IP_NONLOCAL_VALUE ( )
 {
     return ip_nonlocal;
+}
+
+int IP_SADDR_VALUE ( )
+{
+    return ip_saddr_option;
 }
 
 static int _tls_init( void* buf, size_t size )

@@ -482,7 +482,7 @@ static int _netcap_udp_sendto (int sock, void* data, size_t data_len, int flags,
     }
     cmsg->cmsg_len = CMSG_LEN(sizeof(pkt->src.host));
     cmsg->cmsg_level = SOL_IP;
-    cmsg->cmsg_type  = IP_SADDR;
+    cmsg->cmsg_type  = IP_SADDR_VALUE();
     memcpy( CMSG_DATA(cmsg),&pkt->src.host,sizeof(pkt->src.host) );
 
     /* sanity check */

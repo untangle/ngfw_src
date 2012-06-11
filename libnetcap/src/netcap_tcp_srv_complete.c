@@ -141,7 +141,7 @@ static int  _netcap_tcp_setsockopt_srv ( int sock )
         .mark = MARK_NOTRACK | MARK_ANTISUB
     };
     
-    if (setsockopt(sock,SOL_IP,IP_NONLOCAL(),&one,sizeof(one))<0) 
+    if (setsockopt(sock,SOL_IP,IP_NONLOCAL_VALUE(),&one,sizeof(one))<0) 
         perrlog("setsockopt");
     if (setsockopt(sock,SOL_TCP,TCP_NODELAY,&one,sizeof(one))<0) 
         perrlog("setsockopt");

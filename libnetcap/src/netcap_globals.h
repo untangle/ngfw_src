@@ -65,7 +65,14 @@
  * 19 - 2.6.26
  * 30 - 2.6.32
  */
-int IP_NONLOCAL ( );
+int IP_NONLOCAL_VALUE ( );
+
+/**
+ * This CMSG constant depends on the kernel version
+ * 20 - 2.6.26
+ * 21 - 2.6.32
+ */
+int IP_SADDR_VALUE ( );
 
 #ifndef IP_SADDR
 #define IP_SADDR	20
