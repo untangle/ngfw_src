@@ -4,7 +4,6 @@
         "name" : "untangle-node-license",
         "displayName" : "License Manager",
         "type" : "SERVICE",
-        "viewPosition" : 990,
         "singleInstance" : true
 }
 
