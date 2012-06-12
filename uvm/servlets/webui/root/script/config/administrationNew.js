@@ -390,15 +390,15 @@ if (!Ung.hasResource["Ung.Administration"]) {
                         }
                     },{
                         xtype: 'checkbox',
-                        id: 'administration_isInsideInsecureEnabled',
-                        name: 'isInsideInsecureEnabled',
+                        id: 'administration_insideHttpEnabled',
+                        name: 'insideHttpEnabled',
                         boxLabel: this.i18n._('Enable Inside HTTP Administration'),
                         hideLabel: true,
-                        checked: this.getSystemSettings().isInsideInsecureEnabled,
+                        checked: this.getSystemSettings().insideHttpEnabled,
                         listeners: {
                             "change": {
                                 fn: Ext.bind(function(elem, newValue) {
-                                    this.getSystemSettings().isInsideInsecureEnabled = newValue;
+                                    this.getSystemSettings().insideHttpEnabled = newValue;
                                 }, this)
                             }
                         }
@@ -1590,7 +1590,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
                 return true;
             }
             //internal administration
-            if ( i_systemSettings.isInsideInsecureEnabled != c_systemSettings.isInsideInsecureEnabled ) {
+            if ( i_systemSettings.insideHttpEnabled != c_systemSettings.insideHttpEnabled ) {
                 return true;
             }
             if ( i_systemSettings.httpsPort != this.getSystemSettings().httpsPort ) {
