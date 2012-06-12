@@ -21,11 +21,6 @@ public interface NodeManager
     NodeManagerSettings getSettings();
 
     /**
-     * Set the NodeManager settings
-     */
-    void setSettings( NodeManagerSettings newSettings );
-
-    /**
      * Get <code>Node</code>s of all instantiated nodes.
      *
      * @return list of all node ids.
