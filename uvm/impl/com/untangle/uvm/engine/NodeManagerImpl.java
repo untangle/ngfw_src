@@ -52,7 +52,7 @@ import com.untangle.uvm.util.Pulse;
  */
 public class NodeManagerImpl implements NodeManager
 {
-    private final static String NODE_MANAGER_SETTINGS_FILE = System.getProperty( "uvm.settings.dir" ) + "/untangle-vm/node_manager";
+    private final static String NODE_MANAGER_SETTINGS_FILE = System.getProperty( "uvm.settings.dir" ) + "/untangle-vm/nodes";
     private final static String NODE_MANAGER_CONVERSION_SCRIPT = System.getProperty( "uvm.bin.dir" ) + "/untangle-vm-convert-node-manager.py";
 
     private final Logger logger = Logger.getLogger(getClass());
@@ -636,7 +636,7 @@ public class NodeManagerImpl implements NodeManager
     {
         SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
         NodeManagerSettings readSettings = null;
-        String settingsFileName = System.getProperty("uvm.settings.dir") + "/untangle-vm/" + "node_manager";
+        String settingsFileName = System.getProperty("uvm.settings.dir") + "/untangle-vm/" + "nodes";
 
         try {
             readSettings = settingsManager.load( NodeManagerSettings.class, settingsFileName );
@@ -868,7 +868,7 @@ public class NodeManagerImpl implements NodeManager
          */
         SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
         try {
-            settingsManager.save(NodeManagerSettings.class, System.getProperty("uvm.settings.dir") + "/" + "untangle-vm/" + "node_manager", newSettings);
+            settingsManager.save(NodeManagerSettings.class, System.getProperty("uvm.settings.dir") + "/" + "untangle-vm/" + "nodes", newSettings);
         } catch (SettingsManager.SettingsException e) {
             logger.warn("Failed to save settings.",e);
         }

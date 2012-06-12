@@ -2035,16 +2035,11 @@ Ung.MessageManager = {
                                     main.IEWin.close();
                                     main.IEWin=null;
                                 }
-
-                                //already checked for upgrades
-                                //main.warnOnUpgrades(Ext.bind(function() {
                                 rpc.toolboxManager.installAndInstantiate(Ext.bind(function(result, exception) {
                                     if (exception)
                                         Ung.AppItem.updateState(appItemDisplayName, null);
                                     if(Ung.Util.handleException(exception)) return;
                                 }, this),msg.packageDesc.name, rpc.currentPolicy.policyId);
-
-                                //}, this));
                             }
                         } else if (msg.javaClass.indexOf("PackageUninstallRequest") >= 0) {
                             if(!msg.installed) {

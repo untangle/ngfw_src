@@ -145,7 +145,7 @@ try:
     settings_str = get_settings(debug=True)
     print settings_str
     if filename == None:
-        filename = "/usr/share/untangle/settings/untangle-vm/node_manager.js"
+        filename = "/usr/share/untangle/settings/untangle-vm/nodes.js"
     file = open(filename, 'w')
     file.write(settings_str)
     file.close()

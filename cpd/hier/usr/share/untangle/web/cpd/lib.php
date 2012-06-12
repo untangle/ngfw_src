@@ -156,7 +156,7 @@ function get_node_settings($nodename)
         }
 
     /* read the node manager settings */
-    $listfile = $homepath . "/usr/share/untangle/settings/untangle-vm/node_manager.js";
+    $listfile = $homepath . "/usr/share/untangle/settings/untangle-vm/nodes.js";
     $data = file_get_contents($listfile);
     $nodeinfo = json_decode($data,true);
 

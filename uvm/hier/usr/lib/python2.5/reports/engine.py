@@ -594,8 +594,8 @@ def __get_node_partial_order(exclude_uninstalled=True):
 def __get_installed_nodes():
     list = []
 
-    node_manager_settings = json.loads(open('@PREFIX@/usr/share/untangle/settings/untangle-vm/node_manager.js', 'r').read())
-    for node in node_manager_settings["nodes"]["list"]:
+    nodes_settings = json.loads(open('@PREFIX@/usr/share/untangle/settings/untangle-vm/nodes.js', 'r').read())
+    for node in nodes_settings["nodes"]["list"]:
         list.append(node["nodeName"])
 
     return list
