@@ -19,6 +19,14 @@ public interface SessionMonitor
     public List<SessionMonitorEntry> getMergedSessions();
 
     /**
+     * This returns a list of descriptors for all sessions in the conntrack table
+     * It also pulls the list of current "pipelines" from the foundry and adds the UVM informations
+     * such as policy. This only lists sessions being processed by the given nodeId
+     * If nodeId == 0, then getMergedSessions() is returned
+     */
+    public List<SessionMonitorEntry> getMergedSessions(long nodeId);
+    
+    /**
      * This returns a list of sessions and the bandwidth usage over the last 5 seconds
      * It calls the Jnettop list and merges it with the conntrack and argon lists
      * This takes 5 seconds to return

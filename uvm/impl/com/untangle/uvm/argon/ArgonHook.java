@@ -141,7 +141,8 @@ public abstract class ArgonHook implements Runnable
              * Create the initial tuples based on current information
              * Set the current serverSide = clientSide, the apps (like router) will change the tuple if it gets NATd or port forwarded
              */
-            clientSide = new SessionTupleImpl( sessionGlobalState.getProtocol(),
+            clientSide = new SessionTupleImpl( sessionGlobalState.id(),
+                                               sessionGlobalState.getProtocol(),
                                                netcapSession.clientSide().interfaceId(), /* always get clientIntf from client side */
                                                netcapSession.serverSide().interfaceId(), /* always get serverIntf from server side */
                                                netcapSession.clientSide().client().host(),
@@ -199,7 +200,8 @@ public abstract class ArgonHook implements Runnable
              * modified the sessionEvent (we can't do it until we connect
              * to the server since that is what actually modifies the
              * session global state. */
-            serverSide = new SessionTupleImpl( sessionGlobalState.getProtocol(),
+            serverSide = new SessionTupleImpl( sessionGlobalState.id(),
+                                               sessionGlobalState.getProtocol(),
                                                netcapSession.clientSide().interfaceId(), /* always get clientIntf from client side */
                                                netcapSession.serverSide().interfaceId(), /* always get serverIntf from server side */
                                                netcapSession.serverSide().client().host(),

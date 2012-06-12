@@ -18,13 +18,14 @@ import com.untangle.uvm.SessionMonitor;
 import com.untangle.uvm.UvmState;
 import com.untangle.uvm.UvmContext;
 import com.untangle.uvm.UvmContextFactory;
+import com.untangle.uvm.SessionMonitorEntry;
 import com.untangle.uvm.node.Node;
 import com.untangle.uvm.node.NodeManager;
 import com.untangle.uvm.node.SessionTuple;
 import com.untangle.uvm.argon.SessionGlobalState;
 import com.untangle.uvm.argon.ArgonHook;
 import com.untangle.uvm.argon.ArgonSessionTable;
-import com.untangle.uvm.SessionMonitorEntry;
+import com.untangle.uvm.vnet.NodeSession;
 import com.untangle.uvm.node.NodeSettings;
 import com.untangle.uvm.networking.InterfaceConfiguration;
 
@@ -85,14 +86,26 @@ class SessionMonitorImpl implements SessionMonitor
         return getMergedBandwidthSessions("0");
     }
 
+    public List<SessionMonitorEntry> getMergedSessions()
+    {
+        return getMergedSessions(0);
+    }
+    
     /**
      * documented in SessionMonitor.java
      */
-    public List<SessionMonitorEntry> getMergedSessions()
+    public List<SessionMonitorEntry> getMergedSessions(long nodeId)
     {
         List<SessionMonitorEntry> sessions = this._getConntrackSessionMonitorEntrys();
         List<SessionGlobalState> argonSessions = ArgonSessionTable.getInstance().getSessions();
+        List<SessionTuple> nodeSessions = null;;
 
+        Node node = null;
+        if (nodeId > 0)
+            node = UvmContextFactory.context().nodeManager().node(nodeId);
+        if (node != null)
+            nodeSessions = node.liveSessions();
+            
         for (Iterator i = sessions.iterator(); i.hasNext(); ) {  
             SessionMonitorEntry session = (SessionMonitorEntry) i.next();
             session.setPolicy("");             
@@ -119,6 +132,7 @@ class SessionMonitorImpl implements SessionMonitor
                         else
                             session.setPolicy(policyId.toString()); /* FIXME getName */
 
+                        session.setSessionId(argonSession.id());
                         session.setBypassed(Boolean.FALSE);
                         session.setLocalTraffic(Boolean.FALSE);
                         session.setClientIntf(new Integer(clientSide.getClientIntf()));
@@ -177,6 +191,25 @@ class SessionMonitorImpl implements SessionMonitor
             }
         }
 
+        /**
+         * If a nodeId was specified remove all sessions not being touched by that nodeId
+         */
+        if ( nodeSessions != null ) {
+            for (Iterator i = sessions.iterator(); i.hasNext(); ) {  
+                SessionMonitorEntry entry = (SessionMonitorEntry) i.next();
+                long sessionId = entry.getSessionId();
+                boolean found = false;
+                for (SessionTuple tuple : nodeSessions) {
+                    if ( sessionId == tuple.getSessionId() ) {
+                        found = true;
+                        break;
+                    }
+                }
+                if (!found)
+                    i.remove();
+            }
+        }
+        
         return sessions;
     }
     

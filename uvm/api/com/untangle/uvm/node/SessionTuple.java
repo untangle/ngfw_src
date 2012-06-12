@@ -59,4 +59,6 @@ public interface SessionTuple
      * @return the server port.
      */
     int getServerPort();
+
+    long getSessionId();
 }

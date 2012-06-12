@@ -14,6 +14,7 @@ public class SessionTupleImpl implements SessionTuple
     public static final short PROTO_TCP = 6;
     public static final short PROTO_UDP = 17;
 
+    private long sessionId;
     private short protocol;
     private InetAddress clientAddr;
     private int clientIntf;
@@ -22,11 +23,12 @@ public class SessionTupleImpl implements SessionTuple
     private int serverIntf;
     private int serverPort;
     
-    public SessionTupleImpl( short protocol,
+    public SessionTupleImpl( long sessionId, short protocol,
                              int clientIntf, int serverIntf,
                              InetAddress clientAddr, InetAddress serverAddr,
                              int clientPort, int serverPort )
     {
+        this.sessionId = sessionId;
         this.protocol = protocol;
         this.clientAddr = clientAddr;
         this.clientIntf = clientIntf;
@@ -38,6 +40,7 @@ public class SessionTupleImpl implements SessionTuple
 
     public SessionTupleImpl( SessionTuple tuple )
     {
+        this.sessionId = tuple.getSessionId();
         this.protocol = tuple.getProtocol();
         this.clientAddr = tuple.getClientAddr();
         this.clientIntf = tuple.getClientIntf();
@@ -47,6 +50,9 @@ public class SessionTupleImpl implements SessionTuple
         this.serverPort = tuple.getServerPort();
     }
     
+    public long getSessionId() { return this.sessionId; }
+    public void setSessionId( long sessionId ) { this.sessionId = sessionId; }
+
     public short getProtocol() { return this.protocol; }
     public void setProtocol( short protocol ) { this.protocol = protocol; }
 

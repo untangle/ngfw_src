@@ -18,8 +18,8 @@ if (!Ung.hasResource["Ung.SessionMonitor"]) {
             this.gridCurrentSessions.stopAutoRefresh(true);
             this.hide();
         },
-        getSessions: function() {
-            var sessions = rpc.jsonrpc.UvmContext.sessionMonitor().getMergedSessions();
+        getSessions: function(nodeId) {
+            var sessions = rpc.jsonrpc.UvmContext.sessionMonitor().getMergedSessions(nodeId);
             // iterate through each session and change its attachments map to properties
             for (var i = 0; i < sessions.list.length ; i++) {
                 var session = sessions.list[i];
@@ -840,6 +840,7 @@ if (!Ung.hasResource["Ung.SessionMonitor"]) {
                 paginated: false,
                 recordJavaClass: "com.untangle.uvm.SessionMonitorEntry",
                 dataFn: this.getSessions,
+                dataFnArg: 0,
                 fields: [{
                     name: "id"
                 },{

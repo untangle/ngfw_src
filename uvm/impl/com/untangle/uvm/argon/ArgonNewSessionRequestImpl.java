@@ -36,6 +36,11 @@ abstract class ArgonNewSessionRequestImpl implements ArgonNewSessionRequest
         return sessionGlobalState.id();
     }
 
+    public long getSessionId()
+    {
+        return sessionGlobalState.id();
+    }
+    
     public String user()
     {
         return sessionGlobalState.user();

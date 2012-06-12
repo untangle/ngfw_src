@@ -1,22 +1,5 @@
 # -*-ruby-*-
-# $HeadURL: svn://chef/work/src/buildtools/rake-util.rb $
-# Copyright (c) 2003-2007 Untangle, Inc.
-#
-# This program is free software; you can redistribute it and/or modify
-# it under the terms of the GNU General Public License, version 2,
-# as published by the Free Software Foundation.
-#
-# This program is distributed in the hope that it will be useful, but
-# AS-IS and WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE, TITLE, or
-# NONINFRINGEMENT.  See the GNU General Public License for more details.
-#
-# You should have received a copy of the GNU General Public License
-# along with this program; if not, write to the Free Software
-# Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
-#
-
-# Dirk Morris <dmorris@untangle.com>
+# $Id: target.rb,v 1.00 2012/06/11 20:25:15 dmorris Exp $
 
 require 'gettext/utils'
 
@@ -256,9 +239,8 @@ class CopyFiles < Target
           file dest => src if File.exists?( src )
 
           file dest do
-            log
-            ensureDirectory(File.dirname(dest))
-            File.symlink(File.readlink(src), dest) if !File.exist?(dest)
+            ensureDirectory(File.dirname(dest)) if !File.exist?(dest)
+            File.symlink(File.readlink(src), dest) if !File.symlink?(dest)
           end
         elsif File.directory?(src)
           file dest => src do

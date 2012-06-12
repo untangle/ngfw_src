@@ -85,13 +85,16 @@ public abstract class ArgonSessionImpl implements ArgonSession
         return sessionGlobalState;
     }
 
-    /* SessionDesc */
     public long id()
     {
         return sessionGlobalState.id();
     }
 
-    /* NodeSession */
+    public long getSessionId()
+    {
+        return sessionGlobalState.id();
+    }
+    
     public ArgonAgent argonAgent()
     {
         return argonAgent;

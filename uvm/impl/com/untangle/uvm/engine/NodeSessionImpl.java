@@ -41,6 +41,11 @@ abstract class NodeSessionImpl implements NodeSession
         return argonSession.id();
     }
 
+    public long getSessionId()
+    {
+        return argonSession.id();
+    }
+    
     public String user()
     {
         return argonSession.user();

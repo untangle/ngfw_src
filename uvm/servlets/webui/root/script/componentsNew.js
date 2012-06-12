@@ -4141,7 +4141,11 @@ Ext.define('Ung.EditorGrid', {
             if(this.dataRoot === undefined) {
                 this.dataRoot="list";
             }
-            var data=this.dataFn();
+            var data;
+            if (this.dataFnArg !== undefined && this.dataFnArg != null)
+                data = this.dataFn(this.dataFnArg);
+            else
+                data = this.dataFn();
             this.data = (this.dataRoot!=null && this.dataRoot.length>0) ? data[this.dataRoot]:data;
         } else if(this.dataProperty) {
             this.data=this.settingsCmp.settings[this.dataProperty].list;
@@ -4471,7 +4475,11 @@ Ext.define('Ung.EditorGrid', {
     },
     clearDirty: function() {
         if(this.dataFn) {
-            var data=this.dataFn();
+            var data;
+            if (this.dataFnArg !== undefined && this.dataFnArg != null)
+                data = this.dataFn(this.dataFnArg);
+            else
+                data = this.dataFn();
             this.data = (this.dataRoot!=null && this.dataRoot.length>0) ? data[this.dataRoot]:data;
         } else if(this.dataProperty) {
             this.data=this.settingsCmp.settings[this.dataProperty].list;
@@ -4486,7 +4494,7 @@ Ext.define('Ung.EditorGrid', {
     },
     reloadGrid: function(options){
         if(options && options.data){
-            this.data=options.data
+            this.data = options.data;
         }
         this.clearDirty();
     },
