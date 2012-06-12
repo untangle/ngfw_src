@@ -248,6 +248,7 @@ public class NodeManagerImpl implements NodeManager
 
             if (node != null) {
                 loadedNodesMap.put(nodeSettings.getId(), node);
+                saveNewNodeSettings( nodeSettings );
             } else {
                 logger.warn("Failed to initialize node: " + packageDesc.getName());
             }
@@ -747,30 +748,26 @@ public class NodeManagerImpl implements NodeManager
         }
     }
 
-    private NodeSettings createNewNodeSettings( Long policyId, String nodeName ) throws DeployException
+    private NodeSettings createNewNodeSettings( Long policyId, String nodeName )
     {
         long newNodeId = settings.getNextNodeId();
 
         /**
-         * Increment the next node Id
+         * Increment the next node Id (not saved until later)
          */
-        List<NodeSettings> nodes = settings.getNodes();
-        settings.setNextNodeId(newNodeId+1);
+        settings.setNextNodeId( newNodeId + 1 );
         
-        /**
-         * Create the new node settings and add to the node manager settings
-         */
-        NodeSettings nodeSettings = new NodeSettings( newNodeId, policyId, nodeName );
-        nodes.add(nodeSettings);
-
-        /**
-         * Save the new node manager settings
-         */
-        _setSettings(settings);
-        
-        return nodeSettings;
+        return new NodeSettings( newNodeId, policyId, nodeName );
     }
 
+    private void saveNewNodeSettings( NodeSettings nodeSettings )
+    {
+        List<NodeSettings> nodes = settings.getNodes();
+        nodes.add(nodeSettings);
+        _setSettings(settings);
+        return;
+    }
+    
     private List<Long> getParentPolicies(Long policyId)
     {
         PolicyManager policyManager = (PolicyManager) UvmContextFactory.context().nodeManager().node("untangle-node-policy");
