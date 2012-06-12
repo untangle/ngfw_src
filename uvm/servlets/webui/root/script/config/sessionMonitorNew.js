@@ -40,6 +40,7 @@ if (!Ung.hasResource["Ung.SessionMonitor"]) {
                 this.columns = [];
                 this.enabledColumns = {};
                 this.groupField = null;
+                // add/remove columns as necessary
                 for ( var i = 0 ; i < this.panelColumnSelector.items.items.length ; i++ ) {
                     var item = this.panelColumnSelector.items.items[i];
                     if ( item.xtype == "checkbox" ) {
@@ -53,6 +54,18 @@ if (!Ung.hasResource["Ung.SessionMonitor"]) {
                             if ( item.gridColumnRenderer !== undefined )
                                 newColumn.renderer = item.gridColumnRenderer;
                             this.columns.push( newColumn );
+                        }
+                    }
+                }
+                // set dataFnArg (for node limit) as necessary
+                for ( var i = 0 ; i < this.panelNodeSelector.items.items.length ; i++ ) {
+                    var item = this.panelNodeSelector.items.items[i];
+                    if ( item.xtype == "radio" ) {
+                        this.enabledColumns[item.name] = item.checked;
+                        if (item.checked) {
+                            this.dataFnArg = item.dataFnArg;
+                            if ( this.gridCurrentSessions !== undefined ) 
+                                this.gridCurrentSessions.dataFnArg = item.dataFnArg;
                         }
                     }
                 }
@@ -83,11 +96,16 @@ if (!Ung.hasResource["Ung.SessionMonitor"]) {
                     headerCt.suspendLayout = false;
                     this.gridCurrentSessions.forceComponentLayout();
                 }
+                if ( this.gridCurrentSessions !== undefined ) {
+                    this.gridCurrentSessions.reloadGrid();
+                }
+
                 Ext.MessageBox.hide();
             }, this);
             
             // manually call the renderer for the first render
             this.buildGroupSelectorPanel();
+            this.buildNodeSelectorPanel();
             this.buildColumnSelectorPanel();
             this.reRenderGrid();
             this.buildGridCurrentSessions(this.columns, this.groupField);
@@ -105,7 +123,7 @@ if (!Ung.hasResource["Ung.SessionMonitor"]) {
                 },
                 autoScroll: true,
                 cls: 'ung-panel',
-                items: [this.panelColumnSelector, this.panelGroupSelector, this.gridCurrentSessions]
+                items: [this.panelColumnSelector, this.panelNodeSelector, this.panelGroupSelector, this.gridCurrentSessions]
             });
         },
         buildColumnSelectorPanel: function() {
@@ -489,6 +507,52 @@ if (!Ung.hasResource["Ung.SessionMonitor"]) {
                     handler: this.reRenderGrid
                 }]
             });
+        },
+        // build the panel for node selection
+        buildNodeSelectorPanel: function() {
+            var items = [{
+                xtype: 'radio',
+                name: 'nodeRadio',
+                checked: true,
+                boxLabel: this.i18n._("All Sessions"),
+                dataFnArg: 0
+            }];
+            var nodes = rpc.nodeManager.nodeInstances();
+            for (var i = 0 ; i < nodes.list.length ; i++) {
+                var nodeProperties = nodes.list[i].nodeProperties;
+                var nodeSettings = nodes.list[i].nodeSettings;
+                if (nodeProperties.viewPosition != null) {
+                    items.push({
+                        xtype: 'radio',
+                        name: 'nodeRadio',
+                        checked: false,
+                        boxLabel: i18n._('Sessions for') + ' ' + nodeProperties.displayName + " [" + main.getPolicyName(nodeSettings.policyId) + "] ",
+                        dataFnArg: nodeSettings.id
+                    });
+                }
+            }
+            items.push({
+                xtype: 'button',
+                id: "refresh_nodes",
+                text: i18n._('Render'),
+                name: "Render",
+                tooltip: i18n._('Render the grid with the configured view'),
+                iconCls: 'icon-refresh',
+                handler: this.reRenderGrid
+            });
+
+            this.panelNodeSelector = Ext.create('Ext.panel.Panel',{
+                name:'advanced',
+                xtype:'fieldset',
+                layout: 'anchor',
+                title:i18n._("App Selection"),
+                collapsible: true,
+                collapsed: true,
+                autoHeight: true,
+                bodyStyle: 'padding:5px 5px 5px 5px;',
+                items: items
+            });
+
         },
         // build the column selection panel (hidden by default)
         buildGroupSelectorPanel: function() {
