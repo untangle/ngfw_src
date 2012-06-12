@@ -73,11 +73,6 @@ public class NodeManagerImpl implements NodeManager
         return this.settings;
     }
 
-    public void setSettings(final NodeManagerSettings newSettings)
-    {
-        _setSettings(newSettings);
-    }
-
     public void saveTargetState( Node node, NodeSettings.NodeState nodeState )
     {
         if ( node == null ) {
@@ -98,7 +93,7 @@ public class NodeManagerImpl implements NodeManager
                 }
             }
         }
-        this.setSettings(this.settings);       
+        this._setSettings(this.settings);       
     }
 
     public List<Node> nodeInstances()
@@ -230,8 +225,11 @@ public class NodeManagerImpl implements NodeManager
         synchronized (this) {
             logger.info("initializing node: " + nodeName);
 
-            nodeSettings = newNodeSettings( policyId, nodeName );
+            if ( nodeInstances( nodeName, policyId, false ).size() >= 1 ) 
+                throw new DeployException("too many instances: " + nodeName);
+
             nodeProperties = initNodeProperties( packageDesc );
+            nodeSettings = createNewNodeSettings( policyId, nodeName );
 
             if (!live) 
                 throw new DeployException("NodeManager is shut down");
@@ -305,7 +303,7 @@ public class NodeManagerImpl implements NodeManager
                 if (nodeSettings.getId().equals(node.getNodeSettings().getId()))
                     iter.remove();
             }
-            this.setSettings(this.settings);       
+            this._setSettings(this.settings);       
         }
 
         return;
@@ -696,7 +694,7 @@ public class NodeManagerImpl implements NodeManager
 
         NodeManagerSettings newSettings = new NodeManagerSettings();
 
-        this.setSettings(newSettings);
+        this._setSettings(newSettings);
     }
     
     /**
@@ -749,7 +747,7 @@ public class NodeManagerImpl implements NodeManager
         }
     }
 
-    private NodeSettings newNodeSettings( Long policyId, String nodeName ) throws DeployException
+    private NodeSettings createNewNodeSettings( Long policyId, String nodeName ) throws DeployException
     {
         long newNodeId = settings.getNextNodeId();
 
