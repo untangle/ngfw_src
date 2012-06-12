@@ -955,7 +955,7 @@ Ung.Util.RetryHandler = {
         }
 
         var message = exception.message;
-        if (message == null || message == "Unknown") {
+        if (message == null || message == "Unknown" || message == "") {
             message = i18n._("Please Try Again");
             if (exception.javaStack != null)
                 message += "<br/><br/>" + exception.javaStack;
