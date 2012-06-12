@@ -2,28 +2,17 @@ if (!Ung.hasResource["Ung.Virus"]) {
     Ung.hasResource["Ung.Virus"] = true;
     Ung.NodeWin.registerClassName('untangle-base-virus', 'Ung.Virus');
 
-    Ung.Virus = Ext.extend(Ung.NodeWin, {
+    Ext.define('Ung.Virus', {
+		extend:'Ung.NodeWin',
         panelWeb:null,
         panelEmail: null,
         panelFtp: null,
         gridWebEventLog : null,
         gridMailEventLog : null,
-        // override get base settings object to reload the signature information.
-        getBaseSettings : function(forceReload) {
-            if (forceReload || this.rpc.baseSettings === undefined) {
-                try {
-                    this.rpc.baseSettings = this.getRpcNode().getBaseSettings(true);
-                } catch (e) {
-                    Ung.Util.rpcExHandler(e);
-                }
-            }
-            return this.rpc.baseSettings;
-        },
         // called when the component is rendered
         initComponent : function() {
-            // keep initial base settings
-            this.initialBaseSettings = Ung.Util.clone(this.getBaseSettings());
-            
+            this.getSettings();
+            this.vendor=this.getRpcNode().getVendor();
             this.buildWeb();
             this.buildEmail();
             this.buildFtp();
@@ -36,7 +25,7 @@ if (!Ung.hasResource["Ung.Virus"]) {
         },
         // Web Panel
         buildWeb : function() {
-            this.panelWeb = new Ext.Panel({
+            this.panelWeb = Ext.create('Ext.panel.Panel',{
                 name : 'Web',
                 helpSource : 'web',
                 // private fields
@@ -45,7 +34,6 @@ if (!Ung.hasResource["Ung.Virus"]) {
                 parentId : this.getId(),
 
                 title : this.i18n._('Web'),
-                layout : "form",
                 cls: 'ung-panel',
                 autoScroll : true,
                 defaults : {
@@ -59,12 +47,12 @@ if (!Ung.hasResource["Ung.Virus"]) {
                         boxLabel : this.i18n._('Scan HTTP'),
                         hideLabel : true,
                         name : 'Scan HTTP',
-                        checked : this.getBaseSettings().httpConfig.scan,
+                        checked : this.settings.scanHttp,
                         listeners : {
-                            "check" : {
-                                fn : function(elem, checked) {
-                                    this.getBaseSettings().httpConfig.scan = checked;
-                                }.createDelegate(this)
+                            "change" : {
+                                fn : Ext.bind(function(elem, checked) {
+                                    this.settings.scanHttp = checked;
+                                },this)
                             }
                         }
                     }]
@@ -72,62 +60,36 @@ if (!Ung.hasResource["Ung.Virus"]) {
                     title: this.i18n._('Advanced Settings'),
                     collapsible: true,
                     collapsed: true,
-                    labelWidth: 170,
-                    items : [{
-                        xtype : 'button',
-                        name : 'File Extensions',
-                        text : this.i18n._('File Extensions'),
-                        style : 'padding-bottom:10px;',
-                        handler : function() {
-                            this.panelWeb.onManageExtensions();
-                        }.createDelegate(this)
-                    }, {
-                        xtype : 'button',
-                        name : 'MIME Types',
-                        text : this.i18n._('MIME Types'),
-                        style : 'padding-bottom:10px;',
-                        handler : function() {
-                            this.panelWeb.onManageMimeTypes();
-                        }.createDelegate(this)
-                    }, {
-                        xtype : 'checkbox',
-                        boxLabel : this.i18n._('Disable HTTP Resume'),
-                        hideLabel : true,
-                        name : 'Disable HTTP Resume',
-                        checked : this.getBaseSettings().httpDisableResume,
-                        listeners : {
-                            "check" : {
-                                fn : function(elem, checked) {
-                                    this.getBaseSettings().httpDisableResume = checked;
-                                }.createDelegate(this)
-                            }
-                        }
-                    },{
-                        xtype : 'numberfield',
-                        fieldLabel : this.i18n._('Scan trickle rate (1-99)'),
-                        name : 'Scan trickle rate',
-                        id: 'virus_http_trickle_percent',
-                        value : this.getBaseSettings().tricklePercent,
-                        width: 25,
-                        allowDecimals: false,
-                        allowNegative: false,
-                        minValue: 1,                        
-                        maxValue: 99,
-                        listeners : {
-                            "change" : {
-                                fn : function(elem, newValue) {
-                                    var tricklePercentFtpCmp = Ext.getCmp('virus_ftp_trickle_percent');
-                                    tricklePercentFtpCmp.setValue(newValue);
-                                    this.getBaseSettings().tricklePercent = newValue;
-                                }.createDelegate(this)
-                            }
-                        }
+                    labelWidth: 370,
+                    items : [
+						{
+							xtype:'fieldset',
+							items:	{
+								xtype : 'button',
+								name : 'File Extensions',
+								text : this.i18n._('File Extensions'),
+								style : 'padding-bottom:10px;',
+								handler : Ext.bind(function() {
+									this.panelWeb.onManageExtensions();
+								},this)
+							}
+						}
+                    , {
+						xtype:'fieldset',
+						items: {
+							xtype : 'button',
+							name : 'MIME Types',
+							text : this.i18n._('MIME Types'),
+							style : 'padding-bottom:10px;',
+							handler : Ext.bind(function() {
+								this.panelWeb.onManageMimeTypes();
+							},this)
+						}
                     }]
                 }, {
                     cls: 'description',
                     html : this.i18n._("Virus Blocker signatures were last updated") + ":&nbsp;&nbsp;&nbsp;&nbsp;"
-                            + ((this.getBaseSettings().lastUpdate != null) ? i18n.timestampFormat(this.getBaseSettings().lastUpdate) : 
-                            this.i18n._("Unknown"))
+                        + ((this.getRpcNode().getLastSignatureUpdate() != null) ? i18n.timestampFormat(this.getRpcNode().getLastSignatureUpdate()) : this.i18n._("Unknown"))
                 }],
 
                 onManageExtensions : function() {
@@ -137,50 +99,47 @@ if (!Ung.hasResource["Ung.Virus"]) {
                         this.winExtensions = new Ung.ManageListWindow({
                             breadcrumbs : [{
                                 title : i18n._(rpc.currentPolicy.name),
-                                action : function() {
+                                action : Ext.bind(function() {
                                     Ung.Window.cancelAction(
                                        this.gridExtensions.isDirty() || this.isDirty(),
-                                       function() {
+                                       Ext.bind(function() {
                                             this.panelWeb.winExtensions.closeWindow();
                                             this.closeWindow();
-                                       }.createDelegate(this)
+                                       },this)
                                     );
-                                }.createDelegate(settingsCmp)
+                                },settingsCmp)
                             }, {
                                 title : settingsCmp.node.displayName,
-                                action : function() {
+                                action : Ext.bind(function() {
                                     this.panelWeb.winExtensions.cancelAction();
-                                }.createDelegate(settingsCmp)
+                                },settingsCmp)
                             }, {
                                 title : settingsCmp.i18n._("Web"),
-                                action : function() {
+                                action : Ext.bind(function() {
                                     this.panelWeb.winExtensions.cancelAction();
-                                }.createDelegate(settingsCmp)
+                                },settingsCmp)
                             }, {
                                 title : settingsCmp.i18n._("File Extensions")
                             }],
                             grid : settingsCmp.gridExtensions,
                             applyAction : function(callback){
                                 Ext.MessageBox.wait(i18n._("Saving..."), i18n._("Please wait"));
-                                var saveList = settingsCmp.gridExtensions.getSaveList();
-                                settingsCmp.getRpcNode().updateExtensions(function(result, exception) {
-                                    if(Ung.Util.handleException(exception)){
+                                settingsCmp.gridExtensions.getGridSaveList(Ext.bind(function(saveList) {
+                                    this.getRpcNode().setHttpFileExtensions(Ext.bind(function(result, exception) {
                                         Ext.MessageBox.hide();
-                                        return;
-                                    }
-                                    this.getRpcNode().getBaseSettings(function(result2,exception2){
-                                        Ext.MessageBox.hide();                                                
-                                        if(Ung.Util.handleException(exception2)){
-                                            return;
-                                        }
-                                        this.gridExtensions.setTotalRecords(result2.extensionsLength);
-                                        this.gridExtensions.reloadGrid();
-                                        if(callback != null) {
-                                            callback();
-                                        }
-                                    }.createDelegate(this));
-                                }.createDelegate(settingsCmp), saveList[0],saveList[1],saveList[2]);
-                            }    
+                                        if(Ung.Util.handleException(exception)) return;
+                                        this.getRpcNode().getSettings(Ext.bind(function(result, exception) {
+                                            Ext.MessageBox.hide();
+                                            if(Ung.Util.handleException(exception)) return;
+                                            this.settings.httpFileExtensions = result.httpFileExtensions;
+                                            this.gridExtensions.clearDirty();
+                                            if(callback != null) {
+                                                callback();
+                                            }
+                                        },this));
+                                    },this), saveList);
+                                },settingsCmp));
+                            }
                         });
                     }
                     this.winExtensions.show();
@@ -189,53 +148,49 @@ if (!Ung.hasResource["Ung.Virus"]) {
                     if (!this.winMimeTypes) {
                         var settingsCmp = Ext.getCmp(this.parentId);
                         settingsCmp.buildMimeTypes();
-                        this.winMimeTypes = new Ung.ManageListWindow({
+                        this.winMimeTypes = Ext.create('Ung.ManageListWindow',{
                             breadcrumbs : [{
                                 title : i18n._(rpc.currentPolicy.name),
-                                action : function() {
+                                action : Ext.bind(function() {
                                     Ung.Window.cancelAction(
                                        this.gridMimeTypes.isDirty() || this.isDirty(),
-                                       function() {
+                                       Ext.bind(function() {
                                             this.panelWeb.winMimeTypes.closeWindow();
                                             this.closeWindow();
-                                       }.createDelegate(this)
+                                       },this)
                                     );
-                                }.createDelegate(settingsCmp)
+                                },settingsCmp)
                             }, {
                                 title : settingsCmp.node.displayName,
-                                action : function() {
+                                action : Ext.bind(function() {
                                     this.panelWeb.winMimeTypes.cancelAction();
-                                }.createDelegate(settingsCmp)
+                                },settingsCmp)
                             }, {
                                 title : settingsCmp.i18n._("Web"),
-                                action : function() {
+                                action : Ext.bind(function() {
                                     this.panelWeb.winMimeTypes.cancelAction();
-                                }.createDelegate(settingsCmp)
+                                },settingsCmp)
                             }, {
                                 title : settingsCmp.i18n._("MIME Types")
                             }],
                             grid : settingsCmp.gridMimeTypes,
-                            applyAction : function(callback){
+                            applyAction : function(callback) {
                                 Ext.MessageBox.wait(i18n._("Saving..."), i18n._("Please wait"));
-                                var saveList = settingsCmp.gridMimeTypes.getSaveList();
-                                settingsCmp.getRpcNode().updateHttpMimeTypes(function(result, exception) {
-                                    if(Ung.Util.handleException(exception)){
-                                        Ext.MessageBox.hide();
-                                        return;
-                                    }
-                                    this.getRpcNode().getBaseSettings(function(result2,exception2){
-                                        Ext.MessageBox.hide();                                                
-                                        if(Ung.Util.handleException(exception2)){
-                                            return;
-                                        }
-                                        this.gridMimeTypes.setTotalRecords(result2.httpMimeTypesLength);
-                                        this.gridMimeTypes.reloadGrid();
-                                        if(callback != null) {
-                                            callback();
-                                        }
-                                    }.createDelegate(this));
-                                }.createDelegate(settingsCmp), saveList[0],saveList[1],saveList[2]);
-                            } 
+                                settingsCmp.gridMimeTypes.getGridSaveList(Ext.bind(function(saveList) {
+                                    this.getRpcNode().setHttpMimeTypes(Ext.bind(function(result, exception) {
+                                        if(Ung.Util.handleException(exception)) return;
+                                        this.getRpcNode().getSettings(Ext.bind(function(result, exception) {
+                                            Ext.MessageBox.hide();
+                                            if(Ung.Util.handleException(exception)) return;
+                                            this.settings.httpMimeTypes = result.httpMimeTypes;
+                                            this.gridMimeTypes.clearDirty();
+                                            if(callback != null) {
+                                                callback();
+                                            }
+                                        },this));
+                                    },this), saveList);
+                                },settingsCmp));
+                            }
                         });
                     }
                     this.winMimeTypes.show();
@@ -248,156 +203,145 @@ if (!Ung.hasResource["Ung.Virus"]) {
         },
         // File Types
         buildExtensions : function() {
-            var liveColumn = new Ext.grid.CheckColumn({
-                header : this.i18n._("scan"),
-                dataIndex : 'live',
-                fixed : true
-            });
 
-            this.gridExtensions = new Ung.EditorGrid({
+            this.gridExtensions = Ext.create('Ung.EditorGrid',{
                 name : 'File Extensions',
                 settingsCmp : this,
-                totalRecords : this.getBaseSettings().extensionsLength,
                 emptyRow : {
                     "string" : "undefined type",
-                    "live" : true,
+                    "enabled" : true,
                     "name" : this.i18n._("[no description]")
                 },
                 title : this.i18n._("File Extensions"),
-                recordJavaClass : "com.untangle.uvm.node.StringRule",
-                proxyRpcFn : this.getRpcNode().getExtensions,
-                fields : [{
-                    name : 'id'
-                }, {
-                    name : 'string',
-                    type : 'string'
-                }, {
-                    name : 'live'
-                }, {
-                    name : 'name',
-                    type : 'string'
-                }],
+                recordJavaClass : "com.untangle.uvm.node.GenericRule",
+                dataProperty : "httpFileExtensions",
+                fields : Ung.Util.getGenericRuleFields(this),
                 columns : [{
-                    id : 'string',
-                    header : this.i18n._("file type"),
+                    header : this.i18n._("File Type"),
                     width : 200,
                     dataIndex : 'string',
-                    editor : new Ext.form.TextField({
-                        allowBlank : false
-                    })
-                }, liveColumn, {
-                    id : 'name',
-                    header : this.i18n._("description"),
+					editor: {
+						xtype:'textfield',
+						allowBlank:false
+					}
+                }, 
+				{
+					xtype:'checkcolumn',
+					header : this.i18n._("Scan"),
+					dataIndex : 'enabled',
+					fixed : true,
+					width:55
+				}, {
+                    header : this.i18n._("Description"),
                     width : 200,
                     dataIndex : 'name',
-                    editor : new Ext.form.TextField({
-                        allowBlank : false
-                    })
+                    flex: 1,
+					editor: {
+						xtype:'textfield',
+						allowBlank:false
+					}
                 }],
                 sortField : 'string',
                 columnsDefaultSortable : true,
-                autoExpandColumn : 'name',
-                plugins : [liveColumn],
-                rowEditorInputLines : [new Ext.form.TextField({
+                rowEditorInputLines : [
+				{
+					xtype:'textfield',
                     name : "File Type",
                     dataIndex : "string",
                     fieldLabel : this.i18n._("File Type"),
                     allowBlank : false,
-                    width : 200
-                }), new Ext.form.Checkbox({
+                    width : 400
+                },
+				{
+					xtype:'checkbox',
                     name : "Scan",
-                    dataIndex : "live",
+                    dataIndex : "enabled",
                     fieldLabel : this.i18n._("Scan")
-                }), new Ext.form.TextArea({
+                },
+				{
+					xtype:'textarea',
                     name : "Description",
                     dataIndex : "name",
                     fieldLabel : this.i18n._("Description"),
-                    width : 200,
+                    width : 400,
                     height : 60
-                })]
+                }]
             });
         },
         // MIME Types
         buildMimeTypes : function() {
-            var liveColumn = new Ext.grid.CheckColumn({
-                header : this.i18n._("scan"),
-                dataIndex : 'live',
-                fixed : true
-            });
 
-            this.gridMimeTypes = new Ung.EditorGrid({
+            this.gridMimeTypes = Ext.create('Ung.EditorGrid', {
                 name : 'MIME Types',
                 settingsCmp : this,
-                totalRecords : this.getBaseSettings().httpMimeTypesLength,
                 emptyRow : {
-                    "mimeType" : "undefined type",
-                    "live" : true,
+                    "string" : "undefined type",
+                    "enabled" : true,
                     "name" : this.i18n._("[no description]")
                 },
                 title : this.i18n._("MIME Types"),
-                recordJavaClass : "com.untangle.uvm.node.MimeTypeRule",
-                proxyRpcFn : this.getRpcNode().getHttpMimeTypes,
-                fields : [{
-                    name : 'id'
-                }, {
-                    name : 'mimeType',
-                    type : 'string'
-                }, {
-                    name : 'live'
-                }, {
-                    name : 'name',
-                    type : 'string'
-                }],
+                recordJavaClass : "com.untangle.uvm.node.GenericRule",
+                dataProperty : "httpMimeTypes",
+                fields : Ung.Util.getGenericRuleFields(this),
                 columns : [{
-                    id : 'mimeType',
-                    header : this.i18n._("MIME type"),
+                    header : this.i18n._("MIME Type"),
                     width : 200,
-                    dataIndex : 'mimeType',
-                    editor : new Ext.form.TextField({
-                        allowBlank : false
-                    })
-                }, liveColumn, {
-                    id : 'name',
-                    header : this.i18n._("description"),
+                    dataIndex : 'string',
+					editor:{
+						xtype:'textfield',
+						allowBlank:false
+					}
+                }, {
+					xtype:'checkcolumn',
+					header : this.i18n._("Scan"),
+					dataIndex : 'enabled',
+					fixed : true,
+					width:55
+				}, {
+                    header : this.i18n._("Description"),
                     width : 200,
                     dataIndex : 'name',
-                    editor : new Ext.form.TextField({
-                        allowBlank : false
-                    })
+                    flex : 1,
+					field : {
+						xtype:'textfield',
+						allowBlank:false
+					}
                 }],
-                sortField : 'mimeType',
+                sortField : 'string',
                 columnsDefaultSortable : true,
-                autoExpandColumn : 'name',
-                plugins : [liveColumn],
-                rowEditorInputLines : [new Ext.form.TextField({
+                rowEditorInputLines : [
+				{
+					xtype:'textfield',
                     name : "MIME Type",
-                    dataIndex : "mimeType",
+                    dataIndex : "string",
                     fieldLabel : this.i18n._("MIME Type"),
                     allowBlank : false,
-                    width : 200
-                }), new Ext.form.Checkbox({
+                    width : 400
+                },
+				{	xtype:'checkbox',
                     name : "Scan",
-                    dataIndex : "live",
+                    dataIndex : "enabled",
                     fieldLabel : this.i18n._("Scan")
-                }), new Ext.form.TextArea({
+                },
+				{
+					xtype:'textarea',
                     name : "Description",
                     dataIndex : "name",
                     fieldLabel : this.i18n._("Description"),
-                    width : 200,
+                    width : 400,
                     height : 60
-                })]
+                }]
             });
         },        
         // Ftp Panel
         buildFtp : function() {
-            this.panelFtp = new Ext.Panel({
+            this.panelFtp = Ext.create('Ext.panel.Panel',{
                 name : 'FTP',
                 helpSource : 'ftp',
                 // private fields
                 parentId : this.getId(),
 
                 title : this.i18n._('FTP'),
-                layout : "form",
                 cls: 'ung-panel',
                 autoScroll : true,
                 defaults : {
@@ -411,66 +355,26 @@ if (!Ung.hasResource["Ung.Virus"]) {
                         boxLabel : this.i18n._('Scan FTP'),
                         hideLabel : true,
                         name : 'Scan FTP',
-                        checked : this.getBaseSettings().ftpConfig.scan,
-                        listeners : {
-                            "check" : {
-                                fn : function(elem, checked) {
-                                    this.getBaseSettings().ftpConfig.scan = checked;
-                                }.createDelegate(this)
-                            }
-                        }
-                    }]
-                }, {
-                    title: this.i18n._('Advanced Settings'),
-                    collapsible: true,
-                    collapsed: true,
-                    labelWidth: 170,
-                    items : [{
-                        xtype : 'checkbox',
-                        boxLabel : this.i18n._('Disable FTP Resume'),
-                        hideLabel : true,
-                        name : 'Disable FTP Resume',
-                        checked : this.getBaseSettings().ftpDisableResume,
-                        listeners : {
-                            "check" : {
-                                fn : function(elem, checked) {
-                                    this.getBaseSettings().ftpDisableResume = checked;
-                                }.createDelegate(this)
-                            }
-                        }
-                    },{
-                        xtype : 'numberfield',
-                        fieldLabel : this.i18n._('Scan trickle rate'),
-                        name : 'Scan trickle rate (1-99)',
-                        id: 'virus_ftp_trickle_percent',
-                        value : this.getBaseSettings().tricklePercent,
-                        width: 25,
-                        allowDecimals: false,
-                        allowNegative: false,
-                        minValue: 1,                        
-                        maxValue: 99,
+                        checked : this.settings.scanFtp,
                         listeners : {
                             "change" : {
-                                fn : function(elem, newValue) {
-                                    var tricklePercentHttpCmp = Ext.getCmp('virus_http_trickle_percent');
-                                    tricklePercentHttpCmp.setValue(newValue);
-                                    this.getBaseSettings().tricklePercent = newValue;
-                                }.createDelegate(this)
+                                fn : Ext.bind(function(elem, checked) {
+                                    this.settings.scanFtp = checked;
+                                },this)
                             }
                         }
                     }]
                 }, {
                     cls: 'description',
                     html : this.i18n._("Virus Blocker signatures were last updated") + ":&nbsp;&nbsp;&nbsp;&nbsp;"
-                            + ((this.getBaseSettings().lastUpdate != null) ? i18n.timestampFormat(this.getBaseSettings().lastUpdate) : 
-                            this.i18n._("Unknown"))
+                        + ((this.getRpcNode().getLastSignatureUpdate() != null) ? i18n.timestampFormat(this.getRpcNode().getLastSignatureUpdate()) : this.i18n._("Unknown"))
                 }]
 
             });
         },
         // Email Panel
         buildEmail : function() {
-            this.panelEmail = new Ext.Panel({
+            this.panelEmail = Ext.create('Ext.panel.Panel',{
                 name : 'Email',
                 helpSource : 'email',
                 // private fields
@@ -491,19 +395,18 @@ if (!Ung.hasResource["Ung.Virus"]) {
                     layout:'column',
                     items:[{
                         columnWidth:.3,
-                        layout: 'form',
                         border:false,
                         items: [{
                             xtype : 'checkbox',
                             boxLabel : this.i18n._('Scan SMTP'),
                             hideLabel : true,
                             name : 'Scan SMTP',
-                            checked : this.getBaseSettings().smtpConfig.scan,
+                            checked : this.settings.scanSmtp,
                             listeners : {
-                                "check" : {
-                                    fn : function(elem, checked) {
-                                        this.getBaseSettings().smtpConfig.scan = checked;
-                                    }.createDelegate(this)
+                                "change" : {
+                                    fn : Ext.bind(function(elem, checked) {
+                                        this.settings.scanSmtp = checked;
+                                    },this)
                                 }
                             }
                         }, {
@@ -511,12 +414,12 @@ if (!Ung.hasResource["Ung.Virus"]) {
                             boxLabel : this.i18n._('Scan POP3'),
                             hideLabel : true,
                             name : 'Scan POP3',
-                            checked : this.getBaseSettings().popConfig.scan,
+                            checked : this.settings.scanPop,
                             listeners : {
-                                "check" : {
-                                    fn : function(elem, checked) {
-                                        this.getBaseSettings().popConfig.scan = checked;
-                                    }.createDelegate(this)
+                                "change" : {
+                                    fn : Ext.bind(function(elem, checked) {
+                                        this.settings.scanPop = checked;
+                                    },this)
                                 }
                             }
                         }, {
@@ -524,18 +427,17 @@ if (!Ung.hasResource["Ung.Virus"]) {
                             boxLabel : this.i18n._('Scan IMAP'),
                             hideLabel : true,
                             name : 'Scan IMAP',
-                            checked : this.getBaseSettings().imapConfig.scan,
+                            checked : this.settings.scanImap,
                             listeners : {
-                                "check" : {
-                                    fn : function(elem, checked) {
-                                        this.getBaseSettings().imapConfig.scan = checked;
-                                    }.createDelegate(this)
+                                "change" : {
+                                    fn : Ext.bind(function(elem, checked) {
+                                        this.settings.scanImap = checked;
+                                    },this)
                                 }
                             }
                         }]
                     },{
                         columnWidth:.7,
-                        layout: 'form',
                         border:false,
                         items: [{
                             xtype : 'combo',
@@ -545,20 +447,17 @@ if (!Ung.hasResource["Ung.Virus"]) {
                             mode : 'local',
                             triggerAction : 'all',
                             listClass : 'x-combo-list-small',
-                            store : new Ext.data.SimpleStore({
-                                fields : ['key', 'name'],
-                                data : [["PASS", this.i18n._("pass message")], 
-                                        ["REMOVE", this.i18n._("remove infection")],
-                                        ["BLOCK", this.i18n._("block message")]]
-                            }),
+                            store: [["pass", this.i18n._("pass message")], 
+                                    ["remove", this.i18n._("remove infection")],
+                                    ["block", this.i18n._("block message")]],
                             displayField : 'name',
                             valueField : 'key',
-                            value : this.getBaseSettings().smtpConfig.msgAction,
+                            value : this.settings.smtpAction,
                             listeners : {
                                 "change" : {
-                                    fn : function(elem, newValue) {
-                                        this.getBaseSettings().smtpConfig.msgAction = newValue;
-                                    }.createDelegate(this)
+                                    fn : Ext.bind(function(elem, newValue) {
+                                        this.settings.smtpAction = newValue;
+                                    },this)
                                 }
                             }
                         },{
@@ -569,19 +468,16 @@ if (!Ung.hasResource["Ung.Virus"]) {
                             mode : 'local',
                             triggerAction : 'all',
                             listClass : 'x-combo-list-small',
-                            store : new Ext.data.SimpleStore({
-                                fields : ['key', 'name'],
-                                data : [["PASS", this.i18n._("pass message")], 
-                                        ["REMOVE", this.i18n._("remove infection")]]
-                            }),
+                            store : [["pass", this.i18n._("pass message")], 
+									["remove", this.i18n._("remove infection")]],
                             displayField : 'name',
                             valueField : 'key',
-                            value : this.getBaseSettings().popConfig.msgAction,
+                            value : this.settings.popAction,
                             listeners : {
                                 "change" : {
-                                    fn : function(elem, newValue) {
-                                        this.getBaseSettings().popConfig.msgAction = newValue;
-                                    }.createDelegate(this)
+                                    fn : Ext.bind(function(elem, newValue) {
+                                        this.settings.popAction = newValue;
+                                    },this)
                                 }
                             }
                         },{
@@ -592,19 +488,16 @@ if (!Ung.hasResource["Ung.Virus"]) {
                             mode : 'local',
                             triggerAction : 'all',
                             listClass : 'x-combo-list-small',
-                            store : new Ext.data.SimpleStore({
-                                fields : ['key', 'name'],
-                                data : [["PASS", this.i18n._("pass message")], 
-                                        ["REMOVE", this.i18n._("remove infection")]]
-                            }),
+                            store : [["PASS", this.i18n._("pass message")], 
+                                   ["REMOVE", this.i18n._("remove infection")]],
                             displayField : 'name',
                             valueField : 'key',
-                            value : this.getBaseSettings().imapConfig.msgAction,
+                            value : this.settings.imapAction,
                             listeners : {
                                 "change" : {
-                                    fn : function(elem, newValue) {
-                                        this.getBaseSettings().imapConfig.msgAction = newValue;
-                                    }.createDelegate(this)
+                                    fn : Ext.bind(function(elem, newValue) {
+                                        this.settings.imapAction = newValue;
+                                    },this)
                                 }
                             }
                         }]
@@ -612,15 +505,14 @@ if (!Ung.hasResource["Ung.Virus"]) {
                 }, {
                     cls: 'description',
                     html : this.i18n._("Virus Blocker signatures were last updated") + ":&nbsp;&nbsp;&nbsp;&nbsp;"
-                            + ((this.getBaseSettings().lastUpdate != null) ? i18n.timestampFormat(this.getBaseSettings().lastUpdate) : 
-                            this.i18n._("Unknown"))
+                            + ((this.settings.lastUpdate != null) ? i18n.timestampFormat(this.settings.lastUpdate) : this.i18n._("Unknown"))
                 }]
 
             });
         },
         // Event Log
         buildWebEventLog : function() {
-            this.gridWebEventLog = new Ung.GridEventLog({
+            this.gridWebEventLog = Ext.create('Ung.GridEventLog',{
                 name : 'Web Event Log',
                 helpSource : 'Web_Event_Log',
                 settingsCmp : this,
@@ -629,16 +521,16 @@ if (!Ung.hasResource["Ung.Virus"]) {
 
                 // the list of fields
                 fields : [{
-                    name : 'timeStamp',
+                    name : 'time_stamp',
                     sortType : Ung.SortTypes.asTimestamp
                 }, {
                     name : 'client',
-                    mapping : 'CClientAddr'
+                    mapping : 'c_client_addr'
                 }, {
                     name : 'uid'
                 }, {
                     name : 'server',
-                    mapping : 'CServerAddr'
+                    mapping : 'c_server_addr'
                 }, {
                     name : 'host',
                     mapping : 'host'
@@ -649,49 +541,43 @@ if (!Ung.hasResource["Ung.Virus"]) {
                     name : 'location'
                 }, {
                     name : 'reason',
-                    mapping : 'virus' + main.capitalize(this.getRpcNode().getVendor()) + 'Name'
+                    mapping : 'virus_' + this.vendor + '_name'
                 }],
                 // the list of columns
-                autoExpandColumn: 'uri',
                 columns : [{
-                    header : this.i18n._("timestamp"),
+                    header : this.i18n._("Timestamp"),
                     width : Ung.Util.timestampFieldWidth,
                     sortable : true,
-                    dataIndex : 'timeStamp',
+                    dataIndex : 'time_stamp',
                     renderer : function(value) {
                         return i18n.timestampFormat(value);
                     }
                 }, {
-                    id : 'client',
-                    header : this.i18n._("client"),
+                    header : this.i18n._("Client"),
                     width : Ung.Util.ipFieldWidth,
                     sortable : true,
                     dataIndex : 'client'
                 }, {
-                    id : 'username',
-                    header : this.i18n._("username"),
+                    header : this.i18n._("Username"),
                     width : Ung.Util.usernameFieldWidth,
                     sortable : true,
                     dataIndex : 'uid'
                 }, {
-                    id: 'host',
-                    header : this.i18n._("host"),
+                    header : this.i18n._("Host"),
                     width : Ung.Util.hostnameFieldWidth,
                     dataIndex : 'host'
                 }, {
-                    id: 'uri',
-                    header : this.i18n._("uri"),
+                    header : this.i18n._("Uri"),
+                    flex:1,
                     width : Ung.Util.uriFieldWidth,
                     dataIndex : 'uri'
                 }, {
-                    id : 'reason',
-                    header : this.i18n._("virus name"),
+                    header : this.i18n._("Virus Name"),
                     width : 140,
                     sortable : true,
                     dataIndex : 'reason'
                 }, {
-                    id : 'server',
-                    header : this.i18n._("server"),
+                    header : this.i18n._("Server"),
                     width : Ung.Util.ipFieldWidth,
                     sortable : true,
                     dataIndex : 'server'
@@ -700,7 +586,7 @@ if (!Ung.hasResource["Ung.Virus"]) {
         },
         // Event Log
         buildMailEventLog : function() {
-            this.gridMailEventLog = new Ung.GridEventLog({
+            this.gridMailEventLog = Ext.create('Ung.GridEventLog',{
                 name : 'Email Event Log',
                 helpSource : 'Email_Event_Log',
                 settingsCmp : this,
@@ -709,16 +595,16 @@ if (!Ung.hasResource["Ung.Virus"]) {
 
                 // the list of fields
                 fields : [{
-                    name : 'timeStamp',
+                    name : 'time_stamp',
                     sortType : Ung.SortTypes.asTimestamp
                 }, {
                     name : 'client',
-                    mapping : 'CClientAddr'
+                    mapping : 'c_client_addr'
                 }, {
                     name : 'uid'
                 }, {
                     name : 'server',
-                    mapping : 'CServerAddr'
+                    mapping : 'c_server_addr'
                 }, {
                     name : 'subject',
                     type : 'string'
@@ -730,89 +616,50 @@ if (!Ung.hasResource["Ung.Virus"]) {
                     type : 'string'
                 }, {
                     name : 'reason',
-                    mapping : 'virus' + main.capitalize(this.getRpcNode().getVendor()) + 'Name'
+                    mapping : 'virus_' + this.vendor + '_name'
                 }],
                 // the list of columns
-                autoExpandColumn: 'subject',
                 columns : [{
-                    header : this.i18n._("timestamp"),
+                    header : this.i18n._("Timestamp"),
                     width : Ung.Util.timestampFieldWidth,
                     sortable : true,
-                    dataIndex : 'timeStamp',
+                    dataIndex : 'time_stamp',
                     renderer : function(value) {
                         return i18n.timestampFormat(value);
                     }
                 }, {
-                    id : 'client',
-                    header : this.i18n._("client"),
+                    header : this.i18n._("Client"),
                     width : Ung.Util.ipFieldWidth,
                     sortable : true,
                     dataIndex : 'client'
                 }, {
-                    header : this.i18n._("receiver"),
+                    header : this.i18n._("Receiver"),
                     width : Ung.Util.emailFieldWidth,
                     sortable : true,
                     dataIndex : 'addr'
                 }, {
-                    header : this.i18n._("sender"),
+                    header : this.i18n._("Sender"),
                     width : Ung.Util.emailFieldWidth,
                     sortable : true,
                     dataIndex : 'sender'
                 }, {
-                    id : 'subject',
-                    header : this.i18n._("subject"),
+                    header : this.i18n._("Subject"),
+                    flex:1,
                     width : 150,
                     sortable : true,
                     dataIndex : 'subject'
                 }, {
-                    id : 'reason',
-                    header : this.i18n._("virus name"),
+                    header : this.i18n._("Virus name"),
                     width : 140,
                     sortable : true,
                     dataIndex : 'reason'
                 }, {
-                    id : 'server',
-                    header : this.i18n._("server"),
+                    header : this.i18n._("Server"),
                     width : Ung.Util.ipFieldWidth,
                     sortable : true,
                     dataIndex : 'server'
                 }]
             });
-        },
-        // validation function
-        validateClient : function() {
-            //validate trickle rate
-            var tricklePercentCmp = Ext.getCmp('virus_http_trickle_percent');
-            if (tricklePercentCmp.isValid()) {
-                return true;
-            } else {
-                Ext.MessageBox.alert(this.i18n._('Warning'), this.i18n._("Scan trickle rate should be between 1 and 99!"),
-                    function () {
-                        this.tabs.activate(this.panelWeb);
-                        tricklePercentCmp.focus(true);
-                    }.createDelegate(this) 
-                );
-                return false;
-            }
-        },
-        // save function
-        saveAction : function() {
-            if (this.validate()) {
-                Ext.MessageBox.wait(i18n._("Saving..."), i18n._("Please wait"));
-                this.getRpcNode().updateAll(function(result, exception) {
-                    Ext.MessageBox.hide();
-                    if(Ung.Util.handleException(exception)) return;
-                    // exit settings screen
-                    this.closeWindow();
-                }.createDelegate(this), this.getBaseSettings(), 
-                        this.gridMimeTypes ? this.gridMimeTypes.getSaveList() : null,
-                        this.gridExtensions ? this.gridExtensions.getSaveList() : null);
-            }
-        },
-        isDirty : function() {
-            return !Ung.Util.equals(this.getBaseSettings(), this.initialBaseSettings)
-                || (this.gridMimeTypes ? this.gridMimeTypes.isDirty() : false)
-                || (this.gridExtensions ? this.gridExtensions.isDirty() : false);
         }
     });
 }

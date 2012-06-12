@@ -9,23 +9,25 @@
     <title>Setup Wizard</title>
     <META content="IE=7.0000" http-equiv="X-UA-Compatible"/>    
     <style type="text/css">
-      @import "/ext/resources/css/ext-all.css";
+        @import "/ext4/resources/css/ext-all-gray.css?s=${buildStamp}";
+        @import "/ext4/examples/ux/css/CheckHeader.css?s=${buildStamp}";
     </style>
     
-    <uvm:skin src="ext-skin.css"  name="${skinSettings.skinName}"/>
-    <uvm:skin src="admin.css"      name="${skinSettings.skinName}"/>
+    <!--   <uvm:skin src="ext-skin.css"  name="${skinSettings.skinName}"/> -->
+    <uvm:skin src="admin.css?s=${buildStamp}" name="${skinSettings.skinName}"/>
 
-    <script type="text/javascript" src="/ext/source/core/Ext.js"></script>
-    <script type="text/javascript" src="/ext/source/adapter/ext-base.js"></script>
-    <script type="text/javascript" src="/ext/ext-all-debug.js"></script>
+    <script type="text/javascript" src="/ext4/builds/ext-core-debug.js?s=${buildStamp}"></script>
+    <script type="text/javascript" src="/ext4/ext-all-debug.js?s=${buildStamp}"></script>
+	<script type="text/javascript" src="/ext4/examples/ux/data/PagingMemoryProxy.js?s=${buildStamp}"></script>
+	<script type="text/javascript" src="/ext4/examples/ux/CheckColumn.js?s=${buildStamp}"></script>
     
-    <script type="text/javascript" src="/jsonrpc/jsonrpc.js"></script>
-    <script type="text/javascript" src="/script/i18n.js"></script>
-    <script type="text/javascript" src="/script/timezone.js"></script>
-    <script type="text/javascript" src="/script/country.js"></script>
-    <script type="text/javascript" src="/script/wizard.js"></script>
+    <script type="text/javascript" src="/jsonrpc/jsonrpc.js?s=${buildStamp}"></script>
+    <script type="text/javascript" src="/script/i18n.js?s=${buildStamp}"></script>
+    <script type="text/javascript" src="/script/timezone.js?s=${buildStamp}"></script>
+    <script type="text/javascript" src="/script/country.js?s=${buildStamp}"></script>
+    <script type="text/javascript" src="/script/wizard.js?s=${buildStamp}"></script>
 
-    <script type="text/javascript" src="script/setup.js"></script>
+    <script type="text/javascript" src="script/setup.js?s=${buildStamp}"></script>
 
 <c:if test="${param['console']==1}">
     <script type="text/javascript">
@@ -38,17 +40,15 @@
             top.window.outerWidth = top.screen.availWidth-5;
         }
     }
-     </script>
+    </script>
 </c:if>
     
     <script type="text/javascript">
       Ung.SetupWizard.currentSkin = "${skinSettings.skinName}";
-
       Ung.SetupWizard.CurrentValues = {
           timezone : "${timezone.ID}",
           languageMap : ${languageMap},
       };
-
       Ext.onReady(Ung.Setup.init);
     </script>
   </head>

@@ -2,7 +2,8 @@ if (!Ung.hasResource["Ung.Phish"]) {
     Ung.hasResource["Ung.Phish"] = true;
     Ung.NodeWin.registerClassName('untangle-node-phish', 'Ung.Phish');
 
-    Ung.Phish = Ext.extend(Ung.NodeWin, {
+    Ext.define('Ung.Phish',{
+		extend:'Ung.NodeWin',
         lastUpdate : null,
         lastCheck : null,
         signatureVersion : null,
@@ -12,23 +13,12 @@ if (!Ung.hasResource["Ung.Phish"]) {
         webPanel : null,
         gridWebEventLog : null,
         gridEmailEventLog : null,
-        // override get base settings object
-        getNodeSettings : function(forceReload) {
-            if (forceReload || this.rpc.nodeSettings === undefined) {
-                try {
-                   this.rpc.nodeSettings = this.getRpcNode().getSettings();
-                   this.lastUpdate = this.getRpcNode().getLastUpdate();
-                   this.lastCheck = this.getRpcNode().getLastUpdateCheck();
-                   this.signatureVer = this.getRpcNode().getSignatureVersion();
-                } catch (e) {
-                Ung.Util.rpcExHandler(e);
-            }
-            }
-            return this.rpc.nodeSettings;
-        },
+
         initComponent : function() {
-            // keep initial node settings
-            this.initialNodeSettings = Ung.Util.clone(this.getNodeSettings());
+            this.getSettings();
+            this.lastUpdate = this.getRpcNode().getLastUpdate();
+            this.lastCheck = this.getRpcNode().getLastUpdateCheck();
+            this.signatureVer = this.getRpcNode().getSignatureVersion();
             // build tabs
             this.buildEmail();
             this.buildWeb();
@@ -56,11 +46,10 @@ if (!Ung.hasResource["Ung.Phish"]) {
             this.smtpData = [['MARK', this.i18n._('Mark')], ['PASS', this.i18n._('Pass')],
                     ['DROP', this.i18n._('Drop')], ['QUARANTINE', this.i18n._('Quarantine')]];
             this.spamData = [['MARK', this.i18n._('Mark')], ['PASS', this.i18n._('Pass')]];
-            this.emailPanel = new Ext.Panel({
+            this.emailPanel = Ext.create('Ext.panel.Panel',{
                 title : this.i18n._('Email'),
                 name : 'Email',
                 helpSource : 'email',
-                layout : "form",
                 autoScroll : true,
                 cls: 'ung-panel',
                 items : [{
@@ -75,34 +64,28 @@ if (!Ung.hasResource["Ung.Phish"]) {
                         boxLabel : this.i18n._('Scan SMTP'),
                         name : 'Scan SMTP',
                         hideLabel : true,
-                        checked : this.getNodeSettings().smtpConfig.scan,
-                        listeners : {
-                            "check" : {
-                                fn : function(elem, newValue) {
-                                    this.getNodeSettings().smtpConfig.scan = newValue;
-                                }.createDelegate(this)
-                            }
-                        }
-                    }, {
+                        checked : this.settings.smtpConfig.scan,
+                        handler : Ext.bind(function(elem, newValue) {
+                                    this.settings.smtpConfig.scan = newValue;
+                                },this)
+						}
+                     , {
                         xtype : 'combo',
                         name : 'SMTP Action',
                         editable : false,
-                        store : new Ext.data.SimpleStore({
-                            fields : ['key', 'name'],
-                            data : this.smtpData
-                        }),
+						store :this.smtpData,
                         valueField : 'key',
                         displayField : 'name',
                         fieldLabel : this.i18n._('Action'),
                         mode : 'local',
                         triggerAction : 'all',
                         listClass : 'x-combo-list-small',
-                        value : this.getNodeSettings().smtpConfig.msgAction,
+                        value : this.settings.smtpConfig.msgAction,
                         listeners : {
                             "change" : {
-                                fn : function(elem, newValue) {
-                                    this.getNodeSettings().smtpConfig.msgAction = newValue;
-                                }.createDelegate(this)
+                                fn : Ext.bind(function(elem, newValue) {
+                                    this.settings.smtpConfig.msgAction = newValue;
+                                },this)
                             }
                         }
                     }]
@@ -118,34 +101,28 @@ if (!Ung.hasResource["Ung.Phish"]) {
                         boxLabel : this.i18n._('Scan POP3'),
                         name : 'Scan POP3',
                         hideLabel : true,
-                        checked : this.getNodeSettings().popConfig.scan,
-                        listeners : {
-                            "check" : {
-                                fn : function(elem, newValue) {
-                                    this.getNodeSettings().popConfig.scan = newValue;
-                                }.createDelegate(this)
-                            }
-                        }
-                    }, {
+                        checked : this.settings.popConfig.scan,
+                        handler : Ext.bind(function(elem, newValue) {
+                                    this.settings.popConfig.scan = newValue;
+                                },this)
+					}, 
+					{
                         xtype : 'combo',
                         name : 'POP3 Action',
                         editable : false,
-                        store : new Ext.data.SimpleStore({
-                            fields : ['key', 'name'],
-                            data : this.spamData
-                        }),
+                        store :this.spamData,
                         valueField : 'key',
                         displayField : 'name',
                         fieldLabel : this.i18n._('Action'),
                         mode : 'local',
                         triggerAction : 'all',
                         listClass : 'x-combo-list-small',
-                        value : this.getNodeSettings().popConfig.msgAction,
+                        value : this.settings.popConfig.msgAction,
                         listeners : {
                             "change" : {
-                                fn : function(elem, newValue) {
-                                    this.getNodeSettings().popConfig.msgAction = newValue;
-                                }.createDelegate(this)
+                                fn : Ext.bind(function(elem, newValue) {
+                                    this.settings.popConfig.msgAction = newValue;
+                                },this)
                             }
                         }
                     }]
@@ -161,34 +138,28 @@ if (!Ung.hasResource["Ung.Phish"]) {
                         boxLabel : this.i18n._('Scan IMAP'),
                         name : 'Scan IMAP',
                         hideLabel : true,
-                        checked : this.getNodeSettings().imapConfig.scan,
-                        listeners : {
-                            "check" : {
-                                fn : function(elem, newValue) {
-                                  this.getNodeSettings().imapConfig.scan = newValue;
-                                }.createDelegate(this)
-                            }
+                        checked : this.settings.imapConfig.scan,
+                        handler : Ext.bind(function(elem, newValue) {
+                                  this.settings.imapConfig.scan = newValue;
+                                },this)
                         }
-                    }, {
+                     , {
                         xtype : 'combo',
                         name : 'IMAP Action',
                         editable : false,
-                        store : new Ext.data.SimpleStore({
-                            fields : ['key', 'name'],
-                            data : this.spamData
-                        }),
+                        store : this.spamData,
                         valueField : 'key',
                         displayField : 'name',
                         fieldLabel : this.i18n._('Action'),
                         mode : 'local',
                         triggerAction : 'all',
                         listClass : 'x-combo-list-small',
-                        value : this.getNodeSettings().imapConfig.msgAction,
+                        value : this.settings.imapConfig.msgAction,
                         listeners : {
                             "change" : {
-                                fn : function(elem, newValue) {
-                                    this.getNodeSettings().imapConfig.msgAction = newValue;
-                                }.createDelegate(this)
+                                fn : Ext.bind(function(elem, newValue) {
+                                    this.settings.imapConfig.msgAction = newValue;
+                                },this)
                             }
                         }
                     }]
@@ -210,10 +181,9 @@ if (!Ung.hasResource["Ung.Phish"]) {
         },
         // Web Config Panel
         buildWeb : function() {
-            this.webPanel = new Ext.Panel({
+            this.webPanel = Ext.create('Ext.panel.Panel',{
                 title : this.i18n._('Web'),
                 helpSource : 'web',
-                layout : "form",
                 autoScroll : true,
                 cls: 'ung-panel',
                 items : [{
@@ -224,16 +194,13 @@ if (!Ung.hasResource["Ung.Phish"]) {
                         boxLabel : this.i18n._('Enable Phish web filtering'),
                         name : 'Enable Phish web filtering',
                         hideLabel : true,
-                        checked : this.getNodeSettings().enableGooglePhishList,
-                        listeners : {
-                            "check" : {
-                                fn : function(elem, checked) {
-                                    this.getNodeSettings().enableGooglePhishList = checked;
-                                }.createDelegate(this)
-                            }
-                        }
-                    }]
-                }, {
+                        checked : this.settings.enableGooglePhishList,
+						handler:Ext.bind(function(elem, checked) {
+                                    this.settings.enableGooglePhishList = checked;
+                                },this)
+                        }]
+                    }
+                  , {
                     xtype : 'fieldset',
                     title : this.i18n._('Note'),
                     autoHeight : true,
@@ -247,19 +214,7 @@ if (!Ung.hasResource["Ung.Phish"]) {
         },
         // Web Event Log
         buildWebEventLog : function() {
-            var asClient = function(value) {
-                var pe = (value == null ? null : value.pipelineEndpoints);
-                return pe === null ? "" : pe.CClientAddr + ":" + pe.CClientPort;
-            };
-            var asServer = function(value) {
-                var pe = (value == null ? null : value.pipelineEndpoints);
-                return pe === null ? "" : pe.SServerAddr + ":" + pe.SServerPort;
-            };
-            var asRequest = function(value) {
-                return value == null || value.url == null ? "" : value.url;
-            }.createDelegate(this);
-
-            this.gridWebEventLog = new Ung.GridEventLog({
+            this.gridWebEventLog = Ext.create('Ung.GridEventLog',{
                 name : 'Web Event Log',
                 helpSource : 'web_event_log',
                 settingsCmp : this,
@@ -267,13 +222,13 @@ if (!Ung.hasResource["Ung.Phish"]) {
                 eventQueriesFn : this.getRpcNode().getHttpEventQueries,
                 // the list of fields
                 fields : [{
-                    name : 'timeStamp',
+                    name : 'time_stamp',
                     sortType : Ung.SortTypes.asTimestamp
                 }, {
                     name : 'displayAction',
-                    mapping : 'actionType',
+                    mapping : 'phish_action',
                     type : 'string',
-                    convert : function(value) {
+                    convert : Ext.bind(function(value) {
                         switch (value) {
                             case 0 : // PASSED
                                 return this.i18n._("pass");
@@ -281,75 +236,74 @@ if (!Ung.hasResource["Ung.Phish"]) {
                             default :
                                 return this.i18n._("block");
                         }
-                    }.createDelegate(this)
-                }, {
+                    },this)
+				}, {
                     name : 'client',
-                    mapping : 'requestLine',
-                    sortType : asClient
+                    mapping : 'c_client_addr'
+                }, {
+                    name : 'uid'
                 }, {
                     name : 'server',
-                    mapping : 'requestLine',
-                    sortType : asServer
+                    mapping : 'c_server_addr'
                 }, {
-                    name : 'request',
-                    mapping : 'requestLine',
-                    sortType : asRequest
+                    name : 'host',
+                    mapping : 'host'
+                }, {
+                    name : 'uri',
+                    mapping : 'uri'
                 }],
                 // the list of columns
-                autoExpandColumn : 'request',
                 columns : [{
-                    header : this.i18n._("timestamp"),
+                    header : this.i18n._("Timestamp"),
                     width : Ung.Util.timestampFieldWidth,
                     sortable : true,
-                    dataIndex : 'timeStamp',
+                    dataIndex : 'time_stamp',
                     renderer : function(value) {
                         return i18n.timestampFormat(value);
                     }
                 }, {
-                    header : this.i18n._("action"),
+                    header : this.i18n._("Client"),
+                    width : Ung.Util.ipFieldWidth,
+                    dataIndex : 'client'
+                }, {
+                    header : this.i18n._("Username"),
+                    width : Ung.Util.usernameFieldWidth,
+                    dataIndex : 'uid'
+                }, {
+                    header : this.i18n._("Uost"),
+                    width : Ung.Util.hostnameFieldWidth,
+                    dataIndex : 'host'
+                }, {
+                    header : this.i18n._("Uri"),
+                    flex:1,
+                    width : Ung.Util.uriFieldWidth,
+                    dataIndex : 'uri'
+                }, {
+                    header : this.i18n._("Action"),
                     width : 120,
                     sortable : true,
                     dataIndex : 'displayAction'
-                }, {
-                    header : this.i18n._("client"),
-                    width : Ung.Util.ipFieldWidth,
-                    sortable : true,
-                    dataIndex : 'client',
-                    renderer : asClient
-                }, {
-                    id : 'request',
-                    header : this.i18n._("request"),
-                    width : 120,
-                    sortable : true,
-                    dataIndex : 'request',
-                    renderer : asRequest
-                }, {
-                    header : this.i18n._("server"),
-                    width : Ung.Util.ipFieldWidth,
-                    sortable : true,
-                    dataIndex : 'server',
-                    renderer : asServer
                 }]
             });
         },
         // Email Event Log
         buildEmailEventLog : function() {
-            this.gridEmailEventLog = new Ung.GridEventLog({
+            this.gridEmailEventLog = Ext.create('Ung.GridEventLog',{
                 name : 'Email Event Log',
                 helpSource : 'email_event_log',
                 settingsCmp : this,
                 title : this.i18n._("Email Event Log"),
                 fields : [{
-                    name : 'timeStamp',
+                    name : 'time_stamp',
                     sortType : Ung.SortTypes.asTimestamp
                 }, {
                     name : 'vendor',
                     mapping : 'vendor'
                 }, {
                     name : 'displayAction',
-                    mapping : 'phishAction',
+                    mapping : 'phish_action',
                     type : 'string',
-                    convert : function(value, rec ) { // FIXME: make that a switch
+                    convert : Ext.bind(function(value, rec ) { // FIXME: make that a switch
                             if (value == 'P') { // PASSED
                                 return this.i18n._("pass message");
                             } else if (value == 'M') { // MARKED
@@ -368,13 +322,13 @@ if (!Ung.hasResource["Ung.Phish"]) {
                                 return this.i18n._("unknown action");
                             }
                         return "";
-                    }.createDelegate(this)
+                    },this)
                 }, {
                     name : 'client',
-                    mapping : 'CClientAddr'
+                    mapping : 'c_client_addr'
                 }, {
                     name : 'server',
-                    mapping : 'SServerAddr'
+                    mapping : 's_server_addr'
                 }, {
                     name : 'subject',
                     type : 'string'
@@ -389,87 +343,55 @@ if (!Ung.hasResource["Ung.Phish"]) {
                     type : 'string'
                 }],
                 // the list of columns
-                autoExpandColumn : 'subject',
                 columns : [{
-                    header : this.i18n._("timestamp"),
+                    header : this.i18n._("Timestamp"),
                     width : Ung.Util.timestampFieldWidth,
                     sortable : true,
-                    dataIndex : 'timeStamp',
+                    dataIndex : 'time_stamp',
                     renderer : function(value) {
                         return i18n.timestampFormat(value);
                     }
                 }, {
-                    header : this.i18n._("receiver"),
+                    header : this.i18n._("Receiver"),
                     width : Ung.Util.emailFieldWidth,
                     sortable : true,
                     dataIndex : 'addr'
                 }, {
-                    header : this.i18n._("sender"),
+                    header : this.i18n._("Sender"),
                     width : Ung.Util.emailFieldWidth,
                     sortable : true,
                     dataIndex : 'sender'
                 }, {
-                    id : 'subject',
-                    header : this.i18n._("subject"),
+                    header : this.i18n._("Subject"),
+                    flex:1,
                     width : 150,
                     sortable : true,
                     dataIndex : 'subject'
                 }, {
-                    header : this.i18n._("action"),
+                    header : this.i18n._("Action"),
                     width : 125,
                     sortable : true,
                     dataIndex : 'displayAction'
                 }, {
-                    header : this.i18n._("client"),
+                    header : this.i18n._("Client"),
                     width : Ung.Util.ipFieldWidth,
                     sortable : true,
                     dataIndex : 'client'
                 }, {
-                    header : this.i18n._("server"),
+                    header : this.i18n._("Server"),
                     width : Ung.Util.ipFieldWidth,
                     sortable : true,
                     dataIndex : 'server'
                 }]
             });
         },
-
-        // apply action
-        applyAction : function()
-        {
-            this.commitSettings(this.reloadSettings.createDelegate(this));
-        },
-
-        reloadSettings : function()
-        {
-            this.initialNodeSettings = Ung.Util.clone(this.getNodeSettings(true));
-
-            Ext.MessageBox.hide();
-        },
-
-        saveAction : function()
-        {
-            this.commitSettings(this.completeSaveAction.createDelegate(this));
-        },
-
-        completeSaveAction : function()
-        {
-            Ext.MessageBox.hide();
-            this.closeWindow();
-        },
-
-        // save function
-        commitSettings : function(callback)
-        {
-            Ext.MessageBox.wait(i18n._("Saving..."), i18n._("Please wait"));
-            this.getRpcNode().setSettings(function(result, exception) {
-
-                if(Ung.Util.handleException(exception)) return;
-                callback();
-            }.createDelegate(this), this.getNodeSettings());
-        },
-        isDirty : function() {
-            return !Ung.Util.equals(this.getNodeSettings(), this.initialNodeSettings);
+        
+        afterSave : function()  {
+            this.lastUpdate = this.getRpcNode().getLastUpdate();
+            this.lastCheck = this.getRpcNode().getLastUpdateCheck();
+            this.signatureVer = this.getRpcNode().getSignatureVersion();
         }
+
     });
 }
 //@ sourceURL=phish-settings.js

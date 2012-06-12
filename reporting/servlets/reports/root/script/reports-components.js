@@ -32,7 +32,7 @@ Ung.Util= {
     },
     loadModuleTranslations : function(appName, i18n, handler) {
         if(!Ung.i18nModuleInstances[appName]) {
-            rpc.languageManager.getTranslations(function(result, exception, opt, appName, i18n, handler) {
+            rpc.languageManager.getTranslations(Ext.bind(function(result, exception, opt, appName, i18n, handler) {
                 if (exception) {
                     var message = exception.message;
                     if (message == null || message == "Unknown") {
@@ -48,7 +48,7 @@ Ung.Util= {
                         "moduleMap" : moduleMap
                 });
                 handler.call(this);
-            }.createDelegate(this,[appName, i18n, handler],true), appName);
+            },this,[appName, i18n, handler],true), appName);
         } else {
             handler.call(this);
         }

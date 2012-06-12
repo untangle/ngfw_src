@@ -4,7 +4,7 @@ Ext.namespace('Ung.SetupWizard');
 Ung.SetupWizard.BOGUS_ADDRESS = "192.0.2.1";
 
 // The location of the blank pixel image
-Ext.BLANK_IMAGE_URL = '/ext/resources/images/default/s.gif';
+Ext.BLANK_IMAGE_URL = '/ext4/resources/themes/images/default/tree/s.gif'; // The location of the blank pixel image
 // the main internationalization object
 var i18n=null;
 // the main json rpc object
@@ -12,12 +12,22 @@ var rpc = {};
 
 var oemName = "Untangle";
 
+if(typeof console === "undefined") {
+    //Prevent console.log triggering errors on browserw without console support
+    var console = {
+        log: function() {},
+        error: function() {},
+        debug: function() {}
+    };
+}
+
 Ung.SetupWizard.LabelWidth = 200;
 Ung.SetupWizard.LabelWidth2 = 214;
 Ung.SetupWizard.LabelWidth3 = 120;
 Ung.SetupWizard.LabelWidth4 = 100;
 
-Ung.SetupWizard.TextField = Ext.extend( Ext.form.TextField, {
+Ext.define('Ung.SetupWizard.TextField', {
+    extend:'Ext.form.TextField',
     onRender : function(ct, position)
     {
         Ung.SetupWizard.TextField.superclass.onRender.call(this, ct, position);
@@ -35,7 +45,8 @@ Ung.SetupWizard.TextField = Ext.extend( Ext.form.TextField, {
     }
 });
 
-Ung.SetupWizard.NumberField = Ext.extend( Ext.form.NumberField, {
+Ext.define('Ung.SetupWizard.NumberField', {
+    extend:'Ext.form.NumberField',
     onRender : function(ct, position)
     {
         Ung.SetupWizard.NumberField.superclass.onRender.call(this, ct, position);
@@ -53,7 +64,7 @@ Ung.SetupWizard.NumberField = Ext.extend( Ext.form.NumberField, {
     }
 });
 
-Ext.apply( Ext.form.VTypes, {
+Ext.apply(Ext.form.field.VTypes, {
     ipCheck : function( val, field )
     {
         return val.match( this.ipCheckRegex );
@@ -85,19 +96,20 @@ Ext.apply( Ext.form.VTypes, {
     hostnameText : "Please enter a valid hostname"
 });
 
-Ung.SetupWizard.Welcome = Ext.extend(Object, {
+Ext.define('Ung.SetupWizard.Welcome', {
     constructor : function( config )
     {
-        var panel = new Ext.FormPanel({
+        var panel = Ext.create('Ext.form.Panel',{
+        	border: false,
             items : [{
                 xtype : 'label',
-                html : '<h2 class="wizard-title">' + String.format(i18n._( "Thanks for choosing {0}!" ),oemName) + '</h2>'
+                html : '<h2 class="wizard-title">' + Ext.String.format(i18n._( "Thanks for choosing {0}!" ),oemName) + '</h2>'
             },{
                 xtype : 'label',
                 cls : 'noborder',
-                html : String.format(i18n._( 'This wizard will guide you through the initial setup and configuration of the {0} Server.'),oemName) +
+                html : Ext.String.format(i18n._( 'This wizard will guide you through the initial setup and configuration of the {0} Server.'),oemName) +
                     '<br/><br/>'+
-                    String.format(i18n._('Click {0}Next{1} to get started.'),'<b>','</b>')
+                    Ext.String.format(i18n._('Click {0}Next{1} to get started.'),'<b>','</b>')
             }]
         });
         
@@ -108,11 +120,12 @@ Ung.SetupWizard.Welcome = Ext.extend(Object, {
     }
 });
 
-Ung.SetupWizard.Settings = Ext.extend(Object, {
+Ext.define('Ung.SetupWizard.Settings', {
     constructor : function( config )
     {
-        this.panel = new Ext.FormPanel({
+        this.panel = Ext.create('Ext.form.Panel',{
             defaultType : 'fieldset',
+            border: false,
             defaults : {
                 autoHeight : true,
                 cls : 'noborder'
@@ -171,7 +184,7 @@ Ung.SetupWizard.Settings = Ext.extend(Object, {
                     value : Ung.SetupWizard.CurrentValues.timezone,
                     triggerAction : 'all',
                     listClass : 'x-combo-list-small',
-                    ctCls : 'small-top-margin'
+                    cls : 'small-top-margin'
                 }]
             }]
         });
@@ -180,8 +193,8 @@ Ung.SetupWizard.Settings = Ext.extend(Object, {
             title : i18n._( "Settings" ),
             //cardTitle : i18n._( "Configure the Server" ),
             panel : this.panel,
-            onNext : this.saveSettings.createDelegate( this ),
-            onValidate : this.validateSettings.createDelegate(this)
+            onNext : Ext.bind(this.saveSettings, this ),
+            onValidate : Ext.bind(this.validateSettings,this)
         };
     },
     validateSettings : function()
@@ -192,12 +205,12 @@ Ung.SetupWizard.Settings = Ext.extend(Object, {
     saveSettings : function( handler )
     {
         Ext.MessageBox.wait( i18n._( "Saving Settings" ), i18n._( "Please Wait" ));
-        var saver = new Ung.SetupWizard.SettingsSaver( this.panel, handler );
+        var saver = Ext.create('Ung.SetupWizard.SettingsSaver',this.panel, handler );
         saver.savePassword();
     }
 });
 
-Ung.SetupWizard.SettingsSaver = Ext.extend( Object, {
+Ext.define('Ung.SetupWizard.SettingsSaver', {
     password : null,
 
     constructor : function( panel, handler )
@@ -209,8 +222,8 @@ Ung.SetupWizard.SettingsSaver = Ext.extend( Object, {
     savePassword : function()
     {
         /* New Password */
-        this.password = this.panel.find( "name", "password" )[0].getValue();
-        rpc.setup.setAdminPassword( this.saveTimeZone.createDelegate( this ), this.password );
+        this.password = this.panel.query('textfield[name="password"]')[0].getValue();
+        rpc.setup.setAdminPassword( Ext.bind(this.saveTimeZone, this), this.password );
     },
 
     saveTimeZone : function( result, exception )
@@ -220,9 +233,9 @@ Ung.SetupWizard.SettingsSaver = Ext.extend( Object, {
             return;
             }
 
-        var timezone = this.panel.find( "name", "timezone" )[0].getValue();
+        var timezone = this.panel.query('textfield[name="timezone"]')[0].getValue();
 
-        rpc.setup.setTimeZone( this.authenticate.createDelegate( this ), timezone );
+        rpc.setup.setTimeZone( Ext.bind(this.authenticate,this ), timezone );
     },
 
     authenticate : function( result, exception )
@@ -235,6 +248,7 @@ Ung.SetupWizard.SettingsSaver = Ext.extend( Object, {
         /* Cache the password to reauthenticate later */
         Ung.SetupWizard.ReauthenticateHandler.password = this.password;
 
+        console.log("About to authenticate");
         Ext.Ajax.request({
             params : {
                 username : 'admin',
@@ -246,7 +260,7 @@ Ung.SetupWizard.SettingsSaver = Ext.extend( Object, {
                 'Content-Type' : "application/x-www-form-urlencoded"
             },
             url : '/auth/login?url=/webui/setupSettings.js&realm=Administrator',
-            callback : this.getManagers.createDelegate( this )
+            callback : Ext.bind(this.getManagers,this )
         });
     },
 
@@ -260,9 +274,12 @@ Ung.SetupWizard.SettingsSaver = Ext.extend( Object, {
             rpc.networkManager = rpc.jsonrpc.UvmContext.networkManager();
             rpc.connectivityTester = rpc.jsonrpc.UvmContext.getConnectivityTester();
             rpc.toolboxManager = rpc.jsonrpc.UvmContext.toolboxManager();
+            rpc.systemManager = rpc.jsonrpc.UvmContext.systemManager();
             rpc.mailSender = rpc.jsonrpc.UvmContext.mailSender();
 
-            Ext.MessageBox.hide();
+            if (Ext.MessageBox.rendered) {
+                Ext.MessageBox.hide();
+            }
             this.handler();
         } else {
             Ext.MessageBox.alert( i18n._( "Unable to save password." ));
@@ -270,34 +287,43 @@ Ung.SetupWizard.SettingsSaver = Ext.extend( Object, {
     }
 });
 
-Ung.SetupWizard.Interfaces = Ext.extend( Object, {
+Ext.define('Ung.SetupWizard.Interfaces', {
     constructor : function()
     {
-        this.interfaceStore = new Ext.data.Store({
-            reader : new Ext.data.ArrayReader({},[{ name : "name" }, { name : "status" }]),
+        this.interfaceStore = Ext.create('Ext.data.ArrayStore',{
+            fields:[{ name : "name" }, { name : "status" }],
             data : []
         });
 
         this.enableAutoRefresh = true;
 
-        this.interfaceGrid = new Ext.grid.GridPanel({
+        this.interfaceGrid = Ext.create('Ext.grid.Panel',{
             store : this.interfaceStore,
             loadMask : true,
             stripeRows : true,
-            baseCls : 'small-top-margin',
+            //baseCls : 'small-top-margin',
             enableColumnResize : false,
-            autoResizeColumn : 2,
-            disableSelection : false,
-            selModel : new Ext.grid.RowSelectionModel({singleSelect : true}),
-            enableDragDrop : true,
-            ddGroup : 'interfaceDND',
-            ddText : '',
-            height : 300,
-            width : 555,
-            viewConfig : {
-                forceFit : true
+            enableColumnHide : false,
+            enableColumnMove : false,
+            selModel : Ext.create('Ext.selection.RowModel',{singleSelect : true}),
+            viewConfig:{
+               forceFit : true,
+               disableSelection : false,
+               plugins:{
+                    ptype: 'gridviewdragdrop',
+                    dragText: '',
+                    dragGroup:'interfaceDND',
+                    dropGroup:'interfaceDND'
+                },
+                listeners: {
+                    "drop": {
+                        fn:  Ext.bind(this.onDrop,this )
+                    }
+                }
             },
-            cm : new Ext.grid.ColumnModel([{
+            height : 200,
+            width : 585,
+            columns : [{
                 header : i18n._( "Name" ),
                 dataIndex : 'name',
                 sortable : false,
@@ -310,6 +336,7 @@ Ung.SetupWizard.Interfaces = Ext.extend( Object, {
                 header : i18n._( "Status" ),
                 dataIndex : 'status',
                 sortable : false,
+                flex:1,
                 renderer : function( value ) {
                     var divClass = "draggable-disabled-interface";
                     var status = i18n._( "unknown" );
@@ -329,8 +356,7 @@ Ung.SetupWizard.Interfaces = Ext.extend( Object, {
                     
                     return "<div class='" + divClass + "'>" + status + "</div>";
                 },
-                width : 475
-            }])
+            }]
         });
 
         
@@ -352,8 +378,14 @@ Ung.SetupWizard.Interfaces = Ext.extend( Object, {
         panelText += i18n._( "Repeat steps 1 and 2 for each network card and then click <i>Next</i>.");
         panelText += "<br/>";
         
-        var panel = new Ext.Panel({
+        var panel = Ext.create('Ext.panel.Panel',{
             defaults : { cls : 'noborder' },
+            border: false,
+            layout: {
+                type: 'vbox',
+                align:'left'
+            },
+            border: false,
             items : [{
                 html : '<h2 class=" wizard-title">'+panelTitle+'<h2>',
                 border : false
@@ -361,7 +393,11 @@ Ung.SetupWizard.Interfaces = Ext.extend( Object, {
                 xtype : 'label',
                 html : panelText,
                 border : false
-            }, this.interfaceGrid ]
+            }, { xtype: "panel",
+            	layout:'fit',
+            	border : false,
+            	items: this.interfaceGrid
+            }]
         });
 
         this.isDragAndDropInitialized = false;
@@ -369,7 +405,7 @@ Ung.SetupWizard.Interfaces = Ext.extend( Object, {
         this.card = {
             title : i18n._( "Network Cards" ),
             panel : panel,
-            onLoad : function( complete ) {
+            onLoad : Ext.bind(function( complete ) {
 
                 this.refreshInterfaces();
                 
@@ -382,9 +418,9 @@ Ung.SetupWizard.Interfaces = Ext.extend( Object, {
                 this.autoRefreshInterfaces();
                 
                 complete();
-            }.createDelegate( this ),
+            }, this ),
 
-            onNext : this.saveInterfaceList.createDelegate( this )
+            onNext : Ext.bind(this.saveInterfaceList, this )
         };
     },
 
@@ -394,55 +430,28 @@ Ung.SetupWizard.Interfaces = Ext.extend( Object, {
 
         this.interfaceStore.loadData( data );
 
-        var ddrow = new Ext.dd.DropTarget(this.interfaceGrid.getView().mainBody, {
-            ddGroup : 'interfaceDND',
-            copy : false,
-            notifyDrop : this.onNotifyDrop.createDelegate( this )
-        });
     },
 
-    onNotifyDrop : function(dd, e, data)
+    onDrop : function(node,data,overModel,dropPosition,dropFunction, options)
     {
         var sm = this.interfaceGrid.getSelectionModel();
-        var rows=sm.getSelections();
-        var cindex=dd.getDragData(e).rowIndex;
+        var rows=sm.getSelection();
 
-        if ( typeof cindex == "undefined" ) {
-            return false;
-        }
         if ( rows.length != 1 ) {
             return false;
         }
-
-        var row = this.interfaceStore.getById(rows[0].id);
-        var status = row.get( "status" );
-
-            var c = 0;
-        var rowData = [];
-        var index = -1;
+        var status = rows[0].get("status");
+        var origStatus = overModel.get("status");
 
         this.interfaceStore.each( function( currentRow ) {
-            if ( currentRow == row ) {
-                index = c;
+            if ( currentRow == overModel) {
+                currentRow.set("status", status);
             }
-            rowData.push( currentRow.get( "status" ));
-            c++;
+            if ( currentRow == rows[0]) {
+                currentRow.set("status", origStatus);
+            }
         });
-
-        if ( index == cindex ) {
-            return true;
-        }
-
-        rowData.splice( index, 1 );
-        rowData.splice( cindex, 0, status );
-
-        this.interfaceStore.each( function( currentRow ) {
-            currentRow.set( "status", rowData.shift());
-        });
-
         sm.clearSelections();
-
-        return true;
     },
 
     /* Given a list of interfaces, this takes out the ones that are not used */
@@ -484,10 +493,11 @@ Ung.SetupWizard.Interfaces = Ext.extend( Object, {
     {
         Ext.MessageBox.wait( i18n._( "Remapping Network Interfaces" ), i18n._( "Please Wait" ));
 
-        Ung.SetupWizard.ReauthenticateHandler.reauthenticate( this.afterReauthenticate.createDelegate( this, [ handler ] ));
+        Ung.SetupWizard.ReauthenticateHandler.reauthenticate( Ext.bind(this.afterReauthenticate,this, [ handler ] ));
 
         /* disable auto refresh */
         this.enableAutoRefresh = false;
+        
         
         /* do this before the next step */
         rpc.setup.refreshNetworkConfig();
@@ -496,7 +506,7 @@ Ung.SetupWizard.Interfaces = Ext.extend( Object, {
     afterReauthenticate : function( handler )
     {
         /* Commit the store to get rid of the change marks */
-        this.interfaceStore.commitChanges();
+        this.interfaceStore.sync();
 
         /* Build the two interface arrays */
         var osArray = [];
@@ -507,8 +517,7 @@ Ung.SetupWizard.Interfaces = Ext.extend( Object, {
             osArray.push( status[0] );
         });
 
-        
-        rpc.networkManager.remapInterfaces( this.errorHandler.createDelegate( this, [ handler ], true ), osArray, userArray );
+        rpc.networkManager.remapInterfaces( Ext.bind(this.errorHandler, this, [ handler ], true ), osArray, userArray );
     },
 
     errorHandler : function( result, exception, foo, handler )
@@ -525,7 +534,7 @@ Ung.SetupWizard.Interfaces = Ext.extend( Object, {
     refreshInterfaces : function()
     {
         Ext.MessageBox.wait( i18n._( "Refreshing Network Interfaces" ), i18n._( "Please Wait" ));
-        Ung.SetupWizard.ReauthenticateHandler.reauthenticate( this.refreshInterfaces.createDelegate( this ));
+        Ung.SetupWizard.ReauthenticateHandler.reauthenticate( Ext.bind(this.refreshInterfaces,this ));
     },
 
     autoRefreshInterfacesCallback : function( result, exception ) {
@@ -535,20 +544,20 @@ Ung.SetupWizard.Interfaces = Ext.extend( Object, {
         }
 
         if (this.enableAutoRefresh) {
-            this.autoRefreshInterfaces.defer(3000,this);
+            Ext.defer(this.autoRefreshInterfaces,3000,this);
             this.completeRefreshInterfaces( result, exception );
         }
     },
     
     autoRefreshInterfaces : function() {
         rpc.networkManager.updateLinkStatus();
-        rpc.networkManager.getNetworkConfiguration( this.autoRefreshInterfacesCallback.createDelegate( this ) );
+        rpc.networkManager.getNetworkConfiguration( Ext.bind(this.autoRefreshInterfacesCallback, this ) );
     },
     
     refreshInterfaces : function()
     {
         rpc.networkManager.updateLinkStatus();
-        rpc.networkManager.getNetworkConfiguration( this.completeRefreshInterfaces.createDelegate( this ) );
+        rpc.networkManager.getNetworkConfiguration( Ext.bind(this.completeRefreshInterfaces,this ) );
     },
 
     completeRefreshInterfaces : function( result, exception )
@@ -589,11 +598,13 @@ Ung.SetupWizard.Interfaces = Ext.extend( Object, {
             currentRow.set( "status", statusHash[status[0]]);
         });
 
-        Ext.MessageBox.hide();
+        if (Ext.MessageBox.rendered) {
+            Ext.MessageBox.hide();
+        }
     }
 });
 
-Ung.SetupWizard.Internet = Ext.extend( Object, {
+Ext.define('Ung.SetupWizard.Internet', {
     constructor : function( config )
     {
         this.configTypes = [];
@@ -603,8 +614,8 @@ Ung.SetupWizard.Internet = Ext.extend( Object, {
 
         this.cards = [];
 
-        this.cards.push( this.dhcpPanel = new Ext.FormPanel({
-            saveData : this.saveDHCP.createDelegate( this ),
+        this.cards.push( this.dhcpPanel = Ext.create('Ext.form.Panel',{
+            saveData : Ext.bind(this.saveDHCP,this ),
             border : false,
             cls : 'network-card-form-margin',
             labelWidth : Ung.SetupWizard.LabelWidth,
@@ -636,21 +647,21 @@ Ung.SetupWizard.Internet = Ext.extend( Object, {
                 },{
                     xtype : 'button',
                     text : i18n._( 'Refresh' ),
-                    handler : this.refresh.createDelegate( this ),
+                    handler : Ext.bind(this.refresh,this ),
                     disabled : false,
                     cls : 'right-align'
                 },{
                     xtype : 'button',
                     text : i18n._( 'Test Connectivity' ),
-                    cls : 'test-connectivity',
-                    handler : this.testConnectivity.createDelegate( this, [null] ),
+                    //cls : 'test-connectivity',
+                    handler : Ext.bind( this.testConnectivity, this, [null] ),
                     disabled : false
                 }]
             }]}));
 
 
-        this.cards.push( this.staticPanel = new Ext.FormPanel({
-            saveData : this.saveStatic.createDelegate( this ),
+        this.cards.push( this.staticPanel = Ext.create('Ext.form.Panel',{
+            saveData : Ext.bind(this.saveStatic,this ),
             border : false,
             cls : 'network-card-form-margin',
             labelWidth : Ung.SetupWizard.LabelWidth,
@@ -678,7 +689,7 @@ Ung.SetupWizard.Internet = Ext.extend( Object, {
                     store : Ung.SetupWizard.NetmaskData,
                     mode : 'local',
                     triggerAction : 'all',
-                    width : 120,
+                    width : 255,
                     listWidth : 125,
                     value : "255.255.255.0",
                     editable : false,
@@ -699,14 +710,14 @@ Ung.SetupWizard.Internet = Ext.extend( Object, {
                     xtype : 'button',
                     text : i18n._( 'Test Connectivity' ),
                     cls : 'test-connectivity-2',
-                    handler : this.testConnectivity.createDelegate( this, [null] ),
+                    handler : Ext.bind( this.testConnectivity, this, [null] ),
                     disabled : false
                 }]
             }]}));
 
         /* PPPoE Panel */
-        this.pppoePanel = new Ext.FormPanel({
-            saveData : this.savePPPoE.createDelegate( this ),
+        this.pppoePanel = Ext.create('Ext.form.Panel',{
+            saveData : Ext.bind(this.savePPPoE,this ),
             border : false,
             cls : 'network-card-form-margin',
             labelWidth : Ung.SetupWizard.LabelWidth2,
@@ -715,7 +726,7 @@ Ung.SetupWizard.Internet = Ext.extend( Object, {
                 xtype : 'label',
                 cls : 'noborder',
                 border : false,
-                html : String.format( i18n._( 'Using PPPoE on {0} is <b>NOT</b> recommended.' ), oemName) + "<br/>" +
+                html : Ext.String.format( i18n._( 'Using PPPoE on {0} is <b>NOT</b> recommended.' ), oemName) + "<br/>" +
                     i18n._("It is recommended to use the ISP-supplied modem in bridge mode to handle PPPoE.") + "<br/>" +
                     "&nbsp;<br/>"
             }, {
@@ -729,7 +740,6 @@ Ung.SetupWizard.Internet = Ext.extend( Object, {
                     disabled : false,
                     readOnly : false,
                     fieldClass : '',
-                    labelStyle : 'width : '+Ung.SetupWizard.LabelWidth+'px'
                 },{
                     name : "password",
                     inputType : 'password',
@@ -737,7 +747,6 @@ Ung.SetupWizard.Internet = Ext.extend( Object, {
                     disabled : false,
                     readOnly : false,
                     fieldClass : '',
-                    labelStyle : 'width : '+Ung.SetupWizard.LabelWidth+'px'
                 }]
             }, {
                 xtype : 'fieldset',
@@ -749,47 +758,42 @@ Ung.SetupWizard.Internet = Ext.extend( Object, {
                 autoHeight : true,
                 items : [{
                     fieldLabel : i18n._( "IP Address" ),
-                    labelStyle : 'width : '+Ung.SetupWizard.LabelWidth+'px',
                     name : "ip",
                     fieldClass : 'noborder'
                 },{
                     fieldLabel : i18n._( "Netmask" ),
                     name : "netmask",
-                    labelStyle : 'width : '+Ung.SetupWizard.LabelWidth+'px',
                     fieldClass : 'noborder'
                 },{
                     name : "gateway",
                     fieldLabel : i18n._( "Gateway" ),
-                    labelStyle : 'width : '+Ung.SetupWizard.LabelWidth+'px',
                     fieldClass : 'noborder'
                 },{
                     name : "dns1",
                     fieldLabel : i18n._( "Primary DNS" ),
-                    labelStyle : 'width : '+Ung.SetupWizard.LabelWidth+'px',
                     fieldClass : 'noborder'
                 },{
                     name : "dns2",
                     fieldLabel : i18n._( "Secondary DNS" ),
-                    labelStyle : 'width : '+Ung.SetupWizard.LabelWidth+'px',
                     fieldClass : 'noborder'
                 },{
                     xtype : 'button',
                     text : i18n._( 'Refresh' ),
-                    handler : this.refresh.createDelegate( this ),
+                    handler : Ext.bind(this.refresh,this ),
                     disabled : false,
                     cls : 'right-align'
                 },{
                     xtype : 'button',
                     text : i18n._( 'Test Connectivity' ),
                     cls : 'test-connectivity',
-                    handler : this.testConnectivity.createDelegate( this, [null] ),
+                    handler : Ext.bind( this.testConnectivity, this, [null] ),
                     disabled : false
                 }]
             }]});
         this.cards.push( this.pppoePanel );
 
 
-        this.cardPanel = new Ext.Panel({
+        this.cardPanel = Ext.create('Ext.panel.Panel',{
             cls : 'untangle-form-panel',
             border : false,
             layout : 'card',
@@ -799,12 +803,12 @@ Ung.SetupWizard.Internet = Ext.extend( Object, {
             defaults : {
                 autoHeight : true,
                 border : false
-                }
+            }
         });
 
         var configureText = i18n._("Configure the Internet Connection");
         
-        var configure = new Ext.FormPanel({
+        var configure = Ext.create('Ext.form.Panel',{
             cls : "untangle-form-panel",
             border : false,
             autoHeight : true,
@@ -822,10 +826,10 @@ Ung.SetupWizard.Internet = Ext.extend( Object, {
                 mode : 'local',
                 listeners : {
                     "select" : {
-                        fn : this.onSelectConfig.createDelegate( this )
+                        fn : Ext.bind(this.onSelectConfig,this )
                     }
                 },
-                width : 115,
+                width : 350,
                 listWidth : 120,
                 value : this.configTypes[0][0],
                 triggerAction : 'all',
@@ -833,8 +837,9 @@ Ung.SetupWizard.Internet = Ext.extend( Object, {
             }]
         });
 
-        var panel = new Ext.Panel({
+        var panel = Ext.create('Ext.panel.Panel',{
             cls : null,
+            border: false,
             defaults : {
                 cls : null
             },
@@ -847,7 +852,7 @@ Ung.SetupWizard.Internet = Ext.extend( Object, {
         this.card = {
             title : cardTitle,
             panel : panel,
-            onLoad : function( complete )
+            onLoad : Ext.bind(function( complete )
             {
                 if ( !this.isInitialized ) {
                     this.cardPanel.layout.setActiveItem( 0 );
@@ -857,9 +862,9 @@ Ung.SetupWizard.Internet = Ext.extend( Object, {
 
                 this.isInitialized = true;
                 complete();
-            }.createDelegate(this),
-            onNext : this.testConnectivity.createDelegate( this ),
-            onValidate : this.validateInternetConnection.createDelegate(this)
+            },this),
+            onNext : Ext.bind(this.testConnectivity,this ),
+            onValidate : Ext.bind(this.validateInternetConnection,this)
         };
     },
 
@@ -870,7 +875,7 @@ Ung.SetupWizard.Internet = Ext.extend( Object, {
 
     onSelectConfig : function( combo, record, index )
     {
-        this.cardPanel.layout.setActiveItem( index );
+        this.cardPanel.layout.setActiveItem( record[0].index );
     },
 
     afterReauthenticate : function( handler )
@@ -887,7 +892,7 @@ Ung.SetupWizard.Internet = Ext.extend( Object, {
         var wanConfig = Ung.SetupWizard.CurrentValues.wanConfiguration;
         wanConfig.configType = "dynamic";
 
-        var complete = this.complete.createDelegate( this, [ handler, hideWindow ], true );
+        var complete = Ext.bind(this.complete, this, [ handler, hideWindow ], true );
         rpc.networkManager.setSetupSettings( complete, wanConfig );
     },
 
@@ -906,10 +911,10 @@ Ung.SetupWizard.Internet = Ext.extend( Object, {
         delete wanConfig.dns2Str;
         delete wanConfig.gatewayStr;
 
-        wanConfig.primaryAddressStr = this.staticPanel.find( "name", "ip" )[0].getValue() + "/" + this.staticPanel.find( "name", "netmask" )[0].getValue();
-        wanConfig.gateway = this.staticPanel.find( "name", "gateway" )[0].getValue();
-        wanConfig.dns1 = this.staticPanel.find( "name", "dns1" )[0].getValue();
-        var dns2 = this.staticPanel.find( "name", "dns2" )[0].getValue();
+        wanConfig.primaryAddressStr = this.staticPanel.query('textfield[name="ip"]')[0].getValue() + "/" + this.staticPanel.query('textfield[name="netmask"]')[0].getValue();
+        wanConfig.gateway = this.staticPanel.query('textfield[name="gateway"]')[0].getValue();
+        wanConfig.dns1 = this.staticPanel.query('textfield[name="dns1"]')[0].getValue();
+        var dns2 = this.staticPanel.query('textfield[name="dns2"]')[0].getValue();
 
         if ( dns2.length > 0 ) {
             wanConfig.dns2 = dns2;
@@ -917,7 +922,7 @@ Ung.SetupWizard.Internet = Ext.extend( Object, {
             wanConfig.dns2 = null;
         }
 
-        var complete = this.complete.createDelegate( this, [ handler, hideWindow ], true );
+        var complete = Ext.bind(this.complete, this, [ handler, hideWindow ], true );
         rpc.networkManager.setSetupSettings( complete, wanConfig );
     },
 
@@ -930,10 +935,10 @@ Ung.SetupWizard.Internet = Ext.extend( Object, {
             hideWindow = true;
         }
 
-        wanConfig.PPPoEUsername = this.pppoePanel.find( "name", "username" )[0].getValue();
-        wanConfig.PPPoEPassword = this.pppoePanel.find( "name", "password" )[0].getValue();
+        wanConfig.PPPoEUsername = this.pppoePanel.query('textfield[name="username"]')[0].getValue();
+        wanConfig.PPPoEPassword = this.pppoePanel.query('textfield[name="password"]')[0].getValue();
 
-        var complete = this.complete.createDelegate( this, [ handler, hideWindow ], true );
+        var complete = Ext.bind(this.complete, this, [ handler, hideWindow ], true );
         rpc.networkManager.setSetupSettings( complete, wanConfig );
     },
 
@@ -971,7 +976,7 @@ Ung.SetupWizard.Internet = Ext.extend( Object, {
             Ext.MessageBox.hide();
         };
 
-        Ung.SetupWizard.ReauthenticateHandler.reauthenticate( this.saveData.createDelegate( this, [ handler, false ] ));
+        Ung.SetupWizard.ReauthenticateHandler.reauthenticate( Ext.bind(this.saveData,this, [ handler, false ] ));
     },
 
     testConnectivity : function( afterFn )
@@ -988,11 +993,10 @@ Ung.SetupWizard.Internet = Ext.extend( Object, {
         }
 
         Ext.MessageBox.wait(i18n._("Saving Settings..."), i18n._("Please Wait"));
-
-        var handler = this.execConnectivityTest.createDelegate( this, [afterFn] );
-        Ung.SetupWizard.ReauthenticateHandler.reauthenticate( this.saveData.createDelegate( this, [ handler, false ] ));
+        var handler = Ext.bind( this.execConnectivityTest, this, [afterFn] );
+        Ung.SetupWizard.ReauthenticateHandler.reauthenticate( Ext.bind(this.saveData, this, [ handler, false ] ));
     },
-    
+
     saveData : function( handler, hideWindow )
     {
         this.cardPanel.layout.activeItem.saveData( handler, hideWindow );
@@ -1010,7 +1014,9 @@ Ung.SetupWizard.Internet = Ext.extend( Object, {
             });
             return;
         } else {
-            Ext.MessageBox.hide();
+            if ( Ext.MessageBox.rendered) {
+                Ext.MessageBox.hide();
+            }
         }
 
         var message = "";
@@ -1058,23 +1064,23 @@ Ung.SetupWizard.Internet = Ext.extend( Object, {
             }
 
             var warningText = message + "<br/><br/>" +i18n._("It is recommended to configure valid internet settings before continuing. Try again?");
-            Ext.Msg.confirm(i18n._("Warning:"), warningText, function(btn, text) {
+            Ext.Msg.confirm(i18n._("Warning:"), warningText, Ext.bind(function(btn, text) {
                 if (btn == 'yes') {
                     return;
                 } else {
                     handler();
                     return;
                 }
-            }.createDelegate(this));
+            }, this));
         }
     },
-    
+
     execConnectivityTest : function( handler )
     {
         Ext.MessageBox.wait(i18n._("Testing Connectivity..."), i18n._("Please Wait"));
-        rpc.connectivityTester.getStatus( this.completeConnectivityTest.createDelegate( this, [handler], true ));
+        rpc.connectivityTester.getStatus(Ext.bind( this.completeConnectivityTest,this, [handler], true ));
     },
-    
+
     /* This does not reload the settings, it just updates what is
      * displayed inside of the User Interface. */
     refreshNetworkDisplay : function()
@@ -1098,27 +1104,27 @@ Ung.SetupWizard.Internet = Ext.extend( Object, {
                     this.cardPanel.layout.setActiveItem( c );
             }
 
-            this.updateValue( this.card.panel.find("name", "configType")[0], wanConfig.configType);
+            this.updateValue( this.card.panel.query('combo[name="configType"]')[0], wanConfig.configType);
             
             for ( c = 0; c < this.cards.length ; c++ ) {
                 var card = this.cards[c];
                 if (wanConfig.primaryAddress != null) {
-                    this.updateValue( card.find( "name", "ip" )[0] , wanConfig.primaryAddress.network );
-                    this.updateValue( card.find( "name", "netmask" )[0] , wanConfig.primaryAddress.netmask );
-                    this.updateValue( card.find( "name", "gateway" )[0], wanConfig.gateway );
-                    this.updateValue( card.find( "name", "dns1" )[0], wanConfig.dns1 );
-                    this.updateValue( card.find( "name", "dns2" )[0], wanConfig.dns2 );
+                    this.updateValue( card.query('textfield[name="ip"]')[0] , wanConfig.primaryAddress.network );
+                    this.updateValue( card.query('textfield[name="netmask"]')[0] , wanConfig.primaryAddress.netmask );
+                    this.updateValue( card.query('textfield[name="gateway"]')[0], wanConfig.gateway );
+                    this.updateValue( card.query('textfield[name="dns1"]')[0], wanConfig.dns1 );
+                    this.updateValue( card.query('textfield[name="dns2"]')[0], wanConfig.dns2 );
                 }
             }
         } else {
             /* not configured */
             for ( c = 0; c < this.cards.length ; c++ ) {
                 var card = this.cards[c];
-                this.updateValue( card.find( "name", "ip" )[0] , "" );
-                this.updateValue( card.find( "name", "netmask" )[0] , "" );
-                this.updateValue( card.find( "name", "gateway" )[0], "" );
-                this.updateValue( card.find( "name", "dns1" )[0], "" );
-                this.updateValue( card.find( "name", "dns2" )[0], "" );
+                this.updateValue( card.query('textfield[name="ip"]')[0] , "" );
+                this.updateValue( card.query('textfield[name="netmask"]')[0] , "" );
+                this.updateValue( card.query('textfield[name="gateway"]')[0], "" );
+                this.updateValue( card.query('textfield[name="dns1"]')[0], "" );
+                this.updateValue( card.query('textfield[name="dns2"]')[0], "" );
             }
         }
     },
@@ -1138,11 +1144,12 @@ Ung.SetupWizard.Internet = Ext.extend( Object, {
 
 });
 
-Ung.SetupWizard.InternalNetwork = Ext.extend( Object, {
+Ext.define('Ung.SetupWizard.InternalNetwork', {
     constructor : function( config )
     {
-        this.panel = new Ext.FormPanel({
+        this.panel = Ext.create('Ext.form.Panel',{
             defaultType : 'fieldset',
+            border: false,
             defaults : {
                 autoHeight : true,
                 labelWidth : Ung.SetupWizard.LabelWidth3
@@ -1151,28 +1158,29 @@ Ung.SetupWizard.InternalNetwork = Ext.extend( Object, {
                 xtype : 'label',
                 html : '<h2 class="wizard-title">'+i18n._( "Configure the Internal Network Interface" )+'</h2>'
             },{
-                cls : 'noborder  wizard-internal-network',
+                cls : 'noborder wizard-internal-network',
                 items : [{
                     xtype : 'radio',
                     name : 'bridgeOrRouter',
                     inputValue : 'router',
                     boxLabel : i18n._( 'Router' ),
-                    ctCls : 'large-option',
+                    cls : 'large-option',
                     hideLabel : 'true',
                     listeners : {
-                        check : {
-                            fn : function( checkbox, checked ) {
+                        change : {
+                            fn : Ext.bind(function( checkbox, checked ) {
                                 this.onSetRouter(checked);
-                            }.createDelegate( this )
+                            },this )
                         }
                     }
                 },{
                     xtype : 'label',
+                    style:'font-weight:normal',
                     html : "<div class='wizard-network-image-description'>" + i18n._('This is recommended if the external port is plugged into the internet connection. This enables NAT on the Internal Interface and DHCP.') + "</div>"
                 },{
                     name : 'network',
                     xtype : 'textfield',
-                    itemCls : 'wizard-internal-network-address spacing-margin-1',
+                    cls : 'wizard-internal-network-address spacing-margin-1',
                     fieldLabel : i18n._('Internal Address'),
                     vText : i18n._('Please enter a valid Network  Address'),
                     vtype : 'ipCheck',
@@ -1184,15 +1192,15 @@ Ung.SetupWizard.InternalNetwork = Ext.extend( Object, {
                     validationEvent : 'blur'
                 },{
                     name : "netmask",
-                    itemCls : 'wizard-internal-network-address',
+                    cls : 'wizard-internal-network-address',
                     fieldLabel : i18n._( "Internal Netmask" ),
                     xtype : 'combo',
                     store : Ung.SetupWizard.NetmaskData,
                     mode : 'local',
                     triggerAction : 'all',
                     value : "255.255.255.0",
-                    width : 120,
-                    listWidth : 125,
+                  //  width : 255,
+                    //listWidth : 125,
                     disabled : true,
                     editable : false
                 },{
@@ -1201,11 +1209,11 @@ Ung.SetupWizard.InternalNetwork = Ext.extend( Object, {
                     checked : true,
                     disabled : true,
                     name : 'enableDhcpServer',
-                    itemCls : 'wizard-label-margin-9',
+                    cls : 'wizard-label-margin-5',
                     boxLabel : i18n._("Enable DHCP Server (default)")
                 },{
                     xtype : 'label',
-                    cls : 'wizard-network-image',
+                    componentCls : 'wizard-network-image',
                     html : '<img src="/skins/' + Ung.SetupWizard.currentSkin + '/images/admin/wizard/router.png"/>'
                 }]
             }, {
@@ -1215,11 +1223,12 @@ Ung.SetupWizard.InternalNetwork = Ext.extend( Object, {
                     name : 'bridgeOrRouter',
                     inputValue : 'bridge',
                     boxLabel : i18n._('Transparent Bridge'),
-                    ctCls : 'large-option',
+                    cls : 'large-option',
                     hideLabel : 'true',
                     checked : true
                 },{
                     xtype : 'label',
+                    style:'font-weight:normal',
                     html : "<div class='wizard-network-image-description'>" + i18n._('This is recommended if the external port is plugged into a firewall/router. This bridges Internal and External and disables DHCP.') + "</div>"
                 },{
                     xtype : 'label',
@@ -1232,17 +1241,17 @@ Ung.SetupWizard.InternalNetwork = Ext.extend( Object, {
         this.card = {
             title : i18n._( "Internal Network" ),
             panel : this.panel,
-            onLoad : this.onLoadInternalSuggestion.createDelegate(this),
-            onNext : this.saveInternalNetwork.createDelegate( this ),
-            onValidate : this.validateInternalNetwork.createDelegate(this)
+            onLoad : Ext.bind(this.onLoadInternalSuggestion,this),
+            onNext : Ext.bind(this.saveInternalNetwork,this ),
+            onValidate : Ext.bind(this.validateInternalNetwork,this)
         };
     },
     onLoadInternalSuggestion : function( complete )
     {
         /* If the user modified the value, do not fetch a new value */
-        if (( this.panel.find( "name", "netmask" )[0].getRawValue() != "255.255.255.0" ) ||
-            (( this.panel.find( "name", "network" )[0].getValue() != "192.168.1.1" ) &&
-             ( this.panel.find( "name", "network" )[0].getValue() != "172.16.0.1" ))) {
+        if (( this.panel.query('combo[name="netmask"]')[0].getRawValue() != "255.255.255.0" ) ||
+            (( this.panel.query('textfield[name="network"]')[0].getValue() != "192.168.1.1" ) &&
+             ( this.panel.query('textfield[name="network"]')[0].getValue() != "172.16.0.1" ))) {
             complete();
             return;
         }
@@ -1254,17 +1263,17 @@ Ung.SetupWizard.InternalNetwork = Ext.extend( Object, {
             var intfs = netConf.interfaceList.list;
             for ( var c = 0 ;  c < intfs.length ; c++ ) {
                 if (intfs[c].name == "Internal" && intfs[c].configType == "static" ) {
-                    this.panel.find( "name", "bridgeOrRouter" )[0].setValue(true);
-                    this.panel.find( "name", "bridgeOrRouter" )[1].setValue(false);
+                    this.panel.query('radio[name="bridgeOrRouter"]')[0].setValue(true);
+                    this.panel.query('radio[name="bridgeOrRouter"]')[1].setValue(false);
                 }
             }
         }
         
-        Ung.SetupWizard.ReauthenticateHandler.reauthenticate( this.loadInternalSuggestion.createDelegate( this, [ complete ] ));
+        Ung.SetupWizard.ReauthenticateHandler.reauthenticate( Ext.bind(this.loadInternalSuggestion,this, [ complete ] ));
     },
     loadInternalSuggestion : function( complete )
     {
-        rpc.networkManager.getWizardInternalAddressSuggestion( this.completeLoadInternalSuggestion.createDelegate( this, [ complete ], true ), null );
+        rpc.networkManager.getWizardInternalAddressSuggestion( Ext.bind(this.completeLoadInternalSuggestion, this, [ complete ], true ), null );
     },
     completeLoadInternalSuggestion : function( result, exception, foo, handler )
     {
@@ -1274,13 +1283,13 @@ Ung.SetupWizard.InternalNetwork = Ext.extend( Object, {
             return;
         }
 
-        this.panel.find( "name", "network" )[0].setValue( result["network"] );
-        this.panel.find( "name", "netmask" )[0].setValue( result["netmask"] );
+        this.panel.query('textfield[name="network"]')[0].setValue( result["network"] );
+        this.panel.query('combo[name="netmask"]')[0].setValue( result["netmask"] );
         handler();
 
     },
     onSetRouter : function(isSet){
-        var ar = [this.panel.find('name','network')[0],this.panel.find('name','netmask')[0],this.panel.find('name','enableDhcpServer')[0]];
+        var ar = [this.panel.query('textfield[name="network"]')[0],this.panel.query('combo[name="netmask"]')[0],this.panel.query('checkbox[name="enableDhcpServer"]')[0]];
         for(var i=0;i<ar.length;i++){
             ar[i].setDisabled(!isSet);
         }
@@ -1290,9 +1299,9 @@ Ung.SetupWizard.InternalNetwork = Ext.extend( Object, {
     {
         var rv = true;
         var nic = false;
-        for(var i=0;i<this.panel.find('name','bridgeOrRouter').length;i++){
-            if(this.panel.find('name','bridgeOrRouter')[i].getValue()){
-                nic = this.panel.find('name','bridgeOrRouter')[i].inputValue;
+        for(var i=0;i<this.panel.query('radio[name="bridgeOrRouter"]').length;i++){
+            if(this.panel.query('radio[name="bridgeOrRouter"]')[i].getValue()){
+                nic = this.panel.query('radio[name="bridgeOrRouter"]')[i].inputValue;
                 break;
             }
         }
@@ -1303,7 +1312,7 @@ Ung.SetupWizard.InternalNetwork = Ext.extend( Object, {
     },
     saveInternalNetwork : function( handler )
     {
-        var value = this.panel.find( "name", "bridgeOrRouter" )[0].getGroupValue();
+        var value = this.panel.query('radio[name="bridgeOrRouter"]')[0].getGroupValue();
 
         if ( value == null ) {
             Ext.MessageBox.alert(i18n._( "Select a value" ), i18n._( "Please choose bridge or router." ));
@@ -1312,18 +1321,18 @@ Ung.SetupWizard.InternalNetwork = Ext.extend( Object, {
 
         Ext.MessageBox.wait( i18n._( "Saving Internal Network Settings" ), i18n._( "Please Wait" ));
 
-        Ung.SetupWizard.ReauthenticateHandler.reauthenticate( this.afterReauthenticate.createDelegate( this, [ handler ] ));
+        Ung.SetupWizard.ReauthenticateHandler.reauthenticate( Ext.bind(this.afterReauthenticate, this, [ handler ] ));
     },
     afterReauthenticate : function( handler )
     {
-        var delegate = this.complete.createDelegate( this, [ handler ], true );
-        var value = this.panel.find( "name", "bridgeOrRouter" )[0].getGroupValue();
+        var delegate = Ext.bind(this.complete, this, [ handler ], true );
+        var value = this.panel.query('radio[name="bridgeOrRouter"]')[0].getGroupValue();
         if ( value == 'bridge' ) {
             rpc.networkManager.setWizardNatDisabled( delegate );
         } else {
-            var network = this.panel.find( "name", "network" )[0].getValue();
-            var netmask = this.panel.find( "name", "netmask" )[0].getRawValue();
-            var enableDhcpServer = this.panel.find( "name", "enableDhcpServer" )[0].getValue();
+            var network = this.panel.query('textfield[name="network"]')[0].getValue();
+            var netmask = this.panel.query('combo[name="netmask"]')[0].getRawValue();
+            var enableDhcpServer = this.panel.query('checkbox[name="enableDhcpServer"]')[0].getValue();
             rpc.networkManager.setWizardNatEnabled( delegate, network, netmask, enableDhcpServer );
         }
     },
@@ -1340,11 +1349,12 @@ Ung.SetupWizard.InternalNetwork = Ext.extend( Object, {
     }
 });
 
-Ung.SetupWizard.AutoUpgrades = Ext.extend( Object, {
+Ext.define('Ung.SetupWizard.AutoUpgrades', {
     constructor : function( config )
     {
-        this.panel = new Ext.FormPanel({
+        this.panel = Ext.create('Ext.form.Panel',{
             defaultType : 'fieldset',
+            border: false,
             defaults : {
                 autoHeight : true,
                 labelWidth : Ung.SetupWizard.LabelWidth3
@@ -1359,12 +1369,13 @@ Ung.SetupWizard.AutoUpgrades = Ext.extend( Object, {
                     name : 'autoUpgradesRadio',
                     inputValue : 'yes',
                     boxLabel : i18n._( 'Install Upgrades Automatically' ),
-                    ctCls : 'large-option',
+                    cls : 'large-option',
                     hideLabel : 'true',
                     checked : true
                 },{
                     xtype : 'label',
-                    html : String.format( i18n._('Automatically install new versions of {0} software. '), oemName) + '<br/>' +
+                    style:'font-weight:normal',
+                    html : Ext.String.format( i18n._('Automatically install new versions of {0} software. '), oemName) + '<br/>' +
                          i18n._('This is the recommended for most sites.')
                 }]
             }, {
@@ -1374,15 +1385,17 @@ Ung.SetupWizard.AutoUpgrades = Ext.extend( Object, {
                     name : 'autoUpgradesRadio',
                     inputValue : 'no',
                     boxLabel : i18n._('Do Not Install Upgrades Automatically.'),
-                    ctCls : 'large-option',
+                    cls : 'large-option',
                     hideLabel : 'true'
                 },{
                     xtype : 'label',
-                    html : String.format( i18n._('Do not automatically install new versions of {0} software.'), oemName) + '<br/>' +
+                    style:'font-weight:normal',
+                    html : Ext.String.format( i18n._('Do not automatically install new versions of {0} software.'), oemName) + '<br/>' +
                         i18n._('This is the recommended setting for large, complex, or sensitive sites.') + '<br/>' +
                         i18n._('Software Upgrades can be applied manually at any time when available.') 
                 },{
                     xtype : 'label',
+                    style:'font-weight:normal',                    
                     html : '<br/><br/>' + '<b>' + i18n._('Note:') + '</b>' + '<br/>' +
                         i18n._('Signatures for Virus Blocker, Spam Blocker, Web Filter, etc are still updated automatically.') + '<br/>' +
                         i18n._('If desired, a custom upgrade schedule can be configured after installation in the Upgrade Settings.') + '<br/>'
@@ -1394,17 +1407,17 @@ Ung.SetupWizard.AutoUpgrades = Ext.extend( Object, {
         this.card = {
             title : i18n._( "Automatic Upgrades" ),
             panel : this.panel,
-            onLoad : this.onLoadAutoSuggestion.createDelegate(this),
-            onNext : this.saveAutoUpgrades.createDelegate( this ),
-            onValidate : this.validateAutoUpgrades.createDelegate(this)
+            onLoad : Ext.bind(this.onLoadAutoSuggestion,this),
+            onNext : Ext.bind(this.saveAutoUpgrades,this ),
+            onValidate :Ext.bind(this.validateAutoUpgrades,this)
         };
     },
     onLoadAutoSuggestion : function( complete )
     {
-        var autoUpgradesEnabled = rpc.toolboxManager.getUpgradeSettings().autoUpgrade;
+        var autoUpgradesEnabled = rpc.systemManager.getSettings().autoUpgrade;
         if (!autoUpgradesEnabled) {
-            this.panel.find( "name", "autoUpgradesRadio" )[0].setValue(false);
-            this.panel.find( "name", "autoUpgradesRadio" )[1].setValue(true);
+            this.panel.query('radio[name="autoUpgradesRadio"]')[0].setValue(false);
+            this.panel.query('radio[name="autoUpgradesRadio"]')[1].setValue(true);
         } 
         complete();
     },
@@ -1414,26 +1427,26 @@ Ung.SetupWizard.AutoUpgrades = Ext.extend( Object, {
     },
     saveAutoUpgrades : function( handler )
     {
-        var value = this.panel.find( "name", "autoUpgradesRadio" )[0].getGroupValue();
+        var value = this.panel.query('radio[name="autoUpgradesRadio"]')[0].getGroupValue();
         if ( value == null ) {
             Ext.MessageBox.alert(i18n._( "Select a value" ), i18n._( "Please choose Yes or No." ));
             return;
         }
         Ext.MessageBox.wait( i18n._( "Saving Automatic Upgrades Settings" ), i18n._( "Please Wait" ));
 
-        Ung.SetupWizard.ReauthenticateHandler.reauthenticate( this.afterReauthenticate.createDelegate( this, [ handler ] ));
+        Ung.SetupWizard.ReauthenticateHandler.reauthenticate( Ext.bind(this.afterReauthenticate, this, [ handler ] ));
     },
     afterReauthenticate : function( handler )
     {
-        var delegate = this.complete.createDelegate( this, [ handler ], true );
-        var value = this.panel.find( "name", "autoUpgradesRadio" )[0].getGroupValue();
-        var upgradeSettings = rpc.toolboxManager.getUpgradeSettings();
+        var delegate = Ext.bind(this.complete, this, [ handler ], true );
+        var value = this.panel.query('radio[name="autoUpgradesRadio"]')[0].getGroupValue();
+        var systemSettings = rpc.systemManager.getSettings();
         if ( value == "yes" ) {
-            upgradeSettings.autoUpgrade = true;
-            rpc.toolboxManager.setUpgradeSettings( delegate, upgradeSettings );
+            systemSettings.autoUpgrade = true;
+            rpc.systemManager.setSettings( delegate, systemSettings );
         } else {
-            upgradeSettings.autoUpgrade = false;
-            rpc.toolboxManager.setUpgradeSettings( delegate, upgradeSettings );
+            systemSettings.autoUpgrade = false;
+            rpc.systemManager.setSettings( delegate, systemSettings );
         }
     },
     complete : function( result, exception, foo, handler )
@@ -1448,16 +1461,17 @@ Ung.SetupWizard.AutoUpgrades = Ext.extend( Object, {
     }
 });
 
-Ung.SetupWizard.Complete = Ext.extend( Object, {
+Ext.define('Ung.SetupWizard.Complete', {
     constructor : function( config )
     {
-        var panel = new Ext.FormPanel({
+        var panel = Ext.create('Ext.form.Panel',{
+        	border: false,
             items : [{
                 xtype : 'label',
                 html : '<h2 class="wizard-title">'+i18n._( "Congratulations!" )+'</h2>'
             },{
                 xtype : 'label',
-                html : String.format(i18n._( '<b>The {0} Server is now configured.</b><br/><br/>You are now ready to download and configure applications.' ),oemName),
+                html : Ext.String.format(i18n._( '<b>The {0} Server is now configured.</b><br/><br/>You are now ready to download and configure applications.' ),oemName),
                 cls : 'noborder'
             }]
         });
@@ -1466,7 +1480,7 @@ Ung.SetupWizard.Complete = Ext.extend( Object, {
             title : i18n._( "Finished" ),
             cardTitle : i18n._( "Congratulations!" ),
             panel : panel,
-            onNext : this.openUserInterface.createDelegate( this )
+            onNext : Ext.bind(this.openUserInterface,this )
         };
     },
 
@@ -1523,13 +1537,13 @@ Ung.Setup = {
 
         document.title = i18n._( "Setup Wizard" );
 
-        var welcome = new Ung.SetupWizard.Welcome();
-        var settings = new Ung.SetupWizard.Settings();
-        var interfaces = new Ung.SetupWizard.Interfaces();
-        var internet = new Ung.SetupWizard.Internet();
-        var internal = new Ung.SetupWizard.InternalNetwork();
-        var upgrades = new Ung.SetupWizard.AutoUpgrades();
-        var complete = new Ung.SetupWizard.Complete();
+        var welcome = Ext.create('Ung.SetupWizard.Welcome',{});
+        var settings = Ext.create('Ung.SetupWizard.Settings',{});
+        var interfaces = Ext.create('Ung.SetupWizard.Interfaces',{});
+        var internet = Ext.create('Ung.SetupWizard.Internet',{});
+        var internal = Ext.create('Ung.SetupWizard.InternalNetwork',{});
+        var upgrades = Ext.create('Ung.SetupWizard.AutoUpgrades',{});
+        var complete = Ext.create('Ung.SetupWizard.Complete',{});
 
         var cards = [];
         cards.push( welcome.card );
@@ -1540,7 +1554,7 @@ Ung.Setup = {
         cards.push( upgrades.card );
         cards.push( complete.card );
 
-        this.wizard = new Ung.Wizard({
+        this.wizard = Ext.create('Ung.Wizard',{
             height : 500,
             width : 800,
             cardDefaults : {
@@ -1557,10 +1571,10 @@ Ung.Setup = {
 
         if ( false ) {
             /* DEBUGGING CODE (Change to true to dynamically go to any page you want on load.) */
-            var debugHandler = function() {
+            var debugHandler = Ext.bind(function() {
                 this.wizard.goToPage( 3 );
-            }.createDelegate( this );
-            var ss = new Ung.SetupWizard.SettingsSaver( null, debugHandler );
+            }, this );
+            var ss = Ext.create('Ung.SetupWizard.SettingsSaver', null, debugHandler );
 
             ss.password = "passwd";
             ss.authenticate( null, null );
@@ -1578,6 +1592,7 @@ Ung.SetupWizard.ReauthenticateHandler = {
     /* Must reauthenticate in order to refresh the managers */
     reauthenticate : function( handler )
     {
+        console.log("About to authenticate");
         Ext.Ajax.request({
             params : {
                 username : this.username,
@@ -1589,7 +1604,7 @@ Ung.SetupWizard.ReauthenticateHandler = {
                 'Content-Type' : "application/x-www-form-urlencoded"
             },
             url : '/auth/login?url=/webui/setupSettings.js&realm=Administrator',
-            callback : this.reloadManagers.createDelegate( this, [ handler ], 4 )
+            callback : Ext.bind(this.reloadManagers, this, [ handler ], 4 )
         });
     },
 

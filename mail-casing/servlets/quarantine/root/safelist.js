@@ -3,24 +3,19 @@ Ext.namespace('Ung');
 //The location of the blank pixel image
 Ext.BLANK_IMAGE_URL = '/ext/resources/images/default/s.gif';
 
-Ung.SafelistSelectionModel = Ext.extend(  Ext.grid.CheckboxSelectionModel, {
-    onRowSelect : function( sm, rowIndex, record ) {
-        this.safelist.updateActionItems();
-    },
+Ext.define('Ung.SafelistSelectionModel', {
+    extend:'Ext.selection.CheckboxModel',
 
-    onRowDeselect : function( sm, rowIndex, record ) {
+    onSelectionChange:function(model, selected, options) {
         this.safelist.updateActionItems();
     },
 
     constructor : function( config ) {
         Ung.SafelistSelectionModel.superclass.constructor.apply(this, arguments);
-
         this.safelist = config.safelist;
-
-        this.addListener('rowselect',this.onRowSelect, this );
-        this.addListener('rowdeselect',this.onRowDeselect, this );
+        this.addListener('selectionchange',this.onSelectionChange, this );
     }
-} );
+});
 
 
 Ung.Safelist = function() {
@@ -32,29 +27,27 @@ Ung.Safelist.prototype = {
     {
         this.addWindow = null;
 
-        this.selectionModel = new Ung.SafelistSelectionModel( { safelist : this } );
+        this.selectionModel = Ext.create('Ung.SafelistSelectionModel',{ safelist : this } );
 
         // the column model has information about grid columns
         // dataIndex maps the column to the specific data field in
         // the data store
-        this.cm = new Ext.grid.ColumnModel([
-            this.selectionModel,
+        this.columns = [
             {
                 header: i18n._( "Email Address" ),
                 dataIndex: 'emailAddress',
-                editor : new Ext.form.TextField()
-            }]);
+                field: {
+                    xtype:'textfield'
+                }
+            }];
+            
+        this.store = Ext.create('Ext.data.ArrayStore',{
+            fields:[{name:'emailAddress'}],
+            data : inboxDetails.safelistData
+        }); 
 
-        this.reader = new Ext.data.ArrayReader(
-            {},
-            [ { name : 'emailAddress' } ]);
 
-        this.store = new Ext.data.Store({
-            proxy : new Ext.data.MemoryProxy( inboxDetails.safelistData ),
-            reader : safelist.reader
-        });
-
-        this.addButton = new Ext.Button( {
+        this.addButton = Ext.create('Ext.button.Button',{
         iconCls:'icon-add-row',
             text : i18n._( "Add" ),
             handler : function() {
@@ -64,40 +57,38 @@ Ung.Safelist.prototype = {
             "scope" : this
         });
 
-        this.deleteButton = new Ext.Button( {
+        this.deleteButton = Ext.create('Ext.button.Button',{
             text : i18n._( "Delete Addresses" ),
             disabled : true,
-        iconCls:'icon-delete-row',
+            iconCls:'icon-delete-row',
             handler : function() {
                 var addresses = [];
-                this.selectionModel.each( function( record ) {
-                    addresses.push( record.data.emailAddress );
-                    return true;
-                });
-
+                var selectedRecords = this.selectionModel.getSelection();
+                for ( var i =0; i < selectedRecords.length;i++) {
+                    addresses.push( selectedRecords[i].data.emailAddress );
+                }
                 this.grid.setDisabled( true );
-                this.selectionModel.clearSelections();
-                quarantine.selectionModel.clearSelections();
+                this.selectionModel.deselect(selectedRecords);;
                 this.deleteButton.setText( i18n._( "Delete Addresses" ));
                 this.deleteButton.setDisabled( true );
 
-                quarantine.rpc.deleteAddressesFromSafelist( this.deleteAddresses.createDelegate( this ),
+                quarantine.rpc.deleteAddressesFromSafelist( Ext.bind(this.deleteAddresses,this ),
                                                             inboxDetails.token, addresses );
             },
             "scope" : this
         });
 
-        this.grid = new Ext.grid.GridPanel({
+        this.grid = Ext.create('Ext.grid.Panel',{
             store : safelist.store,
             region : "center",
-            cm : safelist.cm,
-            sm : this.selectionModel,
+            columns: safelist.columns,
+            selModel : this.selectionModel,
             loadMask : true,
             frame : true,
             stripeRows : true,
-        cls:'safelist-grid',
-        autoExpandColumn : 1,
-        autoExpandMax: 1700,
+            cls:'safelist-grid',
+            autoExpandColumn : 1,
+            autoExpandMax: 1700,
             tbar : [ this.addButton, this.deleteButton ]
         });
 
@@ -106,7 +97,7 @@ Ung.Safelist.prototype = {
 
     getAddWindow : function() {
         if ( this.addWindow == null ) {
-            var panel = new Ext.FormPanel( {
+            var panel = Ext.create('Ext.form.Panel', {
                 defaultType : 'textfield',
                 items: [{
                     fieldLabel : i18n._( "Email Address" ),
@@ -115,7 +106,7 @@ Ung.Safelist.prototype = {
                 frame :false,
                 height:'100%'
             } );
-            this.addWindow = new Ext.Window( {
+            this.addWindow = Ext.create('Ext.Window',{
 
                 width:500,
                 height:300,
@@ -127,7 +118,7 @@ Ung.Safelist.prototype = {
                 buttons: [{
                     text : i18n._( 'Save' ),
                     handler: function() {
-                        var field = this.addWindow.find( "name", "email_address" )[0];
+                        var field = this.addWindow.query('textfield[name="email_address"]')[0];
                         var email = field.getValue();
                         field.setValue( "" );
                         quarantine.safelist( [ email ] );
@@ -164,7 +155,7 @@ Ung.Safelist.prototype = {
         var count = result.safelistCount;
         count = -count;
 
-        var message = i18n.pluralise( i18n._( "Deleted one address" ), String.format( i18n._( "Deleted {0} addresses" ), count ), count );
+        var message = i18n.pluralise( i18n._( "Deleted one address" ), Ext.String.format( i18n._( "Deleted {0} addresses" ), count ), count );
 
         quarantine.showMessage( message );
 
@@ -177,7 +168,7 @@ Ung.Safelist.prototype = {
     updateActionItems : function()
     {
         var count = this.selectionModel.getCount();
-        var text = i18n.pluralise( i18n._( "Delete one Address" ), String.format( i18n._( "Delete {0} Addresses" ), count ), count );
+        var text = i18n.pluralise( i18n._( "Delete one Address" ), Ext.String.format( i18n._( "Delete {0} Addresses" ), count ), count );
         if ( count > 0 ) {
             this.deleteButton.setDisabled( false );
         } else {

@@ -13,7 +13,7 @@ Ung.SetupWizard.LabelWidth2 = 214;
 Ung.SetupWizard.LabelWidth3 = 70;
 Ung.SetupWizard.LabelWidth4 = 100;
 
-Ung.SetupWizard.Language = Ext.extend(Object, {
+Ext.define('Ung.SetupWizard.Language', {
     constructor : function( config )
     {
         this.languageStore = [];
@@ -26,8 +26,9 @@ Ung.SetupWizard.Language = Ext.extend(Object, {
             this.languageStore[c] = [ language.code, language.name ];
         }
 
-        this.panel = new Ext.FormPanel({
+        this.panel = Ext.create('Ext.form.Panel', {
             defaultType : 'fieldset',
+            border: false,
             defaults : {
                 autoHeight : true,
                 cls : 'noborder'
@@ -45,8 +46,8 @@ Ung.SetupWizard.Language = Ext.extend(Object, {
                     name : "language",
                     xtype : 'combo',
                     editable : false,
-                    width : 200,
-                    listWidth : 205,
+                    width : 350,
+                    labelWidth : 200,
                     store : this.languageStore,
                     value : Ung.SetupWizard.CurrentValues.language,
                     mode : 'local',
@@ -61,7 +62,7 @@ Ung.SetupWizard.Language = Ext.extend(Object, {
             title : i18n._( "Language" ),
             panel : this.panel,
 
-            onValidate : this.validateSettings.createDelegate(this)
+            onValidate : Ext.bind(this.validateSettings,this)
         };
     },
 
@@ -72,8 +73,8 @@ Ung.SetupWizard.Language = Ext.extend(Object, {
 
     saveSettings : function( handler )
     {
-        var language = this.panel.find( "name", "language" )[0].getValue();
-        rpc.setup.setLanguage( this.complete.createDelegate( this, [ handler ], true ), language );
+        var language = this.panel.query('combo[name="language"]')[0].getValue();
+        rpc.setup.setLanguage( Ext.bind(this.complete,this, [ handler ], true ), language );
     },
 
     complete : function( result, exception, foo, handler )
@@ -94,7 +95,7 @@ Ung.SetupWizard.Language = Ext.extend(Object, {
 
     enableHandler : function()
     {
-        this.card.onNext = this.saveSettings.createDelegate( this );
+        this.card.onNext = Ext.bind(this.saveSettings, this );
     }
 });
 
@@ -111,9 +112,9 @@ Ung.Language = {
 
         i18n = new Ung.I18N( { "map" : {} })
 
-        var language = new Ung.SetupWizard.Language();
+        var language = Ext.create('Ung.SetupWizard.Language',{});
 
-        this.wizard = new Ung.Wizard({
+        this.wizard = Ext.create('Ung.Wizard',{
             height : 500,
             width : 800,
             cardDefaults : {

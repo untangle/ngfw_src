@@ -1,4 +1,4 @@
-<!-- $Id: template.jspx,v 1.00 2012/06/05 18:32:49 dmorris Exp $ -->
+<!-- $Id: template.jspx,v 1.00 2012/06/05 18:33:03 dmorris Exp $ -->
 
 <html xmlns:jsp="http://java.sun.com/JSP/Page"
       xmlns:c="http://java.sun.com/jsp/jstl/core"
@@ -17,16 +17,18 @@
     <title><c:out value="${pageTitle}"/></title>
     <META content="IE=7.0000" http-equiv="X-UA-Compatible"/>
     <style type="text/css">
-      @import "/ext/resources/css/ext-all.css";
+        @import "/ext4/resources/css/ext-all-gray.css";
+        @import "/ext4/examples/ux/css/CheckHeader.css";
     </style>
 
     <uvm:skin src="ext-skin.css"  name="${skinSettings.skinName}"/>
     <uvm:skin src="user.css" name="${skinSettings.skinName}"/>
 
     <!-- extjs, json and i18n libraries, this should be consolidated into a helper tag. -->
-    <uvm:script src="/ext/source/core/Ext.js"/>
-    <uvm:script src="/ext/source/adapter/ext-base.js"/>
-    <uvm:script src="/ext/ext-all-debug.js"/>
+    <uvm:script src="/ext4/builds/ext-core-debug.js"/>
+    <uvm:script src="/ext4/ext-all-debug.js"/>
+    <uvm:script src="/ext4/examples/ux/data/PagingMemoryProxy.js"/>
+    <uvm:script src="/ext4/examples/ux/CheckColumn.js"/>
     <uvm:script src="/jsonrpc/jsonrpc.js"/>
     
     <c:out escapeXml="false" value="${javascript}"/>

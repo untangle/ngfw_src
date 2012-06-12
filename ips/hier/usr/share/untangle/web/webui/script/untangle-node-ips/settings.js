@@ -2,14 +2,18 @@ if (!Ung.hasResource["Ung.Ips"]) {
     Ung.hasResource["Ung.Ips"] = true;
     Ung.NodeWin.registerClassName('untangle-node-ips', 'Ung.Ips');
 
-    Ung.Ips = Ext.extend(Ung.NodeWin, {
+    Ext.define('Ung.Ips', {
+        extend:'Ung.NodeWin',
         panelStatus: null,
         panelRules: null,
         gridRules : null,
         gridVariables : null,
         gridEventLog : null,
+        statistics : null,
         // called when the component is rendered
         initComponent : function() {
+            this.getSettings();
+            this.statistics = this.getRpcNode().getStatistics();
             this.buildStatus();
             this.buildRules();
             this.buildEventLog();
@@ -19,13 +23,12 @@ if (!Ung.hasResource["Ung.Ips"]) {
         },
         // Status Panel
         buildStatus : function() {
-            this.panelStatus = new Ext.Panel({
+            this.panelStatus = Ext.create('Ext.panel.Panel',{
                 name : 'Status',
                 helpSource : 'status',
                 parentId : this.getId(),
-
                 title : this.i18n._('Status'),
-                layout : "form",
+            //    layout : "form",
                 cls: 'ung-panel',
                 autoScroll : true,
                 defaults : {
@@ -35,7 +38,7 @@ if (!Ung.hasResource["Ung.Ips"]) {
                 },
                 items : [{
                     title : this.i18n._('Statistics'),
-                    layout:'form',
+                   // layout:'form',
                     labelWidth: 230,
                     defaults: {
                         xtype: "textfield",
@@ -44,20 +47,26 @@ if (!Ung.hasResource["Ung.Ips"]) {
                     items: [{
                         fieldLabel : this.i18n._('Total Signatures Available'),
                         name: 'Total Signatures Available',
-                        value: this.getBaseSettings().totalAvailable
+                        labelWidth:200,
+                        labelAlign:'left',
+                        value: this.statistics.totalAvailable
                     }, {
                         fieldLabel : this.i18n._('Total Signatures Logging'),
                         name: 'Total Signatures Logging',
-                        value: this.getBaseSettings().totalLogging
+                        labelWidth:200,
+                        labelAlign:'left',
+                        value: this.statistics.totalLogging
                     }, {
                         fieldLabel : this.i18n._('Total Signatures Blocking'),
                         name: 'Total Signatures Blocking',
-                        value: this.getBaseSettings().totalBlocking
+                        labelWidth:200,
+                        labelAlign:'left',
+                        value: this.statistics.totalBlocking
                     }]
                 }, {
                     title : this.i18n._('Note'),
                     cls: 'description',
-                    html : String.format(this.i18n._("{0} continues to maintain the default signature settings through automatic updates. You are free to modify and add signatures, however it is not required."),
+                    html : Ext.String.format(this.i18n._("{0} continues to maintain the default signature settings through automatic updates. You are free to modify and add signatures, however it is not required."),
                                          main.getBrandingManager().getCompanyName())
                 }]
             });
@@ -65,21 +74,7 @@ if (!Ung.hasResource["Ung.Ips"]) {
 
         // Rules Panel
         buildRules : function() {
-            // block is a check column
-            var blockColumn = new Ext.grid.CheckColumn({
-                header : this.i18n._("block"),
-                dataIndex : 'live',
-                fixed : true
-            });
-            
-            // log is a check column
-            var logColumn = new Ext.grid.CheckColumn({
-                header : this.i18n._("log"),
-                dataIndex : 'log',
-                fixed : true
-            });
-            
-            this.panelRules = new Ext.Panel({
+            this.panelRules = Ext.create('Ext.panel.Panel',{
                 name : 'panelRules',
                 helpSource : 'rules',
                 // private fields
@@ -94,11 +89,10 @@ if (!Ung.hasResource["Ung.Ips"]) {
                     autoScroll: true
                 },
                 cls: 'ung-panel',
-                items : [this.gridRules = new Ung.EditorGrid({
+                items : [this.gridRules = Ext.create('Ung.EditorGrid',{
                         name : 'Rules',
                         settingsCmp : this,
                         height : 350,
-                        totalRecords : this.getBaseSettings().rulesLength,
                         emptyRow : {
                             "category" : this.i18n._("[no category]"),
                             "name" : this.i18n._("[no name]"),
@@ -111,7 +105,8 @@ if (!Ung.hasResource["Ung.Ips"]) {
                         },
                         title : this.i18n._("Rules"),
                         recordJavaClass : "com.untangle.node.ips.IpsRule",
-                        proxyRpcFn : this.getRpcNode().getRules,
+                        dataProperty : 'rules',
+                        paginated : false,
                         fields : [{
                             name : 'id'
                         }, {
@@ -136,38 +131,51 @@ if (!Ung.hasResource["Ung.Ips"]) {
                             type : 'string'
                         }],
                         columns : [{
-                            id : 'category',
                             header : this.i18n._("category"),
                             width : 180,
                             dataIndex : 'category',
-                            editor : new Ext.form.TextField({
+                            editor: {
+                                xtype:'texfield',
                                 allowBlank : false
-                            })
-                        }, blockColumn, logColumn, {
-                            id : 'description',
+                            }
+                        },
+                        {
+                            xtype:'checkcolumn',
+                            header : this.i18n._("block"),
+                            dataIndex : 'live',
+                            fixed : true,
+                            width:55
+                        },
+                        {
+                            xtype:'checkcolumn',
+                            header : this.i18n._("log"),
+                            dataIndex : 'log',
+                            fixed : true,
+                            width:55
+                        },
+                        {
                             header : this.i18n._("description"),
                             width : 200,
                             dataIndex : 'description',
+                            flex:1,
                             editor : null,
                             renderer : function(value, metadata, record) {
                                 var description = "";
-                                if (record.data.classification != null) 
+                                if (record.data.classification != null)
                                 {
                                     description += record.data.classification + " ";
                                 }
                                 if (record.data.description != null) {
                                     description += "(" + record.data.description + ")";
-                                }    
+                                }
                                 return description;
                             }
                         }, {
-                            id : 'id',
                             header : this.i18n._("id"),
                             width : 70,
                             dataIndex : 'sid',
                             editor : null
                         }, {
-                            id : 'info',
                             header : this.i18n._("info"),
                             width : 70,
                             dataIndex : 'URL',
@@ -179,53 +187,64 @@ if (!Ung.hasResource["Ung.Ips"]) {
                         }],
                         sortField : 'category',
                         columnsDefaultSortable : true,
-                        autoExpandColumn : 'description',
-                        plugins : [blockColumn, logColumn],
-                        rowEditorInputLines : [new Ext.form.TextField({
+                        rowEditorInputLines : [
+                        {
+                            xtype:'textfield',
                             name : "Category",
                             dataIndex: "category",
                             fieldLabel : this.i18n._("Category"),
                             allowBlank : false,
-                            width : 300
-                        }), new Ext.form.TextField({
+                            width : 400
+                        },
+                        {
+                            xtype:'textfield',
                             name : "Signature",
                             dataIndex: "text",
                             fieldLabel : this.i18n._("Signature"),
                             allowBlank : false,
-                            width : 350
-                        }), new Ext.form.TextField({
+                            width : 450
+                        },
+                        {
+                            xtype:'textfield',
                             name : "Name",
                             dataIndex: "name",
                             fieldLabel : this.i18n._("Name"),
                             allowBlank : false,
                             width : 300
-                        }), new Ext.form.TextField({
+                        },
+                        {
+                            xtype:'textfield',
                             name : "SID",
                             dataIndex: "sid",
                             fieldLabel : this.i18n._("SID"),
                             allowBlank : false,
-                            width : 50
-                        }), new Ext.form.Checkbox({
+                            width : 150
+                        },
+                        {
+                            xtype:'checkbox',
                             name : "Block",
                             dataIndex: "live",
                             fieldLabel : this.i18n._("Block")
-                        }), new Ext.form.Checkbox({
+                        },
+                        {
+                            xtype:'checkbox',
                             name : "Log",
                             dataIndex: "log",
                             fieldLabel : this.i18n._("Log")
-                        }), new Ext.form.TextField({
+                        },
+                        {
+                            xtype:'textfield',
                             name : "Description",
                             dataIndex: "description",
                             fieldLabel : this.i18n._("Description"),
                             allowBlank : false,
-                            width : 400
-                        })]
-                    }),  
-                    {html : '<br>', border: false}, 
-                    this.gridVariables = new Ung.EditorGrid({
+                            width : 500
+                        }]
+                    }),
+                    {html : '<br>', border: false},
+                    this.gridVariables = Ext.create('Ung.EditorGrid',{
                         name : 'Variables',
                         settingsCmp : this,
-                        totalRecords : this.getBaseSettings().variablesLength,
                         height : 350,
                         emptyRow : {
                             "variable" : this.i18n._("[no name]"),
@@ -233,9 +252,8 @@ if (!Ung.hasResource["Ung.Ips"]) {
                             "description" : this.i18n._("[no description]")
                         },
                         title : this.i18n._("Variables"),
-                        autoExpandColumn : 'description',
                         recordJavaClass : "com.untangle.node.ips.IpsVariable",
-                        proxyRpcFn : this.getRpcNode().getVariables,
+                        dataProperty : 'variables',
                         fields : [{
                             name : 'id'
                         }, {
@@ -249,163 +267,148 @@ if (!Ung.hasResource["Ung.Ips"]) {
                             type : 'string'
                         }],
                         columns : [{
-                            id : 'variable',
                             header : this.i18n._("name"),
                             width : 170,
                             dataIndex : 'variable',
-                            editor : new Ext.form.TextField({
+                            editor: {
+                                xtype:'textfield',
                                 allowBlank : false
-                            })
-                        }, {
+                                }
+                            },
+                            {
                             id : 'definition',
                             header : this.i18n._("pass"),
                             width : 300,
                             dataIndex : 'definition',
-                            editor : new Ext.form.TextField({
+                            editor: {
+                                xtype:'textfield',
                                 allowBlank : false
-                            })
+                            }
                         }, {
-                            id : 'description',
                             header : this.i18n._("description"),
                             width : 300,
                             dataIndex : 'description',
-                            editor : new Ext.form.TextField({
+                            flex:1,
+                            editor: {
+                                xtype:'textfield',
                                 allowBlank : false
-                            })
+                            }
                         }],
                         sortField : 'variable',
                         columnsDefaultSortable : true,
-                        rowEditorInputLines : [new Ext.form.TextField({
+                        rowEditorInputLines : [{
+                            xtype:'textfield',
                             name : "Name",
                             dataIndex: "variable",
                             fieldLabel : this.i18n._("Name"),
                             allowBlank : false,
-                            width : 200
-                        }), new Ext.form.TextField({
+                            width : 300
+                        },
+                        {
+                            xtype:'textfield',
                             name : "Pass",
                             dataIndex: "definition",
                             fieldLabel : this.i18n._("Pass"),
                             allowBlank : false,
-                            width : 300
-                        }), new Ext.form.TextField({
-
+                            width : 400
+                        },
+                        {
+                            xtype:'textfield',
                             name : "Description",
                             dataIndex: "description",
                             fieldLabel : this.i18n._("Description"),
                             allowBlank : false,
-                            width : 300
-                        })]
+                            width : 400
+                        }]
                     })
             ]});
         },
         // Event Log
         buildEventLog : function() {
-            this.gridEventLog = new Ung.GridEventLog({
+            this.gridEventLog = Ext.create('Ung.GridEventLog',{
                 settingsCmp : this,
                 fields : [{
-                    name : 'timeStamp',
+                    name : 'time_stamp',
                     sortType : Ung.SortTypes.asTimestamp
                 }, {
                     name : 'blocked',
-                    mapping : 'ipsBlocked'
+                    mapping : 'ips_blocked'
                 }, {
                     name : 'name',
-                    mapping : 'ipsName',
+                    mapping : 'ips_name',
                     type : 'string'
                 }, {
                     name : 'description',
-                    mapping : 'ipsDescription',
+                    mapping : 'ips_description',
                     type : 'string'
                 }, {
                     name : 'client',
-                    mapping : 'CClientAddr'
+                    mapping : 'c_client_addr'
                 }, {
                     name : 'server',
-                    mapping : 'CServerAddr'
+                    mapping : 'c_server_addr'
                 }, {
                     name : 'server',
-                    mapping : 'CServerAddr'
+                    mapping : 'c_server_addr'
                 }, {
                     name : 'uid'
                 }],
-                autoExpandColumn : 'ruleDescription',
                 columns : [{
-                    header : this.i18n._("timestamp"),
+                    header : this.i18n._("Timestamp"),
                     width : Ung.Util.timestampFieldWidth,
                     sortable : true,
-                    dataIndex : 'timeStamp',
+                    dataIndex : 'time_stamp',
                     renderer : function(value) {
                         return i18n.timestampFormat(value);
                     }
                 }, {
-                    header : this.i18n._("client"),
+                    header : this.i18n._("Client"),
                     width : Ung.Util.ipFieldWidth,
                     sortable : true,
                     dataIndex : 'client'
                 }, {
-                    header : this.i18n._("username"),
+                    header : this.i18n._("Username"),
                     width : Ung.Util.usernameFieldWidth,
                     sortable : true,
                     dataIndex : 'uid'
                 }, {
-                    header : this.i18n._("blocked"),
+                    header : this.i18n._("Blocked"),
                     width : Ung.Util.booleanFieldWidth,
                     sortable : true,
                     dataIndex : 'blocked'
                 }, {
                     id: 'ruleName',
-                    header : this.i18n._('rule id'),
+                    header : this.i18n._('Rule Id'),
                     width : 60,
                     sortable : true,
                     dataIndex : 'name'
                 }, {
                     id: 'ruleDescription',
-                    header : this.i18n._('rule description'),
+                    header : this.i18n._('Rule Ddescription'),
                     width : 150,
                     sortable : true,
+                    flex:1,
                     dataIndex : 'description'
                 }, {
-                    header : this.i18n._("server"),
+                    header : this.i18n._("Server"),
                     width : Ung.Util.ipFieldWidth,
                     sortable : true,
                     dataIndex : 'server'
                 }]
             });
         },
-        //apply function 
-        applyAction : function(){
-            this.saveAction(true);
+
+        beforeSave : function(isApply,handler)
+        {
+            this.settings.rules.list = this.gridRules.getFullSaveList();
+            this.settings.variables.list = this.gridVariables.getFullSaveList();
+            handler.call(this, isApply);
         },
-        // save function
-        saveAction : function(keepWindowOpen) {
-            if (this.validate()) {
-                Ext.MessageBox.wait(i18n._("Saving..."), i18n._("Please wait"));
-                this.getRpcNode().updateAll(function(result, exception) {
-                    if(Ung.Util.handleException(exception)) return;
-                    // exit settings screen
-                    if(keepWindowOpen!== true){
-                        Ext.MessageBox.hide();                    
-                        this.closeWindow();
-                    }else{
-                    //refresh the settings
-                            this.getRpcNode().getBaseSettings(function(result2,exception2){
-                                Ext.MessageBox.hide();                            
-                                this.gridRules.setTotalRecords(result2.rulesLength);
-                                this.gridVariables.setTotalRecords(result2.variablesLength);
-                                this.gridRules.reloadGrid();
-                                this.gridVariables.reloadGrid();
-                            }.createDelegate(this));
-                            //this.gridEventLog.reloadGrid();                                     
-                    }
-                }.createDelegate(this), this.getBaseSettings(), this.gridRules ? this.gridRules.getSaveList() : null,
-                        this.gridVariables ? this.gridVariables.getSaveList() : null,
-                        null);
-            }
-        },
-        isDirty : function() {
-            return (this.gridRules ? this.gridRules.isDirty() : false)
-                || (this.gridVariables ? this.gridVariables.isDirty() : false);
-        }        
+
+        afterSave : function()
+        {
+            this.statistics = this.getRpcNode().getStatistics();
+        }
     });
 }
 //@ sourceURL=ips-settings.js

@@ -2,11 +2,12 @@ if (!Ung.hasResource["Ung.Shield"]) {
     Ung.hasResource["Ung.Shield"] = true;
     Ung.NodeWin.registerClassName('untangle-node-shield', 'Ung.Shield');
 
-    Ung.Shield = Ext.extend(Ung.NodeWin, {
+     Ext.define('Ung.Shield', {
+    	extend: 'Ung.NodeWin',
         gridExceptions : null,
         gridEventLog : null,
         initComponent : function(container, position) {
-            Ung.Util.generateListIds(this.getSettings().rules.list);
+            this.getSettings();
             // builds the 3 tabs
             this.buildStatus();
             this.buildExceptions();
@@ -17,11 +18,10 @@ if (!Ung.hasResource["Ung.Shield"]) {
         },
         // Status Panel
         buildStatus : function() {
-            this.statusPanel = new Ext.Panel({
+            this.statusPanel = Ext.create('Ext.panel.Panel',{
                 title : this.i18n._('Status'),
                 name : 'Status',
                 helpSource : 'status',
-                layout : "form",
                 autoScroll : true,
                 cls: 'ung-panel',
                 items : [{
@@ -52,23 +52,13 @@ if (!Ung.hasResource["Ung.Shield"]) {
         },
         // Exceptions grid
         buildExceptions : function() {
-            // enable is a check column
-            var enableColumn = new Ext.grid.CheckColumn({
-                header : this.i18n._("enable"),
-                dataIndex : 'enabled',
-                fixed : true
-            });
-
             var deviderData = [[5, 5 + ' ' + this.i18n._("users")], [25, 25 + ' ' + this.i18n._("users")],
                     [40, 50 + ' ' + this.i18n._("users")], [75, 100 + ' ' + this.i18n._("users")], [-1, this.i18n._("unlimited")]];
 
-            this.gridExceptions = new Ung.EditorGrid({
+            this.gridExceptions = Ext.create('Ung.EditorGrid',{
                 settingsCmp : this,
                 name : 'Exceptions',
                 helpSource : 'exceptions',
-                // the total records is set from the base settings
-                // shieldNodeRulesLength field
-                totalRecords : this.getSettings().shieldNodeRulesLength,
                 emptyRow : {
                     "enabled" : true,
                     "address" : "1.2.3.4",
@@ -77,10 +67,8 @@ if (!Ung.hasResource["Ung.Shield"]) {
                 },
                 title : this.i18n._("Exceptions"),
                 // the column is autoexpanded if the grid width permits
-                autoExpandColumn : 'description',
                 recordJavaClass : "com.untangle.node.shield.ShieldRule",
-                data:this.getSettings().rules.list,
-
+                dataProperty:'rules',
                 // the list of fields
                 fields : [{
                     name : 'id'
@@ -96,23 +84,28 @@ if (!Ung.hasResource["Ung.Shield"]) {
                     type : 'string'
                 }],
                 // the list of columns for the column model
-                columns : [enableColumn, {
-                    id : 'address',
-                    header : this.i18n._("address"),
+                columns : [{
+                	xtype: 'checkcolumn',
+                    header : this.i18n._("Enable"),
+                    dataIndex : 'enabled',
+                    width: 55,
+                    fixed : true
+                }, {
+                    header : this.i18n._("Address"),
                     width : 200,
                     dataIndex : 'address',
                     // this is a simple text editor
-                    editor : new Ext.form.TextField({
+                    editor: {
+                        xtype:'textfield',
                         allowBlank : false,
                         vtype : 'ipAddress'
-                    })
+                    }
                 }, {
-                    id : 'divider',
-                    header : this.i18n._("user count"),
+                    header : this.i18n._("User Count"),
                     width : 100,
                     dataIndex : 'divider',
-                    editor : new Ext.form.ComboBox({
-                        store : new Ext.data.SimpleStore({
+                    editor : Ext.create('Ext.form.ComboBox',{
+                        store : Ext.create('Ext.data.ArrayStore',{
                             fields : ['dividerValue', 'dividerName'],
                             data : deviderData
                         }),
@@ -133,34 +126,37 @@ if (!Ung.hasResource["Ung.Shield"]) {
                         return value;
                     }
                 }, {
-                    id : 'description',
                     header : this.i18n._("description"),
                     width : 200,
+                    flex : 1,
                     dataIndex : 'description',
-                    editor : new Ext.form.TextField({
-                        allowBlank : false
-                    })
+                    editor: {
+                        xtype:'textfield',
+                        allowBlank:false
+                    }
                 }],
-                // sortField: 'address',
+                sortField: 'address',
                 columnsDefaultSortable : true,
-                plugins : [enableColumn],
                 // the row input lines used by the row editor window
-                rowEditorInputLines : [new Ext.form.Checkbox({
+                rowEditorInputLines : [{
+                	xtype:'checkbox',
                     name : "Enable",
                     dataIndex : "enabled",
                     fieldLabel : this.i18n._("Enable")
-                }), new Ext.form.TextField({
+                }, {
+                	xtype:'textfield',
                     name : "Address",
                     dataIndex : "address",
                     fieldLabel : this.i18n._("Address"),
                     allowBlank : false,
-                    width : 200,
+                    width : 400,
                     vtype : 'ipAddress'
-                }), new Ext.form.ComboBox({
+                }, {
+                	xtype:'combo',
                     name : "User Count",
                     dataIndex : "divider",
                     fieldLabel : this.i18n._("User Count"),
-                    store : new Ext.data.SimpleStore({
+                    store : Ext.create('Ext.data.ArrayStore',{
                         fields : ['dividerValue', 'dividerName'],
                         data : deviderData
                     }),
@@ -171,13 +167,14 @@ if (!Ung.hasResource["Ung.Shield"]) {
                     triggerAction : 'all',
                     listClass : 'x-combo-list-small',
                     selectOnFocus : true
-                }), new Ext.form.TextArea({
+                }, {
+                	xtype:'textarea',
                     name : "Description",
                     dataIndex : "description",
                     fieldLabel : this.i18n._("Description"),
-                    width : 200,
+                    width : 400,
                     height : 60
-                })]
+                }]
             });
         },
         // Event Log
@@ -189,12 +186,12 @@ if (!Ung.hasResource["Ung.Shield"]) {
                 eventQueriesFn : this.getRpcNode().getEventQueries,
                 // the list of fields
                 fields : [{
-                    name : 'timeStamp',
+                    name : 'time_stamp',
                     sortType : Ung.SortTypes.asTimestamp
                 }, {
-                    name : 'clientAddr'
+                    name : 'client_addr'
                 }, {
-                    name : 'clientIntf'
+                    name : 'client_intf'
                 }, {
                     name : 'reputation',
                     sortType : Ext.data.SortTypes.asFloat 
@@ -213,7 +210,7 @@ if (!Ung.hasResource["Ung.Shield"]) {
                     header : this.i18n._("Timestamp"),
                     width : Ung.Util.timestampFieldWidth,
                     sortable : true,
-                    dataIndex : 'timeStamp',
+                    dataIndex : 'time_stamp',
                     renderer : function(value) {
                         return i18n.timestampFormat(value);
                     }
@@ -221,13 +218,12 @@ if (!Ung.hasResource["Ung.Shield"]) {
                     header : this.i18n._("Client Address"),
                     width : Ung.Util.ipFieldWidth,
                     sortable : true,
-                    dataIndex : 'clientAddr'
+                    dataIndex : 'client_addr'
                 }, {
-                    id :'clientIntf',
                     header : this.i18n._("Client Interface"),
                     width : Ung.Util.ipFieldWidth,
                     sortable : true,
-                    dataIndex : 'clientIntf'
+                    dataIndex : 'client_intf'
                 }, {
                     header : this.i18n._("reputation"),
                     width : 120,
@@ -263,36 +259,14 @@ if (!Ung.hasResource["Ung.Shield"]) {
                 }]
             });
         },
-        //apply function 
-        applyAction : function(){
-            this.saveAction(true);
-        },            
-        // save function
-        saveAction : function(keepWindowOpen) {
-            Ext.MessageBox.wait(i18n._("Saving..."), i18n._("Please wait"));
-            this.gridExceptions.getGridSaveList(function(saveList) {
-                this.getSettings().rules = saveList;
-                this.getRpcNode().setSettings(function(result, exception) {
-                    Ext.MessageBox.hide();
-                    if(Ung.Util.handleException(exception)) return;
-                    // exit settings screen
-                    if(!keepWindowOpen) {
-                        Ext.MessageBox.hide();                    
-                        this.closeWindow();
-                    } else {
-                        //refresh the settings
-                        this.getRpcNode().getSettings(function(result,exception) {
-                            Ext.MessageBox.hide();
-                            if(Ung.Util.handleException(exception)) return;
-                            this.gridExceptions.reloadGrid({data:result.rules.list});                        
-                        }.createDelegate(this));                        
-                    }
-                }.createDelegate(this), this.getSettings());
-            }.createDelegate(this));                        
-        },
-        isDirty : function() {
-            return this.gridExceptions.isDirty();
+        
+        beforeSave: function(isApply, handler) {
+            this.gridExceptions.getGridSaveList(Ext.bind(function(saveList) {
+                this.settings.rules = saveList;
+                handler.call(this, isApply);
+            },this));
         }
+     
     });
 }
 //@ sourceURL=shield-settings.js

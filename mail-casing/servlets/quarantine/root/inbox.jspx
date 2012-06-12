@@ -38,10 +38,18 @@
   <c:set var="pageTitle" scope="request">
     <uvm:i18n p0="${bs.companyName}" p1="${currentAddress}">{0} | Quarantine Digest for: {1}</uvm:i18n>
   </c:set>
+	
+  <uvm:script src="/ext4/builds/ext-core-debug.js"/>
+  <uvm:script src="/ext4/ext-all-debug.js"/>
+  <uvm:script src="/ext4/examples/ux/data/PagingMemoryProxy.js"/>
+  <uvm:script src="/ext4/examples/ux/CheckColumn.js"/>
+
+
 
   <c:set var="javascript" scope="request">
     <uvm:inlineScript>
       <![CDATA[
+		 console.log("inbox.jspx");
                var inboxDetails = {
                    token : '${currentAuthToken}',
                    totalCount: ${q:totalMessageCount(pageContext)},

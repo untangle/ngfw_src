@@ -18,8 +18,8 @@ import com.untangle.uvm.UvmContextFactory;
 @SuppressWarnings("serial")
 public class Welcome extends HttpServlet
 {
-    private static final String WEBUI_URL = "/webui/startPageNew.do";
-    private static final String SETUP_URL = "/setup/languageNew.do";
+    private static final String WEBUI_URL = "/webui/startPage.do";
+    private static final String SETUP_URL = "/setup/language.do";
         
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
         throws ServletException, IOException 

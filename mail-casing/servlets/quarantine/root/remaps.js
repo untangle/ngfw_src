@@ -3,7 +3,8 @@ Ext.namespace('Ung');
 //The location of the blank pixel image
 Ext.BLANK_IMAGE_URL = '/ext/resources/images/default/s.gif';
 
-Ung.RemapsSelectionModel = Ext.extend(  Ext.grid.CheckboxSelectionModel, {    
+Ext.define('Ung.RemapsSelectionModel', {    
+    extend:'Ext.selection.CheckboxModel',
     onRowSelect : function( sm, rowIndex, record ) {
         this.remaps.updateActionItems();
     },
@@ -20,7 +21,7 @@ Ung.RemapsSelectionModel = Ext.extend(  Ext.grid.CheckboxSelectionModel, {
         this.addListener('rowselect',this.onRowSelect, this );
         this.addListener('rowdeselect',this.onRowDeselect, this );
     }
-} );
+});
 
 Ung.Remaps = function() {
     this.cm = null;
@@ -31,27 +32,16 @@ Ung.Remaps.prototype = {
     {
         this.selectionModel = new Ung.RemapsSelectionModel( { remaps : this } );
 
-        // the column model has information about grid columns
-        // dataIndex maps the column to the specific data field in
-        // the data store
-        this.cm = new Ext.grid.ColumnModel([
-            this.selectionModel,
-            {
-                header: i18n._( "Email Address" ),
-                dataIndex: 'emailAddress'
-            }]);
+        this.columns = [ {header: i18n._( "Email Address" ),dataIndex: 'emailAddress'}];
 
-        this.reader = new Ext.data.ArrayReader(
-        {},
-        [ { name : 'emailAddress' } ]);
 
-        this.store = new Ext.data.Store({
-            reader : this.reader,
+        this.store = Ext.create('Ext.data.ArrayStore',{
+            fields:[{name:'emailAddress'}],
             data : inboxDetails.remapsData
-        });
+        }); 
 
 
-        this.deleteButton = new Ext.Button( {
+        this.deleteButton = Ext.create('Ext.button.Button', {
 			iconCls:'icon-delete-row',					
             text : i18n._( "Delete Addresses" ),
             disabled : true,
@@ -66,23 +56,23 @@ Ung.Remaps.prototype = {
                 this.deleteButton.setText( i18n._( "Delete Addresses" ));
                 this.deleteButton.setDisabled( true );
                 
-                quarantine.rpc.deleteRemaps( this.deleteAddresses.createDelegate( this ), 
+                quarantine.rpc.deleteRemaps( Ext.bind(this.deleteAddresses,this ), 
                                              inboxDetails.token, addresses );
             },
             scope : this
         });
     
-        this.grid = new Ext.grid.GridPanel({
+        this.grid = Ext.create('Ext.grid.Panel',{
             autoExpandColumn : 1,
             anchor : '100% -100',
-            store : this.store,
+           // store : this.store,
 			cls:'quarantine-received-messages-grid',
-            cm : this.cm,
+            columns: this.columns,
             loadMask : true,
             frame : true,
             clicksToEdit : 1,
             height : 200,
-            sm : this.selectionModel,
+            selModel : this.selectionModel,
             tbar : [ this.deleteButton ]
          });
 
@@ -97,33 +87,32 @@ Ung.Remaps.prototype = {
 			ctCls:'quarantine-label',			
             checked : inboxDetails.forwardAddress != "",
             listeners : {
-                "check" : {
-                    fn : function(elem, checked) {
+                "change" : {
+                    fn : Ext.bind(function(elem, checked) {
                         if (checked) this.setHasForwardAddress( true );
-                    }.createDelegate(this)
+                    },this)
                  }
             }});
 		//var radio1 = items[items.length-1].getId();
 		Ext.QuickTips.init()		
-		var tt1 = new Ext.ToolTip({
+		var tt1 = Ext.create('Ext.tip.ToolTip',{
 			target: Ext.get('radio1'),
 			title: 'Forward Quarantined Messages to....'
 		});
 		
-        this.emailAddressField = new Ext.form.TextField({
+        this.emailAddressField = Ext.create('Ext.form.TextField',{
             fieldLabel : i18n._( "Address" ),
             name : "email_address",
             value : inboxDetails.forwardAddress,
 			cls:'quarantine-left-indented'
-			}
-			);
+        });
 
         items.push( this.emailAddressField );
-		this.changeAddressButton = new Ext.Button({
+		this.changeAddressButton = Ext.create('Ext.button.Button',{
             text : "Change Address",
             handler: function() {
                 var email = this.emailAddressField.getValue();
-                quarantine.rpc.setRemap( this.setRemap.createDelegate( this ), 
+                quarantine.rpc.setRemap( Ext.bind(this.setRemap,this ), 
                                          inboxDetails.token, email );
             },
 			cls:'quarantine-change-address',
@@ -140,20 +129,20 @@ Ung.Remaps.prototype = {
             hideLabel : true,
 			cls:'quarantine-received-messages',
             listeners : {
-                check : {
-                    fn : function(elem, checked) {
+                "change" : {
+                    fn : Ext.bind(function(elem, checked) {
                         if (checked) this.setHasForwardAddress( false );
-                    }.createDelegate(this)
+                    },this)
                  }
             }});
-		var tt2 = new Ext.ToolTip({
+		var tt2 = Ext.create('Ext.tip.ToolTip',{
 			target: Ext.get('radio2'),
 			title: 'Forward Quarantined Messages to....',
 			html:'Forward Quarantined messages to ...'
 		});
         items.push( this.grid );
 
-        this.panel = new Ext.Panel( {
+        this.panel = Ext.create('Ext.panel.Panel',{
             title : i18n._("Forward or Receive Quarantines" ),
             items : items });
 
@@ -199,7 +188,7 @@ Ung.Remaps.prototype = {
             if ( count != result.length ) {
                 count = count - result.length;
                 var message = i18n.pluralise( i18n._( "Delete one Remap" ), 
-                                              String.format( i18n._( "Deleted {0} Remaps" ), count ),
+                                              Ext.String.format( i18n._( "Deleted {0} Remaps" ), count ),
                                               count );
                 quarantine.showMessage( message );
             }
@@ -213,7 +202,7 @@ Ung.Remaps.prototype = {
     updateActionItems : function()
     {
         var count = this.selectionModel.getCount();
-        var text = i18n.pluralise( i18n._( "Delete one Addressess" ), String.format( i18n._( "Delete {0} Addresses" ), count ), count );
+        var text = i18n.pluralise( i18n._( "Delete one Addressess" ), Ext.String.format( i18n._( "Delete {0} Addresses" ), count ), count );
         if ( count > 0 ) {
             this.deleteButton.setDisabled( false );
         } else {

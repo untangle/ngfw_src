@@ -72,14 +72,16 @@ if (!reportsAvailable || !reportingEnabled) {
     <META content="IE=7.0000" http-equiv="X-UA-Compatible"/>
     <title>Reports</title>
     <style type="text/css">
-        @import "/ext/resources/css/ext-all.css?s=<%=buildStamp%>";
+     @import "/ext4/resources/css/ext-all-gray.css?s=${buildStamp}";
+	 @import "/ext4/examples/ux/css/CheckHeader.css?s=${buildStamp}";
     </style>
-    <script type="text/javascript" src="/ext/source/core/Ext.js?s=<%=buildStamp%>"></script>
-    <script type="text/javascript" src="/ext/source/adapter/ext-base.js?s=<%=buildStamp%>"></script>
-    <script type="text/javascript" src="/ext/ext-all-debug.js?s=<%=buildStamp%>"></script>
+    <script type="text/javascript" src="/ext4/builds/ext-core-debug.js?s=${buildStamp}"></script>
+    <script type="text/javascript" src="/ext4/ext-all-debug.js?s=${buildStamp}"></script>
+	<script type="text/javascript" src="/ext4/examples/ux/data/PagingMemoryProxy.js?s=${buildStamp}"></script>
+	<script type="text/javascript" src="/ext4/examples/ux/CheckColumn.js?s=${buildStamp}"></script>
+
 
     <script type="text/javascript" src="/jsonrpc/jsonrpc.js?s=<%=buildStamp%>"></script>
-
     <script type="text/javascript" src="/script/i18n.js?s=<%=buildStamp%>"></script>
     <script type="text/javascript" src="script/components.js?s=<%=buildStamp%>"></script>
     <script type="text/javascript" src="script/reports-components.js?s=<%=buildStamp%>"></script>
@@ -87,6 +89,7 @@ if (!reportsAvailable || !reportingEnabled) {
 
     <script type="text/javascript">
         <%
+          
         String selectedApplication = request.getParameter("aname");
         String reportsDate = request.getParameter("rdate");
         String numDays = request.getParameter("duration");
@@ -94,7 +97,7 @@ if (!reportsAvailable || !reportingEnabled) {
         String drillValue= request.getParameter("drillValue");
         String args = "";
         if(selectedApplication != null && reportsDate != null && numDays != null){
-            args = "selectedNode:{attributes:{name:'"+selectedApplication+"',text:'Summary'}},printView:true,selectedApplication:'"+selectedApplication+ "',reportsDate:{javaclass:'java.util.Date',time:"+reportsDate +"},numDays:"+numDays+",drillType:'" + drillType +"',drillValue:'" + drillValue +"'";
+            args = "selectedNode:{data:{id:'"+selectedApplication+"',text:'Summary'}},printView:true,selectedApplication:'"+selectedApplication+ "',reportsDate:{javaclass:'java.util.Date',time:"+reportsDate +"},numDays:"+numDays+",drillType:'" + drillType +"',drillValue:'" + drillValue +"'";
         }
         %>
         Ext.onReady(function(){
@@ -103,6 +106,7 @@ if (!reportsAvailable || !reportingEnabled) {
     </script>
  </head>
 <body>
+
 <div id="base">
 </div>
 <div id="window-container"></div>

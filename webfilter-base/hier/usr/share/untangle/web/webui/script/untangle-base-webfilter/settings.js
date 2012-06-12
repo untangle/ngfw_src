@@ -2,31 +2,24 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
     Ung.hasResource["Ung.BaseWebFilter"] = true;
     Ung.NodeWin.registerClassName('untangle-base-webfilter', 'Ung.BaseWebFilter');
 
-    Ung.BaseWebFilter = Ext.extend(Ung.NodeWin, {
+    Ext.define('Ung.BaseWebFilter', {
+		extend:'Ung.NodeWin',
         gridExceptions : null,
         gridEventLog : null,
         // called when the component is rendered
         initComponent : function() {
+        	this.getSettings();
             this.genericRuleFields = Ung.Util.getGenericRuleFields(this);
-            Ung.Util.generateListIds(this.getSettings().categories.list);
-            Ung.Util.generateListIds(this.getSettings().blockedUrls.list);
-            Ung.Util.generateListIds(this.getSettings().blockedExtensions.list);
-            Ung.Util.generateListIds(this.getSettings().blockedMimeTypes.list);
-            Ung.Util.generateListIds(this.getSettings().passedUrls.list);
-            Ung.Util.generateListIds(this.getSettings().passedClients.list);
             this.buildBlockLists();
             this.buildPassLists();
             this.buildEventLog();
             // builds the tab panel with the tabs
             this.buildTabPanel([this.panelBlockLists, this.panelPassLists, this.gridEventLog]);
-            // keep initial base settings
-            this.initialSettings = Ung.Util.clone(this.getSettings());
-            
             Ung.BaseWebFilter.superclass.initComponent.call(this);
         },
         // Block Lists Panel
         buildBlockLists : function() {
-            this.panelBlockLists = new Ext.Panel({
+            this.panelBlockLists = Ext.create('Ext.panel.Panel',{
                 name : 'Block Lists',
                 helpSource : 'block_lists',
                 // private fields
@@ -37,7 +30,7 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                 parentId : this.getId(),
 
                 title : this.i18n._('Block Lists'),
-                layout : "form",
+                //layout : "form",
                 cls: 'ung-panel',
                 autoScroll : true,
                 defaults : {
@@ -51,36 +44,36 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                         xtype : "button",
                         name : "manage_categories",
                         text : this.i18n._("Edit Categories"),
-                        handler : function() {
+                        handler : Ext.bind(function() {
                             this.panelBlockLists.onManageCategories();
-                        }.createDelegate(this)
+                        },this)
                     }]
                 },{
                     items : [{
                         xtype : "button",
                         name : 'manage_sites',
                         text : this.i18n._("Edit Sites"),
-                        handler : function() {
+                        handler : Ext.bind(function() {
                             this.panelBlockLists.onManageBlockedUrls();
-                        }.createDelegate(this)
+                        },this)
                     }]
                 },{
                     items : [{
                         xtype : "button",
                         name : "manage_file_types",
                         text : this.i18n._("Edit File Types"),
-                        handler : function() {
+                        handler : Ext.bind(function() {
                             this.panelBlockLists.onManageBlockedExtensions();
-                        }.createDelegate(this)
+                        },this)
                     }]
                 },{
                     items : [{
                         xtype : "button",
                         name : "manage_mime_types",
                         text : this.i18n._("Edit MIME Types"),
-                        handler : function() {
+                        handler : Ext.bind(function() {
                             this.panelBlockLists.onManageBlockedMimeTypes();
-                        }.createDelegate(this)
+                        },this)
                     }]
                 },{
                     name : "fieldset_miscellaneous",
@@ -89,12 +82,12 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                         boxLabel : this.i18n._("Block pages from IP only hosts"),
                         hideLabel : true,
                         name : 'Block IPHost',
-                        checked : this.getSettings().blockAllIpHosts,
+                        checked : this.settings.blockAllIpHosts,
                         listeners : {
-                            "check" : {
-                                fn : function(elem, checked) {
-                                    this.getSettings().blockAllIpHosts = checked;
-                                }.createDelegate(this)
+                            "change" : {
+                                fn : Ext.bind(function(elem, checked) {
+                                    this.settings.blockAllIpHosts = checked;
+                                },this)
                             }
                         }
                     },{
@@ -103,22 +96,19 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                         mode : "local",
                         fieldLabel : this.i18n._("Unblock"),
                         name : "user_bypass",
-                        store : new Ext.data.SimpleStore({
-                            fields : ['unblockModeValue', 'unblockModeName'],
-                            data : [["None", this.i18n._("None")],
+                        store : [["None", this.i18n._("None")],
                                     ["Host", this.i18n._("Temporary")],
-                                    ["Global", this.i18n._("Permanent and Global")]]
-                        }),
+                                    ["Global", this.i18n._("Permanent and Global")]],
                         displayField : "unblockModeName",
                         valueField : "unblockModeValue",
-                        value : this.getSettings().unblockMode,
+                        value : this.settings.unblockMode,
                         triggerAction : "all",
                         listClass : 'x-combo-list-small',
                         listeners : {
                             "change" : {
-                                fn : function(elem, newValue) {
-                                    this.getSettings().unblockMode = newValue;
-                                }.createDelegate(this)
+                                fn : Ext.bind(function(elem, newValue) {
+                                    this.settings.unblockMode = newValue;
+                                },this)
                             }
                         }
                     }]
@@ -128,44 +118,43 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                     if (!this.winCategories) {
                         var settingsCmp = Ext.getCmp(this.parentId);
                         settingsCmp.buildCategories();
-                        this.winCategories = new Ung.ManageListWindow({
+                        this.winCategories = Ext.create('Ung.ManageListWindow',{
                             breadcrumbs : [{
                                 title : i18n._(rpc.currentPolicy.name),
-                                action : function() {
+                                action : Ext.bind(function() {
                                     Ung.Window.cancelAction(
                                        this.gridCategories.isDirty() || this.isDirty(),
-                                       function() {
+                                       Ext.bind(function() {
                                             this.panelBlockLists.winCategories.closeWindow();
                                             this.closeWindow();
-                                       }.createDelegate(this)
+                                       },this)
                                     );
-                                }.createDelegate(settingsCmp)
+                                },settingsCmp)
                             }, {
                                 title : settingsCmp.node.displayName,
-                                action : function() {
+                                action : Ext.bind(function() {
                                     this.panelBlockLists.winCategories.cancelAction();
-                                }.createDelegate(settingsCmp)
+                                },settingsCmp)
                             }, {
                                 title : settingsCmp.i18n._("Categories")
                             }],
                             grid : settingsCmp.gridCategories,
                             applyAction : function(callback){
                                 Ext.MessageBox.wait(i18n._("Saving..."), i18n._("Please wait"));
-                                settingsCmp.gridCategories.getGridSaveList(function(saveList) {
-                                    this.getRpcNode().setCategories(function(result, exception) {
+                                settingsCmp.gridCategories.getGridSaveList(Ext.bind(function(saveList) {
+                                    this.getRpcNode().setCategories(Ext.bind(function(result, exception) {
                                         if(Ung.Util.handleException(exception)) return;
-                                        this.getRpcNode().getCategories(function(result, exception) {
+                                        this.getRpcNode().getCategories(Ext.bind(function(result, exception) {
                                             Ext.MessageBox.hide();
                                             if(Ung.Util.handleException(exception)) return;
-                                            this.gridCategories.reloadGrid({data:result.list});
-                                            this.getSettings().categories = result;
-                                            this.initialSettings.categories = result;
+                                            this.settings.categories = result;
+                                            this.gridCategories.clearDirty();
                                             if(callback != null) {
                                                 callback();
                                             }
-                                        }.createDelegate(this));
-                                    }.createDelegate(this), saveList);
-                                }.createDelegate(settingsCmp));
+                                        },this));
+                                    },this), saveList);
+                                },settingsCmp));
                             }                                                        
                         });
                     }
@@ -175,45 +164,44 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                     if (!this.winBlockedUrls) {
                         var settingsCmp = Ext.getCmp(this.parentId);
                         settingsCmp.buildBlockedUrls();
-                        this.winBlockedUrls = new Ung.ManageListWindow({
+                        this.winBlockedUrls = Ext.create('Ung.ManageListWindow',{
                             breadcrumbs : [{
                                 title : i18n._(rpc.currentPolicy.name),
-                                action : function() {
+                                action : Ext.bind(function() {
                                     Ung.Window.cancelAction(
                                        this.gridBlockedUrls.isDirty() || this.isDirty(),
-                                       function() {
+                                       Ext.bind(function() {
                                             this.panelBlockLists.winBlockedUrls.closeWindow();
                                             this.closeWindow();
-                                       }.createDelegate(this)
+                                       },this)
                                     );
-                                }.createDelegate(settingsCmp)
+                                },settingsCmp)
                             }, {
                                 title : settingsCmp.node.displayName,
-                                action : function() {
+                                action : Ext.bind(function() {
                                     this.panelBlockLists.winBlockedUrls.cancelAction();
-                                }.createDelegate(settingsCmp)
+                                },settingsCmp)
                             }, {
                                 title : settingsCmp.i18n._("Sites")
                             }],
                             grid : settingsCmp.gridBlockedUrls,
                             applyAction : function(callback){
                                 Ext.MessageBox.wait(i18n._("Saving..."), i18n._("Please wait"));
-                                settingsCmp.gridBlockedUrls.getGridSaveList(function(saveList) {
+                                settingsCmp.gridBlockedUrls.getGridSaveList(Ext.bind(function(saveList) {
                                     this.alterUrls(saveList);
-                                    this.getRpcNode().setBlockedUrls(function(result, exception) {
+                                    this.getRpcNode().setBlockedUrls(Ext.bind(function(result, exception) {
                                         if(Ung.Util.handleException(exception)) return;
-                                        this.getRpcNode().getBlockedUrls(function(result, exception) {
+                                        this.getRpcNode().getBlockedUrls(Ext.bind(function(result, exception) {
                                             Ext.MessageBox.hide();
                                             if(Ung.Util.handleException(exception)) return;
-                                            this.gridBlockedUrls.reloadGrid({data:result.list});
-                                            this.getSettings().blockedUrls = result;
-                                            this.initialSettings.blockedUrls = result;
+                                            this.settings.blockedUrls = result;
+                                            this.gridBlockedUrls.clearDirty();
                                             if(callback != null) {
                                                 callback();
                                             }
-                                        }.createDelegate(this));
-                                    }.createDelegate(this), saveList);
-                                }.createDelegate(settingsCmp));
+                                        },this));
+                                    },this), saveList);
+                                },settingsCmp));
                             }                                                        
                         });
                     }
@@ -223,45 +211,44 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                     if (!this.winBlockedExtensions) {
                         var settingsCmp = Ext.getCmp(this.parentId);
                         settingsCmp.buildBlockedExtensions();
-                        this.winBlockedExtensions = new Ung.ManageListWindow({
+                        this.winBlockedExtensions = Ext.create('Ung.ManageListWindow',{
                             breadcrumbs : [{
                                 title : i18n._(rpc.currentPolicy.name),
-                                action : function() {
+                                action : Ext.bind(function() {
                                     Ung.Window.cancelAction(
                                        this.gridBlockedExtensions.isDirty() || this.isDirty(),
-                                       function() {
+                                       Ext.bind(function() {
                                             this.panelBlockLists.winBlockedExtensions.closeWindow();
                                             this.closeWindow();
-                                       }.createDelegate(this)
+                                       },this)
                                     );
-                                }.createDelegate(settingsCmp)
+                                },settingsCmp)
                             }, {
                                 title : settingsCmp.node.displayName,
-                                action : function() {
+                                action : Ext.bind(function() {
                                     this.panelBlockLists.winBlockedExtensions.cancelAction();
-                                }.createDelegate(settingsCmp)
+                                },settingsCmp)
                             }, {
                                 title : settingsCmp.i18n._("File Types")
                             }],
                             grid : settingsCmp.gridBlockedExtensions,
                             applyAction : function(callback){
                                 Ext.MessageBox.wait(i18n._("Saving..."), i18n._("Please wait"));
-                                settingsCmp.gridBlockedExtensions.getGridSaveList(function(saveList) {
-                                    this.getRpcNode().setBlockedExtensions(function(result, exception) {
+                                settingsCmp.gridBlockedExtensions.getGridSaveList(Ext.bind(function(saveList) {
+                                    this.getRpcNode().setBlockedExtensions(Ext.bind(function(result, exception) {
                                         Ext.MessageBox.hide();
                                         if(Ung.Util.handleException(exception)) return;
-                                        this.getRpcNode().getBlockedExtensions(function(result, exception) {
+                                        this.getRpcNode().getBlockedExtensions(Ext.bind(function(result, exception) {
                                             Ext.MessageBox.hide();
                                             if(Ung.Util.handleException(exception)) return;
-                                            this.gridBlockedExtensions.reloadGrid({data:result.list});
-                                            this.getSettings().blockedExtensions = result;
-                                            this.initialSettings.blockedExtensions = result;
+                                            this.settings.blockedExtensions = result;
+                                            this.gridBlockedExtensions.clearDirty();
                                             if(callback != null) {
                                                 callback();
                                             }
-                                        }.createDelegate(this));
-                                    }.createDelegate(this), saveList);
-                                }.createDelegate(settingsCmp));
+                                        },this));
+                                    },this), saveList);
+                                },settingsCmp));
                             }                                                        
                         });
                     }
@@ -271,45 +258,44 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                     if (!this.winBlockedMimeTypes) {
                         var settingsCmp = Ext.getCmp(this.parentId);
                         settingsCmp.buildBlockedMimeTypes();
-                        this.winBlockedMimeTypes = new Ung.ManageListWindow({
+                        this.winBlockedMimeTypes = Ext.create('Ung.ManageListWindow',{
                             breadcrumbs : [{
                                 title : i18n._(rpc.currentPolicy.name),
-                                action : function() {
+                                action : Ext.bind(function() {
                                     Ung.Window.cancelAction(
                                        this.gridBlockedMimeTypes.isDirty() || this.isDirty(),
-                                       function() {
+                                       Ext.bind(function() {
                                             this.panelBlockLists.winBlockedMimeTypes.closeWindow();
                                             this.closeWindow();
-                                       }.createDelegate(this)
+                                       },this)
                                     );
-                                }.createDelegate(settingsCmp)
+                                },settingsCmp)
                             }, {
                                 title : settingsCmp.node.displayName,
-                                action : function() {
+                                action : Ext.bind(function() {
                                     this.panelBlockLists.winBlockedMimeTypes.cancelAction();
-                                }.createDelegate(settingsCmp)
+                                },settingsCmp)
                             }, {
                                 title : settingsCmp.i18n._("MIME Types")
                             }],
                             grid : settingsCmp.gridBlockedMimeTypes,
                             applyAction : function(callback){
                                 Ext.MessageBox.wait(i18n._("Saving..."), i18n._("Please wait"));
-                                settingsCmp.gridBlockedMimeTypes.getGridSaveList(function(saveList) {
-                                    this.getRpcNode().setBlockedMimeTypes(function(result, exception) {
+                                settingsCmp.gridBlockedMimeTypes.getGridSaveList(Ext.bind(function(saveList) {
+                                    this.getRpcNode().setBlockedMimeTypes(Ext.bind(function(result, exception) {
                                         Ext.MessageBox.hide();
                                         if(Ung.Util.handleException(exception)) return;
-                                        this.getRpcNode().getBlockedMimeTypes(function(result, exception) {
+                                        this.getRpcNode().getBlockedMimeTypes(Ext.bind(function(result, exception) {
                                             Ext.MessageBox.hide();
                                             if(Ung.Util.handleException(exception)) return;
-                                            this.gridBlockedMimeTypes.reloadGrid({data:result.list});
-                                            this.getSettings().blockedMimeTypes = result;
-                                            this.initialSettings.blockedMimeTypes = result;
+                                            this.settings.blockedMimeTypes = result;
+                                            this.gridBlockedMimeTypes.clearDirty();
                                             if(callback != null) {
                                                 callback();
                                             }
-                                        }.createDelegate(this));
-                                    }.createDelegate(this), saveList);
-                                }.createDelegate(settingsCmp));
+                                        },this));
+                                    },this), saveList);
+                                },settingsCmp));
                             }
                         });
                     }
@@ -323,91 +309,103 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
         },
         // Block Categories
         buildCategories : function() {
-            var blockColumn = new Ext.grid.CheckColumn({
-                header : this.i18n._("Block"),
-                dataIndex : 'blocked',
-                fixed : true,
-                changeRecord : function(record) {
-                    Ext.grid.CheckColumn.prototype.changeRecord.call(this, record);
-                    var blocked = record.get(this.dataIndex);
-                    if (blocked) {
-                        record.set('flagged', true);
-                    }
-                }
-            });
-            var flagColumn = new Ext.grid.CheckColumn({
-                header : this.i18n._("Flag"),
-                dataIndex : 'flagged',
-                fixed : true,
-                tooltip : this.i18n._("Flag as Violation")
-            });
-            this.gridCategories = new Ung.EditorGrid({
+
+		this.gridCategories = Ext.create('Ung.EditorGrid',{
                 name : 'Categories',
                 settingsCmp : this,
                 hasAdd : false,
                 hasDelete : false,
                 title : this.i18n._("Categories"),
-                data: this.getSettings().categories.list,
+                dataProperty: "categories",
                 recordJavaClass : "com.untangle.uvm.node.GenericRule",
                 fields : this.genericRuleFields,
                 paginated : false,
                 columns : [{
-                    id : 'name',
-                    header : this.i18n._("category"),
+                    header : this.i18n._("Category"),
                     width : 200,
                     dataIndex : 'name'
-                }, blockColumn, flagColumn, {
-                    id : 'description',
-                    header : this.i18n._("description"),
-                    width : 200,
+                }, 
+				{
+					xtype:'checkcolumn',
+					width:55,
+					header : this.i18n._("Block"),
+					dataIndex : 'blocked',
+					fixed : true,
+					changeRecord : function(record) {
+						Ext.ux.CheckColumn.prototype.changeRecord.call(this, record);
+						var blocked = record.get(this.dataIndex);
+						if (blocked) {
+							record.set('flagged', true);
+						}
+					}
+				},
+				{
+					xtype:'checkcolumn',
+					width:55,
+					header : this.i18n._("Flag"),
+					dataIndex : 'flagged',
+					fixed : true,
+					tooltip : this.i18n._("Flag as Violation")
+				},
+				{
+                    header : this.i18n._("Description"),
+                    flex:1,
+                    width : 400,
                     dataIndex : 'description',
-                    editor : new Ext.form.TextField({
+					editor:{
+						xtype:'textfield',
                         allowBlank : false
-                    })
+                    }
                 }],
                 sortField : 'name',
                 columnsDefaultSortable : true,
-                autoExpandColumn : 'description',
-                plugins : [blockColumn, flagColumn],
-                rowEditorInputLines : [new Ext.form.TextField({
-                    name : "Category",
-                    dataIndex : "name",
-                    fieldLabel : this.i18n._("Category"),
-                    allowBlank : false,
-                    width : 200,
-                    disabled : true,
-                    ctCls: "fixed-pos"
-                }), new Ext.form.Checkbox({
-                    name : "Block",
-                    dataIndex : "blocked",
-                    fieldLabel : this.i18n._("Block"),
-                    listeners : {
-                        "check" : {
-                            fn : function(elem, checked) {
-                                var rowEditor = this.gridCategories.rowEditor;
-                                if (checked) {
-                                    rowEditor.inputLines[2].setValue(true);
-                                }
-                            }.createDelegate(this)
-                        }
-                    }
-                }), new Ext.form.Checkbox({
-                    name : "Flag",
-                    dataIndex : "flagged",
-                    fieldLabel : this.i18n._("Flag"),
-                    tooltip : this.i18n._("Flag as Violation")
-                }), new Ext.form.TextArea({
-                    name : "Description",
-                    dataIndex : "description",
-                    fieldLabel : this.i18n._("Description"),
-                    width : 200,
-                    height : 60
-                })]
+                rowEditorInputLines : [
+					{
+						xtype:'textfield',
+						name : "Category",
+						dataIndex : "name",
+						fieldLabel : this.i18n._("Category"),
+						allowBlank : false,
+						width : 400,
+						disabled : true,
+						//ctCls: "fixed-pos"
+					},
+					{
+						xtype:'checkbox',
+						name : "Block",
+						dataIndex : "blocked",
+						fieldLabel : this.i18n._("Block"),
+						listeners : {
+							"change" : {
+								fn : Ext.bind(function(elem, checked) {
+										var rowEditor = this.gridCategories.rowEditor;
+										if (checked) {
+											rowEditor.inputLines[2].setValue(true);
+										}
+									},this)
+								}
+						}
+                    },
+					{
+						xtype:'checkbox',
+						name : "Flag",
+						dataIndex : "flagged",
+						fieldLabel : this.i18n._("Flag"),
+						tooltip : this.i18n._("Flag as Violation")
+					}, 
+					{
+						xtype:'textarea',
+						name : "Description",
+						dataIndex : "description",
+						fieldLabel : this.i18n._("Description"),
+						width : 400,
+						height : 60
+					}]
             });
         },
         // Block Sites
         buildBlockedUrls : function() {
-            var urlValidator = function(fieldValue) {
+            var urlValidator = Ext.bind(function(fieldValue) {
                 if (fieldValue.indexOf("https://") == 0) {
                     return this.i18n._("\"URL\" specified cannot be blocked because it uses secure http (https)");
                 }
@@ -431,20 +429,9 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                     return this.i18n._("Invalid \"URL\" specified");
                 }
                 return true;
-            }.createDelegate(this);
-            var blockColumn = new Ext.grid.CheckColumn({
-                header : this.i18n._("Block"),
-                dataIndex : 'blocked',
-                fixed : true
-            });
-            var flagColumn = new Ext.grid.CheckColumn({
-                header : this.i18n._("Flag"),
-                dataIndex : 'flagged',
-                fixed : true,
-                tooltip : this.i18n._("Flag as Violation")
-            });
+            },this);
 
-            this.gridBlockedUrls = new Ung.EditorGrid({
+            this.gridBlockedUrls = Ext.create('Ung.EditorGrid',{
                 name : 'Sites',
                 settingsCmp : this,
                 emptyRow : {
@@ -454,73 +441,85 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                     "description" : this.i18n._("[no description]")
                 },
                 title : this.i18n._("Sites"),
-                data: this.getSettings().blockedUrls.list,
+                dataProperty: "blockedUrls",
                 recordJavaClass : "com.untangle.uvm.node.GenericRule",
                 fields : this.genericRuleFields,
                 columns : [{
-                    id : 'string',
-                    header : this.i18n._("site"),
+                    header : this.i18n._("Site"),
                     width : 200,
                     dataIndex : 'string',
-                    editor : new Ext.form.TextField({
-                        allowBlank : false,
+					editor: {
+						xtype:'textfield',
+						allowBlank : false,
                         validator : urlValidator,
                         blankText : this.i18n._("Invalid \"URL\" specified")
-                    })
-                }, blockColumn, flagColumn, {
-                    id : 'description',
-                    header : this.i18n._("description"),
+					}
+                },
+				{
+					xtype:'checkcolumn',
+					width:55,
+					header : this.i18n._("Block"),
+					dataIndex : 'blocked',
+					fixed : true
+				},
+				{ 
+					xtype:'checkcolumn',
+					width:55,
+					header : this.i18n._("Flag"),
+					dataIndex : 'flagged',
+					fixed : true,
+					tooltip : this.i18n._("Flag as Violation")
+				},
+				{
+                    header : this.i18n._("Description"),
                     width : 200,
+                    flex:1,
                     dataIndex : 'description',
-                    editor : new Ext.form.TextField({
-                        allowBlank : false
-                    })
+					editor: {
+						xtype:'textfield',
+						allowBlank:false
+					}
                 }],
                 sortField : 'string',
                 columnsDefaultSortable : true,
-                autoExpandColumn : 'description',
-                plugins : [blockColumn, flagColumn],
-                rowEditorInputLines : [new Ext.form.TextField({
-                    name : "Site",
-                    dataIndex : "string",
-                    fieldLabel : this.i18n._("Site"),
-                    allowBlank : false,
-                    width : 200,
-                    validator : urlValidator,
-                    blankText : this.i18n._("Invalid \"URL\" specified")
-                }), new Ext.form.Checkbox({
-                    name : "Block",
-                    dataIndex : "blocked",
-                    fieldLabel : this.i18n._("Block")
-                }), new Ext.form.Checkbox({
-                    name : "Flag",
-                    dataIndex : "flagged",
-                    fieldLabel : this.i18n._("Flag"),
-                    tooltip : this.i18n._("Flag as Violation")
-                }), new Ext.form.TextArea({
-                    name : "Description",
-                    dataIndex : "description",
-                    fieldLabel : this.i18n._("Description"),
-                    width : 200,
-                    height : 60
-                })]
+                rowEditorInputLines : [
+					{
+						xtype:'textfield',
+						name : "Site",
+						dataIndex : "string",
+						fieldLabel : this.i18n._("Site"),
+						allowBlank : false,
+						width : 400,
+						validator : urlValidator,
+						blankText : this.i18n._("Invalid \"URL\" specified")
+					},
+					{
+						xtype:'checkbox',
+						name : "Block",
+						dataIndex : "blocked",
+						fieldLabel : this.i18n._("Block")
+					},
+					{
+						xtype:'checkbox',
+						name : "Flag",
+						dataIndex : "flagged",
+						fieldLabel : this.i18n._("Flag"),
+						tooltip : this.i18n._("Flag as Violation")
+					},
+					{
+						xtype:'textarea',
+						name : "Description",
+						dataIndex : "description",
+						fieldLabel : this.i18n._("Description"),
+						width : 400,
+						height : 60
+					}]
             });
         },
         // Block File Types
         buildBlockedExtensions : function() {
-            var blockColumn = new Ext.grid.CheckColumn({
-                header : this.i18n._("Block"),
-                dataIndex : 'blocked',
-                fixed : true
-            });
-            var flagColumn = new Ext.grid.CheckColumn({
-                header : this.i18n._("Flag"),
-                dataIndex : 'flagged',
-                fixed : true,
-                tooltip : this.i18n._("Flag as Violation")
-            });
 
-            this.gridBlockedExtensions = new Ung.EditorGrid({
+            this.gridBlockedExtensions = Ext.create('Ung.EditorGrid',{
                 name : 'File Types',
                 settingsCmp : this,
                 emptyRow : {
@@ -531,82 +530,97 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                     "description" : this.i18n._("[no description]")
                 },
                 title : this.i18n._("File Types"),
-                data : this.getSettings().blockedExtensions.list,
+                dataProperty : "blockedExtensions",
                 recordJavaClass : "com.untangle.uvm.node.GenericRule",
                 fields : this.genericRuleFields,
                 columns : [{
-                    id : 'string',
-                    header : this.i18n._("file type"),
+                    header : this.i18n._("File Type"),
                     width : 200,
                     dataIndex : 'string',
-                    editor : new Ext.form.TextField({
-                        allowBlank : false
-                    })
-                }, blockColumn, flagColumn, {
-                    id : 'category',
-                    header : this.i18n._("category"),
+					editor: {
+						xtype:'textfield',
+						allowBlank:false
+					}
+                }, 
+				{
+					xtype:'checkcolumn',
+					width:55,
+					header : this.i18n._("Block"),
+					dataIndex : 'blocked',
+					fixed : true
+				},
+				{ 
+					xtype:'checkcolumn',
+					width:55,
+					header : this.i18n._("Flag"),
+					dataIndex : 'flagged',
+					fixed : true,
+					tooltip : this.i18n._("Flag as Violation")
+				},
+				{
+                    header : this.i18n._("Category"),
                     width : 200,
                     dataIndex : 'category',
-                    editor : new Ext.form.TextField({
-                        allowBlank : false
-                    })
-                }, {
-                    id : 'description',
-                    header : this.i18n._("description"),
+					editor: {
+						xtype:'textfield',
+						allowBlank:false
+					}
+                }, 
+				{
+                    header : this.i18n._("Description"),
                     width : 200,
                     dataIndex : 'description',
-                    editor : new Ext.form.TextField({
-                        allowBlank : false
-                    })
+                    flex:1,
+					editor: {
+						xtype:'textfield',
+						allowBlank:false
+					}
                 }],
                 sortField : 'string',
                 columnsDefaultSortable : true,
-                autoExpandColumn : 'description',
-                plugins : [blockColumn, flagColumn],
-                rowEditorInputLines : [new Ext.form.TextField({
+                rowEditorInputLines : [
+				{
+					xtype:'textfield',
                     name : "File Type",
                     dataIndex : "string",
                     fieldLabel : this.i18n._("File Type"),
                     allowBlank : false,
-                    width : 100
-                }), new Ext.form.Checkbox({
+                    width : 300
+                },
+				{
+					xtype:'checkbox',
                     name : "Block",
                     dataIndex : "blocked",
                     fieldLabel : this.i18n._("Block")
-                }), new Ext.form.Checkbox({
+                },
+				{
+					xtype:'checkbox',
                     name : "Flag",
                     dataIndex : "flagged",
                     fieldLabel : this.i18n._("Flag"),
                     tooltip : this.i18n._("Flag as Violation")
-                }), new Ext.form.TextArea({
+                },
+				{
+					xtype:'textarea',
                     name : "Category",
                     dataIndex : "category",
                     fieldLabel : this.i18n._("Category"),
-                    width : 100
-                }), new Ext.form.TextArea({
+                    width : 300
+                },
+				{
+					xtype:'textarea',
                     name : "Description",
                     dataIndex : "description",
                     fieldLabel : this.i18n._("Description"),
-                    width : 200,
+                    width : 400,
                     height : 60
-                })]
+                }]
             });
         },
         // Block MIME Types
         buildBlockedMimeTypes : function() {
-            var blockColumn = new Ext.grid.CheckColumn({
-                header : this.i18n._("Block"),
-                dataIndex : 'blocked',
-                fixed : true
-            });
-            var flagColumn = new Ext.grid.CheckColumn({
-                header : this.i18n._("Flag"),
-                dataIndex : 'flagged',
-                fixed : true,
-                tooltip : this.i18n._("Flag as Violation")
-            });
 
-            this.gridBlockedMimeTypes = new Ung.EditorGrid({
+            this.gridBlockedMimeTypes = Ext.create('Ung.EditorGrid',{
                 name : 'MIME Types',
                 settingsCmp : this,
                 emptyRow : {
@@ -619,70 +633,96 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                 title : this.i18n._("MIME Types"),
                 recordJavaClass : "com.untangle.uvm.node.GenericRule",
                 fields : this.genericRuleFields,
-                data : this.getSettings().blockedMimeTypes.list,
+                dataProperty: "blockedMimeTypes",
                 columns : [{
-                    id : 'string',
                     header : this.i18n._("MIME type"),
                     width : 200,
                     dataIndex : 'string',
-                    editor : new Ext.form.TextField({
-                        allowBlank : false
-                    })
-                }, blockColumn, flagColumn, {
-                    id : 'category',
-                    header : this.i18n._("category"),
+					editor: {
+						xtype:'textfield',
+						allowBlank:false
+					}
+                }, 
+				{ 
+					xtype:'checkcolumn',
+					width:55,
+					header : this.i18n._("Block"),
+					dataIndex : 'blocked',
+					fixed : true
+				},
+				{ 
+					xtype:'checkcolumn',
+					width:55,
+					header : this.i18n._("Flag"),
+					dataIndex : 'flagged',
+					fixed : true,
+					tooltip : this.i18n._("Flag as Violation")
+				}, 
+				{
+                    header : this.i18n._("Category"),
                     width : 100,
                     dataIndex : 'category',
-                    editor : new Ext.form.TextField({
-                        allowBlank : false
-                    })
-                }, {
-                    id : 'description',
-                    header : this.i18n._("description"),
+					editor: {
+						xtype:'textfield',
+						allowBlank:true
+					}
+                }, 
+				{
+                    header : this.i18n._("Description"),
                     width : 200,
+                    flex:1,
                     dataIndex : 'description',
-                    editor : new Ext.form.TextField({
-                        allowBlank : false
-                    })
+                    editor: {
+						xtype:'textfield',
+						allowBlank:false
+                    }
                 }],
                 sortField : 'string',
                 columnsDefaultSortable : true,
-                autoExpandColumn : 'description',
-                plugins : [blockColumn, flagColumn],
-                rowEditorInputLines : [new Ext.form.TextField({
+                rowEditorInputLines : [
+				{
+					xtype:'textfield',
                     name : "MIME Type",
                     dataIndex : "string",
                     fieldLabel : this.i18n._("MIME Type"),
                     allowBlank : false,
-                    width : 200
-                }), new Ext.form.Checkbox({
+                    width : 400
+                },
+				{
+					xtype:'checkbox',
                     name : "Block",
                     dataIndex : "blocked",
                     fieldLabel : this.i18n._("Block")
-                }), new Ext.form.Checkbox({
+                },
+				{
+					xtype:'checkbox',
                     name : "Flag",
                     dataIndex : "flagged",
                     fieldLabel : this.i18n._("Flag"),
                     tooltip : this.i18n._("Flag as Violation")
-                }), new Ext.form.TextArea({
+                },
+				{
+					xtype:'textarea',
                     name : "Category",
                     dataIndex : "category",
                     fieldLabel : this.i18n._("Category"),
-                    width : 100
-                }), new Ext.form.TextArea({
+                    width : 300
+                },
+				{
+					xtype:'textarea',
                     name : "Description",
                     dataIndex : "description",
                     fieldLabel : this.i18n._("Description"),
-                    width : 200,
+                    width : 400,
                     height : 60
-                })]
+                }]
             });
         },
 
         // Pass Lists Panel
         buildPassLists : function() {
-            this.panelPassLists = new Ext.Panel({
-                // private fields
+            this.panelPassLists = Ext.create('Ext.panel.Panel',{
+			// private fields
                 name : 'Pass Lists',
                 helpSource : 'pass_lists',
                 winPassedUrls : null,
@@ -690,31 +730,36 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                 parentId : this.getId(),
                 autoScroll : true,
                 title : this.i18n._('Pass Lists'),
-                layout : "form",
+                //layout : "form",
                 bodyStyle : 'padding:5px 5px 0px; 5px;',
                 defaults : {
                     xtype : 'fieldset',
                     autoHeight : true,
                     buttonAlign : 'left'
                 },
-                items : [{
-                    buttons : [{
-                        name : 'Sites manage list',
-                        text : this.i18n._("Edit Passed Sites"),
-                        handler : function() {
-                            this.panelPassLists.onManagePassedUrls();
-                        }.createDelegate(this)
-                    }]
-                }, {
-                    buttons : [{
-                        name : 'Client IP addresses manage list',
-                        text : this.i18n._("Edit Passed Client IPs"),
-                        handler : function() {
-                            this.panelPassLists.onManagePassedClients();
-                        }.createDelegate(this)
-                    }]
-                }],
-
+                items : [
+					{
+						xtype:'fieldset',
+						items:{
+							xtype:'button',
+							name : 'Sites manage list',
+							text : this.i18n._("Edit Passed Sites"),
+							handler : Ext.bind(function() {
+								this.panelPassLists.onManagePassedUrls();
+							},this)
+						}
+					},
+					{
+						xtype:'fieldset',
+						items: {
+							xtype:'button',
+							name : 'Client IP addresses manage list',
+							text : this.i18n._("Edit Passed Client IPs"),
+							handler : Ext.bind(function() {
+								this.panelPassLists.onManagePassedClients();
+							},this)
+						}
+					}],
                 onManagePassedUrls : function() {
                     if (!this.winPassedUrls) {
                         var settingsCmp = Ext.getCmp(this.parentId);
@@ -722,43 +767,42 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                         this.winPassedUrls = new Ung.ManageListWindow({
                             breadcrumbs : [{
                                 title : i18n._(rpc.currentPolicy.name),
-                                action : function() {
+                                action : Ext.bind(function() {
                                     Ung.Window.cancelAction(
                                        this.gridPassedUrls.isDirty() || this.isDirty(),
-                                       function() {
+                                       Ext.bind(function() {
                                             this.panelPassLists.winPassedUrls.closeWindow();
                                             this.closeWindow();
-                                       }.createDelegate(this)
+                                       },this)
                                     );
-                                }.createDelegate(settingsCmp)
+                                },settingsCmp)
                             }, {
                                 title : settingsCmp.node.displayName,
-                                action : function() {
+                                action : Ext.bind(function() {
                                     this.panelPassLists.winPassedUrls.cancelAction();
-                                }.createDelegate(settingsCmp)
+                                },settingsCmp)
                             }, {
                                 title : settingsCmp.i18n._("Sites")
                             }],
                             grid : settingsCmp.gridPassedUrls,
                             applyAction : function(callback){
                                 Ext.MessageBox.wait(i18n._("Saving..."), i18n._("Please wait"));
-                                settingsCmp.gridPassedUrls.getGridSaveList(function(saveList) {
+                                settingsCmp.gridPassedUrls.getGridSaveList(Ext.bind(function(saveList) {
                                     this.alterUrls(saveList);
-                                    this.getRpcNode().setPassedUrls(function(result, exception) {
+                                    this.getRpcNode().setPassedUrls(Ext.bind(function(result, exception) {
                                         Ext.MessageBox.hide();
                                         if(Ung.Util.handleException(exception)) return;
-                                        this.getRpcNode().getPassedUrls(function(result, exception) {
+                                        this.getRpcNode().getPassedUrls(Ext.bind(function(result, exception) {
                                             Ext.MessageBox.hide();
                                             if(Ung.Util.handleException(exception)) return;
-                                            this.gridPassedUrls.reloadGrid({data:result.list});
-                                            this.getSettings().passedUrls = result;
-                                            this.initialSettings.passedUrls = result;
+                                            this.settings.passedUrls = result;
+                                            this.gridPassedUrls.clearDirty();
                                             if(callback != null) {
                                                 callback();
                                             }
-                                        }.createDelegate(this));
-                                    }.createDelegate(this), saveList);
-                                }.createDelegate(settingsCmp));
+                                        },this));
+                                    },this), saveList);
+                                },settingsCmp));
                             }                            
                         });
                     }
@@ -768,23 +812,23 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                     if (!this.winPassedClients) {
                         var settingsCmp = Ext.getCmp(this.parentId);
                         settingsCmp.buildPassedClients();
-                        this.winPassedClients = new Ung.ManageListWindow({
+                        this.winPassedClients = Ext.create('Ung.ManageListWindow',{
                             breadcrumbs : [{
                                 title : i18n._(rpc.currentPolicy.name),
-                                action : function() {
+                                action : Ext.bind(function() {
                                     Ung.Window.cancelAction(
                                        this.gridPassedClients.isDirty() || this.isDirty(),
-                                       function() {
+                                       Ext.bind(function() {
                                             this.panelPassLists.winPassedClients.closeWindow();
                                             this.closeWindow();
-                                       }.createDelegate(this)
+                                       },this)
                                     );
-                                }.createDelegate(settingsCmp)
+                                },settingsCmp)
                             }, {
                                 title : settingsCmp.node.displayName,
-                                action : function() {
+                                action : Ext.bind(function() {
                                     this.panelPassLists.winPassedClients.cancelAction();
-                                }.createDelegate(settingsCmp)
+                                },settingsCmp)
                             }, {
                                 title : settingsCmp.i18n._("Client IP addresses")
                             }],
@@ -792,22 +836,21 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                             applyAction : function(callback){
                                 var validateSaveList = settingsCmp.gridPassedClients.getSaveList();
                                 Ext.MessageBox.wait(i18n._("Saving..."), i18n._("Please wait"));
-                                settingsCmp.gridPassedClients.getGridSaveList(function(saveList) {
-                                    this.getRpcNode().setPassedClients(function(result, exception) {
+                                settingsCmp.gridPassedClients.getGridSaveList(Ext.bind(function(saveList) {
+                                    this.getRpcNode().setPassedClients(Ext.bind(function(result, exception) {
                                         Ext.MessageBox.hide();
                                         if(Ung.Util.handleException(exception)) return;
-                                        this.getRpcNode().getPassedClients(function(result, exception) {
+                                        this.getRpcNode().getPassedClients(Ext.bind(function(result, exception) {
                                             Ext.MessageBox.hide();
                                             if(Ung.Util.handleException(exception)) return;
-                                            this.gridPassedClients.reloadGrid({data:result.list});
-                                            this.getSettings().passedClients = result;
-                                            this.initialSettings.passedClients = result;
+                                            this.settings.passedClients = result;
+                                            this.gridPassedClients.clearDirty();
                                             if(callback != null) {
                                                 callback();
                                             }
-                                        }.createDelegate(this));
-                                    }.createDelegate(this), saveList);
-                                }.createDelegate(settingsCmp));
+                                        },this));
+                                    },this), saveList);
+                                },settingsCmp));
                             }                                                 
                         });
                     }
@@ -821,7 +864,7 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
         },
         // Passed Sites
         buildPassedUrls : function() {
-            var urlValidator = function(fieldValue) {
+            var urlValidator = Ext.bind(function(fieldValue) {
                 if (fieldValue.indexOf("https://") == 0) {
                     return this.i18n._("\"URL\" specified cannot be passed because it uses secure http (https)");
                 }
@@ -845,15 +888,10 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                     return this.i18n._("Invalid \"URL\" specified");
                 }
                 return true;
-            }.createDelegate(this);
+            },this);
 
-            var enabledColumn = new Ext.grid.CheckColumn({
-                header : this.i18n._("pass"),
-                dataIndex : 'enabled',
-                fixed : true
-            });
 
-            this.gridPassedUrls = new Ung.EditorGrid({
+            this.gridPassedUrls = Ext.create('Ung.EditorGrid',{
                 name : 'Sites',
                 settingsCmp : this,
                 emptyRow : {
@@ -862,63 +900,70 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                     "description" : this.i18n._("[no description]")
                 },
                 title : this.i18n._("Sites"),
-                data: this.getSettings().passedUrls.list,
+                dataProperty: "passedUrls",
                 recordJavaClass : "com.untangle.uvm.node.GenericRule",
                 fields : this.genericRuleFields,
                 columns : [{
-                    id : 'string',
-                    header : this.i18n._("site"),
+                    header : this.i18n._("Site"),
                     width : 200,
                     dataIndex : 'string',
-                    editor : new Ext.form.TextField({
-                        allowBlank : false,
+					editor: {
+						xtype:'textfield',
+						allowBlank : false,
                         validator : urlValidator,
                         blankText : this.i18n._("Invalid \"URL\" specified")
-                    })
-                }, enabledColumn, {
-                    id : 'description',
-                    header : this.i18n._("description"),
+					}
+                }, 
+				{
+					xtype:'checkcolumn',
+					width:55,
+					header : this.i18n._("Pass"),
+					dataIndex : 'enabled',
+					fixed : true
+				},
+				{
+                    header : this.i18n._("Description"),
+                    flex:1,
                     width : 200,
                     dataIndex : 'description',
-                    editor : new Ext.form.TextField({
-                        allowBlank : false
-                    })
+					editor: {
+						xtype:'textfield',
+						allowBlank:false
+					}
                 }],
                 sortField : 'string',
                 columnsDefaultSortable : true,
-                autoExpandColumn : 'description',
-                plugins : [enabledColumn],
-                rowEditorInputLines : [new Ext.form.TextField({
+                rowEditorInputLines : [
+				{
+					xtype:'textfield',
                     name : "Site",
                     dataIndex : "string",
                     fieldLabel : this.i18n._("Site"),
                     allowBlank : false,
-                    width : 200,
+                    width : 400,
                     validator : urlValidator,
                     blankText : this.i18n._("Invalid \"URL\" specified")
-                }), new Ext.form.Checkbox({
+                },
+				{
+					xtype:'checkbox',
                     name : "Pass",
                     dataIndex : "enabled",
                     fieldLabel : this.i18n._("Pass")
-                }), new Ext.form.TextArea({
+                },
+				{
+					xtype:'textarea',
                     name : "Description",
                     dataIndex : "description",
                     fieldLabel : this.i18n._("Description"),
-                    width : 200,
-
+                    width : 400,
                     height : 60
-                })]
+                }]
             });
         },
         // Passed IP Addresses
         buildPassedClients : function() {
-            var enabledColumn = new Ext.grid.CheckColumn({
-                header : this.i18n._("pass"),
-                dataIndex : 'enabled',
-                fixed : true
-            });
 
-            this.gridPassedClients = new Ung.EditorGrid({
+            this.gridPassedClients = Ext.create('Ung.EditorGrid',{
                 name : 'Client IP addresses',
                 settingsCmp : this,
                 emptyRow : {
@@ -927,76 +972,89 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                     "description" : this.i18n._("[no description]")
                 },
                 title : this.i18n._("Client IP addresses"),
-                data: this.getSettings().passedClients.list,
+                dataProperty: "passedClients",
                 recordJavaClass : "com.untangle.uvm.node.GenericRule",
                 fields : this.genericRuleFields,
                 columns : [{
-                    id : 'string',
                     header : this.i18n._("IP address/range"),
                     width : 200,
                     dataIndex : 'string',
-                    editor : new Ext.form.TextField({
-                        allowBlank : false
-                    })
-                }, enabledColumn, {
-                    id : 'description',
-                    header : this.i18n._("description"),
+					editor: {
+						xtype:'textfield',
+						allowBlank:false
+					}
+                }, 
+				{
+					xtype:'checkcolumn',
+					width:55,
+					header : this.i18n._("Pass"),
+					dataIndex : 'enabled',
+					fixed : true
+				},
+				{
+                    header : this.i18n._("Description"),
+                    flex:1,
                     width : 200,
                     dataIndex : 'description',
-                    editor : new Ext.form.TextField({
-                        allowBlank : false
-                    })
+					editor: {
+						xtype:'textfield',
+						allowBlank:false
+					}
                 }],
                 sortField : 'string',
                 columnsDefaultSortable : true,
-                autoExpandColumn : 'description',
-                plugins : [enabledColumn],
-                rowEditorInputLines : [new Ext.form.TextField({
+                rowEditorInputLines : [
+				{
+					xtype:'textfield',
                     name : "IP address/range",
                     dataIndex : "string",
                     fieldLabel : this.i18n._("IP address/range"),
                     allowBlank : false,
-                    width : 200
-                }), new Ext.form.Checkbox({
+                    width : 400
+                },
+				{
+					xtype:'checkbox',
                     name : "Pass",
                     dataIndex : "enabled",
                     fieldLabel : this.i18n._("Pass")
-                }), new Ext.form.TextArea({
+                },
+				{
+					xtype:'textarea',
                     name : "Description",
                     dataIndex : "description",
                     fieldLabel : this.i18n._("Description"),
-                    width : 200,
+                    width : 400,
                     height : 60
-                })]
+                }]
             });
         },
         // Event Log
         buildEventLog : function() {
-            this.gridEventLog = new Ung.GridEventLog({
+            this.gridEventLog = new Ext.create('Ung.GridEventLog',{
                 settingsCmp : this,
                 fields : [{
-                    name : 'timeStamp',
+                    name : 'time_stamp',
                     sortType : Ung.SortTypes.asTimestamp
                 }, {
                     name : 'blocked',
-                    mapping : 'wf' + main.capitalize(this.getRpcNode().getVendor()) + 'Blocked',
+                    mapping : 'wf_' + this.getRpcNode().getVendor() + '_blocked',
                     type : 'boolean'
                 }, {
                     name : 'flagged',
-                    mapping : 'wf' + main.capitalize(this.getRpcNode().getVendor()) + 'Flagged',
+                    mapping : 'wf_' + this.getRpcNode().getVendor() + '_flagged',
                     type : 'boolean'
                 }, {
                     name : 'category',
-                    mapping : 'wf' + main.capitalize(this.getRpcNode().getVendor()) + 'Category',
+                    mapping : 'wf_' + this.getRpcNode().getVendor() + '_category',
                     type : 'string'
                 }, {
                     name : 'client',
-                    mapping : 'CClientAddr'
+                    mapping : 'c_client_addr'
                 }, {
                     name : 'uid'
                 }, {
                     name : 'server',
-                    mapping : 'CServerAddr'
+                    mapping : 'c_server_addr'
                 }, {
                     name : 'host',
                     mapping : 'host'
@@ -1005,9 +1063,9 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                     mapping : 'uri'
                 }, {
                     name : 'reason',
-                    mapping : 'wf' + main.capitalize(this.getRpcNode().getVendor()) + 'Reason',
+                    mapping : 'wf_' + this.getRpcNode().getVendor() + '_reason',
                     type : 'string',
-                    convert : function(value) {
+                    convert : Ext.bind(function(value) {
                         switch (value) {
                             case 'D' :
                                 return this.i18n._("in Categories Block list");
@@ -1030,54 +1088,52 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                                 return this.i18n._("no rule applied");
                         }
                         return null;
-                    }.createDelegate(this)
+                    },this)
 
                 }],
-                autoExpandColumn: 'uri',
                 columnsDefaultSortable : true,
                 columns : [{
-                    header : this.i18n._("timestamp"),
+                    header : this.i18n._("Timestamp"),
                     width : Ung.Util.timestampFieldWidth,
-                    dataIndex : 'timeStamp',
+                    dataIndex : 'time_stamp',
                     renderer : function(value) {
                         return i18n.timestampFormat(value);
                     }
                 }, {
-                    header : this.i18n._("client"),
+                    header : this.i18n._("Client"),
                     width : Ung.Util.ipFieldWidth,
                     dataIndex : 'client'
                 }, {
-                    header : this.i18n._("username"),
+                    header : this.i18n._("Username"),
                     width : Ung.Util.usernameFieldWidth,
                     dataIndex : 'uid'
                 }, {
-                    id: 'host',
-                    header : this.i18n._("host"),
+                    header : this.i18n._("Host"),
                     width : Ung.Util.hostnameFieldWidth,
                     dataIndex : 'host'
                 }, {
-                    id: 'uri',
-                    header : this.i18n._("uri"),
+                    header : this.i18n._("Uri"),
+                    flex:1,
                     width : Ung.Util.uriFieldWidth,
                     dataIndex : 'uri'
                 }, {
-                    header : this.i18n._("blocked"),
+                    header : this.i18n._("Blocked"),
                     width : Ung.Util.booleanFieldWidth,
                     dataIndex : 'blocked'
                 }, {
-                    header : this.i18n._("flagged"),
+                    header : this.i18n._("Flagged"),
                     width : Ung.Util.booleanFieldWidth,
                     dataIndex : 'flagged'
                 }, {
-                    header : this.i18n._("reason for action"),
+                    header : this.i18n._("Reason For Action"),
                     width : 150,
                     dataIndex : 'reason'
                 }, {
-                    header : this.i18n._("category"),
+                    header : this.i18n._("Category"),
                     width : 120,
                     dataIndex : 'category'
                 }, {
-                    header : this.i18n._("server"),
+                    header : this.i18n._("Server"),
                     width : Ung.Util.ipFieldWidth,
                     dataIndex : 'server'
                 }]
@@ -1112,33 +1168,6 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                 value = value.substring(0, value.length - 1);
             }
             return value.trim();
-        },
-        applyAction : function(){
-            this.saveAction(true);
-        },        
-        // save function
-        saveAction : function(keepWindowOpen) {
-            // validate first
-            if (this.validate()) {
-                Ext.MessageBox.wait(i18n._("Saving..."), i18n._("Please wait"));
-                this.getRpcNode().setSettings(function(result, exception) {
-                    if(Ung.Util.handleException(exception)) return;
-                    // exit settings screen
-                    if(!keepWindowOpen){
-                        Ext.MessageBox.hide();                    
-                        this.closeWindow();
-                    }else{
-                        //refresh the settings
-                        this.getSettings(true);
-                        // keep initial  settings
-                        this.initialSettings = Ung.Util.clone(this.getSettings());
-                        Ext.MessageBox.hide();
-                    }
-                }.createDelegate(this), this.getSettings());
-            }
-        },        
-        isDirty : function() {
-            return !Ung.Util.equals(this.getSettings(), this.initialSettings);
         }
     });
 }

@@ -7,5 +7,5 @@ Ung.NodeWin.dependency["untangle-node-webfilter"] = {
             Ung.WebFilter = Ext.extend(Ung.BaseWebFilter, {});
         }
     }
-}
+};
 //@ sourceURL=webfilter-settings.js

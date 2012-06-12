@@ -1,27 +1,28 @@
 if (!Ung.hasResource["Ung.System"]) {
     Ung.hasResource["Ung.System"] = true;
 
-    Ung.System = Ext.extend(Ung.ConfigWin, {
-        panelSupport : null,
-        panelBackup : null,
-        panelRestore : null,
-        panelProtocolSettings : null,
-        panelRegionalSettings : null,
-        initComponent : function() {
+    Ext.define("Ung.System", {
+    	extend: "Ung.ConfigWin",
+        panelSupport: null,
+        panelBackup: null,
+        panelRestore: null,
+        panelProtocolSettings: null,
+        panelRegionalSettings: null,
+        initComponent: function() {
             this.breadcrumbs = [{
-                title : i18n._("Configuration"),
-                action : function() {
+                title: i18n._("Configuration"),
+                action: Ext.bind(function() {
                     this.cancelAction();
-                }.createDelegate(this)
+                }, this)
             }, {
-                title : i18n._("System")
+                title: i18n._("System")
             }];
             this.companyName=main.getBrandingManager().getCompanyName();
             this.oemName=main.getOemManager().getOemName();
-        if (this.oemName == "Untangle") {
-        this.downloadLanguageHTML='<a href="http://pootle.untangle.com">' + i18n._("Download New Language Packs") + '</a>';
-        } else {
-        this.downloadLanguageHTML='';
+            if (this.oemName == "Untangle") {
+                this.downloadLanguageHTML='<a href="http://pootle.untangle.com">' + i18n._("Download New Language Packs") + '</a>';
+            } else {
+                this.downloadLanguageHTML='';
             }
             this.buildSupport();
             this.buildBackup();
@@ -30,112 +31,107 @@ if (!Ung.hasResource["Ung.System"]) {
             this.buildRegionalSettings();
             // builds the tab panel with the tabs
             this.buildTabPanel([this.panelSupport, this.panelBackup, this.panelRestore, this.panelProtocolSettings, this.panelRegionalSettings]);
-            this.tabs.activate(this.panelSupport);
             if (!this.isHttpLoaded() && !this.isFtpLoaded() && !this.isMailLoaded() ){
                 this.panelProtocolSettings.disable();
             }
-            Ung.System.superclass.initComponent.call(this);
+            this.callParent(arguments);
         },
 
         // get languange settings object
-        getLanguageSettings : function(forceReload) {
+        getLanguageSettings: function(forceReload) {
             if (forceReload || this.rpc.languageSettings === undefined) {
                 try {
                     this.rpc.languageSettings = rpc.languageManager.getLanguageSettings();
                 } catch (e) {
                     Ung.Util.rpcExHandler(e);
                 }
-                
             }
             return this.rpc.languageSettings;
         },
-        getAccessSettings : function(forceReload) {
+        getAccessSettings: function(forceReload) {
             if (forceReload || this.rpc.accessSettings === undefined) {
                 try {
-                    this.rpc.accessSettings = rpc.networkManager.getAccessSettings();
+                    this.rpc.accessSettings = rpc.systemManager.getSettings();
                 } catch (e) {
                     Ung.Util.rpcExHandler(e);
                 }
-                
+
             }
             return this.rpc.accessSettings;
         },
-        getHttpNode : function(forceReload) {
+        getHttpNode: function(forceReload) {
             if (forceReload || this.rpc.httpNode === undefined) {
                 try {
                     this.rpc.httpNode = rpc.nodeManager.node("untangle-casing-http");
                 } catch (e) {
                     Ung.Util.rpcExHandler(e);
                 }
-                
+
             }
             return this.rpc.httpNode;
         },
-        isHttpLoaded : function(forceReload) {
+        isHttpLoaded: function(forceReload) {
             return this.getHttpNode(forceReload) != null;
         },
-        getHttpSettings : function(forceReload) {
+        getHttpSettings: function(forceReload) {
             if (forceReload || this.rpc.httpSettings === undefined) {
                 try {
                     this.rpc.httpSettings = this.getHttpNode(forceReload).getHttpSettings();
                 } catch (e) {
                     Ung.Util.rpcExHandler(e);
                 }
-                
+
             }
             return this.rpc.httpSettings;
         },
-        getFtpNode : function(forceReload) {
+        getFtpNode: function(forceReload) {
             if (forceReload || this.rpc.ftpNode === undefined) {
                 try {
                     this.rpc.ftpNode = rpc.nodeManager.node("untangle-casing-ftp");
                 } catch (e) {
                     Ung.Util.rpcExHandler(e);
                 }
-                    
+
             }
             return this.rpc.ftpNode;
         },
-        isFtpLoaded : function(forceReload) {
+        isFtpLoaded: function(forceReload) {
             return this.getFtpNode(forceReload) != null;
         },
-        getFtpSettings : function(forceReload) {
+        getFtpSettings: function(forceReload) {
             if (forceReload || this.rpc.ftpSettings === undefined) {
                 try {
                     this.rpc.ftpSettings = this.getFtpNode(forceReload).getFtpSettings();
                 } catch (e) {
                     Ung.Util.rpcExHandler(e);
                 }
-                
             }
             return this.rpc.ftpSettings;
         },
-        getMailNode : function(forceReload) {
+        getMailNode: function(forceReload) {
             if (forceReload || this.rpc.mailNode === undefined) {
                 try {
                     this.rpc.mailNode = rpc.nodeManager.node("untangle-casing-mail");
                 } catch (e) {
                     Ung.Util.rpcExHandler(e);
                 }
-                    
             }
             return this.rpc.mailNode;
         },
-        isMailLoaded : function(forceReload) {
+        isMailLoaded: function(forceReload) {
             return this.getMailNode(forceReload) != null;
         },
-        getMailNodeSettings : function(forceReload) {
+        getMailNodeSettings: function(forceReload) {
             if (forceReload || this.rpc.mailSettings === undefined) {
                 try {
                     this.rpc.mailSettings = this.getMailNode(forceReload).getMailNodeSettings();
                 } catch (e) {
                     Ung.Util.rpcExHandler(e);
                 }
-                    
             }
             return this.rpc.mailSettings;
         },
-        getTimeZone : function(forceReload) {
+        getTimeZone: function(forceReload) {
             if (forceReload || this.rpc.timeZone === undefined) {
                 try {
                     /* Handle the serialization mess of java with ZoneInfo. */
@@ -143,149 +139,137 @@ if (!Ung.hasResource["Ung.System"]) {
                     if ( tz != null && typeof ( tz ) != "string" ) {
                         tz = tz.ID;
                     }
-                    
+
                     this.rpc.timeZone = tz;
                 } catch (e) {
                     Ung.Util.rpcExHandler(e);
                 }
-                    
             }
             return this.rpc.timeZone;
         },
-        buildSupport : function() {
-            // keep initial settings
-            this.initialAccessSettings = Ung.Util.clone(this.getAccessSettings());
-            
-            this.panelSupport = new Ext.Panel({
+        buildSupport: function() {
+            this.panelSupport = Ext.create('Ext.panel.Panel',{
                 // private fields
-                name : "Support",
-                helpSource : "support",
-                parentId : this.getId(),
-                title : this.i18n._("Support"),
-                layout : "form",
+                name: "Support",
+                helpSource: "support",
+                parentId: this.getId(),
+                title: this.i18n._("Support"),
                 cls: "ung-panel",
-                autoScroll : true,
-                items : [{
-                    xtype : "fieldset",
-                    autoHeight : true,
-                    title : this.i18n._("Support"),
-                    items : [{
-                        xtype : "checkbox",
-                        name : "Allow secure access to your server for support purposes",
-                        boxLabel : String.format(this.i18n._("{0}Allow{1} secure access to your server for support purposes."), "<b>", "</b>"),
-                        hideLabel : true,
-                        checked : this.getAccessSettings().isSupportEnabled,
-                        listeners : {
-                            "check" : {
-                                fn : function(elem, newValue) {
-                                    this.getAccessSettings().isSupportEnabled = newValue;
-                                }.createDelegate(this)
+                autoScroll: true,
+                items: [{
+                    xtype: "fieldset",
+                    autoHeight: true,
+                    title: this.i18n._("Support"),
+                    items: [{
+                        xtype: 'checkbox',
+                        name: "Allow secure access to your server for support purposes",
+                        boxLabel: Ext.String.format(this.i18n._("{0}Allow{1} secure access to your server for support purposes."), "<b>", "</b>"),
+                        hideLabel: true,
+                        checked: this.getAccessSettings().supportEnabled,
+                        listeners: {
+                            "change": {
+                                fn: Ext.bind(function(elem, newValue) {
+                                    this.getAccessSettings().supportEnabled = newValue;
+                                }, this)
                             }
                         }
                     }]
                 },{
-                    xtype : "fieldset",
-                    autoHeight : true,
-                    title : this.i18n._("Manual Reboot"),
-                    buttonAlign: "left",
-                    items : [{
+                    xtype: "fieldset",
+                    autoHeight: true,
+                    title: this.i18n._("Manual Reboot"),
+                    items: [{
                         border: false,
                         cls: "description",
-                        html: String.format(this.i18n._("{0}Warning:{1} Clicking this button will reboot the {2} Server, temporarily interrupting network activity."),"<b>","</b>",this.companyName)                      
-                    }],
-                    buttons: [{
-                        xtype : "button",
-                        text : this.i18n._("Reboot"),
-                        name : "Manual Reboot",
-                        iconCls : "reboot-icon",
-                        handler : function() {
+                        html: Ext.String.format(this.i18n._("{0}Warning:{1} Clicking this button will reboot the {2} Server, temporarily interrupting network activity."),"<b>","</b>", this.companyName)
+                    },{
+                        xtype: "button",
+                        text: this.i18n._("Reboot"),
+                        name: "Manual Reboot",
+                        iconCls: "reboot-icon",
+                        handler: Ext.bind(function() {
                             Ext.MessageBox.confirm(this.i18n._("Manual Reboot Warning"),
-                                String.format(this.i18n._("You are about to manually reboot.  This will interrupt normal network operations until the {0} Server is finished automatically restarting. This may take up to several minutes to complete."), this.companyName ), 
-                                function(btn) {
+                                Ext.String.format(this.i18n._("You are about to manually reboot.  This will interrupt normal network operations until the {0} Server is finished automatically restarting. This may take up to several minutes to complete."), this.companyName ),
+                                Ext.bind(function(btn) {
                                 if (btn == "yes") {
-                                    rpc.jsonrpc.UvmContext.rebootBox(function (result, exception) {
+                                    rpc.jsonrpc.UvmContext.rebootBox(Ext.bind(function (result, exception) {
                                         if(exception) {
-                                            Ext.MessageBox.alert(this.i18n._("Manual Reboot Failure Warning"),String.format(this.i18n._("Error: Unable to reboot {0} Server"),this.companyName)); 
+                                            Ext.MessageBox.alert(this.i18n._("Manual Reboot Failure Warning"),Ext.String.format(this.i18n._("Error: Unable to reboot {0} Server"), this.companyName));
                                         } else {
-                                            Ext.MessageBox.wait(String.format(this.i18n._("The {0} Server is rebooting."),this.companyName), i18n._("Please wait"));
+                                            Ext.MessageBox.wait(Ext.String.format(this.i18n._("The {0} Server is rebooting."), this.companyName), i18n._("Please wait"));
                                         }
-                                    }.createDelegate(this));
+                                    }, this));
                                 }
-                             }.createDelegate(this));
-                        }.createDelegate(this)
+                             }, this));
+                        }, this)
                     }]
                 },{
-                    xtype : "fieldset",
-                    autoHeight : true,
-                    title : this.i18n._("Manual Shutdown"),
-                    buttonAlign: "left",
-                    items : [{
+                    xtype: "fieldset",
+                    autoHeight: true,
+                    title: this.i18n._("Manual Shutdown"),
+                    items: [{
                         border: false,
                         cls: "description",
-                        html: String.format(this.i18n._("{0}Warning:{1} Clicking this button will shutdown the {2} Server, stopping all network activity."),"<b>","</b>",this.companyName)                      
-                    }],
-                    buttons: [{
-                        xtype : "button",
-                        text : this.i18n._("Shutdown"),
-                        name : "Manual Shutdown",
-                        iconCls : "reboot-icon",
-                        handler : function() {
+                        html: Ext.String.format(this.i18n._("{0}Warning:{1} Clicking this button will shutdown the {2} Server, stopping all network activity."),"<b>","</b>", this.companyName)
+                    },{
+                        xtype: "button",
+                        text: this.i18n._("Shutdown"),
+                        name: "Manual Shutdown",
+                        iconCls: "reboot-icon",
+                        handler: Ext.bind(function() {
                             Ext.MessageBox.confirm(this.i18n._("Manual Shutdown Warning"),
-                                String.format(this.i18n._("You are about to shutdown the {0} Server.  This will stop all network operations."), this.companyName ), 
-                                function(btn) {
+                                Ext.String.format(this.i18n._("You are about to shutdown the {0} Server.  This will stop all network operations."), this.companyName ),
+                                Ext.bind(function(btn) {
                                 if (btn == "yes") {
-                                    rpc.jsonrpc.UvmContext.shutdownBox(function (result, exception) {
+                                    rpc.jsonrpc.UvmContext.shutdownBox(Ext.bind(function (result, exception) {
                                         if(exception) {
-                                            Ext.MessageBox.alert(this.i18n._("Manual Shutdown Failure Warning"),String.format(this.i18n._("Error: Unable to shutdown {0} Server"),this.companyName)); 
+                                            Ext.MessageBox.alert(this.i18n._("Manual Shutdown Failure Warning"),Ext.String.format(this.i18n._("Error: Unable to shutdown {0} Server"), this.companyName));
                                         } else {
-                                            Ext.MessageBox.wait(String.format(this.i18n._("The {0} Server is shutting down."),this.companyName), i18n._("Please wait"));
+                                            Ext.MessageBox.wait(Ext.String.format(this.i18n._("The {0} Server is shutting down."), this.companyName), i18n._("Please wait"));
                                         }
-                                    }.createDelegate(this));
+                                    }, this));
                                 }
-                             }.createDelegate(this));
-                        }.createDelegate(this)
+                             }, this));
+                        }, this)
                     }]
                 },{
-                    xtype : "fieldset",
-                    autoHeight : true,
-                    title : this.i18n._("Setup Wizard"),
-                    buttonAlign: "left",
-                    items : [{
+                    xtype: "fieldset",
+                    autoHeight: true,
+                    title: this.i18n._("Setup Wizard"),
+                    items: [{
                         border: false,
                         cls: "description",
                         html: this.i18n._("Clicking this button will launch the Setup Wizard.")
-                    }],
-                    buttons: [{
-                        xtype : "button",
-                        text : this.i18n._("Setup Wizard"),
-                        name : "Setup Wizard",
-                        iconCls : "reboot-icon",
-                        handler : function() {
+                    },{
+                        xtype: "button",
+                        text: this.i18n._("Setup Wizard"),
+                        name: "Setup Wizard",
+                        iconCls: "reboot-icon",
+                        handler: Ext.bind(function() {
                             Ext.MessageBox.confirm(this.i18n._("Setup Wizard Warning"),
-                                                   String.format(this.i18n._("You are about to re-run the Setup Wizard.  This may reconfigure the {0} Server and {1}overwrite your current settings.{2}"), this.companyName, "<b>", "</b>" ), 
-                                                   function(btn) {
-                                                       if (btn == "yes") {
-                                                           main.showSetupWizardScreen();
-                                                       }
-                                                   }.createDelegate(this));
-                        }.createDelegate(this)
+                               Ext.String.format(this.i18n._("You are about to re-run the Setup Wizard.  This may reconfigure the {0} Server and {1}overwrite your current settings.{2}"), this.companyName, "<b>", "</b>" ),
+                               Ext.bind(function(btn) {
+                                   if (btn == "yes") {
+                                       main.showSetupWizardScreen();
+                                   }
+                               }, this));
+                        }, this)
                     }]
                 }]
             });
 
         },
-        buildBackup : function() {
-            this.panelBackup = new Ext.Panel({
+        buildBackup: function() {
+            this.panelBackup = Ext.create('Ext.panel.Panel',{
                 // private fields
-                name : "Backup",
-                helpSource : "backup",
-                parentId : this.getId(),
-                title : this.i18n._("Backup"),
-                layout : "form",
+                name: "Backup",
+                helpSource: "backup",
+                parentId: this.getId(),
+                title: this.i18n._("Backup"),
                 cls: "ung-panel",
-                autoScroll : true,
-                onBackupToFile: function() {
-                    // A two step process: first asks the server for permission to download the file (the outer ajax request) 
+                autoScroll: true,
+                onBackupToFile: Ext.bind(function() {
+                    // A two step process: first asks the server for permission to download the file (the outer ajax request)
                     // and then if successful opens the iframe which initiates the download.
                     Ext.MessageBox.wait(this.i18n._("Generating Backup File..."), i18n._("Please wait"));
                     Ext.Ajax.request({
@@ -308,45 +292,41 @@ if (!Ung.hasResource["Ung.System"]) {
                             Ext.MessageBox.hide();
                         },
                         failure: function() {
-                            Ext.MessageBox.alert(this.i18n._("Backup Failure Warning"),this.i18n._("Error:  The local file backup procedure failed.  Please try again.")); 
+                            Ext.MessageBox.alert(this.i18n._("Backup Failure Warning"), this.i18n._("Error:  The local file backup procedure failed.  Please try again."));
                         }
-                    });                    
-                }.createDelegate(this),
-                defaults : {
-                    xtype : "fieldset",
-                    autoHeight : true,
-                    buttonAlign : "left"
-                },
-                items : [{
-                    title : this.i18n._("Backup to File"),
-                    items : [{
-                        border : false,
+                    });
+                }, this),
+                items: [{
+                    xtype: "fieldset",
+                    autoHeight: true,
+                    title: this.i18n._("Backup to File"),
+                    items: [{
+                        border: false,
                         cls: "description",
                         html: this.i18n._("You can backup your current system configuration to a file on your local computer for later restoration, in the event that you would like to replace new settings with your current settings.  The file name will end with \".backup\"") +
                                 "<br> <br> " +
                                 this.i18n._("After backing up your current system configuration to a file, you can then restore that configuration through this dialog by going to \"Restore\" -> \"From Local File\".")
-                    }],
-                    buttons : [{
-                        text : this.i18n._("Backup to File"),
+                    },{
+                        xtype:"button",
+                    	text: this.i18n._("Backup to File"),
                         name: "Backup to File",
-                        handler : function() {
+                        handler: Ext.bind(function() {
                             this.panelBackup.onBackupToFile();
-                        }.createDelegate(this)
+                        }, this)
                     }]
                 }]
             });
 
         },
-        buildRestore : function() {
-            this.panelRestore = new Ext.Panel({
+        buildRestore: function() {
+            this.panelRestore = Ext.create('Ext.panel.Panel',{
                 // private fields
-                name : "Restore",
-                helpSource : "restore",
-                parentId : this.getId(),
-                title : this.i18n._("Restore"),
-                layout : "form",
+                name: "Restore",
+                helpSource: "restore",
+                parentId: this.getId(),
+                title: this.i18n._("Restore"),
                 cls: "ung-panel",
-                autoScroll : true,
+                autoScroll: true,
                 onRestoreFromFileFile: function() {
                     var prova = Ext.getCmp("upload_restore_file_form");
                     var cmp = Ext.getCmp(this.parentId);
@@ -357,33 +337,33 @@ if (!Ung.hasResource["Ung.System"]) {
                     }
                     var form = prova.getForm();
                     form.submit({
-                        parentId : cmp.getId(),
-                        waitMsg : cmp.i18n._("Please wait while Restoring..."),
-                        success : function(form, action) {
-                            var cmp = Ext.getCmp(action.options.parentId);
+                        parentId: cmp.getId(),
+                        waitMsg: cmp.i18n._("Please wait while Restoring..."),
+                        success: function(form, action) {
+                            var cmp = Ext.getCmp(action.parentId);
                             Ung.MessageManager.stop();
                             Ext.MessageBox.alert(cmp.i18n._("Restore In Progress"),
-                         cmp.i18n._("The restore procedure is running. The server may be unavailable during this time. Once the process is complete you will be able to log in again."), 
+                         cmp.i18n._("The restore procedure is running. The server may be unavailable during this time. Once the process is complete you will be able to log in again."),
                          Ung.Util.goToStartPage);
                             },
-                        failure : function(form, action) {
-                            var cmp = Ext.getCmp(action.options.parentId);
+                        failure: function(form, action) {
+                            var cmp = Ext.getCmp(action.parentId);
                             var errorMsg = cmp.i18n._("The Local File restore procedure failed.");
                             if (action.result && action.result.msg) {
                                 switch (action.result.msg) {
-                                    case "File does not seem to be valid backup" : 
-                                        errorMsg = String.format(cmp.i18n._("File does not seem to be valid {0} backup"), main.getBrandingManager().getCompanyName());
+                                    case "File does not seem to be valid backup":
+                                        errorMsg = Ext.String.format(cmp.i18n._("File does not seem to be valid {0} backup"), main.getBrandingManager().getCompanyName());
                                     break;
-                                    case "Error in processing restore itself (yet file seems valid)" : 
+                                    case "Error in processing restore itself (yet file seems valid)":
                                         errorMsg = cmp.i18n._("Error in processing restore itself (yet file seems valid)");
                                     break;
-                                    case "File is from an older version and cannot be used" : 
-                                        errorMsg = String.format(cmp.i18n._("File is from an older version of {0} and cannot be used"), main.getBrandingManager().getCompanyName());
+                                    case "File is from an older version and cannot be used":
+                                        errorMsg = Ext.String.format(cmp.i18n._("File is from an older version of {0} and cannot be used"), main.getBrandingManager().getCompanyName());
                                     break;
-                                    case "Unknown error in local processing" : 
+                                    case "Unknown error in local processing":
                                         errorMsg = cmp.i18n._("Unknown error in local processing");
                                     break;
-                                    default :
+                                    default:
                                         errorMsg = cmp.i18n._("The Local File restore procedure failed.");
                                 }
                             }
@@ -391,346 +371,333 @@ if (!Ung.hasResource["Ung.System"]) {
                         }
                     });
                 },
-                defaults : {
-                    xtype : "fieldset",
-                    autoHeight : true,
-                    buttonAlign : "left"
-                },
-                items : [{
-                    title : this.i18n._("From File"),
-                    items : [{
-                        border : false,
+                items: [{
+                    title: this.i18n._("From File"),
+                    xtype: "fieldset",
+                    autoHeight: true,
+                    items: [{
+                        border: false,
                         cls: "description",
                         html: this.i18n._("You can restore a previous system configuration from a backup file on your local computer.  The backup file name ends with \".backup\"")
                     },{
-                        fileUpload : true,
-                        xtype : "form",
-                        id : "upload_restore_file_form",
-                        url : "upload",
-                        border : false,
-                        items : [{
-                            fieldLabel : this.i18n._("File"),
-                            name : "file",
-                            id : "upload_restore_file_textfield",
-                            inputType : "file",
-                            xtype : "textfield",
-                            allowBlank : false
+                        fileUpload: true,
+                        xtype: "form",
+                        id: "upload_restore_file_form",
+                        url: "upload",
+                        border: false,
+                        items: [{
+                            fieldLabel: this.i18n._("File"),
+                            name: "file",
+                            id: "upload_restore_file_textfield",
+                            inputType: "file",
+                            xtype: "textfield",
+                            allowBlank: false
                         }, {
-                            xtype : "button",
-                            text : this.i18n._("Restore from File"),
+                            xtype: "button",
+                            text: this.i18n._("Restore from File"),
                             name: "Restore from File",
-                            handler : function() {
+                            handler: Ext.bind(function() {
                                 this.panelRestore.onRestoreFromFileFile();
-                            }.createDelegate(this)
+                            }, this)
                         }, {
-                            xtype : "hidden",
-                            name : "type",
-                            value : "restore"
+                            xtype: "hidden",
+                            name: "type",
+                            value: "restore"
                         }]
                     }]
                 }]
             });
         },
-        buildProtocolSettings : function()
-        {
+        buildProtocolSettings: function() {
             var protocolSettingsItems = [];
-            
+
             protocolSettingsItems.push({
-                autoHeight : true,
+                autoHeight: true,
                 border: false,
                 cls: "description",
                 html: this.i18n._("Warning: These settings should not be changed unless instructed to do so by support.")
             });
-            
+
             if (this.isHttpLoaded()) {
-                // keep initial http settings
-                this.initialHttpSettings = Ung.Util.clone(this.getHttpSettings());
-                
                 protocolSettingsItems.push({
-                    xtype : "fieldset",
+                    xtype: "fieldset",
                     collapsible: true,
                     collapsed: true,
                     title: this.i18n._("HTTP"),
-                    autoHeight : true,
-                    defaults : {
-                        xtype : "fieldset",
-                        autoHeight : true
+                    autoHeight: true,
+                    defaults: {
+                        xtype: "fieldset",
+                        autoHeight: true
                     },
-                    items : [{
+                    items: [{
                         title: this.i18n._("Web Override"),
-                        items : [{
-                            xtype : "radio",
-                            boxLabel : String.format(this.i18n._("{0}Enable Processing{1} of web traffic.  (This is the default setting)"), "<b>", "</b>"), 
-                            hideLabel : true,
-                            name : "Web Override",
-                            checked : this.getHttpSettings().enabled,
-                            listeners : {
-                                "check" : {
-                                    fn : function(elem, checked) {
+                        items: [{
+                            xtype: "radio",
+                            boxLabel: Ext.String.format(this.i18n._("{0}Enable Processing{1} of web traffic.  (This is the default setting)"), "<b>", "</b>"),
+                            hideLabel: true,
+                            name: "Web Override",
+                            checked: this.getHttpSettings().enabled,
+                            listeners: {
+                                "change": {
+                                    fn: Ext.bind(function(elem, checked) {
                                         this.getHttpSettings().enabled = checked;
-                                    }.createDelegate(this)
+                                    }, this)
                                 }
                             }
                         },{
-                            xtype : "radio",
-                            boxLabel : String.format(this.i18n._("{0}Disable Processing{1} of web traffic."), "<b>", "</b>"), 
-                            hideLabel : true,
-                            name : "Web Override",
-                            checked : !this.getHttpSettings().enabled,
-                            listeners : {
-                                "check" : {
-                                    fn : function(elem, checked) {
+                            xtype: "radio",
+                            boxLabel: Ext.String.format(this.i18n._("{0}Disable Processing{1} of web traffic."), "<b>", "</b>"),
+                            hideLabel: true,
+                            name: "Web Override",
+                            checked: !this.getHttpSettings().enabled,
+                            listeners: {
+                                "change": {
+                                    fn: Ext.bind(function(elem, checked) {
                                         this.getHttpSettings().enabled = !checked;
-                                    }.createDelegate(this)
+                                    }, this)
                                 }
                             }
                         }]
                     },{
                         title: this.i18n._("Long URIs"),
-                        labelWidth: 250,                      
-                        items : [{
-                            xtype : "radio",
-                            boxLabel : String.format(this.i18n._("{0}Enable Processing{1} of long URIs.  The traffic is considered \"Non-Http\".  (This is the default setting)"), "<b>", "</b>"), 
-                            hideLabel : true,
-                            name : "Long URIs",
-                            checked : !this.getHttpSettings().blockLongUris,
-                            listeners : {
-                                "check" : {
-                                    fn : function(elem, checked) {
+                        labelWidth: 250,
+                        items: [{
+                            xtype: "radio",
+                            boxLabel: Ext.String.format(this.i18n._("{0}Enable Processing{1} of long URIs.  The traffic is considered \"Non-Http\".  (This is the default setting)"), "<b>", "</b>"),
+                            hideLabel: true,
+                            name: "Long URIs",
+                            checked: !this.getHttpSettings().blockLongUris,
+                            listeners: {
+                                "change": {
+                                    fn: Ext.bind(function(elem, checked) {
                                         this.getHttpSettings().blockLongUris = !checked;
-                                    }.createDelegate(this)
+                                    }, this)
                                 }
                             }
                         },{
-                            xtype : "radio",
-                            boxLabel : String.format(this.i18n._("{0}Disable Processing{1} of long URIs."), "<b>", "</b>"), 
-                            hideLabel : true,
-                            name : "Long URIs",
-                            checked : this.getHttpSettings().blockLongUris,
-                            listeners : {
-                                "check" : {
-                                    fn : function(elem, checked) {
+                            xtype: "radio",
+                            boxLabel: Ext.String.format(this.i18n._("{0}Disable Processing{1} of long URIs."), "<b>", "</b>"),
+                            hideLabel: true,
+                            name: "Long URIs",
+                            checked: this.getHttpSettings().blockLongUris,
+                            listeners: {
+                                "change": {
+                                    fn: Ext.bind(function(elem, checked) {
                                         this.getHttpSettings().blockLongUris = checked;
-                                    }.createDelegate(this)
+                                    }, this)
                                 }
                             }
                         },{
-                            xtype : "numberfield",
-                            fieldLabel : this.i18n._("Max URI Length (characters)"),
-                            name : "Max URI Length",
+                            xtype: "numberfield",
+                            fieldLabel: this.i18n._("Max URI Length (characters)"),
+                            name: "Max URI Length",
                             id: "system_protocolSettings_maxUriLength",
-                            value : this.getHttpSettings().maxUriLength,
-                            width: 50,
+                            value: this.getHttpSettings().maxUriLength,
+                            labelWidth: 200,
                             allowDecimals: false,
                             allowNegative: false,
-                            minValue: 1024,                        
+                            minValue: 1024,
                             maxValue: 4096,
-                            listeners : {
-                                "change" : {
-                                    fn : function(elem, newValue) {
+                            listeners: {
+                                "change": {
+                                    fn: Ext.bind(function(elem, newValue) {
                                         this.getHttpSettings().maxUriLength = newValue;
-                                    }.createDelegate(this)
+                                    }, this)
                                 }
                             }
                         }]
                     },{
                         title: this.i18n._("Long Headers"),
-                        labelWidth: 250,                      
-                        items : [{
-                            xtype : "radio",
-                            boxLabel : String.format(this.i18n._("{0}Enable Processing{1} of long headers.  The traffic is considered \"Non-Http\".  (This is the default setting)"), "<b>", "</b>"), 
-                            hideLabel : true,
-                            name : "Long Headers",
-                            checked : !this.getHttpSettings().blockLongHeaders,
-                            listeners : {
-                                "check" : {
-                                    fn : function(elem, checked) {
+                        labelWidth: 250,
+                        items: [{
+                            xtype: "radio",
+                            boxLabel: Ext.String.format(this.i18n._("{0}Enable Processing{1} of long headers.  The traffic is considered \"Non-Http\".  (This is the default setting)"), "<b>", "</b>"),
+                            hideLabel: true,
+                            name: "Long Headers",
+                            checked: !this.getHttpSettings().blockLongHeaders,
+                            listeners: {
+                                "change": {
+                                    fn: Ext.bind(function(elem, checked) {
                                         this.getHttpSettings().blockLongHeaders = !checked;
-                                    }.createDelegate(this)
+                                    }, this)
                                 }
                             }
                         },{
-                            xtype : "radio",
-                            boxLabel : String.format(this.i18n._("{0}Disable Processing{1} of long headers."), "<b>", "</b>"), 
-                            hideLabel : true,
-                            name : "Long Headers",
-                            checked : this.getHttpSettings().blockLongHeaders,
-                            listeners : {
-                                "check" : {
-                                    fn : function(elem, checked) {
+                            xtype: "radio",
+                            boxLabel: Ext.String.format(this.i18n._("{0}Disable Processing{1} of long headers."), "<b>", "</b>"),
+                            hideLabel: true,
+                            name: "Long Headers",
+                            checked: this.getHttpSettings().blockLongHeaders,
+                            listeners: {
+                                "change": {
+                                    fn: Ext.bind(function(elem, checked) {
                                         this.getHttpSettings().blockLongHeaders = checked;
-                                    }.createDelegate(this)
+                                    }, this)
                                 }
                             }
                         },{
-                            xtype : "numberfield",
-                            fieldLabel : this.i18n._("Max Header Length (characters)"),
-                            name : "Max Header Length",
+                            xtype: "numberfield",
+                            fieldLabel: this.i18n._("Max Header Length (characters)"),
+                            name: "Max Header Length",
                             id: "system_protocolSettings_maxHeaderLength",
-                            value : this.getHttpSettings().maxHeaderLength,
-                            width: 50,
+                            value: this.getHttpSettings().maxHeaderLength,
+                            labelWidth: 200,
                             allowDecimals: false,
                             allowNegative: false,
-                            minValue: 1024,                        
+                            minValue: 1024,
                             maxValue: 8192,
-                            listeners : {
-                                "change" : {
-                                    fn : function(elem, newValue) {
+                            listeners: {
+                                "change": {
+                                    fn: Ext.bind(function(elem, newValue) {
                                         this.getHttpSettings().maxHeaderLength = newValue;
-                                    }.createDelegate(this)
+                                    }, this)
                                 }
                             }
                         }]
                     },{
                         title: this.i18n._("Non-Http Blocking"),
-                        items : [{
-                            xtype : "radio",
-                            boxLabel : String.format(this.i18n._("{0}Allow{1} non-Http traffic to travel over port 80.  (This is the default setting)"), "<b>", "</b>"), 
-                            hideLabel : true,
-                            name : "Non-Http Blocking",
-                            checked : !this.getHttpSettings().nonHttpBlocked,
-                            listeners : {
-                                "check" : {
-                                    fn : function(elem, checked) {
+                        items: [{
+                            xtype: "radio",
+                            boxLabel: Ext.String.format(this.i18n._("{0}Allow{1} non-Http traffic to travel over port 80.  (This is the default setting)"), "<b>", "</b>"),
+                            hideLabel: true,
+                            name: "Non-Http Blocking",
+                            checked: !this.getHttpSettings().nonHttpBlocked,
+                            listeners: {
+                                "change": {
+                                    fn: Ext.bind(function(elem, checked) {
                                         this.getHttpSettings().nonHttpBlocked = !checked;
-                                    }.createDelegate(this)
+                                    }, this)
                                 }
                             }
                         },{
-                            xtype : "radio",
-                            boxLabel : String.format(this.i18n._("{0}Stop{1} non-Http traffic to travel over port 80."), "<b>", "</b>"), 
-                            hideLabel : true,
-                            name : "Non-Http Blocking",
-                            checked : this.getHttpSettings().nonHttpBlocked,
-                            listeners : {
-                                "check" : {
-                                    fn : function(elem, checked) {
+                            xtype: "radio",
+                            boxLabel: Ext.String.format(this.i18n._("{0}Stop{1} non-Http traffic to travel over port 80."), "<b>", "</b>"),
+                            hideLabel: true,
+                            name: "Non-Http Blocking",
+                            checked: this.getHttpSettings().nonHttpBlocked,
+                            listeners: {
+                                "change": {
+                                    fn: Ext.bind(function(elem, checked) {
                                         this.getHttpSettings().nonHttpBlocked = checked;
-                                    }.createDelegate(this)
+                                    }, this)
                                 }
                             }
                         }]
                     }]
                 });
             }
-            
+
             if (this.isFtpLoaded()) {
-                // keep initial ftp settings
-                this.initialFtpSettings = Ung.Util.clone(this.getFtpSettings());
-                
                 protocolSettingsItems.push({
                     collapsible: true,
                     collapsed: true,
                     title: this.i18n._("FTP"),
-                    autoHeight : true,
-                    items : [{
-                        xtype : "radio",
-                        boxLabel : String.format(this.i18n._("{0}Enable Processing{1} of File Transfer traffic.  (This is the default setting)"), "<b>", "</b>"), 
-                        hideLabel : true,
-                        name : "FTP",
-                        checked : this.getFtpSettings().enabled,
-                        listeners : {
-                            "check" : {
-                                fn : function(elem, checked) {
+                    autoHeight: true,
+                    items: [{
+                        xtype: "radio",
+                        boxLabel: Ext.String.format(this.i18n._("{0}Enable Processing{1} of File Transfer traffic.  (This is the default setting)"), "<b>", "</b>"),
+                        hideLabel: true,
+                        name: "FTP",
+                        checked: this.getFtpSettings().enabled,
+                        listeners: {
+                            "change": {
+                                fn: Ext.bind(function(elem, checked) {
                                     this.getFtpSettings().enabled = checked;
-                                }.createDelegate(this)
+                                }, this)
                             }
                         }
                     },{
-                        xtype : "radio",
-                        boxLabel : String.format(this.i18n._("{0}Disable Processing{1} of File Transfer traffic."), "<b>", "</b>"), 
-                        hideLabel : true,
-                        name : "FTP",
-                        checked : !this.getFtpSettings().enabled,
-                        listeners : {
-                            "check" : {
-                                fn : function(elem, checked) {
+                        xtype: "radio",
+                        boxLabel: Ext.String.format(this.i18n._("{0}Disable Processing{1} of File Transfer traffic."), "<b>", "</b>"),
+                        hideLabel: true,
+                        name: "FTP",
+                        checked: !this.getFtpSettings().enabled,
+                        listeners: {
+                            "change": {
+                                fn: Ext.bind(function(elem, checked) {
                                     this.getFtpSettings().enabled = !checked;
-                                }.createDelegate(this)
+                                }, this)
                             }
                         }
                     }]
                 });
             }
-            
+
             if (this.isMailLoaded()) {
-                // keep initial mail settings
-                this.initialMailSettings = Ung.Util.clone(this.getMailNodeSettings());
-                
                 protocolSettingsItems.push({
                     collapsible: true,
                     collapsed: true,
                     title: this.i18n._("SMTP"),
-                    autoHeight : true,
-                    labelWidth: 200,                      
-                    items : [{
-                        xtype : "radio",
-                        boxLabel : String.format(this.i18n._("{0}Enable SMTP{1} email processing.  (This is the default setting)"), "<b>", "</b>"), 
-                        hideLabel : true,
-                        name : "SMTP",
-                        checked : this.getMailNodeSettings().smtpEnabled,
-                        listeners : {
-                            "check" : {
-                                fn : function(elem, checked) {
+                    autoHeight: true,
+                    labelWidth: 200,
+                    items: [{
+                        xtype: "radio",
+                        boxLabel: Ext.String.format(this.i18n._("{0}Enable SMTP{1} email processing.  (This is the default setting)"), "<b>", "</b>"),
+                        hideLabel: true,
+                        name: "SMTP",
+                        checked: this.getMailNodeSettings().smtpEnabled,
+                        listeners: {
+                            "change": {
+                                fn: Ext.bind(function(elem, checked) {
                                     this.getMailNodeSettings().smtpEnabled = checked;
-                                }.createDelegate(this)
+                                }, this)
                             }
                         }
                     },{
-                        xtype : "radio",
-                        boxLabel : String.format(this.i18n._("{0}Disable SMTP{1} email processing."), "<b>", "</b>"), 
-                        hideLabel : true,
-                        name : "SMTP",
-                        checked : !this.getMailNodeSettings().smtpEnabled,
-                        listeners : {
-                            "check" : {
-                                fn : function(elem, checked) {
+                        xtype: "radio",
+                        boxLabel: Ext.String.format(this.i18n._("{0}Disable SMTP{1} email processing."), "<b>", "</b>"),
+                        hideLabel: true,
+                        name: "SMTP",
+                        checked: !this.getMailNodeSettings().smtpEnabled,
+                        listeners: {
+                            "change": {
+                                fn: Ext.bind(function(elem, checked) {
                                     this.getMailNodeSettings().smtpEnabled = !checked;
-                                }.createDelegate(this)
+                                }, this)
                             }
                         }
                     },{
-                        xtype : "numberfield",
-                        fieldLabel : this.i18n._("SMTP timeout (seconds)"),
-                        name : "SMTP timeout",
+                        xtype: "numberfield",
+                        fieldLabel: this.i18n._("SMTP timeout (seconds)"),
+                        name: "SMTP timeout",
                         id: "system_protocolSettings_smtpTimeout",
-                        value : this.getMailNodeSettings().smtpTimeout/1000,
-                        width: 50,
+                        value: this.getMailNodeSettings().smtpTimeout/1000,
+                        labelWidth: 200,
                         allowDecimals: false,
                         allowNegative: false,
-                        minValue: 0,                        
+                        minValue: 0,
                         maxValue: 86400,
-                        listeners : {
-                            "change" : {
-                                fn : function(elem, newValue) {
+                        listeners: {
+                            "change": {
+                                fn: Ext.bind(function(elem, newValue) {
                                     this.getMailNodeSettings().smtpTimeout = newValue*1000;
-                                }.createDelegate(this)
+                                }, this)
                             }
                         }
                     },{
-                        xtype : "radio",
-                        boxLabel : String.format(this.i18n._("{0}Allow TLS{1} encryption over SMTP."), "<b>", "</b>"), 
-                        hideLabel : true,
-                        name : "AllowTLS",
-                        checked : this.getMailNodeSettings().smtpAllowTLS,
-                        listeners : {
-                            "check" : {
-                                fn : function(elem, checked) {
+                        xtype: "radio",
+                        boxLabel: Ext.String.format(this.i18n._("{0}Allow TLS{1} encryption over SMTP."), "<b>", "</b>"),
+                        hideLabel: true,
+                        name: "AllowTLS",
+                        checked: this.getMailNodeSettings().smtpAllowTLS,
+                        listeners: {
+                            "change": {
+                                fn: Ext.bind(function(elem, checked) {
                                     this.getMailNodeSettings().smtpAllowTLS = checked;
-                                }.createDelegate(this)
+                                }, this)
                             }
                         }
                     },{
-                        xtype : "radio",
-                        boxLabel : String.format(this.i18n._("{0}Stop TLS{1} encryption over SMTP.  (This is the default setting)"), "<b>", "</b>"), 
-                        hideLabel : true,
-                        name : "AllowTLS",
-                        checked : !this.getMailNodeSettings().smtpAllowTLS,
-                        listeners : {
-                            "check" : {
-                                fn : function(elem, checked) {
+                        xtype: "radio",
+                        boxLabel: Ext.String.format(this.i18n._("{0}Stop TLS{1} encryption over SMTP.  (This is the default setting)"), "<b>", "</b>"),
+                        hideLabel: true,
+                        name: "AllowTLS",
+                        checked: !this.getMailNodeSettings().smtpAllowTLS,
+                        listeners: {
+                            "change": {
+                                fn: Ext.bind(function(elem, checked) {
                                     this.getMailNodeSettings().smtpAllowTLS = !checked;
-                                }.createDelegate(this)
+                                }, this)
                             }
                         }
                     }]
@@ -738,52 +705,52 @@ if (!Ung.hasResource["Ung.System"]) {
                 protocolSettingsItems.push({
                     collapsible: true,
                     collapsed: true,
-                    xtype : "fieldset",
+                    xtype: "fieldset",
                     title: this.i18n._("POP3"),
-                    autoHeight : true,
-                    labelWidth: 200,                      
-                    items : [{
-                        xtype : "radio",
-                        boxLabel : String.format(this.i18n._("{0}Enable POP3{1} email processing.  (This is the default setting)"), "<b>", "</b>"), 
-                        hideLabel : true,
-                        name : "POP3",
-                        checked : this.getMailNodeSettings().popEnabled,
-                        listeners : {
-                            "check" : {
-                                fn : function(elem, checked) {
+                    autoHeight: true,
+                    labelWidth: 200,
+                    items: [{
+                        xtype: "radio",
+                        boxLabel: Ext.String.format(this.i18n._("{0}Enable POP3{1} email processing.  (This is the default setting)"), "<b>", "</b>"),
+                        hideLabel: true,
+                        name: "POP3",
+                        checked: this.getMailNodeSettings().popEnabled,
+                        listeners: {
+                            "change": {
+                                fn: Ext.bind(function(elem, checked) {
                                     this.getMailNodeSettings().popEnabled = checked;
-                                }.createDelegate(this)
+                                }, this)
                             }
                         }
                     },{
-                        xtype : "radio",
-                        boxLabel : String.format(this.i18n._("{0}Disable POP3{1} email processing."), "<b>", "</b>"), 
-                        hideLabel : true,
-                        name : "POP3",
-                        checked : !this.getMailNodeSettings().popEnabled,
-                        listeners : {
-                            "check" : {
-                                fn : function(elem, checked) {
+                        xtype: "radio",
+                        boxLabel: Ext.String.format(this.i18n._("{0}Disable POP3{1} email processing."), "<b>", "</b>"),
+                        hideLabel: true,
+                        name: "POP3",
+                        checked: !this.getMailNodeSettings().popEnabled,
+                        listeners: {
+                            "change": {
+                                fn: Ext.bind(function(elem, checked) {
                                     this.getMailNodeSettings().popEnabled = !checked;
-                                }.createDelegate(this)
+                                }, this)
                             }
                         }
                     },{
-                        xtype : "numberfield",
-                        fieldLabel : this.i18n._("POP3 timeout (seconds)"),
-                        name : "POP3 timeout",
+                        xtype: "numberfield",
+                        fieldLabel: this.i18n._("POP3 timeout (seconds)"),
+                        name: "POP3 timeout",
                         id: "system_protocolSettings_popTimeout",
-                        value : this.getMailNodeSettings().popTimeout/1000,
-                        width: 50,
+                        value: this.getMailNodeSettings().popTimeout/1000,
+                        labelWidth: 200,
                         allowDecimals: false,
                         allowNegative: false,
-                        minValue: 0,                        
+                        minValue: 0,
                         maxValue: 86400,
-                        listeners : {
-                            "change" : {
-                                fn : function(elem, newValue) {
+                        listeners: {
+                            "change": {
+                                fn: Ext.bind(function(elem, newValue) {
                                     this.getMailNodeSettings().popTimeout = newValue*1000;
-                                }.createDelegate(this)
+                                }, this)
                             }
                         }
                     }]
@@ -792,285 +759,277 @@ if (!Ung.hasResource["Ung.System"]) {
                     collapsible: true,
                     collapsed: true,
                     title: this.i18n._("IMAP"),
-                    autoHeight : true,
-                    labelWidth: 200,                      
-                    items : [{
-                        xtype : "radio",
-                        boxLabel : String.format(this.i18n._("{0}Enable IMAP{1} email processing.  (This is the default setting)"), "<b>", "</b>"), 
-                        hideLabel : true,
-                        name : "IMAP",
-                        checked : this.getMailNodeSettings().imapEnabled,
-                        listeners : {
-                            "check" : {
-                                fn : function(elem, checked) {
+                    autoHeight: true,
+                    labelWidth: 200,
+                    items: [{
+                        xtype: "radio",
+                        boxLabel: Ext.String.format(this.i18n._("{0}Enable IMAP{1} email processing.  (This is the default setting)"), "<b>", "</b>"),
+                        hideLabel: true,
+                        name: "IMAP",
+                        checked: this.getMailNodeSettings().imapEnabled,
+                        listeners: {
+                            "change": {
+                                fn: Ext.bind(function(elem, checked) {
                                     this.getMailNodeSettings().imapEnabled = checked;
-                                }.createDelegate(this)
+                                }, this)
                             }
                         }
                     },{
-                        xtype : "radio",
-                        boxLabel : String.format(this.i18n._("{0}Disable IMAP{1} email processing."), "<b>", "</b>"), 
-                        hideLabel : true,
-                        name : "IMAP",
-                        checked : !this.getMailNodeSettings().imapEnabled,
-                        listeners : {
-                            "check" : {
-                                fn : function(elem, checked) {
+                        xtype: "radio",
+                        boxLabel: Ext.String.format(this.i18n._("{0}Disable IMAP{1} email processing."), "<b>", "</b>"),
+                        hideLabel: true,
+                        name: "IMAP",
+                        checked: !this.getMailNodeSettings().imapEnabled,
+                        listeners: {
+                            "change": {
+                                fn: Ext.bind(function(elem, checked) {
                                     this.getMailNodeSettings().imapEnabled = !checked;
-                                }.createDelegate(this)
+                                }, this)
                             }
                         }
                     },{
-                        xtype : "numberfield",
-                        fieldLabel : this.i18n._("IMAP timeout (seconds)"),
-                        name : "IMAP timeout",
+                        xtype: "numberfield",
+                        fieldLabel: this.i18n._("IMAP timeout (seconds)"),
+                        name: "IMAP timeout",
                         id: "system_protocolSettings_imapTimeout",
-                        value : this.getMailNodeSettings().imapTimeout/1000,
-                        width: 50,
+                        value: this.getMailNodeSettings().imapTimeout/1000,
+                        labelWidth: 200,
                         allowDecimals: false,
                         allowNegative: false,
-                        minValue: 0,                        
+                        minValue: 0,
                         maxValue: 86400,
-                        listeners : {
-                            "change" : {
-                                fn : function(elem, newValue) {
+                        listeners: {
+                            "change": {
+                                fn: Ext.bind(function(elem, newValue) {
                                     this.getMailNodeSettings().imapTimeout = newValue*1000;
-                                }.createDelegate(this)
+                                }, this)
                             }
                         }
                     }]
                 });
-            }                
-            
-            this.panelProtocolSettings = new Ext.Panel({
-                name : "Protocol Settings",
-                helpSource : "protocol_settings",
-                // private fields
-                parentId : this.getId(),
+            }
 
-                title : this.i18n._("Protocol Settings"),
-                layout : "form",
+            this.panelProtocolSettings = Ext.create('Ext.panel.Panel',{
+                name: "Protocol Settings",
+                helpSource: "protocol_settings",
+                // private fields
+                parentId: this.getId(),
+
+                title: this.i18n._("Protocol Settings"),
                 cls: "ung-panel",
-                autoScroll : true,
-                defaults : {
-                    xtype : "fieldset",
-                    autoHeight : true
+                autoScroll: true,
+                defaults: {
+                    xtype: "fieldset",
+                    autoHeight: true
                 },
-                items: protocolSettingsItems.length != 0 ? protocolSettingsItems : null
+                items: protocolSettingsItems.length != 0 ? protocolSettingsItems: null
             });
         },
-        buildRegionalSettings : function() {
-            // keep initial settings
-            this.initialLanguageSettings = Ung.Util.clone(this.getLanguageSettings());
-            this.initialTimeZone = Ung.Util.clone(this.getTimeZone());
-            
-            var languagesStore = new Ext.data.Store({
-                proxy : new Ung.RpcProxy(rpc.languageManager.getLanguagesList, null, false),
-                reader : new Ext.data.JsonReader({
-                    root : "list",
-                    fields : ["code", "name"]
-                })
+        buildRegionalSettings: function() {
+            // keep initial language settings
+            this.initialLanguage = this.getLanguageSettings().language;
+            var languagesStore =Ext.create("Ext.data.Store", {
+                fields: ["code", "name"],
+                data: rpc.languageManager.getLanguagesList().list
             });
 
             var timeZones = [];
             for (var i = 0; i < Ung.TimeZoneData.length; i++) {
                 timeZones.push([Ung.TimeZoneData[i][2], "(" + Ung.TimeZoneData[i][0] + ") " + Ung.TimeZoneData[i][1]]);
             }
-            this.panelRegionalSettings = new Ext.Panel({
+            this.panelRegionalSettings = Ext.create('Ext.panel.Panel',{
                 // private fields
-                name : "Regional Settings",
-                helpSource : "regional_settings",
-                parentId : this.getId(),
-                title : this.i18n._("Regional Settings"),
-                layout : "form",
+                name: "Regional Settings",
+                helpSource: "regional_settings",
+                parentId: this.getId(),
+                title: this.i18n._("Regional Settings"),
                 cls: "ung-panel",
-                autoScroll : true,
-                defaults : {
-                    xtype : "fieldset",
-                    autoHeight : true,
-                    buttonAlign : "left"
+                autoScroll: true,
+                defaults: {
+                    xtype: "fieldset",
+                    autoHeight: true,
+                    buttonAlign: "left"
                 },
-                items : [{
-                    title : this.i18n._("Current Time"),
-                    defaults : {
-                        border : false,
+                items: [{
+                    title: this.i18n._("Current Time"),
+                    defaults: {
+                        border: false,
                         cls: "description"
                     },
-                    items : [{
-                        html : this.i18n._("time is automatically synced via NTP")
+                    items: [{
+                        html: this.i18n._("time is automatically synced via NTP")
                     }, {
-                        name : "currentTime",
-                        html : rpc.adminManager.getDate()
+                        id: "system_regionalSettings_currentTime",
+                        html: rpc.adminManager.getDate()
                     }]
                 }, {
-                    title : this.i18n._("Timezone"),
-                    items : [{
-                        xtype : "combo",
-                        name : "Timezone",
-                        id : "system_timezone",
-                        editable : false,
-                        store : timeZones,
-                        width : 350,
-                        hideLabel : true,
-                        mode : "local",
-                        triggerAction : "all",
-                        listClass : "x-combo-list-small",
-                        value : this.getTimeZone(),
-                        listeners : {
-                            "change" : {
-                                fn : function(elem, newValue) {
+                    title: this.i18n._("Timezone"),
+                    items: [{
+                        xtype: "combo",
+                        name: "Timezone",
+                        id: "system_timezone",
+                        editable: false,
+                        store: timeZones,
+                        width: 350,
+                        hideLabel: true,
+                        mode: "local",
+                        triggerAction: "all",
+                        listClass: "x-combo-list-small",
+                        value: this.getTimeZone(),
+                        listeners: {
+                            "change": {
+                                fn: Ext.bind(function(elem, newValue) {
                                     this.rpc.timeZone = newValue;
-                                }.createDelegate(this)
+                                }, this)
                             }
                         }
                     }]
                 }, {
-                    title : this.i18n._("Language"),
-                    items : [{
-                        id : "system_language_combo",
-                        xtype : "combo",
-                        name : "Language",
-                        store : languagesStore,
-                        forceSelection : true,
-                        displayField : "name",
-                        valueField : "code",
-                        typeAhead : true,
-                        mode : "local",
-                        triggerAction : "all",
-                        listClass : "x-combo-list-small",
-                        selectOnFocus : true,
-                        hideLabel : true,
-                        listeners : {
-                            "select" : {
-                                fn : function(elem, record) {
-                                    this.getLanguageSettings().language = record.data.code;
-                                }.createDelegate(this)
+                    title: this.i18n._("Language"),
+                    items: [{
+                        id: "system_language_combo",
+                        xtype: "combo",
+                        name: "Language",
+                        store: languagesStore,
+                        forceSelection: true,
+                        displayField: "name",
+                        valueField: "code",
+                        typeAhead: true,
+                        mode: "local",
+                        triggerAction: "all",
+                        listClass: "x-combo-list-small",
+                        selectOnFocus: true,
+                        hideLabel: true,
+                        listeners: {
+                            "select": {
+                                fn: Ext.bind(function(elem, record) {
+                                    this.getLanguageSettings().language = record[0].data.code;
+                                }, this)
                             },
-                            "render" : {
-                                fn : function(elem) {
+                            "render": {
+                                fn: Ext.bind(function(elem) {
                                     languagesStore.load({
-                                        callback : function(r, options, success) {
+                                        callback: Ext.bind(function(r, options, success) {
                                             if (success) {
                                                 var languageComboCmp = Ext.getCmp("system_language_combo");
                                                 if (languageComboCmp) {
                                                     languageComboCmp.setValue(this.getLanguageSettings().language);
                                                 }
                                             }
-                                        }.createDelegate(this)
+                                        }, this)
                                     });
-                                }.createDelegate(this)
+                                }, this)
                             }
                         }
                     }]
                 }, {
-                    title : this.i18n._("Upload New Language Pack"),
-                    items : {
-                        fileUpload : true,
-                        xtype : "form",
-                        id : "upload_language_form",
-                        url : "upload",
-                        border : false,
-                        items : [{
-                            fieldLabel : this.i18n._("File"),
-                            name : "file",
-                            id : "upload_language_file_textfield",
-                            inputType : "file",
-                            xtype : "textfield",
-                            allowBlank : false
+                    title: this.i18n._("Upload New Language Pack"),
+                    items: {
+                        fileUpload: true,
+                        xtype: "form",
+                        id: "upload_language_form",
+                        url: "upload",
+                        border: false,
+                        items: [{
+                            fieldLabel: this.i18n._("File"),
+                            name: "file",
+                            id: "upload_language_file_textfield",
+                            inputType: "file",
+                            xtype: "textfield",
+                            allowBlank: false
                         }, {
-                            xtype : "button",
-                            text : this.i18n._("Upload"),
-                            name : "Upload",
-                            handler : function() {
+                            xtype: "button",
+                            text: this.i18n._("Upload"),
+                            name: "Upload",
+                            handler: Ext.bind(function() {
                                 this.panelRegionalSettings.onUpload();
-                            }.createDelegate(this)
+                            }, this)
                         }, {
-                            xtype : "hidden",
-                            name : "type",
-                            value : "language"
+                            xtype: "hidden",
+                            name: "type",
+                            value: "language"
                         }]
                     }
                 }, {
-                    html : this.downloadLanguageHTML
+                    html: this.downloadLanguageHTML
                 }, {
-                    xtype : "fieldset",
-                    autoHeight : true,
-                    title : this.i18n._("Force Sync Time"),
-                    buttonAlign: "left",
-                    items : [{
+                    xtype: "fieldset",
+                    autoHeight: true,
+                    title: this.i18n._("Force Sync Time"),
+                    items: [{
                         border: false,
                         cls: "description",
                         html: this.i18n._("Click to force instant time synchronization.")
-                    }],
-                    buttons: [{
-                        xtype : "button",
-                        text : this.i18n._("Synchronize Time"),
-                        name : "Setup Wizard",
-                        iconCls : "reboot-icon",
-                        handler : function() {
-                            Ext.MessageBox.confirm(this.i18n._("Force Time Synchronization"),
-                                                   this.i18n._("Forced time synchronization can cause problems if the current date is far in the future.") + "<br/>" +
-                                                   this.i18n._("A reboot is suggested after time sychronization.") + "<br/>" + "<br/>" +
-                                                   this.i18n._("Continue?"),
-                                                   function(btn) {
-                                                       if (btn == "yes") {
-                                                           Ext.MessageBox.wait(this.i18n._("Syncing time with the internet..."), i18n._("Please wait"));
-                                                           rpc.jsonrpc.UvmContext.forceTimeSync(function (result, exception) {
-                                                               if(Ung.Util.handleException(exception)) return;
-
-                                                               if(result != 0) {
-                                                                   Ext.MessageBox.hide();
-                                                                   Ext.MessageBox.alert(this.i18n._("Warning"),this.i18n._("Time synchronization failed. Return code: ") + result); 
-                                                               } else {
-                                                                   Ext.MessageBox.hide();
-                                                               }
-                                                           }.createDelegate(this));
-                                                       }
-                                                   }.createDelegate(this));
-                        }.createDelegate(this)
+                    },{
+                        xtype: "button",
+                        text: this.i18n._("Synchronize Time"),
+                        name: "Setup Wizard",
+                        iconCls: "reboot-icon",
+                        handler: Ext.bind(function() {
+                            Ext.MessageBox.confirm(
+                                this.i18n._("Force Time Synchronization"),
+                                this.i18n._("Forced time synchronization can cause problems if the current date is far in the future.") + "<br/>" +
+                                this.i18n._("A reboot is suggested after time sychronization.") + "<br/>" + "<br/>" +
+                                this.i18n._("Continue?"),
+                                Ext.bind(function(btn) {
+                                    if (btn == "yes") {
+                                        Ext.MessageBox.wait(this.i18n._("Syncing time with the internet..."), i18n._("Please wait"));
+                                        rpc.jsonrpc.UvmContext.forceTimeSync(Ext.bind(function (result, exception) {
+                                            if(Ung.Util.handleException(exception)) return;
+                            
+                                            if(result != 0) {
+                                                Ext.MessageBox.hide();
+                                                Ext.MessageBox.alert(this.i18n._("Warning"), this.i18n._("Time synchronization failed. Return code: ") + result);
+                                            } else {
+                                                Ext.MessageBox.hide();
+                                            }
+                                        }, this));
+                                    }
+                               }, this));
+                        }, this)
                     }]
                 }],
-                onUpload : function() {
+                onUpload: function() {
                     var prova = Ext.getCmp("upload_language_form");
                     var cmp = Ext.getCmp(this.parentId);
 
                     var form = prova.getForm();
                     form.submit({
-                        parentId : cmp.getId(),
-                        waitMsg : cmp.i18n._("Please wait while your language pack is uploaded..."),
-                        success : function(form, action) {
+                        parentId: cmp.getId(),
+                        waitMsg: cmp.i18n._("Please wait while your language pack is uploaded..."),
+                        success: function(form, action) {
                             languagesStore.load();
-                            var cmp = Ext.getCmp(action.options.parentId);
+                            var cmp = Ext.getCmp(action.parentId);
                             if(action.result.success===true){
-                                Ext.MessageBox.alert(cmp.i18n._("Succeeded"), cmp.i18n._("Upload language pack succeeded"), 
+                                Ext.MessageBox.alert(cmp.i18n._("Succeeded"), cmp.i18n._("Upload language pack succeeded"),
                                     function() {
                                         Ext.getCmp("upload_language_file_textfield").reset();
-                                    } 
+                                    }
                                 );
                             }else{
                                 var msg = "An error occured while uploading the language pack";
                                 if(action.result.msg){
                                     msg = action.result.msg;
                                 }
-                                Ext.MessageBox.alert(cmp.i18n._("Warning"), cmp.i18n._(msg));                                
+                                Ext.MessageBox.alert(cmp.i18n._("Warning"), cmp.i18n._(msg));
                             }
                         },
-                        failure : function(form, action) {
-                            var cmp = Ext.getCmp(action.options.parentId);
+                        failure: function(form, action) {
+                            var cmp = Ext.getCmp(action.parentId);
                             var errorMsg = cmp.i18n._("Upload language pack failed");
                             if (action.result && action.result.msg) {
                                 msg = action.result.msg;
                                 switch (true) {
-                                    case (msg === "Invalid Language Pack") :
+                                    case (msg === "Invalid Language Pack"):
                                         errorMsg = cmp.i18n._("Invalid language pack; not a zip file");
                                     break;
-                                    case ((/.*MO file.*/).test(msg)) :
+                                    case ((/.*MO file.*/).test(msg)):
                                         errorMsg = cmp.i18n._("Couldn't compile MO file for entry" + " " + msg.split(" ").pop());
                                     break;
-                                    case ((/.*bundle file.*/).test(msg)) :
+                                    case ((/.*bundle file.*/).test(msg)):
                                         errorMsg = cmp.i18n._("Couldn't compile resource bundle for entry" + " " + msg.split(" ").pop());
                                     break;
-                                    default :
+                                    default:
                                         errorMsg = cmp.i18n._("Upload language pack failed");
                                 }
                             }
@@ -1080,212 +1039,170 @@ if (!Ung.hasResource["Ung.System"]) {
                 }
             });
 
-            this.timeUpdateFunction = function(){
+            this.timeUpdateFunction = Ext.bind(function(){
                 if(!this.isVisible())
                     return;
                 else {
-                    var currentTimeObj = this.panelRegionalSettings.find("name","currentTime")[0];
+                    var currentTimeObj = Ext.getCmp("system_regionalSettings_currentTime");
                     if (currentTimeObj != null && currentTimeObj.body != null)
                         currentTimeObj.body.update(rpc.adminManager.getDate());
+                    //TODO: Consider revising this functionality: Every second it makes a request to server to get the curent data!!!
                     window.setTimeout(this.timeUpdateFunction, 1000);
                 }
-            }.createDelegate(this);
+            }, this);
 
             window.setTimeout(this.timeUpdateFunction, 1000);
         },
         // validation function
-        validateClient : function() {
+        validate: function() {
             //validate timeout
-            return  (!this.isHttpLoaded() || this.validateMaxHeaderLength() && this.validateMaxUriLength()) && 
-               (!this.isMailLoaded() || this.validateSMTP() && this.validatePOP() && this.validateIMAP()); 
+            return  (!this.isHttpLoaded() || this.validateMaxHeaderLength() && this.validateMaxUriLength()) &&
+               (!this.isMailLoaded() || this.validateSMTP() && this.validatePOP() && this.validateIMAP());
         },
-        
+
         //validate Max URI Length
-        validateMaxUriLength : function() {
+        validateMaxUriLength: function() {
             var maxUriLengthCmp = Ext.getCmp("system_protocolSettings_maxUriLength");
             if (maxUriLengthCmp.isValid()) {
                 return true;
             } else {
                 Ext.MessageBox.alert(this.i18n._("Warning"), this.i18n._("Max URI Length should be between 1024 and 4096!"),
-                    function () {
-                        this.tabs.activate(this.panelProtocolSettings);
+            		Ext.bind(function () {
+                        this.tabs.setActiveTab(this.panelProtocolSettings);
                         maxUriLengthCmp.focus(true);
-                    }.createDelegate(this) 
+                    }, this)
                 );
                 return false;
             }
         },
         //validate Max Header Length
-        validateMaxHeaderLength : function() {
+        validateMaxHeaderLength: function() {
             var maxHeaderLengthCmp = Ext.getCmp("system_protocolSettings_maxHeaderLength");
             if (maxHeaderLengthCmp.isValid()) {
                 return true;
             } else {
                 Ext.MessageBox.alert(this.i18n._("Warning"), this.i18n._("Max Header Length should be between 1024 and 8192!"),
-                    function () {
-                        this.tabs.activate(this.panelProtocolSettings);
+            		Ext.bind(function () {
+                        this.tabs.setActiveTab(this.panelProtocolSettings);
                         maxHeaderLengthCmp.focus(true);
-                    }.createDelegate(this) 
+                    }, this)
                 );
                 return false;
             }
         },
         //validate SMTP timeout
-        validateSMTP : function() {
+        validateSMTP: function() {
             var smtpTimeoutCmp = Ext.getCmp("system_protocolSettings_smtpTimeout");
             if (smtpTimeoutCmp.isValid()) {
                 return true;
             } else {
                 Ext.MessageBox.alert(this.i18n._("Warning"), this.i18n._("SMTP timeout should be between 0 and 86400!"),
-                    function () {
-                        this.tabs.activate(this.panelProtocolSettings);
+            		Ext.bind(function () {
+                        this.tabs.setActiveTab(this.panelProtocolSettings);
                         smtpTimeoutCmp.focus(true);
-                    }.createDelegate(this) 
+                    }, this)
                 );
                 return false;
             }
         },
         //validate POP timeout
-        validatePOP : function() {
+        validatePOP: function() {
             var popTimeoutCmp = Ext.getCmp("system_protocolSettings_popTimeout");
             if (popTimeoutCmp.isValid()) {
                 return true;
             } else {
                 Ext.MessageBox.alert(this.i18n._("Warning"), this.i18n._("POP timeout should be between 0 and 86400!"),
-                    function () {
-                        this.tabs.activate(this.panelProtocolSettings);
+            		Ext.bind(function () {
+                        this.tabs.setActiveTab(this.panelProtocolSettings);
                         popTimeoutCmp.focus(true);
-                    }.createDelegate(this) 
+                    }, this)
                 );
                 return false;
             }
         },
         //validate IMAP timeout
-        validateIMAP : function() {
+        validateIMAP: function() {
             var imapTimeoutCmp = Ext.getCmp("system_protocolSettings_imapTimeout");
             if (imapTimeoutCmp.isValid()) {
                 return true;
             } else {
                 Ext.MessageBox.alert(this.i18n._("Warning"), this.i18n._("IMAP timeout should be between 0 and 86400!"),
-                    function () {
-                        this.tabs.activate(this.panelProtocolSettings);
+            		Ext.bind(function () {
+                        this.tabs.setActiveTab(this.panelProtocolSettings);
                         imapTimeoutCmp.focus(true);
-                    }.createDelegate(this) 
+                    }, this)
                 );
                 return false;
             }
         },
-        applyAction : function()
-        {
-            this.commitSettings(this.reloadSettings.createDelegate(this));
-        },
-        reloadSettings : function()
-        {
-            this.initialAccessSettings = Ung.Util.clone(this.getAccessSettings(true));
-            this.initialLanguageSettings = Ung.Util.clone(this.getLanguageSettings());
-            this.initialTimeZone = Ung.Util.clone(this.getTimeZone());
+        doSaveAction: function (isApply) {
+            this.saveSemaphore = 6;
+            // save language settings
+            rpc.languageManager.setLanguageSettings(Ext.bind(function(result, exception) {
+                this.afterSave(exception, isApply);
+            }, this), this.getLanguageSettings());
 
+            // save network settings
+            rpc.systemManager.setSettings(Ext.bind(function(result, exception) {
+                this.afterSave(exception, isApply);
+            }, this), this.getAccessSettings());
+
+            // save http settings
             if (this.isHttpLoaded()) {
-                this.initialHttpSettings = Ung.Util.clone(this.getHttpSettings(true));
+                this.getHttpNode().setHttpSettings(Ext.bind(function(result, exception) {
+                    this.afterSave(exception, isApply);
+                }, this), this.getHttpSettings());
+            } else {
+                this.saveSemaphore--;
             }
 
-            if (this.isMailLoaded()) {
-                this.initialMailSettings = Ung.Util.clone(this.getMailNodeSettings());
-            }
-
+            // save ftp settings
             if (this.isFtpLoaded()) {
-                // keep initial ftp settings
-                this.initialFtpSettings = Ung.Util.clone(this.getFtpSettings(true));
+                this.getFtpNode().setFtpSettings(Ext.bind(function(result, exception) {
+                    this.afterSave(exception, isApply);
+                }, this), this.getFtpSettings());
+            } else {
+                this.saveSemaphore--;
             }
 
-            Ext.MessageBox.hide();
-        },
-        saveAction : function()
-        {
-            this.commitSettings(this.completeSaveAction.createDelegate(this));
-        },
-        completeSaveAction : function()
-        {
-            Ext.MessageBox.hide();
-            this.closeWindow();
-        },
-        // save function
-        commitSettings : function(callback)
-        {
-            if (this.validate()) {
-                Ext.MessageBox.wait(i18n._("Saving..."), i18n._("Please wait"));
-                this.saveSemaphore = 6;
-                // save language settings
-                rpc.languageManager.setLanguageSettings(function(result, exception) {
-                    this.afterSave(exception,callback);
-                }.createDelegate(this), this.getLanguageSettings());
-                
-                // save network settings
-                rpc.networkManager.setSettings(function(result, exception) {
-                    this.afterSave(exception,callback);
-                }.createDelegate(this), this.getAccessSettings());
-                
-                // save http settings
-                if (this.isHttpLoaded()) {
-                    this.getHttpNode().setHttpSettings(function(result, exception) {
-                        this.afterSave(exception,callback);
-                    }.createDelegate(this), this.getHttpSettings());
-                } else {
-                    this.saveSemaphore--;
-                }
-                
-                // save ftp settings
-                if (this.isFtpLoaded()) {
-                    this.getFtpNode().setFtpSettings(function(result, exception) {
-                        this.afterSave(exception,callback);
-                    }.createDelegate(this), this.getFtpSettings());
-                } else {
-                    this.saveSemaphore--;
-                }
-                
-                // save mail settings
-                if (this.isMailLoaded()) {
-                    var quarantineSettings = this.getMailNodeSettings().quarantineSettings;
-                    delete quarantineSettings.secretKey;
+            // save mail settings
+            if (this.isMailLoaded()) {
+                var quarantineSettings = this.getMailNodeSettings().quarantineSettings;
+                quarantineSettings.allowedAddressPatterns.javaClass="java.util.ArrayList";
+                delete quarantineSettings.secretKey;
 
-                    this.getMailNode().setMailNodeSettings(function(result, exception) {
-                        this.afterSave(exception,callback);
-                    }.createDelegate(this), this.getMailNodeSettings());
-                } else {
-                    this.saveSemaphore--;
-                }
-                
-                //save timezone
-                rpc.adminManager.setTimeZone(function(result, exception) {
-                    this.afterSave(exception,callback);
-                }.createDelegate(this), this.rpc.timeZone);
+                this.getMailNode().setMailNodeSettings(Ext.bind(function(result, exception) {
+                    this.afterSave(exception, isApply);
+                }, this), this.getMailNodeSettings());
+            } else {
+                this.saveSemaphore--;
             }
+
+            //save timezone
+            rpc.adminManager.setTimeZone(Ext.bind(function(result, exception) {
+                this.afterSave(exception, isApply);
+            }, this), this.rpc.timeZone);
         },
-        afterSave : function(exception,callback)
-        {
+        afterSave: function(exception, isApply) {
             if(Ung.Util.handleException(exception)) return;
 
             this.saveSemaphore--;
             if (this.saveSemaphore == 0) {
-                var needRefresh = this.initialLanguageSettings.language != this.getLanguageSettings().language;
-
-                if (needRefresh) {                    
+                var needRefresh = this.initialLanguage != this.getLanguageSettings().language;
+                if (needRefresh) {
                     Ung.Util.goToStartPage();
                     return;
                 }
-
-                callback();
+                if(isApply) {
+                    this.initialLanguage = this.getLanguageSettings().language;
+                    this.clearDirty();
+                    Ext.MessageBox.hide();
+                } else {
+                    Ext.MessageBox.hide();
+                    this.closeWindow();
+                }
             }
-        },
-        isDirty : function() {
-            return !Ung.Util.equals(this.getLanguageSettings(), this.initialLanguageSettings)
-                || !Ung.Util.equals(this.getTimeZone(), this.initialTimeZone)
-                || !Ung.Util.equals(this.getAccessSettings(), this.initialAccessSettings)
-                || this.isHttpLoaded() && !Ung.Util.equals(this.getHttpSettings(), this.initialHttpSettings)
-                || this.isFtpLoaded() && !Ung.Util.equals(this.getFtpSettings(), this.initialFtpSettings)
-                || this.isMailLoaded() && !Ung.Util.equals(this.getMailNodeSettings(), this.initialMailSettings);
         }
     });
-
 }
 //@ sourceURL=system.js

@@ -22,21 +22,6 @@
   </servlet-mapping>
 
   <servlet>
-    <servlet-name>StartPageServletNew</servlet-name>
-    <servlet-class>com.untangle.uvm.webui.servlet.StartPageServletNew</servlet-class>
-    <init-param>
-      <param-name>buildStamp</param-name>
-      <param-value>@BUILD_STAMP@</param-value>
-    </init-param>
-    <load-on-startup>1</load-on-startup>
-  </servlet>
-
-  <servlet-mapping>
-    <servlet-name>StartPageServletNew</servlet-name>
-    <url-pattern>/startPageNew.do</url-pattern>
-  </servlet-mapping>
-
-  <servlet>
     <servlet-name>SetupSettingsServlet</servlet-name>
     <servlet-class>com.untangle.uvm.webui.servlet.SetupSettingsServlet</servlet-class>
     <load-on-startup>1</load-on-startup>

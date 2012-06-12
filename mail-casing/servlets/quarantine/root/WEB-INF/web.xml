@@ -37,13 +37,6 @@
   </servlet>
 
   <servlet>
-    <servlet-name>InboxMaintenenceControlerNew</servlet-name>
-    <servlet-class>com.untangle.node.mail.web.euv.InboxMaintenenceControlerNew</servlet-class>
-    <load-on-startup>3</load-on-startup>
-  </servlet>
-
-
-  <servlet>
     <servlet-name>JSONRPCServlet</servlet-name>
     <servlet-class>com.untangle.node.mail.web.euv.UtJsonRpcServlet</servlet-class>
     <init-param>

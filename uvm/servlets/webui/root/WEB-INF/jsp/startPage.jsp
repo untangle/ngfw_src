@@ -2,17 +2,18 @@
 
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <html xmlns="http://www.w3.org/1999/xhtml">
-<c:set var="isDebug" value="false"/>
+<c:set var="isDebug" value="true"/>
 <head>
-
     <title>${companyName}</title>
-    <META content="IE=7.0000" http-equiv="X-UA-Compatible"/>
+    <META content="IE=9.0000" http-equiv="X-UA-Compatible"/>
     <style type="text/css">
-        @import "/ext/resources/css/ext-all.css?s=${buildStamp}";
+     @import "/ext4/resources/css/ext-all-gray.css?s=${buildStamp}";
+	 @import "/ext4/examples/ux/css/CheckHeader.css?s=${buildStamp}";
     </style>
 <c:if test="${isDebug==false}">
-    <script type="text/javascript" src="/ext/adapter/ext/ext-base.js?s=${buildStamp}"></script>
-    <script type="text/javascript" src="/ext/ext-all.js?s=${buildStamp}"></script>
+    <script type="text/javascript" src="/ext4/ext-all.js?s=${buildStamp}"></script>
+	<script type="text/javascript" src="/ext4/examples/ux/data/PagingMemoryProxy.js?s=${buildStamp}"></script>
+	<script type="text/javascript" src="/ext4/examples/ux/CheckColumn.js?s=${buildStamp}"></script>
 
     <script type="text/javascript" src="/jsonrpc/jsonrpc-min.js?s=${buildStamp}"></script>
     <script type="text/javascript" src="/script/i18n.js?s=${buildStamp}"></script>
@@ -25,59 +26,19 @@
     <script type="text/javascript" src="/script/wizard.js?s=${buildStamp}"></script>
 </c:if>
 <c:if test="${isDebug==true}">
-    <script type="text/javascript" src="/ext/source/core/Ext.js?s=${buildStamp}"></script>
-    <script type="text/javascript" src="/ext/source/adapter/ext-base.js?s=${buildStamp}"></script>
-    <script type="text/javascript" src="/ext/ext-all-debug.js?s=${buildStamp}"></script>
-
+    <script type="text/javascript" src="/ext4/ext-all-debug.js?s=${buildStamp}"></script>
+	<script type="text/javascript" src="/ext4/examples/ux/data/PagingMemoryProxy.js?s=${buildStamp}"></script>
+	<script type="text/javascript" src="/ext4/examples/ux/CheckColumn.js?s=${buildStamp}"></script>
 
     <script type="text/javascript" src="/jsonrpc/jsonrpc.js?s=${buildStamp}"></script>
     <script type="text/javascript" src="/script/i18n.js?s=${buildStamp}"></script>
     <script type="text/javascript" src="script/components.js?s=${buildStamp}"></script>
     <script type="text/javascript" src="script/main.js?s=${buildStamp}"></script>
-
+ 
     <!-- todo, move this to a place where it is loaded dynamically. -->
     <script type="text/javascript" src="/script/timezone.js?s=${buildStamp}"></script>
     <script type="text/javascript" src="/script/country.js?s=${buildStamp}"></script>
     <script type="text/javascript" src="/script/wizard.js?s=${buildStamp}"></script>
-
-    <!-- Just for Test, normaly this resources are Dynamically loaded -->
-    <script type="text/javascript" src="script/untangle-base-webfilter/settings.js?s=${buildStamp}"></script>
-    <script type="text/javascript" src="script/untangle-node-adblocker/settings.js?s=${buildStamp}"></script>
-    <script type="text/javascript" src="script/untangle-node-adconnector/settings.js?s=${buildStamp}"></script>
-    <script type="text/javascript" src="script/untangle-node-bandwidth/settings.js?s=${buildStamp}"></script>
-    <script type="text/javascript" src="script/untangle-node-boxbackup/settings.js?s=${buildStamp}"></script>
-    <script type="text/javascript" src="script/untangle-node-branding/settings.js?s=${buildStamp}"></script>
-    <script type="text/javascript" src="script/untangle-node-clam/settings.js?s=${buildStamp}"></script>
-    <script type="text/javascript" src="script/untangle-node-classd/settings.js?s=${buildStamp}"></script>
-    <script type="text/javascript" src="script/untangle-node-commtouchas/settings.js?s=${buildStamp}"></script>
-    <script type="text/javascript" src="script/untangle-node-commtouchav/settings.js?s=${buildStamp}"></script>
-    <script type="text/javascript" src="script/untangle-node-cpd/settings.js?s=${buildStamp}"></script>
-    <script type="text/javascript" src="script/untangle-node-faild/settings.js?s=${buildStamp}"></script>
-    <script type="text/javascript" src="script/untangle-node-firewall/settings.js?s=${buildStamp}"></script>
-    <script type="text/javascript" src="script/untangle-node-ips/settings.js?s=${buildStamp}"></script>
-    <script type="text/javascript" src="script/untangle-node-ipsec/settings.js?s=${buildStamp}"></script>
-    <script type="text/javascript" src="script/untangle-node-license/settings.js?s=${buildStamp}"></script>
-    <script type="text/javascript" src="script/untangle-node-openvpn/settings.js?s=${buildStamp}"></script>
-    <script type="text/javascript" src="script/untangle-node-phish/settings.js?s=${buildStamp}"></script>
-    <script type="text/javascript" src="script/untangle-node-policy/settings.js?s=${buildStamp}"></script>
-    <script type="text/javascript" src="script/untangle-node-protofilter/settings.js?s=${buildStamp}"></script>
-    <script type="text/javascript" src="script/untangle-node-reporting/settings.js?s=${buildStamp}"></script>
-    <script type="text/javascript" src="script/untangle-node-shield/settings.js?s=${buildStamp}"></script>
-    <script type="text/javascript" src="script/untangle-node-sitefilter/settings.js?s=${buildStamp}"></script>
-    <script type="text/javascript" src="script/untangle-node-spamassassin/settings.js?s=${buildStamp}"></script>
-    <script type="text/javascript" src="script/untangle-node-splitd/settings.js?s=${buildStamp}"></script>
-    <script type="text/javascript" src="script/untangle-node-spyware/settings.js?s=${buildStamp}"></script>
-    <script type="text/javascript" src="script/untangle-node-support/settings.js?s=${buildStamp}"></script>
-    <script type="text/javascript" src="script/untangle-node-webcache/settings.js?s=${buildStamp}"></script>
-    <script type="text/javascript" src="script/untangle-node-webfilter/settings.js?s=${buildStamp}"></script>
-    <script type="text/javascript" src="script/config/administration.js?s=${buildStamp}"></script>
-    <script type="text/javascript" src="script/config/email.js?s=${buildStamp}"></script>
-    <script type="text/javascript" src="script/config/system.js?s=${buildStamp}"></script>
-    <script type="text/javascript" src="script/config/systemInfo.js?s=${buildStamp}"></script>
-    <script type="text/javascript" src="script/config/upgrade.js?s=${buildStamp}"></script>
-    <script type="text/javascript" src="script/config/localDirectory.js?s=${buildStamp}"></script>
-    <script type="text/javascript" src="script/config/policyManager.js?s=${buildStamp}"></script>
-    <script type="text/javascript" src="script/config/sessionMonitor.js?s=${buildStamp}"></script>
 </c:if>
 
 <c:if test="${param['console']==1}">
@@ -89,8 +50,7 @@
         var storeWindowName='store_window_${storeWindowId}';
         var isWizardComplete = ${isWizardComplete};
         function init() {
-            main=new Ung.Main({debugMode:${isDebug}});
-            main.buildStamp='${buildStamp}';
+            main=new Ung.Main({debugMode:${isDebug},buildStamp:'${buildStamp}'});
             main.init();
         }
         Ext.onReady(init);

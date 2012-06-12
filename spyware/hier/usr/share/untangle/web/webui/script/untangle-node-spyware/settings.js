@@ -2,7 +2,8 @@ if (!Ung.hasResource["Ung.Spyware"]) {
     Ung.hasResource["Ung.Spyware"] = true;
     Ung.NodeWin.registerClassName('untangle-node-spyware', "Ung.Spyware");
 
-    Ung.Spyware = Ext.extend(Ung.NodeWin, {
+	Ext.define('Ung.Spyware', {
+		extend:'Ung.NodeWin',
         //gridActiveXList : null,
         gridCookiesList : null,
         gridSubnetList : null,
@@ -12,10 +13,8 @@ if (!Ung.hasResource["Ung.Spyware"]) {
         gridSuspiciousEventLog : null,
         gridUrlEventLog : null,
         initComponent : function() {
+            this.getSettings();
             this.genericRuleFields = Ung.Util.getGenericRuleFields(this);
-            Ung.Util.generateListIds(this.getSettings().cookies.list);
-            Ung.Util.generateListIds(this.getSettings().subnets.list);
-            Ung.Util.generateListIds(this.getSettings().passedUrls.list);
             this.buildBlockLists();
             this.buildPassList();
             this.buildUrlEventLog();
@@ -27,13 +26,11 @@ if (!Ung.hasResource["Ung.Spyware"]) {
                                 this.gridCookieEventLog,
                                 this.gridSuspiciousEventLog]);
 
-            // keep initial  settings
-            this.initialSettings = Ung.Util.clone(this.getSettings());
             Ung.Spyware.superclass.initComponent.call(this);
         },
         // Block lists panel
         buildBlockLists : function() {
-            this.panelBlockLists = new Ext.Panel({
+            this.panelBlockLists = Ext.create('Ext.panel.Panel',{
                 name : 'Block Lists',
                 helpSource : 'block_lists',
                 winCookiesList : null,
@@ -42,8 +39,6 @@ if (!Ung.hasResource["Ung.Spyware"]) {
                 subCmps : [],
                 title : this.i18n._("Block Lists"),
                 parentId : this.getId(),
-
-                layout : "form",
                 cls: 'ung-panel',
                 autoScroll : true,
                 defaults : {
@@ -59,49 +54,40 @@ if (!Ung.hasResource["Ung.Spyware"]) {
                         boxLabel : this.i18n._('Block Malware URLs (Community List)'),
                         hideLabel : true,
                         name : 'Block Malware URLs (Community List)',
-                        checked : this.getSettings().scanUrls,
-                        listeners : {
-                            "check" : {
-                                fn : function(elem, checked) {
-                                    this.getSettings().scanUrls = checked;
-                                }.createDelegate(this)
-                            }
-                        }
-                    },  {
+                        checked : this.settings.scanUrls,
+						handler:Ext.bind(function(elem, checked) {
+                                    this.settings.scanUrls = checked;
+                                },this)
+                       }
+                    ,  {
                         xtype : 'checkbox',
                         boxLabel : this.i18n._('Block Malware URLs (Google List)'),
                         hideLabel : true,
                         name : 'Block Malware URLs (Google List)',
-                        checked : this.getSettings().scanGoogleSafeBrowsing,
-                        listeners : {
-                            "check" : {
-                                fn : function(elem, checked) {
-                                    this.getSettings().scanGoogleSafeBrowsing = checked;
-                                }.createDelegate(this)
-                            }
+                        checked : this.settings.scanGoogleSafeBrowsing,
+						handler: Ext.bind(function(elem, checked) {
+                                    this.settings.scanGoogleSafeBrowsing = checked;
+                                },this)
                         }
-                    },  {
+                     ,  {
                         xtype : 'combo',
                         editable : false,
                         mode : 'local',
                         fieldLabel : this.i18n._('User Bypass'),
                         name : "User Bypass",
-                        store : new Ext.data.SimpleStore({
-                            fields : ['unblockModeValue', 'unblockModeName'],
-                            data : [["None", this.i18n._("None")],
-                                    ["Host", this.i18n._("Temporary")],
-                                    ["Global", this.i18n._("Permanent and Global")]]
-                        }),
+                        store : [["None", this.i18n._("None")],
+                                 ["Host", this.i18n._("Temporary")],
+                                 ["Global", this.i18n._("Permanent and Global")]],
                         displayField : 'unblockModeName',
                         valueField : 'unblockModeValue',
-                        value : this.getSettings().unblockMode,
+                        value : this.settings.unblockMode,
                         triggerAction : 'all',
                         listClass : 'x-combo-list-small',
                         listeners : {
                             "change" : {
-                                fn : function(elem, newValue) {
-                                    this.getSettings().unblockMode = newValue;
-                                }.createDelegate(this)
+                                fn : Ext.bind(function(elem, newValue) {
+                                    this.settings.unblockMode = newValue;
+                                },this)
                             }
                         }
                     }]
@@ -112,21 +98,18 @@ if (!Ung.hasResource["Ung.Spyware"]) {
                         boxLabel : this.i18n._('Block Tracking & Ad Cookies'),
                         hideLabel : true,
                         name : 'Block Tracking & Ad Cookies',
-                        checked : this.getSettings().scanCookies,
-                        listeners : {
-                            "check" : {
-                                fn : function(elem, checked) {
-                                    this.getSettings().scanCookies = checked;
-                                }.createDelegate(this)
-                            }
-                        }
-                    }],
-                    buttons : [{
+                        checked : this.settings.scanCookies,
+						handler:Ext.bind(function(elem, checked) {
+                                    this.settings.scanCookies = checked;
+                                },this)
+                    },
+                    {
+						xtype:'button',
                         name : 'Edit Cookies List',
                         text : this.i18n._("Edit Cookie List"),
-                        handler : function() {
+                        handler : Ext.bind(function() {
                             this.panelBlockLists.onManageCookiesList();
-                        }.createDelegate(this)
+                        },this)
                     }]
                 }, {
                     title : this.i18n._('Traffic'),
@@ -135,77 +118,68 @@ if (!Ung.hasResource["Ung.Spyware"]) {
                         boxLabel : this.i18n._('Monitor Suspicious Traffic'),
                         hideLabel : true,
                         name : 'Monitor Suspicious Traffic',
-                        checked : this.getSettings().scanSubnets,
-                        listeners : {
-                            "check" : {
-                                fn : function(elem, checked) {
-                                    this.getSettings().scanSubnets = checked;
-                                }.createDelegate(this)
-                            }
-                        }
-                    }],
-                    buttons : [{
+                        checked : this.settings.scanSubnets,
+                        handler : Ext.bind(function(elem, checked) {
+                                    this.settings.scanSubnets = checked;
+                                },this)
+                    },
+                    {
+						xtype:'button',
                         name : 'Edit Traffic List',
                         text : this.i18n._("Edit Traffic List"),
-                        handler : function() {
+                        handler : Ext.bind(function() {
                             this.panelBlockLists.onManageSubnetList();
-                        }.createDelegate(this)
+                        },this)
                     }]
-                }, {
-                    cls: 'description',
-                    html : this.i18n._("Spyware Blocker signatures were last updated") + ":&nbsp;&nbsp;&nbsp;&nbsp;"
-                        + ((this.getRpcNode().getLastSignatureUpdate() != null) ? i18n.timestampFormat(this.getRpcNode().getLastSignatureUpdate()) :
-                           this.i18n._("Unknown"))
                 }],
 
                 onManageCookiesList : function() {
                     if (!this.winCookiesList) {
                         var settingsCmp = Ext.getCmp(this.parentId);
                         settingsCmp.buildCookiesList();
-                        this.winCookiesList = new Ung.ManageListWindow({
+                        this.winCookiesList = Ext.create('Ung.ManageListWindow',{
                             breadcrumbs : [{
                                 title : i18n._(rpc.currentPolicy.name),
-                                action : function() {
+                                action : Ext.bind(function() {
                                     Ung.Window.cancelAction(
                                         this.gridCookiesList.isDirty() || this.isDirty(),
-                                        function() {
+                                        Ext.bind(function() {
                                             this.panelBlockLists.winCookiesList.closeWindow();
                                             this.closeWindow();
-                                        }.createDelegate(this)
+                                        },this)
                                     );
-                                }.createDelegate(settingsCmp)
+                                },settingsCmp)
                             }, {
                                 title : settingsCmp.node.displayName,
-                                action : function() {
+                                action : Ext.bind(function() {
                                     this.panelBlockLists.winCookiesList.cancelAction();
-                                }.createDelegate(settingsCmp)
+                                },settingsCmp)
                             }, {
                                 title : settingsCmp.i18n._("Block Lists"),
-                                action : function() {
+                                action : Ext.bind(function() {
                                     this.panelBlockLists.winCookiesList.cancelAction();
-                                }.createDelegate(settingsCmp)
+                                },settingsCmp)
                             }, {
                                 title : settingsCmp.i18n._("Cookies List")
                             }],
                             grid : settingsCmp.gridCookiesList,
                             applyAction : function(callback){
                                 Ext.MessageBox.wait(i18n._("Saving..."), i18n._("Please wait"));
-                                settingsCmp.gridCookiesList.getGridSaveList(function(saveList) {
+                                settingsCmp.gridCookiesList.getGridSaveList(Ext.bind(function(saveList) {
                                     this.alterUrls(saveList.list);
-                                    this.getRpcNode().setCookies(function(result, exception) {
+                                    this.getRpcNode().setCookies(Ext.bind(function(result, exception) {
                                         if(Ung.Util.handleException(exception)) return;
-                                        this.getRpcNode().getCookies(function(result, exception) {
+                                        this.getRpcNode().getCookies(Ext.bind(function(result, exception) {
                                             Ext.MessageBox.hide();
                                             if(Ung.Util.handleException(exception)) return;
-                                            this.gridCookiesList.reloadGrid({data:result.list});
-                                            this.getSettings().cookies = result;
-                                            this.initialSettings.cookies = result;
+                                            this.settings.cookies = result;
+                                            this.gridCookiesList.clearDirty();
                                             if(callback != null) {
                                                 callback();
                                             }
-                                        }.createDelegate(this));
-                                    }.createDelegate(this), saveList);
-                                }.createDelegate(settingsCmp));
+                                        },this));
+                                    },this), saveList);
+                                },settingsCmp));
                             }    
                         });
                     }
@@ -215,50 +189,49 @@ if (!Ung.hasResource["Ung.Spyware"]) {
                     if (!this.winSubnetList) {
                         var settingsCmp = Ext.getCmp(this.parentId);
                         settingsCmp.buildSubnetList();
-                        this.winSubnetList = new Ung.ManageListWindow({
+                        this.winSubnetList = Ext.create('Ung.ManageListWindow',{
                             breadcrumbs : [{
                                 title : i18n._(rpc.currentPolicy.name),
-                                action : function() {
+                                action : Ext.bind(function() {
                                     Ung.Window.cancelAction(
                                         this.gridSubnetList.isDirty() || this.isDirty(),
-                                        function() {
+                                        Ext.bind(function() {
                                             this.panelBlockLists.winSubnetList.closeWindow();
                                             this.closeWindow();
-                                        }.createDelegate(this)
+                                        },this)
                                     );
-                                }.createDelegate(settingsCmp)
+                                },settingsCmp)
                             }, {
                                 title : settingsCmp.node.displayName,
-                                action : function() {
+                                action : Ext.bind(function() {
                                     this.panelBlockLists.winSubnetList.cancelAction();
-                                }.createDelegate(settingsCmp)
+                                },settingsCmp)
                             }, {
                                 title : settingsCmp.i18n._("Block Lists"),
-                                action : function() {
+                                action : Ext.bind(function() {
                                     this.panelBlockLists.winSubnetList.cancelAction();
-                                }.createDelegate(settingsCmp)
+                                },settingsCmp)
                             }, {
                                 title : settingsCmp.i18n._("Subnet List")
                             }],
                             grid : settingsCmp.gridSubnetList,
                             applyAction : function(callback){
                                 Ext.MessageBox.wait(i18n._("Saving..."), i18n._("Please wait"));
-                                settingsCmp.gridSubnetList.getGridSaveList(function(saveList) {
+                                settingsCmp.gridSubnetList.getGridSaveList(Ext.bind(function(saveList) {
                                     this.alterUrls(saveList);
-                                    this.getRpcNode().setSubnets(function(result, exception) {
+                                    this.getRpcNode().setSubnets(Ext.bind(function(result, exception) {
                                         if(Ung.Util.handleException(exception)) return;
-                                        this.getRpcNode().getSubnets(function(result, exception) {
+                                        this.getRpcNode().getSubnets(Ext.bind(function(result, exception) {
                                             Ext.MessageBox.hide();
                                             if(Ung.Util.handleException(exception)) return;
-                                            this.gridSubnetList.reloadGrid({data:result.list});
-                                            this.getSettings().subnets = result;
-                                            this.initialSettings.subnets = result;
+                                            this.settings.subnets = result;
+                                            this.gridSubnetList.clearDirty();
                                             if(callback != null) {
                                                 callback();
                                             }
-                                        }.createDelegate(this));
-                                    }.createDelegate(this), saveList);
-                                }.createDelegate(settingsCmp));
+                                        },this));
+                                    },this), saveList);
+                                },settingsCmp));
                             }
                         });
                     }
@@ -275,13 +248,8 @@ if (!Ung.hasResource["Ung.Spyware"]) {
         },
         // Cookies List
         buildCookiesList : function() {
-            var enabledColumn = new Ext.grid.CheckColumn({
-                header : "<b>" + this.i18n._("block") + "</b>",
-                dataIndex : 'enabled',
-                fixed : true
-            });
 
-            this.gridCookiesList = new Ung.EditorGrid({
+            this.gridCookiesList = Ext.create('Ung.EditorGrid',{
                 name : 'Cookies List',
                 settingsCmp : this,
                 emptyRow : {
@@ -290,45 +258,47 @@ if (!Ung.hasResource["Ung.Spyware"]) {
                     "description" : this.i18n._("[no description]")
                 },
                 title : this.i18n._("Cookies List"),
-                data: this.getSettings().cookies.list,
+                dataProperty:'cookies',
                 recordJavaClass : "com.untangle.uvm.node.GenericRule",
                 fields : this.genericRuleFields,
                 columns : [{
-                    id : 'string',
                     header : this.i18n._("identification"),
                     width : 140,
                     dataIndex : 'string',
-                    editor : new Ext.form.TextField({
-                        allowBlank : false
-                    })
-                }, enabledColumn],
+                    flex: 1,
+                    editor:{
+                        xtype:'textfield'
+                    }
+				}, 
+				{
+                	xtype: 'checkcolumn',
+                    header : "<b>" + this.i18n._("block") + "</b>",
+                    dataIndex : 'enabled',
+                    fixed: true,
+                    width:55
+                }],
                 sortField : 'string',
                 columnsDefaultSortable : true,
-                autoExpandColumn : 'string',
-                plugins : [enabledColumn],
-                rowEditorInputLines : [new Ext.form.TextField({
+                rowEditorInputLines : [{
+                	xtype:'textfield',
                     name : "Identification",
                     dataIndex : "string",
                     fieldLabel : this.i18n._("Identification"),
                     allowBlank : false,
-                    width : 200
-                }), new Ext.form.Checkbox({
+                    width : 400
+                }, {
+                	xtype: 'checkbox',
                     name : "Block",
                     dataIndex : "enabled",
                     fieldLabel : this.i18n._("Block")
-                })]
+                }]
             });
         },
 
         // Subnet List
         buildSubnetList : function() {
-            var flagColumn = new Ext.grid.CheckColumn({
-                header : "<b>" + this.i18n._("log") + "</b>",
-                dataIndex : 'flagged',
-                fixed : true
-            });
 
-            this.gridSubnetList = new Ung.EditorGrid({
+            this.gridSubnetList = Ext.create('Ung.EditorGrid',{
                 name : 'Subnet List',
                 settingsCmp : this,
                 emptyRow : {
@@ -338,52 +308,62 @@ if (!Ung.hasResource["Ung.Spyware"]) {
                     description : this.i18n._("[no description]")
                 },
                 title : this.i18n._("Subnet List"),
-                data: this.getSettings().subnets.list,
+                dataProperty:'subnets',
                 recordJavaClass : "com.untangle.uvm.node.GenericRule",
                 fields : this.genericRuleFields,
                 columns : [{
-                    id : 'name',
-                    header : this.i18n._("name"),
-                    width : 150,
-                    dataIndex : 'name',
-                    editor : new Ext.form.TextField({
-                        allowBlank : false
-                    })
-                }, {
-                    id : 'string',
-                    header : this.i18n._("subnet"),
-                    width : 200,
-                    dataIndex : 'string',
-                    editor : new Ext.form.TextField({
-                        allowBlank : false
-                    })
-                }, flagColumn],
+						header : this.i18n._("name"),
+						width : 250,
+						dataIndex : 'name',
+						flex: 1,
+						editor: {
+							xtype: 'textfield',
+							allowBlank: false
+						}
+					}, {
+						id : 'string',
+						header : this.i18n._("subnet"),
+						width : 300,
+						dataIndex : 'string',
+						editor: {
+							xtype: 'textfield',
+							allowBlank: false
+						}
+					}, 
+					{
+					 xtype:'checkcolumn',
+					 header : "<b>" + this.i18n._("log") + "</b>",
+					 dataIndex : 'flagged',
+					 fixed : true,
+					 width:55
+					}],
                 sortField : 'name',
                 columnsDefaultSortable : true,
-                autoExpandColumn : 'name',
-                plugins : [flagColumn],
-                rowEditorInputLines : [new Ext.form.TextField({
+                rowEditorInputLines : [{
+                	xtype:'textfield',
                     name : "Name",
                     dataIndex : "name",
                     fieldLabel : this.i18n._("Name"),
                     allowBlank : false,
-                    width : 200
-                }), new Ext.form.TextField({
+                    width : 250
+                }, {
+                	xtype:'textfield',
                     name : "Subnet",
                     dataIndex : "string",
                     fieldLabel : this.i18n._("Subnet"),
                     allowBlank : false,
-                    width : 200
-                }), new Ext.form.Checkbox({
+                    width : 500
+                }, {
+                	xtype: 'checkbox',
                     name : "Log",
                     dataIndex : "flagged",
                     fieldLabel : this.i18n._("Log")
-                })]
+                }]
             });
         },
         // Pass List
         buildPassList : function() {
-            var urlValidator = function(fieldValue) {
+            var urlValidator = Ext.bind(function(fieldValue) {
                 if (fieldValue.indexOf("https://") == 0) {
                     return this.i18n._("\"URL\" specified cannot be blocked because it uses secure http (https)");
                 }
@@ -400,16 +380,9 @@ if (!Ung.hasResource["Ung.Spyware"]) {
                     return this.i18n._("Invalid \"URL\" specified");
                 }
                 return true;
-            }.createDelegate(this);
+            },this);
 
-            var passColumn = new Ext.grid.CheckColumn({
-                header : "<b>" + this.i18n._("pass") + "</b>",
-                dataIndex : 'enabled',
-                width: 65,
-                fixed : true
-            });
-
-            this.gridPassList = new Ung.EditorGrid({
+			this.gridPassList = Ext.create('Ung.EditorGrid', {
                 name : 'Pass List',
                 helpSource : 'pass_list',
                 settingsCmp : this,
@@ -419,63 +392,71 @@ if (!Ung.hasResource["Ung.Spyware"]) {
                     "description" : this.i18n._("[no description]")
                 },
                 title : this.i18n._("Pass List"),
-                data: this.getSettings().passedUrls.list,
+                dataProperty: 'passedUrls',
                 recordJavaClass : "com.untangle.uvm.node.GenericRule",
                 fields : this.genericRuleFields,
-                columns : [{
-                    id : 'string',
+				sortField : 'string',
+                columnsDefaultSortable : true,
+				columns: [{
                     header : this.i18n._("site"),
                     width : 200,
                     dataIndex : 'string',
-                    editor : new Ext.form.TextField({
-                        allowBlank : false,
-                        validator : urlValidator,
-                        blankText : this.i18n._("Invalid \"URL\" specified")
-                    })
-                }, passColumn, {
-                    id : 'description',
+					editor:{
+                        xtype:'textfield'
+                    }
+                }, {
+                	xtype: "checkcolumn",
+                    header : "<b>" + this.i18n._("pass") + "</b>",
+                    dataIndex : 'enabled',
+                    width: 65,
+                    fixed : true
+                },
+				{
                     header : this.i18n._("description"),
                     width : 200,
+                    flex: 1,
                     dataIndex : 'description',
-                    editor : new Ext.form.TextField({
-                        allowBlank : false
-                    })
+					editor: { 
+                        xtype:'textfield'
+                    }
                 }],
                 sortField : 'string',
                 columnsDefaultSortable : true,
-                autoExpandColumn : 'description',
-                plugins : [passColumn],
-                rowEditorInputLines : [new Ext.form.TextField({
+                rowEditorInputLines : [{
+                	xtype: 'textfield',
                     name : "Site",
                     dataIndex : "string",
                     fieldLabel : this.i18n._("Site"),
-                    width : 200,
+                    width : 500,
                     validator : urlValidator,
                     allowBlank : false,
                     blankText : this.i18n._("Invalid \"URL\" specified")
-                }), new Ext.form.Checkbox({
+                }, {
+                	xtype: 'checkbox',
                     name : "Pass",
                     dataIndex : "enabled",
                     fieldLabel : this.i18n._("Pass")
-                }), new Ext.form.TextArea({
+                }, {
+                	xtype: 'textarea',
                     name : "Description",
                     dataIndex : "description",
                     fieldLabel : this.i18n._("Description"),
-                    width : 200,
+                    width : 500,
                     height : 60
-                })]
-            });
+                }]
+				
+			});
         },
 
         // Event Logs
         buildCookieEventLog : function() {
-            this.gridCookieEventLog = new Ung.GridEventLog({
+            this.gridCookieEventLog = Ext.create('Ung.GridEventLog',{
                 settingsCmp : this,
                 eventQueriesFn : this.getRpcNode().getCookieEventQueries,
                 name : "Cookie Event Log",
                 title : i18n._('Cookie Event Log'),
                 fields : [{
-                    name : 'timeStamp',
+                    name : 'time_stamp',
                     sortType : Ung.SortTypes.asTimestamp
                 }, {
                     name : 'uid'
@@ -484,23 +465,23 @@ if (!Ung.hasResource["Ung.Spyware"]) {
                 }, {
                     name : 'swCookie'
                 }, {
-                    name : 'swAccessIdent'
+                    name : 'sw_access_ident'
                 }, {
                     name : 'uri'
                 }, {
                     name : 'host'
                 }, {
                     name : 'client',
-                    mapping : 'CClientAddr'
+                    mapping : 'c_client_addr'
                 }, {
                     name : 'server',
-                    mapping : 'CServerAddr'
+                    mapping : 'c_server_addr'
                 }],
                 columns : [{
                     header : this.i18n._("timestamp"),
                     width : Ung.Util.timestampFieldWidth,
                     sortable : true,
-                    dataIndex : 'timeStamp',
+                    dataIndex : 'time_stamp',
                     renderer : function(value) {
                         return i18n.timestampFormat(value);
                     }
@@ -539,13 +520,13 @@ if (!Ung.hasResource["Ung.Spyware"]) {
         },
 
         buildUrlEventLog : function() {
-            this.gridUrlEventLog = new Ung.GridEventLog({
+            this.gridUrlEventLog = Ext.create('Ung.GridEventLog',{
                 settingsCmp : this,
                 eventQueriesFn : this.getRpcNode().getUrlEventQueries,
                 name : "Web Event Log",
                 title : i18n._('Web Event Log'),
                 fields : [{
-                    name : 'timeStamp',
+                    name : 'time_stamp',
                     sortType : Ung.SortTypes.asTimestamp
                 }, {
                     name : 'uid'
@@ -554,24 +535,23 @@ if (!Ung.hasResource["Ung.Spyware"]) {
                 }, {
                     name : 'swCookie'
                 }, {
-                    name : 'swAccessIdent'
+                    name : 'sw_access_ident'
                 }, {
                     name : 'uri'
                 }, {
                     name : 'host'
                 }, {
                     name : 'client',
-                    mapping : 'CClientAddr'
+                    mapping : 'c_client_addr'
                 }, {
                     name : 'server',
-                    mapping : 'CServerAddr'
+                    mapping : 'c_server_addr'
                 }],
-                autoExpandColumn: 'uri',
                 columns : [{
                     header : this.i18n._("timestamp"),
                     width : Ung.Util.timestampFieldWidth,
                     sortable : true,
-                    dataIndex : 'timeStamp',
+                    dataIndex : 'time_stamp',
                     renderer : function(value) {
                         return i18n.timestampFormat(value);
                     }
@@ -595,6 +575,7 @@ if (!Ung.hasResource["Ung.Spyware"]) {
                     header : this.i18n._("Uri"),
                     width : Ung.Util.uriFieldWidth,
                     sortable : true,
+                    flex: 1,
                     dataIndex : 'uri'
                 }, {
                     header : this.i18n._("server"),
@@ -606,13 +587,13 @@ if (!Ung.hasResource["Ung.Spyware"]) {
         },
 
         buildSuspiciousEventLog : function() {
-            this.gridSuspiciousEventLog = new Ung.GridEventLog({
+            this.gridSuspiciousEventLog = Ext.create('Ung.GridEventLog',{
                 settingsCmp : this,
                 eventQueriesFn : this.getRpcNode().getSuspiciousEventQueries,
                 name : "Traffic Event Log",
                 title : i18n._('Traffic Event Log'),
                 fields : [{
-                    name : 'timeStamp',
+                    name : 'time_stamp',
                     sortType : Ung.SortTypes.asTimestamp
                 }, {
                     name : 'uid'
@@ -621,19 +602,19 @@ if (!Ung.hasResource["Ung.Spyware"]) {
                 }, {
                     name : 'swCookie'
                 }, {
-                    name : 'swAccessIdent'
+                    name : 'sw_access_ident'
                 }, {
                     name : 'client',
-                    mapping : 'CClientAddr'
+                    mapping : 'c_client_addr'
                 }, {
                     name : 'server',
-                    mapping : 'CServerAddr'
+                    mapping : 'c_server_addr'
                 }],
                 columns : [{
                     header : this.i18n._("timestamp"),
                     width : Ung.Util.timestampFieldWidth,
                     sortable : true,
-                    dataIndex : 'timeStamp',
+                    dataIndex : 'time_stamp',
                     renderer : function(value) {
                         return i18n.timestampFormat(value);
                     }
@@ -651,7 +632,7 @@ if (!Ung.hasResource["Ung.Spyware"]) {
                     header : this.i18n._("subnet"),
                     width : 120,
                     sortable : true,
-                    dataIndex : 'swAccessIdent'
+                    dataIndex : 'sw_access_ident'
                 }, {
                     header : this.i18n._("server"),
                     width : Ung.Util.ipFieldWidth,
@@ -683,7 +664,7 @@ if (!Ung.hasResource["Ung.Spyware"]) {
             return value.trim();
         },
         // validation
-        validateServer : function() {
+        validate: function() {
             // ipMaskedAddress list must be validated server side
             var subnetSaveList = this.gridSubnetList ? this.gridSubnetList.getSaveList() : null;
             if (subnetSaveList != null) {
@@ -734,48 +715,15 @@ if (!Ung.hasResource["Ung.Spyware"]) {
             }
             return true;
         },
-        validate : function() {
-            // reverse the order because valdate client alters the data
-            return this.validateServer() && this.validateClient();
-        },
-        //apply function 
-        applyAction : function(){
-            this.saveAction(true);
-        },        
-        // save function
-        saveAction : function(keepWindowOpen) {
-            // validate first
-            if (this.validate()) {
-                Ext.MessageBox.wait(i18n._("Saving..."), i18n._("Please wait"));
-                this.gridPassList.getGridSaveList(function(saveList) {
-                    this.alterUrls(saveList.list);
-                    this.getSettings().passedUrls = saveList;
-                    this.getRpcNode().setSettings(function(result, exception) {
-                        if(Ung.Util.handleException(exception)) return;
-                        // exit settings screen
-                        if(keepWindowOpen!== true){
-                            Ext.MessageBox.hide();                    
-                            this.closeWindow();
-                        }else{
-                            //refresh the settings
-                            this.getSettings(true);
-                            Ung.Util.generateListIds(this.getSettings().cookies.list);
-                            Ung.Util.generateListIds(this.getSettings().subnets.list);
-                            Ung.Util.generateListIds(this.getSettings().passedUrls.list);
-                            
-                            this.gridPassList.reloadGrid({data:this.getSettings().passedUrls.list});
-                            // keep initial  settings
-                            this.initialSettings = Ung.Util.clone(this.getSettings());
-                            Ext.MessageBox.hide();
-                        }
-                    }.createDelegate(this), this.getSettings());
-                }.createDelegate(this));                  
-            }
-        },
-        isDirty : function() {
-            return !Ung.Util.equals(this.getSettings(), this.initialSettings) || this.gridPassList.isDirty();
-            
+        
+        beforeSave: function(isApply, handler) {
+            this.gridPassList.getGridSaveList(Ext.bind(function(saveList) {
+                this.alterUrls(saveList.list);
+                this.settings.passedUrls = saveList;
+                handler.call(this, isApply);
+            },this));
         }
+        
     });
 }
 //@ sourceURL=spyware-settings.js

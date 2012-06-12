@@ -2,7 +2,8 @@ if (!Ung.hasResource["Ung.Protofilter"]) {
     Ung.hasResource["Ung.Protofilter"] = true;
     Ung.NodeWin.registerClassName('untangle-node-protofilter', 'Ung.Protofilter');
 
-    Ung.Protofilter = Ext.extend(Ung.NodeWin, {
+	Ext.define('Ung.Protofilter',{
+		extend:'Ung.NodeWin',
         nodeData: null,
         panelStatus: null,
         gridProtocolList : null,
@@ -19,13 +20,13 @@ if (!Ung.hasResource["Ung.Protofilter"]) {
         },
         // Status Panel
         buildStatus : function() {
-            this.panelStatus = new Ext.Panel({
+            this.panelStatus = Ext.create('Ext.panel.Panel',{
                 name : 'Status',
                 helpSource : 'status',
                 parentId : this.getId(),
 
                 title : this.i18n._('Status'),
-                layout : "form",
+                //layout : "form",
                 cls: 'ung-panel',
                 autoScroll : true,
                 defaults : {
@@ -36,10 +37,10 @@ if (!Ung.hasResource["Ung.Protofilter"]) {
                 items : [{
                     title : this.i18n._('Status'),
                     cls: 'description',
-                    html : String.format(this.i18n._("Application Control Lite uses signatures to detect the protocols of network traffic. It is useful for detecting unwanted or interesting protocols in use on the network."))
+                    html : Ext.String.format(this.i18n._("Application Control Lite uses signatures to detect the protocols of network traffic. It is useful for detecting unwanted or interesting protocols in use on the network."))
                 }, {
                     title : this.i18n._(' '),
-                    layout:'form',
+                    //layout:'form',
                     labelWidth: 230,
                     defaults: {
                         xtype: "textfield",
@@ -61,33 +62,19 @@ if (!Ung.hasResource["Ung.Protofilter"]) {
                 }, {
                     title : this.i18n._('Note'),
                     cls: 'description',
-                    html : String.format(this.i18n._("Caution and discretion is advised using block at the the risk of false positives and intelligent applications shifting protocol usage to avoid blocking."))
+                    html : Ext.String.format(this.i18n._("Caution and discretion is advised using block at the the risk of false positives and intelligent applications shifting protocol usage to avoid blocking."))
                 }]
             });
         },
         // Protocol list grid
         buildProtocolList : function() {
-            // blocked is a check column
-            var blockedColumn = new Ext.grid.CheckColumn({
-                header : "<b>" + this.i18n._("block") + "</b>",
-                dataIndex : 'blocked',
-                fixed : true
-            });
-            // log is a check column
-            var logColumn = new Ext.grid.CheckColumn({
-                header : "<b>" + this.i18n._("log") + "</b>",
-                dataIndex : 'log',
-                fixed : true
-            });
 
-            this.gridProtocolList = new Ung.EditorGrid({
+            this.gridProtocolList = Ext.create('Ung.EditorGrid',{
                 settingsCmp : this,
                 name : 'Signatures',
                 helpSource : 'protocol_list',
-                paginated : false,
                 autoGenerateId: true,
-                // the total records is set from the base settings
-                // patternsLength field
+                paginated : false,
                 data : this.nodeData.patterns.list,
                 emptyRow : {
                     "protocol" : this.i18n._("[no protocol]"),
@@ -99,9 +86,7 @@ if (!Ung.hasResource["Ung.Protofilter"]) {
                 },
                 title : this.i18n._("Signatures"),
                 // the column is autoexpanded if the grid width permits
-                autoExpandColumn : 'description',
                 recordJavaClass : "com.untangle.node.protofilter.ProtoFilterPattern",
-                // this is the function used by Ung.RpcProxy to retrive data
                 // from the server
                 // the list of fields
                 fields : [{
@@ -143,126 +128,150 @@ if (!Ung.hasResource["Ung.Protofilter"]) {
                 }],
                 // the list of columns for the column model
                 columns : [{
-                    id : 'protocol',
-                    header : this.i18n._("protocol"),
+                    header : this.i18n._("Protocol"),
                     width : 200,
                     dataIndex : 'protocol',
-                    editor : new Ext.form.TextField({
-                        allowBlank : false
-                    })
-                }, {
-                    id : 'category',
-                    header : this.i18n._("category"),
+					editor: {
+						xtype:'textfield',
+						allowBlank:false
+					}
+                }, 
+				{
+                    header : this.i18n._("Category"),
                     width : 200,
                     dataIndex : 'category',
-                    // this is a simple text editor
-                    editor : new Ext.form.TextField({
-                        allowBlank : false
-                    })
-                }, blockedColumn, logColumn, {
-                    id : 'description',
-                    header : this.i18n._("description"),
+					editor: {
+						xtype:'textfield',
+						allowBlank:false
+					}
+                }, 
+				{
+					xtype:'checkcolumn',
+					header : "<b>" + this.i18n._("Block") + "</b>",
+					dataIndex : 'blocked',
+					fixed : true,
+					width:55
+				},
+				{
+					xtype:'checkcolumn',
+					header : "<b>" + this.i18n._("Log") + "</b>",
+					dataIndex : 'log',
+					fixed : true,
+					width:55
+				},
+				{
+                    header : this.i18n._("Description"),
                     width : 200,
                     dataIndex : 'description',
-                    editor : new Ext.form.TextField({
+                    flex: 1,
+					editor:{
+						xtype:'textfield',
                         allowBlank : false
-                    })
+						}
                 }],
                 sortField : 'category',
                 columnsDefaultSortable : true,
-                plugins : [logColumn, blockedColumn],
                 // the row input lines used by the row editor window
-                rowEditorInputLines : [ new Ext.form.TextField({
+                rowEditorInputLines : [{
+					xtype:'textfield',
                     name : "Protocol",
                     dataIndex : "protocol",
                     fieldLabel : this.i18n._("Protocol"),
                     allowBlank : false,
-                    width : 200
-                }), new Ext.form.TextField({
+                    width : 400
+                }, {
+					xtype:'textfield',
                     name : "Category",
                     dataIndex : "category",
                     fieldLabel : this.i18n._("Category"),
                     allowBlank : false,
-                    width : 200
-                }), new Ext.form.Checkbox({
+                    width : 400
+                }, 
+				{
+					xtype:'checkbox',
                     name : "Block",
                     dataIndex : "blocked",
                     fieldLabel : this.i18n._("Block")
-                }), new Ext.form.Checkbox({
+                },
+				{
+					xtype:'checkbox',
                     name : "Log",
                     dataIndex : "log",
                     fieldLabel : this.i18n._("Log")
-                }), new Ext.form.TextArea({
+                },
+				{
+					xtype:'textarea',
                     name : "Description",
                     dataIndex : "description",
                     fieldLabel : this.i18n._("Description"),
-                    width : 200,
+                    width : 400,
                     height : 60
-                }), new Ext.form.TextArea({
+                },
+				{  
+					xtype:'textarea',
                     name : "Signature",
                     dataIndex : "definition",
                     fieldLabel : this.i18n._("Signature"),
                     allowBlank : false,
-                    width : 200,
+                    width : 400,
                     height : 60
-                })]
+                }]
             });
         },
         // Event Log
         buildEventLog : function() {
-            this.gridEventLog = new Ung.GridEventLog({
+            this.gridEventLog = Ext.create('Ung.GridEventLog',{
                 settingsCmp : this,
                 fields : [{
-                    name : 'timeStamp',
+                    name : 'time_stamp',
                     sortType : Ung.SortTypes.asTimestamp
                 }, {
                     name : 'blocked',
-                    mapping : 'pfBlocked'
+                    mapping : 'pf_blocked'
                 }, {
                     name : 'client',
-                    mapping : 'CClientAddr'
+                    mapping : 'c_client_addr'
                 }, {
                     name : 'uid'
                 }, {
                     name : 'server',
-                    mapping : 'CServerAddr'
+                    mapping : 'c_server_addr'
                 }, {
                     name : 'protocol',
                     type : 'string',
-                    mapping : 'pfProtocol'
+                    mapping : 'pf_protocol'
                 }],
-                autoExpandColumn : 'protocol',
                 columns : [{
-                    header : this.i18n._("timestamp"),
+                    header : this.i18n._("Timestamp"),
                     width : Ung.Util.timestampFieldWidth,
                     sortable : true,
-                    dataIndex : 'timeStamp',
+                    dataIndex : 'time_stamp',
                     renderer : function(value) {
                         return i18n.timestampFormat(value);
                     }
                 }, {
-                    header : this.i18n._("client"),
+                    header : this.i18n._("Client"),
                     width : Ung.Util.ipFieldWidth,
                     sortable : true,
                     dataIndex : 'client'
                 }, {
-                    header : this.i18n._("username"),
+                    header : this.i18n._("Username"),
                     width : Ung.Util.usernameFieldWidth,
                     sortable : true,
                     dataIndex : 'uid'
                 }, {
-                    id : 'protocol',
-                    header : this.i18n._("protocol"),
+                    header : this.i18n._("Protocol"),
                     width : 120,
                     sortable : true,
+                    flex:1,
                     dataIndex : 'protocol'
                 }, {
-                    header : this.i18n._("blocked"),
+                    header : this.i18n._("Blocked"),
                     width : Ung.Util.booleanFieldWidth,
                     sortable : true,
                     dataIndex : 'blocked'
                 }, {
-                    header : this.i18n._("server"),
+                    header : this.i18n._("Server"),
                     width : Ung.Util.ipFieldWidth,
                     sortable : true,
                     dataIndex : 'server'
@@ -288,7 +297,7 @@ if (!Ung.hasResource["Ung.Protofilter"]) {
             Ext.MessageBox.wait(i18n._("Saving..."), i18n._("Please wait"));
             this.nodeData.patterns.list = this.gridProtocolList.getFullSaveList();
 
-            this.getRpcNode().setSettings(function(result, exception)
+            this.getRpcNode().setSettings(Ext.bind(function(result, exception)
             {
                 Ext.MessageBox.hide();
                     if (!keepWindowOpen)
@@ -297,7 +306,7 @@ if (!Ung.hasResource["Ung.Protofilter"]) {
                     return;
                     }
                 this.gridProtocolList.reloadGrid({ data: this.nodeData.patterns.list } );
-            }.createDelegate(this), this.nodeData);
+            },this), this.nodeData);
         }
     });
 }
