@@ -54,7 +54,7 @@ Ext.define("Ung.Main", {
         this.appsLastState = {};
         this.nodePreviews = {};
         JSONRpcClient.toplevel_ex_handler = Ung.Util.rpcExHandler;
-        JSONRpcClient.max_req_active = 2;
+        JSONRpcClient.max_req_active = 5;
 
         this.initSemaphore = 1;
         rpc = {};
@@ -834,8 +834,10 @@ Ext.define("Ung.Main", {
                     if (this.breadcrumbs){
                         Ext.destroy(this.breadcrumbs);
                     }
+                },
+                closeWindow: function() {
+                    this.hide();
                 }
-
             });
         }
         return this.iframeWin;

@@ -34,7 +34,7 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                         cls: "description"
                     }, {
                         name: 'downloadConfigurationFile',
-                        html: ".",// "<a href=\"" + this.configurationFiles() + "\" target=\"_blank\">" + this.i18n._('Download VPN Site configuration.') + "</a>",
+                        html: " ",
                         border: false,
                         height: "25",
                         cls: "description"
@@ -52,13 +52,13 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                         cls: "description"
                     }, {
                         name: 'downloadWindowsInstaller',
-                        html:  ".",//,<a href=\"" + this.windowsInstaller() + "\" target=\"_blank\">" + this.i18n._('Click here to download an installer for Windows clients.') + "</a>",
+                        html:  " ",
                         border: false,
                         height: "25",
                         cls: "description"
                     }, {
                         name: 'downloadConfigurationFile',
-                        html: ".",//"<a href=\"" + this.configurationFiles() + "\" target=\"_blank\">" + this.i18n._('Click here to download a configuration file for all OSs.') + "</a>",
+                        html: " ",
                         border: false,
                         height: "25",
                         cls: "description"
@@ -126,22 +126,19 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
 
             Ext.MessageBox.wait( this.i18n._( "Distributing Client Installer..." ), this.i18n._( "Please wait" ));
             
-            this.node.distributeClientConfig(Ext.bind(this.completeSendEmail, this), this.record.data);
+            this.node.distributeClientConfig(Ext.bind(function( result, exception ) {
+                if (exception) {
+                    Ext.MessageBox.alert( this.i18n._("Error saving/sending key"),
+                                          this.i18n._("OpenVPN was not able to send your client installer via email.  Please try again." ));
+                    return;
+                }
+
+                // go to next step
+                Ext.MessageBox.alert( this.i18n._("Success"),
+                                      this.i18n._("OpenVPN successfully sent your Client Installer via email."),
+                                      Ext.bind(this.close, this ));
+            }, this), this.record.data);
         },
-
-        completeSendEmail: function( result, exception ) {
-            if (exception) {
-                Ext.MessageBox.alert( this.i18n._("Error saving/sending key"),
-                                      this.i18n._("OpenVPN was not able to send your client installer via email.  Please try again." ));
-                return;
-            }
-
-            // go to next step
-            Ext.MessageBox.alert( this.i18n._("Success"),
-                                  this.i18n._("OpenVPN successfully sent your Client Installer via email."),
-                                  Ext.bind(this.close, this ));
-        },
-
         populate: function( record ) {
             this.record = record;
             this.show();
@@ -158,7 +155,33 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
             Ext.MessageBox.wait(this.i18n._( "Building OpenVPN Client..." ), this.i18n._( "Please Wait" ));            
             // populate download links too
             Ext.Function.defer(this.renderDownloadLinks, 10, this);
-        },
+            if (this.isVpnSite) {
+                this.node.getAdminDownloadLink(Ext.bind(function(result, exception) {
+                    if(Ung.Util.handleException(exception)) return;
+                    this.downloadConfigurationFileEl.dom.innerHTML = '<a href="' + result + '" target="_blank">' + this.i18n._('Download VPN Site configuration.') + '</a>';
+                    Ext.MessageBox.hide();
+                }, this), this.record.data.name, "ZIP" );
+            } else {
+                var loadSemaphore = 2;
+                this.node.getAdminDownloadLink(Ext.bind(function(result, exception) {
+                    if(Ung.Util.handleException(exception)) return;
+                    this.downloadWindowsInstallerEl.dom.innerHTML = '<a href="' + result + '" target="_blank">' + this.i18n._('Click here to download an installer for Windows clients.') + '</a>';
+                    loadSemaphore--;
+                    if(loadSemaphore == 0) {
+                        Ext.MessageBox.hide();    
+                    }
+                }, this), this.record.data.name, "SETUP_EXE" );
+                this.node.getAdminDownloadLink(Ext.bind(function(result, exception) {
+                    if(Ung.Util.handleException(exception)) return;
+                    this.downloadConfigurationFileEl.dom.innerHTML = '<a href="' + result + '" target="_blank">' + this.i18n._('Click here to download a configuration file for all OSs.') + '</a>';
+                    loadSemaphore--;
+                    if(loadSemaphore == 0) {
+                        Ext.MessageBox.hide();    
+                    }
+                }, this), this.record.data.name, "ZIP" );
+                
+            }
+        }/*,
         renderDownloadLinks: function() {
             if (this.isVpnSite) {
                 this.downloadConfigurationFileEl.dom.innerHTML = '<a href="' + this.configurationFiles() + '" target="_blank">' + this.i18n._('Download VPN Site configuration.') + '</a>';
@@ -186,6 +209,7 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
             }
             return null;
         }
+*/
     });
 
     // Namespace for the openvpn client configuration cards.
@@ -769,11 +793,9 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                 settingsCmp: this,
                 name: 'VPN Clients',
                 sortable: true,
-                // the total records is set from the base settings
                 paginated: false,
                 anchor: "100% 50%",
                 height: 250,
-                //style: "margin-bottom:10px;",
                 emptyRow: {
                     "live": true,
                     "name": this.i18n._("newClient"),
@@ -783,7 +805,6 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                 title: this.i18n._("VPN Clients"),
                 recordJavaClass: "com.untangle.node.openvpn.VpnClient",
                 data: this.getSettings().clientList.list,
-                // the list of fields
                 autoGenerateId: true,
                 fields: [{
                     name: 'live'
@@ -797,7 +818,6 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                 }, {
                     name: 'address'
                 }],
-                // the list of columns for the column model
                 columns: [{
                         xtype:'checkcolumn',
                         header: this.i18n._("Anabled"),
@@ -891,7 +911,35 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                 },
                 title: this.i18n._("VPN Sites"),
                 recordJavaClass: "com.untangle.node.openvpn.VpnSite",
-                data: this.getSettings().siteList.list,
+                dataRoot: '',
+                dataFn: Ext.bind( function() {
+                    var data = this.getSettings().siteList.list;
+                    if( data != null ) {
+                        for(var i=0; i<data.length; i++) {
+                            if(data[i].exportedAddressList==null || data[i].exportedAddressList.list==null || data[i].exportedAddressList.list.length==0) {
+                                data[i].exportedAddressList = {
+                                    javaClass: "java.util.ArrayList",
+                                    list:[{
+                                        javaClass:"com.untangle.node.openvpn.SiteNetwork",
+                                        "network": "1.2.3.4",
+                                        "netmask": "255.255.255.0"
+                                    }]
+                                };
+                            }
+                            data[i].network = data[i].exportedAddressList.list[0].network;
+                            data[i].netmask = data[i].exportedAddressList.list[0].netmask;
+                        }
+                    }
+                    return data;
+                }, this),
+                getFullSaveList: function () {
+                    var data = Ung.EditorGrid.prototype.getFullSaveList.call(this);
+                    for(var i=0; i<data.length; i++) {
+                        data[i].exportedAddressList.list[0].network = data[i].network;
+                        data[i].exportedAddressList.list[0].netmask = data[i].netmask;
+                    }
+                    return data;
+                },
                 // the list of fields
                 autoGenerateId: true,
                 fields: [{
@@ -901,17 +949,9 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                 }, {
                     name: 'exportedAddressList'
                 }, {
-                    name: 'network',
-                    mapping: 'exportedAddressList',
-                    convert: function(val, rec) {
-                        return (val!=null && val.list!=null && val.list.length>0)?val.list[0].network:null;
-                    }
+                    name: 'network'
                 }, {
-                    name: 'netmask',
-                    mapping: 'exportedAddressList',
-                    convert: function(val, rec) {
-                        return (val!=null && val.list!=null && val.list.length>0)?val.list[0].netmask:null;
-                    }
+                    name: 'netmask'
                 }, {
                     name: 'groupName'
                 }],
@@ -1161,6 +1201,7 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                 title: this.i18n._("Address Pools"),
                 recordJavaClass: "com.untangle.node.openvpn.VpnGroup",
                 data: this.getSettings().groupList.list,
+                autoGenerateId: true,
                 // the list of fields
                 fields: [{
                     name: 'id'
@@ -1576,6 +1617,7 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                 this.getSettings().clientList.list = this.gridClients.getFullSaveList();
                 this.getSettings().siteList.list = this.gridSites.getFullSaveList();
                 
+                
                 this.getRpcNode().setSettings(Ext.bind(function(result, exception) {
                     if(Ung.Util.handleException(exception)) return;                        
                     this.afterSave(isApply);
@@ -1598,7 +1640,7 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                     this.gridClients.emptyRow.groupName = this.getDefaultGroupName();
 
                     this.gridClients.reloadGrid({data: this.getSettings().clientList.list });
-                    this.gridSites.reloadGrid({data: this.getSettings().siteList.list });
+                    this.gridSites.reloadGrid();
                     this.gridGroups.reloadGrid({data: this.getSettings().groupList.list });
                     this.gridExports.reloadGrid({data: this.getSettings().exportedAddressList.list });
                     
