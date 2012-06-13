@@ -1,6 +1,6 @@
-diff -Naur jabsorb-1.2.2/build.xml jabsorb-1.2.2.patched/build.xml
---- jabsorb-1.2.2/build.xml	2008-01-16 17:47:54.000000000 -0800
-+++ jabsorb-1.2.2.patched/build.xml	2010-02-16 19:07:59.000000000 -0800
+diff -urN jabsorb-1.2.2.orig/build.xml jabsorb-1.2.2/build.xml
+--- jabsorb-1.2.2.orig/build.xml	2012-06-13 16:45:31.000000000 -0700
++++ jabsorb-1.2.2/build.xml	2012-06-13 16:45:40.000000000 -0700
 @@ -53,13 +53,14 @@
    </target>
  
@@ -35,9 +35,9 @@ diff -Naur jabsorb-1.2.2/build.xml jabsorb-1.2.2.patched/build.xml
      <delete file="${webapp}/WEB-INF/web.xml.out" />
      <delete file="${webapp}/WEB-INF/web.xml.generated" />
      <delete file="${webapp}/Test.java.txt" />
-diff -Naur jabsorb-1.2.2/src/org/jabsorb/JSONRPCBridge.java jabsorb-1.2.2.patched/src/org/jabsorb/JSONRPCBridge.java
---- jabsorb-1.2.2/src/org/jabsorb/JSONRPCBridge.java	2008-01-16 17:47:54.000000000 -0800
-+++ jabsorb-1.2.2.patched/src/org/jabsorb/JSONRPCBridge.java	2010-02-16 19:07:59.000000000 -0800
+diff -urN jabsorb-1.2.2.orig/src/org/jabsorb/JSONRPCBridge.java jabsorb-1.2.2/src/org/jabsorb/JSONRPCBridge.java
+--- jabsorb-1.2.2.orig/src/org/jabsorb/JSONRPCBridge.java	2012-06-13 16:45:31.000000000 -0700
++++ jabsorb-1.2.2/src/org/jabsorb/JSONRPCBridge.java	2012-06-13 16:46:12.000000000 -0700
 @@ -108,8 +108,18 @@
   * <code>JSONRPCBridge.getGlobalBridge().registerClass("MyClass",
   * com.example.MyClass.class);</code>
@@ -130,9 +130,36 @@ diff -Naur jabsorb-1.2.2/src/org/jabsorb/JSONRPCBridge.java jabsorb-1.2.2.patche
        // Invoke the method
        Object returnObj = method.invoke(itsThis, javaArgs);
  
-diff -Naur jabsorb-1.2.2/src/org/jabsorb/JSONSerializer.java jabsorb-1.2.2.patched/src/org/jabsorb/JSONSerializer.java
---- jabsorb-1.2.2/src/org/jabsorb/JSONSerializer.java	2008-01-16 17:47:54.000000000 -0800
-+++ jabsorb-1.2.2.patched/src/org/jabsorb/JSONSerializer.java	2010-02-16 19:07:59.000000000 -0800
+@@ -677,6 +673,8 @@
+         }
+       }
+       log.error("exception occured",e);
++      if (e.getCause() != null)
++          log.error("exception cause",e.getCause());
+       result = new JSONRPCResult(JSONRPCResult.CODE_ERR_UNMARSHALL, requestId,
+           e.getMessage());
+     }
+@@ -690,6 +688,8 @@
+         }
+       }
+       log.error("exception occured",e);
++      if (e.getCause() != null)
++          log.error("exception cause",e.getCause());
+       result = new JSONRPCResult(JSONRPCResult.CODE_ERR_MARSHALL, requestId, e
+           .getMessage());
+     }
+@@ -707,6 +707,8 @@
+         }
+       }
+       log.error("exception occured",e);
++      if (e.getCause() != null)
++          log.error("exception cause",e.getCause());
+       result = new JSONRPCResult(JSONRPCResult.CODE_REMOTE_EXCEPTION,
+           requestId, exceptionTransformer.transform(e));
+     }
+diff -urN jabsorb-1.2.2.orig/src/org/jabsorb/JSONSerializer.java jabsorb-1.2.2/src/org/jabsorb/JSONSerializer.java
+--- jabsorb-1.2.2.orig/src/org/jabsorb/JSONSerializer.java	2012-06-13 16:45:31.000000000 -0700
++++ jabsorb-1.2.2/src/org/jabsorb/JSONSerializer.java	2012-06-13 16:45:40.000000000 -0700
 @@ -718,7 +718,7 @@
        try
        {
@@ -154,9 +181,9 @@ diff -Naur jabsorb-1.2.2/src/org/jabsorb/JSONSerializer.java jabsorb-1.2.2.patch
        }
        catch (ClassNotFoundException e)
        {
-diff -Naur jabsorb-1.2.2/src/org/jabsorb/reflect/ClassAnalyzer.java jabsorb-1.2.2.patched/src/org/jabsorb/reflect/ClassAnalyzer.java
---- jabsorb-1.2.2/src/org/jabsorb/reflect/ClassAnalyzer.java	2008-01-16 17:47:52.000000000 -0800
-+++ jabsorb-1.2.2.patched/src/org/jabsorb/reflect/ClassAnalyzer.java	2010-02-16 19:07:59.000000000 -0800
+diff -urN jabsorb-1.2.2.orig/src/org/jabsorb/reflect/ClassAnalyzer.java jabsorb-1.2.2/src/org/jabsorb/reflect/ClassAnalyzer.java
+--- jabsorb-1.2.2.orig/src/org/jabsorb/reflect/ClassAnalyzer.java	2012-06-13 16:45:31.000000000 -0700
++++ jabsorb-1.2.2/src/org/jabsorb/reflect/ClassAnalyzer.java	2012-06-13 16:45:40.000000000 -0700
 @@ -30,8 +30,11 @@
  import java.lang.reflect.Modifier;
  import java.util.ArrayList;
@@ -237,9 +264,9 @@ diff -Naur jabsorb-1.2.2/src/org/jabsorb/reflect/ClassAnalyzer.java jabsorb-1.2.
 +        return s;
 +    }
  }
-diff -Naur jabsorb-1.2.2/src/org/jabsorb/serializer/impl/BooleanSerializer.java jabsorb-1.2.2.patched/src/org/jabsorb/serializer/impl/BooleanSerializer.java
---- jabsorb-1.2.2/src/org/jabsorb/serializer/impl/BooleanSerializer.java	2008-01-16 17:47:54.000000000 -0800
-+++ jabsorb-1.2.2.patched/src/org/jabsorb/serializer/impl/BooleanSerializer.java	2010-03-09 16:22:20.000000000 -0800
+diff -urN jabsorb-1.2.2.orig/src/org/jabsorb/serializer/impl/BooleanSerializer.java jabsorb-1.2.2/src/org/jabsorb/serializer/impl/BooleanSerializer.java
+--- jabsorb-1.2.2.orig/src/org/jabsorb/serializer/impl/BooleanSerializer.java	2012-06-13 16:45:31.000000000 -0700
++++ jabsorb-1.2.2/src/org/jabsorb/serializer/impl/BooleanSerializer.java	2012-06-13 16:45:40.000000000 -0700
 @@ -97,6 +97,11 @@
      {
        returnValue = (Boolean) jso;
@@ -252,9 +279,9 @@ diff -Naur jabsorb-1.2.2/src/org/jabsorb/serializer/impl/BooleanSerializer.java 
  
      state.setSerialized(jso, returnValue);
      return returnValue;
-diff -Naur jabsorb-1.2.2/src/org/jabsorb/serializer/impl/JSONBeanSerializer.java jabsorb-1.2.2.patched/src/org/jabsorb/serializer/impl/JSONBeanSerializer.java
---- jabsorb-1.2.2/src/org/jabsorb/serializer/impl/JSONBeanSerializer.java	1969-12-31 16:00:00.000000000 -0800
-+++ jabsorb-1.2.2.patched/src/org/jabsorb/serializer/impl/JSONBeanSerializer.java	2010-02-16 19:07:59.000000000 -0800
+diff -urN jabsorb-1.2.2.orig/src/org/jabsorb/serializer/impl/JSONBeanSerializer.java jabsorb-1.2.2/src/org/jabsorb/serializer/impl/JSONBeanSerializer.java
+--- jabsorb-1.2.2.orig/src/org/jabsorb/serializer/impl/JSONBeanSerializer.java	1969-12-31 16:00:00.000000000 -0800
++++ jabsorb-1.2.2/src/org/jabsorb/serializer/impl/JSONBeanSerializer.java	2012-06-13 16:45:40.000000000 -0700
 @@ -0,0 +1,461 @@
 +/*
 + * jabsorb - a Java to JavaScript Advanced Object Request Broker
@@ -717,9 +744,9 @@ diff -Naur jabsorb-1.2.2/src/org/jabsorb/serializer/impl/JSONBeanSerializer.java
 +    return instance;
 +  }
 +}
-diff -Naur jabsorb-1.2.2/src/org/jabsorb/serializer/impl/SetSerializer.java jabsorb-1.2.2.patched/src/org/jabsorb/serializer/impl/SetSerializer.java
---- jabsorb-1.2.2/src/org/jabsorb/serializer/impl/SetSerializer.java	2008-01-16 17:47:54.000000000 -0800
-+++ jabsorb-1.2.2.patched/src/org/jabsorb/serializer/impl/SetSerializer.java	2010-03-09 14:30:57.000000000 -0800
+diff -urN jabsorb-1.2.2.orig/src/org/jabsorb/serializer/impl/SetSerializer.java jabsorb-1.2.2/src/org/jabsorb/serializer/impl/SetSerializer.java
+--- jabsorb-1.2.2.orig/src/org/jabsorb/serializer/impl/SetSerializer.java	2012-06-13 16:45:31.000000000 -0700
++++ jabsorb-1.2.2/src/org/jabsorb/serializer/impl/SetSerializer.java	2012-06-13 16:45:40.000000000 -0700
 @@ -117,7 +117,13 @@
        while (i.hasNext())
        {
@@ -745,9 +772,23 @@ diff -Naur jabsorb-1.2.2/src/org/jabsorb/serializer/impl/SetSerializer.java jabs
 +        public String makeKey();
 +    }
  }
-diff -Naur jabsorb-1.2.2/src/org/json/JSONBean.java jabsorb-1.2.2.patched/src/org/json/JSONBean.java
---- jabsorb-1.2.2/src/org/json/JSONBean.java	1969-12-31 16:00:00.000000000 -0800
-+++ jabsorb-1.2.2.patched/src/org/json/JSONBean.java	2010-02-16 19:07:59.000000000 -0800
+diff -urN jabsorb-1.2.2.orig/src/org/jabsorb/serializer/ObjectMatch.java jabsorb-1.2.2/src/org/jabsorb/serializer/ObjectMatch.java
+--- jabsorb-1.2.2.orig/src/org/jabsorb/serializer/ObjectMatch.java	2012-06-13 16:45:31.000000000 -0700
++++ jabsorb-1.2.2/src/org/jabsorb/serializer/ObjectMatch.java	2012-06-13 16:45:40.000000000 -0700
+@@ -102,6 +102,10 @@
+    */
+   public ObjectMatch max(ObjectMatch m)
+   {
++      if (m == null)
++          {
++              return this;
++          }
+     if (this.mismatch > m.mismatch)
+     {
+       return this;
+diff -urN jabsorb-1.2.2.orig/src/org/json/JSONBean.java jabsorb-1.2.2/src/org/json/JSONBean.java
+--- jabsorb-1.2.2.orig/src/org/json/JSONBean.java	1969-12-31 16:00:00.000000000 -0800
++++ jabsorb-1.2.2/src/org/json/JSONBean.java	2012-06-13 16:45:40.000000000 -0700
 @@ -0,0 +1,59 @@
 +/*
 +Copyright (c) 2008
@@ -808,17 +849,3 @@ diff -Naur jabsorb-1.2.2/src/org/json/JSONBean.java jabsorb-1.2.2.patched/src/or
 +        String property() default "";
 +    }
 +}
-diff -urN jabsorb-1.2.2/src/org/jabsorb/serializer/ObjectMatch.java jabsorb-1.2.2-patched/src/org/jabsorb/serializer/ObjectMatch.java
---- jabsorb-1.2.2/src/org/jabsorb/serializer/ObjectMatch.java   2008-01-16 17:47:54.000000000 -0800
-+++ jabsorb-1.2.2-patched/src/org/jabsorb/serializer/ObjectMatch.java   2010-04-16 16:43:10.000000000 -0700
-@@ -102,6 +102,10 @@
-    */
-   public ObjectMatch max(ObjectMatch m)
-   {
-+      if (m == null)
-+          {
-+              return this;
-+          }
-     if (this.mismatch > m.mismatch)
-     {
-       return this;
