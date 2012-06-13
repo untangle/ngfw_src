@@ -31,12 +31,27 @@ if (!Ung.hasResource["Ung.SessionMonitor"]) {
             }
             return sessions;
         },
+        setFilterNodeId: function(nodeId) {
+            // set dataFnArg (for node limit) as necessary
+            for ( var i = 0 ; i < this.panelNodeSelector.items.items.length ; i++ ) {
+                var item = this.panelNodeSelector.items.items[i];
+                if ( item.xtype == "radio" ) {
+                    if ( item.dataFnArg == nodeId) {
+                        item.setValue(true);
+                    } else {
+                        item.setValue(false);
+                    }
+                }
+            }
+            this.reRenderGrid();
+        },
         buildPanel: function() {
             this.enabledColumns = {};
             this.columns = [];
             this.groupField = null;
+            var nodeStr = ""
+            var groupStr = ""
             this.reRenderGrid = Ext.bind(function() {
-                Ext.MessageBox.wait(this.i18n._("Refreshing..."), this.i18n._("Please wait"));
                 this.columns = [];
                 this.enabledColumns = {};
                 this.groupField = null;
@@ -64,6 +79,8 @@ if (!Ung.hasResource["Ung.SessionMonitor"]) {
                         this.enabledColumns[item.name] = item.checked;
                         if (item.checked) {
                             this.dataFnArg = item.dataFnArg;
+                            // change title
+                            nodeStr = " - " + item.boxLabel;
                             if ( this.gridCurrentSessions !== undefined ) 
                                 this.gridCurrentSessions.dataFnArg = item.dataFnArg;
                         }
@@ -82,7 +99,8 @@ if (!Ung.hasResource["Ung.SessionMonitor"]) {
                 if ( this.gridCurrentSessions == undefined ) {
                     this.buildGridCurrentSessions(this.columns, this.groupField);
                 } else {
-                    if ( this.groupField) {
+                    if ( this.groupField != null ) {
+                        groupStr = " - Grouping:" + this.groupField;
                         this.gridCurrentSessions.getStore().group(this.groupField);
                     } else {
                         this.gridCurrentSessions.getStore().clearGrouping();
@@ -97,10 +115,11 @@ if (!Ung.hasResource["Ung.SessionMonitor"]) {
                     this.gridCurrentSessions.forceComponentLayout();
                 }
                 if ( this.gridCurrentSessions !== undefined ) {
+                    this.gridCurrentSessions.setTitle(i18n._("Current Sessions") + nodeStr + groupStr );
                     this.gridCurrentSessions.reloadGrid();
+
                 }
 
-                Ext.MessageBox.hide();
             }, this);
             
             // manually call the renderer for the first render

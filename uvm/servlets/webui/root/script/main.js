@@ -1155,21 +1155,24 @@ Ext.define("Ung.Main", {
             return i18n._( "Unknown Rack" );
         }
     },
-    
     showSessions: function() {
+        main.showNodeSessions(0);
+    },
+    showNodeSessions: function(nodeIdArg) {
         Ext.MessageBox.wait(i18n._("Loading..."), i18n._("Please wait"));
         if ( main.sessionMonitorWin == null) {
             Ext.Function.defer(Ung.Util.loadResourceAndExecute,1, this,["Ung.SessionMonitor",Ung.Util.getScriptSrc("script/config/sessionMonitor.js"), function() {
                 main.sessionMonitorWin=Ext.create('Ung.SessionMonitor', {"name":"sessionMonitor", "helpSource":"session_viewer"});
+                main.sessionMonitorWin.setFilterNodeId(nodeIdArg);
                 main.sessionMonitorWin.show();
                 Ext.MessageBox.hide();
             }]);
         } else {
+            main.sessionMonitorWin.setFilterNodeId(nodeIdArg);
             main.sessionMonitorWin.show();
             Ext.MessageBox.hide();
         }
     },
-    
     showPolicyManager: function() {
         if (main.policyNodeWidget) {
             main.policyNodeWidget.loadSettings();

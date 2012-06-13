@@ -1847,6 +1847,7 @@ Ext.define("Ung.Node", {
             if( this.metrics.list.length > 0 ) {
                 this.faceplateMetrics=new Ung.FaceplateMetric({
                     parentId: this.getId(),
+                    parentNodeId: this.nodeId,
                     metric: this.metrics.list
                 });
                 this.faceplateMetrics.render('node-metrics_' + this.getId());
@@ -2406,6 +2407,7 @@ Ext.define("Ung.FaceplateMetric", {
     extend: "Ext.Component",
     html:'<div class="chart"></div><div class="system"><div class="system-box"></div></div>',
     parentId: null,
+    parentNodeId: null,
     data: null,
     byteCountCurrent: null,
     byteCountLast: null,
@@ -2437,7 +2439,7 @@ Ext.define("Ung.FaceplateMetric", {
         this.callParent(arguments);
     },
     buildChart: function() {
-        var chartContainerEl = this.getEl().down("div[class=chart]")
+        var chartContainerEl = this.getEl().down("div[class=chart]");
         this.chartData = [];
         for(var i=0; i<this.chartDataLength; i++) {
             this.chartData.push({time:i, sessions:0});
@@ -2475,8 +2477,9 @@ Ext.define("Ung.FaceplateMetric", {
                 }
             }]
         });
+        this.chart.on("click", function(e) { main.showNodeSessions( this.parentNodeId ); }, this);
         var chartTipArr=[
-           '<div class="title">'+i18n._("Session History. Current Sessions:")+' <span name="current_sessions">0</span></div>',
+           '<div class="title">'+i18n._("Session History. Current Sessions:")+' <span name="current_sessions">0</span></div>'
         ];
         this.chartTip=Ext.create('Ext.tip.ToolTip',{
             target: chartContainerEl,

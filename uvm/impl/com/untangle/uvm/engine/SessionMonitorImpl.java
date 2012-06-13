@@ -197,10 +197,10 @@ class SessionMonitorImpl implements SessionMonitor
         if ( nodeSessions != null ) {
             for (Iterator i = sessions.iterator(); i.hasNext(); ) {  
                 SessionMonitorEntry entry = (SessionMonitorEntry) i.next();
-                long sessionId = entry.getSessionId();
+                Long sessionId = entry.getSessionId();
                 boolean found = false;
                 for (SessionTuple tuple : nodeSessions) {
-                    if ( sessionId == tuple.getSessionId() ) {
+                    if ( sessionId != null && sessionId == tuple.getSessionId() ) {
                         found = true;
                         break;
                     }
