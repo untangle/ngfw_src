@@ -17,7 +17,7 @@ boolean reportsAvailable = reportingManager.isReportsAvailable();
 if (!reportsAvailable || !reportingEnabled) {
    String msg = I18nUtil.tr("No reports are available.", i18n_map);
    String disabledMsg = I18nUtil.tr("Reports is not installed into your rack or it is not turned on.<br />Reports are only generated when Reports is installed and turned on.", i18n_map);
-   String emptyMsg = I18nUtil.tr("No reports currently available. Please check back in the morning for your reports.", i18n_map);
+   String emptyMsg = I18nUtil.tr("No reports have been generated.", i18n_map);
 
 %><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
