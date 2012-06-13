@@ -894,7 +894,7 @@ if (!Ung.hasResource["Ung.System"]) {
                         forceSelection: true,
                         displayField: "name",
                         valueField: "code",
-                        typeAhead: true,
+                        editable: false,
                         mode: "local",
                         triggerAction: "all",
                         listClass: "x-combo-list-small",

@@ -25,7 +25,6 @@ if (!Ung.hasResource["Ung.Email"]) {
             }, {
                 title: i18n._('Email')
             }];
-            // keep initial mail settings
             this.getMailSettings();
             this.buildOutgoingServer();
             if( this.isMailLoaded() ) {
@@ -250,7 +249,7 @@ if (!Ung.hasResource["Ung.Email"]) {
                                 }, this)
                             }]
                         });
-                    }else{
+                    } else {
                         Ext.getCmp('email-address-test').setValue('').clearInvalid();                    
                         Ext.getCmp('email-test-success').setVisible(false);
                     }
@@ -1317,7 +1316,6 @@ if (!Ung.hasResource["Ung.Email"]) {
     Ext.define('Ung.EmailAddressDetails', {
         extend: 'Ung.Window',
         settingsCmp: null,
-        // the certPanel
         detailsPanel: null,
         account: null,
         initComponent: function() {
@@ -1338,19 +1336,6 @@ if (!Ung.hasResource["Ung.Email"]) {
             },'-'];
             this.items=this.detailsPanel;
             this.callParent(arguments);
-        },
-        closeWindow: function() {
-            this.hide();
-        },
-        // to override
-        showForCurrentAccount: function(emailAddress) {
-            this.account = emailAddress;  
-            this.show();
-        },            
-        // the proceed actions
-        // to override
-        proceedAction: function() {
-            main.todo();
         }
     });
 }

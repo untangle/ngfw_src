@@ -764,7 +764,7 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                     if (!this.winPassedUrls) {
                         var settingsCmp = Ext.getCmp(this.parentId);
                         settingsCmp.buildPassedUrls();
-                        this.winPassedUrls = new Ung.ManageListWindow({
+                        this.winPassedUrls = Ext.create('Ung.ManageListWindow', {
                             breadcrumbs : [{
                                 title : i18n._(rpc.currentPolicy.name),
                                 action : Ext.bind(function() {
@@ -834,7 +834,6 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                             }],
                             grid : settingsCmp.gridPassedClients,
                             applyAction : function(callback){
-                                var validateSaveList = settingsCmp.gridPassedClients.getSaveList();
                                 Ext.MessageBox.wait(i18n._("Saving..."), i18n._("Please wait"));
                                 settingsCmp.gridPassedClients.getGridSaveList(Ext.bind(function(saveList) {
                                     this.getRpcNode().setPassedClients(Ext.bind(function(result, exception) {

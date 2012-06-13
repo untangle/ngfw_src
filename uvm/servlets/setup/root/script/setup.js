@@ -13,7 +13,7 @@ var rpc = {};
 var oemName = "Untangle";
 
 if(typeof console === "undefined") {
-    //Prevent console.log triggering errors on browserw without console support
+    //Prevent console.log triggering errors on browsers without console support
     var console = {
         log: function() {},
         error: function() {},

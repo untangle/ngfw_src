@@ -31,11 +31,6 @@ Ext.define("Ung.Main", {
     hostName: null,
     policyNodeWidget:null,
     
-    capitalize: function(foo) {
-        return foo.replace(/\w+/g, function(a) {
-            return a.charAt(0).toUpperCase() + a.substr(1).toLowerCase();
-        });
-    },
     // init function
     constructor: function(config) {
         Ext.apply(this, config);
@@ -834,9 +829,6 @@ Ext.define("Ung.Main", {
                     if (this.breadcrumbs){
                         Ext.destroy(this.breadcrumbs);
                     }
-                },
-                closeWindow: function() {
-                    this.hide();
                 }
             });
         }

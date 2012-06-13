@@ -4,14 +4,13 @@ Ext.namespace('Ung.grid');
 Ext.BLANK_IMAGE_URL = '/ext4/resources/themes/images/default/tree/s.gif'; // The location of the blank pixel image
 
 if(typeof console === "undefined") {
-    //Prevent console.log triggering errors on browserw without console support
+    //Prevent console.log triggering errors on browsers without console support
     var console = {
         log: function() {},
         error: function() {},
         debug: function() {}
     };
 }
-
 var i18n=Ext.create('Ung.I18N',{"map":null}); // the main internationalization object
 var rpc=null; // the main json rpc object
 
@@ -892,6 +891,12 @@ Ung.Util = {
                 name: 'flagged'
             }];
     },
+    capitalize: function(foo) {
+        return foo.replace(/\w+/g, function(a) {
+            return a.charAt(0).toUpperCase() + a.substr(1).toLowerCase();
+        });
+    },
+
     maxRowCount: 2147483647,
     timestampFieldWidth: 135,
     ipFieldWidth: 100,
@@ -2600,9 +2605,6 @@ Ext.define("Ung.FaceplateMetric", {
                     if(sub>0) {
                         this.setPosition( pos[0],pos[1]-sub);
                     }
-                },
-                closeWindow: function() {
-                    this.hide();
                 }
             });
         }
@@ -3192,7 +3194,6 @@ Ext.define('Ung.Window', {
     // to override
     closeWindow: function() {
         this.hide();
-        Ext.destroy(this);
     }
 });
 
@@ -3260,6 +3261,10 @@ Ext.define("Ung.SettingsWin", {
         }
         main.openHelp(helpSource);
     },
+    closeWindow: function() {
+        this.hide();
+        Ext.destroy(this);
+    },
     isDirty: function() {
         return this.dirtyFlag || Ung.Util.isDirty(this.tabs);
     },
@@ -3302,15 +3307,8 @@ Ext.define("Ung.SettingsWin", {
             }
         }
     },
-    //TODO: remove this
     // validation functions, to override if needed
     validate: function() {
-        return this.validateClient() && this.validateServer();
-    },
-    validateClient: function() {
-        return true;
-    },
-    validateServer: function() {
         return true;
     }
 });

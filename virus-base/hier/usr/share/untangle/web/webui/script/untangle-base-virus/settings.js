@@ -96,7 +96,7 @@ if (!Ung.hasResource["Ung.Virus"]) {
                     if (!this.winExtensions) {
                         var settingsCmp = Ext.getCmp(this.parentId);
                         settingsCmp.buildExtensions();
-                        this.winExtensions = new Ung.ManageListWindow({
+                        this.winExtensions = Ext.create('Ung.ManageListWindow', {
                             breadcrumbs : [{
                                 title : i18n._(rpc.currentPolicy.name),
                                 action : Ext.bind(function() {
