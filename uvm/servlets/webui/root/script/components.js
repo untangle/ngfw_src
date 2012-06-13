@@ -560,6 +560,18 @@ Ung.Util = {
         Ext.MessageBox.alert(i18n._("TODO"),"TODO: implement this.");
     },
     possibleInterfaces: null,
+    getDayOfWeekList: function() {
+        var data = [];
+        var datacount = 0;
+        data[datacount++] = [1, i18n._("Sunday")];
+        data[datacount++] = [2, i18n._("Monday")];
+        data[datacount++] = [3, i18n._("Tuesday")];
+        data[datacount++] = [4, i18n._("Wednesday")];
+        data[datacount++] = [5, i18n._("Thursday")];
+        data[datacount++] = [6, i18n._("Friday")];
+        data[datacount++] = [7, i18n._("Saturday")];
+        return data;
+    },
     getInterfaceList: function(wanMatchers, anyMatcher) {
         var data = [];
         var datacount = 0;
