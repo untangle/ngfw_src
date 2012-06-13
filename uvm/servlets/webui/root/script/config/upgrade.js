@@ -286,6 +286,7 @@ if (!Ung.hasResource["Ung.Upgrade"]) {
                         }
                     }, {
                         xtype: 'timefield',
+                        format: this.i18n.timeFmt(),
                         name: 'Upgrade Time',
                         width: 90,
                         hideLabel: true,
@@ -293,10 +294,9 @@ if (!Ung.hasResource["Ung.Upgrade"]) {
                         listeners: {
                             "change": {
                                 fn: Ext.bind(function(elem, newValue) {
-                                    if (newValue != "") {
-                                        var v = elem.parseDate(newValue);
-                                        this.getSystemSettings().autoUpgradeMinute = Ext.Date.format( v,"i");
-                                        this.getSystemSettings().autoUpgradeHour = Ext.Date.format( v,"H");
+                                    if (newValue && newValue instanceof Date) {
+                                        this.getSystemSettings().autoUpgradeMinute = newValue.getMinutes();
+                                        this.getSystemSettings().autoUpgradeHour = newValue.getHours();
                                     }
                                 }, this)
                             }

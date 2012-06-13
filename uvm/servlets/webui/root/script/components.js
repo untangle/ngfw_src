@@ -175,24 +175,9 @@ Ext.override( Ext.form.TextField, {
 Ext.define("Ung.form.TimeField", {
     extend: "Ext.form.TimeField",
     alias: "widget.utimefield",
-    
-    /* Default the format to 24 hour */
-    format: "H:i",
-
-    initComponent: function() {
-        /* Save the store before init to determin if one was passed in */
-        var store = this.store;
-
-        this.callParent(arguments);
-        
-        /* If necesary, add the last minute of the day. */
-        if ( this.endTime && store != null && this.maxValue == null && this.minValue == null && this.format == "H:i" ) {
-            this.store.add([new Ext.data.Record({text: "23:59"})]);
-        }
-    },
     getValue: function() {
         var retVal = this.callParent(arguments);
-        if ( retVal instanceof Date) {
+        if (retVal instanceof Date) {
             return Ext.Date.format(retVal,"H:i");
         }
         return retVal;
@@ -891,12 +876,6 @@ Ung.Util = {
                 name: 'flagged'
             }];
     },
-    capitalize: function(foo) {
-        return foo.replace(/\w+/g, function(a) {
-            return a.charAt(0).toUpperCase() + a.substr(1).toLowerCase();
-        });
-    },
-
     maxRowCount: 2147483647,
     timestampFieldWidth: 135,
     ipFieldWidth: 100,

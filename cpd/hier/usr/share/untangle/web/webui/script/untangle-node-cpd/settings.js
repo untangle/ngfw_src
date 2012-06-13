@@ -4,22 +4,21 @@ if (!Ung.hasResource["Ung.CPD"]) {
 
     Ext.define('Ung.CPD', {
         extend:'Ung.NodeWin',
-        panelCaptiveStatus : null,
-        gridCaptiveStatus : null,
+        panelCaptiveStatus: null,
+        gridCaptiveStatus: null,
 
         panelCaptureRules: null,
-        gridCaptureRules : null,
+        gridCaptureRules: null,
 
-        panelPassedHosts : null,
-        panelUserAuthentication : null,
-        panelCaptivePage : null,
+        panelPassedHosts: null,
+        panelUserAuthentication: null,
+        panelCaptivePage: null,
 
-        gridLoginEventLog : null,
-        gridBlockEventLog : null,
-        nodeWindow : null,
+        gridLoginEventLog: null,
+        gridBlockEventLog: null,
+        nodeWindow: null,
 
-        initComponent : function()
-        {
+        initComponent: function() {
             nodeWindow = this;
 
             Ung.Util.clearInterfaceStore();
@@ -37,33 +36,30 @@ if (!Ung.hasResource["Ung.CPD"]) {
             // builds the tab panel with the tabs
             this.buildTabPanel([ this.panelCaptiveStatus, this.panelCaptureRules, this.panelPassedHosts, this.panelCaptivePage,
                                  this.panelUserAuthentication, this.gridLoginEventLog, this.gridBlockEventLog ]);
-
-            Ung.CPD.superclass.initComponent.call(this);
+            this.callParent(arguments);
         },
 
-        buildCaptiveStatus : function() {
-
+        buildCaptiveStatus: function() {
             this.buildGridCaptiveStatus();
-
             this.panelCaptiveStatus = Ext.create('Ext.panel.Panel',{
-                name : 'Status',
-                parentId : this.getId(),
-                title : this.i18n._('Status'),
-                layout : "anchor",
+                name: 'Status',
+                parentId: this.getId(),
+                title: this.i18n._('Status'),
+                layout: "anchor",
                 defaults: {
                         anchor: "98%"
                 },
                 cls: 'ung-panel',
-                autoScroll : true,
-                items : [{
-                    title : this.i18n._('Status'),
-                    name : 'Status',
-                    xtype : 'fieldset',
-                    autoHeight : true,
+                autoScroll: true,
+                items: [{
+                    title: this.i18n._('Status'),
+                    name: 'Status',
+                    xtype: 'fieldset',
+                    autoHeight: true,
                     items: [{
-                        html : this.i18n._('Captive Portal allows administrators to require network users to complete a defined process, such as logging in or accepting a network usage policy, before accessing the internet.'),
+                        html: this.i18n._('Captive Portal allows administrators to require network users to complete a defined process, such as logging in or accepting a network usage policy, before accessing the internet.'),
                         cls: 'description',
-                        border : false}
+                        border: false}
                     ]
                  }]
             });
@@ -71,86 +67,85 @@ if (!Ung.hasResource["Ung.CPD"]) {
             this.panelCaptiveStatus.add( this.gridCaptiveStatus );
         },
 
-        buildGridCaptiveStatus : function()
-        {
+        buildGridCaptiveStatus: function() {
             this.gridCaptiveStatus = Ext.create('Ung.EditorGrid',{
-                name : "gridCaptiveStatus",
-                settingsCmp : this,
-                height : 500,
-                parentId : this.getId(),
-                hasAdd : false,
-                configAdd : null,
-                hasEdit : false,
-                configEdit : null,
-                hasDelete : false,
-                configDelete : null,
-                columnsDefaultSortable : true,
-                title : this.i18n._("Active Sessions"),
-                qtip : this.i18n._("The Active Sessions list shows authenticated users."),
-                paginated : false,
-                bbar : Ext.create('Ext.toolbar.Toolbar', {
-                    items : [
+                name: "gridCaptiveStatus",
+                settingsCmp: this,
+                height: 500,
+                parentId: this.getId(),
+                hasAdd: false,
+                configAdd: null,
+                hasEdit: false,
+                configEdit: null,
+                hasDelete: false,
+                configDelete: null,
+                columnsDefaultSortable: true,
+                title: this.i18n._("Active Sessions"),
+                qtip: this.i18n._("The Active Sessions list shows authenticated users."),
+                paginated: false,
+                bbar: Ext.create('Ext.toolbar.Toolbar', {
+                    items: [
                         '-',
                         {
-                            xtype : 'button',
+                            xtype: 'button',
                             id: "refresh_"+this.getId(),
-                            text : i18n._('Refresh'),
-                            name : "Refresh",
-                            tooltip : i18n._('Refresh'),
-                            iconCls : 'icon-refresh',
-                            handler : Ext.bind(function() {
+                            text: i18n._('Refresh'),
+                            name: "Refresh",
+                            tooltip: i18n._('Refresh'),
+                            iconCls: 'icon-refresh',
+                            handler: Ext.bind(function() {
                                 this.gridCaptiveStatus.store.load();
                             },this)
                         }
                     ]
                 }),
-                recordJavaClass : "com.untangle.node.cpd.HostDatabaseEntry",
+                recordJavaClass: "com.untangle.node.cpd.HostDatabaseEntry",
                 data: this.getRpcNode().getCaptiveStatus().list,
-                fields : [{
-                    name : "ipv4Address"
+                fields: [{
+                    name: "ipv4Address"
                 },{
-                    name : "username"
+                    name: "username"
                 },{
-                    name : "lastSession"
+                    name: "lastSession"
                 },{
-                    name : "sessionStart"
+                    name: "sessionStart"
                 },{
-                    name : "expirationDate"
+                    name: "expirationDate"
                 },{
-                    name : "hardwareAddress"
+                    name: "hardwareAddress"
                 },{
-                    name : "id"
+                    name: "id"
                 }],
-                columns : [{
-                    header : this.i18n._("IP Address"),
+                columns: [{
+                    header: this.i18n._("IP Address"),
                     dataIndex:'ipv4Address',
-                    width : 150
+                    width: 150
                 },{
-                    header : this.i18n._("User Name"),
+                    header: this.i18n._("User Name"),
                     dataIndex:'username',
-                    width : 200
+                    width: 200
                 },{
-                    header : this.i18n._("Last Session"),
+                    header: this.i18n._("Last Session"),
                     dataIndex:'lastSession',
-                    width : 180,
-                    renderer : function(value) { return i18n.timestampFormat(value); }
+                    width: 180,
+                    renderer: function(value) { return i18n.timestampFormat(value); }
                 },{
-                    header : this.i18n._("Current Session"),
-                    width : 180,
-                    renderer : function(value) { return i18n.timestampFormat(value); }
+                    header: this.i18n._("Current Session"),
+                    width: 180,
+                    renderer: function(value) { return i18n.timestampFormat(value); }
                 },{
-                    header : this.i18n._("Expiration"),
+                    header: this.i18n._("Expiration"),
                     dataIndex:'expirationDate',
-                    width : 180,
-                    renderer : function(value) { return i18n.timestampFormat(value); }
+                    width: 180,
+                    renderer: function(value) { return i18n.timestampFormat(value); }
                 },{
-                    header : this.i18n._("Control"),
-                    xtype : 'actioncolumn',
-                    width : 80,
-                    items : [{
-                        id : 'userLogout',
-                        icon : '/skins/default/images/admin/icon_logout_row.gif',
-                        handler : function(grid,row,col) {
+                    header: this.i18n._("Control"),
+                    xtype: 'actioncolumn',
+                    width: 80,
+                    items: [{
+                        id: 'userLogout',
+                        icon: '/skins/default/images/admin/icon_logout_row.gif',
+                        handler: function(grid,row,col) {
                             var rec = grid.getStore().getAt(row);
                             window.nodeWindow.getRpcNode().logout(rec.data.ipv4Address);
                             grid.getStore().load();
@@ -161,270 +156,267 @@ if (!Ung.hasResource["Ung.CPD"]) {
         },
 
         // Rules Panel
-        buildCaptureRules : function()
-        {
+        buildCaptureRules: function() {
             this.buildGridCaptureRules();
-
             this.panelCaptureRules = Ext.create('Ext.panel.Panel',{
-                name : "panelCaptureRules",
-                helpSource : "captive_hosts",
+                name: "panelCaptureRules",
+                helpSource: "captive_hosts",
                 // private fields
-                parentId : this.getId(),
-                title : this.i18n._("Capture Rules"),
-                autoScroll : true,
-                border : false,
+                parentId: this.getId(),
+                title: this.i18n._("Capture Rules"),
+                autoScroll: true,
+                border: false,
                 cls: "ung-panel",
-                items : [{
-                    title : this.i18n._("Note"),
+                items: [{
+                    title: this.i18n._("Note"),
                     cls: "description",
-                    bodyStyle : "padding: 5px 5px 5px; 5px;",
-                    html : this.i18n._("The Capture Rules are a  set of rules to define which hosts and traffic are subject to the Captive Portal.  The rules are evaluated in order.")
+                    bodyStyle: "padding: 5px 5px 5px; 5px;",
+                    html: this.i18n._("The Capture Rules are a  set of rules to define which hosts and traffic are subject to the Captive Portal.  The rules are evaluated in order.")
                 }, this.gridCaptureRules, {
-                    xtype : "fieldset",
-                    autoHeight : true,
-                    items : [{
-                        xtype : "checkbox",
-                        boxLabel : this.i18n._("Capture Bypassed Traffic"),
-                        tooltip : this.i18n._("If enabled, traffic that is bypassed in Bypass Rules will also captured until the host is authenticated."),
-                        hideLabel : true,
-                        checked : this.settings.captureBypassedTraffic,
-                        listeners : {
-                            "change" : Ext.bind(function(elem, checked) {
+                    xtype: "fieldset",
+                    autoHeight: true,
+                    items: [{
+                        xtype: "checkbox",
+                        boxLabel: this.i18n._("Capture Bypassed Traffic"),
+                        tooltip: this.i18n._("If enabled, traffic that is bypassed in Bypass Rules will also captured until the host is authenticated."),
+                        hideLabel: true,
+                        checked: this.settings.captureBypassedTraffic,
+                        listeners: {
+                            "change": Ext.bind(function(elem, checked) {
                                 this.settings.captureBypassedTraffic = checked;
                             },this)
                         }
                     }]
                 }]
-
             });
         },
 
-        buildGridCaptureRules : function()
-        {
+        buildGridCaptureRules: function() {
 
             this.gridCaptureRules = Ext.create('Ung.EditorGrid',{
-                name : "gridCaptureRules",
-                settingsCmp : this,
-                height : 500,
-                hasReorder : true,
-                emptyRow : {
-                    "live" : true,
-                    "capture" : true,
-                    "log" : false,
-                    "clientInterface" : "1",
-                    "clientAddress" : "any",
-                    "serverAddress" : "any",
-                    "days" : "mon,tue,wed,thu,fri,sat,sun",
-                    "startTime" : "00:00",
-                    "endTime" : "23:59",
-                    "name" : this.i18n._("[no name]"),
-                    "category" : this.i18n._("[no category]"),
-                    "description" : this.i18n._("[no description]"),
-                    "javaClass" : "com.untangle.node.cpd.CaptureRule"
+                name: "gridCaptureRules",
+                settingsCmp: this,
+                height: 500,
+                hasReorder: true,
+                emptyRow: {
+                    "live": true,
+                    "capture": true,
+                    "log": false,
+                    "clientInterface": "1",
+                    "clientAddress": "any",
+                    "serverAddress": "any",
+                    "days": "mon,tue,wed,thu,fri,sat,sun",
+                    "startTime": "00:00",
+                    "endTime": "23:59",
+                    "name": this.i18n._("[no name]"),
+                    "category": this.i18n._("[no category]"),
+                    "description": this.i18n._("[no description]"),
+                    "javaClass": "com.untangle.node.cpd.CaptureRule"
                 },
-                title : this.i18n._("Rules"),
-                qtip : this.i18n._("The Capture Rules are a set of rules to define which hosts and traffic are subject to the Captive Portal. All enabled rules are evaluated in order."),
-                recordJavaClass : "com.untangle.node.cpd.CaptureRule",
-                paginated : false,
+                title: this.i18n._("Rules"),
+                qtip: this.i18n._("The Capture Rules are a set of rules to define which hosts and traffic are subject to the Captive Portal. All enabled rules are evaluated in order."),
+                recordJavaClass: "com.untangle.node.cpd.CaptureRule",
+                paginated: false,
                 dataProperty: "captureRules",
-                fields : [{
-                    name : "id"
+                fields: [{
+                    name: "id"
                 },{
-                    name : "live"
+                    name: "live"
                 },{
-                    name : "capture"
+                    name: "capture"
                 },{
-                    name : "log"
+                    name: "log"
                 },{
-                    name : "clientInterface"
+                    name: "clientInterface"
                 },{
-                    name : "clientAddress"
+                    name: "clientAddress"
                 },{
-                    name : "serverAddress"
+                    name: "serverAddress"
                 },{
-                    name : "name"
+                    name: "name"
                 },{
-                    name : "category"
+                    name: "category"
                 },{
-                    name : "description"
+                    name: "description"
                 },{
-                    name : "startTime"
+                    name: "startTime"
                 },{
-                    name : "endTime"
+                    name: "endTime"
                 },{
-                    name : "days"
+                    name: "days"
                 },{
-                    name : "javaClass"
+                    name: "javaClass"
                 }],
-                columns : [
+                columns: [
                     {
                         xtype:'checkcolumn',
-                        header : this.i18n._("Enable"),
-                        dataIndex : "live",
-                        fixed : true,
+                        header: this.i18n._("Enable"),
+                        dataIndex: "live",
+                        fixed: true,
                         width:55
 
                     },
                     {
                         xtype:'checkcolumn',
-                        header : this.i18n._("Capture"),
-                        dataIndex : "capture",
-                        fixed : true,
+                        header: this.i18n._("Capture"),
+                        dataIndex: "capture",
+                        fixed: true,
                         width:55
                     },
                     {
-                        header : this.i18n._("Description"),
-                        width : 200,
-                        dataIndex : "description",
+                        header: this.i18n._("Description"),
+                        width: 200,
+                        dataIndex: "description",
                         flex:1,
-                        editor : {
+                        editor: {
                             xtype:'textfield',
-                            allowBlank : false
+                            allowBlank: false
                         }
                     }
                 ],
-                columnsDefaultSortable : false
+                columnsDefaultSortable: false
             });
 
             var rowEditor = this.buildGridCaptureRulesRowEditor();
             this.gridCaptureRules.rowEditor = rowEditor;
         },
 
-        buildGridCaptureRulesRowEditor : function()
-        {
+        buildGridCaptureRulesRowEditor: function() {
             return Ext.create('Ung.RowEditorWindow',{
-                grid : this.gridCaptureRules,
-                title : this.i18n._("Capture Rule"),
-                inputLines : [{
-                    xtype : "checkbox",
-                    name : "live",
-                    dataIndex : "live",
-                    boxLabel : this.i18n._("Enabled"),
-                    hideLabel : true
+                grid: this.gridCaptureRules,
+                title: this.i18n._("Capture Rule"),
+                inputLines: [{
+                    xtype: "checkbox",
+                    name: "live",
+                    dataIndex: "live",
+                    boxLabel: this.i18n._("Enabled"),
+                    hideLabel: true
                 },{
-                    xtype : "checkbox",
-                    name : "capture",
-                    dataIndex : "capture",
-                    boxLabel : this.i18n._("Capture"),
-                    hideLabel : true
+                    xtype: "checkbox",
+                    name: "capture",
+                    dataIndex: "capture",
+                    boxLabel: this.i18n._("Capture"),
+                    hideLabel: true
                 },{
-                    xtype : "textfield",
-                    name : "description",
-                    width : 320,
-                    dataIndex : "description",
-                    fieldLabel : this.i18n._("Description"),
-                    allowBlank : false
+                    xtype: "textfield",
+                    name: "description",
+                    width: 320,
+                    dataIndex: "description",
+                    fieldLabel: this.i18n._("Description"),
+                    allowBlank: false
                 },{
-                    xtype : "fieldset",
-                    title : this.i18n._("Interface"),
-                    autoHeight : true,
-                    items : [{
+                    xtype: "fieldset",
+                    title: this.i18n._("Interface"),
+                    autoHeight: true,
+                    items: [{
                         cls: "description",
-                        border : false,
-                        html : this.i18n._("The ethernet interface (NIC).")
+                        border: false,
+                        html: this.i18n._("The ethernet interface (NIC).")
                     }, new Ung.Util.InterfaceCombo({
-                        name : "Client",
-                        dataIndex : "clientInterface",
-                        fieldLabel : this.i18n._("Client"),
-                        simpleMatchers : true
+                        name: "Client",
+                        dataIndex: "clientInterface",
+                        fieldLabel: this.i18n._("Client"),
+                        simpleMatchers: true
                     })]
                 },{
-                    xtype : "fieldset",
-                    title : this.i18n._("Address"),
-                    autoHeight : true,
-                    items : [{
+                    xtype: "fieldset",
+                    title: this.i18n._("Address"),
+                    autoHeight: true,
+                    items: [{
                         cls: "description",
-                        border : false,
-                        html : this.i18n._("The IP addresses.")
+                        border: false,
+                        html: this.i18n._("The IP addresses.")
                     },{
-                        xtype : "textfield",
-                        name : "clientAddress",
-                        dataIndex : "clientAddress",
-                        fieldLabel : this.i18n._("Client"),
-                        allowBlank : false
+                        xtype: "textfield",
+                        name: "clientAddress",
+                        dataIndex: "clientAddress",
+                        fieldLabel: this.i18n._("Client"),
+                        allowBlank: false
                     },{
-                        xtype : "textfield",
-                        name : "serverAddress",
-                        dataIndex : "serverAddress",
-                        fieldLabel : this.i18n._("Server"),
-                        allowBlank : false
+                        xtype: "textfield",
+                        name: "serverAddress",
+                        dataIndex: "serverAddress",
+                        fieldLabel: this.i18n._("Server"),
+                        allowBlank: false
                     }]
                 },{
-                    xtype : "fieldset",
-                    autoHeight : true,
-                    title : this.i18n._("Time of Day"),
-                    items : [{
+                    xtype: "fieldset",
+                    autoHeight: true,
+                    title: this.i18n._("Time of Day"),
+                    items: [{
                         cls: "description",
-                        border : false,
-                        html : this.i18n._("The time of day.")
+                        border: false,
+                        html: this.i18n._("The time of day.")
                     },{
-                        xtype : "utimefield",
-                        name : "startTime",
-                        dataIndex : "startTime",
-                        fieldLabel : this.i18n._("Start Time"),
-                        allowBlank : false
+                        xtype: "utimefield",
+                        format: this.i18n.timeFmt(),
+                        name: "startTime",
+                        dataIndex: "startTime",
+                        fieldLabel: this.i18n._("Start Time"),
+                        allowBlank: false
                     },{
-                        xtype : "utimefield",
-                        endTime : true,
-                        name : "endTime",
-                        dataIndex : "endTime",
-                        fieldLabel : this.i18n._("End Time"),
-                        allowBlank : false
+                        xtype: "utimefield",
+                        format: this.i18n.timeFmt(),
+                        endTime: true,
+                        name: "endTime",
+                        dataIndex: "endTime",
+                        fieldLabel: this.i18n._("End Time"),
+                        allowBlank: false
                     }]
                 },{
-                    xtype : "fieldset",
-                    autoHeight : true,
-                    title : this.i18n._("Days of Week"),
-                    items : [{
+                    xtype: "fieldset",
+                    autoHeight: true,
+                    title: this.i18n._("Days of Week"),
+                    items: [{
                         cls: "description",
-                        border : false,
-                        html : this.i18n._("The days of the week.")
+                        border: false,
+                        html: this.i18n._("The days of the week.")
                     },{
-                        xtype : "checkbox",
-                        name : "sunday",
-                        dataIndex : "sun",
-                        boxLabel : this.i18n._("Sunday"),
-                        hideLabel : true
+                        xtype: "checkbox",
+                        name: "sunday",
+                        dataIndex: "sun",
+                        boxLabel: this.i18n._("Sunday"),
+                        hideLabel: true
                     },{
-                        xtype : "checkbox",
-                        name : "monday",
-                        dataIndex : "mon",
-                        boxLabel : this.i18n._("Monday"),
-                        hideLabel : true
+                        xtype: "checkbox",
+                        name: "monday",
+                        dataIndex: "mon",
+                        boxLabel: this.i18n._("Monday"),
+                        hideLabel: true
                     },{
-                        xtype : "checkbox",
-                        name : "tuesday",
-                        dataIndex : "tue",
-                        boxLabel : this.i18n._("Tuesday"),
-                        hideLabel : true
+                        xtype: "checkbox",
+                        name: "tuesday",
+                        dataIndex: "tue",
+                        boxLabel: this.i18n._("Tuesday"),
+                        hideLabel: true
                     }, {
-                        xtype : "checkbox",
-                        name : "wednesday",
-                        dataIndex : "wed",
-                        boxLabel : this.i18n._("Wednesday"),
-                        hideLabel : true
+                        xtype: "checkbox",
+                        name: "wednesday",
+                        dataIndex: "wed",
+                        boxLabel: this.i18n._("Wednesday"),
+                        hideLabel: true
                     }, {
-                        xtype : "checkbox",
-                        name : "thursday",
-                        dataIndex : "thu",
-                        boxLabel : this.i18n._("Thursday"),
-                        hideLabel : true
+                        xtype: "checkbox",
+                        name: "thursday",
+                        dataIndex: "thu",
+                        boxLabel: this.i18n._("Thursday"),
+                        hideLabel: true
                     }, {
-                        xtype : "checkbox",
-                        name : "friday",
-                        dataIndex : "fri",
-                        boxLabel : this.i18n._("Friday"),
-                        hideLabel : true
+                        xtype: "checkbox",
+                        name: "friday",
+                        dataIndex: "fri",
+                        boxLabel: this.i18n._("Friday"),
+                        hideLabel: true
                     }, {
-                        xtype : "checkbox",
-                        name : "saturday",
-                        dataIndex : "sat",
-                        boxLabel : this.i18n._("Saturday"),
-                        hideLabel : true
+                        xtype: "checkbox",
+                        name: "saturday",
+                        dataIndex: "sat",
+                        boxLabel: this.i18n._("Saturday"),
+                        hideLabel: true
                     }]
                 }],
 
-                populate : function(record, addMode) {
+                populate: function(record, addMode) {
                     var days = record.get("days").split( "," );
                     for ( var c = 0 ; c < Ung.CPD.daysOfWeek.length ; c++ ) {
                         var day = Ung.CPD.daysOfWeek[c];
@@ -433,10 +425,10 @@ if (!Ung.hasResource["Ung.CPD"]) {
 
                     Ung.RowEditorWindow.prototype.populateTree.call(this, record, addMode);
                 },
-                isFormValid : function() {
+                isFormValid: function() {
                     return Ung.RowEditorWindow.prototype.isFormValid.call(this);
                 },
-                updateAction : function() {
+                updateAction: function() {
                     Ung.RowEditorWindow.prototype.updateActionTree.call(this);
 
                     if ( this.record !== null ) {
@@ -452,15 +444,11 @@ if (!Ung.hasResource["Ung.CPD"]) {
 
                         this.record.set( "days", days.join( "," ));
                     }
-                },
-                isDirty : function() {
-                    return Ung.RowEditorWindow.prototype.isDirty.call(this);
                 }
             });
         },
 
-        buildPassedHosts : function()
-        {
+        buildPassedHosts: function() {
             this.gridPassedClients =
                 this.buildGridPassedList( "gridPassedClients",
                                           this.i18n._( "Pass Listed Client Addresses"),
@@ -476,92 +464,89 @@ if (!Ung.hasResource["Ung.CPD"]) {
                                           "Pass Listed Server Addresses is a list of Server IPs that unauthenticated clients can access without authentication.");
 
             this.panelPassedHosts = Ext.create('Ext.panel.Panel',{
-                name : "panelPassedHosts",
-                helpSource : "passed_hosts",
+                name: "panelPassedHosts",
+                helpSource: "passed_hosts",
                 // private fields
-                parentId : this.getId(),
-                title : this.i18n._("Passed Hosts"),
-                layout : "anchor",
-                autoScroll : true,
-                border : false,
+                parentId: this.getId(),
+                title: this.i18n._("Passed Hosts"),
+                layout: "anchor",
+                autoScroll: true,
+                border: false,
                 cls: "ung-panel",
-                items : [ this.gridPassedClients, this.gridPassedServers ]
+                items: [ this.gridPassedClients, this.gridPassedServers ]
             });
         },
 
-        buildGridPassedList : function( name, title, javaClass, dataProperty , tooltip)
-        {
-
-            return Ext.create('Ung.EditorGrid',{
-                name : name,
-                tooltip  : tooltip,
-                settingsCmp : this,
-                hasEdit : false,
-                anchor : "100% 49%",
-                emptyRow : {
-                    "live" : true,
-                    "log" : false,
-                    "address" : "any",
-                    "name" : this.i18n._("[no name]"),
-                    "category" : this.i18n._("[no category]"),
-                    "description" : this.i18n._("[no description]"),
-                    "javaClass" : javaClass
+        buildGridPassedList: function( name, title, javaClass, dataProperty , tooltip) {
+            return Ext.create('Ung.EditorGrid', {
+                name: name,
+                tooltip : tooltip,
+                settingsCmp: this,
+                hasEdit: false,
+                anchor: "100% 49%",
+                emptyRow: {
+                    "live": true,
+                    "log": false,
+                    "address": "any",
+                    "name": this.i18n._("[no name]"),
+                    "category": this.i18n._("[no category]"),
+                    "description": this.i18n._("[no description]"),
+                    "javaClass": javaClass
                 },
-                title : this.i18n._(title),
-                recordJavaClass : javaClass,
-                paginated : false,
+                title: this.i18n._(title),
+                recordJavaClass: javaClass,
+                paginated: false,
                 dataProperty: dataProperty,
-                fields : [{
-                    name : "id"
+                fields: [{
+                    name: "id"
                 },{
-                    name : "live"
+                    name: "live"
                 },{
-                    name : "log"
+                    name: "log"
                 },{
-                    name : "address"
+                    name: "address"
                 },{
-                    name : "name"
+                    name: "name"
                 },{
-                    name : "category"
+                    name: "category"
                 }, {
-                    name : "description"
+                    name: "description"
                 }, {
-                    name : "javaClass"
+                    name: "javaClass"
                 }],
-                columns : [
+                columns: [
                     {
                         xtype:'checkcolumn',
-                        header : this.i18n._("Enable"),
-                        dataIndex : "live",
-                        fixed : true,
+                        header: this.i18n._("Enable"),
+                        dataIndex: "live",
+                        fixed: true,
                         width:55
                     },
                     {
-                        header : this.i18n._("Description"),
-                        width : 200,
-                        dataIndex : "description",
+                        header: this.i18n._("Description"),
+                        width: 200,
+                        dataIndex: "description",
                         editor: {
                             xtype:'textfield',
                             allowBlank:false
                         }
                     },
                     {
-                        header : this.i18n._("Address"),
-                        width : 200,
-                        dataIndex : "address",
+                        header: this.i18n._("Address"),
+                        width: 200,
+                        dataIndex: "address",
                         flex:1,
-                        editor :{
+                        editor:{
                             xtype:'textfield',
-                            allowBlank : false
+                            allowBlank: false
                         }
                     }
                 ],
-                columnsDefaultSortable : false
+                columnsDefaultSortable: false
             });
         },
 
-        buildUserAuthentication : function()
-        {
+        buildUserAuthentication: function() {
             var onUpdateRadioButton = Ext.bind(function( elem, checked )
             {
                 if ( checked ) {
@@ -576,128 +561,128 @@ if (!Ung.hasResource["Ung.CPD"]) {
             },this);
 
             this.panelUserAuthentication = Ext.create('Ext.panel.Panel',{
-                name : "panelUserAuthentication",
-                helpSource : "user_authentication",
+                name: "panelUserAuthentication",
+                helpSource: "user_authentication",
                 // private fields
-                parentId : this.getId(),
-                title : this.i18n._("User Authentication"),
-                autoScroll : true,
-                border : false,
+                parentId: this.getId(),
+                title: this.i18n._("User Authentication"),
+                autoScroll: true,
+                border: false,
                 cls: "ung-panel",
-                items : [{
-                    xtype : "fieldset",
-                    autoHeight : true,
-                    title : this.i18n._( "User Authentication" ),
-                    items : [{
-                        xtype : "radio",
-                        boxLabel : this.i18n._("None"),
-                        hideLabel : true,
-                        name : "authenticationType",
-                        inputValue : "NONE",
-                        listeners : {
-                            "change" : onUpdateRadioButton,
-                            "render" : onRenderRadioButton
+                items: [{
+                    xtype: "fieldset",
+                    autoHeight: true,
+                    title: this.i18n._( "User Authentication" ),
+                    items: [{
+                        xtype: "radio",
+                        boxLabel: this.i18n._("None"),
+                        hideLabel: true,
+                        name: "authenticationType",
+                        inputValue: "NONE",
+                        listeners: {
+                            "change": onUpdateRadioButton,
+                            "render": onRenderRadioButton
                         }
                     },{
-                        xtype : "radio",
-                        boxLabel : this.i18n._("Local Directory"),
-                        hideLabel : true,
-                        name : "authenticationType",
-                        inputValue : "LOCAL_DIRECTORY",
-                        listeners : {
-                            "change" : onUpdateRadioButton,
-                            "render" : onRenderRadioButton
+                        xtype: "radio",
+                        boxLabel: this.i18n._("Local Directory"),
+                        hideLabel: true,
+                        name: "authenticationType",
+                        inputValue: "LOCAL_DIRECTORY",
+                        listeners: {
+                            "change": onUpdateRadioButton,
+                            "render": onRenderRadioButton
                         }
                     },{
                         xtype: "button",
-                        name : "configureLocalDirectory",
-                        text : i18n._("Configure Local Directory"),
-                        handler : Ext.bind(this.configureLocalDirectory,this )
+                        name: "configureLocalDirectory",
+                        text: i18n._("Configure Local Directory"),
+                        handler: Ext.bind(this.configureLocalDirectory,this )
                     },{
-                        xtype : "radio",
-                        boxLabel : Ext.String.format( this.i18n._("RADIUS {0}(requires Directory Connector){1}"),
+                        xtype: "radio",
+                        boxLabel: Ext.String.format( this.i18n._("RADIUS {0}(requires Directory Connector){1}"),
                                                   "<i>", "</i>" ),
-                        hideLabel : true,
-                        disabled : !main.getLicenseManager().getLicense("untangle-node-adconnector"),
-                        name : "authenticationType",
-                        inputValue : "RADIUS",
-                        listeners : {
-                            "change" : onUpdateRadioButton,
-                            "render" : onRenderRadioButton
+                        hideLabel: true,
+                        disabled: !main.getLicenseManager().getLicense("untangle-node-adconnector"),
+                        name: "authenticationType",
+                        inputValue: "RADIUS",
+                        listeners: {
+                            "change": onUpdateRadioButton,
+                            "render": onRenderRadioButton
                         }
                     },{
                         xtype: "button",
-                        disabled : !main.getLicenseManager().getLicense("untangle-node-adconnector"),
-                        name : "configureRadiusServer",
-                        text : i18n._("Configure RADIUS"),
-                        handler : Ext.bind(this.configureRadius,this )
+                        disabled: !main.getLicenseManager().getLicense("untangle-node-adconnector"),
+                        name: "configureRadiusServer",
+                        text: i18n._("Configure RADIUS"),
+                        handler: Ext.bind(this.configureRadius,this )
                     },{
-                        xtype : "radio",
-                        boxLabel : Ext.String.format( this.i18n._("Active Directory {0}(requires Directory Connector){1}"),
+                        xtype: "radio",
+                        boxLabel: Ext.String.format( this.i18n._("Active Directory {0}(requires Directory Connector){1}"),
                                                   "<i>", "</i>" ),
-                        hideLabel : true,
-                        disabled : !main.getLicenseManager().getLicense("untangle-node-adconnector"),
-                        name : "authenticationType",
-                        inputValue : "ACTIVE_DIRECTORY",
-                        listeners : {
-                            "change" : onUpdateRadioButton,
-                            "render" : onRenderRadioButton
+                        hideLabel: true,
+                        disabled: !main.getLicenseManager().getLicense("untangle-node-adconnector"),
+                        name: "authenticationType",
+                        inputValue: "ACTIVE_DIRECTORY",
+                        listeners: {
+                            "change": onUpdateRadioButton,
+                            "render": onRenderRadioButton
                         }
                     },{
                         xtype: "button",
-                        disabled : !main.getLicenseManager().getLicense("untangle-node-adconnector"),
-                        name : "configureActiveDirectory",
-                        text : i18n._("Configure Active Directory"),
-                        handler : Ext.bind(this.configureActiveDirectory, this )
+                        disabled: !main.getLicenseManager().getLicense("untangle-node-adconnector"),
+                        name: "configureActiveDirectory",
+                        text: i18n._("Configure Active Directory"),
+                        handler: Ext.bind(this.configureActiveDirectory, this )
                     }]
                 },{
-                    xtype : "fieldset",
-                    autoHeight : true,
-                    title : this.i18n._( "Session Settings" ),
-                    items : [{
-                        xtype : "numberfield",
-                        allowNegative : false,
-                        allowBlank : false,
-                        name : "idleTimeout",
-                        maxValue : 24 * 60,
-                        minValue : 0,
+                    xtype: "fieldset",
+                    autoHeight: true,
+                    title: this.i18n._( "Session Settings" ),
+                    items: [{
+                        xtype: "numberfield",
+                        allowNegative: false,
+                        allowBlank: false,
+                        name: "idleTimeout",
+                        maxValue: 24 * 60,
+                        minValue: 0,
                         hideTrigger:true,
-                        invalidText : this.i18n._( "The Idle Timeout must be between 0 minutes and 24 hours." ),
-                        fieldLabel : this.i18n._( "Idle Timeout" ),
-                        boxLabel : this.i18n._( "minutes" ),
-                        tooltip : this.i18n._( "Clients will be unauthenticated after this amount of idle time. They may re-authenticate immediately." ),
-                        value : this.settings.idleTimeout / 60,
-                        listeners : {
-                            "change" : Ext.bind(function( elem, newValue ){
+                        invalidText: this.i18n._( "The Idle Timeout must be between 0 minutes and 24 hours." ),
+                        fieldLabel: this.i18n._( "Idle Timeout" ),
+                        boxLabel: this.i18n._( "minutes" ),
+                        tooltip: this.i18n._( "Clients will be unauthenticated after this amount of idle time. They may re-authenticate immediately." ),
+                        value: this.settings.idleTimeout / 60,
+                        listeners: {
+                            "change": Ext.bind(function( elem, newValue ){
                                 this.settings.idleTimeout = newValue * 60;
                             },this)
                         }
                     },{
-                        xtype : "numberfield",
-                        allowNegative : false,
-                        allowBlank : false,
-                        name : "timeout",
-                        maxValue : 24 * 60,
-                        minValue : 5,
+                        xtype: "numberfield",
+                        allowNegative: false,
+                        allowBlank: false,
+                        name: "timeout",
+                        maxValue: 24 * 60,
+                        minValue: 5,
                         hideTrigger:true,
-                        fieldLabel : this.i18n._( "Timeout" ),
-                        boxLabel : this.i18n._( "minutes" ),
-                        invalidText : this.i18n._( "The Timeout must be between 5 minutes and 24 hours." ),
-                        tooltip : this.i18n._( "Clients will be unauthenticated after this amount of time regardless of activity. They may re-authenticate immediately." ),
-                        value : this.settings.timeout / 60,
-                        listeners : {
-                            "change" : Ext.bind(function( elem, newValue ){
+                        fieldLabel: this.i18n._( "Timeout" ),
+                        boxLabel: this.i18n._( "minutes" ),
+                        invalidText: this.i18n._( "The Timeout must be between 5 minutes and 24 hours." ),
+                        tooltip: this.i18n._( "Clients will be unauthenticated after this amount of time regardless of activity. They may re-authenticate immediately." ),
+                        value: this.settings.timeout / 60,
+                        listeners: {
+                            "change": Ext.bind(function( elem, newValue ){
                                 this.settings.timeout = newValue * 60;
                             },this)
                         }
                     },{
-                        xtype : "checkbox",
-                        boxLabel : this.i18n._("Allow Concurrent Logins"),
-                        tooltip : this.i18n._("This will allow multiple hosts to use the same username & password concurrently."),
-                        hideLabel : true,
-                        checked : this.settings.concurrentLoginsEnabled,
-                        listeners : {
-                            "change" : Ext.bind(function(elem, checked) {
+                        xtype: "checkbox",
+                        boxLabel: this.i18n._("Allow Concurrent Logins"),
+                        tooltip: this.i18n._("This will allow multiple hosts to use the same username & password concurrently."),
+                        hideLabel: true,
+                        checked: this.settings.concurrentLoginsEnabled,
+                        listeners: {
+                            "change": Ext.bind(function(elem, checked) {
                                 this.settings.concurrentLoginsEnabled = checked;
                             },this)
                         }
@@ -705,8 +690,7 @@ if (!Ung.hasResource["Ung.CPD"]) {
                 }]
             });
         },
-        captivePageHideComponents : function( currentValue )
-        {
+        captivePageHideComponents: function( currentValue ) {
             var values = [ "BASIC_LOGIN", "BASIC_MESSAGE", "CUSTOM" ];
             for ( var c = 0 ; c < values.length ; c++ ) {
                 var item = values[c];
@@ -719,8 +703,7 @@ if (!Ung.hasResource["Ung.CPD"]) {
                 },this));
             }
         },
-        buildCaptivePage : function()
-        {
+        buildCaptivePage: function() {
             var onUpdateRadioButton = Ext.bind(function( elem, checked )
             {
                 if ( checked ) {
@@ -735,241 +718,241 @@ if (!Ung.hasResource["Ung.CPD"]) {
             },this);
 
             this.panelCaptivePage = Ext.create('Ext.panel.Panel',{
-                name : "panelCaptivePage",
-                helpSource : "captive_page",
+                name: "panelCaptivePage",
+                helpSource: "captive_page",
                 // private fields
-                parentId : this.getId(),
-                title : this.i18n._("Captive Page"),
-                autoScroll : true,
-                border : false,
+                parentId: this.getId(),
+                title: this.i18n._("Captive Page"),
+                autoScroll: true,
+                border: false,
                 cls: "ung-panel",
-                listeners : {
-                    "render" : Ext.bind(function () {
+                listeners: {
+                    "render": Ext.bind(function () {
                         this.panelCaptivePage.query('radio[name="pageType"]')[0].setValue(this.settings.pageType);
                         this.captivePageHideComponents(this.settings.pageType );
                         Ung.Util.clearDirty(this.panelCaptivePage);
                     },this)
                 },
-                items : [{
-                    xtype : "fieldset",
-                    autoHeight : true,
-                    title : this.i18n._( "Captive Portal Page" ),
-                    items : [{
-                        xtype : "radio",
-                        boxLabel : this.i18n._("Basic Message"),
-                        hideLabel : true,
-                        name : "pageType",
-                        inputValue : "BASIC_MESSAGE",
-                        listeners : {
-                            "change" : onUpdateRadioButton
+                items: [{
+                    xtype: "fieldset",
+                    autoHeight: true,
+                    title: this.i18n._( "Captive Portal Page" ),
+                    items: [{
+                        xtype: "radio",
+                        boxLabel: this.i18n._("Basic Message"),
+                        hideLabel: true,
+                        name: "pageType",
+                        inputValue: "BASIC_MESSAGE",
+                        listeners: {
+                            "change": onUpdateRadioButton
                         }
                     },{
-                        xtype : "radio",
-                        boxLabel : this.i18n._("Basic Login"),
-                        hideLabel : true,
-                        name : "pageType",
-                        inputValue : "BASIC_LOGIN",
-                        listeners : {
-                            "change" : onUpdateRadioButton
+                        xtype: "radio",
+                        boxLabel: this.i18n._("Basic Login"),
+                        hideLabel: true,
+                        name: "pageType",
+                        inputValue: "BASIC_LOGIN",
+                        listeners: {
+                            "change": onUpdateRadioButton
                         }
                     },{
-                        xtype : "radio",
-                        boxLabel : this.i18n._("Custom"),
-                        hideLabel : true,
-                        name : "pageType",
-                        inputValue : "CUSTOM",
-                        listeners : {
-                            "change" : onUpdateRadioButton
+                        xtype: "radio",
+                        boxLabel: this.i18n._("Custom"),
+                        hideLabel: true,
+                        name: "pageType",
+                        inputValue: "CUSTOM",
+                        listeners: {
+                            "change": onUpdateRadioButton
                         }
                     },{
-                        xtype : "fieldset",
-                        autoHeight : true,
-                        autoScroll : false,
-                        title : this.i18n._( "Captive Portal Page Configuration" ),
-                        items : [{
-                            xtype : "textfield",
-                            allowBlank : false,
-                            name : "basicLoginPageTitle",
-                            fieldLabel : this.i18n._("Page Title"),
-                            pageType : "BASIC_LOGIN",
-                            value : this.settings.basicLoginPageTitle,
-                            listeners : {
-                                "change" : Ext.bind(function( elem, newValue ){
+                        xtype: "fieldset",
+                        autoHeight: true,
+                        autoScroll: false,
+                        title: this.i18n._( "Captive Portal Page Configuration" ),
+                        items: [{
+                            xtype: "textfield",
+                            allowBlank: false,
+                            name: "basicLoginPageTitle",
+                            fieldLabel: this.i18n._("Page Title"),
+                            pageType: "BASIC_LOGIN",
+                            value: this.settings.basicLoginPageTitle,
+                            listeners: {
+                                "change": Ext.bind(function( elem, newValue ){
                                     this.settings.basicLoginPageTitle = newValue;
                                 },this)
                             }
                         },{
-                            xtype : "textfield",
-                            allowBlank : false,
-                            name : "basicLoginPageWelcome",
-                            fieldLabel : this.i18n._("Welcome Text"),
-                            width : 400,
-                            pageType : "BASIC_LOGIN",
-                            value : this.settings.basicLoginPageWelcome,
-                            listeners : {
-                                "change" : Ext.bind(function( elem, newValue ){
+                            xtype: "textfield",
+                            allowBlank: false,
+                            name: "basicLoginPageWelcome",
+                            fieldLabel: this.i18n._("Welcome Text"),
+                            width: 400,
+                            pageType: "BASIC_LOGIN",
+                            value: this.settings.basicLoginPageWelcome,
+                            listeners: {
+                                "change": Ext.bind(function( elem, newValue ){
                                     this.settings.basicLoginPageWelcome = newValue;
                                 },this)
                             }
                         },{
-                            xtype : "textfield",
-                            allowBlank : false,
-                            name : "basicLoginUsername",
-                            fieldLabel : this.i18n._("Username Text"),
-                            pageType : "BASIC_LOGIN",
-                            value : this.settings.basicLoginUsername,
-                            listeners : {
-                                "change" : Ext.bind(function( elem, newValue ){
+                            xtype: "textfield",
+                            allowBlank: false,
+                            name: "basicLoginUsername",
+                            fieldLabel: this.i18n._("Username Text"),
+                            pageType: "BASIC_LOGIN",
+                            value: this.settings.basicLoginUsername,
+                            listeners: {
+                                "change": Ext.bind(function( elem, newValue ){
                                     this.settings.basicLoginUsername = newValue;
                                 },this)
                             }
                         },{
-                            xtype : "textfield",
-                            allowBlank : false,
-                            name : "basicLoginPassword",
-                            fieldLabel : this.i18n._("Password Text"),
-                            pageType : "BASIC_LOGIN",
-                            value : this.settings.basicLoginPassword,
-                            listeners : {
-                                "change" : Ext.bind(function( elem, newValue ){
+                            xtype: "textfield",
+                            allowBlank: false,
+                            name: "basicLoginPassword",
+                            fieldLabel: this.i18n._("Password Text"),
+                            pageType: "BASIC_LOGIN",
+                            value: this.settings.basicLoginPassword,
+                            listeners: {
+                                "change": Ext.bind(function( elem, newValue ){
                                     this.settings.basicLoginPassword = newValue;
                                 },this)
                             }
                         },{
-                            xtype : "textarea",
-                            allowBlank : true,
-                            name : "basicLoginMessageText",
-                            width : 400,
-                            height : 250,
-                            fieldLabel : this.i18n._("Message Text"),
-                            pageType : "BASIC_LOGIN",
-                            value : this.settings.basicLoginMessageText,
-                            listeners : {
-                                "change" : Ext.bind(function( elem, newValue ){
+                            xtype: "textarea",
+                            allowBlank: true,
+                            name: "basicLoginMessageText",
+                            width: 400,
+                            height: 250,
+                            fieldLabel: this.i18n._("Message Text"),
+                            pageType: "BASIC_LOGIN",
+                            value: this.settings.basicLoginMessageText,
+                            listeners: {
+                                "change": Ext.bind(function( elem, newValue ){
                                     this.settings.basicLoginMessageText = newValue;
                                 },this)
                             }
                         },{
-                            xtype : "textfield",
-                            allowBlank : false,
-                            name : "basicLoginFooter",
-                            fieldLabel : this.i18n._("Lower Text"),
-                            width : 400,
-                            pageType : "BASIC_LOGIN",
-                            value : this.settings.basicLoginFooter,
-                            listeners : {
-                                "change" : Ext.bind(function( elem, newValue ){
+                            xtype: "textfield",
+                            allowBlank: false,
+                            name: "basicLoginFooter",
+                            fieldLabel: this.i18n._("Lower Text"),
+                            width: 400,
+                            pageType: "BASIC_LOGIN",
+                            value: this.settings.basicLoginFooter,
+                            listeners: {
+                                "change": Ext.bind(function( elem, newValue ){
                                     this.settings.basicLoginFooter = newValue;
                                 },this)
                             }
                         },{
-                            xtype : "textfield",
-                            allowBlank : false,
-                            name : "basicMessagePageTitle",
-                            fieldLabel : this.i18n._("Page Title"),
-                            pageType : "BASIC_MESSAGE",
-                            width : 400,
-                            value : this.settings.basicMessagePageTitle,
-                            listeners : {
-                                "change" : Ext.bind(function( elem, newValue ){
+                            xtype: "textfield",
+                            allowBlank: false,
+                            name: "basicMessagePageTitle",
+                            fieldLabel: this.i18n._("Page Title"),
+                            pageType: "BASIC_MESSAGE",
+                            width: 400,
+                            value: this.settings.basicMessagePageTitle,
+                            listeners: {
+                                "change": Ext.bind(function( elem, newValue ){
                                     this.settings.basicMessagePageTitle = newValue;
                                 },this)
                             }
                         },{
-                            xtype : "textfield",
-                            allowBlank : false,
-                            name : "basicMessagePageWelcome",
-                            fieldLabel : this.i18n._("Welcome Text"),
-                            width : 400,
-                            pageType : "BASIC_MESSAGE",
-                            value : this.settings.basicMessagePageWelcome,
-                            listeners : {
-                                "change" : Ext.bind(function( elem, newValue ){
+                            xtype: "textfield",
+                            allowBlank: false,
+                            name: "basicMessagePageWelcome",
+                            fieldLabel: this.i18n._("Welcome Text"),
+                            width: 400,
+                            pageType: "BASIC_MESSAGE",
+                            value: this.settings.basicMessagePageWelcome,
+                            listeners: {
+                                "change": Ext.bind(function( elem, newValue ){
                                     this.settings.basicMessagePageWelcome = newValue;
                                 },this)
                             }
                         },{
-                            xtype : "textarea",
-                            allowBlank : false,
-                            name : "basicMessageMessageText",
-                            width : 400,
-                            height : 250,
-                            fieldLabel : this.i18n._("Message Text"),
-                            pageType : "BASIC_MESSAGE",
-                            value : this.settings.basicMessageMessageText,
-                            listeners : {
-                                "change" : Ext.bind(function( elem, newValue ){
+                            xtype: "textarea",
+                            allowBlank: false,
+                            name: "basicMessageMessageText",
+                            width: 400,
+                            height: 250,
+                            fieldLabel: this.i18n._("Message Text"),
+                            pageType: "BASIC_MESSAGE",
+                            value: this.settings.basicMessageMessageText,
+                            listeners: {
+                                "change": Ext.bind(function( elem, newValue ){
                                     this.settings.basicMessageMessageText = newValue;
                                 },this)
                             }
                         },{
-                            xtype : "checkbox",
-                            allowBlank : false,
-                            name : "basicMessageAgreeBox",
-                            fieldLabel : this.i18n._("Agree Checkbox"),
-                            pageType : "BASIC_MESSAGE",
-                            checked : this.settings.basicMessageAgreeBox,
-                            listeners : {
-                                "change" : Ext.bind(function(elem, checked) {
+                            xtype: "checkbox",
+                            allowBlank: false,
+                            name: "basicMessageAgreeBox",
+                            fieldLabel: this.i18n._("Agree Checkbox"),
+                            pageType: "BASIC_MESSAGE",
+                            checked: this.settings.basicMessageAgreeBox,
+                            listeners: {
+                                "change": Ext.bind(function(elem, checked) {
                                     this.settings.basicMessageAgreeBox = checked;
                                 },this)
                             }
                         },{
-                            xtype : "textfield",
-                            allowBlank : false,
-                            name : "basicMessageAgreeText",
-                            fieldLabel : this.i18n._("Agree Text"),
-                            width : 400,
-                            pageType : "BASIC_MESSAGE",
-                            value : this.settings.basicMessageAgreeText,
-                            listeners : {
-                                "change" : Ext.bind(function( elem, newValue ){
+                            xtype: "textfield",
+                            allowBlank: false,
+                            name: "basicMessageAgreeText",
+                            fieldLabel: this.i18n._("Agree Text"),
+                            width: 400,
+                            pageType: "BASIC_MESSAGE",
+                            value: this.settings.basicMessageAgreeText,
+                            listeners: {
+                                "change": Ext.bind(function( elem, newValue ){
                                     this.settings.basicMessageAgreeText = newValue;
                                 },this)
                             }
                         },{
-                            xtype : "textfield",
-                            allowBlank : false,
-                            name : "basicMessageFooter",
-                            fieldLabel : this.i18n._("Lower Text"),
-                            width : 400,
-                            pageType : "BASIC_MESSAGE",
-                            value : this.settings.basicMessageFooter,
-                            listeners : {
-                                "change" : Ext.bind(function( elem, newValue ){
+                            xtype: "textfield",
+                            allowBlank: false,
+                            name: "basicMessageFooter",
+                            fieldLabel: this.i18n._("Lower Text"),
+                            width: 400,
+                            pageType: "BASIC_MESSAGE",
+                            value: this.settings.basicMessageFooter,
+                            listeners: {
+                                "change": Ext.bind(function( elem, newValue ){
                                     this.settings.basicMessageFooter = newValue;
                                 },this)
                             }
                         },{
-                            fileUpload : true,
-                            xtype : "form",
-                            bodyStyle : "padding:0px 0px 0px 25px",
-                            buttonAlign : "left",
-                            id : "upload_custom_php",
-                            url : "upload",
-                            pageType : "CUSTOM",
-                            border : false,
-                            items : [{
-                                fieldLabel : this.i18n._("File"),
-                                name : "customUploadFile",
-                                inputType : "file",
-                                xtype : "textfield"
+                            fileUpload: true,
+                            xtype: "form",
+                            bodyStyle: "padding:0px 0px 0px 25px",
+                            buttonAlign: "left",
+                            id: "upload_custom_php",
+                            url: "upload",
+                            pageType: "CUSTOM",
+                            border: false,
+                            items: [{
+                                fieldLabel: this.i18n._("File"),
+                                name: "customUploadFile",
+                                inputType: "file",
+                                xtype: "textfield"
                             },{
                                 xtype: "button",
-                                name : "customSendFile",
-                                text : i18n._("Upload File"),
-                                handler : Ext.bind(this.onUploadCustomFile,this)
+                                name: "customSendFile",
+                                text: i18n._("Upload File"),
+                                handler: Ext.bind(this.onUploadCustomFile,this)
                             },{
-                                xtype : "hidden",
-                                name : "type",
-                                value : "cpd-custom-page"
+                                xtype: "hidden",
+                                name: "type",
+                                value: "cpd-custom-page"
                             }]
                         }]
                     },{
                         xtype: "button",
-                        name : "viewPage",
-                        text : i18n._("View Page"),
-                        handler : Ext.bind(function()
+                        name: "viewPage",
+                        text: i18n._("View Page"),
+                        handler: Ext.bind(function()
                         {
                             if ( this.node.state != "on" ) {
                                 Ext.MessageBox.alert(this.i18n._("Captive Portal is Disabled"),
@@ -987,40 +970,40 @@ if (!Ung.hasResource["Ung.CPD"]) {
                         },this)
                     }]
                 },{
-                    xtype : "fieldset",
-                    autoHeight : true,
-                    title : this.i18n._( "Session Redirect" ),
-                    items : [{
-                        xtype : "textfield",
-                        name : "redirectUrl",
-                        width : 200,
-                        fieldLabel : this.i18n._("Redirect URL"),
-                        tooltip : this.i18n._("Users will be redirected to this page immediately after authentication. Blank sends the user to their original destination."),
-                        value : this.settings.redirectUrl,
-                        listeners : {
-                            "change" : Ext.bind(function( elem, newValue ){
+                    xtype: "fieldset",
+                    autoHeight: true,
+                    title: this.i18n._( "Session Redirect" ),
+                    items: [{
+                        xtype: "textfield",
+                        name: "redirectUrl",
+                        width: 200,
+                        fieldLabel: this.i18n._("Redirect URL"),
+                        tooltip: this.i18n._("Users will be redirected to this page immediately after authentication. Blank sends the user to their original destination."),
+                        value: this.settings.redirectUrl,
+                        listeners: {
+                            "change": Ext.bind(function( elem, newValue ){
                                 this.settings.redirectUrl = newValue;
                             },this)
                         }
                     },{
-                        xtype : "checkbox",
-                        boxLabel : this.i18n._("Redirect HTTP traffic to HTTPS captive page"),
-                        tooltip : this.i18n._("If unchecked, HTTP traffic to unauthenticated hosts will be redirect to the HTTP Captive page. If checked, users will be redirected to an HTTPS captive page."),
-                        hideLabel : true,
-                        checked : this.settings.useHttpsPage,
-                        listeners : {
-                            "change" : Ext.bind(function(elem, checked) {
+                        xtype: "checkbox",
+                        boxLabel: this.i18n._("Redirect HTTP traffic to HTTPS captive page"),
+                        tooltip: this.i18n._("If unchecked, HTTP traffic to unauthenticated hosts will be redirect to the HTTP Captive page. If checked, users will be redirected to an HTTPS captive page."),
+                        hideLabel: true,
+                        checked: this.settings.useHttpsPage,
+                        listeners: {
+                            "change": Ext.bind(function(elem, checked) {
                                 this.settings.useHttpsPage = checked;
                             },this)
                         }
                     },{
-                        xtype : "checkbox",
-                        boxLabel : this.i18n._("Redirect HTTPS traffic to HTTPS captive page"),
-                        tooltip : this.i18n._("If unchecked, HTTPS traffic for unauthenticated users is blocked. If checked HTTPS traffic will be redirected to the HTTPS captive page. Warning: This will cause certificate warning errors in the browser."),
-                        hideLabel : true,
-                        checked : this.settings.redirectHttpsEnabled,
-                        listeners : {
-                            "change" : Ext.bind(function(elem, checked) {
+                        xtype: "checkbox",
+                        boxLabel: this.i18n._("Redirect HTTPS traffic to HTTPS captive page"),
+                        tooltip: this.i18n._("If unchecked, HTTPS traffic for unauthenticated users is blocked. If checked HTTPS traffic will be redirected to the HTTPS captive page. Warning: This will cause certificate warning errors in the browser."),
+                        hideLabel: true,
+                        checked: this.settings.redirectHttpsEnabled,
+                        listeners: {
+                            "change": Ext.bind(function(elem, checked) {
                                 this.settings.redirectHttpsEnabled = checked;
                             },this)
                         }
@@ -1029,74 +1012,71 @@ if (!Ung.hasResource["Ung.CPD"]) {
             });
         },
 
-        onUploadCustomFile : function()
-        {
+        onUploadCustomFile: function() {
             var form = this.panelCaptivePage.query('xform[id="upload_custom_php"]')[0].getForm();
             form.submit({
-                parentID : this.panelCaptivePage.getId(),
-                waitMsg : this.i18n._("Please wait while uploading your custom captive portal page..."),
-                success : Ext.bind(this.uploadCustomFileSuccess, this ),
-                failure : Ext.bind(this.uploadCustomFileFailure, this )
+                parentID: this.panelCaptivePage.getId(),
+                waitMsg: this.i18n._("Please wait while uploading your custom captive portal page..."),
+                success: Ext.bind(this.uploadCustomFileSuccess, this ),
+                failure: Ext.bind(this.uploadCustomFileFailure, this )
             });
         },
 
-        uploadCustomFileSuccess : function()
-        {
+        uploadCustomFileSuccess: function() {
             Ext.MessageBox.alert( this.i18n._("Succeeded"), this.i18n._("Uploading Custom Captive Portal Page succeeded"));
             var field = this.panelCaptivePage.query('textfield[name="customUploadFile"]')[0];
             field.reset();
         },
 
-        uploadCustomFileFailure : function()
-        {
+        uploadCustomFileFailure: function() {
             Ext.MessageBox.alert(this.i18n._("Failed"),
                                  this.i18n._("There was an error uploading the Custom Captive Portal Page." ));
         },
 
-        buildLoginEventLog : function() {
+        buildLoginEventLog: function() {
             this.gridLoginEventLog = Ext.create('Ung.GridEventLog',{
-                title : this.i18n._( "Login Event Log" ),
-                helpSource : "login_event_log",
-                eventQueriesFn : this.getRpcNode().getLoginEventQueries,
-                settingsCmp : this,
-                fields : [{
-                    name : "time_stamp",
-                    sortType : Ung.SortTypes.asTimestamp
+                title: this.i18n._( "Login Event Log" ),
+                helpSource: "login_event_log",
+                eventQueriesFn: this.getRpcNode().getLoginEventQueries,
+                settingsCmp: this,
+                fields: [{
+                    name: "time_stamp",
+                    sortType: Ung.SortTypes.asTimestamp
                 },{
-                    name : "client_addr"
+                    name: "client_addr"
                 },{
-                    name : "login_name"
+                    name: "login_name"
                 },{
-                    name : "auth_type"
+                    name: "auth_type"
                 },{
-                    name : "event"
+                    name: "event"
                 }],
 
-                columns : [{
-                    header : this.i18n._("Timestamp"),
-                    width : Ung.Util.timestampFieldWidth,
-                    sortable : true,
-                    dataIndex : "time_stamp",
-                    renderer : function(value) {
+                columns: [{
+                    header: this.i18n._("Timestamp"),
+                    width: Ung.Util.timestampFieldWidth,
+                    sortable: true,
+                    dataIndex: "time_stamp",
+                    renderer: function(value) {
                         return i18n.timestampFormat(value);
                     }
                 },{
-                    header : this.i18n._("Client"),
-                    width : Ung.Util.ipFieldWidth,
-                    sortable : true,
-                    dataIndex : "client_addr"
+                    header: this.i18n._("Client"),
+                    width: Ung.Util.ipFieldWidth,
+                    sortable: true,
+                    dataIndex: "client_addr"
                 },{
-                    header : this.i18n._("Username"),
-                    width : Ung.Util.usernameFieldWidth,
-                    sortable : true,
-                    dataIndex : "login_name",
+                    header: this.i18n._("Username"),
+                    width: Ung.Util.usernameFieldWidth,
+                    sortable: true,
+                    dataIndex: "login_name",
                     flex:1
                 },{
-                    header : this.i18n._("Action"),
-                    width : 165,
-                    sortable : true,
-                    dataIndex : "event",
-                    renderer : Ext.bind(function( value ) {
+                    header: this.i18n._("Action"),
+                    width: 165,
+                    sortable: true,
+                    dataIndex: "event",
+                    renderer: Ext.bind(function( value ) {
                         switch ( value ) {
                         case "LOGIN":
                             return this.i18n._( "authenticated" );
@@ -1110,11 +1090,11 @@ if (!Ung.hasResource["Ung.CPD"]) {
                         return "";
                     },this )
                 },{
-                    header : this.i18n._("Authentication"),
-                    width : 165,
-                    sortable : true,
-                    dataIndex : "auth_type",
-                    renderer : Ext.bind(function( value ) {
+                    header: this.i18n._("Authentication"),
+                    width: 165,
+                    sortable: true,
+                    dataIndex: "auth_type",
+                    renderer: Ext.bind(function( value ) {
                         switch ( value ) {
                         case "NONE":
                             return this.i18n._( "None" );
@@ -1132,68 +1112,68 @@ if (!Ung.hasResource["Ung.CPD"]) {
             });
         },
 
-        buildBlockEventLog : function() {
+        buildBlockEventLog: function() {
             this.gridBlockEventLog = Ext.create('Ung.GridEventLog',{
-                title : this.i18n._( "Block Event Log" ),
-                helpSource : "block_event_log",
-                eventQueriesFn : this.getRpcNode().getBlockEventQueries,
-                settingsCmp : this,
-                fields : [{
-                    name : "time_stamp",
-                    sortType : Ung.SortTypes.asTimestamp
+                title: this.i18n._( "Block Event Log" ),
+                helpSource: "block_event_log",
+                eventQueriesFn: this.getRpcNode().getBlockEventQueries,
+                settingsCmp: this,
+                fields: [{
+                    name: "time_stamp",
+                    sortType: Ung.SortTypes.asTimestamp
                 },{
-                    name : "client_address"
+                    name: "client_address"
                 },{
-                    name : "client_port"
+                    name: "client_port"
                 },{
-                    name : "server_address"
+                    name: "server_address"
                 },{
-                    name : "server_port"
+                    name: "server_port"
                 },{
-                    name : "client",
-                    convert : function(value, record) {
+                    name: "client",
+                    convert: function(value, record) {
                         return record.client_address + ":" + record.client_port;
                     }
                 }, {
-                    name : "server",
-                    convert : function(value, record) {
+                    name: "server",
+                    convert: function(value, record) {
                         return record.server_address + ":" + record.server_port;
                     }
                 }],
 
-                columns : [{
-                    header : this.i18n._("Timestamp"),
-                    width : Ung.Util.timestampFieldWidth,
-                    sortable : true,
-                    dataIndex : "time_stamp",
-                    renderer : function(value) {
+                columns: [{
+                    header: this.i18n._("Timestamp"),
+                    width: Ung.Util.timestampFieldWidth,
+                    sortable: true,
+                    dataIndex: "time_stamp",
+                    renderer: function(value) {
                         return i18n.timestampFormat(value);
                     }
                 },{
-                    header : this.i18n._("Action"),
-                    width : 80,
-                    sortable : false,
-                    renderer : Ext.bind(function(value) {
+                    header: this.i18n._("Action"),
+                    width: 80,
+                    sortable: false,
+                    renderer: Ext.bind(function(value) {
                         return this.i18n._( "block" );
                     }, this )
                 },{
-                    header : this.i18n._("Client"),
-                    width : Ung.Util.ipFieldWidth,
-                    sortable : true,
-                    dataIndex : "client"
+                    header: this.i18n._("Client"),
+                    width: Ung.Util.ipFieldWidth,
+                    sortable: true,
+                    dataIndex: "client"
                 },{
-                    header : this.i18n._("Reason"),
-                    width : 100,
-                    sortable : false,
+                    header: this.i18n._("Reason"),
+                    width: 100,
+                    sortable: false,
                     flex:1,
-                    renderer : Ext.bind(function(value) {
+                    renderer: Ext.bind(function(value) {
                         return this.i18n._( "unauthenticated" );
                     }, this )
                 },{
-                    header : this.i18n._("Server"),
-                    width : Ung.Util.ipFieldWidth,
-                    sortable : true,
-                    dataIndex : "server"
+                    header: this.i18n._("Server"),
+                    width: Ung.Util.ipFieldWidth,
+                    sortable: true,
+                    dataIndex: "server"
                 }]
             });
         },
@@ -1209,8 +1189,7 @@ if (!Ung.hasResource["Ung.CPD"]) {
             }
             handler.call(this, isApply);
         },
-        validate: function()
-        {
+        validate: function() {
             // Iterate all of the fields checking if they are valid
             if ( !this.query('numberfield[name="idleTimeout"]')[0].isValid() ||
                  !this.query('numberfield[name="timeout"]')[0].isValid()) {
@@ -1255,15 +1234,14 @@ if (!Ung.hasResource["Ung.CPD"]) {
 
             return true;
         },
-        configureLocalDirectory : function()
-        {
+        configureLocalDirectory: function() {
             Ext.MessageBox.wait(i18n._("Loading Config..."),
                                 i18n._("Please wait"));
 
             Ext.defer(Ung.Util.loadResourceAndExecute,1,this,["Ung.LocalDirectory",Ung.Util.getScriptSrc("script/config/localDirectory.js"), Ext.bind(function() {
 
                 main.localDirectoryWin=new Ung.LocalDirectory({
-                    "name" : "localDirectory"
+                    "name": "localDirectory"
                 });
 
                 main.localDirectoryWin.show();
@@ -1273,8 +1251,7 @@ if (!Ung.hasResource["Ung.CPD"]) {
 
         /* There is no way to select the radius tab because we don't
         get a callback once the settings are loaded. */
-        configureRadius : function()
-        {
+        configureRadius: function() {
             var node = main.getNode("untangle-node-adconnector");
             if (node != null) {
                 var nodeCmp = Ung.Node.getCmp(node.nodeId);
@@ -1284,8 +1261,7 @@ if (!Ung.hasResource["Ung.CPD"]) {
             }
         },
 
-        configureActiveDirectory : function()
-        {
+        configureActiveDirectory: function() {
             var node = main.getNode("untangle-node-adconnector");
             if (node != null) {
                 var nodeCmp = Ung.Node.getCmp(node.nodeId);

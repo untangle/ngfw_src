@@ -11,7 +11,6 @@ if (!Ung.hasResource["Ung.SessionMonitor"]) {
 
             this.buildPanel();
             this.items = [this.sessionPanel];
-            //this.buildTabPanel( [this.sessionPanel] );
             this.callParent(arguments);
         },
         closeWindow: function() {
@@ -855,10 +854,6 @@ if (!Ung.hasResource["Ung.SessionMonitor"]) {
                     checked: false,
                     boxLabel: this.i18n._("Application Control - Risk"),
                     groupField: "classd-risk"
-                    //                 },{
-                    //                     border: false,
-                    //                     html: '&nbsp;',
-                    //                     colspan: 0
                 },{
                     xtype: 'radio',
                     name: 'groupingRadio',

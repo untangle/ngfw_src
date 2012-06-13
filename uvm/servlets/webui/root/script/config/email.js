@@ -738,13 +738,13 @@ if (!Ung.hasResource["Ung.Email"]) {
                         }
                     }, {
                         xtype: 'timefield',
+                        format: this.i18n.timeFmt(),
                         name: 'Digest Sending Time',
                         id: 'quarantine_dailySendingTime',
                         labelWidth: 230,
                         labelAlign: 'left',
                         fieldLabel: this.i18n._('Quarantine Digest Sending Time'),
                         allowBlank: false,
-                        // format: "H:i",
                         increment: 1,
                         width: 320,
                         value: this.getFormattedTime(this.getMailNodeSettings().quarantineSettings.digestHourOfDay, this.getMailNodeSettings().quarantineSettings.digestMinuteOfDay),
@@ -753,7 +753,7 @@ if (!Ung.hasResource["Ung.Email"]) {
                                 fn: Ext.bind(function(elem, newValue) {
                                     if (newValue && newValue instanceof Date) {
                                         this.getMailNodeSettings().quarantineSettings.digestMinuteOfDay = newValue.getMinutes();
-                                        this.getMailNodeSettings().quarantineSettings.digestHourOfDay   = newValue.getHours();
+                                        this.getMailNodeSettings().quarantineSettings.digestHourOfDay = newValue.getHours();
                                     }
                                 }, this)
                             }

@@ -62,17 +62,17 @@ if (!Ung.hasResource["Ung.Reporting"]) {
                                     action: Ext.bind(function() {
                                         main.iframeWin.closeActionFn();
                                         this.cancelAction();
-                                    },this)
+                                    }, this)
                                 }, {
                                     title: this.node.nodeProperties.displayName,
                                     action: Ext.bind(function() {
                                         main.iframeWin.closeActionFn();
-                                    },this)
+                                    }, this)
                                 }, {
                                     title: this.i18n._('View Reports')
                                 }];
                                 window.open(viewReportsUrl);
-                            },this)
+                            }, this)
                         }]
                     }, {
                         html: this.i18n._('Report generation for the current day can be forced with the ') + "<b>" + this.i18n._('Generate Today\'s Reports') + "</b>" + this.i18n._(" button.") + "<br/>" +
@@ -92,8 +92,8 @@ if (!Ung.hasResource["Ung.Reporting"]) {
                                 Ext.MessageBox.wait(i18n._("Generating today's reports... This may take a few minutes."), i18n._("Please wait"));
                                 this.getRpcNode().runDailyReport(Ext.bind(function(result, exception) {
                                     this.afterRun(exception, callback);
-                                },this));
-                            },this)
+                                }, this));
+                            }, this)
                         }]
                     }]
                 }]
@@ -130,22 +130,22 @@ if (!Ung.hasResource["Ung.Reporting"]) {
                         cls: 'description',
                         html: this.i18n._("Scheduled time to generate the reports.")
                     }, {
-                        xtype : 'timefield',
-                        fieldLabel : this.i18n._('Generation Time'),
-                        name : 'Generation Time',
-                        width : 90,
-                        hideLabel : true,
-                        // format : "H:i",
-                        value : generationTime,
-                        listeners : {
-                            "change" : {
-                                fn : Ext.bind(function(elem, newValue) {
+                        xtype: 'timefield',
+                        format: this.i18n.timeFmt(),
+                        fieldLabel: this.i18n._('Generation Time'),
+                        name: 'Generation Time',
+                        width: 90,
+                        hideLabel: true,
+                        value: generationTime,
+                        listeners: {
+                            "change": {
+                                fn: Ext.bind(function(elem, newValue) {
                                     // newValue;
                                     if (newValue && newValue instanceof Date) {
                                         this.getSettings().generationMinute = newValue.getMinutes();
                                         this.getSettings().generationHour   = newValue.getHours();
                                     }
-                                },this)
+                                }, this)
                             }
                         }
                     }]
@@ -157,24 +157,24 @@ if (!Ung.hasResource["Ung.Reporting"]) {
                         cls: 'description',
                         html: this.i18n._("Keep event data for this number of days. The smaller the number the lower the disk space requirements and resource usage during report generation.")
                     },{
-                        xtype : 'numberfield',
-                        fieldLabel : this.i18n._('Data Retention days'),
-                        name : 'Data Retention days',
+                        xtype: 'numberfield',
+                        fieldLabel: this.i18n._('Data Retention days'),
+                        name: 'Data Retention days',
                         id: 'reporting_daysToKeepDB',
-                        value : this.getSettings().dbRetention,
-                        labelWidth:150,
-                        labelAlign:'right',
+                        value: this.getSettings().dbRetention,
+                        labelWidth: 150,
+                        labelAlign: 'right',
                         width: 200,
                         allowDecimals: false,
                         allowNegative: false,
                         minValue: 1,
                         maxValue: 65,
                         hideTrigger:true,
-                        listeners : {
-                            "change" : {
-                                fn : Ext.bind(function(elem, newValue) {
+                        listeners: {
+                            "change": {
+                                fn: Ext.bind(function(elem, newValue) {
                                     this.getSettings().dbRetention = newValue;
-                                },this)
+                                }, this)
                             }
                         }
                     }]
@@ -186,11 +186,11 @@ if (!Ung.hasResource["Ung.Reporting"]) {
                         cls: 'description',
                         html: this.i18n._("Keep old reports on the server for this number of days.")
                     },{
-                        xtype : 'numberfield',
-                        fieldLabel : this.i18n._('Reports Retention days'),
-                        name : 'Reports Retention days',
+                        xtype: 'numberfield',
+                        fieldLabel: this.i18n._('Reports Retention days'),
+                        name: 'Reports Retention days',
                         id: 'reporting_daysToKeepFiles',
-                        value : this.getSettings().fileRetention,
+                        value: this.getSettings().fileRetention,
                         labelWidth:150,
                         labelAlign:'right',
                         width: 200,
@@ -199,65 +199,65 @@ if (!Ung.hasResource["Ung.Reporting"]) {
                         minValue: 1,
                         maxValue: 90,
                         hideTrigger:true,
-                        listeners : {
-                            "change" : {
-                                fn : Ext.bind(function(elem, newValue) {
+                        listeners: {
+                            "change": {
+                                fn: Ext.bind(function(elem, newValue) {
                                     this.getSettings().fileRetention = newValue;
-                                },this)
+                                }, this)
                             }
                         }
                     }]
                 }, {
-                    title : this.i18n._("Daily Reports"),
-                    items : [{
-                        border : false,
+                    title: this.i18n._("Daily Reports"),
+                    items: [{
+                        border: false,
                         cls: 'description',
-                        html : this.i18n._('Daily Reports covers the previous day. Daily reports will be generated on the selected days.')
+                        html: this.i18n._('Daily Reports covers the previous day. Daily reports will be generated on the selected days.')
                     },  {
-                        xtype : 'udayfield',
-                        name : 'Daily Days',
+                        xtype: 'udayfield',
+                        name: 'Daily Days',
                         value: this.getSettings().generateDailyReports,
-                        listeners : {
-                            "change" : {
-                                fn : Ext.bind(function(elem, newValue) {
+                        listeners: {
+                            "change": {
+                                fn: Ext.bind(function(elem, newValue) {
                                     this.getSettings().generateDailyReports = elem.getValue();
-                                },this)
+                                }, this)
                             }
                         }
                     }]
                 },{
-                    title : this.i18n._("Weekly Reports"),
-                    items : [{
-                        border : false,
+                    title: this.i18n._("Weekly Reports"),
+                    items: [{
+                        border: false,
                         cls: 'description',
-                        html : this.i18n._('Weekly Reports covers the previous week. Weekly reports will be generated on the selected days.')
+                        html: this.i18n._('Weekly Reports covers the previous week. Weekly reports will be generated on the selected days.')
                     },  {
-                        xtype : 'udayfield',
-                        name : 'Weekly Days',
+                        xtype: 'udayfield',
+                        name: 'Weekly Days',
                         value: this.getSettings().generateWeeklyReports,
-                        listeners : {
-                            "change" : {
-                                fn : Ext.bind(function(elem, newValue) {
+                        listeners: {
+                            "change": {
+                                fn: Ext.bind(function(elem, newValue) {
                                     this.getSettings().generateWeeklyReports = elem.getValue();
-                                },this)
+                                }, this)
                             }
                         }
                     }]
                 },{
-                    title : this.i18n._("Monthly Reports"),
-                    items : [{
-                        border : false,
+                    title: this.i18n._("Monthly Reports"),
+                    items: [{
+                        border: false,
                         cls: 'description',
-                        html : this.i18n._('Monthly Reports covers the previous month. Monthly reports will be generated on the selected days.')
+                        html: this.i18n._('Monthly Reports covers the previous month. Monthly reports will be generated on the selected days.')
                     },  {
-                        xtype : 'udayfield',
-                        name : 'Monthly Days',
+                        xtype: 'udayfield',
+                        name: 'Monthly Days',
                         value: this.getSettings().generateMonthlyReports,
-                        listeners : {
-                            "change" : {
-                                fn : Ext.bind(function(elem, newValue) {
+                        listeners: {
+                            "change": {
+                                fn: Ext.bind(function(elem, newValue) {
                                     this.getSettings().generateMonthlyReports = elem.getValue();
-                                },this)
+                                }, this)
                             }
                         }
                     }]
@@ -270,11 +270,11 @@ if (!Ung.hasResource["Ung.Reporting"]) {
 
             // Change the password for a user.
             var changePasswordColumn = Ext.create('Ung.grid.EditColumn',{
-                header : this.i18n._("change password"),
-                width : 130,
-                fixed : true,
-                iconClass : 'icon-edit-row',
-                handler : function(view,rowIndex,colIndex)
+                header: this.i18n._("change password"),
+                width: 130,
+                fixed: true,
+                iconClass: 'icon-edit-row',
+                handler: function(view,rowIndex,colIndex)
                 {
                     var record = view.getStore().getAt(rowIndex);
                     this.grid.rowEditorChangePassword.populate(record);
@@ -300,7 +300,7 @@ if (!Ung.hasResource["Ung.Reporting"]) {
                     title: this.i18n._('Email'),
                     height: 350,
                     items: [ this.gridReportingUsers = Ext.create('Ung.EditorGrid',{
-                        width : 710,
+                        width: 710,
                         name: 'ReportingUsers',
                         title: this.i18n._("Reporting Users"),
                         hasEdit: false,
@@ -308,15 +308,15 @@ if (!Ung.hasResource["Ung.Reporting"]) {
                         paginated: false,
                         height: 300,
                         emptyRow: {
-                            javaClass : "com.untangle.node.reporting.ReportingUser",
-                            emailAddress   : "reportrecipient@example.com",
-                            emailSummaries : true,
-                            onlineAccess   : false,
-                            password       : null,
-                            passwordHashBase64   : null
+                            javaClass: "com.untangle.node.reporting.ReportingUser",
+                            emailAddress: "reportrecipient@example.com",
+                            emailSummaries: true,
+                            onlineAccess: false,
+                            password: null,
+                            passwordHashBase64: null
                         },
                         data: this.getSettings().reportingUsers.list,
-                        recordJavaClass : "com.untangle.node.reporting.ReportingUser",
+                        recordJavaClass: "com.untangle.node.reporting.ReportingUser",
                         dataRoot: null,
                         autoGenerateId: true,
                         plugins:[changePasswordColumn],
@@ -336,7 +336,7 @@ if (!Ung.hasResource["Ung.Reporting"]) {
                         columns: [{
                             header: this.i18n._("Email Address (username)"),
                             dataIndex: "emailAddress",
-                            width : 200,
+                            width: 200,
                             editor: {
                                 xtype:'textfield',
                                 vtype: "email",
@@ -346,83 +346,83 @@ if (!Ung.hasResource["Ung.Reporting"]) {
                             flex:1
                         }, {
                             xtype:'checkcolumn',
-                            header : this.i18n._("Email Summaries"),
-                            dataIndex : "emailSummaries",
-                            width : 100,
-                            fixed : true
+                            header: this.i18n._("Email Summaries"),
+                            dataIndex: "emailSummaries",
+                            width: 100,
+                            fixed: true
                         }, { 
                             xtype:'checkcolumn',
-                            header : this.i18n._("Online Access"),
-                            dataIndex : "onlineAccess",
-                            width : 100,
-                            fixed : true
+                            header: this.i18n._("Online Access"),
+                            dataIndex: "onlineAccess",
+                            width: 100,
+                            fixed: true
                         }, changePasswordColumn ],
-                        rowEditorInputLines : [
+                        rowEditorInputLines: [
                             {
                                 xtype:'textfield',
-                                dataIndex : "emailAddress",
-                                fieldLabel : this.i18n._("Email Address (username)"),
-                                allowBlank : false,
-                                blankText : this.i18n._("The email address name cannot be blank."),
-                                width : 300
+                                dataIndex: "emailAddress",
+                                fieldLabel: this.i18n._("Email Address (username)"),
+                                allowBlank: false,
+                                blankText: this.i18n._("The email address name cannot be blank."),
+                                width: 300
                             },
                             {
                                 xtype:'checkbox',
-                                dataIndex : "emailSummaries",
-                                fieldLabel : this.i18n._("Email Summaries"),
-                                width : 300
+                                dataIndex: "emailSummaries",
+                                fieldLabel: this.i18n._("Email Summaries"),
+                                width: 300
                             },
                             {
                                 xtype:'checkbox',
-                                dataIndex : "onlineAccess",
-                                id : "add_reporting_online_reports_" + fieldID,
-                                fieldLabel : this.i18n._("Online Access"),
-                                width : 300
+                                dataIndex: "onlineAccess",
+                                id: "add_reporting_online_reports_" + fieldID,
+                                fieldLabel: this.i18n._("Online Access"),
+                                width: 300
                             },
                             {
                                 xtype:'textfield',
                                 inputType: "password",
-                                name : "Password",
-                                dataIndex : "password",
-                                id : "add_reporting_user_password_" + fieldID,
-                                msgTarget : "title",
-                                fieldLabel : this.i18n._("Password"),
-                                boxLabel : this.i18n._("(required for 'Online Access')"),
-                                width : 300,
-                                minLength : 3,
-                                minLengthText : Ext.String.format(this.i18n._("The password is shorter than the minimum {0} characters."), 3)
+                                name: "Password",
+                                dataIndex: "password",
+                                id: "add_reporting_user_password_" + fieldID,
+                                msgTarget: "title",
+                                fieldLabel: this.i18n._("Password"),
+                                boxLabel: this.i18n._("(required for 'Online Access')"),
+                                width: 300,
+                                minLength: 3,
+                                minLengthText: Ext.String.format(this.i18n._("The password is shorter than the minimum {0} characters."), 3)
                             },
                             {
                                 xtype:'textfield',
                                 inputType: "password",
-                                name : "Confirm Password",
-                                dataIndex : "password",
-                                id : "add_reporting_confirm_password_" + fieldID,
-                                fieldLabel : this.i18n._("Confirm Password"),
-                                width : 300
+                                name: "Confirm Password",
+                                dataIndex: "password",
+                                id: "add_reporting_confirm_password_" + fieldID,
+                                fieldLabel: this.i18n._("Confirm Password"),
+                                width: 300
                             }]
                     })]
                 },{
-                    title : this.i18n._("Email Attachment Settings"),
-                    items : [{
-                        xtype : 'checkbox',
-                        boxLabel : this.i18n._('Attach Detailed Report Logs to Email (CSV Zip File)'),
-                        name : 'Email Detail',
-                        hideLabel : true,
-                        checked : this.getSettings().emailDetail,
-                        listeners : {
-                            "change" : {
-                                fn : Ext.bind(function(elem, newValue) {
+                    title: this.i18n._("Email Attachment Settings"),
+                    items: [{
+                        xtype: 'checkbox',
+                        boxLabel: this.i18n._('Attach Detailed Report Logs to Email (CSV Zip File)'),
+                        name: 'Email Detail',
+                        hideLabel: true,
+                        checked: this.getSettings().emailDetail,
+                        listeners: {
+                            "change": {
+                                fn: Ext.bind(function(elem, newValue) {
                                     this.getSettings().emailDetail = newValue;
-                                },this)
+                                }, this)
                             }
                         }
                     },{
-                        xtype : 'numberfield',
-                        fieldLabel : this.i18n._('Attachment size limit (MB)'),
-                        name : 'Attachement size limit',
+                        xtype: 'numberfield',
+                        fieldLabel: this.i18n._('Attachment size limit (MB)'),
+                        name: 'Attachement size limit',
                         id: 'reporting_attachment_size_limit',
-                        value : this.getSettings().attachmentSizeLimit,
+                        value: this.getSettings().attachmentSizeLimit,
                         labelWidth:150,
                         labelAlign:'right',
                         width: 200,
@@ -431,11 +431,11 @@ if (!Ung.hasResource["Ung.Reporting"]) {
                         minValue: 1,
                         maxValue: 30,
                         hideTrigger:true,
-                        listeners : {
-                            "change" : {
-                                fn : Ext.bind(function(elem, newValue) {
+                        listeners: {
+                            "change": {
+                                fn: Ext.bind(function(elem, newValue) {
                                     this.getSettings().attachmentSizeLimit = newValue;
-                                },this)
+                                }, this)
                             }
                         }
                     }]
@@ -443,45 +443,44 @@ if (!Ung.hasResource["Ung.Reporting"]) {
             });
             /* Create the row editor for updating the password */
             this.gridReportingUsers.rowEditorChangePassword = Ext.create('Ung.RowEditorWindow',{
-                grid : this.gridReportingUsers,
-                inputLines : [
+                grid: this.gridReportingUsers,
+                inputLines: [
                     {
                         xtype:'textfield',
                         inputType: "password",
-                        name : "Password",
-                        dataIndex : "password",
-                        id : "edit_reporting_user_password_"  + fieldID,
-                        fieldLabel : this.i18n._("Password"),
-                        width : 300,
-                        minLength : 3,
-                        minLengthText : Ext.String.format(this.i18n._("The password is shorter than the minimum {0} characters."), 3)
+                        name: "Password",
+                        dataIndex: "password",
+                        id: "edit_reporting_user_password_"  + fieldID,
+                        fieldLabel: this.i18n._("Password"),
+                        width: 300,
+                        minLength: 3,
+                        minLengthText: Ext.String.format(this.i18n._("The password is shorter than the minimum {0} characters."), 3)
                     }, 
                     {
                         xtype:'textfield',
                         inputType: "password",
-                        name : "Confirm Password",
-                        dataIndex : "password",
-                        id : "edit_reporting_confirm_password_"  + fieldID,
-                        fieldLabel : this.i18n._("Confirm Password"),
-                        width : 300
+                        name: "Confirm Password",
+                        dataIndex: "password",
+                        id: "edit_reporting_confirm_password_"  + fieldID,
+                        fieldLabel: this.i18n._("Confirm Password"),
+                        width: 300
                     }],
                 validate: Ext.bind(function(inputLines) {
-                	//validate password match
-                	var pwd = Ext.getCmp("edit_reporting_user_password_" + fieldID);
-                	var confirmPwd = Ext.getCmp("edit_reporting_confirm_password_" + fieldID);
-                	if(pwd.getValue() != confirmPwd.getValue()) {
-                		pwd.markInvalid();
-                		return this.i18n._('Passwords do not match');
-                	}
-                	// validate password not empty if onlineAccess checked
-                	var onlineAccess=Ext.getCmp("add_reporting_online_reports_" + fieldID);
-                	if(onlineAccess.getValue() &&  pwd.getValue().length==0) {
-                		return this.i18n._("A password must be set to enable Online Access!");
-                	} else {
-                		return true;
-                	}
-                	
-                },this)
+                    //validate password match
+                    var pwd = Ext.getCmp("edit_reporting_user_password_" + fieldID);
+                    var confirmPwd = Ext.getCmp("edit_reporting_confirm_password_" + fieldID);
+                    if(pwd.getValue() != confirmPwd.getValue()) {
+                        pwd.markInvalid();
+                        return this.i18n._('Passwords do not match');
+                    }
+                    // validate password not empty if onlineAccess checked
+                    var onlineAccess=Ext.getCmp("add_reporting_online_reports_" + fieldID);
+                    if(onlineAccess.getValue() &&  pwd.getValue().length==0) {
+                        return this.i18n._("A password must be set to enable Online Access!");
+                    } else {
+                        return true;
+                    }
+                }, this)
             });
         },
         // syslog panel
@@ -508,14 +507,14 @@ if (!Ung.hasResource["Ung.Reporting"]) {
                         cls: 'description',
                         border: false
                     }, {
-                        xtype : 'radio',
-                        boxLabel : Ext.String.format(this.i18n._('{0}Disable{1} Syslog Events. (This is the default setting.)'), '<b>', '</b>'),
-                        hideLabel : true,
-                        name : 'syslogEnabled',
-                        checked : !this.getSettings().syslogEnabled,
-                        listeners : {
-                            "change" : {
-                                fn : Ext.bind( function(elem, checked) {
+                        xtype: 'radio',
+                        boxLabel: Ext.String.format(this.i18n._('{0}Disable{1} Syslog Events. (This is the default setting.)'), '<b>', '</b>'),
+                        hideLabel: true,
+                        name: 'syslogEnabled',
+                        checked: !this.getSettings().syslogEnabled,
+                        listeners: {
+                            "change": {
+                                fn: Ext.bind( function(elem, checked) {
                                     this.getSettings().syslogEnabled = !checked;
                                     if (checked) {
                                         Ext.getCmp('reporting_syslog_host').disable();
@@ -526,14 +525,14 @@ if (!Ung.hasResource["Ung.Reporting"]) {
                             }
                         }
                     },{
-                        xtype : 'radio',
-                        boxLabel : Ext.String.format(this.i18n._('{0}Enable{1} Syslog Events.'), '<b>', '</b>'),
-                        hideLabel : true,
-                        name : 'syslogEnabled',
-                        checked : this.getSettings().syslogEnabled,
-                        listeners : {
-                            "change" : {
-                                fn : Ext.bind( function(elem, checked) {
+                        xtype: 'radio',
+                        boxLabel: Ext.String.format(this.i18n._('{0}Enable{1} Syslog Events.'), '<b>', '</b>'),
+                        hideLabel: true,
+                        name: 'syslogEnabled',
+                        checked: this.getSettings().syslogEnabled,
+                        listeners: {
+                            "change": {
+                                fn: Ext.bind( function(elem, checked) {
                                     this.getSettings().syslogEnabled = checked;
                                     if (checked) {
                                         Ext.getCmp('reporting_syslog_host').enable();
@@ -545,53 +544,53 @@ if (!Ung.hasResource["Ung.Reporting"]) {
                         }
                     }, {
                         border: false,
-                        autoWidth : true,
+                        autoWidth: true,
                         items: [{
-                            xtype : 'textfield',
-                            fieldLabel : this.i18n._('Host'),
-                            name : 'syslogHost',
-                            width : 300,
-                            itemCls : 'left-indent-1',
-                            id : 'reporting_syslog_host',
-                            value : this.getSettings().syslogHost,
-                            allowBlank : false,
-                            blankText : this.i18n._("A \"Host\" must be specified."),
-                            disabled : !this.getSettings().syslogEnabled
+                            xtype: 'textfield',
+                            fieldLabel: this.i18n._('Host'),
+                            name: 'syslogHost',
+                            width: 300,
+                            itemCls: 'left-indent-1',
+                            id: 'reporting_syslog_host',
+                            value: this.getSettings().syslogHost,
+                            allowBlank: false,
+                            blankText: this.i18n._("A \"Host\" must be specified."),
+                            disabled: !this.getSettings().syslogEnabled
                         },{
-                            xtype : 'numberfield',
-                            fieldLabel : this.i18n._('Port'),
-                            name : 'syslogPort',
+                            xtype: 'numberfield',
+                            fieldLabel: this.i18n._('Port'),
+                            name: 'syslogPort',
                             width: 200,
-                            itemCls : 'left-indent-1',
-                            id : 'reporting_syslog_port',
-                            value : this.getSettings().syslogPort,
+                            itemCls: 'left-indent-1',
+                            id: 'reporting_syslog_port',
+                            value: this.getSettings().syslogPort,
                             allowDecimals: false,
                             allowNegative: false,
-                            allowBlank : false,
-                            blankText : this.i18n._("You must provide a valid port."),
-                            vtype : 'port',
-                            disabled : !this.getSettings().syslogEnabled
+                            allowBlank: false,
+                            blankText: this.i18n._("You must provide a valid port."),
+                            vtype: 'port',
+                            disabled: !this.getSettings().syslogEnabled
                         },{
-                            xtype : 'combo',
-                            name : 'syslogProtocol',
-                            itemCls : 'left-indent-1',
-                            id : 'reporting_syslog_protocol',
-                            editable : false,
-                            fieldLabel : this.i18n._('Protocol'),
-                            mode : 'local',
-                            triggerAction : 'all',
-                            listClass : 'x-combo-list-small',
-                            store : new Ext.data.SimpleStore({
-                                fields : ['key', 'name'],
-                                data :[
+                            xtype: 'combo',
+                            name: 'syslogProtocol',
+                            itemCls: 'left-indent-1',
+                            id: 'reporting_syslog_protocol',
+                            editable: false,
+                            fieldLabel: this.i18n._('Protocol'),
+                            mode: 'local',
+                            triggerAction: 'all',
+                            listClass: 'x-combo-list-small',
+                            store: new Ext.data.SimpleStore({
+                                fields: ['key', 'name'],
+                                data:[
                                     ["UDP", this.i18n._("UDP")],
                                     ["TCP", this.i18n._("TCP")]
                                 ]
                             }),
-                            displayField : 'name',
-                            valueField : 'key',
-                            value : this.getSettings().syslogProtocol,
-                            disabled : !this.getSettings().syslogEnabled
+                            displayField: 'name',
+                            valueField: 'key',
+                            value: this.getSettings().syslogProtocol,
+                            disabled: !this.getSettings().syslogEnabled
                         }]
                     }]
                 }]
@@ -617,58 +616,58 @@ if (!Ung.hasResource["Ung.Reporting"]) {
                     title: this.i18n._('Database'),
                     height: 350,
                     items: [{
-                        xtype : 'textfield',
-                        fieldLabel : this.i18n._('Host'),
-                        name : 'databaseHost',
-                        width : 300,
-                        itemCls : 'left-indent-1',
-                        id : 'reporting_database_host',
-                        value : this.getSettings().dbHost,
-                        allowBlank : false,
-                        blankText : this.i18n._("A \"Host\" must be specified.")
+                        xtype: 'textfield',
+                        fieldLabel: this.i18n._('Host'),
+                        name: 'databaseHost',
+                        width: 300,
+                        itemCls: 'left-indent-1',
+                        id: 'reporting_database_host',
+                        value: this.getSettings().dbHost,
+                        allowBlank: false,
+                        blankText: this.i18n._("A \"Host\" must be specified.")
                     },{
-                        xtype : 'numberfield',
-                        fieldLabel : this.i18n._('Port'),
-                        name : 'databasePort',
+                        xtype: 'numberfield',
+                        fieldLabel: this.i18n._('Port'),
+                        name: 'databasePort',
                         width: 200,
-                        itemCls : 'left-indent-1',
-                        id : 'reporting_database_port',
-                        value : this.getSettings().dbPort,
+                        itemCls: 'left-indent-1',
+                        id: 'reporting_database_port',
+                        value: this.getSettings().dbPort,
                         allowDecimals: false,
                         allowNegative: false,
-                        allowBlank : false,
-                        blankText : this.i18n._("You must provide a valid port."),
-                        vtype : 'port'
+                        allowBlank: false,
+                        blankText: this.i18n._("You must provide a valid port."),
+                        vtype: 'port'
                     },{
-                        xtype : 'textfield',
-                        fieldLabel : this.i18n._('User'),
-                        name : 'databaseUser',
-                        width : 300,
-                        itemCls : 'left-indent-1',
-                        id : 'reporting_database_user',
-                        value : this.getSettings().dbUser,
-                        allowBlank : false,
-                        blankText : this.i18n._("A \"User\" must be specified.")
+                        xtype: 'textfield',
+                        fieldLabel: this.i18n._('User'),
+                        name: 'databaseUser',
+                        width: 300,
+                        itemCls: 'left-indent-1',
+                        id: 'reporting_database_user',
+                        value: this.getSettings().dbUser,
+                        allowBlank: false,
+                        blankText: this.i18n._("A \"User\" must be specified.")
                     },{
-                        xtype : 'textfield',
-                        fieldLabel : this.i18n._('Password'),
-                        name : 'databasePassword',
-                        width : 300,
-                        itemCls : 'left-indent-1',
-                        id : 'reporting_database_password',
-                        value : this.getSettings().dbPassword,
-                        allowBlank : false,
-                        blankText : this.i18n._("A \"Password\" must be specified.")
+                        xtype: 'textfield',
+                        fieldLabel: this.i18n._('Password'),
+                        name: 'databasePassword',
+                        width: 300,
+                        itemCls: 'left-indent-1',
+                        id: 'reporting_database_password',
+                        value: this.getSettings().dbPassword,
+                        allowBlank: false,
+                        blankText: this.i18n._("A \"Password\" must be specified.")
                     },{
-                        xtype : 'textfield',
-                        fieldLabel : this.i18n._('Name'),
-                        name : 'databaseName',
-                        width : 300,
-                        itemCls : 'left-indent-1',
-                        id : 'reporting_database_name',
-                        value : this.getSettings().dbName,
-                        allowBlank : false,
-                        blankText : this.i18n._("A \"Name\" must be specified.")
+                        xtype: 'textfield',
+                        fieldLabel: this.i18n._('Name'),
+                        name: 'databaseName',
+                        width: 300,
+                        itemCls: 'left-indent-1',
+                        id: 'reporting_database_name',
+                        value: this.getSettings().dbName,
+                        allowBlank: false,
+                        blankText: this.i18n._("A \"Name\" must be specified.")
                     }]
                 }]
             });
@@ -681,12 +680,12 @@ if (!Ung.hasResource["Ung.Reporting"]) {
                 helpSource: 'ip_addresses',
                 title: this.i18n._("Name Map"),
                 emptyRow: {
-                    javaClass : "com.untangle.node.reporting.ReportingUser",
+                    javaClass: "com.untangle.node.reporting.ReportingUser",
                     "address": "1.2.3.4",
                     "hostname": this.i18n._("[no name]")
                 },
                 data: this.getSettings().hostnameMap.list,
-                recordJavaClass : "com.untangle.node.reporting.ReportingHostnameMapEntry",
+                recordJavaClass: "com.untangle.node.reporting.ReportingHostnameMapEntry",
                 // the list of fields
                 fields: [{
                     name: 'id'
@@ -733,11 +732,11 @@ if (!Ung.hasResource["Ung.Reporting"]) {
                     }]
             });
         },
-        applyAction : function()
+        applyAction: function()
         {
-            this.commitSettings(Ext.bind(this.reloadSettings,this));
+            this.commitSettings(Ext.bind(this.reloadSettings, this));
         },
-        reloadSettings : function()
+        reloadSettings: function()
         {
             this.getSettings(true);
 
@@ -755,16 +754,16 @@ if (!Ung.hasResource["Ung.Reporting"]) {
 
             Ext.MessageBox.hide();
         },
-        saveAction : function()
+        saveAction: function()
         {
-            this.commitSettings(Ext.bind(this.completeSaveAction,this));
+            this.commitSettings(Ext.bind(this.completeSaveAction, this));
         },
-        completeSaveAction : function()
+        completeSaveAction: function()
         {
             Ext.MessageBox.hide();
             this.closeWindow();
         },
-        scheduleListToString : function(list)
+        scheduleListToString: function(list)
         {
             var first = true;
             var str = "";
@@ -779,7 +778,7 @@ if (!Ung.hasResource["Ung.Reporting"]) {
             return str;
         },
         // save function
-        commitSettings : function(callback)
+        commitSettings: function(callback)
         {
             if (this.validate()) {
                 Ext.MessageBox.wait(i18n._("Saving..."), i18n._("Please wait"));
@@ -799,7 +798,7 @@ if (!Ung.hasResource["Ung.Reporting"]) {
 
                 this.getRpcNode().setSettings(Ext.bind(function(result, exception) {
                     this.afterSave(exception, callback);
-                },this), this.getSettings());
+                }, this), this.getSettings());
             }
         },
         afterRun: function(exception, callback)
@@ -817,7 +816,7 @@ if (!Ung.hasResource["Ung.Reporting"]) {
 
             callback();
         },
-        getEditableFields : function(){
+        getEditableFields: function(){
             return this.panelGeneration.query('checkbox radiogroup numberfield textfield');        
         },
         isDirty: function() {

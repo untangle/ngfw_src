@@ -29,3 +29,5 @@ msgstr "m/d/y"
 msgid "timestamp_fmt"
 msgstr "Y-m-d g:i:s a"
 
+msgid "time_fmt"
+msgstr "g:i a"
