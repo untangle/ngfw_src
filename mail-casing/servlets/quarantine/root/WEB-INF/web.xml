@@ -1,21 +1,5 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
-<!--
- * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License, version 2,
- * as published by the Free Software Foundation.
- *
- * This program is distributed in the hope that it will be useful, but
- * AS-IS and WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE, TITLE, or
- * NONINFRINGEMENT.  See the GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
--->
+<!-- $Id$ -->
 
 <web-app xmlns="http://java.sun.com/xml/ns/j2ee"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
@@ -51,41 +35,12 @@
   </servlet>
   
 
-  
-<!--
-Automatically created by Apache Jakarta Tomcat JspC.
-Place this fragment in the web.xml before all icon, display-name,
-description, distributable, and context-param elements.
--->
-
-    <servlet>
-        <servlet-name>com.untangle.node.mail.quarantine.jsp.TryLater_jsp</servlet-name>
-        <servlet-class>com.untangle.node.mail.quarantine.jsp.TryLater_jsp</servlet-class>
-    </servlet>
-
-    <servlet-mapping>
-        <servlet-name>com.untangle.node.mail.quarantine.jsp.TryLater_jsp</servlet-name>
-        <url-pattern>/TryLater.jsp</url-pattern>
-    </servlet-mapping>
-
-<!--
-All session-config, mime-mapping, welcome-file-list, error-page, taglib,
-resource-ref, security-constraint, login-config, security-role,
-env-entry, and ejb-ref elements should follow this fragment.
--->
-
+  @JSP_PRE_COMPILED_SERVLETS@
 
   <servlet-mapping>
     <servlet-name>InboxMaintenenceControler</servlet-name>
     <url-pattern>/manageuser</url-pattern>
   </servlet-mapping>
-
-  <servlet-mapping>
-    <servlet-name>InboxMaintenenceControlerNew</servlet-name>
-    <url-pattern>/manageuserNew</url-pattern>
-  </servlet-mapping>
-
-
 
   <welcome-file-list>
     <welcome-file>/request.jspx</welcome-file>
