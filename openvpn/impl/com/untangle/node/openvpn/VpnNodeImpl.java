@@ -600,6 +600,7 @@ public class VpnNodeImpl extends NodeBase implements VpnNode, com.untangle.uvm.n
             this.openVpnManager.restart( settings );
 
         } catch( Exception e ) {
+            logger.error("Error during startup", e);
             try {
                 this.openVpnManager.stop();
             } catch ( Exception stopException ) {
@@ -878,7 +879,7 @@ public class VpnNodeImpl extends NodeBase implements VpnNode, com.untangle.uvm.n
         }
 
     }
-    
+
     class GenerateRules implements Runnable
     {
         private final Runnable callback;

@@ -8,7 +8,7 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
     
     Ext.define('Ung.Node.OpenVPN.DistributeClient', {
         extend: 'Ung.Window',
-        title: this.i18n._('Distribute VPN Client'),
+//        title: this.i18n._('Distribute VPN Client'),
         constructor: function( config ) {
             this.i18n = config.i18n;
             this.node = config.node;
