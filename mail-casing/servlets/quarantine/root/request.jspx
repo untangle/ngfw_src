@@ -27,7 +27,7 @@
   <jsp:scriptlet>
     <![CDATA[
              request.setAttribute( "companyName", com.untangle.uvm.UvmContextFactory.context().brandingManager().getCompanyName());
-             request.setAttribute( "ss", com.untangle.uvm.UvmContextFactory.context().skinManager().getSkinSettings()); 
+             request.setAttribute( "skinSettings", com.untangle.uvm.UvmContextFactory.context().skinManager().getSettings()); 
              request.setAttribute( "i18n_map", com.untangle.uvm.UvmContextFactory.context().languageManager().getTranslations("untangle-casing-mail")); 
     ]]>
   </jsp:scriptlet>  
