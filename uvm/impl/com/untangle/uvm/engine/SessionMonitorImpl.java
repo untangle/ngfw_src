@@ -48,10 +48,7 @@ class SessionMonitorImpl implements SessionMonitor
         uvmContext = UvmContextFactory.context();
     }
 
-    /**
-     * documented in SessionMonitor.java
-     */
-    public List<SessionMonitorEntry> getMergedBandwidthSessions(String interfaceIdStr)
+    public List<SessionMonitorEntry> getMergedBandwidthSessions(String interfaceIdStr, int nodeId)
     {
         /**
          * Find the the system interface name that matches this ID
@@ -76,6 +73,14 @@ class SessionMonitorImpl implements SessionMonitor
 
         logger.warn("Unable to find match for interface " + interfaceIdStr);
         return null;
+    }
+    
+    /**
+     * documented in SessionMonitor.java
+     */
+    public List<SessionMonitorEntry> getMergedBandwidthSessions(String interfaceIdStr)
+    {
+        return getMergedBandwidthSessions(interfaceIdStr, 0);
     }
 
     /**

@@ -40,5 +40,14 @@ public interface SessionMonitor
      * This takes 5 seconds to return
      */
     public List<SessionMonitorEntry> getMergedBandwidthSessions(String interfaceId);
+
+    /**
+     * This returns a list of sessions and the bandwidth usage over the last 5 seconds
+     * It calls the Jnettop list and merges it with the conntrack and argon lists
+     * It calls jnettop on the specified interface Id (example: "0")
+     * if nodeId != 0, only include sessions being processed by the specified nodeId.
+     * This takes 5 seconds to return
+     */
+    public List<SessionMonitorEntry> getMergedBandwidthSessions(String interfaceIdStr, int nodeId);
     
 }

@@ -4,6 +4,9 @@ if (!Ung.hasResource["Ung.SessionMonitor"]) {
     Ext.define('Ung.SessionMonitor', {
         extend: 'Ung.StatusWin',
         helpSource: 'session_monitor',
+        defaultBandwidthColumns: false,
+        sortField:'bypassed',
+        sortOrder : 'ASC',
         initComponent: function() {
             this.breadcrumbs = [{
                 title: this.i18n._('Session Viewer')
@@ -481,21 +484,21 @@ if (!Ung.hasResource["Ung.SessionMonitor"]) {
                     //                     colspan: 0
                 },{
                     xtype: 'checkbox',
-                    checked: false,
+                    checked: this.defaultBandwidthColumns,
                     boxLabel: this.i18n._("Bandwidth Control - Client KBps"),
                     gridColumnHeader: this.i18n._("Bandwidth Control - Client KBps"),
                     gridColumnDataIndex: "clientKBps",
                     gridColumnWidth: 150
                 },{
                     xtype: 'checkbox',
-                    checked: false,
+                    checked: this.defaultBandwidthColumns,
                     boxLabel: this.i18n._("Bandwidth Control - Server KBps"),
                     gridColumnHeader: this.i18n._("Bandwidth Control - Server KBps"),
                     gridColumnDataIndex: "serverKBps",
                     gridColumnWidth: 150
                 },{
                     xtype: 'checkbox',
-                    checked: false,
+                    checked: this.defaultBandwidthColumns,
                     boxLabel: this.i18n._("Bandwidth Control - Priority"),
                     gridColumnHeader: this.i18n._("Bandwidth Control - Priority"),
                     gridColumnDataIndex: "priority",
@@ -912,14 +915,15 @@ if (!Ung.hasResource["Ung.SessionMonitor"]) {
                 configEdit: null,
                 hasDelete: false,
                 configDelete: null,
-                sortField: 'bypassed',
+                sortField: this.sortField,
+                sortOrder : this.sortOrder,
                 groupField: groupField,
                 columnsDefaultSortable: true,
                 title: this.i18n._("Current Sessions"),
                 qtip: this.i18n._("This shows all current sessions."),
                 paginated: false,
                 recordJavaClass: "com.untangle.uvm.SessionMonitorEntry",
-                dataFn: this.getSessions,
+                dataFn: Ext.bind(this.getSessions,this),
                 dataFnArg: 0,
                 fields: [{
                     name: "id"
