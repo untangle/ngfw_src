@@ -69,7 +69,7 @@
   </category>
 
   <category name="org.jabsorb">
-    <priority value="INFO"/>
+    <priority value="WARN"/>
   </category>
 
   <!-- ============================================== -->
