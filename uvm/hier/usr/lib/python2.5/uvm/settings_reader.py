@@ -4,7 +4,7 @@ import simplejson as json
 
 def get_node_settings(nodename):
 
-    listfile = "@PREFIX@/usr/share/untangle/settings/untangle-vm/node.js"
+    listfile = "@PREFIX@/usr/share/untangle/settings/untangle-vm/nodes.js"
 
     # find the settings for the argumented node name
     try:
