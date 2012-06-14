@@ -68,6 +68,10 @@
     <priority value="INFO"/>
   </category>
 
+  <category name="org.jabsorb">
+    <priority value="INFO"/>
+  </category>
+
   <!-- ============================================== -->
   <!-- Untangle Platform Categories                   -->
   <!-- ============================================== -->
