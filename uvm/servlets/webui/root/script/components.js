@@ -2195,12 +2195,12 @@ Ext.define("Ung.SystemStats", {
         this.getEl().addCls("system-stats");
         var contentSystemStatsArr=[
             '<div class="label" style="width:100px;left:0px;">'+i18n._("Network")+'</div>',
-            '<div class="label" style="width:70px;left:103px;">'+i18n._("Sessions")+'</div>',
+            '<div class="label" style="width:70px;left:103px;" onclick="main.showSessions()">'+i18n._("Sessions")+'</div>',
             '<div class="label" style="width:70px;left:173px;">'+i18n._("CPU Load")+'</div>',
             '<div class="label" style="width:75px;left:250px;">'+i18n._("Memory")+'</div>',
             '<div class="label" style="width:40px;right:-5px;">'+i18n._("Disk")+'</div>',
             '<div class="network"><div class="tx">'+i18n._("Tx:")+'<div class="tx-value"></div></div><div class="rx">'+i18n._("Rx:")+'<div class="rx-value"></div></div></div>',
-            '<div class="sessions"></div>',
+            '<div class="sessions" onclick="main.showSessions()"></div>',
             '<div class="cpu"></div>',
             '<div class="memory"><div class="free">'+i18n._("F:")+'<div class="free-value"></div></div><div class="used">'+i18n._("U:")+'<div class="used-value"></div></div></div>',
             '<div class="disk"><div name="disk_value"></div></div>'
@@ -2241,12 +2241,7 @@ Ext.define("Ung.SystemStats", {
             cls: 'extended-stats',
             renderTo: Ext.getBody(),
             html: sessionsArr.join(''),
-            items: {
-                xtype: 'button',
-                name: 'Sessions',
-                text: i18n._('Show Sessions'),
-                handler: main.showSessions
-            }
+            items: {}
         });
 
         // cpu tooltip
@@ -3112,8 +3107,8 @@ Ext.define('Ung.Window', {
     constructor: function(config) {
         var defaults = {
             closeAction: 'cancelAction' 
-        }
-        Ext.applyIf(config, defaults)
+        };
+        Ext.applyIf(config, defaults);
         this.subCmps = [];
         this.callParent(arguments);
     },
@@ -3851,7 +3846,6 @@ Ext.define('Ung.RowEditorWindow', {
         }
         this.hide();
     },
-
     updateActionTree: function() {
         if (!this.isFormValid()) {
             return;
@@ -4078,7 +4072,7 @@ Ext.define('Ung.EditorGrid', {
             changedData: {},
             subCmps:[]
         };
-        Ext.applyIf(config, defaults)
+        Ext.applyIf(config, defaults);
         this.callParent(arguments);
     },
     
@@ -4086,7 +4080,7 @@ Ext.define('Ung.EditorGrid', {
         if(this.hasInlineEditor) {
             this.plugins.push(Ext.create('Ext.grid.plugin.CellEditing', {
                 clicksToEdit: 1
-            }))
+            }));
         }
         if (this.hasReorder) {
             var reorderColumn = Ext.create('Ung.grid.ReorderColumn', this.configReorder || {});
@@ -4095,7 +4089,7 @@ Ext.define('Ung.EditorGrid', {
             this.viewConfig.plugins= {
                 ptype: 'gridviewdragdrop',
                 dragText: i18n._('Drag and drop to reorganize')
-            }
+            };
             this.columnsDefaultSortable = false;
         }
         for (var i = 0; i < this.columns.length; i++) {
@@ -4632,18 +4626,6 @@ Ext.define('Ung.EditorGrid', {
             });
         }
     },
-    /*
-    editRowChangedDataByFieldValue: function(field, value) {
-        var cd = this.findFirstChangedDataByFieldValue(field, value);
-        if (cd != null) {
-            this.loadPage(cd.page, Ext.bind(function(r, options, success) {
-                if (success) {
-                     alert("todo");
-                }
-            }, this), this, cd);
-        }
-    },
-    */
     // Get the save list from the changed data
     getSaveList: function() {
         return Ung.Util.getSaveList(this.changedData, this.recordJavaClass);
@@ -4762,7 +4744,7 @@ Ext.define('Ung.EditorGrid', {
         return {
             javaClass: "java.util.LinkedList",
             list: Ung.Util.generateListIds(data)
-        }
+        };
     },
     getDeletedList: function() {
         var list=[];
@@ -5081,6 +5063,36 @@ Ext.define('Ung.ImportSettingsWindow', {
     }
 });
 
+Ext.define('Ung.TimeEditorWindow', {
+    extend:'Ung.RowEditorWindow',
+    grid : this,
+    sizeToComponent : this.settingsCmp,
+    inputLines : [{
+		xtype:'textarea',
+		width : 200,
+		name : "Start Time",
+		dataIndex : "start_time",
+		fieldLabel : this.i18n._("Start Time"),
+		allowBlank : false
+	}, {
+		xtype:'textarea',
+		width : 200,
+		name : "End Time",
+		dataIndex : "end_time",
+		fieldLabel : this.i18n._("End Time"),
+		allowBlank : false
+	}],
+    rowEditorLabelWidth : 100,
+    populate : function(record, value) {
+        this.record = record;
+        // XXX
+    },
+    // updateAction is called to update the record after the edit
+    updateAction : function() {
+        // XXX
+    }
+});
+
 //RuleBuilder
 Ext.define('Ung.RuleBuilder', {
     extend: 'Ext.grid.Panel',
@@ -5192,6 +5204,9 @@ Ext.define('Ung.RuleBuilder', {
                   case "boolean":
                     res="<div>" + this.settingsCmp.i18n._("True") + "</div>";
                     break;
+                  case "editor":
+                    res='<input type="text" size="20" class="x-form-text x-form-field rule_builder_value" onclick="Ext.getCmp(\''+this.getId()+'\').openRowEditor(\''+record.getId()+'\', \''+rule.editor.getId()+'\', this)" value="'+value+'"/>';
+                    break;
                   case "checkgroup":
                     var values_arr=(value!=null && value.length>0)?value.split(","):[];
                     var out=[];
@@ -5219,6 +5234,17 @@ Ext.define('Ung.RuleBuilder', {
             }, this)
         }, deleteColumn];
         this.callParent(arguments);
+    },
+    openRowEditor: function(recordId,editorId,valObj) {
+        var record=this.store.getById(recordId);
+        var editor=Ext.getCmp(editorId);
+        if (editor == null) {
+            Ext.MessageBox.alert(i18n._("Warning"),i18n._("Missing Editor"));
+            return;
+        }
+
+        editor.populate(record, valObj.value);
+        editor.show();
     },
     changeRowType: function(recordId,selObj) {
         var record=this.store.getById(recordId);
