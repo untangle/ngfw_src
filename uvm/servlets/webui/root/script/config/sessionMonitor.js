@@ -48,8 +48,8 @@ if (!Ung.hasResource["Ung.SessionMonitor"]) {
             this.enabledColumns = {};
             this.columns = [];
             this.groupField = null;
-            var nodeStr = ""
-            var groupStr = ""
+            var nodeStr = "";
+            var groupStr = "";
             this.reRenderGrid = Ext.bind(function() {
                 this.columns = [];
                 this.enabledColumns = {};
@@ -535,10 +535,12 @@ if (!Ung.hasResource["Ung.SessionMonitor"]) {
                 boxLabel: this.i18n._("All Sessions"),
                 dataFnArg: 0
             }];
-            var nodes = rpc.nodeManager.nodeInstances();
-            for (var i = 0 ; i < nodes.list.length ; i++) {
-                var nodeProperties = nodes.list[i].nodeProperties;
-                var nodeSettings = nodes.list[i].nodeSettings;
+            var nodeIds = rpc.nodeManager.nodeInstancesIds();
+            for (var i = 0 ; i < nodeIds.list.length ; i++) {
+                var nodeId = nodeIds.list[i];
+                var node = rpc.nodeManager.node(nodeId);
+                var nodeProperties = node.getNodeProperties();
+                var nodeSettings = node.getNodeSettings();
                 if (nodeProperties.viewPosition != null) {
                     items.push({
                         xtype: 'radio',
