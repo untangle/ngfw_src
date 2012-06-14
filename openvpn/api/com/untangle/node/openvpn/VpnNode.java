@@ -42,7 +42,7 @@ public interface VpnNode extends Node
     /* Send out the client distribution */
     public void distributeClientConfig( VpnClient client ) throws Exception;
 
-    public enum ConfigState { UNCONFIGURED, CLIENT, SERVER_BRIDGE, SERVER_ROUTE }
+    public enum ConfigState { UNCONFIGURED, CLIENT, SERVER }
     public ConfigState getConfigState();
     public HostAddress getVpnServerAddress();
 

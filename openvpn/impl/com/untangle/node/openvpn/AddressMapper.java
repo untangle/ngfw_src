@@ -88,9 +88,6 @@ class AddressMapper
             groupClientList.add( client );
         }
 
-        /* Iterate each group list assigning all of the clients IP addresses */
-        final boolean isBridge = settings.isBridgeMode();
-
         for ( Map.Entry<VpnGroup,List<VpnClient>> entry  : groupToClientList.entrySet()) {
             VpnGroup group = entry.getKey();
             List<VpnClient> clients = entry.getValue();
@@ -101,8 +98,7 @@ class AddressMapper
             IPMatcher matcher = IPMatcher.makeSubnetMatcher( group.getAddress(), group.getNetmask());
 
             /* Create enough addresses for all of the clients, and possible the server */
-            Set<IPAddress> addressSet = createAddressSet( clients.size() + ( isServerGroup ? 1 : 0 ),
-                                                       group, matcher, isBridge );
+            Set<IPAddress> addressSet = createAddressSet( clients.size() + ( isServerGroup ? 1 : 0 ), group, matcher );
 
             /* Remove any duplicates in the current list */
             removeDuplicateAddresses( settings, matcher, clients, isServerGroup );
@@ -119,7 +115,7 @@ class AddressMapper
         }
     }
 
-    private Set<IPAddress> createAddressSet( int size, VpnGroup group, IPMatcher matcher, boolean isBridge )
+    private Set<IPAddress> createAddressSet( int size, VpnGroup group, IPMatcher matcher )
         throws Exception
     {
         /* Get the base address */
@@ -147,15 +143,14 @@ class AddressMapper
 
             addressSet.add( address );
 
-            getNextAddress( addressData, isBridge );
+            getNextAddress( addressData );
         }
 
         return addressSet;
     }
 
     /** These are addresses that are already assigned upon starting */
-    void removeDuplicateAddresses( VpnSettings settings, IPMatcher matcher, List<VpnClient> clientList,
-                                   boolean assignServer )
+    void removeDuplicateAddresses( VpnSettings settings, IPMatcher matcher, List<VpnClient> clientList, boolean assignServer )
     {
         Set<IPAddress> addressSet = new HashSet<IPAddress>();
 
@@ -184,8 +179,7 @@ class AddressMapper
     }
 
     /* Remove the addresses that are taken in the address pool to be distributed to clients */
-    void removeTakenAddresses( VpnSettings settings, IPMatcher matcher, List<VpnClient> clientList,
-                               Set<IPAddress> addressSet, boolean assignServer )
+    void removeTakenAddresses( VpnSettings settings, IPMatcher matcher, List<VpnClient> clientList, Set<IPAddress> addressSet, boolean assignServer )
     {
         /* First check the server address */
         if ( assignServer ) {
@@ -213,8 +207,7 @@ class AddressMapper
         }
     }
 
-    void assignRemainingClients( VpnSettings settings, List<VpnClient> clientList,
-                                 Set<IPAddress> addressSet, boolean assignServer )
+    void assignRemainingClients( VpnSettings settings, List<VpnClient> clientList, Set<IPAddress> addressSet, boolean assignServer )
     {
         Iterator<IPAddress> iter = addressSet.iterator();
 
@@ -236,21 +229,12 @@ class AddressMapper
         }
     }
 
-    void getNextAddress( byte[] current, boolean isBridge )
+    void getNextAddress( byte[] current )
     {
-        /* For a bridge each one increments by 1 */
         boolean overflow = false;
-        if ( isBridge ) {
-            current[3] += 1;
 
-            if (( current[3] == 0 ) || ( current[3] == -127 )) {
-                overflow = true;
-                current[3] = 1;
-            }
-        } else {
-            current[3] += 4;
-            if ( current[3] == 1 ) overflow = true;
-        }
+        current[3] += 4;
+        if ( current[3] == 1 ) overflow = true;
 
         /* Overflow  */
         if ( overflow ) {

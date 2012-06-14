@@ -420,7 +420,7 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                 Ext.form.VTypes["openvpnClientNameText"] = this.i18n._( "A client name should only contains numbers, letters, dashes and periods.  Spaces are not allowed." );
             }
 
-            if (this.configState == "SERVER_ROUTE") {
+            if (this.configState == "SERVER") {
                 // keep initial settings
                 
                 this.buildClients();
@@ -561,7 +561,7 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                 clientButtonDisabled = true;
                 serverButtonDisabled = true;
                 wizardVisible = false;
-            } else if (this.configState == "SERVER_ROUTE") {
+            } else if (this.configState == "SERVER") {
                 statusLabel = this.i18n._("VPN Server");
                 clientButtonDisabled = true;
                 serverButtonDisabled = true;
@@ -621,7 +621,7 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                                 this.getRpcNode().startConfig( Ext.bind(function(result, exception) {
                                     if(Ung.Util.handleException(exception)) return;
                                     this.configureVPNServer();
-                                }, this), "SERVER_ROUTE");
+                                }, this), "SERVER");
                             }, this)
                         }, {
                             html: this.i18n._("This configures OpenVPN so remote users and networks can connect and access exported hosts and networks."),
@@ -652,7 +652,7 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                 }]
             }]});
 
-            if (this.configState == "SERVER_ROUTE") {
+            if (this.configState == "SERVER") {
                 this.buildActiveClientsGrid();
                 this.panelStatus.add( this.gridActiveClients );
             }
@@ -1428,7 +1428,7 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
 
         // validation function
         validate: function() {
-            if (this.configState == "SERVER_ROUTE") {
+            if (this.configState == "SERVER") {
                 return  this.validateAdvanced() && this.validateGroups() &&
                     this.validateVpnClients() && this.validateVpnSites();
             } else {
@@ -1611,7 +1611,7 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
             return true;
         },
         doSaveAction: function(isApply) {
-            if(this.configState == "SERVER_ROUTE") {
+            if(this.configState == "SERVER") {
                 this.getSettings().groupList.list = this.gridGroups.getFullSaveList();
                 this.getSettings().exportedAddressList.list = this.gridExports.getFullSaveList();
                 this.getSettings().clientList.list = this.gridClients.getFullSaveList();
@@ -1633,7 +1633,7 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
             } else {
                 this.getSettings(true);
                 // Assume the config state hasn't changed
-                if (this.configState == "SERVER_ROUTE") {
+                if (this.configState == "SERVER") {
                     this.getGroupsStore(true);
                     this.getDefaultGroupName(true);
                     this.gridSites.emptyRow.groupName = this.getDefaultGroupName();
@@ -1749,7 +1749,7 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                         xtype: 'label',
                         html: '<h2 class="wizard-title">'+this.i18n._("Welcome to the OpenVPN Setup Wizard!")+'</h2>'
                     }, {
-                        html: this.i18n._('This wizard will help guide you through your initial setup and configuration of OpenVPN as a VPN Routing Server.'),
+                        html: this.i18n._('This wizard will help guide you through your initial setup and configuration of OpenVPN as a VPN Server.'),
                         bodyStyle: 'padding-bottom:20px;',
                         cls: 'description',
                         border: false

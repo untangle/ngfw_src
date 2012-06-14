@@ -68,7 +68,7 @@ public class Sandbox
     Sandbox( VpnNode.ConfigState configState )
     {
         this.configState = configState;
-        if(configState==VpnNode.ConfigState.SERVER_ROUTE) {
+        if( configState==VpnNode.ConfigState.SERVER ) {
             this.groupList= new GroupList();
             this.clientList=new ClientList();
             this.siteList=new SiteList();
@@ -305,18 +305,12 @@ public class Sandbox
         VpnSettings settings = new VpnSettings();
 
         switch ( configState ) {
-        case SERVER_BRIDGE:
-            throw new Exception( "Bridge mode is presently unsupported" );
-            // settings.setBridgeMode( true );
-            // break;
-        case SERVER_ROUTE:
-            settings.setBridgeMode( false );
+        case SERVER:
             settings.setUntanglePlatformClient( false );
             break;
 
         case CLIENT:
             settings.setUntanglePlatformClient( true );
-            settings.setBridgeMode( false ); /* This would come from the other box */
             settings.setServerAddress( vpnServerAddress );
 
             /* Nothing left to do */

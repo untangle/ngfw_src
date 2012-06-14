@@ -21,8 +21,7 @@ public class CertificateParameters implements Serializable
         this( "", "", "", "", "", false );
     }
 
-    public CertificateParameters( String organization, String domain, String country, String state, 
-                                  String locality, boolean storeCaUsb )
+    public CertificateParameters( String organization, String domain, String country, String state, String locality, boolean storeCaUsb )
     {
         this.organization = organization;
         this.domain  = domain;
@@ -51,7 +50,6 @@ public class CertificateParameters implements Serializable
     {
         this.domain = domain;
     }
-
 
     public String getCountry()
     {

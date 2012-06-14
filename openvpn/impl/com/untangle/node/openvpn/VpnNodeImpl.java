@@ -45,6 +45,13 @@ public class VpnNodeImpl extends NodeBase implements VpnNode, com.untangle.uvm.n
     private static final String WEB_APP      = NODE_NAME;
     private static final String WEB_APP_PATH = "/" + WEB_APP;
 
+    private static final String DEFAULT_DOMAIN    = "does.not.exists";
+    private static final String DEFAULT_COUNTRY   = "US";
+    private static final String DEFAULT_PROVINCE  = "VPN Land";
+    private static final String DEFAULT_LOCALITY  = "VPN City";
+    private static final String DEFAULT_ORGANIZATION = "VPN Organization";
+    private static final String DEFAULT_EMAIL     = "vpn";
+    
     private static final String CLEANUP_SCRIPT = Constants.SCRIPT_DIR + "/cleanup";
 
     private static final HostAddress EMPTY_HOST_ADDRESS = new HostAddress( "" );
@@ -591,7 +598,7 @@ public class VpnNodeImpl extends NodeBase implements VpnNode, com.untangle.uvm.n
 
         /* Don't start if openvpn cannot be configured */
         if ( !settings.trans_isConfigured()) {
-            throw new RuntimeException( i18nUtil.tr( "You must configure OpenVPN as either a VPN Routing Server or a VPN Client before you can turn it on.  You may do this through its Setup Wizard (in its settings)." ));
+            throw new RuntimeException( i18nUtil.tr( "You must configure OpenVPN as either a VPN Server or a VPN Client before you can turn it on.  You may do this through its Setup Wizard (in its settings)." ));
         }
 
         try {
@@ -685,7 +692,7 @@ public class VpnNodeImpl extends NodeBase implements VpnNode, com.untangle.uvm.n
 
         if ( settings.isUntanglePlatformClient()) return ConfigState.CLIENT;
 
-        return ( settings.isBridgeMode() ? ConfigState.SERVER_BRIDGE : ConfigState.SERVER_ROUTE );
+        return ConfigState.SERVER;
     }
 
     public HostAddress getVpnServerAddress()
@@ -708,13 +715,13 @@ public class VpnNodeImpl extends NodeBase implements VpnNode, com.untangle.uvm.n
 
     public void startConfig( ConfigState state ) throws Exception
     {
-        if ( state == ConfigState.UNCONFIGURED || state == ConfigState.SERVER_BRIDGE ) {
+        if ( state == ConfigState.UNCONFIGURED ) {
             throw new Exception( "Cannot run wizard for the selected state: " + state );
         }
 
         this.sandbox = new Sandbox( state );
 
-        if ( state == ConfigState.SERVER_ROUTE ) {
+        if ( state == ConfigState.SERVER ) {
             this.sandbox.autoDetectAddressPool();
             this.sandbox.autoDetectExportList();
         }
@@ -738,13 +745,8 @@ public class VpnNodeImpl extends NodeBase implements VpnNode, com.untangle.uvm.n
     {
         VpnSettings newSettings = this.sandbox.completeConfig( this.getNodeSettings());
 
-        setSettings( newSettings );
+        if ( ! newSettings.isUntanglePlatformClient() ) {
 
-        /* Generate new settings */
-        if ( newSettings.isUntanglePlatformClient()) {
-            /* Finish the configuration for clients, nothing left to do,
-             * it is all done at download time */
-        } else {
             /* Try to cleanup the previous data */
             UvmContextFactory.context().execManager().exec( CLEANUP_SCRIPT );
 
@@ -757,6 +759,16 @@ public class VpnNodeImpl extends NodeBase implements VpnNode, com.untangle.uvm.n
             /* Distribute emails */
             distributeAllClientFiles( newSettings );
         }
+
+        if ( !isSet( newSettings.getDomain()))           newSettings.setDomain( DEFAULT_DOMAIN );
+        if ( !isSet( newSettings.getCountry()))          newSettings.setCountry( DEFAULT_COUNTRY );        
+        if ( !isSet( newSettings.getProvince()))         newSettings.setProvince( DEFAULT_PROVINCE );
+        if ( !isSet( newSettings.getLocality()))         newSettings.setLocality( DEFAULT_LOCALITY );
+        if ( !isSet( newSettings.getOrganization()))     newSettings.setOrganization( DEFAULT_ORGANIZATION );
+        if ( !isSet( newSettings.getOrganizationUnit())) newSettings.setOrganizationUnit( String.format( "%04x%04x", random.nextInt(), random.nextInt()));
+        if ( !isSet( newSettings.getEmail()))            newSettings.setEmail( DEFAULT_EMAIL + "@" + settings.getDomain());
+        
+        setSettings( newSettings );
 
         /* No reusing the sanbox */
         this.sandbox = null;
@@ -880,6 +892,12 @@ public class VpnNodeImpl extends NodeBase implements VpnNode, com.untangle.uvm.n
 
     }
 
+    private boolean isSet( String setting )
+    {
+        if ( setting == null || setting.trim().length() == 0 ) return false;
+        return true;
+    }
+
     class GenerateRules implements Runnable
     {
         private final Runnable callback;
@@ -930,4 +948,5 @@ public class VpnNodeImpl extends NodeBase implements VpnNode, com.untangle.uvm.n
             return this.key;
         }
     }
+
 }

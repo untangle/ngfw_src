@@ -39,7 +39,6 @@ public class VpnSettings implements Serializable
 
     private Long id;
 
-    private boolean isBridgeMode = false;
     private boolean isUntanglePlatformClient = false;
 
     /* The virtual address of the vpn server, or the address of the server to connect to. */
@@ -88,21 +87,6 @@ public class VpnSettings implements Serializable
     void setId( Long id )
     {
         this.id = id;
-    }
-
-    /** Network settings for the VPN */
-
-    /**
-     * @return whether the vpn is in bridge mode.
-     */
-    public boolean isBridgeMode()
-    {
-        return this.isBridgeMode;
-    }
-
-    public void setBridgeMode( boolean isBridgeMode )
-    {
-        this.isBridgeMode = isBridgeMode;
     }
 
     /**

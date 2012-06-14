@@ -20,35 +20,18 @@ import com.untangle.uvm.UvmContextFactory;
 class CertificateManager
 {
     private static final String DOMAIN_FLAG       = "DOMAIN";
-    private static final String DEFAULT_DOMAIN    = "does.not.exists";
     private static final String KEY_SIZE_FLAG     = "KEY_SIZE";
     private static final String COUNTRY_FLAG      = "KEY_COUNTRY";
-    private static final String DEFAULT_COUNTRY   = "US";
-
     private static final String PROVINCE_FLAG     = "KEY_PROVINCE";
-    private static final String DEFAULT_PROVINCE  = "VPN Land";
-
     private static final String LOCALITY_FLAG     = "KEY_CITY";
-    private static final String DEFAULT_LOCALITY  = "VPN City";
-    
     private static final String ORGANIZATION_FLAG = "KEY_ORG";
-    private static final String DEFAULT_ORGANIZATION = "VPN Organization";
     private static final String ORG_UNIT_FLAG     = "KEY_ORG_UNIT";
-    
-    /* Email is unused */
     private static final String EMAIL_FLAG        = "KEY_EMAIL";
-    private static final String DEFAULT_EMAIL     = "vpn";
-
     private static final String SERVER_NAME_FLAG  = "SERVER_NAME";
     private static final String CA_NAME_FLAG      = "CA_NAME";
 
     private static final String HEADER[]          = new String[] {
         "# VPN Base parameter generator configuration file\n"
-    };
-
-    private static final String DEFAULTS[]        = new String[] {
-        SERVER_NAME_FLAG + "=" + "server.${DOMAIN}",
-        CA_NAME_FLAG     + "=" + "ca.${DOMAIN}",
     };
 
     private static final String GENERATE_BASE_SCRIPT   = Constants.SCRIPT_DIR + "/generate-base";
@@ -71,8 +54,6 @@ class CertificateManager
 
     void createBase( VpnSettings settings ) throws Exception
     {
-        setDefaults( settings );
-
         UvmContextFactory.context().execManager().exec( GENERATE_BASE_SCRIPT );
     }
 
@@ -200,26 +181,5 @@ class CertificateManager
     void revokeClient( VpnClient client ) throws Exception
     {
         UvmContextFactory.context().execManager().exec( REVOKE_CLIENT_SCRIPT + " \""  + client.trans_getInternalName() + "\"");
-    }
-
-    private void setDefaults( VpnSettings settings )
-    {
-        if ( !isSet( settings.getDomain()))       settings.setDomain( DEFAULT_DOMAIN );
-        if ( !isSet( settings.getCountry()))      settings.setCountry( DEFAULT_COUNTRY );        
-        if ( !isSet( settings.getProvince()))     settings.setProvince( DEFAULT_PROVINCE );
-        if ( !isSet( settings.getLocality()))     settings.setLocality( DEFAULT_LOCALITY );
-        if ( !isSet( settings.getOrganization())) settings.setOrganization( DEFAULT_ORGANIZATION );
-
-        /* For now this is always just set to a random string */
-        settings.setOrganizationUnit( String.format( "%04x%04x", random.nextInt(), random.nextInt()));
-        
-        /* Presently the email address isn't used */
-        if ( !isSet( settings.getEmail())) settings.setEmail( DEFAULT_EMAIL + "@" + settings.getDomain());
-    }
-
-    private boolean isSet( String setting )
-    {
-        if ( setting == null || setting.trim().length() == 0 ) return false;
-        return true;
     }
 }

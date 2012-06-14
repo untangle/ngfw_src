@@ -209,20 +209,15 @@ public class OpenVpnManager
         /* May want to expose this in the GUI */
         sw.appendVariable( FLAG_PORT, String.valueOf( VpnSettings.DEFAULT_PUBLIC_PORT ));
 
-        /* Bridging or routing */
-        if ( settings.isBridgeMode()) {
-            sw.appendVariable( FLAG_DEVICE, DEVICE_BRIDGE );
-        } else {
-            sw.appendVariable( FLAG_DEVICE, DEVICE_ROUTING );
-            IPAddress localEndpoint  = settings.getServerAddress().getIp();
-            IPAddress remoteEndpoint = getRemoteEndpoint( localEndpoint );
+        sw.appendVariable( FLAG_DEVICE, DEVICE_ROUTING );
+        IPAddress localEndpoint  = settings.getServerAddress().getIp();
+        IPAddress remoteEndpoint = getRemoteEndpoint( localEndpoint );
 
-            sw.appendVariable( FLAG_IFCONFIG, "" + localEndpoint + " " + remoteEndpoint );
-            writePushRoute( sw, localEndpoint, null );
+        sw.appendVariable( FLAG_IFCONFIG, "" + localEndpoint + " " + remoteEndpoint );
+        writePushRoute( sw, localEndpoint, null );
 
-            /* Get all of the routes for all of the different groups */
-            writeGroups( sw, settings );
-        }
+        /* Get all of the routes for all of the different groups */
+        writeGroups( sw, settings );
 
         writeExports( sw, settings );
 
@@ -349,12 +344,7 @@ public class OpenVpnManager
         /* Insert all of the default parameters */
         sw.appendLines( CLIENT_DEFAULTS );
         sw.appendLines( defaults );
-
-        if ( settings.isBridgeMode()) {
-            sw.appendVariable( FLAG_DEVICE, DEVICE_BRIDGE );
-        } else {
-            sw.appendVariable( FLAG_DEVICE, DEVICE_ROUTING );
-        }
+        sw.appendVariable( FLAG_DEVICE, DEVICE_ROUTING );
 
         String name = client.trans_getInternalName();
         String siteName = settings.trans_getInternalSiteName();
