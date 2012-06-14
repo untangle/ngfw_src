@@ -393,7 +393,7 @@ public class MailNodeImpl extends NodeBase implements MailNode, MailExport
     //================================================================
     //Hacks to work around issues w/ the implicit RMI proxy stuff
 
-    abstract class QuarantineManipulationWrapper
+    public abstract class QuarantineManipulationWrapper
     {
         public InboxIndex purge(String account, String...doomedMails)
             throws NoSuchInboxException, QuarantineUserActionFailedException
@@ -416,7 +416,7 @@ public class MailNodeImpl extends NodeBase implements MailNode, MailExport
         public void test() {}
     }
 
-    class QuarantineUserViewWrapper
+    public class QuarantineUserViewWrapper
         extends QuarantineManipulationWrapper
         implements QuarantineUserView
     {
@@ -458,7 +458,7 @@ public class MailNodeImpl extends NodeBase implements MailNode, MailExport
         }
     }
 
-    class QuarantineMaintenenceViewWrapper
+    public class QuarantineMaintenenceViewWrapper
         extends QuarantineManipulationWrapper
         implements QuarantineMaintenenceView {
 
@@ -535,7 +535,7 @@ public class MailNodeImpl extends NodeBase implements MailNode, MailExport
         }
     }
 
-    class QuarantineNodeViewWrapper implements QuarantineNodeView
+    public class QuarantineNodeViewWrapper implements QuarantineNodeView
     {
         public boolean quarantineMail(File file, MailSummary summary, EmailAddress...recipients)
         {
@@ -548,7 +548,7 @@ public class MailNodeImpl extends NodeBase implements MailNode, MailExport
         }
     }
 
-    class SafelistNodeViewWrapper implements SafelistNodeView
+    public class SafelistNodeViewWrapper implements SafelistNodeView
     {
         public boolean isSafelisted(EmailAddress envelopeSender, EmailAddress mimeFrom, List<EmailAddress> recipients)
         {
@@ -556,7 +556,7 @@ public class MailNodeImpl extends NodeBase implements MailNode, MailExport
         }
     }
 
-    abstract class SafelistManipulationWrapper implements SafelistManipulation
+    public abstract class SafelistManipulationWrapper implements SafelistManipulation
     {
         public String[] addToSafelist(String safelistOwnerAddress, String toAdd)
             throws NoSuchSafelistException, SafelistActionFailedException
@@ -602,11 +602,11 @@ public class MailNodeImpl extends NodeBase implements MailNode, MailExport
         public void test() { }
     }
 
-    class SafelistEndUserViewWrapper
+    public class SafelistEndUserViewWrapper
         extends SafelistManipulationWrapper
         implements SafelistEndUserView {}
 
-    class SafelistAdminViewWrapper
+    public class SafelistAdminViewWrapper
         extends SafelistManipulationWrapper
         implements SafelistAdminView
     {
