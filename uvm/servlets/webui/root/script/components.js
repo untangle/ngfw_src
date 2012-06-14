@@ -4169,7 +4169,11 @@ Ext.define('Ung.EditorGrid', {
         });
 
         if(this.paginated) {
-            this.bbar = Ext.create('Ext.toolbar.Paging',{
+            if(!this.bbar)  {
+                this.bbar = [];
+            }
+            this.bbar.push({
+                xtype: 'pagingtoolbar',
                 pageSize: this.recordsPerPage,
                 store: this.getStore(),
                 displayInfo: true,
