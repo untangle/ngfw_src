@@ -761,8 +761,7 @@ if (!Ung.hasResource["Ung.Email"]) {
                     }, {
                         cls: 'description',
                         border: false,
-                        html: Ext.String.format(this.i18n._('Users can also request Quarantine Digest Emails manually at this link: <b>https://{0}/quarantine/</b>'),
-                         /*rpc.networkManager.getPublicAddress()*/"TODO:replace with valid PublicAddress string after networkManager refactoring!")
+                        html: Ext.String.format(this.i18n._('Users can also request Quarantine Digest Emails manually at this link: <b>https://{0}/quarantine/</b>'), rpc.systemManager.getPublicUrl())
                     }]
                 }, {
                     title: this.i18n._('User Quarantines'),
