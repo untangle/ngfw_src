@@ -25,9 +25,6 @@ OPENVPN_CCD_DIR="${OPENVPN_CONF_DIR}/ccd"
 ## This is the client status file that java uses to check the certificate status for each client
 CLIENT_STATUS_FILE="${MISC_DIR}/client_status.txt"
 
-## Default Key Size
-KEY_SIZE=1536
-
 DOMAIN='does.not.exists'
 export KEY_COUNTRY="`/usr/share/untangle/bin/ut-settings-reader.py node untangle-node-openvpn country`"
 export KEY_PROVINCE="`/usr/share/untangle/bin/ut-settings-reader.py node untangle-node-openvpn province`"
@@ -35,6 +32,7 @@ export KEY_CITY="`/usr/share/untangle/bin/ut-settings-reader.py node untangle-no
 export KEY_ORG="`/usr/share/untangle/bin/ut-settings-reader.py node untangle-node-openvpn organization`"
 export KEY_ORG_UNIT="`/usr/share/untangle/bin/ut-settings-reader.py node untangle-node-openvpn organizationUnit`"
 export KEY_EMAIL='vpn@does.not.exists'
+export KEY_SIZE='1536'
 
 OPENSSL="openssl"
 RM_CMD="rm"
@@ -47,6 +45,9 @@ RM_CMD="rm"
 OPENSSL_CFG_FILE="${DATA_DIR}/openssl.cnf"
 CA_KEY="${PKI_DIR}/ca.key"
 CA_CRT="${PKI_DIR}/ca.crt"
+CA_NAME="ca.${DOMAIN}"
+
+SERVER_NAME="server.${DOMAIN}"
 
 ## Issuing ten year certs
 CERT_DURATION=3650
