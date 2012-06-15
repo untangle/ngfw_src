@@ -47,22 +47,41 @@ def get_node_settings(nodename):
 #-----------------------------------------------------------------------------
 
 def get_node_settings_item(nodename,itemname):
-    return get_settings_item(get_node_settings(nodename), itemname)
+    return get_settings_item_json(get_node_settings(nodename), itemname)
 
 #-----------------------------------------------------------------------------
 
 def get_uvm_settings(basename):
     basefile = "@PREFIX@/usr/share/untangle/settings/untangle-vm/" + basename + ".js"
-    return get_settings(basefile)
+    return get_settings_jsonobj(basefile)
 
 #-----------------------------------------------------------------------------
 
 def get_uvm_settings_item(basename,itemname):
-    return get_settings_item(get_uvm_settings(basename), itemname)
+    return get_settings_item_json(get_uvm_settings(basename), itemname)
+
 
 #-----------------------------------------------------------------------------
 
-def get_settings(filename):
+def get_settings_item(file,itemname):
+    return get_settings_item_json(get_settings_jsonobj(file), itemname)
+
+#-----------------------------------------------------------------------------
+
+def get_settings_item_json(jsonObj,itemname):
+
+    if (jsonObj == None):
+        return(None)
+
+    if (not jsonObj.has_key(itemname)):
+        return(None)
+
+    value = jsonObj[itemname]
+    return(value)
+
+#-----------------------------------------------------------------------------
+
+def get_settings_jsonobj(filename):
     try:
         # read the settings
         file = open(filename, "r")
@@ -78,16 +97,3 @@ def get_settings(filename):
 
     # return the settings
     return(baseinfo)
-
-#-----------------------------------------------------------------------------
-
-def get_settings_item(jsonObj,itemname):
-
-    if (jsonObj == None):
-        return(None)
-
-    if (not jsonObj.has_key(itemname)):
-        return(None)
-
-    value = jsonObj[itemname]
-    return(value)
