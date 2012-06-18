@@ -144,7 +144,7 @@ if (!Ung.hasResource["Ung.SessionMonitor"]) {
                 },
                 autoScroll: true,
                 cls: 'ung-panel',
-                items: [this.panelColumnSelector, this.panelNodeSelector, this.panelGroupSelector, this.gridCurrentSessions]
+                items: [this.gridCurrentSessions, this.panelColumnSelector, this.panelNodeSelector, this.panelGroupSelector]
             });
         },
         buildColumnSelectorPanel: function() {
