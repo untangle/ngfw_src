@@ -45,12 +45,12 @@ public class VpnNodeImpl extends NodeBase implements VpnNode, com.untangle.uvm.n
     private static final String WEB_APP      = NODE_NAME;
     private static final String WEB_APP_PATH = "/" + WEB_APP;
 
-    private static final String DEFAULT_DOMAIN    = "does.not.exists";
-    private static final String DEFAULT_COUNTRY   = "US";
-    private static final String DEFAULT_PROVINCE  = "VPN Land";
-    private static final String DEFAULT_LOCALITY  = "VPN City";
+    private static final String DEFAULT_DOMAIN       = "does.not.exists";
+    private static final String DEFAULT_COUNTRY      = "US";
+    private static final String DEFAULT_PROVINCE     = "VPN Land";
+    private static final String DEFAULT_LOCALITY     = "VPN City";
     private static final String DEFAULT_ORGANIZATION = "VPN Organization";
-    private static final String DEFAULT_EMAIL     = "vpn";
+    private static final String DEFAULT_EMAIL        = "vpn";
     
     private static final String CLEANUP_SCRIPT = Constants.SCRIPT_DIR + "/cleanup";
 
@@ -745,21 +745,6 @@ public class VpnNodeImpl extends NodeBase implements VpnNode, com.untangle.uvm.n
     {
         VpnSettings newSettings = this.sandbox.completeConfig( this.getNodeSettings());
 
-        if ( ! newSettings.isUntanglePlatformClient() ) {
-
-            /* Try to cleanup the previous data */
-            UvmContextFactory.context().execManager().exec( CLEANUP_SCRIPT );
-
-            /* Create the base certificate and parameters */
-            this.certificateManager.createBase( newSettings );
-
-            /* Create clients certificates */
-            this.certificateManager.createAllClientCertificates( newSettings );
-
-            /* Distribute emails */
-            distributeAllClientFiles( newSettings );
-        }
-
         if ( !isSet( newSettings.getDomain()))           newSettings.setDomain( DEFAULT_DOMAIN );
         if ( !isSet( newSettings.getCountry()))          newSettings.setCountry( DEFAULT_COUNTRY );        
         if ( !isSet( newSettings.getProvince()))         newSettings.setProvince( DEFAULT_PROVINCE );
@@ -769,6 +754,21 @@ public class VpnNodeImpl extends NodeBase implements VpnNode, com.untangle.uvm.n
         if ( !isSet( newSettings.getEmail()))            newSettings.setEmail( DEFAULT_EMAIL + "@" + settings.getDomain());
         
         setSettings( newSettings );
+
+        if ( ! newSettings.isUntanglePlatformClient() ) {
+
+            /* Try to cleanup the previous data */
+            UvmContextFactory.context().execManager().exec( CLEANUP_SCRIPT );
+
+            /* Create the base certificate and parameters */
+            this.certificateManager.createBase( );
+
+            /* Create clients certificates */
+            this.certificateManager.createAllClientCertificates( newSettings );
+
+            /* Distribute emails */
+            distributeAllClientFiles( newSettings );
+        }
 
         /* No reusing the sanbox */
         this.sandbox = null;

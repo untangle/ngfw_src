@@ -17,7 +17,7 @@ import org.apache.log4j.Logger;
 
 import com.untangle.uvm.UvmContextFactory;
 
-class CertificateManager
+public class CertificateManager
 {
     private static final String DOMAIN_FLAG       = "DOMAIN";
     private static final String KEY_SIZE_FLAG     = "KEY_SIZE";
@@ -48,18 +48,18 @@ class CertificateManager
 
     private final Random random = new Random();
 
-    CertificateManager()
+    public CertificateManager()
     {
     }
 
-    void createBase( VpnSettings settings ) throws Exception
+    public void createBase() throws Exception
     {
         UvmContextFactory.context().execManager().exec( GENERATE_BASE_SCRIPT );
     }
 
     /* Update the status of the certificate, (granted or revoked), and automatically
      * create a cert if a client doesn't have one */
-    void updateCertificateStatus( VpnSettings settings )
+    public void updateCertificateStatus( VpnSettings settings )
     {
         /* Read out the index file */
         Map<String,Boolean> certificateStatusMap = generateCertificateStatusMap();
@@ -84,6 +84,21 @@ class CertificateManager
                 logger.error( "Unable to revoke the certificate for [" + name + "]", e );
             }
         }
+    }
+
+    public void createAllClientCertificates( VpnSettings settings ) throws Exception
+    {
+        for ( VpnClient client : settings.trans_getCompleteClientList()) createClient( client );
+    }
+
+    public void createClient( VpnClient client ) throws Exception
+    {
+        UvmContextFactory.context().execManager().exec( GENERATE_CLIENT_SCRIPT + " \""  + client.trans_getInternalName() + "\" recreate");
+    }
+
+    public void revokeClient( VpnClient client ) throws Exception
+    {
+        UvmContextFactory.context().execManager().exec( REVOKE_CLIENT_SCRIPT + " \""  + client.trans_getInternalName() + "\"");
     }
 
     private void updateClientCertificateStatus( VpnSettings settings, VpnClient client, 
@@ -168,18 +183,4 @@ class CertificateManager
         }
     }
 
-    void createAllClientCertificates( VpnSettings settings ) throws Exception
-    {
-        for ( VpnClient client : settings.trans_getCompleteClientList()) createClient( client );
-    }
-
-    void createClient( VpnClient client ) throws Exception
-    {
-        UvmContextFactory.context().execManager().exec( GENERATE_CLIENT_SCRIPT + " \""  + client.trans_getInternalName() + "\" recreate");
-    }
-
-    void revokeClient( VpnClient client ) throws Exception
-    {
-        UvmContextFactory.context().execManager().exec( REVOKE_CLIENT_SCRIPT + " \""  + client.trans_getInternalName() + "\"");
-    }
 }
