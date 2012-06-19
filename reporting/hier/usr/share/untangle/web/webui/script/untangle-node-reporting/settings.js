@@ -83,7 +83,7 @@ if (!Ung.hasResource["Ung.Reporting"]) {
                         buttonAlign: 'center',
                         footer: false,
                         border: false,
-                        items: [{
+                        buttons: [{
                             xtype: 'button',
                             text: this.i18n._('Generate Today\'s Reports'),
                             name: 'Generate Reports',
