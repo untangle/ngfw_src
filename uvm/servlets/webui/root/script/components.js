@@ -5068,32 +5068,177 @@ Ext.define('Ung.ImportSettingsWindow', {
 });
 
 Ext.define('Ung.TimeEditorWindow', {
-    extend:'Ung.RowEditorWindow',
+    extend:'Ung.UpdateWindow',
+    height: 210,
+    width: 120,
     grid : this,
     sizeToComponent : this.settingsCmp,
     inputLines : [{
-		xtype:'textarea',
-		width : 200,
-		name : "Start Time",
-		dataIndex : "start_time",
+        xtype:'fieldset',
+        name : 'Start Time',
+        title:i18n._("Start Time"),
 		fieldLabel : this.i18n._("Start Time"),
-		allowBlank : false
+        layout: {
+            type: 'table',
+            columns: 3
+        },
+        items: [{
+            xtype : 'combo',
+            id : 'start_time_hour',
+            editable : false,
+            width: 50,
+		    allowBlank : false,
+            store: [["00","00"], ["01","01"], ["02","02"], ["03","03"], ["04","04"], ["05","05"], ["06","06"], ["07","07"], ["08","08"], ["09","09"],
+                    ["10","10"], ["11","11"], ["12","12"], ["13","13"], ["14","14"], ["15","15"], ["16","16"], ["17","17"], ["18","18"], ["19","19"],
+                    ["20","20"], ["21","21"], ["22","22"], ["23","23"]]
+        }, {
+            cls: 'description',
+            border: false,
+            html: "&nbsp;:&nbsp;"
+        }, {
+            xtype : 'combo',
+            id : 'start_time_minute',
+            editable : false,
+            width: 50,
+		    allowBlank : false,
+            store: [["00","00"], ["01","01"], ["02","02"], ["03","03"], ["04","04"], ["05","05"], ["06","06"], ["07","07"], ["08","08"], ["09","09"],
+                    ["10","10"], ["11","11"], ["12","12"], ["13","13"], ["14","14"], ["15","15"], ["16","16"], ["17","17"], ["18","18"], ["19","19"],
+                    ["20","20"], ["21","21"], ["22","22"], ["23","23"], ["24","24"], ["25","25"], ["26","26"], ["27","27"], ["28","28"], ["29","29"],
+                    ["30","30"], ["31","31"], ["32","32"], ["33","33"], ["34","34"], ["35","35"], ["36","36"], ["37","37"], ["38","38"], ["39","39"],
+                    ["40","40"], ["41","41"], ["42","42"], ["43","43"], ["44","44"], ["45","45"], ["46","46"], ["47","47"], ["48","48"], ["49","49"],
+                    ["50","50"], ["51","51"], ["52","52"], ["53","53"], ["54","54"], ["55","55"], ["56","56"], ["57","57"], ["58","58"], ["59","59"]]
+        }]
 	}, {
-		xtype:'textarea',
-		width : 200,
-		name : "End Time",
-		dataIndex : "end_time",
+        xtype:'fieldset',
+        name : 'End Time',
+        title:i18n._("End Time"),
 		fieldLabel : this.i18n._("End Time"),
-		allowBlank : false
+        layout: {
+            type: 'table',
+            columns: 3
+        },
+        items: [{
+            xtype : 'combo',
+            id : 'end_time_hour',
+            editable : false,
+            width: 50,
+		    allowBlank : false,
+            store: [["00","00"], ["01","01"], ["02","02"], ["03","03"], ["04","04"], ["05","05"], ["06","06"], ["07","07"], ["08","08"], ["09","09"],
+                    ["10","10"], ["11","11"], ["12","12"], ["13","13"], ["14","14"], ["15","15"], ["16","16"], ["17","17"], ["18","18"], ["19","19"],
+                    ["20","20"], ["21","21"], ["22","22"], ["23","23"]]
+        }, {
+            cls: 'description',
+            border: false,
+            html: "&nbsp;:&nbsp;"
+        }, {
+            xtype : 'combo',
+            id : 'end_time_minute',
+            editable : false,
+            width: 50,
+		    allowBlank : false,
+            store: [["00","00"], ["01","01"], ["02","02"], ["03","03"], ["04","04"], ["05","05"], ["06","06"], ["07","07"], ["08","08"], ["09","09"],
+                    ["10","10"], ["11","11"], ["12","12"], ["13","13"], ["14","14"], ["15","15"], ["16","16"], ["17","17"], ["18","18"], ["19","19"],
+                    ["20","20"], ["21","21"], ["22","22"], ["23","23"], ["24","24"], ["25","25"], ["26","26"], ["27","27"], ["28","28"], ["29","29"],
+                    ["30","30"], ["31","31"], ["32","32"], ["33","33"], ["34","34"], ["35","35"], ["36","36"], ["37","37"], ["38","38"], ["39","39"],
+                    ["40","40"], ["41","41"], ["42","42"], ["43","43"], ["44","44"], ["45","45"], ["46","46"], ["47","47"], ["48","48"], ["49","49"],
+                    ["50","50"], ["51","51"], ["52","52"], ["53","53"], ["54","54"], ["55","55"], ["56","56"], ["57","57"], ["58","58"], ["59","59"]]
+        }]
 	}],
-    rowEditorLabelWidth : 100,
-    populate : function(record, value) {
+    initComponent: function() {
+        if (this.title == null) {
+            this.title = i18n._('Edit');
+        }
+        if(this.bbar == null){
+            this.bbar  = [
+                '->',
+                {
+                    name: "Cancel",
+                    id: this.getId() + "_cancelBtn",
+                    iconCls: 'cancel-icon',
+                    text: i18n._('Cancel'),
+                    handler: Ext.bind(function() {
+                        this.cancelAction();
+                    }, this)
+                },'-',{
+                    name: "Done",
+                    id: this.getId() + "_doneBtn",
+                    iconCls: 'apply-icon',
+                    text: i18n._('Done'),
+                    handler: Ext.bind(function() {
+                        Ext.defer(this.updateAction,1, this);
+                    }, this)
+            },'-'];         
+        }        
+        this.items = Ext.create('Ext.panel.Panel',{
+            anchor: "100% 100%",
+            labelWidth: 100,
+            buttonAlign: 'right',
+            border: false,
+            bodyStyle: 'padding:10px 10px 0px 10px;',
+            autoScroll: true,
+            defaults: {
+                selectOnFocus: true,
+                msgTarget: 'side'
+            },
+            items: this.inputLines
+        });
+        this.inputLines=this.items.items.getRange(); 
+        this.callParent(arguments);
+    },
+    onShow: function() {
+        Ung.Window.superclass.onShow.call(this);
+        this.setSize({width:this.width,height:this.height});
+    },
+    populate : function(record, value, rulebuilder) {
         this.record = record;
-        // XXX
+        this.rulebuilder = rulebuilder;
+        
+        var start_time_hour = Ext.getCmp("start_time_hour");
+        var start_time_minute = Ext.getCmp("start_time_minute");
+        var end_time_hour = Ext.getCmp("end_time_hour");
+        var end_time_minute = Ext.getCmp("end_time_minute");
+        start_time_hour.setValue(12);
+        start_time_minute.setValue(0);
+        end_time_hour.setValue(13);
+        end_time_minute.setValue(30);
+        
+        var record_value = record.get("value");
+        if (record_value == null)
+            return;
+        if (record_value.indexOf(",") != -1)
+            return;
+        var splits = record_value.split("-");
+        if (splits.length != 2)
+            return;
+
+        var start_time = splits[0].split(":");
+        var end_time = splits[1].split(":");
+
+        if (start_time.length != 2)
+            return;
+        if (end_time.length != 2)
+            return;
+
+        start_time_hour.setValue(start_time[0]);
+        start_time_minute.setValue(start_time[1]);
+        end_time_hour.setValue(end_time[0]);
+        end_time_minute.setValue(end_time[1]);
     },
     // updateAction is called to update the record after the edit
     updateAction : function() {
-        // XXX
+        var start_time_hour = Ext.getCmp("start_time_hour");
+        var start_time_minute = Ext.getCmp("start_time_minute");
+        var end_time_hour = Ext.getCmp("end_time_hour");
+        var end_time_minute = Ext.getCmp("end_time_minute");
+        var value = "" + start_time_hour.getValue() + ":" + start_time_minute.getValue() + "-" + end_time_hour.getValue() + ":" + end_time_minute.getValue();
+        //this.record.data.value = value;
+        this.record.set("value",value);
+        this.hide();
+        this.rulebuilder.dirtyFlag = true;
+        this.rulebuilder.fireEvent("afteredit");
+    },
+    cancelAction: function() {
+        this.hide();
     }
 });
 
@@ -5247,7 +5392,7 @@ Ext.define('Ung.RuleBuilder', {
             return;
         }
 
-        editor.populate(record, valObj.value);
+        editor.populate(record, valObj.value, this);
         editor.show();
     },
     changeRowType: function(recordId,selObj) {
