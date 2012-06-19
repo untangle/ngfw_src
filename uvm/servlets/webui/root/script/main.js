@@ -291,7 +291,7 @@ Ext.define("Ung.Main", {
                     handler: function() {
                        main.openStore("my_account", i18n._("My Account"));
                     }
-                }, '', {
+                }, {
                     xtype: 'button',
                     name: 'Logout',
                     iconCls: 'icon-logout',
