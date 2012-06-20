@@ -5279,8 +5279,13 @@ Ext.define('Ung.TimeEditorWindow', {
         end_time_hour.setValue(13);
         end_time_minute.setValue(30);
         time_method_custom.setValue(true);
-        time_method_range.setValue(false);
         time_custom_value.setValue(value);
+
+        /* if no value is specified - default to range with default range */
+        if (value == "") {
+            time_method_range.setValue(true);
+            return;
+        }
         
         var record_value = value;
         if (record_value == null)
@@ -5304,7 +5309,6 @@ Ext.define('Ung.TimeEditorWindow', {
         end_time_hour.setValue(end_time[0]);
         end_time_minute.setValue(end_time[1]);
         time_method_range.setValue(true);
-        time_method_custom.setValue(false);
     },
     getValue: function() {
         var time_method_custom = Ext.getCmp("time_method_custom");
@@ -5329,7 +5333,7 @@ Ext.define('Ung.UserEditorWindow', {
         var data = [];
         var node = rpc.nodeManager.node("untangle-node-adconnector");
         if (node != null) {
-            data = node.getUserEntries();
+            data = node.getUserEntries().list;
         } else {
             data.push({ firstName: "", lastName: null, uid: "[any]", displayName: "Any User"});
             data.push({ firstName: "", lastName: null, uid: "[authenticated]", displayName: "Any Authenticated User"});
@@ -5339,8 +5343,8 @@ Ext.define('Ung.UserEditorWindow', {
         this.gridPanel = new Ext.grid.GridPanel({
             title: i18n._('Users'),
             id: 'usersGrid',
-            height: 210,
-            width: 500,
+            height: 300,
+            width: 400,
             enableHdMenu: false,
             enableColumnMove: false,
             store: new Ext.data.Store({
@@ -5360,16 +5364,17 @@ Ext.define('Ung.UserEditorWindow', {
                 },{
                     name: "displayName",
                     convert: function(val, rec) {
-                        if (val != null)
+                        if (val != null && val != "")
                             return val;
-                        var displayName = ( rec.firstName == null )  ? "" : rec.firstName;
-                        displayName = displayName + " " + (( rec.lastName == null )  ? "": rec.lastName);
+                        var displayName = ( rec.data.firstName == null )  ? "" : rec.data.firstName;
+                        displayName = displayName + " " + (( rec.data.lastName == null )  ? "": rec.data.lastName);
                         return displayName;
                     }
                 }]
             }),
             columns: [ {
                 header: i18n._("Selected"),
+                width: 60,
 				xtype:'checkcolumn',
                 dataIndex: "checked"
             }, {
@@ -5379,7 +5384,7 @@ Ext.define('Ung.UserEditorWindow', {
                 dataIndex: "uid"
             },{
                 header: i18n._("Full Name"),
-                width: 350,
+                width: 200,
                 sortable: true,
                 dataIndex: "displayName"
             }]
@@ -5432,9 +5437,10 @@ Ext.define('Ung.UserEditorWindow', {
     },
     setValue: function(value) {
         var user_method_custom = Ext.getCmp("user_method_custom");
-        //var method_check = Ext.getCmp("method_check");
         var user_custom_value = Ext.getCmp("user_custom_value");
 
+        this.gridPanel.getStore().load();
+        
         user_method_custom.setValue(true);
         user_custom_value.setValue(value);
     },
@@ -5444,7 +5450,21 @@ Ext.define('Ung.UserEditorWindow', {
             var user_custom_value = Ext.getCmp("user_custom_value");
             return user_custom_value.getValue();
         } else{
-            return "FIXME";
+            var str = "";
+            var first = true;
+            for ( var i = 0 ; i < this.gridPanel.store.data.items.length ; i++ ) {
+                var row = this.gridPanel.store.data.items[i].data;
+                if (row.checked) {
+                    if (row.uid == "[any]")
+                        return "[any]"; /* if any is checked, the rest is irrelevent */
+                    if (!first)
+                        str = str + ",";
+                    else
+                        first = false;
+                    str = str + row.uid;
+                }
+            }
+            return str;
         }
     }
 });
