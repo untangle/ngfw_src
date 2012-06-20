@@ -4,9 +4,10 @@ if (!Ung.hasResource["Ung.SessionMonitor"]) {
     Ext.define('Ung.SessionMonitor', {
         extend: 'Ung.StatusWin',
         helpSource: 'session_monitor',
-        defaultBandwidthColumns: false,
         sortField:'bypassed',
         sortOrder : 'ASC',
+        defaultBandwidthColumns: false,
+        enableBandwidthColumns: false,
         initComponent: function() {
             this.breadcrumbs = [{
                 title: this.i18n._('Session Viewer')
@@ -478,24 +479,30 @@ if (!Ung.hasResource["Ung.SessionMonitor"]) {
                     gridColumnHeader: this.i18n._("Application Control - Risk"),
                     gridColumnDataIndex: "classd-risk",
                     gridColumnWidth: 150
-                    //                 },{
-                    //                     border: false,
-                    //                     html: '&nbsp;',
-                    //                     colspan: 0
                 },{
                     xtype: 'checkbox',
                     checked: this.defaultBandwidthColumns,
+                    disabled: !this.enableBandwidthColumns,
                     boxLabel: this.i18n._("Bandwidth Control - Client KBps"),
-                    gridColumnHeader: this.i18n._("Bandwidth Control - Client KBps"),
+                    gridColumnHeader: this.i18n._("Client KB/s"),
                     gridColumnDataIndex: "clientKBps",
-                    gridColumnWidth: 150
+                    gridColumnWidth: 80
                 },{
                     xtype: 'checkbox',
                     checked: this.defaultBandwidthColumns,
+                    disabled: !this.enableBandwidthColumns,
                     boxLabel: this.i18n._("Bandwidth Control - Server KBps"),
-                    gridColumnHeader: this.i18n._("Bandwidth Control - Server KBps"),
+                    gridColumnHeader: this.i18n._("Server KB/s"),
                     gridColumnDataIndex: "serverKBps",
-                    gridColumnWidth: 150
+                    gridColumnWidth: 80
+                },{
+                    xtype: 'checkbox',
+                    checked: this.defaultBandwidthColumns,
+                    disabled: !this.enableBandwidthColumns,
+                    boxLabel: this.i18n._("Bandwidth Control - Total KBps"),
+                    gridColumnHeader: this.i18n._("Total KB/s"),
+                    gridColumnDataIndex: "totalKBps",
+                    gridColumnWidth: 80
                 },{
                     xtype: 'checkbox',
                     checked: this.defaultBandwidthColumns,
@@ -506,7 +513,7 @@ if (!Ung.hasResource["Ung.SessionMonitor"]) {
                 },{
                     border: false,
                     html: '&nbsp;',
-                    colspan: 4
+                    colspan: 3
                 },{
                     xtype: 'checkbox',
                     checked: false,
@@ -999,9 +1006,25 @@ if (!Ung.hasResource["Ung.SessionMonitor"]) {
                 },{
                     name: "classd-risk"
                 },{
-                    name: "clientKBps"
+                    name: "clientKBps",
+                    convert: function(val, rec) {
+                        return Math.round(val*10)/10;
+                    }
                 },{
-                    name: "serverKBps"
+                    name: "serverKBps",
+                    convert: function(val, rec) {
+                        return Math.round(val*10)/10;
+                    }
+                },{
+                    name: "totalKBps",
+                    convert: function(val, rec) {
+                        if ( rec.data.serverKBps == null )
+                            return null;
+                        if ( rec.data.clientKBps == null )
+                            return null;
+                        else
+                            return (Math.round(rec.data.clientKBps*10) + Math.round(rec.data.serverKBps*10)/10);
+                    }
                 },{
                     name: "priority"
                 },{
@@ -1017,7 +1040,7 @@ if (!Ung.hasResource["Ung.SessionMonitor"]) {
                         tooltip: i18n._('Refresh'),
                         iconCls: 'icon-refresh',
                         handler: Ext.bind(function() {
-                            this.setLoading(i18n.("Measuring..."));
+                            this.setLoading(true);
                             this.reloadGrid();
                             this.setLoading(false);
                         }, this)
