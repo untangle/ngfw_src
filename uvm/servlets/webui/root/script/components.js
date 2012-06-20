@@ -5357,6 +5357,8 @@ Ext.define('Ung.UserEditorWindow', {
                 },{
                     name: "displayName",
                     convert: function(val, rec) {
+                        if (val != null)
+                            return val;
                         var displayName = ( rec.firstName == null )  ? "" : rec.firstName;
                         displayName = displayName + " " + (( rec.lastName == null )  ? "": rec.lastName);
                         return displayName;
