@@ -491,7 +491,7 @@ Ung.Util = {
         return msg;
     },
     addBuildStampToUrl: function(url){
-        var scriptArgs = "s=" + main.debugMode ? (new Date()).getTime(): main.buildStamp;
+        var scriptArgs = "s=" + main.debugMode ? (new Date()).getTime() : main.buildStamp;
         if (url.indexOf("?") >= 0) {
             return url + "&" + scriptArgs;
         } else {
@@ -499,7 +499,7 @@ Ung.Util = {
         }
     },
     getScriptSrc: function(sScriptSrc){
-        //return main.debugMode ? sScriptSrc: sScriptSrc.replace(/\.js$/, "-min.js");
+        //return main.debugMode ? sScriptSrc : sScriptSrc.replace(/\.js$/, "-min.js");
         return sScriptSrc ;
     },
     // Load css file Dynamically
@@ -827,7 +827,7 @@ Ung.Util = {
     },
     defaultRenderer: function (value) {
         return (typeof value == 'string') ?
-           value.length<1? "&#160;": Ext.util.Format.htmlEncode(value):
+           value.length<1? "&#160;" : Ext.util.Format.htmlEncode(value):
            value;
     },
     getQueryStringParam: function(name){
@@ -1028,7 +1028,7 @@ Ung.SortTypes = {
      * @return {String} The comparison value
      */
     asClient: function(value) {
-        return value === null ? "": value.c_client_addr + ":" + value.c_client_port;
+        return value === null ? "" : value.c_client_addr + ":" + value.c_client_port;
     },
     /**
      * @param {Mixed} value The SessionEvent value being converted
@@ -5147,8 +5147,8 @@ Ext.define('Ung.TimeEditorWindow', {
     width: 300,
     inputLines: [{
         xtype: 'radio',
-        name: 'method',
-        id: 'method_range',
+        name: 'timeMethod',
+        id: 'time_method_range',
         boxLabel: this.i18n._('Specify a Range'),
         listeners: {
             "change": {
@@ -5235,8 +5235,8 @@ Ext.define('Ung.TimeEditorWindow', {
         }]
 	}, {
         xtype: 'radio',
-        name: 'method',
-        id: 'method_custom',
+        name: 'timeMethod',
+        id: 'time_method_custom',
         boxLabel: this.i18n._('Specify a Custom Value'),
         listeners: {
             "change": {
@@ -5264,8 +5264,8 @@ Ext.define('Ung.TimeEditorWindow', {
 		allowBlank:false
     }],
     setValue: function(value) {
-        var method_custom = Ext.getCmp("method_custom");
-        var method_range = Ext.getCmp("method_range");
+        var time_method_custom = Ext.getCmp("time_method_custom");
+        var time_method_range = Ext.getCmp("time_method_range");
         var start_time_hour = Ext.getCmp("start_time_hour");
         var start_time_minute = Ext.getCmp("start_time_minute");
         var end_time_hour = Ext.getCmp("end_time_hour");
@@ -5275,7 +5275,8 @@ Ext.define('Ung.TimeEditorWindow', {
         start_time_minute.setValue(0);
         end_time_hour.setValue(13);
         end_time_minute.setValue(30);
-        method_custom.setValue(true);
+        time_method_custom.setValue(true);
+        time_method_range.setValue(false);
         time_custom_value.setValue(value);
         
         var record_value = value;
@@ -5299,19 +5300,146 @@ Ext.define('Ung.TimeEditorWindow', {
         start_time_minute.setValue(start_time[1]);
         end_time_hour.setValue(end_time[0]);
         end_time_minute.setValue(end_time[1]);
-        method_range.setValue(true);
+        time_method_range.setValue(true);
+        time_method_custom.setValue(false);
     },
     getValue: function() {
-        var method_custom = Ext.getCmp("method_custom");
-        if (method_custom.getValue()) {
-            var custom_time_value = Ext.getCmp("time_custom_value");
-            return custom_time_value.getValue();
+        var time_method_custom = Ext.getCmp("time_method_custom");
+        if (time_method_custom.getValue()) {
+            var time_custom_value = Ext.getCmp("time_custom_value");
+            return time_custom_value.getValue();
         } else{
             var start_time_hour = Ext.getCmp("start_time_hour");
             var start_time_minute = Ext.getCmp("start_time_minute");
             var end_time_hour = Ext.getCmp("end_time_hour");
             var end_time_minute = Ext.getCmp("end_time_minute");
             return start_time_hour.getValue() + ":" + start_time_minute.getValue() + "-" + end_time_hour.getValue() + ":" + end_time_minute.getValue();
+        }
+    }
+});
+
+Ext.define('Ung.UserEditorWindow', {
+    extend:'Ung.MatcherEditorWindow',
+    height: 450,
+    width: 550,
+    initComponent: function() {
+        var data = [];
+        var node = rpc.nodeManager.node("untangle-node-adconnector");
+        if (node != null) {
+            data = node.getUserEntries();
+        } else {
+            data.push({ firstName: "", lastName: null, uid: "[any]", displayName: "Any User"});
+            data.push({ firstName: "", lastName: null, uid: "[authenticated]", displayName: "Any Authenticated User"});
+            data.push({ firstName: "", lastName: null, uid: "[unauthenticated]", displayName: "Any Unauthenticated/Unidentified User"});
+        }
+        
+        this.gridPanel = new Ext.grid.GridPanel({
+            title: i18n._('Users'),
+            id: 'usersGrid',
+            height: 210,
+            width: 500,
+            enableHdMenu: false,
+            enableColumnMove: false,
+            store: new Ext.data.Store({
+                data: data,
+                sortInfo: {
+                    field: "uid",
+                    direction: "ASC"
+                },
+                fields: [{
+                    name: "lastName"
+                },{
+                    name: "firstName"
+                },{
+                    name: "checked"
+                },{
+                    name: "uid"
+                },{
+                    name: "displayName",
+                    convert: function(val, rec) {
+                        var displayName = ( rec.firstName == null )  ? "" : rec.firstName;
+                        displayName = displayName + " " + (( rec.lastName == null )  ? "": rec.lastName);
+                        return displayName;
+                    }
+                }]
+            }),
+            columns: [ {
+                header: i18n._("Selected"),
+				xtype:'checkcolumn',
+                dataIndex: "checked"
+            }, {
+                header: i18n._("Name"),
+                width: 100,
+                sortable: true,
+                dataIndex: "uid"
+            },{
+                header: i18n._("Full Name"),
+                width: 350,
+                sortable: true,
+                dataIndex: "displayName"
+            }]
+        });
+
+        this.inputLines = [{
+            xtype: 'radio',
+            name: 'userMethod',
+            id: 'user_method_range',
+            boxLabel: i18n._('Specify Users'),
+            listeners: {
+                "change": {
+                    fn: Ext.bind(function(elem, checked) {
+                        if (checked) {
+                            Ext.getCmp('usersGrid').enable();
+                            Ext.getCmp('user_custom_value').disable();
+                        } else {
+                            Ext.getCmp('usersGrid').disable();
+                            Ext.getCmp('user_custom_value').enable();
+                        }
+                    }, this)
+                }
+            }
+        }, this.gridPanel, {
+            xtype: 'radio',
+            name: 'userMethod',
+            id: 'user_method_custom',
+            boxLabel: i18n._('Specify a Custom Value'),
+            listeners: {
+                "change": {
+                    fn: Ext.bind(function(elem, checked) {
+                        if (!checked) {
+                            Ext.getCmp('usersGrid').enable();
+                            Ext.getCmp('user_custom_value').disable();
+                        } else {
+                            Ext.getCmp('usersGrid').disable();
+                            Ext.getCmp('user_custom_value').enable();
+                        }
+                    }, this)
+                }
+            }
+        }, {
+    	    xtype:'textfield',
+            id: 'user_custom_value',
+            width: 250,
+		    allowBlank:false
+        }];
+        
+        this.callParent(arguments);
+    },
+    setValue: function(value) {
+        var user_method_custom = Ext.getCmp("user_method_custom");
+        //var method_check = Ext.getCmp("method_check");
+        var user_custom_value = Ext.getCmp("user_custom_value");
+
+        user_method_custom.setValue(true);
+        user_custom_value.setValue(value);
+    },
+    getValue: function() {
+        var user_method_custom = Ext.getCmp("user_method_custom");
+        if (user_method_custom.getValue()) {
+            var user_custom_value = Ext.getCmp("user_custom_value");
+            return user_custom_value.getValue();
+        } else{
+            return "FIXME";
         }
     }
 });
