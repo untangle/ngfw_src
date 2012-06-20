@@ -56,11 +56,6 @@
     <div id="container">
       <!-- These extra divs/spans may be used as catch-alls to add extra imagery. -->
       <div id="extra-div-1"><span></span></div>
-      <div id="extra-div-2"><span></span></div>
-      <div id="extra-div-3"><span></span></div>
-      <div id="extra-div-4"><span></span></div>
-      <div id="extra-div-5"><span></span></div>
-      <div id="extra-div-6"><span></span></div>
     </div>
   </body>
 </html>

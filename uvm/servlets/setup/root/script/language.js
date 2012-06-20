@@ -9,13 +9,9 @@ var i18n=null;
 var rpc = {};
 
 Ung.SetupWizard.LabelWidth = 200;
-Ung.SetupWizard.LabelWidth2 = 214;
-Ung.SetupWizard.LabelWidth3 = 70;
-Ung.SetupWizard.LabelWidth4 = 100;
 
 Ext.define('Ung.SetupWizard.Language', {
-    constructor : function( config )
-    {
+    constructor: function( config ) {
         this.languageStore = [];
         var c = 0;
         var languageList = Ung.SetupWizard.CurrentValues.languageList.list;
@@ -27,58 +23,55 @@ Ext.define('Ung.SetupWizard.Language', {
         }
 
         this.panel = Ext.create('Ext.form.Panel', {
-            defaultType : 'fieldset',
+            defaultType: 'fieldset',
             border: false,
-            defaults : {
-                autoHeight : true,
-                cls : 'noborder'
+            defaults: {
+                autoHeight: true,
+                cls: 'noborder'
             },
-            items : [{
-                xtype : 'label',
-                html : '<h2 class="wizard-title">'+i18n._( "Language Selection" )+'</h2>'
+            items: [{
+                xtype: 'label',
+                html: '<h2 class="wizard-title">'+i18n._( "Language Selection" )+'</h2>'
             },{
-                defaults : {
-                    validationEvent : 'blur',
-                    msgTarget : 'side'
+                defaults: {
+                    validationEvent: 'blur',
+                    msgTarget: 'side'
                 },
-                items : [{
-                    fieldLabel : i18n._('Please select your language'),
-                    name : "language",
-                    xtype : 'combo',
-                    editable : false,
-                    width : 350,
-                    labelWidth : 200,
-                    store : this.languageStore,
-                    value : Ung.SetupWizard.CurrentValues.language,
-                    mode : 'local',
-                    triggerAction : 'all',
-                    listClass : 'x-combo-list-small',
-                    ctCls : 'small-top-margin'
+                items: [{
+                    fieldLabel: i18n._('Please select your language'),
+                    name: "language",
+                    xtype: 'combo',
+                    editable: false,
+                    labelWidth: Ung.SetupWizard.LabelWidth,
+                    store: this.languageStore,
+                    value: Ung.SetupWizard.CurrentValues.language,
+                    mode: 'local',
+                    triggerAction: 'all',
+                    listClass: 'x-combo-list-small',
+                    ctCls: 'small-top-margin'
                 }]
             }]
         });
 
         this.card = {
-            title : i18n._( "Language" ),
-            panel : this.panel,
+            title: i18n._( "Language" ),
+            panel: this.panel,
 
-            onValidate : Ext.bind(this.validateSettings,this)
+            onValidate: Ext.bind(this.validateSettings,this)
         };
     },
 
-    validateSettings : function(){
+    validateSettings: function() {
         var rv = _validate(this.panel.items.items);
         return rv;
     },
 
-    saveSettings : function( handler )
-    {
+    saveSettings: function( handler ) {
         var language = this.panel.query('combo[name="language"]')[0].getValue();
         rpc.setup.setLanguage( Ext.bind(this.complete,this, [ handler ], true ), language );
     },
 
-    complete : function( result, exception, foo, handler )
-    {
+    complete: function( result, exception, foo, handler ) {
         if ( exception ) {
             var message = exception.message;
             if (message == null || message == "Unknown") {
@@ -89,20 +82,18 @@ Ext.define('Ung.SetupWizard.Language', {
             return;
         }
 
-        /* Send the user to the setup wizard. */
+        // Send the user to the setup wizard.
         parent.location = "index.do";
     },
 
-    enableHandler : function()
-    {
+    enableHandler: function() {
         this.card.onNext = Ext.bind(this.saveSettings, this );
     }
 });
 
 Ung.Language = {
-    isInitialized : false,
-    init : function()
-    {
+    isInitialized: false,
+    init: function() {
         if ( this.isInitialized == true ) return;
         this.isInitialized = true;
 
@@ -110,20 +101,19 @@ Ung.Language = {
 
         rpc.setup = new JSONRpcClient("/setup/JSON-RPC").SetupContext;
 
-        i18n = new Ung.I18N( { "map" : {} })
+        i18n = new Ung.I18N( { "map": {} })
 
         var language = Ext.create('Ung.SetupWizard.Language',{});
 
         this.wizard = Ext.create('Ung.Wizard',{
-            height : 500,
-            width : 800,
-            cardDefaults : {
-                labelWidth : Ung.SetupWizard.LabelWidth,
-                cls : 'untangle-form-panel'
+            height: 500,
+            width: 800,
+            cardDefaults: {
+                cls: 'untangle-form-panel'
             },
-            cards : [ language.card ],
-            disableNext : false,
-            el : "container"
+            cards: [ language.card ],
+            disableNext: false,
+            el: "container"
         });
 
         this.wizard.render();
@@ -132,8 +122,8 @@ Ung.Language = {
 
         this.wizard.nextButton.setText( "Next &raquo;" );
 
-        /* The on next handler is always called when calling goToPage,
-         * this disables it until after starting */
+        // The on next handler is always called when calling goToPage,
+        // this disables it until after starting
         language.enableHandler();
     }
 };
