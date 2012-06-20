@@ -189,7 +189,7 @@ Ext.define("Ung.form.DayOfWeekMatcherField", {
     alias: "widget.udayfield",
     columns: 7,
     width: 700,
-    isDayEnabled : function (dayOfWeekMatcher, dayInt) {
+    isDayEnabled: function (dayOfWeekMatcher, dayInt) {
         if (dayOfWeekMatcher.indexOf("any") != -1)
             return true;
         if (dayOfWeekMatcher.indexOf(dayInt.toString()) != -1)
@@ -227,48 +227,48 @@ Ext.define("Ung.form.DayOfWeekMatcherField", {
         return false;
     },
     items: [{
-        xtype : 'checkbox',
-        name : 'sunday',
-        dayId : '1',
-        boxLabel : this.i18n._('Sunday'),
-        hideLabel : true
+        xtype: 'checkbox',
+        name: 'sunday',
+        dayId: '1',
+        boxLabel: this.i18n._('Sunday'),
+        hideLabel: true
     },{
-        xtype : 'checkbox',
-        name : 'monday',
-        dayId : '2',
-        boxLabel : this.i18n._('Monday'),
-        hideLabel : true
+        xtype: 'checkbox',
+        name: 'monday',
+        dayId: '2',
+        boxLabel: this.i18n._('Monday'),
+        hideLabel: true
     },{
-        xtype : 'checkbox',
-        name : 'tuesday',
-        dayId : '3',
-        boxLabel : this.i18n._('Tuesday'),
-        hideLabel : true
+        xtype: 'checkbox',
+        name: 'tuesday',
+        dayId: '3',
+        boxLabel: this.i18n._('Tuesday'),
+        hideLabel: true
     },{
-        xtype : 'checkbox',
-        name : 'wednesday',
-        dayId : '4',
-        boxLabel : this.i18n._('Wednesday'),
-        hideLabel : true
+        xtype: 'checkbox',
+        name: 'wednesday',
+        dayId: '4',
+        boxLabel: this.i18n._('Wednesday'),
+        hideLabel: true
     },{
-        xtype : 'checkbox',
-        name : 'thursday',
-        dayId : '5',
-        boxLabel : this.i18n._('Thursday'),
-        hideLabel : true
+        xtype: 'checkbox',
+        name: 'thursday',
+        dayId: '5',
+        boxLabel: this.i18n._('Thursday'),
+        hideLabel: true
     },{
-        xtype : 'checkbox',
-        name : 'friday',
-        dayId : '6',
-        checked : true,
-        boxLabel : this.i18n._('Friday'),
-        hideLabel : true
+        xtype: 'checkbox',
+        name: 'friday',
+        dayId: '6',
+        checked: true,
+        boxLabel: this.i18n._('Friday'),
+        hideLabel: true
     },{
-        xtype : 'checkbox',
-        name : 'saturday',
-        dayId : '7',
-        boxLabel : this.i18n._('Saturday'),
-        hideLabel : true
+        xtype: 'checkbox',
+        name: 'saturday',
+        dayId: '7',
+        boxLabel: this.i18n._('Saturday'),
+        hideLabel: true
     }],
     arrayContains: function(array, value) {
         for (var i = 0 ; i < array.length ; i++) {
@@ -491,7 +491,7 @@ Ung.Util = {
         return msg;
     },
     addBuildStampToUrl: function(url){
-        var scriptArgs = "s=" + main.debugMode ? (new Date()).getTime() : main.buildStamp;
+        var scriptArgs = "s=" + main.debugMode ? (new Date()).getTime(): main.buildStamp;
         if (url.indexOf("?") >= 0) {
             return url + "&" + scriptArgs;
         } else {
@@ -499,7 +499,7 @@ Ung.Util = {
         }
     },
     getScriptSrc: function(sScriptSrc){
-        //return main.debugMode ? sScriptSrc : sScriptSrc.replace(/\.js$/, "-min.js");
+        //return main.debugMode ? sScriptSrc: sScriptSrc.replace(/\.js$/, "-min.js");
         return sScriptSrc ;
     },
     // Load css file Dynamically
@@ -827,7 +827,7 @@ Ung.Util = {
     },
     defaultRenderer: function (value) {
         return (typeof value == 'string') ?
-           value.length<1? "&#160;": Ext.util.Format.htmlEncode(value) :
+           value.length<1? "&#160;": Ext.util.Format.htmlEncode(value):
            value;
     },
     getQueryStringParam: function(name){
@@ -1028,7 +1028,7 @@ Ung.SortTypes = {
      * @return {String} The comparison value
      */
     asClient: function(value) {
-        return value === null ? "" : value.c_client_addr + ":" + value.c_client_port;
+        return value === null ? "": value.c_client_addr + ":" + value.c_client_port;
     },
     /**
      * @param {Mixed} value The SessionEvent value being converted
@@ -5072,7 +5072,7 @@ Ext.define('Ung.MatcherEditorWindow', {
     extend:'Ung.UpdateWindow',
     height: 210,
     width: 120,
-    inputLines : null, //override me
+    inputLines: null, //override me
     initComponent: function() {
         if (this.title == null) {
             this.title = i18n._('Edit');
@@ -5111,19 +5111,18 @@ Ext.define('Ung.MatcherEditorWindow', {
             },
             items: this.inputLines
         });
-        this.inputLines=this.items.items.getRange(); 
         this.callParent(arguments);
     },
     onShow: function() {
         Ung.Window.superclass.onShow.call(this);
         this.setSize({width:this.width,height:this.height});
     },
-    populate : function(record, value, rulebuilder) {
+    populate: function(record, value, rulebuilder) {
         this.record = record;
         this.rulebuilder = rulebuilder;
         this.setValue(value);
     },
-    updateAction : function() {
+    updateAction: function() {
         this.record.set("value",this.getValue());
         this.rulebuilder.dirtyFlag = true;
         this.rulebuilder.fireEvent("afteredit");
@@ -5144,23 +5143,47 @@ Ext.define('Ung.MatcherEditorWindow', {
 
 Ext.define('Ung.TimeEditorWindow', {
     extend:'Ung.MatcherEditorWindow',
-    height: 210,
-    width: 120,
-    inputLines : [{
+    height: 250,
+    width: 350,
+    inputLines: [{
+        xtype: 'radio',
+        name: 'method',
+        id: 'method_range',
+        boxLabel: this.i18n._('Specify a Range'),
+        listeners: {
+            "change": {
+                fn: Ext.bind(function(elem, checked) {
+                    if (checked) {
+                        Ext.getCmp('start_time_hour').enable();
+                        Ext.getCmp('start_time_minute').enable();
+                        Ext.getCmp('end_time_hour').enable();
+                        Ext.getCmp('end_time_minute').enable();
+                        Ext.getCmp('time_custom_value').disable();
+                    } else {
+                        Ext.getCmp('start_time_hour').disable();
+                        Ext.getCmp('start_time_minute').disable();
+                        Ext.getCmp('end_time_hour').disable();
+                        Ext.getCmp('end_time_minute').disable();
+                        Ext.getCmp('time_custom_value').enable();
+                    }
+                }, this)
+            }
+        }
+    }, {
         xtype:'fieldset',
-        name : 'Start Time',
+        name: 'Start Time',
         title:i18n._("Start Time"),
-		fieldLabel : this.i18n._("Start Time"),
+		fieldLabel: this.i18n._("Start Time - End Time"),
         layout: {
             type: 'table',
-            columns: 3
+            columns: 7
         },
         items: [{
-            xtype : 'combo',
-            id : 'start_time_hour',
-            editable : false,
-            width: 50,
-		    allowBlank : false,
+            xtype: 'combo',
+            id: 'start_time_hour',
+            editable: false,
+            width: 40,
+		    allowBlank: false,
             store: [["00","00"], ["01","01"], ["02","02"], ["03","03"], ["04","04"], ["05","05"], ["06","06"], ["07","07"], ["08","08"], ["09","09"],
                     ["10","10"], ["11","11"], ["12","12"], ["13","13"], ["14","14"], ["15","15"], ["16","16"], ["17","17"], ["18","18"], ["19","19"],
                     ["20","20"], ["21","21"], ["22","22"], ["23","23"]]
@@ -5169,11 +5192,40 @@ Ext.define('Ung.TimeEditorWindow', {
             border: false,
             html: "&nbsp;:&nbsp;"
         }, {
-            xtype : 'combo',
-            id : 'start_time_minute',
-            editable : false,
-            width: 50,
-		    allowBlank : false,
+            xtype: 'combo',
+            id: 'start_time_minute',
+            editable: false,
+            width: 40,
+		    allowBlank: false,
+            store: [["00","00"], ["01","01"], ["02","02"], ["03","03"], ["04","04"], ["05","05"], ["06","06"], ["07","07"], ["08","08"], ["09","09"],
+                    ["10","10"], ["11","11"], ["12","12"], ["13","13"], ["14","14"], ["15","15"], ["16","16"], ["17","17"], ["18","18"], ["19","19"],
+                    ["20","20"], ["21","21"], ["22","22"], ["23","23"], ["24","24"], ["25","25"], ["26","26"], ["27","27"], ["28","28"], ["29","29"],
+                    ["30","30"], ["31","31"], ["32","32"], ["33","33"], ["34","34"], ["35","35"], ["36","36"], ["37","37"], ["38","38"], ["39","39"],
+                    ["40","40"], ["41","41"], ["42","42"], ["43","43"], ["44","44"], ["45","45"], ["46","46"], ["47","47"], ["48","48"], ["49","49"],
+                    ["50","50"], ["51","51"], ["52","52"], ["53","53"], ["54","54"], ["55","55"], ["56","56"], ["57","57"], ["58","58"], ["59","59"]]
+        }, {
+            cls: 'description',
+            border: false,
+		    html: "&nbsp;" + this.i18n._("to") + "&nbsp;"
+        }, {
+            xtype: 'combo',
+            id: 'end_time_hour',
+            editable: false,
+            width: 40,
+		    allowBlank: false,
+            store: [["00","00"], ["01","01"], ["02","02"], ["03","03"], ["04","04"], ["05","05"], ["06","06"], ["07","07"], ["08","08"], ["09","09"],
+                    ["10","10"], ["11","11"], ["12","12"], ["13","13"], ["14","14"], ["15","15"], ["16","16"], ["17","17"], ["18","18"], ["19","19"],
+                    ["20","20"], ["21","21"], ["22","22"], ["23","23"]]
+        }, {
+            cls: 'description',
+            border: false,
+            html: "&nbsp;:&nbsp;"
+        }, {
+            xtype: 'combo',
+            id: 'end_time_minute',
+            editable: false,
+            width: 40,
+		    allowBlank: false,
             store: [["00","00"], ["01","01"], ["02","02"], ["03","03"], ["04","04"], ["05","05"], ["06","06"], ["07","07"], ["08","08"], ["09","09"],
                     ["10","10"], ["11","11"], ["12","12"], ["13","13"], ["14","14"], ["15","15"], ["16","16"], ["17","17"], ["18","18"], ["19","19"],
                     ["20","20"], ["21","21"], ["22","22"], ["23","23"], ["24","24"], ["25","25"], ["26","26"], ["27","27"], ["28","28"], ["29","29"],
@@ -5182,50 +5234,49 @@ Ext.define('Ung.TimeEditorWindow', {
                     ["50","50"], ["51","51"], ["52","52"], ["53","53"], ["54","54"], ["55","55"], ["56","56"], ["57","57"], ["58","58"], ["59","59"]]
         }]
 	}, {
-        xtype:'fieldset',
-        name : 'End Time',
-        title:i18n._("End Time"),
-		fieldLabel : this.i18n._("End Time"),
-        layout: {
-            type: 'table',
-            columns: 3
-        },
-        items: [{
-            xtype : 'combo',
-            id : 'end_time_hour',
-            editable : false,
-            width: 50,
-		    allowBlank : false,
-            store: [["00","00"], ["01","01"], ["02","02"], ["03","03"], ["04","04"], ["05","05"], ["06","06"], ["07","07"], ["08","08"], ["09","09"],
-                    ["10","10"], ["11","11"], ["12","12"], ["13","13"], ["14","14"], ["15","15"], ["16","16"], ["17","17"], ["18","18"], ["19","19"],
-                    ["20","20"], ["21","21"], ["22","22"], ["23","23"]]
-        }, {
-            cls: 'description',
-            border: false,
-            html: "&nbsp;:&nbsp;"
-        }, {
-            xtype : 'combo',
-            id : 'end_time_minute',
-            editable : false,
-            width: 50,
-		    allowBlank : false,
-            store: [["00","00"], ["01","01"], ["02","02"], ["03","03"], ["04","04"], ["05","05"], ["06","06"], ["07","07"], ["08","08"], ["09","09"],
-                    ["10","10"], ["11","11"], ["12","12"], ["13","13"], ["14","14"], ["15","15"], ["16","16"], ["17","17"], ["18","18"], ["19","19"],
-                    ["20","20"], ["21","21"], ["22","22"], ["23","23"], ["24","24"], ["25","25"], ["26","26"], ["27","27"], ["28","28"], ["29","29"],
-                    ["30","30"], ["31","31"], ["32","32"], ["33","33"], ["34","34"], ["35","35"], ["36","36"], ["37","37"], ["38","38"], ["39","39"],
-                    ["40","40"], ["41","41"], ["42","42"], ["43","43"], ["44","44"], ["45","45"], ["46","46"], ["47","47"], ["48","48"], ["49","49"],
-                    ["50","50"], ["51","51"], ["52","52"], ["53","53"], ["54","54"], ["55","55"], ["56","56"], ["57","57"], ["58","58"], ["59","59"]]
-        }]
-	}],
-    setValue : function(value) {
+        xtype: 'radio',
+        name: 'method',
+        id: 'method_custom',
+        boxLabel: this.i18n._('Specify a Custom Value'),
+        listeners: {
+            "change": {
+                fn: Ext.bind(function(elem, checked) {
+                    if (!checked) {
+                        Ext.getCmp('start_time_hour').enable();
+                        Ext.getCmp('start_time_minute').enable();
+                        Ext.getCmp('end_time_hour').enable();
+                        Ext.getCmp('end_time_minute').enable();
+                        Ext.getCmp('time_custom_value').disable();
+                    } else {
+                        Ext.getCmp('start_time_hour').disable();
+                        Ext.getCmp('start_time_minute').disable();
+                        Ext.getCmp('end_time_hour').disable();
+                        Ext.getCmp('end_time_minute').disable();
+                        Ext.getCmp('time_custom_value').enable();
+                    }
+                }, this)
+            }
+        }
+    }, {
+    	xtype:'textfield',
+        id: 'time_custom_value',
+        width: 200,
+		allowBlank:false
+    }],
+    setValue: function(value) {
+        var method_custom = Ext.getCmp("method_custom");
+        var method_range = Ext.getCmp("method_range");
         var start_time_hour = Ext.getCmp("start_time_hour");
         var start_time_minute = Ext.getCmp("start_time_minute");
         var end_time_hour = Ext.getCmp("end_time_hour");
         var end_time_minute = Ext.getCmp("end_time_minute");
+        var time_custom_value = Ext.getCmp("time_custom_value");
         start_time_hour.setValue(12);
         start_time_minute.setValue(0);
         end_time_hour.setValue(13);
         end_time_minute.setValue(30);
+        method_custom.setValue(true);
+        time_custom_value.setValue(value);
         
         var record_value = value;
         if (record_value == null)
@@ -5248,14 +5299,20 @@ Ext.define('Ung.TimeEditorWindow', {
         start_time_minute.setValue(start_time[1]);
         end_time_hour.setValue(end_time[0]);
         end_time_minute.setValue(end_time[1]);
+        method_range.setValue(true);
     },
-    getValue : function() {
-        var start_time_hour = Ext.getCmp("start_time_hour");
-        var start_time_minute = Ext.getCmp("start_time_minute");
-        var end_time_hour = Ext.getCmp("end_time_hour");
-        var end_time_minute = Ext.getCmp("end_time_minute");
-        var value = "" + start_time_hour.getValue() + ":" + start_time_minute.getValue() + "-" + end_time_hour.getValue() + ":" + end_time_minute.getValue();
-        return value;
+    getValue: function() {
+        var method_custom = Ext.getCmp("method_custom");
+        if (method_custom.getValue()) {
+            var custom_time_value = Ext.getCmp("time_custom_value");
+            return custom_time_value.getValue();
+        } else{
+            var start_time_hour = Ext.getCmp("start_time_hour");
+            var start_time_minute = Ext.getCmp("start_time_minute");
+            var end_time_hour = Ext.getCmp("end_time_hour");
+            var end_time_minute = Ext.getCmp("end_time_minute");
+            return start_time_hour.getValue() + ":" + start_time_minute.getValue() + "-" + end_time_hour.getValue() + ":" + end_time_minute.getValue();
+        }
     }
 });
 
