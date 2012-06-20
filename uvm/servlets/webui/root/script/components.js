@@ -5067,12 +5067,85 @@ Ext.define('Ung.ImportSettingsWindow', {
     }
 });
 
-Ext.define('Ung.TimeEditorWindow', {
+
+Ext.define('Ung.MatcherEditorWindow', {
     extend:'Ung.UpdateWindow',
     height: 210,
     width: 120,
-    grid : this,
-    sizeToComponent : this.settingsCmp,
+    inputLines : null, //override me
+    initComponent: function() {
+        if (this.title == null) {
+            this.title = i18n._('Edit');
+        }
+        if(this.bbar == null){
+            this.bbar  = [
+                '->',
+                {
+                    name: "Cancel",
+                    id: this.getId() + "_cancelBtn",
+                    iconCls: 'cancel-icon',
+                    text: i18n._('Cancel'),
+                    handler: Ext.bind(function() {
+                        this.cancelAction();
+                    }, this)
+                },'-',{
+                    name: "Done",
+                    id: this.getId() + "_doneBtn",
+                    iconCls: 'apply-icon',
+                    text: i18n._('Done'),
+                    handler: Ext.bind(function() {
+                        Ext.defer(this.updateAction,1, this);
+                    }, this)
+            },'-'];         
+        }        
+        this.items = Ext.create('Ext.panel.Panel',{
+            anchor: "100% 100%",
+            labelWidth: 100,
+            buttonAlign: 'right',
+            border: false,
+            bodyStyle: 'padding:10px 10px 0px 10px;',
+            autoScroll: true,
+            defaults: {
+                selectOnFocus: true,
+                msgTarget: 'side'
+            },
+            items: this.inputLines
+        });
+        this.inputLines=this.items.items.getRange(); 
+        this.callParent(arguments);
+    },
+    onShow: function() {
+        Ung.Window.superclass.onShow.call(this);
+        this.setSize({width:this.width,height:this.height});
+    },
+    populate : function(record, value, rulebuilder) {
+        this.record = record;
+        this.rulebuilder = rulebuilder;
+        this.setValue(value);
+    },
+    updateAction : function() {
+        this.record.set("value",this.getValue());
+        this.rulebuilder.dirtyFlag = true;
+        this.rulebuilder.fireEvent("afteredit");
+        this.hide();
+    },
+    cancelAction: function() {
+        this.hide();
+    },
+    // set the value of fields (override me)
+    setValue: function(value) {
+        Ung.Util.todo();
+    },
+    // set the record based on the value of the fields (override me)
+    getValue: function() {
+        Ung.Util.todo();
+    }
+});
+
+Ext.define('Ung.TimeEditorWindow', {
+    extend:'Ung.MatcherEditorWindow',
+    height: 210,
+    width: 120,
     inputLines : [{
         xtype:'fieldset',
         name : 'Start Time',
@@ -5144,55 +5217,7 @@ Ext.define('Ung.TimeEditorWindow', {
                     ["50","50"], ["51","51"], ["52","52"], ["53","53"], ["54","54"], ["55","55"], ["56","56"], ["57","57"], ["58","58"], ["59","59"]]
         }]
 	}],
-    initComponent: function() {
-        if (this.title == null) {
-            this.title = i18n._('Edit');
-        }
-        if(this.bbar == null){
-            this.bbar  = [
-                '->',
-                {
-                    name: "Cancel",
-                    id: this.getId() + "_cancelBtn",
-                    iconCls: 'cancel-icon',
-                    text: i18n._('Cancel'),
-                    handler: Ext.bind(function() {
-                        this.cancelAction();
-                    }, this)
-                },'-',{
-                    name: "Done",
-                    id: this.getId() + "_doneBtn",
-                    iconCls: 'apply-icon',
-                    text: i18n._('Done'),
-                    handler: Ext.bind(function() {
-                        Ext.defer(this.updateAction,1, this);
-                    }, this)
-            },'-'];         
-        }        
-        this.items = Ext.create('Ext.panel.Panel',{
-            anchor: "100% 100%",
-            labelWidth: 100,
-            buttonAlign: 'right',
-            border: false,
-            bodyStyle: 'padding:10px 10px 0px 10px;',
-            autoScroll: true,
-            defaults: {
-                selectOnFocus: true,
-                msgTarget: 'side'
-            },
-            items: this.inputLines
-        });
-        this.inputLines=this.items.items.getRange(); 
-        this.callParent(arguments);
-    },
-    onShow: function() {
-        Ung.Window.superclass.onShow.call(this);
-        this.setSize({width:this.width,height:this.height});
-    },
-    populate : function(record, value, rulebuilder) {
-        this.record = record;
-        this.rulebuilder = rulebuilder;
-        
+    setValue : function(value) {
         var start_time_hour = Ext.getCmp("start_time_hour");
         var start_time_minute = Ext.getCmp("start_time_minute");
         var end_time_hour = Ext.getCmp("end_time_hour");
@@ -5202,7 +5227,7 @@ Ext.define('Ung.TimeEditorWindow', {
         end_time_hour.setValue(13);
         end_time_minute.setValue(30);
         
-        var record_value = record.get("value");
+        var record_value = value;
         if (record_value == null)
             return;
         if (record_value.indexOf(",") != -1)
@@ -5224,21 +5249,13 @@ Ext.define('Ung.TimeEditorWindow', {
         end_time_hour.setValue(end_time[0]);
         end_time_minute.setValue(end_time[1]);
     },
-    // updateAction is called to update the record after the edit
-    updateAction : function() {
+    getValue : function() {
         var start_time_hour = Ext.getCmp("start_time_hour");
         var start_time_minute = Ext.getCmp("start_time_minute");
         var end_time_hour = Ext.getCmp("end_time_hour");
         var end_time_minute = Ext.getCmp("end_time_minute");
         var value = "" + start_time_hour.getValue() + ":" + start_time_minute.getValue() + "-" + end_time_hour.getValue() + ":" + end_time_minute.getValue();
-        //this.record.data.value = value;
-        this.record.set("value",value);
-        this.hide();
-        this.rulebuilder.dirtyFlag = true;
-        this.rulebuilder.fireEvent("afteredit");
-    },
-    cancelAction: function() {
-        this.hide();
+        return value;
     }
 });
 
