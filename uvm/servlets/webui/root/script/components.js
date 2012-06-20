@@ -5469,6 +5469,144 @@ Ext.define('Ung.UserEditorWindow', {
     }
 });
 
+Ext.define('Ung.GroupEditorWindow', {
+    extend:'Ung.MatcherEditorWindow',
+    height: 450,
+    width: 550,
+    initComponent: function() {
+        var data = [];
+        var node = rpc.nodeManager.node("untangle-node-adconnector");
+        if (node != null) {
+            data = node.getGroupEntries().list;
+        } else {
+            data.push({ SAMAccountName: "*", displayName: "Any Group"});
+        }
+        
+        this.gridPanel = new Ext.grid.GridPanel({
+            title: i18n._('Groups'),
+            id: 'groupsGrid',
+            height: 300,
+            width: 400,
+            enableHdMenu: false,
+            enableColumnMove: false,
+            store: new Ext.data.Store({
+                data: data,
+                sortInfo: {
+                    field: "SAMAccountName",
+                    direction: "ASC"
+                },
+                fields: [{
+                    name: "checked"
+                },{
+                    name: "CN"
+                },{
+                    name: "SAMAccountName"
+                },{
+                    name: "displayName",
+                    convert: function(val, rec) {
+                        if (val != null && val != "")
+                            return val;
+                        return rec.data.CN;
+                    }
+                }]
+            }),
+            columns: [ {
+                header: i18n._("Selected"),
+                width: 60,
+				xtype:'checkcolumn',
+                dataIndex: "checked"
+            }, {
+                header: i18n._("Name"),
+                width: 100,
+                sortable: true,
+                dataIndex: "SAMAccountName"
+            },{
+                header: i18n._("Full Name"),
+                width: 200,
+                sortable: true,
+                dataIndex: "displayName"
+            }]
+        });
+
+        this.inputLines = [{
+            xtype: 'radio',
+            name: 'groupMethod',
+            id: 'group_method_range',
+            boxLabel: i18n._('Specify Groups'),
+            listeners: {
+                "change": {
+                    fn: Ext.bind(function(elem, checked) {
+                        if (checked) {
+                            Ext.getCmp('groupsGrid').enable();
+                            Ext.getCmp('group_custom_value').disable();
+                        } else {
+                            Ext.getCmp('groupsGrid').disable();
+                            Ext.getCmp('group_custom_value').enable();
+                        }
+                    }, this)
+                }
+            }
+        }, this.gridPanel, {
+            xtype: 'radio',
+            name: 'groupMethod',
+            id: 'group_method_custom',
+            boxLabel: i18n._('Specify a Custom Value'),
+            listeners: {
+                "change": {
+                    fn: Ext.bind(function(elem, checked) {
+                        if (!checked) {
+                            Ext.getCmp('groupsGrid').enable();
+                            Ext.getCmp('group_custom_value').disable();
+                        } else {
+                            Ext.getCmp('groupsGrid').disable();
+                            Ext.getCmp('group_custom_value').enable();
+                        }
+                    }, this)
+                }
+            }
+        }, {
+    	    xtype:'textfield',
+            id: 'group_custom_value',
+            width: 250,
+		    allowBlank:false
+        }];
+        
+        this.callParent(arguments);
+    },
+    setValue: function(value) {
+        var group_method_custom = Ext.getCmp("group_method_custom");
+        var group_custom_value = Ext.getCmp("group_custom_value");
+
+        this.gridPanel.getStore().load();
+        
+        group_method_custom.setValue(true);
+        group_custom_value.setValue(value);
+    },
+    getValue: function() {
+        var group_method_custom = Ext.getCmp("group_method_custom");
+        if (group_method_custom.getValue()) {
+            var group_custom_value = Ext.getCmp("group_custom_value");
+            return group_custom_value.getValue();
+        } else{
+            var str = "";
+            var first = true;
+            for ( var i = 0 ; i < this.gridPanel.store.data.items.length ; i++ ) {
+                var row = this.gridPanel.store.data.items[i].data;
+                if (row.checked) {
+                    if (row.SAMAccountName == "*")
+                        return "*"; /* if any is checked, the rest is irrelevent */
+                    if (!first)
+                        str = str + ",";
+                    else
+                        first = false;
+                    str = str + row.SAMAccountName;
+                }
+            }
+            return str;
+        }
+    }
+});
+
 //RuleBuilder
 Ext.define('Ung.RuleBuilder', {
     extend: 'Ext.grid.Panel',
