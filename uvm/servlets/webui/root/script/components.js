@@ -1009,11 +1009,7 @@ Ext.define("Ung.Util.ProtocolCombo", {
     listClass: 'x-combo-list-small'
 });
 
-/**
- * @class Ung.SortTypes
- * @singleton
- * Defines custom sorting (casting?) comparison functions used when sorting data.
- */
+// Defines custom sorting (casting?) comparison functions used when sorting data.
 Ung.SortTypes = {
     /**
      * Timestamp sorting
@@ -1895,7 +1891,6 @@ Ext.define("Ung.Node", {
         }
     }
 });
-
 
 Ext.define("Ung.NodePreview", {
     extend: "Ext.Component",
@@ -4840,7 +4835,6 @@ Ext.define('Ung.Breadcrumbs', {
     }
 });
 
-
 Ung.grid.ButtonColumn = function(config) {
     Ext.apply(this, config);
     if (!this.id) {
@@ -5070,7 +5064,7 @@ Ext.define('Ung.ImportSettingsWindow', {
     }
 });
 
-
+// Base matcher pop-up editor window
 Ext.define('Ung.MatcherEditorWindow', {
     extend:'Ung.UpdateWindow',
     height: 210,
@@ -5144,6 +5138,7 @@ Ext.define('Ung.MatcherEditorWindow', {
     }
 });
 
+// matcher pop-up editor for time ranges
 Ext.define('Ung.TimeEditorWindow', {
     extend:'Ung.MatcherEditorWindow',
     height: 250,
@@ -5325,6 +5320,7 @@ Ext.define('Ung.TimeEditorWindow', {
     }
 });
 
+// matcher pop-up editor for time users
 Ext.define('Ung.UserEditorWindow', {
     extend:'Ung.MatcherEditorWindow',
     height: 450,
@@ -5469,6 +5465,7 @@ Ext.define('Ung.UserEditorWindow', {
     }
 });
 
+// matcher pop-up editor for time groups
 Ext.define('Ung.GroupEditorWindow', {
     extend:'Ung.MatcherEditorWindow',
     height: 450,
