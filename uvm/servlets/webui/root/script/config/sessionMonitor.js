@@ -1017,9 +1017,9 @@ if (!Ung.hasResource["Ung.SessionMonitor"]) {
                         tooltip: i18n._('Refresh'),
                         iconCls: 'icon-refresh',
                         handler: Ext.bind(function() {
-                            Ext.MessageBox.wait(this.settingsCmp.i18n._("Refreshing..."), this.settingsCmp.i18n._("Please wait"));
+                            this.setLoading(i18n.("Measuring..."));
                             this.reloadGrid();
-                            Ext.MessageBox.hide();
+                            this.setLoading(false);
                         }, this)
                     },{
                         xtype: 'button',

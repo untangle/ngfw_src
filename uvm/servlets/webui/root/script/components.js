@@ -2690,7 +2690,7 @@ Ext.define("Ung.GridEventLog", {
     rpc: null,
     helpSource: 'event_log',
     // mask to show during refresh
-    //loadMask: {msg: i18n._("Refreshing...")},
+    // loadMask: {msg: i18n._("Refreshing...")},
     // called when the component is initialized
     constructor: function(config) {
          var modelName='Ung.GridEventLog.Store.ImplicitModel-' + Ext.id();
