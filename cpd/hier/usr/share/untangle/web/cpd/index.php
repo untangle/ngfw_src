@@ -22,7 +22,7 @@ if ($_REQUEST["logout"]=='Y'){
 session_write_close();
 
 open_db_connection();
-$skin_settings = get_skin_settings();
+$skin_settings = get_uvm_settings("skin");
 $branding_settings = get_node_settings('untangle-node-branding');
 $cpd_settings = get_cpd_settings();
 

@@ -189,4 +189,39 @@ function get_node_settings_item($nodename,$itemname)
     return($value);
 }
 
+function get_uvm_settings($nodename)
+{
+    /* look for the first part of our known path */
+    $homefind = strpos($_ENV["SCRIPT_FILENAME"],"/usr/share/untangle");
+
+        /* script filename not found so we'll assume the root as our home */
+        if ($homefind === false)
+        {
+            $homepath = "";
+        }
+
+        /* use any prefix from the script filename as our home */
+        else
+        {
+        if ($homefind != 0) $homepath = substr($_ENV["SCRIPT_FILENAME"],0,$homefind);
+        else $homepath = "";
+        }
+
+    /* read the node settings */
+    $listfile = $homepath . "/usr/share/untangle/settings/untangle-vm/" . $nodename . ".js";
+    $data = file_get_contents($listfile);
+    $nodeinfo = json_decode($data,true);
+
+    return($nodeinfo);
+}
+
+function get_uvm_settings_item($nodename,$itemname)
+{
+    $settings = get_uvm_settings($nodename);
+    if ($settings == null) return(null);
+
+    $value = $settings[$itemname];
+    return($value);
+}
+
 ?>

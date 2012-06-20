@@ -11,7 +11,7 @@
   <title>
     <?= trim( $branding_settings["companyName"] ) ?> | Captive Portal
   </title>
-  <link type="text/css" rel="stylesheet" href="/skins/<?= trim( $skin_settings["user_skin"] ) ?>/css/user.css"></link>
+  <link type="text/css" rel="stylesheet" href="/skins/<?= trim( $skin_settings["skinName"] ) ?>/css/user.css"></link>
 
   </head>
   <body class="captive-portal" id="simple">
