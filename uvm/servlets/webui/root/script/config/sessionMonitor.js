@@ -67,7 +67,8 @@ if (!Ung.hasResource["Ung.SessionMonitor"]) {
                             var newColumn = {
                                 header: item.gridColumnHeader,
                                 dataIndex: item.gridColumnDataIndex,
-                                width: item.gridColumnWidth
+                                width: item.gridColumnWidth,
+                                summaryType: item.gridColumnSummaryType
                             };
                             if ( item.gridColumnRenderer !== undefined )
                                 newColumn.renderer = item.gridColumnRenderer;
@@ -183,7 +184,7 @@ if (!Ung.hasResource["Ung.SessionMonitor"]) {
                     gridColumnDataIndex: "policy",
                     gridColumnWidth: 100,
                     gridColumnRenderer: function(value) {
-                        if (value == null)
+                        if (value == null || value == "")
                             return "";
                         return main.getPolicyName(value);
                     }
@@ -491,7 +492,8 @@ if (!Ung.hasResource["Ung.SessionMonitor"]) {
                     boxLabel: this.i18n._("Bandwidth Control - Client KBps"),
                     gridColumnHeader: this.i18n._("Client KB/s"),
                     gridColumnDataIndex: "clientKBps",
-                    gridColumnWidth: 80
+                    gridColumnWidth: 80,
+                    gridColumnSummaryType: "sum"
                 },{
                     xtype: 'checkbox',
                     checked: this.defaultBandwidthColumns,
@@ -499,7 +501,8 @@ if (!Ung.hasResource["Ung.SessionMonitor"]) {
                     boxLabel: this.i18n._("Bandwidth Control - Server KBps"),
                     gridColumnHeader: this.i18n._("Server KB/s"),
                     gridColumnDataIndex: "serverKBps",
-                    gridColumnWidth: 80
+                    gridColumnWidth: 80,
+                    gridColumnSummaryType: "sum"
                 },{
                     xtype: 'checkbox',
                     checked: this.defaultBandwidthColumns,
@@ -507,7 +510,8 @@ if (!Ung.hasResource["Ung.SessionMonitor"]) {
                     boxLabel: this.i18n._("Bandwidth Control - Total KBps"),
                     gridColumnHeader: this.i18n._("Total KB/s"),
                     gridColumnDataIndex: "totalKBps",
-                    gridColumnWidth: 80
+                    gridColumnWidth: 80,
+                    gridColumnSummaryType: "sum"
                 },{
                     xtype: 'checkbox',
                     checked: this.defaultBandwidthColumns,
@@ -939,6 +943,9 @@ if (!Ung.hasResource["Ung.SessionMonitor"]) {
                 qtip: this.i18n._("This shows all current sessions."),
                 paginated: false,
                 recordJavaClass: "com.untangle.uvm.SessionMonitorEntry",
+                features: [{
+                    ftype: 'groupingsummary'
+                }],
                 dataFn: Ext.bind(this.getSessions,this),
                 dataFnArg: 0,
                 fields: [{
@@ -1035,7 +1042,7 @@ if (!Ung.hasResource["Ung.SessionMonitor"]) {
                         if ( rec.data.clientKBps == null )
                             return null;
                         else
-                            return (Math.round(rec.data.clientKBps*10) + Math.round(rec.data.serverKBps*10)/10);
+                            return (Math.round(rec.data.clientKBps*10))/10 + (Math.round(rec.data.serverKBps*10))/10;
                     }
                 },{
                     name: "priority"
