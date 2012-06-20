@@ -2128,14 +2128,17 @@ Ung.MessageManager = {
                                     lastUpgradeDownloadProgressMsg="stop";
                                     startUpgradeMode="stop";
                                     this.stop();
-                                    Ext.MessageBox.wait(i18n._("Initializing..."), i18n._("Please wait"), {
+                                    Ext.MessageBox.wait(i18n._("Applying Upgrades..."), i18n._("Please wait"), {
                                         interval: 500,
                                         increment: 60,
                                         duration: 60000,
                                         fn: function() {
                                             Ext.MessageBox.alert(
-                                                i18n._("Applying Upgrade"),
-                                                i18n._("The upgrades have been downloaded and are now being applied.  <strong>DO NOT REBOOT AT THIS TIME.</strong>  Please be patient this process will take a few minutes. After the upgrade is complete you will be able to log in again."),
+                                                i18n._("Upgrade in Progress"),
+                                                i18n._("The upgrades have been downloaded and are now being applied.") + "<br/>" +
+                                                    "<strong>" + i18n._("DO NOT REBOOT AT THIS TIME.") + "</strong>" + "<br/>" +
+                                                    i18n._("Please be patient this process will take a few minutes.") + "<br/>" +
+                                                    i18n._("After the upgrade is complete you will be able to log in again."),
                                                 Ung.Util.goToStartPage);
                                         }
                                     });
