@@ -5144,7 +5144,7 @@ Ext.define('Ung.MatcherEditorWindow', {
 Ext.define('Ung.TimeEditorWindow', {
     extend:'Ung.MatcherEditorWindow',
     height: 250,
-    width: 350,
+    width: 300,
     inputLines: [{
         xtype: 'radio',
         name: 'method',
@@ -5260,7 +5260,7 @@ Ext.define('Ung.TimeEditorWindow', {
     }, {
     	xtype:'textfield',
         id: 'time_custom_value',
-        width: 200,
+        width: 250,
 		allowBlank:false
     }],
     setValue: function(value) {
