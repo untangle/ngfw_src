@@ -41,26 +41,18 @@ if (!Ung.hasResource["Ung.CPD"]) {
 
         buildCaptiveStatus: function() {
             this.buildGridCaptiveStatus();
-            this.panelCaptiveStatus = Ext.create('Ext.panel.Panel',{
+            this.panelCaptiveStatus = Ext.create('Ext.panel.Panel', {
                 name: 'Status',
                 parentId: this.getId(),
                 title: this.i18n._('Status'),
                 layout: "anchor",
-                defaults: {
-                        anchor: "98%"
-                },
                 cls: 'ung-panel',
-                autoScroll: true,
                 items: [{
-                    title: this.i18n._('Status'),
-                    name: 'Status',
                     xtype: 'fieldset',
-                    autoHeight: true,
-                    items: [{
-                        html: this.i18n._('Captive Portal allows administrators to require network users to complete a defined process, such as logging in or accepting a network usage policy, before accessing the internet.'),
-                        cls: 'description',
-                        border: false}
-                    ]
+                    cls: 'description',
+                    title: this.i18n._('Status'),
+                    height: '90',
+                    html: this.i18n._('Captive Portal allows administrators to require network users to complete a defined process, such as logging in or accepting a network usage policy, before accessing the internet.')
                  }]
             });
 
@@ -69,16 +61,13 @@ if (!Ung.hasResource["Ung.CPD"]) {
 
         buildGridCaptiveStatus: function() {
             this.gridCaptiveStatus = Ext.create('Ung.EditorGrid',{
+                anchor: '100% -90',
                 name: "gridCaptiveStatus",
                 settingsCmp: this,
-                height: 500,
                 parentId: this.getId(),
                 hasAdd: false,
-                configAdd: null,
                 hasEdit: false,
-                configEdit: null,
                 hasDelete: false,
-                configDelete: null,
                 columnsDefaultSortable: true,
                 title: this.i18n._("Active Sessions"),
                 qtip: this.i18n._("The Active Sessions list shows authenticated users."),
@@ -161,20 +150,17 @@ if (!Ung.hasResource["Ung.CPD"]) {
             this.panelCaptureRules = Ext.create('Ext.panel.Panel',{
                 name: "panelCaptureRules",
                 helpSource: "captive_hosts",
-                // private fields
                 parentId: this.getId(),
                 title: this.i18n._("Capture Rules"),
-                autoScroll: true,
-                border: false,
+                layout: "anchor",
                 cls: "ung-panel",
                 items: [{
+                    xtype: 'fieldset',
+                    cls: 'description',
                     title: this.i18n._("Note"),
-                    cls: "description",
-                    bodyStyle: "padding: 5px 5px 5px; 5px;",
                     html: this.i18n._("The Capture Rules are a  set of rules to define which hosts and traffic are subject to the Captive Portal.  The rules are evaluated in order.")
                 }, this.gridCaptureRules, {
                     xtype: "fieldset",
-                    autoHeight: true,
                     items: [{
                         xtype: "checkbox",
                         boxLabel: this.i18n._("Capture Bypassed Traffic"),
@@ -192,11 +178,10 @@ if (!Ung.hasResource["Ung.CPD"]) {
         },
 
         buildGridCaptureRules: function() {
-
-            this.gridCaptureRules = Ext.create('Ung.EditorGrid',{
+            this.gridCaptureRules = Ext.create('Ung.EditorGrid', {
+                anchor: '100% -120',
                 name: "gridCaptureRules",
                 settingsCmp: this,
-                height: 500,
                 hasReorder: true,
                 emptyRow: {
                     "live": true,

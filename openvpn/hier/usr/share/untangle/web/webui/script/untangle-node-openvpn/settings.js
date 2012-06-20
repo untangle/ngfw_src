@@ -181,35 +181,7 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                 }, this), this.record.data.name, "ZIP" );
                 
             }
-        }/*,
-        renderDownloadLinks: function() {
-            if (this.isVpnSite) {
-                this.downloadConfigurationFileEl.dom.innerHTML = '<a href="' + this.configurationFiles() + '" target="_blank">' + this.i18n._('Download VPN Site configuration.') + '</a>';
-            } else {
-                this.downloadWindowsInstallerEl.dom.innerHTML = '<a href="' + this.windowsInstaller() + '" target="_blank">' + this.i18n._('Click here to download an installer for Windows clients.') + '</a>';
-                this.downloadConfigurationFileEl.dom.innerHTML = '<a href="' + this.configurationFiles() + '" target="_blank">' + this.i18n._('Click here to download a configuration file for all OSs.') + '</a>';
-            }
-            Ext.MessageBox.hide();
-        },
-        windowsInstaller: function() {
-            return this.startDownload( "SETUP_EXE" );
-        },
-
-        configurationFiles: function() {
-            return this.startDownload( "ZIP" );
-        },
-
-        startDownload: function( format ) {
-            var name = this.record.data.name;
-            try {
-                return this.node.getAdminDownloadLink( name, format );
-            } catch (x) {
-                Ext.MessageBox.alert( this.i18n._("Error creating client."), x);
-                throw "Error";
-            }
-            return null;
         }
-*/
     });
 
     // Namespace for the openvpn client configuration cards.
@@ -241,8 +213,7 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
     });
 
     Ext.define('Ung.Node.OpenVPN.ClientWizard.LoadConfig', {
-        constructor: function( config )
-        {
+        constructor: function( config ) {
             this.i18n = config.i18n;
             this.node = config.node;
 
@@ -278,15 +249,13 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
             this.onValidate = Ext.bind(this.validateSettings, this );
         },
 
-        validateSettings: function()
-        {
+        validateSettings: function() {
             if ( !_validate( this.panel.query('textfield[name="siteConfiguration"]'))) return false;
 
             return true;
         },
 
-        validateServerAddress: function( value )
-        {
+        validateServerAddress: function( value ) {
             var sarr = value.split( ":" );
             if ( sarr.length > 2 ) return this.i18n._( "Invalid Server Address" );
 
@@ -294,21 +263,18 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
             return true;
         },
 
-        retrieveClient: function( handler )
-        {
+        retrieveClient: function( handler ) {
             return this.uploadClient( handler );
         },
 
-        uploadClient: function( handler )
-        {
+        uploadClient: function( handler ) {
             Ext.MessageBox.wait(this.i18n._("Uploading Configuration... (This may take a minute)"),
                                 this.i18n._("Please wait"));
 
             this.node.getAdminClientUploadLink( Ext.bind(this.completeGetAdminClientUploadLink, this, [handler], true ));
         },
 
-        completeGetAdminClientUploadLink: function( result, exception, foo, handler )
-        {
+        completeGetAdminClientUploadLink: function( result, exception, foo, handler ) {
             if(Ung.Util.handleException(exception,Ext.bind(function() {
                 Ext.MessageBox.alert( this.i18n._("Failed"), this.i18n._( "Unable to load VPN Client" ));
             }, this),"noAlert")) return;
@@ -330,8 +296,7 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
         },
 
         /** action.result["success"] = true will trigger success in extjs for a form submit. */
-        completeUploadClient: function( form, action, handler )
-        {
+        completeUploadClient: function( form, action, handler ) {
             this.node.completeConfig( Ext.bind(this.c_completeConfig, this, [ handler ], true ));
         },
 
@@ -350,8 +315,7 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
             Ext.MessageBox.alert(this.i18n._( "Failed" ), message );
         },
 
-        c_completeConfig: function( result, exception, foo, handler )
-        {
+        c_completeConfig: function( result, exception, foo, handler ) {
             if(Ung.Util.handleException(exception,Ext.bind(function() {
                 Ext.MessageBox.alert( this.i18n._("Failed"), this.i18n._( "Unable to load VPN Client" ));
             }, this),"noAlert")) return;
@@ -365,8 +329,7 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
     });
 
     Ext.define('Ung.Node.OpenVPN.ClientWizard.Congratulations', {
-        constructor: function( config )
-        {
+        constructor: function( config ) {
             this.i18n = config.i18n;
             this.node = config.node;
             this.gui = config.gui;
@@ -386,8 +349,7 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
             this.onNext = Ext.bind(this.completeWizard, this );
         },
 
-        completeWizard: function( handler )
-        {
+        completeWizard: function( handler ) {
             this.gui.node.start();
             this.gui.clientSetup.endAction();
         }
@@ -410,7 +372,7 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
             this.buildStatus();
             var tabs = [this.panelStatus];
 
-            /* Register the VTypes, need i18n to be initialized for the text */
+            // Register the VTypes, need i18n to be initialized for the text
             if(Ext.form.VTypes["openvpnClientNameVal"]==null) {
                 Ext.form.VTypes["openvpnClientNameVal"] = /^[A-Za-z0-9]([-_.0-9A-Za-z]*[0-9A-Za-z])?$/;
                 Ext.form.VTypes["openvpnClientName"] = function(v) {
@@ -421,8 +383,6 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
             }
 
             if (this.configState == "SERVER") {
-                // keep initial settings
-                
                 this.buildClients();
                 this.buildExports();
                 this.buildAdvanced();
@@ -476,6 +436,7 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
         // active connections/sessions grip
         buildActiveClientsGrid: function() {
             this.gridActiveClients = Ext.create('Ung.EditorGrid', {
+                anchor: '100% -110',
                 name: "gridActiveClients",
                 settingsCmp: this,
                 emptyRow: {
@@ -485,13 +446,9 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                     "bytesRxTotal": "",
                     "bytesTxTotal": ""
                 },
-                height: 400,
                 hasAdd: false,
-                configAdd: null,
                 hasEdit: false,
-                configEdit: null,
                 hasDelete: false,
-                configDelete: null,
                 columnsDefaultSortable: true,
                 title: this.i18n._("Active Clients"),
                 qtip: this.i18n._("The Active Clients list shows connected clients."),
@@ -532,7 +489,8 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                     width: 150
                 }, {
                     header: this.i18n._("Client"),
-                    width: 200
+                    width: 200,
+                    flex: 1
                 }, {
                     header: this.i18n._("Start Time"),
                     width: 180,
@@ -576,18 +534,18 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                 helpSource: 'status',
                 title: this.i18n._("Status"),
                 parentId: this.getId(),
+                layout: 'anchor',
                 cls: 'ung-panel',
-                autoScroll: true,
                 isDirty: function() {
                     return false;
                 },
                 defaults: {
                     xtype: 'fieldset',
-                    buttonAlign: 'left'
                 },
                 items: [{
+                    xtype: 'fieldset',
+                    cls: 'description',
                     title: this.i18n._('Current Mode'),
-                    autoHeight: true,
                     items: [{
                         xtype: "textfield",
                         name: "Mode",
@@ -608,7 +566,6 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                         columns:1
                     },
                     hidden: !wizardVisible,
-                    autoHeight: true,
                     items: [{
                         xtype:'fieldset',
                         items:[{
@@ -794,8 +751,8 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                 name: 'VPN Clients',
                 sortable: true,
                 paginated: false,
-                anchor: "100% 50%",
-                height: 250,
+                anchor: "100% 48%",
+                style: "margin-bottom:10px;",
                 emptyRow: {
                     "live": true,
                     "name": this.i18n._("newClient"),
@@ -892,8 +849,7 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                 name: 'VPN Sites',
                 // the total records is set from the base settings
                 paginated: false,
-                anchor: "100% 50%",
-                height: 250,
+                anchor: "100% 48%",
                 emptyRow: {
                     "live": true,
                     "name": this.i18n._("newSite"),
@@ -1066,7 +1022,8 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                 helpSource: 'clients',
                 parentId: this.getId(),
                 title: this.i18n._('Clients'),
-                autoScroll: true,
+                layout: 'anchor',
+                cls: 'ung-panel',
                 items: [this.gridClients, this.gridSites]
             });
         },

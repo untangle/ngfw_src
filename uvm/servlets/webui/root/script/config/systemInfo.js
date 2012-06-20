@@ -90,24 +90,20 @@ if (!Ung.hasResource["Ung.SystemInfo"]) {
                 parentId: this.getId(),
                 title: this.i18n._('Licenses'),
                 cls: 'ung-panel',
+                layout: "anchor",
                 items: [{
-                    title: this.i18n._('Licenses'),
-                    name: 'Status',
                     xtype: 'fieldset',
-                    autoHeight: true,
-                    items: [{
-                        html: Ext.String.format(this.i18n._('Licenses determine entitlement to paid applications and services. Click Refresh to force reconciliation with the license server.'),'<b>','</b>'),
-                        cls: 'description',
-                        border: false
-                    }, this.gridLicenses]
-                 }]
+                    cls: 'description',
+                    title: this.i18n._('Licenses'),
+                    html: Ext.String.format(this.i18n._('Licenses determine entitlement to paid applications and services. Click Refresh to force reconciliation with the license server.'),'<b>','</b>')
+                 }, this.gridLicenses]
            });
         },
         buildGridLicenses: function() {
             this.gridLicenses = Ext.create('Ung.EditorGrid',{
+                anchor: '100% -40',
                 name: "gridLicenses",
                 settingsCmp: this,
-                height: 350,
                 parentId: this.getId(),
                 hasAdd: false,
                 hasEdit: false,

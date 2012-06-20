@@ -24,7 +24,6 @@ if (!Ung.hasResource["Ung.Firewall"]) {
         gridRules : null,
         gridEventLog : null,
         initComponent : function() {
-            //Ung.Util.clearInterfaceStore();
             this.getSettings();
          
             // builds the tabs
@@ -33,38 +32,26 @@ if (!Ung.hasResource["Ung.Firewall"]) {
             // builds the tab panel with the tabs
             this.buildTabPanel([this.panelRules, this.gridEventLog]);
             
-            Ung.Firewall.superclass.initComponent.call(this);
+            this.callParent(arguments);
         },
         // Rules Panel
         buildRules : function() {
-
-            
-
             this.panelRules = Ext.create('Ext.panel.Panel',{
                 name : 'panelRules',
                 helpSource : 'rules',
-                // private fields
-                gridRulesList : null,
                 parentId : this.getId(),
                 title : this.i18n._('Rules'),
                 layout : 'anchor',
-                defaults: {
-                    anchor: '98%',
-                    autoWidth: true,
-                    autoScroll: true
-                },
-                autoScroll : true,
-                border : false,
                 cls: 'ung-panel',
                 items : [{
-                    title : this.i18n._('Note'),
+                    xtype: 'fieldset',
                     cls: 'description',
-                    bodyStyle : 'padding:5px 5px 5px; 5px;',
+                    title : this.i18n._('Note'),
                     html : Ext.String.format(this.i18n._(" <b>Firewall</b> is a simple application designed to block and log network traffic based on a set of rules. To learn more click on the <b>Help</b> button below.<br/> Routing and Port Forwarding functionality can be found elsewhere in Config->Networking."),main.getBrandingManager().getCompanyName())
                 },  this.gridRules= Ext.create('Ung.EditorGrid',{
+                    anchor: '100% -80',
                     name : 'Rules',
                     settingsCmp : this,
-                    height : 500,
                     paginated : false,
                     hasReorder : true,
                     addAtTop : false,

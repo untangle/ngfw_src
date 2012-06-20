@@ -458,9 +458,7 @@ if (!Ung.hasResource["Ung.Email"]) {
                 hasEdit: false,
                 settingsCmp: this,
                 anchor: "100% 48%",
-                height: 250,
                 style: "margin-bottom:10px;",
-                autoScroll: true,
                 emptyRow: {
                     "emailAddress": this.i18n._("[no email address]")
                 },
@@ -512,9 +510,7 @@ if (!Ung.hasResource["Ung.Email"]) {
                 hasDelete: false,
                 settingsCmp: this,
                 paginated: false,
-                anchor: "100% 50%",
-                height: 250,
-                autoScroll: true,
+                anchor: "100% 48%",
                 dataFn: this.getSafelistAdminView().getUserSafelistCounts,
                 /*data: [//TODO: remove this after testing
                     {id: 5, emailAddress: "aaa@aaa.com", count: 353},
@@ -600,9 +596,8 @@ if (!Ung.hasResource["Ung.Email"]) {
                 helpSource: 'from_safe_list',
                 parentId: this.getId(),
                 title: this.i18n._('From-Safe List'),
-                height: 550,
+                layout: 'anchor',
                 cls: 'ung-panel',
-                autoScroll: true,
                 items: [this.gridSafelistGlobal, this.gridSafelistUser]
             });
         },

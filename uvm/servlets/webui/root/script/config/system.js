@@ -914,6 +914,7 @@ if (!Ung.hasResource["Ung.System"]) {
                                                 var languageComboCmp = Ext.getCmp("system_language_combo");
                                                 if (languageComboCmp) {
                                                     languageComboCmp.setValue(this.getLanguageSettings().language);
+                                                    languageComboCmp.clearDirty();
                                                 }
                                             }
                                         }, this)
