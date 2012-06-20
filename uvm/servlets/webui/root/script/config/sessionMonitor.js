@@ -51,13 +51,10 @@ if (!Ung.hasResource["Ung.SessionMonitor"]) {
         buildPanel: function() {
             this.enabledColumns = {};
             this.columns = [];
-            this.groupField = null;
             var nodeStr = "";
-            var groupStr = "";
             this.reRenderGrid = Ext.bind(function() {
                 this.columns = [];
                 this.enabledColumns = {};
-                this.groupField = null;
                 // add/remove columns as necessary
                 for ( var i = 0 ; i < this.panelColumnSelector.items.items.length ; i++ ) {
                     var item = this.panelColumnSelector.items.items[i];
@@ -89,36 +86,20 @@ if (!Ung.hasResource["Ung.SessionMonitor"]) {
                         }
                     }
                 }
-                // add grouping if enabled
-                for ( var i = 0 ; i < this.panelGroupSelector.items.items.length ; i++ ) {
-                    var item = this.panelGroupSelector.items.items[i];
-                    if ( item.xtype == "radio" ) {
-                        if (item.checked) {
-                            this.groupField = item.groupField;
-                        }
-                    }
-                }
                 // if the grid is already rendered it - force re-render it
                 if ( this.gridCurrentSessions == undefined ) {
-                    this.buildGridCurrentSessions(this.columns, this.groupField);
+                    this.buildGridCurrentSessions(this.columns);
                 } else {
-                    if ( this.groupField != null ) {
-                        groupStr = " - Grouping:" + this.groupField;
-                        this.gridCurrentSessions.getStore().group(this.groupField);
-                    } else {
-                        this.gridCurrentSessions.getStore().clearGrouping();
-                    }
                     var headerCt = this.gridCurrentSessions.headerCt;
                     headerCt.suspendLayout = true;
                     headerCt.removeAll();
                     headerCt.add(this.columns);
-                    this.gridCurrentSessions.groupField = this.groupField;
                     this.gridCurrentSessions.getView().refresh();
                     headerCt.suspendLayout = false;
                     this.gridCurrentSessions.forceComponentLayout();
                 }
                 if ( this.gridCurrentSessions !== undefined ) {
-                    this.gridCurrentSessions.setTitle(i18n._("Current Sessions") + nodeStr + groupStr );
+                    this.gridCurrentSessions.setTitle(i18n._("Current Sessions") + nodeStr );
                     this.gridCurrentSessions.reloadGrid();
 
                 }
@@ -126,11 +107,10 @@ if (!Ung.hasResource["Ung.SessionMonitor"]) {
             }, this);
             
             // manually call the renderer for the first render
-            this.buildGroupSelectorPanel();
             this.buildNodeSelectorPanel();
             this.buildColumnSelectorPanel();
             this.reRenderGrid();
-            this.buildGridCurrentSessions(this.columns, this.groupField);
+            this.buildGridCurrentSessions( this.columns );
             this.buildSessionPanel();
         },
         buildSessionPanel: function() {
@@ -145,7 +125,7 @@ if (!Ung.hasResource["Ung.SessionMonitor"]) {
                 },
                 autoScroll: true,
                 cls: 'ung-panel',
-                items: [this.gridCurrentSessions, this.panelColumnSelector, this.panelNodeSelector, this.panelGroupSelector]
+                items: [this.gridCurrentSessions, this.panelColumnSelector, this.panelNodeSelector]
             });
         },
         buildColumnSelectorPanel: function() {
@@ -181,7 +161,10 @@ if (!Ung.hasResource["Ung.SessionMonitor"]) {
                     boxLabel: this.i18n._("Policy"),
                     gridColumnHeader: this.i18n._("Policy"),
                     gridColumnDataIndex: "policy",
-                    gridColumnWidth: 100
+                    gridColumnWidth: 100,
+                    gridColumnRenderer: function(value) {
+                        return main.getPolicyName(value);
+                    }
                 },{
                     border: false,
                     html: '&nbsp;',
@@ -584,333 +567,8 @@ if (!Ung.hasResource["Ung.SessionMonitor"]) {
             });
 
         },
-        // build the column selection panel (hidden by default)
-        buildGroupSelectorPanel: function() {
-            this.panelGroupSelector = Ext.create('Ext.panel.Panel',{
-                name:'advanced',
-                xtype:'fieldset',
-                layout: {
-                    type: 'table',
-                    columns: 7
-                },
-                title:i18n._("Grouping Field"),
-                collapsible: true,
-                collapsed: true,
-                autoHeight: true,
-                bodyStyle: 'padding:5px 5px 5px 5px;',
-                items: [{
-                    xtype: 'radio',
-                    name: 'groupingRadio',
-                    checked: true,
-                    boxLabel: this.i18n._("No Grouping"),
-                    groupField: null
-                },{
-                    border: false,
-                    html: '&nbsp;',
-                    colspan: 6
-                },{
-                    xtype: 'radio',
-                    name: 'groupingRadio',
-                    checked: false,
-                    boxLabel: this.i18n._("Protocol"),
-                    groupField: "protocol"
-                },{
-                    xtype: 'radio',
-                    name: 'groupingRadio',
-                    checked: false,
-                    boxLabel: this.i18n._("Bypassed"),
-                    groupField: "bypassed"
-                },{
-                    xtype: 'radio',
-                    name: 'groupingRadio',
-                    checked: false,
-                    boxLabel: this.i18n._("Policy"),
-                    groupField: "policy"
-                },{
-                    border: false,
-                    html: '&nbsp;',
-                    colspan: 4
-                },{
-                    xtype: 'radio',
-                    name: 'groupingRadio',
-                    checked: false,
-                    boxLabel: this.i18n._("Client Interface"),
-                    groupField: "clientIntf"
-                },{
-                    xtype: 'radio',
-                    name: 'groupingRadio',
-                    checked: false,
-                    boxLabel: this.i18n._("Server Interface"),
-                    groupField: "serverIntf"
-                },{
-                    border: false,
-                    html: '&nbsp;',
-                    colspan: 5
-                },{
-                    xtype: 'radio',
-                    name: 'groupingRadio',
-                    checked: false,
-                    boxLabel: this.i18n._("Client (Pre-NAT)"),
-                    groupField: "preNatClient"
-                },{
-                    xtype: 'radio',
-                    name: 'groupingRadio',
-                    checked: false,
-                    boxLabel: this.i18n._("Server (Pre-NAT)"),
-                    groupField: "preNatServer"
-                },{
-                    xtype: 'radio',
-                    name: 'groupingRadio',
-                    checked: false,
-                    boxLabel: this.i18n._("Client Port (Pre-NAT)"),
-                    groupField: "preNatClientPort"
-                },{
-                    xtype: 'radio',
-                    name: 'groupingRadio',
-                    checked: false,
-                    boxLabel: this.i18n._("Server Port (Pre-NAT)"),
-                    groupField: "preNatServerPort"
-                },{
-                    border: false,
-                    html: '&nbsp;',
-                    colspan: 3
-                },{
-                    xtype: 'radio',
-                    name: 'groupingRadio',
-                    checked: false,
-                    boxLabel: this.i18n._("Client (Post-NAT)"),
-                    groupField: "postNatClient"
-                },{
-                    xtype: 'radio',
-                    name: 'groupingRadio',
-                    checked: false,
-                    boxLabel: this.i18n._("Server (Post-NAT)"),
-                    groupField: "postNatServer"
-                },{
-                    xtype: 'radio',
-                    name: 'groupingRadio',
-                    checked: false,
-                    boxLabel: this.i18n._("Client Port (Post-NAT)"),
-                    groupField: "postNatClientPort"
-                },{
-                    xtype: 'radio',
-                    name: 'groupingRadio',
-                    checked: false,
-                    boxLabel: this.i18n._("Server Port (Post-NAT)"),
-                    groupField: "postNatServerPort"
-                },{
-                    border: false,
-                    html: '&nbsp;',
-                    colspan: 3
-                },{
-                    xtype: 'radio',
-                    name: 'groupingRadio',
-                    checked: false,
-                    boxLabel: this.i18n._("Local"),
-                    groupField: "localTraffic"
-                },{
-                    xtype: 'radio',
-                    name: 'groupingRadio',
-                    checked: false,
-                    boxLabel: this.i18n._("NATd"),
-                    groupField: "natted"
-                },{
-                    xtype: 'radio',
-                    name: 'groupingRadio',
-                    checked: false,
-                    boxLabel: this.i18n._("Port Forwarded"),
-                    groupField: "portForwarded"
-                },{
-                    border: false,
-                    html: '&nbsp;',
-                    colspan: 4
-                },{
-                    xtype: 'radio',
-                    name: 'groupingRadio',
-                    checked: false,
-                    boxLabel: this.i18n._("Hostname"),
-                    groupField: "platform-hostname"
-                },{
-                    xtype: 'radio',
-                    name: 'groupingRadio',
-                    checked: false,
-                    boxLabel: this.i18n._("Username"),
-                    groupField: "platform-username"
-                },{
-                    border: false,
-                    html: '&nbsp;',
-                    colspan: 5
-                },{
-                    xtype: 'radio',
-                    name: 'groupingRadio',
-                    checked: false,
-                    boxLabel: this.i18n._("Application Control Lite - Protocol"),
-                    groupField: "protofilter-protocol"
-                },{
-                    xtype: 'radio',
-                    name: 'groupingRadio',
-                    checked: false,
-                    boxLabel: this.i18n._("Application Control Lite - Category"),
-                    groupField: "protofilter-category"
-                },{
-                    xtype: 'radio',
-                    name: 'groupingRadio',
-                    checked: false,
-                    boxLabel: this.i18n._("Application Control Lite - Description"),
-                    groupField: "protofilter-description"
-                },{
-                    xtype: 'radio',
-                    name: 'groupingRadio',
-                    checked: false,
-                    boxLabel: this.i18n._("Application Control Lite - Matched?"),
-                    groupField: "protofilter-matched"
-                },{
-                    border: false,
-                    html: '&nbsp;',
-                    colspan: 3
-                },{
-                    xtype: 'radio',
-                    name: 'groupingRadio',
-                    checked: false,
-                    boxLabel: this.i18n._("HTTP - Hostname"),
-                    groupField: "http-hostname"
-                },{
-                    xtype: 'radio',
-                    name: 'groupingRadio',
-                    checked: false,
-                    boxLabel: this.i18n._("HTTP - URI"),
-                    groupField: "http-uri"
-                },{
-                    border: false,
-                    html: '&nbsp;',
-                    colspan: 5
-                },{
-                    xtype: 'radio',
-                    name: 'groupingRadio',
-                    checked: false,
-                    boxLabel: this.i18n._("Web Filter - Category ID"),
-                    groupField: "esoft-best-category-id"
-                },{
-                    xtype: 'radio',
-                    name: 'groupingRadio',
-                    checked: false,
-                    boxLabel: this.i18n._("Web Filter - Category Name"),
-                    groupField: "esoft-best-category-name"
-                },{
-                    xtype: 'radio',
-                    name: 'groupingRadio',
-                    checked: false,
-                    boxLabel: this.i18n._("Web Filter - Category Description"),
-                    groupField: "esoft-best-category-description"
-                },{
-                    xtype: 'radio',
-                    name: 'groupingRadio',
-                    checked: false,
-                    boxLabel: this.i18n._("Web Filter - Category Flagged"),
-                    groupField: "esoft-best-category-flagged"
-                },{
-                    xtype: 'radio',
-                    name: 'groupingRadio',
-                    checked: false,
-                    boxLabel: this.i18n._("Web Filter - Category Blocked"),
-                    groupField: "esoft-best-category-blocked"
-                },{
-                    xtype: 'radio',
-                    name: 'groupingRadio',
-                    checked: false,
-                    boxLabel: this.i18n._("Web Filter - Flagged"),
-                    groupField: "esoft-flagged"
-                },{
-                    border: false,
-                    html: '&nbsp;',
-                    colspan: 1
-                },{
-                    xtype: 'radio',
-                    name: 'groupingRadio',
-                    checked: false,
-                    boxLabel: this.i18n._("Application Control - Application"),
-                    groupField: "classd-application"
-                },{
-                    xtype: 'radio',
-                    name: 'groupingRadio',
-                    checked: false,
-                    boxLabel: this.i18n._("Application Control - Category"),
-                    groupField: "classd-category"
-                },{
-                    xtype: 'radio',
-                    name: 'groupingRadio',
-                    checked: false,
-                    boxLabel: this.i18n._("Application Control - Protochain"),
-                    groupField: "classd-protochain"
-                },{
-                    xtype: 'radio',
-                    name: 'groupingRadio',
-                    checked: false,
-                    boxLabel: this.i18n._("Application Control - Detail"),
-                    groupField: "classd-detail"
-                },{
-                    xtype: 'radio',
-                    name: 'groupingRadio',
-                    checked: false,
-                    boxLabel: this.i18n._("Application Control - Confidence"),
-                    groupField: "classd-confidence"
-                },{
-                    xtype: 'radio',
-                    name: 'groupingRadio',
-                    checked: false,
-                    boxLabel: this.i18n._("Application Control - Productivity"),
-                    groupField: "classd-productivity"
-                },{
-                    xtype: 'radio',
-                    name: 'groupingRadio',
-                    checked: false,
-                    boxLabel: this.i18n._("Application Control - Risk"),
-                    groupField: "classd-risk"
-                },{
-                    xtype: 'radio',
-                    name: 'groupingRadio',
-                    checked: false,
-                    boxLabel: this.i18n._("Bandwidth Control - Client KBps"),
-                    groupField: "clientKBps"
-                },{
-                    xtype: 'radio',
-                    name: 'groupingRadio',
-                    checked: false,
-                    boxLabel: this.i18n._("Bandwidth Control - Server KBps"),
-                    groupField: "serverKBps"
-                },{
-                    xtype: 'radio',
-                    name: 'groupingRadio',
-                    checked: false,
-                    boxLabel: this.i18n._("Bandwidth Control - Priority"),
-                    groupField: "priority"
-                },{
-                    border: false,
-                    html: '&nbsp;',
-                    colspan: 4
-                },{
-                    xtype: 'radio',
-                    name: 'groupingRadio',
-                    checked: false,
-                    boxLabel: this.i18n._("QoS - Priority"),
-                    groupField: "qosPriority"
-                },{
-                    border: false,
-                    html: '&nbsp;',
-                    colspan: 6
-                },{
-                    xtype: 'button',
-                    id: "refresh_grouping",
-                    text: i18n._('Render'),
-                    name: "Render Columns",
-                    tooltip: i18n._('Render the grid with the configured view'),
-                    iconCls: 'icon-refresh',
-                    handler: this.reRenderGrid
-                }]
-            });
-        },
         // Current Sessions Grid
-        buildGridCurrentSessions: function(columns, groupField) {
+        buildGridCurrentSessions: function(columns) {
             this.gridCurrentSessions = Ext.create('Ung.EditorGrid',{
                 name: "gridCurrentSessions",
                 settingsCmp: this,
@@ -921,7 +579,7 @@ if (!Ung.hasResource["Ung.SessionMonitor"]) {
                 hasDelete: false,
                 sortField: this.sortField,
                 sortOrder : this.sortOrder,
-                groupField: groupField,
+                groupField: null,
                 columnsDefaultSortable: true,
                 title: this.i18n._("Current Sessions"),
                 qtip: this.i18n._("This shows all current sessions."),
