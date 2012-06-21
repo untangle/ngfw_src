@@ -334,7 +334,7 @@ if (!Ung.hasResource["Ung.SessionMonitor"]) {
                     gridColumnWidth: 100
                 },{
                     xtype: 'checkbox',
-                    checked: false,
+                    checked: true,
                     boxLabel: this.i18n._("Username"),
                     gridColumnHeader: this.i18n._("Username"),
                     gridColumnDataIndex: "platform-username",
@@ -434,7 +434,7 @@ if (!Ung.hasResource["Ung.SessionMonitor"]) {
                     colspan: 2
                 },{
                     xtype: 'checkbox',
-                    checked: false,
+                    checked: true,
                     boxLabel: this.i18n._("Application Control - Protochain"),
                     gridColumnHeader: this.i18n._("Protochain (Application Control)"),
                     gridColumnDataIndex: "classd-protochain",
