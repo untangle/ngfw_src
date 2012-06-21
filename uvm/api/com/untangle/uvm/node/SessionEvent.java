@@ -314,7 +314,7 @@ public class SessionEvent extends LogEvent
         pstmt.setTimestamp(++i,timeStampPlusHours(24));
         pstmt.setString(++i, (getHostname() == null ? "" : getHostname()) );
         pstmt.setString(++i, (getUsername() == null ? "" : getUsername()) );
-        pstmt.setLong(++i, getPolicyId() );
+        pstmt.setLong(++i, (getPolicyId() == null ? 0 : getPolicyId() );
         pstmt.setObject(++i, getCClientAddr().getHostAddress(), java.sql.Types.OTHER);
         pstmt.setInt(++i, getCClientPort());
         pstmt.setObject(++i, getCServerAddr().getHostAddress(), java.sql.Types.OTHER);
