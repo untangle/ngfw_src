@@ -4076,9 +4076,10 @@ Ext.define('Ung.EditorGrid', {
     
     initComponent: function() {
         if(this.hasInlineEditor) {
-            this.plugins.push(Ext.create('Ext.grid.plugin.CellEditing', {
+            this.inlineEditor=Ext.create('Ext.grid.plugin.CellEditing', {
                 clicksToEdit: 1
-            }));
+            });
+            this.plugins.push(this.inlineEditor);
         }
         if (this.hasReorder) {
             var reorderColumn = Ext.create('Ung.grid.ReorderColumn', this.configReorder || {});
@@ -4165,12 +4166,12 @@ Ext.define('Ung.EditorGrid', {
                 }
             }
         });
-
+        if(!this.dockedItems)  {
+            this.dockedItems = [];
+        }
         if(this.paginated) {
-            if(!this.bbar)  {
-                this.bbar = [];
-            }
-            this.bbar.push({
+            this.dockedItems.push({
+                dock: 'bottom',
                 xtype: 'pagingtoolbar',
                 pageSize: this.recordsPerPage,
                 store: this.getStore(),
@@ -4228,12 +4229,14 @@ Ext.define('Ung.EditorGrid', {
         this.callParent(arguments);
     },
     stopEditing: function() {
-        //added for compatimbilty
-        //TODO:remove this
+        if(this.inlineEditor) {
+            this.inlineEditor.completeEdit();
+        }
     },
     startEditing: function() {
-        //added for compatimbilty
-        //TODO:remove this
+        if(this.inlineEditor) {
+            this.inlineEditor.startEdit.call(arguments);
+        }
     },
     addHandler: function() {
         var record = Ext.create(Ext.ClassManager.getName(this.getStore().getProxy().getModel()), Ext.decode(Ext.encode(this.emptyRow)));

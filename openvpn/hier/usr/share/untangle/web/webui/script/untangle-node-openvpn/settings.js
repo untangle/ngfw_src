@@ -194,6 +194,7 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
 
             this.title = this.i18n._("Welcome"),
             this.panel = Ext.create('Ext.form.Panel', {
+                border: false,
                 items: [{
                     xtype: 'label',
                     html: '<h2 class="wizard-title">'+this.i18n._("Welcome to the OpenVPN Setup Wizard!")+'</h2>'
@@ -220,6 +221,7 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
             this.title = this.i18n._( "Install Configuration" );
 
             this.panel = Ext.create('Ext.form.Panel', {
+                border: false,
                 fileUpload: true,
                 items: [{
                     xtype: 'label',
@@ -335,7 +337,8 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
             this.gui = config.gui;
 
             this.title = this.i18n._( "Finished!" );
-            this.panel = new Ext.FormPanel({
+            this.panel = Ext.create('Ext.form.Panel', {
+                border: false,
                 items: [{
                     xtype: 'label',
                     html: '<h2 class="wizard-title">'+this.i18n._("Finished!")+'</h2>'
