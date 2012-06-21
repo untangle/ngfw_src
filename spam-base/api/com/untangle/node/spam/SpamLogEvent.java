@@ -162,6 +162,8 @@ public class SpamLogEvent extends LogEvent
             prefix = "sa";
         else if ("commtouchas".equals(getVendorName().toLowerCase()))
             prefix = "ct";
+        else if ("clam".equals(getVendorName().toLowerCase()))
+            prefix = "phish";
         else {
             throw new RuntimeException("Unknown vendor name: " + getVendorName());
         }
