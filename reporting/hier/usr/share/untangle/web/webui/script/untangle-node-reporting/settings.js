@@ -679,6 +679,7 @@ if (!Ung.hasResource["Ung.Reporting"]) {
                 name: 'Name Map',
                 helpSource: 'ip_addresses',
                 title: this.i18n._("Name Map"),
+                paginated: false,
                 emptyRow: {
                     javaClass: "com.untangle.node.reporting.ReportingUser",
                     "address": "1.2.3.4",

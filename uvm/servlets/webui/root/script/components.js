@@ -4632,11 +4632,16 @@ Ext.define('Ung.EditorGrid', {
         }
     },
     // Get the save list from the changed data
+    //TODO: rename to getAddedDeletedModifiedLists
     getSaveList: function() {
         return Ung.Util.getSaveList(this.changedData, this.recordJavaClass);
     },
     // Get the entire list
     // for the unpaginated grids, that send all the records on save
+    //Attention this only gets the records from the current page!
+    //It can's be used for grids that may have pagination.
+    //Can be used only for grids that have explicitly set: paginated: false
+    //TODO: rename this all occurences to getPageList 
     getFullSaveList: function(forExport) {
         var list=[];
         var records=this.getStore().getRange();
@@ -4662,6 +4667,7 @@ Ext.define('Ung.EditorGrid', {
 
         return list;
     },
+    //TODO: rename this all occurences to getList
     getGridSaveList: function(handler, skipRepagination) {
         if(this.isPaginated()) {
             var oldSettings=null;
@@ -4720,7 +4726,8 @@ Ext.define('Ung.EditorGrid', {
             });
         }
     },
-    //To be used in the next version
+    //Trying to create a function to get data from all pages in one line without the need of the callback function as parameter
+    //This is not working as expected so it should not be used. may stay here for future development
     getGridData: function() {
         var data=null;
         if(this.isPaginated()) {
