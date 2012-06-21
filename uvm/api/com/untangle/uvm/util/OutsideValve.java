@@ -43,8 +43,7 @@ public abstract class OutsideValve extends ValveBase
                 logger.debug( "The request: " + request + " caught by OutsideValve." );
             }
 
-            String msg = request.getLocalPort() == DEFAULT_HTTP_PORT
-                ? httpErrorMessage() : outsideErrorMessage();
+            String msg = request.getLocalPort() == DEFAULT_HTTP_PORT ? httpErrorMessage() : outsideErrorMessage();
             request.setAttribute(LocalAppServerManager.UVM_WEB_MESSAGE_ATTR, msg);
             response.sendError(HttpServletResponse.SC_FORBIDDEN);
             return;
@@ -85,13 +84,16 @@ public abstract class OutsideValve extends ValveBase
     {
         UvmContext uvm = UvmContextFactory.context();
         Map<String,String> i18n_map = uvm.languageManager().getTranslations("untangle-libuvm");
-        return I18nUtil.tr("standard access", i18n_map);
+        logger.warn("HTTP ERROR",new Exception());
+        return I18nUtil.tr("Permission denied.", i18n_map);
     }
 
     private boolean isAccessAllowed(boolean outsideAccessAllowed, ServletRequest request)
     {
         String address = request.getRemoteAddr();
         boolean isHttpAccessAllowed = isHttpAccessAllowed();
+
+        logger.warn("isAccessAllowed( " + outsideAccessAllowed + ", " + request + " ) " + request.getLocalPort()); 
 
         if (outsideAccessAllowed && isHttpAccessAllowed) return true;
 
@@ -104,21 +106,16 @@ public abstract class OutsideValve extends ValveBase
         int port = request.getLocalPort();
 
         /* This is insecure access on port 80 */
-        if (port == DEFAULT_HTTP_PORT) {
+        if (port == DEFAULT_HTTP_PORT) 
             return isHttpAccessAllowed;
-        }
-        if (port == SECONDARY_HTTP_PORT) {
-            return isHttpAccessAllowed;
-        }
 
-        int blockPagePort = DEFAULT_HTTP_PORT;
-        
-        if ( port == blockPagePort ) {
-            return isHttpAccessAllowed;
-        }
+        /* IF traffic comes to this port its because Http admin is disable, but block pages are OK */
+        if (port == SECONDARY_HTTP_PORT) 
+            return true;
         
         /* This is secure access on the internal port */
-        if (port == NetworkUtil.INTERNAL_OPEN_HTTPS_PORT) return true;
+        if (port == NetworkUtil.INTERNAL_OPEN_HTTPS_PORT)
+            return true;
 
         /* This is secure access on the external port */
         if (port == getSystemSettings().getHttpsPort()) return outsideAccessAllowed;
