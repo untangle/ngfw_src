@@ -22,6 +22,9 @@ if (!Ung.hasResource["Ung.SessionMonitor"]) {
             this.hide();
         },
         getSessions: function(nodeId) {
+            if (!this.isVisible())
+                return {javaClass:"java.util.LinkedList", list:[]};
+
             var sessions = rpc.jsonrpc.UvmContext.sessionMonitor().getMergedSessions(nodeId);
             // iterate through each session and change its attachments map to properties
             for (var i = 0; i < sessions.list.length ; i++) {
@@ -168,21 +171,21 @@ if (!Ung.hasResource["Ung.SessionMonitor"]) {
                     boxLabel: this.i18n._("Protocol"),
                     gridColumnHeader: this.i18n._("Protocol"),
                     gridColumnDataIndex: "protocol",
-                    gridColumnWidth: 70
+                    gridColumnWidth: 60
                 },{
                     xtype: 'checkbox',
                     checked: true,
                     boxLabel: this.i18n._("Bypassed"),
                     gridColumnHeader: this.i18n._("Bypassed"),
                     gridColumnDataIndex: "bypassed",
-                    gridColumnWidth: 70
+                    gridColumnWidth: 60
                 },{
                     xtype: 'checkbox',
                     checked: true,
                     boxLabel: this.i18n._("Policy"),
                     gridColumnHeader: this.i18n._("Policy"),
                     gridColumnDataIndex: "policy",
-                    gridColumnWidth: 100,
+                    gridColumnWidth: 80,
                     gridColumnRenderer: function(value) {
                         if (value == null || value == "")
                             return "";
@@ -198,7 +201,7 @@ if (!Ung.hasResource["Ung.SessionMonitor"]) {
                     boxLabel: this.i18n._("Client Interface"),
                     gridColumnHeader: this.i18n._("Client Interface"),
                     gridColumnDataIndex: "clientIntf",
-                    gridColumnWidth: 100,
+                    gridColumnWidth: 85,
                     gridColumnRenderer: function(value) {
                         var result = "";
                         var store = Ung.Util.getInterfaceStore();
@@ -216,7 +219,7 @@ if (!Ung.hasResource["Ung.SessionMonitor"]) {
                     boxLabel: this.i18n._("Server Interface"),
                     gridColumnHeader: this.i18n._("Server Interface"),
                     gridColumnDataIndex: "serverIntf",
-                    gridColumnWidth: 100,
+                    gridColumnWidth: 85,
                     gridColumnRenderer: function(value) {
                         var result = "";
                         var store = Ung.Util.getInterfaceStore();
@@ -239,28 +242,28 @@ if (!Ung.hasResource["Ung.SessionMonitor"]) {
                     boxLabel: this.i18n._("Client (Pre-NAT)"),
                     gridColumnHeader: this.i18n._("Client (Pre-NAT)"),
                     gridColumnDataIndex: "preNatClient",
-                    gridColumnWidth: 100
+                    gridColumnWidth: 75
                 },{
                     xtype: 'checkbox',
                     checked: false,
                     boxLabel: this.i18n._("Server (Pre-NAT)"),
                     gridColumnHeader: this.i18n._("Server (Pre-NAT)"),
                     gridColumnDataIndex: "preNatServer",
-                    gridColumnWidth: 100
+                    gridColumnWidth: 75
                 },{
                     xtype: 'checkbox',
                     checked: true,
                     boxLabel: this.i18n._("Client Port (Pre-NAT)"),
                     gridColumnHeader: this.i18n._("Client Port (Pre-NAT)"),
                     gridColumnDataIndex: "preNatClientPort",
-                    gridColumnWidth: 80
+                    gridColumnWidth: 70
                 },{
                     xtype: 'checkbox',
                     checked: false,
                     boxLabel: this.i18n._("Server Port (Pre-NAT)"),
                     gridColumnHeader: this.i18n._("Server Port (Pre-NAT)"),
                     gridColumnDataIndex: "preNatServerPort",
-                    gridColumnWidth: 80
+                    gridColumnWidth: 70
                 },{
                     border: false,
                     html: '&nbsp;',
@@ -271,28 +274,28 @@ if (!Ung.hasResource["Ung.SessionMonitor"]) {
                     boxLabel: this.i18n._("Client (Post-NAT)"),
                     gridColumnHeader: this.i18n._("Client (Post-NAT)"),
                     gridColumnDataIndex: "postNatClient",
-                    gridColumnWidth: 100
+                    gridColumnWidth: 75
                 },{
                     xtype: 'checkbox',
                     checked: true,
                     boxLabel: this.i18n._("Server (Post-NAT)"),
                     gridColumnHeader: this.i18n._("Server (Post-NAT)"),
                     gridColumnDataIndex: "postNatServer",
-                    gridColumnWidth: 100
+                    gridColumnWidth: 75
                 },{
                     xtype: 'checkbox',
                     checked: false,
                     boxLabel: this.i18n._("Client Port (Post-NAT)"),
                     gridColumnHeader: this.i18n._("Client Port (Post-NAT)"),
                     gridColumnDataIndex: "postNatClientPort",
-                    gridColumnWidth: 80
+                    gridColumnWidth: 70
                 },{
                     xtype: 'checkbox',
                     checked: true,
                     boxLabel: this.i18n._("Server Port (Post-NAT)"),
                     gridColumnHeader: this.i18n._("Server Port (Post-NAT)"),
                     gridColumnDataIndex: "postNatServerPort",
-                    gridColumnWidth: 80
+                    gridColumnWidth: 70
                 },{
                     border: false,
                     html: '&nbsp;',
@@ -328,14 +331,14 @@ if (!Ung.hasResource["Ung.SessionMonitor"]) {
                     boxLabel: this.i18n._("Hostname"),
                     gridColumnHeader: this.i18n._("Hostname"),
                     gridColumnDataIndex: "platform-hostname",
-                    gridColumnWidth: 150
+                    gridColumnWidth: 100
                 },{
                     xtype: 'checkbox',
                     checked: false,
                     boxLabel: this.i18n._("Username"),
                     gridColumnHeader: this.i18n._("Username"),
                     gridColumnDataIndex: "platform-username",
-                    gridColumnWidth: 150
+                    gridColumnWidth: 100
                 },{
                     border: false,
                     html: '&nbsp;',
@@ -344,30 +347,30 @@ if (!Ung.hasResource["Ung.SessionMonitor"]) {
                     xtype: 'checkbox',
                     checked: false,
                     boxLabel: this.i18n._("Application Control Lite - Protocol"),
-                    gridColumnHeader: this.i18n._("Application Control Lite - Protocol"),
+                    gridColumnHeader: this.i18n._("Protocol (Application Control Lite)"),
                     gridColumnDataIndex: "protofilter-protocol",
-                    gridColumnWidth: 150
+                    gridColumnWidth: 100
                 },{
                     xtype: 'checkbox',
                     checked: false,
                     boxLabel: this.i18n._("Application Control Lite - Category"),
-                    gridColumnHeader: this.i18n._("Application Control Lite - Category"),
+                    gridColumnHeader: this.i18n._("Category (Application Control Lite)"),
                     gridColumnDataIndex: "protofilter-category",
-                    gridColumnWidth: 150
+                    gridColumnWidth: 100
                 },{
                     xtype: 'checkbox',
                     checked: false,
                     boxLabel: this.i18n._("Application Control Lite - Description"),
-                    gridColumnHeader: this.i18n._("Application Control Lite - Description"),
+                    gridColumnHeader: this.i18n._("Description (Application Control Lite)"),
                     gridColumnDataIndex: "protofilter-description",
-                    gridColumnWidth: 150
+                    gridColumnWidth: 100
                 },{
                     xtype: 'checkbox',
                     checked: false,
                     boxLabel: this.i18n._("Application Control Lite - Matched?"),
-                    gridColumnHeader: this.i18n._("Application Control Lite - Matched?"),
+                    gridColumnHeader: this.i18n._("Matched? (Application Control Lite)"),
                     gridColumnDataIndex: "protofilter-matched",
-                    gridColumnWidth: 150
+                    gridColumnWidth: 100
                 },{
                     border: false,
                     html: '&nbsp;',
@@ -376,16 +379,16 @@ if (!Ung.hasResource["Ung.SessionMonitor"]) {
                     xtype: 'checkbox',
                     checked: false,
                     boxLabel: this.i18n._("HTTP - Hostname"),
-                    gridColumnHeader: this.i18n._("HTTP - Hostname"),
+                    gridColumnHeader: this.i18n._("Hostname (HTTP)"),
                     gridColumnDataIndex: "http-hostname",
-                    gridColumnWidth: 150
+                    gridColumnWidth: 120
                 },{
                     xtype: 'checkbox',
                     checked: false,
                     boxLabel: this.i18n._("HTTP - URI"),
-                    gridColumnHeader: this.i18n._("HTTP - URI"),
+                    gridColumnHeader: this.i18n._("URI (HTTP)"),
                     gridColumnDataIndex: "http-uri",
-                    gridColumnWidth: 150
+                    gridColumnWidth: 120
                 },{
                     border: false,
                     html: '&nbsp;',
@@ -393,45 +396,38 @@ if (!Ung.hasResource["Ung.SessionMonitor"]) {
                 },{
                     xtype: 'checkbox',
                     checked: false,
-                    boxLabel: this.i18n._("Web Filter - Category ID"),
-                    gridColumnHeader: this.i18n._("Web Filter - Category ID"),
-                    gridColumnDataIndex: "esoft-best-category-id",
-                    gridColumnWidth: 150
-                },{
-                    xtype: 'checkbox',
-                    checked: false,
                     boxLabel: this.i18n._("Web Filter - Category Name"),
-                    gridColumnHeader: this.i18n._("Web Filter - Category Name"),
+                    gridColumnHeader: this.i18n._("Category Name (Web Filter)"),
                     gridColumnDataIndex: "esoft-best-category-name",
-                    gridColumnWidth: 150
+                    gridColumnWidth: 100
                 },{
                     xtype: 'checkbox',
                     checked: false,
                     boxLabel: this.i18n._("Web Filter - Category Description"),
-                    gridColumnHeader: this.i18n._("Web Filter - Category Description"),
+                    gridColumnHeader: this.i18n._("Category Description (Web Filter)"),
                     gridColumnDataIndex: "esoft-best-category-description",
-                    gridColumnWidth: 150
+                    gridColumnWidth: 100
                 },{
                     xtype: 'checkbox',
                     checked: false,
                     boxLabel: this.i18n._("Web Filter - Category Flagged"),
-                    gridColumnHeader: this.i18n._("Web Filter - Category Flagged"),
+                    gridColumnHeader: this.i18n._("Category Flagged (Web Filter)"),
                     gridColumnDataIndex: "esoft-best-category-flagged",
-                    gridColumnWidth: 150
+                    gridColumnWidth: 50
                 },{
                     xtype: 'checkbox',
                     checked: false,
                     boxLabel: this.i18n._("Web Filter - Category Blocked"),
-                    gridColumnHeader: this.i18n._("Web Filter - Category Blocked"),
+                    gridColumnHeader: this.i18n._("Category Blocked (Web Filter)"),
                     gridColumnDataIndex: "esoft-best-category-blocked",
-                    gridColumnWidth: 150
+                    gridColumnWidth: 50
                 },{
                     xtype: 'checkbox',
                     checked: false,
                     boxLabel: this.i18n._("Web Filter - Flagged"),
-                    gridColumnHeader: this.i18n._("esoft-flagged"),
+                    gridColumnHeader: this.i18n._("Flagged (Web Filter)"),
                     gridColumnDataIndex: "esoft-flagged",
-                    gridColumnWidth: 150
+                    gridColumnWidth: 50
                 },{
                     border: false,
                     html: '&nbsp;',
@@ -439,52 +435,52 @@ if (!Ung.hasResource["Ung.SessionMonitor"]) {
                 },{
                     xtype: 'checkbox',
                     checked: false,
+                    boxLabel: this.i18n._("Application Control - Protochain"),
+                    gridColumnHeader: this.i18n._("Protochain (Application Control)"),
+                    gridColumnDataIndex: "classd-protochain",
+                    gridColumnWidth: 100
+                },{
+                    xtype: 'checkbox',
+                    checked: false,
                     boxLabel: this.i18n._("Application Control - Application"),
-                    gridColumnHeader: this.i18n._("Application Control - Application"),
+                    gridColumnHeader: this.i18n._("Application (Application Control)"),
                     gridColumnDataIndex: "classd-application",
-                    gridColumnWidth: 150
+                    gridColumnWidth: 100
                 },{
                     xtype: 'checkbox',
                     checked: false,
                     boxLabel: this.i18n._("Application Control - Category"),
-                    gridColumnHeader: this.i18n._("Application Control - Category"),
+                    gridColumnHeader: this.i18n._("Category (Application Control)"),
                     gridColumnDataIndex: "classd-category",
-                    gridColumnWidth: 150
-                },{
-                    xtype: 'checkbox',
-                    checked: false,
-                    boxLabel: this.i18n._("Application Control - Protochain"),
-                    gridColumnHeader: this.i18n._("Application Control - Protochain"),
-                    gridColumnDataIndex: "classd-protochain",
-                    gridColumnWidth: 150
+                    gridColumnWidth: 100
                 },{
                     xtype: 'checkbox',
                     checked: false,
                     boxLabel: this.i18n._("Application Control - Detail"),
-                    gridColumnHeader: this.i18n._("Application Control - Detail"),
+                    gridColumnHeader: this.i18n._("Detail (Application Control)"),
                     gridColumnDataIndex: "classd-detail",
-                    gridColumnWidth: 150
+                    gridColumnWidth: 120
                 },{
                     xtype: 'checkbox',
                     checked: false,
                     boxLabel: this.i18n._("Application Control - Confidence"),
-                    gridColumnHeader: this.i18n._("Application Control - Confidence"),
+                    gridColumnHeader: this.i18n._("Confidence (Application Control)"),
                     gridColumnDataIndex: "classd-confidence",
-                    gridColumnWidth: 150
+                    gridColumnWidth: 50
                 },{
                     xtype: 'checkbox',
                     checked: false,
                     boxLabel: this.i18n._("Application Control - Productivity"),
-                    gridColumnHeader: this.i18n._("Application Control - Productivity"),
+                    gridColumnHeader: this.i18n._("Productivity (Application Control)"),
                     gridColumnDataIndex: "classd-productivity",
-                    gridColumnWidth: 150
+                    gridColumnWidth: 50
                 },{
                     xtype: 'checkbox',
                     checked: false,
                     boxLabel: this.i18n._("Application Control - Risk"),
-                    gridColumnHeader: this.i18n._("Application Control - Risk"),
+                    gridColumnHeader: this.i18n._("Risk (Application Control)"),
                     gridColumnDataIndex: "classd-risk",
-                    gridColumnWidth: 150
+                    gridColumnWidth: 50
                 },{
                     xtype: 'checkbox',
                     checked: this.defaultBandwidthColumns,
@@ -516,9 +512,9 @@ if (!Ung.hasResource["Ung.SessionMonitor"]) {
                     xtype: 'checkbox',
                     checked: this.defaultBandwidthColumns,
                     boxLabel: this.i18n._("Bandwidth Control - Priority"),
-                    gridColumnHeader: this.i18n._("Bandwidth Control - Priority"),
+                    gridColumnHeader: this.i18n._("Priority (Bandwidth Control)"),
                     gridColumnDataIndex: "priority",
-                    gridColumnWidth: 150,
+                    gridColumnWidth: 80,
                     gridColumnRenderer: function(value) {
                         if (value < 1 || value > 7)
                             return i18n._("None");
@@ -534,9 +530,16 @@ if (!Ung.hasResource["Ung.SessionMonitor"]) {
                     xtype: 'checkbox',
                     checked: false,
                     boxLabel: this.i18n._("QoS - Priority"),
-                    gridColumnHeader: this.i18n._("QoS - Priority"),
+                    gridColumnHeader: this.i18n._("Priority (QoS)"),
                     gridColumnDataIndex: "qosPriority",
-                    gridColumnWidth: 150
+                    gridColumnWidth: 100,
+                    gridColumnRenderer: function(value) {
+                        if (value < 1 || value > 7)
+                            return i18n._("None");
+                        else
+                            return [i18n._("Very High"), i18n._("High"), i18n._("Medium"), i18n._("Low"), i18n._("Limited"), i18n._("Limited More"), i18n._("Limited Severely")][value-1];
+                        
+                    }
                 },{
                     border: false,
                     html: '&nbsp;',
@@ -804,12 +807,6 @@ if (!Ung.hasResource["Ung.SessionMonitor"]) {
                     xtype: 'radio',
                     name: 'groupingRadio',
                     checked: false,
-                    boxLabel: this.i18n._("Web Filter - Category ID"),
-                    groupField: "esoft-best-category-id"
-                },{
-                    xtype: 'radio',
-                    name: 'groupingRadio',
-                    checked: false,
                     boxLabel: this.i18n._("Web Filter - Category Name"),
                     groupField: "esoft-best-category-name"
                 },{
@@ -839,7 +836,7 @@ if (!Ung.hasResource["Ung.SessionMonitor"]) {
                 },{
                     border: false,
                     html: '&nbsp;',
-                    colspan: 1
+                    colspan: 2
                 },{
                     xtype: 'radio',
                     name: 'groupingRadio',
@@ -998,8 +995,6 @@ if (!Ung.hasResource["Ung.SessionMonitor"]) {
                     name: "http-hostname"
                 },{
                     name: "http-uri"
-                },{
-                    name: "esoft-best-category-id"
                 },{
                     name: "esoft-best-category-name"
                 },{

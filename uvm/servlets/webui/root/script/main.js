@@ -1157,11 +1157,13 @@ Ext.define("Ung.Main", {
                 main.sessionMonitorWin=Ext.create('Ung.SessionMonitor', {"name":"sessionMonitor", "helpSource":"session_viewer"});
                 main.sessionMonitorWin.setFilterNodeId(nodeIdArg);
                 main.sessionMonitorWin.show();
+                main.sessionMonitorWin.gridCurrentSessions.reloadGrid();
                 Ext.MessageBox.hide();
             }]);
         } else {
             main.sessionMonitorWin.setFilterNodeId(nodeIdArg);
             main.sessionMonitorWin.show();
+            main.sessionMonitorWin.gridCurrentSessions.reloadGrid();
             Ext.MessageBox.hide();
         }
     },
