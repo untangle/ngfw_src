@@ -336,7 +336,7 @@ public class CPDIpUsernameMapAssistant implements IpUsernameMapAssistant
         Connection conn = null;
         ResultSet rset = null;
         Statement stmt = null;
-        String qstr = "SELECT entry_id, hw_addr, ipv4_addr, username, last_session, session_start, expiration_date FROM events.n_cpd_host_database_entry";
+        String qstr = "SELECT entry_id, hw_addr, ipv4_addr, username, last_session, session_start, expiration_date FROM cpd.host_database_entry";
 
         if (condition != null)
             qstr = (qstr + " " + condition);
