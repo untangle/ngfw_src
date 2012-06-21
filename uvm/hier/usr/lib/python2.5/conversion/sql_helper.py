@@ -41,6 +41,8 @@ class Connection(psycopg2.extensions.connection):
 
 
 def sanitize_string(str):
+    if str ==  None:
+        return None
     global EVIL_CHARACTERS
     for char in EVIL_CHARACTERS:
         str=str.replace(char,"")
