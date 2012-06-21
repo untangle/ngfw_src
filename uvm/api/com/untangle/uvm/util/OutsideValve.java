@@ -84,7 +84,6 @@ public abstract class OutsideValve extends ValveBase
     {
         UvmContext uvm = UvmContextFactory.context();
         Map<String,String> i18n_map = uvm.languageManager().getTranslations("untangle-libuvm");
-        logger.warn("HTTP ERROR",new Exception());
         return I18nUtil.tr("Permission denied.", i18n_map);
     }
 
@@ -92,8 +91,6 @@ public abstract class OutsideValve extends ValveBase
     {
         String address = request.getRemoteAddr();
         boolean isHttpAccessAllowed = isHttpAccessAllowed();
-
-        logger.warn("isAccessAllowed( " + outsideAccessAllowed + ", " + request + " ) " + request.getLocalPort()); 
 
         if (outsideAccessAllowed && isHttpAccessAllowed) return true;
 
