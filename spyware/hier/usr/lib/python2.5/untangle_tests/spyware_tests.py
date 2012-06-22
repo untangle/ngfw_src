@@ -71,7 +71,7 @@ class SpywareTests(unittest.TestCase):
         # remove any previous instance of testcookie.txt
         clientControl.runCommand("/bin/rm -f testcookie.txt")
         # see if untangle cookie is downloaded.
-        result = clientControl.runCommand("wget -q --save-cookies testcookie.txt -O - http://youtube.com/ >/dev/null 2>&1 ; grep -q youtube.com testcookie.txt")
+        result = clientControl.runCommand("rm -f testcookie.txt ; wget -4 -q --save-cookies testcookie.txt -O - http://youtube.com/ >/dev/null 2>&1 ; grep -q youtube.com testcookie.txt")
         assert (result == 0)
 
     # verify a youtube cookie can be blocked
@@ -80,7 +80,7 @@ class SpywareTests(unittest.TestCase):
         # remove any previous instance of testcookie.txt
         clientControl.runCommand("/bin/rm -f testcookie.txt")
         # see if untangle cookie is downloaded.
-        result = clientControl.runCommand("wget -q --save-cookies testcookie.txt -O - http://youtube.com/ >/dev/null 2>&1 ; grep -q youtube.com testcookie.txt")
+        result = clientControl.runCommand("rm -f testcookie.txt ; wget -4 -q --save-cookies testcookie.txt -O - http://youtube.com/ >/dev/null 2>&1 ; grep -q youtube.com testcookie.txt")
         assert (result == 1)
 
     def test_999_finalTearDown(self):
