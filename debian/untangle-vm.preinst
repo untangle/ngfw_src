@@ -14,8 +14,8 @@ if [ -n "$oldVersion" ]; then
     # The schema will be re-created new a shiny when the UVM starts
     # Adjust split_schema_ver to assure that the schemas are created fresh
     if dpkg --compare-versions "$oldVersion" le 9.3.0 ; then
-      psql -U postgres -c 'DROP SCHEMA events CASCADE' uvm
-      psql -U postgres -c 'UPDATE split_schema_ver SET events_version = NULL' uvm
+      psql -U postgres -c 'DROP SCHEMA events CASCADE' uvm >/dev/null 2>&1
+      psql -U postgres -c 'UPDATE split_schema_ver SET events_version = NULL' uvm >/dev/null 2>&1
     fi
 fi
 
