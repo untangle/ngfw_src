@@ -103,5 +103,6 @@ if [ -x "/etc/init.d/atd" ]; then
     ourInit atd restart
 fi
 rm -f /etc/cron.d/untangle-reports-incremental
+rm -f /var/log/uvm/schema*
 
 exit 0
