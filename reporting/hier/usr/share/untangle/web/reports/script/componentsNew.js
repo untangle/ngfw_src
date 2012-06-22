@@ -1,1 +1,0 @@
-../../webui/script/componentsNew.js
