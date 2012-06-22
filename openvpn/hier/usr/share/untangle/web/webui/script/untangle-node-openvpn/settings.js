@@ -489,20 +489,25 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                 }],
                 columns: [{
                     header: this.i18n._("Address"),
+                    dataIndex:'address',
                     width: 150
                 }, {
                     header: this.i18n._("Client"),
+                    dataIndex:'clientName',
                     width: 200,
                     flex: 1
                 }, {
                     header: this.i18n._("Start Time"),
+                    dataIndex:'start',
                     width: 180,
                     renderer: function(value) { return i18n.timestampFormat(value); }
                 }, {
                     header: this.i18n._("Rx Bytes"),
+                    dataIndex:'bytesRxTotal',
                     width: 180
                 }, {
                     header: this.i18n._("Tx Bytes"),
+                    dataIndex:'bytesTxTotal',
                     width: 180
                 }]
             });
