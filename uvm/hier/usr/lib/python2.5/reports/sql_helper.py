@@ -210,8 +210,8 @@ def drop_index(schema, tablename, columnname, unique=False):
         uniqueStr1="unique_"
     else:
         uniqueStr1=""
-    logger.warn("DROP INDEX %s_%s_%sidx" % (tablename, columnname, uniqueStr1))
-    sql = 'DROP INDEX %s_%s_%sidx' % (tablename, columnname, uniqueStr1 )
+    logger.warn("DROP INDEX %s.%s_%s_%sidx" % (schema, tablename, columnname, uniqueStr1))
+    sql = 'DROP INDEX %s.%s_%s_%sidx' % (schema, tablename, columnname, uniqueStr1 )
     run_sql(sql)
                                     
 def rename_index(schema, oldname, newname):
