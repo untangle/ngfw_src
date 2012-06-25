@@ -1837,10 +1837,10 @@ Ext.define("Ung.Node", {
     initMetrics: function() {
         if(this.metrics != null && this.metrics.list != null) {
             if( this.metrics.list.length > 0 ) {
-                this.faceplateMetrics=new Ung.FaceplateMetric({
+                this.faceplateMetrics = Ext.create('Ung.FaceplateMetric', {
                     parentId: this.getId(),
                     parentNodeId: this.nodeId,
-                    metric: this.metrics.list
+                    metrics: this.metrics
                 });
                 this.faceplateMetrics.render('node-metrics_' + this.getId());
                 this.subCmps.push(this.faceplateMetrics);
@@ -2394,7 +2394,7 @@ Ext.define("Ung.SystemStats", {
 // Faceplate Metric Class
 Ext.define("Ung.FaceplateMetric", {
     extend: "Ext.Component",
-    html:'<div class="chart"></div><div class="system"><div class="system-box"></div></div>',
+    html: '<div class="chart"></div><div class="system"><div class="system-box"></div></div>',
     parentId: null,
     parentNodeId: null,
     data: null,
@@ -2404,6 +2404,7 @@ Ext.define("Ung.FaceplateMetric", {
     sessionCountTotal: null,
     sessionRequestLast: null,
     sessionRequestTotal: null,
+    hasChart: false,
     chart: null,
     chartData: null,
     chartDataLength: 20,
@@ -2423,12 +2424,28 @@ Ext.define("Ung.FaceplateMetric", {
         this.buildChart();
     },
     beforeDestroy: function() {
-        Ext.destroy(this.chartTip);
-        Ext.destroy(this.chart);
+        if(this.chartTip != null) {
+            Ext.destroy(this.chartTip);
+        }
+        if(this.chart != null ){
+            Ext.destroy(this.chart);
+        }
         this.callParent(arguments);
     },
     buildChart: function() {
+        for(var i=0; i<this.metrics.list.length; i++) {
+            if(this.metrics.list[i].name=="live-sessions") {
+                this.hasChart = true;
+                break;
+            }
+        }
         var chartContainerEl = this.getEl().down("div[class=chart]");
+        //Do not build chart graph if the node desn't have live-session metrics
+        if( !this.hasChart ) {
+            chartContainerEl.hide();
+            return;
+        }
+
         this.chartData = [];
         for(var i=0; i<this.chartDataLength; i++) {
             this.chartData.push({time:i, sessions:0});
@@ -2625,18 +2642,20 @@ Ext.define("Ung.FaceplateMetric", {
                 }
             }
         }
-        var reloadChart = this.chartData[0].sessions != 0;
-        for(var i=0;i<this.chartData.length-1;i++) {
-            this.chartData[i].sessions=this.chartData[i+1].sessions;
-            reloadChart = (reloadChart || (this.chartData[i].sessions != 0));
-        }
-        var currentSessions = this.getCurrentSessions(nodeCmp.metrics);
-        reloadChart = (reloadChart || (currentSessions!=0));
-        this.chartData[this.chartData.length-1].sessions=currentSessions;
-        if(reloadChart) {
-            this.chart.store.loadData(this.chartData);
-            if(this.chartTip.rendered) {
-                this.chartTip.getEl().down("span[name=current_sessions]").dom.innerHTML=currentSessions;
+        if(this.hasChart) {
+            var reloadChart = this.chartData[0].sessions != 0;
+            for(var i=0;i<this.chartData.length-1;i++) {
+                this.chartData[i].sessions=this.chartData[i+1].sessions;
+                reloadChart = (reloadChart || (this.chartData[i].sessions != 0));
+            }
+            var currentSessions = this.getCurrentSessions(nodeCmp.metrics);
+            reloadChart = (reloadChart || (currentSessions!=0));
+            this.chartData[this.chartData.length-1].sessions=currentSessions;
+            if(reloadChart) {
+                this.chart.store.loadData(this.chartData);
+                if(this.chartTip.rendered) {
+                    this.chartTip.getEl().down("span[name=current_sessions]").dom.innerHTML=currentSessions;
+                }
             }
         }
     },
