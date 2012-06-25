@@ -250,7 +250,7 @@ except Exception:
      pass
 
 if not db_retention:
-     db_retention = get_node_settings('untangle-node-reporting').get('dbRetention', 7)
+     db_retention = get_node_settings('untangle-node-reporting').get('dbRetention', 7.0)
 if not file_retention:
      file_retention = get_node_settings('untangle-node-reporting').get('fileRetention', 30)
 attach_csv = attach_csv or get_node_settings('untangle-node-reporting').get('emailDetail')
@@ -295,7 +295,7 @@ else:
      logger.info("Create schemas mode, not generating reports themselves")
 
 if not no_cleanup and not simulate and not create_schemas:
-     reports_cutoff = end_date - mx.DateTime.DateTimeDelta(db_retention)
+     reports_cutoff = end_date - mx.DateTime.DateTimeDelta(float(db_retention))
      reports.engine.reports_cleanup(reports_cutoff)     
      write_cutoff_date(DateFromMx(reports_cutoff))
     
