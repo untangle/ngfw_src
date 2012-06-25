@@ -888,6 +888,17 @@ Ung.Util = {
                 name: 'flagged'
             }];
     },
+    buildJsonListFromStrings: function(stringsList, propertyName) {
+          var jsonList=[];
+          if(stringsList != null && stringsList.length>0) {
+              for(var i=0; i<stringsList.length; i++) {
+                  var el={};
+                  el[propertyName]=stringsList[i];
+                  jsonList.push(el);
+              }
+          }
+          return jsonList;
+    },
     maxRowCount: 2147483647,
     timestampFieldWidth: 135,
     ipFieldWidth: 100,

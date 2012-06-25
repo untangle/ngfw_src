@@ -457,6 +457,7 @@ if (!Ung.hasResource["Ung.Email"]) {
                 title: this.i18n._('Global'),
                 hasEdit: false,
                 settingsCmp: this,
+                autoGenerateId: true,
                 anchor: "100% 48%",
                 style: "margin-bottom:10px;",
                 emptyRow: {
@@ -490,14 +491,9 @@ if (!Ung.hasResource["Ung.Email"]) {
                 dataRoot: '',
                 dataFn: Ext.bind(function() { 
                     var safeListContents = this.getSafelistAdminView().getSafelistContents('GLOBAL');
-                    var results=[]
-                    if ( safeListContents && safeListContents.length > 0) {
-                        for ( var i = 0; i < safeListContents.length; i++) {
-                            results.push({emailAddress: safeListContents[i]});
-                        }
-                    }
+                    //var safeListContents = ['test@aaa.com', 'test1@bbb.com'];
                     this.loadedGlobalSafelist = true;
-                    return results;
+                    return Ung.Util.buildJsonListFromStrings(safeListContents, 'emailAddress');
                 }, this)
             });
                 
@@ -580,7 +576,10 @@ if (!Ung.hasResource["Ung.Email"]) {
                                     Ext.bind(function(result, exception) {
                                         Ext.MessageBox.hide();
                                         if(Ung.Util.handleException(exception)) return;
-                                        this.settingsCmp.gridSafelistUserDetails.reloadGrid({data: result});
+                                        //result = ['test@aaa.com', 'test1@bbb.com']; //TODO: comment it when not testing
+                                        var data = Ung.Util.buildJsonListFromStrings(result, 'sender');
+                                        
+                                        this.settingsCmp.gridSafelistUserDetails.reloadGrid({data: data});
                                     }, this), emailAddress); 
                             }          
                         });
@@ -610,6 +609,7 @@ if (!Ung.hasResource["Ung.Email"]) {
                 hasAdd: false,
                 hasDelete: false,
                 paginated: false,
+                autoGenerateId: true,
                 tbar: [{
                     text: this.i18n._('Purge Selected'),
                     tooltip: this.i18n._('Purge Selected'),
@@ -629,7 +629,9 @@ if (!Ung.hasResource["Ung.Email"]) {
                         Ext.MessageBox.wait(this.i18n._("Purging..."), this.i18n._("Please wait"));
                         this.getSafelistAdminView().removeFromSafelists(Ext.bind(function(result, exception) {
                             if(Ung.Util.handleException(exception)) return;
-                            this.gridSafelistUserDetails.reloadGrid({data: result});
+                            result = ['test@aaa.com', 'test1@bbb.com']; //TODO: comment it when not testing
+                            var data = Ung.Util.buildJsonListFromStrings(result, 'sender');
+                            this.gridSafelistUserDetails.reloadGrid({data: data});
                             Ext.MessageBox.hide();
                         }, this), this.safelistDetailsWin.account, senders);
                         
@@ -1081,12 +1083,7 @@ if (!Ung.hasResource["Ung.Email"]) {
                         
                     }, this)
                 }],
-                dataRoot: '',
                 dataFn: Ext.bind(function() {
-                    /*return [//just for test
-                        {mailID:"aaa", mailSummary: {subject:"a aaa"+Math.random(), sender: "aaa@fff.com", category: "cat a", size: 10354}},
-                        {mailID:"bbb", mailSummary: {subject:"b bbb"+Math.random(), sender: "bbb@fff.com", category: "cat b", size: 40300}}
-                    ];*/
                     if(this.userQuarantinesDetailsGrid != null) {
                         return this.getQuarantineMaintenenceView().getInboxRecords(this.quarantinesDetailsWin.account, 0, Ung.Util.maxRowCount, []);
                     } else {
@@ -1116,19 +1113,19 @@ if (!Ung.hasResource["Ung.Email"]) {
                 }],
                 columns: [{
                     header: this.i18n._("MailID"),
-                    width: 150,
+                    width: 200,
                     dataIndex: 'mailID',
                     sortable: false
                 }, {
                     header: this.i18n._("Date"),
-                    width: 150,
+                    width: 140,
                     dataIndex: 'quarantinedDate',
                     renderer: function(value) {
                         return i18n.timestampFormat(value);
                     }
                 }, {
                     header: this.i18n._("Sender"),
-                    width: 150,
+                    width: 180,
                     dataIndex: 'sender',
                     renderer: function(value) {
                         return value.sender;
