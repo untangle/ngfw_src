@@ -102,7 +102,8 @@ public class SessionStatsEvent extends LogEvent
         " c2p_bytes = ?, " +
         " s2p_bytes = ?, " +
         " p2c_bytes = ?, " + 
-        " p2s_bytes = ? " + 
+        " p2s_bytes = ?, " + 
+        " end_time = ? " + 
         " WHERE " + 
         " session_id = ?";
 
@@ -116,6 +117,7 @@ public class SessionStatsEvent extends LogEvent
         pstmt.setLong(++i,getS2pBytes());
         pstmt.setLong(++i,getP2cBytes());
         pstmt.setLong(++i,getP2sBytes());
+        pstmt.setTimestamp(++i,getTimeStamp());
         pstmt.setLong(++i,getSessionId());
         
         return pstmt;

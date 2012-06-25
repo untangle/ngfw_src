@@ -311,7 +311,8 @@ public class SessionEvent extends LogEvent
         pstmt.setLong(++i,getSessionId());
         pstmt.setLong(++i,getSessionId());
         pstmt.setTimestamp(++i,getTimeStamp());
-        pstmt.setTimestamp(++i,timeStampPlusHours(24));
+        //pstmt.setTimestamp(++i,timeStampPlusHours(24));
+        pstmt.setTimestamp(++i,timeStampPlusMinutes(1));
         pstmt.setString(++i, (getHostname() == null ? "" : getHostname()) );
         pstmt.setString(++i, (getUsername() == null ? "" : getUsername()) );
         pstmt.setLong(++i, (getPolicyId() == null ? 0 : getPolicyId() ));
