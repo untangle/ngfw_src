@@ -3857,17 +3857,19 @@ Ext.define('Ung.RowEditorWindow', {
             if(this.addMode) {
                 if (this.grid.addAtTop) {
                     this.grid.getStore().insert(0, [this.record]);
+                    /*TODO: It does not work find an alternate solution
                     if(this.grid.hasReorder) {
                         this.grid.startEditing(0,0);
                         this.grid.stopEditing();
-                    }
+                    }*/
                 } else {
                     this.grid.getStore().add([this.record]);
+                    /*
                     if(this.grid.hasReorder) {
                         var len = this.grid.getStore().data.length;
                         this.grid.startEditing(len-1,0);
                         this.grid.stopEditing();
-                    }
+                    }*/
                 }
                 this.grid.updateChangedData(this.record, "added");
             }
@@ -3885,17 +3887,19 @@ Ext.define('Ung.RowEditorWindow', {
             if(this.addMode) {
                 if (this.grid.addAtTop) {
                     this.grid.getStore().insert(0, [this.record]);
+                    /*
                     if(this.grid.hasReorder) {
                         this.grid.startEditing(0,0);
                         this.grid.stopEditing();
-                    }
+                    }*/
                 } else {
                     this.grid.getStore().add([this.record]);
+                    /*
                     if(this.grid.hasReorder) {
                         var len = this.grid.getStore().data.length;
                         this.grid.startEditing(len-1,0);
                         this.grid.stopEditing();
-                    }
+                    }*/
                 }
                 this.grid.updateChangedData(this.record, "added");
             }
