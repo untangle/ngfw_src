@@ -105,5 +105,6 @@ fi
 rm -f /etc/cron.d/untangle-reports-incremental
 rm -f /var/log/uvm/schema*
 rm -f /var/log/uvm/iptables*
+rm -f /usr/lib/python2.5/reports/node/untangle_node_template*
 
 exit 0
