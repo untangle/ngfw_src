@@ -313,8 +313,8 @@ public class SessionEvent extends LogEvent
         pstmt.setTimestamp(++i,getTimeStamp());
         //pstmt.setTimestamp(++i,timeStampPlusHours(24));
         pstmt.setTimestamp(++i,timeStampPlusMinutes(1));
-        pstmt.setString(++i, (getHostname() == null ? "" : getHostname()) );
-        pstmt.setString(++i, (getUsername() == null ? "" : getUsername()) );
+        pstmt.setString(++i, getHostname());
+        pstmt.setString(++i, getUsername());
         pstmt.setLong(++i, (getPolicyId() == null ? 0 : getPolicyId() ));
         pstmt.setObject(++i, getCClientAddr().getHostAddress(), java.sql.Types.OTHER);
         pstmt.setInt(++i, getCClientPort());

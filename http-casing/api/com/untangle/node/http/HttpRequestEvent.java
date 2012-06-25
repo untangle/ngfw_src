@@ -128,13 +128,13 @@ public class HttpRequestEvent extends LogEvent
         pstmt.setObject(++i, getSessionEvent().getSServerAddr().getHostAddress(), java.sql.Types.OTHER);
         pstmt.setInt(++i, getSessionEvent().getSServerPort());
         pstmt.setLong(++i, getSessionEvent().getPolicyId());
-        pstmt.setString(++i, (getSessionEvent().getUsername() == null ? "" : getSessionEvent().getUsername()));
+        pstmt.setString(++i, getSessionEvent().getUsername());
         pstmt.setLong(++i, getRequestId());
         pstmt.setString(++i, Character.toString(getMethod().getKey()));
         pstmt.setString(++i, getRequestUri().toString());
         pstmt.setString(++i, getHost());
         pstmt.setInt(++i, getContentLength());
-        pstmt.setString(++i, (getSessionEvent().getHostname() == null ? "" : getSessionEvent().getHostname()));
+        pstmt.setString(++i, getSessionEvent().getHostname());
 
         return pstmt;
     }
