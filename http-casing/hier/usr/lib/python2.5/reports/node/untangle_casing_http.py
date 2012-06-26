@@ -109,6 +109,7 @@ CREATE TABLE reports.n_http_events (
 
         # If the new index does not exist, create it
         if not sql_helper.index_exists("reports","n_http_events","request_id", unique=True):
+            sql_helper.run_sql("""delete from reports.n_http_events where request_id in (select request_id from (select request_id,count(*) as cnt from reports.n_http_events group by request_id order by cnt desc) as foo where cnt > 1);""");
             sql_helper.create_index("reports","n_http_events","request_id", unique=True);
         # If the new index does exist, delete the old one
         if sql_helper.index_exists("reports","n_http_events","request_id", unique=True):
