@@ -921,7 +921,7 @@ if (!Ung.hasResource["Ung.SpamAssassin"]) {
                     },this)
                 }, {
                     name : 'sender',
-                    mapping : 'ip_addr',
+                    mapping : 'ipaddr',
                     convert : function(value) {
                         return value == null ? "" : value;
                     }
