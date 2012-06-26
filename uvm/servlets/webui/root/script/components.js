@@ -3453,11 +3453,14 @@ Ext.define("Ung.NodeWin", {
                 this.closeWindow();
                 return;
             } else {
-                this.getSettings(true);
-                this.clearDirty();
-                if(Ext.isFunction(this.afterSave)) {
-                    this.afterSave.call(this);
-                }
+                Ext.MessageBox.wait(i18n._("Reloading..."), i18n._("Please wait"));
+                this.getSettings(function(){
+                    this.clearDirty();
+                    Ext.MessageBox.hide();
+                    if(Ext.isFunction(this.afterSave)) {
+                        this.afterSave.call(this);
+                    }
+                });
             }
         }, this), this.getSettings());
     }
