@@ -390,6 +390,7 @@ Ung.Util = {
     },
     handleException: function(exception, handler, type, continueExecution) { //type: alertCallback, alert, noAlert
         if(exception) {
+            console.log("handleException:", exception);
             var message=null;
             var gotoStartPage=false;
             /* special text for apt error */
