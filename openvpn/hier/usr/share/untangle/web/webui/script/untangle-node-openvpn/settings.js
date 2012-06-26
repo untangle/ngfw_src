@@ -153,8 +153,7 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                 this.downloadWindowsInstallerEl.dom.innerHTML = this.i18n._('Loading...');
             }
             Ext.MessageBox.wait(this.i18n._( "Building OpenVPN Client..." ), this.i18n._( "Please Wait" ));
-            // populate download links too
-            Ext.Function.defer(this.renderDownloadLinks, 10, this);
+            // populate download links
             if (this.isVpnSite) {
                 this.node.getAdminDownloadLink(Ext.bind(function(result, exception) {
                     if(Ung.Util.handleException(exception)) return;
