@@ -229,6 +229,7 @@ CREATE TABLE reports.sessions (
 
         # If the new index does not exist, create it
         if not sql_helper.index_exists("reports","sessions","session_id", unique=True):
+            sql_helper.run_sql("""delete from reports.sessions where session_id in (select session_id from (select session_id,count(*) as cnt from reports.sessions group by session_id order by cnt desc) as foo where cnt > 1);""");
             sql_helper.create_index("reports","sessions","session_id", unique=True);
         # If the new index does exist, delete the old one
         if sql_helper.index_exists("reports","sessions","session_id", unique=True):
