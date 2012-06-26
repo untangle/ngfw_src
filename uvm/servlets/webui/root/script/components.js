@@ -1749,6 +1749,7 @@ Ext.define("Ung.Node", {
         if(handler==null) {handler=Ext.emptyFn;}
         Ext.bind(this.getNode, this,[Ext.bind(this.getNode, this,[Ext.bind(this.getNodeProperties, this,[handler])])]).call(this);
     },
+    
     loadSettings: function() {
         Ext.MessageBox.wait(i18n._("Loading Settings..."), i18n._("Please wait"));
         this.settingsClassName = Ung.NodeWin.getClassName(this.name);
@@ -1764,16 +1765,27 @@ Ext.define("Ung.Node", {
     },
     // init settings
     initSettings: function() {
-        Ext.bind(this.loadNode, this,[Ext.bind(this.initSettingsTranslations, this,[Ext.bind(this.openSettings, this)])]).call(this);
+        Ext.bind(this.loadNode, this,[Ext.bind(this.initSettingsTranslations, this,[Ext.bind(this.preloadSettings, this)])]).call(this);
     },
     initSettingsTranslations: function(handler) {
         Ung.Util.loadModuleTranslations.call(this, this.name, handler);
     },
+    //get node settings async before node settings load
+    preloadSettings: function(handler) {
+        if(Ext.isFunction(this.rpcNode.getSettings)) {
+            this.rpcNode.getSettings(Ext.bind(function(result, exception) {
+                if(Ung.Util.handleException(exception)) return;
+                this.openSettings.call(this, result);
+            }, this));
+        } else {
+            this.openSettings.call(this, null);
+        }
+    },
     // open settings window
-    openSettings: function() {
+    openSettings: function(settings) {
         var items=null;
         if (this.settingsClassName !== null) {
-            this.settingsWin=Ext.create(this.settingsClassName, {'node':this,'tid':this.nodeId,'name':this.name});
+            this.settingsWin=Ext.create(this.settingsClassName, {'node':this,'tid':this.nodeId,'name':this.name, 'settings': settings});
         } else {
             this.settingsWin = Ext.create('Ung.NodeWin',{
                 node: this,
@@ -2023,7 +2035,7 @@ Ung.MessageManager = {
                     var lastUpgradeDownloadProgressMsg=null;
                     for(var i=0;i<messageQueue.messages.list.length;i++) {
                         var msg=messageQueue.messages.list[i];
-                        //console.log("MQ:",msg.javaClass, msg);
+                        console.log("MQ:",msg.javaClass, msg);
                         if(msg.javaClass.indexOf("NodeStateChangeMessage") >= 0) {
                             var node=Ung.Node.getCmp(msg.nodeSettings.id);
                             if( node !== undefined && node != null) {
@@ -3403,26 +3415,21 @@ Ext.define("Ung.NodeWin", {
     getRpcNode: function() {
         return this.node.rpcNode;
     },
-    // get base settings object
-    getBaseSettings: function(forceReload) {
-        if (forceReload || this.rpc.baseSettings === undefined) {
-            try {
-                if (typeof this.getRpcNode().getBaseSettings == 'function') {
-                    this.rpc.baseSettings = this.getRpcNode().getBaseSettings();
-                }
-            } catch (e) {
-                Ung.Util.rpcExHandler(e);
-            }
-        }
-        return this.rpc.baseSettings;
-    },
     // get node settings object
-    getSettings: function(forceReload) {
-        if (forceReload || this.settings === undefined) {
-            try {
-                this.settings = this.getRpcNode().getSettings();
-            } catch (e) {
-                Ung.Util.rpcExHandler(e);
+    getSettings: function(forceReloadOrHandler) {
+        if (forceReloadOrHandler !== undefined || this.settings === undefined) {
+            if(Ext.isFunction(forceReloadOrHandler)) {
+                this.getRpcNode().getSettings(Ext.bind(function(result, exception) {
+                    if(Ung.Util.handleException(exception)) return;
+                    this.settings = result;
+                    forceReloadOrHandler.call(this);
+                }, this));
+            } else {
+                try {
+                    this.settings = this.getRpcNode().getSettings();
+                } catch (e) {
+                    Ung.Util.rpcExHandler(e);
+                }
             }
         }
         return this.settings;
@@ -3859,19 +3866,8 @@ Ext.define('Ung.RowEditorWindow', {
             if(this.addMode) {
                 if (this.grid.addAtTop) {
                     this.grid.getStore().insert(0, [this.record]);
-                    /*TODO: It does not work find an alternate solution
-                    if(this.grid.hasReorder) {
-                        this.grid.startEditing(0,0);
-                        this.grid.stopEditing();
-                    }*/
                 } else {
                     this.grid.getStore().add([this.record]);
-                    /*
-                    if(this.grid.hasReorder) {
-                        var len = this.grid.getStore().data.length;
-                        this.grid.startEditing(len-1,0);
-                        this.grid.stopEditing();
-                    }*/
                 }
                 this.grid.updateChangedData(this.record, "added");
             }
@@ -3882,26 +3878,14 @@ Ext.define('Ung.RowEditorWindow', {
         if (!this.isFormValid()) {
             return;
         }
-
         if (this.record !== null) {
             this.updateActionChild(this, this.record);
 
             if(this.addMode) {
                 if (this.grid.addAtTop) {
                     this.grid.getStore().insert(0, [this.record]);
-                    /*
-                    if(this.grid.hasReorder) {
-                        this.grid.startEditing(0,0);
-                        this.grid.stopEditing();
-                    }*/
                 } else {
                     this.grid.getStore().add([this.record]);
-                    /*
-                    if(this.grid.hasReorder) {
-                        var len = this.grid.getStore().data.length;
-                        this.grid.startEditing(len-1,0);
-                        this.grid.stopEditing();
-                    }*/
                 }
                 this.grid.updateChangedData(this.record, "added");
             }
@@ -4269,11 +4253,6 @@ Ext.define('Ung.EditorGrid', {
             this.inlineEditor.completeEdit();
         }
     },
-    startEditing: function() {
-        if(this.inlineEditor) {
-            this.inlineEditor.startEdit.call(arguments);
-        }
-    },
     addHandler: function() {
         var record = Ext.create(Ext.ClassManager.getName(this.getStore().getProxy().getModel()), Ext.decode(Ext.encode(this.emptyRow)));
         record.data.id = this.genAddedId();
@@ -4287,7 +4266,6 @@ Ext.define('Ung.EditorGrid', {
             else
                 this.getStore().add([record]);
             this.updateChangedData(record, "added");
-            this.startEditing(0, 0);
         }
     },
     editHandler: function(record) {
