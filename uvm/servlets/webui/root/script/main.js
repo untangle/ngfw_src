@@ -1019,18 +1019,17 @@ Ext.define("Ung.Main", {
         }
         return false;
     }, 
-    getNode: function(nodeName,nodePolicy) {
+    getNode: function(nodeName,nodePolicyId) {
         var cp = rpc.currentPolicy.policyId ,np = null;
         if(main.nodes) {
             for (var i = 0; i < main.nodes.length; i++) {
-                if(nodePolicy==null){
+                if(nodePolicyId==null) {
                     cp = null;
-                }else{
-                    np = nodePolicy.parentId;
-                    cp = main.nodes[i].nodeSettings.policy == null ? null : main.nodes[i].nodeSettings.policy.parentId;
+                } else {
+                    cp = main.nodes[i].nodeSettings.policy == null ? null : main.nodes[i].nodeSettings.policyId;
                 }
             
-                if ((nodeName == main.nodes[i].name)&& (np==cp)) {
+                if ((nodeName == main.nodes[i].name)&& (nodePolicyId==cp)) {
                     return main.nodes[i];
                 }
             }

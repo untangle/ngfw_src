@@ -2023,6 +2023,7 @@ Ung.MessageManager = {
                     var lastUpgradeDownloadProgressMsg=null;
                     for(var i=0;i<messageQueue.messages.list.length;i++) {
                         var msg=messageQueue.messages.list[i];
+                        console.log("MQ:",msg.javaClass, msg);
                         if(msg.javaClass.indexOf("NodeStateChangeMessage") >= 0) {
                             var node=Ung.Node.getCmp(msg.nodeSettings.id);
                             if( node !== undefined && node != null) {
