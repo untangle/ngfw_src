@@ -1026,7 +1026,7 @@ Ext.define("Ung.Main", {
                 if(nodePolicyId==null) {
                     cp = null;
                 } else {
-                    cp = main.nodes[i].nodeSettings.policy == null ? null : main.nodes[i].nodeSettings.policyId;
+                    cp = main.nodes[i].nodeSettings.policyId;
                 }
             
                 if ((nodeName == main.nodes[i].name)&& (nodePolicyId==cp)) {
@@ -1043,7 +1043,7 @@ Ext.define("Ung.Main", {
                 if(nodePolicyId==null){
                     cp = null;
                 } else {
-                    cp = main.nodes[i].nodePolicyId == null ? null : main.nodes[i].nodeSettings.nodePolicyId;
+                    cp = main.nodes[i].nodeSettings.policyId;
                 }
             
                 if (node.name === main.nodes[i].name) {
