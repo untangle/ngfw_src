@@ -1019,7 +1019,7 @@ Ext.define("Ung.Main", {
         }
         return false;
     }, 
-    getNode: function(nodeName,nodePolicyId) {
+    getNode: function(nodeName, nodePolicyId) {
         var cp = rpc.currentPolicy.policyId ,np = null;
         if(main.nodes) {
             for (var i = 0; i < main.nodes.length; i++) {
@@ -1036,19 +1036,18 @@ Ext.define("Ung.Main", {
         }
         return null;
     },
-    removeParentNode: function (node,nodePolicy){
-        var cp = rpc.currentPolicy.policyId ,np = null;    
+    removeParentNode: function (node, nodePolicyId) {
+        var cp = rpc.currentPolicy.policyId;    
         if(main.nodes) {
             for (var i = 0; i < main.nodes.length; i++) {
-                if(nodePolicy==null){
+                if(nodePolicyId==null){
                     cp = null;
-                }else{
-                    np = nodePolicy.parentId;
-                    cp = main.nodes[i].nodeSettings.policy == null ? null : main.nodes[i].nodeSettings.policy.parentId;
+                } else {
+                    cp = main.nodes[i].nodePolicyId == null ? null : main.nodes[i].nodeSettings.nodePolicyId;
                 }
             
                 if (node.name === main.nodes[i].name) {
-                    if(np!=cp){
+                    if(nodePolicyId!=cp) {
                         //parent found
                         return main.removeNode(i); 
                     }

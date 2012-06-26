@@ -1496,7 +1496,7 @@ Ext.define("Ung.Node", {
         }
         this.subCmps = [];
         if( config.nodeSettings.policyId != null ) {
-            this.isNodeEditable = config.nodeSettings.policyId == rpc.currentPolicy.policyId ? true : false;
+            this.isNodeEditable = (config.nodeSettings.policyId == rpc.currentPolicy.policyId);
         }
         this.callParent(arguments);
     },
@@ -1556,7 +1556,7 @@ Ext.define("Ung.Node", {
         var templateHTML = Ung.Node.template.applyTemplate({
             'id': this.getId(),
             'image': this.image,
-            'isNodeEditable': this.isNodeEditable === true ? "none" : "",
+            'isNodeEditable': this.isNodeEditable ? "none" : "",
             'displayName': this.displayName,
             'nodePowerCls': this.hasPowerButton?((this.license && !this.license.valid)?"node-power-expired":"node-power"):"",
             'licenseMessage': this.getLicenseMessage()
@@ -1596,7 +1596,7 @@ Ext.define("Ung.Node", {
                 dismissDelay: 0,
                 hideDelay: 0
             }));
-            if(this.isNodeEditable==false){
+            if(!this.isNodeEditable) {
                 this.subCmps.push(new Ext.ToolTip({
                     html: Ung.Node.getNonEditableNodeTip(),
                     target: 'node_' + this.nodeId,
@@ -2023,7 +2023,7 @@ Ung.MessageManager = {
                     var lastUpgradeDownloadProgressMsg=null;
                     for(var i=0;i<messageQueue.messages.list.length;i++) {
                         var msg=messageQueue.messages.list[i];
-                        console.log("MQ:",msg.javaClass, msg);
+                        //console.log("MQ:",msg.javaClass, msg);
                         if(msg.javaClass.indexOf("NodeStateChangeMessage") >= 0) {
                             var node=Ung.Node.getCmp(msg.nodeSettings.id);
                             if( node !== undefined && node != null) {
