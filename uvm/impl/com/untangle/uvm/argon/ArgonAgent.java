@@ -14,9 +14,6 @@ package com.untangle.uvm.argon;
  *
  * This class is wrapped inside the view as seen
  * by the node and node API, which is now ArgonConnector.
- *
- * @author <a href="mailto:jdi@untangle.com"></a>
- * @version 1.0
  */
 public interface ArgonAgent
 {

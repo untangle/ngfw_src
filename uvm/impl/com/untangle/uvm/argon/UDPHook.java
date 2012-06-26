@@ -208,7 +208,12 @@ public class UDPHook implements NetcapHook
 
             ArgonUDPSession session = agent.getNewSessionEventListener().newSession( request );
 
-            processSession( request, session );
+            try {
+                processSession( request, session );
+            } catch (IllegalStateException e) {
+                logger.warn(agent.toString() + " Exception: ", e);
+                throw e;
+            }
 
             if ( iter.hasNext()) {
                 /* Only advance the previous session if the node requested the session */
