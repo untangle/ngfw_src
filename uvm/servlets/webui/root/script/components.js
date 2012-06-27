@@ -1836,6 +1836,7 @@ Ext.define("Ung.Node", {
         if(this.metrics != null && this.metrics.list != null) {
             if( this.metrics.list.length > 0 ) {
                 this.faceplateMetrics = Ext.create('Ung.FaceplateMetric', {
+                    nodeName: this.name,
                     parentId: this.getId(),
                     parentNodeId: this.nodeId,
                     metrics: this.metrics
@@ -2436,6 +2437,9 @@ Ext.define("Ung.FaceplateMetric", {
                 this.hasChart = true;
                 break;
             }
+        }
+        if(this.nodeName == "untangle-node-firewall") {
+            this.hasChart = false;
         }
         var chartContainerEl = this.getEl().down("div[class=chart]");
         //Do not build chart graph if the node desn't have live-session metrics
