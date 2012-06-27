@@ -123,16 +123,17 @@ if (!Ung.hasResource["Ung.CPD"]) {
                     width: 180,
                     renderer: function(value) { return i18n.timestampFormat(value); }
                 },{
-                    header: this.i18n._("Control"),
+                    header: this.i18n._("Logout"),
                     xtype: 'actioncolumn',
                     width: 80,
                     items: [{
                         id: 'userLogout',
-                        icon: '/skins/default/images/admin/icon_logout_row.gif',
+                        iconCls: 'icon-delete-row',
+                        tooltip: 'Click to logout',
                         handler: Ext.bind(function(grid,row,col) {
                             var rec = grid.getStore().getAt(row);
                             this.getRpcNode().logout(rec.data.ipv4Address);
-                            grid.getStore().load();
+                            this.gridCaptiveStatus.reload();
                         }, this)
                     }]
                 }]
