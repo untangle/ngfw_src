@@ -233,7 +233,7 @@ if (!Ung.hasResource["Ung.Virus"]) {
                 }, {
                     header: this.i18n._("Description"),
                     width: 200,
-                    dataIndex: 'name',
+                    dataIndex: 'description',
                     flex: 1,
                     editor: {
                         xtype:'textfield',
@@ -260,7 +260,7 @@ if (!Ung.hasResource["Ung.Virus"]) {
                 {
                     xtype:'textarea',
                     name: "Description",
-                    dataIndex: "name",
+                    dataIndex: "description",
                     fieldLabel: this.i18n._("Description"),
                     width: 400,
                     height: 60
@@ -299,7 +299,7 @@ if (!Ung.hasResource["Ung.Virus"]) {
                 }, {
                     header: this.i18n._("Description"),
                     width: 200,
-                    dataIndex: 'name',
+                    dataIndex: 'description',
                     flex: 1,
                     field: {
                         xtype:'textfield',
@@ -325,7 +325,7 @@ if (!Ung.hasResource["Ung.Virus"]) {
                 {
                     xtype:'textarea',
                     name: "Description",
-                    dataIndex: "name",
+                    dataIndex: "description",
                     fieldLabel: this.i18n._("Description"),
                     width: 400,
                     height: 60
