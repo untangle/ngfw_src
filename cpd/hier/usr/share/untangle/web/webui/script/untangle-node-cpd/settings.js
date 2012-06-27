@@ -1240,7 +1240,6 @@ if (!Ung.hasResource["Ung.CPD"]) {
                 }
             }
         },
-
         configureActiveDirectory: function() {
             var node = main.getNode("untangle-node-adconnector");
             if (node != null) {

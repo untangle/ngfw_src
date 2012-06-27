@@ -370,7 +370,7 @@ Ung.Util = {
     },
     rpcExHandler: function(exception) {
         if (exception != null)
-            console.error("In rpcExHandler: " + exception);
+            console.error("In rpcExHandler: ", exception);
         else
             console.error("In rpcExHandler: null");
             
@@ -3440,6 +3440,11 @@ Ext.define("Ung.NodeWin", {
                 });
             }
         }, this), this.getSettings());
+    },
+    reload: function() {
+        var nodeWidget=this.node;
+        this.closeWindow();
+        nodeWidget.onSettingsAction();
     }
 });
 Ung.NodeWin._nodeScripts = {};
