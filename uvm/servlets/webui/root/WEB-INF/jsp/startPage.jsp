@@ -8,12 +8,12 @@
     <META content="IE=9.0000" http-equiv="X-UA-Compatible"/>
     <style type="text/css">
      @import "/ext4/resources/css/ext-all-gray.css?s=${buildStamp}";
-	 @import "/ext4/examples/ux/css/CheckHeader.css?s=${buildStamp}";
+     @import "/ext4/examples/ux/css/CheckHeader.css?s=${buildStamp}";
     </style>
 <c:if test="${isDebug==false}">
     <script type="text/javascript" src="/ext4/ext-all.js?s=${buildStamp}"></script>
-	<script type="text/javascript" src="/ext4/examples/ux/data/PagingMemoryProxy.js?s=${buildStamp}"></script>
-	<script type="text/javascript" src="/ext4/examples/ux/CheckColumn.js?s=${buildStamp}"></script>
+    <script type="text/javascript" src="/ext4/examples/ux/data/PagingMemoryProxy.js?s=${buildStamp}"></script>
+    <script type="text/javascript" src="/ext4/examples/ux/CheckColumn.js?s=${buildStamp}"></script>
 
     <script type="text/javascript" src="/jsonrpc/jsonrpc-min.js?s=${buildStamp}"></script>
     <script type="text/javascript" src="/script/i18n.js?s=${buildStamp}"></script>
@@ -27,8 +27,8 @@
 </c:if>
 <c:if test="${isDebug==true}">
     <script type="text/javascript" src="/ext4/ext-all-debug.js?s=${buildStamp}"></script>
-	<script type="text/javascript" src="/ext4/examples/ux/data/PagingMemoryProxy.js?s=${buildStamp}"></script>
-	<script type="text/javascript" src="/ext4/examples/ux/CheckColumn.js?s=${buildStamp}"></script>
+    <script type="text/javascript" src="/ext4/examples/ux/data/PagingMemoryProxy.js?s=${buildStamp}"></script>
+    <script type="text/javascript" src="/ext4/examples/ux/CheckColumn.js?s=${buildStamp}"></script>
 
     <script type="text/javascript" src="/jsonrpc/jsonrpc.js?s=${buildStamp}"></script>
     <script type="text/javascript" src="/script/i18n.js?s=${buildStamp}"></script>
