@@ -10,11 +10,16 @@ import com.untangle.uvm.UvmContextFactory;
 
 import org.apache.log4j.Logger;
 
+/**
+ * This class actually implements the DnsBL lookup
+ * It launches a new thread, because there is no easy way to specify a timeout of
+ * InetAddress.getByName() which is the DNS mechanism used to do the DNSBL lookup.
+ */
 public final class DnsblClient implements Runnable
 {
     private final Logger logger = Logger.getLogger(getClass());
 
-    private Thread myThread;
+    private Thread myThread = null;
     private String dbgName; // thread name and socket host
 
     private String hostname;
@@ -28,21 +33,25 @@ public final class DnsblClient implements Runnable
         this.hostname = hostname;
         this.ipAddr = ipAddr;
         this.invertedIPAddr = invertedIPAddr;
-
-        this.myThread = UvmContextFactory.context().newThread(this);
     }
 
     public void startScan()
     {
-        //logger.debug("start, thread: " + myThread + ", this: " + this);
-        myThread.start(); // execute run() now
+        if (myThread != null) {
+            logger.warn("Thread already exist!");
+        } else {
+            //logger.debug("start, thread: " + myThread + ", this: " + this);
+
+            this.myThread = UvmContextFactory.context().newThread(this);
+            this.myThread.start(); // execute run() now
+        }
         return;
     }
 
     public void checkProgress(long timeout)
     {
         //logger.debug("check, thread: " + myThread + ", this: " + this);
-        if (false == myThread.isAlive()) {
+        if ( myThread == null || !myThread.isAlive() ) {
             logger.debug(dbgName + ", is not alive; not waiting");
             return;
         }
@@ -76,7 +85,7 @@ public final class DnsblClient implements Runnable
     public void stopScan()
     {
         //logger.debug("stop, thread: " + myThread + ", this: " + this);
-        if (false == myThread.isAlive()) {
+        if ( myThread == null || !myThread.isAlive() ) {
             logger.debug(dbgName + ", is not alive; no need to stop");
             return;
         }
