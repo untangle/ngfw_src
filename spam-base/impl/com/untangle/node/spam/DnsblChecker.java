@@ -3,11 +3,8 @@
  */
 package com.untangle.node.spam;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Collection;
-import java.util.Map;
-import java.util.Set;
+import java.util.LinkedList;
 import java.util.StringTokenizer;
 
 import org.apache.log4j.Logger;
@@ -19,7 +16,8 @@ import com.untangle.uvm.vnet.TCPNewSessionRequest;
  * A class that checks if an SMTP server is listed on a Realtime Blackhole List (Dnsbl).
  * You may choose which Dnsbl to check. Addresses of several Dnsbl services are included.
  *
- * @author Kai Blankenhorn &lt;<a href="mailto:pub01@bitfolge.de">pub01@bitfolge.de</a>&gt;
+ * original author:
+ * Kai Blankenhorn &lt;<a href="mailto:pub01@bitfolge.de">pub01@bitfolge.de</a>&gt;
  */
 public class DnsblChecker
 {
@@ -31,14 +29,13 @@ public class DnsblChecker
     private static Object dnsblCntMonitor = new Object();
     private static int dnsblCnt = 0;
 
-    private Map<DnsblClient, DnsblClientContext> clientMap;
     private List<SpamDnsbl> spamDnsblList;
-    private final SpamNodeImpl m_spamImpl;
+    private final SpamNodeImpl spamImpl;
 
-    public DnsblChecker(List<SpamDnsbl> spamDnsblList,SpamNodeImpl m_spamImpl)
+    public DnsblChecker(List<SpamDnsbl> spamDnsblList,SpamNodeImpl spamImpl)
     {
         this.spamDnsblList = spamDnsblList;
-        this.m_spamImpl = m_spamImpl;
+        this.spamImpl = spamImpl;
     }
 
     /**
@@ -51,33 +48,34 @@ public class DnsblChecker
      *         false if there is no record
      */
 
-    /*
-      http://relays.osirusoft.com/faq.html:
-      For a given address, a.b.c.d will return one of the following values if a dns lookup of d.c.b.a.relays.osirusoft.com is performed.
-
-      127.0.0.2 // bl.spamcop.net, dul.dnsbl.sorbs.net, list.dsbl.org return hit
-      127.0.0.4 // list.dsbl.org returns hit
-
-      The DNS addressing is as follows:
-      127.0.0.2 Verified Open Relay
-      127.0.0.3 Dialup Spam Source
-      Dialup Spam Sources are imported into the Zone file from other sources and some known sources are manually added to the local include file.
-      127.0.0.4 Confirmed Spam Source
-      A site has been identified as a constant source of spam, and is manually added. Submissions for this type of spam require multiple nominations from multiple sites. Test Blockers also find themselves in this catagory.
-      127.0.0.5 Smart Host (In progress)
-      A Smart host is a site determined to be secure, but relays for those who are not, defeating one level of security. When this is ready, it will be labeled outputs.osirusoft.com. NOTE: I strongly discourage using outputs due to it being way too effective to be useful.
-      127.0.0.6 A Spamware software developer or spamvertized site. This information is maintained by spamsites.org and spamhaus.org.
-      127.0.0.7 A list server that automatically opts users in without confirmation
-      127.0.0.8 An insecure formmail.cgi script. (Planned)
-      127.0.0.9 Open proxy servers
-    */
+    /**
+     * http://relays.osirusoft.com/faq.html:
+     * For a given address, a.b.c.d will return one of the following values if a dns lookup of d.c.b.a.relays.osirusoft.com is performed.
+     * 
+     *  127.0.0.2 // bl.spamcop.net, dul.dnsbl.sorbs.net, list.dsbl.org return hit
+     *  127.0.0.4 // list.dsbl.org returns hit
+     * 
+     * The DNS addressing is as follows:
+     * 127.0.0.2 Verified Open Relay
+     * 127.0.0.3 Dialup Spam Source
+     * Dialup Spam Sources are imported into the Zone file from other sources and some known sources are manually added to the local include file.
+     * 127.0.0.4 Confirmed Spam Source
+     * A site has been identified as a constant source of spam, and is manually added. Submissions for this type of spam require multiple nominations from multiple sites. Test Blockers also find themselves in this catagory.
+     * 127.0.0.5 Smart Host (In progress)
+     * A Smart host is a site determined to be secure, but relays for those who are not, defeating one level of security.
+     * When this is ready, it will be labeled outputs.osirusoft.com. NOTE: I strongly discourage using outputs due to it being way too effective to be useful.
+     * 127.0.0.6 A Spamware software developer or spamvertized site. This information is maintained by spamsites.org and spamhaus.org.
+     * 127.0.0.7 A list server that automatically opts users in without confirmation
+     * 127.0.0.8 An insecure formmail.cgi script. (Planned)
+     * 127.0.0.9 Open proxy servers
+     */
 
     public boolean check(TCPNewSessionRequest tsr, long timeoutSec)
     {
         String ipAddr = tsr.getClientAddr().getHostAddress();
         String invertedIPAddr = invertIPAddress(ipAddr);
 
-        DnsblClient[] clients = createClients(ipAddr, invertedIPAddr); // create checkers
+        List<DnsblClient> clients = createClients(ipAddr, invertedIPAddr); // create checkers
 
         for (DnsblClient clientStart : clients) {
             clientStart.startScan(); // start checking
@@ -100,31 +98,29 @@ public class DnsblChecker
             }
         }
 
-        Collection<DnsblClientContext> cContexts = clientMap.values(); // get contexts
 
         // examine results
         // - if any confirmation is found, log it and then report it
         boolean isBlacklisted = false;
 
         Boolean result;
-        for (DnsblClientContext cContext : cContexts) {
-            result = cContext.getResult();
-            if (null == result) {
+        for (DnsblClient client : clients) {
+            result = client.getResult();
+            if ( result == null ) {
                 continue; // assume not blacklisted
             }
 
-            if (result.equals(Boolean.TRUE)) {
+            if ( result.equals(Boolean.TRUE) ) {
                 logger.debug("DNSBL: " + ipAddr + " is blacklisted.");
-                isBlacklisted = logDnsblEvent(cContext, tsr, ipAddr); // log/done
+                isBlacklisted = logDnsblEvent(client, tsr, ipAddr); // log/done
                 break;
             }
         }
 
-        freeClients(); // destroy checkers
         return isBlacklisted; // report
     }
 
-    private boolean logDnsblEvent(DnsblClientContext cContext, TCPNewSessionRequest tsr, String ipAddr)
+    private boolean logDnsblEvent(DnsblClient client, TCPNewSessionRequest tsr, String ipAddr)
     {
         boolean isBlacklisted = true;
 
@@ -137,16 +133,16 @@ public class DnsblChecker
                 // from a blacklisted SMTP server
                 // to test the emails that this server will try to send
                 // -> functionality requested by dmorris
-                logger.debug(cContext.getHostname() + " confirmed that " + ipAddr + " is on its blacklist but ignoring this time");
+                logger.debug(client.getHostname() + " confirmed that " + ipAddr + " is on its blacklist but ignoring this time");
                 
                 dnsblCnt = 0;
                 isBlacklisted = false;
             } else {
-                logger.debug(cContext.getHostname() + " confirmed that " + ipAddr + " is on its blacklist");
-                tsr.attach(new SpamSmtpTarpitEvent(tsr.sessionEvent(), cContext.getHostname(), tsr.getClientAddr(), this.m_spamImpl.getVendor()));
+                logger.debug(client.getHostname() + " confirmed that " + ipAddr + " is on its blacklist");
+                tsr.attach(new SpamSmtpTarpitEvent(tsr.sessionEvent(), client.getHostname(), tsr.getClientAddr(), this.spamImpl.getVendor()));
 
                 /* Indicate that there was a block event */
-                this.m_spamImpl.incrementBlockCount();
+                this.spamImpl.incrementBlockCount();
 
                 dnsblCnt++;
             }
@@ -163,7 +159,8 @@ public class DnsblChecker
      * @param orgIPAddr - invert this IP address
      * @return the inverted form of orgIPAddr
      */
-    private String invertIPAddress(String orgIPAddr) {
+    private String invertIPAddress(String orgIPAddr)
+    {
         StringTokenizer strTokenizer = new StringTokenizer(orgIPAddr, ".");
         String invertedIPAddr = strTokenizer.nextToken();
 
@@ -174,49 +171,18 @@ public class DnsblChecker
         return invertedIPAddr;
     }
 
-    private DnsblClient createClient(DnsblClientContext cContext) 
+    private List<DnsblClient> createClients(String ipAddr, String invertedIPAddr) 
     {
-        DnsblClient client = new DnsblClient(cContext);
-        Thread thread = UvmContextFactory.context().newThread(client);
-        client.setThread(thread);
-        clientMap.put(client, cContext);
-        return client;
-    }
-
-    private Object[] getClients() {
-        Set<DnsblClient> clientSet = clientMap.keySet();
-        return clientSet.toArray();
-    }
-
-    private DnsblClient[] createClients(String ipAddr, String invertedIPAddr) 
-    {
-        clientMap = new HashMap<DnsblClient, DnsblClientContext>();
-
-        DnsblClientContext cContext;
-        for (SpamDnsbl spamDnsbl : spamDnsblList) {
-            if (false == spamDnsbl.getActive()) {
+        LinkedList<DnsblClient> clients = new LinkedList<DnsblClient>();
+        
+        for ( SpamDnsbl spamDnsbl : spamDnsblList ) {
+            if ( !spamDnsbl.getActive() ) {
                 logger.debug(spamDnsbl.getHostname() + " is not active; skipping it");
                 continue;
             }
-            cContext = new DnsblClientContext(spamDnsbl.getHostname(), ipAddr, invertedIPAddr);
-            createClient(cContext);
-        }
-
-        Object[] cObjects = getClients();
-        DnsblClient[] clients = new DnsblClient[cObjects.length];
-        int idx = 0;
-
-        for (Object cObject : cObjects) {
-            clients[idx] = (DnsblClient) cObject;
-            idx++;
+            clients.add(new DnsblClient(spamDnsbl.getHostname(), ipAddr, invertedIPAddr));
         }
 
         return clients;
-    }
-
-    private void freeClients()
-    {
-        clientMap.clear();
-        return;
     }
 }

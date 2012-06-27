@@ -6,45 +6,43 @@ package com.untangle.node.spam;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 
+import com.untangle.uvm.UvmContextFactory;
+
 import org.apache.log4j.Logger;
 
 public final class DnsblClient implements Runnable
 {
     private final Logger logger = Logger.getLogger(getClass());
 
-    private DnsblClientContext cContext;
-
-    private Thread cThread;
+    private Thread myThread;
     private String dbgName; // thread name and socket host
 
-    public DnsblClient(DnsblClientContext cContext)
-    {
-        this.cContext = cContext;
-    }
+    private String hostname;
+    private String ipAddr;
+    private String invertedIPAddr;
 
-    public void setThread(Thread cThread)
+    private volatile Boolean isBlacklisted = null;
+    
+    public DnsblClient(String hostname, String ipAddr, String invertedIPAddr)
     {
-        this.cThread = cThread;
-        dbgName = new StringBuilder("<").append(cThread.getName()).append(">").append(cContext.getHostname()).append("/").append(cContext.getIPAddr()).toString();
-        return;
-    }
+        this.hostname = hostname;
+        this.ipAddr = ipAddr;
+        this.invertedIPAddr = invertedIPAddr;
 
-    public DnsblClientContext getClientContext()
-    {
-        return cContext;
+        this.myThread = UvmContextFactory.context().newThread(this);
     }
 
     public void startScan()
     {
-        //logger.debug("start, thread: " + cThread + ", this: " + this);
-        cThread.start(); // execute run() now
+        //logger.debug("start, thread: " + myThread + ", this: " + this);
+        myThread.start(); // execute run() now
         return;
     }
 
     public void checkProgress(long timeout)
     {
-        //logger.debug("check, thread: " + cThread + ", this: " + this);
-        if (false == cThread.isAlive()) {
+        //logger.debug("check, thread: " + myThread + ", this: " + this);
+        if (false == myThread.isAlive()) {
             logger.debug(dbgName + ", is not alive; not waiting");
             return;
         }
@@ -56,7 +54,7 @@ public final class DnsblClient implements Runnable
 
                 // retry when no result yet and time remains before timeout
                 long elapsedTime = System.currentTimeMillis() - startTime;
-                while (null == cContext.getResult() && elapsedTime < timeout) {
+                while (null == this.getResult() && elapsedTime < timeout) {
                     this.wait(timeout - elapsedTime);
                     elapsedTime = System.currentTimeMillis() - startTime;
                 }
@@ -67,7 +65,7 @@ public final class DnsblClient implements Runnable
             logger.warn(dbgName + ", DNSBL check failed", e);
         }
 
-        if (null == cContext.getResult()) {
+        if (null == this.getResult()) {
             logger.warn(dbgName + ", DNSBL check timer expired");
             stopScan();
         }
@@ -77,13 +75,13 @@ public final class DnsblClient implements Runnable
 
     public void stopScan()
     {
-        //logger.debug("stop, thread: " + cThread + ", this: " + this);
-        if (false == cThread.isAlive()) {
+        //logger.debug("stop, thread: " + myThread + ", this: " + this);
+        if (false == myThread.isAlive()) {
             logger.debug(dbgName + ", is not alive; no need to stop");
             return;
         }
 
-        cThread.interrupt(); // stop run() now
+        myThread.interrupt(); // stop run() now
         return;
     }
 
@@ -92,6 +90,32 @@ public final class DnsblClient implements Runnable
         return dbgName;
     }
 
+    public String getHostname()
+    {
+        return hostname;
+    }
+
+    public String getIPAddr()
+    {
+        return ipAddr;
+    }
+
+    public String getInvertedIPAddr()
+    {
+        return invertedIPAddr;
+    }
+
+    public void setResult(Boolean isBlacklisted)
+    {
+        this.isBlacklisted = isBlacklisted;
+        return;
+    }
+
+    public Boolean getResult()
+    {
+        return isBlacklisted;
+    }
+    
     // run() performs minimal work so if interrupted, it exits "immediately"
     // -> e.g., no need to implement stop flag
     public void run()
@@ -99,7 +123,7 @@ public final class DnsblClient implements Runnable
         Boolean isBlacklisted = Boolean.FALSE;
 
         try {
-            InetAddress hostIPAddr = InetAddress.getByName(cContext.getInvertedIPAddr() + "." + cContext.getHostname() + ".");
+            InetAddress hostIPAddr = InetAddress.getByName(this.getInvertedIPAddr() + "." + this.getHostname() + ".");
             if (null != hostIPAddr) {
                 logger.debug(dbgName + ", received confirmation that IP is on blacklist");
                 isBlacklisted = Boolean.TRUE;
@@ -121,7 +145,7 @@ public final class DnsblClient implements Runnable
             // assume ipAddr is not on this blacklist
             logger.warn(dbgName + ", DNSBL checker failed: ", e);
         } finally {
-            cContext.setResult(isBlacklisted);
+            this.setResult(isBlacklisted);
 
             synchronized(this) {
                 this.notifyAll(); // notify waiting thread and finish run()
