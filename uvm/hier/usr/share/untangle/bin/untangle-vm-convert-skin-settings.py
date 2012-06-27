@@ -41,7 +41,7 @@ def get_settings(debug=False):
 
     str = '{\n'
     str += pad(4) + '"javaClass": "com.untangle.uvm.SkinSettings",\n'
-    str += pad(4) + '"skin": "%s",\n' % skin
+    str += pad(4) + '"skinName": "%s",\n' % skin
     str += pad(4) + '"version": 1\n'
     str += '}\n'
 
