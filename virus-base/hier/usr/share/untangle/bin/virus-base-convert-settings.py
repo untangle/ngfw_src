@@ -5,6 +5,75 @@ import os
 
 global nodeName
 
+def get_http_filetypes(tid, debug=False):
+    if (debug):
+        print "Getting filetypes for node_id: ",tid
+
+    rule_list = sql_helper.run_sql("select live, string, description, name from settings.n_virus_settings join settings.n_virus_vs_ext using (settings_id) join settings.u_string_rule using (rule_id) where tid = '%s'" % tid, debug=debug)
+
+    str = '\t{\n'
+    str += '\t\t"javaClass": "java.util.LinkedList",\n'
+    str += '\t\t"list": [\n'
+    
+    first = True
+    for rule in rule_list:
+        enabled = rule[0]
+        string =  rule[1]
+        description = rule[2]
+        if description == "[no description]":
+            description = rule[3]
+    
+        if not first:
+            str += ',\n'
+        str += '\t\t\t{\n'
+        str += '\t\t\t"javaClass": "com.untangle.uvm.node.GenericRule",\n'
+        str += '\t\t\t"string": "%s",\n' % string
+        str += '\t\t\t"enabled": "%s",\n' % enabled
+        str += '\t\t\t"description": "%s"\n' % description
+        str += '\t\t\t}'
+
+        first = False
+
+    str += '\n\t\t]\n'
+    str += '\t\t}'
+    
+    return str
+
+def get_http_mimetypes(tid, debug=False):
+    if (debug):
+        print "Getting mimetypes for node_id: ",tid
+
+    rule_list = sql_helper.run_sql("select live, mime_type, description, name from settings.n_virus_settings join settings.n_virus_vs_mt using (settings_id) join settings.u_mimetype_rule using (rule_id) where tid = '%s'" % tid, debug=debug)
+
+    str = '\t{\n'
+    str += '\t\t"javaClass": "java.util.LinkedList",\n'
+    str += '\t\t"list": [\n'
+    
+    first = True
+    for rule in rule_list:
+        enabled = rule[0]
+        string =  rule[1]
+        description = rule[2]
+        if description == "[no description]":
+            description = rule[3]
+    
+        if not first:
+            str += ',\n'
+        str += '\t\t\t{\n'
+        str += '\t\t\t"javaClass": "com.untangle.uvm.node.GenericRule",\n'
+        str += '\t\t\t"string": "%s",\n' % string
+        str += '\t\t\t"enabled": "%s",\n' % enabled
+        str += '\t\t\t"description": "%s"\n' % description
+        str += '\t\t\t}'
+
+        first = False
+
+    str += '\n\t\t]\n'
+    str += '\t\t}'
+    
+    return str
+
+
 def get_pop_config(config_id, debug=False):
     if (debug):
         print "Getting config for config_id: ", config_id
@@ -128,6 +197,8 @@ def get_settings(tid, debug=False):
     str += '\t"popAction": \"%s\",\n' % pop_action
     str += '\t"scanImap": \"%s\",\n' % scan_imap
     str += '\t"imapAction": \"%s\",\n' % imap_action
+    str += '\t"httpFileExtensions": %s,\n' % get_http_filetypes(tid)
+    str += '\t"httpMimeTypes": %s\n' % get_http_mimetypes(tid)
     str += '}\n'
     
     return str
@@ -166,3 +237,4 @@ except Exception, e:
     sys.exit(1)
 
 sys.exit(0)
+
