@@ -8,15 +8,6 @@ function open_db_connection()
     $uvm_db = pg_connect("host=localhost dbname=uvm user=postgres") or die("Unable to connect to the database.  " . pg_last_error());
 }
 
-function get_skin_settings()
-{
-    global $uvm_db;
-    $result = pg_query($uvm_db, "SELECT * FROM u_skin_settings ORDER BY skin_settings_id DESC LIMIT 1");
-    $row = pg_fetch_assoc($result);
-    pg_free_result($result);
-    return $row;
-}
-
 function get_cpd_settings()
 {
 	$data = file_get_contents("/etc/untangle-cpd/config.js");
