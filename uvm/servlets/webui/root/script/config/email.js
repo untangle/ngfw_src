@@ -140,15 +140,15 @@ if (!Ung.hasResource["Ung.Email"]) {
             return this.rpc.quarantineMaintenenceView;
         }, 
         getFormattedTime: function(hours, minutes) {
-            var hh = hours < 10 ? "0" + hours : hours;
-            var mm = minutes < 10 ? "0" + minutes : minutes;
+            var hh = hours < 10 ? "0" + hours: hours;
+            var mm = minutes < 10 ? "0" + minutes: minutes;
             return hh + ":" + mm;
         },
-        sendTestMessage: function(emailAddress){
+        sendTestMessage: function(emailAddress) {
             var message = main.getMailSender().sendTestMessage( Ext.bind(function(result, exception) {
                 if(Ung.Util.handleException(exception)) return;
-                this.testEmailResultMessage = (( result == true ) ? this.i18n._( 'Test email sent.  Check your mailbox for successful delivery.' ) : this.i18n._('Warning!  Test failed.  Check your settings.' ));
-                var color = result === true ? 'green' : 'red';
+                this.testEmailResultMessage = (( result == true ) ? this.i18n._( 'Test email sent.  Check your mailbox for successful delivery.' ): this.i18n._('Warning!  Test failed.  Check your settings.' ));
+                var color = result === true ? 'green': 'red';
                 Ext.MessageBox.hide();
                 Ext.getCmp('email-test-success').setText(this.testEmailResultMessage).setVisible(true).getEl().dom.style.color = color;
                 
@@ -165,7 +165,7 @@ if (!Ung.hasResource["Ung.Email"]) {
                 autoScroll: true,
                 listeners: {
                     'activate': {
-                        fn: function (){
+                        fn: function () {
                             Ext.create('Ext.tip.ToolTip',{
                                 html: 'It is recommended to use a valid email address. (example: untangle@mydomain.com)',
                                 target: 'email_fromAddress',
@@ -190,7 +190,7 @@ if (!Ung.hasResource["Ung.Email"]) {
 
                 onEmailTest: Ext.bind(function(saveBefore) {
                     var emailTestMessage = this.i18n._("Enter an email address to send a test message and then press \"Send\". That email account should receive an email shortly after running the test. If not, the email settings may not be correct.<br/><br/>It is recommended to verify that the email settings work for sending to both internal (your domain) and external email addresses.");
-                    if(!this.emailMessageBox){
+                    if(!this.emailMessageBox) {
                         this.emailMessageBox = Ext.create('Ext.Window',{
                             layout: 'fit',
                             width: 500,
@@ -234,16 +234,16 @@ if (!Ung.hasResource["Ung.Email"]) {
                             buttons: [{
                                 text: 'Send',
                                 disabled: false,
-                                handler: Ext.bind(function(){
+                                handler: Ext.bind(function() {
                                     var emailAddress = Ext.getCmp('email-address-test');
-                                    if(emailAddress.validate()===true){
+                                    if(emailAddress.validate()===true) {
                                         Ext.MessageBox.wait(this.i18n._('Sending Email...'), this.i18n._('Please wait'));
                                         this.sendTestMessage(emailAddress.getValue());
                                     }                                    
                                 }, this)
                             },{
                                 text: 'Close',
-                                handler: Ext.bind(function(){
+                                handler: Ext.bind(function() {
                                     this.emailMessageBox.destroy();
                                     this.emailMessageBox = null;
                                 }, this)
@@ -533,7 +533,7 @@ if (!Ung.hasResource["Ung.Email"]) {
                         this.getSafelistAdminView().deleteSafelists(Ext.bind(function(result, exception) {
                             Ext.MessageBox.hide();
                             if(Ung.Util.handleException(exception)) return;
-                            this.gridSafelistUser.reloadGrid();
+                            this.gridSafelistUser.reload();
                         }, this), accounts);
                     }, this)
                 }],
@@ -579,7 +579,7 @@ if (!Ung.hasResource["Ung.Email"]) {
                                         //result = ['test@aaa.com', 'test1@bbb.com']; //TODO: comment it when not testing
                                         var data = Ung.Util.buildJsonListFromStrings(result, 'sender');
                                         
-                                        this.settingsCmp.gridSafelistUserDetails.reloadGrid({data: data});
+                                        this.settingsCmp.gridSafelistUserDetails.reload({data: data});
                                     }, this), emailAddress); 
                             }          
                         });
@@ -631,11 +631,11 @@ if (!Ung.hasResource["Ung.Email"]) {
                             if(Ung.Util.handleException(exception)) return;
                             result = ['test@aaa.com', 'test1@bbb.com']; //TODO: comment it when not testing
                             var data = Ung.Util.buildJsonListFromStrings(result, 'sender');
-                            this.gridSafelistUserDetails.reloadGrid({data: data});
+                            this.gridSafelistUserDetails.reload({data: data});
                             Ext.MessageBox.hide();
                         }, this), this.safelistDetailsWin.account, senders);
                         
-                        this.gridSafelistUser.reloadGrid();
+                        this.gridSafelistUser.reload();
                     }, this)
                 }],
                 data: [],
@@ -714,7 +714,7 @@ if (!Ung.hasResource["Ung.Email"]) {
                         listeners: {
                             "render": {
                                 fn: Ext.bind(function(elem) {
-                                    if(elem.getValue()){
+                                    if(elem.getValue()) {
                                         Ext.getCmp('quarantine_dailySendingTime').enable();
                                     } else {
                                         Ext.getCmp('quarantine_dailySendingTime').disable();
@@ -800,7 +800,7 @@ if (!Ung.hasResource["Ung.Email"]) {
                                 this.getQuarantineMaintenenceView().deleteInboxes(Ext.bind(function(result, exception) {
                                     Ext.MessageBox.hide();
                                     if(Ung.Util.handleException(exception)) return;
-                                    this.userQuarantinesGrid.reloadGrid();
+                                    this.userQuarantinesGrid.reload();
                                 }, this), accounts);
                             }, this)
                         }, {
@@ -823,7 +823,7 @@ if (!Ung.hasResource["Ung.Email"]) {
                                 this.getQuarantineMaintenenceView().rescueInboxes(Ext.bind(function(result, exception) {
                                     Ext.MessageBox.hide();
                                     if(Ung.Util.handleException(exception)) return;
-                                    this.userQuarantinesGrid.reloadGrid();
+                                    this.userQuarantinesGrid.reload();
                                 }, this), accounts);
                             }, this)
                         }, {
@@ -876,7 +876,7 @@ if (!Ung.hasResource["Ung.Email"]) {
                                         this.setTitle(newTitle);
                                         this.show();
                                         //load Quarantines Details
-                                        this.settingsCmp.userQuarantinesDetailsGrid.reloadGrid();
+                                        this.settingsCmp.userQuarantinesDetailsGrid.reload();
                                     }          
                                 });
                                 this.subCmps.push(this.quarantinesDetailsWin);
@@ -1051,8 +1051,8 @@ if (!Ung.hasResource["Ung.Email"]) {
                             Ext.MessageBox.hide();
                             if(Ung.Util.handleException(exception)) return;
                             //load Quarantines Details
-                            this.userQuarantinesDetailsGrid.reloadGrid();
-                            this.userQuarantinesGrid.reloadGrid();
+                            this.userQuarantinesDetailsGrid.reload();
+                            this.userQuarantinesGrid.reload();
                         }, this), this.quarantinesDetailsWin.account, emails);
                         
                     }, this)
@@ -1077,8 +1077,8 @@ if (!Ung.hasResource["Ung.Email"]) {
                             Ext.MessageBox.hide();
                             if(Ung.Util.handleException(exception)) return;
                             //load Quarantines Details
-                            this.userQuarantinesDetailsGrid.reloadGrid();
-                            this.userQuarantinesGrid.reloadGrid();
+                            this.userQuarantinesDetailsGrid.reload();
+                            this.userQuarantinesGrid.reload();
                         }, this), this.quarantinesDetailsWin.account, emails);
                         
                     }, this)
@@ -1242,16 +1242,16 @@ if (!Ung.hasResource["Ung.Email"]) {
                 this.getMailSettings().smtpPort = portCmp.getValue();  
                 //set login/password to blank if the 'Use Authentication' is not checked
                 var useAuth = useAuthenticationCmp.getValue();
-                this.getMailSettings().authUser = useAuth == true ? loginCmp.getValue() : '';  
-                this.getMailSettings().authPass = useAuth == true ? passwordCmp.getValue() : '';  
+                this.getMailSettings().authUser = useAuth == true ? loginCmp.getValue(): '';  
+                this.getMailSettings().authPass = useAuth == true ? passwordCmp.getValue(): '';  
             }
             this.getMailSettings().fromAddress = fromAddressCmp.getValue();
                 
             return true;
         },
         
-        doSaveAction: function (isApply) {
-            this.saveSemaphore = this.isMailLoaded() ? 3 : 1;
+        save: function (isApply) {
+            this.saveSemaphore = this.isMailLoaded() ? 3: 1;
             // save mail settings
             main.getMailSender().setSettings(Ext.bind(function(result, exception) {
                 this.afterSave(exception, isApply);
@@ -1261,8 +1261,8 @@ if (!Ung.hasResource["Ung.Email"]) {
                 var quarantineSettings = this.getMailNodeSettings().quarantineSettings;
                 // save mail node settings 
                 quarantineSettings.allowedAddressPatterns.javaClass="java.util.ArrayList";
-                quarantineSettings.allowedAddressPatterns.list = this.quarantinableAddressesGrid.getFullSaveList();
-                quarantineSettings.addressRemaps.list = this.quarantineForwardsGrid.getFullSaveList();
+                quarantineSettings.allowedAddressPatterns.list = this.quarantinableAddressesGrid.getPageList();
+                quarantineSettings.addressRemaps.list = this.quarantineForwardsGrid.getPageList();
                 
                 delete quarantineSettings.secretKey;
 
@@ -1272,7 +1272,7 @@ if (!Ung.hasResource["Ung.Email"]) {
                 
                 // save global safelist
                 if ( this.loadedGlobalSafelist == true ) {
-                    var gridSafelistGlobalValues = this.gridSafelistGlobal.getFullSaveList();
+                    var gridSafelistGlobalValues = this.gridSafelistGlobal.getPageList();
                     var globalList = [];
                     for(var i=0; i<gridSafelistGlobalValues.length; i++) {
                         globalList.push(gridSafelistGlobalValues[i].emailAddress);

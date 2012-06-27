@@ -86,7 +86,7 @@ Ext.define("Ung.Main", {
                 title: i18n._('Skin Out of Date'),
                 buttons: [ {
                     text: i18n._('Ok'),
-                    handler: function(){
+                    handler: function() {
                         win.hide();
                     }
                 }]
@@ -167,14 +167,14 @@ Ext.define("Ung.Main", {
             if(upgradeStatus.upgrading) {
                 Ext.MessageBox.alert(i18n._("Failed"), "Upgrade in progress.");
                 return;
-            } else if(upgradeStatus.upgradesAvailable){
+            } else if(upgradeStatus.upgradesAvailable) {
                 Ext.getCmp("configItem_upgrade").setIconCls("icon-config-upgrade-available");
                 Ext.Msg.show({
                     title:i18n._("Upgrades warning"),
                     msg: i18n._("Upgrades are available. You must perform all possible upgrades before downloading from the library. Please click OK to open Upgrade panel."),
                     buttons: Ext.Msg.OKCANCEL,
                     fn: function (btn, text) {
-                        if (btn == 'ok'){
+                        if (btn == 'ok') {
                             main.leftTabs.setActiveTab('leftTabConfig');
                             Ext.getCmp("configItem_upgrade").onClick();
                         }
@@ -217,7 +217,7 @@ Ext.define("Ung.Main", {
             '</div>'];
 
         var cssRule = Ext.util.CSS.getRule(".content-left",true);
-        this.contentLeftWidth = ( cssRule ) ? parseInt( cssRule.style.width ) : 214;
+        this.contentLeftWidth = ( cssRule ) ? parseInt( cssRule.style.width ): 214;
         this.viewport = Ext.create('Ext.container.Viewport',{
             layout:'border',
             items:[{
@@ -420,7 +420,7 @@ Ext.define("Ung.Main", {
         });
     },
     // Add the additional 'advanced' VTypes
-    initExtVTypes: function(){
+    initExtVTypes: function() {
         Ext.apply(Ext.form.VTypes, {
           ipAddress: function(val) {
               if ( val.indexOf("/") == -1 && val.indexOf(",") == -1 && val.indexOf("-") == -1) {
@@ -826,7 +826,7 @@ Ext.define("Ung.Main", {
                 closeActionFn: function() {
                     this.hide();
                     window.frames["iframeWin_iframe"].location.href="/webui/blank.html";
-                    if (this.breadcrumbs){
+                    if (this.breadcrumbs) {
                         Ext.destroy(this.breadcrumbs);
                     }
                 }
@@ -1010,10 +1010,10 @@ Ext.define("Ung.Main", {
     removeNode: function(index) {
         var tid = main.nodes[index].nodeId,
         nd,
-        nodeUI = tid != null ? Ext.getCmp('node_'+tid) : null;
+        nodeUI = tid != null ? Ext.getCmp('node_'+tid): null;
         nd = main.nodes.splice(index, 1);
         delete(nd);
-        if(nodeUI){
+        if(nodeUI) {
             Ext.destroy(nodeUI);
             return true;        
         }
@@ -1040,7 +1040,7 @@ Ext.define("Ung.Main", {
         var cp = rpc.currentPolicy.policyId;    
         if(main.nodes) {
             for (var i = 0; i < main.nodes.length; i++) {
-                if(nodePolicyId==null){
+                if(nodePolicyId==null) {
                     cp = null;
                 } else {
                     cp = main.nodes[i].nodeSettings.policyId;
@@ -1060,7 +1060,7 @@ Ext.define("Ung.Main", {
         var node = main.getNode(nodeName);
         if (node != null) {
              var nodeCmp = Ung.Node.getCmp(node.nodeId);
-             if (nodeCmp != null && nodeCmp.isRunning()){
+             if (nodeCmp != null && nodeCmp.isRunning()) {
                 return true;
              }
         }
@@ -1099,7 +1099,7 @@ Ext.define("Ung.Main", {
         for( var i=0 ; i<rpc.policies.length ; i++ ) {
             var policy = rpc.policies[i];
 
-            selVirtualRackIndex = (policy.policyId ==1 ? i : selVirtualRackIndex);
+            selVirtualRackIndex = (policy.policyId ==1 ? i: selVirtualRackIndex);
 
             rpc.policyNamesMap[policy.policyId] = policy.name;
             items.push({
@@ -1156,13 +1156,13 @@ Ext.define("Ung.Main", {
                 main.sessionMonitorWin=Ext.create('Ung.SessionMonitor', {"name":"sessionMonitor", "helpSource":"session_viewer"});
                 main.sessionMonitorWin.setFilterNodeId(nodeIdArg);
                 main.sessionMonitorWin.show();
-                main.sessionMonitorWin.gridCurrentSessions.reloadGrid();
+                main.sessionMonitorWin.gridCurrentSessions.reload();
                 Ext.MessageBox.hide();
             }]);
         } else {
             main.sessionMonitorWin.setFilterNodeId(nodeIdArg);
             main.sessionMonitorWin.show();
-            main.sessionMonitorWin.gridCurrentSessions.reloadGrid();
+            main.sessionMonitorWin.gridCurrentSessions.reload();
             Ext.MessageBox.hide();
         }
     },
@@ -1189,7 +1189,7 @@ Ext.define("Ung.Main", {
         }
         
         for ( var c = 0 ; c < rpc.policies.length ; c++ ) {
-            if ( rpc.policies[c].id == parentId ){
+            if ( rpc.policies[c].id == parentId ) {
                 return rpc.policies[c].name;
             }
         }
@@ -1215,9 +1215,9 @@ Ext.define("Ung.Main", {
      */         
     upgradeCheckCallback: function () {
         if(main.upgradeLastCheckTime!=null && (new Date()).getTime()-main.upgradeLastCheckTime<300000 && main.upgradeStatus!=null) {
-            if(main.upgradeStatus.upgradesAvailable===true){
+            if(main.upgradeStatus.upgradesAvailable===true) {
                 this.showUpgradeScreen();            
-            }else{
+            } else {
                 this.showWelcomeScreen();
             }                
         } else {
@@ -1256,7 +1256,7 @@ Ext.define("Ung.Main", {
             centerSize = Ext.getCmp('center').getSize(),
             centerPosition = Ext.getCmp('center').getPosition();
         if(isWizardComplete===true) {
-            if(result===true){
+            if(result===true) {
                 main.checkForUpgrades(this.upgradeCheckCallback);
                 return;
             } else {

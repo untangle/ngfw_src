@@ -194,8 +194,8 @@ if (!Ung.hasResource["Ung.Administration"]) {
                         "username": this.i18n._("[no username]"),
                         "description": this.i18n._("[no description]"),
                         "emailAddress": this.i18n._("[no email]"),
-                        "password"     : null,
-                        "passwordHashBase64" : null
+                        "password": null,
+                        "passwordHashBase64": null
                     },
                     ignoreServerIds: true,
                     data: this.getAdminSettings().users.list,
@@ -320,11 +320,11 @@ if (!Ung.hasResource["Ung.Administration"]) {
                         listeners: {
                             "render": {
                                 fn: Ext.bind(function(elem) {
-                                    if(elem.getValue()){
+                                    if(elem.getValue()) {
                                         Ext.getCmp('administration_outsideHttpsAdministrationEnabled').enable();
                                         Ext.getCmp('administration_outsideHttpsReportingEnabled').enable();
                                         Ext.getCmp('administration_outsideHttpsQuarantineEnabled').enable();
-                                    }else{
+                                    } else {
                                         Ext.getCmp('administration_outsideHttpsAdministrationEnabled').disable();
                                         Ext.getCmp('administration_outsideHttpsReportingEnabled').disable();
                                         Ext.getCmp('administration_outsideHttpsQuarantineEnabled').disable();
@@ -334,11 +334,11 @@ if (!Ung.hasResource["Ung.Administration"]) {
                             "change": {
                                 fn: Ext.bind(function(elem, newValue) {
                                     this.getSystemSettings().outsideHttpsEnabled = newValue;
-                                    if(newValue){
+                                    if(newValue) {
                                         Ext.getCmp('administration_outsideHttpsAdministrationEnabled').enable();
                                         Ext.getCmp('administration_outsideHttpsReportingEnabled').enable();
                                         Ext.getCmp('administration_outsideHttpsQuarantineEnabled').enable();
-                                    }else{
+                                    } else {
                                         Ext.getCmp('administration_outsideHttpsAdministrationEnabled').disable();
                                         Ext.getCmp('administration_outsideHttpsReportingEnabled').disable();
                                         Ext.getCmp('administration_outsideHttpsQuarantineEnabled').disable();
@@ -532,7 +532,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
                         listeners: {
                             "render": {
                                 fn: Ext.bind(function(elem) {
-                                    if(elem.getValue()){
+                                    if(elem.getValue()) {
                                         Ext.getCmp('administration_publicUrlAddress').enable();
                                         Ext.getCmp('administration_publicUrlPort').enable();
                                     } else {
@@ -756,12 +756,12 @@ if (!Ung.hasResource["Ung.Administration"]) {
                         title: i18n._('Administration'),
                         action: Ext.bind(function() {
                             this.winGenerateSelfSignedCertificate.cancelAction();
-                        },this)
+                        }, this)
                     }, {
                         title: i18n._('Certificates'),
                         action: Ext.bind(function() {
                             this.winGenerateSelfSignedCertificate.cancelAction();
-                        },this)
+                        }, this)
                     }, {
                         title: this.i18n._("Generate a Self-Signed Certificate")
                     }],
@@ -905,17 +905,17 @@ if (!Ung.hasResource["Ung.Administration"]) {
                         action: Ext.bind(function() {
                             this.winGenerateCertGenTrusted.cancelAction();
                             this.cancelAction();
-                        },this)
+                        }, this)
                     }, {
                         title: i18n._('Administration'),
                         action: Ext.bind(function() {
                             this.winGenerateCertGenTrusted.cancelAction();
-                        },this)
+                        }, this)
                     }, {
                         title: i18n._('Certificates'),
                         action: Ext.bind(function() {
                             this.winGenerateCertGenTrusted.cancelAction();
-                        },this)
+                        }, this)
                     }, {
                         title: this.i18n._("Generate a Certificate Signature Request")
                     }],
@@ -962,7 +962,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
                             }
                         }, this));
     
-                    },this),
+                    }, this),
                     cancelAction: function() {
                         Ext.getCmp('administration_crs').reset();
                         this.hide();
@@ -982,17 +982,17 @@ if (!Ung.hasResource["Ung.Administration"]) {
                         action: Ext.bind(function() {
                             this.winCertImportTrusted.cancelAction();
                             this.cancelAction();
-                        },this)
+                        }, this)
                     }, {
                         title: i18n._('Administration'),
                         action: Ext.bind(function() {
                             this.winCertImportTrusted.cancelAction();
-                        },this)
+                        }, this)
                     }, {
                         title: i18n._('Certificates'),
                         action: Ext.bind(function() {
                             this.winCertImportTrusted.cancelAction();
-                        },this)
+                        }, this)
                     }, {
                         title: this.i18n._("Import Signed Certificate")
                     }],
@@ -1135,7 +1135,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
                                         Ext.getCmp('administration_snmp_sendTraps_disable').enable();
                                         var sendTrapsEnableCmp = null;
                                         (sendTrapsEnableCmp = Ext.getCmp('administration_snmp_sendTraps_enable')).enable();
-                                        if (sendTrapsEnableCmp.getValue()){
+                                        if (sendTrapsEnableCmp.getValue()) {
                                             Ext.getCmp('administration_snmp_trapCommunity').enable();
                                             Ext.getCmp('administration_snmp_trapHost').enable();
                                             Ext.getCmp('administration_snmp_trapPort').enable();
@@ -1386,7 +1386,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
 
         //validate Admin Accounts
         validateAdminAccounts: function() {
-            var listAdminAccounts = this.gridAdminAccounts.getFullSaveList();
+            var listAdminAccounts = this.gridAdminAccounts.getPageList();
             var oneWritableAccount = false;
 
             // verify that the username is not duplicated
@@ -1409,7 +1409,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
             }
 
             // verify that there is at least one valid entry after all operations
-            if(listAdminAccounts.length <= 0 ){
+            if(listAdminAccounts.length <= 0 ) {
                 Ext.MessageBox.alert(this.i18n._('Warning'), this.i18n._("There must always be at least one valid account."),
                     Ext.bind(function () {
                         this.tabs.setActiveTab(this.panelAdministration);
@@ -1419,7 +1419,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
             }
 
             // verify that there was at least one non-read-only account
-            if(!oneWritableAccount){
+            if(!oneWritableAccount) {
                 Ext.MessageBox.alert(this.i18n._('Warning'), this.i18n._("There must always be at least one non-read-only (writable) account."),
                     Ext.bind(function () {
                         this.tabs.setActiveTab(this.panelAdministration);
@@ -1612,11 +1612,11 @@ if (!Ung.hasResource["Ung.Administration"]) {
                 handler.call(this, isApply);
             }
         },
-        doSaveAction: function(isApply) {
+        save: function(isApply) {
             this.saveSemaphore = 2;
             Ext.MessageBox.wait(i18n._("Saving..."), i18n._("Please wait"));
 
-            this.getAdminSettings().users.list=this.gridAdminAccounts.getFullSaveList();
+            this.getAdminSettings().users.list=this.gridAdminAccounts.getPageList();
             
             rpc.adminManager.setSettings(Ext.bind(function(result, exception) {
                 this.afterSave(exception, isApply);
@@ -1639,7 +1639,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
                         return;
                     }
                     if(isApply) {
-                        this.gridAdminAccounts.reloadGrid({data: this.getAdminSettings(true).users.list});
+                        this.gridAdminAccounts.reload({data: this.getAdminSettings(true).users.list});
                         this.initialSystemSettings = Ung.Util.clone(this.getSystemSettings(true));
                         this.getCurrentServerCertInfo(true);
                         this.getHostname(true);

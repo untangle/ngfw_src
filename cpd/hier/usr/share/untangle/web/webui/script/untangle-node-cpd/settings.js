@@ -16,13 +16,8 @@ if (!Ung.hasResource["Ung.CPD"]) {
 
         gridLoginEventLog: null,
         gridBlockEventLog: null,
-        nodeWindow: null,
-
         initComponent: function() {
-            nodeWindow = this;
-
             Ung.Util.clearInterfaceStore();
-            this.getSettings();
 
             // builds the tabs
             this.buildCaptiveStatus();
@@ -83,13 +78,13 @@ if (!Ung.hasResource["Ung.CPD"]) {
                             tooltip: i18n._('Refresh'),
                             iconCls: 'icon-refresh',
                             handler: Ext.bind(function() {
-                                this.gridCaptiveStatus.store.load();
-                            },this)
+                                this.gridCaptiveStatus.reload();
+                            }, this)
                         }
                     ]
                 }),
                 recordJavaClass: "com.untangle.node.cpd.HostDatabaseEntry",
-                data: this.getRpcNode().getCaptiveStatus().list,
+                dataFn: this.getRpcNode().getCaptiveStatus,
                 fields: [{
                     name: "ipv4Address"
                 },{
@@ -134,11 +129,11 @@ if (!Ung.hasResource["Ung.CPD"]) {
                     items: [{
                         id: 'userLogout',
                         icon: '/skins/default/images/admin/icon_logout_row.gif',
-                        handler: function(grid,row,col) {
+                        handler: Ext.bind(function(grid,row,col) {
                             var rec = grid.getStore().getAt(row);
-                            window.nodeWindow.getRpcNode().logout(rec.data.ipv4Address);
+                            this.getRpcNode().logout(rec.data.ipv4Address);
                             grid.getStore().load();
-                        }
+                        }, this)
                     }]
                 }]
             });
@@ -170,7 +165,7 @@ if (!Ung.hasResource["Ung.CPD"]) {
                         listeners: {
                             "change": Ext.bind(function(elem, checked) {
                                 this.settings.captureBypassedTraffic = checked;
-                            },this)
+                            }, this)
                         }
                     }]
                 }]
@@ -465,7 +460,7 @@ if (!Ung.hasResource["Ung.CPD"]) {
         buildGridPassedList: function( name, title, javaClass, dataProperty , tooltip) {
             return Ext.create('Ung.EditorGrid', {
                 name: name,
-                tooltip : tooltip,
+                tooltip: tooltip,
                 settingsCmp: this,
                 hasEdit: false,
                 anchor: "100% 49%",
@@ -537,13 +532,13 @@ if (!Ung.hasResource["Ung.CPD"]) {
                 if ( checked ) {
                     this.settings.authenticationType = elem.inputValue;
                 }
-            },this);
+            }, this);
 
             var onRenderRadioButton = Ext.bind(function( elem )
             {
                 elem.setValue(this.settings.authenticationType);
                 elem.clearDirty();
-            },this);
+            }, this);
 
             this.panelUserAuthentication = Ext.create('Ext.panel.Panel',{
                 name: "panelUserAuthentication",
@@ -582,10 +577,10 @@ if (!Ung.hasResource["Ung.CPD"]) {
                         xtype: "button",
                         name: "configureLocalDirectory",
                         text: i18n._("Configure Local Directory"),
-                        handler: Ext.bind(this.configureLocalDirectory,this )
+                        handler: Ext.bind(this.configureLocalDirectory, this )
                     },{
                         xtype: "radio",
-                        boxLabel: Ext.String.format( this.i18n._("RADIUS {0}(requires Directory Connector){1}"),
+                        boxLabel: Ext.String.format( this.i18n._("RADIUS {0}(requires Directory Connector) {1}"),
                                                   "<i>", "</i>" ),
                         hideLabel: true,
                         disabled: !main.getLicenseManager().getLicense("untangle-node-adconnector"),
@@ -600,10 +595,10 @@ if (!Ung.hasResource["Ung.CPD"]) {
                         disabled: !main.getLicenseManager().getLicense("untangle-node-adconnector"),
                         name: "configureRadiusServer",
                         text: i18n._("Configure RADIUS"),
-                        handler: Ext.bind(this.configureRadius,this )
+                        handler: Ext.bind(this.configureRadius, this )
                     },{
                         xtype: "radio",
-                        boxLabel: Ext.String.format( this.i18n._("Active Directory {0}(requires Directory Connector){1}"),
+                        boxLabel: Ext.String.format( this.i18n._("Active Directory {0}(requires Directory Connector) {1}"),
                                                   "<i>", "</i>" ),
                         hideLabel: true,
                         disabled: !main.getLicenseManager().getLicense("untangle-node-adconnector"),
@@ -638,9 +633,9 @@ if (!Ung.hasResource["Ung.CPD"]) {
                         tooltip: this.i18n._( "Clients will be unauthenticated after this amount of idle time. They may re-authenticate immediately." ),
                         value: this.settings.idleTimeout / 60,
                         listeners: {
-                            "change": Ext.bind(function( elem, newValue ){
+                            "change": Ext.bind(function( elem, newValue ) {
                                 this.settings.idleTimeout = newValue * 60;
-                            },this)
+                            }, this)
                         }
                     },{
                         xtype: "numberfield",
@@ -656,9 +651,9 @@ if (!Ung.hasResource["Ung.CPD"]) {
                         tooltip: this.i18n._( "Clients will be unauthenticated after this amount of time regardless of activity. They may re-authenticate immediately." ),
                         value: this.settings.timeout / 60,
                         listeners: {
-                            "change": Ext.bind(function( elem, newValue ){
+                            "change": Ext.bind(function( elem, newValue ) {
                                 this.settings.timeout = newValue * 60;
-                            },this)
+                            }, this)
                         }
                     },{
                         xtype: "checkbox",
@@ -669,7 +664,7 @@ if (!Ung.hasResource["Ung.CPD"]) {
                         listeners: {
                             "change": Ext.bind(function(elem, checked) {
                                 this.settings.concurrentLoginsEnabled = checked;
-                            },this)
+                            }, this)
                         }
                     }]
                 }]
@@ -685,7 +680,7 @@ if (!Ung.hasResource["Ung.CPD"]) {
                     } else {
                         component.setVisible( currentValue == item );
                     }
-                },this));
+                }, this));
             }
         },
         buildCaptivePage: function() {
@@ -695,12 +690,12 @@ if (!Ung.hasResource["Ung.CPD"]) {
                     this.settings.pageType = elem.inputValue;
                     this.captivePageHideComponents( elem.inputValue );
                 }
-            },this);
+            }, this);
 
             var onRenderRadioButton = Ext.bind(function( elem )
             {
                 this.panelCaptivePage.query('radio[name="pageType"]')[0].setValue(this.settings.pageType);
-            },this);
+            }, this);
 
             this.panelCaptivePage = Ext.create('Ext.panel.Panel',{
                 name: "panelCaptivePage",
@@ -716,7 +711,7 @@ if (!Ung.hasResource["Ung.CPD"]) {
                         this.panelCaptivePage.query('radio[name="pageType"]')[0].setValue(this.settings.pageType);
                         this.captivePageHideComponents(this.settings.pageType );
                         Ung.Util.clearDirty(this.panelCaptivePage);
-                    },this)
+                    }, this)
                 },
                 items: [{
                     xtype: "fieldset",
@@ -762,9 +757,9 @@ if (!Ung.hasResource["Ung.CPD"]) {
                             pageType: "BASIC_LOGIN",
                             value: this.settings.basicLoginPageTitle,
                             listeners: {
-                                "change": Ext.bind(function( elem, newValue ){
+                                "change": Ext.bind(function( elem, newValue ) {
                                     this.settings.basicLoginPageTitle = newValue;
-                                },this)
+                                }, this)
                             }
                         },{
                             xtype: "textfield",
@@ -775,9 +770,9 @@ if (!Ung.hasResource["Ung.CPD"]) {
                             pageType: "BASIC_LOGIN",
                             value: this.settings.basicLoginPageWelcome,
                             listeners: {
-                                "change": Ext.bind(function( elem, newValue ){
+                                "change": Ext.bind(function( elem, newValue ) {
                                     this.settings.basicLoginPageWelcome = newValue;
-                                },this)
+                                }, this)
                             }
                         },{
                             xtype: "textfield",
@@ -787,9 +782,9 @@ if (!Ung.hasResource["Ung.CPD"]) {
                             pageType: "BASIC_LOGIN",
                             value: this.settings.basicLoginUsername,
                             listeners: {
-                                "change": Ext.bind(function( elem, newValue ){
+                                "change": Ext.bind(function( elem, newValue ) {
                                     this.settings.basicLoginUsername = newValue;
-                                },this)
+                                }, this)
                             }
                         },{
                             xtype: "textfield",
@@ -799,9 +794,9 @@ if (!Ung.hasResource["Ung.CPD"]) {
                             pageType: "BASIC_LOGIN",
                             value: this.settings.basicLoginPassword,
                             listeners: {
-                                "change": Ext.bind(function( elem, newValue ){
+                                "change": Ext.bind(function( elem, newValue ) {
                                     this.settings.basicLoginPassword = newValue;
-                                },this)
+                                }, this)
                             }
                         },{
                             xtype: "textarea",
@@ -813,9 +808,9 @@ if (!Ung.hasResource["Ung.CPD"]) {
                             pageType: "BASIC_LOGIN",
                             value: this.settings.basicLoginMessageText,
                             listeners: {
-                                "change": Ext.bind(function( elem, newValue ){
+                                "change": Ext.bind(function( elem, newValue ) {
                                     this.settings.basicLoginMessageText = newValue;
-                                },this)
+                                }, this)
                             }
                         },{
                             xtype: "textfield",
@@ -826,9 +821,9 @@ if (!Ung.hasResource["Ung.CPD"]) {
                             pageType: "BASIC_LOGIN",
                             value: this.settings.basicLoginFooter,
                             listeners: {
-                                "change": Ext.bind(function( elem, newValue ){
+                                "change": Ext.bind(function( elem, newValue ) {
                                     this.settings.basicLoginFooter = newValue;
-                                },this)
+                                }, this)
                             }
                         },{
                             xtype: "textfield",
@@ -839,9 +834,9 @@ if (!Ung.hasResource["Ung.CPD"]) {
                             width: 400,
                             value: this.settings.basicMessagePageTitle,
                             listeners: {
-                                "change": Ext.bind(function( elem, newValue ){
+                                "change": Ext.bind(function( elem, newValue ) {
                                     this.settings.basicMessagePageTitle = newValue;
-                                },this)
+                                }, this)
                             }
                         },{
                             xtype: "textfield",
@@ -852,9 +847,9 @@ if (!Ung.hasResource["Ung.CPD"]) {
                             pageType: "BASIC_MESSAGE",
                             value: this.settings.basicMessagePageWelcome,
                             listeners: {
-                                "change": Ext.bind(function( elem, newValue ){
+                                "change": Ext.bind(function( elem, newValue ) {
                                     this.settings.basicMessagePageWelcome = newValue;
-                                },this)
+                                }, this)
                             }
                         },{
                             xtype: "textarea",
@@ -866,9 +861,9 @@ if (!Ung.hasResource["Ung.CPD"]) {
                             pageType: "BASIC_MESSAGE",
                             value: this.settings.basicMessageMessageText,
                             listeners: {
-                                "change": Ext.bind(function( elem, newValue ){
+                                "change": Ext.bind(function( elem, newValue ) {
                                     this.settings.basicMessageMessageText = newValue;
-                                },this)
+                                }, this)
                             }
                         },{
                             xtype: "checkbox",
@@ -880,7 +875,7 @@ if (!Ung.hasResource["Ung.CPD"]) {
                             listeners: {
                                 "change": Ext.bind(function(elem, checked) {
                                     this.settings.basicMessageAgreeBox = checked;
-                                },this)
+                                }, this)
                             }
                         },{
                             xtype: "textfield",
@@ -891,9 +886,9 @@ if (!Ung.hasResource["Ung.CPD"]) {
                             pageType: "BASIC_MESSAGE",
                             value: this.settings.basicMessageAgreeText,
                             listeners: {
-                                "change": Ext.bind(function( elem, newValue ){
+                                "change": Ext.bind(function( elem, newValue ) {
                                     this.settings.basicMessageAgreeText = newValue;
-                                },this)
+                                }, this)
                             }
                         },{
                             xtype: "textfield",
@@ -904,9 +899,9 @@ if (!Ung.hasResource["Ung.CPD"]) {
                             pageType: "BASIC_MESSAGE",
                             value: this.settings.basicMessageFooter,
                             listeners: {
-                                "change": Ext.bind(function( elem, newValue ){
+                                "change": Ext.bind(function( elem, newValue ) {
                                     this.settings.basicMessageFooter = newValue;
-                                },this)
+                                }, this)
                             }
                         },{
                             fileUpload: true,
@@ -926,7 +921,7 @@ if (!Ung.hasResource["Ung.CPD"]) {
                                 xtype: "button",
                                 name: "customSendFile",
                                 text: i18n._("Upload File"),
-                                handler: Ext.bind(this.onUploadCustomFile,this)
+                                handler: Ext.bind(this.onUploadCustomFile, this)
                             },{
                                 xtype: "hidden",
                                 name: "type",
@@ -952,7 +947,7 @@ if (!Ung.hasResource["Ung.CPD"]) {
                             }
 
                             window.open("/cpd", "_blank");
-                        },this)
+                        }, this)
                     }]
                 },{
                     xtype: "fieldset",
@@ -966,9 +961,9 @@ if (!Ung.hasResource["Ung.CPD"]) {
                         tooltip: this.i18n._("Users will be redirected to this page immediately after authentication. Blank sends the user to their original destination."),
                         value: this.settings.redirectUrl,
                         listeners: {
-                            "change": Ext.bind(function( elem, newValue ){
+                            "change": Ext.bind(function( elem, newValue ) {
                                 this.settings.redirectUrl = newValue;
-                            },this)
+                            }, this)
                         }
                     },{
                         xtype: "checkbox",
@@ -979,7 +974,7 @@ if (!Ung.hasResource["Ung.CPD"]) {
                         listeners: {
                             "change": Ext.bind(function(elem, checked) {
                                 this.settings.useHttpsPage = checked;
-                            },this)
+                            }, this)
                         }
                     },{
                         xtype: "checkbox",
@@ -990,7 +985,7 @@ if (!Ung.hasResource["Ung.CPD"]) {
                         listeners: {
                             "change": Ext.bind(function(elem, checked) {
                                 this.settings.redirectHttpsEnabled = checked;
-                            },this)
+                            }, this)
                         }
                     }]
                 }]
@@ -1073,7 +1068,7 @@ if (!Ung.hasResource["Ung.CPD"]) {
                             return this.i18n._( "logout" );
                         }
                         return "";
-                    },this )
+                    }, this )
                 },{
                     header: this.i18n._("Authentication"),
                     width: 165,
@@ -1163,14 +1158,14 @@ if (!Ung.hasResource["Ung.CPD"]) {
             });
         },
         beforeSave: function(isApply, handler) {
-        	if ( this.gridCaptureRules.isDirty() ) {
-            	this.settings.captureRules.list = this.gridCaptureRules.getFullSaveList();
+            if ( this.gridCaptureRules.isDirty() ) {
+                this.settings.captureRules.list = this.gridCaptureRules.getPageList();
             }
             if ( this.gridPassedClients.isDirty() ) {
-            	this.settings.passedClients.list = this.gridPassedClients.getFullSaveList();
+                this.settings.passedClients.list = this.gridPassedClients.getPageList();
             }
             if ( this.gridPassedServers.isDirty() ) {
-            	this.settings.passedServers.list = this.gridPassedServers.getFullSaveList();
+                this.settings.passedServers.list = this.gridPassedServers.getPageList();
             }
             handler.call(this, isApply);
         },
@@ -1182,7 +1177,7 @@ if (!Ung.hasResource["Ung.CPD"]) {
                                      this.i18n._("Please correct any highlighted fields."),
                                      Ext.bind(function () {
                                          this.tabs.setActiveTab(this.panelUserAuthentication);
-                                     },this));
+                                     }, this));
                 return false;
             }
 
@@ -1192,7 +1187,7 @@ if (!Ung.hasResource["Ung.CPD"]) {
                                          this.i18n._("When using 'Basic Message', 'Authentication' must be set to 'None'."),
                                          Ext.bind(function () {
                                              this.tabs.setActiveTab(this.panelUserAuthentication);
-                                         },this));
+                                         }, this));
                     return false;
                 }
 
@@ -1201,7 +1196,7 @@ if (!Ung.hasResource["Ung.CPD"]) {
                                          this.i18n._("When using 'Basic Message', 'Allow Concurrent Logins' must be enabled."),
                                          Ext.bind(function () {
                                              this.tabs.setActiveTab(this.panelUserAuthentication);
-                                         },this));
+                                         }, this));
                     return false;
                 }
             }
@@ -1212,7 +1207,7 @@ if (!Ung.hasResource["Ung.CPD"]) {
                                          this.i18n._("When using 'Basic Login', 'Authentication' cannot be set to 'None'."),
                                          Ext.bind(function () {
                                              this.tabs.setActiveTab(this.panelUserAuthentication);
-                                         },this));
+                                         }, this));
                     return false;
                 }
             }
@@ -1223,7 +1218,7 @@ if (!Ung.hasResource["Ung.CPD"]) {
             Ext.MessageBox.wait(i18n._("Loading Config..."),
                                 i18n._("Please wait"));
 
-            Ext.defer(Ung.Util.loadResourceAndExecute,1,this,["Ung.LocalDirectory",Ung.Util.getScriptSrc("script/config/localDirectory.js"), Ext.bind(function() {
+            Ext.defer(Ung.Util.loadResourceAndExecute,1, this,["Ung.LocalDirectory",Ung.Util.getScriptSrc("script/config/localDirectory.js"), Ext.bind(function() {
 
                 main.localDirectoryWin=new Ung.LocalDirectory({
                     "name": "localDirectory"
@@ -1231,7 +1226,7 @@ if (!Ung.hasResource["Ung.CPD"]) {
 
                 main.localDirectoryWin.show();
                 Ext.MessageBox.hide();
-            },this)]);
+            }, this)]);
         },
 
         /* There is no way to select the radius tab because we don't

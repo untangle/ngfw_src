@@ -3,7 +3,6 @@ if (!Ung.hasResource["Ung.LocalDirectory"]) {
 
     Ext.define('Ung.LocalDirectory', {
         extend: 'Ung.ConfigWin',
-        fnCallback: null,
         gridUsers: null,
         initComponent: function() {
             this.breadcrumbs = [{
@@ -159,7 +158,7 @@ if (!Ung.hasResource["Ung.LocalDirectory"]) {
         },
         validate: function() {
             //validate local directory users
-            var listUsers = this.gridUsers.getFullSaveList();
+            var listUsers = this.gridUsers.getPageList();
             
             for(var i=0; i<listUsers.length;i++) {
                 // verify that the login name is not duplicated
@@ -221,19 +220,16 @@ if (!Ung.hasResource["Ung.LocalDirectory"]) {
             }
             return true;
         },
-        doSaveAction: function (isApply) {
+        save: function (isApply) {
             main.getLocalDirectory().setUsers(Ext.bind(function(result, exception) {
                 Ext.MessageBox.hide();
                 if(Ung.Util.handleException(exception)) return;
                 if (!isApply) {
                     this.closeWindow();
-                    if(this.fnCallback) {
-                        this.fnCallback.call();
-                    }
                 } else {
                     this.clearDirty();
                 }
-            }, this), {javaClass:"java.util.LinkedList",list:this.gridUsers.getFullSaveList()});
+            }, this), {javaClass:"java.util.LinkedList",list:this.gridUsers.getPageList()});
         }
     });
 }

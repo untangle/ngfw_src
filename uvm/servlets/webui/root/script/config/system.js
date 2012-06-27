@@ -2,7 +2,7 @@ if (!Ung.hasResource["Ung.System"]) {
     Ung.hasResource["Ung.System"] = true;
 
     Ext.define("Ung.System", {
-    	extend: "Ung.ConfigWin",
+        extend: "Ung.ConfigWin",
         panelSupport: null,
         panelBackup: null,
         panelRestore: null,
@@ -31,7 +31,7 @@ if (!Ung.hasResource["Ung.System"]) {
             this.buildRegionalSettings();
             // builds the tab panel with the tabs
             this.buildTabPanel([this.panelSupport, this.panelBackup, this.panelRestore, this.panelProtocolSettings, this.panelRegionalSettings]);
-            if (!this.isHttpLoaded() && !this.isFtpLoaded() && !this.isMailLoaded() ){
+            if (!this.isHttpLoaded() && !this.isFtpLoaded() && !this.isMailLoaded() ) {
                 this.panelProtocolSettings.disable();
             }
             this.callParent(arguments);
@@ -308,7 +308,7 @@ if (!Ung.hasResource["Ung.System"]) {
                                 this.i18n._("After backing up your current system configuration to a file, you can then restore that configuration through this dialog by going to \"Restore\" -> \"From Local File\".")
                     },{
                         xtype:"button",
-                    	text: this.i18n._("Backup to File"),
+                        text: this.i18n._("Backup to File"),
                         name: "Backup to File",
                         handler: Ext.bind(function() {
                             this.panelBackup.onBackupToFile();
@@ -1001,15 +1001,15 @@ if (!Ung.hasResource["Ung.System"]) {
                         success: function(form, action) {
                             languagesStore.load();
                             var cmp = Ext.getCmp(action.parentId);
-                            if(action.result.success===true){
+                            if(action.result.success===true) {
                                 Ext.MessageBox.alert(cmp.i18n._("Succeeded"), cmp.i18n._("Upload language pack succeeded"),
                                     function() {
                                         Ext.getCmp("upload_language_file_textfield").reset();
                                     }
                                 );
-                            }else{
+                            } else {
                                 var msg = "An error occured while uploading the language pack";
-                                if(action.result.msg){
+                                if(action.result.msg) {
                                     msg = action.result.msg;
                                 }
                                 Ext.MessageBox.alert(cmp.i18n._("Warning"), cmp.i18n._(msg));
@@ -1040,7 +1040,7 @@ if (!Ung.hasResource["Ung.System"]) {
                 }
             });
 
-            this.timeUpdateFunction = Ext.bind(function(){
+            this.timeUpdateFunction = Ext.bind(function() {
                 if(!this.isVisible())
                     return;
                 else {
@@ -1068,7 +1068,7 @@ if (!Ung.hasResource["Ung.System"]) {
                 return true;
             } else {
                 Ext.MessageBox.alert(this.i18n._("Warning"), this.i18n._("Max URI Length should be between 1024 and 4096!"),
-            		Ext.bind(function () {
+                    Ext.bind(function () {
                         this.tabs.setActiveTab(this.panelProtocolSettings);
                         maxUriLengthCmp.focus(true);
                     }, this)
@@ -1083,7 +1083,7 @@ if (!Ung.hasResource["Ung.System"]) {
                 return true;
             } else {
                 Ext.MessageBox.alert(this.i18n._("Warning"), this.i18n._("Max Header Length should be between 1024 and 8192!"),
-            		Ext.bind(function () {
+                    Ext.bind(function () {
                         this.tabs.setActiveTab(this.panelProtocolSettings);
                         maxHeaderLengthCmp.focus(true);
                     }, this)
@@ -1098,7 +1098,7 @@ if (!Ung.hasResource["Ung.System"]) {
                 return true;
             } else {
                 Ext.MessageBox.alert(this.i18n._("Warning"), this.i18n._("SMTP timeout should be between 0 and 86400!"),
-            		Ext.bind(function () {
+                    Ext.bind(function () {
                         this.tabs.setActiveTab(this.panelProtocolSettings);
                         smtpTimeoutCmp.focus(true);
                     }, this)
@@ -1113,7 +1113,7 @@ if (!Ung.hasResource["Ung.System"]) {
                 return true;
             } else {
                 Ext.MessageBox.alert(this.i18n._("Warning"), this.i18n._("POP timeout should be between 0 and 86400!"),
-            		Ext.bind(function () {
+                    Ext.bind(function () {
                         this.tabs.setActiveTab(this.panelProtocolSettings);
                         popTimeoutCmp.focus(true);
                     }, this)
@@ -1128,7 +1128,7 @@ if (!Ung.hasResource["Ung.System"]) {
                 return true;
             } else {
                 Ext.MessageBox.alert(this.i18n._("Warning"), this.i18n._("IMAP timeout should be between 0 and 86400!"),
-            		Ext.bind(function () {
+                    Ext.bind(function () {
                         this.tabs.setActiveTab(this.panelProtocolSettings);
                         imapTimeoutCmp.focus(true);
                     }, this)
@@ -1136,7 +1136,7 @@ if (!Ung.hasResource["Ung.System"]) {
                 return false;
             }
         },
-        doSaveAction: function (isApply) {
+        save: function (isApply) {
             this.saveSemaphore = 6;
             // save language settings
             rpc.languageManager.setLanguageSettings(Ext.bind(function(result, exception) {

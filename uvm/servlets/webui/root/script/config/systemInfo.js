@@ -2,7 +2,7 @@ if (!Ung.hasResource["Ung.SystemInfo"]) {
     Ung.hasResource["Ung.SystemInfo"] = true;
 
      Ext.define("Ung.SystemInfo", {
-    	extend: "Ung.StatusWin",
+        extend: "Ung.StatusWin",
         panelVersion: null,
         panelLicenses: null,
         panelLicenseAgreement: null,
@@ -11,7 +11,7 @@ if (!Ung.hasResource["Ung.SystemInfo"]) {
                 title: i18n._("Configuration"),
                 action: Ext.bind(function() {
                     this.cancelAction();
-                },this)
+                }, this)
             }, {
                 title: i18n._('System Info')
             }];
@@ -39,7 +39,7 @@ if (!Ung.hasResource["Ung.SystemInfo"]) {
                     autoHeight: true,
                     buttonAlign: 'left',
                     items: [{
-                    	xtype: 'textarea',
+                        xtype: 'textarea',
                         name: 'UID',
                         hideLabel: true,
                         readOnly: true,
@@ -49,7 +49,7 @@ if (!Ung.hasResource["Ung.SystemInfo"]) {
                         value: this.i18n._('Do not publicly post or share the UID.') + "\n" +
                             this.i18n._('UID')+": " + rpc.jsonrpc.UvmContext.getServerUID()
                     }, {
-                    	xtype: 'textarea',
+                        xtype: 'textarea',
                         name: 'System Info',
                         hideLabel: true,
                         readOnly: true,
@@ -127,7 +127,7 @@ if (!Ung.hasResource["Ung.SystemInfo"]) {
                                 //reload licenses for each node in rack
                                 main.loadLicenses();
                                 //reload grid
-                                this.gridLicenses.reloadGrid();
+                                this.gridLicenses.reload();
                             }, this)
                         }
                     ]
@@ -170,16 +170,16 @@ if (!Ung.hasResource["Ung.SystemInfo"]) {
                     renderer: function(value) { return new Date(value*1000); }
                 },{
                     header: this.i18n._("End Date"),
-                	dataIndex: "end",
+                    dataIndex: "end",
                     width: 240,
                     renderer: function(value) { return new Date(value*1000); }
                 },{
                     header: this.i18n._("Valid"),
-                	dataIndex: "valid",
+                    dataIndex: "valid",
                     width: 50
                 },{
                     header: this.i18n._("Status"),
-                	dataIndex: "status",
+                    dataIndex: "status",
                     width: 150
                 }]
             });

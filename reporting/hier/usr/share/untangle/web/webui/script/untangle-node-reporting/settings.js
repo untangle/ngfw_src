@@ -12,7 +12,6 @@ if (!Ung.hasResource["Ung.Reporting"]) {
         gridReportingUsers: null,
         gridHostnameMap: null,
         initComponent: function(container, position) {
-            // builds the 3 tabs
             this.buildStatus();
             this.buildGeneration();
             this.buildEmail();
@@ -21,13 +20,14 @@ if (!Ung.hasResource["Ung.Reporting"]) {
             this.buildDatabase();
 
             // only show DB settings if set to something other than localhost
-            if (this.getSettings().dbHost != "localhost") 
+            if (this.getSettings().dbHost != "localhost") { 
                 this.buildTabPanel([this.panelStatus, this.panelGeneration, this.panelEmail, this.panelSyslog, this.gridHostnameMap, this.panelDatabase]);
-            else
+            } else {
                 this.buildTabPanel([this.panelStatus, this.panelGeneration, this.panelEmail, this.panelSyslog, this.gridHostnameMap]);
-                
+            }
             this.tabs.setActiveTab(this.panelStatus);
-            Ung.Reporting.superclass.initComponent.call(this);
+            this.clearDirty();
+            this.callParent(arguments);
         },
         // Status Panel
         buildStatus: function() {
@@ -91,7 +91,8 @@ if (!Ung.hasResource["Ung.Reporting"]) {
                             handler: Ext.bind(function(callback) {
                                 Ext.MessageBox.wait(i18n._("Generating today's reports... This may take a few minutes."), i18n._("Please wait"));
                                 this.getRpcNode().runDailyReport(Ext.bind(function(result, exception) {
-                                    this.afterRun(exception, callback);
+                                    Ext.MessageBox.hide();
+                                    if(Ung.Util.handleException(exception)) return;
                                 }, this));
                             }, this)
                         }]
@@ -140,10 +141,9 @@ if (!Ung.hasResource["Ung.Reporting"]) {
                         listeners: {
                             "change": {
                                 fn: Ext.bind(function(elem, newValue) {
-                                    // newValue;
                                     if (newValue && newValue instanceof Date) {
                                         this.getSettings().generationMinute = newValue.getMinutes();
-                                        this.getSettings().generationHour   = newValue.getHours();
+                                        this.getSettings().generationHour = newValue.getHours();
                                     }
                                 }, this)
                             }
@@ -315,9 +315,8 @@ if (!Ung.hasResource["Ung.Reporting"]) {
                             password: null,
                             passwordHashBase64: null
                         },
-                        data: this.getSettings().reportingUsers.list,
+                        dataProperty: 'reportingUsers',
                         recordJavaClass: "com.untangle.node.reporting.ReportingUser",
-                        dataRoot: null,
                         autoGenerateId: true,
                         plugins:[changePasswordColumn],
                         fields: [{
@@ -423,14 +422,14 @@ if (!Ung.hasResource["Ung.Reporting"]) {
                         name: 'Attachement size limit',
                         id: 'reporting_attachment_size_limit',
                         value: this.getSettings().attachmentSizeLimit,
-                        labelWidth:150,
+                        labelWidth: 150,
                         labelAlign:'right',
                         width: 200,
                         allowDecimals: false,
                         allowNegative: false,
                         minValue: 1,
                         maxValue: 30,
-                        hideTrigger:true,
+                        hideTrigger: true,
                         listeners: {
                             "change": {
                                 fn: Ext.bind(function(elem, newValue) {
@@ -621,53 +620,73 @@ if (!Ung.hasResource["Ung.Reporting"]) {
                         name: 'databaseHost',
                         width: 300,
                         itemCls: 'left-indent-1',
-                        id: 'reporting_database_host',
                         value: this.getSettings().dbHost,
                         allowBlank: false,
-                        blankText: this.i18n._("A \"Host\" must be specified.")
+                        blankText: this.i18n._("A \"Host\" must be specified."),
+                        listeners: {
+                            "change": Ext.bind(function( elem, newValue ) {
+                                this.getSettings().dbHost = newValue;
+                            }, this )
+                        }
                     },{
                         xtype: 'numberfield',
                         fieldLabel: this.i18n._('Port'),
                         name: 'databasePort',
                         width: 200,
                         itemCls: 'left-indent-1',
-                        id: 'reporting_database_port',
                         value: this.getSettings().dbPort,
                         allowDecimals: false,
                         allowNegative: false,
                         allowBlank: false,
                         blankText: this.i18n._("You must provide a valid port."),
-                        vtype: 'port'
+                        vtype: 'port',
+                        listeners: {
+                            "change": Ext.bind(function( elem, newValue ) {
+                                this.getSettings().dbPort = newValue;
+                            }, this )
+                        }
                     },{
                         xtype: 'textfield',
                         fieldLabel: this.i18n._('User'),
                         name: 'databaseUser',
                         width: 300,
                         itemCls: 'left-indent-1',
-                        id: 'reporting_database_user',
                         value: this.getSettings().dbUser,
                         allowBlank: false,
-                        blankText: this.i18n._("A \"User\" must be specified.")
+                        blankText: this.i18n._("A \"User\" must be specified."),
+                        listeners: {
+                            "change": Ext.bind(function( elem, newValue ) {
+                                this.getSettings().dbUser = newValue;
+                            }, this )
+                        }
                     },{
                         xtype: 'textfield',
                         fieldLabel: this.i18n._('Password'),
                         name: 'databasePassword',
                         width: 300,
                         itemCls: 'left-indent-1',
-                        id: 'reporting_database_password',
                         value: this.getSettings().dbPassword,
                         allowBlank: false,
-                        blankText: this.i18n._("A \"Password\" must be specified.")
+                        blankText: this.i18n._("A \"Password\" must be specified."),
+                        listeners: {
+                            "change": Ext.bind(function( elem, newValue ) {
+                                this.getSettings().dbPassword = newValue;
+                            }, this )
+                        }
                     },{
                         xtype: 'textfield',
                         fieldLabel: this.i18n._('Name'),
                         name: 'databaseName',
                         width: 300,
                         itemCls: 'left-indent-1',
-                        id: 'reporting_database_name',
                         value: this.getSettings().dbName,
                         allowBlank: false,
-                        blankText: this.i18n._("A \"Name\" must be specified.")
+                        blankText: this.i18n._("A \"Name\" must be specified."),
+                        listeners: {
+                            "change": Ext.bind(function( elem, newValue ) {
+                                this.getSettings().dbName = newValue;
+                            }, this )
+                        }
                     }]
                 }]
             });
@@ -685,7 +704,7 @@ if (!Ung.hasResource["Ung.Reporting"]) {
                     "address": "1.2.3.4",
                     "hostname": this.i18n._("[no name]")
                 },
-                data: this.getSettings().hostnameMap.list,
+                dataProperty: 'hostnameMap',
                 recordJavaClass: "com.untangle.node.reporting.ReportingHostnameMapEntry",
                 // the list of fields
                 fields: [{
@@ -733,106 +752,15 @@ if (!Ung.hasResource["Ung.Reporting"]) {
                     }]
             });
         },
-        applyAction: function()
-        {
-            this.commitSettings(Ext.bind(this.reloadSettings, this));
-        },
-        reloadSettings: function()
-        {
-            this.getSettings(true);
+        beforeSave: function(isApply,handler) {
+            this.getSettings().reportingUsers.list = this.gridReportingUsers.getPageList();
+            this.getSettings().hostnameMap.list = this.gridHostnameMap.getPageList();
 
-            //this.gridReportingUsers.clearChangedData();
-            this.gridReportingUsers.store.loadData( this.getSettings().reportingUsers.list );
-            var cmpIds = this.getEditableFields();
-            for (var i = 0; i < cmpIds.length; i++) {
-                if (cmpIds[i].isDirty()) {
-                    cmpIds[i].clearDirty();
-                }
-            }
+            this.getSettings().syslogHost = Ext.getCmp('reporting_syslog_host').getValue();
+            this.getSettings().syslogPort = Ext.getCmp('reporting_syslog_port').getValue();
+            this.getSettings().syslogProtocol = Ext.getCmp('reporting_syslog_protocol').getValue();
 
-            //this.gridHostnameMap.clearChangedData();
-            this.gridHostnameMap.store.loadData( this.getSettings().hostnameMap.list );
-
-            Ext.MessageBox.hide();
-        },
-        saveAction: function()
-        {
-            this.commitSettings(Ext.bind(this.completeSaveAction, this));
-        },
-        completeSaveAction: function()
-        {
-            Ext.MessageBox.hide();
-            this.closeWindow();
-        },
-        scheduleListToString: function(list)
-        {
-            var first = true;
-            var str = "";
-            for (var i = 0 ; i < list.length ; i++ ) {
-                if (!first)
-                    str += ",";
-                else
-                    first = false;
-                str += list[i];
-            }
-
-            return str;
-        },
-        // save function
-        commitSettings: function(callback)
-        {
-            if (this.validate()) {
-                Ext.MessageBox.wait(i18n._("Saving..."), i18n._("Please wait"));
-
-                this.getSettings().reportingUsers.list = this.gridReportingUsers.getFullSaveList();
-                this.getSettings().hostnameMap.list = this.gridHostnameMap.getFullSaveList();
-
-                this.getSettings().syslogHost     = Ext.getCmp('reporting_syslog_host').getValue();
-                this.getSettings().syslogPort     = Ext.getCmp('reporting_syslog_port').getValue();
-                this.getSettings().syslogProtocol = Ext.getCmp('reporting_syslog_protocol').getValue();
-
-                this.getSettings().dbHost     = Ext.getCmp('reporting_database_host').getValue();
-                this.getSettings().dbPort     = Ext.getCmp('reporting_database_port').getValue();
-                this.getSettings().dbUser     = Ext.getCmp('reporting_database_user').getValue();
-                this.getSettings().dbPassword = Ext.getCmp('reporting_database_password').getValue();
-                this.getSettings().dbName     = Ext.getCmp('reporting_database_name').getValue();
-
-                this.getRpcNode().setSettings(Ext.bind(function(result, exception) {
-                    this.afterSave(exception, callback);
-                }, this), this.getSettings());
-            }
-        },
-        afterRun: function(exception, callback)
-        {
-            if(Ung.Util.handleException(exception)) {
-                return;
-            }
-            Ext.MessageBox.hide();
-        },
-        afterSave: function(exception, callback)
-        {
-            if(Ung.Util.handleException(exception)) {
-                return;
-            }
-
-            callback();
-        },
-        getEditableFields: function(){
-            return this.panelGeneration.query('checkbox radiogroup numberfield textfield');        
-        },
-        isDirty: function() {
-            if(this.panelGeneration.rendered) {
-                var cmpIds = this.getEditableFields(), i;
-                for (i = 0; i < cmpIds.length; i++) {
-                    if (cmpIds[i].isDirty()){
-                        return true;
-                    }
-                }
-                if (this.gridReportingUsers.isDirty()){
-                    return true;
-                }
-            }
-            return this.gridHostnameMap.isDirty();
+            handler.call(this, isApply);
         }
     });
 }

@@ -2,8 +2,8 @@ if (!Ung.hasResource["Ung.Protofilter"]) {
     Ung.hasResource["Ung.Protofilter"] = true;
     Ung.NodeWin.registerClassName('untangle-node-protofilter', 'Ung.Protofilter');
 
-	Ext.define('Ung.Protofilter',{
-		extend: 'Ung.NodeWin',
+    Ext.define('Ung.Protofilter',{
+        extend: 'Ung.NodeWin',
         panelStatus: null,
         gridProtocolList: null,
         gridEventLog: null,
@@ -13,7 +13,7 @@ if (!Ung.hasResource["Ung.Protofilter"]) {
             this.buildEventLog();
             // builds the tab panel with the tabs
             this.buildTabPanel([this.panelStatus, this.gridProtocolList, this.gridEventLog]);
-            Ung.Protofilter.superclass.initComponent.call(this);
+            this.callParent(arguments);
         },
         // Status Panel
         buildStatus: function() {
@@ -38,7 +38,6 @@ if (!Ung.hasResource["Ung.Protofilter"]) {
                     html: Ext.String.format(this.i18n._("Application Control Lite uses signatures to detect the protocols of network traffic. It is useful for detecting unwanted or interesting protocols in use on the network."))
                 }, {
                     title: this.i18n._(' '),
-                    //layout:'form',
                     labelWidth: 230,
                     defaults: {
                         xtype: "textfield",
@@ -128,84 +127,84 @@ if (!Ung.hasResource["Ung.Protofilter"]) {
                     header: this.i18n._("Protocol"),
                     width: 200,
                     dataIndex: 'protocol',
-					editor: {
-						xtype:'textfield',
-						allowBlank:false
-					}
+                    editor: {
+                        xtype:'textfield',
+                        allowBlank:false
+                    }
                 }, 
-				{
+                {
                     header: this.i18n._("Category"),
                     width: 200,
                     dataIndex: 'category',
-					editor: {
-						xtype:'textfield',
-						allowBlank:false
-					}
+                    editor: {
+                        xtype:'textfield',
+                        allowBlank:false
+                    }
                 }, 
-				{
-					xtype:'checkcolumn',
-					header: "<b>" + this.i18n._("Block") + "</b>",
-					dataIndex: 'blocked',
-					fixed: true,
-					width:55
-				},
-				{
-					xtype:'checkcolumn',
-					header: "<b>" + this.i18n._("Log") + "</b>",
-					dataIndex: 'log',
-					fixed: true,
-					width:55
-				},
-				{
+                {
+                    xtype:'checkcolumn',
+                    header: "<b>" + this.i18n._("Block") + "</b>",
+                    dataIndex: 'blocked',
+                    fixed: true,
+                    width:55
+                },
+                {
+                    xtype:'checkcolumn',
+                    header: "<b>" + this.i18n._("Log") + "</b>",
+                    dataIndex: 'log',
+                    fixed: true,
+                    width:55
+                },
+                {
                     header: this.i18n._("Description"),
                     width: 200,
                     dataIndex: 'description',
                     flex: 1,
-					editor:{
-						xtype:'textfield',
+                    editor:{
+                        xtype:'textfield',
                         allowBlank: false
-						}
+                        }
                 }],
                 sortField: 'category',
                 columnsDefaultSortable: true,
                 // the row input lines used by the row editor window
                 rowEditorInputLines: [{
-					xtype:'textfield',
+                    xtype:'textfield',
                     name: "Protocol",
                     dataIndex: "protocol",
                     fieldLabel: this.i18n._("Protocol"),
                     allowBlank: false,
                     width: 400
                 }, {
-					xtype:'textfield',
+                    xtype:'textfield',
                     name: "Category",
                     dataIndex: "category",
                     fieldLabel: this.i18n._("Category"),
                     allowBlank: false,
                     width: 400
                 }, 
-				{
-					xtype:'checkbox',
+                {
+                    xtype:'checkbox',
                     name: "Block",
                     dataIndex: "blocked",
                     fieldLabel: this.i18n._("Block")
                 },
-				{
-					xtype:'checkbox',
+                {
+                    xtype:'checkbox',
                     name: "Log",
                     dataIndex: "log",
                     fieldLabel: this.i18n._("Log")
                 },
-				{
-					xtype:'textarea',
+                {
+                    xtype:'textarea',
                     name: "Description",
                     dataIndex: "description",
                     fieldLabel: this.i18n._("Description"),
                     width: 400,
                     height: 60
                 },
-				{  
-					xtype:'textarea',
+                {  
+                    xtype:'textarea',
                     name: "Signature",
                     dataIndex: "definition",
                     fieldLabel: this.i18n._("Signature"),
@@ -276,7 +275,7 @@ if (!Ung.hasResource["Ung.Protofilter"]) {
             });
         },
         beforeSave: function(isApply, handler) {
-            this.getSettings().patterns.list = this.gridProtocolList.getFullSaveList();
+            this.getSettings().patterns.list = this.gridProtocolList.getPageList();
             handler.call(this, isApply);
         }
     });

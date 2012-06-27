@@ -5,7 +5,7 @@ if (!Ung.hasResource["Ung.SessionMonitor"]) {
         extend: 'Ung.StatusWin',
         helpSource: 'session_monitor',
         sortField:'bypassed',
-        sortOrder : 'ASC',
+        sortOrder: 'ASC',
         defaultBandwidthColumns: false,
         enableBandwidthColumns: false,
         initComponent: function() {
@@ -123,7 +123,7 @@ if (!Ung.hasResource["Ung.SessionMonitor"]) {
                 }
                 if ( this.gridCurrentSessions !== undefined ) {
                     this.gridCurrentSessions.setTitle(i18n._("Current Sessions") + nodeStr + groupStr );
-                    this.gridCurrentSessions.reloadGrid();
+                    this.gridCurrentSessions.reload();
 
                 }
 
@@ -933,7 +933,7 @@ if (!Ung.hasResource["Ung.SessionMonitor"]) {
                 hasEdit: false,
                 hasDelete: false,
                 sortField: this.sortField,
-                sortOrder : this.sortOrder,
+                sortOrder: this.sortOrder,
                 groupField: groupField,
                 columnsDefaultSortable: true,
                 title: this.i18n._("Current Sessions"),
@@ -943,7 +943,7 @@ if (!Ung.hasResource["Ung.SessionMonitor"]) {
                 features: [{
                     ftype: 'groupingsummary'
                 }],
-                dataFn: Ext.bind(this.getSessions,this),
+                dataFn: Ext.bind(this.getSessions, this),
                 dataFnArg: 0,
                 fields: [{
                     name: "id"
@@ -1055,7 +1055,7 @@ if (!Ung.hasResource["Ung.SessionMonitor"]) {
                         iconCls: 'icon-refresh',
                         handler: Ext.bind(function() {
                             this.setLoading(true);
-                            this.reloadGrid();
+                            this.reload();
                             this.setLoading(false);
                         }, this)
                     },{
@@ -1102,7 +1102,7 @@ if (!Ung.hasResource["Ung.SessionMonitor"]) {
                 },
                 autorefreshList: function() {
                     if(this!=null && this.autoRefreshEnabled && Ext.getCmp(this.id) != null) {
-                    	this.reloadGrid();
+                        this.reload();
                         Ext.defer(this.autorefreshList, 5000, this);
                     }
                 }

@@ -102,7 +102,7 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
             this.items = {
                 xtype: 'panel',
                 cls: 'ung-panel',
-                items : panelItems
+                items: panelItems
             }
             this.callParent(arguments);
         },
@@ -430,7 +430,7 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
         getDefaultGroupName: function(forceReload) {
             if (forceReload || this.defaultGroupName === undefined) {
                 var defaultGroup = this.getGroupsStore().getCount()>0 ? this.getGroupsStore().getAt(0).data:null;
-                this.defaultGroupName = defaultGroup==null ? null : defaultGroup.name;
+                this.defaultGroupName = defaultGroup==null ? null: defaultGroup.name;
             }
             return this.defaultGroupName;
         },
@@ -466,7 +466,7 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                             tooltip: i18n._('Refresh'),
                             iconCls: 'icon-refresh',
                             handler: Ext.bind(function() {
-                                this.gridActiveClients.reloadGrid();
+                                this.gridActiveClients.reload();
                             }, this)
                         }
                     ]
@@ -768,7 +768,7 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                 },
                 title: this.i18n._("VPN Clients"),
                 recordJavaClass: "com.untangle.node.openvpn.VpnClient",
-                data: this.getSettings().clientList.list,
+                dataProperty: "clientList",
                 autoGenerateId: true,
                 fields: [{
                     name: 'live'
@@ -895,8 +895,8 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                     }
                     return data;
                 }, this),
-                getFullSaveList: function () {
-                    var data = Ung.EditorGrid.prototype.getFullSaveList.call(this);
+                getPageList: function () {
+                    var data = Ung.EditorGrid.prototype.getPageList.call(this);
                     for(var i=0; i<data.length; i++) {
                         data[i].exportedAddressList.list[0].network = data[i].network;
                         data[i].exportedAddressList.list[0].netmask = data[i].netmask;
@@ -1164,7 +1164,7 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                 },
                 title: this.i18n._("Address Pools"),
                 recordJavaClass: "com.untangle.node.openvpn.VpnGroup",
-                data: this.getSettings().groupList.list,
+                dataProperty: 'groupList',
                 autoGenerateId: true,
                 // the list of fields
                 fields: [{
@@ -1451,10 +1451,10 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
 
         validateGroups: function() {
             var i;
-            var groupList=this.gridGroups.getFullSaveList();
+            var groupList=this.gridGroups.getPageList();
 
             // verify that there is at least one group
-            if(groupList.length <= 0 ){
+            if(groupList.length <= 0 ) {
                 Ext.MessageBox.alert(this.i18n._('Failed'), this.i18n._("You must create at least one group."),
                     Ext.bind(function () {
                         this.tabs.setActiveTab(this.panelAdvanced);
@@ -1467,7 +1467,7 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
             var removedGroups = this.gridGroups.getDeletedList();
 
             for( i=0; i<removedGroups.length;i++) {
-                var clientList = this.gridClients.getFullSaveList();
+                var clientList = this.gridClients.getPageList();
                 for(var j=0; j<clientList.length;j++) {
                     if (removedGroups[i].name == clientList[j].groupName) {
                         Ext.MessageBox.alert(this.i18n._('Failed'),
@@ -1480,7 +1480,7 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                     }
                 }
 
-                var siteList=this.gridSites.getFullSaveList();
+                var siteList=this.gridSites.getPageList();
                 for(var j=0; j<siteList.length;j++) {
                     if (removedGroups[i].name == siteList[j].groupName) {
                         Ext.MessageBox.alert(this.i18n._('Failed'),
@@ -1525,7 +1525,7 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
         },
 
         validateVpnClients: function() {
-            var clientList=this.gridClients.getFullSaveList();
+            var clientList=this.gridClients.getPageList();
             var clientNames = {};
             var client = null;
 
@@ -1555,7 +1555,7 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
         },
 
         validateVpnSites: function() {
-            var siteList=this.gridSites.getFullSaveList();
+            var siteList=this.gridSites.getPageList();
             // Site names must all be unique
             for(var i=0;i<siteList.length;i++) {
                 for(var j=i+1; j<siteList.length;j++) {
@@ -1574,12 +1574,12 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
         validateExports: function(exportList) {
             return true;
         },
-        doSaveAction: function(isApply) {
+        save: function(isApply) {
             if(this.configState == "SERVER") {
-                this.getSettings().groupList.list = this.gridGroups.getFullSaveList();
-                this.getSettings().exportedAddressList.list = this.gridExports.getFullSaveList();
-                this.getSettings().clientList.list = this.gridClients.getFullSaveList();
-                this.getSettings().siteList.list = this.gridSites.getFullSaveList();
+                this.getSettings().groupList.list = this.gridGroups.getPageList();
+                this.getSettings().exportedAddressList.list = this.gridExports.getPageList();
+                this.getSettings().clientList.list = this.gridClients.getPageList();
+                this.getSettings().siteList.list = this.gridSites.getPageList();
 
 
                 this.getRpcNode().setSettings(Ext.bind(function(result, exception) {
@@ -1595,28 +1595,28 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
             if (!isApply) {
                 this.closeWindow();
             } else {
-                this.getSettings(true);
-                // Assume the config state hasn't changed
-                if (this.configState == "SERVER") {
-                    this.getGroupsStore(true);
-                    this.getDefaultGroupName(true);
-                    this.gridSites.emptyRow.groupName = this.getDefaultGroupName();
-                    this.gridClients.emptyRow.groupName = this.getDefaultGroupName();
+                Ext.MessageBox.wait(i18n._("Reloading..."), i18n._("Please wait"));
+                this.getSettings(function() {
+                    // Assume the config state hasn't changed
+                    if (this.configState == "SERVER") {
+                        this.getGroupsStore(true);
+                        this.getDefaultGroupName(true);
+                        this.gridSites.emptyRow.groupName = this.getDefaultGroupName();
+                        this.gridClients.emptyRow.groupName = this.getDefaultGroupName();
 
-                    this.gridClients.reloadGrid({data: this.getSettings().clientList.list });
-                    this.gridSites.reloadGrid();
-                    this.gridGroups.reloadGrid({data: this.getSettings().groupList.list });
-                    this.gridExports.reloadGrid({data: this.getSettings().exportedAddressList.list });
+                        this.gridExports.reload({data: this.getSettings().exportedAddressList.list });
 
-                    Ext.getCmp( "openvpn_advanced_siteName" ).setValue( this.getSettings().siteName );
+                        Ext.getCmp( "openvpn_advanced_siteName" ).setValue( this.getSettings().siteName );
 
-                    // Assuming radio box is intact
-                    Ext.getCmp("openvpn_advanced_dns1").setValue( this.getSettings().dns1 );
-                    Ext.getCmp("openvpn_advanced_dns2").setValue( this.getSettings().dns2 );
-                    this.clearDirty();
-                } else {
-                    // do nothing
-                }
+                        // Assuming radio box is intact
+                        Ext.getCmp("openvpn_advanced_dns1").setValue( this.getSettings().dns1 );
+                        Ext.getCmp("openvpn_advanced_dns2").setValue( this.getSettings().dns2 );
+                        this.clearDirty();
+                    } else {
+                        // do nothing
+                    }
+                    Ext.MessageBox.hide();
+                });
             }
         },
         configureVPNClient: function() {
@@ -1847,7 +1847,7 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                 },
                 onNext: Ext.bind(function(handler) {
                     var gridExports=Ext.getCmp(this.serverSetup.gridExportsId);
-                    var saveList=gridExports.getFullSaveList();
+                    var saveList=gridExports.getPageList();
 
                     if (!this.validateExports(saveList)) {
                         return;

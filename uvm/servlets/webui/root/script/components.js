@@ -38,14 +38,14 @@ Ext.override(Ext.form.field.Base, {
             this.originalValue=this.getValue();
         }
     },
-    afterRender: Ext.Function.createSequence(Ext.form.Field.prototype.afterRender,function(){
+    afterRender: Ext.Function.createSequence(Ext.form.Field.prototype.afterRender,function() {
         Ext.QuickTips.init();    
         var qt = this.tooltip,
             target = null;
         try {
-            if(this.xtype=='checkbox'){
+            if(this.xtype=='checkbox') {
                 target = this.labelEl;
-            }else{        
+            } else {        
                 target = this.container.dom.parentNode.childNodes[0];        
             }
         } catch(exn) {
@@ -89,7 +89,7 @@ Ext.override(Ext.Toolbar, {
         this.tr.appendChild(td);
         return td;
     },
-    insertButton: Ext.Function.createSequence(function(){
+    insertButton: Ext.Function.createSequence(function() {
         if (this.columns) {
             throw "This method won't work with multiple rows";
         }
@@ -153,7 +153,7 @@ Ext.override( Ext.form.Field, {
 });
 
 Ext.override( Ext.form.TextField, {
-    afterRender: Ext.Function.createSequence(Ext.form.TextField.prototype.afterRender, function(){
+    afterRender: Ext.Function.createSequence(Ext.form.TextField.prototype.afterRender, function() {
         //var parent = this.el.parent();
         if( this.boxLabel ) {
             this.labelEl = this.el.down("div").createChild({
@@ -165,7 +165,7 @@ Ext.override( Ext.form.TextField, {
             });
         }
     }),
-    updateBoxLabel: function(html){
+    updateBoxLabel: function(html) {
         if(this.labelEl) {
             this.labelEl.dom.innerHTML = html;
         }
@@ -464,7 +464,7 @@ Ung.Util = {
             
             if (handler==null) {
                 Ext.MessageBox.alert(i18n._("Warning"), message);
-            } else if(type==null || type== "alertCallback"){
+            } else if(type==null || type== "alertCallback") {
                 Ext.MessageBox.alert(i18n._("Warning"), message, handler);
             } else if (type== "alert") {
                 Ext.MessageBox.alert(i18n._("Warning"), message);
@@ -491,16 +491,16 @@ Ung.Util = {
         }
         return msg;
     },
-    addBuildStampToUrl: function(url){
-        var scriptArgs = "s=" + main.debugMode ? (new Date()).getTime() : main.buildStamp;
+    addBuildStampToUrl: function(url) {
+        var scriptArgs = "s=" + main.debugMode ? (new Date()).getTime(): main.buildStamp;
         if (url.indexOf("?") >= 0) {
             return url + "&" + scriptArgs;
         } else {
             return url + "?" + scriptArgs;
         }
     },
-    getScriptSrc: function(sScriptSrc){
-        //return main.debugMode ? sScriptSrc : sScriptSrc.replace(/\.js$/, "-min.js");
+    getScriptSrc: function(sScriptSrc) {
+        //return main.debugMode ? sScriptSrc: sScriptSrc.replace(/\.js$/, "-min.js");
         return sScriptSrc ;
     },
     // Load css file Dynamically
@@ -670,7 +670,7 @@ Ung.Util = {
 
         var data = [];
         
-        /* simple Matchers excludes WAN matchers */
+        // simple Matchers excludes WAN matchers
         if (simpleMatchers)
             data = this.getInterfaceList(false, true);
         else
@@ -685,9 +685,8 @@ Ung.Util = {
         
         return interfaceStore;
     },
-    clearInterfaceStore: function()
-    {
-        /* It will automatically reload the next time the interface store is fetched. */
+    clearInterfaceStore: function() {
+        // It will automatically reload the next time the interface store is fetched.
         this.interfaceStore = null;
     },
     protocolStore: null,
@@ -752,7 +751,7 @@ Ung.Util = {
               case 'undefined':
                 break;
               case 'object':
-                if (!Ung.Util.equals(obj1[prop], obj2[prop])){
+                if (!Ung.Util.equals(obj1[prop], obj2[prop])) {
                     return false;
                 }
                 break;
@@ -771,7 +770,7 @@ Ung.Util = {
     },
 
     // Clone object
-    clone: function (obj){
+    clone: function (obj) {
         if(obj == null || typeof(obj) != 'object')
             return obj;
 
@@ -780,40 +779,6 @@ Ung.Util = {
             temp[key] = Ung.Util.clone(obj[key]);
 
         return temp;
-    },
-
-    // Get the save list from the changed data
-    getSaveList: function(changedData, recordJavaClass) {
-        var added = [];
-        var deleted = [];
-        var modified = [];
-        for (id in changedData) {
-          var cd = changedData[id];
-          if ("deleted" == cd.op) {
-            if (id > 0) {
-              deleted.push(parseInt(id));
-              }
-          } else {
-            if (recordJavaClass != null){
-              cd.recData["javaClass"] = recordJavaClass;
-            }
-            if (id < 0) {
-              added.push(cd.recData);
-            } else {
-              modified.push(cd.recData);
-            }
-          }
-        }
-        return [{
-            list: added,
-            "javaClass": "java.util.ArrayList"
-        }, {
-            list: deleted,
-            "javaClass": "java.util.ArrayList"
-        }, {
-            list: modified,
-            "javaClass": "java.util.ArrayList"
-        }];
     },
     bytesToMBs: function(value) {
         return Math.round(value/10000)/100;
@@ -828,10 +793,10 @@ Ung.Util = {
     },
     defaultRenderer: function (value) {
         return (typeof value == 'string') ?
-           value.length<1? "&#160;" : Ext.util.Format.htmlEncode(value):
+           value.length<1? "&#160;": Ext.util.Format.htmlEncode(value):
            value;
     },
-    getQueryStringParam: function(name){
+    getQueryStringParam: function(name) {
         name = name.replace(/[\[]/,"\\\[").replace(/[\]]/,"\\\]");
         var regexS = "[\\?&]"+name+"=([^&#]*)";
         var regex = new RegExp( regexS );
@@ -848,7 +813,6 @@ Ung.Util = {
         } else {
             top.window.outerHeight = top.screen.availHeight-30;
             top.window.outerWidth = top.screen.availWidth-30;
-
         }
     },
     generateListIds: function(list) {
@@ -865,18 +829,12 @@ Ung.Util = {
             }, {
                 name: 'name',
                 type: 'string'
-                //                 convert: function(v) {
-                //                     return settingsCmp.i18n._(v);
-                //                 }
             }, {
                 name: 'string',
                 type: 'string'
             }, {
                 name: 'description',
                 type: 'string'
-                //                 convert: function(v) {
-                //                     return settingsCmp.i18n._(v);
-                //                 }
             }, {
                 name: 'category',
                 type: 'string'
@@ -899,6 +857,26 @@ Ung.Util = {
               }
           }
           return jsonList;
+    },
+    makeDataFn: function(dataProperty, dataFn, dataFnArgs) {
+        return function(forceReloadOrHandler) {
+            if (forceReloadOrHandler !== undefined || dataProperty === undefined) {
+                if(Ext.isFunction(forceReloadOrHandler)) {
+                    dataFn(Ext.bind(function(result, exception) {
+                        if(Ung.Util.handleException(exception)) return;
+                        dataProperty = result;
+                        forceReloadOrHandler.call(this);
+                    }, this, dataFnArgs, true));
+                } else {
+                    try {
+                        dataProperty = dataFn(dataFnArgs);
+                    } catch (e) {
+                        Ung.Util.rpcExHandler(e);
+                    }
+                }
+            }
+            return dataProperty;
+        }
     },
     maxRowCount: 2147483647,
     timestampFieldWidth: 135,
@@ -940,7 +918,7 @@ Ung.Util.RetryHandler = {
 
         var count = input["count"];
 
-        /* Do not retry any more */
+        // Do not retry any more
         if (( count == null ) || ( count < 1 )) {
             handler = null;
             type = null;
@@ -957,7 +935,7 @@ Ung.Util.RetryHandler = {
 
     tryAgain: function( exception, input ) {
         if( exception.code == 500 ) {
-            /* If necessary try calling the function again. */
+            // If necessary try calling the function again.
             window.setTimeout( Ext.bind(this.callFunction, this, [ input ] ), input["timeout"] );
             return;
         }
@@ -1036,20 +1014,20 @@ Ung.SortTypes = {
      * @return {String} The comparison value
      */
     asClient: function(value) {
-        return value === null ? "" : value.c_client_addr + ":" + value.c_client_port;
+        return value === null ? "": value.c_client_addr + ":" + value.c_client_port;
     },
     /**
      * @param {Mixed} value The SessionEvent value being converted
      * @return {String} The comparison value
      */
     asServer: function(value) {
-        return value === null ? "" : value.s_server_addr + ":" + value.s_server_port;
+        return value === null ? "": value.s_server_addr + ":" + value.s_server_port;
     },
     /**
      * @param value of the UID for users / groups
      * @reutrn the comparison value
      */
-    asUID: function (value){
+    asUID: function (value) {
         if ( value == "[any]" || value == "[authenticated]" || value == "[unauthenticated]" ) {
             return "";
         }
@@ -1058,7 +1036,7 @@ Ung.SortTypes = {
     /**
      * @param value of the last name field - if no value is given it is pushed to the last.
      */
-    asLastName: function (value){
+    asLastName: function (value) {
         if(value == null || value == "") {
             return null;
         }
@@ -1269,7 +1247,7 @@ Ext.define("Ung.AppItem", {
           case "download_complete":
             if(this.download!=null && this.download.summary!=null) {
                 this.download.completePackages++;
-                var currentPercentComplete = parseFloat(this.download.completePackages) / parseFloat(this.download.summary.size > 0 ? this.download.summary.size : 1);
+                var currentPercentComplete = parseFloat(this.download.completePackages) / parseFloat(this.download.summary.size > 0 ? this.download.summary.size: 1);
                 var progressIndex = parseFloat(0.99 * currentPercentComplete);
                 progressString = this.stylizeProgressText(i18n._("DL") + Ext.String.format(" {0}/{1} ", this.download.completePackages, this.download.summary.count) + i18n._("done"));
                 //the progress bar works better without these updates
@@ -1281,7 +1259,7 @@ Ext.define("Ung.AppItem", {
             this.displayButtonsOrProgress(false);
             if(this.download!=null && this.download.summary!=null) {
                 this.download.completeSize=options.bytesDownloaded;
-                var currentPercentComplete = parseFloat(options.bytesDownloaded) / parseFloat(options.size != 0 ? options.size : 1);
+                var currentPercentComplete = parseFloat(options.bytesDownloaded) / parseFloat(options.size != 0 ? options.size: 1);
                 var progressIndex = parseFloat(0.99 * currentPercentComplete);
                 progressString = this.stylizeProgressText(i18n._("DL") + Ext.String.format(" {0}/{1} @ {2} KB/s", this.download.completePackages, this.download.summary.count, options.speed));
                 this.progressBar.reset();
@@ -1295,7 +1273,7 @@ Ext.define("Ung.AppItem", {
                 if (options.action.indexOf("unpack") != -1) {
                     action = i18n._("Unpacking");
                 } 
-                var currentPercentComplete = parseFloat(options.count) / parseFloat(options.totalCount != 0 ? options.totalCount : 1);
+                var currentPercentComplete = parseFloat(options.count) / parseFloat(options.totalCount != 0 ? options.totalCount: 1);
                 var progressIndex = parseFloat(0.99 * currentPercentComplete);
                 //progressString = this.stylizeProgressText(action + " " + Ext.String.format("{0}/{1}", options.count, options.totalCount));
                 progressString = this.stylizeProgressText(action + " " + Ext.String.format("{0}%", Math.round(progressIndex*100)) + "&nbsp;");
@@ -1485,7 +1463,6 @@ Ext.define("Ung.Node", {
     faceplateMetrics: null,
     buttonsPanel: null,
     subCmps: null,
-    fnCallback: null,
     //can the node be edited on the gui
     isNodeEditable: true,
     constructor: function(config) {
@@ -1556,7 +1533,7 @@ Ext.define("Ung.Node", {
         var templateHTML = Ung.Node.template.applyTemplate({
             'id': this.getId(),
             'image': this.image,
-            'isNodeEditable': this.isNodeEditable ? "none" : "",
+            'isNodeEditable': this.isNodeEditable ? "none": "",
             'displayName': this.displayName,
             'nodePowerCls': this.hasPowerButton?((this.license && !this.license.valid)?"node-power-expired":"node-power"):"",
             'licenseMessage': this.getLicenseMessage()
@@ -1704,12 +1681,11 @@ Ext.define("Ung.Node", {
         main.openHelp(this.helpSource);
     },
     // on click settings
-    onSettingsAction: function(fnCallback) {
-        this.fnCallback=fnCallback;
+    onSettingsAction: function() {
         this.loadSettings();
     },
     //on Buy Now Action
-    onBuyNowAction: function(){
+    onBuyNowAction: function() {
         var appItem=Ung.AppItem.getApp(this.displayName);
         if(appItem!=null) {
             appItem.linkToStoreFn(null,"buy");
@@ -1808,8 +1784,7 @@ Ext.define("Ung.Node", {
     },
 
     // remove node
-    removeAction: function()
-    {
+    removeAction: function() {
         /* A hook for doing something in a node before attempting to remove it */
         if ( this.preRemoveAction ) {
             this.preRemoveAction( this, Ext.bind(this.completeRemoveAction, this ));
@@ -1819,8 +1794,7 @@ Ext.define("Ung.Node", {
         this.completeRemoveAction();
     },
 
-    completeRemoveAction: function()
-    {
+    completeRemoveAction: function() {
         var message = Ext.String.format(
                 i18n._("{0} is about to be removed from the rack.\nIts settings will be lost and it will stop processing network traffic.\n\nWould you like to continue removing?"), this.displayName);
         Ext.Msg.confirm(i18n._("Warning:"), message, Ext.bind(function(btn, text) {
@@ -1830,7 +1804,7 @@ Ext.define("Ung.Node", {
                 }
                 this.setState("attention");
                 this.getEl().mask();
-                this.getEl().fadeOut({ opacity: 0.1, duration: 2000, remove: false, useDisplay :false});
+                this.getEl().fadeOut({ opacity: 0.1, duration: 2000, remove: false, useDisplay:false});
                 rpc.nodeManager.destroy(Ext.bind(function(result, exception) {
                     if(Ung.Util.handleException(exception, Ext.bind(function() {
                         this.getEl().unmask();
@@ -1887,15 +1861,14 @@ Ext.define("Ung.Node", {
             } else {
                 licenseMessage = i18n._("Free Trial.");
             }
-        }
-        else { /* not a trial */
+        } else { // not a trial
             if (this.license.valid) { 
-                /* if its valid - say if its close to expiring otherwise say nothing */
+                // if its valid - say if its close to expiring otherwise say nothing
                 if (this.license.daysRemaining < 5) {
                     licenseMessage = i18n._("Expires in") + Ext.String.format(" {0} ", this.license.daysRemaining) + i18n._("days");
                 } 
             } else {
-                /* if its invalid say the reason */
+                // if its invalid say the reason
                 licenseMessage = this.license.status;
             }
         }
@@ -2048,7 +2021,7 @@ Ung.MessageManager = {
                                 if ( main.isIframeWinVisible()) {
                                     main.getIframeWin().closeActionFn();
                                 }
-                                if(main.IEWin != null){
+                                if(main.IEWin != null) {
                                     main.IEWin.close();
                                     main.IEWin=null;
                                 }
@@ -2452,7 +2425,7 @@ Ext.define("Ung.FaceplateMetric", {
         if(this.chartTip != null) {
             Ext.destroy(this.chartTip);
         }
-        if(this.chart != null ){
+        if(this.chart != null ) {
             Ext.destroy(this.chart);
         }
         this.callParent(arguments);
@@ -2911,7 +2884,7 @@ Ext.define("Ung.GridEventLog", {
         var selPolicy = this.getSelectedPolicy();
         if (selQuery != null && selPolicy != null) {
             Ext.MessageBox.wait(i18n._("Exporting Events..."), i18n._("Please wait"));
-            var name = ( (this.name!=null) ? this.name : i18n._("Event Log") ) + " " +selQueryName;
+            var name = ( (this.name!=null) ? this.name: i18n._("Event Log") ) + " " +selQueryName;
             name=name.trim().replace(/ /g,"_");
             var exportForm = document.getElementById('exportEventLogEvents');
             exportForm["name"].value=name;
@@ -2926,7 +2899,7 @@ Ext.define("Ung.GridEventLog", {
     onRender: function(container, position) {
         this.callParent(arguments);
         //TODO: extjs4 migration find an alternative
-        //this.getGridEl().down("div[class*=x-grid3-viewport]").set({'name' : "Table"});
+        //this.getGridEl().down("div[class*=x-grid3-viewport]").set({'name': "Table"});
         //this.pagingToolbar.loading.hide();
 
         if (this.eventQueriesFn != null) {
@@ -2940,7 +2913,7 @@ Ext.define("Ung.GridEventLog", {
             out.push('<select name="Event Type" id="selectQuery_' + this.getId() + '_' + this.settingsCmp.node.nodeId + '">');
             for (i = 0; i < queryList.length; i++) {
                 var queryDesc = queryList[i];
-                var selOpt = (i === 0) ? "selected" : "";
+                var selOpt = (i === 0) ? "selected": "";
                 out.push('<option value="' + queryDesc.query + '" ' + selOpt + '>' + this.settingsCmp.i18n._(queryDesc.name) + '</option>');
             }
             out.push('</select>');
@@ -2953,7 +2926,7 @@ Ext.define("Ung.GridEventLog", {
             out.push('<option value="-1" ' + selOpt + '>' + i18n._('All Racks') + '</option>');
             for (i = 0; i < rpc.policies.length; i++) {
                 var policy = rpc.policies[i];
-                var selOpt = ( policy == rpc.currentPolicy ) ? "selected" : "";
+                var selOpt = ( policy == rpc.currentPolicy ) ? "selected": "";
                 out.push('<option value="' + policy.policyId + '" ' + selOpt + '>' + policy.name + '</option>');
             }
             out.push('</select>');
@@ -3003,7 +2976,7 @@ Ext.define("Ung.GridEventLog", {
     },
     makeSelectable: function() {
         var elems=Ext.DomQuery.select("div[unselectable=on]", this.dom);
-        for(var i=0, len=elems.length; i<len; i++){
+        for(var i=0, len=elems.length; i<len; i++) {
             elems[i].unselectable = "off";
         }
     },
@@ -3318,13 +3291,13 @@ Ext.define("Ung.SettingsWin", {
         }
         Ext.MessageBox.wait(i18n._("Saving..."), i18n._("Please wait"));
         if(Ext.isFunction(this.beforeSave)) {
-            this.beforeSave(isApply, this.doSaveAction);
+            this.beforeSave(isApply, this.save);
         } else {
-            this.doSaveAction.call(this, isApply);
+            this.save.call(this, isApply);
         }
     },
     //To Override
-    doSaveAction: function(isApply) {
+    save: function(isApply) {
         Ext.MessageBox.hide();
         if (!isApply) {
             this.closeWindow();
@@ -3416,13 +3389,13 @@ Ext.define("Ung.NodeWin", {
         return this.node.rpcNode;
     },
     // get node settings object
-    getSettings: function(forceReloadOrHandler) {
-        if (forceReloadOrHandler !== undefined || this.settings === undefined) {
-            if(Ext.isFunction(forceReloadOrHandler)) {
+    getSettings: function(handler) {
+        if (handler !== undefined || this.settings === undefined) {
+            if(Ext.isFunction(handler)) {
                 this.getRpcNode().getSettings(Ext.bind(function(result, exception) {
                     if(Ung.Util.handleException(exception)) return;
                     this.settings = result;
-                    forceReloadOrHandler.call(this);
+                    handler.call(this);
                 }, this));
             } else {
                 try {
@@ -3445,7 +3418,7 @@ Ext.define("Ung.NodeWin", {
         }
         return this.node.rpcNode.validator;
     },
-    doSaveAction: function(isApply) {
+    save: function(isApply) {
         this.getRpcNode().setSettings( Ext.bind(function(result,exception) {
             Ext.MessageBox.hide();
             if(Ung.Util.handleException(exception)) return;
@@ -3454,12 +3427,12 @@ Ext.define("Ung.NodeWin", {
                 return;
             } else {
                 Ext.MessageBox.wait(i18n._("Reloading..."), i18n._("Please wait"));
-                this.getSettings(function(){
+                this.getSettings(function() {
                     this.clearDirty();
-                    Ext.MessageBox.hide();
                     if(Ext.isFunction(this.afterSave)) {
                         this.afterSave.call(this);
                     }
+                    Ext.MessageBox.hide();
                 });
             }
         }, this), this.getSettings());
@@ -3494,7 +3467,7 @@ Ung.NodeWin.dependency = {};
 // Static function get the settings class name for a node
 Ung.NodeWin.getClassName = function(name) {
     var className = Ung.NodeWin.classNames[name];
-    return className === undefined ? null : className;
+    return className === undefined ? null: className;
 };
 // Static function to register a settings class name for a node
 Ung.NodeWin.registerClassName = function(name, className) {
@@ -3636,10 +3609,10 @@ Ext.define('Ung.UpdateWindow', {
     updateAction: function() {
         Ung.Util.todo();
     },
-    saveAction: function(){
+    saveAction: function() {
         Ung.Util.todo();
     },
-    applyAction: function(){
+    applyAction: function() {
         Ung.Util.todo();
     }
 });
@@ -3655,7 +3628,7 @@ Ext.define("Ung.ManageListWindow", {
     },
     closeWindow: function(skipLoad) {
         if(!skipLoad) {
-            this.grid.reloadGrid();
+            this.grid.reload();
         }
         this.hide();
     },
@@ -3665,7 +3638,7 @@ Ext.define("Ung.ManageListWindow", {
     updateAction: function() {
         this.hide();
     },
-    saveAction: function(){
+    saveAction: function() {
         this.applyAction(Ext.bind(this.hide, this));
     }
 });
@@ -3701,7 +3674,7 @@ Ext.define('Ung.RowEditorWindow', {
         if (this.rowEditorLabelWidth == null) {
             this.rowEditorLabelWidth = 100;
         }
-        if(this.bbar == null){
+        if(this.bbar == null) {
             this.bbar  = [
                 '->',
                 {
@@ -4172,8 +4145,8 @@ Ext.define('Ung.EditorGrid', {
             autoLoad: false,
             sorters: this.sortField ? {
                 property: this.sortField,
-                direction: this.sortOrder ? this.sortOrder : "ASC"
-            } : null,
+                direction: this.sortOrder ? this.sortOrder: "ASC"
+            }: null,
             groupField: this.groupField,
             remoteSort: this.paginated,
             listeners: {
@@ -4325,7 +4298,7 @@ Ext.define('Ung.EditorGrid', {
             } else {
                 if(importMode=='append') {
                     this.getStore().add(records);
-                } else if(importMode=='prepend'){ //replace or prepend mode
+                } else if(importMode=='prepend') { //replace or prepend mode
                     this.getStore().insert(0, records.reverse());
                 }
                 this.updateChangedDataOnImport(records, "added");
@@ -4357,7 +4330,7 @@ Ext.define('Ung.EditorGrid', {
             var exportForm = document.getElementById('exportGridSettings');
             exportForm["gridName"].value=gridName;
             exportForm["gridData"].value="";
-            exportForm["gridData"].value=Ext.encode(this.getFullSaveList(true));
+            exportForm["gridData"].value=Ext.encode(this.getPageList(true));
             exportForm.submit();
             Ext.MessageBox.hide();
         }, this ));
@@ -4437,13 +4410,13 @@ Ext.define('Ung.EditorGrid', {
     initialLoad: function() {
         this.setTotalRecords(this.totalRecords);
         this.getStore().loadPage(1,{
-            limit:this.isPaginated() ? this.recordsPerPage : Ung.Util.maxRowCount
+            limit:this.isPaginated() ? this.recordsPerPage: Ung.Util.maxRowCount
         });
     },
     // load a page
     loadPage: function(page, callback, scope, arg) {
         this.getStore().loadPage(page, {
-            limit:this.isPaginated() ? this.recordsPerPage : Ung.Util.maxRowCount,
+            limit:this.isPaginated() ? this.recordsPerPage: Ung.Util.maxRowCount,
             callback: callback,
             scope: scope,
             arg: arg
@@ -4495,8 +4468,8 @@ Ext.define('Ung.EditorGrid', {
         this.setTotalRecords(this.data.length);
         this.getStore().load();           
     },
-    reloadGrid: function(options){
-        if(options && options.data){
+    reload: function(options) {
+        if(options && options.data) {
             this.data = options.data;
         }
         this.clearDirty();
@@ -4596,7 +4569,6 @@ Ext.define('Ung.EditorGrid', {
                 }
             }
         }
-
     },
     // Set the total number of records
     setTotalRecords: function(totalRecords) {
@@ -4648,18 +4620,44 @@ Ext.define('Ung.EditorGrid', {
             });
         }
     },
-    // Get the save list from the changed data
-    //TODO: rename to getAddedDeletedModifiedLists
-    getSaveList: function() {
-        return Ung.Util.getSaveList(this.changedData, this.recordJavaClass);
+    getAddedDeletedModifiedLists: function() {
+        var added = [];
+        var deleted = [];
+        var modified = [];
+        for (id in this.changedData) {
+          var cd = this.changedData[id];
+          if ("deleted" == cd.op) {
+            if (id > 0) {
+              deleted.push(parseInt(id));
+              }
+          } else {
+            if (this.recordJavaClass != null) {
+              cd.recData["javaClass"] = this.recordJavaClass;
+            }
+            if (id < 0) {
+              added.push(cd.recData);
+            } else {
+              modified.push(cd.recData);
+            }
+          }
+        }
+        return [{
+            list: added,
+            "javaClass": "java.util.ArrayList"
+        }, {
+            list: deleted,
+            "javaClass": "java.util.ArrayList"
+        }, {
+            list: modified,
+            "javaClass": "java.util.ArrayList"
+        }];
     },
-    // Get the entire list
+    // Get the page list
     // for the unpaginated grids, that send all the records on save
     //Attention this only gets the records from the current page!
-    //It can's be used for grids that may have pagination.
+    //It can't be used for grids that may have pagination.
     //Can be used only for grids that have explicitly set: paginated: false
-    //TODO: rename this all occurences to getPageList 
-    getFullSaveList: function(forExport) {
+    getPageList: function(forExport) {
         var list=[];
         var records=this.getStore().getRange();
         for(var i=0; i<records.length;i++) {
@@ -4672,7 +4670,7 @@ Ext.define('Ung.EditorGrid', {
                     }
                 }
             }
-            if (this.recordJavaClass != null){
+            if (this.recordJavaClass != null) {
                 records[i].data["javaClass"] = this.recordJavaClass;
             }
             var recData=Ext.decode(Ext.encode(records[i].data));
@@ -4684,8 +4682,10 @@ Ext.define('Ung.EditorGrid', {
 
         return list;
     },
-    //TODO: rename this all occurences to getList
-    getGridSaveList: function(handler, skipRepagination) {
+    // Get the entire list from all pages, and the result is returned in the callback handler function.
+    // This is why it cannot be used synchronusly. it have to be used in an async way.
+    // First it remove pagination the grid then it gets the list
+    getList: function(handler, skipRepagination) {
         if(this.isPaginated()) {
             var oldSettings=null;
             if(!skipRepagination) {
@@ -4710,13 +4710,13 @@ Ext.define('Ung.EditorGrid', {
             this.getStore().loadPage(1, {
                 limit:Ung.Util.maxRowCount,
                 callback: Ext.bind(function() {
-                    var result=this.getFullSaveList();
+                    var result=this.getPageList();
                     Ung.Util.generateListIds(result);
                     if(!skipRepagination) {
                         this.changedData = oldSettings.changedData;
                         this.minPaginateCount = oldSettings.minPaginateCount;
                         this.getStore().loadPage(oldSettings.page, {
-                            limit:this.isPaginated() ? this.recordsPerPage : Ung.Util.maxRowCount,
+                            limit:this.isPaginated() ? this.recordsPerPage: Ung.Util.maxRowCount,
                                 callback:Ext.bind(function() {
                                 handler({
                                     javaClass: "java.util.LinkedList",
@@ -4735,7 +4735,7 @@ Ext.define('Ung.EditorGrid', {
                 scope: this
             });
         } else {
-            var fullSaveList = this.getFullSaveList();
+            var fullSaveList = this.getPageList();
             Ung.Util.generateListIds(fullSaveList);
             handler({
                 javaClass: "java.util.LinkedList",
@@ -4745,7 +4745,7 @@ Ext.define('Ung.EditorGrid', {
     },
     //Trying to create a function to get data from all pages in one line without the need of the callback function as parameter
     //This is not working as expected so it should not be used. may stay here for future development
-    getGridData: function() {
+    _getGridData: function() {
         var data=null;
         if(this.isPaginated()) {
             var oldSettings = {
@@ -4761,14 +4761,14 @@ Ext.define('Ung.EditorGrid', {
             this.getStore().loadPage(1, {
                 limit: Ung.Util.maxRowCount
             });
-            data=this.getFullSaveList();
+            data=this.getPageList();
             this.changedData = oldSettings.changedData;
             //reload grid context
             this.getStore().loadPage(oldSettings.page, {
-                limit: this.isPaginated() ? this.recordsPerPage : Ung.Util.maxRowCount
+                limit: this.isPaginated() ? this.recordsPerPage: Ung.Util.maxRowCount
             });
         } else {
-            data=this.getFullSaveList();  
+            data=this.getPageList();  
         }
         return {
             javaClass: "java.util.LinkedList",
@@ -4784,7 +4784,7 @@ Ext.define('Ung.EditorGrid', {
                 var d = this.changedData[id];
                 if (d) {
                     if (d.op == "deleted") {
-                        if (this.recordJavaClass != null){
+                        if (this.recordJavaClass != null) {
                             records[i].data["javaClass"] = this.recordJavaClass;
                         }
                         list.push(records[i].data);
@@ -4801,20 +4801,20 @@ Ext.define('Ung.EditorGrid', {
 Ext.define('Ung.JsonListReader', {
     extend:'Ext.data.JsonReader',
     autoGenerateId:true,
-    generatedId:1,
+    generatedId: 1,
     readRecords: function(o) {
-        var sid = this.meta ? this.meta.id : null;
+        var sid = this.meta ? this.meta.id: null;
         var recordType = this.recordType, fields = recordType.prototype.fields;
         var records = [];
-        this.getRoot = this.meta.root ? this.getJsonAccessor(this.meta.root) : function(p) {
+        this.getRoot = this.meta.root ? this.getJsonAccessor(this.meta.root): function(p) {
             return p;
         };
         var root = this.getRoot(o);
         for (var i = 0; i < root.length; i++) {
             var n = root[i];
             var values = {};
-            var id = ((sid || sid === 0) && n[sid] !== undefined && n[sid] !== "" ? n[sid] : null);
-            var fName = (fields && fields.length > 0) ? fields.items[0].name : "name";
+            var id = ((sid || sid === 0) && n[sid] !== undefined && n[sid] !== "" ? n[sid]: null);
+            var fName = (fields && fields.length > 0) ? fields.items[0].name: "name";
             values[fName] = n;
             if(this.autoGenerateId) {
                 values['id'] = this.generatedId++;
@@ -4943,7 +4943,7 @@ Ext.define('Ung.ImportSettingsWindow', {
         if (this.title == null) {
             this.title = i18n._('Import Settings');
         }
-        if(this.bbar == null){
+        if(this.bbar == null) {
             this.bbar  = [
                 '->',
                 {
@@ -5101,7 +5101,7 @@ Ext.define('Ung.MatcherEditorWindow', {
         if (this.title == null) {
             this.title = i18n._('Edit');
         }
-        if(this.bbar == null){
+        if(this.bbar == null) {
             this.bbar  = [
                 '->',
                 {
@@ -5147,7 +5147,7 @@ Ext.define('Ung.MatcherEditorWindow', {
         this.setValue(value);
     },
     updateAction: function() {
-        this.record.set("value",this.getValue());
+        this.record.set("value", this.getValue());
         this.rulebuilder.dirtyFlag = true;
         this.rulebuilder.fireEvent("afteredit");
         this.hide();
@@ -5198,7 +5198,7 @@ Ext.define('Ung.TimeEditorWindow', {
         xtype:'fieldset',
         name: 'Start Time',
         title:i18n._("Start Time"),
-		fieldLabel: this.i18n._("Start Time - End Time"),
+        fieldLabel: this.i18n._("Start Time - End Time"),
         layout: {
             type: 'table',
             columns: 7
@@ -5208,7 +5208,7 @@ Ext.define('Ung.TimeEditorWindow', {
             id: 'start_time_hour',
             editable: false,
             width: 40,
-		    allowBlank: false,
+            allowBlank: false,
             store: [["00","00"], ["01","01"], ["02","02"], ["03","03"], ["04","04"], ["05","05"], ["06","06"], ["07","07"], ["08","08"], ["09","09"],
                     ["10","10"], ["11","11"], ["12","12"], ["13","13"], ["14","14"], ["15","15"], ["16","16"], ["17","17"], ["18","18"], ["19","19"],
                     ["20","20"], ["21","21"], ["22","22"], ["23","23"]]
@@ -5221,7 +5221,7 @@ Ext.define('Ung.TimeEditorWindow', {
             id: 'start_time_minute',
             editable: false,
             width: 40,
-		    allowBlank: false,
+            allowBlank: false,
             store: [["00","00"], ["01","01"], ["02","02"], ["03","03"], ["04","04"], ["05","05"], ["06","06"], ["07","07"], ["08","08"], ["09","09"],
                     ["10","10"], ["11","11"], ["12","12"], ["13","13"], ["14","14"], ["15","15"], ["16","16"], ["17","17"], ["18","18"], ["19","19"],
                     ["20","20"], ["21","21"], ["22","22"], ["23","23"], ["24","24"], ["25","25"], ["26","26"], ["27","27"], ["28","28"], ["29","29"],
@@ -5231,13 +5231,13 @@ Ext.define('Ung.TimeEditorWindow', {
         }, {
             cls: 'description',
             border: false,
-		    html: "&nbsp;" + this.i18n._("to") + "&nbsp;"
+            html: "&nbsp;" + this.i18n._("to") + "&nbsp;"
         }, {
             xtype: 'combo',
             id: 'end_time_hour',
             editable: false,
             width: 40,
-		    allowBlank: false,
+            allowBlank: false,
             store: [["00","00"], ["01","01"], ["02","02"], ["03","03"], ["04","04"], ["05","05"], ["06","06"], ["07","07"], ["08","08"], ["09","09"],
                     ["10","10"], ["11","11"], ["12","12"], ["13","13"], ["14","14"], ["15","15"], ["16","16"], ["17","17"], ["18","18"], ["19","19"],
                     ["20","20"], ["21","21"], ["22","22"], ["23","23"]]
@@ -5250,7 +5250,7 @@ Ext.define('Ung.TimeEditorWindow', {
             id: 'end_time_minute',
             editable: false,
             width: 40,
-		    allowBlank: false,
+            allowBlank: false,
             store: [["00","00"], ["01","01"], ["02","02"], ["03","03"], ["04","04"], ["05","05"], ["06","06"], ["07","07"], ["08","08"], ["09","09"],
                     ["10","10"], ["11","11"], ["12","12"], ["13","13"], ["14","14"], ["15","15"], ["16","16"], ["17","17"], ["18","18"], ["19","19"],
                     ["20","20"], ["21","21"], ["22","22"], ["23","23"], ["24","24"], ["25","25"], ["26","26"], ["27","27"], ["28","28"], ["29","29"],
@@ -5258,7 +5258,7 @@ Ext.define('Ung.TimeEditorWindow', {
                     ["40","40"], ["41","41"], ["42","42"], ["43","43"], ["44","44"], ["45","45"], ["46","46"], ["47","47"], ["48","48"], ["49","49"],
                     ["50","50"], ["51","51"], ["52","52"], ["53","53"], ["54","54"], ["55","55"], ["56","56"], ["57","57"], ["58","58"], ["59","59"]]
         }]
-	}, {
+    }, {
         xtype: 'radio',
         name: 'timeMethod',
         id: 'time_method_custom',
@@ -5283,10 +5283,10 @@ Ext.define('Ung.TimeEditorWindow', {
             }
         }
     }, {
-    	xtype:'textfield',
+        xtype:'textfield',
         id: 'time_custom_value',
         width: 250,
-		allowBlank:false
+        allowBlank:false
     }],
     setValue: function(value) {
         var time_method_custom = Ext.getCmp("time_method_custom");
@@ -5389,7 +5389,7 @@ Ext.define('Ung.UserEditorWindow', {
                     convert: function(val, rec) {
                         if (val != null && val != "")
                             return val;
-                        var displayName = ( rec.data.firstName == null )  ? "" : rec.data.firstName;
+                        var displayName = ( rec.data.firstName == null )  ? "": rec.data.firstName;
                         displayName = displayName + " " + (( rec.data.lastName == null )  ? "": rec.data.lastName);
                         return displayName;
                     }
@@ -5398,7 +5398,7 @@ Ext.define('Ung.UserEditorWindow', {
             columns: [ {
                 header: i18n._("Selected"),
                 width: 60,
-				xtype:'checkcolumn',
+                xtype:'checkcolumn',
                 dataIndex: "checked"
             }, {
                 header: i18n._("Name"),
@@ -5450,10 +5450,10 @@ Ext.define('Ung.UserEditorWindow', {
                 }
             }
         }, {
-    	    xtype:'textfield',
+            xtype:'textfield',
             id: 'user_custom_value',
             width: 250,
-		    allowBlank:false
+            allowBlank:false
         }];
         
         this.callParent(arguments);
@@ -5537,7 +5537,7 @@ Ext.define('Ung.GroupEditorWindow', {
             columns: [ {
                 header: i18n._("Selected"),
                 width: 60,
-				xtype:'checkcolumn',
+                xtype:'checkcolumn',
                 dataIndex: "checked"
             }, {
                 header: i18n._("Name"),
@@ -5589,10 +5589,10 @@ Ext.define('Ung.GroupEditorWindow', {
                 }
             }
         }, {
-    	    xtype:'textfield',
+            xtype:'textfield',
             id: 'group_custom_value',
             width: 250,
-		    allowBlank:false
+            allowBlank:false
         }];
         
         this.callParent(arguments);
@@ -5868,7 +5868,7 @@ Ext.define('Ung.RuleBuilder', {
                         valObj.value='';
                         valObj.select();
                         valObj.setAttribute('style','border:1px #C30000 solid');
-                    }else {
+                    } else {
                         valObj.removeAttribute('style');
                         record.data.value=new_value;
                     }

@@ -2,7 +2,7 @@ if (!Ung.hasResource["Ung.Upgrade"]) {
     Ung.hasResource["Ung.Upgrade"] = true;
 
      Ext.define('Ung.Upgrade', {
-    	extend: 'Ung.ConfigWin',
+        extend: 'Ung.ConfigWin',
         gridUpgrade: null,
         panelSettings: null,
         initComponent: function() {
@@ -62,46 +62,46 @@ if (!Ung.hasResource["Ung.Upgrade"]) {
                                 var totalSize=0;
                                 for (var i = 0; i < upgradeList.length; i++) {
                                     var md = upgradeList[i];
-				                    var mtype;
-				                    var displayName = md.displayNane;
-				                    totalSize+=md.size;
-				                    // Leave out only libitems
-				                    switch (md.type) {
-				                    case "LIB_ITEM":
-				                    case "TRIAL":
-				                      // Skip
-				                      continue;
-				                    case "LIBRARY":
-				                    case "BASE":
-				                    case "CASING":
-				                      mtype = this.i18n._("System Component");
-				                      break;
-				                    case "NODE":
-				                    case "SERVICE":
-				                      mtype = this.i18n._("Product");
-				                      break;
-				                    case "UNKNOWN":
-				                      mtype = this.i18n._("System Component");
-				                      break;
-				                    }
-				                    if (displayName == null) {
-				                    if (md.shortDescription != null)
-				                        displayName = md.shortDescription;
-				                    else
-				                        displayName = md.name;
-				                    } 
-				                    if (displayName != null) {
-				                    	displayName = displayName.replace("Untangle",main.getOemManager().getOemName());
-				                    }
-				                    somethingVisibleAdded = true;
-					                    upgradeData.push({
-					                    image: "image?name=" + md.name,
-					                    name: md.name,
-					                    displayName: displayName,
-					                    availableVersion: md.availableVersion,
-					                    type: mtype,
-					                    size: Math.round(md.size / 1000)
-				                    });
+                                    var mtype;
+                                    var displayName = md.displayNane;
+                                    totalSize+=md.size;
+                                    // Leave out only libitems
+                                    switch (md.type) {
+                                    case "LIB_ITEM":
+                                    case "TRIAL":
+                                      // Skip
+                                      continue;
+                                    case "LIBRARY":
+                                    case "BASE":
+                                    case "CASING":
+                                      mtype = this.i18n._("System Component");
+                                      break;
+                                    case "NODE":
+                                    case "SERVICE":
+                                      mtype = this.i18n._("Product");
+                                      break;
+                                    case "UNKNOWN":
+                                      mtype = this.i18n._("System Component");
+                                      break;
+                                    }
+                                    if (displayName == null) {
+                                    if (md.shortDescription != null)
+                                        displayName = md.shortDescription;
+                                    else
+                                        displayName = md.name;
+                                    } 
+                                    if (displayName != null) {
+                                        displayName = displayName.replace("Untangle",main.getOemManager().getOemName());
+                                    }
+                                    somethingVisibleAdded = true;
+                                        upgradeData.push({
+                                        image: "image?name=" + md.name,
+                                        name: md.name,
+                                        displayName: displayName,
+                                        availableVersion: md.availableVersion,
+                                        type: mtype,
+                                        size: Math.round(md.size / 1000)
+                                    });
                                 }
                                 if (!somethingVisibleAdded) {
                                     upgradeData.push({
@@ -139,26 +139,26 @@ if (!Ung.hasResource["Ung.Upgrade"]) {
                 tbar: [{xtype: 'tbtext', text: i18n._("Checking for upgrades...")}],
                 isDirty: function() { return false;},
                 store: Ext.create('Ext.data.Store', {
-                	data:[],
-                	proxy: {
-    					type: 'memory',
-    					reader: {
-    						type: 'json',
-    						root: ''
-    					}
-    				},
-    				fields: [{
-	                        name: 'image'
-	                    }, {
-	                        name: 'name'
-	                    }, {
-	                        name: 'displayName'
-	                    }, {
-	                        name: 'availableVersion'
-	                    }, {
-	                        name: 'type'
-	                    }, {
-	                        name: 'size'
+                    data:[],
+                    proxy: {
+                        type: 'memory',
+                        reader: {
+                            type: 'json',
+                            root: ''
+                        }
+                    },
+                    fields: [{
+                            name: 'image'
+                        }, {
+                            name: 'name'
+                        }, {
+                            name: 'displayName'
+                        }, {
+                            name: 'availableVersion'
+                        }, {
+                            name: 'type'
+                        }, {
+                            name: 'size'
                     }]
                 }),
                 columns: [{
@@ -305,7 +305,7 @@ if (!Ung.hasResource["Ung.Upgrade"]) {
                 }]
             });
         },
-        doSaveAction: function (isApply) {
+        save: function (isApply) {
             rpc.systemManager.setSettings(Ext.bind(function(result, exception) {
                 Ext.MessageBox.hide();
                 if(Ung.Util.handleException(exception)) return;
