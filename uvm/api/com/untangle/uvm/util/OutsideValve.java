@@ -77,6 +77,7 @@ public abstract class OutsideValve extends ValveBase
     {
         UvmContext uvm = UvmContextFactory.context();
         Map<String,String> i18n_map = uvm.languageManager().getTranslations("untangle-libuvm");
+        logger.warn("Disallowing HTTPS access (" + getClass() + "): ", new Exception()); 
         return I18nUtil.tr("Off-site administration is disabled.", i18n_map);
     }
 

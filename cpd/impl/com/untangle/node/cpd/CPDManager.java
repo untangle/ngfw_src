@@ -66,6 +66,7 @@ public class CPDManager
 
         fw = new FileWriter(CPD_WEB_CONFIG);
         fw.write(String.format( "<?php $https_redirect = %s;?>", settings.getUseHttpsPage() ? "TRUE" : "FALSE" ));
+        fw.write(String.format( "<?php $https_port = %s;?>", UvmContextFactory.context().systemManager().getSettings().getHttpsPort()));
         fw.close();
     }
 

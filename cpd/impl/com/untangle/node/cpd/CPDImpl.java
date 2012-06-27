@@ -28,6 +28,7 @@ import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.UvmException;
 import com.untangle.uvm.UvmState;
 import com.untangle.uvm.BrandingManager;
+import com.untangle.uvm.NetworkManager;
 import com.untangle.uvm.node.NodeSettings;
 import com.untangle.uvm.node.License;
 import com.untangle.uvm.node.Node;
@@ -41,6 +42,8 @@ import com.untangle.uvm.util.OutsideValve;
 import com.untangle.uvm.util.JsonClient.ConnectionException;
 import com.untangle.uvm.vnet.NodeBase;
 import com.untangle.uvm.vnet.PipeSpec;
+import com.untangle.uvm.networking.NetworkConfigurationListener;
+import com.untangle.uvm.networking.NetworkConfiguration;
 import com.untangle.uvm.SettingsManager;
 
 public class CPDImpl extends NodeBase implements CPD
@@ -62,6 +65,8 @@ public class CPDImpl extends NodeBase implements CPD
 
     private CPDIpUsernameMapAssistant assistant = null;
 
+    private static NetworkListener listener = null;
+    
     private CPDSettings settings;
 
     private EventLogQuery loginEventQuery;
@@ -84,6 +89,8 @@ public class CPDImpl extends NodeBase implements CPD
 
         this.addMetric(new NodeMetric(STAT_BLOCK, I18nUtil.marktr("Sessions blocked")));
         this.addMetric(new NodeMetric(STAT_AUTHORIZE, I18nUtil.marktr("Clients authorized")));
+
+        initializeListerner();
     }
 
     public void initializeSettings()
@@ -534,7 +541,7 @@ public class CPDImpl extends NodeBase implements CPD
                 /* Unified way to determine which parameter to check */
                 protected boolean isOutsideAccessAllowed()
                 {
-                    return false;
+                    return true;
                 }
             };
 
@@ -559,4 +566,34 @@ public class CPDImpl extends NodeBase implements CPD
             logger.warn("Uanble to unload authentication WebApp");
         }
     }
+
+    private synchronized void initializeListerner()
+    {
+        /**
+         * If this is the first IPMatcher to be initialized
+         * start the network listener
+         */
+        if (listener == null) {
+            UvmContext context = UvmContextFactory.context();
+            if (context == null)
+                return;
+            
+            NetworkManager netMan = UvmContextFactory.context().networkManager();
+            if (netMan == null)
+                return;
+                    
+            this.listener = new NetworkListener();
+            netMan.registerListener( this.listener );
+        }
+    }
+    
+    private class NetworkListener implements NetworkConfigurationListener
+    {
+        public void event( NetworkConfiguration settings )
+        {
+            // we don this in case the https port changes
+            reconfigure(true);
+        }
+    }
+
 }
