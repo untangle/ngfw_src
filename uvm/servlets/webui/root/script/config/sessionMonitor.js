@@ -438,7 +438,7 @@ if (!Ung.hasResource["Ung.SessionMonitor"]) {
                     boxLabel: this.i18n._("Application Control - Protochain"),
                     gridColumnHeader: this.i18n._("Protochain (Application Control)"),
                     gridColumnDataIndex: "classd-protochain",
-                    gridColumnWidth: 100
+                    gridColumnWidth: 140
                 },{
                     xtype: 'checkbox',
                     checked: false,
