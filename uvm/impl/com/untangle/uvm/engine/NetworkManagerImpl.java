@@ -637,7 +637,7 @@ public class NetworkManagerImpl implements NetworkManager
                     try {Thread.sleep(3000);} catch(Exception e) {}
                     tryCount++;
                 }
-                while (tryCount < 5);
+                while (tryCount < 8);
             }
             
             if (!success) {
