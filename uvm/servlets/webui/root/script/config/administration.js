@@ -176,15 +176,11 @@ if (!Ung.hasResource["Ung.Administration"]) {
                 parentId: this.getId(),
                 title: this.i18n._('Administration'),
                 layout: "anchor",
-                defaults: {
-                    anchor: '98%'
-                },
                 cls: 'ung-panel',
-                autoScroll: true,
                 items: [this.gridAdminAccounts=Ext.create("Ung.EditorGrid",{
+                    anchor: "100% -260",
                     settingsCmp: this,
                     title: this.i18n._("Admin Accounts"),
-                    height: 200,
                     bodyStyle: 'padding-bottom:30px;',
                     autoScroll: true,
                     hasEdit: false,
@@ -197,7 +193,6 @@ if (!Ung.hasResource["Ung.Administration"]) {
                         "password": null,
                         "passwordHashBase64": null
                     },
-                    ignoreServerIds: true,
                     data: this.getAdminSettings().users.list,
                     // the list of fields; we need all as we get/set all records once
                     fields: [{
@@ -289,9 +284,11 @@ if (!Ung.hasResource["Ung.Administration"]) {
                 }), {
                     xtype: 'fieldset',
                     id:'external_administration_fieldset',
+                    cls: 'description',
                     title: this.i18n._('Services Access'),
-                    autoHeight: true,
-                    labelWidth: 150,
+                    defaults: {
+                        labelWidth: 150,
+                    },
                     items: [{
                         xtype: 'numberfield',
                         fieldLabel: this.i18n._('HTTPS port'),
@@ -408,7 +405,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
                         html: this.i18n._('Note:') + "<br/>" +
                             this.i18n._('HTTP  Outside administration is always disabled.') + "<br/>" +
                             this.i18n._('HTTPS Inside administration is always enabled.') + "<br/>" +
-                            this.i18n._('HTTP  Inside port is always open for block pages even when administration is disabled.') + "<br/>"
+                            this.i18n._('HTTP  Inside port is always open for block pages even when administration is disabled.')
                     }]
                 }]
             });
@@ -608,7 +605,9 @@ if (!Ung.hasResource["Ung.Administration"]) {
                 },
                 items: [{
                     title: this.i18n._('Status'),
-                    labelWidth: 150,
+                    defaults: {
+                        labelWidth: 150,
+                    },
                     items: [{
                         xtype: 'textfield',
                         fieldLabel: this.i18n._('Valid starting'),
@@ -1094,7 +1093,9 @@ if (!Ung.hasResource["Ung.Administration"]) {
                 },
                 items: [{
                     title: this.i18n._('SNMP'),
-                    labelWidth: 150,
+                    defaults: {
+                        labelWidth: 150,
+                    },
                     items: [{
                         xtype: 'radio',
                         boxLabel: Ext.String.format(this.i18n._('{0}Disable{1} SNMP Monitoring. (This is the default setting.)'), '<b>', '</b>'),
