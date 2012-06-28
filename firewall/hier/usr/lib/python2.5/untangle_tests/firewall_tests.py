@@ -325,7 +325,7 @@ class FirewallTests(unittest.TestCase):
         assert (result != 0)
 
     # verify rules that both MUST match for the session to be blocked
-    def test_080_dualMatcherRuleAnd(self):
+    def test_081_dualMatcherRuleAnd(self):
         nukeRules();
         appendRule( createDualMatcherRule("SRC_ADDR", ClientControl.hostIP, "DST_PORT", 79) );
         result = clientControl.runCommand("wget -o /dev/null -t 1 --timeout=3 http://test.untangle.com/")

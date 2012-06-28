@@ -66,6 +66,8 @@ class ShieldTests(unittest.TestCase):
     def test_999_finalTearDown(self):
         global node
         uvmContext.nodeManager().destroy( node.getNodeSettings()["id"] )
+        # remove this line after alpaca is replaced
+        time.sleep(10) # FIXME - this is for alpaca to take care of its shit
         node = None
         nodeSettings = None
         
