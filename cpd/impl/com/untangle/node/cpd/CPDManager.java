@@ -64,10 +64,19 @@ public class CPDManager
         fw.write("\n");
         fw.close();
 
-        fw = new FileWriter(CPD_WEB_CONFIG);
-        fw.write(String.format( "<?php $https_redirect = %s;?>", settings.getUseHttpsPage() ? "TRUE" : "FALSE" ));
-        fw.write(String.format( "<?php $https_port = %s;?>", UvmContextFactory.context().systemManager().getSettings().getHttpsPort()));
-        fw.close();
+        writePhpConfig(settings);
+    }
+
+    void writePhpConfig(CPDSettings settings)
+    {
+        try {
+            FileWriter fw = new FileWriter(CPD_WEB_CONFIG);
+            fw.write(String.format( "<?php $https_redirect = %s;?>", settings.getUseHttpsPage() ? "TRUE" : "FALSE" ));
+            fw.write(String.format( "<?php $https_port = %s;?>", UvmContextFactory.context().systemManager().getSettings().getHttpsPort()));
+            fw.close();
+        } catch (Exception e) {
+            logger.warn("Failed to write PHP config file",e);
+        }
     }
 
     boolean clearHostDatabase() throws JSONException, ConnectionException

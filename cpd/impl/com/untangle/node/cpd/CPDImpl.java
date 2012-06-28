@@ -589,10 +589,10 @@ public class CPDImpl extends NodeBase implements CPD
     
     private class NetworkListener implements NetworkConfigurationListener
     {
-        public void event( NetworkConfiguration settings )
+        public void event( NetworkConfiguration netSettings )
         {
             // we don this in case the https port changes
-            reconfigure(true);
+            manager.writePhpConfig( settings );
         }
     }
 
