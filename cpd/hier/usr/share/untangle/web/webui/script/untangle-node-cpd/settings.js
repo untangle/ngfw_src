@@ -1141,7 +1141,7 @@ if (!Ung.hasResource["Ung.CPD"]) {
                     header: this.i18n._("Client"),
                     width: Ung.Util.ipFieldWidth,
                     sortable: true,
-                    dataIndex: "client"
+                    dataIndex: "client_address"
                 },{
                     header: this.i18n._("Reason"),
                     width: 100,
@@ -1154,7 +1154,7 @@ if (!Ung.hasResource["Ung.CPD"]) {
                     header: this.i18n._("Server"),
                     width: Ung.Util.ipFieldWidth,
                     sortable: true,
-                    dataIndex: "server"
+                    dataIndex: "server_address"
                 }]
             });
         },
