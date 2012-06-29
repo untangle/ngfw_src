@@ -71,6 +71,7 @@ if (!Ung.hasResource["Ung.SystemInfo"]) {
                 parentId: this.getId(),
                 title: this.i18n._('License Agreement'),
                 cls: 'ung-panel',
+                bodyStyle: 'padding:5px 5px 0px; 5px;',
                 items: [{
                     xtype: "button",
                     text: this.i18n._("View License"),
