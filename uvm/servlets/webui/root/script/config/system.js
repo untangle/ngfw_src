@@ -860,7 +860,14 @@ if (!Ung.hasResource["Ung.System"]) {
                         html: this.i18n._("time is automatically synced via NTP")
                     }, {
                         id: "system_regionalSettings_currentTime",
-                        html: rpc.adminManager.getDate()
+                        html: ".",//rpc.adminManager.getDate(),
+                        listeners: {
+                            "afterrender": {
+                                fn: Ext.bind(function(elem) {
+                                    this.timeUpdate();
+                                }, this)
+                            }
+                        }
                     }]
                 }, {
                     title: this.i18n._("Timezone"),
@@ -1039,20 +1046,21 @@ if (!Ung.hasResource["Ung.System"]) {
                     });
                 }
             });
-
-            this.timeUpdateFunction = Ext.bind(function() {
-                if(!this.isVisible())
-                    return;
-                else {
+        },
+        timeUpdate: function() {
+            if(!this.isVisible())
+                return;
+            else {
+                rpc.adminManager.getDate(Ext.bind(function(result, exception) {
+                    if(Ung.Util.handleException(exception)) return;
                     var currentTimeObj = Ext.getCmp("system_regionalSettings_currentTime");
-                    if (currentTimeObj != null && currentTimeObj.body != null)
-                        currentTimeObj.body.update(rpc.adminManager.getDate());
-                    //TODO: Consider revising this functionality: Every second it makes a request to server to get the curent data!!!
-                    window.setTimeout(this.timeUpdateFunction, 1000);
-                }
-            }, this);
-
-            window.setTimeout(this.timeUpdateFunction, 1000);
+                    if (currentTimeObj != null && currentTimeObj.body != null) {
+                        currentTimeObj.body.update(result);
+                        //Updates every 10 seconds to decrease data trafic...
+                        Ext.defer(this.timeUpdate, 10000, this)
+                    }
+                }, this));
+            }
         },
         // validation function
         validate: function() {
@@ -1060,7 +1068,6 @@ if (!Ung.hasResource["Ung.System"]) {
             return  (!this.isHttpLoaded() || this.validateMaxHeaderLength() && this.validateMaxUriLength()) &&
                (!this.isMailLoaded() || this.validateSMTP() && this.validatePOP() && this.validateIMAP());
         },
-
         //validate Max URI Length
         validateMaxUriLength: function() {
             var maxUriLengthCmp = Ext.getCmp("system_protocolSettings_maxUriLength");

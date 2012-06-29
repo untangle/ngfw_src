@@ -330,14 +330,12 @@ if (!Ung.hasResource["Ung.CPD"]) {
                         html: this.i18n._("The time of day.")
                     },{
                         xtype: "utimefield",
-                        format: this.i18n.timeFmt(),
                         name: "startTime",
                         dataIndex: "startTime",
                         fieldLabel: this.i18n._("Start Time"),
                         allowBlank: false
                     },{
                         xtype: "utimefield",
-                        format: this.i18n.timeFmt(),
                         endTime: true,
                         name: "endTime",
                         dataIndex: "endTime",

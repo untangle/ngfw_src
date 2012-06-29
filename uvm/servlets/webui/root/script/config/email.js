@@ -735,7 +735,6 @@ if (!Ung.hasResource["Ung.Email"]) {
                         }
                     }, {
                         xtype: 'timefield',
-                        format: this.i18n.timeFmt(),
                         name: 'Digest Sending Time',
                         id: 'quarantine_dailySendingTime',
                         labelWidth: 230,

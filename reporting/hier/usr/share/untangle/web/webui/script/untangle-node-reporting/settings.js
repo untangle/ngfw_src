@@ -132,7 +132,6 @@ if (!Ung.hasResource["Ung.Reporting"]) {
                         html: this.i18n._("Scheduled time to generate the reports.")
                     }, {
                         xtype: 'timefield',
-                        format: this.i18n.timeFmt(),
                         fieldLabel: this.i18n._('Generation Time'),
                         name: 'Generation Time',
                         width: 90,

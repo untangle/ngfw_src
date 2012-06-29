@@ -390,8 +390,19 @@ Ext.define("Ung.Main", {
     initExtI18n: function() {
         var locale = rpc.languageSettings.language;
         if(locale) {
-          Ung.Util.loadScript('/ext4/locale/ext-lang-' + locale + '.js');
+          Ung.Util.loadScript('/ext4/locale/ext-lang-' + locale + '.js', main.overrideLanguageSettings);
+        } else {
+            main.overrideLanguageSettings();
         }
+    },
+    overrideLanguageSettings: function () {
+        // Uncomment this to override the language timefield format for the current language
+        //TODO: consider adding support to set this in a Time Format section in Config -> Settings -> Regional Settings (would be stored in AdminManager.AdminSettings)
+        /*
+        Ext.apply(Ext.form.field.Time.prototype, {
+            format : "H:i"    //may also use: "g:i A"
+        });
+        */
     },
     initExtGlobal: function() {
         // init quick tips

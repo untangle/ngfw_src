@@ -286,7 +286,6 @@ if (!Ung.hasResource["Ung.Upgrade"]) {
                         }
                     }, {
                         xtype: 'timefield',
-                        format: this.i18n.timeFmt(),
                         name: 'Upgrade Time',
                         width: 90,
                         hideLabel: true,
