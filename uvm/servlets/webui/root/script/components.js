@@ -2454,8 +2454,8 @@ Ext.define("Ung.FaceplateMetric", {
         }
         this.chart = Ext.create('Ext.chart.Chart', {
             renderTo: chartContainerEl,
-            width: 133,
-            height: 88,
+            width: chartContainerEl.getWidth(),
+            height: chartContainerEl.getHeight(),
             animate: false,
             //insetPadding: 11,
             store: Ext.create('Ext.data.JsonStore', {
