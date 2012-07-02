@@ -206,7 +206,7 @@ Ext.define("Ung.Main", {
         var contentRightArr=[
             '<div id="content-right">',
                 '<div id="racks" style="">',
-                    '<div id="rack-list"><div id="rack-select-container"></div><div id="parent-rack-container"></div><div id="alert-container" style="display:none;"></div>',
+                    '<div id="rack-list"><div id="rack-select-container"></div><div id="parent-rack-container"></div><div id="alert-container" style="display:none;"></div><div id="no-ie-container" style="display:none;"></div>',
                     '</div>',
                     '<div id="rack-nodes">',
                         '<div id="filter_nodes"></div>',
@@ -885,6 +885,22 @@ Ext.define("Ung.Main", {
             });
         }
     },
+    checkForIE: function (handler) {
+        if (Ext.isIE) {
+            var noIEDisplay = Ext.get('no-ie-container');
+            noIEDisplay.show();
+
+            this.noIEToolTip= new Ext.ToolTip({
+                target: document.getElementById("no-ie-container"),
+                dismissDelay: 0,
+                hideDelay: 1500,
+                width: 500,
+                cls: 'extended-stats',
+                html: i18n._("For an optimal experience use Google Chrome or Mozilla Firefox.")
+            });
+            this.noIEToolTip.render(Ext.getBody());
+        }
+    },
     checkForAlerts: function (handler) {
         //check for upgrades
         rpc.alertManager.getAlerts(Ext.bind(function( result, exception, opt, handler ) {
@@ -1138,6 +1154,7 @@ Ext.define("Ung.Main", {
             })
         });
         this.checkForAlerts();
+        this.checkForIE();
 
         if (this.firstTimeRun) {
             this.checkForUpgrades(main.loadRackView);
