@@ -40,21 +40,21 @@ public class FtpNodeImpl extends NodeBase
         return settings;
     }
 
-    public void setFtpSettings(final FtpSettings settings)
+    public void setFtpSettings(final FtpSettings newSettings)
     {
         String nodeID = this.getNodeSettings().getId().toString();
         String settingsName = System.getProperty("uvm.settings.dir") + "/untangle-casing-ftp/settings_" + nodeID;
         String settingsFile = settingsName + ".js";
 
-        this.settings = settings;
-
         try {
-            settingsManager.save(FtpSettings.class, settingsName, settings);
+            settingsManager.save(FtpSettings.class, settingsName, newSettings);
         } catch(Exception exn) {
             logger.error("setFtpSettings()",exn);
             return;
         }
 
+        this.settings = newSettings;
+        
         reconfigure();
     }
 

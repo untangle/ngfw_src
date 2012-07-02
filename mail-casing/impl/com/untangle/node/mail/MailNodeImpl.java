@@ -158,21 +158,21 @@ public class MailNodeImpl extends NodeBase implements MailNode, MailExport
         return settings;
     }
 
-    public void setMailNodeSettings(final MailNodeSettings settings)
+    public void setMailNodeSettings(final MailNodeSettings newSettings)
     {
         String nodeID = this.getNodeSettings().getId().toString();
         String settingsName = System.getProperty("uvm.settings.dir") + "/untangle-casing-mail/settings_" + nodeID;
         String settingsFile = settingsName + ".js";
 
-        this.settings = settings;
-
         try {
-            settingsManager.save(MailNodeSettings.class, settingsName, settings);
+            settingsManager.save(MailNodeSettings.class, settingsName, newSettings);
         } catch(Exception exn) {
             logger.error("setMailNodeSettings()",exn);
             return;
         }
 
+        this.settings = newSettings;
+        
         reconfigure();
         s_quarantine.setSettings(this, settings.getQuarantineSettings());
         s_safelistMngr.setSettings(this, settings);

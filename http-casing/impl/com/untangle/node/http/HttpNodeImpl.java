@@ -36,21 +36,21 @@ public class HttpNodeImpl extends NodeBase implements HttpNode
         return settings;
     }
 
-    public void setHttpSettings(final HttpSettings settings)
+    public void setHttpSettings(final HttpSettings newSettings)
     {
         String nodeID = this.getNodeSettings().getId().toString();
         String settingsName = System.getProperty("uvm.settings.dir") + "/untangle-casing-http/settings_" + nodeID;
         String settingsFile = settingsName + ".js";
 
-        this.settings = settings;
-
         try {
-            settingsManager.save(HttpSettings.class, settingsName, settings);
+            settingsManager.save(HttpSettings.class, settingsName, newSettings);
         } catch(Exception exn) {
             logger.error("setHttpSettings()",exn);
             return;
         }
 
+        this.settings = newSettings;
+        
         reconfigure();
     }
 
