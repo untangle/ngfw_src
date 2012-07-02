@@ -77,8 +77,6 @@ public class ReportingNodeImpl extends NodeBase implements ReportingNode, Report
         this.sanityCheck( settings );
 
         this._setSettings( settings );
-
-        this.reconfigure();
     }
 
     public ReportingSettings getSettings()
@@ -306,6 +304,7 @@ public class ReportingNodeImpl extends NodeBase implements ReportingNode, Report
             settingsManager.save(ReportingSettings.class, System.getProperty("uvm.settings.dir") + "/" + "untangle-node-reporting/" + "settings_"  + nodeID, newSettings);
         } catch (SettingsManager.SettingsException e) {
             logger.warn("Failed to save settings.",e);
+            return;
         }
 
         /**
@@ -313,6 +312,8 @@ public class ReportingNodeImpl extends NodeBase implements ReportingNode, Report
          */
         this.settings = newSettings;
         try {logger.debug("New Settings: \n" + new org.json.JSONObject(this.settings).toString(2));} catch (Exception e) {}
+
+        this.reconfigure();
     }
     
     private void writeCronFile()

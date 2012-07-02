@@ -48,14 +48,11 @@ public class FtpNodeImpl extends NodeBase
 
         this.settings = settings;
 
-        try
-        {
+        try {
             settingsManager.save(FtpSettings.class, settingsName, settings);
-        }
-
-        catch(Exception exn)
-        {
+        } catch(Exception exn) {
             logger.error("setFtpSettings()",exn);
+            return;
         }
 
         reconfigure();

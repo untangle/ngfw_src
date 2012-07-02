@@ -156,6 +156,7 @@ public class CPDImpl extends NodeBase implements CPD
             settingsManager.save(CPDSettings.class, settingsBase, settings);
         } catch (SettingsManager.SettingsException e) {
             logger.warn("Unable to save settings: ", e);
+            return;
         }
 
         reconfigure();

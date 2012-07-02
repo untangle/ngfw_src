@@ -137,11 +137,6 @@ public class FirewallImpl extends NodeBase implements Firewall
     public void setSettings(final FirewallSettings settings)
     {
         this._setSettings(settings);
-
-        /* check for any sessions that should be killed according to new rules */
-        this.killMatchingSessions(FIREWALL_SESSION_MATCHER);
-
-        this.reconfigure();
     }
 
     public List<FirewallRule> getRules()
@@ -171,7 +166,7 @@ public class FirewallImpl extends NodeBase implements Firewall
 
         FirewallSettings settings = getDefaultSettings();
 
-        this.setSettings(settings);
+        setSettings(settings);
     }
 
     public void incrementBlockCount() 
@@ -309,6 +304,9 @@ public class FirewallImpl extends NodeBase implements Firewall
     {
         logger.info("Reconfigure()");
 
+        /* check for any sessions that should be killed according to new rules */
+        this.killMatchingSessions(FIREWALL_SESSION_MATCHER);
+
         if (settings == null) {
             logger.warn("Invalid settings: null");
         } else {
@@ -346,6 +344,7 @@ public class FirewallImpl extends NodeBase implements Firewall
             settingsManager.save(FirewallSettings.class, System.getProperty("uvm.settings.dir") + "/" + "untangle-node-firewall/" + "settings_"  + nodeID, newSettings);
         } catch (SettingsManager.SettingsException e) {
             logger.warn("Failed to save settings.",e);
+            return;
         }
 
         /**
@@ -353,6 +352,8 @@ public class FirewallImpl extends NodeBase implements Firewall
          */
         this.settings = newSettings;
         try {logger.debug("New Settings: \n" + new org.json.JSONObject(this.settings).toString(2));} catch (Exception e) {}
+
+        this.reconfigure();
     }
 
     private void killSessions()

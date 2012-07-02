@@ -15,9 +15,6 @@ import com.untangle.uvm.UvmContextFactory;
 
 /**
  * An HTTP casing node.
- *
- * @author <a href="mailto:amread@untangle.com">Aaron Read</a>
- * @version 1.0
  */
 public class HttpNodeImpl extends NodeBase implements HttpNode
 {
@@ -47,14 +44,11 @@ public class HttpNodeImpl extends NodeBase implements HttpNode
 
         this.settings = settings;
 
-        try
-        {
+        try {
             settingsManager.save(HttpSettings.class, settingsName, settings);
-        }
-
-        catch(Exception exn)
-        {
+        } catch(Exception exn) {
             logger.error("setHttpSettings()",exn);
+            return;
         }
 
         reconfigure();

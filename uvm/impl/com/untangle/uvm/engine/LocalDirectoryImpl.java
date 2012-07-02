@@ -109,11 +109,10 @@ class LocalDirectoryImpl implements LocalDirectory
             user.removeCleartextPassword();
         }
 
-        this.currentList = users;
-        saveUsersList();
+        saveUsersList(users);
     }
     
-    private void saveUsersList()
+    private void saveUsersList(LinkedList<LocalDirectoryUser> list)
     {
         SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
 
@@ -123,8 +122,11 @@ class LocalDirectoryImpl implements LocalDirectory
         try {
             settingsManager.save(LinkedList.class, LOCAL_DIRECTORY_SETTINGS_FILE, this.currentList);
         } catch (SettingsManager.SettingsException e) {
-            logger.error("Unable to save localDirectory file: ", e );
+            logger.warn("Failed to save settings.",e);
+            return;
         }
+
+        this.currentList = list;
 
         return;
     }
@@ -167,8 +169,7 @@ class LocalDirectoryImpl implements LocalDirectory
         // Still no settings, just initialize new ones
         if (users == null) {
             logger.warn("No settings found - Initializing new settings.");
-            this.currentList = new LinkedList<LocalDirectoryUser>();
-            this.saveUsersList();
+            this.saveUsersList(new LinkedList<LocalDirectoryUser>());
         }
 
         this.currentList = users;

@@ -348,7 +348,6 @@ public class SpywareImpl extends NodeBase implements Spyware
             this.initializeSettings(settings);
 
             _setSettings(settings);
-
         }
         else {
             logger.info("Loading Settings...");
@@ -657,6 +656,7 @@ public class SpywareImpl extends NodeBase implements Spyware
             settingsManager.save(SpywareSettings.class, System.getProperty("uvm.settings.dir") + "/" + "untangle-node-spyware/" + "settings_"  + nodeID, newSettings);
         } catch (SettingsManager.SettingsException e) {
             logger.warn("Failed to save settings.",e);
+            return;
         }
 
         /**

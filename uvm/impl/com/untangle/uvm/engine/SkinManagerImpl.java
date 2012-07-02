@@ -126,8 +126,6 @@ class SkinManagerImpl implements SkinManager
     public void setSettings(SkinSettings newSettings)
     {
         this._setSettings( newSettings );
-
-        this.reconfigure();
     }
 	
     public void uploadSkin(FileItem item) throws UvmException
@@ -259,6 +257,7 @@ class SkinManagerImpl implements SkinManager
             settingsManager.save(SkinSettings.class, System.getProperty("uvm.settings.dir") + "/" + "untangle-vm/" + "skin", newSettings);
         } catch (SettingsManager.SettingsException e) {
             logger.warn("Failed to save settings.",e);
+            return;
         }
 
         /**
@@ -266,6 +265,8 @@ class SkinManagerImpl implements SkinManager
          */
         this.settings = newSettings;
         try {logger.debug("New Settings: \n" + new org.json.JSONObject(this.settings).toString(2));} catch (Exception e) {}
+
+        this.reconfigure();
     }
     
     private void reconfigure() 

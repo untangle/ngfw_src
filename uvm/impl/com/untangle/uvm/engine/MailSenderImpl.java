@@ -831,6 +831,7 @@ class MailSenderImpl implements MailSender
             settingsManager.save(MailSettings.class, System.getProperty("uvm.settings.dir") + "/" + "untangle-vm/" + "mail", newSettings);
         } catch (SettingsManager.SettingsException e) {
             logger.warn("Failed to save settings.",e);
+            return;
         }
 
         /**

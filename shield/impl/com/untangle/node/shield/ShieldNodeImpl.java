@@ -73,8 +73,6 @@ public class ShieldNodeImpl extends NodeBase  implements ShieldNode
     public void setSettings(final ShieldSettings settings)
     {
         this._setSettings(settings);
-
-        this.reconfigure();
     }
 
     public ShieldSettings getSettings()
@@ -196,6 +194,7 @@ public class ShieldNodeImpl extends NodeBase  implements ShieldNode
             settingsManager.save(ShieldSettings.class, System.getProperty("uvm.settings.dir") + "/" + "untangle-node-shield/" + "settings_"  + nodeID, newSettings);
         } catch (SettingsManager.SettingsException e) {
             logger.warn("Failed to save settings.",e);
+            return;
         }
 
         /**

@@ -166,15 +166,12 @@ public class MailNodeImpl extends NodeBase implements MailNode, MailExport
 
         this.settings = settings;
 
-        try
-            {
-                settingsManager.save(MailNodeSettings.class, settingsName, settings);
-            }
-
-        catch(Exception exn)
-            {
-                logger.error("setMailNodeSettings()",exn);
-            }
+        try {
+            settingsManager.save(MailNodeSettings.class, settingsName, settings);
+        } catch(Exception exn) {
+            logger.error("setMailNodeSettings()",exn);
+            return;
+        }
 
         reconfigure();
         s_quarantine.setSettings(this, settings.getQuarantineSettings());
