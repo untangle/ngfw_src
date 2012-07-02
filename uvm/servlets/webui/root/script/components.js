@@ -1424,7 +1424,7 @@ Ext.define("Ung.Node", {
             return i18n._('The <B>Power Button</B> allows you to turn a application "on" and "off".');
         },
         getNonEditableNodeTip: function () {
-            return i18n._('This node belongs to the parent rack shown above.<br/> To access the settings for this node, select the parent rack.'); 
+            return i18n._('This app belongs to the parent rack shown above.<br/> To access the settings for this app, select the parent rack.'); 
         },
         template: new Ext.Template('<div class="node-cap" style="display:{isNodeEditable}"></div><div class="node-image"><img src="{image}"/></div>', '<div class="node-label">{displayName}</div>',
             '<div class="node-faceplate-info">{licenseMessage}</div>',
