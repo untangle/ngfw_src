@@ -1500,9 +1500,13 @@ Ext.define("Ung.Node", {
             'name': this.displayName
         });
         if(this.fadeIn) {
-            this.getEl().scrollIntoView(Ext.getCmp("center").body);
-            this.getEl().setOpacity(0.5);
-            this.getEl().syncFx().frame("#63BE4A", 1, { duration: 1000 }).fadeIn({opacity: 1, duration: 6000});
+            var el=this.getEl();
+            el.scrollIntoView(Ext.getCmp("center").body);
+            el.setOpacity(0.5);
+            el.fadeIn({opacity: 1, duration: 2500});
+            Ext.defer(function() {
+                el.frame("#63BE4A", 1, { duration: 1000 })
+            }, 5000, this)
         }
         var nodeButtons=[{
             xtype: "button",
@@ -1804,7 +1808,7 @@ Ext.define("Ung.Node", {
                 }
                 this.setState("attention");
                 this.getEl().mask();
-                this.getEl().fadeOut({ opacity: 0.1, duration: 2000, remove: false, useDisplay:false});
+                this.getEl().fadeOut({ opacity: 0.1, duration: 2500, remove: false, useDisplay:false});
                 rpc.nodeManager.destroy(Ext.bind(function(result, exception) {
                     if(Ung.Util.handleException(exception, Ext.bind(function() {
                         this.getEl().unmask();
