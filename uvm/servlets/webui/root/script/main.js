@@ -1217,7 +1217,7 @@ Ext.define("Ung.Main", {
         }
         
         for ( var c = 0 ; c < rpc.policies.length ; c++ ) {
-            if ( rpc.policies[c].id == parentId ) {
+            if ( rpc.policies[c].policyId == parentId ) {
                 return rpc.policies[c].name;
             }
         }
