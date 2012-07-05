@@ -152,7 +152,7 @@ public class VpnNodeImpl extends NodeBase implements VpnNode, com.untangle.uvm.n
                 initializeSettings();
             }
             else {
-                setSettings(readSettings);
+                setSettings( readSettings, false );
             }
         }
         catch (Exception exn) {
@@ -179,6 +179,11 @@ public class VpnNodeImpl extends NodeBase implements VpnNode, com.untangle.uvm.n
     // VpnNode methods --------------------------------------------------
     public void setSettings( final VpnSettings newSettings )
     {
+        this.setSettings( newSettings, true );
+    }
+
+    public void setSettings( final VpnSettings newSettings, boolean saveToDisk )
+    {
         sanityCheck(newSettings);
 
         /* Verify that all of the client names are valid. */
@@ -201,15 +206,17 @@ public class VpnNodeImpl extends NodeBase implements VpnNode, com.untangle.uvm.n
             logger.warn( "Could not assign client addresses, continuing", exn );
         }
 
-        SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
-        String nodeID = this.getNodeSettings().getId().toString();
-        String settingsName = System.getProperty("uvm.settings.dir") + "/untangle-node-openvpn/settings_" + nodeID;
+        if ( saveToDisk ) {
+            SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
+            String nodeID = this.getNodeSettings().getId().toString();
+            String settingsName = System.getProperty("uvm.settings.dir") + "/untangle-node-openvpn/settings_" + nodeID;
 
-        try {
-            settingsManager.save( VpnSettings.class, settingsName, newSettings);
-        } catch (Exception exn) {
-            logger.error("Could not save OpenVPN settings", exn);
-            return;
+            try {
+                settingsManager.save( VpnSettings.class, settingsName, newSettings);
+            } catch (Exception exn) {
+                logger.error("Could not save OpenVPN settings", exn);
+                return;
+            }
         }
 
         if ( !newSettings.isUntanglePlatformClient()) {
