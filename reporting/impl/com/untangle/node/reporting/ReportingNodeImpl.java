@@ -282,14 +282,6 @@ public class ReportingNodeImpl extends NodeBase implements ReportingNode, Report
     {
         ReportingSettings settings = new ReportingSettings();
 
-        /* XXX for testing */
-        LinkedList<ReportingHostnameMapEntry> foo  = settings.getHostnameMap();
-        ReportingHostnameMapEntry bar = new ReportingHostnameMapEntry();
-        bar.setAddress(new IPMaskedAddress("192.168.1.100/32"));
-        bar.setHostname("foobar");
-        foo.add(bar);
-        settings.setHostnameMap(foo);
-        
         return settings;
     }
     
