@@ -149,7 +149,7 @@ class MailSenderImpl implements MailSender
 
             settings = new MailSettings();
             String fromSender = MailSender.DEFAULT_SENDER;
-            String fromHostname = UvmContextFactory.context().execManager().execOutput("/bin/cat /etc/mailname");
+            String fromHostname = UvmContextFactory.context().execManager().execOutput("/bin/cat /etc/mailname").replaceAll("(\\r|\\n)","");
             settings.setFromAddress(fromSender + "@" + fromHostname);
 
             this.setSettings(settings);

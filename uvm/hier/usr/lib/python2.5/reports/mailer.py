@@ -140,47 +140,17 @@ def mail(file, zip_file, sender, receiver, date, company_name, has_web_access, u
     smtp.quit()
 
 def __get_mail_info():
-    conn = sql_helper.get_connection()
-
     report_email = None
     receivers = []
 
     try:
-        curs = conn.cursor()
+        report_email = get_uvm_settings_item('mail','fromAddress')
+        receivers_list = get_node_settings_item('untangle-node-reporting','reportingUsers')
 
-        curs.execute("""\
-SELECT from_address FROM settings.u_mail_settings
-""")
-
-        row = curs.fetchone()
-        if row:
-            report_email = row[0]
-
-        curs.execute("""\
-SELECT count(*) FROM settings.n_reporting_settings
-JOIN u_node_persistent_state USING (tid)
-WHERE target_state = 'running' OR target_state = 'initialized'
-""")
-        row = curs.fetchone()
-        if row:
-            count = row[0]
-            if count == 0:
-                # reports is not installed
-                receivers = []
-
-            curs.execute("SELECT report_email FROM settings.u_mail_settings")
-            row = curs.fetchone()
-            if row:
-                receiver_str = row[0]
-
-            if not receiver_str or receiver_str.strip() == '':
-                receivers = []
-            else:
-                receivers = receiver_str.split(',')
-
-        conn.commit()
+        if receivers_list != None:
+            for r in receivers_list['list']:
+                receivers.append(r['emailAddress'])
     except:
-        conn.rollback();
         logger.warn('could not get mail info', exc_info=True)
 
     return (receivers, report_email)
@@ -214,20 +184,17 @@ def __get_url(date):
     return 'https://%s/reports?time=%s' % ( url, date.strftime(locale.nl_langinfo(locale.D_FMT)), )
 
 def __get_report_users():
-    rv = set()
+    rv = []
 
-    conn = sql_helper.get_connection()
     try:
-        curs = conn.cursor()
-        curs.execute('SELECT email FROM settings.u_user WHERE reports_access IS TRUE')
+        report_users = get_node_settings_item('untangle-node-reporting','reportingUsers')
 
-        for r in curs.fetchall():
-            rv.add(r[0])
-
-    except Exception, e:
-        logger.warn('could not get hostname', exc_info=True)
-    finally:
-        conn.commit()
+        if report_users != None:
+            for r in report_users['list']:
+                if (r['onlineAccess']):
+                    rv.append(r['emailAddress'])
+    except:
+        logger.warn('could not get reporting users', exc_info=True)
 
     return rv
 
