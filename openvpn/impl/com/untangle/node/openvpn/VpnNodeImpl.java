@@ -111,7 +111,7 @@ public class VpnNodeImpl extends NodeBase implements VpnNode, com.untangle.uvm.n
 
     private void readNodeSettings()
     {
-        SettingsManager setman = UvmContextFactory.context().settingsManager();
+        SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
         String nodeID = this.getNodeSettings().getId().toString();
         String settingsName = System.getProperty("uvm.settings.dir") + "/untangle-node-openvpn/settings_" + nodeID;
         String settingsFile = settingsName + ".js";
@@ -120,10 +120,8 @@ public class VpnNodeImpl extends NodeBase implements VpnNode, com.untangle.uvm.n
         logger.info("Loading settings from " + settingsFile);
 
         try {
-            readSettings =  setman.load( VpnSettings.class, settingsName);
-        }
-
-        catch (Exception exn) {
+            readSettings =  settingsManager.load( VpnSettings.class, settingsName);
+        } catch (Exception exn) {
             logger.error("Could not read node settings", exn);
         }
 
@@ -135,17 +133,13 @@ public class VpnNodeImpl extends NodeBase implements VpnNode, com.untangle.uvm.n
                 String convertCmd = SETTINGS_CONVERSION_SCRIPT + " " + nodeID.toString() + " " + settingsFile;
                 logger.warn("Running: " + convertCmd);
                 UvmContextFactory.context().execManager().exec( convertCmd );
-            }
-
-            catch (Exception exn) {
+            } catch (Exception exn) {
                 logger.error("Conversion script failed", exn);
             }
 
             try {
-                readSettings = setman.load( VpnSettings.class, settingsName);
-            }
-
-            catch (Exception exn) {
+                readSettings = settingsManager.load( VpnSettings.class, settingsName);
+            } catch (Exception exn) {
                 logger.error("Could not read node settings", exn);
             }
 
@@ -156,7 +150,6 @@ public class VpnNodeImpl extends NodeBase implements VpnNode, com.untangle.uvm.n
             if (readSettings == null) {
                 logger.warn("No database or json settings found... initializing with defaults");
                 initializeSettings();
-                writeNodeSettings(getSettings());
             }
             else {
                 setSettings(readSettings);
@@ -164,21 +157,6 @@ public class VpnNodeImpl extends NodeBase implements VpnNode, com.untangle.uvm.n
         }
         catch (Exception exn) {
             logger.error("Could not apply node settings", exn);
-        }
-    }
-
-    private void writeNodeSettings(VpnSettings argSettings)
-    {
-        SettingsManager setman = UvmContextFactory.context().settingsManager();
-        String nodeID = this.getNodeSettings().getId().toString();
-        String settingsName = System.getProperty("uvm.settings.dir") + "/untangle-node-openvpn/settings_" + nodeID;
-
-        try {
-            setman.save( VpnSettings.class, settingsName, argSettings);
-        }
-
-        catch (Exception exn) {
-            logger.error("Could not save OpenVPN settings", exn);
         }
     }
 
@@ -223,6 +201,17 @@ public class VpnNodeImpl extends NodeBase implements VpnNode, com.untangle.uvm.n
             logger.warn( "Could not assign client addresses, continuing", exn );
         }
 
+        SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
+        String nodeID = this.getNodeSettings().getId().toString();
+        String settingsName = System.getProperty("uvm.settings.dir") + "/untangle-node-openvpn/settings_" + nodeID;
+
+        try {
+            settingsManager.save( VpnSettings.class, settingsName, newSettings);
+        } catch (Exception exn) {
+            logger.error("Could not save OpenVPN settings", exn);
+            return;
+        }
+
         if ( !newSettings.isUntanglePlatformClient()) {
             /* Update the status/generate all of the certificates for clients */
             this.certificateManager.updateCertificateStatus( newSettings );
@@ -230,7 +219,7 @@ public class VpnNodeImpl extends NodeBase implements VpnNode, com.untangle.uvm.n
 
         /* Copy in the old keys that were distributed over email */
         saveDistributedKeys(newSettings);
-        writeNodeSettings(newSettings);
+        
         this.settings = newSettings;
 
         try {

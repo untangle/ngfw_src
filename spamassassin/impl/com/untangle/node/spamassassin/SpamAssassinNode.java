@@ -22,7 +22,7 @@ public class SpamAssassinNode extends SpamNodeImpl
 
     private void readNodeSettings()
     {
-        SettingsManager setman = UvmContextFactory.context().settingsManager();
+        SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
         String nodeID = this.getNodeSettings().getId().toString();
         String settingsBase = System.getProperty("uvm.settings.dir") + "/untangle-node-spamassassin/settings_" + nodeID;
         String settingsFile = settingsBase + ".js";
@@ -31,10 +31,8 @@ public class SpamAssassinNode extends SpamNodeImpl
         logger.info("Loading settings from " + settingsFile);
         
         try {
-            readSettings =  setman.load( SpamSettings.class, settingsBase);
-        }
-
-        catch (Exception exn) {
+            readSettings =  settingsManager.load( SpamSettings.class, settingsBase);
+        } catch (Exception exn) {
             logger.error("Could not read node settings", exn);
         }
 
@@ -46,17 +44,13 @@ public class SpamAssassinNode extends SpamNodeImpl
                 String convertCmd = SETTINGS_CONVERSION_SCRIPT + " " + nodeID.toString() + " " +  settingsFile;
                 logger.warn("Running: " + convertCmd);
                 UvmContextFactory.context().execManager().exec( convertCmd );
-            }
-
-            catch (Exception exn) {
+            } catch (Exception exn) {
                 logger.error("Conversion script failed", exn);
             }
 
             try {
-                readSettings = setman.load( SpamSettings.class, settingsBase);
-            }
-
-            catch (Exception exn) {
+                readSettings = settingsManager.load( SpamSettings.class, settingsBase);
+            } catch (Exception exn) {
                 logger.error("Could not read node settings", exn);
             }
             
@@ -69,38 +63,32 @@ public class SpamAssassinNode extends SpamNodeImpl
                 initializeSettings();
                 SpamSettings ps = getSettings();
                 initSpamDnsblList(ps);
-                writeNodeSettings(getSettings());
+                this.setSettings(ps);
             }
             else {
                 this.spamSettings = readSettings;
                 initSpamDnsblList(this.spamSettings);
             }
-        }
-        catch (Exception exn) {
+        } catch (Exception exn) {
             logger.error("Could not apply node settings", exn);
         }
     }
 
-    private void writeNodeSettings(SpamSettings argSettings)
+    @Override
+    public void setSettings(SpamSettings newSettings)
     {
-        SettingsManager setman = UvmContextFactory.context().settingsManager();
+        SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
         String nodeID = this.getNodeSettings().getId().toString();
         String settingsBase = System.getProperty("uvm.settings.dir") + "/untangle-node-spamassassin/settings_" + nodeID;
 
         try {
-            setman.save( SpamSettings.class, settingsBase, argSettings);
-        }
-
-        catch (Exception exn) {
+            settingsManager.save( SpamSettings.class, settingsBase, newSettings);
+        } catch (Exception exn) {
             logger.error("Could not save node settings", exn);
+            return;
         }
-    }
 
-    @Override
-    public void setSettings(SpamSettings spamSettings)
-    {
-        super.setSettings(spamSettings);
-        writeNodeSettings(spamSettings);
+        super.setSettings(newSettings);
     }
     
     @Override

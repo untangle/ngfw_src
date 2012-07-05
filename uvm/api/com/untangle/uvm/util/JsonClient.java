@@ -120,7 +120,8 @@ public class JsonClient
             UvmContext context = UvmContextFactory.context();
             JSONObject object = new JSONObject();
 
-            object.put( "language", context.languageManager().getLanguageSettings().getLanguage());
+            if (context.languageManager() != null)
+                object.put( "language", context.languageManager().getLanguageSettings().getLanguage());
 
             object.put( "skin", "default");
             // ignore alpaca skin options - deprecated

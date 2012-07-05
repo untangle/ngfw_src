@@ -96,7 +96,7 @@ public class PhishNode extends SpamNodeImpl implements Phish
 
     private void readNodeSettings()
     {
-        SettingsManager setman = UvmContextFactory.context().settingsManager();
+        SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
         String nodeID = this.getNodeSettings().getId().toString();
         String settingsBase = System.getProperty("uvm.settings.dir") + "/untangle-node-phish/settings_" + nodeID;
         String settingsFile = settingsBase + ".js";
@@ -105,10 +105,8 @@ public class PhishNode extends SpamNodeImpl implements Phish
         logger.info("Loading settings from " + settingsFile);
         
         try {
-            readSettings =  setman.load( PhishSettings.class, settingsBase);
-        }
-
-        catch (Exception exn) {
+            readSettings =  settingsManager.load( PhishSettings.class, settingsBase);
+        } catch (Exception exn) {
             logger.error("Could not read node settings", exn);
         }
 
@@ -120,17 +118,13 @@ public class PhishNode extends SpamNodeImpl implements Phish
                 String convertCmd = SETTINGS_CONVERSION_SCRIPT + " " + nodeID.toString() + " " + settingsFile;
                 logger.warn("Running: " + convertCmd);
                 UvmContextFactory.context().execManager().exec( convertCmd );
-            }
-
-            catch (Exception exn) {
+            } catch (Exception exn) {
                 logger.error("Conversion script failed", exn);
             }
 
             try {
-                readSettings = setman.load( PhishSettings.class, settingsBase);
-            }
-
-            catch (Exception exn) {
+                readSettings = settingsManager.load( PhishSettings.class, settingsBase);
+            } catch (Exception exn) {
                 logger.error("Could not read node settings", exn);
             }
             
@@ -141,29 +135,12 @@ public class PhishNode extends SpamNodeImpl implements Phish
             if (readSettings == null) {
                 logger.warn("No database or json settings found... initializing with defaults");
                 initializeSettings();
-                writeNodeSettings(getSettings());
             }
             else {
                 this.spamSettings = readSettings;
             }
-        }
-        catch (Exception exn) {
+        } catch (Exception exn) {
             logger.error("Could not apply node settings", exn);
-        }
-    }
-
-    private void writeNodeSettings(PhishSettings argSettings)
-    {
-        SettingsManager setman = UvmContextFactory.context().settingsManager();
-        String nodeID = this.getNodeSettings().getId().toString();
-        String settingsBase = System.getProperty("uvm.settings.dir") + "/untangle-node-phish/settings_" + nodeID;
-
-        try {
-            setman.save( PhishSettings.class, settingsBase, argSettings);
-        }
-
-        catch (Exception exn) {
-            logger.error("Could not save PhishNode settings", exn);
         }
     }
     
@@ -179,11 +156,22 @@ public class PhishNode extends SpamNodeImpl implements Phish
         return (PhishSettings)super.getSettings();
     }
 
-    public void setSettings(PhishSettings spamSettings)
+    public void setSettings(PhishSettings newSettings)
     {
         logger.info("setSettings()");
-        super.setSettings(spamSettings);
-        writeNodeSettings(spamSettings);
+
+        SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
+        String nodeID = this.getNodeSettings().getId().toString();
+        String settingsBase = System.getProperty("uvm.settings.dir") + "/untangle-node-phish/settings_" + nodeID;
+
+        try {
+            settingsManager.save( PhishSettings.class, settingsBase, newSettings);
+        } catch (Exception exn) {
+            logger.error("Could not save PhishNode settings", exn);
+            return;
+        }
+
+        super.setSettings(newSettings);
     }
 
     public PhishBlockDetails getBlockDetails(String nonce)

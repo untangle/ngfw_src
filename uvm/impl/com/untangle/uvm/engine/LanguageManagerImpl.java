@@ -94,10 +94,19 @@ public class LanguageManagerImpl implements LanguageManager
         return languageSettings;
     }
 
-    public void setLanguageSettings(LanguageSettings settings)
+    public void setLanguageSettings(LanguageSettings newSettings)
     {
-        this.languageSettings = settings;
-        writeLanguageSettings();
+        SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
+        String settingsName = System.getProperty("uvm.settings.dir") + "/untangle-vm/language_settings";
+
+        try {
+            settingsManager.save( LanguageSettings.class, settingsName, newSettings);
+        } catch (Exception exn) {
+            logger.error("Could not save language settings", exn);
+            return;
+        }
+
+        this.languageSettings = newSettings;
 
         try {
             /* This is asynchronous */
@@ -508,7 +517,7 @@ public class LanguageManagerImpl implements LanguageManager
 
     private void readLanguageSettings()
     {
-        SettingsManager setman = UvmContextFactory.context().settingsManager();
+        SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
         String settingsName = System.getProperty("uvm.settings.dir") + "/untangle-vm/language_settings";
         String settingsFile = settingsName + ".js";
         LanguageSettings readSettings = null;
@@ -516,10 +525,8 @@ public class LanguageManagerImpl implements LanguageManager
         logger.debug("Loading language settings from " + settingsFile);
 
         try {
-            readSettings =  setman.load( LanguageSettings.class, settingsName);
-        }
-
-        catch (Exception exn) {
+            readSettings =  settingsManager.load( LanguageSettings.class, settingsName);
+        } catch (Exception exn) {
             logger.error("Could not read language settings", exn);
         }
 
@@ -531,17 +538,13 @@ public class LanguageManagerImpl implements LanguageManager
                 String convertCmd = SETTINGS_CONVERSION_SCRIPT + " " + settingsFile;
                 logger.warn("Running: " + convertCmd);
                 UvmContextFactory.context().execManager().exec( convertCmd );
-            }
-
-            catch (Exception exn) {
+            } catch (Exception exn) {
                 logger.error("Conversion script failed", exn);
             }
 
             try {
-                readSettings = setman.load( LanguageSettings.class, settingsName);
-            }
-
-            catch (Exception exn) {
+                readSettings = settingsManager.load( LanguageSettings.class, settingsName);
+            } catch (Exception exn) {
                 logger.error("Could not read language settings", exn);
             }
 
@@ -552,24 +555,10 @@ public class LanguageManagerImpl implements LanguageManager
             logger.warn("No database or json language settings found... initializing with defaults");
             languageSettings = new LanguageSettings();
             languageSettings.setLanguage(DEFAULT_LANGUAGE);
-            writeLanguageSettings();
+            setLanguageSettings(languageSettings);
         }
         else {
             languageSettings = readSettings;
-        }
-    }
-
-    private void writeLanguageSettings()
-    {
-        SettingsManager setman = UvmContextFactory.context().settingsManager();
-        String settingsName = System.getProperty("uvm.settings.dir") + "/untangle-vm/language_settings";
-
-        try {
-            setman.save( LanguageSettings.class, settingsName, languageSettings);
-        }
-
-        catch (Exception exn) {
-            logger.error("Could not save language settings", exn);
         }
     }
 }
