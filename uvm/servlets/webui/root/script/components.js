@@ -2471,7 +2471,6 @@ Ext.define("Ung.FaceplateMetric", {
                 position: 'left',
                 fields: ['sessions'],
                 minimum: 0,
-                adjustMaximumByMajorUnit: true,
                 majorTickSteps: 0,
                 minorTickSteps: 3
             }],
