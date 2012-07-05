@@ -369,8 +369,9 @@ Ung.Util = {
         window.location.href="/webui";
     },
     rpcExHandler: function(exception) {
-        if (exception != null)
+        if (exception != null) {
             console.error("In rpcExHandler: ", exception);
+        }
         else
             console.error("In rpcExHandler: null");
             
@@ -2648,7 +2649,7 @@ Ext.define("Ung.FaceplateMetric", {
                 }
             }
         }
-        if(this.hasChart) {
+        if( this.hasChart && this.chartData != null ) {
             var reloadChart = this.chartData[0].sessions != 0;
             for(var i=0;i<this.chartData.length-1;i++) {
                 this.chartData[i].sessions=this.chartData[i+1].sessions;
@@ -2681,13 +2682,15 @@ Ext.define("Ung.FaceplateMetric", {
         return this.currentSessionsMetricIndex>=0?metrics.list[this.currentSessionsMetricIndex].value:0;
     },
     reset: function() {
-        for(var i=0;i<this.chartData.length;i++) {
-            this.chartData[i].sessions=0;
-        }
-        this.chart.store.loadData(this.chartData);
-        for (var i = 0; i < 4; i++) {
-            var valueDiv = document.getElementById('systemValue_' + this.getId() + '_' + i);
-            valueDiv.innerHTML = "&nbsp;";
+        if (this.chartData != null) {
+            for(var i=0;i<this.chartData.length;i++) {
+                this.chartData[i].sessions=0;
+            }
+            this.chart.store.loadData(this.chartData);
+            for (var i = 0; i < 4; i++) {
+                var valueDiv = document.getElementById('systemValue_' + this.getId() + '_' + i);
+                valueDiv.innerHTML = "&nbsp;";
+            }
         }
     }
 });
