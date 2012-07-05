@@ -275,7 +275,7 @@ public class SettingsManagerImpl implements SettingsManager
                  */
             } catch (IOException e) {
                 logger.warn("Failed to save settings: ", e);
-                throw new SettingsException("Unable to load the file: '" + fileName + "'", e);
+                throw new SettingsException("Unable to save the file: '" + fileName + "'", e);
             } catch (MarshallException e) {
                 logger.warn("Failed to save settings: ", e);
                 throw new SettingsException("Unable to marshal json string:", e);
