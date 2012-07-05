@@ -871,7 +871,7 @@ public class NodeManagerImpl implements NodeManager
             settingsManager.save(NodeManagerSettings.class, System.getProperty("uvm.settings.dir") + "/" + "untangle-vm/" + "nodes", newSettings);
         } catch (SettingsManager.SettingsException e) {
             logger.warn("Failed to save settings.",e);
-            return;
+            throw new RuntimeException(e);
         }
 
         /**

@@ -84,7 +84,6 @@ public abstract class NodeBase implements Node
     private List<NodeMetric> metricList = new ArrayList<NodeMetric>();
         
     private NodeSettings.NodeState currentState;
-    private boolean wasStarted = false;
 
     protected NodeBase( )
     {
@@ -534,21 +533,17 @@ public abstract class NodeBase implements Node
 
     private void changeState( NodeState nodeState, boolean saveNewTargetState )
     {
-        currentState = nodeState;
-
         if ( saveNewTargetState ) {
-            if (NodeState.RUNNING == nodeState) {
-                wasStarted = true;
-            }
+            UvmContextFactory.context().nodeManager().saveTargetState( this, nodeState );
 
             MessageManager mm = UvmContextFactory.context().messageManager();
             NodeStateChangeMessage nsc = new NodeStateChangeMessage(nodeProperties, nodeSettings, nodeState);
             mm.submitMessage(nsc);
-
-            UvmContextFactory.context().nodeManager().saveTargetState( this, nodeState );
             
             UvmContextFactory.context().pipelineFoundry().clearChains();
         }
+
+        this.currentState = nodeState;
     }
 
     private void init( boolean saveNewTargetState ) 
