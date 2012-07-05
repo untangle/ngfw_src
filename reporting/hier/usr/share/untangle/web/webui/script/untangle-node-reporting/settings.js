@@ -715,10 +715,11 @@ if (!Ung.hasResource["Ung.Reporting"]) {
                 }],
                 // the list of columns for the column model
                 columns: [{
-                    header: this.i18n._("Name Map"),
+                    header: this.i18n._("IP Address"),
                     width: 200,
                     dataIndex: 'address',
                     editor: {
+                        vtype: 'ipAddress',
                         xtype:'textfield'
                     }
                 }, {
@@ -738,6 +739,7 @@ if (!Ung.hasResource["Ung.Reporting"]) {
                         name: "Subnet",
                         dataIndex: "address",
                         fieldLabel: this.i18n._("IP Address"),
+                        vtype: 'ipAddress',
                         allowBlank: false,
                         width: 300
                     }, 
