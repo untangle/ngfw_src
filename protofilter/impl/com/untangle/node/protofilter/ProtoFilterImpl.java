@@ -75,24 +75,22 @@ public class ProtoFilterImpl extends NodeBase implements ProtoFilter
         return this.nodeSettings;
     }
 
-    public void setSettings(final ProtoFilterSettings settings)
+    public void setSettings(final ProtoFilterSettings newSettings)
     {
-        this.nodeSettings = settings;
-        
-        SettingsManager setman = UvmContextFactory.context().settingsManager();
-
+        SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
         String nodeID = this.getNodeSettings().getId().toString();
-
         String settingsBase = System.getProperty("uvm.settings.dir") + "/untangle-node-protofilter/settings_" + nodeID;
 
         try {
-            setman.save( ProtoFilterSettings.class, settingsBase, nodeSettings);
-            reconfigure();
+            settingsManager.save( ProtoFilterSettings.class, settingsBase, newSettings);
+        } catch (Exception exn) {
+            logger.error("Could not save ProtoFilter settings", exn);
+            return;
         }
 
-        catch (Exception exn) {
-            logger.error("Could not save ProtoFilter settings", exn);
-        }
+        this.nodeSettings = newSettings;
+        
+        reconfigure();
     }
 
     public int getPatternsTotal()
@@ -164,7 +162,7 @@ public class ProtoFilterImpl extends NodeBase implements ProtoFilter
 
     protected void postInit()
     {
-        SettingsManager setman = UvmContextFactory.context().settingsManager();
+        SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
 
         String nodeID = this.getNodeSettings().getId().toString();
 
@@ -175,10 +173,8 @@ public class ProtoFilterImpl extends NodeBase implements ProtoFilter
         logger.info("Loading settings from " + settingsFile);
         
         try {
-            readSettings =  setman.load( ProtoFilterSettings.class, settingsBase);
-        }
-
-        catch (Exception exn) {
+            readSettings =  settingsManager.load( ProtoFilterSettings.class, settingsBase);
+        } catch (Exception exn) {
             logger.error("Could not read node settings", exn);
         }
 
@@ -197,7 +193,7 @@ public class ProtoFilterImpl extends NodeBase implements ProtoFilter
             }
 
             try {
-                readSettings =  setman.load( ProtoFilterSettings.class, settingsBase);
+                readSettings =  settingsManager.load( ProtoFilterSettings.class, settingsBase);
             }
 
             catch (Exception exn) {
@@ -225,14 +221,14 @@ public class ProtoFilterImpl extends NodeBase implements ProtoFilter
         }
     }
 
-    public void reconfigure() throws Exception
+    public void reconfigure()
     {
         HashSet<ProtoFilterPattern> enabledPatternsSet = new HashSet<ProtoFilterPattern>();
 
         logger.info("Reconfigure()");
 
         if (nodeSettings == null) {
-            throw new Exception("Failed to get ProtoFilter settings: " + nodeSettings);
+            throw new RuntimeException("Failed to get ProtoFilter settings: " + nodeSettings);
         }
 
         LinkedList<ProtoFilterPattern> curPatterns = nodeSettings.getPatterns();

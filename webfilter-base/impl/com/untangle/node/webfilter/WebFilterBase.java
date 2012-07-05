@@ -507,6 +507,7 @@ public abstract class WebFilterBase extends NodeBase implements WebFilter
             settingsManager.save(WebFilterSettings.class, System.getProperty("uvm.settings.dir") + "/" + "untangle-node-" + this.getName() + "/" + "settings_" + nodeID, newSettings);
         } catch (SettingsManager.SettingsException e) {
             logger.warn("Failed to save settings.",e);
+            return;
         }
 
         /**
