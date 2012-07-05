@@ -368,7 +368,7 @@ def setup():
     count = 0.0
     for name in __get_available_nodes():
         try:
-            logger.debug('doing setup for: %s' % (name))
+            logger.info('doing setup for: %s' % (name))
             node = __nodes.get(name, None)
 
             if not node:

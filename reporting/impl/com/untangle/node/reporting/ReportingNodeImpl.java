@@ -48,10 +48,7 @@ public class ReportingNodeImpl extends NodeBase implements ReportingNode, Report
     private static final Logger logger = Logger.getLogger(ReportingNodeImpl.class);
 
     private static final String SETTINGS_CONVERSION_SCRIPT = System.getProperty( "uvm.bin.dir" ) + "/reporting-convert-settings.py";
-    
-    private static final String  REPORTS_SCRIPT = System.getProperty("uvm.home") + "/bin/reporting-generate-reports.py";
-    private static final String  REPORTER_LOG_FILE = "/var/log/uvm/reporter.log";
-    private static final long    REPORTER_LOG_FILE_READ_TIMEOUT = 180 * 1000; /* 180 seconds */
+    private static final String REPORTS_SCRIPT = System.getProperty("uvm.home") + "/bin/reporting-generate-reports.py";
 
     private static final String CRON_STRING = "* * * root /usr/share/untangle/bin/reporting-generate-reports.py -d $(date \"+\\%Y-\\%m-\\%d\") > /dev/null 2>&1";
     private static final File CRON_FILE = new File("/etc/cron.d/untangle-reports-nightly");

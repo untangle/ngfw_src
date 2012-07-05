@@ -159,16 +159,26 @@ def get_report_lengths(date):
     logger.debug("current_day_of_week: %s" % (current_day_of_week,))
     conn = sql_helper.get_connection()
 
-    dailySched = get_node_settings_item('untangle-node-reporting','generateDailyReports').lower()
-    weeklySched = get_node_settings_item('untangle-node-reporting','generateWeeklyReports').lower()
-    monthlySched = get_node_settings_item('untangle-node-reporting','generateMonthlyReports').lower()
+    dailySched = get_node_settings_item('untangle-node-reporting','generateDailyReports')
+    if dailySched != None:
+         dailySched = dailySched.lower()
+         if str(current_day_of_week) in dailySched or get_day_name(current_day_of_week) in dailySched or "any" in dailySched:
+              lengths.append(1)
 
-    if str(current_day_of_week) in dailySched or get_day_name(current_day_of_week) in dailySched or "any" in dailySched:
+    weeklySched = get_node_settings_item('untangle-node-reporting','generateWeeklyReports')
+    if weeklySched != None:
+         weeklySched = weeklySched.lower()
+         if str(current_day_of_week) in weeklySched or get_day_name(current_day_of_week) in weeklySched or "any" in weeklySched:
+              lengths.append(7)
+
+    monthlySched = get_node_settings_item('untangle-node-reporting','generateMonthlyReports')
+    if monthlySched != None:
+         monthlySched = monthlySched.lower()
+         if str(current_day_of_week) in monthlySched or get_day_name(current_day_of_week) in monthlySched or "any" in monthlySched:
+              lengths.append(30)
+
+    if not lengths:
          lengths.append(1)
-    if str(current_day_of_week) in weeklySched or get_day_name(current_day_of_week) in weeklySched or "any" in weeklySched:
-         lengths.append(7)
-    if str(current_day_of_week) in monthlySched or get_day_name(current_day_of_week) in monthlySched or "any" in monthlySched:
-         lengths.append(30)
 
     logger.info("Generating reports for the following lengths: %s" % (lengths,))
     return lengths
@@ -249,12 +259,18 @@ CREATE TABLE reports.table_updates (
 except Exception:
      pass
 
+node = get_node_settings('untangle-node-reporting')
+if not node:
+     node = {}
+
 if not db_retention:
-     db_retention = get_node_settings('untangle-node-reporting').get('dbRetention', 7.0)
+     db_retention = node.get('dbRetention', 7.0)
 if not file_retention:
-     file_retention = get_node_settings('untangle-node-reporting').get('fileRetention', 30)
-attach_csv = attach_csv or get_node_settings('untangle-node-reporting').get('emailDetail')
-attachment_size_limit = get_node_settings('untangle-node-reporting').get('attachmentSizeLimit')
+     file_retention = node.get('fileRetention', 30)
+if not attach_csv:
+     attach_csv = node.get('emailDetail',False)
+if not attachment_size_limit:
+     attachment_size_limit = node.get('attachmentSizeLimit',10)
 
 reports_output_base=REPORTS_OUTPUT_BASE
 
