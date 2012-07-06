@@ -150,6 +150,9 @@ def get_settings(tid, debug=False):
     if monthly_n_daily:
         monthlySched = "any"
 
+    if db_retention <= 7:
+        monthlySched = ""
+
     str = '{\n'
     str += '\t"javaClass": "com.untangle.node.reporting.ReportingSettings",\n'
     str += '\t"emailDetail": "%s",\n' % email_detail
