@@ -424,11 +424,6 @@ class ToolboxManagerImpl implements ToolboxManager
                 throw new PackageInstallException(e);
             }
             
-            
-            logger.info("SUBNODES:");
-            for (String node : subnodes) 
-                logger.info(node);
-
             /**
              * Install the package
              */
