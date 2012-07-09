@@ -30,7 +30,7 @@ import org.jabsorb.JSONSerializer;
 import com.untangle.uvm.CronJob;
 import com.untangle.uvm.SettingsManager;
 import com.untangle.uvm.UvmContext;
-import com.untangle.uvm.LocalTomcatManager;
+import com.untangle.uvm.TomcatManager;
 import com.untangle.uvm.LocalDirectory;
 import com.untangle.uvm.BrandingManager;
 import com.untangle.uvm.OemManager;
@@ -677,7 +677,7 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
         main.fatalError(throwingLocation, x);
     }
 
-    public LocalTomcatManager tomcatManager()
+    public TomcatManager tomcatManager()
     {
         return tomcatManager;
     }

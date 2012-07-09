@@ -1,4 +1,4 @@
-/*
+/**
  * $Id$
  */
 package com.untangle.uvm.engine;
@@ -31,12 +31,12 @@ import org.apache.log4j.Logger;
 
 import com.untangle.uvm.util.AdministrationOutsideAccessValve;
 import com.untangle.uvm.util.ReportingOutsideAccessValve;
-import com.untangle.uvm.LocalTomcatManager;
+import com.untangle.uvm.TomcatManager;
 
 /**
  * Wrapper around the Tomcat server embedded within the UVM.
  */
-public class TomcatManagerImpl implements LocalTomcatManager
+public class TomcatManagerImpl implements TomcatManager
 {
     private static final int NUM_TOMCAT_RETRIES = 15; //  5 minutes total
     private static final long TOMCAT_SLEEP_TIME = 20 * 1000; // 20 seconds
@@ -59,9 +59,7 @@ public class TomcatManagerImpl implements LocalTomcatManager
 
     // constructors -----------------------------------------------------------
 
-    TomcatManagerImpl(UvmContextImpl uvmContext,
-                      InheritableThreadLocal<HttpServletRequest> threadRequest,
-                      String catalinaHome, String webAppRoot, String logDir)
+    protected TomcatManagerImpl(UvmContextImpl uvmContext, InheritableThreadLocal<HttpServletRequest> threadRequest, String catalinaHome, String webAppRoot, String logDir)
     {
         this.webAppRoot = webAppRoot;
 
@@ -107,9 +105,7 @@ public class TomcatManagerImpl implements LocalTomcatManager
             // Engine for embedded server
             emb.addEngine(baseEngine);
 
-            //loadSystemApp("/session-dumper", "session-dumper", new WebAppOptions(new AdministrationOutsideAccessValve()));
             loadSystemApp("/blockpage", "blockpage");
-            loadSystemApp("/reports", "reports", new WebAppOptions(true, new ReportingOutsideAccessValve()));
             loadSystemApp("/alpaca", "alpaca", new WebAppOptions(true, new AdministrationOutsideAccessValve()));
             ServletContext ctx = loadSystemApp("/webui", "webui", new WebAppOptions(new AdministrationOutsideAccessValve()));
             ctx.setAttribute("threadRequest", threadRequest);
@@ -159,19 +155,19 @@ public class TomcatManagerImpl implements LocalTomcatManager
         this.keyAlias = ksAlias;
     }
 
-    public ServletContext loadPortalApp(String urlBase, String rootDir, Realm realm, AuthenticatorBase auth)
-    {
-        // Need a large timeout since we handle that ourselves.
-        WebAppOptions options = new WebAppOptions(false, 24*60);
-        return loadWebApp(urlBase, rootDir, realm, auth, options);
-    }
+//     public ServletContext loadPortalApp(String urlBase, String rootDir, Realm realm, AuthenticatorBase auth)
+//     {
+//         // Need a large timeout since we handle that ourselves.
+//         WebAppOptions options = new WebAppOptions(false, 24*60);
+//         return loadWebApp(urlBase, rootDir, realm, auth, options);
+//     }
 
     ServletContext loadSystemApp(String urlBase, String rootDir, WebAppOptions options)
     {
         return loadWebApp(urlBase, rootDir, null, null, options);
     }
 
-    ServletContext loadSystemApp(String urlBase, String rootDir, Valve valve)
+    public ServletContext loadSystemApp(String urlBase, String rootDir, Valve valve)
     {
         return loadSystemApp(urlBase, rootDir, new WebAppOptions(true, valve));
     }

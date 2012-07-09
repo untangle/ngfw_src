@@ -11,7 +11,7 @@ import java.sql.Connection;
 
 import com.untangle.uvm.UvmContext;
 import com.untangle.uvm.AdminManager;
-import com.untangle.uvm.LocalTomcatManager;
+import com.untangle.uvm.TomcatManager;
 import com.untangle.uvm.logging.LoggingManager;
 import com.untangle.uvm.logging.LogEvent;
 import com.untangle.uvm.message.MessageManager;
@@ -198,7 +198,7 @@ public interface UvmContext
      *
      * @return the TomcatManager
      */
-    LocalTomcatManager tomcatManager();
+    TomcatManager tomcatManager();
 
     /**
      * get the execManager for launching subprocesses
