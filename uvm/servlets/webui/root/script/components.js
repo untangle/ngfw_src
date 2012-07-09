@@ -2673,7 +2673,7 @@ Ext.define("Ung.FaceplateMetric", {
     },
     getCurrentSessions: function(metrics) {
         //Just for test generate random data
-        return Math.floor((Math.random()*150)); //Random Data
+        //return Math.floor((Math.random()*150)); //Random Data
         
         if(this.currentSessionsMetricIndex == null) {
             this.currentSessionsMetricIndex = -1;

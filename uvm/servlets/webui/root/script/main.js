@@ -66,6 +66,9 @@ Ext.define("Ung.Main", {
         rpc.languageManager = rpc.jsonrpc.UvmContext.languageManager();
         i18n=new Ung.I18N({"map":rpc.languageManager.getTranslations("untangle-libuvm").map});
         Ext.MessageBox.wait(i18n._("Initializing..."), i18n._("Please wait"));
+        Ext.defer(this.initSync, 5, this);
+    },
+    initSync: function() {
         rpc.languageSettings = rpc.languageManager.getLanguageSettings();
 
         // get the skin manager
@@ -129,7 +132,10 @@ Ext.define("Ung.Main", {
         this.companyName = rpc.brandingManager.getCompanyName();
         this.setDocumentTitle();
 
-        this.postinit(); // 1
+        this.startApplication();
+    },
+    initAsync: function() {
+        //TODO: re-implement the init asynchronously when we switch to chrome browser
     },
     postinit: function() {
         this.initSemaphore--;
@@ -880,7 +886,7 @@ Ext.define("Ung.Main", {
         var out=[];
         for(var i=0;i<this.config.length;i++) {
             var item=this.config[i];
-            var appItemCmp=new Ung.ConfigItem({
+            var appItemCmp=Ext.create('Ung.ConfigItem', {
                 item:item
             });
         }
@@ -969,7 +975,7 @@ Ext.define("Ung.Main", {
     },
     openConfig: function(configItem) {
         Ext.MessageBox.wait(i18n._("Loading Config..."), i18n._("Please wait"));
-        Ext.Function.defer(Ung.Util.loadResourceAndExecute,1, this, [configItem.className,Ung.Util.getScriptSrc("script/config/"+configItem.scriptFile), Ext.bind(function() {
+        Ext.Function.defer(Ung.Util.loadResourceAndExecute,10, this, [configItem.className,Ung.Util.getScriptSrc("script/config/"+configItem.scriptFile), Ext.bind(function() {
             main.configWin = Ext.create(this.className, this);
             main.configWin.show();
             Ext.MessageBox.hide();
@@ -1180,7 +1186,7 @@ Ext.define("Ung.Main", {
     showNodeSessions: function(nodeIdArg) {
         Ext.MessageBox.wait(i18n._("Loading..."), i18n._("Please wait"));
         if ( main.sessionMonitorWin == null) {
-            Ext.Function.defer(Ung.Util.loadResourceAndExecute,1, this,["Ung.SessionMonitor",Ung.Util.getScriptSrc("script/config/sessionMonitor.js"), function() {
+            Ext.Function.defer(Ung.Util.loadResourceAndExecute,10, this,["Ung.SessionMonitor",Ung.Util.getScriptSrc("script/config/sessionMonitor.js"), function() {
                 main.sessionMonitorWin=Ext.create('Ung.SessionMonitor', {"name":"sessionMonitor", "helpSource":"session_viewer"});
                 main.sessionMonitorWin.setFilterNodeId(nodeIdArg);
                 main.sessionMonitorWin.show();
@@ -1188,10 +1194,12 @@ Ext.define("Ung.Main", {
                 Ext.MessageBox.hide();
             }]);
         } else {
-            main.sessionMonitorWin.setFilterNodeId(nodeIdArg);
-            main.sessionMonitorWin.show();
-            main.sessionMonitorWin.gridCurrentSessions.reload();
-            Ext.MessageBox.hide();
+            Ext.Function.defer(function() {
+                main.sessionMonitorWin.setFilterNodeId(nodeIdArg);
+                main.sessionMonitorWin.show();
+                main.sessionMonitorWin.gridCurrentSessions.reload();
+                Ext.MessageBox.hide();
+            }, 10, this)
         }
     },
     showPolicyManager: function() {
