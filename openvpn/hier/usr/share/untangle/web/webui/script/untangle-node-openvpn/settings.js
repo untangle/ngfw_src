@@ -241,7 +241,8 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                         name: 'siteConfiguration',
                         fieldLabel: 'Configuration File',
                         allowBlank: false,
-                        width: 300
+                        width: 500,
+                        size: 50
                     }]
                 }]
             });

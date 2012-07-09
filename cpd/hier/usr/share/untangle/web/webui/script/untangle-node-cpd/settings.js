@@ -279,9 +279,10 @@ if (!Ung.hasResource["Ung.CPD"]) {
                     boxLabel: this.i18n._("Capture"),
                     hideLabel: true
                 },{
-                    xtype: "textfield",
+                    xtype: 'textarea',
                     name: "description",
-                    width: 320,
+                    width: 400,
+                    height: 60,
                     dataIndex: "description",
                     fieldLabel: this.i18n._("Description"),
                     allowBlank: false
@@ -915,7 +916,9 @@ if (!Ung.hasResource["Ung.CPD"]) {
                                 fieldLabel: this.i18n._("File"),
                                 name: "customUploadFile",
                                 inputType: "file",
-                                xtype: "textfield"
+                                xtype: "textfield",
+                                width: 500,
+                                size: 50
                             },{
                                 xtype: "button",
                                 name: "customSendFile",

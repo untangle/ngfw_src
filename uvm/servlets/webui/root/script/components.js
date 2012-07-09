@@ -4943,7 +4943,7 @@ Ext.define('Ung.ImportSettingsWindow', {
     // the editor grid
     grid: null,
     height: 230,
-    width: 450,
+    width: 500,
     sizeToRack: false,
     // size to grid on show
     sizeToGrid: false,
@@ -5055,6 +5055,8 @@ Ext.define('Ung.ImportSettingsWindow', {
                     name: 'import_settings_textfield',
                     inputType: 'file',
                     xtype: 'textfield',
+                    width: 400,
+                    size: 40,
                     allowBlank: false
                 },{
                     xtype: 'hidden',

@@ -1333,6 +1333,8 @@ if (!Ung.hasResource["Ung.Administration"]) {
                             name: 'upload_skin_textfield',
                             inputType: 'file',
                             xtype: 'textfield',
+                            width: 500,
+                            size: 50,
                             allowBlank: false
                         },{
                             xtype: 'button',
