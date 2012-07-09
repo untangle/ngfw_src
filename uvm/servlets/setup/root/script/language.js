@@ -26,7 +26,6 @@ Ext.define('Ung.SetupWizard.Language', {
             defaultType: 'fieldset',
             border: false,
             defaults: {
-                autoHeight: true,
                 cls: 'noborder'
             },
             items: [{

@@ -81,7 +81,6 @@ Ext.define('Ung.SetupWizard.Settings', {
             defaultType: 'fieldset',
             border: false,
             defaults: {
-                autoHeight: true,
                 cls: 'noborder'
             },
             items: [{
@@ -565,7 +564,6 @@ Ext.define('Ung.SetupWizard.Internet', {
                     fieldClass: 'noborder',
                     labelWidth: Ung.SetupWizard.LabelWidth
                 },
-                autoHeight: true,
                 items: [{
                     name: "ip",
                     fieldLabel: i18n._( "IP Address" )
@@ -611,7 +609,6 @@ Ext.define('Ung.SetupWizard.Internet', {
                     maskRe: /(\d+|\.)/,
                     vtype: 'ipCheck'
                 },
-                autoHeight: true,
                 items: [{
                     name: "ip",
                     fieldLabel: i18n._( "IP Address" ),
@@ -668,7 +665,6 @@ Ext.define('Ung.SetupWizard.Internet', {
                 defaults: {
                     labelWidth: Ung.SetupWizard.LabelWidth
                 },
-                autoHeight: true,
                 items: [{
                     fieldLabel: i18n._( "Username" ),
                     name: "username",
@@ -691,7 +687,6 @@ Ext.define('Ung.SetupWizard.Internet', {
                     labelWidth: Ung.SetupWizard.LabelWidth,
                     readOnly: true
                 },
-                autoHeight: true,
                 items: [{
                     fieldLabel: i18n._( "IP Address" ),
                     name: "ip",
@@ -732,10 +727,8 @@ Ext.define('Ung.SetupWizard.Internet', {
             border: false,
             layout: 'card',
             items: this.cards,
-            autoHeight: true,
             activePanel: 0,
             defaults: {
-                autoHeight: true,
                 border: false
             }
         });
@@ -745,7 +738,6 @@ Ext.define('Ung.SetupWizard.Internet', {
         var configure = Ext.create('Ext.form.Panel', {
             cls: "untangle-form-panel",
             border: false,
-            autoHeight: true,
             labelWidth: Ung.SetupWizard.LabelWidth,
             items: [{
                 html: '<h2 class="wizard-title">'+configureText+'<h2>',
@@ -1063,10 +1055,6 @@ Ext.define('Ung.SetupWizard.InternalNetwork', {
         this.panel = Ext.create('Ext.form.Panel', {
             defaultType: 'fieldset',
             border: false,
-            defaults: {
-                autoHeight: true,
-                labelWidth: Ung.SetupWizard.LabelWidth2
-            },
             items: [{
                 xtype: 'label',
                 html: '<h2 class="wizard-title">'+i18n._( "Configure the Internal Network Interface" )+'</h2>'
@@ -1095,6 +1083,7 @@ Ext.define('Ung.SetupWizard.InternalNetwork', {
                     xtype: 'textfield',
                     cls: 'wizard-internal-network-address spacing-margin-1',
                     fieldLabel: i18n._('Internal Address'),
+                    labelWidth: Ung.SetupWizard.LabelWidth2,
                     vText: i18n._('Please enter a valid Network  Address'),
                     vtype: 'ipCheck',
                     allowBlank: false,
@@ -1107,6 +1096,7 @@ Ext.define('Ung.SetupWizard.InternalNetwork', {
                     name: "netmask",
                     cls: 'wizard-internal-network-address',
                     fieldLabel: i18n._( "Internal Netmask" ),
+                    labelWidth: Ung.SetupWizard.LabelWidth2,
                     xtype: 'combo',
                     store: Ung.SetupWizard.NetmaskData,
                     mode: 'local',
@@ -1258,10 +1248,6 @@ Ext.define('Ung.SetupWizard.AutoUpgrades', {
         this.panel = Ext.create('Ext.form.Panel', {
             defaultType: 'fieldset',
             border: false,
-            defaults: {
-                autoHeight: true,
-                labelWidth: Ung.SetupWizard.LabelWidth2
-            },
             items: [{
                 xtype: 'label',
                 html: '<h2 class="wizard-title">'+i18n._( "Configure Automatic Upgrade Settings" )+'</h2>'
@@ -1467,7 +1453,7 @@ Ung.Setup = {
         if ( false ) {
             // DEBUGGING CODE (Change to true to dynamically go to any page you want on load.)
             var debugHandler = Ext.bind(function() {
-                this.wizard.goToPage( 3 );
+                this.wizard.goToPage( 4 );
             }, this );
             var ss = Ext.create('Ung.SetupWizard.SettingsSaver', null, debugHandler );
 
