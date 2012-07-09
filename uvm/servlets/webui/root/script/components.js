@@ -2457,10 +2457,15 @@ Ext.define("Ung.FaceplateMetric", {
         for(var i=0; i<this.chartDataLength; i++) {
             this.chartData.push({time:i, sessions:0});
         }
+        var chartHeight=chartContainerEl.getHeight();
+        if(chartHeight > 90) {
+            //in order to support all themes with large and thin node height
+            chartHeight = chartHeight-4;
+        }
         this.chart = Ext.create('Ext.chart.Chart', {
             renderTo: chartContainerEl,
             width: chartContainerEl.getWidth(),
-            height: chartContainerEl.getHeight(),
+            height: chartHeight,
             animate: false,
             //insetPadding: 11,
             store: Ext.create('Ext.data.JsonStore', {
@@ -2668,7 +2673,7 @@ Ext.define("Ung.FaceplateMetric", {
     },
     getCurrentSessions: function(metrics) {
         //Just for test generate random data
-        //return Math.floor((Math.random()*150)); //Random Data
+        return Math.floor((Math.random()*150)); //Random Data
         
         if(this.currentSessionsMetricIndex == null) {
             this.currentSessionsMetricIndex = -1;
