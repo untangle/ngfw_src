@@ -51,7 +51,7 @@ public class VpnNodeImpl extends NodeBase implements VpnNode, com.untangle.uvm.n
     private static final String DEFAULT_LOCALITY     = "VPN City";
     private static final String DEFAULT_ORGANIZATION = "VPN Organization";
     private static final String DEFAULT_EMAIL        = "vpn";
-    
+
     private static final String CLEANUP_SCRIPT = Constants.SCRIPT_DIR + "/cleanup";
 
     private static final HostAddress EMPTY_HOST_ADDRESS = new HostAddress( "" );
@@ -742,13 +742,13 @@ public class VpnNodeImpl extends NodeBase implements VpnNode, com.untangle.uvm.n
         VpnSettings newSettings = this.sandbox.completeConfig( this.getNodeSettings());
 
         if ( !isSet( newSettings.getDomain()))           newSettings.setDomain( DEFAULT_DOMAIN );
-        if ( !isSet( newSettings.getCountry()))          newSettings.setCountry( DEFAULT_COUNTRY );        
+        if ( !isSet( newSettings.getCountry()))          newSettings.setCountry( DEFAULT_COUNTRY );
         if ( !isSet( newSettings.getProvince()))         newSettings.setProvince( DEFAULT_PROVINCE );
         if ( !isSet( newSettings.getLocality()))         newSettings.setLocality( DEFAULT_LOCALITY );
         if ( !isSet( newSettings.getOrganization()))     newSettings.setOrganization( DEFAULT_ORGANIZATION );
         if ( !isSet( newSettings.getOrganizationUnit())) newSettings.setOrganizationUnit( String.format( "%04x%04x", random.nextInt(), random.nextInt()));
         if ( !isSet( newSettings.getEmail()))            newSettings.setEmail( DEFAULT_EMAIL + "@" + settings.getDomain());
-        
+
         setSettings( newSettings );
 
         if ( ! newSettings.isUntanglePlatformClient() ) {
@@ -944,5 +944,4 @@ public class VpnNodeImpl extends NodeBase implements VpnNode, com.untangle.uvm.n
             return this.key;
         }
     }
-
 }

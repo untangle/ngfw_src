@@ -31,7 +31,7 @@ import com.untangle.uvm.util.I18nUtil;
 public class Sandbox
 {
     private final Logger logger = Logger.getLogger( getClass());
-    
+
     private static final int DEFAULT_MAX_CLIENTS = 500;
     private static final boolean DEFAULT_KEEP_ALIVE  = true;
     private static final boolean DEFAULT_EXPOSE_CLIENTS = true;
@@ -49,7 +49,7 @@ public class Sandbox
         "10.254.16.0/24",  "10.254.17.0/24",  "10.254.18.0/24",  "10.254.19.0/24",
         "10.254.20.0/24",  "10.254.21.0/24",  "10.254.22.0/24",  "10.254.23.0/24"
     };
-    
+
     private static final Map<IPNetwork,AddressRange> AUTO_ADDRESS_POOLS;
 
     private HostAddress vpnServerAddress;
@@ -62,9 +62,9 @@ public class Sandbox
     private final VpnNode.ConfigState configState;
 
     private final Map<String,VpnGroup> resolveGroupMap = new HashMap<String,VpnGroup>();
-    
+
     private I18nUtil i18nUtil = null;
-    
+
     Sandbox( VpnNode.ConfigState configState )
     {
         this.configState = configState;
@@ -81,7 +81,7 @@ public class Sandbox
 
         logger.debug( "Installing from : " + path );
 
-        execInstallScript( path );        
+        execInstallScript( path );
     }
 
     private void execInstallScript( String path ) throws Exception
@@ -91,7 +91,7 @@ public class Sandbox
         switch ( result.getResult()) {
         case 0:
             break;
-            
+
         case Constants.START_ERROR:
             throw new StartException( "Test connection with OpenVPN server failed." );
 
@@ -106,7 +106,7 @@ public class Sandbox
         /* Parse out the client configuration address */
         vpnServerAddress = new HostAddress( new IPAddress( null ));
         BufferedReader in = null;
-        try { 
+        try {
             in = new BufferedReader( new FileReader( OPENVPN_CLIENT_FILE ));
             String line;
             while(( line = in.readLine()) != null ) {
@@ -118,7 +118,7 @@ public class Sandbox
                         logger.warn( "Invalid client configuration" );
                         break;
                     }
-                    
+
                     vpnServerAddress = HostAddress.parse( valueArray[1] );
                     break;
                 }
@@ -130,7 +130,7 @@ public class Sandbox
             if ( in != null ) try { in.close(); } catch ( Exception e ) {};
         }
     }
-    
+
     void generateCertificate( CertificateParameters parameters ) throws Exception
     {
         parameters.validate();
@@ -142,7 +142,7 @@ public class Sandbox
         if ( this.groupList == null ) throw new Exception( "Groups haven't been created yet" );
         return this.groupList;
     }
-    
+
     void setGroupList( GroupList parameters ) throws Exception
     {
         this.groupList = parameters;
@@ -155,7 +155,7 @@ public class Sandbox
                 /* This shouldn't happen because this is validated in parameters.validate */
                 throw new Exception( "Group name must be unique: '" + group.getName() + "'" );
             }
-        }        
+        }
     }
 
     /* This will automatically pick a valid address group based on the
@@ -163,7 +163,7 @@ public class Sandbox
     void autoDetectAddressPool() throws Exception
     {
         NetworkConfiguration networkSettings = UvmContextFactory.context().networkManager().getNetworkConfiguration();
-        
+
         /* Load the list of networks. */
         List<AddressRange> currentNetwork = new LinkedList<AddressRange>();
         for (InterfaceConfiguration intf : networkSettings.getInterfaceList()) {
@@ -176,7 +176,7 @@ public class Sandbox
                 range = AddressRange.makeNetwork( net.getNetwork().getAddr(), net.getNetmask().getAddr() );
                 currentNetwork.add(range);
             }
-            
+
             if (intf.getAliases() != null) {
                 for ( IPNetwork alias : intf.getAliases() ) {
                     range = AddressRange.makeNetwork( alias.getNetwork().getAddr(), alias.getNetmask().getAddr() );
@@ -184,9 +184,9 @@ public class Sandbox
                 }
             }
         }
-        
+
         IPNetwork network = null;
-        
+
         for ( Map.Entry<IPNetwork,AddressRange> e : AUTO_ADDRESS_POOLS.entrySet()) {
             network = e.getKey();
             for ( AddressRange range : currentNetwork ) {
@@ -198,12 +198,12 @@ public class Sandbox
 
             if ( network != null ) break;
         }
-        
+
         if ( network == null ) {
             logger.warn( "Unable to auto detect a network for VPN." );
             return;
         }
-        
+
         VpnGroup group = new VpnGroup();
         group.setLive( true );
         group.setUseDNS( false );
@@ -221,7 +221,7 @@ public class Sandbox
     {
         return this.exportList;
     }
-    
+
     void setExportList( ExportList parameters ) throws Exception
     {
         parameters.validate();
@@ -233,24 +233,48 @@ public class Sandbox
     {
         /* Load the list of networks. */
         NetworkConfiguration networkSettings = UvmContextFactory.context().networkManager().getNetworkConfiguration();
-        
+
         List<SiteNetwork> networkList = new LinkedList<SiteNetwork>();
         LinkedList<AddressRange> rangeList = new LinkedList<AddressRange>();
-        
+
         for (InterfaceConfiguration intf : networkSettings.getInterfaceList()) {
             if (! intf.isWAN() ) {
                 IPNetwork network = intf.getPrimaryAddress();
 
                 if (network == null)
                     continue;
-                
+
                 rangeList.addFirst( AddressRange.makeNetwork( network.getNetwork().getAddr(), network.getNetmask().getAddr()));
-            
+
                 SiteNetwork ssn = new SiteNetwork();
                 ssn.setNetwork( network.getNetwork());
                 ssn.setNetmask( network.getNetmask());
                 ssn.setLive( true );
-                ssn.setName( i18nUtil.tr("internal network") );
+//                ssn.setName( i18nUtil.tr("internal network") );
+                ssn.setName(intf.getName());
+                networkList.add( ssn );
+            }
+        }
+
+        /* if list is empty just add the first wan interface */
+        if (networkList.size() == 0) {
+            for (InterfaceConfiguration intf : networkSettings.getInterfaceList()) {
+                if (! intf.isWAN() )
+                    continue;
+
+                IPNetwork network = intf.getPrimaryAddress();
+
+                if (network == null)
+                    continue;
+
+                rangeList.addFirst( AddressRange.makeNetwork( network.getNetwork().getAddr(), network.getNetmask().getAddr()));
+
+                SiteNetwork ssn = new SiteNetwork();
+                ssn.setNetwork( network.getNetwork());
+                ssn.setNetmask( network.getNetmask());
+                ssn.setLive( true );
+//                ssn.setName( i18nUtil.tr("internal network") );
+                ssn.setName(intf.getName());
                 networkList.add( ssn );
             }
         }
@@ -268,14 +292,14 @@ public class Sandbox
         ssn.setLive( false );
         ssn.setName( i18nUtil.tr("entire internet (full tunnel VPN)") );
         networkList.add( ssn );
-        
+
         setExportList( new ExportList( networkList ));
     }
 
     void setClientList( ClientList parameters ) throws Exception
     {
         parameters.validate();
-        
+
         fixGroups( parameters.getClientList());
         this.clientList = parameters;
     }
@@ -315,7 +339,7 @@ public class Sandbox
 
             /* Nothing left to do */
             return settings;
-            
+
         default:
             throw new Exception( "Invalid state for sandbox: " + this.configState );
         }
@@ -336,7 +360,7 @@ public class Sandbox
 
         /* Client list */
         settings.setClientList( this.clientList.getClientList());
-        
+
         settings.setSiteList( this.siteList.getSiteList());
 
         settings.setExportedAddressList( this.exportList.getExportList());
@@ -345,10 +369,10 @@ public class Sandbox
         settings.setMaxClients( DEFAULT_MAX_CLIENTS );
         settings.setKeepAlive( DEFAULT_KEEP_ALIVE );
         settings.setExposeClients( DEFAULT_EXPOSE_CLIENTS );
-        
+
         return settings;
     }
-    
+
     static
     {
         Map<IPNetwork,AddressRange> map = new LinkedHashMap<IPNetwork,AddressRange>();
@@ -366,5 +390,4 @@ public class Sandbox
 
         AUTO_ADDRESS_POOLS = Collections.unmodifiableMap( map );
     }
-    
 }
