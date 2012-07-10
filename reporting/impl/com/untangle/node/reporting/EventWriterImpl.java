@@ -279,7 +279,7 @@ public class EventWriterImpl implements Runnable
             }
 
             long t1 = System.currentTimeMillis();
-            logger.info("persist(): " + String.format("%5d",count) + " events [" + String.format("%5d",(t1-t0)) + " ms] [" + String.format("%4.1f",(((float)count)/(t1-t0))) + " avg] " + mapOutput);
+            logger.info("persist(): " + String.format("%5d",count) + " events [" + String.format("%5d",(t1-t0)) + " ms] [" + String.format("%4.1f",((t1-t0)/((float)count))) + " avg] " + mapOutput);
         }
     }
 
