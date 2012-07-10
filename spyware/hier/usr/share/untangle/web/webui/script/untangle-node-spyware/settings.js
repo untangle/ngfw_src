@@ -41,7 +41,6 @@ if (!Ung.hasResource["Ung.Spyware"]) {
                 autoScroll: true,
                 defaults: {
                     xtype: 'fieldset',
-                    autoHeight: true,
                     buttonAlign: 'left'
                 },
                 items: [{

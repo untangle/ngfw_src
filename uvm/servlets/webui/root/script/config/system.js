@@ -158,7 +158,6 @@ if (!Ung.hasResource["Ung.System"]) {
                 autoScroll: true,
                 items: [{
                     xtype: "fieldset",
-                    autoHeight: true,
                     title: this.i18n._("Support"),
                     items: [{
                         xtype: 'checkbox',
@@ -176,7 +175,6 @@ if (!Ung.hasResource["Ung.System"]) {
                     }]
                 },{
                     xtype: "fieldset",
-                    autoHeight: true,
                     title: this.i18n._("Manual Reboot"),
                     items: [{
                         border: false,
@@ -205,7 +203,6 @@ if (!Ung.hasResource["Ung.System"]) {
                     }]
                 },{
                     xtype: "fieldset",
-                    autoHeight: true,
                     title: this.i18n._("Manual Shutdown"),
                     items: [{
                         border: false,
@@ -234,7 +231,6 @@ if (!Ung.hasResource["Ung.System"]) {
                     }]
                 },{
                     xtype: "fieldset",
-                    autoHeight: true,
                     title: this.i18n._("Setup Wizard"),
                     items: [{
                         border: false,
@@ -298,7 +294,6 @@ if (!Ung.hasResource["Ung.System"]) {
                 }, this),
                 items: [{
                     xtype: "fieldset",
-                    autoHeight: true,
                     title: this.i18n._("Backup to File"),
                     items: [{
                         border: false,
@@ -374,7 +369,6 @@ if (!Ung.hasResource["Ung.System"]) {
                 items: [{
                     title: this.i18n._("From File"),
                     xtype: "fieldset",
-                    autoHeight: true,
                     items: [{
                         border: false,
                         cls: "description",
@@ -414,7 +408,6 @@ if (!Ung.hasResource["Ung.System"]) {
             var protocolSettingsItems = [];
 
             protocolSettingsItems.push({
-                autoHeight: true,
                 border: false,
                 cls: "description",
                 html: this.i18n._("Warning: These settings should not be changed unless instructed to do so by support.")
@@ -426,10 +419,8 @@ if (!Ung.hasResource["Ung.System"]) {
                     collapsible: true,
                     collapsed: true,
                     title: this.i18n._("HTTP"),
-                    autoHeight: true,
                     defaults: {
-                        xtype: "fieldset",
-                        autoHeight: true
+                        xtype: "fieldset"
                     },
                     items: [{
                         title: this.i18n._("Web Override"),
@@ -594,7 +585,6 @@ if (!Ung.hasResource["Ung.System"]) {
                     collapsible: true,
                     collapsed: true,
                     title: this.i18n._("FTP"),
-                    autoHeight: true,
                     items: [{
                         xtype: "radio",
                         boxLabel: Ext.String.format(this.i18n._("{0}Enable Processing{1} of File Transfer traffic.  (This is the default setting)"), "<b>", "</b>"),
@@ -630,7 +620,6 @@ if (!Ung.hasResource["Ung.System"]) {
                     collapsible: true,
                     collapsed: true,
                     title: this.i18n._("SMTP"),
-                    autoHeight: true,
                     labelWidth: 200,
                     items: [{
                         xtype: "radio",
@@ -709,7 +698,6 @@ if (!Ung.hasResource["Ung.System"]) {
                     collapsed: true,
                     xtype: "fieldset",
                     title: this.i18n._("POP3"),
-                    autoHeight: true,
                     labelWidth: 200,
                     items: [{
                         xtype: "radio",
@@ -761,7 +749,6 @@ if (!Ung.hasResource["Ung.System"]) {
                     collapsible: true,
                     collapsed: true,
                     title: this.i18n._("IMAP"),
-                    autoHeight: true,
                     labelWidth: 200,
                     items: [{
                         xtype: "radio",
@@ -821,8 +808,7 @@ if (!Ung.hasResource["Ung.System"]) {
                 cls: "ung-panel",
                 autoScroll: true,
                 defaults: {
-                    xtype: "fieldset",
-                    autoHeight: true
+                    xtype: "fieldset"
                 },
                 items: protocolSettingsItems.length != 0 ? protocolSettingsItems: null
             });
@@ -849,7 +835,6 @@ if (!Ung.hasResource["Ung.System"]) {
                 autoScroll: true,
                 defaults: {
                     xtype: "fieldset",
-                    autoHeight: true,
                     buttonAlign: "left"
                 },
                 items: [{
@@ -966,7 +951,6 @@ if (!Ung.hasResource["Ung.System"]) {
                     html: this.downloadLanguageHTML
                 }, {
                     xtype: "fieldset",
-                    autoHeight: true,
                     title: this.i18n._("Force Sync Time"),
                     items: [{
                         border: false,

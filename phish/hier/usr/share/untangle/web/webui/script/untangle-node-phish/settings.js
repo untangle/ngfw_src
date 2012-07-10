@@ -54,7 +54,6 @@ if (!Ung.hasResource["Ung.Phish"]) {
                 items: [{
                     xtype: 'fieldset',
                     title: this.i18n._('SMTP'),
-                    autoHeight: true,
                     defaults: {
                         width: 210
                     },
@@ -91,7 +90,6 @@ if (!Ung.hasResource["Ung.Phish"]) {
                 }, {
                     xtype: 'fieldset',
                     title: this.i18n._('POP3'),
-                    autoHeight: true,
                     defaults: {
                         width: 210
                     },
@@ -128,7 +126,6 @@ if (!Ung.hasResource["Ung.Phish"]) {
                 }, {
                     xtype: 'fieldset',
                     title: this.i18n._('IMAP'),
-                    autoHeight: true,
                     defaults: {
                         width: 210
                     },
@@ -165,16 +162,9 @@ if (!Ung.hasResource["Ung.Phish"]) {
                 }, {
                     xtype: 'fieldset',
                     title: this.i18n._('Note'),
-                    autoHeight: true,
                     cls: 'description',
-                    html: //this.i18n._('Phish Blocker last checked for updates') + ":&nbsp;&nbsp;&nbsp;&nbsp;"
-                           //+ (this.lastUpdateCheck != null ? i18n.timestampFormat(this.lastUpdateCheck): i18n._("unknown"))
-                           //+ '<br\>'
-                           this.i18n._('Phish Blocker email signatures were last updated') + ":&nbsp;&nbsp;&nbsp;&nbsp;"
-                           + (this.lastUpdate != null ? i18n.timestampFormat(this.lastUpdate): i18n._("unknown"))
-                    //+ '<br\>'
-                    //+ this.i18n._('Current Version:') + ":&nbsp;&nbsp;&nbsp;&nbsp;"
-                    //+ (this.signatureVersion != null ? this.signatureVersion: i18n._("unknown"))
+                    html: this.i18n._('Phish Blocker email signatures were last updated') + ":&nbsp;&nbsp;&nbsp;&nbsp;"
+                          + (this.lastUpdate != null ? i18n.timestampFormat(this.lastUpdate): i18n._("unknown"))
                 }]
             });
         },
@@ -187,7 +177,6 @@ if (!Ung.hasResource["Ung.Phish"]) {
                 cls: 'ung-panel',
                 items: [{
                     xtype: 'fieldset',
-                    autoHeight: true,
                     items: [{
                         xtype: 'checkbox',
                         boxLabel: this.i18n._('Enable Phish web filtering'),
@@ -202,7 +191,6 @@ if (!Ung.hasResource["Ung.Phish"]) {
                   , {
                     xtype: 'fieldset',
                     title: this.i18n._('Note'),
-                    autoHeight: true,
                     cls: 'description',
                     html: this.i18n._('Phish Blocker web signatures were last updated ')
                             + ":&nbsp;&nbsp;&nbsp;&nbsp;"

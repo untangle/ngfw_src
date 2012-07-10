@@ -41,7 +41,6 @@ if (!Ung.hasResource["Ung.Reporting"]) {
                 items: [{
                     title: this.i18n._('Status'),
                     xtype: 'fieldset',
-                    autoHeight: true,
                     items: [{
                         html: this.i18n._('Reports are automatically generated each night.') + "<br/>",
                         cls: 'description',
@@ -120,8 +119,7 @@ if (!Ung.hasResource["Ung.Reporting"]) {
                 autoScroll: true,
                 defaults: {
                     anchor: "98%",
-                    xtype: 'fieldset',
-                    autoHeight: true
+                    xtype: 'fieldset'
                 },
                 items: [{
                     title: this.i18n._("Generation Time"),
@@ -292,8 +290,7 @@ if (!Ung.hasResource["Ung.Reporting"]) {
                 autoScroll: true,
                 defaults: {
                     anchor: "98%",
-                    xtype: 'fieldset',
-                    autoHeight: true
+                    xtype: 'fieldset'
                 },
                 items: [{
                     title: this.i18n._('Email'),
@@ -494,8 +491,7 @@ if (!Ung.hasResource["Ung.Reporting"]) {
                 autoScroll: true,
                 defaults: {
                     anchor: "98%",
-                    xtype: 'fieldset',
-                    autoHeight: true
+                    xtype: 'fieldset'
                 },
                 items: [{
                     title: this.i18n._('Syslog'),
@@ -607,8 +603,7 @@ if (!Ung.hasResource["Ung.Reporting"]) {
                 autoScroll: true,
                 defaults: {
                     anchor: "98%",
-                    xtype: 'fieldset',
-                    autoHeight: true
+                    xtype: 'fieldset'
                 },
                 items: [{
                     title: this.i18n._('Database'),

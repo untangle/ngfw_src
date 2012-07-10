@@ -163,7 +163,6 @@ if (!Ung.hasResource["Ung.SessionMonitor"]) {
                 title:i18n._("Column Selection"),
                 collapsible: true,
                 collapsed: true,
-                autoHeight: true,
                 bodyStyle: 'padding:5px 5px 5px 5px;',
                 items: [{
                     xtype: 'checkbox',
@@ -597,7 +596,6 @@ if (!Ung.hasResource["Ung.SessionMonitor"]) {
                 title:i18n._("App Selection"),
                 collapsible: true,
                 collapsed: true,
-                autoHeight: true,
                 bodyStyle: 'padding:5px 5px 5px 5px;',
                 items: items
             });
@@ -615,7 +613,6 @@ if (!Ung.hasResource["Ung.SessionMonitor"]) {
                 title:i18n._("Grouping Field"),
                 collapsible: true,
                 collapsed: true,
-                autoHeight: true,
                 bodyStyle: 'padding:5px 5px 5px 5px;',
                 items: [{
                     xtype: 'radio',

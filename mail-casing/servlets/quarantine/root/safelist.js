@@ -36,6 +36,7 @@ Ung.Safelist.prototype = {
             {
                 header: i18n._( "Email Address" ),
                 dataIndex: 'emailAddress',
+                flex: 1,
                 field: {
                     xtype:'textfield'
                 }
@@ -87,8 +88,8 @@ Ung.Safelist.prototype = {
             frame : true,
             stripeRows : true,
             cls:'safelist-grid',
-            autoExpandColumn : 1,
-            autoExpandMax: 1700,
+            enableHdMenu: false,
+            enableColumnMove: false,
             tbar : [ this.addButton, this.deleteButton ]
         });
 
@@ -107,7 +108,6 @@ Ung.Safelist.prototype = {
                 height:'100%'
             } );
             this.addWindow = Ext.create('Ext.Window',{
-
                 width:500,
                 height:300,
                 closeAction:'hide',

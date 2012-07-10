@@ -33,7 +33,6 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                 autoScroll: true,
                 defaults: {
                     xtype: 'fieldset',
-                    autoHeight: true,
                     buttonAlign: 'left'
                 },
                 items: [{
@@ -731,7 +730,6 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                 bodyStyle: 'padding:5px 5px 0px; 5px;',
                 defaults: {
                     xtype: 'fieldset',
-                    autoHeight: true,
                     buttonAlign: 'left'
                 },
                 items: [

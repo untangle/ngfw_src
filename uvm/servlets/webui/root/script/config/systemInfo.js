@@ -36,7 +36,6 @@ if (!Ung.hasResource["Ung.SystemInfo"]) {
                     title: this.i18n._('System Info'),
                     name: 'System Info',
                     xtype: 'fieldset',
-                    autoHeight: true,
                     buttonAlign: 'left',
                     items: [{
                         xtype: 'textarea',

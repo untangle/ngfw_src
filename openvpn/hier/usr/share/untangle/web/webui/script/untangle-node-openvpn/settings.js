@@ -26,7 +26,6 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                 panelItems = {
                     xtype: 'fieldset',
                     title: this.i18n._('Download Client Config'),
-                    autoHeight: true,
                     labelWidth: 150,
                     items: [{
                         html: this.i18n._('This configuration file can be used to configure the remote VPN Site.'),
@@ -44,7 +43,6 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                 panelItems = [{
                     xtype: 'fieldset',
                     title: this.i18n._('Download Client Config'),
-                    autoHeight: true,
                     labelWidth: 150,
                     items: [{
                         html: this.i18n._('These files can be used to configure your remote VPN Clients.'),
@@ -66,7 +64,6 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                 }, {
                     xtype: 'fieldset',
                     title: this.i18n._('or Distribute Client Config via Email'),
-                    autoHeight: true,
                     items: [{
                         html: this.i18n._('Click "Send Email" to send an email to "Email Address" with information to retrieve the OpenVPN Client.'),
                         border: false,
@@ -231,7 +228,6 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                     html: this.i18n._('Upload the Client Configuration file downloaded from the VPN Server.')
                 }, {
                     xtype: 'fieldset',
-                    autoHeight: true,
                     buttonAlign: 'left',
                     labelWidth: 150,
                     labelAlign: 'right',
@@ -1284,7 +1280,6 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                 defaults: {
                     anchor:"98%",
                     xtype: 'fieldset',
-                    autoHeight: true,
                     buttonAlign: 'left'
                 },
                 items: [{
@@ -1363,7 +1358,6 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                         }]
                     }, {
                         xtype: 'fieldset',
-                        autoHeight: true,
                         style: 'margin:0px 0px 0px 160px;',
                         labelWidth: 160,
                         border: false,
@@ -1748,7 +1742,6 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                         border: false
                     }, {
                         xtype: 'fieldset',
-                        autoHeight: true,
                         buttonAlign: 'left',
                         title: this.i18n._('This information is required.'),
                         items: [{

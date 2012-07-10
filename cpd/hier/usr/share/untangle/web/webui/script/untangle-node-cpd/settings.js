@@ -289,7 +289,6 @@ if (!Ung.hasResource["Ung.CPD"]) {
                 },{
                     xtype: "fieldset",
                     title: this.i18n._("Interface"),
-                    autoHeight: true,
                     items: [{
                         cls: "description",
                         border: false,
@@ -303,7 +302,6 @@ if (!Ung.hasResource["Ung.CPD"]) {
                 },{
                     xtype: "fieldset",
                     title: this.i18n._("Address"),
-                    autoHeight: true,
                     items: [{
                         cls: "description",
                         border: false,
@@ -323,7 +321,6 @@ if (!Ung.hasResource["Ung.CPD"]) {
                     }]
                 },{
                     xtype: "fieldset",
-                    autoHeight: true,
                     title: this.i18n._("Time of Day"),
                     items: [{
                         cls: "description",
@@ -345,7 +342,6 @@ if (!Ung.hasResource["Ung.CPD"]) {
                     }]
                 },{
                     xtype: "fieldset",
-                    autoHeight: true,
                     title: this.i18n._("Days of Week"),
                     items: [{
                         cls: "description",
@@ -551,7 +547,6 @@ if (!Ung.hasResource["Ung.CPD"]) {
                 cls: "ung-panel",
                 items: [{
                     xtype: "fieldset",
-                    autoHeight: true,
                     title: this.i18n._( "User Authentication" ),
                     items: [{
                         xtype: "radio",
@@ -617,7 +612,6 @@ if (!Ung.hasResource["Ung.CPD"]) {
                     }]
                 },{
                     xtype: "fieldset",
-                    autoHeight: true,
                     title: this.i18n._( "Session Settings" ),
                     items: [{
                         xtype: "numberfield",
@@ -715,7 +709,6 @@ if (!Ung.hasResource["Ung.CPD"]) {
                 },
                 items: [{
                     xtype: "fieldset",
-                    autoHeight: true,
                     title: this.i18n._( "Captive Portal Page" ),
                     items: [{
                         xtype: "radio",
@@ -746,7 +739,6 @@ if (!Ung.hasResource["Ung.CPD"]) {
                         }
                     },{
                         xtype: "fieldset",
-                        autoHeight: true,
                         autoScroll: false,
                         title: this.i18n._( "Captive Portal Page Configuration" ),
                         items: [{
@@ -953,7 +945,6 @@ if (!Ung.hasResource["Ung.CPD"]) {
                     }]
                 },{
                     xtype: "fieldset",
-                    autoHeight: true,
                     title: this.i18n._( "Session Redirect" ),
                     items: [{
                         xtype: "textfield",

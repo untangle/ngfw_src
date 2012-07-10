@@ -37,7 +37,6 @@ if (!Ung.hasResource["Ung.Virus"]) {
                 autoScroll: true,
                 defaults: {
                     xtype: 'fieldset',
-                    autoHeight: true,
                     buttonAlign: 'left'
                 },
                 items: [{
@@ -345,7 +344,6 @@ if (!Ung.hasResource["Ung.Virus"]) {
                 autoScroll: true,
                 defaults: {
                     xtype: 'fieldset',
-                    autoHeight: true,
                     buttonAlign: 'left'
                 },
                 items: [{
@@ -384,7 +382,6 @@ if (!Ung.hasResource["Ung.Virus"]) {
                 defaults: {
                     anchor: '98%',
                     xtype: 'fieldset',
-                    autoHeight: true,
                     autoScroll: true,
                     buttonAlign: 'left'
                 },

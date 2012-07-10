@@ -65,8 +65,9 @@ Ung.Remaps.prototype = {
         this.grid = Ext.create('Ext.grid.Panel',{
             autoExpandColumn : 1,
             anchor : '100% -100',
-           // store : this.store,
 			cls:'quarantine-received-messages-grid',
+            enableHdMenu: false,
+            enableColumnMove: false,
             columns: this.columns,
             loadMask : true,
             frame : true,

@@ -204,7 +204,6 @@ if (!Ung.hasResource["Ung.Firewall"]) {
                             xtype:'fieldset',
                             title: this.i18n._("Rule") ,
                             cls:'firewall-spacing-2',
-                            autoHeight: true,
                             title: "If all of the following conditions are met:",
                             items:[{
                                 xtype:'rulebuilder',
@@ -219,7 +218,6 @@ if (!Ung.hasResource["Ung.Firewall"]) {
                         },
                         {
                             xtype: 'fieldset',
-                            autoHeight: true,
                             cls:'description',
                             title: i18n._('Perform the following action(s):'),
                             border: false

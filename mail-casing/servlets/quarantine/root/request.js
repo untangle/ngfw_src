@@ -41,7 +41,7 @@ Ung.QuarantineRequest.prototype = {
                     fieldLabel : i18n._( "Email Address" ),
                     name : "email_address",
                     width: '300',
-                    flex:1
+                    flex: 1
                 },
                 {
                     xtype:'button',

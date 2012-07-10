@@ -170,7 +170,6 @@ if (!Ung.hasResource["Ung.Email"]) {
                                 html: 'It is recommended to use a valid email address. (example: untangle@mydomain.com)',
                                 target: 'email_fromAddress',
                                 autoWidth: true,
-                                autoHeight: true,
                                 showDelay: 200,
                                 dismissDelay: 0,
                                 hideDelay: 0
@@ -179,7 +178,6 @@ if (!Ung.hasResource["Ung.Email"]) {
                                 html: 'Some servers may require this but other servers may not support it.',
                                 target: 'email_smtpUseAuthentication',
                                 autoWidth: true,
-                                autoHeight: true,
                                 showDelay: 200,
                                 dismissDelay: 0,
                                 hideDelay: 0
@@ -258,7 +256,6 @@ if (!Ung.hasResource["Ung.Email"]) {
 
                 defaults: {
                     xtype: 'fieldset',
-                    autoHeight: true,
                     buttonAlign: 'left'
                 },
                 items: [{
@@ -678,7 +675,6 @@ if (!Ung.hasResource["Ung.Email"]) {
                 defaults: {
                     xtype: 'fieldset',
                     anchor: "98% 25%",
-                    autoHeight: true,
                     autoScroll: true,
                     buttonAlign: 'left'
                 },

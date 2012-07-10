@@ -29,7 +29,6 @@ if (!Ung.hasResource["Ung.Protofilter"]) {
                 autoScroll: true,
                 defaults: {
                     xtype: 'fieldset',
-                    autoHeight: true,
                     buttonAlign: 'left'
                 },
                 items: [{

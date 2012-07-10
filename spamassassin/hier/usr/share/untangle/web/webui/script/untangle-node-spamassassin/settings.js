@@ -115,7 +115,6 @@ if (!Ung.hasResource["Ung.SpamAssassin"]) {
                 items: [{
                     xtype: 'fieldset',
                     title: this.i18n._('SMTP'),
-                    autoHeight: true,
                     items: [{
                         xtype: 'checkbox',
                         name: 'Scan SMTP',
@@ -323,7 +322,6 @@ if (!Ung.hasResource["Ung.SpamAssassin"]) {
                                  title:i18n._("Advanced SMTP Configuration"),
                                  collapsible: true,
                                  collapsed: !this.isAdvanced,
-                                 autoHeight: true,
                                  listeners: {
                                      beforecollapse: Ext.bind(this.onBeforeCollapse, this ),
                                      beforeexpand: Ext.bind(this.onBeforeExpand, this )
@@ -442,8 +440,6 @@ if (!Ung.hasResource["Ung.SpamAssassin"]) {
                 }, {
                     xtype: 'fieldset',
                     title: this.i18n._('POP3'),
-                    autoHeight: true,
-
                     items: [{
                         xtype: 'checkbox',
                         name: 'Scan POP3',
@@ -569,7 +565,6 @@ if (!Ung.hasResource["Ung.SpamAssassin"]) {
                         title:i18n._("Advanced POP Configuration"),
                         collapsible: true,
                         collapsed: !this.isAdvanced,
-                        autoHeight: true,
                         listeners: {
                             beforecollapse: Ext.bind(this.onBeforeCollapse, this ),
                             beforeexpand: Ext.bind(this.onBeforeExpand, this )
@@ -611,8 +606,6 @@ if (!Ung.hasResource["Ung.SpamAssassin"]) {
                 }, {
                     xtype: 'fieldset',
                     title: this.i18n._('IMAP'),
-                    autoHeight: true,
-
                     items: [{
                         xtype: 'checkbox',
                         name: 'Scan IMAP',
@@ -740,7 +733,6 @@ if (!Ung.hasResource["Ung.SpamAssassin"]) {
                         title:i18n._("Advanced IMAP Configuration"),
                         collapsible: true,
                         collapsed: !this.isAdvanced,
-                        autoHeight: true,
                         listeners: {
                             beforecollapse: Ext.bind(this.onBeforeCollapse, this ),
                             beforeexpand: Ext.bind(this.onBeforeExpand, this )
@@ -782,7 +774,6 @@ if (!Ung.hasResource["Ung.SpamAssassin"]) {
                 }, {
                     xtype: 'fieldset',
                     title: this.i18n._('Note'),
-                    autoHeight: true,
                     cls: 'description',
                     html: this.i18n._('Spam Blocker Lite last checked for updates') + ":&nbsp;&nbsp;&nbsp;&nbsp;"
                         + (this.lastCheck != null ? i18n.timestampFormat(this.lastCheck): i18n._("unknown"))

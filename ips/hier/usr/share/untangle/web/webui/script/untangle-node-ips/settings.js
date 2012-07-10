@@ -31,8 +31,7 @@ if (!Ung.hasResource["Ung.Ips"]) {
                 cls: 'ung-panel',
                 autoScroll: true,
                 defaults: {
-                    xtype: 'fieldset',
-                    autoHeight: true,
+                    xtype: 'fieldset'
                     buttonAlign: 'left'
                 },
                 items: [{

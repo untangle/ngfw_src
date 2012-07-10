@@ -470,6 +470,8 @@ Ext.define('Ung.QuarantineSelectionModel', {
 
 Ext.define('Ung.QuarantineGrid', {
     extend:'Ext.grid.Panel',
+    enableHdMenu: false,
+    enableColumnMove: false,
     constructor : function( config ) {
         this.quarantine = config.quarantine;
 
@@ -477,7 +479,7 @@ Ext.define('Ung.QuarantineGrid', {
             {
                 header: i18n._( "From" ),
                 dataIndex: 'sender',
-                width: 150
+                width: 250
             },{
                 header: "<div class='quarantine-attachment-header'>&nbsp</div>",
                 dataIndex: 'attachmentCount',
@@ -492,6 +494,7 @@ Ext.define('Ung.QuarantineGrid', {
             },{
                 header: i18n._( "Subject" ),
                 dataIndex: 'truncatedSubject',
+                flex: 1,
                 width: 250
             },{
                 header: i18n._( "Date" ),
@@ -567,8 +570,6 @@ Ext.define('Ung.QuarantineTabPanel', {
     height : 430,
     activeTab : 0,
     layoutOnTabChange : true,
-    /* defaults : { autoHeight : true }, */
-    frame : true,
     defaults : {
         border : false,
         bodyStyle : 'padding:4px 5px 0px 5px;'

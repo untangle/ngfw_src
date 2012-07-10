@@ -464,7 +464,6 @@ if (!Ung.hasResource["Ung.Administration"]) {
                 autoScroll: true,
                 items: {
                     xtype: 'fieldset',
-                    autoHeight: true,
                     items: [{
                         cls: 'description',
                         html: Ext.String.format(this.i18n._('The Public Address is the address/URL that provides a public location for the {0} Server. This address will be used in emails sent by the {0} Server to link back to services hosted on the {0} Server such as Quarantine Digests and OpenVPN Client emails.'), main.getBrandingManager().getCompanyName()),
@@ -600,8 +599,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
                 autoScroll: true,
                 defaults: {
                     anchor: '98%',
-                    xtype: 'fieldset',
-                    autoHeight: true
+                    xtype: 'fieldset'
                 },
                 items: [{
                     title: this.i18n._('Status'),
@@ -647,8 +645,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
                     title: this.i18n._('Generation'),
                     defaults: {
                         xtype: 'fieldset',
-                        autoHeight: true,
-                        layout:'column'
+                        layout: 'column'
                     },
                     items: [{
                             cls: 'description',
@@ -774,7 +771,6 @@ if (!Ung.hasResource["Ung.Administration"]) {
                         autoScroll: true,
                         items: {
                             xtype: 'fieldset',
-                            autoHeight: true,
                             defaults: {
                                 labelWidth: 150,
                                 width: 400                        
@@ -1088,8 +1084,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
                 cls: 'ung-panel',
                 autoScroll: true,
                 defaults: {
-                    xtype: 'fieldset',
-                    autoHeight: true
+                    xtype: 'fieldset'
                 },
                 items: [{
                     title: this.i18n._('SNMP'),
@@ -1288,7 +1283,6 @@ if (!Ung.hasResource["Ung.Administration"]) {
                 autoScroll: true,
                 defaults: {
                     xtype: 'fieldset',
-                    autoHeight: true,
                     buttonAlign: 'left'
                 },
                 items: [{

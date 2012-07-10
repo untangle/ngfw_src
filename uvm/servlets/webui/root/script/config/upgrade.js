@@ -227,8 +227,7 @@ if (!Ung.hasResource["Ung.Upgrade"]) {
                 cls: 'ung-panel',
                 autoScroll: true,
                 defaults: {
-                    xtype: 'fieldset',
-                    autoHeight: true
+                    xtype: 'fieldset'
                 },
                 items: [{
                     title: this.i18n._('Automatic Upgrade'),
