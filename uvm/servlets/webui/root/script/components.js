@@ -2714,7 +2714,7 @@ Ext.define("Ung.GridEventLog", {
     fields: null,
     // columns for the column model
     columns: null,
-    enableHdMenu: false,
+    enableColumnHide: false,
     enableColumnMove: false,
     // for internal use
     rpc: null,
@@ -2740,9 +2740,6 @@ Ext.define("Ung.GridEventLog", {
         }
         if ( this.hasAutoRefresh == null ) {
             this.hasAutoRefresh = true;
-        }
-        if ( this.autoExpandColumn == null ) {
-            this.autoExpandColumn = "timestamp";
         }
         if ( this.name == null ) {
             this.name = "Event Log";
@@ -2819,9 +2816,10 @@ Ext.define("Ung.GridEventLog", {
             text: '<div style="width:30px;"></div>'
         }, this.pagingToolbar];
         this.callParent(arguments);
- 
+  
         var cmConfig = this.columns;
         for (i in cmConfig) {
+            cmConfig[i].menuDisabled = true;
             if (cmConfig[i].sortable == true || cmConfig[i].sortable == null) {
                 cmConfig[i].sortable = true;
                 cmConfig[i].initialSortable = true;
@@ -5388,7 +5386,7 @@ Ext.define('Ung.UserEditorWindow', {
             id: 'usersGrid',
             height: 300,
             width: 400,
-            enableHdMenu: false,
+            enableColumnHide: false,
             enableColumnMove: false,
             store: new Ext.data.Store({
                 data: data,
@@ -5419,16 +5417,19 @@ Ext.define('Ung.UserEditorWindow', {
                 header: i18n._("Selected"),
                 width: 60,
                 xtype:'checkcolumn',
+                menuDisabled: true,
                 dataIndex: "checked"
             }, {
                 header: i18n._("Name"),
                 width: 100,
                 sortable: true,
+                menuDisabled: true,
                 dataIndex: "uid"
             },{
                 header: i18n._("Full Name"),
                 width: 200,
                 sortable: true,
+                menuDisabled: true,
                 dataIndex: "displayName"
             }]
         });
@@ -5531,7 +5532,7 @@ Ext.define('Ung.GroupEditorWindow', {
             id: 'groupsGrid',
             height: 300,
             width: 400,
-            enableHdMenu: false,
+            enableColumnHide: false,
             enableColumnMove: false,
             store: new Ext.data.Store({
                 data: data,
@@ -5557,16 +5558,19 @@ Ext.define('Ung.GroupEditorWindow', {
             columns: [ {
                 header: i18n._("Selected"),
                 width: 60,
+                menuDisabled: true,
                 xtype:'checkcolumn',
                 dataIndex: "checked"
             }, {
                 header: i18n._("Name"),
                 width: 100,
+                menuDisabled: true,
                 sortable: true,
                 dataIndex: "SAMAccountName"
             },{
                 header: i18n._("Full Name"),
                 width: 200,
+                menuDisabled: true,
                 sortable: true,
                 dataIndex: "displayName"
             }]
@@ -5655,7 +5659,7 @@ Ext.define('Ung.GroupEditorWindow', {
 Ext.define('Ung.RuleBuilder', {
     extend: 'Ext.grid.Panel',
     settingsCmp: null,
-    enableHdMenu: false,
+    enableColumnHide: false,
     enableColumnMove: false,
     dirtyFlag: false,
     alias: 'widget.rulebuilder',
@@ -5695,6 +5699,7 @@ Ext.define('Ung.RuleBuilder', {
             header: "",
             width: 45,
             fixed: true,
+            menuDisabled: true,
             dataIndex: null,
             renderer: Ext.bind(function(value, metadata, record, rowIndex) {
                 if (rowIndex == 0) return "";
@@ -5704,6 +5709,7 @@ Ext.define('Ung.RuleBuilder', {
             header: this.settingsCmp.i18n._("Type"),
             width: 320,
             fixed: true,
+            menuDisabled: true,
             dataIndex: "name",
             renderer: Ext.bind(function(value, metadata, record, rowIndex, colIndex, store) {
                 var out=[];
@@ -5726,6 +5732,7 @@ Ext.define('Ung.RuleBuilder', {
             header: "",
             width: 100,
             fixed: true,
+            menuDisabled: true,
             dataIndex: "invert",
             renderer: Ext.bind(function(value, metadata, record, rowIndex, colIndex, store) {
                 var out=[];
@@ -5740,6 +5747,7 @@ Ext.define('Ung.RuleBuilder', {
             width: 315,
             flex: 1,
             fixed: true,
+            menuDisabled: true,
             dataIndex: "value",
             renderer: Ext.bind(function(value, metadata, record, rowIndex, colIndex, store) {
                 var name=record.get("name");
@@ -5785,7 +5793,6 @@ Ext.define('Ung.RuleBuilder', {
                     }
                     res=out.join("");
                     break;
-                    
                 }
                 return res;
 
@@ -5959,10 +5966,6 @@ Ext.define('Ung.RuleBuilder', {
                 Ext.MessageBox.alert(i18n._("Warning"),i18n._("A valid type must be selected for all matchers."));
                 return false;
             }
-            //if (this.store.data.items[i].data.value == null || this.store.data.items[i].data.value == "") {
-            //    Ext.MessageBox.alert(i18n._("Warning"),i18n._("A valid value must be specified for all matchers."));
-            //    return false;
-            //}
         }
         return true;
     },

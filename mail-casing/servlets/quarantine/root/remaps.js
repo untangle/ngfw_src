@@ -32,17 +32,20 @@ Ung.Remaps.prototype = {
     {
         this.selectionModel = new Ung.RemapsSelectionModel( { remaps : this } );
 
-        this.columns = [ {header: i18n._( "Email Address" ),dataIndex: 'emailAddress'}];
+        this.columns = [{
+            header: i18n._( "Email Address" ),
+            dataIndex: 'emailAddress',
+            flex: 1,
+            menuDisabled: true
+        }];
 
-
-        this.store = Ext.create('Ext.data.ArrayStore',{
+        this.store = Ext.create('Ext.data.ArrayStore', {
             fields:[{name:'emailAddress'}],
             data : inboxDetails.remapsData
         }); 
 
-
         this.deleteButton = Ext.create('Ext.button.Button', {
-			iconCls:'icon-delete-row',					
+            iconCls:'icon-delete-row',                    
             text : i18n._( "Delete Addresses" ),
             disabled : true,
             handler : function() {
@@ -63,10 +66,9 @@ Ung.Remaps.prototype = {
         });
     
         this.grid = Ext.create('Ext.grid.Panel',{
-            autoExpandColumn : 1,
             anchor : '100% -100',
-			cls:'quarantine-received-messages-grid',
-            enableHdMenu: false,
+            cls:'quarantine-received-messages-grid',
+            enableColumnHide: false,
             enableColumnMove: false,
             columns: this.columns,
             loadMask : true,
@@ -83,9 +85,9 @@ Ung.Remaps.prototype = {
             xtype : 'radio',
             boxLabel : i18n._( "Forward Quarantined Messages To:" ),
             hideLabel : true,
-			id:'radio1',
+            id:'radio1',
             name : "acceptQuantineMessages",
-			ctCls:'quarantine-label',			
+            ctCls:'quarantine-label',            
             checked : inboxDetails.forwardAddress != "",
             listeners : {
                 "change" : {
@@ -94,41 +96,40 @@ Ung.Remaps.prototype = {
                     },this)
                  }
             }});
-		//var radio1 = items[items.length-1].getId();
-		Ext.QuickTips.init()		
-		var tt1 = Ext.create('Ext.tip.ToolTip',{
-			target: Ext.get('radio1'),
-			title: 'Forward Quarantined Messages to....'
-		});
-		
+        Ext.QuickTips.init()        
+        var tt1 = Ext.create('Ext.tip.ToolTip',{
+            target: Ext.get('radio1'),
+            title: 'Forward Quarantined Messages to....'
+        });
+        
         this.emailAddressField = Ext.create('Ext.form.TextField',{
             fieldLabel : i18n._( "Address" ),
             name : "email_address",
             value : inboxDetails.forwardAddress,
-			cls:'quarantine-left-indented'
+            cls:'quarantine-left-indented'
         });
 
         items.push( this.emailAddressField );
-		this.changeAddressButton = Ext.create('Ext.button.Button',{
+        this.changeAddressButton = Ext.create('Ext.button.Button',{
             text : "Change Address",
             handler: function() {
                 var email = this.emailAddressField.getValue();
                 quarantine.rpc.setRemap( Ext.bind(this.setRemap,this ), 
                                          inboxDetails.token, email );
             },
-			cls:'quarantine-change-address',
-            scope : this		
-		});
-		items.push(this.changeAddressButton);
+            cls:'quarantine-change-address',
+            scope : this        
+        });
+        items.push(this.changeAddressButton);
 
         items.push ({ 
             xtype : 'radio',
             name : "acceptQuantineMessages",
-			id: 'radio2',
+            id: 'radio2',
             boxLabel : i18n._( "Received Quarantined Messages From:" ),
             checked : inboxDetails.forwardAddress == "",
             hideLabel : true,
-			cls:'quarantine-received-messages',
+            cls:'quarantine-received-messages',
             listeners : {
                 "change" : {
                     fn : Ext.bind(function(elem, checked) {
@@ -136,11 +137,11 @@ Ung.Remaps.prototype = {
                     },this)
                  }
             }});
-		var tt2 = Ext.create('Ext.tip.ToolTip',{
-			target: Ext.get('radio2'),
-			title: 'Forward Quarantined Messages to....',
-			html:'Forward Quarantined messages to ...'
-		});
+        var tt2 = Ext.create('Ext.tip.ToolTip',{
+            target: Ext.get('radio2'),
+            title: 'Forward Quarantined Messages to....',
+            html:'Forward Quarantined messages to ...'
+        });
         items.push( this.grid );
 
         this.panel = Ext.create('Ext.panel.Panel',{
@@ -154,11 +155,11 @@ Ung.Remaps.prototype = {
     {
         if ( isForwarded ) {
             this.emailAddressField.enable();
-			this.changeAddressButton.enable();
+            this.changeAddressButton.enable();
             this.grid.disable();
         } else {
             this.emailAddressField.disable();
-			this.changeAddressButton.disable();
+            this.changeAddressButton.disable();
             this.grid.enable();            
         }
     },

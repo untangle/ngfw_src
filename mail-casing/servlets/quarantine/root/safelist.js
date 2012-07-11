@@ -32,15 +32,15 @@ Ung.Safelist.prototype = {
         // the column model has information about grid columns
         // dataIndex maps the column to the specific data field in
         // the data store
-        this.columns = [
-            {
-                header: i18n._( "Email Address" ),
-                dataIndex: 'emailAddress',
-                flex: 1,
-                field: {
-                    xtype:'textfield'
-                }
-            }];
+        this.columns = [{
+            header: i18n._( "Email Address" ),
+            dataIndex: 'emailAddress',
+            flex: 1,
+            menuDisabled: true,
+            field: {
+                xtype:'textfield'
+            }
+        }];
             
         this.store = Ext.create('Ext.data.ArrayStore',{
             fields:[{name:'emailAddress'}],
@@ -88,7 +88,7 @@ Ung.Safelist.prototype = {
             frame : true,
             stripeRows : true,
             cls:'safelist-grid',
-            enableHdMenu: false,
+            enableColumnHide: false,
             enableColumnMove: false,
             tbar : [ this.addButton, this.deleteButton ]
         });

@@ -879,6 +879,7 @@ Ext.define('Ung.ReportDetails', {
                 width: 500,
                 sortable: false,
                 dataIndex: 'title',
+                menuDisabled: true,
                 renderer: Ext.bind(function(value, medata, record) {
                     return '<a href="javascript:reports.getApplicationDataFor' + upperName + '(\'' + record.data.name + '\', \'' + rpc.drilldownValue + '\')">' + value + '</a>';
                 },this)
@@ -887,7 +888,7 @@ Ext.define('Ung.ReportDetails', {
             height: 500,
             stripeRows: true,
             hideHeaders: true,
-            enableHdMenu: false,
+            enableColumnHide: false,
             enableColumnMove: false
         });
     },
@@ -933,6 +934,7 @@ Ext.define('Ung.ReportDetails', {
                 width: 500,
                 sortable: false,
                 dataIndex: 'name',
+                menuDisabled: true,
                 renderer: Ext.bind(function(value, medata, record) {
                     return '<a href="javascript:reports.getTableOfContentsFor' + upperName + '(\''+ value + '\')">' + value + '</a>';
                 },this)
@@ -941,7 +943,6 @@ Ext.define('Ung.ReportDetails', {
             height: 500,
             stripeRows: true,
             hideHeaders: true,
-            enableHdMenu: false,
             enableColumnMove: false
         });
     },
@@ -1148,6 +1149,7 @@ Ext.define('Ung.ReportDetails', {
                     header: "Color",
                     width: 25,
                     sortable: false,
+                    menuDisabled: true,
                     dataIndex: 'color',
                     renderer: Ext.bind(function(value, medata, record) {
                         return '<div style="position:absolute;height:8px;width:8px;margin-top:2px;background-color:#'+value+'">&nbsp;</div>';
@@ -1160,6 +1162,7 @@ Ext.define('Ung.ReportDetails', {
                 header: "Label",
                 width: columnTwoWidth,
                 sortable: false,
+                menuDisabled: true,
                 dataIndex: 'label',
                 renderer: Ext.bind(function(value, medata, record) {
                     var linkType = record.data.linkType;
@@ -1181,6 +1184,7 @@ Ext.define('Ung.ReportDetails', {
                 header: "Value",
                 width: 150,
                 sortable: false,
+                menuDisabled: true,
                 dataIndex: 'value',
                 renderer: Ext.bind(function (value, medata, record) {
                     var unit = record.data.unit;
@@ -1245,7 +1249,6 @@ Ext.define('Ung.ReportDetails', {
                 header: false,
                 stripeRows: true,
                 hideHeaders: true,
-                enableHdMenu: false,
                 enableColumnMove: false
             }));
         }
@@ -1273,7 +1276,11 @@ Ext.define('Ung.ReportDetails', {
             c = section.columns.list[i];
             //TODO this case should not occur
             if (c == null || c == undefined) { break; }
-            var col = { header:this.i18n._(c.title), dataIndex:c.name };
+            var col = {
+                header:this.i18n._(c.title), 
+                dataIndex:c.name,
+                menuDisabled: true
+            };
 
             if (c.type == "Date") {
                 col.renderer = function(value) {
@@ -1357,7 +1364,6 @@ Ext.define('Ung.ReportDetails', {
         });
         var detailSection=Ext.create('Ext.grid.Panel',{
             title: section.title,
-            enableHdMenu: false,
             enableColumnMove: false,
             store: store,
             columns: columns,

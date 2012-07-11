@@ -140,19 +140,18 @@ Ext.define('Ung.CountingHash', {
         }
 
         return this.put( key, current );
-        }
-    });
+    }
+});
 
 
-    var quarantineTabPanel = null;
+var quarantineTabPanel = null;
 var quarantine = null;
 var safelist = null;
-    var remaps = null;
+var remaps = null;
 
 var i18n = null;
 
-Ung.Quarantine = function() {
-}
+Ung.Quarantine = function() {}
 
 Ung.Quarantine.prototype = {
     rpc : null,
@@ -470,7 +469,7 @@ Ext.define('Ung.QuarantineSelectionModel', {
 
 Ext.define('Ung.QuarantineGrid', {
     extend:'Ext.grid.Panel',
-    enableHdMenu: false,
+    enableColumnHide: false,
     enableColumnMove: false,
     constructor : function( config ) {
         this.quarantine = config.quarantine;
@@ -479,26 +478,31 @@ Ext.define('Ung.QuarantineGrid', {
             {
                 header: i18n._( "From" ),
                 dataIndex: 'sender',
+                menuDisabled: true,
                 width: 250
             },{
                 header: "<div class='quarantine-attachment-header'>&nbsp</div>",
                 dataIndex: 'attachmentCount',
                 width: 60,
                 tooltip : i18n._( "Number of Attachments in the email." ),
+                menuDisabled: true,
                 align : 'center'
             },{
                 header: i18n._( "Score" ),
                 dataIndex: 'quarantineDetail',
                 width: 60,
+                menuDisabled: true,
                 align : 'center'
             },{
                 header: i18n._( "Subject" ),
                 dataIndex: 'truncatedSubject',
                 flex: 1,
+                menuDisabled: true,
                 width: 250
             },{
                 header: i18n._( "Date" ),
                 dataIndex: 'quarantinedDate',
+                menuDisabled: true,
                 width: 135,
                 renderer : function( value ) {
                     var date = new Date();
@@ -510,13 +514,12 @@ Ext.define('Ung.QuarantineGrid', {
             },{
                 header: i18n._( "Size (KB)" ),
                 dataIndex: 'size',
+                menuDisabled: true,
                 renderer : function( value ) {
                     return Math.round( (( value + 0.0 ) / 1024) * 10 ) / 10;
                 },
                 width: 60
             }];
-
-        //config.cm.defaultSortable = true;
 
         config.bbar = Ext.create('Ext.ux.toolbar.PagingOptions',{
             pageSize: this.quarantine.pageSize,
@@ -544,16 +547,13 @@ Ext.define('Ung.QuarantineGrid', {
         quarantine.pageSize=value;
         quarantine.store.currentPage=1;
         quarantine.store.load({params:{start:0, limit:value}});
-
     },
 
     trackMouseOver:false,
     loadMask: true,
     frame : true,
     region : "center",
-    stripeRows : true,
-    autoExpandColumn : 4
-
+    stripeRows : true
 });
 
 Ext.define('Ung.QuarantineTabPanel', {
@@ -624,7 +624,7 @@ function completeInit()
 
     panels.push( remaps.panel );
 
-    quarantineTabPanel = Ext.create('Ung.QuarantineTabPanel',{ items : panels, layout:'border'});
+    quarantineTabPanel = Ext.create('Ung.QuarantineTabPanel', { items : panels, layout:'border'});
 
     quarantineTabPanel.render();
 
