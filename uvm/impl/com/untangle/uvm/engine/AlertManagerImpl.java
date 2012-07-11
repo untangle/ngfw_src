@@ -396,10 +396,10 @@ class AlertManagerImpl implements AlertManager
             if ( dnsSecondary != null ) dnsServers.add(dnsSecondary);
 
             for (String dnsServer : dnsServers) {
+                /* hardcode common known bad DNS */
                 if ( "8.8.8.8".equals( dnsServer ) || /* google */
                      "8.8.4.4".equals( dnsServer ) || /* google */
                      "4.2.2.1".equals( dnsServer ) || /* level3 */
-                     "4.2.2.2".equals( dnsServer ) || /* level3 */
                      "4.2.2.2".equals( dnsServer ) || /* level3 */
                      "208.67.222.222".equals( dnsServer ) || /* openDNS */
                      "208.67.222.220".equals( dnsServer ) /* openDNS */ ) {
@@ -412,14 +412,24 @@ class AlertManagerImpl implements AlertManager
                     alertText += ").";
 
                     alertList.add(alertText);
-                    
-
                 }
-                    
+                /* otherwise check each DNS against spamhaus */
+                else {
+                    int result = UvmContextFactory.context().execManager().execResult("host 2.0.0.127.zen.spamhaus.org " + dnsServer);
+                    if (result != 0) {
+                        String alertText = "";
+                        alertText += i18nUtil.tr("Spam Blocker [Lite] is installed but an unsupported DNS server is used");
+                        alertText += " (";
+                        alertText += intf.getName();
+                        alertText += ",";
+                        alertText += dnsServer;
+                        alertText += ").";
+
+                        alertList.add(alertText);
+                    }
+                }
             }
         }
-        
-        
     }
     
 }
