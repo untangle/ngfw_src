@@ -912,7 +912,7 @@ class ToolboxManagerImpl implements ToolboxManager
              * If returns non-zero throw an exception
              */
             if (result.getResult() != 0) {
-                throw new PackageException("ut-apt predictInstall exited with: " + result.getResult());
+                throw new PackageException("ut-apt predictInstall error (" + result.getResult() + ") :" + result.getOutput());
             }
         }
 
