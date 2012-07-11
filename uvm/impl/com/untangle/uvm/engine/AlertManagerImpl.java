@@ -418,12 +418,12 @@ class AlertManagerImpl implements AlertManager
                     int result = UvmContextFactory.context().execManager().execResult("host 2.0.0.127.zen.spamhaus.org " + dnsServer);
                     if (result != 0) {
                         String alertText = "";
-                        alertText += i18nUtil.tr("Spam Blocker [Lite] is installed but an unsupported DNS server is used");
+                        alertText += i18nUtil.tr("Spam Blocker [Lite] is installed but a DNS server ");
                         alertText += " (";
                         alertText += intf.getName();
                         alertText += ",";
                         alertText += dnsServer;
-                        alertText += ").";
+                        alertText += ") fails to resolve DNSBL queries.";
 
                         alertList.add(alertText);
                     }
