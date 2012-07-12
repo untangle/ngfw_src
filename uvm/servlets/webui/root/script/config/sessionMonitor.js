@@ -61,12 +61,30 @@ if (!Ung.hasResource["Ung.SessionMonitor"]) {
                 this.columns = [];
                 this.enabledColumns = {};
                 this.groupField = null;
+                var nodeName = "xxxxxxxxxxxxxxxxxx";
+                // set dataFnArg (for node limit) as necessary
+                for ( var i = 0 ; i < this.panelNodeSelector.items.items.length ; i++ ) {
+                    var item = this.panelNodeSelector.items.items[i];
+                    if ( item.xtype == "radio" ) {
+                        this.enabledColumns[item.name] = item.checked;
+                        if (item.checked) {
+                            this.dataFnArg = item.dataFnArg;
+                            nodeName = item.nodeName;
+                            // change title
+                            nodeStr = " - " + item.boxLabel;
+                            if ( this.gridCurrentSessions !== undefined ) 
+                                this.gridCurrentSessions.dataFnArg = item.dataFnArg;
+                        }
+                    }
+                }
                 // add/remove columns as necessary
                 for ( var i = 0 ; i < this.panelColumnSelector.items.items.length ; i++ ) {
                     var item = this.panelColumnSelector.items.items[i];
                     if ( item.xtype == "checkbox" ) {
                         this.enabledColumns[item.name] = item.checked;
-                        if (item.checked) {
+                        // if the item is checked, or if we're only showing a specific node's sessions
+                        // show the column related to that node
+                        if (item.checked || item.gridColumnHeader.indexOf("(" + nodeName+ ")") != -1) {
                             var newColumn = {
                                 header: item.gridColumnHeader,
                                 dataIndex: item.gridColumnDataIndex,
@@ -76,20 +94,6 @@ if (!Ung.hasResource["Ung.SessionMonitor"]) {
                             if ( item.gridColumnRenderer !== undefined )
                                 newColumn.renderer = item.gridColumnRenderer;
                             this.columns.push( newColumn );
-                        }
-                    }
-                }
-                // set dataFnArg (for node limit) as necessary
-                for ( var i = 0 ; i < this.panelNodeSelector.items.items.length ; i++ ) {
-                    var item = this.panelNodeSelector.items.items[i];
-                    if ( item.xtype == "radio" ) {
-                        this.enabledColumns[item.name] = item.checked;
-                        if (item.checked) {
-                            this.dataFnArg = item.dataFnArg;
-                            // change title
-                            nodeStr = " - " + item.boxLabel;
-                            if ( this.gridCurrentSessions !== undefined ) 
-                                this.gridCurrentSessions.dataFnArg = item.dataFnArg;
                         }
                     }
                 }
@@ -345,29 +349,29 @@ if (!Ung.hasResource["Ung.SessionMonitor"]) {
                 },{
                     xtype: 'checkbox',
                     checked: false,
-                    boxLabel: this.i18n._("Application Control Lite - Protocol"),
-                    gridColumnHeader: this.i18n._("Protocol (Application Control Lite)"),
+                    boxLabel: "Application Control Lite - " + this.i18n._("Protocol"),
+                    gridColumnHeader: this.i18n._("Protocol") + " (Application Control Lite)",
                     gridColumnDataIndex: "protofilter-protocol",
                     gridColumnWidth: 100
                 },{
                     xtype: 'checkbox',
                     checked: false,
-                    boxLabel: this.i18n._("Application Control Lite - Category"),
-                    gridColumnHeader: this.i18n._("Category (Application Control Lite)"),
+                    boxLabel: "Application Control Lite - " + this.i18n._("Category"),
+                    gridColumnHeader: this.i18n._("Category") + " (Application Control Lite)",
                     gridColumnDataIndex: "protofilter-category",
                     gridColumnWidth: 100
                 },{
                     xtype: 'checkbox',
                     checked: false,
-                    boxLabel: this.i18n._("Application Control Lite - Description"),
-                    gridColumnHeader: this.i18n._("Description (Application Control Lite)"),
+                    boxLabel: "Application Control Lite - " + this.i18n._("Description"),
+                    gridColumnHeader: this.i18n._("Description") + " (Application Control Lite)",
                     gridColumnDataIndex: "protofilter-description",
                     gridColumnWidth: 100
                 },{
                     xtype: 'checkbox',
                     checked: false,
-                    boxLabel: this.i18n._("Application Control Lite - Matched?"),
-                    gridColumnHeader: this.i18n._("Matched? (Application Control Lite)"),
+                    boxLabel: "Application Control Lite - " + this.i18n._("Matched?"),
+                    gridColumnHeader: this.i18n._("Matched?") + " (Application Control Lite)",
                     gridColumnDataIndex: "protofilter-matched",
                     gridColumnWidth: 100
                 },{
@@ -377,15 +381,15 @@ if (!Ung.hasResource["Ung.SessionMonitor"]) {
                 },{
                     xtype: 'checkbox',
                     checked: false,
-                    boxLabel: this.i18n._("HTTP - Hostname"),
-                    gridColumnHeader: this.i18n._("Hostname (HTTP)"),
+                    boxLabel: "HTTP - " + this.i18n._("Hostname"),
+                    gridColumnHeader: this.i18n._("Hostname") + " (HTTP)",
                     gridColumnDataIndex: "http-hostname",
                     gridColumnWidth: 120
                 },{
                     xtype: 'checkbox',
                     checked: false,
-                    boxLabel: this.i18n._("HTTP - URI"),
-                    gridColumnHeader: this.i18n._("URI (HTTP)"),
+                    boxLabel: "HTTP - " + this.i18n._("URI"),
+                    gridColumnHeader: this.i18n._("URI") + " (HTTP)",
                     gridColumnDataIndex: "http-uri",
                     gridColumnWidth: 120
                 },{
@@ -395,36 +399,36 @@ if (!Ung.hasResource["Ung.SessionMonitor"]) {
                 },{
                     xtype: 'checkbox',
                     checked: false,
-                    boxLabel: this.i18n._("Web Filter - Category Name"),
-                    gridColumnHeader: this.i18n._("Category Name (Web Filter)"),
+                    boxLabel: "Web Filter - " + this.i18n._("Category Name"),
+                    gridColumnHeader: this.i18n._("Category Name") + " (Web Filter)",
                     gridColumnDataIndex: "esoft-best-category-name",
                     gridColumnWidth: 100
                 },{
                     xtype: 'checkbox',
                     checked: false,
-                    boxLabel: this.i18n._("Web Filter - Category Description"),
-                    gridColumnHeader: this.i18n._("Category Description (Web Filter)"),
+                    boxLabel: "Web Filter - " + this.i18n._("Category Description"),
+                    gridColumnHeader: this.i18n._("Category Description") + " (Web Filter)",
                     gridColumnDataIndex: "esoft-best-category-description",
                     gridColumnWidth: 100
                 },{
                     xtype: 'checkbox',
                     checked: false,
-                    boxLabel: this.i18n._("Web Filter - Category Flagged"),
-                    gridColumnHeader: this.i18n._("Category Flagged (Web Filter)"),
+                    boxLabel: "Web Filter - " + this.i18n._("Category Flagged"),
+                    gridColumnHeader: this.i18n._("Category Flagged") + " (Web Filter)",
                     gridColumnDataIndex: "esoft-best-category-flagged",
                     gridColumnWidth: 50
                 },{
                     xtype: 'checkbox',
                     checked: false,
-                    boxLabel: this.i18n._("Web Filter - Category Blocked"),
-                    gridColumnHeader: this.i18n._("Category Blocked (Web Filter)"),
+                    boxLabel: "Web Filter - " + this.i18n._("Category Blocked"),
+                    gridColumnHeader: this.i18n._("Category Blocked") + " (Web Filter)",
                     gridColumnDataIndex: "esoft-best-category-blocked",
                     gridColumnWidth: 50
                 },{
                     xtype: 'checkbox',
                     checked: false,
-                    boxLabel: this.i18n._("Web Filter - Flagged"),
-                    gridColumnHeader: this.i18n._("Flagged (Web Filter)"),
+                    boxLabel: "Web Filter - " + this.i18n._("Flagged"),
+                    gridColumnHeader: this.i18n._("Flagged") + " (Web Filter)",
                     gridColumnDataIndex: "esoft-flagged",
                     gridColumnWidth: 50
                 },{
@@ -434,57 +438,57 @@ if (!Ung.hasResource["Ung.SessionMonitor"]) {
                 },{
                     xtype: 'checkbox',
                     checked: true,
-                    boxLabel: this.i18n._("Application Control - Protochain"),
-                    gridColumnHeader: this.i18n._("Protochain (Application Control)"),
+                    boxLabel: "Application Control - " + this.i18n._("Protochain"),
+                    gridColumnHeader: this.i18n._("Protochain") + " (Application Control)",
                     gridColumnDataIndex: "classd-protochain",
                     gridColumnWidth: 140
                 },{
                     xtype: 'checkbox',
                     checked: false,
-                    boxLabel: this.i18n._("Application Control - Application"),
-                    gridColumnHeader: this.i18n._("Application (Application Control)"),
+                    boxLabel: "Application Control - " + this.i18n._("Application"),
+                    gridColumnHeader: this.i18n._("Application") + " (Application Control)",
                     gridColumnDataIndex: "classd-application",
                     gridColumnWidth: 100
                 },{
                     xtype: 'checkbox',
                     checked: false,
-                    boxLabel: this.i18n._("Application Control - Category"),
-                    gridColumnHeader: this.i18n._("Category (Application Control)"),
+                    boxLabel: "Application Control - " + this.i18n._("Category"),
+                    gridColumnHeader: this.i18n._("Category") + " (Application Control)",
                     gridColumnDataIndex: "classd-category",
                     gridColumnWidth: 100
                 },{
                     xtype: 'checkbox',
                     checked: false,
-                    boxLabel: this.i18n._("Application Control - Detail"),
-                    gridColumnHeader: this.i18n._("Detail (Application Control)"),
+                    boxLabel: "Application Control - " + this.i18n._("Detail"),
+                    gridColumnHeader: this.i18n._("Detail") + " (Application Control)",
                     gridColumnDataIndex: "classd-detail",
                     gridColumnWidth: 120
                 },{
                     xtype: 'checkbox',
                     checked: false,
-                    boxLabel: this.i18n._("Application Control - Confidence"),
-                    gridColumnHeader: this.i18n._("Confidence (Application Control)"),
+                    boxLabel: "Application Control - " + this.i18n._("Confidence"),
+                    gridColumnHeader: this.i18n._("Confidence") + " (Application Control)",
                     gridColumnDataIndex: "classd-confidence",
                     gridColumnWidth: 50
                 },{
                     xtype: 'checkbox',
                     checked: false,
-                    boxLabel: this.i18n._("Application Control - Productivity"),
-                    gridColumnHeader: this.i18n._("Productivity (Application Control)"),
+                    boxLabel: "Application Control - " + this.i18n._("Productivity"),
+                    gridColumnHeader: this.i18n._("Productivity") + " (Application Control)",
                     gridColumnDataIndex: "classd-productivity",
                     gridColumnWidth: 50
                 },{
                     xtype: 'checkbox',
                     checked: false,
-                    boxLabel: this.i18n._("Application Control - Risk"),
-                    gridColumnHeader: this.i18n._("Risk (Application Control)"),
+                    boxLabel: "Application Control - " + this.i18n._("Risk"),
+                    gridColumnHeader: this.i18n._("Risk") + " (Application Control)",
                     gridColumnDataIndex: "classd-risk",
                     gridColumnWidth: 50
                 },{
                     xtype: 'checkbox',
                     checked: this.defaultBandwidthColumns,
                     disabled: !this.enableBandwidthColumns,
-                    boxLabel: this.i18n._("Bandwidth Control - Client KBps"),
+                    boxLabel: "Bandwidth Control - " + this.i18n._("Client KBps"),
                     gridColumnHeader: this.i18n._("Client KB/s"),
                     gridColumnDataIndex: "clientKBps",
                     gridColumnWidth: 80,
@@ -493,7 +497,7 @@ if (!Ung.hasResource["Ung.SessionMonitor"]) {
                     xtype: 'checkbox',
                     checked: this.defaultBandwidthColumns,
                     disabled: !this.enableBandwidthColumns,
-                    boxLabel: this.i18n._("Bandwidth Control - Server KBps"),
+                    boxLabel: "Bandwidth Control - " + this.i18n._("Server KBps"),
                     gridColumnHeader: this.i18n._("Server KB/s"),
                     gridColumnDataIndex: "serverKBps",
                     gridColumnWidth: 80,
@@ -502,7 +506,7 @@ if (!Ung.hasResource["Ung.SessionMonitor"]) {
                     xtype: 'checkbox',
                     checked: this.defaultBandwidthColumns,
                     disabled: !this.enableBandwidthColumns,
-                    boxLabel: this.i18n._("Bandwidth Control - Total KBps"),
+                    boxLabel: "Bandwidth Control - " + this.i18n._("Total KBps"),
                     gridColumnHeader: this.i18n._("Total KB/s"),
                     gridColumnDataIndex: "totalKBps",
                     gridColumnWidth: 80,
@@ -510,8 +514,8 @@ if (!Ung.hasResource["Ung.SessionMonitor"]) {
                 },{
                     xtype: 'checkbox',
                     checked: this.defaultBandwidthColumns,
-                    boxLabel: this.i18n._("Bandwidth Control - Priority"),
-                    gridColumnHeader: this.i18n._("Priority (Bandwidth Control)"),
+                    boxLabel: "Bandwidth Control - " + this.i18n._("Priority"),
+                    gridColumnHeader: this.i18n._("Priority") + " (Bandwidth Control)",
                     gridColumnDataIndex: "priority",
                     gridColumnWidth: 80,
                     gridColumnRenderer: function(value) {
@@ -528,8 +532,8 @@ if (!Ung.hasResource["Ung.SessionMonitor"]) {
                 },{
                     xtype: 'checkbox',
                     checked: false,
-                    boxLabel: this.i18n._("QoS - Priority"),
-                    gridColumnHeader: this.i18n._("Priority (QoS)"),
+                    boxLabel: "QoS - " + this.i18n._("Priority"),
+                    gridColumnHeader: this.i18n._("Priority") + " (QoS)",
                     gridColumnDataIndex: "qosPriority",
                     gridColumnWidth: 100,
                     gridColumnRenderer: function(value) {
@@ -575,7 +579,8 @@ if (!Ung.hasResource["Ung.SessionMonitor"]) {
                         name: 'nodeRadio',
                         checked: false,
                         boxLabel: i18n._('Sessions for') + ' ' + nodeProperties.displayName + " [" + main.getPolicyName(nodeSettings.policyId) + "] ",
-                        dataFnArg: nodeSettings.id
+                        dataFnArg: nodeSettings.id,
+                        nodeName: nodeProperties.displayName
                     });
                 }
             }
