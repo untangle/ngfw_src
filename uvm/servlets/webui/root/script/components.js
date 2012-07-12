@@ -5477,7 +5477,9 @@ Ext.define('Ung.UserEditorWindow', {
         var data = [];
         var node = rpc.nodeManager.node("untangle-node-adconnector");
         if (node != null) {
+            Ext.MessageBox.wait(i18n._("Loading..."), i18n._("Please wait"));
             data = node.getUserEntries().list;
+            Ext.MessageBox.hide();
         } else {
             data.push({ firstName: "", lastName: null, uid: "[any]", displayName: "Any User"});
             data.push({ firstName: "", lastName: null, uid: "[authenticated]", displayName: "Any Authenticated User"});
@@ -5625,7 +5627,9 @@ Ext.define('Ung.GroupEditorWindow', {
         var data = [];
         var node = rpc.nodeManager.node("untangle-node-adconnector");
         if (node != null) {
+            Ext.MessageBox.wait(i18n._("Loading..."), i18n._("Please wait"));
             data = node.getGroupEntries().list;
+            Ext.MessageBox.hide();
         } else {
             data.push({ SAMAccountName: "*", displayName: "Any Group"});
         }
