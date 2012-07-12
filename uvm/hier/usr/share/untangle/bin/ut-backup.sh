@@ -133,7 +133,7 @@ fi
 debug "Outputting to file -" $OUT_FILE
 
 # Create the backups into a directory we provide
-DUMP_DIR=`mktemp -d -t ut-backup-bundled.XXXXXXXXXX`
+DUMP_DIR=`mktemp -d -t ut-backup.XXXXXXXXXX`
 createBackup $DUMP_DIR
 
 EXIT_CODE=$?
@@ -145,9 +145,8 @@ fi
 
 
 
-
 # Tar the contents of the temp directory
-TAR_FILE=`mktemp -t ut-backup-bundled.XXXXXXXXXX`
+TAR_FILE=`mktemp -t ut-backup.XXXXXXXXXX`
 tarBackupFiles $TAR_FILE $DUMP_DIR
 
 debug "Remove dump dir"

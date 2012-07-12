@@ -18,8 +18,8 @@ import com.untangle.node.util.IOUtil;
  */
 class BackupManager
 {
-    private static final String BACKUP_SCRIPT = System.getProperty("uvm.home") + "/bin/ut-backup-bundled.sh";;
-    private static final String RESTORE_SCRIPT = System.getProperty("uvm.home") + "/bin/ut-restore-bundled.sh";
+    private static final String BACKUP_SCRIPT = System.getProperty("uvm.home") + "/bin/ut-backup.sh";;
+    private static final String RESTORE_SCRIPT = System.getProperty("uvm.home") + "/bin/ut-restore.sh";
 
     private final Logger logger = Logger.getLogger(BackupManager.class);
 
