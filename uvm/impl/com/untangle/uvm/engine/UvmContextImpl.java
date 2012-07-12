@@ -591,7 +591,7 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
 
         hideUpgradeSplash();
 
-        networkManager.refreshIptablesRules();
+        networkManager.refreshNetworkConfig();
     }
 
     @Override

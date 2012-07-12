@@ -366,14 +366,14 @@ public class NetworkManagerImpl implements NetworkManager
     
     public void refreshNetworkConfig()
     {
-        logger.info("Refreshing Network Configuration...");
-
         /**
          * If the UVM is shutting down, don't bother doing anything
          */
-        if ( UvmContextFactory.context().state() == UvmState.DESTROYED)
+        if ( UvmContextFactory.context().state() != UvmState.RUNNING)
             return;
-                                 
+
+        logger.info("Refreshing Network Configuration...");
+
         this.networkConfiguration = loadNetworkConfiguration( );
 
         if (this.networkConfiguration == null) {
