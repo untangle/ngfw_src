@@ -191,7 +191,7 @@ public class PipelineFoundryImpl implements PipelineFoundry
         return new ArgonConnectorImpl(spec,listener);
     }
 
-    public void registerArgonConnector(ArgonConnector argonConnector)
+    public synchronized void registerArgonConnector(ArgonConnector argonConnector)
     {
         SoloPipeSpec sps = (SoloPipeSpec) argonConnector.getPipeSpec();
         Fitting fitting = sps.getFitting();
