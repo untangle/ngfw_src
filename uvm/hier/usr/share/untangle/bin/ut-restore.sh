@@ -160,7 +160,7 @@ EOF
 function doRestore() {
     if [ "INVALID" == $IN_FILE ]; then
         err "Please provide an input file";
-        exit 1;
+        return 1;
     fi
 
     debug "Restoring from file -" $IN_FILE
@@ -179,7 +179,7 @@ function doRestore() {
     if [ $EXIT_VAL != 0 ]; then
         err "$IN_FILE Does not seem to be a valid gzip file"
         rm -rf $WORKING_DIR
-        exit 1
+        return 1
     fi
 
     debug "Gunzip"
@@ -195,7 +195,7 @@ function doRestore() {
     if [ $EXIT_VAL != 0 ]; then
         err "$IN_FILE Does not seem to be a valid gzip tar file"
         rm -rf $WORKING_DIR
-        exit 2
+        return 2
     fi
 
     # Find the specfic files
@@ -215,26 +215,26 @@ function doRestore() {
     # Check version
     if [ -n "$OLD_DB_FILE" ]; then
         err "Restore file too old"
-        exit 5
+        return 5
     fi
 
     # Verify files
     if [ -z "$INSTALLED_FILE" ]; then
         err "Unable to find installed packages file"
         rm -rf $WORKING_DIR
-        exit 3
+        return 3
     fi
 
     if [ -z "$FILES_FILE" ]; then
         err "Unable to find system files file"
         rm -rf $WORKING_DIR
-        exit 3
+        return 3
     fi
 
     if [ -z "$DB_FILE" ]; then
         err "Unable to find database file"
         rm -rf $WORKING_DIR
-        exit 3
+        return 3
     fi
 
     # Invoke restoreFiles ("Usage: $0 dumpfile tarfile instfile")
@@ -247,7 +247,7 @@ function doRestore() {
 
     if [ $EXIT_VAL != 0 ]; then
         err "Error $EXIT_VAL returned from untangle-restore"
-        exit 4
+        return 4
     fi
 
     debug "Completed.  Success"
