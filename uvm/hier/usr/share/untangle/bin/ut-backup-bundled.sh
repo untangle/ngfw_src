@@ -25,6 +25,56 @@
 OUT_FILE=INVALID
 VERBOSE=false
 
+function tar_files()
+{
+    tarfile=$1
+
+    [ -x  /usr/share/untangle-net-alpaca/scripts/backup ] && /usr/share/untangle-net-alpaca/scripts/backup /usr/share/untangle/conf/alpaca-backup.uab "UVM Backup"
+
+    tar zcf $tarfile --ignore-failed-read -C / \
+        etc/hostname \
+        etc/network/interfaces \
+        etc/openvpn \
+        etc/resolv.conf \
+        etc/apache2/ssl \
+        usr/share/untangle/conf/keystore \
+        usr/share/untangle/conf/openvpn/misc \
+        usr/share/untangle/conf/openvpn/pki \
+        usr/share/untangle/conf/dirbackup.ldif \
+        usr/share/untangle/conf/alpaca-backup.uab \
+        usr/share/untangle/conf/wizard-complete-flag \
+        usr/share/untangle/settings 
+
+    # Tar exits with non-zero when some files don't exist, which can happen.
+    return 0
+}
+
+function dump_installed()
+{
+    instlist=$1
+
+    /usr/share/untangle/bin/ut-apt installed > $instlist
+}
+
+function dump_db()
+{
+    outfile=$1
+    # nothing of use is store in the DB
+    # we just echo nothing to a zip file, so we don't break the restore process
+    echo "" | gzip > $outfile 2>/dev/null
+}
+
+function backupToDir()
+{
+    outdir=$1
+
+    datestamp=$(date '+%Y%m%d%H%M')
+    dumpfile=$outdir/uvmdb-$datestamp.gz
+    tarfile=$outdir/files-$datestamp.tar.gz
+    instlist=$outdir/installed-$datestamp
+
+    dump_db $dumpfile && tar_files $tarfile && dump_installed $instlist
+}
 
 function debug() {
   if [ "true" == $VERBOSE ]; then
@@ -46,13 +96,7 @@ function doHelp() {
 #
 function createBackup() {
   debug "Creating Backup in " $1
-  @UVM_HOME@/bin/ut-backup $1
-#  pushd $1 > /dev/null 2>&1
-#  datestamp=$(date '+%Y%m%d%H%M')
-#  echo "FOO" > uvmdb-$datestamp.gz
-#  echo "MOO" > files-$datestamp.tar.gz
-#  echo "DOO" > installed-$datestamp
-#  popd > /dev/null 2>&1
+  backupToDir $1
   DUMP_EXIT=$?
   debug "Done creating backup with return code $DUMP_EXIT"
   return $DUMP_EXIT
