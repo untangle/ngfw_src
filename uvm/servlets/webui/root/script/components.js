@@ -5529,12 +5529,6 @@ Ext.define('Ung.GroupEditorWindow', {
     width: 550,
     initComponent: function() {
         var data = [];
-        var node = rpc.nodeManager.node("untangle-node-adconnector");
-        if (node != null) {
-            data = node.getGroupEntries().list;
-        } else {
-            data.push({ SAMAccountName: "*", displayName: "Any Group"});
-        }
         
         this.gridPanel = new Ext.grid.GridPanel({
             title: i18n._('Groups'),
@@ -5625,6 +5619,19 @@ Ext.define('Ung.GroupEditorWindow', {
             allowBlank:false
         }];
         
+        this.callParent(arguments);
+    },
+    populate: function(record, value, rulebuilder) {
+        var data = [];
+        var node = rpc.nodeManager.node("untangle-node-adconnector");
+        if (node != null) {
+            data = node.getGroupEntries().list;
+        } else {
+            data.push({ SAMAccountName: "*", displayName: "Any Group"});
+        }
+
+        this.gridPanel.getStore().getProxy().data = data;
+        this.gridPanel.getStore().load();
         this.callParent(arguments);
     },
     setValue: function(value) {
