@@ -5,8 +5,6 @@ package com.untangle.node.firewall;
 
 import java.util.List;
 import java.io.Serializable;
-import java.util.regex.Pattern;
-import java.util.regex.PatternSyntaxException;
 import java.net.InetAddress;
 
 import org.apache.log4j.Logger;
@@ -20,6 +18,7 @@ import com.untangle.uvm.node.IPMatcher;
 import com.untangle.uvm.node.PortMatcher;
 import com.untangle.uvm.node.IntfMatcher;
 import com.untangle.uvm.node.UserMatcher;
+import com.untangle.uvm.node.GroupMatcher;
 import com.untangle.uvm.node.ProtocolMatcher;
 import com.untangle.uvm.node.DirectoryConnector;
 import com.untangle.node.util.GlobUtil;
@@ -63,8 +62,8 @@ public class FirewallRuleMatcher implements JSONString, Serializable
     private PortMatcher     portMatcher     = null;
     private IntfMatcher     intfMatcher     = null;
     private UserMatcher     userMatcher     = null;
+    private GroupMatcher    groupMatcher     = null;
     private ProtocolMatcher protocolMatcher = null;
-    private String          regex           = null;
     
     public FirewallRuleMatcher( )
     {
@@ -204,8 +203,6 @@ public class FirewallRuleMatcher implements JSONString, Serializable
                 return false;
             if (this.userMatcher.isMatch(username))
                 return true;
-            if (Pattern.matches(regex, username))
-                return true;
             return false;
 
         case DIRECTORY_CONNECTOR_GROUP:
@@ -221,7 +218,7 @@ public class FirewallRuleMatcher implements JSONString, Serializable
             if (!isMemberOf) {
                 List<String> groupNames = adconnector.memberOf( username );
                 for (String groupName : groupNames) {
-                    if (Pattern.matches(regex, groupName)) {
+                    if ( this.groupMatcher.isMatch(groupName) ) {
                         isMemberOf = true;
                         break;
                     }
@@ -282,12 +279,15 @@ public class FirewallRuleMatcher implements JSONString, Serializable
             } catch (Exception e) {
                 logger.warn("Invalid User Matcher: " + value, e);
             }
-            this.regex = GlobUtil.globToRegex(value);
 
             break;
             
         case DIRECTORY_CONNECTOR_GROUP:
-            this.regex = GlobUtil.globToRegex(value);
+            try {
+                this.groupMatcher = new GroupMatcher(this.value);
+            } catch (Exception e) {
+                logger.warn("Invalid Group Matcher: " + value, e);
+            }
 
             break;
 

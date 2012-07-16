@@ -1,5 +1,5 @@
 /**
- * $Id$
+ * $Id: GroupMatcher.java 31785 2012-04-26 18:46:03Z dmorris $
  */
 package com.untangle.uvm.node;
 
@@ -11,15 +11,13 @@ import org.apache.log4j.Logger;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.node.util.GlobUtil;
 
-public class UserMatcher
+public class GroupMatcher
 {
     private static final String MARKER_SEPERATOR = ",";
     private static final String MARKER_ANY = "[any]";
     private static final String MARKER_NONE = "[none]";
-    private static final String MARKER_UNAUTHENTICATED = "[unauthenticated]";
-    private static final String MARKER_AUTHENTICATED = "[authenticated]";
 
-    private static UserMatcher ANY_MATCHER = new UserMatcher(MARKER_ANY);
+    private static GroupMatcher ANY_MATCHER = new GroupMatcher(MARKER_ANY);
     
     private final Logger logger = Logger.getLogger(getClass());
 
@@ -29,30 +27,30 @@ public class UserMatcher
     public String matcher;
 
     /**
-     * This is all the available types of user matchers
+     * This is all the available types of group matchers
      */
-    private enum UserMatcherType { ANY, NONE, SINGLE, AUTHENTICATED, UNAUTHENTICATED, LIST };
+    private enum GroupMatcherType { ANY, NONE, SINGLE, LIST };
 
     /**
      * The type of this matcher
      */
-    private UserMatcherType type = UserMatcherType.NONE;
+    private GroupMatcherType type = GroupMatcherType.NONE;
     
     /**
-     * This stores the username if this is a single matcher
+     * This stores the groupname if this is a single matcher
      */
-    private String single = null;
+    public String single = null;
     private String regexValue = null;
 
     /**
      * if this port matcher is a list of port matchers, this list stores the children
      */
-    private LinkedList<UserMatcher> children = null;
+    private LinkedList<GroupMatcher> children = null;
     
     /**
-     * Create a user matcher from the given string
+     * Create a group matcher from the given string
      */
-    public UserMatcher( String matcher )
+    public GroupMatcher( String matcher )
     {
         initialize(matcher);
     }
@@ -76,16 +74,8 @@ public class UserMatcher
                 return true;
             return false;
             
-        case AUTHENTICATED:
-            /* XXX this was kept for backwards compatability */
-            return (value != null); 
-
-        case UNAUTHENTICATED:
-            /* XXX this was kept for backwards compatability */
-            return (value == null); 
-
         case LIST:
-            for (UserMatcher child : this.children) {
+            for (GroupMatcher child : this.children) {
                 if (child.isMatch(value))
                     return true;
             }
@@ -106,7 +96,7 @@ public class UserMatcher
         return this.matcher;
     }
     
-    public static synchronized UserMatcher getAnyMatcher()
+    public static synchronized GroupMatcher getAnyMatcher()
     {
         return ANY_MATCHER;
     }
@@ -127,15 +117,15 @@ public class UserMatcher
          * if so, go ahead and initialize the children
          */
         if (matcher.contains(MARKER_SEPERATOR)) {
-            this.type = UserMatcherType.LIST;
+            this.type = GroupMatcherType.LIST;
 
-            this.children = new LinkedList<UserMatcher>();
+            this.children = new LinkedList<GroupMatcher>();
 
             String[] results = matcher.split(MARKER_SEPERATOR);
             
             /* check each one */
             for (String childString : results) {
-                UserMatcher child = new UserMatcher(childString);
+                GroupMatcher child = new GroupMatcher(childString);
                 this.children.add(child);
             }
 
@@ -146,26 +136,18 @@ public class UserMatcher
          * Check the common constants
          */
         if (MARKER_ANY.equals(matcher))  {
-            this.type = UserMatcherType.ANY;
+            this.type = GroupMatcherType.ANY;
             return;
         }
         if (MARKER_NONE.equals(matcher))  {
-            this.type = UserMatcherType.ANY;
-            return;
-        }
-        if (MARKER_AUTHENTICATED.equals(matcher)) {
-            this.type = UserMatcherType.UNAUTHENTICATED;
-            return;
-        }
-        if (MARKER_UNAUTHENTICATED.equals(matcher)) {
-            this.type = UserMatcherType.UNAUTHENTICATED;
+            this.type = GroupMatcherType.ANY;
             return;
         }
 
         /**
          * if it isn't any of these it must be a basic SINGLE matcher
          */
-        this.type = UserMatcherType.SINGLE;
+        this.type = GroupMatcherType.SINGLE;
         this.single = matcher;
         this.regexValue = GlobUtil.globToRegex(matcher);
 
