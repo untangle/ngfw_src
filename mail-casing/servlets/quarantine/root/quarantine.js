@@ -33,7 +33,8 @@ Ext.define('Ext.ux.toolbar.PagingOptions', {
             me.pageSizeOptions = [
                 { pagesize : 25 },
                 { pagesize : 100 },
-                { pagesize : 1000 }
+                { pagesize : 1000 },
+                { pagesize : 10000 }
             ];
         }
 
