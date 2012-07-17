@@ -42,7 +42,12 @@ class SyslogManagerImpl
         if (!enabled)
             return;
 
-        logger.log(org.apache.log4j.Level.INFO, tag + " " + e.toJSONString());
+        try {
+            logger.log(org.apache.log4j.Level.INFO, tag + " " + e.toJSONString());
+        } catch (Exception exn) {
+            logger.warn("Failed to syslog Event: " + e, exn);
+        }
+
     }
 
     public static void reconfigure(ReportingSettings reportingSettings)
