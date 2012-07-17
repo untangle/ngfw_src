@@ -132,12 +132,13 @@ class AlertManagerImpl implements AlertManager
                  * If they have the same name and are in the same rack - they are dupes
                  * Check both for == and .equals so null is handled
                  */
-                if (n1.getPolicyId() == n2.getPolicyId() && n1.getNodeName().equals(n2.getNodeName()))
-                    alertList.add(i18nUtil.tr("A policy/rack") + " [" + n1.getPolicyId() + "] " + i18nUtil.tr("contains two or more") + " " + n1.getNodeName()); 
-                if (n1.getPolicyId() == null || n2.getPolicyId() == null)
-                    continue;
-                if (n1.getPolicyId().equals(n2.getPolicyId()) && n1.getNodeName().equals(n2.getNodeName()))
-                    alertList.add(i18nUtil.tr("A policy/rack") + " [" + n1.getPolicyId() + "] " + i18nUtil.tr("contains two or more") + " " + n1.getNodeName()); 
+                if (n1.getPolicyId() == null || n2.getPolicyId() == null) {
+                    if (n1.getPolicyId() == n2.getPolicyId() && n1.getNodeName().equals(n2.getNodeName()))
+                        alertList.add( i18nUtil.tr("Services contains two or more") + " " + n1.getNodeName() ); 
+                } else {
+                    if (n1.getPolicyId().equals(n2.getPolicyId()) && n1.getNodeName().equals(n2.getNodeName()))
+                        alertList.add(i18nUtil.tr("A policy/rack") + " [" + n1.getPolicyId() + "] " + i18nUtil.tr("contains two or more") + " " + n1.getNodeName()); 
+                }
             }
         }
     }
