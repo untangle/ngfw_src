@@ -58,19 +58,6 @@ public class MessageInfoAddr extends LogEvent implements Serializable
     }
 
     /**
-     * The MessageInfo object.
-     */
-    public MessageInfo getMessageInfo()
-    {
-        return messageInfo;
-    }
-
-    public void setMessageInfo(MessageInfo messageInfo)
-    {
-        this.messageInfo = messageInfo;
-    }
-
-    /**
      * The email address, in RFC822 format
      *
      * @return email address.

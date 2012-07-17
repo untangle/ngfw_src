@@ -105,12 +105,12 @@ public class MessageInfo extends LogEvent implements Serializable
      *
      * @return the set of the email addresses involved in the email
      */
-    public Set<MessageInfoAddr> getAddresses()
+    public Set<MessageInfoAddr> trans_getAddresses()
     {
         return addresses;
     }
 
-    public void setAddresses(Set<MessageInfoAddr> s)
+    public void trans_setAddresses(Set<MessageInfoAddr> s)
     {
         addresses = s;
         return;
