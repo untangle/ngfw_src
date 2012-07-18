@@ -152,7 +152,7 @@ var remaps = null;
 
 var i18n = null;
 
-Ung.Quarantine = function() {}
+Ung.Quarantine = function() {};
 
 Ung.Quarantine.prototype = {
     rpc : null,
