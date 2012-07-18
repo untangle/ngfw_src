@@ -4477,6 +4477,9 @@ Ext.define('Ung.EditorGrid', {
         } else if(this.dataExpression) {
             this.data=eval("this.settingsCmp."+this.dataExpression);
         }
+        if(!this.data) {
+            this.data=[];
+        }
         this.changedData = {};
         this.dirtyFlag=false;
         this.getStore().getProxy().data = this.data;

@@ -1082,7 +1082,9 @@ if (!Ung.hasResource["Ung.Email"]) {
                     if(this.userQuarantinesDetailsGrid != null) {
                         return this.getQuarantineMaintenenceView().getInboxRecords(this.quarantinesDetailsWin.account, 0, Ung.Util.maxRowCount, []);
                     } else {
-                        return [];
+                        return {
+                            list: []
+                        };
                     }
                 }, this),
                 initialLoad: function() {}, //do nothing here
