@@ -300,7 +300,7 @@ if (!Ung.hasResource["Ung.Email"]) {
                         xtype: 'radio',
                         id: 'email_smtpEnabled',
                         name: 'email_smtpEnabled',
-                        boxLabel: this.i18n._('Send Email using the specified SMTP Server'),
+                        boxLabel: this.i18n._('Send email using the specified SMTP Server'),
                         hideLabel: true,
                         style: "margin-left: 50px;",
                         checked: !this.getMailSettings().useMxRecords
@@ -1211,9 +1211,9 @@ if (!Ung.hasResource["Ung.Email"]) {
                 return false;
             }
             
-            // CHECK THAT IF EITHER LOGIN OR PASSWORD ARE FILLED, A HOSTNAME IS GIVEN
-            if (loginCmp.getValue().length > 0 && passwordCmp.getValue().length > 0 && hostCmp.getValue().length == 0) {
-                Ext.MessageBox.alert(this.i18n._('Warning'), this.i18n._('A "Hostname" must be specified if "Login" or "Password" are specified.'),
+            // CHECK THAT A HOSTNAME/IP IS GIVEN if using specified SMTP server
+            if (!this.getMailSettings().useMxRecords && hostCmp.getValue().length == 0) {
+                Ext.MessageBox.alert(this.i18n._('Warning'), this.i18n._('A Server Address or Hostname must be specified for an SMTP server.'),
                     Ext.bind(function () {
                         this.tabs.setActiveTab(this.panelActiveDirectoryConnector);
                         hostCmp.focus(true);
