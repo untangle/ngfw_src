@@ -4296,8 +4296,8 @@ Ext.define('Ung.EditorGrid', {
         var records=[];
         for (var i = 0; i < importedRows.length; i++) {
             try {
-                var record= Ext.create(Ext.ClassManager.getName(this.getStore().getProxy().getModel()),importedRows[i]);
-                if(record.data["javaClass"] == this.recordJavaClass) {
+                var record= Ext.create(Ext.ClassManager.getName(this.getStore().getProxy().getModel()), importedRows[i]);
+                if(importedRows[i].javaClass == this.recordJavaClass) {
                     record.set("id", this.genAddedId());
                     records.push(record);
                 } else {
@@ -5107,7 +5107,12 @@ Ext.define('Ung.ImportSettingsWindow', {
         }
     },
     importSettingsFailure: function (form, action) {
-        Ext.MessageBox.alert(i18n._("Warning"), action.result.msg);
+        var result = action.result;
+        if(!result) {
+            Ext.MessageBox.alert(i18n._("Warning"), i18n._("Import failed. No file chosen."));
+        } else {
+            Ext.MessageBox.alert(i18n._("Warning"), action.result.msg);
+        }
     },
     isDirty: function() {
         return false;  

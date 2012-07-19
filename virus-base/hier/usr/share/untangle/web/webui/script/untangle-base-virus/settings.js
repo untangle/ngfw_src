@@ -201,7 +201,6 @@ if (!Ung.hasResource["Ung.Virus"]) {
         },
         // File Types
         buildExtensions: function() {
-
             this.gridExtensions = Ext.create('Ung.EditorGrid',{
                 name: 'File Extensions',
                 settingsCmp: this,
@@ -268,7 +267,6 @@ if (!Ung.hasResource["Ung.Virus"]) {
         },
         // MIME Types
         buildMimeTypes: function() {
-
             this.gridMimeTypes = Ext.create('Ung.EditorGrid', {
                 name: 'MIME Types',
                 settingsCmp: this,
