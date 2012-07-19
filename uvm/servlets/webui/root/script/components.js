@@ -5398,10 +5398,7 @@ Ext.define('Ung.UserEditorWindow', {
             enableColumnMove: false,
             store: new Ext.data.Store({
                 data: data,
-                sortInfo: {
-                    field: "uid",
-                    direction: "ASC"
-                },
+                sorters: { property: 'uid', direction : 'ASC' },
                 fields: [{
                     name: "lastName"
                 },{
@@ -5426,6 +5423,7 @@ Ext.define('Ung.UserEditorWindow', {
                 width: 60,
                 xtype:'checkcolumn',
                 menuDisabled: true,
+                sortable: false,
                 dataIndex: "checked"
             }, {
                 header: i18n._("Name"),
@@ -5555,10 +5553,8 @@ Ext.define('Ung.GroupEditorWindow', {
             enableColumnMove: false,
             store: new Ext.data.Store({
                 data: data,
-                sortInfo: {
-                    field: "SAMAccountName",
-                    direction: "ASC"
-                },
+                sortOnLoad: true,
+                sorters: { property: 'SAMAccountName', direction : 'ASC' },
                 fields: [{
                     name: "checked"
                 },{
@@ -5578,6 +5574,7 @@ Ext.define('Ung.GroupEditorWindow', {
                 header: i18n._("Selected"),
                 width: 60,
                 menuDisabled: true,
+                sortable: false,
                 xtype:'checkcolumn',
                 dataIndex: "checked"
             }, {
@@ -5646,6 +5643,11 @@ Ext.define('Ung.GroupEditorWindow', {
         if (node != null) {
             Ext.MessageBox.wait(i18n._("Loading..."), i18n._("Please wait"));
             data = node.getGroupEntries().list;
+            //For Test Only
+            data.push({ SAMAccountName: "test1", displayName: "Ion Iliescu"});
+            data.push({ SAMAccountName: "test2", displayName: "Gica Petrescu"});
+            data.push({ SAMAccountName: "test5", displayName: "Vlad Dumitrescu"});
+            data.push({ SAMAccountName: "test3", displayName: "Alin Treznaiv"});
             Ext.MessageBox.hide();
         } else {
             data.push({ SAMAccountName: "*", displayName: "Any Group"});
