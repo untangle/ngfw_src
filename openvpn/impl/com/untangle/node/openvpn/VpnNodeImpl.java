@@ -38,7 +38,6 @@ public class VpnNodeImpl extends NodeBase implements VpnNode, com.untangle.uvm.n
     private static final String SETTINGS_CONVERSION_SCRIPT = System.getProperty( "uvm.bin.dir" ) + "/openvpn-convert-settings.py";
 
     private static final String STAT_PASS = "pass";
-    private static final String STAT_BLOCK = "block";
     private static final String STAT_CONNECT = "connect";
 
     private static final String NODE_NAME    = "openvpn";
@@ -102,7 +101,6 @@ public class VpnNodeImpl extends NodeBase implements VpnNode, com.untangle.uvm.n
         this.pipeSpec = new SoloPipeSpec( NODE_NAME, this, handler, Fitting.OCTET_STREAM, Affinity.CLIENT, SoloPipeSpec.MAX_STRENGTH - 2);
         this.pipeSpecs = new SoloPipeSpec[] { pipeSpec };
 
-        this.addMetric(new NodeMetric(STAT_BLOCK, I18nUtil.marktr("Sessions blocked")));
         this.addMetric(new NodeMetric(STAT_PASS, I18nUtil.marktr("Sessions passed")));
         this.addMetric(new NodeMetric(STAT_CONNECT, I18nUtil.marktr("Clients Connected")));
 
@@ -818,11 +816,6 @@ public class VpnNodeImpl extends NodeBase implements VpnNode, com.untangle.uvm.n
     public EventLogQuery[] getStatusEventsQueries()
     {
         return new EventLogQuery[] { this.connectEventsQuery };
-    }
-
-    public void incrementBlockCount()
-    {
-        this.incrementMetric(this.STAT_BLOCK);
     }
 
     public void incrementPassCount()

@@ -1179,6 +1179,8 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                     name: 'netmask'
                 }, {
                     name: 'useDNS'
+                }, {
+                    name: 'fullTunnel'
                 }],
                 // the list of columns for the column model
                 columns: [
@@ -1225,6 +1227,13 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                     dataIndex: 'useDNS',
                     width: 90,
                     fixed: true
+                },
+                {
+                    id: "fullTunnel",
+                    header: this.i18n._("Full Tunnel"),
+                    dataIndex: 'fullTunnel',
+                    width: 90,
+                    fixed: true
                 }],
                 // sortField: 'name',
                 columnsDefaultSortable: true,
@@ -1262,6 +1271,11 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                     name: "Export DNS",
                     dataIndex: "useDNS",
                     fieldLabel: this.i18n._("Export DNS")
+                }, {
+                    xtype: 'checkbox',
+                    name: "Full Tunnel",
+                    dataIndex: "fullTunnel",
+                    fieldLabel: this.i18n._("Full Tunnel")
                 }]
             });
             return gridGroups;

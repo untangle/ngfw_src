@@ -36,10 +36,6 @@ if [ -f ${OPENVPN_CLIENT_CONF} ]; then
     if [ -z "`grep keepalive ${OPENVPN_CLIENT_CONF}`" ]; then
         echo "keepalive 10 120" >> ${OPENVPN_CLIENT_CONF}
     fi
-
-    ## This file shouldn't be left around, it is there if this box was
-    ## configured as a server first.
-    rm -f "@UVM_CONF@/openvpn/packet-filter-rules"
 fi
 
 ## Use restart just in case there is one lingering around

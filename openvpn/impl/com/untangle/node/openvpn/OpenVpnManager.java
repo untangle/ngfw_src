@@ -32,8 +32,6 @@ public class OpenVpnManager
     private static final String VPN_STOP_SCRIPT  = Constants.SCRIPT_DIR + "/stop-openvpn";
     private static final String GENERATE_DISTRO_SCRIPT = Constants.SCRIPT_DIR + "/generate-distro";
 
-    private static final String PACKET_FILTER_RULES_FILE = System.getProperty( "uvm.conf.dir" ) + "/openvpn/packet-filter-rules";
-
     /* Most likely want to bind to the outside address when using NAT */
     //unused private static final String FLAG_LOCAL       = "local";
 
@@ -196,7 +194,6 @@ public class OpenVpnManager
 
         writeSettings( settings );
         writeClientFiles( settings );
-        writePacketFilterRules( settings );
     }
 
     private void writeSettings( VpnSettings settings ) throws Exception
@@ -403,6 +400,10 @@ public class OpenVpnManager
             /* XXXX This won't work for a bridge configuration */
             sw.appendVariable( FLAG_CLI_IFCONFIG, "" + localEndpoint + " " + remoteEndpoint );
 
+            if(group.getFullTunnel()) {
+                sw.appendVariable( "push", "\"redirect-gateway def1\"");
+            }
+
             if(group.getUseDNS()) {
                 List<IPAddress> dnsServers = null;
 
@@ -447,9 +448,6 @@ public class OpenVpnManager
             IPAddress remoteEndpoint = getRemoteEndpoint( localEndpoint );
             String name           = site.trans_getInternalName();
 
-            logger.info( "Writing site configuration file for [" + name + "]" );
-
-            /* XXXX This won't work for a bridge configuration */
             sw.appendVariable( FLAG_CLI_IFCONFIG, "" + localEndpoint + " " + remoteEndpoint );
 
             for ( SiteNetwork siteNetwork : site.getExportedAddressList()) {
@@ -458,6 +456,7 @@ public class OpenVpnManager
                 writeClientRoute( sw, siteNetwork.getNetwork(), siteNetwork.getNetmask());
             }
 
+            logger.info( "Writing site configuration file for [" + name + "]: " + OPENVPN_CCD_DIR + "/" + name);
             sw.writeFile( OPENVPN_CCD_DIR + "/" + name );
         }
     }
@@ -520,16 +519,6 @@ public class OpenVpnManager
         }
 
         sw.appendVariable( type, value );
-    }
-
-    private void writePacketFilterRules( VpnSettings settings )
-    {
-        AlpacaRulesWriter arw = new AlpacaRulesWriter();
-
-        /* Append all of the exported addresses */
-        arw.appendExportedAddresses( settings.getExportedAddressList());
-
-        arw.writeFile( PACKET_FILTER_RULES_FILE );
     }
 
     /* A safe function (exceptionless) for InetAddress.getByAddress */

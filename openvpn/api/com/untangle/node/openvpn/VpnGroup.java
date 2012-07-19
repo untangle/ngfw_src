@@ -21,6 +21,7 @@ public class VpnGroup implements java.io.Serializable
     private IPAddress address;
     private IPAddress netmask;
     private boolean useDNS = false;
+    private boolean fullTunnel = false;
     private String name = EMPTY_NAME;
     private String category = EMPTY_CATEGORY;
     private String description = EMPTY_DESCRIPTION;
@@ -34,6 +35,12 @@ public class VpnGroup implements java.io.Serializable
     public boolean getUseDNS() { return useDNS; }
     public void setUseDNS(boolean useDNS) { this.useDNS = useDNS; }
 
+    /**
+     * Should clients use DNS from the server
+     */
+    public boolean getFullTunnel() { return fullTunnel; }
+    public void setFullTunnel(boolean fullTunnel) { this.fullTunnel = fullTunnel; }
+    
     /**
      * Get the pool of addresses for the clients.
      */

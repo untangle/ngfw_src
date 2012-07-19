@@ -279,20 +279,6 @@ public class Sandbox
             }
         }
 
-        /**
-         * Add an option for full-tunnel
-         */
-        SiteNetwork ssn = new SiteNetwork();
-        try {
-            ssn.setNetwork( new IPAddress( InetAddress.getByName("0.0.0.0") ) );
-            ssn.setNetmask( new IPAddress( InetAddress.getByName("0.0.0.0") ) );
-        } catch (java.net.UnknownHostException e) {
-            logger.warn("Unknown host 0.0.0.0");
-        }
-        ssn.setLive( false );
-        ssn.setName( i18nUtil.tr("entire internet (full tunnel VPN)") );
-        networkList.add( ssn );
-
         setExportList( new ExportList( networkList ));
     }
 
