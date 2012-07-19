@@ -4143,6 +4143,9 @@ Ext.define('Ung.EditorGrid', {
         } else if(this.dataExpression) {
             this.data=eval("this.settingsCmp."+this.dataExpression);
         }
+        if(!this.data) {
+            this.data=[];
+        }
         if(this.ignoreServerIds) {
             Ung.Util.generateListIds(this.data);
         }
@@ -4479,6 +4482,9 @@ Ext.define('Ung.EditorGrid', {
         }
         if(!this.data) {
             this.data=[];
+        }
+        if(this.ignoreServerIds) {
+            Ung.Util.generateListIds(this.data);
         }
         this.changedData = {};
         this.dirtyFlag=false;
