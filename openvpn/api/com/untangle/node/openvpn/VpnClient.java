@@ -84,11 +84,11 @@ public class VpnClient
     public void setLive(boolean live) { this.live = live; }
 
     /* Indicates whether or not the server should distribute a config for this client */
-    public boolean trans_getDistributeClient() { return this.distributeClient; }
-    public void trans_setDistributeClient( boolean distributeClient ) { this.distributeClient = distributeClient; }
+    public boolean getDistributeClient() { return this.distributeClient; }
+    public void setDistributeClient( boolean distributeClient ) { this.distributeClient = distributeClient; }
 
-    public String trans_getDistributionEmail() { return this.distributionEmail; }
-    public void trans_setDistributionEmail( String email ) { this.distributionEmail = email; }
+    public String getDistributionEmail() { return this.distributionEmail; }
+    public void setDistributionEmail( String email ) { this.distributionEmail = email; }
 
     public boolean trans_hasDistributionEmail()
     {

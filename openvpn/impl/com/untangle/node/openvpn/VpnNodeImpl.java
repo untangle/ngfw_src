@@ -315,7 +315,7 @@ public class VpnNodeImpl extends NodeBase implements VpnNode, com.untangle.uvm.n
     private void distributeAllClientFiles( VpnSettings settings ) throws Exception
     {
         for ( VpnClient client : settings.trans_getCompleteClientList()) {
-            if ( !client.trans_getDistributeClient()) continue;
+            if ( !client.getDistributeClient()) continue;
             distributeRealClientConfig( client );
         }
     }
@@ -327,7 +327,7 @@ public class VpnNodeImpl extends NodeBase implements VpnNode, com.untangle.uvm.n
         boolean foundRealClient = false;
         for ( VpnClient realClient : settings.trans_getCompleteClientList()) {
             if ( client.trans_getInternalName().equals( realClient.trans_getInternalName())) {
-                realClient.trans_setDistributionEmail( client.trans_getDistributionEmail());
+                realClient.setDistributionEmail( client.getDistributionEmail());
                 client = realClient;
                 foundRealClient = true;
                 break;
@@ -347,7 +347,7 @@ public class VpnNodeImpl extends NodeBase implements VpnNode, com.untangle.uvm.n
 
         this.certificateManager.createClient( client );
 
-        final String email = client.trans_getDistributionEmail();
+        final String email = client.getDistributionEmail();
         String method = "download";
 
         if ( email != null ) {
@@ -377,6 +377,7 @@ public class VpnNodeImpl extends NodeBase implements VpnNode, com.untangle.uvm.n
     private void distributeClientConfigEmail( VpnClient client, String email )
         throws Exception
     {
+        logger.info("Sending OpenVPN configuration to " + email);
         try {
             UvmContext uvm = UvmContextFactory.context();
             MailSender mailSender = uvm.mailSender();
@@ -453,7 +454,7 @@ public class VpnNodeImpl extends NodeBase implements VpnNode, com.untangle.uvm.n
             clientName = client.trans_getInternalName();
 
             /* Clear out the distribution email */
-            client.trans_setDistributionEmail( null );
+            client.setDistributionEmail( null );
             distributeRealClientConfig( client );
             foundClient = true;
             break;
