@@ -14,6 +14,18 @@ if(typeof console === "undefined") {
 var i18n=Ext.create('Ung.I18N',{"map":null}); // the main internationalization object
 var rpc=null; // the main json rpc object
 
+//TODO: in Extjs 4.1.1 replace onRender with onBoxReady
+/*
+if(Ext.getVersion().version=="4.0.7") {
+    Ext.override(Ext.AbstractComponent, {
+        onBoxReady: function (){},
+        afterRender: Ext.Function.createSequence(Ext.AbstractComponent.prototype.afterRender,function() {
+            this.onBoxReady();
+        })
+        
+    });
+}
+*/
 Ext.override(Ext.Button, {
     listeners: {
         "render": {
@@ -1125,9 +1137,8 @@ Ext.define("Ung.AppItem", {
         this.getEl().insertHtml("afterBegin", Ung.AppItem.buttonTemplate.applyTemplate({content:html}));
         this.getEl().addCls("app-item");
 
-        this.progressBar = new Ext.ProgressBar({
-            text: '',
-            cls: 'x-progress-bar',
+        this.progressBar = Ext.create('Ext.ProgressBar',{
+            cls: 'x-progress-bar',//TODO:411 remove because it's no longer needed
             id: 'progressBar_' + this.getId(),
             renderTo: "state_" + this.getId(),
             height: 17,
@@ -1181,7 +1192,7 @@ Ext.define("Ung.AppItem", {
     },
     // hack because I cant figure out how to tell extjs to apply style to progress text
     stylizeProgressText: function (str) {
-        return "<p style=\"font-size:xx-small;text-align:left;align:left\">&nbsp;&nbsp;" + str + "</p>";
+        return '<p style="font-size:xx-small;text-align:left;align:left;padding-left:5px;">' + str + '</p>';
     },
     // set the state of the progress bar
     setState: function(newState, options) {
@@ -2706,9 +2717,12 @@ Ext.define("Ung.GridEventLog", {
     },
     initComponent: function() {
         this.rpc = {};
-        if(this.viewConfig == null) {
-            this.viewConfig = {enableTextSelection: true};
+        
+        if( this.viewConfig == null ) {
+            this.viewConfig = {};
         }
+        this.viewConfig.enableTextSelection = true;
+        
         if ( this.title == null ) {
             this.title = i18n._('Event Log');
         }
@@ -2879,7 +2893,7 @@ Ext.define("Ung.GridEventLog", {
         }
     },
     // called when the component is rendered
-    onRender: function(container, position) {
+    onRender: function() {
         this.callParent(arguments);
         //TODO: extjs4 migration find an alternative
         //this.getGridEl().down("div[class*=x-grid3-viewport]").set({'name': "Table"});
