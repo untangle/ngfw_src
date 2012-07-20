@@ -36,7 +36,6 @@ if (!Ung.hasResource["Ung.Ips"]) {
                 },
                 items: [{
                     title: this.i18n._('Statistics'),
-                   // layout:'form',
                     labelWidth: 230,
                     defaults: {
                         xtype: "textfield",

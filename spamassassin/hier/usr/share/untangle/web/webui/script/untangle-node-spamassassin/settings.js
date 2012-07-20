@@ -161,7 +161,6 @@ if (!Ung.hasResource["Ung.SpamAssassin"]) {
                         autoWidth: true,
                         items: [{
                             border: false,
-                          //  layout: 'form',
                             items: [{
                                 xtype: 'combo',
                                 name: 'SMTP Strength',
@@ -191,7 +190,6 @@ if (!Ung.hasResource["Ung.SpamAssassin"]) {
                         },{
                             border: false,
                             columnWidth:1,
-//                            layout: 'form',
                             items: [{
                                 xtype: 'numberfield',
                                 fieldLabel: '&nbsp;&nbsp;&nbsp;' + this.i18n._('Strength Value'),
@@ -483,7 +481,6 @@ if (!Ung.hasResource["Ung.SpamAssassin"]) {
                         autoWidth: true,
                         items: [{
                             border: false,
-  //                          layout: 'form',
                             items: [{
                                 xtype: 'combo',
                                 name: 'POP3 Strength',
@@ -513,7 +510,6 @@ if (!Ung.hasResource["Ung.SpamAssassin"]) {
                         },{
                             border: false,
                             columnWidth:1,
-    //                        layout: 'form',
                             items: [{
                                 xtype: 'numberfield',
                                 fieldLabel:'&nbsp;&nbsp;&nbsp;' + this.i18n._('Strength Value'),
@@ -650,8 +646,6 @@ if (!Ung.hasResource["Ung.SpamAssassin"]) {
                         autoWidth: true,
                         items: [{
                             border: false,
-      //                      layout: 'form',
-
                             items: [{
                                 xtype: 'combo',
                                 name: 'IMAP Strength',
@@ -681,7 +675,6 @@ if (!Ung.hasResource["Ung.SpamAssassin"]) {
                         },{
                             border: false,
                             columnWidth:1,
-        //                    layout: 'form',
                             items: [{
                                 xtype: 'numberfield',
                                 fieldLabel:'&nbsp;&nbsp;&nbsp;' + this.i18n._('Strength Value'),

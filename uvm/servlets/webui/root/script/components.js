@@ -127,36 +127,10 @@ Ext.override(Ext.TabPanel, {
     }
 });
 
-Ext.override( Ext.form.Field, {
-    showContainer: function() {
-        this.show();
-        this.enable();
-        /* show entire container and children (including label if applicable) */
-        this.getEl().up('.x-form-item').setDisplayed( true );
-    },
-    hideContainer: function() {
-        this.disable();
-        this.hide();
-        this.getEl().up('.x-form-item').setDisplayed( false );
-    },
-    setContainerVisible: function(visible) {
-        if (visible) {
-            this.showContainer();
-        } else {
-            this.hideContainer();
-        }
-        return this;
-    },
-    isContainerVisible: function() {
-        return this.getEl().up('.x-form-item').isDisplayed();
-    }
-});
-
 Ext.override( Ext.form.TextField, {
     afterRender: Ext.Function.createSequence(Ext.form.TextField.prototype.afterRender, function() {
-        //var parent = this.el.parent();
-        if( this.boxLabel ) {
-            this.labelEl = this.el.down("div").createChild({
+        if( this.boxLabel) {
+            this.labelEl = this.el.down("input").parent().createChild({
                 tag: 'label',
                 htmlFor: this.el.id,
                 cls: 'x-form-textfield-detail',
@@ -1174,12 +1148,10 @@ Ext.define("Ung.AppItem", {
         this.progressBar.hide();
         if(this.libItem!=null && this.node==null) { // libitem
             this.getEl().on("click", this.linkToStoreFn, this);
-            // this.actionEl.on("click", this.linkToStoreFn, this);
             this.actionEl.insertHtml("afterBegin", i18n._("More Info"));
             this.actionEl.addCls("icon-info");
         } else if(this.node!=null) { // node
             this.getEl().on("click", this.installNodeFn, this);
-            // this.actionEl.on("click", this.installNodeFn, this);
             this.actionEl.insertHtml("afterBegin", this.libItem==null?i18n._("Install"):i18n._("Trial Install"));
             this.actionEl.addCls("icon-arrow-install");
             if(this.libItem!=null) { // libitem and trial node
@@ -2734,7 +2706,9 @@ Ext.define("Ung.GridEventLog", {
     },
     initComponent: function() {
         this.rpc = {};
-
+        if(this.viewConfig == null) {
+            this.viewConfig = {enableTextSelection: true};
+        }
         if ( this.title == null ) {
             this.title = i18n._('Event Log');
         }
@@ -2870,7 +2844,6 @@ Ext.define("Ung.GridEventLog", {
                 }
             });
         }
-        //this.makeSelectable();
         if(this!=null && this.rendered && this.autoRefreshEnabled) {
             if(this==this.settingsCmp.tabs.getActiveTab()) {
                 Ext.Function.defer(this.autoRefreshList, 5000, this);
@@ -2911,7 +2884,7 @@ Ext.define("Ung.GridEventLog", {
         //TODO: extjs4 migration find an alternative
         //this.getGridEl().down("div[class*=x-grid3-viewport]").set({'name': "Table"});
         //this.pagingToolbar.loading.hide();
-
+        
         if (this.eventQueriesFn != null) {
             this.rpc.eventLogQueries=this.eventQueriesFn();
             var queryList = this.rpc.eventLogQueries;
@@ -2984,12 +2957,6 @@ Ext.define("Ung.GridEventLog", {
         }
         return columnList;
     },
-    makeSelectable: function() {
-        var elems=Ext.DomQuery.select("div[unselectable=on]", this.dom);
-        for(var i=0, len=elems.length; i<len; i++) {
-            elems[i].unselectable = "off";
-        }
-    },
     refreshHandler: function (forceFlush) {
         if (!this.isReportsAppInstalled()) {
             Ext.MessageBox.alert(i18n._('Warning'), i18n._("Event Logs require the Reports application. Please install and enable the Reports application."));
@@ -3012,7 +2979,7 @@ Ext.define("Ung.GridEventLog", {
            Ung.Util.handleException(exception);
         } else {
             var events = result;
-            //Add sample events for test
+            //TEST:Add sample events for test
             /*
             for(var i=0; i<250; i++) {
                 events.list.push({
@@ -3025,7 +2992,8 @@ Ext.define("Ung.GridEventLog", {
                     ip_addr: "2.1.1."+i,
                     hostname: "Host_"+i 
                 });
-            }*/
+            }
+            */
             if (this.settingsCmp !== null) {
                 this.getStore().getProxy().data = events;
                 this.getStore().loadPage(1, {
@@ -3034,7 +3002,6 @@ Ext.define("Ung.GridEventLog", {
             }
         }
         this.setLoading(false);
-        this.makeSelectable();
     },
     flushHandler: function (forceFlush) {
         if (!this.isReportsAppInstalled()) {
