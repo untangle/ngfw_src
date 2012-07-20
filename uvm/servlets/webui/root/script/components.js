@@ -1153,7 +1153,7 @@ Ext.define("Ung.AppItem", {
 
         this.progressBar = new Ext.ProgressBar({
             text: '',
-            ctCls: 'progress-bar-text',
+            cls: 'x-progress-bar',
             id: 'progressBar_' + this.getId(),
             renderTo: "state_" + this.getId(),
             height: 17,
