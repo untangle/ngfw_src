@@ -5,7 +5,6 @@ var main=null;
 // Main object class
 Ext.define("Ung.Main", {
     debugMode: false,
-    testMode: false,
     buildStamp: null,
     disableThreads: false, // in development environment is useful to disable
                             // threads.

@@ -13,6 +13,7 @@ if(typeof console === "undefined") {
 }
 var i18n=Ext.create('Ung.I18N',{"map":null}); // the main internationalization object
 var rpc=null; // the main json rpc object
+var testMode = false;
 
 Ext.override(Ext.Button, {
     listeners: {
@@ -2089,20 +2090,28 @@ Ung.MessageManager = {
                                     lastUpgradeDownloadProgressMsg="stop";
                                     startUpgradeMode="stop";
                                     this.stop();
+                                    console.log("Applying Upgrades...");
+                                    var afterUpgradesWait = function() {
+                                        console.log("Upgrade in Progress. goToStartPag.");
+                                        Ext.MessageBox.alert(
+                                            i18n._("Upgrade in Progress"),
+                                            i18n._("The upgrades have been downloaded and are now being applied.") + "<br/>" +
+                                                "<strong>" + i18n._("DO NOT REBOOT AT THIS TIME.") + "</strong>" + "<br/>" +
+                                                i18n._("Please be patient this process will take a few minutes.") + "<br/>" +
+                                                i18n._("After the upgrade is complete you will be able to log in again."),
+                                            Ung.Util.goToStartPage);
+                                    };
                                     Ext.MessageBox.wait(i18n._("Applying Upgrades..."), i18n._("Please wait"), {
                                         interval: 500,
                                         increment: 60,
                                         duration: 60000,
-                                        fn: function() {
-                                            Ext.MessageBox.alert(
-                                                i18n._("Upgrade in Progress"),
-                                                i18n._("The upgrades have been downloaded and are now being applied.") + "<br/>" +
-                                                    "<strong>" + i18n._("DO NOT REBOOT AT THIS TIME.") + "</strong>" + "<br/>" +
-                                                    i18n._("Please be patient this process will take a few minutes.") + "<br/>" +
-                                                    i18n._("After the upgrade is complete you will be able to log in again."),
-                                                Ung.Util.goToStartPage);
-                                        }
+                                        fn: afterUpgradesWait
                                     });
+                                    Ext.defer(function() {
+                                        console.log("afterUpgradesWait called by defered function.");
+                                        Ext.MessageBox.hide();
+                                        afterUpgradesWait();
+                                    }, 60000, this);
                                 } 
                             }
                         }
@@ -2634,7 +2643,7 @@ Ext.define("Ung.FaceplateMetric", {
                 }
             }
         }
-        if(main.testMode) {
+        if(testMode) {
             if(!this.maxRandomNumber) {
                 this.maxRandomNumber=Math.floor((Math.random()*200))
             }
@@ -2829,7 +2838,7 @@ Ext.define("Ung.GridEventLog", {
     autoRefreshCallback: function(result, exception) {
         if(Ung.Util.handleException(exception)) return;
         var events = result;
-        if(main.testMode) {
+        if(testMode) {
             var emptyRec={};
             for(var i=0; i<30; i++) {
                 events.list.push(this.getTestRecord(i, this.fields));
@@ -2993,7 +3002,7 @@ Ext.define("Ung.GridEventLog", {
         } else {
             var events = result;
             //TEST:Add sample events for test
-            if(main.testMode) {
+            if(testMode) {
                 var emptyRec={};
                 var length = Math.floor((Math.random()*150));
                 for(var i=0; i<length; i++) {
@@ -4209,7 +4218,7 @@ Ext.define('Ung.EditorGrid', {
         if(!this.data) {
             this.data=[];
         }
-        if(main.testMode && this.data.length==0) {
+        if(testMode && this.data.length==0) {
             if(this.testData) {
                 this.data.concat(this.testData);
             } else if(this.testDataFn) {
