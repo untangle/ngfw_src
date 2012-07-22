@@ -101,7 +101,7 @@ if (!Ung.hasResource["Ung.SystemInfo"]) {
         },
         buildGridLicenses: function() {
             this.gridLicenses = Ext.create('Ung.EditorGrid',{
-                anchor: '100% -40',
+                anchor: '100% -60',
                 name: "gridLicenses",
                 settingsCmp: this,
                 parentId: this.getId(),

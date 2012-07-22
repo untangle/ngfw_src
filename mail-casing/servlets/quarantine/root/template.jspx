@@ -21,11 +21,9 @@
         @import "/ext4/examples/ux/css/CheckHeader.css";
     </style>
 
-    <uvm:skin src="ext-skin.css"  name="${skinSettings.skinName}"/>
     <uvm:skin src="user.css" name="${skinSettings.skinName}"/>
 
     <!-- extjs, json and i18n libraries, this should be consolidated into a helper tag. -->
-    <uvm:script src="/ext4/builds/ext-core-debug.js"/>
     <uvm:script src="/ext4/ext-all-debug.js"/>
     <uvm:script src="/ext4/examples/ux/data/PagingMemoryProxy.js"/>
     <uvm:script src="/ext4/examples/ux/CheckColumn.js"/>
@@ -52,14 +50,8 @@
 
     </div>
 
-    <!-- This is used in the CSS Zen Garden -->
     <!-- These extra divs/spans may be used as catch-alls to add extra imagery. -->
     <div id="extra-div-1"><span><!-- jspx --></span></div>
-    <div id="extra-div-2"><span><!-- jspx --></span></div>
-    <div id="extra-div-3"><span><!-- jspx --></span></div>
-    <div id="extra-div-4"><span><!-- jspx --></span></div>
-    <div id="extra-div-5"><span><!-- jspx --></span></div>
-    <div id="extra-div-6"><span><!-- jspx --></span></div>
   </body>
 
 

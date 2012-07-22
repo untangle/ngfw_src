@@ -25,6 +25,7 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
             if (this.isVpnSite) {
                 panelItems = {
                     xtype: 'fieldset',
+                    cls: "description",
                     title: this.i18n._('Download Client Config'),
                     labelWidth: 150,
                     items: [{
@@ -35,13 +36,14 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                         name: 'downloadConfigurationFile',
                         html: " ",
                         border: false,
-                        height: "25",
+                        height: 25,
                         cls: "description"
                     }]
                 };
             } else {
                 panelItems = [{
                     xtype: 'fieldset',
+                    cls: "description",
                     title: this.i18n._('Download Client Config'),
                     labelWidth: 150,
                     items: [{
@@ -52,17 +54,18 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                         name: 'downloadWindowsInstaller',
                         html:  " ",
                         border: false,
-                        height: "25",
+                        height: 25,
                         cls: "description"
                     }, {
                         name: 'downloadConfigurationFile',
                         html: " ",
                         border: false,
-                        height: "25",
+                        height: 25,
                         cls: "description"
                     }]
                 }, {
                     xtype: 'fieldset',
+                    cls: "description",
                     title: this.i18n._('or Distribute Client Config via Email'),
                     items: [{
                         html: this.i18n._('Click "Send Email" to send an email to "Email Address" with information to retrieve the OpenVPN Client.'),
@@ -98,7 +101,6 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
             }
             this.items = {
                 xtype: 'panel',
-                cls: 'ung-panel',
                 items: panelItems
             }
             this.callParent(arguments);
@@ -716,7 +718,7 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
 
                 renderer: Ext.bind(function(value, metadata, record,rowIndex,colIndex,store,view) {
                     var out= '';
-                    if(record.data.id>=0) {
+                    if(record.data.internalId>=0) {
                         //adding the x-action-col-0 class to force the processing of click event
                         out= '<div class="x-action-col-0 ung-button button-column" style="text-align:center;">' + this.i18n._("Distribute Client") + '</div>';
                     }
@@ -766,7 +768,6 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                 title: this.i18n._("VPN Clients"),
                 recordJavaClass: "com.untangle.node.openvpn.VpnClient",
                 dataProperty: "clientList",
-                autoGenerateId: true,
                 fields: [{
                     name: 'live'
                 }, {
@@ -901,7 +902,6 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                     return data;
                 },
                 // the list of fields
-                autoGenerateId: true,
                 fields: [{
                     name: 'live'
                 }, {
@@ -1059,7 +1059,6 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                 recordJavaClass: "com.untangle.node.openvpn.SiteNetwork",
                 data: exportedAddressList,
                 // the list of fields
-                autoGenerateId: true,
                 fields: [{
                     name: 'live'
                 }, {
@@ -1162,11 +1161,8 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                 title: this.i18n._("Address Pools"),
                 recordJavaClass: "com.untangle.node.openvpn.VpnGroup",
                 dataProperty: 'groupList',
-                autoGenerateId: true,
                 // the list of fields
                 fields: [{
-                    name: 'id'
-                }, {
                     name: 'live'
                 }, {
                     name: 'name'

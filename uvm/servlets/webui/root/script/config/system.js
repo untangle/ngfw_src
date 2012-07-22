@@ -900,7 +900,7 @@ if (!Ung.hasResource["Ung.System"]) {
                                     this.getLanguageSettings().language = record[0].data.code;
                                 }, this)
                             },
-                            "render": {
+                            "afterrender": {
                                 fn: Ext.bind(function(elem) {
                                     languagesStore.load({
                                         callback: Ext.bind(function(r, options, success) {

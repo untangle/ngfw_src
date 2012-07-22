@@ -46,7 +46,7 @@ if (!Ung.hasResource["Ung.CPD"]) {
                     xtype: 'fieldset',
                     cls: 'description',
                     title: this.i18n._('Status'),
-                    height: '90',
+                    height: 70,
                     html: this.i18n._('Captive Portal allows administrators to require network users to complete a defined process, such as logging in or accepting a network usage policy, before accessing the internet.')
                  }]
             });
@@ -327,16 +327,16 @@ if (!Ung.hasResource["Ung.CPD"]) {
                         border: false,
                         html: this.i18n._("The time of day.")
                     },{
-                        xtype: "utimefield",
+                        xtype: "timefield",
                         name: "startTime",
-                        dataIndex: "startTime",
+                        dataIndex: "startTimeAsDate",
                         fieldLabel: this.i18n._("Start Time"),
                         allowBlank: false
                     },{
-                        xtype: "utimefield",
+                        xtype: "timefield",
                         endTime: true,
                         name: "endTime",
-                        dataIndex: "endTime",
+                        dataIndex: "endTimeAsDate",
                         fieldLabel: this.i18n._("End Time"),
                         allowBlank: false
                     }]
@@ -398,6 +398,8 @@ if (!Ung.hasResource["Ung.CPD"]) {
                         var day = Ung.CPD.daysOfWeek[c];
                         record.set( day, days.indexOf( day ) >= 0 );
                     }
+                    record.set( "startTimeAsDate", Ext.Date.parse(record.get("startTime"), "H:i") || Ext.Date.parse(record.get("startTime"), "G:i") )
+                    record.set( "endTimeAsDate", Ext.Date.parse(record.get("endTime"), "H:i") || Ext.Date.parse(record.get("endTime"), "G:i"))
 
                     Ung.RowEditorWindow.prototype.populateTree.call(this, record, addMode);
                 },
@@ -419,6 +421,8 @@ if (!Ung.hasResource["Ung.CPD"]) {
                         }
 
                         this.record.set( "days", days.join( "," ));
+                        this.record.set( "startTime", Ext.Date.format(this.record.get("startTimeAsDate"),"H:i") )
+                        this.record.set( "endTime", Ext.Date.format(this.record.get("endTimeAsDate"),"H:i") )
                     }
                 }
             });
@@ -556,7 +560,7 @@ if (!Ung.hasResource["Ung.CPD"]) {
                         inputValue: "NONE",
                         listeners: {
                             "change": onUpdateRadioButton,
-                            "render": onRenderRadioButton
+                            "afterrender": onRenderRadioButton
                         }
                     },{
                         xtype: "radio",
@@ -566,7 +570,7 @@ if (!Ung.hasResource["Ung.CPD"]) {
                         inputValue: "LOCAL_DIRECTORY",
                         listeners: {
                             "change": onUpdateRadioButton,
-                            "render": onRenderRadioButton
+                            "afterrender": onRenderRadioButton
                         }
                     },{
                         xtype: "button",
@@ -583,7 +587,7 @@ if (!Ung.hasResource["Ung.CPD"]) {
                         inputValue: "RADIUS",
                         listeners: {
                             "change": onUpdateRadioButton,
-                            "render": onRenderRadioButton
+                            "afterrender": onRenderRadioButton
                         }
                     },{
                         xtype: "button",
@@ -601,7 +605,7 @@ if (!Ung.hasResource["Ung.CPD"]) {
                         inputValue: "ACTIVE_DIRECTORY",
                         listeners: {
                             "change": onUpdateRadioButton,
-                            "render": onRenderRadioButton
+                            "afterrender": onRenderRadioButton
                         }
                     },{
                         xtype: "button",
@@ -701,7 +705,7 @@ if (!Ung.hasResource["Ung.CPD"]) {
                 border: false,
                 cls: "ung-panel",
                 listeners: {
-                    "render": Ext.bind(function () {
+                    "afterrender": Ext.bind(function () {
                         this.panelCaptivePage.query('radio[name="pageType"]')[0].setValue(this.settings.pageType);
                         this.captivePageHideComponents(this.settings.pageType );
                         Ung.Util.clearDirty(this.panelCaptivePage);

@@ -42,12 +42,8 @@ if (!Ung.hasResource["Ung.Email"]) {
             this.tabs.setActiveTab(this.panelOutgoingServer);
             this.callParent(arguments);
         },
-
-        onRender: function(container, position) {
+        afterRender: function() {
             this.callParent(arguments);
-            Ext.defer(this.initSubCmps,1, this);
-        },
-        initSubCmps: function() {
             var smtpLoginCmp = Ext.getCmp('email_smtpLogin');
             var useAuthentication = smtpLoginCmp != null && smtpLoginCmp.getValue()!=null && smtpLoginCmp.getValue().length > 0;
             Ext.getCmp('email_smtpUseAuthentication').setValue(useAuthentication);
@@ -61,8 +57,7 @@ if (!Ung.hasResource["Ung.Email"]) {
                 Ext.getCmp('email_smtpUseAuthentication').disable();
                 Ext.getCmp('email_smtpLogin').disable();
                 Ext.getCmp('email_smtpPassword').disable();
-            }
-            else {
+            } else {
                 Ext.getCmp('email_smtpHost').enable();
                 Ext.getCmp('email_smtpPort').enable();
                 Ext.getCmp('email_smtpUseAuthentication').enable();
@@ -454,17 +449,12 @@ if (!Ung.hasResource["Ung.Email"]) {
                 title: this.i18n._('Global'),
                 hasEdit: false,
                 settingsCmp: this,
-                autoGenerateId: true,
                 anchor: "100% 48%",
                 style: "margin-bottom:10px;",
                 emptyRow: {
                     "emailAddress": this.i18n._("[no email address]")
                 },
-                fields: [ 
-                {
-                    name: 'id'
-                },
-                {
+                fields: [{
                     name: 'emailAddress'
                 }],
                 columns: [{
@@ -505,7 +495,7 @@ if (!Ung.hasResource["Ung.Email"]) {
                 paginated: false,
                 anchor: "100% 48%",
                 dataFn: this.getSafelistAdminView().getUserSafelistCounts,
-                /*data: [//TODO: remove this after testing
+                /*testData: [
                     {id: 5, emailAddress: "aaa@aaa.com", count: 353},
                     {id: 6, emailAddress: "bbb@bbb.com", count: 890}
                 ],*/
@@ -606,7 +596,6 @@ if (!Ung.hasResource["Ung.Email"]) {
                 hasAdd: false,
                 hasDelete: false,
                 paginated: false,
-                autoGenerateId: true,
                 tbar: [{
                     text: this.i18n._('Purge Selected'),
                     tooltip: this.i18n._('Purge Selected'),
@@ -626,7 +615,7 @@ if (!Ung.hasResource["Ung.Email"]) {
                         Ext.MessageBox.wait(this.i18n._("Purging..."), this.i18n._("Please wait"));
                         this.getSafelistAdminView().removeFromSafelists(Ext.bind(function(result, exception) {
                             if(Ung.Util.handleException(exception)) return;
-                            result = ['test@aaa.com', 'test1@bbb.com']; //TODO: comment it when not testing
+                            //result = ['test@aaa.com', 'test1@bbb.com']; //TODO: comment it when not testing
                             var data = Ung.Util.buildJsonListFromStrings(result, 'sender');
                             this.gridSafelistUserDetails.reload({data: data});
                             Ext.MessageBox.hide();
@@ -636,7 +625,9 @@ if (!Ung.hasResource["Ung.Email"]) {
                     }, this)
                 }],
                 data: [],
-                fields: ['sender'],
+                fields: [{
+                    name: 'sender'
+                }],
                 columns: [{
                     header: this.i18n._("email address"),
                     flex: 1,
@@ -671,14 +662,14 @@ if (!Ung.hasResource["Ung.Email"]) {
                 parentId: this.getId(),
                 title: this.i18n._('Quarantine'),
                 cls: 'ung-panel',
+                style: 'padding-right: 17px',//To solve rendering issue of Ext 4.1.1 with Chrome
                 autoScroll: true,
+                layout: 'anchor',
                 defaults: {
-                    xtype: 'fieldset',
-                    anchor: "98% 25%",
-                    autoScroll: true,
-                    buttonAlign: 'left'
+                    anchor: '100%'
                 },
                 items: [{
+                    xtype: 'fieldset',
                     items: [{
                         xtype: 'textfield',
                         labelWidth: 230,
@@ -708,7 +699,7 @@ if (!Ung.hasResource["Ung.Email"]) {
                         checked: this.getMailNodeSettings().quarantineSettings.sendDailyDigests,
                         width: 320,
                         listeners: {
-                            "render": {
+                            "afterrender": {
                                 fn: Ext.bind(function(elem) {
                                     if(elem.getValue()) {
                                         Ext.getCmp('quarantine_dailySendingTime').enable();
@@ -755,263 +746,249 @@ if (!Ung.hasResource["Ung.Email"]) {
                         border: false,
                         html: Ext.String.format(this.i18n._('Users can also request Quarantine Digest Emails manually at this link: <b>https://{0}/quarantine/</b>'), rpc.systemManager.getPublicUrl())
                     }]
-                }, {
+                }, 
+                this.userQuarantinesGrid = Ext.create('Ung.EditorGrid', {
                     title: this.i18n._('User Quarantines'),
-                    layout: "anchor",
-                    items: [ this.userQuarantinesGrid = Ext.create('Ung.EditorGrid',{
-                        anchor: "100% 100%",
-                        name: 'User Quarantines',
-                        selModel: Ext.create('Ext.selection.CheckboxModel', {singleSelect: false}),
-                        hasEdit: false,
-                        hasAdd: false,
-                        hasDelete: false,
-                        paginated: false,
-                        autoGenerateId: true,
-                        settingsCmp: this,
-                        height: 250,
-                        autoScroll: true,
-                        dataFn: this.getQuarantineMaintenenceView().listInboxes,
-                        /*data: [//TODO: remove this after testing
-                            {id: 34, address: "aaa@ddd.com", numMails: 115, totalSz: 150124},
-                            {id: 35, address: "bbb@ddd.com", numMails: 76, totalSz: 560777}
-                        ],*/
-                        tbar: [{
-                            text: this.i18n._('Purge Selected'),
-                            tooltip: this.i18n._('Purge Selected'),
-                            iconCls: 'purge-icon',
-                            name: 'Purge Selected',
-                            parentId: this.getId(),
-                            handler: Ext.bind(function() {
-                                var selectedRecords = this.userQuarantinesGrid.getSelectionModel().selected;
-                                if(selectedRecords === undefined || selectedRecords.length == 0) {
-                                    return;
-                                }
-                                var accounts = [];
-                                selectedRecords.each(function(item, index, length) {
-                                    accounts.push(item.data.address);
-                                });
-                                
-                                Ext.MessageBox.wait(this.i18n._("Purging..."), this.i18n._("Please wait"));
-                                this.getQuarantineMaintenenceView().deleteInboxes(Ext.bind(function(result, exception) {
-                                    Ext.MessageBox.hide();
-                                    if(Ung.Util.handleException(exception)) return;
-                                    this.userQuarantinesGrid.reload();
-                                }, this), accounts);
-                            }, this)
-                        }, {
-                            text: this.i18n._('Release Selected'),
-                            tooltip: this.i18n._('Release Selected'),
-                            iconCls: 'release-icon',
-                            name: 'Release Selected',
-                            parentId: this.getId(),
-                            handler: Ext.bind(function() {
-                                var selectedRecords = this.userQuarantinesGrid.getSelectionModel().selected;
-                                if(selectedRecords === undefined || selectedRecords.length == 0) {
-                                    return;
-                                }
-                                var accounts = [];
-                                selectedRecords.each(function(item, index, length) {
-                                    accounts.push(item.data.address);
-                                });
-                                
-                                Ext.MessageBox.wait(this.i18n._("Releasing..."), this.i18n._("Please wait"));
-                                this.getQuarantineMaintenenceView().rescueInboxes(Ext.bind(function(result, exception) {
-                                    Ext.MessageBox.hide();
-                                    if(Ung.Util.handleException(exception)) return;
-                                    this.userQuarantinesGrid.reload();
-                                }, this), accounts);
-                            }, this)
-                        }, {
-                            xtype: 'tbfill'
-                        }, {
-                            xtype: 'tbtext', 
-                            text: Ext.String.format(this.i18n._('Total Disk Space Used: {0} MB'), i18n.numberFormat((this.getQuarantineMaintenenceView().getInboxesTotalSize()/(1024 * 1024)).toFixed(3)))
-                        }],
-                        fields: [{
-                            name: 'address'
-                        }, {
-                            name: 'numMails'
-                        }, {
-                            name: 'totalSz'
-                        }],
-                        columns: [
-                        {
-                            header: this.i18n._("account address"),
-                            width: 200,
-                            dataIndex: 'address',
-                            flex: 1
+                    name: 'User Quarantines',
+                    selModel: Ext.create('Ext.selection.CheckboxModel', {singleSelect: false}),
+                    hasEdit: false,
+                    hasAdd: false,
+                    hasDelete: false,
+                    paginated: false,
+                    settingsCmp: this,
+                    height: 250,
+                    dataFn: this.getQuarantineMaintenenceView().listInboxes,
+                    //testData: [
+                    //    {id: 34, address: "aaa@ddd.com", numMails: 115, totalSz: 150124},
+                    //    {id: 35, address: "bbb@ddd.com", numMails: 76, totalSz: 560777}
+                    //],
+                    tbar: [{
+                        text: this.i18n._('Purge Selected'),
+                        tooltip: this.i18n._('Purge Selected'),
+                        iconCls: 'purge-icon',
+                        name: 'Purge Selected',
+                        parentId: this.getId(),
+                        handler: Ext.bind(function() {
+                            var selectedRecords = this.userQuarantinesGrid.getSelectionModel().selected;
+                            if(selectedRecords === undefined || selectedRecords.length == 0) {
+                                return;
+                            }
+                            var accounts = [];
+                            selectedRecords.each(function(item, index, length) {
+                                accounts.push(item.data.address);
+                            });
                             
-                        }, {
-                            header: this.i18n._("message count"),
-                            width: 185,
-                            align: 'right',
-                            dataIndex: 'numMails'
-                        }, {
-                            header: this.i18n._("data size (kB)"),
-                            width: 185,
-                            align: 'right',
-                            dataIndex: 'totalSz',
-                            renderer: function(value) {
-                                return i18n.numberFormat((value /1024.0).toFixed(3));
-                            }
-                        }, showDetailColumn],
-                        plugins: [showDetailColumn],
-                        sortField: 'address',
-                        columnsDefaultSortable: true,
-                        
-                        onShowDetail: Ext.bind(function(record) {
-                            if(!this.quarantinesDetailsWin) {
-                                this.buildUserQuarantinesGrid();
-                                this.quarantinesDetailsWin = Ext.create('Ung.EmailAddressDetails', {
-                                    detailsPanel: this.userQuarantinesDetailsGrid,
-                                    settingsCmp: this,
-                                    showForCurrentAccount: function(emailAddress) {
-                                        this.account = emailAddress;  
-                                        var newTitle = this.settingsCmp.i18n._('Email Quarantine Details for: ') + emailAddress;
-                                        this.setTitle(newTitle);
-                                        this.show();
-                                        //load Quarantines Details
-                                        this.settingsCmp.userQuarantinesDetailsGrid.reload();
-                                    }          
-                                });
-                                this.subCmps.push(this.quarantinesDetailsWin);
-                            }
-                            this.quarantinesDetailsWin.showForCurrentAccount(record.get('address'));
+                            Ext.MessageBox.wait(this.i18n._("Purging..."), this.i18n._("Please wait"));
+                            this.getQuarantineMaintenenceView().deleteInboxes(Ext.bind(function(result, exception) {
+                                Ext.MessageBox.hide();
+                                if(Ung.Util.handleException(exception)) return;
+                                this.userQuarantinesGrid.reload();
+                            }, this), accounts);
                         }, this)
-                    })
-                ]}, {
+                    }, {
+                        text: this.i18n._('Release Selected'),
+                        tooltip: this.i18n._('Release Selected'),
+                        iconCls: 'release-icon',
+                        name: 'Release Selected',
+                        parentId: this.getId(),
+                        handler: Ext.bind(function() {
+                            var selectedRecords = this.userQuarantinesGrid.getSelectionModel().selected;
+                            if(selectedRecords === undefined || selectedRecords.length == 0) {
+                                return;
+                            }
+                            var accounts = [];
+                            selectedRecords.each(function(item, index, length) {
+                                accounts.push(item.data.address);
+                            });
+                            
+                            Ext.MessageBox.wait(this.i18n._("Releasing..."), this.i18n._("Please wait"));
+                            this.getQuarantineMaintenenceView().rescueInboxes(Ext.bind(function(result, exception) {
+                                Ext.MessageBox.hide();
+                                if(Ung.Util.handleException(exception)) return;
+                                this.userQuarantinesGrid.reload();
+                            }, this), accounts);
+                        }, this)
+                    }, {
+                        xtype: 'tbfill'
+                    }, {
+                        xtype: 'tbtext', 
+                        text: Ext.String.format(this.i18n._('Total Disk Space Used: {0} MB'), i18n.numberFormat((this.getQuarantineMaintenenceView().getInboxesTotalSize()/(1024 * 1024)).toFixed(3)))
+                    }],
+                    fields: [{
+                        name: 'address'
+                    }, {
+                        name: 'numMails'
+                    }, {
+                        name: 'totalSz'
+                    }],
+                    columns: [
+                    {
+                        header: this.i18n._("account address"),
+                        width: 200,
+                        dataIndex: 'address',
+                        flex: 1
+                        
+                    }, {
+                        header: this.i18n._("message count"),
+                        width: 185,
+                        align: 'right',
+                        dataIndex: 'numMails'
+                    }, {
+                        header: this.i18n._("data size (kB)"),
+                        width: 185,
+                        align: 'right',
+                        dataIndex: 'totalSz',
+                        renderer: function(value) {
+                            return i18n.numberFormat((value /1024.0).toFixed(3));
+                        }
+                    }, showDetailColumn],
+                    plugins: [showDetailColumn],
+                    sortField: 'address',
+                    columnsDefaultSortable: true,
+                    onShowDetail: Ext.bind(function(record) {
+                        if(!this.quarantinesDetailsWin) {
+                            this.buildUserQuarantinesGrid();
+                            this.quarantinesDetailsWin = Ext.create('Ung.EmailAddressDetails', {
+                                detailsPanel: this.userQuarantinesDetailsGrid,
+                                settingsCmp: this,
+                                showForCurrentAccount: function(emailAddress) {
+                                    this.account = emailAddress;  
+                                    var newTitle = this.settingsCmp.i18n._('Email Quarantine Details for: ') + emailAddress;
+                                    this.setTitle(newTitle);
+                                    this.show();
+                                    //load Quarantines Details
+                                    this.settingsCmp.userQuarantinesDetailsGrid.reload();
+                                }          
+                            });
+                            this.subCmps.push(this.quarantinesDetailsWin);
+                        }
+                        this.quarantinesDetailsWin.showForCurrentAccount(record.get('address'));
+                    }, this)
+                }), {
+                    xtype: 'container',
+                    style: 'margin: 20px 0 5px 0',                    
+                    border: false,
+                    html: this.i18n._('Email addresses on this list will have quarantines automatically created. All other emails will be marked and not quarantined.')
+                },
+                this.quarantinableAddressesGrid = Ext.create('Ung.EditorGrid',{
                     title: this.i18n._('Quarantinable Addresses'),
-                    layout: "anchor",
-                    items: [{
-                        cls: 'description',
-                        border: false,
-                        html: this.i18n._('Email addresses on this list will have quarantines automatically created. All other emails will be marked and not quarantined.')
+                    name: 'Quarantinable Addresses',
+                    settingsCmp: this,
+                    height: 250,
+                    paginated: false,
+                    emptyRow: {
+                        "address": "email@example.com",
+                        "category": this.i18n._("[no category]"),
+                        "description": this.i18n._("[no description]"),
+                        "javaClass": "com.untangle.node.mail.papi.EmailAddressRule"
                     },
-                    this.quarantinableAddressesGrid = Ext.create('Ung.EditorGrid',{
-                        anchor: "100%",
-                        name: 'Quarantinable Addresses',
-                        settingsCmp: this,
-                        height: 250,
-                        autoScroll: true,
-                        autoGenerateId: true,
-                        paginated: false,
-                        emptyRow: {
-                            "address": "email@example.com",
-                            "category": this.i18n._("[no category]"),
-                            "description": this.i18n._("[no description]"),
-                            "javaClass": "com.untangle.node.mail.papi.EmailAddressRule"
-                        },
-                        recordJavaClass: "com.untangle.node.mail.papi.EmailAddressRule",
-                        dataFn: Ext.bind(function() { 
-                            return this.getMailNodeSettings().quarantineSettings.allowedAddressPatterns;
-                        }, this),
-                        fields: [{
-                            name: 'id'
-                        },{
-                            name: 'address'
-                        }],
-                        columns: [{
-                            header: this.i18n._("quarantinable address"),
-                            flex: 1,
-                            width: 400,
-                            dataIndex: 'address',
-                            editor: {
-                                xtype: 'textfield'
-                            }
-                        }],
-                        rowEditorInputLines: [{
-                            xtype: 'textfield',
-                            name: "Address",
-                            dataIndex: "address",
-                            fieldLabel: this.i18n._("Address"),
-                            allowBlank: false,
-                            width: 450
-                        }]
-                    })]
-                }, {
+                    recordJavaClass: "com.untangle.node.mail.papi.EmailAddressRule",
+                    dataFn: Ext.bind(function() { 
+                        return this.getMailNodeSettings().quarantineSettings.allowedAddressPatterns;
+                    }, this),
+                    fields: [{
+                        name: 'address'
+                    }],
+                    columns: [{
+                        header: this.i18n._("quarantinable address"),
+                        flex: 1,
+                        width: 400,
+                        dataIndex: 'address',
+                        editor: {
+                            xtype: 'textfield'
+                        }
+                    }],
+                    rowEditorInputLines: [{
+                        xtype: 'textfield',
+                        name: "Address",
+                        dataIndex: "address",
+                        fieldLabel: this.i18n._("Address"),
+                        allowBlank: false,
+                        width: 450
+                    }]
+                }), {
+                    xtype: 'container',
+                    style: 'margin: 20px 0 5px 0',                    
+                    border: false,
+                    html: this.i18n._('This is a list of email addresses whose quarantine digest gets forwarded to another account. This is common for distribution lists where the whole list should not receive the digest.')
+                },
+                this.quarantineForwardsGrid = Ext.create('Ung.EditorGrid', {
                     title: this.i18n._('Quarantine Forwards'),
-                    items: [{
-                        cls: 'description',
-                        border: false,
-                        html: this.i18n._('This is a list of email addresses whose quarantine digest gets forwarded to another account. This is common for distribution lists where the whole list should not receive the digest.')
-                    }, this.quarantineForwardsGrid = Ext.create('Ung.EditorGrid',{
-                        name: 'Quarantine Forwards',
-                        settingsCmp: this,
-                        height: 250,
-                        autoScroll: true,
-                        paginated: false,
-                        emptyRow: {
-                            "address1": this.i18n._("distributionlistrecipient@example.com"),
-                            "address2": this.i18n._("quarantinelistowner@example.com"),
-                            "category": this.i18n._("[no category]"),
-                            "description": this.i18n._("[no description]"),
-                            "javaClass": "com.untangle.node.mail.papi.EmailAddressPairRule"
-                        },
-                        recordJavaClass: "com.untangle.node.mail.papi.EmailAddressPairRule",
-                        dataFn: Ext.bind( function() { 
-                            return this.getMailNodeSettings().quarantineSettings.addressRemaps;
-                        }, this),
-                        fields: [{
-                            name: 'id'
-                        }, {
-                            name: 'address1'
-                        }, {
-                            name: 'address2'
-                        }, {
-                            name: 'category'
-                        }, {
-                            name: 'description'
-                        }],
-                        columns: [
-                        {
-                            header: this.i18n._("distribution list address"),
-                            width: 250,
-                            dataIndex: 'address1',
-                            editor: {
-                                xtype: 'textfield'
-                            }
-                        }, 
-                        {
-                            header: this.i18n._("send to address"),
-                            width: 250,
-                            dataIndex: 'address2',
-                            flex:1,
-                            editor: {
-                                xtype: 'textfield'
-                            }
-                        }],
-                        rowEditorLabelWidth: 160,
-                        rowEditorInputLines: [
-                        {
-                            xtype: 'textfield',
-                            name: "Distribution List Address",
-                            dataIndex: "address1",
-                            fieldLabel: this.i18n._("Distribution List Address"),
-                            width: 450
-                        },
-                        {
-                            xtype: 'textfield',
-                            name: "Send To Address",
-                            dataIndex: "address2",
-                            fieldLabel: this.i18n._("Send To Address"),
-                            width: 450
-                        },
-                        {
-                            xtype: 'textfield',
-                            name: "Category",
-                            dataIndex: "category",
-                            fieldLabel: this.i18n._("Category"),
-                            width: 450
-                        }, 
-                        {
-                            xtype: 'textfield',
-                            name: "Description",
-                            dataIndex: "description",
-                            fieldLabel: this.i18n._("Description"),
-                            width: 450
-                        }]
-                    })]
-                }]
+                    name: 'Quarantine Forwards',
+                    settingsCmp: this,
+                    height: 250,
+                    paginated: false,
+                    emptyRow: {
+                        "address1": this.i18n._("distributionlistrecipient@example.com"),
+                        "address2": this.i18n._("quarantinelistowner@example.com"),
+                        "category": this.i18n._("[no category]"),
+                        "description": this.i18n._("[no description]"),
+                        "javaClass": "com.untangle.node.mail.papi.EmailAddressPairRule"
+                    },
+                    recordJavaClass: "com.untangle.node.mail.papi.EmailAddressPairRule",
+                    dataFn: Ext.bind( function() { 
+                        return this.getMailNodeSettings().quarantineSettings.addressRemaps;
+                    }, this),
+                    fields: [{
+                        name: 'id'
+                    }, {
+                        name: 'address1'
+                    }, {
+                        name: 'address2'
+                    }, {
+                        name: 'category'
+                    }, {
+                        name: 'description'
+                    }],
+                    columns: [
+                    {
+                        header: this.i18n._("distribution list address"),
+                        width: 250,
+                        dataIndex: 'address1',
+                        editor: {
+                            xtype: 'textfield'
+                        }
+                    }, 
+                    {
+                        header: this.i18n._("send to address"),
+                        width: 250,
+                        dataIndex: 'address2',
+                        flex:1,
+                        editor: {
+                            xtype: 'textfield'
+                        }
+                    }],
+                    rowEditorLabelWidth: 160,
+                    rowEditorInputLines: [
+                    {
+                        xtype: 'textfield',
+                        name: "Distribution List Address",
+                        dataIndex: "address1",
+                        fieldLabel: this.i18n._("Distribution List Address"),
+                        width: 450
+                    },
+                    {
+                        xtype: 'textfield',
+                        name: "Send To Address",
+                        dataIndex: "address2",
+                        fieldLabel: this.i18n._("Send To Address"),
+                        width: 450
+                    },
+                    {
+                        xtype: 'textfield',
+                        name: "Category",
+                        dataIndex: "category",
+                        fieldLabel: this.i18n._("Category"),
+                        width: 450
+                    }, 
+                    {
+                        xtype: 'textfield',
+                        name: "Description",
+                        dataIndex: "description",
+                        fieldLabel: this.i18n._("Description"),
+                        width: 450
+                    }]
+                })]
             });
         },
         
@@ -1023,8 +1000,6 @@ if (!Ung.hasResource["Ung.Email"]) {
                 hasEdit: false,
                 hasAdd: false,
                 hasDelete: false,
-                autoGenerateId: true,
-                
                 tbar: [{
                     text: this.i18n._('Purge Selected'),
                     tooltip: this.i18n._('Purge Selected'),

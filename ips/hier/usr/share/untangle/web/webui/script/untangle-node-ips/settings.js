@@ -27,7 +27,6 @@ if (!Ung.hasResource["Ung.Ips"]) {
                 helpSource: 'status',
                 parentId: this.getId(),
                 title: this.i18n._('Status'),
-            //    layout: "form",
                 cls: 'ung-panel',
                 autoScroll: true,
                 defaults: {
@@ -74,250 +73,244 @@ if (!Ung.hasResource["Ung.Ips"]) {
             this.panelRules = Ext.create('Ext.panel.Panel',{
                 name: 'panelRules',
                 helpSource: 'rules',
-                // private fields
                 parentId: this.getId(),
                 title: this.i18n._('Rules'),
                 autoScroll: true,
                 border: false,
                 layout: 'anchor',
-                defaults: {
-                    anchor: '98%',
-                    autoWidth: true,
-                    autoScroll: true
-                },
                 cls: 'ung-panel',
-                items: [this.gridRules = Ext.create('Ung.EditorGrid',{
-                        name: 'Rules',
-                        settingsCmp: this,
-                        height: 350,
-                        emptyRow: {
-                            "category": this.i18n._("[no category]"),
-                            "name": this.i18n._("[no name]"),
-                            "text": this.i18n._("[no signature]"),
-                            "category": this.i18n._("[no category]"),
-                            "sid": "0",
-                            "live": true,
-                            "log": true,
-                            "description": this.i18n._("[no description]")
-                        },
-                        title: this.i18n._("Rules"),
-                        recordJavaClass: "com.untangle.node.ips.IpsRule",
-                        dataProperty: 'rules',
-                        paginated: false,
-                        fields: [{
-                            name: 'id'
-                        }, {
-                            name: 'text'
-                        }, {
-                            name: 'sid'
-                        }, {
-                            name: 'name'
-                        }, {
-                            name: 'category',
-                            type: 'string'
-                        }, {
-                            name: 'classification'
-                        }, {
-                            name: 'URL'
-                        }, {
-                            name: 'live'
-                        }, {
-                            name: 'log'
-                        }, {
-                            name: 'description',
-                            type: 'string'
-                        }],
-                        columns: [{
-                            header: this.i18n._("category"),
-                            width: 180,
-                            dataIndex: 'category',
-                            editor: {
-                                xtype:'texfield',
-                                allowBlank: false
-                            }
-                        },
-                        {
-                            xtype:'checkcolumn',
-                            header: this.i18n._("block"),
-                            dataIndex: 'live',
-                            fixed: true,
-                            width:55
-                        },
-                        {
-                            xtype:'checkcolumn',
-                            header: this.i18n._("log"),
-                            dataIndex: 'log',
-                            fixed: true,
-                            width:55
-                        },
-                        {
-                            header: this.i18n._("description"),
-                            width: 200,
-                            dataIndex: 'description',
-                            flex:1,
-                            editor: null,
-                            renderer: function(value, metadata, record) {
-                                var description = "";
-                                if (record.data.classification != null)
-                                {
-                                    description += record.data.classification + " ";
-                                }
-                                if (record.data.description != null) {
-                                    description += "(" + record.data.description + ")";
-                                }
-                                return description;
-                            }
-                        }, {
-                            header: this.i18n._("id"),
-                            width: 70,
-                            dataIndex: 'sid',
-                            editor: null
-                        }, {
-                            header: this.i18n._("info"),
-                            width: 70,
-                            dataIndex: 'URL',
-                            editor: null,
-                            sortable: false,
-                            renderer: function(value) {
-                                return (value == null || value.length == 0) ? "no info": "<a href='" + value + "' target='_blank'>info</a>";
-                            }
-                        }],
-                        sortField: 'category',
-                        columnsDefaultSortable: true,
-                        rowEditorInputLines: [
-                        {
-                            xtype:'textfield',
-                            name: "Category",
-                            dataIndex: "category",
-                            fieldLabel: this.i18n._("Category"),
-                            allowBlank: false,
-                            width: 400
-                        },
-                        {
-                            xtype:'textfield',
-                            name: "Signature",
-                            dataIndex: "text",
-                            fieldLabel: this.i18n._("Signature"),
-                            allowBlank: false,
-                            width: 450
-                        },
-                        {
-                            xtype:'textfield',
-                            name: "Name",
-                            dataIndex: "name",
-                            fieldLabel: this.i18n._("Name"),
-                            allowBlank: false,
-                            width: 300
-                        },
-                        {
-                            xtype:'textfield',
-                            name: "SID",
-                            dataIndex: "sid",
-                            fieldLabel: this.i18n._("SID"),
-                            allowBlank: false,
-                            width: 150
-                        },
-                        {
-                            xtype:'checkbox',
-                            name: "Block",
-                            dataIndex: "live",
-                            fieldLabel: this.i18n._("Block")
-                        },
-                        {
-                            xtype:'checkbox',
-                            name: "Log",
-                            dataIndex: "log",
-                            fieldLabel: this.i18n._("Log")
-                        },
-                        {
-                            xtype:'textfield',
-                            name: "Description",
-                            dataIndex: "description",
-                            fieldLabel: this.i18n._("Description"),
-                            allowBlank: false,
-                            width: 500
-                        }]
-                    }),
-                    {html: '<br>', border: false},
-                    this.gridVariables = Ext.create('Ung.EditorGrid',{
-                        name: 'Variables',
-                        settingsCmp: this,
-                        height: 350,
-                        emptyRow: {
-                            "variable": this.i18n._("[no name]"),
-                            "definition": this.i18n._("[no definition]"),
-                            "description": this.i18n._("[no description]")
-                        },
-                        title: this.i18n._("Variables"),
-                        recordJavaClass: "com.untangle.node.ips.IpsVariable",
-                        dataProperty: 'variables',
-                        fields: [{
-                            name: 'id'
-                        }, {
-                            name: 'variable',
-                            type: 'string'
-                        }, {
-                            name: 'definition',
-                            type: 'string'
-                        }, {
-                            name: 'description',
-                            type: 'string'
-                        }],
-                        columns: [{
-                            header: this.i18n._("name"),
-                            width: 170,
-                            dataIndex: 'variable',
-                            editor: {
-                                xtype:'textfield',
-                                allowBlank: false
-                                }
-                            },
+                items: [this.gridRules = Ext.create('Ung.EditorGrid', {
+                    anchor: "100% 48%",
+                    style: "margin-bottom:10px;",
+                    name: 'Rules',
+                    settingsCmp: this,
+                    emptyRow: {
+                        "category": this.i18n._("[no category]"),
+                        "name": this.i18n._("[no name]"),
+                        "text": this.i18n._("[no signature]"),
+                        "category": this.i18n._("[no category]"),
+                        "sid": "0",
+                        "live": true,
+                        "log": true,
+                        "description": this.i18n._("[no description]")
+                    },
+                    title: this.i18n._("Rules"),
+                    recordJavaClass: "com.untangle.node.ips.IpsRule",
+                    dataProperty: 'rules',
+                    paginated: false,
+                    fields: [{
+                        name: 'id'
+                    }, {
+                        name: 'text'
+                    }, {
+                        name: 'sid'
+                    }, {
+                        name: 'name'
+                    }, {
+                        name: 'category',
+                        type: 'string'
+                    }, {
+                        name: 'classification'
+                    }, {
+                        name: 'URL'
+                    }, {
+                        name: 'live'
+                    }, {
+                        name: 'log'
+                    }, {
+                        name: 'description',
+                        type: 'string'
+                    }],
+                    columns: [{
+                        header: this.i18n._("category"),
+                        width: 180,
+                        dataIndex: 'category',
+                        editor: {
+                            xtype:'texfield',
+                            allowBlank: false
+                        }
+                    },
+                    {
+                        xtype:'checkcolumn',
+                        header: this.i18n._("block"),
+                        dataIndex: 'live',
+                        fixed: true,
+                        width:55
+                    },
+                    {
+                        xtype:'checkcolumn',
+                        header: this.i18n._("log"),
+                        dataIndex: 'log',
+                        fixed: true,
+                        width:55
+                    },
+                    {
+                        header: this.i18n._("description"),
+                        width: 200,
+                        dataIndex: 'description',
+                        flex:1,
+                        editor: null,
+                        renderer: function(value, metadata, record) {
+                            var description = "";
+                            if (record.data.classification != null)
                             {
-                            id: 'definition',
-                            header: this.i18n._("pass"),
-                            width: 300,
-                            dataIndex: 'definition',
-                            editor: {
-                                xtype:'textfield',
-                                allowBlank: false
+                                description += record.data.classification + " ";
                             }
-                        }, {
-                            header: this.i18n._("description"),
-                            width: 300,
-                            dataIndex: 'description',
-                            flex:1,
-                            editor: {
-                                xtype:'textfield',
-                                allowBlank: false
+                            if (record.data.description != null) {
+                                description += "(" + record.data.description + ")";
                             }
-                        }],
-                        sortField: 'variable',
-                        columnsDefaultSortable: true,
-                        rowEditorInputLines: [{
+                            return description;
+                        }
+                    }, {
+                        header: this.i18n._("id"),
+                        width: 70,
+                        dataIndex: 'sid',
+                        editor: null
+                    }, {
+                        header: this.i18n._("info"),
+                        width: 70,
+                        dataIndex: 'URL',
+                        editor: null,
+                        sortable: false,
+                        renderer: function(value) {
+                            return (value == null || value.length == 0) ? "no info": "<a href='" + value + "' target='_blank'>info</a>";
+                        }
+                    }],
+                    sortField: 'category',
+                    columnsDefaultSortable: true,
+                    rowEditorInputLines: [
+                    {
+                        xtype:'textfield',
+                        name: "Category",
+                        dataIndex: "category",
+                        fieldLabel: this.i18n._("Category"),
+                        allowBlank: false,
+                        width: 400
+                    },
+                    {
+                        xtype:'textfield',
+                        name: "Signature",
+                        dataIndex: "text",
+                        fieldLabel: this.i18n._("Signature"),
+                        allowBlank: false,
+                        width: 450
+                    },
+                    {
+                        xtype:'textfield',
+                        name: "Name",
+                        dataIndex: "name",
+                        fieldLabel: this.i18n._("Name"),
+                        allowBlank: false,
+                        width: 300
+                    },
+                    {
+                        xtype:'textfield',
+                        name: "SID",
+                        dataIndex: "sid",
+                        fieldLabel: this.i18n._("SID"),
+                        allowBlank: false,
+                        width: 150
+                    },
+                    {
+                        xtype:'checkbox',
+                        name: "Block",
+                        dataIndex: "live",
+                        fieldLabel: this.i18n._("Block")
+                    },
+                    {
+                        xtype:'checkbox',
+                        name: "Log",
+                        dataIndex: "log",
+                        fieldLabel: this.i18n._("Log")
+                    },
+                    {
+                        xtype:'textfield',
+                        name: "Description",
+                        dataIndex: "description",
+                        fieldLabel: this.i18n._("Description"),
+                        allowBlank: false,
+                        width: 500
+                    }]
+                }),
+                this.gridVariables = Ext.create('Ung.EditorGrid', {
+                    anchor: "100% 48%",
+                    name: 'Variables',
+                    settingsCmp: this,
+                    emptyRow: {
+                        "variable": this.i18n._("[no name]"),
+                        "definition": this.i18n._("[no definition]"),
+                        "description": this.i18n._("[no description]")
+                    },
+                    title: this.i18n._("Variables"),
+                    recordJavaClass: "com.untangle.node.ips.IpsVariable",
+                    dataProperty: 'variables',
+                    fields: [{
+                        name: 'id'
+                    }, {
+                        name: 'variable',
+                        type: 'string'
+                    }, {
+                        name: 'definition',
+                        type: 'string'
+                    }, {
+                        name: 'description',
+                        type: 'string'
+                    }],
+                    columns: [{
+                        header: this.i18n._("name"),
+                        width: 170,
+                        dataIndex: 'variable',
+                        editor: {
                             xtype:'textfield',
-                            name: "Name",
-                            dataIndex: "variable",
-                            fieldLabel: this.i18n._("Name"),
-                            allowBlank: false,
-                            width: 300
+                            allowBlank: false
+                            }
                         },
                         {
+                        id: 'definition',
+                        header: this.i18n._("pass"),
+                        width: 300,
+                        dataIndex: 'definition',
+                        editor: {
                             xtype:'textfield',
-                            name: "Pass",
-                            dataIndex: "definition",
-                            fieldLabel: this.i18n._("Pass"),
-                            allowBlank: false,
-                            width: 400
-                        },
-                        {
+                            allowBlank: false
+                        }
+                    }, {
+                        header: this.i18n._("description"),
+                        width: 300,
+                        dataIndex: 'description',
+                        flex:1,
+                        editor: {
                             xtype:'textfield',
-                            name: "Description",
-                            dataIndex: "description",
-                            fieldLabel: this.i18n._("Description"),
-                            allowBlank: false,
-                            width: 400
-                        }]
-                    })
+                            allowBlank: false
+                        }
+                    }],
+                    sortField: 'variable',
+                    columnsDefaultSortable: true,
+                    rowEditorInputLines: [{
+                        xtype:'textfield',
+                        name: "Name",
+                        dataIndex: "variable",
+                        fieldLabel: this.i18n._("Name"),
+                        allowBlank: false,
+                        width: 300
+                    },
+                    {
+                        xtype:'textfield',
+                        name: "Pass",
+                        dataIndex: "definition",
+                        fieldLabel: this.i18n._("Pass"),
+                        allowBlank: false,
+                        width: 400
+                    },
+                    {
+                        xtype:'textfield',
+                        name: "Description",
+                        dataIndex: "description",
+                        fieldLabel: this.i18n._("Description"),
+                        allowBlank: false,
+                        width: 400
+                    }]
+                })
             ]});
         },
         // Event Log

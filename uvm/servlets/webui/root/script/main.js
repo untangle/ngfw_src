@@ -5,6 +5,7 @@ var main=null;
 // Main object class
 Ext.define("Ung.Main", {
     debugMode: false,
+    testMode: false,
     buildStamp: null,
     disableThreads: false, // in development environment is useful to disable
                             // threads.
@@ -252,7 +253,6 @@ Ext.define("Ung.Main", {
                         height: 400,
                         anchor: "100% 100%",
                         autoWidth: true,
-                        layoutOnTabChange: true,
                         deferredRender: false,
                         defaults: {
                             anchor: '100% 100%',
@@ -272,7 +272,7 @@ Ext.define("Ung.Main", {
                             name: 'Config'
                         }],
                         listeners: {
-                            "render": {
+                            "afterrender": {
                                 fn: function() {
                                     this.addNamesToPanels();
                                 }
@@ -413,6 +413,10 @@ Ext.define("Ung.Main", {
     initExtGlobal: function() {
         // init quick tips
         Ext.QuickTips.init();
+        if(Ext.getVersion().version == "4.0.7") {
+            Ext.util.CSS.updateRule("div.button-column", "padding-top", "0"); //Doesn't work in Chrome
+        }
+        
     },
     // Add the additional 'advanced' VTypes
     initExtVTypes: function() {
@@ -811,7 +815,6 @@ Ext.define("Ung.Main", {
         if(this.iframeWin==null) {
             this.iframeWin=Ext.create("Ung.Window",{
                 id: 'iframeWin',
-                title:'',
                 layout: 'fit',
                 defaults: {},
                 items: {
@@ -819,32 +822,49 @@ Ext.define("Ung.Main", {
                 },
                 closeAction:'closeActionFn',
                 closeActionFn: function() {
+                    this.setTitle('');
                     this.hide();
                     window.frames["iframeWin_iframe"].location.href="/webui/blank.html";
-                    if (this.breadcrumbs) {
-                        Ext.destroy(this.breadcrumbs);
-                    }
                 }
             });
         }
         return this.iframeWin;
     },
+    getNetworkingWin: function() {
+        if(this.networkingWin==null) {
+            this.networkingWin=Ext.create("Ung.Window",{
+                id: 'networkingWin',
+                layout: 'fit',
+                defaults: {},
+                breadcrumbs: [{
+                    title: i18n._("Configuration"),
+                    action: Ext.bind(function() {
+                        main.iframeWin.closeActionFn();
+                    }, this)
+                }, {
+                    title: i18n._('Networking')
+                }],
+                items: {
+                    html: '<iframe id="networkingWin_iframe" name="networkingWin_iframe" width="100%" height="100%" frameborder="0"/>'
+                },
+                closeAction:'closeActionFn',
+                closeActionFn: function() {
+                    this.setTitle('');
+                    this.hide();
+                    window.frames["networkingWin_iframe"].location.href="/webui/blank.html";
+                }
+            });
+        }
+        return this.networkingWin;
+    },
     isIframeWinVisible: function() {
-        return ((this.iframeWin!=null) && (!this.iframeWin.hidden));
+        return ((this.iframeWin!=null) && (this.iframeWin.isVisible()));
     },
     openInRightFrame: function(title, url) {
         var iframeWin=main.getIframeWin();
         iframeWin.setSizeToRack();
         iframeWin.show();
-        if (typeof title == 'string') {
-            iframeWin.setTitle(title);
-        } else { // the title represents breadcrumbs
-          iframeWin.setTitle('<span id="title_' + iframeWin.getId() + '"></span>');
-          iframeWin.breadcrumbs = new Ung.Breadcrumbs({
-            renderTo: 'title_' + iframeWin.getId(),
-            elements: title
-          });
-        }
+        iframeWin.setTitle(title);
         window.frames["iframeWin_iframe"].location.href=url;
     },
     // load Config
@@ -939,17 +959,9 @@ Ext.define("Ung.Main", {
         }, this,[handler],true),true);
     },
     openNetworking: function() {
+        main.getNetworkingWin().show();
         var alpacaUrl = "/alpaca/";
-        var breadcrumbs = [{
-            title: i18n._("Configuration"),
-            action: Ext.bind(function() {
-                main.iframeWin.closeActionFn();
-            }, this)
-        }, {
-            title: i18n._('Networking')
-        }];
-
-        main.openInRightFrame(breadcrumbs, alpacaUrl);
+        window.frames["networkingWin_iframe"].location.href=alpacaUrl;
     },
     openConfig: function(configItem) {
         Ext.MessageBox.wait(i18n._("Loading Config..."), i18n._("Please wait"));
@@ -1322,11 +1334,12 @@ Ext.define("Ung.Main", {
                 win.close();
                 this.IEWin = null;
             }
-        } else {
-            win = main.getIframeWin();
-            if(win != null) {
-                win.closeActionFn();
-            }            
-        }        
+        }
+        if ( main.isIframeWinVisible()) {
+            main.getIframeWin().closeActionFn();
+        }
+        if(main.networkingWin != null && main.networkingWin.isVisible()) {
+            main.getNetworkingWin().closeActionFn();
+        }            
     }
 });

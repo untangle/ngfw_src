@@ -45,7 +45,6 @@ if (!Ung.hasResource["Ung.LocalDirectory"]) {
                     return storeData;
                 }, this),            
                 dataRoot: null,
-                autoGenerateId: true,
                 fields: [{
                     name: 'username'
                 }, {

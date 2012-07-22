@@ -549,18 +549,16 @@ Ext.define('Ung.QuarantineGrid', {
 
 Ext.define('Ung.QuarantineTabPanel', {
     extend:'Ext.tab.Panel',
-    constructor: function( config )
-    {
-        /* Set the active tab to the forward address is mail is being forwarded. */
+    constructor: function( config ) {
+        // Set the active tab to the forward address is mail is being forwarded.
         if ( inboxDetails.forwardAddress != "" ) config.activeTab = 2;
-        Ung.QuarantineTabPanel.superclass.constructor.apply(this, arguments);
+        this.callParent(arguments);
     },
 
-    el: "quarantine-tab-panel",
+    renderTo: "quarantine-tab-panel",
     width: '100%',
     height: 430,
     activeTab: 0,
-    layoutOnTabChange: true,
     defaults: {
         border: false,
         bodyStyle: 'padding:4px 5px 0px 5px;'
@@ -612,7 +610,6 @@ function completeInit() {
     panels.push( remaps.panel );
 
     quarantineTabPanel = Ext.create('Ung.QuarantineTabPanel', { items: panels, layout:'border'});
-    quarantineTabPanel.render();
     quarantineTabPanel.setActiveTab(panels[0]);
 }
 

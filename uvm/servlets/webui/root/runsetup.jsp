@@ -36,7 +36,7 @@ String[] messageArguments = {
             var main = getMain();
             if(main!=null){
                 main.hideWelcomeScreen();
-                main.openNetworking.defer(1);
+                main.openNetworking();
             } 
             return false;   
         }

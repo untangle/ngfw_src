@@ -26,13 +26,9 @@ if (!Ung.hasResource["Ung.SpamAssassin"]) {
             this.buildTabPanel([this.emailPanel, this.gridEventLog, this.gridDnsblEventLog]);
             this.callParent(arguments);
         },
-        // called when the component is rendered
-        onRender: function(container, position) {
+        afterRender: function() {
             this.callParent(arguments);
-            Ext.defer(this.initSubCmps,1, this);
             this.enableSuperSpam(Ext.getCmp('spamassassin_smtpAction'));
-        },
-        initSubCmps: function() {
             Ext.getCmp('spamassassin_smtpStrengthValue').setVisible(this.isCustomStrength(this.settings.smtpConfig.strength));
             Ext.getCmp('spamassassin_pop3StrengthValue').setVisible(this.isCustomStrength(this.settings.popConfig.strength));
             Ext.getCmp('spamassassin_imapStrengthValue').setVisible(this.isCustomStrength(this.settings.imapConfig.strength));
@@ -122,7 +118,7 @@ if (!Ung.hasResource["Ung.SpamAssassin"]) {
                         hideLabel: true,
                         checked: this.settings.smtpConfig.scan,
                         listeners: {
-                            "render":{
+                            "afterrender":{
                                 fn: Ext.bind(function(elem) {
                                     if(elem.getValue()) {
                                         Ext.getCmp('spamassassin_smtpStrength').enable();
@@ -234,7 +230,7 @@ if (!Ung.hasResource["Ung.SpamAssassin"]) {
                                     this.settings.smtpConfig.msgAction = newValue;
                                 }, this)
                             },
-                            "render": {
+                            "afterrender": {
                                 fn: Ext.bind(function(elem) {
                                     this.enableSuperSpam(elem);
                                 }, this)
@@ -301,7 +297,7 @@ if (!Ung.hasResource["Ung.SpamAssassin"]) {
                                              }
                                          }
                                      },
-                                     "render":{
+                                     "afterrender":{
                                          fn: Ext.bind(function(elem) {
                                              this.enableSuperSpam(Ext.getCmp('spamassassin_smtpAction'));
                                          }, this)
@@ -445,7 +441,7 @@ if (!Ung.hasResource["Ung.SpamAssassin"]) {
                         hideLabel: true,
                         checked: this.settings.popConfig.scan,
                         listeners: {
-                            "render": {
+                            "afterrender": {
                                 fn: Ext.bind(function(elem) {
                                     if(elem.getValue()) {
                                         Ext.getCmp('spamassassin_pop3Strength').enable();
@@ -610,7 +606,7 @@ if (!Ung.hasResource["Ung.SpamAssassin"]) {
                         hideLabel: true,
                         checked: this.settings.imapConfig.scan,
                         listeners: {
-                            "render": {
+                            "afterrender": {
                                 fn: Ext.bind(function(elem) {
                                     if(elem.getValue()) {
                                         Ext.getCmp('spamassassin_imapStrength').enable();

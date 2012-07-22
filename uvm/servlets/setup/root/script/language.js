@@ -112,10 +112,9 @@ Ung.Language = {
             },
             cards: [ language.card ],
             disableNext: false,
-            el: "container"
+            renderTo: "container"
         });
 
-        this.wizard.render();
         Ext.QuickTips.init();
         this.wizard.goToPage( 0 );
 

@@ -20,12 +20,8 @@ if (!Ung.hasResource["Ung.Upgrade"]) {
             this.buildTabPanel([this.gridUpgrade, this.panelSettings]);
             this.callParent(arguments);
         },
-        onRender: function(container, position) {
-            // call parent renderer first
+        afterRender: function() {
             this.callParent(arguments);
-            Ext.Function.defer(this.initSubCmps,1, this);
-        },
-        initSubCmps: function() {
             this.loadGridUpgrade();
             Ung.Util.clearDirty(this.panelSettings);
         },

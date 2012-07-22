@@ -313,7 +313,6 @@ if (!Ung.hasResource["Ung.Reporting"]) {
                         },
                         dataProperty: 'reportingUsers',
                         recordJavaClass: "com.untangle.node.reporting.ReportingUser",
-                        autoGenerateId: true,
                         plugins:[changePasswordColumn],
                         fields: [{
                             name: "emailAddress"

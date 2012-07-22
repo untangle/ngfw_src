@@ -438,7 +438,6 @@ Ext.define('Ung.Reports', {
                 paginated: false,
                 hasReorder: false,
                 hasEdit: false,
-                ignoreServerIds:false,
                 hasDelete: false,
                 width: 950,
                 height: getWinHeight()-60,                
@@ -1007,8 +1006,7 @@ Ext.define('Ung.ReportDetails', {
                     autoScroll: true
                 },
                 activeTab: 0,
-                items: itemsArray,
-                layoutOnTabChange: true
+                items: itemsArray
             });
             reportDetails.add(this.tabPanel);
         } else if(this.reportType != null) {

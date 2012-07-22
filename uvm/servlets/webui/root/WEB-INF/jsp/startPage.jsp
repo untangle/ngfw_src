@@ -5,7 +5,6 @@
 <c:set var="isDebug" value="true"/>
 <head>
     <title>${companyName}</title>
-    <META content="IE=9.0000" http-equiv="X-UA-Compatible"/>
     <style type="text/css">
      @import "/ext4/resources/css/ext-all-gray.css?s=${buildStamp}";
      @import "/ext4/examples/ux/css/CheckHeader.css?s=${buildStamp}";

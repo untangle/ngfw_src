@@ -177,7 +177,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
                 title: this.i18n._('Administration'),
                 layout: "anchor",
                 cls: 'ung-panel',
-                items: [this.gridAdminAccounts=Ext.create("Ung.EditorGrid",{
+                items: [this.gridAdminAccounts=Ext.create('Ung.EditorGrid', {
                     anchor: "100% -260",
                     settingsCmp: this,
                     title: this.i18n._("Admin Accounts"),
@@ -196,8 +196,6 @@ if (!Ung.hasResource["Ung.Administration"]) {
                     data: this.getAdminSettings().users.list,
                     // the list of fields; we need all as we get/set all records once
                     fields: [{
-                        name: 'id'
-                    }, {
                         name: 'username'
                     }, {
                         name: 'description'
@@ -315,7 +313,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
                         hideLabel: true,
                         checked: this.getSystemSettings().outsideHttpsEnabled,
                         listeners: {
-                            "render": {
+                            "afterrender": {
                                 fn: Ext.bind(function(elem) {
                                     if(elem.getValue()) {
                                         Ext.getCmp('administration_outsideHttpsAdministrationEnabled').enable();
@@ -526,7 +524,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
                         name: 'publicUrl',
                         checked: this.getSystemSettings().publicUrlMethod == "address_and_port",
                         listeners: {
-                            "render": {
+                            "afterrender": {
                                 fn: Ext.bind(function(elem) {
                                     if(elem.getValue()) {
                                         Ext.getCmp('administration_publicUrlAddress').enable();

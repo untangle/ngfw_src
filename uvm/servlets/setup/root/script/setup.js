@@ -258,9 +258,7 @@ Ext.define('Ung.SetupWizard.Interfaces', {
                disableSelection: false,
                plugins:{
                     ptype: 'gridviewdragdrop',
-                    dragText: '',
-                    dragGroup:'interfaceDND',
-                    dropGroup:'interfaceDND'
+                    dragText: i18n._('Drag and drop to reorganize')
                 },
                 listeners: {
                     "drop": {
@@ -1444,10 +1442,9 @@ Ung.Setup = {
             },
             cards: cards,
             disableNext: false,
-            el: "container"
+            renderTo: "container"
         });
 
-        this.wizard.render();
         Ext.QuickTips.init();
 
         if ( false ) {

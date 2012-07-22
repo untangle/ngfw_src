@@ -69,7 +69,6 @@ if (!Ung.hasResource["Ung.Protofilter"]) {
                 settingsCmp: this,
                 name: 'Signatures',
                 helpSource: 'protocol_list',
-                autoGenerateId: true,
                 paginated: false,
                 dataProperty: "patterns",
                 emptyRow: {

@@ -7,7 +7,6 @@
       xmlns:uvm="http://java.untangle.com/jsp/uvm">
   <head>
     <title>Setup Wizard</title>
-    <META content="IE=7.0000" http-equiv="X-UA-Compatible"/>    
     <style type="text/css">
         @import "/ext4/resources/css/ext-all-gray.css?s=${buildStamp}";
         @import "/ext4/examples/ux/css/CheckHeader.css?s=${buildStamp}";
@@ -16,7 +15,6 @@
     <!--     <uvm:skin src="ext-skin.css"  name="${skinSettings.skinName}"/> -->
     <uvm:skin src="admin.css?s=${buildStamp}"  name="${skinSettings.skinName}"/>
 
-    <script type="text/javascript" src="/ext4/builds/ext-core-debug.js?s=${buildStamp}"></script>
     <script type="text/javascript" src="/ext4/ext-all-debug.js?s=${buildStamp}"></script>
 	<script type="text/javascript" src="/ext4/examples/ux/data/PagingMemoryProxy.js?s=${buildStamp}"></script>
 	<script type="text/javascript" src="/ext4/examples/ux/CheckColumn.js?s=${buildStamp}"></script>
