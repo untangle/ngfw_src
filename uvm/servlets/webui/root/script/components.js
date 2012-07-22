@@ -2049,7 +2049,7 @@ Ung.MessageManager = {
                             main.loadLicenses();
                         } else {
                             if( msg.upgrade==false || msg.upgrade === undefined ) {
-                                var appItemDisplayName=msg.requestingPackage.type=="TRIAL"?main.findLibItemDisplayName(msg.requestingPackage.fullVersion):msg.requestingPackage.displayName;
+                                var appItemDisplayName=(msg.requestingPackage==null)?"":msg.requestingPackage.type=="TRIAL"?main.findLibItemDisplayName(msg.requestingPackage.fullVersion):msg.requestingPackage.displayName;
                                 if(msg.javaClass.indexOf("DownloadSummary") != -1) {
                                     Ung.AppItem.updateState(appItemDisplayName, "download_summary", msg);
                                 } else if(msg.javaClass.indexOf("DownloadProgress") != -1) {
@@ -2100,9 +2100,17 @@ Ung.MessageManager = {
                                     lastUpgradeDownloadProgressMsg="stop";
                                     startUpgradeMode="stop";
                                     this.stop();
+                                    Ext.MessageBox.hide();
                                     console.log("Applying Upgrades...");
-                                    var afterUpgradesWait = function() {
+                                    Ext.MessageBox.wait(i18n._("Applying Upgrades..."), i18n._("Please wait"), {
+                                        //TODO:This configuration is not Working, Find out why.
+                                        interval: 500,
+                                        increment: 10,
+                                        duration: 60000
+                                    });
+                                    Ext.defer(function() {
                                         console.log("Upgrade in Progress. goToStartPage.");
+                                        Ext.MessageBox.hide();
                                         Ext.MessageBox.alert(
                                             i18n._("Upgrade in Progress"),
                                             i18n._("The upgrades have been downloaded and are now being applied.") + "<br/>" +
@@ -2110,19 +2118,7 @@ Ung.MessageManager = {
                                                 i18n._("Please be patient this process will take a few minutes.") + "<br/>" +
                                                 i18n._("After the upgrade is complete you will be able to log in again."),
                                             Ung.Util.goToStartPage);
-                                    };
-                                    Ext.MessageBox.hide();
-                                    Ext.defer(function() {
-                                        Ext.MessageBox.wait(i18n._("Applying Upgrades..."), i18n._("Please wait"), {
-                                            interval: 500,
-                                            increment: 30,
-                                            duration: 60000
-                                            //fn: afterUpgradesWait // Commented out because it does not work as expected 
-                                        });
-                                        Ext.defer(function() {
-                                            afterUpgradesWait();
-                                        }, 60010, this);
-                                    }, 10, this);
+                                    }, 60010, this);
                                 } 
                             }
                         }
