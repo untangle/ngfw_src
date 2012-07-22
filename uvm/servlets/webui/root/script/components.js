@@ -15,6 +15,16 @@ var i18n=Ext.create('Ung.I18N',{"map":null}); // the main internationalization o
 var rpc=null; // the main json rpc object
 var testMode = false;
 
+if(Ext.getVersion().version=="4.1.1") {
+    Ext.override(Ext.MessageBox, {
+        alert: function() {
+            this.callParent(arguments);
+            //Hack to solve the issue with alert being displayed behind the current settings window after a jabsorb call.
+            Ext.defer(this.toFront, 10, this);
+        }
+    })
+};
+
 Ext.override(Ext.Button, {
     listeners: {
         "afterrender": {
@@ -2092,7 +2102,7 @@ Ung.MessageManager = {
                                     this.stop();
                                     console.log("Applying Upgrades...");
                                     var afterUpgradesWait = function() {
-                                        console.log("Upgrade in Progress. goToStartPag.");
+                                        console.log("Upgrade in Progress. goToStartPage.");
                                         Ext.MessageBox.alert(
                                             i18n._("Upgrade in Progress"),
                                             i18n._("The upgrades have been downloaded and are now being applied.") + "<br/>" +
@@ -2101,17 +2111,18 @@ Ung.MessageManager = {
                                                 i18n._("After the upgrade is complete you will be able to log in again."),
                                             Ung.Util.goToStartPage);
                                     };
-                                    Ext.MessageBox.wait(i18n._("Applying Upgrades..."), i18n._("Please wait"), {
-                                        interval: 500,
-                                        increment: 60,
-                                        duration: 60000,
-                                        fn: afterUpgradesWait
-                                    });
+                                    Ext.MessageBox.hide();
                                     Ext.defer(function() {
-                                        console.log("afterUpgradesWait called by defered function.");
-                                        Ext.MessageBox.hide();
-                                        afterUpgradesWait();
-                                    }, 60000, this);
+                                        Ext.MessageBox.wait(i18n._("Applying Upgrades..."), i18n._("Please wait"), {
+                                            interval: 500,
+                                            increment: 30,
+                                            duration: 60000
+                                            //fn: afterUpgradesWait // Commented out because it does not work as expected 
+                                        });
+                                        Ext.defer(function() {
+                                            afterUpgradesWait();
+                                        }, 60010, this);
+                                    }, 10, this);
                                 } 
                             }
                         }
@@ -3352,7 +3363,7 @@ Ext.define("Ung.NodeWin", {
                 }, this)
             },"-"];
             if(this.hasApply) {
-                this.bbar.concat([{
+                this.bbar.push({
                     name: "Apply",
                     id: this.getId() + "_applyBtn",
                     iconCls: 'apply-icon',
@@ -3360,7 +3371,7 @@ Ext.define("Ung.NodeWin", {
                     handler: Ext.bind(function() {
                         Ext.Function.defer(this.applyAction,1, this);
                     }, this)
-                },"-"]);
+                },"-");
             }
         }
         this.callParent(arguments);
