@@ -990,7 +990,7 @@ if (!Ung.hasResource["Ung.CPD"]) {
         },
 
         onUploadCustomFile: function() {
-            var form = this.panelCaptivePage.query('xform[id="upload_custom_php"]')[0].getForm();
+            var form = Ext.getCmp('upload_custom_php').getForm();
             form.submit({
                 parentID: this.panelCaptivePage.getId(),
                 waitMsg: this.i18n._("Please wait while uploading your custom captive portal page..."),
