@@ -2257,8 +2257,7 @@ Ext.define("Ung.SystemStats", {
             width: 330,
             cls: 'extended-stats',
             renderTo: Ext.getBody(),
-            html: sessionsArr.join(''),
-            items: {}
+            html: sessionsArr.join('')
         });
 
         // cpu tooltip

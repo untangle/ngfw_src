@@ -926,8 +926,7 @@ Ext.define("Ung.Main", {
                 hideDelay: 1500,
                 width: 500,
                 cls: 'extended-stats',
-                html: alertArr.join(''),
-                items: {
+                items: [{
                     xtype: 'button',
                     name: 'Help',
                     iconCls: 'icon-help',
@@ -935,7 +934,10 @@ Ext.define("Ung.Main", {
                     handler: function() {
                         main.openHelp('admin_alerts');
                     }
-                }
+                },{
+                    xtype: 'container',
+                    html: alertArr.join('')
+                }]
             });
             this.alertToolTip.render(Ext.getBody());
             
