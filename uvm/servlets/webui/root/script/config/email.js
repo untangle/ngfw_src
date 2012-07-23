@@ -1236,8 +1236,6 @@ if (!Ung.hasResource["Ung.Email"]) {
                 quarantineSettings.allowedAddressPatterns.list = this.quarantinableAddressesGrid.getPageList();
                 quarantineSettings.addressRemaps.list = this.quarantineForwardsGrid.getPageList();
                 
-                delete quarantineSettings.secretKey;
-
                 this.getMailNode().setMailNodeSettingsWithoutSafelists(Ext.bind(function(result, exception) {
                     this.afterSave(exception, isApply);
                 }, this), this.getMailNodeSettings());

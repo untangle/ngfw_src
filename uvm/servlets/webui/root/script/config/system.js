@@ -1163,10 +1163,6 @@ if (!Ung.hasResource["Ung.System"]) {
 
             // save mail settings
             if (this.isMailLoaded()) {
-                var quarantineSettings = this.getMailNodeSettings().quarantineSettings;
-                quarantineSettings.allowedAddressPatterns.javaClass="java.util.ArrayList";
-                delete quarantineSettings.secretKey;
-
                 this.getMailNode().setMailNodeSettings(Ext.bind(function(result, exception) {
                     this.afterSave(exception, isApply);
                 }, this), this.getMailNodeSettings());

@@ -1,36 +1,6 @@
-/*
- * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc.
- *
- * This library is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License, version 2,
- * as published by the Free Software Foundation.
- *
- * This library is distributed in the hope that it will be useful, but
- * AS-IS and WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE, TITLE, or
- * NONINFRINGEMENT.  See the GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this library; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
- *
- * Linking this library statically or dynamically with other modules is
- * making a combined work based on this library.  Thus, the terms and
- * conditions of the GNU General Public License cover the whole combination.
- *
- * As a special exception, the copyright holders of this library give you
- * permission to link this library with independent modules to produce an
- * executable, regardless of the license terms of these independent modules,
- * and to copy and distribute the resulting executable under terms of your
- * choice, provided that you also meet, for each linked independent module,
- * the terms and conditions of the license of that module.  An independent
- * module is a module which is not derived from or based on this library.
- * If you modify this library, you may extend this exception to your version
- * of the library, but you are not obligated to do so.  If you do not wish
- * to do so, delete this exception statement from your version.
+/**
+ * $Id$
  */
-
 package com.untangle.node.mail.papi.quarantine;
 
 import java.io.Serializable;
@@ -74,7 +44,8 @@ public class QuarantineSettings implements Serializable
      * not supported.  Only glob.  <br>
      * @return a List of EmailAddressRule objects.
      */
-    public List<EmailAddressRule> getAllowedAddressPatterns() {
+    public List<EmailAddressRule> getAllowedAddressPatterns()
+    {
         if (allowedAddressPatterns == null) {
             setAllowedAddressPatterns(null);
         }
@@ -82,7 +53,8 @@ public class QuarantineSettings implements Serializable
         return allowedAddressPatterns;
     }
 
-    public void setAllowedAddressPatterns(List<EmailAddressRule> patterns) {
+    public void setAllowedAddressPatterns(List<EmailAddressRule> patterns)
+    {
         if (patterns == null) {
             patterns = new ArrayList<EmailAddressRule>();
         }
@@ -108,7 +80,8 @@ public class QuarantineSettings implements Serializable
      *
      * @return a List of EmailAddressPairRule objects.
      */
-    public List<EmailAddressPairRule> getAddressRemaps() {
+    public List<EmailAddressPairRule> getAddressRemaps()
+    {
         if(addressRemaps == null) {
             setAddressRemaps(null);
         }
@@ -126,14 +99,16 @@ public class QuarantineSettings implements Serializable
      *
      * @param remaps the list of remapped addresses.
      */
-    public void setAddressRemaps(List<EmailAddressPairRule> remaps) {
+    public void setAddressRemaps(List<EmailAddressPairRule> remaps)
+    {
         if(remaps == null) {
             remaps = new ArrayList<EmailAddressPairRule>();
         }
         addressRemaps = remaps;
     }
 
-    public long getMaxQuarantineTotalSz() {
+    public long getMaxQuarantineTotalSz()
+    {
         return maxQuarantineSz;
     }
 
@@ -143,14 +118,16 @@ public class QuarantineSettings implements Serializable
      *
      * @param max the max size
      */
-    public void setMaxQuarantineTotalSz(long max) {
+    public void setMaxQuarantineTotalSz(long max)
+    {
         maxQuarantineSz = max;
     }
 
     /**
      * @return the Hour of the day when digest emails should be sent.
      */
-    public int getDigestHourOfDay() {
+    public int getDigestHourOfDay()
+    {
         return digestHOD;
     }
 
@@ -161,7 +138,8 @@ public class QuarantineSettings implements Serializable
      *
      * @param hod the hour of the day
      */
-    public void setDigestHourOfDay(int hod) {
+    public void setDigestHourOfDay(int hod)
+    {
         digestHOD = hod;
     }
 
@@ -169,7 +147,8 @@ public class QuarantineSettings implements Serializable
      *
      * @return the Minute of the day when digest emails should be sent.
      */
-    public int getDigestMinuteOfDay() {
+    public int getDigestMinuteOfDay()
+    {
         return digestMOD;
     }
 
@@ -180,7 +159,8 @@ public class QuarantineSettings implements Serializable
      *
      * @param mod the minute of the day
      */
-    public void setDigestMinuteOfDay(int mod) {
+    public void setDigestMinuteOfDay(int mod)
+    {
         digestMOD = mod;
     }
 
@@ -229,42 +209,42 @@ public class QuarantineSettings implements Serializable
 
     public void setSecretKey(String key)
     {
-    // first we save the argumented key in our string version
-    secretKey = key;
+        // first we save the argumented key in our string version
+        secretKey = key;
 
-    // now we generate the binary version from the string version
-    int rawlen = (key.length() / 2);
-    binaryKey = new byte[rawlen];
+        // now we generate the binary version from the string version
+        int rawlen = (key.length() / 2);
+        binaryKey = new byte[rawlen];
 
         for(int x = 0;x < rawlen;x++)
-        {
-        int lo_nib = (key.charAt((x * 2) + 0) - 'A');
-        int hi_nib = (key.charAt((x * 2) + 1) - 'A');
-        int value = (((hi_nib << 4) & 0xF0) | lo_nib);
-        binaryKey[x] = (byte)value;
-        }
+            {
+                int lo_nib = (key.charAt((x * 2) + 0) - 'A');
+                int hi_nib = (key.charAt((x * 2) + 1) - 'A');
+                int value = (((hi_nib << 4) & 0xF0) | lo_nib);
+                binaryKey[x] = (byte)value;
+            }
     }
 
     public void initBinaryKey(byte[] key)
     {
-    // first we save the argumented key in our binary version
-    binaryKey = key;
+        // first we save the argumented key in our binary version
+        binaryKey = key;
 
-    // now we generate the string version from the binary version
-    StringBuilder local = new StringBuilder();
+        // now we generate the string version from the binary version
+        StringBuilder local = new StringBuilder();
 
-        for(int x = 0;x < key.length;x++)
-        {
-        char lo_nib = (char)((key[x] & 0x0F) + 'A');
-        char hi_nib = (char)(((key[x] >> 4) & 0x0F) + 'A');
-        local.append(lo_nib);
-        local.append(hi_nib);
+        for(int x = 0;x < key.length;x++) {
+            char lo_nib = (char)((key[x] & 0x0F) + 'A');
+            char hi_nib = (char)(((key[x] >> 4) & 0x0F) + 'A');
+            local.append(lo_nib);
+            local.append(hi_nib);
         }
 
-    secretKey = local.toString();
+        secretKey = local.toString();
     }
 
-    public long getMaxMailIntern() {
+    public long getMaxMailIntern()
+    {
         return maxMailIntern;
     }
 
@@ -272,11 +252,13 @@ public class QuarantineSettings implements Serializable
      * Get the longest period of time (in ms) that a mail may be interned
      * before it is automagically purged.
      */
-    public void setMaxMailIntern(long max) {
+    public void setMaxMailIntern(long max)
+    {
         maxMailIntern = max;
     }
 
-    public long getMaxIdleInbox() {
+    public long getMaxIdleInbox()
+    {
         return maxIdleInbox;
     }
 
@@ -285,7 +267,8 @@ public class QuarantineSettings implements Serializable
      * that inboxes can be idle before they are implicitly
      * cleaned-up.  This is a relative unit (ie "2 weeks")
      */
-    public void setMaxIdleInbox(long max) {
+    public void setMaxIdleInbox(long max)
+    {
         maxIdleInbox = max;
     }
 
@@ -293,14 +276,16 @@ public class QuarantineSettings implements Serializable
      *
      * @return a boolean to determine whether to send daily digests
      */
-    public boolean getSendDailyDigests() {
+    public boolean getSendDailyDigests()
+    {
         return this.sendDailyDigests;
     }
 
     /**
      * Set whether to send daily digests
      */
-    public void setSendDailyDigests(boolean sendDailyDigests) {
+    public void setSendDailyDigests(boolean sendDailyDigests)
+    {
         this.sendDailyDigests = sendDailyDigests;
     }
 }
