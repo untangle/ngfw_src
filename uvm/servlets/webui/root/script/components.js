@@ -1858,7 +1858,7 @@ Ext.define("Ung.Node", {
             if(this.license && this.license.trial) {
                 nodeBuyButton.show();
             } else {
-              nodeBuyButton.hide();
+                nodeBuyButton.hide();
             }
         }
     }
@@ -1976,6 +1976,39 @@ Ung.MessageManager = {
             this.cycleCompleted = true;
             try {
                 var messageQueue=result;
+                if(testMode) {
+                    //TEST: Adding test queue messages
+                    /*
+                    if(this.testPackageInstallRequest && !this.testInstallAndInstantiateComplete) {
+                        this.testInstallAndInstantiateComplete=true;
+                        messageQueue.messages.list.push({
+                            installed: false, javaClass: "com.untangle.uvm.toolbox.InstallAndInstantiateComplete", messageType: "com.untangle.uvm.toolbox.InstallAndInstantiateComplete",
+                            requestingPackage: {
+                                type: "LIB_ITEM"  
+                            },
+                            packageDesc: {
+                                autoStart: false, availableVersion: "9.3.0~svn20120706r32399main-1lenny", displayName: "Web Filter",fullVersion: null, hide: null, installedSize: 36, installedVersion: null,invisible: false,
+                                javaClass: "com.untangle.uvm.toolbox.PackageDesc",longDescription: " The Web Filter Library Item.",
+                                name: "untangle-libitem-sitefilter",shortDescription: "Web Filter",size: 4668,type: "LIB_ITEM",viewPosition: 10
+                            },
+                            time: { javaClass: "java.util.Date",time: 1343046146132}
+                        })
+                    }
+
+                    if(!this.testPackageInstallRequest) {
+                        this.testPackageInstallRequest=true;
+                        messageQueue.messages.list.push({
+                            installed: false, javaClass: "com.untangle.uvm.toolbox.PackageInstallRequest", messageType: "com.untangle.uvm.toolbox.PackageInstallRequest",
+                            packageDesc: {
+                                autoStart: false, availableVersion: "9.3.0~svn20120706r32399main-1lenny", displayName: "Web Filter",fullVersion: null, hide: null, installedSize: 36, installedVersion: null,invisible: false,
+                                javaClass: "com.untangle.uvm.toolbox.PackageDesc",longDescription: " The Web Filter Library Item.",
+                                name: "untangle-libitem-sitefilter",shortDescription: "Web Filter",size: 4668,type: "LIB_ITEM",viewPosition: 10
+                            },
+                            time: { javaClass: "java.util.Date",time: 1343046146132}
+                        })
+                    }
+                    */
+                }
                 if(messageQueue.messages.list!=null && messageQueue.messages.list.length>0) {
                     Ung.MessageManager.messageHistory.push(messageQueue.messages.list);
                     if(Ung.MessageManager.messageHistory.length>Ung.MessageManager.historyMaxSize) {
@@ -2102,23 +2135,27 @@ Ung.MessageManager = {
                                     this.stop();
                                     Ext.MessageBox.hide();
                                     console.log("Applying Upgrades...");
-                                    Ext.MessageBox.wait(i18n._("Applying Upgrades..."), i18n._("Please wait"), {
-                                        //TODO:This configuration is not Working, Find out why.
-                                        interval: 500,
-                                        increment: 10,
-                                        duration: 60000
+                                    var applyingUpgradesWindow=Ext.create('Ext.window.MessageBox', {
+                                        minProgressWidth: 360,
                                     });
-                                    Ext.defer(function() {
-                                        console.log("Upgrade in Progress. goToStartPage.");
-                                        Ext.MessageBox.hide();
-                                        Ext.MessageBox.alert(
-                                            i18n._("Upgrade in Progress"),
-                                            i18n._("The upgrades have been downloaded and are now being applied.") + "<br/>" +
-                                                "<strong>" + i18n._("DO NOT REBOOT AT THIS TIME.") + "</strong>" + "<br/>" +
-                                                i18n._("Please be patient this process will take a few minutes.") + "<br/>" +
-                                                i18n._("After the upgrade is complete you will be able to log in again."),
-                                            Ung.Util.goToStartPage);
-                                    }, 60010, this);
+                                    applyingUpgradesWindow.wait(i18n._("Applying Upgrades..."), i18n._("Please wait"), {
+                                        interval: 500,
+                                        increment: 120,
+                                        duration: 60000,
+                                        scope: this,
+                                        fn: function() {
+                                            console.log("Upgrade in Progress. Press ok to go to the Start Page...");
+                                            applyingUpgradesWindow.hide();
+                                            Ext.MessageBox.hide();
+                                            Ext.MessageBox.alert(
+                                                i18n._("Upgrade in Progress"),
+                                                i18n._("The upgrades have been downloaded and are now being applied.") + "<br/>" +
+                                                    "<strong>" + i18n._("DO NOT REBOOT AT THIS TIME.") + "</strong>" + "<br/>" +
+                                                    i18n._("Please be patient this process will take a few minutes.") + "<br/>" +
+                                                    i18n._("After the upgrade is complete you will be able to log in again."),
+                                                Ung.Util.goToStartPage);
+                                        }
+                                    });
                                 } 
                             }
                         }
