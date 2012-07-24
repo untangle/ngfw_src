@@ -81,7 +81,14 @@ if (!Ung.hasResource["Ung.Firewall"]) {
                     columns: [{
                                 header: this.i18n._("Rule Id"),
                                 width: 50,
-                                dataIndex: 'id'
+                                dataIndex: 'internalId',
+                                renderer: function(value) {
+                                    if (value < 0) {
+                                        return i18n._("new");
+                                    } else {
+                                        return value;
+                                    }
+                                }
                             }, 
                             {
                                 xtype:'checkcolumn',
