@@ -57,10 +57,10 @@ Ext.define('Ung.SetupWizard.Welcome', {
         var panel = Ext.create('Ext.form.Panel', {
         	border: false,
             items: [{
-                xtype: 'label',
+                xtype: 'container',
                 html: '<h2 class="wizard-title">' + Ext.String.format(i18n._( "Thanks for choosing {0}!" ),oemName) + '</h2>'
             }, {
-                xtype: 'label',
+                xtype: 'container',
                 cls: 'noborder',
                 html: Ext.String.format(i18n._( 'This wizard will guide you through the initial setup and configuration of the {0} Server.'),oemName) +
                     '<br/><br/>'+
@@ -84,7 +84,7 @@ Ext.define('Ung.SetupWizard.Settings', {
                 cls: 'noborder'
             },
             items: [{
-                xtype: 'label',
+                xtype: 'container',
                 html: '<h2 class="wizard-title">'+i18n._( "Configure the Server" )+'</h2>'
             }, {
                 defaultType: 'textfield',
@@ -94,7 +94,7 @@ Ext.define('Ung.SetupWizard.Settings', {
                     labelWidth: 150 
                 },
                 items: [{
-                    xtype: 'label',
+                    xtype: 'container',
                     html: '<b>'+i18n._( 'Choose a password for the admin account.')+'</b>',
                     border: false
                 }, {
@@ -126,7 +126,7 @@ Ext.define('Ung.SetupWizard.Settings', {
                 }]
             }, {
                 items: [{
-                    xtype: 'label',
+                    xtype: 'container',
                     html: '<b>'+i18n._( 'Select a timezone.')+'</b>',
                     border: false
                 }, {
@@ -335,7 +335,7 @@ Ext.define('Ung.SetupWizard.Interfaces', {
                 html: '<h2 class=" wizard-title">'+panelTitle+'<h2>',
                 border: false
             }, {
-                xtype: 'label',
+                xtype: 'container',
                 html: panelText,
                 border: false
             }, { xtype: "panel",
@@ -650,7 +650,7 @@ Ext.define('Ung.SetupWizard.Internet', {
             border: false,
             cls: 'network-card-form-margin',
             items: [{
-                xtype: 'label',
+                xtype: 'container',
                 cls: 'noborder',
                 border: false,
                 html: Ext.String.format( i18n._( 'Using PPPoE on {0} is <b>NOT</b> recommended.' ), oemName) + "<br/>" +
@@ -1054,7 +1054,7 @@ Ext.define('Ung.SetupWizard.InternalNetwork', {
             defaultType: 'fieldset',
             border: false,
             items: [{
-                xtype: 'label',
+                xtype: 'container',
                 html: '<h2 class="wizard-title">'+i18n._( "Configure the Internal Network Interface" )+'</h2>'
             }, {
                 cls: 'noborder wizard-internal-network',
@@ -1073,7 +1073,7 @@ Ext.define('Ung.SetupWizard.InternalNetwork', {
                         }
                     }
                 }, {
-                    xtype: 'label',
+                    xtype: 'container',
                     style:'font-weight:normal',
                     html: "<div class='wizard-network-image-description'>" + i18n._('This is recommended if the external port is plugged into the internet connection. This enables NAT on the Internal Interface and DHCP.') + "</div>"
                 }, {
@@ -1111,7 +1111,7 @@ Ext.define('Ung.SetupWizard.InternalNetwork', {
                     cls: 'wizard-label-margin-5',
                     boxLabel: i18n._("Enable DHCP Server (default)")
                 }, {
-                    xtype: 'label',
+                    xtype: 'container',
                     componentCls: 'wizard-network-image',
                     html: '<img src="/skins/' + Ung.SetupWizard.currentSkin + '/images/admin/wizard/router.png"/>'
                 }]
@@ -1126,11 +1126,11 @@ Ext.define('Ung.SetupWizard.InternalNetwork', {
                     hideLabel: 'true',
                     checked: true
                 }, {
-                    xtype: 'label',
+                    xtype: 'container',
                     style:'font-weight:normal',
                     html: "<div class='wizard-network-image-description'>" + i18n._('This is recommended if the external port is plugged into a firewall/router. This bridges Internal and External and disables DHCP.') + "</div>"
                 }, {
-                    xtype: 'label',
+                    xtype: 'container',
                     cls: 'wizard-network-image',
                     html: '<img src="/skins/' + Ung.SetupWizard.currentSkin + '/images/admin/wizard/bridge.png"/>'
                 }]
@@ -1247,7 +1247,7 @@ Ext.define('Ung.SetupWizard.AutoUpgrades', {
             defaultType: 'fieldset',
             border: false,
             items: [{
-                xtype: 'label',
+                xtype: 'container',
                 html: '<h2 class="wizard-title">'+i18n._( "Configure Automatic Upgrade Settings" )+'</h2>'
             }, {
                 cls: 'noborder  wizard-auto-upgrades',
@@ -1260,7 +1260,7 @@ Ext.define('Ung.SetupWizard.AutoUpgrades', {
                     hideLabel: 'true',
                     checked: true
                 }, {
-                    xtype: 'label',
+                    xtype: 'container',
                     style:'font-weight:normal',
                     html: Ext.String.format( i18n._('Automatically install new versions of {0} software. '), oemName) + '<br/>' +
                          i18n._('This is the recommended for most sites.')
@@ -1275,13 +1275,13 @@ Ext.define('Ung.SetupWizard.AutoUpgrades', {
                     cls: 'large-option',
                     hideLabel: 'true'
                 }, {
-                    xtype: 'label',
+                    xtype: 'container',
                     style:'font-weight:normal',
                     html: Ext.String.format( i18n._('Do not automatically install new versions of {0} software.'), oemName) + '<br/>' +
                         i18n._('This is the recommended setting for large, complex, or sensitive sites.') + '<br/>' +
                         i18n._('Software Upgrades can be applied manually at any time when available.') 
                 }, {
-                    xtype: 'label',
+                    xtype: 'container',
                     style:'font-weight:normal',                    
                     html: '<br/><br/>' + '<b>' + i18n._('Note:') + '</b>' + '<br/>' +
                         i18n._('Signatures for Virus Blocker, Spam Blocker, Web Filter, etc are still updated automatically.') + '<br/>' +
@@ -1348,10 +1348,10 @@ Ext.define('Ung.SetupWizard.Complete', {
         var panel = Ext.create('Ext.form.Panel', {
         	border: false,
             items: [{
-                xtype: 'label',
+                xtype: 'container',
                 html: '<h2 class="wizard-title">'+i18n._( "Congratulations!" )+'</h2>'
             }, {
-                xtype: 'label',
+                xtype: 'container',
                 html: Ext.String.format(i18n._( '<b>The {0} Server is now configured.</b><br/><br/>You are now ready to download and configure applications.' ),oemName),
                 cls: 'noborder'
             }]

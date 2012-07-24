@@ -29,7 +29,7 @@ Ext.define('Ung.SetupWizard.Language', {
                 cls: 'noborder'
             },
             items: [{
-                xtype: 'label',
+                xtype: 'container',
                 html: '<h2 class="wizard-title">'+i18n._( "Language Selection" )+'</h2>'
             },{
                 defaults: {
