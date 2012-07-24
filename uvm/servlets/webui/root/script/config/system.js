@@ -374,7 +374,6 @@ if (!Ung.hasResource["Ung.System"]) {
                         cls: "description",
                         html: this.i18n._("You can restore a previous system configuration from a backup file on your local computer.  The backup file name ends with \".backup\"")
                     },{
-                        fileUpload: true,
                         xtype: "form",
                         id: "upload_restore_file_form",
                         url: "upload",
@@ -920,31 +919,32 @@ if (!Ung.hasResource["Ung.System"]) {
                 }, {
                     title: this.i18n._("Upload New Language Pack"),
                     items: {
-                        fileUpload: true,
                         xtype: "form",
                         id: "upload_language_form",
                         url: "upload",
                         border: false,
-                        items: [{
-                            fieldLabel: this.i18n._("File"),
-                            name: "file",
-                            id: "upload_language_file_textfield",
-                            inputType: "file",
-                            xtype: "textfield",
-                            width: 500,
-                            size: 50,
-                            allowBlank: false
-                        }, {
+                        items: [
+                        {
+                          xtype: 'filefield',
+                          width:500,
+                          size:50,
+                          labelWidth:50,
+                          name: 'file',
+                          fieldLabel:this.i18n._("File"),
+                          allowBlank: false,
+                        },
+                        {
+                            xtype: "hidden",
+                            name: "type",
+                            value: "language"
+                        },
+                        {
                             xtype: "button",
                             text: this.i18n._("Upload"),
                             name: "Upload",
                             handler: Ext.bind(function() {
                                 this.panelRegionalSettings.onUpload();
                             }, this)
-                        }, {
-                            xtype: "hidden",
-                            name: "type",
-                            value: "language"
                         }]
                     }
                 }, {
