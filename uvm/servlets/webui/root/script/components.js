@@ -5044,6 +5044,7 @@ Ext.define('Ung.ImportSettingsWindow', {
                     name: 'import_settings_textfield',
                     width: 450,
                     size: 45,
+                    labelWidth: 50,
                     allowBlank: false
                 },{
                     xtype: 'hidden',

@@ -237,7 +237,7 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                     items: [{
                         xtype: 'filefield',
                         name: 'siteConfiguration',
-                        fieldLabel: 'Configuration File',
+                        fieldLabel: this.i18n._('Configuration File'),
                         allowBlank: false,
                         width: 500,
                         size: 50
