@@ -4047,7 +4047,9 @@ Ext.define('Ung.EditorGrid', {
     // javaClass of the record, used in save function to create correct json-rpc
     // object
     recordJavaClass: null,
+    async: false,
     // the map of changed data in the grid
+    
     // used by rendering functions and by save
     importSettingsWindow: null,    
     enableColumnHide: false,
@@ -4070,12 +4072,12 @@ Ext.define('Ung.EditorGrid', {
                             this.markDirty();
                         }, this)
                     }
+                },
+                loadMask:{
+                    msg: i18n._("Loading...")
                 }
-
             },
-            loadMask:{
-                msg: i18n._("Loading ...")
-            },
+            
             changedData: {},
             subCmps:[]
         };
@@ -4124,15 +4126,18 @@ Ext.define('Ung.EditorGrid', {
             mapping: null
         });
         
-        if(this.dataFn && this.dataRoot === undefined) {
-            this.dataRoot="list";
+        if(this.dataFn) {
+            if(this.dataRoot === undefined) {
+                this.dataRoot="list";
+            }
+        } else {
+            this.async=false;
         }
-
-        this.buildData();
+        
 
         this.totalRecords = this.data.length;
         this.store=Ext.create('Ext.data.Store',{
-            data: this.data,
+            data: [],
             fields: this.fields,
             pageSize: this.paginated?this.recordsPerPage:null,
             proxy: {
@@ -4176,18 +4181,6 @@ Ext.define('Ung.EditorGrid', {
             });
         }
 
-        if (this.rowEditor==null && this.rowEditorInputLines != null) {
-            this.rowEditor = Ext.create('Ung.RowEditorWindow',{
-                grid: this,
-                inputLines: this.rowEditorInputLines,
-                validate: this.rowEditorValidate,
-                rowEditorLabelWidth: this.rowEditorLabelWidth
-            });
-        }
-
-        if(this.rowEditor!=null) {
-            this.subCmps.push(this.rowEditor);
-        }
         if (this.tbar == null) {        
             this.tbar=[];
         }
@@ -4223,6 +4216,65 @@ Ext.define('Ung.EditorGrid', {
         }
         this.callParent(arguments);
     },
+    afterRender: function() {
+        this.callParent(arguments);
+        var grid=this;
+        this.getView().getRowClass = function(record, index, rowParams, store) {
+            var id = record.get("internalId");
+            if (id == null || id < 0) {
+                return "grid-row-added";
+            } else {
+                var d = grid.changedData[id];
+                if (d) {
+                    if (d.op == "deleted") {
+                        return "grid-row-deleted";
+                    } else {
+                        return "grid-row-modified";
+                    }
+                }
+            }
+            return "";
+        };
+
+        if (this.rowEditor==null && this.rowEditorInputLines != null) {
+            this.rowEditor = Ext.create('Ung.RowEditorWindow',{
+                grid: this,
+                inputLines: this.rowEditorInputLines,
+                validate: this.rowEditorValidate,
+                rowEditorLabelWidth: this.rowEditorLabelWidth
+            });
+        }
+
+        if(this.rowEditor!=null) {
+            this.subCmps.push(this.rowEditor);
+        }
+        
+        if ( (undefined !== this.tooltip) && (undefined !== this.header) && ( undefined !== this.header.dom ) ) {
+            Ext.QuickTips.register({
+                target: this.header.dom,
+                title: '',
+                text: this.tooltip,
+                enabled: true,
+                showDelay: 20
+            });
+        }
+        this.initialLoad();
+    },
+    initialLoad: function() {
+        // load first page initialy
+        this.getView().setLoading(true);
+        Ext.defer(function(){
+            this.buildData(Ext.bind(function() {
+                this.getStore().loadPage(1, {
+                    limit:this.isPaginated() ? this.recordsPerPage: Ung.Util.maxRowCount,
+                    callback: function() {
+                        this.getView().setLoading(false);
+                    },
+                    scope: this
+                });
+            }, this));
+        },10, this);
+    },
     getTestRecord:function(index) {
         var rec= {};
         var property;
@@ -4235,19 +4287,40 @@ Ext.define('Ung.EditorGrid', {
         }
         return rec;
     },
-    buildData: function() {
-        if(this.dataFn) {
-            var data;
-            if (this.dataFnArg !== undefined && this.dataFnArg != null)
-                data = this.dataFn(this.dataFnArg);
-            else
-                data = this.dataFn();
-            this.data = (this.dataRoot!=null && this.dataRoot.length>0) ? data[this.dataRoot]:data;
-        } else if(this.dataProperty) {
-            this.data=this.settingsCmp.settings[this.dataProperty].list;
-        } else if(this.dataExpression) {
-            this.data=eval("this.settingsCmp."+this.dataExpression);
+    buildData: function(handler) {
+        if(this.async) {
+            if (this.dataFnArg !== undefined && this.dataFnArg != null) {
+                this.dataFn(Ext.bind(function(result, exception) {
+                    if(Ung.Util.handleException(exception)) return;
+                    this.data=result;
+                    this.afterDataBuild(handler);
+                }, this),this.dataFnArg);
+            } else {
+                this.dataFn(Ext.bind(function(result, exception) {
+                    if(Ung.Util.handleException(exception)) return;
+                    this.data=result;
+                    this.afterDataBuild(handler);
+                }, this));
+            }
+        } else {
+            if(this.dataFn) {
+                var data;
+                if (this.dataFnArg !== undefined && this.dataFnArg != null) {
+                    data = this.dataFn(this.dataFnArg);
+                } else {
+                    data = this.dataFn();
+                }
+                this.data = (this.dataRoot!=null && this.dataRoot.length>0) ? data[this.dataRoot]:data;
+            } else if(this.dataProperty) {
+                this.data=this.settingsCmp.settings[this.dataProperty].list;
+            } else if(this.dataExpression) {
+                this.data=eval("this.settingsCmp."+this.dataExpression);
+            }
+            this.afterDataBuild(handler);
         }
+
+    },
+    afterDataBuild: function(handler) {
         if(!this.data) {
             this.data=[];
         }
@@ -4269,6 +4342,9 @@ Ext.define('Ung.EditorGrid', {
             //prevent using ids from server
             delete this.data[i]["id"];
         }
+        this.getStore().getProxy().data = this.data;
+        this.setTotalRecords(this.data.length);
+        handler();
     },
     stopEditing: function() {
         if(this.inlineEditor) {
@@ -4416,49 +4492,6 @@ Ext.define('Ung.EditorGrid', {
         Ext.each(this.subCmps, Ext.destroy);
         this.callParent(arguments);
     },
-    afterRender: function() {
-        this.callParent(arguments);
-        var grid=this;
-        this.getView().getRowClass = function(record, index, rowParams, store) {
-            var id = record.get("internalId");
-            if (id == null || id < 0) {
-                return "grid-row-added";
-            } else {
-                var d = grid.changedData[id];
-                if (d) {
-                    if (d.op == "deleted") {
-                        return "grid-row-deleted";
-                    } else {
-                        return "grid-row-modified";
-                    }
-                }
-            }
-            return "";
-        };
-        
-        if ( undefined !== this.header ) {
-            var target = this.header.dom;
-            var qt = this.tooltip;
-        
-            if (( undefined !== qt ) && ( undefined !== target )) {
-                Ext.QuickTips.register({
-                    target: target,
-                    title: '',
-                    text: qt,
-                    enabled: true,
-                    showDelay: 20
-                });
-            }
-        }
-        Ext.Function.defer(this.initialLoad,1, this);
-    },
-    // load first page initialy
-    initialLoad: function() {
-        this.setTotalRecords(this.totalRecords);
-        this.getStore().loadPage(1,{
-            limit:this.isPaginated() ? this.recordsPerPage: Ung.Util.maxRowCount
-        });
-    },
     // load a page
     loadPage: function(page, callback, scope, arg) {
         this.getStore().loadPage(page, {
@@ -4496,14 +4529,20 @@ Ext.define('Ung.EditorGrid', {
         this.dirtyFlag=true;
     },
     clearDirty: function() {
-        this.buildData();
         this.changedData = {};
         this.dirtyFlag=false;
-        this.getStore().getProxy().data = this.data;
-        this.setTotalRecords(this.data.length);
-        this.getStore().loadPage(1,{
-            limit:this.isPaginated() ? this.recordsPerPage: Ung.Util.maxRowCount
-        });
+        this.getView().setLoading(true);
+        Ext.defer(function() {
+            this.buildData(Ext.bind(function() {
+                this.getStore().loadPage(this.getStore().currentPage, {
+                    limit:this.isPaginated() ? this.recordsPerPage: Ung.Util.maxRowCount,
+                    callback: function() {
+                        this.getView().setLoading(false);
+                    },
+                    scope: this
+                });
+            }, this));
+        }, 10, this);
     },
     reload: function(options) {
         if(options && options.data) {
