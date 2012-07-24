@@ -379,13 +379,13 @@ if (!Ung.hasResource["Ung.System"]) {
                         url: "upload",
                         border: false,
                         items: [{
+                            xtype: 'filefield',
                             fieldLabel: this.i18n._("File"),
                             name: "file",
                             id: "upload_restore_file_textfield",
-                            inputType: "file",
-                            xtype: "textfield",
                             width: 500,
                             size: 50,
+                            labelWidth: 50,
                             allowBlank: false
                         }, {
                             xtype: "button",
@@ -926,11 +926,11 @@ if (!Ung.hasResource["Ung.System"]) {
                         items: [
                         {
                           xtype: 'filefield',
-                          width:500,
-                          size:50,
-                          labelWidth:50,
-                          name: 'file',
                           fieldLabel:this.i18n._("File"),
+                          width: 500,
+                          size: 50,
+                          labelWidth: 50,
+                          name: 'file',
                           allowBlank: false,
                         },
                         {

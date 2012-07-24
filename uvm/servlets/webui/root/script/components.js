@@ -5034,18 +5034,16 @@ Ext.define('Ung.ImportSettingsWindow', {
                 bodyStyle: 'padding:5px 0px 5px 30px;',
                 html: "<i>" + i18n._("with settings from")+ "</i>"
             }, {
-                fileUpload: true,
                 xtype: 'form',
                 id: 'import_settings_form'+this.getId(),
                 url: 'gridSettings',
                 border: false,
                 items: [{
+                    xtype: 'filefield',
                     fieldLabel: i18n._('File'),
                     name: 'import_settings_textfield',
-                    inputType: 'file',
-                    xtype: 'textfield',
-                    width: 400,
-                    size: 40,
+                    width: 450,
+                    size: 45,
                     allowBlank: false
                 },{
                     xtype: 'hidden',

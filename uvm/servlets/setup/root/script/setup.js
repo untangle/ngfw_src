@@ -332,6 +332,7 @@ Ext.define('Ung.SetupWizard.Interfaces', {
             },
             border: false,
             items: [{
+                xtype: 'container',
                 html: '<h2 class=" wizard-title">'+panelTitle+'<h2>',
                 border: false
             }, {
@@ -738,6 +739,7 @@ Ext.define('Ung.SetupWizard.Internet', {
             border: false,
             labelWidth: Ung.SetupWizard.LabelWidth,
             items: [{
+                xtype: 'container',
                 html: '<h2 class="wizard-title">'+configureText+'<h2>',
                 border: false
             }, {

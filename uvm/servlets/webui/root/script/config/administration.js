@@ -1315,18 +1315,17 @@ if (!Ung.hasResource["Ung.Administration"]) {
                 },{
                     title: this.i18n._('Upload New Skin'),
                     items: {
-                        fileUpload: true,
                         xtype: 'form',
                         id: 'upload_skin_form',
                         url: 'upload',
                         border: false,
                         items: [{
+                            xtype: 'filefield',
                             fieldLabel: this.i18n._('File'),
                             name: 'upload_skin_textfield',
-                            inputType: 'file',
-                            xtype: 'textfield',
                             width: 500,
                             size: 50,
+                            labelWidth: 50,
                             allowBlank: false
                         },{
                             xtype: 'button',

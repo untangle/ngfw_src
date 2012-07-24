@@ -900,7 +900,6 @@ if (!Ung.hasResource["Ung.CPD"]) {
                                 }, this)
                             }
                         },{
-                            fileUpload: true,
                             xtype: "form",
                             bodyStyle: "padding:0px 0px 0px 25px",
                             buttonAlign: "left",
@@ -909,9 +908,8 @@ if (!Ung.hasResource["Ung.CPD"]) {
                             pageType: "CUSTOM",
                             border: false,
                             items: [{
-                                fieldLabel: this.i18n._("File"),
+                                xtype: 'filefield',
                                 name: "customUploadFile",
-                                inputType: "file",
                                 xtype: "textfield",
                                 width: 500,
                                 size: 50

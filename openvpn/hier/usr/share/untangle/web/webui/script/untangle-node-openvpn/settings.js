@@ -221,9 +221,8 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
 
             this.panel = Ext.create('Ext.form.Panel', {
                 border: false,
-                fileUpload: true,
                 items: [{
-                    xtype: 'label',
+                    xtype: 'container',
                     html: '<h2 class="wizard-title">'+this.i18n._("Download Configuration")+'</h2>'
                 }, {
                     xtype: 'container',
@@ -236,8 +235,7 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                     labelWidth: 150,
                     labelAlign: 'right',
                     items: [{
-                        xtype: 'textfield',
-                        inputType: 'file',
+                        xtype: 'filefield',
                         name: 'siteConfiguration',
                         fieldLabel: 'Configuration File',
                         allowBlank: false,
