@@ -297,7 +297,7 @@ Ext.define('Ung.Reports', {
                         {
                             xtype: 'label',
                             id: 'logout-link',
-                            html: i18n._('Logout'),
+                            text: i18n._('Logout'),
                             listeners: {
                                 "render": {
                                     fn: Ext.bind(function(comp){
@@ -309,12 +309,12 @@ Ext.define('Ung.Reports', {
                         {
                             xtype: 'label',
                             id: 'report-date-range',
-                            html: reports.getDateRangeText(this.reportDatesItems[0])
+                            text: reports.getDateRangeText(this.reportDatesItems[0])
                         },
                         {
                             xtype: 'label',
                             id: 'report-day-menu',
-                            html: i18n._('View Other Reports'),
+                            text: i18n._('View Other Reports'),
                             listeners: {
                                 "render": {
                                     fn: Ext.bind(function(comp) {
@@ -1232,7 +1232,8 @@ Ext.define('Ung.ReportDetails', {
                 tbar:[
                 {
                     xtype: 'label',
-                    html: '<b>' + this.i18n._('Key Statistics') + '</b>',
+                    text: this.i18n._('Key Statistics'),
+                    style: 'font-weight: bold;padding-left:3px;',
                     width: 150
                 },
                 {
