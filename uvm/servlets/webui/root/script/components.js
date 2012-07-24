@@ -51,8 +51,9 @@ Ext.override(Ext.form.field.Base, {
     },
     afterRender: Ext.Function.createSequence(Ext.form.Field.prototype.afterRender,function() {
         Ext.QuickTips.init();    
-        var qt = this.tooltip,
-            target = null;
+        var qt = this.tooltip;
+        var target = null;
+        
         try {
             if(this.xtype=='checkbox') {
                 target = this.labelEl;
@@ -139,27 +140,16 @@ Ext.override(Ext.TabPanel, {
 });
 
 Ext.override( Ext.form.TextField, {
-    afterRender: Ext.Function.createSequence(Ext.form.TextField.prototype.afterRender, function() {
+//There is now way to hack again the extjs framework to display fine the box label on the right side for all browsers
+//So for now the solution was to display it as a tooltip
+//Consider including it in fieldLabel property when it's short
+    afterRender: function() {
+        this.callParent(arguments);
         if( this.boxLabel) {
-            //console.log(this.xtype);
-            var style = 'position: absolute; top: 5px;';
-            if(this.xtype == "numberfield") {
-                style +='margin-left:20px; z-index:100;';
-            } else if(this.xtype == "combo") {
-                style +='margin-left:20px;';
-            } 
-            this.labelEl = this.el.down("input").parent().createChild({
-                tag: 'label',
-                htmlFor: this.el.id,
-                cls: 'x-form-textfield-detail',
-                style: style,
-                html: this.boxLabel
+            Ext.QuickTips.register({
+                target: this.getEl(),
+                text: this.boxLabel
             });
-        }
-    }),
-    updateBoxLabel: function(html) {
-        if(this.labelEl) {
-            this.labelEl.dom.innerHTML = html;
         }
     }
 });
