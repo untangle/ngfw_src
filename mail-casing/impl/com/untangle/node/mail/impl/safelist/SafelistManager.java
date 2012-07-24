@@ -108,7 +108,7 @@ public class SafelistManager
             for (EmailAddress r : recipients) {
                 try {
                     urs.add(quarantine.getUltimateRecipient(r.getAddress().toLowerCase()).toLowerCase());
-                } catch (QuarantineUserActionFailedException exn) {
+                } catch (Exception exn) {
                     m_logger.warn("could not get recipient", exn);
                 }
             }
