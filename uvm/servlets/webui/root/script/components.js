@@ -3191,10 +3191,8 @@ Ext.define('Ung.Window', {
     },
     setSizeToRack: function () {
         var objSize = main.viewport.getSize();
-        var viewportWidth=objSize.width;
-        //objSize.width = Math.min(viewportWidth,Math.max(1024,viewportWidth - main.contentLeftWidth));
-        objSize.width = viewportWidth - main.contentLeftWidth;
-        this.setPosition(viewportWidth-objSize.width, 0);
+        objSize.width = objSize.width - main.contentLeftWidth;
+        this.setPosition(main.contentLeftWidth, 0);
         this.setSize(objSize);
     },
 
@@ -3256,9 +3254,17 @@ Ext.define("Ung.SettingsWin", {
     // build Tab panel from an array of tab items
     constructor: function(config) {
         config.rpc = {};
+        var objSize = main.viewport.getSize();
+        Ext.applyIf(config, {
+            height: objSize.height,
+            width: objSize.width - main.contentLeftWidth,
+            x: main.contentLeftWidth,
+            y: 0
+        });
         this.callParent(arguments);
     },
     buildTabPanel: function(itemsArray) {
+        Ext.get("racks").hide();
         this.tabs = Ext.create('Ext.tab.Panel',{
             activeTab: 0,
             deferredRender: false,
@@ -3267,6 +3273,7 @@ Ext.define("Ung.SettingsWin", {
         });
         this.items=this.tabs;
         this.tabs.on('afterrender', function() {
+            Ext.get("racks").show();
             this.addNamesToPanels();
         }, this.tabs);
     },
@@ -3281,6 +3288,7 @@ Ext.define("Ung.SettingsWin", {
         main.openHelp(helpSource);
     },
     closeWindow: function() {
+        Ext.get("racks").show();
         this.hide();
         Ext.destroy(this);
     },
