@@ -1054,15 +1054,21 @@ if (!Ung.hasResource["Ung.Email"]) {
                     }, this)
                 }],
                 dataFn: Ext.bind(function() {
-                    if(this.userQuarantinesDetailsGrid != null) {
-                        return this.getQuarantineMaintenenceView().getInboxRecords(this.quarantinesDetailsWin.account, 0, Ung.Util.maxRowCount, []);
+                    if(this.userQuarantinesDetailsGrid != null && this.quarantinesDetailsWin.account!= null) {
+                        try {
+                            return this.getQuarantineMaintenenceView().getInboxRecords(this.quarantinesDetailsWin.account, 0, Ung.Util.maxRowCount, []);
+                        } catch (e) {
+                            Ung.Util.rpcExHandler(e, true);
+                            return {
+                                list: []
+                            };
+                        }
                     } else {
                         return {
                             list: []
                         };
                     }
                 }, this),
-                initialLoad: function() {}, //do nothing here
                 fields: [{
                     name: 'mailID'
                 }, {

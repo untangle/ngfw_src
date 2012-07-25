@@ -13,7 +13,7 @@ if(typeof console === "undefined") {
 }
 var i18n=Ext.create('Ung.I18N',{"map":null}); // the main internationalization object
 var rpc=null; // the main json rpc object
-var testMode = false;
+var testMode = true;
 
 if(Ext.getVersion().version=="4.1.1") {
     Ext.override(Ext.MessageBox, {
@@ -338,12 +338,12 @@ Ung.Util = {
         Ext.MessageBox.wait(i18n._("Redirecting to the start page..."), i18n._("Please wait"));
         window.location.href="/webui";
     },
-    rpcExHandler: function(exception) {
+    rpcExHandler: function(exception, continueExecution) {
         if (exception != null) {
             console.error("In rpcExHandler: ", exception);
-        }
-        else
+        } else{
             console.error("In rpcExHandler: null");
+        }
             
         if(exception instanceof JSONRpcClient.Exception)
         {
@@ -355,11 +355,15 @@ Ung.Util = {
                 return;
             }*/
         }
-        if(exception) {
-            throw exception;
-        }
-        else {
-            throw i18n._("Error making rpc request to server");
+        if(!continueExecution) {
+            if(exception) {
+                throw exception;
+            }
+            else {
+                throw i18n._("Error making rpc request to server");
+            }
+        } else {
+            Ext.MessageBox.alert(i18n._("Warning"), exception.message);
         }
     },
     handleException: function(exception, handler, type, continueExecution) { //type: alertCallback, alert, noAlert
