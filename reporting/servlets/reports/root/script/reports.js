@@ -177,6 +177,7 @@ Ext.define('Ung.Reports', {
         }
     },
     startApplicationPrintView: function() {
+        Ext.get("base").setStyle("width", "740px");
         var panel = Ext.create('Ext.panel.Panel',{
             renderTo: 'base',
             cls: "base-container",
