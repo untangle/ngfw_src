@@ -13,7 +13,7 @@ if(typeof console === "undefined") {
 }
 var i18n=Ext.create('Ung.I18N',{"map":null}); // the main internationalization object
 var rpc=null; // the main json rpc object
-var testMode = true;
+var testMode = false;
 
 if(Ext.getVersion().version=="4.1.1") {
     Ext.override(Ext.MessageBox, {
