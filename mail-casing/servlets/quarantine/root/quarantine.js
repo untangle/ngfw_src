@@ -260,7 +260,7 @@ Ung.Quarantine.prototype = {
             this.store.sync();
 
             /* to refresh the buttons at the bottom */
-            this.updateActionItems();
+            this.updateActionItem( null, null, false );
 
             /* Reload the data */
             // this.grid.bbar.doLoad( 0 );
@@ -310,21 +310,17 @@ Ung.Quarantine.prototype = {
         return messages.join( "<br/>" );
     },
 
-    updateItem: function( mailid, address, ifAdd ) {
-        if ( mailid != null ) {
-            this.actionItems.put( mailid, !ifAdd?null:true );
-        }
+    updateActionItem: function( mailid, address, ifAdd ) {
+        var value = true;
+        if ( !ifAdd ) value = null;
+        if ( mailid != null ) this.actionItems.put( mailid, value );
         if ( address != null ) {
-            if ( ifAdd ) {
-                this.addresses.add( address );
-            } else {
-                this.addresses.minus( address );
-            }
+            if ( ifAdd ) this.addresses.add( address );
+            else this.addresses.minus( address );
         }
-    },
-    updateActionItems: function() {
-        var deleteText;
-        var releaseText;
+
+            var deleteText;
+            var releaseText;
         var safelistText;
 
         var count = this.actionItems.size;
@@ -361,6 +357,7 @@ Ung.Quarantine.prototype = {
         this.safelistButton.setText( safelistText );
         this.deleteButton.setText( deleteText );
     },
+
     showMessage: function( message ) {
         this.messageCount++;
 
@@ -390,7 +387,7 @@ Ext.define('Ung.QuarantineModel', {
     fields: [ 
       {name:'recipients'},
       {name:'mailID'},
-      {name:'quarantinedDate'},
+      {name:'quarantinedDate', sortType:function(value) { return value.time;}},
       {name:'size'},
       {name:'attachmentCount'},
       {name:'truncatedSender'},
@@ -443,15 +440,14 @@ Ext.define('Ung.QuarantineSelectionModel', {
     extend:'Ext.selection.CheckboxModel',
     onSelectionChange:function(model, selected, options) {
         Ext.each(this.lastSelectedRecords, Ext.bind(function(record) {
-            this.quarantine.updateItem( record.data.mailID, record.data.sender, false);
+            this.quarantine.updateActionItem( record.data.mailID, record.data.sender, false);
             return true;
         }, this));
         Ext.each(selected, Ext.bind(function(record) {
-            this.quarantine.updateItem( record.data.mailID, record.data.sender, true );
+            this.quarantine.updateActionItem( record.data.mailID, record.data.sender, true );
             return true;
         }, this));
         this.lastSelectedRecords=selected;
-        this.quarantine.updateActionItems();
     },
 
     constructor: function( config ) {
