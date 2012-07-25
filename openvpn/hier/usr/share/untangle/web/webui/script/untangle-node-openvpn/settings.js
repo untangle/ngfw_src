@@ -1457,7 +1457,7 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
 
         validateGroups: function() {
             var i;
-            var groupList=this.gridGroups.getPageList();
+            var groupList=this.gridGroups.getPageList(false, true);
 
             // verify that there is at least one group
             if(groupList.length <= 0 ) {
@@ -1471,31 +1471,32 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
 
             // removed groups should not be referenced
             var removedGroups = this.gridGroups.getDeletedList();
-
-            for( i=0; i<removedGroups.length;i++) {
+            if(removedGroups.length>0) {
                 var clientList = this.gridClients.getPageList();
-                for(var j=0; j<clientList.length;j++) {
-                    if (removedGroups[i].name == clientList[j].groupName) {
-                        Ext.MessageBox.alert(this.i18n._('Failed'),
-                            Ext.String.format(this.i18n._("The group: \"{0}\" cannot be deleted because it is being used by the client: {1} in the Client To Site List."), removedGroups[i].name, clientList[j].name),
-                            Ext.bind(function () {
-                                this.tabs.setActiveTab(this.panelAdvanced);
-                            }, this)
-                        );
-                        return false;
-                    }
-                }
-
                 var siteList=this.gridSites.getPageList();
-                for(var j=0; j<siteList.length;j++) {
-                    if (removedGroups[i].name == siteList[j].groupName) {
-                        Ext.MessageBox.alert(this.i18n._('Failed'),
-                            Ext.String.format(this.i18n._("The group: \"{0}\" cannot be deleted because it is being used by the site: {1} in the Site To Site List."), removedGroups[i].name, siteList[j].name),
-                            Ext.bind(function () {
-                                this.tabs.setActiveTab(this.panelAdvanced);
-                            }, this)
-                        );
-                        return false;
+                for( i=0; i<removedGroups.length;i++) {
+                    for(var j=0; j<clientList.length;j++) {
+                        if (removedGroups[i].name == clientList[j].groupName) {
+                            Ext.MessageBox.alert(this.i18n._('Failed'),
+                                Ext.String.format(this.i18n._("The group: \"{0}\" cannot be deleted because it is being used by the client: {1} in the Client To Site List."), removedGroups[i].name, clientList[j].name),
+                                Ext.bind(function () {
+                                    this.tabs.setActiveTab(this.panelAdvanced);
+                                }, this)
+                            );
+                            return false;
+                        }
+                    }
+
+                    for(var j=0; j<siteList.length;j++) {
+                        if (removedGroups[i].name == siteList[j].groupName) {
+                            Ext.MessageBox.alert(this.i18n._('Failed'),
+                                Ext.String.format(this.i18n._("The group: \"{0}\" cannot be deleted because it is being used by the site: {1} in the Site To Site List."), removedGroups[i].name, siteList[j].name),
+                                Ext.bind(function () {
+                                    this.tabs.setActiveTab(this.panelAdvanced);
+                                }, this)
+                            );
+                            return false;
+                        }
                     }
                 }
             }
@@ -1507,7 +1508,7 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                 var groupName = groupList[i].name.toLowerCase();
 
                 var group = groupList[i];
-                if(group.id>=0 && group.originalName != "" && group.name!=group.originalName) {
+                if(group.internalId>=0 && group.name!=group.originalName) {
                     Ext.MessageBox.alert(i18n._("Failed"), this.i18n._("Changing name is not allowed. Create a new group."),
                         Ext.bind(function () {
                             this.tabs.setActiveTab(this.panelClients);
@@ -1531,13 +1532,13 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
         },
 
         validateVpnClients: function() {
-            var clientList=this.gridClients.getPageList();
+            var clientList=this.gridClients.getPageList(false, true);
             var clientNames = {};
             var client = null;
 
             for(var i=0;i<clientList.length;i++) {
                 client = clientList[i];
-                if(client.id>=0 && client.originalName!="" && client.name!=client.originalName) {
+                if(client.internalId>=0 && client.name!=client.originalName) {
                     Ext.MessageBox.alert(i18n._("Failed"), this.i18n._("Changing name is not allowed. Create a new user."),
                         Ext.bind(function () {
                             this.tabs.setActiveTab(this.panelClients);

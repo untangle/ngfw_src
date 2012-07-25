@@ -3257,6 +3257,7 @@ Ext.define("Ung.SettingsWin", {
     buildTabPanel: function(itemsArray) {
         this.tabs = Ext.create('Ext.tab.Panel',{
             activeTab: 0,
+            deferredRender: false,
             parentId: this.getId(),
             items: itemsArray
         });
@@ -4049,7 +4050,8 @@ Ext.define('Ung.EditorGrid', {
     recordJavaClass: null,
     async: false,
     // the map of changed data in the grid
-    
+    dataLoaded: false,
+    dataInitialized: false,
     // used by rendering functions and by save
     importSettingsWindow: null,    
     enableColumnHide: false,
@@ -4057,6 +4059,7 @@ Ext.define('Ung.EditorGrid', {
     dirtyFlag: false,
     addedId: 0,
     generatedId: 1,
+    useServerIds: false,
     sortingDisabled:false,
     features: [{ftype: "grouping"}],
     constructor: function(config) {
@@ -4134,10 +4137,10 @@ Ext.define('Ung.EditorGrid', {
             this.async=false;
         }
         
-
         this.totalRecords = this.data.length;
         this.store=Ext.create('Ext.data.Store',{
-            data: [],
+            //Chrome Fix: Adding an empty initial row until store is loaded. to fix Chrom browser bad scroll rendering.
+            data: Ext.isChrome?[{id:0}]:[],
             fields: this.fields,
             pageSize: this.paginated?this.recordsPerPage:null,
             proxy: {
@@ -4262,13 +4265,14 @@ Ext.define('Ung.EditorGrid', {
     },
     initialLoad: function() {
         // load first page initialy
-        this.getView().setLoading(true);
+        this.getView().setLoading(true);  
         Ext.defer(function(){
             this.buildData(Ext.bind(function() {
                 this.getStore().loadPage(1, {
                     limit:this.isPaginated() ? this.recordsPerPage: Ung.Util.maxRowCount,
                     callback: function() {
-                        this.getView().setLoading(false);
+                        this.dataLoaded=true;
+                        this.getView().setLoading(false);  
                     },
                     scope: this
                 });
@@ -4287,24 +4291,9 @@ Ext.define('Ung.EditorGrid', {
         }
         return rec;
     },
-    buildData: function(handler) {
-        if(this.async) {
-            if (this.dataFnArg !== undefined && this.dataFnArg != null) {
-                this.dataFn(Ext.bind(function(result, exception) {
-                    if(Ung.Util.handleException(exception)) return;
-                    this.data=result;
-                    this.afterDataBuild(handler);
-                }, this),this.dataFnArg);
-            } else {
-                this.dataFn(Ext.bind(function(result, exception) {
-                    if(Ung.Util.handleException(exception)) return;
-                    this.data=result;
-                    this.afterDataBuild(handler);
-                }, this));
-            }
-        } else {
+    getData: function(data) {
+        if(!data) {
             if(this.dataFn) {
-                var data;
                 if (this.dataFnArg !== undefined && this.dataFnArg != null) {
                     data = this.dataFn(this.dataFnArg);
                 } else {
@@ -4316,11 +4305,10 @@ Ext.define('Ung.EditorGrid', {
             } else if(this.dataExpression) {
                 this.data=eval("this.settingsCmp."+this.dataExpression);
             }
-            this.afterDataBuild(handler);
+        } else {
+            this.data=data;
         }
 
-    },
-    afterDataBuild: function(handler) {
         if(!this.data) {
             this.data=[];
         }
@@ -4340,11 +4328,40 @@ Ext.define('Ung.EditorGrid', {
         for(var i=0; i<this.data.length; i++) {
             this.data[i]["internalId"]=i+1;
             //prevent using ids from server
-            delete this.data[i]["id"];
+            if(!this.useServerIds) {
+                delete this.data[i]["id"];
+            }
         }
+        this.dataInitialized=true;
+        return this.data;
+    },
+    buildData: function(handler) {
+        if(this.async) {
+            if (this.dataFnArg !== undefined && this.dataFnArg != null) {
+                this.dataFn(Ext.bind(function(result, exception) {
+                    if(Ung.Util.handleException(exception)) return;
+                    this.getData(result);
+                    this.afterDataBuild(handler);
+                }, this),this.dataFnArg);
+            } else {
+                this.dataFn(Ext.bind(function(result, exception) {
+                    if(Ung.Util.handleException(exception)) return;
+                    this.getData(result);
+                    this.afterDataBuild(handler);
+                }, this));
+            }
+        } else {
+            this.getData();
+            this.afterDataBuild(handler);
+        }
+
+    },
+    afterDataBuild: function(handler) {
         this.getStore().getProxy().data = this.data;
         this.setTotalRecords(this.data.length);
-        handler();
+        if(handler) {
+            handler();
+        }
     },
     stopEditing: function() {
         if(this.inlineEditor) {
@@ -4532,17 +4549,15 @@ Ext.define('Ung.EditorGrid', {
         this.changedData = {};
         this.dirtyFlag=false;
         this.getView().setLoading(true);
-        Ext.defer(function() {
-            this.buildData(Ext.bind(function() {
-                this.getStore().loadPage(this.getStore().currentPage, {
-                    limit:this.isPaginated() ? this.recordsPerPage: Ung.Util.maxRowCount,
-                    callback: function() {
-                        this.getView().setLoading(false);
-                    },
-                    scope: this
-                });
-            }, this));
-        }, 10, this);
+        this.buildData(Ext.bind(function() {
+            this.getStore().loadPage(this.getStore().currentPage, {
+                limit:this.isPaginated() ? this.recordsPerPage: Ung.Util.maxRowCount,
+                callback: function() {
+                    this.getView().setLoading(false);
+                },
+                scope: this
+            });
+        }, this));
     },
     reload: function(options) {
         if(options && options.data) {
@@ -4734,8 +4749,17 @@ Ext.define('Ung.EditorGrid', {
     //Attention this only gets the records from the current page!
     //It can't be used for grids that may have pagination.
     //Can be used only for grids that have explicitly set: paginated: false
-    getPageList: function(forExport) {
+    getPageList: function(useId, useInternalId) {
         var list=[];
+        if(!this.dataLoaded) {
+            //This code should never be called
+            if(!this.dataInitialized) {
+                this.getData();
+            }
+            //NOT Working fine with mapping fields
+            this.getStore().loadData(this.data);
+            this.dataLoaded=true;
+        }
         var records=this.getStore().getRange();
         for(var i=0; i<records.length;i++) {
             var id = records[i].get("internalId");
@@ -4751,15 +4775,17 @@ Ext.define('Ung.EditorGrid', {
                 records[i].data["javaClass"] = this.recordJavaClass;
             }
             var recData=Ext.decode(Ext.encode(records[i].data));
-            delete recData["internalId"];
-            if(forExport) { 
+            if(!useInternalId) {
+                delete recData["internalId"];
+            }
+            if(!useId) {
                 delete recData["id"];
-            } else {
+            } else if(!this.useServerIds) {
                 recData["id"]=i+1;
             }
-            list.push(recData);
-        }
 
+            list.push(recData);
+        }            
         return list;
     },
     // Get the entire list from all pages, and the result is returned in the callback handler function.
