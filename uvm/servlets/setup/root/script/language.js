@@ -104,6 +104,7 @@ Ung.Language = {
 
         var language = Ext.create('Ung.SetupWizard.Language',{});
 
+        Ext.get("container").setStyle("width", "800px");
         this.wizard = Ext.create('Ung.Wizard',{
             height: 500,
             width: 800,

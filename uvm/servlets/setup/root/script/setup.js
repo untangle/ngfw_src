@@ -1434,7 +1434,7 @@ Ung.Setup = {
         cards.push( internal.card );
         cards.push( upgrades.card );
         cards.push( complete.card );
-
+        Ext.get("container").setStyle("width", "800px");
         this.wizard = Ext.create('Ung.Wizard', {
             height: 500,
             width: 800,
@@ -1446,8 +1446,6 @@ Ung.Setup = {
             disableNext: false,
             renderTo: "container"
         });
-
-        Ext.QuickTips.init();
 
         if ( false ) {
             // DEBUGGING CODE (Change to true to dynamically go to any page you want on load.)
