@@ -38,12 +38,11 @@ import com.untangle.uvm.TomcatManager;
  */
 public class TomcatManagerImpl implements TomcatManager
 {
-    private static final int NUM_TOMCAT_RETRIES = 15; //  5 minutes total
+    private static final int  TOMCAT_NUM_RETRIES = 15; //  5 minutes total
     private static final long TOMCAT_SLEEP_TIME = 20 * 1000; // 20 seconds
-
-    private static final int TOMCAT_MAX_POST_SIZE = 16777216; // 16MB
-
-    private static final String STANDARD_WELCOME = "/setup/welcome.do";
+    private static final int  TOMCAT_MAX_POST_SIZE = 16777216; // 16MB
+    private static final String WELCOME_URI = "/setup/welcome.do";
+    private static final String WELCOME_FILE = System.getProperty("uvm.home") + "/apache2/conf.d/homepage.conf";
 
     private final Logger logger = Logger.getLogger(getClass());
 
@@ -55,7 +54,6 @@ public class TomcatManagerImpl implements TomcatManager
     private String keystorePass = "changeit";
     private String keyAlias = "tomcat";
 
-    private String welcomeFile = STANDARD_WELCOME;
 
     // constructors -----------------------------------------------------------
 
@@ -119,7 +117,7 @@ public class TomcatManagerImpl implements TomcatManager
             // restored classloader ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         }
 
-        resetRootWelcome();
+        writeWelcomeFile();
     }
 
     // package protected methods ----------------------------------------------
@@ -226,7 +224,7 @@ public class TomcatManagerImpl implements TomcatManager
     /**
      * Gives no exceptions, even if Tomcat was never started.
      */
-    void stopTomcat()
+    public void stopTomcat()
     {
         try {
             if (null != emb) {
@@ -234,6 +232,29 @@ public class TomcatManagerImpl implements TomcatManager
             }
         } catch (LifecycleException exn) {
             logger.debug(exn);
+        }
+    }
+
+    public void writeWelcomeFile()
+    {
+        FileWriter w = null;
+        try {
+            w = new FileWriter(WELCOME_FILE);
+            w.write("RewriteEngine On\n");
+            w.write("RewriteRule ^/index.html$ " + WELCOME_URI + " [R=302]\n");
+            w.write("RewriteRule ^/$ " + WELCOME_URI + " [R=302]\n");
+            // old apache way
+            //w.write("RedirectMatch 302 ^/index.html " + WELCOME_URI + "\n");
+        } catch (IOException exn) {
+            logger.warn("could not write homepage redirect", exn);
+        } finally {
+            if (null != w) {
+                try {
+                    w.close();
+                } catch (IOException exn) {
+                    logger.warn("could not close FileWriter", exn);
+                }
+            }
         }
     }
 
@@ -264,7 +285,7 @@ public class TomcatManagerImpl implements TomcatManager
                 Runnable tryAgain = new Runnable() {
                         public void run() {
                             int i;
-                            for (i = 0; i < NUM_TOMCAT_RETRIES; i++) {
+                            for (i = 0; i < TOMCAT_NUM_RETRIES; i++) {
                                 try {
                                     logger.warn("could not start Tomcat (address in use), sleeping 20 and trying again");
                                     Thread.sleep(TOMCAT_SLEEP_TIME);
@@ -287,9 +308,9 @@ public class TomcatManagerImpl implements TomcatManager
                                     }
                                 }
                             }
-                            if (i == NUM_TOMCAT_RETRIES)
+                            if (i == TOMCAT_NUM_RETRIES)
                                 UvmContextImpl.getInstance().fatalError("Unable to start Tomcat after " +
-                                                                        NUM_TOMCAT_RETRIES
+                                                                        TOMCAT_NUM_RETRIES
                                                                         + " tries, giving up",
                                                                         null);
                         }
@@ -303,29 +324,6 @@ public class TomcatManagerImpl implements TomcatManager
         }
 
         logger.info("Tomcat started");
-    }
-
-    void resetRootWelcome()
-    {
-        setRootWelcome(STANDARD_WELCOME);
-    }
-
-    synchronized void setRootWelcome(String welcomeFile)
-    {
-        this.welcomeFile = welcomeFile;
-
-        String bh = System.getProperty("uvm.home");
-        String p = bh + "/apache2/conf.d/homepage.conf";
-        writeWelcomeFile(p);
-        //String p = bh + "/apache2/unrestricted-conf.d/homepage.conf";
-        //writeWelcomeFile(p);
-
-        apacheReload();
-    }
-
-    String getRootWelcome()
-    {
-        return welcomeFile;
     }
 
     // private classes --------------------------------------------------------
@@ -374,34 +372,22 @@ public class TomcatManagerImpl implements TomcatManager
      * @param auth an <code>AuthenticatorBase</code> value
      * @return a <code>boolean</code> value
      */
-    private synchronized ServletContext loadWebApp(String urlBase,
-                                                   String rootDir,
-                                                   Realm realm,
-                                                   AuthenticatorBase auth,
-                                                   WebAppOptions options)
+    private synchronized ServletContext loadWebApp(String urlBase, String rootDir, Realm realm, AuthenticatorBase auth, WebAppOptions options)
     {
         return loadWebAppImpl(urlBase, rootDir, realm, auth, options);
     }
 
-    private ServletContext loadWebApp(String urlBase,
-                                      String rootDir,
-                                      Realm realm,
-                                      AuthenticatorBase auth) {
+    private ServletContext loadWebApp(String urlBase, String rootDir, Realm realm, AuthenticatorBase auth)
+    {
         return loadWebApp(urlBase, rootDir, realm, auth, new WebAppOptions());
     }
 
-    private ServletContext loadWebApp(String urlBase,
-                                      String rootDir,
-                                      Realm realm,
-                                      AuthenticatorBase auth,
-                                      Valve valve) {
-        return loadWebApp(urlBase, rootDir, realm, auth,
-                          new WebAppOptions(valve));
+    private ServletContext loadWebApp(String urlBase, String rootDir, Realm realm, AuthenticatorBase auth, Valve valve)
+    {
+        return loadWebApp(urlBase, rootDir, realm, auth, new WebAppOptions(valve));
     }
 
-    private ServletContext loadWebAppImpl(String urlBase, String rootDir,
-                                          Realm realm, AuthenticatorBase auth,
-                                          WebAppOptions options)
+    private ServletContext loadWebAppImpl(String urlBase, String rootDir, Realm realm, AuthenticatorBase auth, WebAppOptions options)
     {
         String fqRoot = webAppRoot + "/" + rootDir;
 
@@ -542,24 +528,5 @@ public class TomcatManagerImpl implements TomcatManager
         }
 
         return p.getProperty("worker.uvmWorker.secret");
-    }
-
-    private void writeWelcomeFile(String f)
-    {
-        FileWriter w = null;
-        try {
-            w = new FileWriter(f);
-            w.write("RedirectMatch 302 ^/index.html " + welcomeFile + "\n");
-        } catch (IOException exn) {
-            logger.warn("could not write homepage redirect", exn);
-        } finally {
-            if (null != w) {
-                try {
-                    w.close();
-                } catch (IOException exn) {
-                    logger.warn("could not close FileWriter", exn);
-                }
-            }
-        }
     }
 }

@@ -25,7 +25,7 @@ import com.untangle.node.spam.SpamNodeImpl;
 import com.untangle.node.spam.SpamSettings;
 import com.untangle.node.token.Token;
 import com.untangle.node.token.TokenAdaptor;
-import com.untangle.uvm.LocalAppServerManager;
+import com.untangle.uvm.AppServerManager;
 import com.untangle.uvm.UvmContext;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.util.I18nUtil;
@@ -307,7 +307,7 @@ public class PhishNode extends SpamNodeImpl implements Phish
         }
 
         UvmContext mctx = UvmContextFactory.context();
-        LocalAppServerManager asm = mctx.localAppServerManager();
+        AppServerManager asm = mctx.localAppServerManager();
 
         Valve v = new OutsideValve()
             {
@@ -337,7 +337,7 @@ public class PhishNode extends SpamNodeImpl implements Phish
         }
 
         UvmContext mctx = UvmContextFactory.context();
-        LocalAppServerManager asm = mctx.localAppServerManager();
+        AppServerManager asm = mctx.localAppServerManager();
 
         if (asm.unloadWebApp("/phish")) {
             logger.debug("Unloaded phish WebApp");

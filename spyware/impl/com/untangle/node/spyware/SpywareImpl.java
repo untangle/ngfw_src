@@ -31,7 +31,7 @@ import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.log4j.Logger;
 
 import com.untangle.uvm.SettingsManager;
-import com.untangle.uvm.LocalAppServerManager;
+import com.untangle.uvm.AppServerManager;
 import com.untangle.uvm.UvmContext;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.node.IPMaskedAddress;
@@ -553,7 +553,7 @@ public class SpywareImpl extends NodeBase implements Spyware
         }
 
         UvmContext uvmContext = UvmContextFactory.context();
-        LocalAppServerManager asm = uvmContext.localAppServerManager();
+        AppServerManager asm = uvmContext.localAppServerManager();
 
         Valve v = new OutsideValve()
             {
@@ -583,7 +583,7 @@ public class SpywareImpl extends NodeBase implements Spyware
         }
 
         UvmContext uvmContext = UvmContextFactory.context();
-        LocalAppServerManager asm = uvmContext.localAppServerManager();
+        AppServerManager asm = uvmContext.localAppServerManager();
 
         if (asm.unloadWebApp("/spyware")) {
             logger.debug("Unloaded Spyware WebApp");

@@ -1,4 +1,6 @@
-/* $HeadURL$ */
+/**
+ * $Id$
+ */
 package com.untangle.uvm.engine;
 
 import java.io.File;
@@ -11,7 +13,7 @@ import org.apache.catalina.Valve;
 import org.apache.log4j.Logger;
 
 import com.untangle.node.util.OpenSSLWrapper;
-import com.untangle.uvm.LocalAppServerManager;
+import com.untangle.uvm.AppServerManager;
 import com.untangle.uvm.AppServerManager;
 import com.untangle.uvm.networking.NetworkUtil;
 import com.untangle.uvm.security.CertInfo;
@@ -25,7 +27,7 @@ import com.untangle.uvm.UvmContextFactory;
  * TODO A work in progress (currently a disorganized mess of crap taken
  * from the old "main" and "TomcatManager" code.
  */
-class AppServerManagerImpl implements LocalAppServerManager, AppServerManager
+class AppServerManagerImpl implements AppServerManager
 {
     private static final String APACHE_PEM_FILE = "/etc/apache2/ssl/apache.pem";
 
@@ -125,21 +127,6 @@ class AppServerManagerImpl implements LocalAppServerManager, AppServerManager
     public boolean unloadWebApp(String contextRoot)
     {
         return tomcatManager.unloadWebApp(contextRoot);
-    }
-
-    public void resetRootWelcome()
-    {
-        tomcatManager.resetRootWelcome();
-    }
-
-    public void setRootWelcome(String welcomeFile)
-    {
-        tomcatManager.setRootWelcome(welcomeFile);
-    }
-
-    public String getRootWelcome()
-    {
-        return tomcatManager.getRootWelcome();
     }
 
     public boolean regenCert(RFC2253Name dn, int durationInDays)

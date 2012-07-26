@@ -577,7 +577,7 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
         pipelineFoundry.clearChains();
 
         /* Reload Apache */
-        tomcatManager.setRootWelcome(tomcatManager.getRootWelcome());
+        tomcatManager.writeWelcomeFile();
 
         //Inform the AppServer manager that everything
         //else is started.

@@ -20,7 +20,7 @@ import com.untangle.uvm.SettingsManager;
 import com.untangle.node.mail.papi.smtp.SMTPNotifyAction;
 import com.untangle.node.token.Token;
 import com.untangle.node.token.TokenAdaptor;
-import com.untangle.uvm.LocalAppServerManager;
+import com.untangle.uvm.AppServerManager;
 import com.untangle.uvm.UvmContext;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.SessionMatcher;
@@ -507,7 +507,7 @@ public abstract class VirusNodeImpl extends NodeBase implements VirusNode
         }
 
         UvmContext mctx = UvmContextFactory.context();
-        LocalAppServerManager asm = mctx.localAppServerManager();
+        AppServerManager asm = mctx.localAppServerManager();
 
         Valve v = new OutsideValve()
             {
@@ -536,7 +536,7 @@ public abstract class VirusNodeImpl extends NodeBase implements VirusNode
         }
 
         UvmContext mctx = UvmContextFactory.context();
-        LocalAppServerManager asm = mctx.localAppServerManager();
+        AppServerManager asm = mctx.localAppServerManager();
 
         if (asm.unloadWebApp("/virus")) {
             logger.debug("Unloaded Virus WebApp");

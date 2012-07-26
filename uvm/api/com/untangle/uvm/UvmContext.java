@@ -191,7 +191,7 @@ public interface UvmContext
      *
      * @return the singleton
      */
-    LocalAppServerManager localAppServerManager();
+    AppServerManager localAppServerManager();
 
     /**
      * Get the TomcatManager

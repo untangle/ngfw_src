@@ -18,7 +18,7 @@ import org.apache.catalina.connector.Response;
 import org.apache.catalina.valves.ValveBase;
 import org.apache.log4j.Logger;
 
-import com.untangle.uvm.LocalAppServerManager;
+import com.untangle.uvm.AppServerManager;
 import com.untangle.uvm.UvmContext;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.SystemSettings;
@@ -44,7 +44,7 @@ public abstract class OutsideValve extends ValveBase
             }
 
             String msg = request.getLocalPort() == DEFAULT_HTTP_PORT ? httpErrorMessage() : outsideErrorMessage();
-            request.setAttribute(LocalAppServerManager.UVM_WEB_MESSAGE_ATTR, msg);
+            request.setAttribute(AppServerManager.UVM_WEB_MESSAGE_ATTR, msg);
             response.sendError(HttpServletResponse.SC_FORBIDDEN);
             return;
         }

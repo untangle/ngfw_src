@@ -22,7 +22,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import com.untangle.node.cpd.CPDSettings.AuthenticationType;
-import com.untangle.uvm.LocalAppServerManager;
+import com.untangle.uvm.AppServerManager;
 import com.untangle.uvm.UvmContext;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.UvmException;
@@ -530,7 +530,7 @@ public class CPDImpl extends NodeBase implements CPD
         }
 
         UvmContext mctx = UvmContextFactory.context();
-        LocalAppServerManager asm = mctx.localAppServerManager();
+        AppServerManager asm = mctx.localAppServerManager();
 
         Valve v = new OutsideValve()
             {
@@ -559,7 +559,7 @@ public class CPDImpl extends NodeBase implements CPD
         }
 
         UvmContext mctx = UvmContextFactory.context();
-        LocalAppServerManager asm = mctx.localAppServerManager();
+        AppServerManager asm = mctx.localAppServerManager();
 
         if (asm.unloadWebApp("/users")) {
             logger.debug("Unloaded authentication webapp");

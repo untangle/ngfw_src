@@ -14,7 +14,7 @@ import com.untangle.uvm.SettingsManager;
 import com.untangle.node.token.Header;
 import com.untangle.node.token.Token;
 import com.untangle.node.token.TokenAdaptor;
-import com.untangle.uvm.LocalAppServerManager;
+import com.untangle.uvm.AppServerManager;
 import com.untangle.uvm.UvmContext;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.node.NodeSettings;
@@ -427,7 +427,7 @@ public abstract class WebFilterBase extends NodeBase implements WebFilter
         }
 
         UvmContext mctx = UvmContextFactory.context();
-        LocalAppServerManager asm = mctx.localAppServerManager();
+        AppServerManager asm = mctx.localAppServerManager();
 
         org.apache.catalina.Valve v = new com.untangle.uvm.util.OutsideValve()
             {
@@ -458,7 +458,7 @@ public abstract class WebFilterBase extends NodeBase implements WebFilter
         }
 
         UvmContext mctx = UvmContextFactory.context();
-        LocalAppServerManager asm = mctx.localAppServerManager();
+        AppServerManager asm = mctx.localAppServerManager();
 
         if (asm.unloadWebApp("/webfilter")) {
             logger.debug("Unloaded WebFilter WebApp");
