@@ -107,5 +107,6 @@ rm -f /var/log/uvm/schema*
 rm -f /var/log/uvm/iptables*
 rm -f /usr/lib/python2.5/reports/node/untangle_node_template*
 rm -f /usr/share/untangle/conf/openvpn/packet-filter-rules
+find /usr/share/untangle/settings -name '*.tmp' -exec rm -rf {} \;
 
 exit 0
