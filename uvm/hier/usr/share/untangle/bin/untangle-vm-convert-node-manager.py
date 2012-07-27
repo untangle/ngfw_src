@@ -96,11 +96,25 @@ def get_nodes(debug=False):
 
     first = True
     id = 0
+    added_service_nodes = []
     for node in nodes_list:
         tid = node[0];
         name = node[1];
         target_state = (node[2]).upper();
         policy_id = node[3]
+
+        # If its a service node, then check if its already been added
+        # This node type has already to the settings, dont add it again
+        # otherwise mark it as added
+        # Since the nodes are sorted by nodeId, the lowest nodeId will be kept and the
+        # higher nodeId will be dropped on upgrade
+        # dmorris - I added this because we have too many people with dupe service nodes
+        # and I think this is the path of least resistance.
+        if policy_id is None:
+            if name in added_service_nodes:
+                continue;
+            else:
+                added_service_nodes.append(name)
 
         if not first:
             str += '\t\t,\n'
