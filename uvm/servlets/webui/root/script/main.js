@@ -412,10 +412,6 @@ Ext.define("Ung.Main", {
     initExtGlobal: function() {
         // init quick tips
         Ext.QuickTips.init();
-        if(Ext.getVersion().version == "4.0.7") {
-            Ext.util.CSS.updateRule("div.button-column", "padding-top", "0"); //Doesn't work in Chrome
-        }
-        
     },
     // Add the additional 'advanced' VTypes
     initExtVTypes: function() {

@@ -1120,7 +1120,6 @@ Ext.define("Ung.AppItem", {
         this.getEl().addCls("app-item");
 
         this.progressBar = Ext.create('Ext.ProgressBar',{
-            //cls: 'x-progress-bar',//TODO:411 remove because it's no longer needed
             id: 'progressBar_' + this.getId(),
             renderTo: "state_" + this.getId(),
             height: 17,
