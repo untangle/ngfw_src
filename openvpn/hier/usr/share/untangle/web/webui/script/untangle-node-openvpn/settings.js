@@ -1648,8 +1648,6 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
             });
 
             var clientWizard = Ext.create('Ung.Wizard', {
-                height: 450,
-                width: 'auto',
                 modalFinish: true,
                 hasCancel: true,
                 cardDefaults: {
@@ -1662,16 +1660,9 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
             this.clientSetup = Ext.create('Ung.Window', {
                 title: this.i18n._("OpenVPN Client Setup Wizard"),
                 closeAction: "cancelAction",
-                defaults: {},
                 wizard: clientWizard,
-                items: [{
-                    region: "center",
-                    items: [clientWizard],
-                    border: false,
-                    autoScroll: true,
-                    cls: 'window-background',
-                    bodyStyle: 'background-color: transparent;'
-                }],
+                layout: "fit",
+                items: clientWizard,
                 endAction: Ext.bind(function() {
                     this.clientSetup.hide();
                     Ext.destroy(this.clientSetup);
@@ -1903,8 +1894,6 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                 onNext: Ext.bind(this.completeServerWizard, this)
             };
             var serverWizard = Ext.create('Ung.Wizard', {
-                height: 450,
-                width: 'auto',
                 modalFinish: true,
                 hasCancel: true,
                 cardDefaults: {
@@ -1918,16 +1907,9 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                 gridExportsId: gridExports.getId(),
                 title: this.i18n._("OpenVPN Server Setup Wizard"),
                 closeAction: "cancelAction",
-                defaults: {},
                 wizard: serverWizard,
-                items: [{
-                    region: "center",
-                    items: [serverWizard],
-                    border: false,
-                    autoScroll: true,
-                    cls: 'window-background',
-                    bodyStyle: 'background-color: transparent;'
-                }],
+                layout: "fit",
+                items: serverWizard,
                 endAction: Ext.bind(function() {
                     this.serverSetup.hide();
                     Ext.destroy(this.serverSetup);
