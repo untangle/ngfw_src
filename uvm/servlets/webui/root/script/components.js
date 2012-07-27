@@ -2164,7 +2164,8 @@ Ung.MessageManager = {
                         if(!Ext.MessageBox.isVisible() || Ext.MessageBox.title!=msgTitle) {
                             Ext.MessageBox.progress(msgTitle, text);
                         }
-                        var progressIndex = msg.size!=0?parseFloat(msg.bytesDownloaded/ msg.size):0;
+                        var currentPercentComplete = parseFloat(msg.bytesDownloaded) / parseFloat(msg.size != 0 ? msg.size: 1);
+                        var progressIndex = parseFloat(0.99 * currentPercentComplete);
                         Ext.MessageBox.updateProgress(progressIndex, "", text);
                     }
                     if(startUpgradeMode==true) {
