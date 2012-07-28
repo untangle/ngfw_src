@@ -18,7 +18,9 @@ if [ -n "$oldVersion" ]; then
     /etc/init.d/postgresql-8.3 restart ; sleep 5
 
     if dpkg --compare-versions "$oldVersion" le 9.3.0 ; then
+      echo "Dropping events schema..."
       psql -U postgres -c 'DROP SCHEMA events CASCADE' uvm >/dev/null 2>&1
+      echo "Dropping events schema...done"
     fi
 fi
 
