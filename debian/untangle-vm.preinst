@@ -12,7 +12,7 @@ if [ -n "$oldVersion" ]; then
     # remove obsolete events schema
 
     # kill any running reports process
-    ps ax | grep reporting-generate-reports.py | grep -v grep | awk '{print $1}' | xargs kill
+    ps ax | grep reporting-generate-reports.py | grep -v grep | awk '{print $1}' | xargs kill 2>/dev/null
 
     # restart postgres to make sure there are no active queries
     /etc/init.d/postgresql-8.3 restart ; sleep 5
