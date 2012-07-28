@@ -641,9 +641,6 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                     name: 'name',
                     mapping: 'client_name'
                 }, {
-                    name: 'port',
-                    mapping: 'remote_port'
-                }, {
                     name: 'address',
                     mapping: 'remote_address'
                 }, {
@@ -683,9 +680,6 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                     header: this.i18n._("Client Address"),
                     sortable: true,
                     dataIndex: 'address'
-                }, {
-                    header: this.i18n._("Port"),
-                    dataIndex: 'port'
                 }, {
                     header: this.i18n._("KB Sent"),
                     width: 80,
