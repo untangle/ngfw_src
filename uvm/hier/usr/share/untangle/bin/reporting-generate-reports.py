@@ -1,6 +1,6 @@
 #! /usr/bin/env python 
 
-import getopt, logging, mx, os, os.path, re, sys, tempfile, time, shutil
+import getopt, logging, mx, os, os.path, re, sys, tempfile, time, shutil, datetime
 from subprocess import Popen, PIPE
 from psycopg2.extensions import DateFromMx, TimestampFromMx
 from uvm.settings_reader import get_node_settings_item
@@ -173,9 +173,10 @@ def get_report_lengths(date):
 
     monthlySched = get_node_settings_item('untangle-node-reporting','generateMonthlyReports')
     if monthlySched != None:
-         monthlySched = monthlySched.lower()
-         if str(current_day_of_week) in monthlySched or get_day_name(current_day_of_week) in monthlySched or "any" in monthlySched:
-              lengths.append(30)
+         if monthlySched and date.day == 1:              
+              prev_month = date - datetime.timedelta(days=1)
+              prev_month_days = prev_month.days_in_month
+              lengths.append(prev_month_days)
 
     if not lengths:
          lengths.append(1)

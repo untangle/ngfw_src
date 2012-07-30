@@ -122,89 +122,6 @@ if (!Ung.hasResource["Ung.Reporting"]) {
                     xtype: 'fieldset'
                 },
                 items: [{
-                    title: this.i18n._("Generation Time"),
-                    labelWidth: 150,
-                    items: [{
-                        border: false,
-                        cls: 'description',
-                        html: this.i18n._("Scheduled time to generate the reports.")
-                    }, {
-                        xtype: 'timefield',
-                        fieldLabel: this.i18n._('Generation Time'),
-                        name: 'Generation Time',
-                        width: 90,
-                        hideLabel: true,
-                        value: generationTime,
-                        listeners: {
-                            "change": {
-                                fn: Ext.bind(function(elem, newValue) {
-                                    if (newValue && newValue instanceof Date) {
-                                        this.getSettings().generationMinute = newValue.getMinutes();
-                                        this.getSettings().generationHour = newValue.getHours();
-                                    }
-                                }, this)
-                            }
-                        }
-                    }]
-                }, {
-                    title: this.i18n._("Data Retention"),
-                    labelWidth: 150,
-                    items: [{
-                        border: false,
-                        cls: 'description',
-                        html: this.i18n._("Keep event data for this number of days. The smaller the number the lower the disk space requirements and resource usage during report generation.")
-                    },{
-                        xtype: 'numberfield',
-                        fieldLabel: this.i18n._('Data Retention days'),
-                        name: 'Data Retention days',
-                        id: 'reporting_daysToKeepDB',
-                        value: this.getSettings().dbRetention,
-                        labelWidth: 150,
-                        labelAlign: 'right',
-                        width: 200,
-                        allowDecimals: false,
-                        allowNegative: false,
-                        minValue: 1,
-                        maxValue: 65,
-                        hideTrigger:true,
-                        listeners: {
-                            "change": {
-                                fn: Ext.bind(function(elem, newValue) {
-                                    this.getSettings().dbRetention = newValue;
-                                }, this)
-                            }
-                        }
-                    }]
-                },  {
-                    title: this.i18n._("Reports Retention"),
-                    labelWidth: 150,
-                    items: [{
-                        border: false,
-                        cls: 'description',
-                        html: this.i18n._("Keep old reports on the server for this number of days.")
-                    },{
-                        xtype: 'numberfield',
-                        fieldLabel: this.i18n._('Reports Retention days'),
-                        name: 'Reports Retention days',
-                        id: 'reporting_daysToKeepFiles',
-                        value: this.getSettings().fileRetention,
-                        labelWidth:150,
-                        labelAlign:'right',
-                        width: 200,
-                        allowDecimals: false,
-                        allowNegative: false,
-                        minValue: 1,
-                        maxValue: 90,
-                        hideTrigger:true,
-                        listeners: {
-                            "change": {
-                                fn: Ext.bind(function(elem, newValue) {
-                                    this.getSettings().fileRetention = newValue;
-                                }, this)
-                            }
-                        }
-                    }]
-                }, {
                     title: this.i18n._("Daily Reports"),
                     items: [{
                         border: false,
@@ -245,15 +162,75 @@ if (!Ung.hasResource["Ung.Reporting"]) {
                     items: [{
                         border: false,
                         cls: 'description',
-                        html: this.i18n._('Monthly Reports covers the previous month. Monthly reports will be generated on the selected days.')
+                        html: this.i18n._('Monthly Reports are generated on the 1st and cover the previous month.')
                     },  {
-                        xtype: 'udayfield',
-                        name: 'Monthly Days',
-                        value: this.getSettings().generateMonthlyReports,
+                        xtype: 'checkbox',
+                        name: "Monthly Enabled",
+                        boxLabel: this.i18n._("Enabled"),
+                        hideLabel: true,
+                        checked: this.getSettings().generateMonthlyReports,
                         listeners: {
                             "change": {
                                 fn: Ext.bind(function(elem, newValue) {
                                     this.getSettings().generateMonthlyReports = elem.getValue();
+                                }, this)
+                            }
+                        }
+                    }]
+                }, {
+                    title: this.i18n._("Generation Time"),
+                    labelWidth: 150,
+                    items: [{
+                        border: false,
+                        cls: 'description',
+                        html: this.i18n._("Scheduled time to generate the reports.")
+                    }, {
+                        xtype: 'timefield',
+                        fieldLabel: this.i18n._('Generation Time'),
+                        name: 'Generation Time',
+                        width: 90,
+                        hideLabel: true,
+                        value: generationTime,
+                        listeners: {
+                            "change": {
+                                fn: Ext.bind(function(elem, newValue) {
+                                    if (newValue && newValue instanceof Date) {
+                                        this.getSettings().generationMinute = newValue.getMinutes();
+                                        this.getSettings().generationHour = newValue.getHours();
+                                    }
+                                }, this)
+                            }
+                        }
+                    }]
+                }, {
+                    title: this.i18n._("Data Retention"),
+                    labelWidth: 150,
+                    items: [{
+                        border: false,
+                        cls: 'description',
+                        html: this.i18n._("Keep event data for this number of days. The smaller the number the lower the disk space requirements and resource usage during report generation.")
+                    },{
+                        border: false,
+                        cls: "description",
+                        html: Ext.String.format("{0}" + this.i18n._("Warning") + ":{1} " +  this.i18n._("Depending on the server and network, increasing this value may cause performance issues."),"<font color=\"red\">","</font>")
+                    },{
+                        xtype: 'numberfield',
+                        fieldLabel: this.i18n._('Data Retention days'),
+                        name: 'Data Retention days',
+                        id: 'reporting_daysToKeepDB',
+                        value: this.getSettings().dbRetention,
+                        labelWidth: 150,
+                        labelAlign: 'right',
+                        width: 200,
+                        allowDecimals: false,
+                        allowNegative: false,
+                        minValue: 1,
+                        maxValue: 65,
+                        hideTrigger:true,
+                        listeners: {
+                            "change": {
+                                fn: Ext.bind(function(elem, newValue) {
+                                    this.getSettings().dbRetention = newValue;
                                 }, this)
                             }
                         }

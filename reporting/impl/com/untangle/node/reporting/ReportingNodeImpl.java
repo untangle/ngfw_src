@@ -174,6 +174,11 @@ public class ReportingNodeImpl extends NodeBase implements ReportingNode, Report
         this.eventWriter.forceFlush();
     }
 
+    public double getAvgWriteTimePerEvent()
+    {
+        return this.eventWriter.getAvgWriteTimePerEvent();
+    }
+    
     public ArrayList getEvents( final String query, final Long policyId, final int limit )
     {
         return this.eventReader.getEvents( query, policyId, limit );

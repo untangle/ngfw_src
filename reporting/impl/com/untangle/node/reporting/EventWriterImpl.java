@@ -46,6 +46,13 @@ public class EventWriterImpl implements Runnable
     private long lastLoggedWarningTime = System.currentTimeMillis();
 
     /**
+     * This stores the approximate write times of events
+     * It is updated each time the events are flushed
+     * using a weighted mixture of the current value with the old value
+     */
+    private double avgWriteTimePerEvent = 0.0;
+    
+    /**
      * This is a queue of incoming events
      */
     private final BlockingQueue<LogEvent> inputQueue = new LinkedBlockingQueue<LogEvent>();
@@ -178,6 +185,11 @@ public class EventWriterImpl implements Runnable
         }
     }
 
+    public double getAvgWriteTimePerEvent()
+    {
+        return this.avgWriteTimePerEvent;
+    }
+    
     /**
      * write the logQueue to the database
      */
@@ -279,7 +291,14 @@ public class EventWriterImpl implements Runnable
             }
 
             long t1 = System.currentTimeMillis();
-            logger.info("persist(): " + String.format("%5d",count) + " events [" + String.format("%5d",(t1-t0)) + " ms] [" + String.format("%4.1f",((t1-t0)/((float)count))) + " avg] " + mapOutput);
+            long elapsedTime = t1-t0;
+            double avgTime = ((double)elapsedTime/((double)count));
+            logger.info("persist(): " + String.format("%5d",count) + " events [" + String.format("%5d",elapsedTime) + " ms] [" + String.format("%4.1f",avgTime) + " avg] " + mapOutput);
+
+            /**
+             * update avgWriteTimePerEvent
+             */
+            this.avgWriteTimePerEvent = (this.avgWriteTimePerEvent * .8) + (avgTime * .2);
         }
     }
 

@@ -19,7 +19,7 @@ import com.untangle.uvm.node.DayOfWeekMatcher;
 public class ReportingSettings implements Serializable, JSONString
 {
     private Integer dbRetention = 7; // days
-    private Integer fileRetention = 30; // days
+    private Integer fileRetention = 90; // days
     private Integer generationHour = 2;
     private Integer generationMinute = 0;
     private boolean emailDetail = false;
@@ -30,7 +30,7 @@ public class ReportingSettings implements Serializable, JSONString
 
     private DayOfWeekMatcher generateDailyReports = new DayOfWeekMatcher("any");
     private DayOfWeekMatcher generateWeeklyReports = new DayOfWeekMatcher("sunday");
-    private DayOfWeekMatcher generateMonthlyReports = new DayOfWeekMatcher("");
+    private boolean generateMonthlyReports = false;
 
     private String dbHost = "localhost";
     private int    dbPort = 5432;
@@ -75,8 +75,8 @@ public class ReportingSettings implements Serializable, JSONString
     public DayOfWeekMatcher getGenerateWeeklyReports() { return this.generateWeeklyReports; }
     public void setGenerateWeeklyReports( DayOfWeekMatcher generateWeeklyReports ) { this.generateWeeklyReports = generateWeeklyReports; }
 
-    public DayOfWeekMatcher getGenerateMonthlyReports() { return this.generateMonthlyReports; }
-    public void setGenerateMonthlyReports( DayOfWeekMatcher generateMonthlyReports ) { this.generateMonthlyReports = generateMonthlyReports; }
+    public boolean getGenerateMonthlyReports() { return this.generateMonthlyReports; }
+    public void setGenerateMonthlyReports( boolean generateMonthlyReports ) { this.generateMonthlyReports = generateMonthlyReports; }
 
     public boolean isSyslogEnabled() { return syslogEnabled; }
     public void setSyslogEnabled( boolean syslogEnabled ) { this.syslogEnabled = syslogEnabled; }

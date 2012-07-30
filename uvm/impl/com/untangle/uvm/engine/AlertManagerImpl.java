@@ -18,6 +18,7 @@ import com.untangle.uvm.util.I18nUtil;
 import com.untangle.uvm.node.Node;
 import com.untangle.uvm.node.NodeSettings;
 import com.untangle.uvm.node.PolicyManager;
+import com.untangle.uvm.node.Reporting;
 import com.untangle.uvm.networking.NetworkConfiguration;
 import com.untangle.uvm.networking.ConnectionStatus;
 import com.untangle.uvm.networking.InterfaceConfiguration;
@@ -33,11 +34,8 @@ import com.untangle.uvm.networking.InterfaceConfiguration;
  * semi-frequent power loss?
  * disk almost full?
  * modified sources.list?
- * high reports data retention time?
  * ping 8.8.8.8 for wan failover test?
  * change ifconfig to check percentage of errors
- * test RBL instead of checking 6 DNSs
- * have you messed with your casing settings
  */
 class AlertManagerImpl implements AlertManager
 {
@@ -62,6 +60,7 @@ class AlertManagerImpl implements AlertManager
         try { testBridgeBackwards(alertList); } catch (Exception e) { logger.warn("Alert test exception",e); }
         try { testInterfaceErrors(alertList); } catch (Exception e) { logger.warn("Alert test exception",e); }
         try { testSpamDNSServers(alertList); } catch (Exception e) { logger.warn("Alert test exception",e); }
+        try { testEventWriteTime(alertList); } catch (Exception e) { logger.warn("Alert test exception",e); }
 
         return alertList;
     }
@@ -423,13 +422,38 @@ class AlertManagerImpl implements AlertManager
                         alertText += " (";
                         alertText += intf.getName();
                         alertText += ",";
-                        alertText += dnsServer;
-                        alertText += ") fails to resolve DNSBL queries.";
+                        alertText += dnsServer + ")";
+                        alertText += i18nUtil.tr(" fails to resolve DNSBL queries.");
 
                         alertList.add(alertText);
                     }
                 }
             }
+        }
+    }
+
+    /**
+     * This test that the event writing time on average is not "too" slow.
+     */
+    private void testEventWriteTime(List<String> alertList)
+    {
+        final double MAX_AVG_TIME_WARN = 15.0;
+            
+        Reporting reporting = (Reporting) UvmContextFactory.context().nodeManager().node("untangle-node-reporting");
+        /* if reports not installed - no events - just return */
+        if (reporting == null)
+            return;
+        
+        double avgTime = reporting.getAvgWriteTimePerEvent();
+        if (avgTime > MAX_AVG_TIME_WARN) {
+            String alertText = "";
+            alertText += i18nUtil.tr("Event processing is slow");
+            alertText += " (";
+            alertText += String.format("%.1f",avgTime) + " ms";
+            alertText += "). ";
+            alertText += i18nUtil.tr("Data retention time may be too high. Check Reports settings.");
+
+            alertList.add(alertText);
         }
     }
     

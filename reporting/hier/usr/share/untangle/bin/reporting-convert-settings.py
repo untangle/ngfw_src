@@ -144,11 +144,13 @@ def get_settings(tid, debug=False):
     # just revert to sunday-only
     weeklySched = "1"
 
-    monthlySched = "1"
+    #monthlySched = "1"
+    monthlySched = False
     if monthly_n_day_of_wk != -1:
-        monthlySched = str(monthly_n_day_of_wk)
+        #monthlySched = str(monthly_n_day_of_wk)
+        monthlySched = True
     if monthly_n_daily:
-        monthlySched = "any"
+        monthlySched = True
 
     if db_retention <= 7:
         monthlySched = ""
@@ -166,7 +168,7 @@ def get_settings(tid, debug=False):
     str += '\t"generateWeeklyReports": "%s",\n' % weeklySched
     str += '\t"generateMonthlyReports": "%s",\n' % monthlySched
     str += '\t"dbRetention": "%s",\n' % db_retention
-    str += '\t"fileRetention": "%s"\n' % file_retention
+    str += '\t"fileRetention": "%s"\n' % 90
     str += '}\n'
     
     return str
