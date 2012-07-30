@@ -240,11 +240,14 @@ public class TomcatManagerImpl implements TomcatManager
         FileWriter w = null;
         try {
             w = new FileWriter(WELCOME_FILE);
-            w.write("RewriteEngine On\n");
-            w.write("RewriteRule ^/index.html$ " + WELCOME_URI + " [R=302]\n");
-            w.write("RewriteRule ^/$ " + WELCOME_URI + " [R=302]\n");
+
+            // RewriteRule doesnt handle HTTPS port correctly
+            //w.write("RewriteEngine On\n");
+            //w.write("RewriteRule ^/index.html$ " + WELCOME_URI + " [R=302]\n");
+            //w.write("RewriteRule ^/$ " + WELCOME_URI + " [R=302]\n");
+
             // old apache way
-            //w.write("RedirectMatch 302 ^/index.html " + WELCOME_URI + "\n");
+            w.write("RedirectMatch 302 ^/index.html " + WELCOME_URI + "\n");
         } catch (IOException exn) {
             logger.warn("could not write homepage redirect", exn);
         } finally {
