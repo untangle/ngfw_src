@@ -1,7 +1,6 @@
 #!/usr/bin/python
 # $Id: mailer.py,v 1.00 2012/05/30 11:51:31 dmorris Exp $
 
-
 PREFIX = '@PREFIX@'
 REPORTS_PYTHON_DIR = '%s/usr/lib/python2.5' % PREFIX
 REPORTS_OUTPUT_BASE = '%s/usr/share/untangle/web/reports' % PREFIX
@@ -56,8 +55,7 @@ from uvm.settings_reader import get_uvm_settings_item
 
 _ = reports.i18n_helper.get_translation('untangle-vm').lgettext
 
-def mail_reports(end_date, report_days, file, mail_reports,
-                 attach_csv, attachment_size_limit):
+def mail_reports(end_date, report_days, file, mail_reports, attach_csv, attachment_size_limit):
     if attach_csv:
         zip_dir = __make_zip_file(end_date, report_days, mail_reports)
         zip_file = '%s/reports.zip' % zip_dir
@@ -149,7 +147,8 @@ def __get_mail_info():
 
         if receivers_list != None:
             for r in receivers_list['list']:
-                receivers.append(r['emailAddress'])
+                if r['emailSummaries']:
+                    receivers.append(r['emailAddress'])
     except:
         logger.warn('could not get mail info', exc_info=True)
 

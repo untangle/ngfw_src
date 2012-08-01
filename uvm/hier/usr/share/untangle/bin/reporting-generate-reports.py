@@ -304,7 +304,7 @@ if not create_schemas:
               if not no_mail and not simulate:
                    logger.info("About to email report summaries for %s days" % (report_days,))          
                    f = reports.pdf.generate_pdf(reports_output_base, end_date, report_days, mail_reports)
-                   reports.mailer.mail_reports(end_date, report_days, f, mail_reports, attach_csv=attach_csv, attachment_size_limit=attachment_size_limit)
+                   reports.mailer.mail_reports(end_date, report_days, f, mail_reports, attach_csv, attachment_size_limit)
                    os.remove(f)
      except Exception, e:
           logger.critical("Exception while building report: %s" % (e,), exc_info=True)
