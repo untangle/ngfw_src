@@ -38,7 +38,7 @@
   <c:set var="pageTitle" scope="request">
     <uvm:i18n p0="${companyName}" p1="${currentAddress}">{0} | Quarantine Digest for: {1}</uvm:i18n>
   </c:set>
-	
+    
   <uvm:script src="/ext4/ext-all-debug.js"/>
   <uvm:script src="/ext4/examples/ux/data/PagingMemoryProxy.js"/>
   <uvm:script src="/ext4/examples/ux/CheckColumn.js"/>
@@ -46,22 +46,30 @@
   <c:set var="javascript" scope="request">
     <uvm:inlineScript>
       <![CDATA[
-		 console.log("inbox.jspx");
-         var inboxDetails = {
-             token : '${currentAuthToken}',
-             totalCount: ${q:totalMessageCount(pageContext)},
-             address : '${currentAddress}',
-
-             /* This is the address the message is remapped to */
-             forwardAddress : '${q:remappedTo(pageContext, false )}',
-             
-             /* This is the number of days a message will be saved in the quarantine for */
-             quarantineDays : ${q:maxDaysToIntern( pageContext )},
-
-             safelistData : ${q:jsonSafelist(pageContext)},
-         
-             remapsData : ${q:jsonReceivingRemaps(pageContext)}
-         }
+        if(typeof console === "undefined") {
+            //Prevent console.log triggering errors on browsers without console support
+            var console = {
+                log: function() {},
+                error: function() {},
+                debug: function() {}
+            };
+        }
+      
+        var inboxDetails = {
+            token : '${currentAuthToken}',
+            totalCount: ${q:totalMessageCount(pageContext)},
+            address : '${currentAddress}',
+        
+            /* This is the address the message is remapped to */
+            forwardAddress : '${q:remappedTo(pageContext, false )}',
+            
+            /* This is the number of days a message will be saved in the quarantine for */
+            quarantineDays : ${q:maxDaysToIntern( pageContext )},
+        
+            safelistData : ${q:jsonSafelist(pageContext)},
+        
+            remapsData : ${q:jsonReceivingRemaps(pageContext)}
+        }
       ]]>
     </uvm:inlineScript>
 
