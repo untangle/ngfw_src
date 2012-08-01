@@ -569,7 +569,7 @@ public class PipelineFoundryImpl implements PipelineFoundry
         if (policyManager == null)
             return false;
 
-        for ( Long parentId = policyId ; parentId != null ; parentId = policyManager.getParentPolicyId( parentId ) ) {
+        for ( Long parentId = policyManager.getParentPolicyId( policyId ) ; parentId != null ; parentId = policyManager.getParentPolicyId( parentId ) ) {
             if ( parentId.equals( policyId ) )
                 return true;
         }
