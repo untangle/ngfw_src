@@ -5860,6 +5860,7 @@ Ext.define('Ung.RuleBuilder', {
                     res='<input type="text" size="20" class="x-form-text x-form-field rule_builder_value" onclick="Ext.getCmp(\''+this.getId()+'\').openRowEditor(\''+record.getId()+'\', \''+rule.editor.getId()+'\', this)" onchange="Ext.getCmp(\''+this.getId()+'\').changeRowValue(\''+record.getId()+'\', this)" value="'+value+'"/>';
                     break;
                   case "checkgroup":
+                    if (name == "PROTOCOL" && (value == "tcp&udp" || value == "udp&tcp")) value = "any"; // hack to support obsolete protocol matcher syntax
                     var values_arr=(value!=null && value.length>0)?value.split(","):[];
                     var out=[];
                     for(var count=0; count<rule.values.length; count++) {

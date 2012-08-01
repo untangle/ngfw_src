@@ -25,7 +25,6 @@ public class ProtocolMatcher
     private static final String MARKER_ALL = "all";
     private static final String MARKER_NONE = "none";
     private static final String MARKER_SEPERATOR = ",";
-    private static final String MARKER_SEPERATOR2 = "&"; 
     private static final String MARKER_TCP = "tcp";
     private static final String MARKER_UDP = "udp";
 
@@ -134,8 +133,17 @@ public class ProtocolMatcher
     private void initialize( String matcher )
     {
         matcher = matcher.toLowerCase().trim().replaceAll("\\s","");
-        this.matcher = matcher;
 
+        /**
+         * Obsolote matcher syntax
+         */
+        if ("tcp&udp".equals(matcher))
+            matcher = "any";
+        if ("udp&tcp".equals(matcher))
+            matcher = "any";
+
+        this.matcher = matcher;
+        
         /**
          * If it contains a comma it must be a list of protocol matchers
          * if so, go ahead and initialize the children
@@ -156,26 +164,6 @@ public class ProtocolMatcher
             return;
         }
 
-        /**
-         * If it contains a ampersand it must be a list of protocol matchers
-         * if so, go ahead and initialize the children
-         */
-        if (matcher.contains(MARKER_SEPERATOR2)) {
-            this.type = ProtocolMatcherType.LIST;
-
-            this.children = new LinkedList<ProtocolMatcher>();
-
-            String[] results = matcher.split(MARKER_SEPERATOR2);
-            
-            /* check each one */
-            for (String childString : results) {
-                ProtocolMatcher child = new ProtocolMatcher(childString);
-                this.children.add(child);
-            }
-
-            return;
-        }
-        
         /**
          * Check the common constants
          */
