@@ -2129,7 +2129,7 @@ Ung.MessageManager = {
                                     Ext.MessageBox.hide();
                                     console.log("Applying Upgrades...");
                                     var applyingUpgradesWindow=Ext.create('Ext.window.MessageBox', {
-                                        minProgressWidth: 360,
+                                        minProgressWidth: 360
                                     });
                                     applyingUpgradesWindow.wait(i18n._("Applying Upgrades..."), i18n._("Please wait"), {
                                         interval: 500,

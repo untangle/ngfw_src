@@ -478,7 +478,7 @@ Ext.define("Ung.Main", {
             }
             return true;
           },
-          passwordText: i18n._('Passwords do not match'),
+          passwordText: i18n._('Passwords do not match')
         });
     },
     upgrade: function () {

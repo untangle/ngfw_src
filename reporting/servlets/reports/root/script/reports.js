@@ -2,6 +2,8 @@ Ext.namespace('Ung');
 
 var rpc = null;
 var reports = null;
+var testMode = false;
+
 function getWinHeight(){
     if(!window.innerHeight){
         return window.screen.height - 190;
@@ -1347,14 +1349,19 @@ Ext.define('Ung.ReportDetails', {
             columns.push(col);
             fields.push({ name: c.name });
         }
+        var store = Ext.create('Ext.data.Store', {
+            fields: fields,
+            proxy: {
+                type: 'pagingmemory',
+                reader: {
+                    type: 'array'
+                }
+            },
+            autoLoad: {params: {start: 0, limit: 40}},
+            remoteSort: true
+        });
 
-        var store = Ext.create('Ext.data.ArrayStore',{
-                fields: fields,
-                remoteSort:true,
-                data: [] ,
-                autoLoad: {params: {start: 0, limit: 40}}
-        }),
-        pagingBar = Ext.create('Ext.toolbar.Paging', {
+        var pagingBar = Ext.create('Ext.toolbar.Paging', {
             pageSize: 40,
             store: store,
             displayInfo: true,
@@ -1408,6 +1415,27 @@ Ext.define('Ung.ReportDetails', {
                                     Ext.MessageBox.alert(title, message);
                                 }
                                 return;
+                            }
+                            //For Test only
+                            if(testMode && result.list.length==0) {
+                                var getTestRecord=function(index, fields) {
+                                    var rec= [];
+                                    var property;
+                                    for (var i=0; i<fields.length ; i++) {
+                                        property = (fields[i].mapping != null)?fields[i].mapping:fields[i].name
+                                        rec.push(
+                                            (property=='id')?index+1:
+                                            (property=='time_stamp')?{javaClass:"java.util.Date", time: (new Date(i*10000)).getTime()}:
+                                                property+"_"+(i*index)+"_"+Math.floor((Math.random()*10)));
+                                    }
+                                    return rec;
+                                };
+
+                                var emptyRec={};
+                                var length = Math.floor((Math.random()*120));
+                                for(var i=0; i<length; i++) {
+                                    result.list.push({list:getTestRecord(i, fields)});
+                                }
                             }
 
                             var data = [];
