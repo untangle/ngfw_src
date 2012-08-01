@@ -35,8 +35,27 @@ def get_syslog_setting(debug=False):
 
     return str;
 
+def get_email_list(debug=False):
+    if (debug):
+        print "Getting syslog setting. "
+
+    settings_list = sql_helper.run_sql("select report_email from settings.u_mail_settings", debug=debug)
+
+    if settings_list == None:
+        return []
+    if len(settings_list) != 1:
+        print "WARNING: dupe email list settings"
+
+    report_email = settings_list[0][0];
+    if (report_email == None or report_email == ""):
+        return []
+    else:
+        return report_email.split(",")
+
+
 def get_users(userlist, debug=False):
     user_list = userlist.split(",")
+    email_list = get_email_list(debug)
 
     if (debug):
         print "Getting user list from: ",userlist
@@ -53,12 +72,12 @@ def get_users(userlist, debug=False):
         if user == None or len(user) == 0:
             online_access = False
             password = ""
-            email_summaries = True;
+            email_summaries = (email in email_list);
         else:
             print user
             online_access = user[0][1]
             password = user[0][2]
-            email_summaries = (email in userlist);
+            email_summaries = (email in email_list);
 
         if not first:
             str += '\t\t\t,\n'
