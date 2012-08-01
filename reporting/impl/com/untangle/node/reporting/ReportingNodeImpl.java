@@ -284,6 +284,11 @@ public class ReportingNodeImpl extends NodeBase implements ReportingNode, Report
         this.eventWriter.stop();
     }
 
+    @Override
+    protected void preDestroy() 
+    {
+        UvmContextFactory.context().tomcatManager().unloadWebApp("/reports");
+    }
     
     private ReportingSettings initSettings()
     {
