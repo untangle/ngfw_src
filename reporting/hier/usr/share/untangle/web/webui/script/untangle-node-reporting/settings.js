@@ -56,20 +56,6 @@ if (!Ung.hasResource["Ung.Reporting"]) {
                             iconCls: 'action-icon',
                             handler: Ext.bind(function() {
                                 var viewReportsUrl = "../reports/";
-                                var breadcrumbs = [{
-                                    title: i18n._(rpc.currentPolicy.name),
-                                    action: Ext.bind(function() {
-                                        main.iframeWin.closeActionFn();
-                                        this.cancelAction();
-                                    }, this)
-                                }, {
-                                    title: this.node.nodeProperties.displayName,
-                                    action: Ext.bind(function() {
-                                        main.iframeWin.closeActionFn();
-                                    }, this)
-                                }, {
-                                    title: this.i18n._('View Reports')
-                                }];
                                 window.open(viewReportsUrl);
                             }, this)
                         }]

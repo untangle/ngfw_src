@@ -388,8 +388,13 @@ Ext.define("Ung.Main", {
         iframeWin.setTitle(title);
         window.frames["iframeWin_iframe"].location.href = url;
     },
-    setIFrameLocation: function (url) {
-        window.frames["iframeWin_iframe"].location.href = url;
+    closeStore: function() {
+        if(this.iframeWin!=null && this.iframeWin.isVisible() ) {
+            this.iframeWin.closeWindow();
+        } else if(this.IEWin != null) {
+            this.IEWin.close();
+            this.IEWin=null;
+        }
     },
 
     initExtI18n: function() {
@@ -779,6 +784,24 @@ Ext.define("Ung.Main", {
 
         Ung.Util.RetryHandler.retry( rpc.toolboxManager.getRackView, rpc.toolboxManager, [ rpc.currentPolicy.policyId ], callback, 1500, 10 );
     },
+    reloadLicenses: function() {
+        main.getLicenseManager().reloadLicenses(Ext.bind(function(result,exception) {
+            if(Ung.Util.handleException(exception)) return;
+            
+            var callback = Ext.bind(function(result,exception) {
+                if(Ung.Util.handleException(exception)) return;
+                rpc.rackView=result;
+                for (var i = 0; i < main.nodes.length; i++) {
+                    var nodeCmp = Ung.Node.getCmp(main.nodes[i].nodeId);
+                    if (nodeCmp && nodeCmp.license) {
+                        nodeCmp.updateLicense(rpc.rackView.licenseMap.map[nodeCmp.name]);
+                    }
+                }
+            }, this);
+
+            Ung.Util.RetryHandler.retry( rpc.toolboxManager.getRackView, rpc.toolboxManager, [ rpc.currentPolicy.policyId ], callback, 1500, 10 );
+        }, this));
+    },
 
     installNode: function(packageDesc, appItem) {
         if(packageDesc===null) {
@@ -800,12 +823,6 @@ Ext.define("Ung.Main", {
             }
         },packageDesc), packageDesc.name, rpc.currentPolicy.policyId);
     },
-    /**
-     *  Returns the reference to the IE window if one exists
-     **/         
-    getIEWin: function() {
-        return this.IEWin;
-    },
     getIframeWin: function() {
         if(this.iframeWin==null) {
             this.iframeWin=Ext.create("Ung.Window",{
@@ -815,8 +832,8 @@ Ext.define("Ung.Main", {
                 items: {
                     html: '<iframe id="iframeWin_iframe" name="iframeWin_iframe" width="100%" height="100%" frameborder="0"/>'
                 },
-                closeAction:'closeActionFn',
-                closeActionFn: function() {
+                closeWindow: function() {
+                    main.reloadLicenses();
                     this.setTitle('');
                     this.hide();
                     window.frames["iframeWin_iframe"].location.href="/webui/blank.html";
@@ -833,17 +850,16 @@ Ext.define("Ung.Main", {
                 defaults: {},
                 breadcrumbs: [{
                     title: i18n._("Configuration"),
-                    action: Ext.bind(function() {
-                        main.iframeWin.closeActionFn();
-                    }, this)
+                    action: function() {
+                        main.closeNetworking();
+                    }
                 }, {
                     title: i18n._('Networking')
                 }],
                 items: {
                     html: '<iframe id="networkingWin_iframe" name="networkingWin_iframe" width="100%" height="100%" frameborder="0"/>'
                 },
-                closeAction:'closeActionFn',
-                closeActionFn: function() {
+                closeWindow: function() {
                     this.setTitle('');
                     this.hide();
                     window.frames["networkingWin_iframe"].location.href="/webui/blank.html";
@@ -852,15 +868,10 @@ Ext.define("Ung.Main", {
         }
         return this.networkingWin;
     },
-    isIframeWinVisible: function() {
-        return ((this.iframeWin!=null) && (this.iframeWin.isVisible()));
-    },
-    openInRightFrame: function(title, url) {
-        var iframeWin=main.getIframeWin();
-        iframeWin.setSizeToRack();
-        iframeWin.show();
-        iframeWin.setTitle(title);
-        window.frames["iframeWin_iframe"].location.href=url;
+    closeNetworking: function() {
+        if(this.networkingWin!=null && this.networkingWin.isVisible() ) {
+            this.networkingWin.closeWindow();
+        }
     },
     // load Config
     loadConfig: function() {
@@ -1324,19 +1335,7 @@ Ext.define("Ung.Main", {
      *  Hides the welcome screen
      */         
     hideWelcomeScreen: function() {
-        var win = null;
-        if(Ext.isIE===true) {
-            win = this.IEWin;
-            if(win != null) {
-                win.close();
-                this.IEWin = null;
-            }
-        }
-        if ( main.isIframeWinVisible()) {
-            main.getIframeWin().closeActionFn();
-        }
-        if(main.networkingWin != null && main.networkingWin.isVisible()) {
-            main.getNetworkingWin().closeActionFn();
-        }            
+        main.closeStore();
+        main.closeNetworking();
     }
 });

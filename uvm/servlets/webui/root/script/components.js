@@ -2023,13 +2023,7 @@ Ung.MessageManager = {
                             if(!msg.installed) {
                                 var appItemDisplayName=msg.packageDesc.type=="TRIAL"?main.findLibItemDisplayName(msg.packageDesc.fullVersion):msg.packageDesc.displayName;
                                 Ung.AppItem.updateState(appItemDisplayName, "download");
-                                if ( main.isIframeWinVisible()) {
-                                    main.getIframeWin().closeActionFn();
-                                }
-                                if(main.IEWin != null) {
-                                    main.IEWin.close();
-                                    main.IEWin=null;
-                                }
+                                main.closeStore();
                                 rpc.toolboxManager.installAndInstantiate(Ext.bind(function(result, exception) {
                                     if (exception)
                                         Ung.AppItem.updateState(appItemDisplayName, null);
@@ -2045,9 +2039,7 @@ Ung.MessageManager = {
                                 }, this),msg.packageDesc.name);
                                 rpc.toolboxManager.uninstall(Ext.bind(function(result, exception) {
                                     if(Ung.Util.handleException(exception)) return;
-                                    if ( main.isIframeWinVisible()) {
-                                        main.getIframeWin().closeActionFn();
-                                    }
+                                    main.closeStore();
                                 }, this),msg.packageDesc.name);
                             }
                         } else if(msg.javaClass.indexOf("NodeInstantiatedMessage") != -1) {
