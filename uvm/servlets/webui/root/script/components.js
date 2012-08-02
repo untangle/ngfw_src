@@ -3752,13 +3752,6 @@ Ext.define('Ung.RowEditorWindow', {
             }
         }
         this.setPosition(objPosition);
-        if(Ext.isIE) {
-            var cancelButton=Ext.getCmp("cancel_"+this.getId());
-            if(cancelButton) {
-                cancelButton.hide();
-                cancelButton.show();
-            }
-        }
     },
     // populate is called whent a record is edited, tot populate the edit window
     // This function should be deprecated for populateTree.
@@ -5135,13 +5128,6 @@ Ext.define('Ung.ImportSettingsWindow', {
             }
         }
         this.setPosition(objPosition);
-        if(Ext.isIE) {
-            var cancelButton=Ext.getCmp("cancel_"+this.getId());
-            if(cancelButton) {
-                cancelButton.hide();
-                cancelButton.show();
-            }
-        }
     },
     importSettingsSuccess: function (form, action) {
         var result = action.result;
