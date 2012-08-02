@@ -573,6 +573,11 @@ public class PipelineFoundryImpl implements PipelineFoundry
          * Recursively check the parent rack of the nodePolicy
          */
         for ( Long parentId = policyManager.getParentPolicyId( policyId ) ; parentId != null ; parentId = policyManager.getParentPolicyId( parentId ) ) {
+            /**
+             * does this node live in the parent of the session's policy?
+             * if so then this node should process this session
+             * dupes will be removed later...
+             */
             if ( parentId.equals( nodePolicy ) )
                 return true;
         }
