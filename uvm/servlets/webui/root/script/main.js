@@ -394,6 +394,7 @@ Ext.define("Ung.Main", {
         } else if(this.IEWin != null) {
             this.IEWin.close();
             this.IEWin=null;
+            this.reloadLicenses();
         }
     },
 
@@ -833,10 +834,10 @@ Ext.define("Ung.Main", {
                     html: '<iframe id="iframeWin_iframe" name="iframeWin_iframe" width="100%" height="100%" frameborder="0"/>'
                 },
                 closeWindow: function() {
-                    main.reloadLicenses();
                     this.setTitle('');
                     this.hide();
                     window.frames["iframeWin_iframe"].location.href="/webui/blank.html";
+                    main.reloadLicenses();
                 }
             });
         }
