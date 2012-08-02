@@ -49,35 +49,13 @@ import com.untangle.uvm.vnet.event.UDPSessionEvent;
  * One dispatcher per ArgonConnector.  This where all the new session logic
  * lives, and the event dispatching.
  */
-class Dispatcher implements com.untangle.uvm.argon.NewSessionEventListener
+public class Dispatcher implements com.untangle.uvm.argon.NewSessionEventListener
 {
+    public static final String SESSION_ID_MDC_KEY = "SessionID";
 
-    /**
-     * 
-     * Note we only send a heartbeat once we haven't communicated with
-     * argonConnector in that long.  any command or new session (incoming
-     * command) resets the timer.
-     */
-    public static final int DEFAULT_HEARTBEAT_INTERVAL = 30000;
-    public static final int DEFAULT_CHECKUP_RESPONSE_TIMEOUT = 10000;
-
-    /**
-     * 8 seconds is the longest interval we wait between each attempt
-     * to try to connect to ArgonConnector.
-     */
-    public static final int MAX_CONNECT_BACKOFF_TIME = 8000;
-
-    public static final int TCP_READ_BUFFER_SIZE = 8192;
-    public static final int UDP_MAX_PACKET_SIZE  = 16384;
+    private static final int TCP_READ_BUFFER_SIZE = 8192;
+    private static final int UDP_MAX_PACKET_SIZE  = 16384;
     
-    /**
-     * Set to true to disable use of the session and newSession thread
-     * pools and run everything in the command/session dispatchers.
-     */
-    public static final boolean HANDLE_ALL_INLINE = true;
-
-    static final String SESSION_ID_MDC_KEY = "SessionID";
-
     private Logger logger;
 
     private final ArgonConnectorImpl argonConnector;
@@ -93,14 +71,6 @@ class Dispatcher implements com.untangle.uvm.argon.NewSessionEventListener
     private static final String STAT_TCP_SESSION_REQUESTS = "tcp-session-requests";
     private static final String STAT_UDP_SESSION_REQUESTS = "udp-session-requests";
     
-    /**
-     * <code>mainThread</code> is the master thread started by
-     * <code>start</code>.  It handles connecting to argonConnector, monitoring
-     * of the command/session master threads for argonConnector death, and
-     * reconnection.
-     */
-    private volatile Thread mainThread;
-
     private SessionEventListener sessionEventListener;
 
     /**
@@ -123,11 +93,6 @@ class Dispatcher implements com.untangle.uvm.argon.NewSessionEventListener
     private ConcurrentHashMap<NodeIPSession,NodeIPSession> liveSessions;
 
     /**
-     * This one is for the command socket.
-     */
-    private boolean lastCommandReadFailed = false;
-
-    /**
      * dispatcher is created ArgonConnector.start() when user decides this
      * dispatcher should begin handling a newly connected ArgonConnector.
      *
@@ -136,16 +101,13 @@ class Dispatcher implements com.untangle.uvm.argon.NewSessionEventListener
      */
     public Dispatcher(ArgonConnectorImpl argonConnector) 
     {
-        logger = Logger.getLogger(Dispatcher.class.getName());
+        this.logger = Logger.getLogger(Dispatcher.class.getName());
         this.argonConnector = argonConnector;
         this.node = (NodeBase)argonConnector.node();
-        sessionEventListener = null;
-        NodeProperties td = node.getNodeProperties();
-
-        sessionEventLogger = argonConnector.sessionEventLogger();
-        releasedHandler = new ReleasedEventHandler(node);
-
-        liveSessions = new ConcurrentHashMap<NodeIPSession,NodeIPSession>();
+        this.sessionEventListener = null;
+        this.sessionEventLogger = argonConnector.sessionEventLogger();
+        this.releasedHandler = new ReleasedEventHandler(node);
+        this.liveSessions = new ConcurrentHashMap<NodeIPSession,NodeIPSession>();
 
         this.node.addMetric(new NodeMetric(STAT_LIVE_SESSIONS, I18nUtil.marktr("Current Sessions")));
         this.node.addMetric(new NodeMetric(STAT_TCP_LIVE_SESSIONS, I18nUtil.marktr("Current TCP Sessions")));
@@ -158,9 +120,15 @@ class Dispatcher implements com.untangle.uvm.argon.NewSessionEventListener
         this.node.addMetric(new NodeMetric(STAT_UDP_SESSION_REQUESTS, I18nUtil.marktr("UDP NodeSession Requests")));
     }
 
+    public synchronized void destroy()
+    {
+        for ( NodeIPSession sess : liveSessions.keySet() ) {
+            removeSession( sess );
+        }
+    }
+    
     // Called by the new session handler thread.
-    void addSession(NodeTCPSession sess)
-        throws InterruptedException
+    public void addSession( NodeTCPSession sess ) 
     {
         this.node.incrementMetric(STAT_LIVE_SESSIONS);
         this.node.incrementMetric(STAT_TCP_LIVE_SESSIONS);
@@ -172,7 +140,7 @@ class Dispatcher implements com.untangle.uvm.argon.NewSessionEventListener
     }
 
     // Called by the new session handler thread.
-    void addSession(NodeUDPSession sess) throws InterruptedException
+    public void addSession( NodeUDPSession sess ) 
     {
         this.node.incrementMetric(STAT_LIVE_SESSIONS);
         this.node.incrementMetric(STAT_UDP_LIVE_SESSIONS);
@@ -183,26 +151,7 @@ class Dispatcher implements com.untangle.uvm.argon.NewSessionEventListener
         liveSessions.put(sess, sess);
     }
 
-    // Called by NodeIPSessionImpl at closeFinal (raze) time.
-    void removeSession(NodeIPSessionImpl sess)
-    {
-        liveSessions.remove(sess);
-        ArgonAgent agent = (argonConnector).getArgonAgent();
-        if (agent == null) {
-            logger.warn("attempt to remove session " + sess.id() + " when already destroyed");
-        } else {
-            agent.removeSession(sess.argonSession);
-        }
-
-        this.node.decrementMetric(STAT_LIVE_SESSIONS);
-        if (sess instanceof NodeUDPSession) {
-            this.node.decrementMetric(STAT_UDP_LIVE_SESSIONS);
-        } else if (sess instanceof NodeTCPSession) {
-            this.node.decrementMetric(STAT_TCP_LIVE_SESSIONS);
-        }
-    }
-
-    public ArgonTCPSession newSession(ArgonTCPNewSessionRequest request)
+    public ArgonTCPSession newSession( ArgonTCPNewSessionRequest request )
     {
         try {
             UvmContextImpl.getInstance().loggingManager().setLoggingNode(node.getNodeSettings().getId());
@@ -213,8 +162,8 @@ class Dispatcher implements com.untangle.uvm.argon.NewSessionEventListener
             MDC.remove(SESSION_ID_MDC_KEY);
         }
     }
-
-    public ArgonUDPSession newSession(ArgonUDPNewSessionRequest request)
+ 
+    public ArgonUDPSession newSession( ArgonUDPNewSessionRequest request )
     {
         try {
             UvmContextImpl.getInstance().loggingManager().setLoggingNode(node.getNodeSettings().getId());
@@ -225,275 +174,43 @@ class Dispatcher implements com.untangle.uvm.argon.NewSessionEventListener
             MDC.remove(SESSION_ID_MDC_KEY);
         }
     }
-
-
-    // Here's the callback that Argon calls to notify of a new TCP session:
-    public ArgonTCPSession newSessionInternal(ArgonTCPNewSessionRequest request)
+    
+    // Called by NodeIPSessionImpl at closeFinal (raze) time.
+    protected void removeSession( NodeIPSession sess )
     {
-        long sessionId = -1L;
+        this.node.decrementMetric(STAT_LIVE_SESSIONS);
+        if (sess instanceof NodeUDPSession) {
+            this.node.decrementMetric(STAT_UDP_LIVE_SESSIONS);
+        } else if (sess instanceof NodeTCPSession) {
+            this.node.decrementMetric(STAT_TCP_LIVE_SESSIONS);
+        }
 
-        try {
-            NodeProperties td = node.getNodeProperties();
-            sessionId = request.id();
+        liveSessions.remove(sess);
 
-            TCPNewSessionRequestImpl treq = new TCPNewSessionRequestImpl(this, request);
-
-            this.node.incrementMetric(STAT_SESSION_REQUESTS);
-            this.node.incrementMetric(STAT_TCP_SESSION_REQUESTS);
-
-            // Give the request event to the user, to give them a
-            // chance to reject the session.
-            logger.debug("sending TCP new session request event");
-            TCPNewSessionRequestEvent revent = new TCPNewSessionRequestEvent(argonConnector, treq);
-            dispatchTCPNewSessionRequest(revent);
-
-            // Check the session only if it was not rejected.
-            switch (treq.state()) {
-            case ArgonIPNewSessionRequest.REJECTED:
-            case ArgonIPNewSessionRequest.REJECTED_SILENT:
-                if (treq.needsFinalization()) {
-                    logger.debug("rejecting (with finalization)");
-                } else {
-                    logger.debug("rejecting");
-                    return null;
-                }
-
-                /* XX Otherwise fall through and create a "fake" session that
-                 * exists just to modify the session or to get the raze() call
-                 * from Argon when the session is razed. */
-                break;
-            case ArgonIPNewSessionRequest.RELEASED:
-                boolean needsFinalization = treq.needsFinalization();
-                boolean modified = treq.modified();
-                if (needsFinalization)
-                    logger.debug("releasing (with finalization)");
-                else if (modified)
-                    logger.debug("releasing (with modification)");
-                else
-                    logger.debug("releasing");
-                if (!needsFinalization && !modified)
-                    // Then we don't need to create a session at all.
-                    return null;
-
-                /* XX Otherwise fall through and create a "fake" session that
-                 * exists just to modify the session or to get the raze() call
-                 * from Argon when the session is razed. */
-                break;
-            case ArgonIPNewSessionRequest.REQUESTED:
-            case ArgonIPNewSessionRequest.ENDPOINTED:
-            default:
-                break;
-            }
-
-            // Create the session, client and server channels
-            ArgonTCPSession argonSession = new ArgonTCPSessionImpl(request);
-            NodeTCPSessionImpl session = new NodeTCPSessionImpl(this, argonSession, request.sessionEvent(), TCP_READ_BUFFER_SIZE, TCP_READ_BUFFER_SIZE);
-            
-            session.attach(treq.attachment());
-            registerPipelineListener(argonSession, session);
-
-            // Send the new session event.  
-            if (logger.isInfoEnabled())
-                logger.info("New TCP session " +
-                            session.getClientAddr().getHostAddress() + ":" + session.getClientPort() + " -> " +
-                            session.getServerAddr().getHostAddress() + ":" + session.getServerPort());
-            if (treq.state() == ArgonIPNewSessionRequest.RELEASED) {
-                session.release(treq.needsFinalization());
-            } else {
-                TCPSessionEvent tevent = new TCPSessionEvent(argonConnector, session);
-                dispatchTCPNewSession(tevent);
-            }
-
-            // Finally it to our set of owned sessions.
-            addSession(session);
-
-            return argonSession;
-        } catch (Exception x) {
-            String message = "" + x.getClass().getName() + " building TCP session " + sessionId;
-            logger.error(message, x);
-            // This "kills" the session:
-            return null;
+        ArgonAgent agent = argonConnector.getArgonAgent();
+        if (agent == null) {
+            logger.warn("attempt to remove session " + sess.id() + " when already destroyed");
+        } else {
+            agent.removeSession(((NodeIPSessionImpl)sess).argonSession);
         }
     }
 
-    public ArgonUDPSession newSessionInternal(ArgonUDPNewSessionRequest request)
-    {
-        long sessionId = -1;
-
-        try {
-            NodeProperties td = node.getNodeProperties();
-            sessionId = request.id();
-
-            UDPNewSessionRequestImpl ureq = new UDPNewSessionRequestImpl(this, request);
-
-            this.node.incrementMetric(STAT_SESSION_REQUESTS);
-            this.node.incrementMetric(STAT_UDP_SESSION_REQUESTS);
-
-            // Give the request event to the user, to give them a chance to reject the session.
-            logger.debug("sending UDP new session request event");
-            UDPNewSessionRequestEvent revent = new UDPNewSessionRequestEvent(argonConnector, ureq);
-            dispatchUDPNewSessionRequest(revent);
-
-            // Check the session only if it was not rejected.
-            switch (ureq.state()) {
-            case ArgonIPNewSessionRequest.REJECTED:
-            case ArgonIPNewSessionRequest.REJECTED_SILENT:
-                if (ureq.needsFinalization()) {
-                    logger.debug("rejecting (with finalization)");
-                } else {
-                    logger.debug("rejecting");
-                    return null;
-                }
-
-                /* XX Otherwise fall through and create a "fake" session that
-                 * exists just to modify the session or to get the raze() call
-                 * from Argon when the session is razed. */
-                break;
-            case ArgonIPNewSessionRequest.RELEASED:
-                boolean needsFinalization = ureq.needsFinalization();
-                boolean modified = ureq.modified();
-                if (needsFinalization)
-                    logger.debug("releasing (with finalization)");
-                else if (modified)
-                    logger.debug("releasing (with modification)");
-                else
-                    logger.debug("releasing");
-                if (!needsFinalization && !modified)
-                    // Then we don't need to create a session at all.
-                    return null;
-
-                /* XX Otherwise fall through and create a "fake" session that
-                 * exists just to modify the session or to get the raze() call
-                 * from Argon when the session is razed. */
-                break;
-            case ArgonIPNewSessionRequest.REQUESTED:
-            case ArgonIPNewSessionRequest.ENDPOINTED:
-            default:
-                break;
-            }
-
-            // Create the session, client and server channels
-            ArgonUDPSession argonSession = new ArgonUDPSessionImpl(request);
-            NodeUDPSessionImpl session = new NodeUDPSessionImpl(this, argonSession, request.sessionEvent(), UDP_MAX_PACKET_SIZE, UDP_MAX_PACKET_SIZE);
-            
-            session.attach(ureq.attachment());
-            registerPipelineListener(argonSession, session);
-
-            // Send the new session event.  Maybe this should be done on the session handler
-            // thread instead?  XX
-            if (logger.isInfoEnabled())
-                logger.info("New UDP session " +
-                            session.getClientAddr().getHostAddress() + ":" + session.getClientPort() + " -> " +
-                            session.getServerAddr().getHostAddress() + ":" + session.getServerPort());
-            if (ureq.state() == ArgonIPNewSessionRequest.RELEASED) {
-                session.release(ureq.needsFinalization());
-            } else {
-                UDPSessionEvent tevent = new UDPSessionEvent(argonConnector, session);
-                dispatchUDPNewSession(tevent);
-            }
-
-            // Finally add it to our set of owned sessions.
-            addSession(session);
-
-            return argonSession;
-        } catch (Exception x) {
-            String message = "" + x.getClass().getName() + " building UDP session " + sessionId;
-            logger.error(message, x);
-            // This "kills" the session:
-            return null;
-        }
-    }
-
-    void registerPipelineListener(ArgonIPSession argonSession, NodeIPSessionImpl session)
+    protected void registerPipelineListener(ArgonIPSession argonSession, NodeIPSessionImpl session)
     {
         argonSession.registerListener(session);
     }
 
-    /**
-     * Describe <code>start</code> method here.
-     *
-     * By the time we're called, the load request has been sent, but the response has not been read.
-     *
-     * @exception Exception if an error occurs
-     */
-    void start() 
-    {
-    }
-
-    /**
-     * Called from ArgonConnectorImpl.  Stop is only called to disconnect us
-     * from a live ArgonConnector.  Once stopped we cannot be restarted.  This
-     * function is idempotent for safety.
-     *
-     * When used in drain mode, this function will not return until
-     * all sessions have naturally finished.  When not in drain mode,
-     * all existing sessions are forcibly terminated (by closing
-     * connection to ArgonConnector == close server & client sockets outside of
-     * VP).  In both modes, when this function returns we guarantee:
-     * No sessions are alive.  No DEM threads are alive.  No session
-     * threads, new session threads, or any of the three main threads
-     * are alive.
-     *
-     * @param drainMode a <code>boolean</code> true if we should
-     * switch into drain-then-exit mode, false if we should
-     * immediately exit.
-     */
-    void destroy(boolean drainMode) throws InterruptedException
-    {
-        logger.info("destroy called");
-        if (mainThread != null) {
-            Thread oldMain = mainThread;
-            mainThread = null;
-            oldMain.interrupt();
-
-            if (drainMode)
-                logger.error("Drain mode not yet supported");
-
-            // The main thread exitting handles all the cleanup.  We just wait for it to finish.
-            try {
-                oldMain.join(10000); // Need constant XXX
-            } catch (InterruptedException x) {
-                // Can't really happen
-                logger.error("Dispatcher.destroy() interrupted waiting for mainThread to die");
-                // Resend it back out
-                Thread.currentThread().interrupt();
-            }
-
-            if (oldMain.isAlive())
-                logger.error("Dispatcher didn't die");
-        }
-    }
-
-    ArgonConnectorImpl argonConnector()
+    protected ArgonConnectorImpl argonConnector()
     {
         return argonConnector;
     }
 
-    boolean lastReadFailed()
-    {
-        // Note that we do *not* consider session reads a failure.  This is a result
-        // of how we currently handle session shutdown.
-        return this.lastCommandReadFailed;
-    }
-
-    /**
-     * Called whenever a command socket read occurs.
-     */
-    public void lastCommandNumRead(int numRead)
-    {
-        if (numRead > 0) {
-            lastCommandReadFailed = false;
-        } else {
-            lastCommandReadFailed = true;
-        }
-    }
-
-    public void setSessionEventListener(SessionEventListener listener)
+    protected void setSessionEventListener(SessionEventListener listener)
     {
         sessionEventListener = listener;
     }
 
-    public long[] liveSessionIds()
+    protected long[] liveSessionIds()
     {
         int count = 0;
         int size = liveSessions.size();
@@ -510,7 +227,7 @@ class Dispatcher implements com.untangle.uvm.argon.NewSessionEventListener
         return idlist;
     }
 
-    List<NodeIPSession> liveSessions()
+    protected List<NodeIPSession> liveSessions()
     {
         LinkedList<NodeIPSession> sessions = new LinkedList<NodeIPSession>();
         
@@ -784,6 +501,181 @@ class Dispatcher implements com.untangle.uvm.argon.NewSessionEventListener
             releasedHandler.handleTimer(event);
         else
             sessionEventListener.handleTimer(event);
+    }
+
+
+    private ArgonTCPSession newSessionInternal( ArgonTCPNewSessionRequest request )
+    {
+        long sessionId = -1L;
+
+        try {
+            sessionId = request.id();
+
+            TCPNewSessionRequestImpl treq = new TCPNewSessionRequestImpl(this, request);
+
+            this.node.incrementMetric(STAT_SESSION_REQUESTS);
+            this.node.incrementMetric(STAT_TCP_SESSION_REQUESTS);
+
+            // Give the request event to the user, to give them a
+            // chance to reject the session.
+            logger.debug("sending TCP new session request event");
+            TCPNewSessionRequestEvent revent = new TCPNewSessionRequestEvent(argonConnector, treq);
+            dispatchTCPNewSessionRequest(revent);
+
+            // Check the session only if it was not rejected.
+            switch (treq.state()) {
+            case ArgonIPNewSessionRequest.REJECTED:
+            case ArgonIPNewSessionRequest.REJECTED_SILENT:
+                if (treq.needsFinalization()) {
+                    logger.debug("rejecting (with finalization)");
+                } else {
+                    logger.debug("rejecting");
+                    return null;
+                }
+
+                /* XX Otherwise fall through and create a "fake" session that
+                 * exists just to modify the session or to get the raze() call
+                 * from Argon when the session is razed. */
+                break;
+            case ArgonIPNewSessionRequest.RELEASED:
+                boolean needsFinalization = treq.needsFinalization();
+                boolean modified = treq.modified();
+                if (needsFinalization)
+                    logger.debug("releasing (with finalization)");
+                else if (modified)
+                    logger.debug("releasing (with modification)");
+                else
+                    logger.debug("releasing");
+                if (!needsFinalization && !modified)
+                    // Then we don't need to create a session at all.
+                    return null;
+
+                /* XX Otherwise fall through and create a "fake" session that
+                 * exists just to modify the session or to get the raze() call
+                 * from Argon when the session is razed. */
+                break;
+            case ArgonIPNewSessionRequest.REQUESTED:
+            case ArgonIPNewSessionRequest.ENDPOINTED:
+            default:
+                break;
+            }
+
+            // Create the session, client and server channels
+            ArgonTCPSession argonSession = new ArgonTCPSessionImpl(request);
+            NodeTCPSessionImpl session = new NodeTCPSessionImpl(this, argonSession, request.sessionEvent(), TCP_READ_BUFFER_SIZE, TCP_READ_BUFFER_SIZE);
+            
+            session.attach(treq.attachment());
+            registerPipelineListener(argonSession, session);
+
+            // Send the new session event.  
+            if (logger.isInfoEnabled())
+                logger.info("New TCP session " +
+                            session.getClientAddr().getHostAddress() + ":" + session.getClientPort() + " -> " +
+                            session.getServerAddr().getHostAddress() + ":" + session.getServerPort());
+            if (treq.state() == ArgonIPNewSessionRequest.RELEASED) {
+                session.release(treq.needsFinalization());
+            } else {
+                TCPSessionEvent tevent = new TCPSessionEvent(argonConnector, session);
+                dispatchTCPNewSession(tevent);
+            }
+
+            // Finally it to our set of owned sessions.
+            addSession(session);
+
+            return argonSession;
+        } catch (Exception x) {
+            String message = "" + x.getClass().getName() + " building TCP session " + sessionId;
+            logger.error(message, x);
+            // This "kills" the session:
+            return null;
+        }
+    }
+
+    private ArgonUDPSession newSessionInternal(ArgonUDPNewSessionRequest request)
+    {
+        long sessionId = -1;
+
+        try {
+            sessionId = request.id();
+
+            UDPNewSessionRequestImpl ureq = new UDPNewSessionRequestImpl(this, request);
+
+            this.node.incrementMetric(STAT_SESSION_REQUESTS);
+            this.node.incrementMetric(STAT_UDP_SESSION_REQUESTS);
+
+            // Give the request event to the user, to give them a chance to reject the session.
+            logger.debug("sending UDP new session request event");
+            UDPNewSessionRequestEvent revent = new UDPNewSessionRequestEvent(argonConnector, ureq);
+            dispatchUDPNewSessionRequest(revent);
+
+            // Check the session only if it was not rejected.
+            switch (ureq.state()) {
+            case ArgonIPNewSessionRequest.REJECTED:
+            case ArgonIPNewSessionRequest.REJECTED_SILENT:
+                if (ureq.needsFinalization()) {
+                    logger.debug("rejecting (with finalization)");
+                } else {
+                    logger.debug("rejecting");
+                    return null;
+                }
+
+                /* XXX Otherwise fall through and create a "fake" session that
+                 * exists just to modify the session or to get the raze() call
+                 * from Argon when the session is razed. */
+                break;
+            case ArgonIPNewSessionRequest.RELEASED:
+                boolean needsFinalization = ureq.needsFinalization();
+                boolean modified = ureq.modified();
+                if (needsFinalization)
+                    logger.debug("releasing (with finalization)");
+                else if (modified)
+                    logger.debug("releasing (with modification)");
+                else
+                    logger.debug("releasing");
+                if (!needsFinalization && !modified)
+                    // Then we don't need to create a session at all.
+                    return null;
+
+                /* XXX Otherwise fall through and create a "fake" session that
+                 * exists just to modify the session or to get the raze() call
+                 * from Argon when the session is razed. */
+                break;
+            case ArgonIPNewSessionRequest.REQUESTED:
+            case ArgonIPNewSessionRequest.ENDPOINTED:
+            default:
+                break;
+            }
+
+            // Create the session, client and server channels
+            ArgonUDPSession argonSession = new ArgonUDPSessionImpl(request);
+            NodeUDPSessionImpl session = new NodeUDPSessionImpl(this, argonSession, request.sessionEvent(), UDP_MAX_PACKET_SIZE, UDP_MAX_PACKET_SIZE);
+            
+            session.attach(ureq.attachment());
+            registerPipelineListener(argonSession, session);
+
+            // Send the new session event.  Maybe this should be done on the session handler
+            // thread instead?  XXX
+            if (logger.isInfoEnabled())
+                logger.info("New UDP session " +
+                            session.getClientAddr().getHostAddress() + ":" + session.getClientPort() + " -> " +
+                            session.getServerAddr().getHostAddress() + ":" + session.getServerPort());
+            if (ureq.state() == ArgonIPNewSessionRequest.RELEASED) {
+                session.release(ureq.needsFinalization());
+            } else {
+                UDPSessionEvent tevent = new UDPSessionEvent(argonConnector, session);
+                dispatchUDPNewSession(tevent);
+            }
+
+            // Finally add it to our set of owned sessions.
+            addSession(session);
+
+            return argonSession;
+        } catch (Exception x) {
+            String message = "" + x.getClass().getName() + " building UDP session " + sessionId;
+            logger.error(message, x);
+            // This "kills" the session:
+            return null;
+        }
     }
 
     private void elog(Level level, String eventName, long sessionId)

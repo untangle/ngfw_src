@@ -162,8 +162,6 @@ class ArgonConnectorImpl implements ArgonConnector
         disp = new Dispatcher(this);
         if (listener != null)
             disp.setSessionEventListener(listener);
-        /* start event loop */
-        disp.start();
 
         argon = new ArgonAgentImpl(pipeSpec.getName(), disp); // Also sets new session listener to dispatcher
     }
@@ -181,19 +179,20 @@ class ArgonConnectorImpl implements ArgonConnector
      */
     public void destroy()
     {
-        if (isRunning()) {
-            // Stop the dispatcher and all its threads.
+        if ( isRunning() ) {
             try {
-                disp.destroy(false);
-                argon.destroy();
-            } catch (InterruptedException x) {
-                Thread.currentThread().interrupt();
+                disp.destroy();
             } catch (Exception x) {
-                // Not expected, just log
+                logger.info("Exception destroying ArgonConnector", x);
+            }
+            disp = null;
+
+            try {
+                argon.destroy();
+            } catch (Exception x) {
                 logger.info("Exception destroying ArgonConnector", x);
             }
             argon = null;
-            disp = null;
         }
     }
 
