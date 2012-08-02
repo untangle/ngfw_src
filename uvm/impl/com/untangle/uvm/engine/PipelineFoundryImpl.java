@@ -572,7 +572,6 @@ public class PipelineFoundryImpl implements PipelineFoundry
         /**
          * Recursively check the parent rack of the nodePolicy
          */
-        logger.warn("check PARENT :: nodePolicy:" + nodePolicy + " policyId: " + policyId );
         for ( Long parentId = policyManager.getParentPolicyId( policyId ) ; parentId != null ; parentId = policyManager.getParentPolicyId( parentId ) ) {
             if ( parentId.equals( nodePolicy ) )
                 return true;
