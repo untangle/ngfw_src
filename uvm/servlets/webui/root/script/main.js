@@ -354,11 +354,13 @@ Ext.define("Ung.Main", {
         this.openWindow( query, storeWindowName, title );
     },
     openWindow: function( query, windowName, title, url) {
+        var useIframeStore = Ung.Util.getQueryStringParam("useIframeStore");
+        //var useIframeStore = true; //uncomment this line to force open store in right iframe window for IE. also comment the previous line 
         if( url==null ) {
             url =   '../library/launcher?' + query;
         }
         /* browser specific code ... we has it. */
-        if ( !Ext.isIE ) {
+        if ( !Ext.isIE || useIframeStore) {
             this.openIFrame(url, title);
             return;
         }
