@@ -560,7 +560,7 @@ public class PipelineFoundryImpl implements PipelineFoundry
         /**
          * Otherwise test for equality
          */
-        if (nodePolicy.equals(policyId))
+        if ( policyId.equals(nodePolicy) )
             return true;
 
         /**
@@ -569,8 +569,12 @@ public class PipelineFoundryImpl implements PipelineFoundry
         if (policyManager == null)
             return false;
 
+        /**
+         * Recursively check the parent rack of the nodePolicy
+         */
+        logger.warn("check PARENT :: nodePolicy:" + nodePolicy + " policyId: " + policyId );
         for ( Long parentId = policyManager.getParentPolicyId( policyId ) ; parentId != null ; parentId = policyManager.getParentPolicyId( parentId ) ) {
-            if ( parentId.equals( policyId ) )
+            if ( parentId.equals( nodePolicy ) )
                 return true;
         }
 
