@@ -584,15 +584,22 @@ public abstract class NodeBase implements Node
             }
         }
 
+        // save new settings first (if this fails, the state should not be changed)
+        try {
+            changeState(NodeState.RUNNING, saveNewTargetState);
+        } catch (Exception e) {
+            logger.warn("Failed to stop node",e);
+            return;
+        }
+
         try {
             UvmContextFactory.context().loggingManager().setLoggingNode( this.nodeSettings.getId() );
             logger.info("Starting   node " + this.getNodeProperties().getName() + "(" + this.getNodeProperties().getName() + ")" + " ...");
+
             preStart();
-
             connectArgonConnector();
+            postStart(); 
 
-            changeState(NodeState.RUNNING, saveNewTargetState);
-            postStart(); // XXX if exception, state == ?
             logger.info("Started    node " + this.getNodeProperties().getName() + "(" + this.getNodeProperties().getName() + ")" + " ...");
         } finally {
             UvmContextFactory.context().loggingManager().setLoggingUvm();
@@ -606,12 +613,19 @@ public abstract class NodeBase implements Node
             return;
         }
 
+        // save new settings first (if this fails, the state should not be changed)
+        try {
+            changeState(NodeState.INITIALIZED, saveNewTargetState);
+        } catch (Exception e) {
+            logger.warn("Failed to stop node",e);
+            return;
+        }
+
         try {
             UvmContextFactory.context().loggingManager().setLoggingNode( this.nodeSettings.getId() );
             logger.info("Stopping   node " + this.getNodeProperties().getName() + "(" + this.getNodeProperties().getName() + ")" + " ...");
             preStop();
             disconnectArgonConnector();
-            changeState(NodeState.INITIALIZED, saveNewTargetState);
         } finally {
             UvmContextFactory.context().loggingManager().setLoggingUvm();
         }
