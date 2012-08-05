@@ -588,7 +588,7 @@ public abstract class NodeBase implements Node
         try {
             changeState(NodeState.RUNNING, saveNewTargetState);
         } catch (Exception e) {
-            logger.warn("Failed to stop node",e);
+            logger.warn("Failed to start node",e);
             return;
         }
 
