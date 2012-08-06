@@ -29,9 +29,10 @@ import org.apache.catalina.session.StandardManager;
 import org.apache.catalina.startup.Embedded;
 import org.apache.log4j.Logger;
 
+import com.untangle.uvm.UvmContextFactory;
+import com.untangle.uvm.TomcatManager;
 import com.untangle.uvm.util.AdministrationOutsideAccessValve;
 import com.untangle.uvm.util.ReportingOutsideAccessValve;
-import com.untangle.uvm.TomcatManager;
 
 /**
  * Wrapper around the Tomcat server embedded within the UVM.
@@ -259,6 +260,8 @@ public class TomcatManagerImpl implements TomcatManager
                 }
             }
         }
+
+        apacheReload();
     }
 
     synchronized void startTomcat(int internalHTTPPort, int internalHTTPSPort, int externalHTTPSPort, int internalOpenHTTPSPort) throws Exception
@@ -482,32 +485,7 @@ public class TomcatManagerImpl implements TomcatManager
     {
         writeIncludes();
 
-        try {
-            logger.info("Reloading Apache...");
-            ProcessBuilder pb = new ProcessBuilder("/etc/init.d/apache2",
-                                                   "reload");
-
-            pb.redirectErrorStream(true);
-            Process p = pb.start();
-            InputStream is = p.getInputStream();
-            BufferedReader br = new BufferedReader(new InputStreamReader(is));
-            for (String line = br.readLine(); null != line; line = br.readLine()) {
-                logger.debug(line);
-            }
-
-            boolean done = false;
-            int tries = 5;
-
-            while (!done && 0 < tries) {
-                tries--;
-                try {
-                    p.waitFor();
-                    done = true;
-                } catch (InterruptedException exn) { }
-            }
-        } catch (IOException exn) {
-            logger.warn("Could not reload apache config", exn);
-        }
+        UvmContextFactory.context().execManager().exec("/etc/init.d/apache2 reload");
     }
 
     private String getSecret()
