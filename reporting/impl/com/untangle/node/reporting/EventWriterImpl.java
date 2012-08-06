@@ -51,6 +51,7 @@ public class EventWriterImpl implements Runnable
      * using a weighted mixture of the current value with the old value
      */
     private double avgWriteTimePerEvent = 0.0;
+    private long totalEventsWritten = 0;
     
     /**
      * This is a queue of incoming events
@@ -187,6 +188,12 @@ public class EventWriterImpl implements Runnable
 
     public double getAvgWriteTimePerEvent()
     {
+        /**
+         * If too few datapoints, just return 0.0
+         */
+        if (totalEventsWritten < 50)
+            return 0.0;
+                         
         return this.avgWriteTimePerEvent;
     }
     
@@ -296,8 +303,9 @@ public class EventWriterImpl implements Runnable
             logger.info("persist(): " + String.format("%5d",count) + " events [" + String.format("%5d",elapsedTime) + " ms] [" + String.format("%4.1f",avgTime) + " avg] " + mapOutput);
 
             /**
-             * update avgWriteTimePerEvent
+             * update avgWriteTimePerEvent and totalEventsWritten
              */
+            this.totalEventsWritten += count;
             this.avgWriteTimePerEvent = (this.avgWriteTimePerEvent * .8) + (avgTime * .2);
         }
     }
