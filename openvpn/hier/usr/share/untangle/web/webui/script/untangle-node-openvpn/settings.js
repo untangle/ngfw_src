@@ -777,7 +777,7 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                 }],
                 columns: [{
                         xtype:'checkcolumn',
-                        header: this.i18n._("Anabled"),
+                        header: this.i18n._("Enabled"),
                         dataIndex: 'live',
                         width: 80,
                         fixed: true
