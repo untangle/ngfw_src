@@ -172,7 +172,7 @@ def get_settings(tid, debug=False):
         monthlySched = True
 
     if db_retention <= 7:
-        monthlySched = ""
+        monthlySched = False
 
     str = '{\n'
     str += '\t"javaClass": "com.untangle.node.reporting.ReportingSettings",\n'
