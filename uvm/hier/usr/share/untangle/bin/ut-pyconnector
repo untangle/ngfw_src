@@ -1,0 +1,155 @@
+#!/usr/bin/env python
+
+#
+# We must use stunnel to do the SSL until python 2.6 or greater
+# 
+
+import sys
+sys.path.insert(0,'@PREFIX@/usr/lib/python2.5/')
+
+import time
+import socket
+import os
+#import ssl
+from uvm import Manager
+from uvm import Uvm
+
+UNTANGLE_CMD = "10.0.0.142"
+UNTANGLE_CMD_PORT = 4443
+RETRY_TIME_LONG = 10
+RETRY_TIME_SHORT = 5
+STUNNEL_LOCAL_PORT = 808
+CERTS_FILE = '/tmp/pyconnector-certs.pem'
+
+uvm = None
+command_socket = None
+command_socket_file = None
+
+# utility for cmd 
+def system(cmd_str):
+   proc = os.popen(cmd_str)
+   return proc.read()
+
+def write_cert_file():
+   global CERTS_FILE
+   f = open(CERTS_FILE, 'w')
+   f.write('-----BEGIN CERTIFICATE-----\n')
+   f.write('MIIDGjCCAoOgAwIBAgIJAJWdC06wNHyNMA0GCSqGSIb3DQEBBQUAMIGlMQswCQYD\n')
+   f.write('VQQGEwJVUzETMBEGA1UECAwKQ2FsaWZvcm5pYTESMBAGA1UEBwwJU3Vubnl2YWxl\n')
+   f.write('MRQwEgYDVQQKDAtVbnRhbmdsZSBDQTEYMBYGA1UECwwPY2EudW50YW5nbGUuY29t\n')
+   f.write('MRgwFgYDVQQDDA9jYS51bnRhbmdsZS5jb20xIzAhBgkqhkiG9w0BCQEWFGRtb3Jy\n')
+   f.write('aXNAdW50YW5nbGUuY29tMB4XDTEyMDgwOTIxMzU0NVoXDTIyMDgwNzIxMzU0NVow\n')
+   f.write('gaUxCzAJBgNVBAYTAlVTMRMwEQYDVQQIDApDYWxpZm9ybmlhMRIwEAYDVQQHDAlT\n')
+   f.write('dW5ueXZhbGUxFDASBgNVBAoMC1VudGFuZ2xlIENBMRgwFgYDVQQLDA9jYS51bnRh\n')
+   f.write('bmdsZS5jb20xGDAWBgNVBAMMD2NhLnVudGFuZ2xlLmNvbTEjMCEGCSqGSIb3DQEJ\n')
+   f.write('ARYUZG1vcnJpc0B1bnRhbmdsZS5jb20wgZ8wDQYJKoZIhvcNAQEBBQADgY0AMIGJ\n')
+   f.write('AoGBALYepW5elyeiDDHAYC7UMD+3VMj3Wp+X69r+APllVTJBlaNI+rmdmR0IUuRu\n')
+   f.write('0P3wpcZm1OooaoUU7q2F2zYbhyqtPB9ULPzNyQ0ys2KvXmauSkmx9He6ysDiWHmD\n')
+   f.write('F7MTxhR/I7WI1n6E+7EIpP+CGbDYd2w5nWFzWhhx28936RwPAgMBAAGjUDBOMB0G\n')
+   f.write('A1UdDgQWBBQRNxGoQB+2uSfjfxvJp7Uq3zHGADAfBgNVHSMEGDAWgBQRNxGoQB+2\n')
+   f.write('uSfjfxvJp7Uq3zHGADAMBgNVHRMEBTADAQH/MA0GCSqGSIb3DQEBBQUAA4GBAJOy\n')
+   f.write('tlQvH4BGnrvCalM+8v/UEL/UYDziJmrv6kKW2OVrdp83a2iLLwhkAwBIEAvmgJpD\n')
+   f.write('iIYjmzyqkwC3tJOREcN5XKo83AKKxgIB0UWwH6Vo4k6XlxwE8CGfXwl++6/RAmAu\n')
+   f.write('KZFJgDBndnYz9thw4TuIjrQriZDPRVcpCz9T/tX3\n')
+   f.write('-----END CERTIFICATE-----\n')
+   f.write('-----BEGIN CERTIFICATE-----\n')
+   f.write('MIICujCCAiMCAQEwDQYJKoZIhvcNAQEFBQAwgaUxCzAJBgNVBAYTAlVTMRMwEQYD\n')
+   f.write('VQQIDApDYWxpZm9ybmlhMRIwEAYDVQQHDAlTdW5ueXZhbGUxFDASBgNVBAoMC1Vu\n')
+   f.write('dGFuZ2xlIENBMRgwFgYDVQQLDA9jYS51bnRhbmdsZS5jb20xGDAWBgNVBAMMD2Nh\n')
+   f.write('LnVudGFuZ2xlLmNvbTEjMCEGCSqGSIb3DQEJARYUZG1vcnJpc0B1bnRhbmdsZS5j\n')
+   f.write('b20wHhcNMTIwODA5MjEzNjM5WhcNMjIwODA3MjEzNjM5WjCBpDELMAkGA1UEBhMC\n')
+   f.write('VVMxEzARBgNVBAgMCkNhbGlmb3JuaWExEjAQBgNVBAcMCVN1bm55dmFsZTERMA8G\n')
+   f.write('A1UECgwIVW50YW5nbGUxGTAXBgNVBAsMEGNtZC51bnRhbmdsZS5jb20xGTAXBgNV\n')
+   f.write('BAMMEGNtZC51bnRhbmdsZS5jb20xIzAhBgkqhkiG9w0BCQEWFGRtb3JyaXNAdW50\n')
+   f.write('YW5nbGUuY29tMIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDUeVn2SrWChvlb\n')
+   f.write('RjtymxCyH+1QUaS2x34K+7oYxoa5NPs7u85bHpWM7HeFiN3gdZ1Qf+B6wkwa2spG\n')
+   f.write('coir2wqp7udrEX5PipnHXVPqtOLExE5yNcwJ5kEmcd0l/LUh1I4Y7mXebqrrSvCE\n')
+   f.write('j3P1xQF0mZ/gkFI0xjaFTKr6wYSxwwIDAQABMA0GCSqGSIb3DQEBBQUAA4GBAFne\n')
+   f.write('oaoFbMan9WBqnPkCbTdDmMdOMesIBRfr3YIzzbfHtemfX0v+nMdsL8XdFc2dBlhl\n')
+   f.write('UP6dCmvX3ZJtF/6O45lq+8tjVbN0PIECSDDNHuppheKoI6STWaD2WCklwLVqItw0\n')
+   f.write('0oHL7BzL8/3QuL3xEWsMwAHhF7Mjvs683F9JhZ81\n')
+   f.write('-----END CERTIFICATE-----\n')
+   f.close()
+
+def connect():
+   global command_socket
+   global command_socket_file
+   global UNTANGLE_CMD
+   global UNTANGLE_CMD_PORT
+   if command_socket != None:
+      return
+   try:
+      command_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+      # in python 2.6 or later connect directly
+      # command_socket = ssl.wrap_socket( command_socket, keyfile="xxx", certfile="xxx", xxx)
+      # command_socket.connect( ( UNTANGLE_CMD, UNTANGLE_CMD_PORT ) )
+      # in python 2.5 connect to stunnel
+      command_socket.connect( ( "127.0.0.1", STUNNEL_LOCAL_PORT ) )
+   except Exception,e:
+      sys.stderr.write("Failed to connect: (%s)\n" % e )
+      command_socket = None
+      return
+
+   command_socket_file = command_socket.makefile("rb")
+
+def run_cmd(cmd_str):
+   print "Received: \"%s\"" % cmd_str.strip()
+   global uvm
+   if uvm == None:
+      uvm = Uvm().getUvmContext( hostname="127.0.0.1", username=None, password=None, timeout=30 )
+   try:
+      result = eval(cmd_str)
+      return str(result)
+   except Exception,e:
+      uvm = None
+      return "Error (%s)" % type(e)
+
+def read_from_cmd():
+   global command_socket, command_socket_file
+   global RETRY_TIME_SHORT, RETRY_TIME_LONG
+
+   # connect to center (if necessary)
+   if command_socket == None:
+      connect()
+   if command_socket == None:
+      print "Failed to connect. Retrying in %i seconds..." % RETRY_TIME_LONG
+      time.sleep(RETRY_TIME_LONG); return;
+
+   # read from center
+   try:
+      cmd = command_socket_file.readline()
+      if cmd == "":
+         sys.stderr.write("Disconnected. Retrying in %i seconds...\n" % RETRY_TIME_SHORT)
+         command_socket = None
+         time.sleep(RETRY_TIME_SHORT); return;
+   except Exception,e:
+      # this can happen frequently using stunnel 
+      # because it connects to stunnel even when the server is unreachable
+      # as such, sleep for LONG time
+      sys.stderr.write("Failed to read: (%s)\n" % e )
+      command_socket = None
+      time.sleep(RETRY_TIME_LONG); return;
+
+   # run command
+   output = run_cmd(cmd)
+   print "Result:\n%s" % output
+   try:
+      output_len = len(output)
+      command_socket.send(str(output_len) + "\n")
+      command_socket.send(str(output))
+   except Exception,e:
+      sys.stderr.write("Failed to write: (%s)\n" % e )
+      command_socket = None
+
+
+if __name__ == "__main__":
+   write_cert_file()
+   os.system("sudo killall stunnel4 >/dev/null 2>&1 ; sudo stunnel -c -d localhost:%i -r %s:%i -A %s -v 3 -D 6" % (STUNNEL_LOCAL_PORT, UNTANGLE_CMD, UNTANGLE_CMD_PORT, CERTS_FILE))
+
+   while True: 
+      sys.stdout.write("---\n")
+      sys.stdout.flush()
+
+      read_from_cmd()
+
+
