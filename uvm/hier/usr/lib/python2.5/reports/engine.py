@@ -337,7 +337,7 @@ def generate_plots(report_base, end_date, report_days=1):
 
 @print_timing
 def reports_cleanup(cutoff):
-    logger.info("Cleaning-reports data for all dates < %s" % (cutoff,))
+    logger.info("Cleaning reports data for all dates < %s" % (cutoff,))
 
     for name in __get_node_partial_order():
         try:
@@ -350,7 +350,7 @@ def reports_cleanup(cutoff):
 
 @print_timing
 def delete_old_reports(dir, cutoff):
-    logger.info("Cleaning-up reports files for all dates < %s" % (cutoff,))    
+    logger.info("Cleaning reports files for all dates < %s" % (cutoff,))    
     for f in os.listdir(dir):
         if re.match('^\d+-\d+-\d+$', f):
             d = mx.DateTime.DateFrom(f)
