@@ -465,16 +465,14 @@ if (!Ung.hasResource["Ung.Email"]) {
                 }],
                 sortField: 'emailAddress',
                 columnsDefaultSortable: true,
-                rowEditorInputLines: [
-                    {
-                        xtype: 'textfield',
-                        name: "Email Address",
-                        dataIndex: "emailAddress",
-                        fieldLabel: this.i18n._("Email Address"),
-                        allowBlank: false,
-                        vtype: 'email',
-                        width: 300
-                    }],
+                rowEditorInputLines: [{
+                    xtype: 'textfield',
+                    name: "Email Address",
+                    dataIndex: "emailAddress",
+                    fieldLabel: this.i18n._("Email Address"),
+                    allowBlank: false,
+                    width: 300
+                }],
                 dataRoot: '',
                 dataFn: Ext.bind(function() { 
                     var safeListContents = this.getSafelistAdminView().getSafelistContents('GLOBAL');
