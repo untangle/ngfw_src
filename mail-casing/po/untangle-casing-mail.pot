@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-02-07 12:51-0800\n"
+"POT-Creation-Date: 2012-08-09 15:36-0700\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,188 +17,188 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=0; null;\n"
 
-#: ../servlets/quarantine/root/quarantine.js:193
-msgid "The account {0} doesn't have any quarantined messages."
-msgstr ""
-
-#: ../servlets/quarantine/root/quarantine.js:198
-#: ../servlets/quarantine/root/quarantine.js:325
-#: ../servlets/quarantine/root/request.js:79
-#: ../servlets/quarantine/root/safelist.js:155
-msgid "Please Try Again"
-msgstr ""
-
-#: ../servlets/quarantine/root/quarantine.js:248
-#: ../servlets/quarantine/root/quarantine.js:405
+#: ../servlets/quarantine/root/quarantine.js:175
+#: ../servlets/quarantine/root/quarantine.js:329
 msgid "Move to Inbox (0  messages)"
 msgstr ""
 
-#: ../servlets/quarantine/root/quarantine.js:255
-#: ../servlets/quarantine/root/quarantine.js:422
+#: ../servlets/quarantine/root/quarantine.js:182
+#: ../servlets/quarantine/root/quarantine.js:346
 msgid "Move to Inbox & Add to Safelist (0  Senders)"
 msgstr ""
 
-#: ../servlets/quarantine/root/quarantine.js:262
-#: ../servlets/quarantine/root/quarantine.js:404
+#: ../servlets/quarantine/root/quarantine.js:189
+#: ../servlets/quarantine/root/quarantine.js:328
 msgid "Delete (0  messages)"
 msgstr ""
 
-#: ../servlets/quarantine/root/quarantine.js:365
+#: ../servlets/quarantine/root/quarantine.js:249
+#: ../servlets/quarantine/root/quarantine.js:430
+#: ../servlets/quarantine/root/request.js:85
+#: ../servlets/quarantine/root/safelist.js:146
+msgid "Please Try Again"
+msgstr ""
+
+#: ../servlets/quarantine/root/quarantine.js:290
 msgid "Deleted one Message"
 msgstr ""
 
-#: ../servlets/quarantine/root/quarantine.js:366
+#: ../servlets/quarantine/root/quarantine.js:291
 msgid "Deleted {0} Messages"
 msgstr ""
 
-#: ../servlets/quarantine/root/quarantine.js:372
+#: ../servlets/quarantine/root/quarantine.js:297
 msgid "Released one Message"
 msgstr ""
 
-#: ../servlets/quarantine/root/quarantine.js:373
+#: ../servlets/quarantine/root/quarantine.js:298
 msgid "Released {0} Messages"
 msgstr ""
 
-#: ../servlets/quarantine/root/quarantine.js:379
+#: ../servlets/quarantine/root/quarantine.js:304
 msgid "Safelisted one Address"
 msgstr ""
 
-#: ../servlets/quarantine/root/quarantine.js:380
+#: ../servlets/quarantine/root/quarantine.js:305
 msgid "Safelisted {0} Addresses"
 msgstr ""
 
-#: ../servlets/quarantine/root/quarantine.js:409
+#: ../servlets/quarantine/root/quarantine.js:333
 msgid "Delete (1  message)"
 msgstr ""
 
-#: ../servlets/quarantine/root/quarantine.js:410
+#: ../servlets/quarantine/root/quarantine.js:334
 msgid "Move to Inbox (1  message)"
 msgstr ""
 
-#: ../servlets/quarantine/root/quarantine.js:414
+#: ../servlets/quarantine/root/quarantine.js:338
 msgid "Delete ({0} messages)"
 msgstr ""
 
-#: ../servlets/quarantine/root/quarantine.js:415
+#: ../servlets/quarantine/root/quarantine.js:339
 msgid "Move to Inbox ({0} messages)"
 msgstr ""
 
-#: ../servlets/quarantine/root/quarantine.js:425
+#: ../servlets/quarantine/root/quarantine.js:349
 msgid "Move to Inbox & Add to Safelist (1  Sender)"
 msgstr ""
 
-#: ../servlets/quarantine/root/quarantine.js:428
+#: ../servlets/quarantine/root/quarantine.js:352
 msgid "Move to Inbox & Add to Safelist ({0} Senders)"
 msgstr ""
 
-#: ../servlets/quarantine/root/quarantine.js:539
+#: ../servlets/quarantine/root/quarantine.js:425
+msgid "The account {0} doesn't have any quarantined messages."
+msgstr ""
+
+#: ../servlets/quarantine/root/quarantine.js:470
 msgid "From"
 msgstr ""
 
-#: ../servlets/quarantine/root/quarantine.js:546
+#: ../servlets/quarantine/root/quarantine.js:478
 msgid "Number of Attachments in the email."
 msgstr ""
 
-#: ../servlets/quarantine/root/quarantine.js:549
+#: ../servlets/quarantine/root/quarantine.js:482
 msgid "Score"
 msgstr ""
 
-#: ../servlets/quarantine/root/quarantine.js:554
+#: ../servlets/quarantine/root/quarantine.js:488
 msgid "Subject"
 msgstr ""
 
-#: ../servlets/quarantine/root/quarantine.js:558
+#: ../servlets/quarantine/root/quarantine.js:494
 msgid "Date"
 msgstr ""
 
-#: ../servlets/quarantine/root/quarantine.js:569
+#: ../servlets/quarantine/root/quarantine.js:506
 msgid "Size (KB)"
 msgstr ""
 
-#: ../servlets/quarantine/root/quarantine.js:583
+#: ../servlets/quarantine/root/quarantine.js:519
 msgid "Showing items {0} - {1} of {2}"
 msgstr ""
 
-#: ../servlets/quarantine/root/quarantine.js:584
+#: ../servlets/quarantine/root/quarantine.js:520
 msgid "No messages to display"
 msgstr ""
 
-#: ../servlets/quarantine/root/quarantine.js:657
+#: ../servlets/quarantine/root/quarantine.js:597
 msgid "The messages below were quarantined and will be deleted after {0} days."
 msgstr ""
 
-#: ../servlets/quarantine/root/quarantine.js:662
+#: ../servlets/quarantine/root/quarantine.js:599
 msgid "Quarantined Messages"
 msgstr ""
 
-#: ../servlets/quarantine/root/quarantine.js:667
+#: ../servlets/quarantine/root/quarantine.js:604
 msgid ""
 "You can use the Safelist to make sure that messages from these senders are "
 "never quarantined."
 msgstr ""
 
-#: ../servlets/quarantine/root/quarantine.js:670
+#: ../servlets/quarantine/root/quarantine.js:606
 msgid "Safelist"
 msgstr ""
 
-#: ../servlets/quarantine/root/remaps.js:40
-#: ../servlets/quarantine/root/request.js:48
-#: ../servlets/quarantine/root/safelist.js:43
-#: ../servlets/quarantine/root/safelist.js:112
+#: ../servlets/quarantine/root/remaps.js:36
+#: ../servlets/quarantine/root/request.js:41
+#: ../servlets/quarantine/root/safelist.js:36
+#: ../servlets/quarantine/root/safelist.js:104
 msgid "Email Address"
 msgstr ""
 
-#: ../servlets/quarantine/root/remaps.js:56
-#: ../servlets/quarantine/root/remaps.js:66
-#: ../servlets/quarantine/root/remaps.js:221
-#: ../servlets/quarantine/root/safelist.js:68
-#: ../servlets/quarantine/root/safelist.js:81
-#: ../servlets/quarantine/root/safelist.js:185
+#: ../servlets/quarantine/root/remaps.js:49
+#: ../servlets/quarantine/root/remaps.js:59
+#: ../servlets/quarantine/root/remaps.js:212
+#: ../servlets/quarantine/root/safelist.js:62
+#: ../servlets/quarantine/root/safelist.js:73
+#: ../servlets/quarantine/root/safelist.js:176
 msgid "Delete Addresses"
 msgstr ""
 
-#: ../servlets/quarantine/root/remaps.js:93
+#: ../servlets/quarantine/root/remaps.js:86
 msgid "Forward Quarantined Messages To:"
 msgstr ""
 
-#: ../servlets/quarantine/root/remaps.js:114
+#: ../servlets/quarantine/root/remaps.js:106
 msgid "Address"
 msgstr ""
 
-#: ../servlets/quarantine/root/remaps.js:138
+#: ../servlets/quarantine/root/remaps.js:129
 msgid "Received Quarantined Messages From:"
 msgstr ""
 
-#: ../servlets/quarantine/root/remaps.js:157
+#: ../servlets/quarantine/root/remaps.js:148
 msgid "Forward or Receive Quarantines"
 msgstr ""
 
-#: ../servlets/quarantine/root/remaps.js:179
+#: ../servlets/quarantine/root/remaps.js:170
 msgid "Unable to set the forward."
 msgstr ""
 
-#: ../servlets/quarantine/root/remaps.js:187
+#: ../servlets/quarantine/root/remaps.js:178
 msgid "Unable to delete an entry."
 msgstr ""
 
-#: ../servlets/quarantine/root/remaps.js:201
+#: ../servlets/quarantine/root/remaps.js:192
 msgid "Delete one Remap"
 msgstr ""
 
-#: ../servlets/quarantine/root/remaps.js:202
+#: ../servlets/quarantine/root/remaps.js:193
 msgid "Deleted {0} Remaps"
 msgstr ""
 
-#: ../servlets/quarantine/root/remaps.js:208
+#: ../servlets/quarantine/root/remaps.js:199
 msgid "Unable to update remap table."
 msgstr ""
 
-#: ../servlets/quarantine/root/remaps.js:216
+#: ../servlets/quarantine/root/remaps.js:207
 msgid "Delete one Addressess"
 msgstr ""
 
-#: ../servlets/quarantine/root/remaps.js:216
-#: ../servlets/quarantine/root/safelist.js:180
+#: ../servlets/quarantine/root/remaps.js:207
+#: ../servlets/quarantine/root/safelist.js:171
 msgid "Delete {0} Addresses"
 msgstr ""
 
@@ -207,59 +207,59 @@ msgid ""
 "Your Remote Access Portal login is not configured with a valid email address."
 msgstr ""
 
-#: ../servlets/quarantine/root/request.js:31
+#: ../servlets/quarantine/root/request.js:36
 msgid "Select User"
 msgstr ""
 
-#: ../servlets/quarantine/root/request.js:31
+#: ../servlets/quarantine/root/request.js:36
 msgid "Enter the email address for which you would like the Quarantine Digest"
 msgstr ""
 
-#: ../servlets/quarantine/root/request.js:35
+#: ../servlets/quarantine/root/request.js:48
 msgid "Request"
 msgstr ""
 
-#: ../servlets/quarantine/root/request.js:88
+#: ../servlets/quarantine/root/request.js:94
 msgid "Successfully sent digest to '{0}'"
 msgstr ""
 
-#: ../servlets/quarantine/root/request.js:90
+#: ../servlets/quarantine/root/request.js:96
 msgid "A quarantine does not exist for '{0}'"
 msgstr ""
 
-#: ../servlets/quarantine/root/request.js:94
+#: ../servlets/quarantine/root/request.js:100
 msgid "Quarantine Request"
 msgstr ""
 
-#: ../servlets/quarantine/root/safelist.js:59
+#: ../servlets/quarantine/root/safelist.js:53
 msgid "Add"
 msgstr ""
 
-#: ../servlets/quarantine/root/safelist.js:125
+#: ../servlets/quarantine/root/safelist.js:116
 msgid "Add an Email Address to Safelist"
 msgstr ""
 
-#: ../servlets/quarantine/root/safelist.js:128
+#: ../servlets/quarantine/root/safelist.js:119
 msgid "Save"
 msgstr ""
 
-#: ../servlets/quarantine/root/safelist.js:138
+#: ../servlets/quarantine/root/safelist.js:129
 msgid "Cancel"
 msgstr ""
 
-#: ../servlets/quarantine/root/safelist.js:167
+#: ../servlets/quarantine/root/safelist.js:158
 msgid "Deleted one address"
 msgstr ""
 
-#: ../servlets/quarantine/root/safelist.js:167
+#: ../servlets/quarantine/root/safelist.js:158
 msgid "Deleted {0} addresses"
 msgstr ""
 
-#: ../servlets/quarantine/root/safelist.js:180
+#: ../servlets/quarantine/root/safelist.js:171
 msgid "Delete one Address"
 msgstr ""
 
-#: ../impl/com/untangle/node/mail/impl/quarantine/Quarantine.java:755
+#: ../impl/com/untangle/node/mail/impl/quarantine/Quarantine.java:736
 msgid "Quarantine Digest"
 msgstr ""
 

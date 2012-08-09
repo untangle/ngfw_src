@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-02-07 12:51-0800\n"
+"POT-Creation-Date: 2012-08-09 15:36-0700\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,202 +17,188 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=0; null;\n"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:56
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:58
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:45
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:47
 msgid "Mark"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:56
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:58
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:45
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:47
 msgid "Pass"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:57
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:46
 msgid "Drop"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:57
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:46
 msgid "Quarantine"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:60
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:49
 msgid "Email"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:68
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:56
 msgid "SMTP"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:75
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:62
 msgid "Scan SMTP"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:96
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:139
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:182
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:77
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:113
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:149
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:269
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:358
 msgid "Action"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:111
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:92
 msgid "POP3"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:118
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:98
 msgid "Scan POP3"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:154
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:128
 msgid "IMAP"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:161
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:134
 msgid "Scan IMAP"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:197
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:238
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:164
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:193
 msgid "Note"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:200
-msgid "Phish Blocker last checked for updates"
-msgstr ""
-
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:201
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:204
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:207
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:244
-msgid "unknown"
-msgstr ""
-
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:203
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:166
 msgid "Phish Blocker email signatures were last updated"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:206
-msgid "Current Version:"
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:167
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:198
+msgid "unknown"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:214
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:174
 msgid "Web"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:224
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:182
 msgid "Enable Phish web filtering"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:241
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:195
 msgid "Phish Blocker web signatures were last updated "
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:266
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:208
 msgid "Web Event Log"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:279
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:221
 msgid "pass"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:282
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:224
 msgid "block"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:301
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:394
-msgid "timestamp"
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:244
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:334
+msgid "Timestamp"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:309
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:418
-msgid "action"
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:252
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:363
+msgid "Client"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:314
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:423
-msgid "client"
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:256
+msgid "Username"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:321
-msgid "request"
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:260
+msgid "Uost"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:327
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:428
-msgid "server"
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:264
+msgid "Uri"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:341
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:282
 msgid "Email Event Log"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:354
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:295
 msgid "pass message"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:356
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:297
 msgid "mark message"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:358
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:299
 msgid "drop message"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:360
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:301
 msgid "quarantine message"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:362
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:303
 msgid "pass safelist message"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:364
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:305
 msgid "pass oversize message"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:366
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:307
 msgid "pass outbound message"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:368
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:309
 msgid "unknown action"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:402
-msgid "receiver"
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:342
+msgid "Receiver"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:407
-msgid "sender"
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:347
+msgid "Sender"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:413
-msgid "subject"
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:352
+msgid "Subject"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:463
-msgid "Saving..."
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:368
+msgid "Server"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:463
-msgid "Please wait"
-msgstr ""
-
-#: ../servlets/phish/src/com/untangle/node/phish/BlockPageServlet.java:61
-#: ../servlets/phish/src/com/untangle/node/phish/BlockPageServlet.java:70
+#: ../servlets/phish/src/com/untangle/node/phish/BlockPageServlet.java:38
+#: ../servlets/phish/src/com/untangle/node/phish/BlockPageServlet.java:49
 msgid "Feature is not installed."
 msgstr ""
 
-#: ../servlets/phish/src/com/untangle/node/phish/BlockPageServlet.java:101
+#: ../servlets/phish/src/com/untangle/node/phish/BlockPageServlet.java:80
 #, java-format
 msgid "{0} | Phish Blocker Warning"
 msgstr ""
 
-#: ../servlets/phish/src/com/untangle/node/phish/BlockPageServlet.java:112
+#: ../servlets/phish/src/com/untangle/node/phish/BlockPageServlet.java:91
 #, java-format
 msgid "{0}  Phish Blocker"
 msgstr ""
 
-#: ../servlets/phish/src/com/untangle/node/phish/BlockPageServlet.java:129
+#: ../servlets/phish/src/com/untangle/node/phish/BlockPageServlet.java:108
 #, java-format
 msgid ""
 "{0}Warning - Suspected phishing page.{1} This page may be a forgery or "
@@ -226,64 +212,52 @@ msgstr ""
 msgid "If you have any questions, Please contact {0}."
 msgstr ""
 
-#: ../../spam-base/impl/com/untangle/node/spam/SpamNodeImpl.java:91
+#: ../../spam-base/impl/com/untangle/node/spam/SpamNodeImpl.java:82
 msgid "All Email Events"
 msgstr ""
 
-#: ../../spam-base/impl/com/untangle/node/spam/SpamNodeImpl.java:98
+#: ../../spam-base/impl/com/untangle/node/spam/SpamNodeImpl.java:88
 msgid "All"
 msgstr ""
 
-#: ../../spam-base/impl/com/untangle/node/spam/SpamNodeImpl.java:98
+#: ../../spam-base/impl/com/untangle/node/spam/SpamNodeImpl.java:88
 msgid "Events"
 msgstr ""
 
-#: ../../spam-base/impl/com/untangle/node/spam/SpamNodeImpl.java:105
+#: ../../spam-base/impl/com/untangle/node/spam/SpamNodeImpl.java:94
 msgid "Quarantined Events"
 msgstr ""
 
-#: ../../spam-base/impl/com/untangle/node/spam/SpamNodeImpl.java:112
+#: ../../spam-base/impl/com/untangle/node/spam/SpamNodeImpl.java:100
 msgid "Tarpit Events"
 msgstr ""
 
-#: ../../spam-base/impl/com/untangle/node/spam/SpamNodeImpl.java:120
+#: ../../spam-base/impl/com/untangle/node/spam/SpamNodeImpl.java:106
+msgid "Messages received"
+msgstr ""
+
+#: ../../spam-base/impl/com/untangle/node/spam/SpamNodeImpl.java:107
 msgid "Messages passed"
 msgstr ""
 
-#: ../../spam-base/impl/com/untangle/node/spam/SpamNodeImpl.java:120
-msgid "PASS"
-msgstr ""
-
-#: ../../spam-base/impl/com/untangle/node/spam/SpamNodeImpl.java:121
+#: ../../spam-base/impl/com/untangle/node/spam/SpamNodeImpl.java:108
 msgid "Messages dropped"
 msgstr ""
 
-#: ../../spam-base/impl/com/untangle/node/spam/SpamNodeImpl.java:121
-msgid "DROP"
-msgstr ""
-
-#: ../../spam-base/impl/com/untangle/node/spam/SpamNodeImpl.java:122
+#: ../../spam-base/impl/com/untangle/node/spam/SpamNodeImpl.java:109
 msgid "Messages marked"
 msgstr ""
 
-#: ../../spam-base/impl/com/untangle/node/spam/SpamNodeImpl.java:122
-msgid "MARK"
-msgstr ""
-
-#: ../../spam-base/impl/com/untangle/node/spam/SpamNodeImpl.java:123
+#: ../../spam-base/impl/com/untangle/node/spam/SpamNodeImpl.java:110
 msgid "Messages quarantined"
 msgstr ""
 
-#: ../../spam-base/impl/com/untangle/node/spam/SpamNodeImpl.java:123
-msgid "QUARANTINE"
-msgstr ""
-
-#: ../../spam-base/impl/com/untangle/node/spam/SpamNodeImpl.java:124
+#: ../../spam-base/impl/com/untangle/node/spam/SpamNodeImpl.java:111
 msgid "Spam detected"
 msgstr ""
 
-#: ../../spam-base/impl/com/untangle/node/spam/SpamNodeImpl.java:125
-msgid "Messages received"
+#: ../impl/com/untangle/node/phish/PhishNode.java:84
+msgid "Blocked Web Events"
 msgstr ""
 
 #: ../hier/usr/lib/python2.5/reports/node/untangle_node_phish.py:7
