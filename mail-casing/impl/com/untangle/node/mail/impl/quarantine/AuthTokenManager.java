@@ -1,21 +1,6 @@
-/*
- * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License, version 2,
- * as published by the Free Software Foundation.
- *
- * This program is distributed in the hope that it will be useful, but
- * AS-IS and WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE, TITLE, or
- * NONINFRINGEMENT.  See the GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
+/**
+ * $Id$
  */
-
 package com.untangle.node.mail.impl.quarantine;
 
 import javax.crypto.Cipher;
@@ -32,8 +17,8 @@ import com.untangle.node.util.Pair;
  * strong crypto - just keeping it hard for
  * bad guys to do bad things.
  */
-class AuthTokenManager {
-
+class AuthTokenManager
+{
     enum DecryptOutcome {
         OK,
         NOT_A_TOKEN,
@@ -157,20 +142,4 @@ class AuthTokenManager {
         }
         return true;
     }
-
-
-//     public static void main(String[] args) throws Exception {
-//         byte[] bytes = new byte[4];
-//         new java.util.Random().nextBytes(bytes);
-
-//         AuthTokenManager atm = new AuthTokenManager();
-//         atm.setKey(bytes);
-
-//         String tkn = atm.createAuthToken("dmorris@untangle.com");
-//         System.out.println("Token: " + tkn);
-
-//         Pair<DecryptOutcome, String> p = atm.decryptAuthToken(tkn);
-//         System.out.println(p.a + ", " + p.b);
-//       }
-
 }
