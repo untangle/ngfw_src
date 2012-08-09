@@ -276,7 +276,7 @@ reports.engine.fix_hierarchy(REPORTS_OUTPUT_BASE)
 
 reports.engine.init_engine(NODE_MODULE_DIR)
 
-if not no_migration:
+if not no_migration and report_lengths != []:
      init_date = end_date - mx.DateTime.DateTimeDelta(max(report_lengths))
      reports.engine.setup()
      if not create_schemas:
