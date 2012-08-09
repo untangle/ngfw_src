@@ -1236,7 +1236,7 @@ if (!Ung.hasResource["Ung.Email"]) {
             if( this.isMailLoaded() ) {
                 var quarantineSettings = this.getMailNodeSettings().quarantineSettings;
                 // save mail node settings 
-                quarantineSettings.allowedAddressPatterns.javaClass="java.util.ArrayList";
+                quarantineSettings.allowedAddressPatterns.javaClass="java.util.LinkedList";
                 quarantineSettings.allowedAddressPatterns.list = this.quarantinableAddressesGrid.getPageList();
                 quarantineSettings.addressRemaps.list = this.quarantineForwardsGrid.getPageList();
                 

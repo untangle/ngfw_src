@@ -4,15 +4,13 @@
 package com.untangle.node.mail.papi;
 
 import java.io.Serializable;
+import java.util.LinkedList;
 import java.util.List;
 import com.untangle.node.mail.papi.quarantine.QuarantineSettings;
 import com.untangle.node.mail.papi.safelist.SafelistSettings;
 
 /**
  * Mail casing settings.
- *
- * @author <a href="mailto:amread@untangle.com">Aaron Read</a>
- * @version 1.0
  */
 @SuppressWarnings("serial")
 public class MailNodeSettings implements Serializable
@@ -28,7 +26,7 @@ public class MailNodeSettings implements Serializable
     private long popTimeout;
     private long imapTimeout;
     private QuarantineSettings quarantineSettings;
-    private List<SafelistSettings> safelistSettings;
+    private LinkedList<SafelistSettings> safelistSettings;
     private boolean smtpAllowTLS;
 
     // constructors -----------------------------------------------------------
@@ -168,7 +166,7 @@ public class MailNodeSettings implements Serializable
 
     public void setSafelistSettings(List<SafelistSettings> safelistSettings)
     {
-        this.safelistSettings = safelistSettings;
+        this.safelistSettings = new LinkedList<SafelistSettings>(safelistSettings);
 
         return;
     }

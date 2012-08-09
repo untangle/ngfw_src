@@ -8,7 +8,7 @@ import java.io.UnsupportedEncodingException;
 import java.nio.ByteBuffer;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
-import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import com.untangle.node.mail.papi.EmailAddressPairRule;
 import com.untangle.node.mail.papi.EmailAddressRule;
@@ -30,8 +30,8 @@ public class QuarantineSettings implements Serializable
     private int digestHOD;//Hour Of Day
     private int digestMOD;//Minute Of Day
     private long maxQuarantineSz;
-    private List<EmailAddressPairRule> addressRemaps;
-    private List<EmailAddressRule> allowedAddressPatterns;
+    private LinkedList<EmailAddressPairRule> addressRemaps;
+    private LinkedList<EmailAddressRule> allowedAddressPatterns;
     private boolean sendDailyDigests = true;
 
     /**
@@ -56,9 +56,9 @@ public class QuarantineSettings implements Serializable
     public void setAllowedAddressPatterns(List<EmailAddressRule> patterns)
     {
         if (patterns == null) {
-            patterns = new ArrayList<EmailAddressRule>();
+            patterns = new LinkedList<EmailAddressRule>();
         }
-        allowedAddressPatterns = patterns;
+        allowedAddressPatterns = new LinkedList<EmailAddressRule>(patterns);
     }
 
     /**
@@ -102,9 +102,9 @@ public class QuarantineSettings implements Serializable
     public void setAddressRemaps(List<EmailAddressPairRule> remaps)
     {
         if(remaps == null) {
-            remaps = new ArrayList<EmailAddressPairRule>();
+            remaps = new LinkedList<EmailAddressPairRule>();
         }
-        addressRemaps = remaps;
+        addressRemaps = new LinkedList<EmailAddressPairRule>(remaps);
     }
 
     public long getMaxQuarantineTotalSz()
