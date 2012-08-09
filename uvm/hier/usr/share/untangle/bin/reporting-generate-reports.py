@@ -178,9 +178,6 @@ def get_report_lengths(date):
               prev_month_days = prev_month.days_in_month
               lengths.append(prev_month_days)
 
-    if not lengths:
-         lengths.append(1)
-
     logger.info("Generating reports for the following lengths: %s" % (lengths,))
     return lengths
 
