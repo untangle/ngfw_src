@@ -337,12 +337,12 @@ def generate_plots(report_base, end_date, report_days=1):
 
 @print_timing
 def reports_cleanup(cutoff):
-    logger.info("Cleaning-up reports data for all dates < %s" % (cutoff,))
+    logger.info("Cleaning-reports data for all dates < %s" % (cutoff,))
 
     for name in __get_node_partial_order():
         try:
             node = __nodes.get(name, None)
-            logger.debug("** about to clean data for %s" % (name,))
+            logger.info("Cleaning data for %s" % (name,))
             node.reports_cleanup(cutoff)
         except:
             logger.warn('could not cleanup reports for: %s' % name,
