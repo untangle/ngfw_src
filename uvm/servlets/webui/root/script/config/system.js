@@ -999,7 +999,7 @@ if (!Ung.hasResource["Ung.System"]) {
                             if(action.result.success===true) {
                                 Ext.MessageBox.alert(cmp.i18n._("Succeeded"), cmp.i18n._("Upload language pack succeeded"),
                                     function() {
-                                        Ext.getCmp("upload_language_file_textfield").reset();
+                                        languagesStore.loadData(rpc.languageManager.getLanguagesList().list);
                                     }
                                 );
                             } else {
