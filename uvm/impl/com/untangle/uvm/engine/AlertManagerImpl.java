@@ -103,7 +103,7 @@ class AlertManagerImpl implements AlertManager
         }
 
         if (nonWorkingDns.size() > 0) {
-            String alertText = i18nUtil.tr("DNS connecitivity failed: ");
+            String alertText = i18nUtil.tr("DNS connectivity failed: ");
             for (InetAddress ia : nonWorkingDns) {
                 alertText += ia.getHostAddress() + " ";
             }
