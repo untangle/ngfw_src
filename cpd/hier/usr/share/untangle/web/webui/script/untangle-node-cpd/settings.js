@@ -910,7 +910,6 @@ if (!Ung.hasResource["Ung.CPD"]) {
                             items: [{
                                 xtype: 'filefield',
                                 name: "customUploadFile",
-                                xtype: "textfield",
                                 width: 500,
                                 size: 50
                             },{
