@@ -225,7 +225,7 @@ public class CPDSettings implements Serializable
     public String getBasicLoginFooter()         { return this.basicLoginFooter; }
     public String getBasicMessagePageTitle()    { return this.basicMessagePageTitle; }
     public String getBasicMessagePageWelcome()  { return this.basicMessagePageWelcome; }
-    public String getBasicMessageMessageText()  { return this.basicMessageAgreeText; }
+    public String getBasicMessageMessageText()  { return this.basicMessageMessageText; }
     public boolean getBasicMessageAgreeBox()    { return this.basicMessageAgreeBox; }
     public String getBasicMessageAgreeText()    { return this.basicMessageAgreeText; }
     public String getBasicMessageFooter()       { return this.basicMessageFooter; }
@@ -238,7 +238,7 @@ public class CPDSettings implements Serializable
     public void setBasicLoginFooter( String newValue )          { this.basicLoginFooter = newValue; }
     public void setBasicMessagePageTitle( String newValue )     { this.basicMessagePageTitle = newValue; }
     public void setBasicMessagePageWelcome( String newValue )   { this.basicMessagePageWelcome = newValue; }
-    public void setBasicMessageMessageText( String newValue )   { this.basicMessageAgreeText = newValue; }
+    public void setBasicMessageMessageText( String newValue )   { this.basicMessageMessageText = newValue; }
     public void setBasicMessageAgreeBox( boolean newValue )     { this.basicMessageAgreeBox = newValue; }
     public void setBasicMessageAgreeText( String newValue )     { this.basicMessageAgreeText = newValue; }
     public void setBasicMessageFooter( String newValue )        { this.basicMessageFooter = newValue; }
