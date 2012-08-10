@@ -116,11 +116,11 @@ class LocalDirectoryImpl implements LocalDirectory
     {
         SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
 
-        if (this.currentList == null)
-            this.currentList = new LinkedList<LocalDirectoryUser>();
+        if (list == null)
+            list = new LinkedList<LocalDirectoryUser>();
 
         try {
-            settingsManager.save(LinkedList.class, LOCAL_DIRECTORY_SETTINGS_FILE, this.currentList);
+            settingsManager.save(LinkedList.class, LOCAL_DIRECTORY_SETTINGS_FILE, list);
         } catch (SettingsManager.SettingsException e) {
             logger.warn("Failed to save settings.",e);
             return;
