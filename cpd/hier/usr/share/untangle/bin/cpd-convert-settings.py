@@ -1,5 +1,6 @@
 #!/usr/bin/python
 import conversion.sql_helper as sql_helper
+import traceback
 import simplejson
 import sys
 import os
@@ -15,6 +16,11 @@ def pad(arg):
 #------------------------------------------------------------------------------
 
 def escape(arg):
+    arg = str(arg.encode("ascii","ignore"))
+
+    EVIL_CHARACTERS = ["\015" , "\r" , "\n" , "\f", "\t", "\b", "/" ]
+    for char in EVIL_CHARACTERS:
+        arg=arg.replace(char,"")
 
     # first we escape backslash characters
     one = arg.replace('\\', '\\\\')
@@ -281,6 +287,7 @@ try:
 
 except Exception, e:
     print("Could not get result",e)
+    traceback.print_exc(file=sys.stdout)
     sys.exit(1)
 
 sys.exit(0)
