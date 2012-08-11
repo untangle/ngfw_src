@@ -165,6 +165,7 @@ function get_node_settings($nodename)
 
     /* load the settings for the argumented node */
     $nodefile = $homepath . "/usr/share/untangle/settings/" . $nodename . "/settings_" . $nodeid . ".js";
+    if ( ! file_exists($nodefile) ) return(null);
     $data = file_get_contents($nodefile);
     $settings = json_decode($data,true);
 
