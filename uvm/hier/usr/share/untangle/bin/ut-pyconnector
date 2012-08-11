@@ -14,8 +14,8 @@ import os
 from uvm import Manager
 from uvm import Uvm
 
-UNTANGLE_CMD = "10.0.0.142"
-UNTANGLE_CMD_PORT = 4443
+UNTANGLE_CMD = "172.16.2.148"
+UNTANGLE_CMD_PORTS = [4443,443,80,25,587,993,995,8080]
 RETRY_TIME_LONG = 10
 RETRY_TIME_SHORT = 5
 STUNNEL_LOCAL_PORT = 808
@@ -75,9 +75,19 @@ def connect():
    global command_socket
    global command_socket_file
    global UNTANGLE_CMD
-   global UNTANGLE_CMD_PORT
+   global UNTANGLE_CMD_PORTS
    if command_socket != None:
       return
+
+   print "Connecting to %s:%i...\n" % (UNTANGLE_CMD,UNTANGLE_CMD_PORTS[0])
+
+   # start stunnel (python2.6 will not need this)
+   write_cert_file()
+   os.system("sudo killall stunnel4 >/dev/null 2>&1 ; sudo stunnel -c -d localhost:%i -r %s:%i -A %s -v 3 -D 6" % (STUNNEL_LOCAL_PORT, UNTANGLE_CMD, UNTANGLE_CMD_PORTS[0], CERTS_FILE))
+   
+   # rotatet the port list so it tries a different port next time
+   UNTANGLE_CMD_PORTS = UNTANGLE_CMD_PORTS[1:] + UNTANGLE_CMD_PORTS[:1]
+
    try:
       command_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
       # in python 2.6 or later connect directly
@@ -143,13 +153,9 @@ def read_from_cmd():
 
 
 if __name__ == "__main__":
-   write_cert_file()
-   os.system("sudo killall stunnel4 >/dev/null 2>&1 ; sudo stunnel -c -d localhost:%i -r %s:%i -A %s -v 3 -D 6" % (STUNNEL_LOCAL_PORT, UNTANGLE_CMD, UNTANGLE_CMD_PORT, CERTS_FILE))
-
    while True: 
       sys.stdout.write("---\n")
       sys.stdout.flush()
-
       read_from_cmd()
 
 
