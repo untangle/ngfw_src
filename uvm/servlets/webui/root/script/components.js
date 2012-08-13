@@ -11,6 +11,15 @@ if(typeof console === "undefined") {
         debug: function() {}
     };
 }
+
+if (typeof String.prototype.trim !== "function") {
+    // implement trim for browsers like IceWeasel 3.0.6
+    String.prototype.trim = function () {
+        return this.replace(/^\s\s*/, '').replace(/\s\s*$/, '');
+    }
+}
+
+
 var i18n=Ext.create('Ung.I18N',{"map":null}); // the main internationalization object
 var rpc=null; // the main json rpc object
 var testMode = false;
