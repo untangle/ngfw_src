@@ -13,6 +13,7 @@ import java.sql.SQLException;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.Statement;
+import java.sql.Timestamp;
 
 import org.apache.log4j.Logger;
 
@@ -364,9 +365,9 @@ public class CPDIpUsernameMapAssistant implements IpUsernameMapAssistant
                 entry.setHardwareAddress(rset.getString(2));
                 entry.setIpv4Address(InetAddress.getByName(rset.getString(3)));
                 entry.setUsername(rset.getString(4));
-                entry.setLastSession(rset.getDate(5));
-                entry.setSessionStart(rset.getDate(6));
-                entry.setExpirationDate(rset.getDate(7));
+                entry.setLastSession(rset.getTimestamp(5));
+                entry.setSessionStart(rset.getTimestamp(6));
+                entry.setExpirationDate(rset.getTimestamp(7));
                 list.add(entry);
             }
 

@@ -115,6 +115,7 @@ if (!Ung.hasResource["Ung.CPD"]) {
                     renderer: function(value) { return i18n.timestampFormat(value); }
                 },{
                     header: this.i18n._("Current Session"),
+                    dataIndex:'sessionStart',
                     width: 180,
                     renderer: function(value) { return i18n.timestampFormat(value); }
                 },{

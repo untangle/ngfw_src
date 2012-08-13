@@ -2,7 +2,7 @@ package com.untangle.node.cpd;
 
 import java.io.Serializable;
 import java.net.InetAddress;
-import java.util.Date;
+import java.sql.Timestamp;
 
 @SuppressWarnings("serial")
 public class HostDatabaseEntry implements Serializable
@@ -11,9 +11,9 @@ public class HostDatabaseEntry implements Serializable
     private String hardwareAddress;
     private InetAddress ipv4Address;
     private String username;
-    private Date lastSession;
-    private Date sessionStart;
-    private Date expirationDate;
+    private Timestamp lastSession;
+    private Timestamp sessionStart;
+    private Timestamp expirationDate;
 
     public HostDatabaseEntry()
     {
@@ -59,32 +59,32 @@ public class HostDatabaseEntry implements Serializable
         this.username = username;
     }
 
-    public Date getLastSession()
+    public Timestamp getLastSession()
     {
         return lastSession;
     }
 
-    public void setLastSession(Date lastSession)
+    public void setLastSession(Timestamp lastSession)
     {
         this.lastSession = lastSession;
     }
 
-    public Date getSessionStart()
+    public Timestamp getSessionStart()
     {
         return sessionStart;
     }
 
-    public void setSessionStart(Date sessionStart)
+    public void setSessionStart(Timestamp sessionStart)
     {
         this.sessionStart = sessionStart;
     }
 
-    public Date getExpirationDate()
+    public Timestamp getExpirationDate()
     {
         return expirationDate;
     }
 
-    public void setExpirationDate(Date expirationDate)
+    public void setExpirationDate(Timestamp expirationDate)
     {
         this.expirationDate = expirationDate;
     }
