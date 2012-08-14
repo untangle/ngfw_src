@@ -19,8 +19,8 @@ from uvm import Uvm
 #UNTANGLE_CMD = "tweek.metaloft.com"
 UNTANGLE_CMD = "cmd.untangle.com"
 UNTANGLE_CMD_PORTS = [4443,443,80,25,587,993,995,8080]
-RETRY_TIME_LONG = 10
-RETRY_TIME_SHORT = 5
+RETRY_TIME_LONG = 60
+RETRY_TIME_SHORT = 10
 STUNNEL_LOCAL_PORT = 808
 CERTS_FILE = '/tmp/pyconnector-certs.pem'
 
