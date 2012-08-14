@@ -960,7 +960,7 @@ Description: Intrusion Prevention
 
 Package: untangle-node-reporting
 Architecture: all
-Depends: untangle-vm
+Depends: untangle-vm, untangle-postgresql-config
 XB-Display-Name: Reports
 XB-View-Position: 1010
 XB-Untangle-Type: service
