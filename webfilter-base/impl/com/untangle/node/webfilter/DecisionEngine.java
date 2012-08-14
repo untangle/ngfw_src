@@ -578,7 +578,13 @@ public abstract class DecisionEngine
                 String re = GlobUtil.urlGlobToRegex(rule.getString());
 
                 logger.debug("Compile  rule: " + re );
-                regex = Pattern.compile(re);
+                try {
+                    regex = Pattern.compile(re);
+                }
+                catch (Exception e) {
+                    logger.warn("Failed to compile regex: " + re, e);
+                    regex = Pattern.compile("a^");
+                }
                 rule.attach(regex);
             } else {
                 regex = (Pattern)regexO;
