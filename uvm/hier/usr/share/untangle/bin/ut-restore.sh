@@ -35,6 +35,7 @@ UPGD_OPTS=" -o DPkg::Options::=--force-confnew --yes --force-yes --fix-broken "
 
 function restore_db()
 {
+    echo "restore_db()"
     infile=$1
 
     dropdb -U postgres uvm >/dev/null 2>&1
@@ -42,22 +43,24 @@ function restore_db()
     createdb -O postgres -U postgres uvm >/dev/null 2>&1
 
     ## If the database is open, just drop all of the schemas inside of it.
-    psql -U postgres uvm -c "DROP SCHEMA settings CASCADE"
-    psql -U postgres uvm -c "DROP SCHEMA events CASCADE"
-    psql -U postgres uvm -c "DROP SCHEMA reports CASCADE"
+    psql -U postgres uvm -c "DROP SCHEMA settings CASCADE" >/dev/null 2>&1
+    psql -U postgres uvm -c "DROP SCHEMA events CASCADE" >/dev/null 2>&1
+    psql -U postgres uvm -c "DROP SCHEMA reports CASCADE" >/dev/null 2>&1
 
     # if confirm "Restore settings?"; then
-    zcat $infile | psql -X -U postgres uvm >/dev/null 2>&1
+    zcat $infile | psql -X -U postgres uvm
     
     ## Reset the events schema, it is no longer valid.
-    psql -U postgres -c "UPDATE settings.split_schema_ver SET events_version = NULL;" uvm  || true
-    psql -U postgres -c "DROP SCHEMA IF EXISTS events CASCADE" uvm || true
+    psql -U postgres -c "UPDATE settings.split_schema_ver SET events_version = NULL;" uvm  >/dev/null 2>&1
+    psql -U postgres -c "DROP SCHEMA IF EXISTS events CASCADE" uvm >/dev/null 2>&1 
+    true
     
     # fi
 }
 
 function clean_dirs()
 {
+    rm -rf /usr/share/untangle/settings/*
     rm -rf /usr/share/untangle/conf/openvpn
     rm -rf /etc/openvpn
     rm -f  /usr/share/untangle/conf/dirbackup.ldif
@@ -66,20 +69,24 @@ function clean_dirs()
 
 function restore_packages()
 {
+    echo "restore_packages()"
     instfile=$1
 
-    apt-get update 2>&1 | logger -f local2.info
-    apt-get dist-upgrade $UPGD_OPTS 2>&1 | logger -f local2.info
+    apt-get update 2>&1 
+    apt-get dist-upgrade $UPGD_OPTS 2>&1 
+
     /etc/init.d/untangle-vm stop
     if [ -x /etc/init.d/untangle-reports ]; then
         /etc/init.d/untangle-reports stop
     fi
 
-    cat $instfile | cut -d' ' -f1 | \
-      xargs apt-get install $INST_OPTS 2>&1 | logger -f local2.info
+    # ignore kaspersky files *-kav*
+    cat $instfile | grep -v "\-kav" | awk '{print $1}' | xargs apt-get install $INST_OPTS 2>&1 
 }
 
-function restoreFiles() {
+function restore_files() {
+    echo "restore_files()"
+
     dumpfile=$1
     tarfile=$2
     instfile=$3
@@ -237,9 +244,8 @@ function doRestore() {
         return 3
     fi
 
-    # Invoke restoreFiles ("Usage: $0 dumpfile tarfile instfile")
-
-    restoreFiles $WORKING_DIR/$DB_FILE $WORKING_DIR/$FILES_FILE $WORKING_DIR/$INSTALLED_FILE
+    # Invoke restore_files ("Usage: $0 dumpfile tarfile instfile")
+    restore_files $WORKING_DIR/$DB_FILE $WORKING_DIR/$FILES_FILE $WORKING_DIR/$INSTALLED_FILE
 
     EXIT_VAL=$?
 
