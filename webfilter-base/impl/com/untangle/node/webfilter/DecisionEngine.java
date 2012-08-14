@@ -583,6 +583,7 @@ public abstract class DecisionEngine
                 }
                 catch (Exception e) {
                     logger.warn("Failed to compile regex: " + re, e);
+                    //Use a regex that will never match anything
                     regex = Pattern.compile("a^");
                 }
                 rule.attach(regex);
