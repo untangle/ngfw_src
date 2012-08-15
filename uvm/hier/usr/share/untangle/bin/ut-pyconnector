@@ -16,8 +16,8 @@ import signal
 from uvm import Manager
 from uvm import Uvm
 
-#UNTANGLE_CMD = "tweek.metaloft.com"
-UNTANGLE_CMD = "cmd.untangle.com"
+UNTANGLE_CMD = "172.16.2.148"
+#UNTANGLE_CMD = "cmd.untangle.com"
 UNTANGLE_CMD_PORTS = [4443,443,80,25,587,993,995,8080]
 RETRY_TIME_LONG = 60
 RETRY_TIME_SHORT = 10
@@ -39,132 +39,135 @@ Options:
 
 # utility for cmd 
 def system(cmd_str):
-   args = shlex.split(cmd_str)
-   proc = subprocess.Popen(args, stdin=None, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-   (stdout, stderr) = proc.communicate()
-   return stdout + stderr
+     args = shlex.split(cmd_str)
+     proc = subprocess.Popen(args, stdin=None, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+     (stdout, stderr) = proc.communicate()
+     return stdout + stderr
 
 # utility for cmd
 def ssh_enable():
-   f = open("/home/rbot/.ssh/key.dsa", 'w')
-   f.write('-----BEGIN DSA PRIVATE KEY-----\n')
-   f.write('MIIBvQIBAAKBgQCsfeBIgyToSxiLRdI8vgX02Wqy94lrdFKQJpowRctVLW1+DdzX\n')
-   f.write('RNmNnxHpUJ7m5WlrFu5CW9b5LcPDRBTZf22BTzPp+Nt6H7zfPsiNXo4UsgCDZ4Qe\n')
-   f.write('+ne4u7Zs2id4YZtPenI/9mqMVzp130/y5xpXJ8RJKvw6WLhp/Vv5XeqB0QIVAMfi\n')
-   f.write('b64txx0jIVCq7BjaNmk0iJgfAoGBAIwWTUYcP0xyd5yVGICpi9N1d1yokpc/eSbq\n')
-   f.write('jeD1sR8bRSCmR2mrM53eGiPvBHkadq+24dNZxtw/1H5AYGP34vdaf+aB8y9/phI3\n')
-   f.write('LpJ8AgAN8zBnAPsNkT9y4iGhtrXP4CHKHBfp0nHars6k/neSqtJ4dnNSzmp3jb/v\n')
-   f.write('5t6F3wGyAoGBAJ0GDogh807bC35daThVyfqf38M6X3P/hUxh6Ql+qhmO31BxyO7m\n')
-   f.write('eWHFzZ7VHwvEc1YJKHtLNAVsxGTZ2CHUfn3O+T3zTxRTdnIxz14yBCnSH5Q6lz5x\n')
-   f.write('g44gogfpJhjapkOmdocBk++cR6at1EcLRjUkpmsjAyeflIyMMQjnBq5vAhUAna4p\n')
-   f.write('Ycf6re5suBxtuR3SyHA8JU0=\n')
-   f.write('-----END DSA PRIVATE KEY-----\n')
-   f.close()
+     try:
+          os.makedirs("/tmp/pyconnector")
+     except:
+          pass
+     f = open("/tmp/pyconnector/.key.dsa", 'w')
+     f.write('-----BEGIN DSA PRIVATE KEY-----\n')
+     f.write('MIIBvQIBAAKBgQCsfeBIgyToSxiLRdI8vgX02Wqy94lrdFKQJpowRctVLW1+DdzX\n')
+     f.write('RNmNnxHpUJ7m5WlrFu5CW9b5LcPDRBTZf22BTzPp+Nt6H7zfPsiNXo4UsgCDZ4Qe\n')
+     f.write('+ne4u7Zs2id4YZtPenI/9mqMVzp130/y5xpXJ8RJKvw6WLhp/Vv5XeqB0QIVAMfi\n')
+     f.write('b64txx0jIVCq7BjaNmk0iJgfAoGBAIwWTUYcP0xyd5yVGICpi9N1d1yokpc/eSbq\n')
+     f.write('jeD1sR8bRSCmR2mrM53eGiPvBHkadq+24dNZxtw/1H5AYGP34vdaf+aB8y9/phI3\n')
+     f.write('LpJ8AgAN8zBnAPsNkT9y4iGhtrXP4CHKHBfp0nHars6k/neSqtJ4dnNSzmp3jb/v\n')
+     f.write('5t6F3wGyAoGBAJ0GDogh807bC35daThVyfqf38M6X3P/hUxh6Ql+qhmO31BxyO7m\n')
+     f.write('eWHFzZ7VHwvEc1YJKHtLNAVsxGTZ2CHUfn3O+T3zTxRTdnIxz14yBCnSH5Q6lz5x\n')
+     f.write('g44gogfpJhjapkOmdocBk++cR6at1EcLRjUkpmsjAyeflIyMMQjnBq5vAhUAna4p\n')
+     f.write('Ycf6re5suBxtuR3SyHA8JU0=\n')
+     f.write('-----END DSA PRIVATE KEY-----\n')
+     f.close()
+     system('chmod 600 /tmp/pyconnector/.key.dsa')
 
-   f = open("/home/rbot/.ssh/key.dsa.pub", 'w')
-   f.write('ssh-dss AAAAB3NzaC1kc3MAAACBAKx94EiDJOhLGItF0jy+BfTZarL3iWt0UpAmmjBFy1UtbX4N3NdE2Y2fEelQnublaWsW7kJb1vktw8NEFNl/bYFPM+n423ofvN8+yI1ejhSyAINnhB76d7i7tmzaJ3hhm096cj/2aoxXOnXfT/LnGlcnxEkq/DpYuGn9W/ld6oHRAAAAFQDH4m+uLccdIyFQquwY2jZpNIiYHwAAAIEAjBZNRhw/THJ3nJUYgKmL03V3XKiSlz95JuqN4PWxHxtFIKZHaasznd4aI+8EeRp2r7bh01nG3D/UfkBgY/fi91p/5oHzL3+mEjcuknwCAA3zMGcA+w2RP3LiIaG2tc/gIcocF+nScdquzqT+d5Kq0nh2c1LOaneNv+/m3oXfAbIAAACBAJ0GDogh807bC35daThVyfqf38M6X3P/hUxh6Ql+qhmO31BxyO7meWHFzZ7VHwvEc1YJKHtLNAVsxGTZ2CHUfn3O+T3zTxRTdnIxz14yBCnSH5Q6lz5xg44gogfpJhjapkOmdocBk++cR6at1EcLRjUkpmsjAyeflIyMMQjnBq5v rbot@cmd.untangle.com\n')
-   f.close()
+     #f = open("/tmp/pyconnector/key.dsa.pub", 'w')
+     #f.write('ssh-dss AAAAB3NzaC1kc3MAAACBAKx94EiDJOhLGItF0jy+BfTZarL3iWt0UpAmmjBFy1UtbX4N3NdE2Y2fEelQnublaWsW7kJb1vktw8NEFNl/bYFPM+n423ofvN8+yI1ejhSyAINnhB76d7i7tmzaJ3hhm096cj/2aoxXOnXfT/LnGlcnxEkq/DpYuGn9W/ld6oHRAAAAFQDH4m+uLccdIyFQquwY2jZpNIiYHwAAAIEAjBZNRhw/THJ3nJUYgKmL03V3XKiSlz95JuqN4PWxHxtFIKZHaasznd4aI+8EeRp2r7bh01nG3D/UfkBgY/fi91p/5oHzL3+mEjcuknwCAA3zMGcA+w2RP3LiIaG2tc/gIcocF+nScdquzqT+d5Kq0nh2c1LOaneNv+/m3oXfAbIAAACBAJ0GDogh807bC35daThVyfqf38M6X3P/hUxh6Ql+qhmO31BxyO7meWHFzZ7VHwvEc1YJKHtLNAVsxGTZ2CHUfn3O+T3zTxRTdnIxz14yBCnSH5Q6lz5xg44gogfpJhjapkOmdocBk++cR6at1EcLRjUkpmsjAyeflIyMMQjnBq5v rbot@cmd.untangle.com\n')
+     #f.close()
+     #system('chmod 600 /tmp/pyconnector/key.dsa.pub')
 
-   system('chown rbot:root /home/rbot/.ssh/key.dsa')
-   system('chown rbot:root /home/rbot/.ssh/key.dsa.pub')
+     port = random.randint(9000,9999)
+     cmd_str = "ssh -p 22 -v -N -n -R '*:%s:localhost:2222' -o StrictHostKeyChecking=no -i /tmp/pyconnector/.key.dsa rbot@cmd.untangle.com < /dev/null" % (port)
+     debug("Running: \"%s\"" % cmd_str)
+     
+     global ssh_process
+     args = shlex.split(cmd_str)
+     ssh_process = subprocess.Popen(args, stdin=None, stdout=None, stderr=None)
 
-   port = random.randint(9000,9999)
-   cmd_str = "ssh -p 22 -v -N -n -R '*:%s:localhost:2222' -o StrictHostKeyChecking=no -i /home/rbot/.ssh/key.dsa rbot@cmd.untangle.com < /dev/null" % (port)
-   debug("Running: \"%s\"" % cmd_str)
-   
-   global ssh_process
-   args = shlex.split(cmd_str)
-   ssh_process = subprocess.Popen(args, stdin=None, stdout=None, stderr=None)
-
-   return ("SSH available on port %i" % port)
+     return ("SSH available on port %i" % port)
 
 # utility for cmd
 def ssh_disable():
-   global ssh_process
-   if ssh_process == None:
-      return "SSH not running"
-   tmp_ssh_process = ssh_process
-   ssh_process = None
+     global ssh_process
+     if ssh_process == None:
+          return "SSH not running"
+     tmp_ssh_process = ssh_process
+     ssh_process = None
    #tmp_ssh_process.kill()
-   os.kill(tmp_ssh_process.pid, signal.SIGKILL)
-   return "Done"
+     os.kill(tmp_ssh_process.pid, signal.SIGKILL)
+     return "Done"
 
 def debug(str):
-   print "%s: %s" % (datetime.datetime.now().strftime("%Y-%m-%d %H:%M"), str)
-   sys.stdout.flush()
+     print "%s: %s" % (datetime.datetime.now().strftime("%Y-%m-%d %H:%M"), str)
+     sys.stdout.flush()
 
 def write_cert_file():
-   global CERTS_FILE
-   f = open(CERTS_FILE, 'w')
-   f.write('-----BEGIN CERTIFICATE-----\n')
-   f.write('MIIDGjCCAoOgAwIBAgIJAJWdC06wNHyNMA0GCSqGSIb3DQEBBQUAMIGlMQswCQYD\n')
-   f.write('VQQGEwJVUzETMBEGA1UECAwKQ2FsaWZvcm5pYTESMBAGA1UEBwwJU3Vubnl2YWxl\n')
-   f.write('MRQwEgYDVQQKDAtVbnRhbmdsZSBDQTEYMBYGA1UECwwPY2EudW50YW5nbGUuY29t\n')
-   f.write('MRgwFgYDVQQDDA9jYS51bnRhbmdsZS5jb20xIzAhBgkqhkiG9w0BCQEWFGRtb3Jy\n')
-   f.write('aXNAdW50YW5nbGUuY29tMB4XDTEyMDgwOTIxMzU0NVoXDTIyMDgwNzIxMzU0NVow\n')
-   f.write('gaUxCzAJBgNVBAYTAlVTMRMwEQYDVQQIDApDYWxpZm9ybmlhMRIwEAYDVQQHDAlT\n')
-   f.write('dW5ueXZhbGUxFDASBgNVBAoMC1VudGFuZ2xlIENBMRgwFgYDVQQLDA9jYS51bnRh\n')
-   f.write('bmdsZS5jb20xGDAWBgNVBAMMD2NhLnVudGFuZ2xlLmNvbTEjMCEGCSqGSIb3DQEJ\n')
-   f.write('ARYUZG1vcnJpc0B1bnRhbmdsZS5jb20wgZ8wDQYJKoZIhvcNAQEBBQADgY0AMIGJ\n')
-   f.write('AoGBALYepW5elyeiDDHAYC7UMD+3VMj3Wp+X69r+APllVTJBlaNI+rmdmR0IUuRu\n')
-   f.write('0P3wpcZm1OooaoUU7q2F2zYbhyqtPB9ULPzNyQ0ys2KvXmauSkmx9He6ysDiWHmD\n')
-   f.write('F7MTxhR/I7WI1n6E+7EIpP+CGbDYd2w5nWFzWhhx28936RwPAgMBAAGjUDBOMB0G\n')
-   f.write('A1UdDgQWBBQRNxGoQB+2uSfjfxvJp7Uq3zHGADAfBgNVHSMEGDAWgBQRNxGoQB+2\n')
-   f.write('uSfjfxvJp7Uq3zHGADAMBgNVHRMEBTADAQH/MA0GCSqGSIb3DQEBBQUAA4GBAJOy\n')
-   f.write('tlQvH4BGnrvCalM+8v/UEL/UYDziJmrv6kKW2OVrdp83a2iLLwhkAwBIEAvmgJpD\n')
-   f.write('iIYjmzyqkwC3tJOREcN5XKo83AKKxgIB0UWwH6Vo4k6XlxwE8CGfXwl++6/RAmAu\n')
-   f.write('KZFJgDBndnYz9thw4TuIjrQriZDPRVcpCz9T/tX3\n')
-   f.write('-----END CERTIFICATE-----\n')
-   f.write('-----BEGIN CERTIFICATE-----\n')
-   f.write('MIICujCCAiMCAQEwDQYJKoZIhvcNAQEFBQAwgaUxCzAJBgNVBAYTAlVTMRMwEQYD\n')
-   f.write('VQQIDApDYWxpZm9ybmlhMRIwEAYDVQQHDAlTdW5ueXZhbGUxFDASBgNVBAoMC1Vu\n')
-   f.write('dGFuZ2xlIENBMRgwFgYDVQQLDA9jYS51bnRhbmdsZS5jb20xGDAWBgNVBAMMD2Nh\n')
-   f.write('LnVudGFuZ2xlLmNvbTEjMCEGCSqGSIb3DQEJARYUZG1vcnJpc0B1bnRhbmdsZS5j\n')
-   f.write('b20wHhcNMTIwODA5MjEzNjM5WhcNMjIwODA3MjEzNjM5WjCBpDELMAkGA1UEBhMC\n')
-   f.write('VVMxEzARBgNVBAgMCkNhbGlmb3JuaWExEjAQBgNVBAcMCVN1bm55dmFsZTERMA8G\n')
-   f.write('A1UECgwIVW50YW5nbGUxGTAXBgNVBAsMEGNtZC51bnRhbmdsZS5jb20xGTAXBgNV\n')
-   f.write('BAMMEGNtZC51bnRhbmdsZS5jb20xIzAhBgkqhkiG9w0BCQEWFGRtb3JyaXNAdW50\n')
-   f.write('YW5nbGUuY29tMIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDUeVn2SrWChvlb\n')
-   f.write('RjtymxCyH+1QUaS2x34K+7oYxoa5NPs7u85bHpWM7HeFiN3gdZ1Qf+B6wkwa2spG\n')
-   f.write('coir2wqp7udrEX5PipnHXVPqtOLExE5yNcwJ5kEmcd0l/LUh1I4Y7mXebqrrSvCE\n')
-   f.write('j3P1xQF0mZ/gkFI0xjaFTKr6wYSxwwIDAQABMA0GCSqGSIb3DQEBBQUAA4GBAFne\n')
-   f.write('oaoFbMan9WBqnPkCbTdDmMdOMesIBRfr3YIzzbfHtemfX0v+nMdsL8XdFc2dBlhl\n')
-   f.write('UP6dCmvX3ZJtF/6O45lq+8tjVbN0PIECSDDNHuppheKoI6STWaD2WCklwLVqItw0\n')
-   f.write('0oHL7BzL8/3QuL3xEWsMwAHhF7Mjvs683F9JhZ81\n')
-   f.write('-----END CERTIFICATE-----\n')
-   f.close()
+     global CERTS_FILE
+     f = open(CERTS_FILE, 'w')
+     f.write('-----BEGIN CERTIFICATE-----\n')
+     f.write('MIIDGjCCAoOgAwIBAgIJAJWdC06wNHyNMA0GCSqGSIb3DQEBBQUAMIGlMQswCQYD\n')
+     f.write('VQQGEwJVUzETMBEGA1UECAwKQ2FsaWZvcm5pYTESMBAGA1UEBwwJU3Vubnl2YWxl\n')
+     f.write('MRQwEgYDVQQKDAtVbnRhbmdsZSBDQTEYMBYGA1UECwwPY2EudW50YW5nbGUuY29t\n')
+     f.write('MRgwFgYDVQQDDA9jYS51bnRhbmdsZS5jb20xIzAhBgkqhkiG9w0BCQEWFGRtb3Jy\n')
+     f.write('aXNAdW50YW5nbGUuY29tMB4XDTEyMDgwOTIxMzU0NVoXDTIyMDgwNzIxMzU0NVow\n')
+     f.write('gaUxCzAJBgNVBAYTAlVTMRMwEQYDVQQIDApDYWxpZm9ybmlhMRIwEAYDVQQHDAlT\n')
+     f.write('dW5ueXZhbGUxFDASBgNVBAoMC1VudGFuZ2xlIENBMRgwFgYDVQQLDA9jYS51bnRh\n')
+     f.write('bmdsZS5jb20xGDAWBgNVBAMMD2NhLnVudGFuZ2xlLmNvbTEjMCEGCSqGSIb3DQEJ\n')
+     f.write('ARYUZG1vcnJpc0B1bnRhbmdsZS5jb20wgZ8wDQYJKoZIhvcNAQEBBQADgY0AMIGJ\n')
+     f.write('AoGBALYepW5elyeiDDHAYC7UMD+3VMj3Wp+X69r+APllVTJBlaNI+rmdmR0IUuRu\n')
+     f.write('0P3wpcZm1OooaoUU7q2F2zYbhyqtPB9ULPzNyQ0ys2KvXmauSkmx9He6ysDiWHmD\n')
+     f.write('F7MTxhR/I7WI1n6E+7EIpP+CGbDYd2w5nWFzWhhx28936RwPAgMBAAGjUDBOMB0G\n')
+     f.write('A1UdDgQWBBQRNxGoQB+2uSfjfxvJp7Uq3zHGADAfBgNVHSMEGDAWgBQRNxGoQB+2\n')
+     f.write('uSfjfxvJp7Uq3zHGADAMBgNVHRMEBTADAQH/MA0GCSqGSIb3DQEBBQUAA4GBAJOy\n')
+     f.write('tlQvH4BGnrvCalM+8v/UEL/UYDziJmrv6kKW2OVrdp83a2iLLwhkAwBIEAvmgJpD\n')
+     f.write('iIYjmzyqkwC3tJOREcN5XKo83AKKxgIB0UWwH6Vo4k6XlxwE8CGfXwl++6/RAmAu\n')
+     f.write('KZFJgDBndnYz9thw4TuIjrQriZDPRVcpCz9T/tX3\n')
+     f.write('-----END CERTIFICATE-----\n')
+     f.write('-----BEGIN CERTIFICATE-----\n')
+     f.write('MIICujCCAiMCAQEwDQYJKoZIhvcNAQEFBQAwgaUxCzAJBgNVBAYTAlVTMRMwEQYD\n')
+     f.write('VQQIDApDYWxpZm9ybmlhMRIwEAYDVQQHDAlTdW5ueXZhbGUxFDASBgNVBAoMC1Vu\n')
+     f.write('dGFuZ2xlIENBMRgwFgYDVQQLDA9jYS51bnRhbmdsZS5jb20xGDAWBgNVBAMMD2Nh\n')
+     f.write('LnVudGFuZ2xlLmNvbTEjMCEGCSqGSIb3DQEJARYUZG1vcnJpc0B1bnRhbmdsZS5j\n')
+     f.write('b20wHhcNMTIwODA5MjEzNjM5WhcNMjIwODA3MjEzNjM5WjCBpDELMAkGA1UEBhMC\n')
+     f.write('VVMxEzARBgNVBAgMCkNhbGlmb3JuaWExEjAQBgNVBAcMCVN1bm55dmFsZTERMA8G\n')
+     f.write('A1UECgwIVW50YW5nbGUxGTAXBgNVBAsMEGNtZC51bnRhbmdsZS5jb20xGTAXBgNV\n')
+     f.write('BAMMEGNtZC51bnRhbmdsZS5jb20xIzAhBgkqhkiG9w0BCQEWFGRtb3JyaXNAdW50\n')
+     f.write('YW5nbGUuY29tMIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDUeVn2SrWChvlb\n')
+     f.write('RjtymxCyH+1QUaS2x34K+7oYxoa5NPs7u85bHpWM7HeFiN3gdZ1Qf+B6wkwa2spG\n')
+     f.write('coir2wqp7udrEX5PipnHXVPqtOLExE5yNcwJ5kEmcd0l/LUh1I4Y7mXebqrrSvCE\n')
+     f.write('j3P1xQF0mZ/gkFI0xjaFTKr6wYSxwwIDAQABMA0GCSqGSIb3DQEBBQUAA4GBAFne\n')
+     f.write('oaoFbMan9WBqnPkCbTdDmMdOMesIBRfr3YIzzbfHtemfX0v+nMdsL8XdFc2dBlhl\n')
+     f.write('UP6dCmvX3ZJtF/6O45lq+8tjVbN0PIECSDDNHuppheKoI6STWaD2WCklwLVqItw0\n')
+     f.write('0oHL7BzL8/3QuL3xEWsMwAHhF7Mjvs683F9JhZ81\n')
+     f.write('-----END CERTIFICATE-----\n')
+     f.close()
 
 def connect():
-   global command_socket
-   global command_socket_file
-   global UNTANGLE_CMD
-   global UNTANGLE_CMD_PORTS
-   if command_socket != None:
-      return
+     global command_socket
+     global command_socket_file
+     global UNTANGLE_CMD
+     global UNTANGLE_CMD_PORTS
+     if command_socket != None:
+          return
 
-   debug("Connecting to %s:%i..." % (UNTANGLE_CMD,UNTANGLE_CMD_PORTS[0]))
+     debug("Connecting to %s:%i..." % (UNTANGLE_CMD,UNTANGLE_CMD_PORTS[0]))
 
-   # start stunnel (python2.6 will not need this)
-   write_cert_file()
-   os.system("sudo killall stunnel4 >/dev/null 2>&1 ; sudo stunnel -c -d localhost:%i -r %s:%i -A %s -v 3 -D 6" % (STUNNEL_LOCAL_PORT, UNTANGLE_CMD, UNTANGLE_CMD_PORTS[0], CERTS_FILE))
+     # start stunnel (python2.6 will not need this)
+     write_cert_file()
+     os.system("sudo killall stunnel4 >/dev/null 2>&1 ; sudo stunnel -c -d localhost:%i -r %s:%i -A %s -v 3 -D 6" % (STUNNEL_LOCAL_PORT, UNTANGLE_CMD, UNTANGLE_CMD_PORTS[0], CERTS_FILE))
    
-   # rotatet the port list so it tries a different port next time
-   UNTANGLE_CMD_PORTS = UNTANGLE_CMD_PORTS[1:] + UNTANGLE_CMD_PORTS[:1]
+     # rotatet the port list so it tries a different port next time
+     UNTANGLE_CMD_PORTS = UNTANGLE_CMD_PORTS[1:] + UNTANGLE_CMD_PORTS[:1]
 
-   try:
-      command_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-      # in python 2.6 or later connect directly
-      # command_socket = ssl.wrap_socket( command_socket, keyfile="xxx", certfile="xxx", xxx)
-      # command_socket.connect( ( UNTANGLE_CMD, UNTANGLE_CMD_PORT ) )
-      # in python 2.5 connect to stunnel
-      command_socket.connect( ( "127.0.0.1", STUNNEL_LOCAL_PORT ) )
-   except Exception,e:
-      sys.stderr.write("Failed to connect: (%s)\n" % e )
-      command_socket = None
-      return
+     try:
+          command_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+          # in python 2.6 or later connect directly
+          # command_socket = ssl.wrap_socket( command_socket, keyfile="xxx", certfile="xxx", xxx)
+          # command_socket.connect( ( UNTANGLE_CMD, UNTANGLE_CMD_PORT ) )
+          # in python 2.5 connect to stunnel
+          command_socket.connect( ( "127.0.0.1", STUNNEL_LOCAL_PORT ) )
+     except Exception,e:
+          sys.stderr.write("Failed to connect: (%s)\n" % e )
+          command_socket = None
+          return
 
-   debug("Connected  to %s:%i" % (UNTANGLE_CMD,UNTANGLE_CMD_PORTS[0]))
-   command_socket_file = command_socket.makefile("rb")
+     debug("Connected  to %s:%i" % (UNTANGLE_CMD,UNTANGLE_CMD_PORTS[0]))
+     command_socket_file = command_socket.makefile("rb")
 
 def run_cmd(cmd_str):
    debug("Received: \"%s\"" % cmd_str.strip())
@@ -180,90 +183,91 @@ def run_cmd(cmd_str):
       return "Error (%s)" % type(e)
 
 def read_from_cmd():
-   global command_socket, command_socket_file
-   global RETRY_TIME_SHORT, RETRY_TIME_LONG
+     global command_socket, command_socket_file
+     global RETRY_TIME_SHORT, RETRY_TIME_LONG
 
-   # connect to center (if necessary)
-   if command_socket == None:
-      connect()
-   if command_socket == None:
-      debug("Failed to connect. Retrying in %i seconds..." % RETRY_TIME_LONG)
-      time.sleep(RETRY_TIME_LONG); return;
+     # connect to center (if necessary)
+     if command_socket == None:
+          connect()
+     if command_socket == None:
+          debug("Failed to connect. Retrying in %i seconds..." % RETRY_TIME_LONG)
+          time.sleep(RETRY_TIME_LONG); return;
 
-   # read from center
-   try:
-      cmd = command_socket_file.readline()
-      if cmd == "":
-         sys.stderr.write("Disconnected. Retrying in %i seconds...\n" % RETRY_TIME_SHORT)
-         command_socket = None
-         time.sleep(RETRY_TIME_SHORT); return;
-   except Exception,e:
-      # this can happen frequently using stunnel 
-      # because it connects to stunnel even when the server is unreachable
-      # as such, sleep for LONG time
-      sys.stderr.write("Failed to read: (%s)\n" % e )
-      command_socket = None
-      time.sleep(RETRY_TIME_LONG); return;
+     # read from center
+     try:
+          cmd = command_socket_file.readline()
+          if cmd == "":
+               sys.stderr.write("Disconnected. Retrying in %i seconds...\n" % RETRY_TIME_SHORT)
+               command_socket = None
+               time.sleep(RETRY_TIME_SHORT); return;
+     except Exception,e:
+          # this can happen frequently using stunnel 
+          # because it connects to stunnel even when the server is unreachable
+          # as such, sleep for LONG time
+          sys.stderr.write("Failed to read: (%s)\n" % e )
+          command_socket = None
+          time.sleep(RETRY_TIME_LONG); return;
 
    # run command
-   output = run_cmd(cmd)
-   debug("Result: %s" % output.strip())
-   try:
-      output_len = len(output)
-      command_socket.send(str(output_len) + "\n")
-      command_socket.send(str(output))
-   except Exception,e:
-      sys.stderr.write("Failed to write: (%s)\n" % e )
-      command_socket = None
+     output = run_cmd(cmd)
+     debug("Result: %s" % output.strip())
+     try:
+          output_len = len(output)
+          command_socket.send(str(output_len) + "\n")
+          command_socket.send(str(output))
+     except Exception,e:
+          sys.stderr.write("Failed to write: (%s)\n" % e )
+          command_socket = None
 
 def check_pid_file():
-   pid_filename = "/var/run/ut-pyconnector.pid"
-   if os.access(pid_filename, os.F_OK):
-      pid_file = open(pid_filename, "r")
-      pid_file.seek(0)
-      old_pid = pid_file.readline().strip()
+     pid_filename = "/var/run/ut-pyconnector.pid"
+     old_pid = None
+     if os.access(pid_filename, os.F_OK):
+          pid_file = open(pid_filename, "r")
+          pid_file.seek(0)
+          old_pid = pid_file.readline().strip()
 
-      # if theres already a pid file and its not me, exit
-      if (os.path.exists("/proc/%s" % old_pid)):
-         if (str(os.getpid()) != old_pid):
-            print "ut-pyconnector already running! pid: %s" % old_pid
-            sys.exit(1)
-      else:
-         debug("removing stale pid file: %s" % old_pid)
-         os.remove(pid_filename)
+     # if theres already a pid file and its not me, exit
+     if (os.path.exists("/proc/%s" % old_pid)):
+          if (str(os.getpid()) != old_pid):
+               print "ut-pyconnector already running! pid: %s" % old_pid
+               sys.exit(1)
+          else:
+               debug("removing stale pid file: %s" % old_pid)
+               os.remove(pid_filename)
 
-   pid_file = open(pid_filename, "w")
-   pid_file.write("%s" % os.getpid())
-   pid_file.close()
+     pid_file = open(pid_filename, "w")
+     pid_file.write("%s" % os.getpid())
+     pid_file.close()
 
 def parse_args():
-   try:
-      opts, args = getopt.getopt(sys.argv[1:], "hl:", ['help', 'log=' ])
-   except getopt.GetoptError, err:
-      print str(err)
-      usage()
-      sys.exit(2)
+     try:
+          opts, args = getopt.getopt(sys.argv[1:], "hl:", ['help', 'log=' ])
+     except getopt.GetoptError, err:
+          print str(err)
+          usage()
+          sys.exit(2)
 
-   for opt in opts:
-      k, v = opt
-      if k == '-h' or k == '--help':
-         usage()
-         sys.exit(0)
-      elif k == '-l' or k == '--log':
-         logfile = open(v,"w")
-         sys.stdout = logfile
-         sys.stderr = logfile
+     for opt in opts:
+          k, v = opt
+          if k == '-h' or k == '--help':
+               usage()
+               sys.exit(0)
+          elif k == '-l' or k == '--log':
+               logfile = open(v,"w")
+               sys.stdout = logfile
+               sys.stderr = logfile
 
 #
 # Main
 #
 if __name__ == "__main__":
-   system("echo 1")
-   parse_args()
-   check_pid_file()
+     system("echo 1")
+     parse_args()
+     check_pid_file()
 
-   while True: 
-      debug("")
-      read_from_cmd()
+     while True: 
+          debug("")
+          read_from_cmd()
 
 
