@@ -16,9 +16,13 @@ import signal
 from uvm import Manager
 from uvm import Uvm
 
-#UNTANGLE_CMD = "172.16.2.148"
-UNTANGLE_CMD = "cmd.untangle.com"
+# FIXME add fall back to IP if DNS doesn't resolve for cmd.untangle.com and supportssh.untangle.com
+
+#UNTANGLE_CMD_HOST = "172.16.2.148"
+UNTANGLE_CMD_HOST = "cmd.untangle.com"
 UNTANGLE_CMD_PORTS = [4443,443,80,25,587,993,995,8080]
+UNTANGLE_SSH_HOST = "supportssh.untangle.com"
+UNTANGLE_SSH_USER = "pyconnector"
 RETRY_TIME_LONG = 60
 RETRY_TIME_SHORT = 10
 STUNNEL_LOCAL_PORT = 808
@@ -67,19 +71,19 @@ def ssh_enable():
      system('chmod 600 /tmp/pyconnector/.key.dsa')
 
      #f = open("/tmp/pyconnector/key.dsa.pub", 'w')
-     #f.write('ssh-dss AAAAB3NzaC1kc3MAAACBAKx94EiDJOhLGItF0jy+BfTZarL3iWt0UpAmmjBFy1UtbX4N3NdE2Y2fEelQnublaWsW7kJb1vktw8NEFNl/bYFPM+n423ofvN8+yI1ejhSyAINnhB76d7i7tmzaJ3hhm096cj/2aoxXOnXfT/LnGlcnxEkq/DpYuGn9W/ld6oHRAAAAFQDH4m+uLccdIyFQquwY2jZpNIiYHwAAAIEAjBZNRhw/THJ3nJUYgKmL03V3XKiSlz95JuqN4PWxHxtFIKZHaasznd4aI+8EeRp2r7bh01nG3D/UfkBgY/fi91p/5oHzL3+mEjcuknwCAA3zMGcA+w2RP3LiIaG2tc/gIcocF+nScdquzqT+d5Kq0nh2c1LOaneNv+/m3oXfAbIAAACBAJ0GDogh807bC35daThVyfqf38M6X3P/hUxh6Ql+qhmO31BxyO7meWHFzZ7VHwvEc1YJKHtLNAVsxGTZ2CHUfn3O+T3zTxRTdnIxz14yBCnSH5Q6lz5xg44gogfpJhjapkOmdocBk++cR6at1EcLRjUkpmsjAyeflIyMMQjnBq5v rbot@cmd.untangle.com\n')
+     #f.write('ssh-dss AAAAB3NzaC1kc3MAAACBAKx94EiDJOhLGItF0jy+BfTZarL3iWt0UpAmmjBFy1UtbX4N3NdE2Y2fEelQnublaWsW7kJb1vktw8NEFNl/bYFPM+n423ofvN8+yI1ejhSyAINnhB76d7i7tmzaJ3hhm096cj/2aoxXOnXfT/LnGlcnxEkq/DpYuGn9W/ld6oHRAAAAFQDH4m+uLccdIyFQquwY2jZpNIiYHwAAAIEAjBZNRhw/THJ3nJUYgKmL03V3XKiSlz95JuqN4PWxHxtFIKZHaasznd4aI+8EeRp2r7bh01nG3D/UfkBgY/fi91p/5oHzL3+mEjcuknwCAA3zMGcA+w2RP3LiIaG2tc/gIcocF+nScdquzqT+d5Kq0nh2c1LOaneNv+/m3oXfAbIAAACBAJ0GDogh807bC35daThVyfqf38M6X3P/hUxh6Ql+qhmO31BxyO7meWHFzZ7VHwvEc1YJKHtLNAVsxGTZ2CHUfn3O+T3zTxRTdnIxz14yBCnSH5Q6lz5xg44gogfpJhjapkOmdocBk++cR6at1EcLRjUkpmsjAyeflIyMMQjnBq5v *@*\n')
      #f.close()
      #system('chmod 600 /tmp/pyconnector/key.dsa.pub')
 
      port = random.randint(9000,9999)
-     cmd_str = "ssh -p 22 -v -N -n -R '*:%s:localhost:2222' -o StrictHostKeyChecking=no -i /tmp/pyconnector/.key.dsa rbot@cmd.untangle.com < /dev/null" % (port)
+     cmd_str = "ssh -p 22 -v -N -n -R '*:%s:localhost:2222' -o StrictHostKeyChecking=no -i /tmp/pyconnector/.key.dsa %s@%s < /dev/null" % (port, UNTANGLE_SSH_USER, UNTANGLE_SSH_HOST)
      debug("Running: \"%s\"" % cmd_str)
      
      global ssh_process
      args = shlex.split(cmd_str)
      ssh_process = subprocess.Popen(args, stdin=None, stdout=None, stderr=None)
 
-     return ("SSH available on port %i" % port)
+     return ("SSH available at %s on port %i" % (UNTANGLE_SSH_HOST, port))
 
 # utility for cmd
 def ssh_disable():
@@ -140,16 +144,18 @@ def write_cert_file():
 def connect():
      global command_socket
      global command_socket_file
-     global UNTANGLE_CMD
+     global UNTANGLE_CMD_HOST
      global UNTANGLE_CMD_PORTS
      if command_socket != None:
           return
 
-     debug("Connecting to %s:%i..." % (UNTANGLE_CMD,UNTANGLE_CMD_PORTS[0]))
+     debug("Connecting to %s:%i..." % (UNTANGLE_CMD_HOST,UNTANGLE_CMD_PORTS[0]))
 
      # start stunnel (python2.6 will not need this)
      write_cert_file()
-     os.system("sudo killall stunnel4 >/dev/null 2>&1 ; sudo stunnel -c -d localhost:%i -r %s:%i -A %s -v 3 -D 6" % (STUNNEL_LOCAL_PORT, UNTANGLE_CMD, UNTANGLE_CMD_PORTS[0], CERTS_FILE))
+     cmd_str = "sudo killall stunnel4 >/dev/null 2>&1 ; sudo stunnel -c -d localhost:%i -r %s:%i -A %s -v 3 -D 6" % (STUNNEL_LOCAL_PORT, UNTANGLE_CMD_HOST, UNTANGLE_CMD_PORTS[0], CERTS_FILE)
+     debug(cmd_str)
+     os.system("sudo killall stunnel4 >/dev/null 2>&1 ; sudo stunnel -c -d localhost:%i -r %s:%i -A %s -v 3 -D 6" % (STUNNEL_LOCAL_PORT, UNTANGLE_CMD_HOST, UNTANGLE_CMD_PORTS[0], CERTS_FILE))
    
      # rotatet the port list so it tries a different port next time
      UNTANGLE_CMD_PORTS = UNTANGLE_CMD_PORTS[1:] + UNTANGLE_CMD_PORTS[:1]
@@ -158,7 +164,7 @@ def connect():
           command_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
           # in python 2.6 or later connect directly
           # command_socket = ssl.wrap_socket( command_socket, keyfile="xxx", certfile="xxx", xxx)
-          # command_socket.connect( ( UNTANGLE_CMD, UNTANGLE_CMD_PORT ) )
+          # command_socket.connect( ( UNTANGLE_CMD_HOST, UNTANGLE_CMD_PORT ) )
           # in python 2.5 connect to stunnel
           command_socket.connect( ( "127.0.0.1", STUNNEL_LOCAL_PORT ) )
      except Exception,e:
@@ -166,7 +172,6 @@ def connect():
           command_socket = None
           return
 
-     debug("Connected  to %s:%i" % (UNTANGLE_CMD,UNTANGLE_CMD_PORTS[0]))
      command_socket_file = command_socket.makefile("rb")
 
 def run_cmd(cmd_str):
