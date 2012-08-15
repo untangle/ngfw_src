@@ -96,7 +96,7 @@ Ung.Remaps.prototype = {
                     },this)
                  }
             }});
-        Ext.QuickTips.init()        
+        Ext.QuickTips.init();  
         var tt1 = Ext.create('Ext.tip.ToolTip',{
             target: Ext.get('radio1'),
             title: 'Forward Quarantined Messages to....'
@@ -110,15 +110,13 @@ Ung.Remaps.prototype = {
         });
 
         items.push( this.emailAddressField );
-        this.changeAddressButton = Ext.create('Ext.button.Button',{
-            text : "Change Address",
-            handler: function() {
-                var email = this.emailAddressField.getValue();
-                quarantine.rpc.setRemap( Ext.bind(this.setRemap,this ), 
-                                         inboxDetails.token, email );
-            },
-            cls:'quarantine-change-address',
-            scope : this        
+        this.changeAddressButton = Ext.create('Ext.button.Button', {
+            text : i18n._("Change Address"),
+            handler: Ext.bind(function() {
+                    var email = this.emailAddressField.getValue();
+                quarantine.rpc.setRemap( Ext.bind(this.setRemap,this ), inboxDetails.token, email );
+            }, this)
+            //cls:'quarantine-change-address',
         });
         items.push(this.changeAddressButton);
 
