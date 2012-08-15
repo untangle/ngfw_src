@@ -16,8 +16,8 @@ import signal
 from uvm import Manager
 from uvm import Uvm
 
-UNTANGLE_CMD = "172.16.2.148"
-#UNTANGLE_CMD = "cmd.untangle.com"
+#UNTANGLE_CMD = "172.16.2.148"
+UNTANGLE_CMD = "cmd.untangle.com"
 UNTANGLE_CMD_PORTS = [4443,443,80,25,587,993,995,8080]
 RETRY_TIME_LONG = 60
 RETRY_TIME_SHORT = 10
