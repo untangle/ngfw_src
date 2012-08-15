@@ -16,7 +16,7 @@ if (typeof String.prototype.trim !== "function") {
     // implement trim for browsers like IceWeasel 3.0.6
     String.prototype.trim = function () {
         return this.replace(/^\s\s*/, '').replace(/\s\s*$/, '');
-    }
+    };
 }
 
 
@@ -31,7 +31,7 @@ if(Ext.getVersion().version=="4.1.1") {
             //Hack to solve the issue with alert being displayed behind the current settings window after a jabsorb call.
             Ext.defer(this.toFront, 10, this);
         }
-    })
+    });
 };
 
 Ext.override(Ext.Button, {

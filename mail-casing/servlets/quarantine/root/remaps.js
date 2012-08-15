@@ -115,8 +115,8 @@ Ung.Remaps.prototype = {
             handler: Ext.bind(function() {
                     var email = this.emailAddressField.getValue();
                 quarantine.rpc.setRemap( Ext.bind(this.setRemap,this ), inboxDetails.token, email );
-            }, this)
-            //cls:'quarantine-change-address',
+            }, this),
+            cls:'quarantine-left-indented'
         });
         items.push(this.changeAddressButton);
 
