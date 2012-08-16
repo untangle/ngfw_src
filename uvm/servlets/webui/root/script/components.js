@@ -3025,7 +3025,7 @@ Ext.define("Ung.GridEventLog", {
         var rec= {};
         var property;
         for (var i=0; i<fields.length ; i++) {
-            property = (fields[i].mapping != null)?fields[i].mapping:fields[i].name
+            property = (fields[i].mapping != null)?fields[i].mapping:fields[i].name;
             rec[property]=
                 (property=='id')?index+1:
                 (property=='time_stamp')?{javaClass:"java.util.Date", time: (new Date(i*10000)).getTime()}:
