@@ -27,7 +27,7 @@ public class FirewallRule implements JSONString, Serializable
 
     private List<FirewallRuleMatcher> matchers;
 
-    private Integer id;
+    private Integer ruleId;
     private Boolean enabled;
     private Boolean log;
     private Boolean block;
@@ -56,16 +56,34 @@ public class FirewallRule implements JSONString, Serializable
         this.matchers = matchers;
     }
 
+    /**
+     * Use RuleId instead
+     * Kept for backwards compatability
+     */
     public Integer getId()
     {
-        return this.id;
+        return this.ruleId;
     }
 
-    public void setId(Integer id)
+    /**
+     * Use RuleId instead
+     * Kept for backwards compatability
+     */
+    public void setId(Integer ruleId)
     {
-        this.id = id;
+        this.ruleId = ruleId;
     }
-    
+
+    public Integer getRuleId()
+    {
+        return this.ruleId;
+    }
+
+    public void setRuleId(Integer ruleId)
+    {
+        this.ruleId = ruleId;
+    }
+
     public Boolean getEnabled()
     {
         return enabled;

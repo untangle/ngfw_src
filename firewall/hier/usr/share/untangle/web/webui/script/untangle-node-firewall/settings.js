@@ -53,7 +53,7 @@ if (!Ung.hasResource["Ung.Firewall"]) {
                     hasReorder: true,
                     addAtTop: false,
                     emptyRow: {
-                        "id": 0,
+                        "ruleId": 0,
                         "enabled": true,
                         "block": false,
                         "log": true,
@@ -64,7 +64,7 @@ if (!Ung.hasResource["Ung.Firewall"]) {
                     recordJavaClass: "com.untangle.node.firewall.FirewallRule",
                     dataProperty:'rules',
                     fields: [{
-                        name: 'id'
+                        name: 'ruleId'
                     }, {
                         name: 'enabled'
                     }, {
@@ -81,7 +81,7 @@ if (!Ung.hasResource["Ung.Firewall"]) {
                     columns: [{
                                 header: this.i18n._("Rule Id"),
                                 width: 50,
-                                dataIndex: 'internalId',
+                                dataIndex: 'ruleId',
                                 renderer: function(value) {
                                     if (value < 0) {
                                         return i18n._("new");
