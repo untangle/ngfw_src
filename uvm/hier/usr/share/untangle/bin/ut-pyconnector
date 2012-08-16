@@ -32,6 +32,7 @@ uvm = None
 command_socket = None
 command_socket_file = None
 ssh_process = None
+ssh_port = None
 
 def usage():
      print """\
@@ -56,6 +57,9 @@ def make_tmp_dir():
 
 # utility for cmd
 def ssh_enable():
+     if ssh_process != None:
+          return "SSH already available at %s on port %i" % (UNTANGLE_SSH_HOST, ssh_port)
+
      make_tmp_dir();
      f = open("/tmp/pyconnector/.key.dsa", 'w')
      f.write('-----BEGIN DSA PRIVATE KEY-----\n')
@@ -78,15 +82,17 @@ def ssh_enable():
      #f.close()
      #system('chmod 600 /tmp/pyconnector/key.dsa.pub')
 
-     port = random.randint(9000,9999)
-     cmd_str = "ssh -p 22 -v -N -n -R '*:%s:localhost:2222' -o StrictHostKeyChecking=no -i /tmp/pyconnector/.key.dsa %s@%s < /dev/null" % (port, UNTANGLE_SSH_USER, UNTANGLE_SSH_HOST)
-     debug("Running: \"%s\"" % cmd_str)
-     
      global ssh_process
+     global ssh_port
+
+     ssh_port = random.randint(9000,9999)
+     cmd_str = "ssh -p 22 -v -N -n -R '*:%s:localhost:2222' -o StrictHostKeyChecking=no -i /tmp/pyconnector/.key.dsa %s@%s < /dev/null" % (ssh_port, UNTANGLE_SSH_USER, UNTANGLE_SSH_HOST)
+     debug("Starting SSH: \"%s\"" % cmd_str)
+     
      args = shlex.split(cmd_str)
      ssh_process = subprocess.Popen(args, stdin=None, stdout=None, stderr=None)
 
-     return ("SSH available at %s on port %i" % (UNTANGLE_SSH_HOST, port))
+     return ("SSH available at %s on port %i" % (UNTANGLE_SSH_HOST, ssh_port))
 
 # utility for cmd
 def ssh_disable():
@@ -96,6 +102,7 @@ def ssh_disable():
      tmp_ssh_process = ssh_process
      ssh_process = None
    #tmp_ssh_process.kill()
+     debug("Stopping SSH: \"%i\"" % tmp_ssh_process.pid)
      os.kill(tmp_ssh_process.pid, signal.SIGKILL)
      return "Done"
 
