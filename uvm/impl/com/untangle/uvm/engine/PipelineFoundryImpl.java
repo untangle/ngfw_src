@@ -21,7 +21,9 @@ import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.argon.ArgonAgent;
 import com.untangle.uvm.logging.LogEvent;
 import com.untangle.uvm.node.SessionTuple;
+import com.untangle.uvm.node.Node;
 import com.untangle.uvm.node.NodeManager;
+import com.untangle.uvm.node.NodeSettings;
 import com.untangle.uvm.node.SessionEvent;
 import com.untangle.uvm.node.SessionStatsEvent;
 import com.untangle.uvm.node.PolicyManager;
@@ -439,11 +441,18 @@ public class PipelineFoundryImpl implements PipelineFoundry
         chains.clear();
     }
     
-    private void removeDuplicates(Long policyId, List<ArgonConnectorFitting> chain)
+    private void removeDuplicates( Long policyId, List<ArgonConnectorFitting> chain )
     {
         Map<String, Integer> numParents = new HashMap<String, Integer>();
         Map<ArgonConnectorFitting, Integer> fittingDistance = new HashMap<ArgonConnectorFitting, Integer>();
 
+        List<String> enabledNodesInPolicy = new LinkedList<String>();
+        List<Node> nodesInPolicy = UvmContextFactory.context().nodeManager().nodeInstances( policyId );
+        for (Node node : nodesInPolicy) {
+            if (node.getRunState() == NodeSettings.NodeState.RUNNING)
+                enabledNodesInPolicy.add(node.getNodeProperties().getName());
+        }
+        
         for (Iterator<ArgonConnectorFitting> i = chain.iterator(); i.hasNext();) {
             ArgonConnectorFitting acFitting = i.next();
 
@@ -454,6 +463,17 @@ public class PipelineFoundryImpl implements PipelineFoundry
             }
 
             String nodeName = acFitting.argonConnector.node().getNodeProperties().getName();
+
+            /**
+             * Remove the items that are not enabled in this policy
+             * This is to ensure that if an app is in the child and not enable, it is not inherited from the parent
+             */
+            if (!enabledNodesInPolicy.contains(nodeName)) {
+                i.remove();
+                continue;
+            }
+
+
             Integer n = numParents.get(nodeName);
             int distance = getPolicyGenerationDiff(policyId, nodePolicyId);
 

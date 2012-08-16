@@ -136,12 +136,12 @@ public class NodeManagerImpl implements NodeManager
         return list;
     }
 
-    public List<Node> nodeInstances(String name, Long policyId)
+    public List<Node> nodeInstances( String name, Long policyId )
     {
         return nodeInstances( name, policyId, true);
     }
 
-    public List<Node> nodeInstances(String name, Long policyId, boolean parents)
+    public List<Node> nodeInstances( String name, Long policyId, boolean parents )
     {
         List<Node> list = new ArrayList<Node>(loadedNodesMap.size());
 
@@ -161,7 +161,7 @@ public class NodeManagerImpl implements NodeManager
         return getNodesForPolicy( policyId );
     }
 
-    public List<Long> nodeInstancesIds( Long policyId)
+    public List<Long> nodeInstancesIds( Long policyId )
     {
         return nodeToIdList( nodeInstances( policyId ) );
     }
@@ -768,7 +768,7 @@ public class NodeManagerImpl implements NodeManager
         return;
     }
     
-    private List<Long> getParentPolicies(Long policyId)
+    private List<Long> getParentPolicies( Long policyId )
     {
         PolicyManager policyManager = (PolicyManager) UvmContextFactory.context().nodeManager().node("untangle-node-policy");
         List<Long> parentList = new ArrayList<Long>();
@@ -782,12 +782,12 @@ public class NodeManagerImpl implements NodeManager
         return parentList;
     }
 
-    private List<Node> getNodesForPolicy(Long policyId)
+    private List<Node> getNodesForPolicy( Long policyId )
     {
-        return getNodesForPolicy(policyId,true);
+        return getNodesForPolicy( policyId,true );
     }
 
-    private List<Node> getNodesForPolicy(Long policyId, boolean parents)
+    private List<Node> getNodesForPolicy( Long policyId, boolean parents )
     {
         List<Long> parentPolicies = null;
 
