@@ -4,8 +4,6 @@ Ext.namespace('Ext.ux');
 //The location of the blank pixel image
 Ext.BLANK_IMAGE_URL = '/ext/resources/images/default/s.gif';
 
-// vim: ts=4:sw=4:nu:fdc=4:nospell
-
 /**
  * @class Ext.ux.toolbar.PagingOptions
  * @author Arthur Kay (http://www.akawebdesign.com)
@@ -61,6 +59,7 @@ Ext.define('Ext.ux.toolbar.PagingOptions', {
                 keypress: function(thisField, eventObj) {
                     if (eventObj.getKey() !== eventObj.ENTER) { return false; }
                     me.fireEvent('pagesizeselect', thisField.getValue());
+                    return true;
                 }
             }
         });
@@ -77,73 +76,6 @@ Ext.define('Ext.ux.toolbar.PagingOptions', {
         me.addEvents('pagesizeselect');
     }
 });
-// end of file
-
-Ext.define('Ung.SimpleHash', {
-    constructor:function() {
-        this.data = new Object();
-        this.size = 0;
-    },
-    /**
-     * Add an item to internal hash.
-     * @param key The key to update
-     * @param value The value to insert, use null to remove the item.
-     */
-    put: function( key, value ) {
-        if ( this.data[key] != null ) {
-            if ( value == null ) this.size--;
-        } else {
-            if ( value != null ) this.size++;
-        }
-
-        if ( value == null ) delete this.data[key];
-        else this.data[key] = value;
-    },
-
-    clear: function( key ) {
-        if ( this.data[key] != null ) this.size--;
-        this.data[key] = null;
-    },
-
-    clearAll: function() {
-        this.data = {};
-        this.size = 0;
-    },
-
-    get: function( key ) {
-        return this.data[key];
-    }
-});
-
-Ext.define('Ung.CountingHash', {
-    extend:'Ung.SimpleHash',
-    add: function( key ) {
-        var current = this.get( key );
-
-        if ( current == null ) {
-            current = 1;
-        } else {
-            current++;
-        }
-
-        return this.put( key, current );
-    },
-
-    minus: function( key ) {
-        var current = this.get( key );
-
-        if ( current != null ) {
-            if ( current <= 1 ) {
-                current = null;
-            } else {
-                current--;
-            }
-        }
-
-        return this.put( key, current );
-    }
-});
-
 
 var quarantineTabPanel = null;
 var quarantine = null;
@@ -157,12 +89,6 @@ Ung.Quarantine = function() {};
 Ung.Quarantine.prototype = {
     rpc: null,
 
-    /* This is a hash of message ids that are ready to be deleted or released. */
-    actionItems: new Ung.SimpleHash(),
-
-    /* This is a hash of the email addresses to safelist */
-    addresses: new Ung.CountingHash(),
-
     init: function() {
         //get JSONRpcClient
         this.rpc = new JSONRpcClient("/quarantine/JSON-RPC").Quarantine;
@@ -172,21 +98,21 @@ Ung.Quarantine.prototype = {
         this.releaseButton= Ext.create('Ext.button.Button', {
             handler: Ext.bind(function() { this.releaseOrDelete( quarantine.rpc.releaseMessages ); }, this ),
             iconCls: 'icon-move-mails',
-            text: i18n._( "Move to Inbox (0  messages)" ),
+            text: i18n._( "Release to Inbox" ),
             disabled: true
         } );
 
         this.safelistButton = Ext.create('Ext.button.Button', {
             handler: Ext.bind(function() { this.safelist(); }, this ),
             iconCls:'icon-safe-list',
-            text: i18n._( "Move to Inbox & Add to Safelist (0  Senders)" ),
+            text: i18n._( "Release to Inbox & Add Senders to Safelist" ),
             disabled: true
         } );
 
         this.deleteButton = Ext.create('Ext.button.Button', {
             handler: Ext.bind(function() { this.releaseOrDelete( quarantine.rpc.purgeMessages ); }, this ),
             iconCls:'icon-delete-row',
-            text: i18n._( "Delete (0  messages)" ),
+            text: i18n._( "Delete" ),
             disabled: true
         } );
 
@@ -212,29 +138,29 @@ Ung.Quarantine.prototype = {
 
     clearSelections: function() {
         // Clear the current action items 
-        this.actionItems.clearAll();
-        this.addresses.clearAll();
         this.selectionModel.deselectAll();
         this.grid.setDisabled( true );
     },
 
-    releaseOrDelete: function( action ) {
+    releaseOrDelete: function( actionFn ) {
         var mids = [];
-        for ( var key in this.actionItems.data )   {
-            mids.push( key );
-        }
+        var selections = this.grid.getSelectionModel().getSelection();
+        Ext.each(selections, function(item) {
+            mids.push(item.data.mailID)
+        });
         this.store.remove(this.selectionModel.getSelection());
 
         this.clearSelections();
-        action( Ext.bind(this.refreshTable, this), inboxDetails.token, mids );
+        actionFn( Ext.bind(this.refreshTable, this), inboxDetails.token, mids );
     },
 
     safelist: function( addresses )
     {
-        if ( addresses == null ) {
-            addresses = [];
-            for ( var key in this.addresses.data ) addresses.push( key );
-        }
+        addresses = [];
+        var selections = this.grid.getSelectionModel().getSelection();
+        Ext.each(selections, function(item) {
+            addresses.push(item.data.sender)
+        });
         this.selectionModel.selectAll();
         this.store.remove(this.selectionModel.getSelection());
 
@@ -260,10 +186,11 @@ Ung.Quarantine.prototype = {
             this.store.sync();
 
             /* to refresh the buttons at the bottom */
-            this.updateActionItems();
+            this.updateButtons(false);
 
             /* Reload the data */
-            // this.grid.bbar.doLoad( 0 );
+            /* FIXME need to refresh here - this displays old stale data FIXME */
+            this.grid.getStore().load();
 
             var message = this.getMessage( result );
             if ( message != "" ) this.showMessage( message );
@@ -288,79 +215,31 @@ Ung.Quarantine.prototype = {
         var messages = [];
         if ( result.purgeCount > 0 ) {
             messages.push( i18n.pluralise( i18n._( "Deleted one Message" ),
-                                           Ext.String.format( i18n._( "Deleted {0} Messages" ),
-                                                              result.purgeCount ),
+                                           Ext.String.format( i18n._( "Deleted {0} Messages" ), result.purgeCount ),
                                            result.purgeCount ));
         }
 
         if ( result.releaseCount > 0 ) {
             messages.push( i18n.pluralise( i18n._( "Released one Message" ),
-                                           Ext.String.format( i18n._( "Released {0} Messages" ),
-                                                              result.releaseCount ),
+                                           Ext.String.format( i18n._( "Released {0} Messages" ), result.releaseCount ),
                                            result.releaseCount ));
         }
 
         if ( result.safelistCount > 0 ) {
             messages.push( i18n.pluralise( i18n._( "Safelisted one Address" ),
-                                           Ext.String.format( i18n._( "Safelisted {0} Addresses" ),
-                                                              result.safelistCount ),
+                                           Ext.String.format( i18n._( "Safelisted {0} Addresses" ), result.safelistCount ),
                                            result.safelistCount ));
         }
 
         return messages.join( "<br/>" );
     },
 
-    updateItem: function( mailid, address, ifAdd ) {
-        if ( mailid != null ) {
-            this.actionItems.put( mailid, !ifAdd?null:true );
-        }
-        if ( address != null ) {
-            if ( ifAdd ) {
-                this.addresses.add( address );
-            } else {
-                this.addresses.minus( address );
-        }
-        }
+    updateButtons: function( enabled ) {
+        this.releaseButton.setDisabled( !enabled );
+        this.deleteButton.setDisabled( !enabled );
+        this.safelistButton.setDisabled( !enabled );
     },
-    updateActionItems: function() {
-            var deleteText;
-            var releaseText;
-        var safelistText;
 
-        var count = this.actionItems.size;
-        if ( count == 0 ) {
-            deleteText = i18n._( "Delete (0  messages)" );
-            releaseText = i18n._( "Move to Inbox (0  messages)" );
-            this.releaseButton.setDisabled( true );
-            this.deleteButton.setDisabled( true );
-        } else if ( count == 1 ) {
-            deleteText = i18n._( "Delete (1  message)" );
-            releaseText = i18n._( "Move to Inbox (1  message)" );
-            this.releaseButton.setDisabled( false );
-            this.deleteButton.setDisabled( false );
-        } else {
-            deleteText = Ext.String.format( i18n._( "Delete ({0} messages)" ), count );
-            releaseText = Ext.String.format( i18n._( "Move to Inbox ({0} messages)" ), count );
-            this.releaseButton.setDisabled( false );
-            this.deleteButton.setDisabled( false );
-        }
-
-        count = this.addresses.size;
-        if ( count == 0 ) {
-            safelistText = i18n._( "Move to Inbox & Add to Safelist (0  Senders)" );
-            this.safelistButton.setDisabled( true );
-        } else if ( count == 1 ) {
-            safelistText = i18n._( "Move to Inbox & Add to Safelist (1  Sender)" );
-            this.safelistButton.setDisabled( false );
-        } else {
-            safelistText = Ext.String.format( i18n._( "Move to Inbox & Add to Safelist ({0} Senders)" ), count );
-            this.safelistButton.setDisabled( false );
-        }
-
-        this.releaseButton.setText( releaseText );
-        this.safelistButton.setText( safelistText );
-        this.deleteButton.setText( deleteText );
-    },
     showMessage: function( message ) {
         this.messageCount++;
 
@@ -417,11 +296,17 @@ Ext.define('Ung.QuarantineStore', {
                 root:'list'
             }
         };
+        config.data = this.refresh();
+
+        Ung.QuarantineStore.superclass.constructor.apply(this, arguments);
+        this.quarantine = config.quarantine;
+    },
+    refresh: function () {
         var dataFn = Ext.bind( function () {
             return quarantine.rpc.getInboxRecords(inboxDetails.token, 0, inboxDetails.totalCount, null, false); 
         }, this);
         try {
-            config.data = dataFn();
+            var data = dataFn();
         } catch ( exception) {
             var message = exception.message;
             if ( exception.name == "com.untangle.node.mail.papi.quarantine.NoSuchInboxException" ) {
@@ -433,30 +318,25 @@ Ext.define('Ung.QuarantineStore', {
                 message = i18n._("Please Try Again");
             }
             Ext.MessageBox.alert("Failed",message);
+            return null;
         }
-        Ung.QuarantineStore.superclass.constructor.apply(this, arguments);
-        this.quarantine = config.quarantine;
+
+        return data;
     }
 });
 
 Ext.define('Ung.QuarantineSelectionModel', {
     extend:'Ext.selection.CheckboxModel',
     onSelectionChange:function(model, selected, options) {
-        Ext.each(this.lastSelectedRecords, Ext.bind(function(record) {
-            this.quarantine.updateItem( record.data.mailID, record.data.sender, false);
-            return true;
-        }, this));
-        Ext.each(selected, Ext.bind(function(record) {
-            this.quarantine.updateItem( record.data.mailID, record.data.sender, true );
-            return true;
-        }, this));
-        this.lastSelectedRecords=selected;
-        this.quarantine.updateActionItems();
+        if (selected.length >= 1)
+            this.quarantine.updateButtons(true);
+        else
+            this.quarantine.updateButtons(false);
+        
     },
 
     constructor: function( config ) {
         Ung.QuarantineSelectionModel.superclass.constructor.apply(this, arguments);
-        this.lastSelectedRecords=[];
         this.quarantine = config.quarantine;
         this.addListener('selectionchange', this.onSelectionChange, this );
     }
