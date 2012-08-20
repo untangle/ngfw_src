@@ -21,7 +21,7 @@ from uvm import Uvm
 #UNTANGLE_CMD_HOST = "172.16.2.148"
 UNTANGLE_CMD_HOST = "cmd.untangle.com"
 UNTANGLE_CMD_PORTS = [4443,443,80,25,587,993,995,8080]
-UNTANGLE_SSH_HOST = "supportssh.untangle.com"
+UNTANGLE_SSH_HOST = "supssh.untangle.com"
 UNTANGLE_SSH_USER = "pyconnector"
 RETRY_TIME_LONG = 60
 RETRY_TIME_SHORT = 10
