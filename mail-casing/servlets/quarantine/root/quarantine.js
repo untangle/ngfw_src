@@ -3,7 +3,7 @@ Ext.namespace('Ext.ux');
 
 //The location of the blank pixel image
 Ext.BLANK_IMAGE_URL = '/ext/resources/images/default/s.gif';
-
+var testMode = false;
 /**
  * @class Ext.ux.toolbar.PagingOptions
  * @author Arthur Kay (http://www.akawebdesign.com)
@@ -35,7 +35,7 @@ Ext.define('Ext.ux.toolbar.PagingOptions', {
             ];
         }
 
-        pagingButtons.push({xtype:'label', text:'Show '});
+        pagingButtons.push({ xtype:'label', text:'Show '});
         pagingButtons.push({
             xtype          : 'combobox',
             queryMode      : 'local',
@@ -69,10 +69,8 @@ Ext.define('Ext.ux.toolbar.PagingOptions', {
     },
 
     initComponent: function() {
-            var me = this;
-
+        var me = this;
         me.callParent();
-
         me.addEvents('pagesizeselect');
     }
 });
@@ -117,7 +115,7 @@ Ung.Quarantine.prototype = {
         } );
 
         // This is used to show messages when they are available
-        this.messageDisplayTip = Ext.create('Ext.tip.Tip',{
+        this.messageDisplayTip = Ext.create('Ext.tip.Tip', {
             cls: 'action-messages'
         });
 
@@ -125,7 +123,7 @@ Ung.Quarantine.prototype = {
 
         this.hideTimeout = null;
 
-        this.grid = Ext.create('Ung.QuarantineGrid',{ quarantine: this } );
+        this.grid = Ext.create('Ung.QuarantineGrid', { quarantine: this } );
     },
 
     store: null,
@@ -191,6 +189,7 @@ Ung.Quarantine.prototype = {
 
             /* Reload the data */
             /* FIXME need to refresh here - this displays old stale data FIXME */
+            this.grid.getStore().proxy.data=this.grid.getStore().refresh();
             this.grid.getStore().load();
 
             var message = this.getMessage( result );
@@ -203,7 +202,9 @@ Ung.Quarantine.prototype = {
             if ( result.safelist != null ) {
                 var sl = result.safelist;
                 /* Build a new set of data */
-                for ( var c = 0 ; c < sl.length ; c++ ) sl[c] = [sl[c]];
+                for ( var c = 0 ; c < sl.length ; c++ ) {
+                    sl[c] = [sl[c]];
+                }
                 safelist.store.loadData( sl );
             }
 
@@ -302,7 +303,29 @@ Ext.define('Ung.QuarantineStore', {
         Ung.QuarantineStore.superclass.constructor.apply(this, arguments);
         this.quarantine = config.quarantine;
     },
+
     refresh: function () {
+        if(testMode) {
+            var getTestRecord = function(index) {
+                return { 
+                    recipients:'recipients'+index ,
+                    sender: "sender"+index+"@test.com",
+                    mailID: 'mailID'+index,
+                    quarantinedDate: {time: 10000*index},
+                    size: 500*index,
+                    attachmentCount: 1000-index,
+                    quarantineDetail: parseFloat(index)/100,
+                    truncatedSubject: "subject spam"+index
+                }
+            };
+            var data = {list:[]};
+            var length = Math.floor((Math.random()*150));
+            var start = parseInt(length/3);
+            for(var i=start; i<length; i++) {
+                data.list.push(getTestRecord(i));
+            }
+            return data;
+        }
         var dataFn = Ext.bind( function () {
             return quarantine.rpc.getInboxRecords(inboxDetails.token, 0, inboxDetails.totalCount, null, false); 
         }, this);
@@ -328,16 +351,11 @@ Ext.define('Ung.QuarantineStore', {
 
 Ext.define('Ung.QuarantineSelectionModel', {
     extend:'Ext.selection.CheckboxModel',
-    onSelectionChange:function(model, selected, options) {
-        if (selected.length >= 1)
-            this.quarantine.updateButtons(true);
-        else
-            this.quarantine.updateButtons(false);
-        
+    onSelectionChange: function(model, selected, options) {
+        this.quarantine.updateButtons( selected.length>0 );
     },
-
     constructor: function( config ) {
-        Ung.QuarantineSelectionModel.superclass.constructor.apply(this, arguments);
+        this.callParent(arguments);
         this.quarantine = config.quarantine;
         this.addListener('selectionchange', this.onSelectionChange, this );
     }
