@@ -13,7 +13,7 @@ Ext.define('Ung.SafelistSelectionModel', {
     constructor : function( config ) {
         Ung.SafelistSelectionModel.superclass.constructor.apply(this, arguments);
         this.safelist = config.safelist;
-        this.addListener('selectionchange',this.onSelectionChange, this );
+        this.addListener('selectionchange', this.onSelectionChange, this );
     }
 });
 
@@ -23,11 +23,10 @@ Ung.Safelist = function() {
 }
 
 Ung.Safelist.prototype = {
-    init : function()
-    {
+    init : function() {
         this.addWindow = null;
 
-        this.selectionModel = Ext.create('Ung.SafelistSelectionModel',{ safelist : this } );
+        this.selectionModel = Ext.create('Ung.SafelistSelectionModel', { safelist : this } );
 
         // the column model has information about grid columns
         // dataIndex maps the column to the specific data field in
@@ -53,7 +52,7 @@ Ung.Safelist.prototype = {
             text : i18n._( "Add" ),
             handler : function() {
                 var window = this.getAddWindow();
-                window.show( this );
+                window.show();
             },
             "scope" : this
         });
@@ -98,27 +97,27 @@ Ung.Safelist.prototype = {
 
     getAddWindow : function() {
         if ( this.addWindow == null ) {
-            var panel = Ext.create('Ext.form.Panel', {
-                defaultType : 'textfield',
-                items: [{
-                    fieldLabel : i18n._( "Email Address" ),
-                    name : "email_address"
-                }],
-                frame :false,
-                height:'100%'
-            } );
-            this.addWindow = Ext.create('Ext.Window',{
+            this.addWindow = Ext.create('Ext.window.Window', {
                 width:500,
-                height:300,
+                height:250,
+                title: i18n._('Add an Email Address to Safelist'),
                 closeAction:'hide',
-                plain: true,
-                items  :[ panel ],
-                title:i18n._('Add an Email Address to Safelist'),
-
+                modal: true,
+                layout: 'fit',
+                items: {
+                    xtype: 'panel',
+                    bodyPadding: 10,
+                    items: [{
+                        xtype: 'textfield',
+                        width: 420,
+                        fieldLabel : i18n._( "Email Address" ),
+                        name : "email_address"
+                    }]
+                },
                 buttons: [{
                     text : i18n._( 'Save' ),
                     handler: function() {
-                        var field = this.addWindow.query('textfield[name="email_address"]')[0];
+                        var field = this.addWindow.down('textfield[name="email_address"]');
                         var email = field.getValue();
                         field.setValue( "" );
                         quarantine.safelist( [ email ] );
@@ -138,8 +137,7 @@ Ung.Safelist.prototype = {
         return this.addWindow;
     },
 
-    deleteAddresses : function( result, exception, foo )
-    {
+    deleteAddresses : function( result, exception, foo ) {
         if ( exception ) {
             var message = exception.message;
             if (message == null || message == "Unknown") {
@@ -165,8 +163,7 @@ Ung.Safelist.prototype = {
         safelist.store.loadData( sl );
     },
 
-    updateActionItems : function()
-    {
+    updateActionItems : function() {
         var count = this.selectionModel.getCount();
         var text = i18n.pluralise( i18n._( "Delete one Address" ), Ext.String.format( i18n._( "Delete {0} Addresses" ), count ), count );
         if ( count > 0 ) {
