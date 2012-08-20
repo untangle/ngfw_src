@@ -154,9 +154,10 @@ Ung.Quarantine.prototype = {
         actionFn( Ext.bind(this.refreshTable, this), inboxDetails.token, mids );
     },
 
-    safelist: function( addresses )
-    {
-        addresses = [];
+    safelist: function( addresses ) {
+        if(addresses == null) {
+            addresses = [];
+        }
         var selections = this.grid.getSelectionModel().getSelection();
         Ext.each(selections, function(item) {
             addresses.push(item.data.sender)
