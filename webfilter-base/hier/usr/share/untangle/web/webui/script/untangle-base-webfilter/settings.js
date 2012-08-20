@@ -1050,6 +1050,9 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                     name: 'server',
                     mapping: 'c_server_addr'
                 }, {
+                    name: 'server_port',
+                    mapping: 's_server_port'
+                }, {
                     name: 'host',
                     mapping: 'host'
                 }, {
@@ -1130,6 +1133,10 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                     header: this.i18n._("Server"),
                     width: Ung.Util.ipFieldWidth,
                     dataIndex: 'server'
+                }, {
+                    header: this.i18n._("Server Port"),
+                    width: Ung.Util.portFieldWidth,
+                    dataIndex: 'server_port'
                 }]
 
             });
