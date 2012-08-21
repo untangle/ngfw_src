@@ -181,15 +181,14 @@ Ung.Quarantine.prototype = {
         try {
             /* Update the new total number of records */
             // this.store.proxy.setTotalRecords( result.totalRecords );
-            
+            //TODO: study this. it may no longer be needed. 
             this.store.sync();
 
             /* to refresh the buttons at the bottom */
             this.updateButtons(false);
 
             /* Reload the data */
-            /* FIXME need to refresh here - this displays old stale data FIXME */
-            this.grid.getStore().proxy.data=this.grid.getStore().refresh();
+            this.grid.getStore().getProxy().data=this.grid.getStore().refresh();
             this.grid.getStore().load();
 
             var message = this.getMessage( result );
@@ -298,6 +297,7 @@ Ext.define('Ung.QuarantineStore', {
                 root:'list'
             }
         };
+        config.remoteSort=true;
         config.data = this.refresh();
 
         Ung.QuarantineStore.superclass.constructor.apply(this, arguments);
