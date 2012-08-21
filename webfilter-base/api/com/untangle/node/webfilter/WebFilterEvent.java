@@ -128,7 +128,7 @@ public class WebFilterEvent extends LogEvent
             "WHERE " +
             "request_id = ? ";
         java.sql.PreparedStatement pstmt = conn.prepareStatement( sql );
-        
+
         int i = 0;
         pstmt.setBoolean(++i, getBlocked());
         pstmt.setBoolean(++i, getFlagged());

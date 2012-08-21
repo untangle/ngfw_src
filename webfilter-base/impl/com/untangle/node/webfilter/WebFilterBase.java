@@ -175,7 +175,6 @@ public abstract class WebFilterBase extends NodeBase implements WebFilter
         }
     }
 
-
     public WebFilterSettings getSettings()
     {
         return this.settings;
@@ -397,16 +396,6 @@ public abstract class WebFilterBase extends NodeBase implements WebFilter
     {
         unblockedSitesMonitor.stop();
         getDecisionEngine().removeAllUnblockedSites();
-    }
-
-    protected void logEvent( WebFilterEvent se, String host, int port, TCPNewSessionRequestEvent event )
-    {
-        /* only pass in the event if you don't want to log immediately. */
-        if (event == null) {
-            this.logEvent(se);
-        } else {
-            event.sessionRequest().attach(se);
-        }
     }
 
     protected String generateNonce( WebFilterBlockDetails details )

@@ -28,7 +28,6 @@ import com.untangle.node.util.GlobUtil;
 import com.untangle.uvm.util.I18nUtil;
 import com.untangle.uvm.vnet.NodeSession;
 import com.untangle.uvm.vnet.NodeTCPSession;
-import com.untangle.uvm.vnet.event.TCPNewSessionRequestEvent;
 
 /**
  * This is the core functionality of web filter
@@ -71,14 +70,6 @@ public abstract class DecisionEngine
     
     /**
      * Checks if the request should be blocked, giving an appropriate response if it should.
-     */
-    public String checkRequest( NodeTCPSession sess, InetAddress clientIp, int port, RequestLineToken requestLine, Header header)
-    {
-        return checkRequest(sess, clientIp, port, requestLine, header, null);
-    }
-
-    /**
-     * Checks if the request should be blocked, giving an appropriate response if it should.
      *
      * @param clientIp IP That made the request.
      * @param port Port that the request was made to.
@@ -87,7 +78,7 @@ public abstract class DecisionEngine
      * @param event This is the new sessions request associated with this request, (or null if this is later.)
      * @return an HTML response (null means the site is passed and no response is given).
      */
-    public String checkRequest( NodeTCPSession sess, InetAddress clientIp, int port, RequestLineToken requestLine, Header header, TCPNewSessionRequestEvent event )
+    public String checkRequest( NodeTCPSession sess, InetAddress clientIp, int port, RequestLineToken requestLine, Header header)
     {
         URI uri = null;
         try {
@@ -124,7 +115,7 @@ public abstract class DecisionEngine
         if ( description != null ) {
             WebFilterEvent hbe = new WebFilterEvent(requestLine.getRequestLine(), Boolean.FALSE, Boolean.FALSE, Reason.PASS_URL, description, node.getVendor());
             logger.debug("LOG: in pass list: " + requestLine.getRequestLine());
-            node.logEvent(hbe, host, port, event);
+            node.logEvent(hbe);
             return null;
         }
 
@@ -133,7 +124,7 @@ public abstract class DecisionEngine
         if ( checkUnblockedSites( host, uri, clientIp ) ) {
             WebFilterEvent hbe = new WebFilterEvent(requestLine.getRequestLine(), Boolean.FALSE, Boolean.FALSE, Reason.PASS_UNBLOCK, "unblocked", node.getVendor());
             logger.debug("LOG: in unblock list: " + requestLine.getRequestLine());
-            node.logEvent(hbe, host, port, event);
+            node.logEvent(hbe);
             return null;
         }
 
@@ -142,7 +133,7 @@ public abstract class DecisionEngine
             if ( host == null || IP_PATTERN.matcher(host).matches() ) {
                 WebFilterEvent hbe = new WebFilterEvent(requestLine.getRequestLine(), Boolean.TRUE, Boolean.TRUE, Reason.BLOCK_IP_HOST, host, node.getVendor());
                 logger.debug("LOG: block all IPs: " + requestLine.getRequestLine());
-                node.logEvent(hbe, host, port, event);
+                node.logEvent(hbe);
 
                 Map<String,String> i18nMap = UvmContextFactory.context().languageManager().getTranslations("untangle-node-webfilter");
                 WebFilterBlockDetails bd = new WebFilterBlockDetails(node.getSettings(), host, uri.toString(),
@@ -156,7 +147,7 @@ public abstract class DecisionEngine
         Reason reason = Reason.DEFAULT; /* this stores the corresponding reason for the flag/block */
             
         // Check Block lists
-        GenericRule urlRule = checkUrlList( host, uri.toString(), port, requestLine, event );
+        GenericRule urlRule = checkUrlList( host, uri.toString(), port, requestLine );
         if ( urlRule != null ) {
             if ( urlRule.getBlocked() ) {
                 WebFilterBlockDetails bd = new WebFilterBlockDetails(node.getSettings(), host, uri.toString(), urlRule.getDescription(), clientIp, node.getNodeTitle(), username);
@@ -171,7 +162,7 @@ public abstract class DecisionEngine
         
         // Check Extensions
         // If this extension is blocked, block the request
-        GenericRule extRule = checkExtensionList(host, uri, port, requestLine, event);
+        GenericRule extRule = checkExtensionList(host, uri, port, requestLine );
         if (extRule != null) {
             if ( extRule.getBlocked() ) {
                 WebFilterBlockDetails bd = new WebFilterBlockDetails(node.getSettings(), host, uri.toString(), extRule.getDescription(), clientIp, node.getNodeTitle(), username);
@@ -183,7 +174,7 @@ public abstract class DecisionEngine
         }
 
         // Check Categories
-        GenericRule bestCategory = checkCategory(sess, clientIp, host, port, requestLine, event, username);
+        GenericRule bestCategory = checkCategory(sess, clientIp, host, port, requestLine, username);
         if (bestCategory != null) {
             if (!isFlagged && bestCategory.getFlagged()) {
                 isFlagged = true;
@@ -208,7 +199,7 @@ public abstract class DecisionEngine
              * Always log an event if the site was categorized
              */
             WebFilterEvent hbe = new WebFilterEvent(requestLine.getRequestLine(), bestCategory.getBlocked(), isFlagged, reason, bestCategory.getName(), node.getVendor());
-            node.logEvent(hbe, host, port, event);
+            node.logEvent(hbe);
 
             /**
              * If the site was blocked return the nonce
@@ -227,7 +218,7 @@ public abstract class DecisionEngine
         // Since nothing matched, just log it and return null to allow the visit
 
         WebFilterEvent hbe = new WebFilterEvent(requestLine.getRequestLine(), Boolean.FALSE, isFlagged, reason, "None", node.getVendor());
-        node.logEvent(hbe, host, port, event);
+        node.logEvent(hbe);
         return null;
     }
 
@@ -412,7 +403,7 @@ public abstract class DecisionEngine
      * Checks the given URL against sites in the block list
      * Returns the given rule if a rule matches, otherwise null
      */
-    private GenericRule checkUrlList( String host, String uri, int port, RequestLineToken requestLine, TCPNewSessionRequestEvent event )
+    private GenericRule checkUrlList( String host, String uri, int port, RequestLineToken requestLine )
     {
         String dom;
         GenericRule rule = null;
@@ -432,11 +423,11 @@ public abstract class DecisionEngine
 
         if (rule.getBlocked()) {
             WebFilterEvent hbe = new WebFilterEvent(requestLine.getRequestLine(), Boolean.TRUE,  Boolean.TRUE, Reason.BLOCK_URL, rule.getDescription(), node.getVendor());
-            node.logEvent(hbe, host, port, event);
+            node.logEvent(hbe);
             return rule;
         } else if (rule.getFlagged()) {
             WebFilterEvent hbe = new WebFilterEvent(requestLine.getRequestLine(), Boolean.FALSE, Boolean.TRUE, Reason.PASS_URL, rule.getDescription(), node.getVendor());
-            node.logEvent(hbe, host, port, event);
+            node.logEvent(hbe);
             return rule;
         } 
 
@@ -464,7 +455,7 @@ public abstract class DecisionEngine
      * Checks the given URL against the file extension rules
      * Returns the given rule if a rule matches, otherwise null
      */
-    private GenericRule checkExtensionList( String host, URI fullUri, int port, RequestLineToken requestLine, TCPNewSessionRequestEvent event )
+    private GenericRule checkExtensionList( String host, URI fullUri, int port, RequestLineToken requestLine )
     {
         String uri = fullUri.toString();
         try { uri = (new URI(fullUri.getPath())).toString(); /*ignore everything after ?*/ } catch (URISyntaxException e) {}
@@ -479,11 +470,11 @@ public abstract class DecisionEngine
 
                 if (rule.getBlocked()) {
                     WebFilterEvent hbe = new WebFilterEvent(requestLine.getRequestLine(), Boolean.TRUE,  Boolean.TRUE, Reason.BLOCK_EXTENSION, rule.getDescription(), node.getVendor());
-                    node.logEvent(hbe, host, port, event);
+                    node.logEvent(hbe);
                     return rule;
                 } else if (rule.getFlagged()) {
                     WebFilterEvent hbe = new WebFilterEvent(requestLine.getRequestLine(), Boolean.FALSE, Boolean.TRUE, Reason.BLOCK_EXTENSION, rule.getDescription(), node.getVendor());
-                    node.logEvent(hbe, host, port, event);
+                    node.logEvent(hbe);
                     return rule;
                 } 
             }
@@ -495,7 +486,7 @@ public abstract class DecisionEngine
     /**
      * Check the given URL against the categories (and their settings)
      */
-    private GenericRule checkCategory( NodeTCPSession sess, InetAddress clientIp, String host, int port, RequestLineToken requestLine, TCPNewSessionRequestEvent event, String username )
+    private GenericRule checkCategory( NodeTCPSession sess, InetAddress clientIp, String host, int port, RequestLineToken requestLine, String username )
     {
         URI reqUri = requestLine.getRequestUri();
 
