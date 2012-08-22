@@ -16,9 +16,11 @@ import signal
 from uvm import Manager
 from uvm import Uvm
 
+# TODO:
 # FIXME add fall back to IP if DNS doesn't resolve for cmd.untangle.com and supportssh.untangle.com
-UNTANGLE_CMD_HOST = "cmd.untangle.com"
-UNTANGLE_CMD_PORTS = [4443,443,80,25,587,993,995,8080]
+# 
+
+UNTANGLE_CMD_PORTS = [443,80,4443,587,993,995,8080,53,25]
 UNTANGLE_SSH_HOST = "supssh.untangle.com"
 UNTANGLE_SSH_USER = "pyconnector"
 RETRY_TIME_LONG = 60
@@ -27,6 +29,7 @@ STUNNEL_LOCAL_PORT = 808
 CERTS_FILE = '/tmp/pyconnector/certs.pem'
 
 uvm = None
+cmd_server = "cmd.untangle.com"
 command_socket = None
 command_socket_file = None
 ssh_process = None
@@ -37,7 +40,8 @@ def usage():
 usage: %s [options]
 Options:
   -h | --help                   help - print this message
-  -l <log> | --log=<log>        output to specified log instead of stdout/stderr
+  -l <log>    | --log=<log>        output to specified log instead of stdout/stderr
+  -s <server> | --server=<server>  specify a cmd server (default: cmd.untangle.com)
 """ % sys.argv[0]
 
 # utility for cmd 
@@ -54,11 +58,32 @@ def make_tmp_dir():
           pass
 
 # utility for cmd
+def pkg_installed(pkgname):
+     if os.system("dpkg-query -W -f='${Status}\\n' %s | grep ' installed' >/dev/null 2>&1" % pkgname) == 0:
+          return True
+     else:
+          return False
+
+# utility for cmd
+def install_pkg(pkgname):
+     os.system("apt-get install --yes %s" % pkgname)
+
+# utility for cmd
 def ssh_enable():
      global ssh_process
      global ssh_port
      if ssh_process != None:
           return "SSH already available at %s on port %i" % (UNTANGLE_SSH_HOST, ssh_port)
+
+     if not pkg_installed("untangle-support-keyring"):
+          install_pkg("untangle-support-keyring")
+     if not pkg_installed("untangle-openssh-server"):
+          install_pkg("untangle-openssh-server")
+
+     if not pkg_installed("untangle-support-keyring"):
+          return "Failed to install untangle-support-keyring"
+     if not pkg_installed("untangle-openssh-server"):
+          return "Failed to install untangle-openssh-server"
 
      make_tmp_dir();
      f = open("/tmp/pyconnector/.key.dsa", 'w')
@@ -151,16 +176,16 @@ def write_cert_file():
 def connect():
      global command_socket
      global command_socket_file
-     global UNTANGLE_CMD_HOST
+     global cmd_server
      global UNTANGLE_CMD_PORTS
      if command_socket != None:
           return
 
-     debug("Connecting to %s:%i..." % (UNTANGLE_CMD_HOST,UNTANGLE_CMD_PORTS[0]))
+     debug("Connecting to %s:%i..." % (cmd_server,UNTANGLE_CMD_PORTS[0]))
 
      # start stunnel (python2.6 will not need this)
      write_cert_file()
-     cmd_str = "sudo killall stunnel4 >/dev/null 2>&1 ; sudo stunnel -c -d localhost:%i -r %s:%i -A %s -v 3 -D 6" % (STUNNEL_LOCAL_PORT, UNTANGLE_CMD_HOST, UNTANGLE_CMD_PORTS[0], CERTS_FILE)
+     cmd_str = "sudo killall stunnel4 >/dev/null 2>&1 ; sudo stunnel -c -d localhost:%i -r %s:%i -A %s -v 3 -D 6" % (STUNNEL_LOCAL_PORT, cmd_server, UNTANGLE_CMD_PORTS[0], CERTS_FILE)
      #debug(cmd_str)
      os.system(cmd_str)
    
@@ -171,7 +196,7 @@ def connect():
           command_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
           # in python 2.6 or later connect directly
           # command_socket = ssl.wrap_socket( command_socket, keyfile="xxx", certfile="xxx", xxx)
-          # command_socket.connect( ( UNTANGLE_CMD_HOST, UNTANGLE_CMD_PORT ) )
+          # command_socket.connect( ( cmd_server, UNTANGLE_CMD_PORTS[0] ) )
           # in python 2.5 connect to stunnel
           command_socket.connect( ( "127.0.0.1", STUNNEL_LOCAL_PORT ) )
      except Exception,e:
@@ -254,7 +279,7 @@ def check_pid_file():
 
 def parse_args():
      try:
-          opts, args = getopt.getopt(sys.argv[1:], "hl:", ['help', 'log=' ])
+          opts, args = getopt.getopt(sys.argv[1:], "hl:s:", ['help', 'log=', 'server=' ])
      except getopt.GetoptError, err:
           print str(err)
           usage()
@@ -269,6 +294,9 @@ def parse_args():
                logfile = open(v,"w")
                sys.stdout = logfile
                sys.stderr = logfile
+          elif k == '-s' or k == '--server':
+               global cmd_server
+               cmd_server = v
 
 #
 # Main
