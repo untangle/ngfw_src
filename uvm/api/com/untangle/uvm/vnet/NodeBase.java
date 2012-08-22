@@ -428,8 +428,10 @@ public abstract class NodeBase implements Node
 
     public synchronized void addMetric( NodeMetric metric )
     {
-        if (metrics.get(metric.getName()) != null)
+        if (metrics.get(metric.getName()) != null) {
+            //logger.warn("addMetric(): Metric already exists: \"" + metric.getName() + "\" - ignoring");
             return;
+        }
         this.metrics.put( metric.getName(), metric );
         this.metricList.add( metric );
     }
