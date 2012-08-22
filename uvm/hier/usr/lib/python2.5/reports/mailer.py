@@ -107,12 +107,12 @@ def mail(file, zip_file, sender, receiver, date, company_name, has_web_access, u
     msgRoot.attach(tmpMsgRoot)
 
     if report_days == 1:
-        a = "Daily"
+        length_name = "Daily"
     elif report_days == 7:
-        a = "Weekly"
+        length_name = "Weekly"
     else:
-        a = "Monthly"
-    msgRoot['Subject'] = _('New %s %s Reports Available') % (company_name, a)
+        length_name = "Monthly"
+    msgRoot['Subject'] = _('%s %s Report [%s]') % (company_name, length_name, os.uname[1])
     msgRoot['From'] = sender
     msgRoot['To'] = receiver
 
