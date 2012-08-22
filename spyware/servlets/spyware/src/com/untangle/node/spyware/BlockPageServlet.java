@@ -1,5 +1,5 @@
-/*
- * $HeadURL$
+/**
+ * $Id$
  */
 package com.untangle.node.spyware;
 
@@ -34,8 +34,7 @@ public class BlockPageServlet extends HttpServlet
 
         Spyware node = (Spyware) nm.node( Long.parseLong(request.getParameter( "tid" )) );
         if ( node == null || !(node instanceof Spyware)) {
-            response.sendError( HttpServletResponse.SC_NOT_ACCEPTABLE, 
-                                I18nUtil.tr( "Feature is not installed.", i18n_map ));
+            response.sendError( HttpServletResponse.SC_NOT_ACCEPTABLE, I18nUtil.tr( "Feature is not installed.", i18n_map ));
             return;
         }
 
@@ -45,8 +44,7 @@ public class BlockPageServlet extends HttpServlet
         
         blockDetails = node.getBlockDetails(nonce);
         if (blockDetails == null) {
-            response.sendError( HttpServletResponse.SC_NOT_ACCEPTABLE, 
-                                I18nUtil.tr( "This request has expired.", i18n_map ));
+            response.sendError( HttpServletResponse.SC_NOT_ACCEPTABLE, I18nUtil.tr( "This request has expired.", i18n_map ));
             return;
         }
         unblockMode = node.getUnblockMode();
@@ -104,8 +102,7 @@ public class BlockPageServlet extends HttpServlet
         /* Retrieve the description of why this page was blocked. */
         public String getDescription( BrandingManager bm, Map<String,String> i18n_map )
         {
-            return I18nUtil.tr( "{0}This web page was blocked{1} because it contains malicious content.", new Object[]{ "<b>","</b>" },
-                    i18n_map );
+            return I18nUtil.tr( "{0}This web page was blocked{1} because it contains malicious content.", new Object[]{ "<b>","</b>" }, i18n_map );
         }
     
         public SpywareBlockDetails getBlockDetails()
