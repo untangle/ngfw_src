@@ -147,13 +147,6 @@ class ToolboxManagerImpl implements ToolboxManager
                         }
                     }
                 }
-            } else if (type == PackageDesc.Type.TRIAL) {
-                // Workaround for Trial display names. better solution
-                // is welcome.
-                String realDn=dn.replaceFirst(" [0-9]+.Day Trial","");
-                realDn=realDn.replaceFirst(" Limited Trial","");
-                displayNames.add(realDn);
-                trials.put(realDn, md);
             }
         }
 
@@ -164,12 +157,6 @@ class ToolboxManagerImpl implements ToolboxManager
             if (type == PackageDesc.Type.LIB_ITEM) {
                 libitems.remove(dn);
                 trials.remove(dn);
-                hiddenApps.remove(dn);
-            } else if (type == PackageDesc.Type.TRIAL) {
-                // Workaround for Trial display names. better solution is welcome.
-                String realDn=dn.replaceFirst(" [0-9]+.Day Trial","");
-                realDn=realDn.replaceFirst(" Limited Trial","");
-                trials.remove(realDn);
                 hiddenApps.remove(dn);
             } else if (!md.isInvisible() && (type == PackageDesc.Type.NODE || type == PackageDesc.Type.SERVICE)) {
                 displayNames.add(dn);

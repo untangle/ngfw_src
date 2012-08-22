@@ -1065,16 +1065,12 @@ Ext.define("Ung.AppItem", {
     extend: "Ext.Component",
     libItem: null,
     node: null,
-    trialLibItem: null,
-
     iconSrc: null,
     iconCls: null,
     renderTo: 'appsItems',
     operationSemaphore: false,
     autoEl: 'div',
     state: null,
-    // buy button
-    buttonBuy: null,
     // progress bar component
     progressBar: null,
     subCmps:null,
@@ -1091,11 +1087,7 @@ Ext.define("Ung.AppItem", {
             this.item=config.node;
         } else {
            this.isValid=false;
-            // ignore this error from the esoft web filter rename
-            //if (config.trialLibitem != null && config.trialLibitem.displayName != "eSoft Web Filter")
-            //    Ext.MessageBox.alert(i18n._("Apps Error"), i18n._("Error in Rack View applications list."));
             return;
-            // error
         }
         this.id = "app-item_" + name;
         this.callParent(arguments);
@@ -1143,8 +1135,6 @@ Ext.define("Ung.AppItem", {
             }
         });
 
-        this.buttonBuy = Ext.get("button-buy_" + this.getId());
-        this.buttonBuy.setVisible(false);
         this.actionEl = Ext.get("action_" + this.getId());
         this.progressBar.hide();
         if(this.libItem!=null && this.node==null) { // libitem
@@ -1153,15 +1143,8 @@ Ext.define("Ung.AppItem", {
             this.actionEl.addCls("icon-info");
         } else if(this.node!=null) { // node
             this.getEl().on("click", this.installNodeFn, this);
-            this.actionEl.insertHtml("afterBegin", this.libItem==null?i18n._("Install"):i18n._("Trial Install"));
+            this.actionEl.insertHtml("afterBegin", i18n._("Install"));
             this.actionEl.addCls("icon-arrow-install");
-            if(this.libItem!=null) { // libitem and trial node
-                this.buttonBuy.setVisible(true);
-                this.buttonBuy.insertHtml("afterBegin", i18n._("Buy"));
-                this.buttonBuy.on("click", Ext.bind(this.linkToStoreBuyFn, this), "buy");
-                this.buttonBuy.addCls("button-buy");
-                this.buttonBuy.addCls("icon-arrow-buy");
-            }
         } else {
             return;
             // error
@@ -1171,14 +1154,6 @@ Ext.define("Ung.AppItem", {
             this.download=appsLastState.download;
             this.setState(appsLastState.state,appsLastState.options);
         };
-    },
-    // get the node name associated with the App
-    getNodeName: function() {
-        var nodeName = null; // for libitems with no trial node return null
-        if (this.node) { // nodes
-            nodeName = this.node.name;
-        }
-        return nodeName;
     },
     // hack because I cant figure out how to tell extjs to apply style to progress text
     stylizeProgressText: function (str) {
@@ -1279,7 +1254,6 @@ Ext.define("Ung.AppItem", {
     // before Destroy
     beforeDestroy: function() {
         this.actionEl.removeAllListeners();
-        this.buttonBuy.removeAllListeners();
         this.progressBar.reset(true);
         this.progressBar.destroy();
         Ext.each(this.subCmps, Ext.destroy);
@@ -1289,14 +1263,11 @@ Ext.define("Ung.AppItem", {
     // display Buttons xor Progress barr
     displayButtonsOrProgress: function(displayButtons) {
         this.actionEl.setVisible(displayButtons);
-        this.buttonBuy.setVisible(displayButtons);
         if (displayButtons) {
             this.getEl().unmask();
-            this.buttonBuy.unmask();
             this.progressBar.reset(true);
         } else {
             this.getEl().mask();
-            this.buttonBuy.mask();
             if(!this.progressBar.isVisible()) {
                 this.progressBar.show();
             }
@@ -1340,8 +1311,7 @@ Ext.define("Ung.AppItem", {
     }
 
 });
-Ung.AppItem.template = new Ext.Template('<div class="icon">{imageHtml}</div>', '<div class="text">{text}</div>',
-        '<div id="button-buy_{id}"></div>', '<div id="action_{id}" class="action"></div>', '<div class="state-pos" id="state_{id}"></div>');
+Ung.AppItem.template = new Ext.Template('<div class="icon">{imageHtml}</div>', '<div class="text">{text}</div>', '<div id="action_{id}" class="action"></div>', '<div class="state-pos" id="state_{id}"></div>');
 Ung.AppItem.buttonTemplate = new Ext.Template('<table cellspacing="0" cellpadding="0" border="0" style="width: 100%; height:100%"><tbody><tr><td class="app-item-left"></td><td class="app-item-center">{content}</td><td class="app-item-right"></td></tr></tbody></table>');
 // update state for the app with a displayName
 Ung.AppItem.updateState = function(displayName, state, options) {
@@ -1830,7 +1800,7 @@ Ext.define("Ung.Node", {
         }
         if(this.license.trial) {
             if(this.license.expired) {
-                licenseMessage = i18n._("Free Trial Ended");
+                licenseMessage = i18n._("Free Trial Expired!");
             } else if (this.license.daysRemaining < 2) {
                 licenseMessage = i18n._("Free Trial.") + " " + i18n._("Expires today");
             } else if (this.license.daysRemaining < 32) {
@@ -2030,7 +2000,7 @@ Ung.MessageManager = {
                             }
                         } else if (msg.javaClass.indexOf("PackageInstallRequest") >= 0) {
                             if(!msg.installed) {
-                                var appItemDisplayName=msg.packageDesc.type=="TRIAL"?main.findLibItemDisplayName(msg.packageDesc.fullVersion):msg.packageDesc.displayName;
+                                var appItemDisplayName = msg.packageDesc.displayName;
                                 Ung.AppItem.updateState(appItemDisplayName, "download");
                                 main.closeStore();
                                 rpc.toolboxManager.installAndInstantiate(Ext.bind(function(result, exception) {
@@ -2041,7 +2011,7 @@ Ung.MessageManager = {
                             }
                         } else if (msg.javaClass.indexOf("PackageUninstallRequest") >= 0) {
                             if(!msg.installed) {
-                                var appItemDisplayName=msg.packageDesc.type=="TRIAL"?main.findLibItemDisplayName(msg.packageDesc.fullVersion):msg.packageDesc.displayName;
+                                var appItemDisplayName = msg.packageDesc.displayName;
                                 Ung.AppItem.updateState(appItemDisplayName, "uninstall");
                                 rpc.toolboxManager.unregister(Ext.bind(function(result, exception) {
                                     if(Ung.Util.handleException(exception)) return;
@@ -2069,14 +2039,14 @@ Ung.MessageManager = {
                         } else if(msg.javaClass.indexOf("InstallAndInstantiateComplete") != -1) {
                             refreshApps=true;
                             this.installInProgress--;
-                            var appItemDisplayName=msg.requestingPackage.type=="TRIAL"?main.findLibItemDisplayName(msg.requestingPackage.fullVersion):msg.requestingPackage.displayName;
+                            var appItemDisplayName = msg.requestingPackage.displayName;
                             Ung.MessageManager.setFrequency(Ung.MessageManager.normalFrequency);
                             Ung.AppItem.updateState(appItemDisplayName, null);
                         } else if(msg.javaClass.indexOf("LicenseUpdateMessage") != -1) {
                             main.loadLicenses();
                         } else {
                             if( msg.upgrade==false || msg.upgrade === undefined ) {
-                                var appItemDisplayName=(msg.requestingPackage==null)?"":msg.requestingPackage.type=="TRIAL"?main.findLibItemDisplayName(msg.requestingPackage.fullVersion):msg.requestingPackage.displayName;
+                                var appItemDisplayName = ( msg.requestingPackage == null ? "" : msg.requestingPackage.displayName );
                                 if(msg.javaClass.indexOf("DownloadSummary") != -1) {
                                     Ung.AppItem.updateState(appItemDisplayName, "download_summary", msg);
                                 } else if(msg.javaClass.indexOf("DownloadProgress") != -1) {

@@ -29,7 +29,6 @@ public class PackageDesc implements Serializable, JSONString
         LIBRARY,
         BASE,
         LIB_ITEM,
-        TRIAL,
         UNKNOWN
     }
 
