@@ -17,9 +17,7 @@ from uvm import Manager
 from uvm import Uvm
 
 # FIXME add fall back to IP if DNS doesn't resolve for cmd.untangle.com and supportssh.untangle.com
-
-UNTANGLE_CMD_HOST = "172.16.2.148"
-#UNTANGLE_CMD_HOST = "cmd.untangle.com"
+UNTANGLE_CMD_HOST = "cmd.untangle.com"
 UNTANGLE_CMD_PORTS = [4443,443,80,25,587,993,995,8080]
 UNTANGLE_SSH_HOST = "supssh.untangle.com"
 UNTANGLE_SSH_USER = "pyconnector"
@@ -84,7 +82,7 @@ def ssh_enable():
      #f.close()
      #system('chmod 600 /tmp/pyconnector/key.dsa.pub')
 
-     ssh_port = random.randint(9000,9999)
+     ssh_port = random.randint(10000,15000)
      cmd_str = "ssh -p 22 -v -N -n -R '*:%s:localhost:2222' -o StrictHostKeyChecking=no -i /tmp/pyconnector/.key.dsa %s@%s < /dev/null" % (ssh_port, UNTANGLE_SSH_USER, UNTANGLE_SSH_HOST)
      debug("Starting SSH: \"%s\"" % cmd_str)
      
