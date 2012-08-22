@@ -17,10 +17,21 @@ if [ -n "$oldVersion" ]; then
     # restart postgres to make sure there are no active queries
     /etc/init.d/postgresql-8.3 restart ; sleep 5
 
+    # If upgrading from 9.3 or prior, drop events schema
     if dpkg --compare-versions "$oldVersion" le 9.3.0 ; then
       echo "Dropping events schema..."
       psql -U postgres -c 'DROP SCHEMA events CASCADE' uvm >/dev/null 2>&1
       echo "Dropping events schema...done"
+    fi
+
+    # If upgrading from 9.3.x or later, Then the DB->files conversion has already happened
+    # So we should drop settings schema as it is no longer needed.
+    # This is done because leaving the settings schema around can mess up restore and install of some apps
+    # There is a risk that they will see the settings in the DB and restore from those settings
+    if dpkg --compare-versions "$oldVersion" ge 9.3.0 ; then
+      echo "Dropping settings schema..."
+      psql -U postgres -c 'DROP SCHEMA settings CASCADE' uvm >/dev/null 2>&1
+      echo "Dropping settings schema...done"
     fi
 fi
 
