@@ -3658,6 +3658,7 @@ Ext.define("Ung.ManageListWindow", {
     extend: "Ung.UpdateWindow",
     // the editor grid
     grid: null,
+    layout: 'fit',
     initComponent: function() {
         this.items=this.grid;
         this.callParent(arguments);
@@ -4145,8 +4146,7 @@ Ext.define('Ung.EditorGrid', {
         
         this.totalRecords = this.data.length;
         this.store=Ext.create('Ext.data.Store',{
-            //Chrome Fix: Adding an empty initial row until store is loaded. to fix Chrom browser bad scroll rendering.
-            data: Ext.isChrome?[{id:0}]:[],
+            data: [],
             fields: this.fields,
             pageSize: this.paginated?this.recordsPerPage:null,
             proxy: {
@@ -4182,7 +4182,6 @@ Ext.define('Ung.EditorGrid', {
             this.dockedItems.push({
                 dock: 'bottom',
                 xtype: 'pagingtoolbar',
-                pageSize: this.recordsPerPage,
                 store: this.getStore(),
                 displayInfo: true,
                 displayMsg: i18n._('Displaying topics {0} - {1} of {2}'),
@@ -4278,7 +4277,7 @@ Ext.define('Ung.EditorGrid', {
                     limit:this.isPaginated() ? this.recordsPerPage: Ung.Util.maxRowCount,
                     callback: function() {
                         this.dataLoaded=true;
-                        this.getView().setLoading(false);  
+                        this.getView().setLoading(false);
                     },
                     scope: this
                 });
@@ -4672,16 +4671,27 @@ Ext.define('Ung.EditorGrid', {
     setTotalRecords: function(totalRecords) {
         this.totalRecords = totalRecords;
         if(this.paginated) {
+            this.getStore().pageSize=this.isPaginated()?this.recordsPerPage:Ung.Util.maxRowCount;
             var bbar=this.getDockedItems('toolbar[dock="bottom"]')[0];
-            if (this.isPaginated()) {
-                bbar.show();
-                bbar.enable();
+            //Had to disable show/hide pagination feature for grids inside a window for Chrome browser because of the right scrollbar incorrect rendering issue. 
+            //Fixing this is more important than hiding the unnecesary pagination toolbar 
+            if(Ext.isChrome && this.up().xtype=="window") {
+                if (this.isPaginated()) {
+                    bbar.enable();
+                } else {
+                    bbar.disable();
+                }
             } else {
-                bbar.hide();
-                bbar.disable();
-            }
-            if(this.rendered) {
-                this.setSize();
+                if (this.isPaginated()) {
+                    bbar.show();
+                    bbar.enable();
+                } else {
+                    bbar.hide();
+                    bbar.disable();
+                }
+                if(this.rendered) {
+                    this.setSize();
+                }
             }
         }
     },
