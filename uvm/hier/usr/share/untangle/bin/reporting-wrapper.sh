@@ -9,7 +9,7 @@ pid=foo
 while true ; do
 
   if ! ps -p $pid > /dev/null ; then
-    $DAEMON 2>> $LOGFILE &
+    $DAEMON > $LOGFILE 2>&1 &
     pid=$!
   fi
 

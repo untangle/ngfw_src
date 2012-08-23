@@ -11,7 +11,6 @@ def usage():
 usage: %s [options]
 Options:
   -h | --help                   help
-  -n | --no-migration           skip schema migration
   -g | --no-data-gen            skip graph data processing
   -p | --no-plot-gen            skip graph image processing
   -m | --no-mail                skip mailing
@@ -36,8 +35,8 @@ from reports.log import *
 logger = getLogger(__name__)
 
 try:
-     opts, args = getopt.getopt(sys.argv[1:], "hncgpmiaver:d:l:t:s:b:",
-                                ['help', 'no-migration', 'no-cleanup',
+     opts, args = getopt.getopt(sys.argv[1:], "hcgpmiaver:d:l:t:s:b:",
+                                ['help', 'no-cleanup',
                                  'no-data-gen', 'no-mail', 'create-schemas',
                                  'no-plot-gen', 'verbose', 'attach-csv',
                                  'events-retention', 'report-length',
@@ -49,7 +48,6 @@ except getopt.GetoptError, err:
      sys.exit(2)
 
 report_lengths = None
-no_migration = False
 no_cleanup = False
 no_data_gen = False
 no_plot_gen = False
@@ -69,8 +67,6 @@ for opt in opts:
      if k == '-h' or k == '--help':
           usage()
           sys.exit(0)
-     elif k == '-n' or k == '--no-migration':
-          no_migration = True
      elif k == '-g' or k == '--no-data-gen':
           no_data_gen = True
      elif k == '-p' or k == '--no-plot-gen':
@@ -234,6 +230,8 @@ if not running and not create_schemas:
 
 if not report_lengths:
      report_lengths = get_report_lengths(end_date)
+if create_schemas and report_lengths == []:
+     report_lengths = [1]
      
 try:
      sql_helper.create_schema(sql_helper.SCHEMA);
@@ -273,10 +271,9 @@ if not attachment_size_limit:
 reports_output_base=REPORTS_OUTPUT_BASE
 
 reports.engine.fix_hierarchy(REPORTS_OUTPUT_BASE)
-
 reports.engine.init_engine(NODE_MODULE_DIR)
 
-if not no_migration and report_lengths != []:
+if report_lengths != []:
      init_date = end_date - mx.DateTime.DateTimeDelta(max(report_lengths))
      reports.engine.setup()
      if not create_schemas:

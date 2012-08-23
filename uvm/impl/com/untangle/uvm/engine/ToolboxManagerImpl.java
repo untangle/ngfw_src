@@ -575,7 +575,7 @@ class ToolboxManagerImpl implements ToolboxManager
     // registers a package and restarts all instances in previous state
     public void register(String pkgName) throws PackageInstallException
     {
-        logger.debug("registering package: " + pkgName);
+        logger.info("registering package: " + pkgName);
 
         UvmContextImpl uvmContext = UvmContextImpl.getInstance();
         uvmContext.refreshToolbox();

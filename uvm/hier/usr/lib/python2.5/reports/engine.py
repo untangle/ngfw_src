@@ -366,6 +366,7 @@ def setup():
     global __nodes
 
     count = 0.0
+    logger.info('setup(): %s ' % __get_available_nodes())
     for name in __get_available_nodes():
         try:
             logger.info('doing setup for: %s' % (name))
@@ -565,7 +566,6 @@ def __get_emails(start_date, end_date):
 
 def __get_available_nodes():
     global __nodes
-    installed = __get_installed_nodes()
     available = sets.Set(__nodes.keys());
     list = []
 
