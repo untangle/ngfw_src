@@ -94,7 +94,7 @@ Ung.Quarantine.prototype = {
         this.selectionModel = new Ung.QuarantineSelectionModel( { quarantine: this } );
 
         this.releaseButton= Ext.create('Ext.button.Button', {
-            handler: Ext.bind(function() { this.releaseOrDelete( quarantine.rpc.releaseMessages ); }, this ),
+            handler: Ext.bind(function() { this.releaseOrDelete( quarantine.rpc.releaseMessages, i18n._("Releasing...") ); }, this ),
             iconCls: 'icon-move-mails',
             text: i18n._( "Release to Inbox" ),
             disabled: true
@@ -108,7 +108,7 @@ Ung.Quarantine.prototype = {
         } );
 
         this.deleteButton = Ext.create('Ext.button.Button', {
-            handler: Ext.bind(function() { this.releaseOrDelete( quarantine.rpc.purgeMessages ); }, this ),
+            handler: Ext.bind(function() { this.releaseOrDelete( quarantine.rpc.purgeMessages, i18n._("Deleting...") ); }, this ),
             iconCls:'icon-delete-row',
             text: i18n._( "Delete" ),
             disabled: true
@@ -140,16 +140,20 @@ Ung.Quarantine.prototype = {
         this.grid.setDisabled( true );
     },
 
-    releaseOrDelete: function( actionFn ) {
+    releaseOrDelete: function( actionFn, actionStr ) {
         var mids = [];
         var selections = this.grid.getSelectionModel().getSelection();
         Ext.each(selections, function(item) {
-            mids.push(item.data.mailID)
+            mids.push(item.data.mailID);
         });
         this.store.remove(this.selectionModel.getSelection());
 
         this.clearSelections();
-        actionFn( Ext.bind(this.refreshTable, this), inboxDetails.token, mids );
+        Ext.MessageBox.wait( actionStr , i18n._("Please wait"));
+        actionFn( Ext.bind( function( result, exception ) {
+            Ext.MessageBox.hide();
+            this.refreshTable( result, exception );
+        }, this), inboxDetails.token, mids );
     },
 
     safelist: function( addresses ) {
@@ -158,7 +162,7 @@ Ung.Quarantine.prototype = {
         }
         var selections = this.grid.getSelectionModel().getSelection();
         Ext.each(selections, function(item) {
-            addresses.push(item.data.sender)
+            addresses.push(item.data.sender);
         });
         this.selectionModel.selectAll();
         this.store.remove(this.selectionModel.getSelection());
