@@ -4671,18 +4671,23 @@ Ext.define('Ung.EditorGrid', {
     setTotalRecords: function(totalRecords) {
         this.totalRecords = totalRecords;
         if(this.paginated) {
-            this.getStore().pageSize=this.isPaginated()?this.recordsPerPage:Ung.Util.maxRowCount;
+            var isPaginated=this.isPaginated();
+            this.getStore().pageSize=isPaginated?this.recordsPerPage:Ung.Util.maxRowCount;
+            if(!isPaginated) {
+                //Needs to set currentPage to 1 when not using pagination toolbar.
+                this.getStore().currentPage=1;
+            }
             var bbar=this.getDockedItems('toolbar[dock="bottom"]')[0];
             //Had to disable show/hide pagination feature for grids inside a window for Chrome browser because of the right scrollbar incorrect rendering issue. 
             //Fixing this is more important than hiding the unnecesary pagination toolbar 
             if(Ext.isChrome && this.up().xtype=="window") {
-                if (this.isPaginated()) {
+                if (isPaginated) {
                     bbar.enable();
                 } else {
                     bbar.disable();
                 }
             } else {
-                if (this.isPaginated()) {
+                if (isPaginated) {
                     bbar.show();
                     bbar.enable();
                 } else {
