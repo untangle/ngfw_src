@@ -44,7 +44,7 @@ Ext.define('Ung.SetupWizard.Language', {
                     labelWidth: Ung.SetupWizard.LabelWidth,
                     store: this.languageStore,
                     value: Ung.SetupWizard.CurrentValues.language,
-                    mode: 'local',
+                    queryMode: 'local',
                     triggerAction: 'all',
                     listClass: 'x-combo-list-small',
                     ctCls: 'small-top-margin'

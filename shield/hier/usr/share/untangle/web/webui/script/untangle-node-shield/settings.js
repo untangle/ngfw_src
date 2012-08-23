@@ -109,7 +109,7 @@ if (!Ung.hasResource["Ung.Shield"]) {
                         displayField: 'dividerName',
                         valueField: 'dividerValue',
                         typeAhead: true,
-                        mode: 'local',
+                        queryMode: 'local',
                         triggerAction: 'all',
                         listClass: 'x-combo-list-small',
                         selectOnFocus: true
@@ -160,7 +160,7 @@ if (!Ung.hasResource["Ung.Shield"]) {
                     displayField: 'dividerName',
                     valueField: 'dividerValue',
                     typeAhead: true,
-                    mode: 'local',
+                    queryMode: 'local',
                     triggerAction: 'all',
                     listClass: 'x-combo-list-small',
                     selectOnFocus: true

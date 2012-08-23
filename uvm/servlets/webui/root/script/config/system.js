@@ -866,7 +866,7 @@ if (!Ung.hasResource["Ung.System"]) {
                         store: timeZones,
                         width: 350,
                         hideLabel: true,
-                        mode: "local",
+                        queryMode: 'local',
                         triggerAction: "all",
                         listClass: "x-combo-list-small",
                         value: this.getTimeZone(),
@@ -889,8 +889,8 @@ if (!Ung.hasResource["Ung.System"]) {
                         displayField: "name",
                         valueField: "code",
                         editable: false,
-                        mode: "local",
-                        triggerAction: "all",
+                        queryMode: 'local',
+                        triggerAction: 'all',
                         listClass: "x-combo-list-small",
                         selectOnFocus: true,
                         hideLabel: true,
@@ -995,14 +995,10 @@ if (!Ung.hasResource["Ung.System"]) {
                         parentId: cmp.getId(),
                         waitMsg: cmp.i18n._("Please wait while your language pack is uploaded..."),
                         success: function(form, action) {
-                            languagesStore.load();
+                            languagesStore.loadData(rpc.languageManager.getLanguagesList().list);
                             var cmp = Ext.getCmp(action.parentId);
                             if(action.result.success===true) {
-                                Ext.MessageBox.alert(cmp.i18n._("Succeeded"), cmp.i18n._("Upload language pack succeeded"),
-                                    function() {
-                                        languagesStore.loadData(rpc.languageManager.getLanguagesList().list);
-                                    }
-                                );
+                                Ext.MessageBox.alert(cmp.i18n._("Succeeded"), cmp.i18n._("Upload language pack succeeded"));
                             } else {
                                 var msg = "An error occured while uploading the language pack";
                                 if(action.result.msg) {

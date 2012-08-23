@@ -732,7 +732,7 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                     displayField: 'name',
                     valueField: 'name',
                     editable: false,
-                    mode: 'local',
+                    queryMode: 'local',
                     triggerAction: 'all',
                     listClass: 'x-combo-list-small'
                 })
@@ -827,7 +827,7 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                     displayField: 'name',
                     valueField: 'name',
                     editable: false,
-                    mode: 'local',
+                    queryMode: 'local',
                     triggerAction: 'all',
                     listClass: 'x-combo-list-small',
                     width: 300
@@ -983,7 +983,7 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                     valueField: 'name',
                     store: this.getGroupsStore(),
                     editable: false,
-                    mode: 'local',
+                    queryMode: 'local',
                     triggerAction: 'all',
                     width: 300
                 }, {
@@ -1758,7 +1758,7 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                             width: 300,
                             listWidth: 205,
                             store: Ung.Country.getCountryStore(this.i18n),
-                            mode: 'local',
+                            queryMode: 'local',
                             triggerAction: 'all',
                             listClass: 'x-combo-list-small',
                             value: country

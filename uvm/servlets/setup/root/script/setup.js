@@ -136,7 +136,7 @@ Ext.define('Ung.SetupWizard.Settings', {
                     store: Ung.SetupWizard.TimeZoneStore,
                     width: 350,
                     hideLabel: true,
-                    mode: 'local',
+                    queryMode: 'local',
                     value: Ung.SetupWizard.CurrentValues.timezone,
                     triggerAction: 'all',
                     listClass: 'x-combo-list-small',
@@ -617,7 +617,7 @@ Ext.define('Ung.SetupWizard.Internet', {
                     fieldLabel: i18n._( "Netmask" ),
                     xtype: 'combo',
                     store: Ung.SetupWizard.NetmaskData,
-                    mode: 'local',
+                    queryMode: 'local',
                     triggerAction: 'all',
                     value: "255.255.255.0",
                     editable: false,
@@ -749,7 +749,7 @@ Ext.define('Ung.SetupWizard.Internet', {
                 editable: false,
                 store: this.configTypes,
                 labelWidth: Ung.SetupWizard.LabelWidth,
-                mode: 'local',
+                queryMode: 'local',
                 listeners: {
                     "select": {
                         fn: Ext.bind(this.onSelectConfig,this )
@@ -1099,7 +1099,7 @@ Ext.define('Ung.SetupWizard.InternalNetwork', {
                     labelWidth: Ung.SetupWizard.LabelWidth2,
                     xtype: 'combo',
                     store: Ung.SetupWizard.NetmaskData,
-                    mode: 'local',
+                    queryMode: 'local',
                     triggerAction: 'all',
                     value: "255.255.255.0",
                     disabled: true,
