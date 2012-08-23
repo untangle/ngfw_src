@@ -33,6 +33,7 @@ import org.apache.log4j.Logger;
 
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.SettingsManager;
+import com.untangle.uvm.ExecManagerResult;
 import com.untangle.uvm.util.I18nUtil;
 import com.untangle.uvm.node.NodeSettings;
 import com.untangle.uvm.node.NodeProperties;
@@ -50,6 +51,7 @@ public class ReportingNodeImpl extends NodeBase implements ReportingNode, Report
 
     private static final String SETTINGS_CONVERSION_SCRIPT = System.getProperty( "uvm.bin.dir" ) + "/reporting-convert-settings.py";
     private static final String REPORTS_SCRIPT = System.getProperty("uvm.home") + "/bin/reporting-generate-reports.py";
+    private static final String REPORTS_LOG = System.getProperty("uvm.log.dir") + "/reporter.log";
 
     private static final String CRON_STRING = "* * * root /usr/share/untangle/bin/reporting-generate-reports.py -d $(date \"+\\%Y-\\%m-\\%d\") > /dev/null 2>&1";
     private static final File CRON_FILE = new File("/etc/cron.d/untangle-reports-nightly");
@@ -85,16 +87,22 @@ public class ReportingNodeImpl extends NodeBase implements ReportingNode, Report
     public void createSchemas()
     {
         // run commands to create user just in case
-        UvmContextFactory.context().execManager().execResult("createuser -U postgres -dSR untangle");
-        UvmContextFactory.context().execManager().execResult("createdb -O postgres -U postgres uvm");
-        UvmContextFactory.context().execManager().execResult("createlang -U postgres plpgsql uvm");
+        UvmContextFactory.context().execManager().execResult("createuser -U postgres -dSR untangle >/dev/null 2>&1");
+        UvmContextFactory.context().execManager().execResult("createdb -O postgres -U postgres uvm >/dev/null 2>&1");
+        UvmContextFactory.context().execManager().execResult("createlang -U postgres plpgsql uvm >/dev/null 2>&1");
 
-        String cmd = REPORTS_SCRIPT + " -c";
         synchronized (this) {
-            int exitCode = UvmContextFactory.context().execManager().execResult(cmd);
-            if (exitCode != 0) {
-                logger.warn("Failed to create schemas: \"" + cmd + "\" -> "  + exitCode);
+            String cmd = REPORTS_SCRIPT + " -c";
+            ExecManagerResult result = UvmContextFactory.context().execManager().exec(cmd);
+            if (result.getResult() != 0) {
+                logger.warn("Failed to create schemas: \"" + cmd + "\" -> "  + result.getResult());
             }
+            try {
+                String lines[] = result.getOutput().split("\\r?\\n");
+                logger.warn("Creating Schema: ");
+                for ( String line : lines )
+                    logger.warn("Schema: " + line);
+            } catch (Exception e) {}
         }
     }
 
