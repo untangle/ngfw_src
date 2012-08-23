@@ -10,14 +10,13 @@ import java.text.StringCharacterIterator;
 import java.util.List;
 import java.util.Map;
 import java.util.ArrayList;
-import java.lang.Class;
-import java.lang.reflect.Method;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.json.JSONObject;
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
@@ -61,13 +60,8 @@ public class EventLogExportServlet extends HttpServlet
         String[] columnList = columnListStr.split(",");
         Long policyId = Long.parseLong(policyIdStr);
         
-        logger.info("Export CSV( name:" + name + " query: " + query + " policyId: " + policyId + " columnList: " + columnList + ")");
+        logger.info("Export CSV( name:" + name + " query: " + query + " policyId: " + policyId + " columnList: " + columnListStr + ")");
 
-        for ( int i = 0 ; i < columnList.length ; i++ ) {
-            String currentColumnName = columnList[i];
-            columnList[i] = "get" + Character.toUpperCase(currentColumnName.charAt(0)) + currentColumnName.substring(1);
-        }
-        
         ArrayList results = UvmContextFactory.context().getEvents( query, policyId, MAX_RESULTS );
         
         // Write content type and also length (determined via byte array).
@@ -80,26 +74,38 @@ public class EventLogExportServlet extends HttpServlet
             resp.getWriter().write(columnListStr + "\n");
 
             // Write each row
-            for (Object result : results) {
-                Class resultClz = result.getClass();
-                int i = 0;
+            if (results != null) {
+                for (Object resultO : results) {
+                    JSONObject result = (JSONObject)resultO;
+                    int i = 0;
 
-                // Write each cell of each row
-                for (String column : columnList) {
-                    if (i != 0)
-                        resp.getWriter().write(",");
+                    // Write each cell of each row
+                    for (String column : columnList) {
+                        if (i != 0)
+                            resp.getWriter().write(",");
 
-                    Method getMethod = resultClz.getMethod(column);
-                    Object o = getMethod.invoke(result);
-                    String oStr = "";
-                    if (o != null)
-                        oStr = o.toString().replaceAll(",","");
+                        Object o = null;
+                        try {
+                            o = result.get(column);
+                        } catch (org.json.JSONException e) {
+                            // ignore "not found" columns
+                            if (e.getMessage() != null && e.getMessage().contains("not found")) {
+                                logger.debug("ignoring missing column " + column);
+                            } else {
+                                throw e;
+                            }
+                        }
+                        
+                        String oStr = "";
+                        if (o != null)
+                            oStr = o.toString().replaceAll(",","");
                     
-                    resp.getWriter().write(oStr);
-                    i++;
-                }
+                        resp.getWriter().write(oStr);
+                        i++;
+                    }
                 
-                resp.getWriter().write("\n");
+                    resp.getWriter().write("\n");
+                }
             }
         } catch (Exception e) {
             logger.warn("Failed to export CSV.",e);
