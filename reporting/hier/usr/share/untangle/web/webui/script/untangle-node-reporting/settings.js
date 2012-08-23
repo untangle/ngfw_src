@@ -533,7 +533,7 @@ if (!Ung.hasResource["Ung.Reporting"]) {
                             id: 'reporting_syslog_protocol',
                             editable: false,
                             fieldLabel: this.i18n._('Protocol'),
-                            mode: 'local',
+                            queryMode: 'local',
                             triggerAction: 'all',
                             listClass: 'x-combo-list-small',
                             store: new Ext.data.SimpleStore({

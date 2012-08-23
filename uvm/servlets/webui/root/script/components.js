@@ -958,7 +958,7 @@ Ext.define("Ung.Util.InterfaceCombo", {
     displayField: 'name',
     valueField: 'key',
     editable: false,
-    mode: 'local',
+    queryMode: 'local',
     triggerAction: 'all',
     listClass: 'x-combo-list-small'
 });
@@ -972,7 +972,7 @@ Ext.define("Ung.Util.ProtocolCombo", {
     displayField: 'name',
     valueField: 'key',
     editable: false,
-    mode: 'local',
+    queryMode: 'local',
     triggerAction: 'all',
     listClass: 'x-combo-list-small'
 });

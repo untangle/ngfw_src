@@ -239,7 +239,7 @@ if (!Ung.hasResource["Ung.Firewall"]) {
                             store: [[true,i18n._('Block')], [false,i18n._('Pass')]],
                             valueField: "value",
                             displayField: "displayName",
-                            mode: "local",
+                            queryMode: 'local',
                             triggerAction: 'all',
                             listClass: 'x-combo-list-small'
                         }, 

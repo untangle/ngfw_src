@@ -90,7 +90,7 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                     },{
                         xtype: "combo",
                         editable: false,
-                        mode: "local",
+                        queryMode: 'local',
                         fieldLabel: this.i18n._("Unblock"),
                         name: "user_bypass",
                         store: [["None", this.i18n._("None")],

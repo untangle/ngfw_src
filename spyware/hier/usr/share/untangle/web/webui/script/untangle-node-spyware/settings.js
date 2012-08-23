@@ -69,7 +69,7 @@ if (!Ung.hasResource["Ung.Spyware"]) {
                      ,  {
                         xtype: 'combo',
                         editable: false,
-                        mode: 'local',
+                        queryMode: 'local',
                         fieldLabel: this.i18n._('User Bypass'),
                         name: "User Bypass",
                         store: [["None", this.i18n._("None")],
