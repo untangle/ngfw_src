@@ -1,8 +1,5 @@
 Ext.namespace('Ung');
 
-//The location of the blank pixel image
-Ext.BLANK_IMAGE_URL = '/ext/resources/images/default/s.gif';
-
 Ext.define('Ung.RemapsSelectionModel', {    
     extend:'Ext.selection.CheckboxModel',
     onRowSelect : function( sm, rowIndex, record ) {
