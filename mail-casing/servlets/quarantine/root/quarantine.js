@@ -1,8 +1,6 @@
 Ext.namespace('Ung');
 Ext.namespace('Ext.ux');
 
-//The location of the blank pixel image
-Ext.BLANK_IMAGE_URL = '/ext/resources/images/default/s.gif';
 var testMode = false;
 /**
  * @class Ext.ux.toolbar.PagingOptions
@@ -86,7 +84,6 @@ Ung.Quarantine = function() {};
 
 Ung.Quarantine.prototype = {
     rpc: null,
-
     init: function() {
         //get JSONRpcClient
         this.rpc = new JSONRpcClient("/quarantine/JSON-RPC").Quarantine;
@@ -125,38 +122,26 @@ Ung.Quarantine.prototype = {
 
         this.grid = Ext.create('Ung.QuarantineGrid', { quarantine: this } );
     },
-
     store: null,
-
     selectionModel: null,
-
     grid: null,
-
     pageSize: 25,
 
-    clearSelections: function() {
-        // Clear the current action items 
-        this.selectionModel.deselectAll();
-        this.grid.setDisabled( true );
-    },
-
     releaseOrDelete: function( actionFn, actionStr ) {
+        Ext.MessageBox.wait( actionStr , i18n._("Please wait"));
         var mids = [];
         var selections = this.grid.getSelectionModel().getSelection();
         Ext.each(selections, function(item) {
             mids.push(item.data.mailID);
         });
-        this.store.remove(this.selectionModel.getSelection());
 
-        this.clearSelections();
-        Ext.MessageBox.wait( actionStr , i18n._("Please wait"));
-        actionFn( Ext.bind( function( result, exception ) {
-            Ext.MessageBox.hide();
-            this.refreshTable( result, exception );
-        }, this), inboxDetails.token, mids );
+        this.grid.getSelectionModel().deselectAll();
+        this.grid.setDisabled( true );
+        actionFn( Ext.bind(this.refreshTable, this ), inboxDetails.token, mids );
     },
 
     safelist: function( addresses ) {
+        Ext.MessageBox.wait( i18n._("Releasing and adding Senders to Safelist...") , i18n._("Please wait"));
         if(addresses == null) {
             addresses = [];
         }
@@ -164,14 +149,15 @@ Ung.Quarantine.prototype = {
         Ext.each(selections, function(item) {
             addresses.push(item.data.sender);
         });
-        this.selectionModel.selectAll();
-        this.store.remove(this.selectionModel.getSelection());
-
-        this.clearSelections();
-        this.rpc.safelist( Ext.bind(this.refreshTable, this ), inboxDetails.token, addresses );
+        this.grid.getSelectionModel().deselectAll();
+        this.grid.setDisabled( true );
+        Ext.Function.defer(function() {
+            this.rpc.safelist( Ext.bind(this.refreshTable, this ), inboxDetails.token, addresses );
+        }, 1 ,this);
     },
 
     refreshTable: function( result, exception ) {
+        Ext.MessageBox.hide();
         if ( exception ) {
             var message = exception.message;
             if (message == null || message == "Unknown") {
@@ -183,17 +169,21 @@ Ung.Quarantine.prototype = {
         }
 
         try {
-            /* Update the new total number of records */
-            // this.store.proxy.setTotalRecords( result.totalRecords );
-            //TODO: study this. it may no longer be needed. 
-            this.store.sync();
-
             /* to refresh the buttons at the bottom */
             this.updateButtons(false);
 
             /* Reload the data */
-            this.grid.getStore().getProxy().data=this.grid.getStore().refresh();
-            this.grid.getStore().load();
+            var store=this.grid.getStore();
+            store.getProxy().data=store.refresh();
+            
+            if(store.currentPage>1) {
+                //reset page index if all records from the current page where deleted
+                var dataLength=store.getProxy().data.list.length;
+                if(store.currentPage > Math.ceil(dataLength/store.pageSize)) {
+                    store.currentPage=1;
+                }
+            }
+            store.load();
 
             var message = this.getMessage( result );
             if ( message != "" ) this.showMessage( message );
@@ -309,32 +299,31 @@ Ext.define('Ung.QuarantineStore', {
     },
 
     refresh: function () {
-        if(testMode) {
-            var getTestRecord = function(index) {
-                return { 
-                    recipients:'recipients'+index ,
-                    sender: "sender"+index+"@test.com",
-                    mailID: 'mailID'+index,
-                    quarantinedDate: {time: 10000*index},
-                    size: 500*index,
-                    attachmentCount: 1000-index,
-                    quarantineDetail: parseFloat(index)/100,
-                    truncatedSubject: "subject spam"+index
-                }
-            };
-            var data = {list:[]};
-            var length = Math.floor((Math.random()*150));
-            var start = parseInt(length/3);
-            for(var i=start; i<length; i++) {
-                data.list.push(getTestRecord(i));
-            }
-            return data;
-        }
         var dataFn = Ext.bind( function () {
             return quarantine.rpc.getInboxRecords(inboxDetails.token, 0, inboxDetails.totalCount, null, false); 
         }, this);
         try {
             var data = dataFn();
+            if(testMode) {
+                var getTestRecord = function(index) {
+                    return { 
+                        recipients:'recipients'+index ,
+                        sender: "sender"+(index%10)+"@test.com",
+                        mailID: 'mailID'+index,
+                        quarantinedDate: {time: 10000*index},
+                        size: 500*index,
+                        attachmentCount: 1000-index,
+                        quarantineDetail: parseFloat(index)/100,
+                        truncatedSubject: "subject spam"+index
+                    }
+                };
+                var length = Math.floor((Math.random()*5000));
+                var start = parseInt(length/3);
+                for(var i=start; i<length; i++) {
+                    data.list.push(getTestRecord(i));
+                }
+                return data;
+            }
         } catch ( exception) {
             var message = exception.message;
             if ( exception.name == "com.untangle.node.mail.papi.quarantine.NoSuchInboxException" ) {

@@ -1,8 +1,5 @@
 Ext.namespace('Ung');
 
-//The location of the blank pixel image
-Ext.BLANK_IMAGE_URL = '/ext/resources/images/default/s.gif';
-
 Ext.define('Ung.SafelistSelectionModel', {
     extend:'Ext.selection.CheckboxModel',
 
@@ -68,7 +65,7 @@ Ung.Safelist.prototype = {
                     addresses.push( selectedRecords[i].data.emailAddress );
                 }
                 this.grid.setDisabled( true );
-                this.selectionModel.deselect(selectedRecords);;
+                this.selectionModel.deselectAll();
                 this.deleteButton.setText( i18n._( "Delete Addresses" ));
                 this.deleteButton.setDisabled( true );
 

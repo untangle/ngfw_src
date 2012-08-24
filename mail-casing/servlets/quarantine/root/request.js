@@ -1,7 +1,7 @@
 Ext.namespace('Ung');
 
 //The location of the blank pixel image
-Ext.BLANK_IMAGE_URL = '/ext/resources/images/default/s.gif';
+Ext.BLANK_IMAGE_URL = '/ext4/resources/themes/images/default/tree/s.gif';
 
 var i18n;
 var qr;
