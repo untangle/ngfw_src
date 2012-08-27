@@ -185,7 +185,7 @@ def connect():
 
      # start stunnel (python2.6 will not need this)
      write_cert_file()
-     cmd_str = "sudo killall stunnel4 >/dev/null 2>&1 ; sudo stunnel -c -d localhost:%i -r %s:%i -A %s -v 3 -D 6" % (STUNNEL_LOCAL_PORT, cmd_server, UNTANGLE_CMD_PORTS[0], CERTS_FILE)
+     cmd_str = "sudo killall -9 stunnel4 >/dev/null 2>&1 ; sudo stunnel -c -d localhost:%i -r %s:%i -A %s -v 3 -D 6" % (STUNNEL_LOCAL_PORT, cmd_server, UNTANGLE_CMD_PORTS[0], CERTS_FILE)
      #debug(cmd_str)
      os.system(cmd_str)
    
