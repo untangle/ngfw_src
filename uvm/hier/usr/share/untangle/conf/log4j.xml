@@ -193,10 +193,6 @@
     <priority value="INFO"/>
   </category>
 
-  <category name="com.untangle.node.cpd">
-    <priority value="INFO"/>
-  </category>
-
   <category name="com.untangle.node.faild">
     <priority value="INFO"/>
   </category>

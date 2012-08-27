@@ -97,10 +97,6 @@ function restore_files() {
         /etc/init.d/untangle-reports stop
     fi
 
-    if [ -x /etc/init.d/untangle-cpd ]; then
-        /etc/init.d/untangle-cpd stop
-    fi
-
     if [ -x /etc/init.d/apache2 ]; then
         /etc/init.d/apache2 stop
     fi

@@ -59,9 +59,6 @@ for f in $(find $t -type f -name '*.po'); do
         untangle-node-commtouchav)
             d=$hades/src/commtouchav
             ;;
-        untangle-node-cpd)
-            d=$work/src/cpd
-            ;;
         untangle-node-faild)
             d=$hades/src/faild
             ;;
