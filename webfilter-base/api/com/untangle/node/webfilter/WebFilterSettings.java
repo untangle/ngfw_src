@@ -28,6 +28,7 @@ public class WebFilterSettings implements Serializable
     private Integer version = new Integer(1);
 
     private Boolean enableHttps = false;
+    private Boolean enableHttpsSni = true;
     private Boolean unblockPasswordEnabled = false;
     private Boolean unblockPasswordAdmin = false;
     private String  unblockPassword = "";
@@ -84,6 +85,9 @@ public class WebFilterSettings implements Serializable
     public Boolean getEnableHttps() { return enableHttps; }
     public void setEnableHttps( Boolean enableHttps ) { this.enableHttps = enableHttps; }
 
+    public Boolean getEnableHttpsSni() { return enableHttpsSni; }
+    public void setEnableHttpsSni( Boolean enableHttpsSni ) { this.enableHttpsSni = enableHttpsSni; }
+    
     /**
      * If true, enforces safe search on popular search engines.
      */

@@ -118,6 +118,11 @@ public abstract class WebFilterBase extends NodeBase implements WebFilter
         return settings.getEnableHttps();
     }
 
+    public boolean isHttpsEnabledSni()
+    {
+        return settings.getEnableHttpsSni();
+    }
+
     public WebFilterBlockDetails getDetails( String nonce )
     {
         return replacementGenerator.getNonceData(nonce);
