@@ -307,7 +307,7 @@ public class PhishNode extends SpamNodeImpl implements Phish
         }
 
         UvmContext mctx = UvmContextFactory.context();
-        AppServerManager asm = mctx.localAppServerManager();
+        AppServerManager asm = mctx.appServerManager();
 
         Valve v = new OutsideValve()
             {
@@ -337,7 +337,7 @@ public class PhishNode extends SpamNodeImpl implements Phish
         }
 
         UvmContext mctx = UvmContextFactory.context();
-        AppServerManager asm = mctx.localAppServerManager();
+        AppServerManager asm = mctx.appServerManager();
 
         if (asm.unloadWebApp("/phish")) {
             logger.debug("Unloaded phish WebApp");

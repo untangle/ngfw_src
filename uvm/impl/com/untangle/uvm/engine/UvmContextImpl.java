@@ -41,6 +41,7 @@ import com.untangle.uvm.ExecManager;
 import com.untangle.uvm.UvmException;
 import com.untangle.uvm.UvmState;
 import com.untangle.uvm.SessionMonitor;
+import com.untangle.uvm.HostTable;
 import com.untangle.uvm.argon.Argon;
 import com.untangle.uvm.argon.ArgonManagerImpl;
 import com.untangle.uvm.node.LicenseManager;
@@ -115,6 +116,7 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
     private SystemManagerImpl systemManager;
     private JSONSerializer serializer;
     private Reporting reportingNode = null;
+    private HostTableImpl hostTableImpl = null;
     private long lastLoggedWarningTime = System.currentTimeMillis();
     
     private volatile List<String> annotatedClasses = new LinkedList<String>();
@@ -163,11 +165,6 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
     public LanguageManagerImpl languageManager()
     {
         return this.languageManager;
-    }
-
-    public AppServerManagerImpl localAppServerManager()
-    {
-        return this.appServerManager;
     }
 
     public AppServerManager appServerManager()
@@ -255,6 +252,11 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
         ExecManagerImpl execManager = new ExecManagerImpl();
         execManager.setSerializer(serializer);
         return execManager;
+    }
+
+    public HostTable hostTable()
+    {
+        return this.hostTableImpl;
     }
     
     public void waitForStartup()
@@ -485,6 +487,8 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
         
         this.sessionMonitor = new SessionMonitorImpl();
 
+        this.hostTableImpl = new HostTableImpl();
+        
         try {
             ServletUtils.getInstance().registerSerializers(serializer);
             settingsManager.setSerializer(serializer);

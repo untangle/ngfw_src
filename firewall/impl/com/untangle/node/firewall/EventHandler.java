@@ -65,7 +65,7 @@ class EventHandler extends AbstractEventHandler
                              request.getClientIntf(), request.getServerIntf(),
                              request.getClientAddr(), request.getNatToHost(),
                              request.getClientPort(), request.getNatToPort(),
-                             (String)request.globalAttachment(NodeSession.KEY_PLATFORM_ADCONNECTOR_USERNAME))) {
+                             (String)request.globalAttachment(NodeSession.KEY_PLATFORM_USERNAME))) {
                 matchedRule = rule;
                 break;
             }

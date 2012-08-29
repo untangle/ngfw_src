@@ -98,7 +98,7 @@ public abstract class DecisionEngine
 
         String username = null;
         if (sess != null)
-            username = (String) sess.globalAttachment(NodeSession.KEY_PLATFORM_ADCONNECTOR_USERNAME);
+            username = (String) sess.globalAttachment(NodeSession.KEY_PLATFORM_USERNAME);
 
         // check client IP address pass list
         // If a client is on the pass list is is passed regardless of any other settings

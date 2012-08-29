@@ -1,11 +1,9 @@
-/*
+/**
  * $Id: DirectoryConnector.java,v 1.00 2011/08/15 14:13:23 dmorris Exp $
  */
 package com.untangle.uvm.node;
 
 import java.util.List;
-
-import com.untangle.uvm.user.IpUsernameMap;
 
 /**
  * This interface provides the needed platform functionality of the Directory Connector.
@@ -14,11 +12,6 @@ import com.untangle.uvm.user.IpUsernameMap;
  */
 public interface DirectoryConnector 
 {
-    /**
-     * Get the current IP Username Map
-     */
-    public IpUsernameMap getIpUsernameMap();
-
     /**
      * Query if a user is a member of a group (Currently this only applies to Active Directory)
      */

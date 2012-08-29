@@ -1151,6 +1151,7 @@ Ext.define("Ung.Main", {
         items.push({text: i18n._('Show Policy Manager'), value: 'SHOW_POLICY_MANAGER', handler: main.showPolicyManager, id:'policyManagerMenuItem', disabled: true, hideDelay: 0});
         items.push('-');
         items.push({text: i18n._('Show Sessions'), value: 'SHOW_SESSIONS', handler: main.showSessions, hideDelay: 0});
+        items.push({text: i18n._('Show Hosts'), value: 'SHOW_HOSTS', handler: main.showHosts, hideDelay: 0});
         main.rackSelect = new Ext.SplitButton({
             renderTo: 'rack-select-container', // the container id
             text: items[selVirtualRackIndex].text,
@@ -1181,6 +1182,23 @@ Ext.define("Ung.Main", {
             return i18n._( "Unknown Rack" );
         }
     },
+    showHosts: function() {
+        Ext.MessageBox.wait(i18n._("Loading..."), i18n._("Please wait"));
+        if ( main.hostMonitorWin == null) {
+            Ext.Function.defer(Ung.Util.loadResourceAndExecute,10, this,["Ung.HostMonitor",Ung.Util.getScriptSrc("script/config/hostMonitor.js"), function() {
+                main.hostMonitorWin=Ext.create('Ung.HostMonitor', {"name":"hostMonitor", "helpSource":"host_viewer"});
+                main.hostMonitorWin.show();
+                //main.hostMonitorWin.gridCurrentHosts.reload(); // XXX needed?
+                Ext.MessageBox.hide();
+            }]);
+        } else {
+            Ext.Function.defer(function() {
+                main.hostMonitorWin.show();
+                //main.hostMonitorWin.gridCurrentHosts.reload(); // XXX needed?
+                Ext.MessageBox.hide();
+            }, 10, this);
+        }
+    },
     showSessions: function() {
         main.showNodeSessions(0);
     },
@@ -1200,7 +1218,7 @@ Ext.define("Ung.Main", {
                 main.sessionMonitorWin.show();
                 main.sessionMonitorWin.gridCurrentSessions.reload();
                 Ext.MessageBox.hide();
-            }, 10, this)
+            }, 10, this);
         }
     },
     showPolicyManager: function() {

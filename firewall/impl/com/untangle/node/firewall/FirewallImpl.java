@@ -69,7 +69,7 @@ public class FirewallImpl extends NodeBase implements Firewall
                                      client.getClientIntf(), server.getServerIntf(),
                                      client.getClientAddr(),  client.getServerAddr(),
                                      client.getClientPort(), client.getServerPort(),
-                                     (String)attachments.get(NodeSession.KEY_PLATFORM_ADCONNECTOR_USERNAME))) {
+                                     (String)attachments.get(NodeSession.KEY_PLATFORM_USERNAME))) {
                         matchedRule = rule;
                         break;
                     }

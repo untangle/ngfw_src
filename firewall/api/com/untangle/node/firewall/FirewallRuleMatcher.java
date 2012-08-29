@@ -45,8 +45,9 @@ public class FirewallRuleMatcher implements JSONString, Serializable
             SRC_INTF, /* "External" "any" */
             DST_INTF, /* "External" "any" */
             PROTOCOL, /* "TCP" "UDP" "TCP,UDP" "any" */
-            DIRECTORY_CONNECTOR_USERNAME, /* "dmorris" or "none" or "*" */
+            USERNAME, /* "dmorris" or "none" or "*" */
             DIRECTORY_CONNECTOR_GROUP, /* "teachers" or "none" or "*" */
+            DIRECTORY_CONNECTOR_USERNAME /* XXX deprecated in 9.4 - use USERNAME */
     }
 
     private FirewallRuleMatcher.MatcherType matcherType = null;
@@ -197,6 +198,7 @@ public class FirewallRuleMatcher implements JSONString, Serializable
             return protocolMatcher.isMatch(protocol);
 
         case DIRECTORY_CONNECTOR_USERNAME:
+        case USERNAME:
             if ("none".equals(value) && username == null)
                 return true;
             if (username == null)
@@ -274,6 +276,7 @@ public class FirewallRuleMatcher implements JSONString, Serializable
             break;
 
         case DIRECTORY_CONNECTOR_USERNAME:
+        case USERNAME:
             try {
                 this.userMatcher = new UserMatcher(this.value);
             } catch (Exception e) {

@@ -531,7 +531,7 @@ public class VpnNodeImpl extends NodeBase implements VpnNode, com.untangle.uvm.n
     private synchronized void deployWebApp()
     {
         if ( !isWebAppDeployed ) {
-            if (null != UvmContextFactory.context().localAppServerManager().loadInsecureApp( WEB_APP_PATH, WEB_APP)) {
+            if (null != UvmContextFactory.context().appServerManager().loadInsecureApp( WEB_APP_PATH, WEB_APP)) {
                 logger.debug( "Deployed openvpn web app" );
             }
             else logger.warn( "Unable to deploy openvpn web app" );
@@ -545,7 +545,7 @@ public class VpnNodeImpl extends NodeBase implements VpnNode, com.untangle.uvm.n
     private synchronized void unDeployWebApp()
     {
         if ( isWebAppDeployed ) {
-            if( UvmContextFactory.context().localAppServerManager().unloadWebApp(WEB_APP_PATH )) {
+            if( UvmContextFactory.context().appServerManager().unloadWebApp(WEB_APP_PATH )) {
                 logger.debug( "Unloaded openvpn web app" );
             } else logger.warn( "Unable to unload openvpn web app" );
         }

@@ -553,7 +553,7 @@ public class SpywareImpl extends NodeBase implements Spyware
         }
 
         UvmContext uvmContext = UvmContextFactory.context();
-        AppServerManager asm = uvmContext.localAppServerManager();
+        AppServerManager asm = uvmContext.appServerManager();
 
         Valve v = new OutsideValve()
             {
@@ -583,7 +583,7 @@ public class SpywareImpl extends NodeBase implements Spyware
         }
 
         UvmContext uvmContext = UvmContextFactory.context();
-        AppServerManager asm = uvmContext.localAppServerManager();
+        AppServerManager asm = uvmContext.appServerManager();
 
         if (asm.unloadWebApp("/spyware")) {
             logger.debug("Unloaded Spyware WebApp");

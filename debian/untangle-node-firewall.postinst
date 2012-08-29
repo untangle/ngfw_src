@@ -5,5 +5,8 @@
 
 touch /etc/untangle/reports-to-restart
 
+# 9.4 conversion
+sed -i -e 's/"DIRECTORY_CONNECTOR_USERNAME"/"USERNAME"/g' /usr/share/untangle/settings/untangle-node-firewall/*.js
+
 exit 0
 

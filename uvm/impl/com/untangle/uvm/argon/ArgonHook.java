@@ -23,6 +23,7 @@ import com.untangle.jvector.Vector;
 import com.untangle.uvm.IntfConstants;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.NetworkManager;
+import com.untangle.uvm.HostTable;
 import com.untangle.uvm.engine.PipelineFoundryImpl;
 import com.untangle.uvm.node.SessionTuple;
 import com.untangle.uvm.node.SessionTupleImpl;
@@ -30,7 +31,6 @@ import com.untangle.uvm.node.SessionEvent;
 import com.untangle.uvm.node.SessionStatsEvent;
 import com.untangle.uvm.node.PolicyManager;
 import com.untangle.uvm.vnet.NodeSession;
-import com.untangle.uvm.node.DirectoryConnector;
 import com.untangle.uvm.node.HostnameLookup;
 import com.untangle.uvm.networking.InterfaceConfiguration;
 
@@ -152,14 +152,11 @@ public abstract class ArgonHook implements Runnable
             serverSide = clientSide;
 
             /* lookup the user information */
-            DirectoryConnector adconnector = (DirectoryConnector)UvmContextFactory.context().nodeManager().node("untangle-node-adconnector");
-            String username = null;
-            if (adconnector != null)
-                username = adconnector.getIpUsernameMap().tryLookupUser( clientSide.getClientAddr() );
+            String username = (String) UvmContextFactory.context().hostTable().getAttachment( clientAddr, HostTable.KEY_USERNAME );
             if (username != null && username.length() > 0 ) { 
                 logger.debug( "user information: " + username );
                 sessionGlobalState.setUser( username );
-                sessionGlobalState.attach( NodeSession.KEY_PLATFORM_ADCONNECTOR_USERNAME, username );
+                sessionGlobalState.attach( NodeSession.KEY_PLATFORM_USERNAME, username );
             }
             /* lookup the hostname information */
             HostnameLookup router = (HostnameLookup) UvmContextFactory.context().nodeManager().node("untangle-node-router");

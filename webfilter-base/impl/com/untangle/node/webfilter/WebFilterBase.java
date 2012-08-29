@@ -421,7 +421,7 @@ public abstract class WebFilterBase extends NodeBase implements WebFilter
         }
 
         UvmContext mctx = UvmContextFactory.context();
-        AppServerManager asm = mctx.localAppServerManager();
+        AppServerManager asm = mctx.appServerManager();
 
         org.apache.catalina.Valve v = new com.untangle.uvm.util.OutsideValve()
             {
@@ -452,7 +452,7 @@ public abstract class WebFilterBase extends NodeBase implements WebFilter
         }
 
         UvmContext mctx = UvmContextFactory.context();
-        AppServerManager asm = mctx.localAppServerManager();
+        AppServerManager asm = mctx.appServerManager();
 
         if (asm.unloadWebApp("/webfilter")) {
             logger.debug("Unloaded WebFilter WebApp");

@@ -99,7 +99,7 @@ public interface NodeSession extends SessionTuple
      * The following are attachment keys used by various nodes to
      * share information with other nodes.
      */
-    public final String KEY_PLATFORM_ADCONNECTOR_USERNAME = "platform-username"; /* String */
+    public final String KEY_PLATFORM_USERNAME = "platform-username"; /* String */
     public final String KEY_PLATFORM_HOSTNAME = "platform-hostname"; /* String */
 
     public final String KEY_PROTOFILTER_SIGNATURE = "protofilter-protocol"; /* String */

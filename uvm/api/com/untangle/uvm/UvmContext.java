@@ -187,13 +187,6 @@ public interface UvmContext
     UploadManager uploadManager();
 
     /**
-     * Get the AppServerManager singleton for this instance
-     *
-     * @return the singleton
-     */
-    AppServerManager localAppServerManager();
-
-    /**
      * Get the TomcatManager
      *
      * @return the TomcatManager
@@ -212,6 +205,13 @@ public interface UvmContext
      */
     ExecManager createExecManager();
 
+    /**
+     * The host table
+     *
+     * @return the global host table.
+     */
+    HostTable hostTable();
+    
     /**
      * Once settings have been restored, and the UVM has been booted, call
      * into here to get the corresponding OS files rewritten.  This calls through

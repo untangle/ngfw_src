@@ -37,7 +37,7 @@ import com.untangle.uvm.networking.InterfaceConfiguration;
  * ping 8.8.8.8 for wan failover test?
  * change ifconfig to check percentage of errors
  */
-class AlertManagerImpl implements AlertManager
+public class AlertManagerImpl implements AlertManager
 {
     private final Logger logger = Logger.getLogger(this.getClass());
 

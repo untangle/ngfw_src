@@ -199,7 +199,7 @@ public class SystemManagerImpl implements SystemManager
         int port = this.settings.getHttpsPort();
         try {
             logger.info("Rebinding HTTPS port: " + port);
-            UvmContextFactory.context().localAppServerManager().rebindExternalHttpsPort( port );
+            UvmContextFactory.context().appServerManager().rebindExternalHttpsPort( port );
             logger.info("Rebinding HTTPS port done.");
         } catch ( Exception e ) {
             if ( !UvmContextFactory.context().state().equals( UvmState.RUNNING )) {
