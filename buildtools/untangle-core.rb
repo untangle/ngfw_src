@@ -42,6 +42,9 @@ require "#{SRC_HOME}/adblocker/package.rb"
 ## Virus based nodes
 require "#{SRC_HOME}/clam/package.rb"
 
+## New captive portal
+require "#{SRC_HOME}/capture/package.rb"
+
 wlibs = []
 
 libuvmcore_so = "#{BuildEnv::SRC.staging}/libuvmcore.so"

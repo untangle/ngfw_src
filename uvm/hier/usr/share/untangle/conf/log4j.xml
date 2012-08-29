@@ -289,6 +289,10 @@
     <priority value="INFO"/>
   </category>
 
+  <category name="com.untangle.node.capture">
+    <priority value="DEBUG"/>
+  </category>
+
   <category name="com.untangle.node">
     <priority value="INFO"/>
   </category>
