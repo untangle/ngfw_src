@@ -2422,11 +2422,12 @@ Ext.define("Ung.FaceplateMetric", {
                 break;
             }
         }
-        if(this.nodeName == "untangle-node-firewall") {
+        //Do not show chart graph for Firewal and OpenVpn nodes even though they have the live-sessions metrics
+        if(this.nodeName == "untangle-node-firewall" || this.nodeName == "untangle-node-openvpn") {
             this.hasChart = false;
         }
         var chartContainerEl = this.getEl().down("div[class=chart]");
-        //Do not build chart graph if the node desn't have live-session metrics
+        //Do not build chart graph if the node doesn't have live-session metrics
         if( !this.hasChart ) {
             chartContainerEl.hide();
             return;
