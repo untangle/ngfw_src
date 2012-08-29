@@ -381,6 +381,11 @@ public abstract class NodeBase implements Node
         return metricList;
     }
 
+    public NodeMetric getMetric( String name )
+    {
+        return metrics.get( name );
+    }
+    
     public void decrementMetric( String name )
     {
         adjustMetric( name, -1L );
