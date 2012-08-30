@@ -356,15 +356,9 @@ public interface UvmContext
     void loadLibrary(String libname);
 
     /**
-     * Query events in the database
+     * Query events in the reports database
      */
     ArrayList getEvents( final String query, final Long policyId, final int limit );
-
-    /**
-     * Query events in the database
-     * Same as getEvents() but returns a ResultSet
-     */
-    java.sql.ResultSet getEventsResultSet( final String query, final Long policyId, final int limit );
 
     /**
      * Convenience method, log an event to the database

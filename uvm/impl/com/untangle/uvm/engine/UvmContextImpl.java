@@ -16,9 +16,6 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.StringTokenizer;
 import java.util.Properties;
-import java.sql.SQLException;
-import java.sql.Connection;
-import java.sql.DriverManager;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -723,16 +720,6 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
         return this.alertManager;
     }
     
-    public java.sql.ResultSet getEventsResultSet( final String query, final Long policyId, final int limit )
-    {
-        if (this.reportingNode == null)
-            getReportingNode();
-        if (this.reportingNode == null)
-            return null;
-
-        return this.reportingNode.getEventsResultSet( query, policyId, limit );
-    }
-
     public ArrayList getEvents( final String query, final Long policyId, final int limit )
     {
         if (this.reportingNode == null)
