@@ -24,9 +24,8 @@ import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.apache.log4j.Logger;
 
-import com.untangle.uvm.UvmContext;
 import com.untangle.uvm.UvmContextFactory;
-import com.untangle.uvm.util.I18nUtil;
+import com.untangle.node.reporting.ReportingNode;
 
 /**
  * A servlet for export event log data
@@ -62,7 +61,12 @@ public class EventLogExportServlet extends HttpServlet
         Long policyId = Long.parseLong(policyIdStr);
         logger.info("Export CSV( name:" + name + " query: " + query + " policyId: " + policyId + " columnList: " + columnListStr + ")");
 
-        ResultSet resultSet = UvmContextFactory.context().getEventsResultSet( query, policyId, MAX_RESULTS );
+        ReportingNode reporting = (ReportingNode) UvmContextFactory.context().nodeManager().node("untangle-node-reporting");
+        if (reporting == null) {
+            logger.warn("reporting node not found");
+            return;
+        }
+        ResultSet resultSet = reporting.getEventsResultSet( query, policyId, MAX_RESULTS );
         
         // Write content type and also length (determined via byte array).
         resp.setCharacterEncoding(CHARACTER_ENCODING);

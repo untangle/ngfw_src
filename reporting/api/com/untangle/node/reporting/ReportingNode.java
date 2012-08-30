@@ -3,9 +3,10 @@
  */
 package com.untangle.node.reporting;
 
-import java.io.IOException;
+import java.util.ArrayList;
 import java.net.InetAddress;
 import java.sql.Connection;
+import java.sql.ResultSet;
 
 import com.untangle.uvm.node.Node;
 import com.untangle.uvm.node.HostnameLookup;
@@ -18,15 +19,15 @@ public interface ReportingNode extends Node, HostnameLookup
 
     void runDailyReport() throws Exception;
 
-    /**
-     * Force flush all the pending databdase events to the database and run
-     * an incremental reports process
-     */
     void flushEvents();
     
     String lookupHostname( InetAddress address );
 
+    ReportingManager getReportingManager();
+
     Connection getDbConnection();
 
-    ReportingManager getReportingManager();
+    ArrayList getEvents( final String query, final Long policyId, final int limit );
+
+    ResultSet getEventsResultSet( final String query, final Long policyId, final int limit );
 }
