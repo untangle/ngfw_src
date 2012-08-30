@@ -85,7 +85,12 @@ public class EventLogExportServlet extends HttpServlet
                 int writtenColumnCount = 0;
                 
                 for ( String columnName : columnList ) {
-                    Object o = resultSet.getObject( columnName );
+                    Object o = null;
+                    try {
+                        o = resultSet.getObject( columnName );
+                    } catch (Exception e) {
+                        // do nothing - object not found
+                    }
                     String oStr = "";
                     if (o != null)
                         oStr = o.toString().replaceAll(",","");
