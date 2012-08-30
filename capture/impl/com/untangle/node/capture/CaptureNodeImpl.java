@@ -61,7 +61,7 @@ public class CaptureNodeImpl extends NodeBase implements CaptureNode
 
         this.flaggedEventQuery = new EventLogQuery(I18nUtil.marktr("Flagged Sessions"),
             "SELECT * FROM reports.sessions " +
-            "WHERE policyId = :policyId " +
+            "WHERE policy_id = :policyId " +
             "AND classd_flagged IS TRUE " +
             "ORDER BY time_stamp DESC");
 
