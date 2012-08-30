@@ -15,6 +15,8 @@ public interface Reporting
 
     ArrayList getEvents( final String query, final Long policyId, final int limit );
 
+    java.sql.ResultSet getEventsResultSet( final String query, final Long policyId, final int limit );
+    
     void createSchemas();
 
     double getAvgWriteTimePerEvent();

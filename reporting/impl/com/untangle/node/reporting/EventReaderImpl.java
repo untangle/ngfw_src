@@ -42,7 +42,7 @@ public class EventReaderImpl
     }
 
     @SuppressWarnings("unchecked")
-    public ArrayList getEvents( final String query, final Long policyId, final int limit )
+    public ResultSet getEventsResultSet( final String query, final Long policyId, final int limit )
     {
         if ( dbConnection == null ) {
             try {
@@ -66,8 +66,8 @@ public class EventReaderImpl
             }
             queryStr += " LIMIT " + limit + " ";
 
-            logger.debug("getEvents( query: " + query + " policyId: " + policyId + " limit: " + limit + " )");
-            logger.info("getEvents( queryStr: \"" + queryStr + "\")");
+            logger.debug("getEventsResultSet( query: " + query + " policyId: " + policyId + " limit: " + limit + " )");
+            logger.info("getEventsResultSet( queryStr: \"" + queryStr + "\")");
             
             Statement statement = dbConnection.createStatement();
             if (statement == null) {
@@ -76,14 +76,31 @@ public class EventReaderImpl
             }
             
             ResultSet resultSet = statement.executeQuery( queryStr );
+            return resultSet;
+            
+        } catch (SQLException e) {
+            logger.warn("Failed to query database", e );
+            throw new RuntimeException( "Failed to query database.", e );
+        }
+    }
+        
+    @SuppressWarnings("unchecked")
+    public ArrayList getEvents( final String query, final Long policyId, final int limit )
+    {
+        try {
+            ResultSet resultSet = getEventsResultSet( query, policyId, limit );
+            if (resultSet == null)
+                return null;
+        
             ResultSetMetaData metadata = resultSet.getMetaData();
             int numColumns = metadata.getColumnCount();
                 
             ArrayList newList = new ArrayList();
+
             while (resultSet.next()) {
-                JSONObject row = new JSONObject();
-                for ( int i = 1 ; i < numColumns+1 ; i++ ) {
-                    try {
+                try {
+                    JSONObject row = new JSONObject();
+                    for ( int i = 1 ; i < numColumns+1 ; i++ ) {
                         Object o = resultSet.getObject( i );
 
                         // if its a special Postgres type - change it to string
@@ -93,18 +110,17 @@ public class EventReaderImpl
                         //logger.info( "getEvents( " + queryStr + " ) column[ " + metadata.getColumnName(i) + " ] = " + o);
 
                         row.put( metadata.getColumnName(i), o );
-                    } catch (JSONException e) {
-                        logger.warn("Failed to query database, bad column.", e );
-                        throw new RuntimeException( "Failed to query database, bad column.", e );
                     }
+                    newList.add(row);
+                } catch (Exception e) {
+                    logger.warn("Failed to process row - skipping.",e);
                 }
-                newList.add(row);
             }
             return newList;
-                
         } catch (SQLException e) {
             logger.warn("Failed to query database", e );
             throw new RuntimeException( "Failed to query database.", e );
         }
     }
+        
 }
