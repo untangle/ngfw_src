@@ -1,7 +1,7 @@
 /**
  * $Id: User.java,v 1.00 2012/06/11 14:57:46 dmorris Exp $
  */
-package com.untangle.uvm.reports;
+package com.untangle.node.reporting.items;
 
 import java.io.Serializable;
 

@@ -1,11 +1,11 @@
 #! /bin/bash
-# This file automatically created - do not modify
 
-rm -fr /usr/share/untangle/db/webfilter/
-
-/usr/bin/ucli -q -t 30 register untangle-node-webfilter 2>/dev/null || true
+/usr/bin/ucli -q -t 30 register $DPKG_MAINTSCRIPT_PACKAGE 2>/dev/null || true
 
 touch /etc/untangle/reports-to-restart
+
+# remove obsolete files
+rm -fr /usr/share/untangle/db/webfilter/
 
 exit 0
 

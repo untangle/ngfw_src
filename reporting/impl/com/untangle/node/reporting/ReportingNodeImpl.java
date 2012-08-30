@@ -43,7 +43,6 @@ import com.untangle.uvm.AdminManager;
 import com.untangle.uvm.logging.LogEvent;
 import com.untangle.uvm.vnet.NodeBase;
 import com.untangle.uvm.vnet.PipeSpec;
-import com.untangle.uvm.util.ReportingOutsideAccessValve;
 
 public class ReportingNodeImpl extends NodeBase implements ReportingNode, Reporting
 {
@@ -58,6 +57,7 @@ public class ReportingNodeImpl extends NodeBase implements ReportingNode, Report
 
     private static EventWriterImpl eventWriter = null;
     private static EventReaderImpl eventReader = null;
+    private static ReportingManagerImpl reportingManager = null;
 
     private ReportingSettings settings;
 
@@ -67,9 +67,10 @@ public class ReportingNodeImpl extends NodeBase implements ReportingNode, Report
 
         if (eventWriter == null)
             eventWriter = new EventWriterImpl( this );
-
         if (eventReader == null)
             eventReader = new EventReaderImpl( this );
+        if (reportingManager == null)
+            reportingManager = new ReportingManagerImpl( this );
     }
 
     public void setSettings(final ReportingSettings settings)
@@ -197,7 +198,7 @@ public class ReportingNodeImpl extends NodeBase implements ReportingNode, Report
         return this.eventReader.getEvents( query, policyId, limit );
     }
 
-    protected Connection getDbConnection()
+    public Connection getDbConnection()
     {
         try {
             Class.forName("org.postgresql.Driver");
@@ -213,6 +214,11 @@ public class ReportingNodeImpl extends NodeBase implements ReportingNode, Report
             logger.warn("Failed to connect to DB", e);
             return null;
         }
+    }
+
+    public ReportingManager getReportingManager()
+    {
+        return this.reportingManager;
     }
     
     @Override

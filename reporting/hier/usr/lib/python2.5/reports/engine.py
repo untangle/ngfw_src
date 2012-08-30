@@ -468,6 +468,7 @@ def __generate_plots(report_base, dir):
     path.append('@PREFIX@/usr/share/untangle/lib/untangle-libuvm-bootstrap/')
     path.append('@PREFIX@/usr/share/untangle/lib/untangle-libuvm-api/')
     path.append('@PREFIX@/usr/share/untangle/conf/')
+    path.append('@PREFIX@/usr/share/untangle/toolbox/untangle-node-reporting-api.jar')
 
     for f in os.listdir(UVM_JAR_DIR):
         if f.endswith('.jar'):
@@ -475,7 +476,7 @@ def __generate_plots(report_base, dir):
 
     logger.debug("About to call GraphGenerator with report_base='%s', dir='%s'" % (report_base, dir))
 
-    command = "java -Djava.awt.headless=true -cp %s com.untangle.uvm.reports.GraphGenerator '%s' '%s'" % (string.join(path, ':'), report_base, dir)
+    command = "java -Djava.awt.headless=true -cp %s com.untangle.node.reporting.items.GraphGenerator '%s' '%s'" % (string.join(path, ':'), report_base, dir)
 
     os.system(command)
 

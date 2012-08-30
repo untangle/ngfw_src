@@ -16,7 +16,7 @@ import org.jabsorb.serializer.impl.JSONBeanSerializer;
 
 import com.untangle.uvm.LanguageManager;
 import com.untangle.uvm.SkinManager;
-import com.untangle.uvm.reports.ReportingManager;
+import com.untangle.node.reporting.ReportingManager;
 
 import com.untangle.uvm.webui.jabsorb.serializer.EnumSerializer;
 import com.untangle.uvm.webui.jabsorb.serializer.HostAddressSerializer;

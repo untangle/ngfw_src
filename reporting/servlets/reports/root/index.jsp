@@ -1,20 +1,27 @@
-<%@ page language="java" import="com.untangle.uvm.*,com.untangle.uvm.util.*,com.untangle.uvm.reports.*,com.untangle.uvm.node.NodeSettings,com.untangle.uvm.node.*,com.untangle.uvm.vnet.*,org.apache.log4j.helpers.AbsoluteTimeDateFormat,java.util.Properties, java.util.Map, java.net.URL, java.io.PrintWriter, javax.naming.*" 
+<%@ page language="java" import="com.untangle.node.reporting.*,com.untangle.uvm.*,com.untangle.uvm.util.*,com.untangle.uvm.reports.*,com.untangle.uvm.node.NodeSettings,com.untangle.uvm.node.*,com.untangle.uvm.vnet.*,org.apache.log4j.helpers.AbsoluteTimeDateFormat,java.util.Properties, java.util.Map, java.net.URL, java.io.PrintWriter, javax.naming.*" 
 %><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
 <%
+String buildStamp = getServletContext().getInitParameter("buildStamp");
+
 UvmContext uvm = UvmContextFactory.context();
 Map<String,String> i18n_map = uvm.languageManager().getTranslations("untangle-libuvm");
 
 String company = uvm.brandingManager().getCompanyName();
 String companyUrl = uvm.brandingManager().getCompanyUrl();
 
-ReportingManager reportingManager = uvm.reportingManager();
+ReportingNode node = (ReportingNode) UvmContextFactory.context().nodeManager().node("untangle-node-reporting");
+ReportingManager reportingManager = null ;
+boolean reportingEnabled = false;
+boolean reportsAvailable = false;
 
-String buildStamp = getServletContext().getInitParameter("buildStamp");
+if (node != null) {
+   reportingManager = node.getReportingManager();
+   reportingEnabled = reportingManager.isReportingEnabled();
+   reportsAvailable = reportingManager.isReportsAvailable();
+}
 
-boolean reportingEnabled = reportingManager.isReportingEnabled();
-boolean reportsAvailable = reportingManager.isReportsAvailable();
-if (!reportsAvailable || !reportingEnabled) {
+if (node == null || !reportsAvailable || !reportingEnabled) {
    String msg = I18nUtil.tr("No reports are available.", i18n_map);
    String disabledMsg = I18nUtil.tr("Reports is not installed into your rack or it is not turned on.<br />Reports are only generated when Reports is installed and turned on.", i18n_map);
    String emptyMsg = I18nUtil.tr("No reports have been generated.", i18n_map);

@@ -32,7 +32,6 @@ import org.apache.log4j.Logger;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.TomcatManager;
 import com.untangle.uvm.util.AdministrationOutsideAccessValve;
-import com.untangle.uvm.util.ReportingOutsideAccessValve;
 
 /**
  * Wrapper around the Tomcat server embedded within the UVM.

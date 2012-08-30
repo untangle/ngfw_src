@@ -1,10 +1,10 @@
 #! /bin/bash
 
-/usr/bin/ucli -q -t 30 register untangle-node-adblocker 2>/dev/null || true
-
-/etc/init.d/apache2 reload
+/usr/bin/ucli -q -t 30 register $DPKG_MAINTSCRIPT_PACKAGE 2>/dev/null || true
 
 touch /etc/untangle/reports-to-restart
+
+/etc/init.d/apache2 reload
 
 exit 0
 

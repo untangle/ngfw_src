@@ -22,14 +22,16 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.log4j.Logger;
+
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.UvmContext;
-import com.untangle.uvm.reports.ApplicationData;
-import com.untangle.uvm.reports.ColumnDesc;
-import com.untangle.uvm.reports.DetailSection;
-import com.untangle.uvm.reports.ReportingManager;
-import com.untangle.uvm.reports.Section;
-import org.apache.log4j.Logger;
+import com.untangle.node.reporting.items.ApplicationData;
+import com.untangle.node.reporting.items.ColumnDesc;
+import com.untangle.node.reporting.items.DetailSection;
+import com.untangle.node.reporting.items.Section;
+import com.untangle.node.reporting.ReportingManager;
+import com.untangle.node.reporting.ReportingNode;
 
 /**
  * Gets CSV for a detail report.
@@ -64,7 +66,12 @@ public class CsvServlet extends HttpServlet
         }
 
         UvmContext uvm = UvmContextFactory.context();
-        ReportingManager rm = uvm.reportingManager();
+        ReportingNode reporting = (ReportingNode) UvmContextFactory.context().nodeManager().node("untangle-node-reporting");
+        if (reporting == null) {
+            logger.warn("reporting node not found");
+            return;
+        }
+        ReportingManager rm = reporting.getReportingManager();
 
         BufferedWriter bw = null;
         try {
@@ -126,10 +133,16 @@ public class CsvServlet extends HttpServlet
         throws IOException
     {
         logger.info("About to do query: '" + sql + "'");
+        ReportingNode reporting = (ReportingNode) UvmContextFactory.context().nodeManager().node("untangle-node-reporting");
+        if (reporting == null) {
+            logger.warn("reporting node not found");
+            return;
+        }
 
         Connection conn = null;
         try {
-            conn = UvmContextFactory.context().getDBConnection();
+                
+            conn = reporting.getDbConnection();
             Statement stmt = conn.createStatement();
             ResultSet rs = stmt.executeQuery(sql);
             int columnCount = rs.getMetaData().getColumnCount();

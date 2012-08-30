@@ -77,8 +77,7 @@ Ext.define('Ung.Reports', {
         }
         rpc.languageManager = result;
         // get translations for main module
-        rpc.languageManager.getTranslations(Ext.bind(this.completeGetTranslations,this),
-                                            "untangle-libuvm");
+        rpc.languageManager.getTranslations(Ext.bind(this.completeGetTranslations,this), "untangle-libuvm");
     },
 
     completeGetTranslations: function( result, exception ) {
@@ -1017,15 +1016,15 @@ Ext.define('Ung.ReportDetails', {
             var reportTypeMap = {
                 'users': {
                     'toc': Ext.bind(this.buildUserList,this),
-                    'com.untangle.uvm.reports.TableOfContents': Ext.bind(this.buildUserTableOfContents,this)
+                    'com.untangle.node.reporting.items.TableOfContents': Ext.bind(this.buildUserTableOfContents,this)
                 },
                 'hosts': {
                     'toc': Ext.bind(this.buildHostList,this),
-                    'com.untangle.uvm.reports.TableOfContents': Ext.bind(this.buildHostTableOfContents,this)
+                    'com.untangle.node.reporting.items.TableOfContents': Ext.bind(this.buildHostTableOfContents,this)
                 },
                 'emails': {
                     'toc': Ext.bind(this.buildEmailList,this),
-                    'com.untangle.uvm.reports.TableOfContents': Ext.bind(this.buildEmailTableOfContents,this)
+                    'com.untangle.node.reporting.items.TableOfContents': Ext.bind(this.buildEmailTableOfContents,this)
                 }
             };
             if (reportTypeMap[this.reportType] != null) {
@@ -1042,9 +1041,9 @@ Ext.define('Ung.ReportDetails', {
 
     buildSection: function(appName, section) {
         var sectionPanel=null;
-        if (section.javaClass=="com.untangle.uvm.reports.SummarySection") {
+        if (section.javaClass=="com.untangle.node.reporting.items.SummarySection") {
             sectionPanel=this.buildSummarySection(appName, section);
-        } else if (section.javaClass=="com.untangle.uvm.reports.DetailSection") {
+        } else if (section.javaClass=="com.untangle.node.reporting.items.DetailSection") {
             sectionPanel=this.buildDetailSection(appName, section);
         }
         return sectionPanel;

@@ -91,7 +91,6 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
     private LoggingManagerImpl loggingManager;
     private MailSenderImpl mailSender;
     private NetworkManagerImpl networkManager;
-    private ReportingManagerImpl reportingManager;
     private ConnectivityTesterImpl connectivityTester;
     private PipelineFoundryImpl pipelineFoundry;
     private ToolboxManagerImpl toolboxManager;
@@ -205,11 +204,6 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
     public NetworkManager networkManager()
     {
         return this.networkManager;
-    }
-
-    public ReportingManagerImpl reportingManager()
-    {
-        return this.reportingManager;
     }
 
     public ConnectivityTesterImpl getConnectivityTester()
@@ -539,9 +533,6 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
 
         this.messageManager = new MessageManagerImpl();
 
-        // Retrieve the reporting configuration manager
-        this.reportingManager = ReportingManagerImpl.reportingManager();
-
         // Retrieve the connectivity tester
         this.connectivityTester = ConnectivityTesterImpl.getInstance();
 
@@ -750,24 +741,6 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
             return null;
 
         return this.reportingNode.getEvents( query, policyId, limit );
-    }
-
-    public Connection getDBConnection()
-    {
-        try {
-            Class.forName("org.postgresql.Driver");
-            String url = "jdbc:postgresql://localhost/uvm";
-            Properties props = new Properties();
-            props.setProperty( "user", "postgres" );
-            props.setProperty( "password", "foo" );
-            props.setProperty( "charset", "unicode" );
-
-            return DriverManager.getConnection(url,props);
-        }
-        catch (Exception e) {
-            logger.warn("Failed to connect to DB", e);
-            return null;
-        }
     }
 
     // private methods --------------------------------------------------------

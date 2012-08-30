@@ -1,10 +1,15 @@
 /*
  * $Id$
  */
-package com.untangle.uvm.reports;
+package com.untangle.node.reporting;
 
 import java.util.Date;
 import java.util.List;
+
+import com.untangle.node.reporting.items.DateItem;
+import com.untangle.node.reporting.items.TableOfContents;
+import com.untangle.node.reporting.items.ApplicationData;
+import com.untangle.node.reporting.items.Highlight;
 
 /**
  * Manages report generation.

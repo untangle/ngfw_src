@@ -1,7 +1,7 @@
 /**
  * $Id: GraphGenerator.java,v 1.00 2012/04/12 22:21:53 dmorris Exp $
  */
-package com.untangle.uvm.reports;
+package com.untangle.node.reporting.items;
 
 import java.io.File;
 import java.io.FileInputStream;

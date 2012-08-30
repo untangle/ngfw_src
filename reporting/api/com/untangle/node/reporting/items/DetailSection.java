@@ -1,7 +1,7 @@
 /*
  * $Id: DetailSection.java,v 1.00 2011/12/17 12:31:18 dmorris Exp $
  */
-package com.untangle.uvm.reports;
+package com.untangle.node.reporting.items;
 
 import java.io.Serializable;
 import java.util.ArrayList;

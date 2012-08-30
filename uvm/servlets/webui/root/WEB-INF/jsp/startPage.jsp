@@ -62,7 +62,7 @@
 <input type="hidden" name="gridData" value=""/>
 <input type="hidden" name="type" value="export"/>
 </form>
-<form name="exportEventLogEvents" id="exportEventLogEvents" method="post" action="eventLogExport" style="display:none;">
+<form name="exportEventLogEvents" id="exportEventLogEvents" method="post" action="/reports/eventLogExport" style="display:none;">
 <input type="hidden" name="name" value=""/>
 <input type="hidden" name="query" value=""/>
 <input type="hidden" name="policyId" value=""/>

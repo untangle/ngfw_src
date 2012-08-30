@@ -7,6 +7,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.log4j.Logger;
+
 import com.untangle.uvm.LanguageSettings;
 import com.untangle.uvm.LocaleInfo;
 import com.untangle.uvm.LanguageManager;
@@ -16,22 +18,23 @@ import com.untangle.uvm.SkinSettings;
 import com.untangle.uvm.UvmException;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.UvmContext;
-import com.untangle.uvm.reports.ApplicationData;
-import com.untangle.uvm.reports.DateItem;
-import com.untangle.uvm.reports.Highlight;
-import com.untangle.uvm.reports.ReportingManager;
-import com.untangle.uvm.reports.TableOfContents;
+import com.untangle.node.reporting.ReportingNode;
+import com.untangle.node.reporting.ReportingManager;
+import com.untangle.node.reporting.items.ApplicationData;
+import com.untangle.node.reporting.items.DateItem;
+import com.untangle.node.reporting.items.Highlight;
+import com.untangle.node.reporting.items.TableOfContents;
 import org.apache.commons.fileupload.FileItem;
 
 
 public class ReportsContextImpl implements UtJsonRpcServlet.ReportsContext
 {
+    private final Logger logger = Logger.getLogger(getClass());
+
     private final UvmContext context;
 
     private final SkinManager skinManager = new SkinManagerImpl();
-    private final ReportingManager reportingManager = new ReportingManagerImpl();
     private final LanguageManager languageManager = new LanguageManagerImpl();
-
 
     private ReportsContextImpl( UvmContext context )
     {
@@ -40,7 +43,12 @@ public class ReportsContextImpl implements UtJsonRpcServlet.ReportsContext
 
     public ReportingManager reportingManager()
     {
-        return this.reportingManager;
+        ReportingNode reporting = (ReportingNode) UvmContextFactory.context().nodeManager().node("untangle-node-reporting");
+        if (reporting == null) {
+            logger.warn("reporting node not found");
+            return null;
+        }
+        return reporting.getReportingManager();
     }
 
     public SkinManager skinManager()
@@ -59,210 +67,26 @@ public class ReportsContextImpl implements UtJsonRpcServlet.ReportsContext
         return new ReportsContextImpl( uvm );
     }
 
+    /**
+     * This proxy object is used so the reporting servlet does not have access to setSettings and related methods
+     */
     private class SkinManagerImpl implements SkinManager
     {
-        /**
-         * Get the settings.
-         *
-         * @return the settings.
-         */
-        public SkinSettings getSettings()
-        {
-            return context.skinManager().getSettings();
-        }
-
-        /**
-         * Set the settings.
-         *
-         * @param skinSettings the settings.
-         */
-        public void setSettings( SkinSettings skinSettings )
-        {
-            throw new RuntimeException("Unable to change the skin settings.");
-        }
-
-        /**
-         * Upload a new skin
-         */
-        public void uploadSkin(FileItem item) throws UvmException
-        {
-            throw new RuntimeException("Unable to change the skin settings.");
-        }
-
-
-        public List<SkinInfo> getSkinsList( )
-        {
-            return context.skinManager().getSkinsList();
-        }
+        public SkinSettings getSettings() { return context.skinManager().getSettings(); }
+        public void setSettings( SkinSettings skinSettings ) { throw new RuntimeException("Unable to change the skin settings."); }
+        public void uploadSkin(FileItem item) { throw new RuntimeException("Unable to change the skin settings."); }
+        public List<SkinInfo> getSkinsList( ) { return context.skinManager().getSkinsList(); }
     }
 
+    /**
+     * This proxy object is used so the reporting servlet does not have access to setSettings and related methods
+     */
     private class LanguageManagerImpl implements LanguageManager
     {
-        /**
-         * Get the settings.
-         *
-         * @return the settings.
-         */
-    public LanguageSettings getLanguageSettings()
-        {
-            return context.languageManager().getLanguageSettings();
-        }
-
-        /**
-         * Set the settings.
-         *
-         * @param langSettings the settings.
-         */
-        public void setLanguageSettings(LanguageSettings langSettings)
-        {
-            throw new RuntimeException("Unable to change the language settings.");
-        }
-
-        /**
-         * Upload New Language Pack
-         *
-         * @return true if the uploaded language pack was processed
-         * with no errors; otherwise returns false.
-         */
-        public boolean uploadLanguagePack(FileItem item) throws UvmException
-        {
-            throw new RuntimeException("Unable to upload a language pack.");
-        }
-
-        /**
-         * Get list of available languages
-         */
-        public List<LocaleInfo> getLanguagesList()
-        {
-            return context.languageManager().getLanguagesList();
-        }
-
-        /**
-         * Return the map of translations for a module, for the
-         * current language.
-         *
-         * @param module  the name of the module
-         * @return map of translations
-         */
-        public Map<String, String> getTranslations(String module)
-        {
-            return context.languageManager().getTranslations(module);
-        }
-    }
-
-    private class ReportingManagerImpl implements ReportingManager
-    {
-        public List<DateItem> getDates()
-        {
-            return context.reportingManager().getDates();
-        }
-
-        public List<Highlight> getHighlights(Date d, int numDays)
-        {
-            return context.reportingManager().getHighlights(d, numDays);
-        }
-
-        public Date getReportsCutoff()
-        {
-            return context.reportingManager().getReportsCutoff();
-        }
-
-        public TableOfContents getTableOfContents(Date d, int numDays)
-        {
-            return context.reportingManager().getTableOfContents(d, numDays);
-        }
-
-        public TableOfContents getTableOfContentsForHost(Date d, int numDays,
-                                                         String hostname)
-        {
-            return context.reportingManager().getTableOfContentsForHost(d, numDays, hostname);
-        }
-
-        public TableOfContents getTableOfContentsForUser(Date d, int numDays,
-                                                         String username)
-        {
-            return context.reportingManager().getTableOfContentsForUser(d, numDays, username);
-        }
-
-        public TableOfContents getTableOfContentsForEmail(Date d, int numDays,
-                                                          String email)
-        {
-            return context.reportingManager().getTableOfContentsForEmail(d, numDays, email);
-        }
-
-        public ApplicationData getApplicationData(Date d, int numDays,
-                                                  String appName, String type,
-                                                  String value)
-        {
-            return context.reportingManager().getApplicationData(d, numDays, appName, type, value);
-        }
-
-        public ApplicationData getApplicationData(Date d, int numDays,
-                                                  String appName)
-        {
-            return context.reportingManager().getApplicationData(d, numDays, appName);
-        }
-
-        public ApplicationData getApplicationDataForUser(Date d, int numDays,
-                                                         String appName,
-                                                         String username)
-        {
-            return context.reportingManager().getApplicationDataForUser(d, numDays, appName, username);
-        }
-
-
-        public ApplicationData getApplicationDataForEmail(Date d, int numDays,
-                                                          String appName,
-                                                          String emailAddr)
-        {
-            return context.reportingManager().getApplicationDataForEmail(d, numDays, appName, emailAddr);
-        }
-
-        public ApplicationData getApplicationDataForHost(Date d, int numDays,
-                                                         String appName,
-                                                         String hostname)
-        {
-            return context.reportingManager().getApplicationDataForHost(d, numDays, appName, hostname);
-        }
-
-        public List<List<Object>> getDetailData(Date d, int numDays, String appName,
-                                        String detailName, String type,
-                                        String value)
-        {
-            return context.reportingManager().getDetailData(d, numDays, appName, detailName, type, value);
-        }
-
-
-        public List<List<Object>> getAllDetailData(Date d, int numDays, String appName,
-                                           String detailName, String type,
-                                           String value)
-        {
-            return context.reportingManager().getAllDetailData(d, numDays, appName, detailName, type, value);
-        }
-
-        /**
-         *  Tests if reporting is enabled, that is if reports will be
-         * generated nightly.  Currently this is the same thing as "is the
-         * reporting node installed and turned on."
-         *
-         * @return true if reporting is enabled, false otherwise.
-         */
-        public boolean isReportingEnabled()
-        {
-            return context.reportingManager().isReportingEnabled();
-        }
-
-        /**
-         * Tests if reporting is enabled and reports have been generated
-         * and are ready to view.  Currently this is the same thing as
-         * "does the current symlink exist and contain a valid
-         * reporting-node/sum-daily.html file."
-         *
-         * @return true if reports are available
-         */
-        public boolean isReportsAvailable()
-        {
-            return context.reportingManager().isReportsAvailable();
-        }
+        public LanguageSettings getLanguageSettings() { return context.languageManager().getLanguageSettings(); }
+        public void setLanguageSettings(LanguageSettings langSettings) { throw new RuntimeException("Unable to change the language settings."); }
+        public boolean uploadLanguagePack(FileItem item) throws UvmException { throw new RuntimeException("Unable to upload a language pack."); }
+        public List<LocaleInfo> getLanguagesList() { return context.languageManager().getLanguagesList(); }
+        public Map<String, String> getTranslations(String module) { return context.languageManager().getTranslations(module); }
     }
 }

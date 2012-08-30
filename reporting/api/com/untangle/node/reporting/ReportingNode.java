@@ -5,6 +5,7 @@ package com.untangle.node.reporting;
 
 import java.io.IOException;
 import java.net.InetAddress;
+import java.sql.Connection;
 
 import com.untangle.uvm.node.Node;
 import com.untangle.uvm.node.HostnameLookup;
@@ -24,4 +25,8 @@ public interface ReportingNode extends Node, HostnameLookup
     void flushEvents();
     
     String lookupHostname( InetAddress address );
+
+    Connection getDbConnection();
+
+    ReportingManager getReportingManager();
 }

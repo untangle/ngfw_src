@@ -2,7 +2,7 @@
  * $Id: Chart.java,v 1.00 2012/01/08 20:12:21 dmorris Exp $
  */
 
-package com.untangle.uvm.reports;
+package com.untangle.node.reporting.items;
 
 import java.io.File;
 import java.io.FileInputStream;

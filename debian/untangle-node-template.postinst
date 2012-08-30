@@ -1,6 +1,5 @@
 #! /bin/bash
-# This file automatically created - do not modify
 
-/usr/bin/ucli -q -t 30 register untangle-node-template 2>/dev/null || true
+/usr/bin/ucli -q -t 30 register $DPKG_MAINTSCRIPT_PACKAGE 2>/dev/null || true
 
 exit 0

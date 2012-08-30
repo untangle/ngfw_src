@@ -1,5 +1,5 @@
 /*
- * $HeadURL: svn://chef/work/src/uvm/api/com/untangle/uvm/reports/Highlight.java $
+ * $HeadURL: svn://chef/work/src/uvm/api/com.untangle.node.reporting.items/Highlight.java $
  * Copyright (c) 2003-2009 Untangle, Inc.
  *
  * This library is free software; you can redistribute it and/or modify
@@ -31,7 +31,7 @@
  * to do so, delete this exception statement from your version.
  */
 
-package com.untangle.uvm.reports;
+package com.untangle.node.reporting.items;
 
 import java.io.Serializable;
 import java.util.HashMap;

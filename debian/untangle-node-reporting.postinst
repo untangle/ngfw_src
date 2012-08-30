@@ -1,11 +1,20 @@
 #! /bin/bash
-# This file automatically created - do not modify
 
-/usr/bin/ucli -q -t 30 register untangle-node-reporting 2>/dev/null || true
-
-rm -fr /usr/share/untangle/web/reports/current
-rm -fr /usr/share/untangle/web/reports/200[6-9]*
+/usr/bin/ucli -q -t 30 register $DPKG_MAINTSCRIPT_PACKAGE 2>/dev/null || true
 
 touch /etc/untangle/monit-to-restart
+
+# remove obsolete files
+rm -fr /usr/share/untangle/web/reports/current
+rm -f /usr/lib/python2.5/reports/node/untangle_node_template*
+rm -fr /usr/share/untangle/web/reports/200[6-9]*
+rm -f /etc/cron.d/untangle-reports-incremental
+rm -f /var/log/uvm/report.log*
+
+if [ -x "/etc/init.d/untangle-reports" ]; then
+    update-rc.d -f untangle-reports remove
+    update-rc.d untangle-reports defaults 96 5 > /dev/null
+    ourInit untangle-reports restart
+fi
 
 exit 0

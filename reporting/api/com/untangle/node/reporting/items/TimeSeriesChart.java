@@ -1,7 +1,7 @@
 /**
  * $Id: TimeSeriesChart.java,v 1.00 2012/01/08 20:14:47 dmorris Exp $h
  */
-package com.untangle.uvm.reports;
+package com.untangle.node.reporting.items;
 
 import java.awt.Color;
 import java.io.File;

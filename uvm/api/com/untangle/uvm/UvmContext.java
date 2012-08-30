@@ -6,8 +6,6 @@ package com.untangle.uvm;
 import java.io.File;
 import java.util.ArrayList;
 import java.io.IOException;
-import java.sql.Connection;
-
 
 import com.untangle.uvm.UvmContext;
 import com.untangle.uvm.AdminManager;
@@ -20,7 +18,6 @@ import com.untangle.uvm.node.NodeManager;
 import com.untangle.uvm.node.LicenseManager;
 import com.untangle.uvm.node.PolicyManager;
 import com.untangle.uvm.node.DayOfWeekMatcher;
-import com.untangle.uvm.reports.ReportingManager;
 import com.untangle.uvm.servlet.UploadManager;
 import com.untangle.uvm.toolbox.ToolboxManager;
 import com.untangle.uvm.vnet.PipelineFoundry;
@@ -71,13 +68,6 @@ public interface UvmContext
      * @return the NetworkManager.
      */
     NetworkManager networkManager();
-
-    /**
-     * Get the <code>ReportingManager</code> singleton.
-     *
-     * @return the ReportingManager.
-     */
-    ReportingManager reportingManager();
 
     /**
      * Get the <code>ConnectivityTester</code> singleton.
@@ -380,7 +370,4 @@ public interface UvmContext
      * Convenience method, log an event to the database
      */
     void logEvent(LogEvent evt);
-
-    Connection getDBConnection();
-    
 }

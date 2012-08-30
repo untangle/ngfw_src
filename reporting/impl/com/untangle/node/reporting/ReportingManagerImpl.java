@@ -1,7 +1,7 @@
 /*
  * $Id$
  */
-package com.untangle.uvm.engine;
+package com.untangle.node.reporting;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -39,21 +39,31 @@ import com.untangle.uvm.UvmContext;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.node.Node;
 import com.untangle.uvm.node.NodeManager;
-import com.untangle.uvm.reports.Application;
-import com.untangle.uvm.reports.ApplicationData;
-import com.untangle.uvm.reports.DateItem;
-import com.untangle.uvm.reports.DetailSection;
-import com.untangle.uvm.reports.Email;
-import com.untangle.uvm.reports.Highlight;
-import com.untangle.uvm.reports.Host;
-import com.untangle.uvm.reports.ReportingManager;
-import com.untangle.uvm.reports.ReportXmlHandler;
-import com.untangle.uvm.reports.Section;
-import com.untangle.uvm.reports.SummarySection;
-import com.untangle.uvm.reports.TableOfContents;
-import com.untangle.uvm.reports.User;
 import com.untangle.uvm.node.NodeSettings;
+import com.untangle.node.reporting.ReportingNode;
 import com.untangle.uvm.toolbox.PackageDesc;
+import com.untangle.node.reporting.items.ApplicationData;
+import com.untangle.node.reporting.items.Application;
+import com.untangle.node.reporting.items.Chart;
+import com.untangle.node.reporting.items.ColumnDesc;
+import com.untangle.node.reporting.items.DateItem;
+import com.untangle.node.reporting.items.DetailSection;
+import com.untangle.node.reporting.items.Email;
+import com.untangle.node.reporting.items.GraphGenerator;
+import com.untangle.node.reporting.items.Highlight;
+import com.untangle.node.reporting.items.Host;
+import com.untangle.node.reporting.items.KeyStatistic;
+import com.untangle.node.reporting.items.LegendItem;
+import com.untangle.node.reporting.items.PieChart;
+import com.untangle.node.reporting.items.Plot;
+import com.untangle.node.reporting.items.ReportXmlHandler;
+import com.untangle.node.reporting.items.Section;
+import com.untangle.node.reporting.items.StackedBarChart;
+import com.untangle.node.reporting.items.SummaryItem;
+import com.untangle.node.reporting.items.SummarySection;
+import com.untangle.node.reporting.items.TableOfContents;
+import com.untangle.node.reporting.items.TimeSeriesChart;
+import com.untangle.node.reporting.items.User;
 
 class ReportingManagerImpl implements ReportingManager
 {
@@ -64,15 +74,11 @@ class ReportingManagerImpl implements ReportingManager
     private static final File REPORTS_DIR = new File(UVM_REPORTS_DATA);
     private static final String DATE_FORMAT = "yyyy-MM-dd";
 
-    private static ReportingManagerImpl REPORTING_MANAGER = new ReportingManagerImpl();
-
-    private ReportingManagerImpl()
+    private ReportingNode node;
+    
+    protected ReportingManagerImpl( ReportingNode node)
     {
-    }
-
-    static ReportingManagerImpl reportingManager()
-    {
-        return REPORTING_MANAGER;
+        this.node = node;
     }
 
     public List<DateItem> getDates()
@@ -112,10 +118,10 @@ class ReportingManagerImpl implements ReportingManager
     public Date getReportsCutoff()
     {
         Date d = null;
-
+        
         Connection conn = null;
         try {
-            conn = UvmContextFactory.context().getDBConnection();
+            conn = node.getDbConnection();
 
             PreparedStatement ps = conn.prepareStatement("SELECT last_cutoff FROM reports.reports_state");
             ResultSet rs = ps.executeQuery();
@@ -141,9 +147,7 @@ class ReportingManagerImpl implements ReportingManager
     public List<Highlight> getHighlights(Date d, int numDays)
     {
         List<Highlight> list = new ArrayList<Highlight>();
-
-        List<Application> l = getApplications(getDateDir(d, numDays),
-                                              "top-level");
+        List<Application> l = getApplications( getDateDir(d, numDays), "top-level");
 
         // add untangle-vm's highlights
         File f = new File(getDateDir(d, numDays) + "/untangle-vm/report.xml");
@@ -257,14 +261,16 @@ class ReportingManagerImpl implements ReportingManager
 
     private List<List<Object>> doGetDetailData(Date d, int numDays, String appName, String detailName, String type, String value, boolean limitResultSet)
     {
-        logger.info("doGetDetailData for '" + appName +
+        logger.warn("doGetDetailData for '" + appName +
                     "' (detail='" + detailName + "', " +
                     "type='" + type + "', " +
                     "value='" + value + "', " +
                     "limitResultSet='" + limitResultSet + "')");
 
-        if (isDateBefore(getDaysBefore(d, numDays), getReportsCutoff()))
+        if (isDateBefore(getDaysBefore(d, numDays), getReportsCutoff())) {
+            logger.warn("Date " + getDaysBefore(d, numDays) + " is before " + getReportsCutoff());
             return null;
+        }
 
         List<List<Object>> rv = new ArrayList<List<Object>>();
 
@@ -281,7 +287,7 @@ class ReportingManagerImpl implements ReportingManager
                     logger.info("** sql='" + sql + "'");
                     Connection conn = null;
                     try {
-                        conn = UvmContextFactory.context().getDBConnection();
+                        conn = node.getDbConnection();
                         Statement stmt = conn.createStatement();
                         if (limitResultSet) {
                             stmt.setMaxRows(1000);
@@ -433,12 +439,10 @@ class ReportingManagerImpl implements ReportingManager
     {
         List<String> appNames = getAppNames(dirName + "/../", type);
 
-        ToolboxManagerImpl tm = ToolboxManagerImpl.toolboxManager();
-
         Map<Integer, Application> m = new TreeMap<Integer, Application>();
 
         for (String s : appNames) {
-            PackageDesc md = tm.packageDesc(s);
+            PackageDesc md = UvmContextFactory.context().toolboxManager().packageDesc(s);
 
             int pos;
 

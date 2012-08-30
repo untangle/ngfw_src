@@ -1,11 +1,13 @@
 /**
  * $Id$
  */
-package com.untangle.uvm.util;
+package com.untangle.node.reporting;
 
 import java.util.Map;
 
 import com.untangle.uvm.UvmContextFactory;
+import com.untangle.uvm.util.OutsideValve;
+import com.untangle.uvm.util.I18nUtil;
 
 public class ReportingOutsideAccessValve extends OutsideValve
 {

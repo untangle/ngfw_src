@@ -1,6 +1,0 @@
-#! /bin/bash
-# This file automatically created - do not modify
-
-/usr/bin/ucli -q -t 30 register untangle-node-test 2>/dev/null || true
-
-exit 0

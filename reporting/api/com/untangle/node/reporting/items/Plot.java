@@ -1,7 +1,7 @@
 /**
  * $Id: Plot.java,v 1.00 2012/01/08 18:05:02 dmorris Exp $
  */
-package com.untangle.uvm.reports;
+package com.untangle.node.reporting.items;
 
 import java.awt.Font;
 import java.io.IOException;
