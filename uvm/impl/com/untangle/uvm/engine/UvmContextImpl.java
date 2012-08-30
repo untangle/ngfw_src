@@ -732,6 +732,16 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
         return this.alertManager;
     }
     
+    public java.sql.ResultSet getEventsResultSet( final String query, final Long policyId, final int limit )
+    {
+        if (this.reportingNode == null)
+            getReportingNode();
+        if (this.reportingNode == null)
+            return null;
+
+        return this.reportingNode.getEventsResultSet( query, policyId, limit );
+    }
+
     public ArrayList getEvents( final String query, final Long policyId, final int limit )
     {
         if (this.reportingNode == null)

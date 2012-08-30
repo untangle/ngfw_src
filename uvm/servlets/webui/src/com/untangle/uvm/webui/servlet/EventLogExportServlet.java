@@ -9,7 +9,9 @@ import java.text.CharacterIterator;
 import java.text.StringCharacterIterator;
 import java.util.List;
 import java.util.Map;
-import java.util.ArrayList;
+import java.util.Arrays;
+import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -57,55 +59,43 @@ public class EventLogExportServlet extends HttpServlet
             return;
         }
 
-        String[] columnList = columnListStr.split(",");
         Long policyId = Long.parseLong(policyIdStr);
-        
         logger.info("Export CSV( name:" + name + " query: " + query + " policyId: " + policyId + " columnList: " + columnListStr + ")");
 
-        ArrayList results = UvmContextFactory.context().getEvents( query, policyId, MAX_RESULTS );
+        ResultSet resultSet = UvmContextFactory.context().getEventsResultSet( query, policyId, MAX_RESULTS );
         
         // Write content type and also length (determined via byte array).
         resp.setCharacterEncoding(CHARACTER_ENCODING);
         resp.setHeader("Content-Type","text/csv");
         resp.setHeader("Content-Disposition","attachment; filename="+name+".csv");
+        // Write the header
+        resp.getWriter().write(columnListStr + "\n");
+
+        if (resultSet == null)
+            return;
 
         try {
-            // Write the header
-            resp.getWriter().write(columnListStr + "\n");
+            ResultSetMetaData metadata = resultSet.getMetaData();
+            int numColumns = metadata.getColumnCount();
+            String[] columnList = columnListStr.split(",");
 
-            // Write each row
-            if (results != null) {
-                for (Object resultO : results) {
-                    JSONObject result = (JSONObject)resultO;
-                    int i = 0;
-
-                    // Write each cell of each row
-                    for (String column : columnList) {
-                        if (i != 0)
-                            resp.getWriter().write(",");
-
-                        Object o = null;
-                        try {
-                            o = result.get(column);
-                        } catch (org.json.JSONException e) {
-                            // ignore "not found" columns
-                            if (e.getMessage() != null && e.getMessage().contains("not found")) {
-                                logger.debug("ignoring missing column " + column);
-                            } else {
-                                throw e;
-                            }
-                        }
-                        
-                        String oStr = "";
-                        if (o != null)
-                            oStr = o.toString().replaceAll(",","");
-                    
-                        resp.getWriter().write(oStr);
-                        i++;
-                    }
+            // Write each row 
+            while (resultSet.next()) {
+                // build JSON object from columns
+                int writtenColumnCount = 0;
                 
-                    resp.getWriter().write("\n");
+                for ( String columnName : columnList ) {
+                    Object o = resultSet.getObject( columnName );
+                    String oStr = "";
+                    if (o != null)
+                        oStr = o.toString().replaceAll(",","");
+                    
+                    if (writtenColumnCount != 0)
+                        resp.getWriter().write(",");
+                    resp.getWriter().write(oStr);
+                    writtenColumnCount++;
                 }
+                resp.getWriter().write("\n");
             }
         } catch (Exception e) {
             logger.warn("Failed to export CSV.",e);
