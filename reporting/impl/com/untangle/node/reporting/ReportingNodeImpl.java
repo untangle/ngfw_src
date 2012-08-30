@@ -120,6 +120,8 @@ public class ReportingNodeImpl extends NodeBase implements ReportingNode, Report
         boolean tryAgain = false;
         int tries = 0;
 
+        flushEvents();
+        
         synchronized (this) {
             do {
                 tries++;

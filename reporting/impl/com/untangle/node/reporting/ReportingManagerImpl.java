@@ -521,7 +521,6 @@ class ReportingManagerImpl implements ReportingManager
 
         SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
 
-        //String cmdStr = "generate_sub_report," + appName + "," + df.format(d) + "," + numDays + "," + host + "," + user + "," + email + "\n";
         String cmdStr = SUBREPORT_SCRIPT +
             " --node=\"" + appName + "\" " +
             " --end-date=\"" + df.format(d) + "\" " +
@@ -545,58 +544,6 @@ class ReportingManagerImpl implements ReportingManager
         }
 
         return true;
-//         Socket s = null;
-//         Writer w = null;
-//         BufferedReader r = null;
-
-//         boolean rv = false;
-
-//         try {
-//             s = new Socket("localhost", 55204);
-//             w = new OutputStreamWriter(s.getOutputStream());
-//             InputStream is = s.getInputStream();
-//             r = new BufferedReader(new InputStreamReader(is));
-
-//             w.write(cmdStr);
-//             w.flush();
-//             String l = r.readLine();
-
-//             if (l.equals("DONE")) {
-//                 rv = true;
-//             } else {
-//                 logger.warn("could not generate graph: '" + cmdStr
-//                             + "' result: '" + l + "'");
-//                 rv = false;
-//             }
-//         } catch (IOException exn) {
-//             logger.warn("could not generate report: '" + cmdStr + "'", exn);
-//         } finally {
-//             if (null != r) {
-//                 try {
-//                     r.close();
-//                 } catch (IOException exn) {
-//                     logger.warn("could not close reader", exn);
-//                 }
-//             }
-
-//             if (null != w) {
-//                 try {
-//                     w.close();
-//                 } catch (IOException exn) {
-//                     logger.warn("could not close writer", exn);
-//                 }
-//             }
-
-//             if (null != s) {
-//                 try {
-//                     s.close();
-//                 } catch (IOException exn) {
-//                     logger.warn("could not close writer", exn);
-//                 }
-//             }
-//         }
-          
-//        return rv;
     }
 
     private Date getDaysBefore(Date d, int numDays)
