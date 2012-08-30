@@ -58,9 +58,6 @@ if [ -x "/etc/init.d/untangle-vm" ]; then
     # (remove to allow replacement when upgrading from 5.2 to 5.3)
     update-rc.d -f untangle-vm remove
     update-rc.d untangle-vm defaults 95 5 > /dev/null
-    update-rc.d -f untangle-reports remove
-    update-rc.d untangle-reports defaults 96 5 > /dev/null
-    ourInit untangle-reports restart
 fi
 
 ## Nuke the work directory for the servlets.
@@ -95,17 +92,14 @@ fi
 rm -rf /usr/share/untangle/autodump
 rm -rf /usr/share/untangle/db
 rm -rf /usr/share/untangle/pycli/uvm
-rm -f /var/log/uvm/report.log*
 
 # 9.3 upgrade - remove kav conversion cron job
 rm -f /var/spool/cron/atjobs/* 
 if [ -x "/etc/init.d/atd" ]; then
     ourInit atd restart
 fi
-rm -f /etc/cron.d/untangle-reports-incremental
 rm -f /var/log/uvm/schema*
 rm -f /var/log/uvm/iptables*
-rm -f /usr/lib/python2.5/reports/node/untangle_node_template*
 rm -f /usr/share/untangle/conf/openvpn/packet-filter-rules
 find /usr/share/untangle/settings -name '*.tmp' -exec rm -rf {} \;
 

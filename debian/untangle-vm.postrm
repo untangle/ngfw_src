@@ -11,8 +11,6 @@ fi
 if [ "$1" = "purge" ] ; then
     rm -f /etc/init.d/untangle-vm
     update-rc.d untangle-vm remove > /dev/null
-    rm -f /etc/init.d/untangle-reports
-    update-rc.d untangle-reports remove > /dev/null
 fi
 
 exit 0

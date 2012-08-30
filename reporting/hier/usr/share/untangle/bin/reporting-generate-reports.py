@@ -1,4 +1,5 @@
 #! /usr/bin/env python 
+# $Id: reporting-generate-reports.py,v 1.00 2012/08/30 15:24:12 dmorris Exp $
 
 import getopt, logging, mx, os, os.path, re, sys, tempfile, time, shutil, datetime
 from subprocess import Popen, PIPE

@@ -4,17 +4,18 @@
 
 touch /etc/untangle/monit-to-restart
 
-# remove obsolete files
+# 9.3 remove obsolete files
 rm -fr /usr/share/untangle/web/reports/current
 rm -f /usr/lib/python2.5/reports/node/untangle_node_template*
 rm -fr /usr/share/untangle/web/reports/200[6-9]*
 rm -f /etc/cron.d/untangle-reports-incremental
 rm -f /var/log/uvm/report.log*
 
-if [ -x "/etc/init.d/untangle-reports" ]; then
+# 9.4 remove obsolete server monit file
+rm -f /etc/untangle/monit.d/untangle-reports_all.conf
+if [ -x /etc/init.d/untangle-reports ] ; then
     update-rc.d -f untangle-reports remove
-    update-rc.d untangle-reports defaults 96 5 > /dev/null
-    ourInit untangle-reports restart
+    rm -f /etc/init.d/untangle-reports 
 fi
 
 exit 0

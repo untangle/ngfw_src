@@ -37,6 +37,7 @@ import org.xml.sax.helpers.XMLReaderFactory;
 
 import com.untangle.uvm.UvmContext;
 import com.untangle.uvm.UvmContextFactory;
+import com.untangle.uvm.ExecManagerResult;
 import com.untangle.uvm.node.Node;
 import com.untangle.uvm.node.NodeManager;
 import com.untangle.uvm.node.NodeSettings;
@@ -70,6 +71,7 @@ class ReportingManagerImpl implements ReportingManager
     private static final Logger logger = Logger.getLogger(ReportingManagerImpl.class);
 
     private static final String UVM_REPORTS_DATA = System.getProperty("uvm.web.dir") + "/reports/data";
+    private static final String SUBREPORT_SCRIPT = System.getProperty("uvm.bin.dir") + "/reporting-generate-subreport.py";
 
     private static final File REPORTS_DIR = new File(UVM_REPORTS_DATA);
     private static final String DATE_FORMAT = "yyyy-MM-dd";
@@ -519,60 +521,82 @@ class ReportingManagerImpl implements ReportingManager
 
         SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
 
-        String cmdStr = "generate_sub_report," + appName + "," + df.format(d) + "," + numDays + "," + host + "," + user + "," + email + "\n";
+        //String cmdStr = "generate_sub_report," + appName + "," + df.format(d) + "," + numDays + "," + host + "," + user + "," + email + "\n";
+        String cmdStr = SUBREPORT_SCRIPT +
+            " --node=\"" + appName + "\" " +
+            " --end-date=\"" + df.format(d) + "\" " +
+            " --report-days=\"" + numDays + "\" " +
+            " --host=\"" + host + "\" " +
+            " --user=\"" + user + "\" " +
+            " --email=\"" + email + "\"";
+        
+        ExecManagerResult result = UvmContextFactory.context().execManager().exec(cmdStr);
 
-        Socket s = null;
-        Writer w = null;
-        BufferedReader r = null;
+        if (result.getResult() != 0) {
+            logger.warn("Failed to generate subreport: \"" + cmdStr + "\" -> "  + result.getResult());
+            try {
+                String lines[] = result.getOutput().split("\\r?\\n");
+                logger.warn("Creating Schema: ");
+                for ( String line : lines )
+                    logger.warn("Failed to generate subreport: " + line);
+            } catch (Exception e) {}
 
-        boolean rv = false;
-
-        try {
-            s = new Socket("localhost", 55204);
-            w = new OutputStreamWriter(s.getOutputStream());
-            InputStream is = s.getInputStream();
-            r = new BufferedReader(new InputStreamReader(is));
-
-            w.write(cmdStr);
-            w.flush();
-            String l = r.readLine();
-
-            if (l.equals("DONE")) {
-                rv = true;
-            } else {
-                logger.warn("could not generate graph: '" + cmdStr
-                            + "' result: '" + l + "'");
-                rv = false;
-            }
-        } catch (IOException exn) {
-            logger.warn("could not generate report: '" + cmdStr + "'", exn);
-        } finally {
-            if (null != r) {
-                try {
-                    r.close();
-                } catch (IOException exn) {
-                    logger.warn("could not close reader", exn);
-                }
-            }
-
-            if (null != w) {
-                try {
-                    w.close();
-                } catch (IOException exn) {
-                    logger.warn("could not close writer", exn);
-                }
-            }
-
-            if (null != s) {
-                try {
-                    s.close();
-                } catch (IOException exn) {
-                    logger.warn("could not close writer", exn);
-                }
-            }
+            throw new RuntimeException("Failed to generate subreport: " + result.getOutput());
         }
 
-        return rv;
+        return true;
+//         Socket s = null;
+//         Writer w = null;
+//         BufferedReader r = null;
+
+//         boolean rv = false;
+
+//         try {
+//             s = new Socket("localhost", 55204);
+//             w = new OutputStreamWriter(s.getOutputStream());
+//             InputStream is = s.getInputStream();
+//             r = new BufferedReader(new InputStreamReader(is));
+
+//             w.write(cmdStr);
+//             w.flush();
+//             String l = r.readLine();
+
+//             if (l.equals("DONE")) {
+//                 rv = true;
+//             } else {
+//                 logger.warn("could not generate graph: '" + cmdStr
+//                             + "' result: '" + l + "'");
+//                 rv = false;
+//             }
+//         } catch (IOException exn) {
+//             logger.warn("could not generate report: '" + cmdStr + "'", exn);
+//         } finally {
+//             if (null != r) {
+//                 try {
+//                     r.close();
+//                 } catch (IOException exn) {
+//                     logger.warn("could not close reader", exn);
+//                 }
+//             }
+
+//             if (null != w) {
+//                 try {
+//                     w.close();
+//                 } catch (IOException exn) {
+//                     logger.warn("could not close writer", exn);
+//                 }
+//             }
+
+//             if (null != s) {
+//                 try {
+//                     s.close();
+//                 } catch (IOException exn) {
+//                     logger.warn("could not close writer", exn);
+//                 }
+//             }
+//         }
+          
+//        return rv;
     }
 
     private Date getDaysBefore(Date d, int numDays)
