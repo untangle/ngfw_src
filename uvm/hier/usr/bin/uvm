@@ -226,7 +226,7 @@ def monitor_uvm(pid):
 def needToRestart(pid): 
     
     # If the untangle-vm is having frequent CMF GC failures, kill it
-    p = os.popen('tail -50 %s | grep -ci "concurrent mode failure"' % uvm_gc_log);
+    p = os.popen('tail -100 %s | grep -ci "concurrent mode failure"' % uvm_gc_log);
     output = p.readline().rstrip();
     cmf_count = int(output);
     if (cmf_count > 4):
@@ -239,13 +239,6 @@ def needToRestart(pid):
     fatal_count = int(output);
     if (fatal_count > 1):
         debug("*** Fatal Error in console.log (%i)" % (fatal_count));
-        return True;
-
-    # If the untangle-vm garbage collection failed, kill it
-    p = os.popen('tail -50 %s | grep -i "promotion failed"' % uvm_gc_log);
-    output = p.readline().rstrip();
-    if not (output == ""):
-        debug("*** Promotion failed \"%s\"" % output);
         return True;
 
     # check Tomcat port is correct (8009 is correct, 8010-8019 is NOT correct)
