@@ -68,13 +68,8 @@ def pkg_installed(pkgname):
 def install_pkg(pkgname):
      os.system("apt-get install --yes %s" % pkgname)
 
-# utility for cmd
-def ssh_enable():
-     global ssh_process
-     global ssh_port
-     if ssh_process != None:
-          return "SSH already available at %s on port %i" % (UNTANGLE_SSH_HOST, ssh_port)
-
+# prepare the server for connection to supssh
+def prep_ssh():
      if not pkg_installed("untangle-support-keyring"):
           install_pkg("untangle-support-keyring")
      if not pkg_installed("untangle-openssh-server"):
@@ -107,14 +102,37 @@ def ssh_enable():
      #f.close()
      #system('chmod 600 /tmp/pyconnector/key.dsa.pub')
 
+# utility for cmd
+def ssh_enable(gui=False):
+     global ssh_process
+     global ssh_port
+     if ssh_process != None:
+          return "SSH already available at %s on port %i" % (UNTANGLE_SSH_HOST, ssh_port)
+
+     prep_ssh()
+
      ssh_port = random.randint(10000,15000)
-     cmd_str = "ssh -p 22 -v -N -n -R '*:%s:localhost:2222' -o StrictHostKeyChecking=no -i /tmp/pyconnector/.key.dsa %s@%s < /dev/null" % (ssh_port, UNTANGLE_SSH_USER, UNTANGLE_SSH_HOST)
+     gui_port = random.randint(10000,15000)
+     if gui:
+          gui_cmd = " -R '*:%s:localhost:80' " % str(gui_port)
+     else:
+          gui_cmd = ""
+
+     cmd_str = "ssh -p 22 -v -N -n -R '*:%s:localhost:2222' %s -o StrictHostKeyChecking=no -i /tmp/pyconnector/.key.dsa %s@%s < /dev/null" % (ssh_port, gui_cmd, UNTANGLE_SSH_USER, UNTANGLE_SSH_HOST)
      debug("Starting SSH: \"%s\"" % cmd_str)
      
      args = shlex.split(cmd_str)
      ssh_process = subprocess.Popen(args, stdin=None, stdout=None, stderr=None)
+     time.sleep(2)
+     exit_code = ssh_process.poll()
+     if ssh_process.poll() != None:
+          ssh_process = None
+          return "SSH exited prematurely with %s." % str(exit_code)
 
-     return ("SSH available at %s on port %i" % (UNTANGLE_SSH_HOST, ssh_port))
+     if gui:
+          return ("Connected. SSH available at %s on port %i. GUI available at http://%s:%i/." % (UNTANGLE_SSH_HOST, ssh_port, UNTANGLE_SSH_HOST, gui_port))
+     else:
+          return ("Connected. SSH available at %s on port %i. " % (UNTANGLE_SSH_HOST, ssh_port))
 
 # utility for cmd
 def ssh_disable():
