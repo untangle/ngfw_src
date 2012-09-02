@@ -11,7 +11,7 @@ import getopt
 import datetime
 import random
 import signal
-#import base64
+import base64
 import re
 
 #import ssl # We must use stunnel to do the SSL until python 2.6 or greater
@@ -34,6 +34,7 @@ uvm = None
 cmd_server = "cmd.untangle.com"
 command_socket = None
 command_socket_file = None
+debug_level = 2
 
 def usage():
      print """\
@@ -50,9 +51,11 @@ def system(cmd_str):
      (stdout, stderr) = proc.communicate()
      return stdout + stderr
 
-def debug(str):
-     print "%s: %s" % (datetime.datetime.now().strftime("%Y-%m-%d %H:%M"), str)
-     sys.stdout.flush()
+def debug(str, level=1):
+     global debug_level
+     if level <= debug_level:
+          print "%s: %s" % (datetime.datetime.now().strftime("%Y-%m-%d %H:%M"), str)
+          sys.stdout.flush()
 
 def write_cert_file():
      global CERTS_FILE
@@ -129,17 +132,18 @@ def connect():
      command_socket_file = command_socket.makefile("rb")
 
 def run_cmd(cmd_str):
-   debug("Received: %s" % cmd_str.strip())
-   global uvm
-   if uvm == None:
-      uvm = Uvm().getUvmContext( hostname="127.0.0.1", username=None, password=None, timeout=30 )
-   try:
-      result = eval(cmd_str.strip())
-      return str(result)
-   except Exception,e:
-      uvm = None
-      debug("Exception: %s" % e)
-      return "Error (%s)" % type(e)
+     debug("Command Received.")
+     debug("Received: %s" % cmd_str.strip(), 2)
+     global uvm
+     if uvm == None:
+          uvm = Uvm().getUvmContext( hostname="127.0.0.1", username=None, password=None, timeout=30 )
+     try:
+          result = eval(cmd_str.strip())
+          return str(result)
+     except Exception,e:
+          uvm = None
+          debug("Exception: %s" % e)
+          return "Error (%s)" % type(e)
 
 def read_from_cmd():
      global command_socket, command_socket_file
