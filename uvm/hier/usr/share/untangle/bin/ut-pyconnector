@@ -34,7 +34,7 @@ uvm = None
 cmd_server = "cmd.untangle.com"
 command_socket = None
 command_socket_file = None
-debug_level = 2
+debug_level = 1
 
 def usage():
      print """\
