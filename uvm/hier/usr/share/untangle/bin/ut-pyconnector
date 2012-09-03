@@ -23,8 +23,6 @@ from uvm import Uvm
 # 
 
 UNTANGLE_CMD_PORTS = [443,80,4443,587,993,995,8080,53,25]
-UNTANGLE_SSH_HOST = "supssh.untangle.com"
-UNTANGLE_SSH_USER = "pyconnector"
 RETRY_TIME_LONG = 60
 RETRY_TIME_SHORT = 10
 STUNNEL_LOCAL_PORT = 808
@@ -41,8 +39,9 @@ def usage():
 usage: %s [options]
 Options:
   -h | --help                   help - print this message
-  -l <log>    | --log=<log>        output to specified log instead of stdout/stderr
-  -s <server> | --server=<server>  specify a cmd server (default: cmd.untangle.com)
+  -l <log>       | --log=<log>          output to specified log instead of stdout/stderr
+  -d <debug_lvl> | --debug-level=<0-2>  debug verbosite level
+  -s <server>    | --server=<server>    specify a cmd server (default: cmd.untangle.com)
 """ % sys.argv[0]
 
 def system(cmd_str):
@@ -205,7 +204,7 @@ def check_pid_file():
 
 def parse_args():
      try:
-          opts, args = getopt.getopt(sys.argv[1:], "hl:s:", ['help', 'log=', 'server=' ])
+          opts, args = getopt.getopt(sys.argv[1:], "hl:s:d:", ['help', 'log=', 'server=', 'debug-level=' ])
      except getopt.GetoptError, err:
           print str(err)
           usage()
@@ -223,6 +222,9 @@ def parse_args():
           elif k == '-s' or k == '--server':
                global cmd_server
                cmd_server = v
+          elif k == '-d' or k == '--debug-level':
+               global debug_level
+               debug_level = int(v)
 
 #
 # Main
