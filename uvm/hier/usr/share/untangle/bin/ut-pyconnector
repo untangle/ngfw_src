@@ -18,18 +18,14 @@ import re
 from uvm import Manager
 from uvm import Uvm
 
-# TODO:
-# FIXME add fall back to IP if DNS doesn't resolve for cmd.untangle.com and supportssh.untangle.com
-# 
-
-UNTANGLE_CMD_PORTS = [443,80,4443,587,993,995,8080,53,25]
+UNTANGLE_CMD_PORTS   = [443,80,4443,587,993,995,8080,53,25]
+UNTANGLE_CMD_SERVERS = ["cmd.untangle.com", '74.123.28.85']
 RETRY_TIME_LONG = 60
 RETRY_TIME_SHORT = 10
 STUNNEL_LOCAL_PORT = 808
 CERTS_FILE = '/tmp/pyconnector/certs.pem'
 
 uvm = None
-cmd_server = "cmd.untangle.com"
 command_socket = None
 command_socket_file = None
 debug_level = 1
@@ -100,21 +96,22 @@ def write_cert_file():
 def connect():
      global command_socket
      global command_socket_file
-     global cmd_server
+     global UNTANGLE_CMD_SERVERS
      global UNTANGLE_CMD_PORTS
      if command_socket != None:
           return
 
-     debug("Connecting to %s:%i..." % (cmd_server,UNTANGLE_CMD_PORTS[0]))
+     debug("Connecting to %s:%i..." % (UNTANGLE_CMD_SERVERS[0],UNTANGLE_CMD_PORTS[0]))
 
      # start stunnel (python2.6 will not need this)
      write_cert_file()
-     cmd_str = "sudo killall -9 stunnel4 >/dev/null 2>&1 ; sudo stunnel -c -d localhost:%i -r %s:%i -A %s -v 3 -D 6" % (STUNNEL_LOCAL_PORT, cmd_server, UNTANGLE_CMD_PORTS[0], CERTS_FILE)
+     cmd_str = "sudo killall -9 stunnel4 >/dev/null 2>&1 ; sudo stunnel -c -d localhost:%i -r %s:%i -A %s -v 3 -D 6" % (STUNNEL_LOCAL_PORT, UNTANGLE_CMD_SERVERS[0], UNTANGLE_CMD_PORTS[0], CERTS_FILE)
      #debug(cmd_str)
      os.system(cmd_str)
    
-     # rotatet the port list so it tries a different port next time
-     UNTANGLE_CMD_PORTS = UNTANGLE_CMD_PORTS[1:] + UNTANGLE_CMD_PORTS[:1]
+     # rotate the port list so it tries a different port next time
+     UNTANGLE_CMD_SERVERS = UNTANGLE_CMD_SERVERS[1:] + UNTANGLE_CMD_SERVERS[:1]
+     UNTANGLE_CMD_PORTS   = UNTANGLE_CMD_PORTS[1:]   + UNTANGLE_CMD_PORTS[:1]
 
      try:
           command_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -209,6 +206,8 @@ def parse_args():
           print str(err)
           usage()
           sys.exit(2)
+     
+     cmd_servers = []
 
      for opt in opts:
           k, v = opt
@@ -220,11 +219,15 @@ def parse_args():
                sys.stdout = logfile
                sys.stderr = logfile
           elif k == '-s' or k == '--server':
-               global cmd_server
-               cmd_server = v
+               cmd_servers.append(v)
           elif k == '-d' or k == '--debug-level':
                global debug_level
                debug_level = int(v)
+
+     if cmd_servers != []:
+          global UNTANGLE_CMD_SERVERS
+          UNTANGLE_CMD_SERVERS = cmd_servers
+
 
 #
 # Main
