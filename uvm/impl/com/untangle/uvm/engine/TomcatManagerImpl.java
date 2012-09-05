@@ -53,7 +53,7 @@ public class TomcatManagerImpl implements TomcatManager
 
     private String keystoreFile = "conf/keystore";
     private String keystorePass = "changeit";
-    private String keyAlias = "tomcat";
+    private String keyAlias     = "tomcat";
 
 
     // constructors -----------------------------------------------------------
@@ -153,13 +153,6 @@ public class TomcatManagerImpl implements TomcatManager
         this.keystorePass = ksPass;
         this.keyAlias = ksAlias;
     }
-
-//     public ServletContext loadPortalApp(String urlBase, String rootDir, Realm realm, AuthenticatorBase auth)
-//     {
-//         // Need a large timeout since we handle that ourselves.
-//         WebAppOptions options = new WebAppOptions(false, 24*60);
-//         return loadWebApp(urlBase, rootDir, realm, auth, options);
-//     }
 
     ServletContext loadSystemApp(String urlBase, String rootDir, WebAppOptions options)
     {
@@ -264,7 +257,7 @@ public class TomcatManagerImpl implements TomcatManager
         apacheReload();
     }
 
-    synchronized void startTomcat(int internalHTTPPort, int internalHTTPSPort, int externalHTTPSPort, int internalOpenHTTPSPort) throws Exception
+    synchronized void startTomcat() throws Exception
     {
         Connector jkConnector = new Connector("org.apache.jk.server.JkCoyoteHandler");
         jkConnector.setProperty("port", "8009");
