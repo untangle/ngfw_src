@@ -7,10 +7,13 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.Map;
+import java.util.Collections;
+import java.util.Enumeration;
 
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpServletRequest;
 
 import org.apache.catalina.Valve;
 import org.apache.catalina.connector.Request;
@@ -29,6 +32,7 @@ public abstract class OutsideValve extends ValveBase
 {
     private static final int DEFAULT_HTTP_PORT = 80;
     private static final int SECONDARY_HTTP_PORT = 64156;
+    private static final int INTERNAL_OPEN_HTTPS_PORT = 64157;
 
     private final Logger logger = Logger.getLogger(OutsideValve.class);
 
@@ -103,6 +107,15 @@ public abstract class OutsideValve extends ValveBase
 
         int port = request.getLocalPort();
 
+        //String reqUrl = ((HttpServletRequest)request).getRequestURL().toString();
+        //logger.warn("isAccessAllowed( " + reqUrl + " ) localPort: "  + request.getLocalPort() + " serverPort: " + request.getServerPort() );
+        //logger.warn("isAccessAllowed( " + reqUrl + " ) remotePort: "  + request.getRemotePort() );
+        //Enumeration e = request.getAttributeNames();
+        //for (Object n : Collections.list(e)) {
+        //    String name = (String)n;
+        //    logger.warn("isAccessAllowed( " + reqUrl + " ) attribute: "  + name );
+        //}
+
         /* This is insecure access on port 80 */
         if (port == DEFAULT_HTTP_PORT) 
             return isHttpAccessAllowed;
@@ -112,13 +125,15 @@ public abstract class OutsideValve extends ValveBase
             return true;
         
         /* This is secure access on the internal port */
-        if (port == NetworkUtil.INTERNAL_OPEN_HTTPS_PORT)
+        if (port == INTERNAL_OPEN_HTTPS_PORT)
             return true;
 
         /* This is secure access on the external port */
-        if (port == getSystemSettings().getHttpsPort()) return outsideAccessAllowed;
+        if (port == getSystemSettings().getHttpsPort())
+            return outsideAccessAllowed;
 
-        if (request.getScheme().equals("https")) return outsideAccessAllowed;
+        if (request.getScheme().equals("https"))
+            return outsideAccessAllowed;
 
         return false;
     }

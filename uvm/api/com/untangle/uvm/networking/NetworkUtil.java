@@ -69,42 +69,12 @@ public class NetworkUtil
     /* Default HTTPS port */
     public static final int    DEF_HTTPS_PORT = 443;
 
-    /* Default setting for allowing internal access via http */
-    public static final boolean DEF_IS_INSIDE_INSECURE_EN = true;
-
-    /* Default setting for allowing external access via https */  
-    public static final boolean DEF_IS_OUTSIDE_EN         = true;
-
-    /* Default setting for whether or not external access is restricted */
-    public static final boolean DEF_IS_OUTSIDE_RESTRICTED = false;
-
-    /* Default setting for remote support */
-    public static final boolean DEF_IS_SSH_EN             = false;
-
-    /* Default setting for sending exception reports */
-    public static final boolean DEF_IS_EXCEPTION_REPORTING_EN = false;
-
-    /* Default setting for TCP Window scaling */
-    public static final boolean DEF_IS_TCP_WIN_EN         = false;
-
-    /* Default setting for whether public administration is allowed */
-    public static final boolean DEF_OUTSIDE_ADMINISTRATION = false;
-
-    /* Default setting for whether users can retrieve their quarantine
-     * from the internet. */
-    public static final boolean DEF_OUTSIDE_QUARANTINE = true;
-    
-    /* Default setting for whether administrators can access reports from the internet. */
-    public static final boolean DEF_OUTSIDE_REPORTING = false;
-
     /* The list of private networks, this is defined by RFC 1918 */
     private static final String PRIVATE_NETWORK_STRINGS[] =
     {
         "192.168.0.0/16", "10.0.0.0/8", "172.16.0.0/12"
     };
 
-    /* ports 9500 -> 9650 are redirect ports, 10000 -> 60000 are reserved for NAT */
-    public static final int INTERNAL_OPEN_HTTPS_PORT = 64157;
 
     /* XXX This should be final, but there is a bug in javac that won't let it be. */
     

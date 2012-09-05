@@ -31,11 +31,6 @@ class AppServerManagerImpl implements AppServerManager
 {
     private static final String APACHE_PEM_FILE = "/etc/apache2/ssl/apache.pem";
 
-    private static final int DEFAULT_HTTP_PORT = 80;
-    private static final int DEFAULT_HTTPS_PORT = 443;
-
-    private final int externalHttpsPort;
-
     private final Logger logger = Logger.getLogger(getClass());
 
     private final UvmContextImpl uvmContext;
@@ -45,15 +40,6 @@ class AppServerManagerImpl implements AppServerManager
     {
         this.uvmContext = uvmContext;
         this.tomcatManager = (TomcatManagerImpl) uvmContext.tomcatManager();
-
-        int p = uvmContext.systemManager().getSettings().getHttpsPort();
-
-        /* Illegal range */
-        if (p <= 0 || p >= 0xFFFF || p == 80 ) {
-            p = DEFAULT_HTTPS_PORT;
-        }
-
-        this.externalHttpsPort = p;
     }
 
     public void postInit()
@@ -61,10 +47,7 @@ class AppServerManagerImpl implements AppServerManager
         UvmRepositorySelector.instance().setLoggingUvm();
 
         try {
-            tomcatManager.startTomcat(DEFAULT_HTTP_PORT,
-                                      DEFAULT_HTTPS_PORT,
-                                      externalHttpsPort,
-                                      NetworkUtil.INTERNAL_OPEN_HTTPS_PORT);
+            tomcatManager.startTomcat();
         } catch (Exception exn) {
             logger.warn("could not start Tomcat", exn);
         }
