@@ -10,8 +10,7 @@ class ToolboxManager(Manager):
         self.doAptTailLog( key )
 
     def api_installandinstantiate(self,packageName):
-        policy = self.__uvmContext.policyManager().getDefaultPolicy()
-        key = self.__toolbox.installAndInstantiate(packageName, policy)
+        key = self.__toolbox.installAndInstantiate(packageName, 1L)
         self.doAptTailLog( key )
 
     def api_uninstall(self, packageName):
