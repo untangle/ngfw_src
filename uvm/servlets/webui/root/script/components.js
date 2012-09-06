@@ -2654,7 +2654,7 @@ Ext.define("Ung.FaceplateMetric", {
         }
         if(testMode) {
             if(!this.maxRandomNumber) {
-                this.maxRandomNumber=Math.floor((Math.random()*200))
+                this.maxRandomNumber=Math.floor((Math.random()*200));
             }
             //Just for test generate random data
             return this.currentSessionsMetricIndex>=0?Math.floor((Math.random()*this.maxRandomNumber)):0;
