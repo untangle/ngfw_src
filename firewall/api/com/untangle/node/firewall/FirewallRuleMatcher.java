@@ -201,8 +201,6 @@ public class FirewallRuleMatcher implements JSONString, Serializable
         case USERNAME:
             if ("none".equals(value) && username == null)
                 return true;
-            if (username == null)
-                return false;
             if (this.userMatcher.isMatch(username))
                 return true;
             return false;

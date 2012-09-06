@@ -45,7 +45,7 @@ public class UserMatcher
     private String regexValue = null;
 
     /**
-     * if this port matcher is a list of port matchers, this list stores the children
+     * if this user matcher is a list of user matchers, this list stores the children
      */
     private LinkedList<UserMatcher> children = null;
     
@@ -77,12 +77,10 @@ public class UserMatcher
             return false;
             
         case AUTHENTICATED:
-            /* XXX this was kept for backwards compatability */
-            return (value != null); 
+            return (value != null && !"".equals(value)); 
 
         case UNAUTHENTICATED:
-            /* XXX this was kept for backwards compatability */
-            return (value == null); 
+            return ("".equals(value) || value == null); 
 
         case LIST:
             for (UserMatcher child : this.children) {
@@ -92,7 +90,7 @@ public class UserMatcher
             return false;
 
         default:
-            logger.warn("Unknown port matcher type: " + this.type);
+            logger.warn("Unknown user matcher type: " + this.type);
             return false;
             
         }
@@ -123,7 +121,7 @@ public class UserMatcher
         this.matcher = matcher;
 
         /**
-         * If it contains a comma it must be a list of port matchers
+         * If it contains a comma it must be a list of user matchers
          * if so, go ahead and initialize the children
          */
         if (matcher.contains(MARKER_SEPERATOR)) {
@@ -154,7 +152,7 @@ public class UserMatcher
             return;
         }
         if (MARKER_AUTHENTICATED.equals(matcher)) {
-            this.type = UserMatcherType.UNAUTHENTICATED;
+            this.type = UserMatcherType.AUTHENTICATED;
             return;
         }
         if (MARKER_UNAUTHENTICATED.equals(matcher)) {
