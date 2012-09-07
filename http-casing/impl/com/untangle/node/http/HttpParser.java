@@ -838,7 +838,7 @@ public class HttpParser extends AbstractParser
 
         int b = data.get();
         if (b != c) {
-            logger.info(sessStr + "expected " + b + " bytes, but got " + c + " bytes.");
+            logger.debug(sessStr + "expected " + b + " bytes, but got " + c + " bytes.");
             data.position(data.position() - 1);
             return false;
         } else {
