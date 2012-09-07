@@ -169,15 +169,15 @@ def __get_branding_info():
 
 def __get_url(date):
     url = "unknown.ip"
-    publicUrlMethod = get_node_settings_item('system','publicUrlMethod')
-    httpsPort = get_node_settings_item('system','httpsPort')
+    publicUrlMethod = get_uvm_settings_item('system','publicUrlMethod')
+    httpsPort = get_uvm_settings_item('system','httpsPort')
     if publicUrlMethod == "external":
         url = get_wan_ip() + ":" + httpsPort
     elif publicUrlMethod == "hostname":
         url = os.uname()[1] + ":" + httpsPort
     elif publicUrlMethod == "address_and_port":
-        publicUrlAddress = get_node_settings_item('system','publicUrlAddress')
-        publicUrlPort = get_node_settings_item('system','publicUrlPort')
+        publicUrlAddress = get_uvm_settings_item('system','publicUrlAddress')
+        publicUrlPort = get_uvm_settings_item('system','publicUrlPort')
         url = publicUrlAddress + ":" + publicUrlPort
         
     return 'https://%s/reports?time=%s' % ( url, date.strftime(locale.nl_langinfo(locale.D_FMT)), )
