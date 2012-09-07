@@ -11,7 +11,10 @@ import java.util.HashSet;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 
+import com.untangle.node.token.Header;
+import com.untangle.node.token.Token;
 import com.untangle.node.token.TokenAdaptor;
+import com.untangle.node.http.ReplacementGenerator;
 import com.untangle.uvm.node.IPMaskedAddress;
 import com.untangle.uvm.node.PortRange;
 import com.untangle.uvm.node.NodeMetric;
@@ -22,6 +25,7 @@ import com.untangle.uvm.vnet.PipeSpec;
 import com.untangle.uvm.vnet.SoloPipeSpec;
 import com.untangle.uvm.vnet.Subscription;
 import com.untangle.uvm.vnet.NodeBase;
+import com.untangle.uvm.vnet.NodeTCPSession;
 import com.untangle.uvm.util.I18nUtil;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.UvmContextFactory;
@@ -38,6 +42,7 @@ public class CaptureNodeImpl extends NodeBase implements CaptureNode
     private final PipeSpec[] pipeSpecs = new PipeSpec[] { httpPipe, trafficPipe };
     private final SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
     private final String settingsFile = (System.getProperty("uvm.settings.dir") + "/untangle-node-capture/settings_" + getNodeSettings().getId().toString());
+    private final CaptureReplacementGenerator replacementGenerator;
 
     protected CaptureStatistics statistics;
     protected CaptureSettings settings;
@@ -51,6 +56,7 @@ public class CaptureNodeImpl extends NodeBase implements CaptureNode
     {
         super( nodeSettings, nodeProperties );
 
+        replacementGenerator = new CaptureReplacementGenerator(getNodeSettings());
         statistics = new CaptureStatistics();
 
         this.allEventQuery = new EventLogQuery(I18nUtil.marktr("All Sessions"),
@@ -219,5 +225,11 @@ public class CaptureNodeImpl extends NodeBase implements CaptureNode
                 // to the common apply function
                 applyNodeSettings(readSettings);
             }
+    }
+
+    protected Token[] generateResponse(CaptureBlockDetails block, NodeTCPSession session)
+    {
+        logger.debug("generateResponse");
+        return replacementGenerator.generateResponse(block, session, false);
     }
 }

@@ -1,6 +1,7 @@
 /**
  * $Id: CaptureTrafficHandler.java,v 1.00 2011/12/14 01:02:03 mahotz Exp $
  */
+
 package com.untangle.node.capture; // IMPL
 
 import java.nio.ByteBuffer;
@@ -63,8 +64,8 @@ public class CaptureTrafficHandler extends AbstractEventHandler
     {
         NodeTCPSession sess = event.session();
         CaptureStatus status = (CaptureStatus)sess.attachment();
-        if (sess.getServerPort() == 80) return(ProcessWebRequest(event));
-        if (sess.getServerPort() == 443) return(ProcessWebRequest(event));
+//        if (sess.getServerPort() == 80) return(ProcessWebRequest(event));
+//        if (sess.getServerPort() == 443) return(ProcessWebRequest(event));
         return(super.handleTCPClientChunk(event));
     }
 
@@ -174,7 +175,7 @@ public class CaptureTrafficHandler extends AbstractEventHandler
         if ((top >= 0) && (end >= 0)) status.hostname = new String(orgstr.substring(top + look.length(),end));
 
         logger.debug("METHOD:" + status.method + " HOST:" + status.hostname + " PAGE:" + status.pagename);
-        
+
         String modstr = new String();
         modstr+="HTTP/1.1 302 Moved Temporarily\r\n";
         modstr+="Server: Untangle\r\n";
@@ -183,9 +184,9 @@ public class CaptureTrafficHandler extends AbstractEventHandler
         modstr+="Pragma: no-cache\r\n";
         modstr+="Location: http://172.16.37.1/cpd/index.php?server_name=" + status.hostname + "&method=" + status.method + "&path=" + status.pagename + "\r\n";
         modstr+="\r\n";
-        
+
         logger.debug("REDIRECT=" + modstr);
-        
+
         ByteBuffer modbb = ByteBuffer.wrap(modstr.getBytes(),0,modstr.length());
         buff[0] = modbb;
         if (1 > 0) return(new TCPChunkResult(buff,null,null));

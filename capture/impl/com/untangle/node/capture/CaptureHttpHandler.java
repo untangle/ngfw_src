@@ -8,6 +8,8 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.net.InetAddress;
+import java.net.URI;
 import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
 import java.util.Iterator;
@@ -47,38 +49,43 @@ class CaptureHttpHandler extends HttpStateMachine
     // HttpStateMachine methods -----------------------------------------------
 
     @Override
-    protected RequestLineToken doRequestLine(RequestLineToken requestLine)
-    {
-        logger.debug("doRequestLine");
-        releaseRequest();
-        return requestLine;
-    }
-
-    @Override
     protected Header doRequestHeader(Header requestHeader)
     {
-        logger.debug("doRequestHeader");
+        NodeTCPSession sess = getSession();
+        URI uri = getRequestLine().getRequestUri();
+        String host = uri.getHost();
+
+        if (host == null)
+        {
+            host = requestHeader.getValue("host");
+        }
+
+        if (host == null)
+        {
+            InetAddress clientIp = getSession().getClientAddr();
+            host = clientIp.getHostAddress();
+        }
+
+        host = host.toLowerCase();
+
+        CaptureBlockDetails block = new CaptureBlockDetails(host, uri.toString(), "testing");
+        logger.debug("doRequestHeader HOST:" + host + " URI:" + uri);
+        Token[] response = node.generateResponse(block, sess);
+        blockRequest(response);
         return requestHeader;
     }
 
     @Override
-    protected Chunk doRequestBody(Chunk chunk)
+    protected Chunk doRequestBody(Chunk chunk) throws TokenException
     {
         logger.debug("doRequestBody");
         return chunk;
     }
 
     @Override
-    protected void doRequestBodyEnd()
+    protected void doRequestBodyEnd() throws TokenException
     {
         logger.debug("doRequestBodyEnd");
-    }
-
-    @Override
-    protected StatusLine doStatusLine(StatusLine statusLine)
-    {
-        logger.debug("doStatusLine");
-        return statusLine;
     }
 
     @Override
@@ -89,17 +96,30 @@ class CaptureHttpHandler extends HttpStateMachine
     }
 
     @Override
-    protected Chunk doResponseBody(Chunk chunk) throws TokenException
+    protected Chunk doResponseBody( Chunk chunk ) throws TokenException
     {
         logger.debug("doResponseBody");
-        releaseResponse();
-        return(chunk);
+        return chunk;
     }
 
     @Override
-    protected void doResponseBodyEnd()
+    protected void doResponseBodyEnd( ) throws TokenException
     {
-        logger.debug("doResponseBodyEnd()");
+        logger.debug("doResponseBodyEnd");
+    }
+
+    @Override
+    protected RequestLineToken doRequestLine(RequestLineToken requestLine) throws TokenException
+    {
+        logger.debug("doRequestLine");
+        return requestLine;
+    }
+
+    @Override
+    protected StatusLine doStatusLine(StatusLine statusLine) throws TokenException
+    {
+        logger.debug("doStatusLine");
+        return statusLine;
     }
 
     // private methods --------------------------------------------------------
