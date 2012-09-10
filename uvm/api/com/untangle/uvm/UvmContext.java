@@ -84,11 +84,11 @@ public interface UvmContext
     MailSender mailSender();
 
     /**
-     * Get the AppServerManager singleton for this instance
+     * Get the CertificateManager singleton for this instance
      *
      * @return the singleton
      */
-    AppServerManager appServerManager();
+    CertificateManager certificateManager();
 
     /**
      * The LocalDirectory for managing/authenticating users

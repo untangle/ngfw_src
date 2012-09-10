@@ -17,6 +17,7 @@ import com.untangle.uvm.node.DayOfWeekMatcher;
 @SuppressWarnings("serial")
 public class SystemSettings implements Serializable, JSONString
 {
+    private int version = 1;
     private boolean supportEnabled;
     private boolean insideHttpEnabled;
     private boolean outsideHttpsEnabled;
@@ -74,21 +75,27 @@ public class SystemSettings implements Serializable, JSONString
 
     /**
      * Retrieve whether access is allowed to reports from the internet.
+     * DEPRECATED: 9.3.1
+     * This is still here because it is needed by the v1->v2 conversion
      */
-    public boolean getOutsideHttpsReportingEnabled() { return this.outsideHttpsReportingEnabled; }
+    public boolean DEPRECATED_getOutsideHttpsReportingEnabled() { return this.outsideHttpsReportingEnabled; }
     public void setOutsideHttpsReportingEnabled( boolean newValue ) { this.outsideHttpsReportingEnabled = newValue; }
 
     /**
      * Get whether or not external administration is allowed.
+     * DEPRECATED: 9.3.1
+     * This is still here because it is needed by the v1->v2 conversion
      */
-    public boolean getOutsideHttpsAdministrationEnabled() { return this.outsideHttpsAdministrationEnabled; }
+    public boolean DEPRECATED_getOutsideHttpsAdministrationEnabled() { return this.outsideHttpsAdministrationEnabled; }
     public void setOutsideHttpsAdministrationEnabled( boolean newValue ) { this.outsideHttpsAdministrationEnabled = newValue; }
 
     /**
      * Retrieve whether or not to access the user quarantine from the
      * internet is allowed.
+     * DEPRECATED: 9.3.1
+     * This is still here because it is needed by the v1->v2 conversion
      */
-    public boolean getOutsideHttpsQuarantineEnabled() { return this.outsideHttpsQuarantineEnabled; }
+    public boolean DEPRECATED_getOutsideHttpsQuarantineEnabled() { return this.outsideHttpsQuarantineEnabled; }
     public void setOutsideHttpsQuarantineEnabled( boolean newValue ) { this.outsideHttpsQuarantineEnabled = newValue; }
 
     /**
@@ -139,5 +146,13 @@ public class SystemSettings implements Serializable, JSONString
      */
     public int getAutoUpgradeMinute() { return autoUpgradeMinute; }
     public void setAutoUpgradeMinute( int newValue) { this.autoUpgradeMinute = newValue; }
+
+    /**
+     * Get the current settings version
+     */
+    public int getVersion() { return version; }
+    public void setVersion( int newValue) { this.version = newValue; }
+    
+
     
 }

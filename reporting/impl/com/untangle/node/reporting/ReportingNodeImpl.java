@@ -287,7 +287,7 @@ public class ReportingNodeImpl extends NodeBase implements ReportingNode, Report
         this.createSchemas();
 
         /* Start the servlet */
-        UvmContextFactory.context().tomcatManager().loadSystemApp("/reports", "reports", new ReportingOutsideAccessValve());
+        UvmContextFactory.context().tomcatManager().loadServlet("/reports", "reports");
 
     }
 
@@ -308,7 +308,7 @@ public class ReportingNodeImpl extends NodeBase implements ReportingNode, Report
     @Override
     protected void preDestroy() 
     {
-        UvmContextFactory.context().tomcatManager().unloadWebApp("/reports");
+        UvmContextFactory.context().tomcatManager().unloadServlet("/reports");
     }
     
     private ReportingSettings initSettings()

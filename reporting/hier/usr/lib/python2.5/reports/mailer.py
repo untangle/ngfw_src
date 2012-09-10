@@ -172,9 +172,9 @@ def __get_url(date):
     publicUrlMethod = get_uvm_settings_item('system','publicUrlMethod')
     httpsPort = get_uvm_settings_item('system','httpsPort')
     if publicUrlMethod == "external":
-        url = get_wan_ip() + ":" + httpsPort
+        url = get_wan_ip() + ":" + str(httpsPort)
     elif publicUrlMethod == "hostname":
-        url = os.uname()[1] + ":" + httpsPort
+        url = os.uname()[1] + ":" + str(httpsPort)
     elif publicUrlMethod == "address_and_port":
         publicUrlAddress = get_uvm_settings_item('system','publicUrlAddress')
         publicUrlPort = get_uvm_settings_item('system','publicUrlPort')

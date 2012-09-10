@@ -32,7 +32,7 @@ import com.untangle.uvm.LocalDirectory;
 import com.untangle.uvm.BrandingManager;
 import com.untangle.uvm.OemManager;
 import com.untangle.uvm.AlertManager;
-import com.untangle.uvm.AppServerManager;
+import com.untangle.uvm.CertificateManager;
 import com.untangle.uvm.NetworkManager;
 import com.untangle.uvm.ExecManager;
 import com.untangle.uvm.UvmException;
@@ -93,7 +93,7 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
     private ToolboxManagerImpl toolboxManager;
     private NodeManagerImpl nodeManager;
     private CronManager cronManager;
-    private AppServerManagerImpl appServerManager;
+    private CertificateManagerImpl certificateManager;
     private BrandingManagerImpl brandingManager;
     private SkinManagerImpl skinManager;
     private MessageManagerImpl messageManager;
@@ -163,9 +163,9 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
         return this.languageManager;
     }
 
-    public AppServerManager appServerManager()
+    public CertificateManager certificateManager()
     {
-        return this.appServerManager;
+        return this.certificateManager;
     }
     
     public ToolboxManagerImpl toolboxManager()
@@ -536,7 +536,7 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
         // Retrieve the argon manager
         this.argonManager = ArgonManagerImpl.getInstance();
 
-        this.appServerManager = new AppServerManagerImpl(this);
+        this.certificateManager = new CertificateManagerImpl(this);
 
         this.alertManager = new AlertManagerImpl();
         
@@ -571,9 +571,9 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
         /* Reload Apache */
         tomcatManager.writeWelcomeFile();
 
-        //Inform the AppServer manager that everything
+        //Inform the Certificate manager that everything
         //else is started.
-        appServerManager.postInit();
+        certificateManager.postInit();
 
         logger.debug("postInit complete");
         synchronized (startupWaitLock) {
@@ -652,11 +652,6 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
     }
 
     // package protected methods ----------------------------------------------
-
-    AppServerManager remoteAppServerManager()
-    {
-        return appServerManager;
-    }
 
     boolean refreshToolbox()
     {

@@ -25,11 +25,9 @@ import com.untangle.node.spam.SpamNodeImpl;
 import com.untangle.node.spam.SpamSettings;
 import com.untangle.node.token.Token;
 import com.untangle.node.token.TokenAdaptor;
-import com.untangle.uvm.AppServerManager;
 import com.untangle.uvm.UvmContext;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.util.I18nUtil;
-import com.untangle.uvm.util.OutsideValve;
 import com.untangle.uvm.vnet.Affinity;
 import com.untangle.uvm.vnet.Fitting;
 import com.untangle.uvm.vnet.PipeSpec;
@@ -306,24 +304,7 @@ public class PhishNode extends SpamNodeImpl implements Phish
             return;
         }
 
-        UvmContext mctx = UvmContextFactory.context();
-        AppServerManager asm = mctx.appServerManager();
-
-        Valve v = new OutsideValve()
-            {
-                protected boolean isInsecureAccessAllowed()
-                {
-                    return true;
-                }
-
-                /* Unified way to determine which parameter to check */
-                protected boolean isOutsideAccessAllowed()
-                {
-                    return false;
-                }
-            };
-
-        if (null != asm.loadInsecureApp("/phish", "phish", v)) {
+        if (null != UvmContextFactory.context().tomcatManager().loadServlet("/phish", "phish")) {
             logger.debug("Deployed phish WebApp");
         } else {
             logger.error("Unable to deploy phish WebApp");
@@ -336,10 +317,7 @@ public class PhishNode extends SpamNodeImpl implements Phish
             return;
         }
 
-        UvmContext mctx = UvmContextFactory.context();
-        AppServerManager asm = mctx.appServerManager();
-
-        if (asm.unloadWebApp("/phish")) {
+        if (UvmContextFactory.context().tomcatManager().unloadServlet("/phish")) {
             logger.debug("Unloaded phish WebApp");
         } else {
             logger.warn("Unable to unload phish WebApp");

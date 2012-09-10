@@ -24,14 +24,12 @@ import java.util.Map;
 import java.util.Set;
 import java.util.StringTokenizer;
 
-import org.apache.catalina.Valve;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpMethod;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.log4j.Logger;
 
 import com.untangle.uvm.SettingsManager;
-import com.untangle.uvm.AppServerManager;
 import com.untangle.uvm.UvmContext;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.node.IPMaskedAddress;
@@ -39,7 +37,6 @@ import com.untangle.uvm.node.GenericRule;
 import com.untangle.uvm.node.EventLogQuery;
 import com.untangle.uvm.node.NodeMetric;
 import com.untangle.uvm.util.I18nUtil;
-import com.untangle.uvm.util.OutsideValve;
 import com.untangle.uvm.vnet.NodeBase;
 import com.untangle.uvm.vnet.Affinity;
 import com.untangle.uvm.vnet.Fitting;
@@ -552,24 +549,7 @@ public class SpywareImpl extends NodeBase implements Spyware
             return;
         }
 
-        UvmContext uvmContext = UvmContextFactory.context();
-        AppServerManager asm = uvmContext.appServerManager();
-
-        Valve v = new OutsideValve()
-            {
-                protected boolean isInsecureAccessAllowed()
-                {
-                    return true;
-                }
-
-                /* Unified way to determine which parameter to check */
-                protected boolean isOutsideAccessAllowed()
-                {
-                    return false;
-                }
-            };
-
-        if (null != asm.loadInsecureApp("/spyware", "spyware", v)) {
+        if (null != UvmContextFactory.context().tomcatManager().loadServlet("/spyware", "spyware")) {
             logger.debug("Deployed Spyware WebApp");
         } else {
             logger.error("Unable to deploy Spyware WebApp");
@@ -582,10 +562,7 @@ public class SpywareImpl extends NodeBase implements Spyware
             return;
         }
 
-        UvmContext uvmContext = UvmContextFactory.context();
-        AppServerManager asm = uvmContext.appServerManager();
-
-        if (asm.unloadWebApp("/spyware")) {
+        if (UvmContextFactory.context().tomcatManager().unloadServlet("/spyware")) {
             logger.debug("Unloaded Spyware WebApp");
         } else {
             logger.warn("Unable to unload Spyware WebApp");

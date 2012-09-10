@@ -521,16 +521,16 @@ Ext.define("Ung.Main", {
         return rpc.loggingManager;
     },
 
-    getAppServerManager: function(forceReload) {
-        if (forceReload || rpc.appServerManager === undefined) {
+    getCertificateManager: function(forceReload) {
+        if (forceReload || rpc.certificateManager === undefined) {
             try {
-                rpc.appServerManager = rpc.jsonrpc.UvmContext.appServerManager();
+                rpc.certificateManager = rpc.jsonrpc.UvmContext.certificateManager();
             } catch (e) {
                 Ung.Util.rpcExHandler(e);
             }
 
         }
-        return rpc.appServerManager;
+        return rpc.certificateManager;
     },
 
     getBrandingManager: function(forceReload) {

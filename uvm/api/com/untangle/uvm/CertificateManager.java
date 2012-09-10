@@ -13,7 +13,7 @@ import com.untangle.uvm.security.RFC2253Name;
  * Abstraction to the application server used for external web
  * applications.
  */
-public interface AppServerManager
+public interface CertificateManager
 {
     final String UVM_WEB_MESSAGE_ATTR = "com.untangle.uvm.web.message";
 
@@ -128,52 +128,4 @@ public interface AppServerManager
 	 * on the server.
 	 */
 	CertInfo getCurrentServerCertInfo();
-
-    boolean unloadWebApp(String urlBase);
-
-    /**
-     * Load a portal web app. This app will use the UvmRealm for
-     * authentication. The web app's files are already assumed to be
-     * unpackaged into the root web apps directory of the edgeguard
-     * deployment
-     *
-     * @param urlBase the base URL
-     * (i.e. "http://edgeguard/<i>urlBase</i>/foo").
-     * @param rootDir the name of the root directory under the "web"
-     * directory of edgeguard w/ the app.
-     */
-    ServletContext loadSystemApp(String urlBase, String rootDir);
-
-    ServletContext loadSystemApp(String urlBase, String rootDir, Valve valve);
-
-    ServletContext loadGlobalApp(String urlBase, String rootDir);
-
-    ServletContext loadGlobalApp(String urlBase, String rootDir, Valve valve);
-
-    /**
-     * Load a portal web app. This app will not use
-     * authentication. The web app's files are already assumed to be
-     * unpackaged into the root web apps directory of the edgeguard
-     * deployment
-     *
-     * @param urlBase the base URL
-     * (i.e. "http://edgeguard/<i>urlBase</i>/foo").
-     * @param rootDir the name of the root directory under the "web"
-     * directory of edgeguard w/ the app.
-     */
-    ServletContext loadInsecureApp(String urlBase, String rootDir);
-
-    ServletContext loadInsecureApp(String urlBase, String rootDir, Valve valve);
-
-    /**
-     * Load the quarantine app.  This is hack, designed this way to not force
-     * the valve object into the uvm-client.jar */
-    ServletContext loadQuarantineApp(String urlBase, String rootDir);
-
-    /**
-     * Change the port to-which the external interface is bound
-     */
-    void rebindExternalHttpsPort(int port) throws Exception;
-
-    
 }
