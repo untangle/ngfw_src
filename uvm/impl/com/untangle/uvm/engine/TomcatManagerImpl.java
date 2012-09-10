@@ -31,8 +31,6 @@ import org.apache.log4j.Logger;
 
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.TomcatManager;
-import com.untangle.uvm.util.AdministrationOutsideAccessValve;
-import com.untangle.uvm.util.ReportingOutsideAccessValve;
 
 /**
  * Wrapper around the Tomcat server embedded within the UVM.
@@ -104,14 +102,14 @@ public class TomcatManagerImpl implements TomcatManager
             // Engine for embedded server
             emb.addEngine(baseEngine);
 
-            loadSystemApp("/blockpage", "blockpage");
-            loadSystemApp("/alpaca", "alpaca", new WebAppOptions(true, new AdministrationOutsideAccessValve()));
-            ServletContext ctx = loadSystemApp("/webui", "webui", new WebAppOptions(new AdministrationOutsideAccessValve()));
+            loadServlet("/blockpage", "blockpage");
+            loadServlet("/alpaca", "alpaca" );
+            ServletContext ctx = loadServlet("/webui", "webui" );
             ctx.setAttribute("threadRequest", threadRequest);
 
-            ctx = loadSystemApp("/setup", "setup", new WebAppOptions(new AdministrationOutsideAccessValve()));
+            ctx = loadServlet("/setup", "setup" );
             ctx.setAttribute("threadRequest", threadRequest);
-            loadSystemApp("/library", "library", new WebAppOptions(true,new AdministrationOutsideAccessValve()));
+            loadServlet("/library", "library" );
             
         } finally {
             Thread.currentThread().setContextClassLoader(uvmCl);
@@ -154,46 +152,12 @@ public class TomcatManagerImpl implements TomcatManager
         this.keyAlias = ksAlias;
     }
 
-    ServletContext loadSystemApp(String urlBase, String rootDir, WebAppOptions options)
-    {
-        return loadWebApp(urlBase, rootDir, null, null, options);
-    }
-
-    public ServletContext loadSystemApp(String urlBase, String rootDir, Valve valve)
-    {
-        return loadSystemApp(urlBase, rootDir, new WebAppOptions(true, valve));
-    }
-
-    ServletContext loadSystemApp(String urlBase, String rootDir) {
-        return loadSystemApp(urlBase, rootDir, new WebAppOptions());
-    }
-
-    ServletContext loadGlobalApp(String urlBase, String rootDir, WebAppOptions options)
-    {
-        return loadWebApp(urlBase, rootDir, null, null, options);
-    }
-
-    ServletContext loadGlobalApp(String urlBase, String rootDir, Valve valve)
-    {
-        return loadGlobalApp(urlBase, rootDir, new WebAppOptions(true, valve));
-    }
-
-    ServletContext loadGlobalApp(String urlBase, String rootDir)
-    {
-        return loadGlobalApp(urlBase, rootDir, new WebAppOptions());
-    }
-
-    public ServletContext loadInsecureApp(String urlBase, String rootDir)
+    public ServletContext loadServlet(String urlBase, String rootDir)
     {
         return loadWebApp(urlBase, rootDir, null, null);
     }
 
-    public ServletContext loadInsecureApp(String urlBase, String rootDir, Valve valve)
-    {
-        return loadWebApp(urlBase, rootDir, null, null, valve);
-    }
-
-    public boolean unloadWebApp(String contextRoot)
+    public boolean unloadServlet(String contextRoot)
     {
         try {
             if (null != baseHost) {
@@ -379,11 +343,6 @@ public class TomcatManagerImpl implements TomcatManager
     private ServletContext loadWebApp(String urlBase, String rootDir, Realm realm, AuthenticatorBase auth)
     {
         return loadWebApp(urlBase, rootDir, realm, auth, new WebAppOptions());
-    }
-
-    private ServletContext loadWebApp(String urlBase, String rootDir, Realm realm, AuthenticatorBase auth, Valve valve)
-    {
-        return loadWebApp(urlBase, rootDir, realm, auth, new WebAppOptions(valve));
     }
 
     private ServletContext loadWebAppImpl(String urlBase, String rootDir, Realm realm, AuthenticatorBase auth, WebAppOptions options)

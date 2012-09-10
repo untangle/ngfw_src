@@ -14,7 +14,6 @@ import com.untangle.uvm.SettingsManager;
 import com.untangle.node.token.Header;
 import com.untangle.node.token.Token;
 import com.untangle.node.token.TokenAdaptor;
-import com.untangle.uvm.AppServerManager;
 import com.untangle.uvm.UvmContext;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.node.NodeSettings;
@@ -420,24 +419,7 @@ public abstract class WebFilterBase extends NodeBase implements WebFilter
             return;
         }
 
-        UvmContext mctx = UvmContextFactory.context();
-        AppServerManager asm = mctx.localAppServerManager();
-
-        org.apache.catalina.Valve v = new com.untangle.uvm.util.OutsideValve()
-            {
-                protected boolean isInsecureAccessAllowed()
-                {
-                    return true;
-                }
-
-                /* Unified way to determine which parameter to check */
-                protected boolean isOutsideAccessAllowed()
-                {
-                    return false;
-                }
-            };
-
-        if (null != asm.loadInsecureApp("/webfilter", "webfilter", v)) {
+        if (null != UvmContextFactory.context().tomcatManager().loadServlet("/webfilter", "webfilter")) {
             logger.debug("Deployed WebFilter WebApp");
         } else {
             logger.error("Unable to deploy WebFilter WebApp");
@@ -451,10 +433,7 @@ public abstract class WebFilterBase extends NodeBase implements WebFilter
             return;
         }
 
-        UvmContext mctx = UvmContextFactory.context();
-        AppServerManager asm = mctx.localAppServerManager();
-
-        if (asm.unloadWebApp("/webfilter")) {
+        if (UvmContextFactory.context().tomcatManager().unloadServlet("/webfilter")) {
             logger.debug("Unloaded WebFilter WebApp");
         } else {
             logger.warn("Unable to unload WebFilter WebApp");

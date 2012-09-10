@@ -90,6 +90,14 @@ public class SystemManagerImpl implements SystemManager
         }
 
         /**
+         * If settings are v1 - then convert to v2 and save
+         */
+        if (settings.getVersion() == 1) {
+            this.convertSettingsV1toV2(settings);
+            this.setSettings(settings);
+        }
+
+        /**
          * If the settings file date is newer than the system files, re-sync them
          */
         File settingsFile = new File(settingsFileName + ".js");
@@ -195,20 +203,6 @@ public class SystemManagerImpl implements SystemManager
             logger.error( "Unable to enable support", ex );
         }
 
-        /* rebind HTTPS port if necessary */
-        int port = this.settings.getHttpsPort();
-        try {
-            logger.info("Rebinding HTTPS port: " + port);
-            UvmContextFactory.context().localAppServerManager().rebindExternalHttpsPort( port );
-            logger.info("Rebinding HTTPS port done.");
-        } catch ( Exception e ) {
-            if ( !UvmContextFactory.context().state().equals( UvmState.RUNNING )) {
-                logger.info( "unable to rebind port at startup, expected. ");
-            } else {
-                logger.warn( "unable to rebind https to port: " + port, e );
-            }
-        }
-
         /* sync SnmpSettings to disk */
         syncSnmpSettings(this.settings.getSnmpSettings());
     
@@ -224,17 +218,8 @@ public class SystemManagerImpl implements SystemManager
     private SystemSettings defaultSettings()
     {
         SystemSettings newSettings = new SystemSettings();
+        newSettings.setVersion(2);
         newSettings.setInsideHttpEnabled( true );
-        newSettings.setOutsideHttpsEnabled( true );
-        if (UvmContextFactory.context().isDevel()) {
-            newSettings.setOutsideHttpsAdministrationEnabled( true );
-            newSettings.setOutsideHttpsQuarantineEnabled( true );
-            newSettings.setOutsideHttpsReportingEnabled( true );
-        } else {
-            newSettings.setOutsideHttpsAdministrationEnabled( false );
-            newSettings.setOutsideHttpsQuarantineEnabled( true );
-            newSettings.setOutsideHttpsReportingEnabled( false );
-        }
         newSettings.setOutsideHttpsEnabled( true );
         newSettings.setHttpsPort( 443 );
 
@@ -365,8 +350,7 @@ public class SystemManagerImpl implements SystemManager
         catch(Exception ex) {
             IOUtil.close(fos);
             tmp.delete();
-            logger.error("Unable to create SNMP control file \"" +
-                         fileName + "\"", ex);
+            logger.error("Unable to create SNMP control file \"" + fileName + "\"", ex);
             return false;
         }
     }
@@ -420,4 +404,27 @@ public class SystemManagerImpl implements SystemManager
             }
         }
     }
+
+    private void convertSettingsV1toV2( SystemSettings settings )
+    {
+        if (settings.getVersion() != 1)
+            logger.warn("convertSettingsV1toV2(): Cannot convert settings v" + settings.getVersion() + " to v2 ");
+
+        /**
+         * As discussed with support
+         * If any of the major 3 are disabled, disable outside HTTPS entirely
+         */
+        boolean httpsOutsideSettings = settings.getOutsideHttpsEnabled();
+        if (!settings.DEPRECATED_getOutsideHttpsAdministrationEnabled())
+            httpsOutsideSettings = false;
+
+        settings.setVersion(2);
+        settings.setOutsideHttpsEnabled(httpsOutsideSettings);
+
+        settings.setOutsideHttpsReportingEnabled(false); // disable obsolete setting
+        settings.setOutsideHttpsAdministrationEnabled(false); // disable obsolete setting
+        settings.setOutsideHttpsQuarantineEnabled(false); // disable obsolete setting
+    }
+
+    
 }

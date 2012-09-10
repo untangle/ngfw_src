@@ -22,7 +22,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import com.untangle.node.cpd.CPDSettings.AuthenticationType;
-import com.untangle.uvm.AppServerManager;
 import com.untangle.uvm.UvmContext;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.UvmException;
@@ -38,7 +37,6 @@ import com.untangle.uvm.node.EventLogQuery;
 import com.untangle.uvm.node.NodeMetric;
 import com.untangle.uvm.servlet.UploadHandler;
 import com.untangle.uvm.util.I18nUtil;
-import com.untangle.uvm.util.OutsideValve;
 import com.untangle.uvm.util.JsonClient.ConnectionException;
 import com.untangle.uvm.vnet.NodeBase;
 import com.untangle.uvm.vnet.PipeSpec;
@@ -529,24 +527,7 @@ public class CPDImpl extends NodeBase implements CPD
             return;
         }
 
-        UvmContext mctx = UvmContextFactory.context();
-        AppServerManager asm = mctx.localAppServerManager();
-
-        Valve v = new OutsideValve()
-            {
-                protected boolean isInsecureAccessAllowed()
-                {
-                    return true;
-                }
-
-                /* Unified way to determine which parameter to check */
-                protected boolean isOutsideAccessAllowed()
-                {
-                    return true;
-                }
-            };
-
-        if (null != asm.loadInsecureApp("/users", "users", v)) {
+        if (null != UvmContextFactory.context().tomcatManager().loadServlet("/users", "users")) {
             logger.debug("Deployed authentication WebApp");
         } else {
             logger.error("Unable to deploy authentication WebApp");
@@ -558,10 +539,7 @@ public class CPDImpl extends NodeBase implements CPD
             return;
         }
 
-        UvmContext mctx = UvmContextFactory.context();
-        AppServerManager asm = mctx.localAppServerManager();
-
-        if (asm.unloadWebApp("/users")) {
+        if (UvmContextFactory.context().tomcatManager().unloadServlet("/users")) {
             logger.debug("Unloaded authentication webapp");
         } else {
             logger.warn("Uanble to unload authentication WebApp");

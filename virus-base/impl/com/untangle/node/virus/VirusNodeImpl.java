@@ -12,7 +12,6 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.Map;
 
-import org.apache.catalina.Valve;
 import org.apache.log4j.Logger;
 import org.json.JSONString;
 
@@ -20,7 +19,6 @@ import com.untangle.uvm.SettingsManager;
 import com.untangle.node.mail.papi.smtp.SMTPNotifyAction;
 import com.untangle.node.token.Token;
 import com.untangle.node.token.TokenAdaptor;
-import com.untangle.uvm.AppServerManager;
 import com.untangle.uvm.UvmContext;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.SessionMatcher;
@@ -29,7 +27,6 @@ import com.untangle.uvm.node.EventLogQuery;
 import com.untangle.uvm.node.NodeMetric;
 import com.untangle.uvm.node.SessionTuple;
 import com.untangle.uvm.util.I18nUtil;
-import com.untangle.uvm.util.OutsideValve;
 import com.untangle.uvm.vnet.NodeBase;
 import com.untangle.uvm.vnet.Affinity;
 import com.untangle.uvm.vnet.Fitting;
@@ -506,24 +503,7 @@ public abstract class VirusNodeImpl extends NodeBase implements VirusNode
             return;
         }
 
-        UvmContext mctx = UvmContextFactory.context();
-        AppServerManager asm = mctx.localAppServerManager();
-
-        Valve v = new OutsideValve()
-            {
-                protected boolean isInsecureAccessAllowed()
-                {
-                    return true;
-                }
-
-                /* Unified way to determine which parameter to check */
-                protected boolean isOutsideAccessAllowed()
-                {
-                    return false;
-                }
-            };
-
-        if (null != asm.loadInsecureApp("/virus", "virus", v)) {
+        if (null != UvmContextFactory.context().tomcatManager().loadServlet("/virus", "virus")) {
             logger.debug("Deployed Virus WebApp");
         } else {
             logger.error("Unable to deploy Virus WebApp");
@@ -535,10 +515,7 @@ public abstract class VirusNodeImpl extends NodeBase implements VirusNode
             return;
         }
 
-        UvmContext mctx = UvmContextFactory.context();
-        AppServerManager asm = mctx.localAppServerManager();
-
-        if (asm.unloadWebApp("/virus")) {
+        if (UvmContextFactory.context().tomcatManager().unloadServlet("/virus")) {
             logger.debug("Unloaded Virus WebApp");
         } else {
             logger.warn("Unable to unload Virus WebApp");

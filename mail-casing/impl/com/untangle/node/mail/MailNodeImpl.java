@@ -99,7 +99,7 @@ public class MailNodeImpl extends NodeBase implements MailNode, MailExport
     private static synchronized void deployWebAppIfRequired(Logger logger)
     {
         if(!s_deployedWebApp) {
-            if (null != UvmContextFactory.context().localAppServerManager().loadQuarantineApp("/quarantine", "quarantine")) {
+            if (null != UvmContextFactory.context().tomcatManager().loadServlet("/quarantine", "quarantine")) {
                 logger.debug("Deployed Quarantine web app");
             }
             else {
@@ -112,7 +112,7 @@ public class MailNodeImpl extends NodeBase implements MailNode, MailExport
     private static synchronized void unDeployWebAppIfRequired(Logger logger)
     {
         if(!s_unDeployedWebApp) {
-            if (UvmContextFactory.context().localAppServerManager().unloadWebApp("/quarantine")) {
+            if (UvmContextFactory.context().tomcatManager().unloadServlet("/quarantine")) {
                 logger.debug("Unloaded Quarantine web app");
             }
             else {

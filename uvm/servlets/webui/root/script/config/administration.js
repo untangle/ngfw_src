@@ -127,7 +127,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
         getCurrentServerCertInfo: function(forceReload) {
             if (forceReload || this.rpc.currentServerCertInfo === undefined) {
                 try {
-                    this.rpc.currentServerCertInfo = main.getAppServerManager().getCurrentServerCertInfo();
+                    this.rpc.currentServerCertInfo = main.getCertificateManager().getCurrentServerCertInfo();
                 } catch (e) {
                     Ung.Util.rpcExHandler(e);
                 }
@@ -285,7 +285,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
                     cls: 'description',
                     title: this.i18n._('Services Access'),
                     defaults: {
-                        labelWidth: 150,
+                        labelWidth: 150
                     },
                     items: [{
                         xtype: 'numberfield',
@@ -313,73 +313,9 @@ if (!Ung.hasResource["Ung.Administration"]) {
                         hideLabel: true,
                         checked: this.getSystemSettings().outsideHttpsEnabled,
                         listeners: {
-                            "afterrender": {
-                                fn: Ext.bind(function(elem) {
-                                    if(elem.getValue()) {
-                                        Ext.getCmp('administration_outsideHttpsAdministrationEnabled').enable();
-                                        Ext.getCmp('administration_outsideHttpsReportingEnabled').enable();
-                                        Ext.getCmp('administration_outsideHttpsQuarantineEnabled').enable();
-                                    } else {
-                                        Ext.getCmp('administration_outsideHttpsAdministrationEnabled').disable();
-                                        Ext.getCmp('administration_outsideHttpsReportingEnabled').disable();
-                                        Ext.getCmp('administration_outsideHttpsQuarantineEnabled').disable();
-                                    }
-                                }, this)
-                            },
                             "change": {
                                 fn: Ext.bind(function(elem, newValue) {
                                     this.getSystemSettings().outsideHttpsEnabled = newValue;
-                                    if(newValue) {
-                                        Ext.getCmp('administration_outsideHttpsAdministrationEnabled').enable();
-                                        Ext.getCmp('administration_outsideHttpsReportingEnabled').enable();
-                                        Ext.getCmp('administration_outsideHttpsQuarantineEnabled').enable();
-                                    } else {
-                                        Ext.getCmp('administration_outsideHttpsAdministrationEnabled').disable();
-                                        Ext.getCmp('administration_outsideHttpsReportingEnabled').disable();
-                                        Ext.getCmp('administration_outsideHttpsQuarantineEnabled').disable();
-                                    }
-                                }, this)
-                            }
-                        }
-                    }, {
-                        xtype: 'checkbox',
-                        id: 'administration_outsideHttpsAdministrationEnabled',
-                        name: 'outsideHttpsAdministrationEnabled',
-                        boxLabel: this.i18n._('Enable Outside HTTPS Administration'),
-                        hideLabel: true,
-                        checked: this.getSystemSettings().outsideHttpsAdministrationEnabled,
-                        listeners: {
-                            "change": {
-                                fn: Ext.bind(function(elem, newValue) {
-                                    this.getSystemSettings().outsideHttpsAdministrationEnabled = newValue;
-                                }, this)
-                            }
-                        }
-                    },{
-                        xtype: 'checkbox',
-                        id: 'administration_outsideHttpsReportingEnabled',
-                        name: 'outsideHttpsReportingEnabled',
-                        boxLabel: this.i18n._('Enable Outside HTTPS Report Viewing'),
-                        hideLabel: true,
-                        checked: this.getSystemSettings().outsideHttpsReportingEnabled,
-                        listeners: {
-                            "change": {
-                                fn: Ext.bind(function(elem, newValue) {
-                                    this.getSystemSettings().outsideHttpsReportingEnabled = newValue;
-                                }, this)
-                            }
-                        }
-                    },{
-                        xtype: 'checkbox',
-                        id: 'administration_outsideHttpsQuarantineEnabled',
-                        name: 'outsideHttpsQuarantineEnabled',
-                        boxLabel: this.i18n._('Enable Outside HTTPS Quarantine Viewing'),
-                        hideLabel: true,
-                        checked: this.getSystemSettings().outsideHttpsQuarantineEnabled,
-                        listeners: {
-                            "change": {
-                                fn: Ext.bind(function(elem, newValue) {
-                                    this.getSystemSettings().outsideHttpsQuarantineEnabled = newValue;
                                 }, this)
                             }
                         }
@@ -387,7 +323,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
                         xtype: 'checkbox',
                         id: 'administration_insideHttpEnabled',
                         name: 'insideHttpEnabled',
-                        boxLabel: this.i18n._('Enable Inside HTTP Administration'),
+                        boxLabel: this.i18n._('Enable Inside HTTP'),
                         hideLabel: true,
                         checked: this.getSystemSettings().insideHttpEnabled,
                         listeners: {
@@ -401,9 +337,9 @@ if (!Ung.hasResource["Ung.Administration"]) {
                         border: false,
                         cls: 'description',
                         html: this.i18n._('Note:') + "<br/>" +
-                            this.i18n._('HTTP  Outside administration is always disabled.') + "<br/>" +
-                            this.i18n._('HTTPS Inside administration is always enabled.') + "<br/>" +
-                            this.i18n._('HTTP  Inside port is always open for block pages even when administration is disabled.')
+                            this.i18n._('HTTP  Outside is always disabled and the port is not open.') + "<br/>" +
+                            this.i18n._('HTTPS Inside is always enabled on the <i>HTTPS port</i> specified.') + "<br/>" +
+                            this.i18n._('HTTP  Inside port is always open for block pages even when <i>Enable Inside HTTP</i> is disabled.')
                     }]
                 }]
             });
@@ -854,7 +790,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
                                 organization, organizationUnit, city, state, country);
     
                         // generate certificate
-                        main.getAppServerManager().regenCert(Ext.bind(function(result, exception) {
+                        main.getCertificateManager().regenCert(Ext.bind(function(result, exception) {
                             if(Ung.Util.handleException(exception)) return;
                             if (result) { //true or false
                                 //success
@@ -937,7 +873,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
                         Ext.MessageBox.wait(this.i18n._("Generating Certificate..."), i18n._("Please wait"));
     
                         // generate certificate request
-                        main.getAppServerManager().generateCSR(Ext.bind(function(result, exception) {
+                        main.getCertificateManager().generateCSR(Ext.bind(function(result, exception) {
                             if(Ung.Util.handleException(exception)) return;
                             if (result != null) {
                                 //success
@@ -1030,7 +966,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
                         var caCert = Ext.getCmp('administration_import_caCert').getValue();
     
                         // import certificate
-                        main.getAppServerManager().importServerCert(Ext.bind(function(result, exception) {
+                        main.getCertificateManager().importServerCert(Ext.bind(function(result, exception) {
                             if(Ung.Util.handleException(exception)) return;
                             if (result) { //true or false
                                 //success

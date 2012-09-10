@@ -94,11 +94,11 @@ public interface UvmContext
     MailSender mailSender();
 
     /**
-     * Get the AppServerManager singleton for this instance
+     * Get the CertificateManager singleton for this instance
      *
      * @return the singleton
      */
-    AppServerManager appServerManager();
+    CertificateManager certificateManager();
 
     /**
      * The LocalDirectory for managing/authenticating users
@@ -185,13 +185,6 @@ public interface UvmContext
      * @return the UploadManager
      */
     UploadManager uploadManager();
-
-    /**
-     * Get the AppServerManager singleton for this instance
-     *
-     * @return the singleton
-     */
-    AppServerManager localAppServerManager();
 
     /**
      * Get the TomcatManager
