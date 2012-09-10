@@ -52,8 +52,10 @@ class CaptureHttpHandler extends HttpStateMachine
     protected Header doRequestHeader(Header requestHeader)
     {
         NodeTCPSession sess = getSession();
-        URI uri = getRequestLine().getRequestUri();
-        String host = uri.getHost();
+        String method = getRequestLine().getMethod().toString();
+        String host = getRequestLine().getRequestUri().getHost();
+        String uri = getRequestLine().getRequestUri().toString();
+               
 
         if (host == null)
         {
@@ -68,9 +70,9 @@ class CaptureHttpHandler extends HttpStateMachine
 
         host = host.toLowerCase();
 
-        CaptureBlockDetails block = new CaptureBlockDetails(host, uri.toString(), "testing");
-        logger.debug("doRequestHeader HOST:" + host + " URI:" + uri);
-        Token[] response = node.generateResponse(block, sess);
+        CaptureBlockDetails details = new CaptureBlockDetails(host, uri, method);
+        logger.debug("doRequestHeader " + details.toString());
+        Token[] response = node.generateResponse(details, sess);
         blockRequest(response);
         return requestHeader;
     }

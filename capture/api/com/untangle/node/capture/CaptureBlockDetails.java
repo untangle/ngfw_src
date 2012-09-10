@@ -9,19 +9,24 @@ import com.untangle.node.http.BlockDetails;
 @SuppressWarnings("serial")
 public class CaptureBlockDetails extends BlockDetails
 {
-    private final String reason;
+    private final String method;
 
     // constructor ------------------------------------------------------------
 
-    public CaptureBlockDetails(String host, String uri, String reason)
+    public CaptureBlockDetails(String host, String uri, String method)
     {
         super(host, uri);
-        this.reason = reason;
+        this.method = method;
     }
 
     // public methods ---------------------------------------------------------
-    public String getReason()
+    public String getMethod()
     {
-        return reason;
+        return method;
+    }
+    
+    public String toString()
+    {
+        return("HOST:" + getHost() + " URI:" + getUri() + " METHOD:" + getMethod());
     }
 }

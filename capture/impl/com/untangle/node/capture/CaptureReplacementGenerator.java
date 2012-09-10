@@ -4,6 +4,8 @@
 
 package com.untangle.node.capture;
 
+import java.net.URI;
+
 import org.apache.log4j.Logger;
 
 import com.untangle.node.http.ReplacementGenerator;
@@ -15,13 +17,13 @@ class CaptureReplacementGenerator extends ReplacementGenerator<CaptureBlockDetai
 {
     private final Logger logger = Logger.getLogger(getClass());
     private static final String BLOCK_TEMPLATE
-        = "<HTML><HEAD>"
-        + "<TITLE>403 Forbidden</TITLE>"
-        + "</HEAD><BODY>"
-        + "<p>This site is blocked because your computer has not been authenticated.</p>"
-        + "<p>Host: %s</p>"
-        + "<p>URI: %s</p>"
-        + "<p>Please contact %s</p>"
+        = "<HTML><HEAD>\r\n"
+        + "<TITLE>Captive Portal - Access Denied - Authentication Required</TITLE>\r\n"
+        + "</HEAD><BODY>\r\n"
+        + "<P><H2><HR><BR><CENTER>This site is blocked because your computer has not been authenticated.</CENTER><BR><HR></H2></P>\r\n"
+        + "<P><H3>Host: %s</H3></P>"
+        + "<P><H3>URI: %s</H3></P>"
+        + "<P><H3>Please contact %s for assistance.</H3></P>"
         + "</BODY></HTML>";
 
     CaptureReplacementGenerator(NodeSettings tid)
@@ -45,7 +47,13 @@ class CaptureReplacementGenerator extends ReplacementGenerator<CaptureBlockDetai
     @Override
     protected String getRedirectUrl(String nonce, String host, NodeSettings nodeSettings)
     {
-        logger.debug("getRedirectUrl NONCE:" + nonce + " HOST:" + host);
-        return "http://" + host + "/webui/startPage.do?nonce=" + nonce + "&tid=" + nodeSettings.getId();
+        CaptureBlockDetails details = getNonceData(nonce);
+        logger.debug("getRedirectUrl " + details.toString());
+        String retval =  ("http://" + host + "/capture/request?nonce=" + nonce);
+        retval = (retval + "&tid=" + nodeSettings.getId());
+        retval = (retval + "&host=" + details.getHost());
+        retval = (retval + "&uri=" + details.getUri());
+        retval = (retval + "&method=" + details.getMethod());
+        return(retval);
     }
 }
