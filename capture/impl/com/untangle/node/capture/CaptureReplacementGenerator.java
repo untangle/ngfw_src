@@ -21,6 +21,7 @@ class CaptureReplacementGenerator extends ReplacementGenerator<CaptureBlockDetai
         + "<TITLE>Captive Portal - Access Denied - Authentication Required</TITLE>\r\n"
         + "</HEAD><BODY>\r\n"
         + "<P><H2><HR><BR><CENTER>This site is blocked because your computer has not been authenticated.</CENTER><BR><HR></H2></P>\r\n"
+        + "<P><H3>Request: %s</H3></P>"
         + "<P><H3>Host: %s</H3></P>"
         + "<P><H3>URI: %s</H3></P>"
         + "<P><H3>Please contact %s for assistance.</H3></P>"
@@ -39,9 +40,10 @@ class CaptureReplacementGenerator extends ReplacementGenerator<CaptureBlockDetai
         logger.debug("getReplacement DETAILS:" + details.toString());
 
         return String.format(BLOCK_TEMPLATE,
-                             details.getHost(),
-                             details.getUri(),
-                             uvm.brandingManager().getContactHtml());
+            details.getMethod(),
+            details.getHost(),
+            details.getUri(),
+            uvm.brandingManager().getContactHtml());
     }
 
     @Override

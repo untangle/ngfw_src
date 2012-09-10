@@ -161,6 +161,9 @@ public abstract class ReplacementGenerator<T extends BlockDetails>
 
         Header h = new Header();
         h.addField("Location", getRedirectUrl(nonce, host, tid));
+        h.addField("Cache-Control", "no-store, no-cache, must-revalidate, post-check=0, pre-check=0");
+        h.addField("Pragma", "no-cache");
+        h.addField("Expires", "Sat, 1 Jan 2000 00:00:00 GMT");
         h.addField("Content-Type", "text/plain");
         h.addField("Content-Length", "0");
         h.addField("Connection", persistent ? "Keep-Alive" : "Close");
