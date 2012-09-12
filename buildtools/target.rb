@@ -314,15 +314,7 @@ class ServletBuilder < Target
     if File.exist? "#{path}/apache.conf"
       deps << CopyFiles.new(package,
                             MoveSpec.fileMove("#{path}/apache.conf",
-                                              "#{package.distDirectory}/usr/share/untangle/apache2/conf.d/",
-                                              "#{name}.conf"),
-                            "#{suffix}-apache")
-    end
-
-    if File.exist? "#{path}/unrestricted.conf"
-      deps << CopyFiles.new(package,
-                            MoveSpec.fileMove("#{path}/unrestricted.conf",
-                                              "#{package.distDirectory}/usr/share/untangle/apache2/unrestricted-conf.d/",
+                                              "#{package.distDirectory}/usr/share/untangle/conf/apache2/conf.d/",
                                               "#{name}.conf"),
                             "#{suffix}-apache")
     end
