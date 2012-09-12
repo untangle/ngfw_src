@@ -21,7 +21,6 @@ import org.apache.catalina.Pipeline;
 import org.apache.catalina.Realm;
 import org.apache.catalina.Valve;
 import org.apache.catalina.authenticator.AuthenticatorBase;
-import org.apache.catalina.authenticator.SingleSignOn;
 import org.apache.catalina.connector.Connector;
 import org.apache.catalina.core.StandardContext;
 import org.apache.catalina.core.StandardHost;
@@ -89,12 +88,6 @@ public class TomcatManagerImpl implements TomcatManager
             baseHost.setDeployOnStartup(true);
             baseHost.setAutoDeploy(true);
             baseHost.setErrorReportValveClass("com.untangle.uvm.engine.UvmErrorReportValve");
-            OurSingleSignOn ourSsoWorkaroundValve = new OurSingleSignOn();
-            SingleSignOn ssoValve = new SpecialSingleSignOn(uvmContext, "", "/reports", "/library" );
-
-            // ssoValve.setRequireReauthentication(true);
-            baseHost.getPipeline().addValve(ourSsoWorkaroundValve);
-            baseHost.getPipeline().addValve(ssoValve);
 
             // add host to Engine
             baseEngine.addChild(baseHost);
