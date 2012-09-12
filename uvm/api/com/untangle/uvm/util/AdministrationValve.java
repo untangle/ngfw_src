@@ -57,7 +57,7 @@ public class AdministrationValve extends ValveBase
         String address = request.getRemoteAddr();
         boolean isHttpAllowed = UvmContextFactory.context().systemManager().getSettings().getInsideHttpEnabled();
 
-        logger.warn("isAccessAllowed( " + request + " ) scheme: " + request.getScheme() + " HTTP allowed: " + isHttpAllowed); 
+        logger.debug("isAccessAllowed( " + request + " ) [scheme: " + request.getScheme() + " HTTP allowed: " + isHttpAllowed + "]"); 
 
         /**
          * Always allow HTTP from 127.0.0.1
@@ -72,8 +72,11 @@ public class AdministrationValve extends ValveBase
         /**
          * Otherwise only allow HTTP if enabled
          */
-        if (request.getScheme().equals("http"))
+        if (request.getScheme().equals("http")) {
+            if (!isHttpAllowed)
+                logger.warn("isAccessAllowed( " + request + " ) denied. [scheme: " + request.getScheme() + " HTTP allowed: " + isHttpAllowed + "]"); 
             return isHttpAllowed;
+        }
         else
             return true; /* https always allowed */
     }
