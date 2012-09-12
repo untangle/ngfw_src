@@ -15,6 +15,8 @@ import com.untangle.uvm.security.RFC2253Name;
  */
 public interface CertificateManager
 {
+    final String UVM_WEB_MESSAGE_ATTR = "com.untangle.uvm.web.message";
+
     /**
      * Regenerate the self-signed certificate for this instance. The
      * key algorithm and strength are determined by the

@@ -31,7 +31,6 @@ import org.apache.log4j.Logger;
 
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.TomcatManager;
-import com.untangle.uvm.util.AdministrationValve;
 
 /**
  * Wrapper around the Tomcat server embedded within the UVM.
@@ -104,13 +103,13 @@ public class TomcatManagerImpl implements TomcatManager
             emb.addEngine(baseEngine);
 
             loadServlet("/blockpage", "blockpage");
-            loadServlet("/alpaca", "alpaca", new AdministrationValve() );
-            ServletContext ctx = loadServlet("/webui", "webui", new AdministrationValve() );
+            loadServlet("/alpaca", "alpaca" );
+            ServletContext ctx = loadServlet("/webui", "webui" );
             ctx.setAttribute("threadRequest", threadRequest);
 
-            ctx = loadServlet("/setup", "setup", new AdministrationValve() );
+            ctx = loadServlet("/setup", "setup" );
             ctx.setAttribute("threadRequest", threadRequest);
-            loadServlet("/library", "library", new AdministrationValve() );
+            loadServlet("/library", "library" );
             
         } finally {
             Thread.currentThread().setContextClassLoader(uvmCl);
@@ -155,14 +154,9 @@ public class TomcatManagerImpl implements TomcatManager
 
     public ServletContext loadServlet(String urlBase, String rootDir)
     {
-        return loadServlet(urlBase, rootDir, null, null);
+        return loadWebApp(urlBase, rootDir, null, null);
     }
 
-    public ServletContext loadServlet(String urlBase, String rootDir, Valve v)
-    {
-        return loadServlet(urlBase, rootDir, null, null, new WebAppOptions(v));
-    }
-    
     public boolean unloadServlet(String contextRoot)
     {
         try {
@@ -331,16 +325,6 @@ public class TomcatManagerImpl implements TomcatManager
 
     // private methods --------------------------------------------------------
 
-    private ServletContext loadServlet(String urlBase, String rootDir, Realm realm, AuthenticatorBase auth)
-    {
-        return loadServlet(urlBase, rootDir, realm, auth, new WebAppOptions());
-    }
-
-    private ServletContext loadServlet(String urlBase, String rootDir, Realm realm, AuthenticatorBase auth, WebAppOptions options)
-    {
-        return loadServletImpl(urlBase, rootDir, realm, auth, options);
-    }
-
     /**
      * Loads the web application.  If Tomcat is not yet running,
      * schedules it for later loading.
@@ -351,7 +335,17 @@ public class TomcatManagerImpl implements TomcatManager
      * @param auth an <code>AuthenticatorBase</code> value
      * @return a <code>boolean</code> value
      */
-    private synchronized ServletContext loadServletImpl(String urlBase, String rootDir, Realm realm, AuthenticatorBase auth, WebAppOptions options)
+    private synchronized ServletContext loadWebApp(String urlBase, String rootDir, Realm realm, AuthenticatorBase auth, WebAppOptions options)
+    {
+        return loadWebAppImpl(urlBase, rootDir, realm, auth, options);
+    }
+
+    private ServletContext loadWebApp(String urlBase, String rootDir, Realm realm, AuthenticatorBase auth)
+    {
+        return loadWebApp(urlBase, rootDir, realm, auth, new WebAppOptions());
+    }
+
+    private ServletContext loadWebAppImpl(String urlBase, String rootDir, Realm realm, AuthenticatorBase auth, WebAppOptions options)
     {
         String fqRoot = webAppRoot + "/" + rootDir;
 
@@ -403,18 +397,33 @@ public class TomcatManagerImpl implements TomcatManager
 
     private void writeIncludes()
     {
-        String dir = System.getProperty("uvm.conf.dir");
-        if ( dir == null ) {
-            dir = "/usr/share/untangle/conf";
+        String bh = System.getProperty("uvm.home");
+        if (null == bh) {
+            bh = "/usr/share/untangle";
         }
         FileWriter fw = null;
         try {
-            fw = new FileWriter("/etc/apache2/uvm.conf");
-            fw.write("Include " + dir + "/apache2/conf.d/*.conf\n");
+            fw = new FileWriter("/etc/apache2/untangle-conf.d/uvm.conf");
+            fw.write("Include " + bh + "/apache2/conf.d/*.conf\n");
         } catch (IOException exn) {
             logger.warn("could not write includes: conf.d");
         } finally {
-            if ( fw != null ) {
+            if (null != fw) {
+                try {
+                    fw.close();
+                } catch (IOException exn) {
+                    logger.warn("could not close file", exn);
+                }
+            }
+        }
+
+        try {
+            fw = new FileWriter("/etc/apache2/untangle-unrestricted-conf.d/uvm.conf");
+            fw.write("Include " + bh + "/apache2/unrestricted-conf.d/*.conf\n");
+        } catch (IOException exn) {
+            logger.warn("could not write includes: conf.d");
+        } finally {
+            if (null != fw) {
                 try {
                     fw.close();
                 } catch (IOException exn) {
