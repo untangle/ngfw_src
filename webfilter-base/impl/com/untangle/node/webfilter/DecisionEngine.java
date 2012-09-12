@@ -24,6 +24,7 @@ import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.node.IPMaskedAddress;
 import com.untangle.uvm.node.MimeType;
 import com.untangle.uvm.node.GenericRule;
+import com.untangle.uvm.node.IPMatcher;
 import com.untangle.node.util.GlobUtil;
 import com.untangle.uvm.util.I18nUtil;
 import com.untangle.uvm.vnet.NodeSession;
@@ -367,9 +368,9 @@ public abstract class DecisionEngine
      */
     private String      checkClientPassList( InetAddress clientIp )
     {
-        for (GenericRule rule : node.getSettings().getPassedClients()) {
-            IPMaskedAddress addr = new IPMaskedAddress(rule.getString());
-            if (addr.contains(clientIp) && rule.getEnabled()) {
+        for ( GenericRule rule : node.getSettings().getPassedClients() ) {
+            IPMatcher matcher = new IPMatcher(rule.getString());
+            if ( rule.getEnabled() && matcher.isMatch(clientIp) ) {
                 logger.debug("LOG: "+clientIp+" in client pass list");
                 return rule.getDescription();
             }
