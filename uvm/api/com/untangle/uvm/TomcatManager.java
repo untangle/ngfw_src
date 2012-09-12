@@ -7,6 +7,8 @@ import javax.servlet.ServletContext;
 
 public interface TomcatManager
 {
+    final String UVM_WEB_MESSAGE_ATTR = "com.untangle.uvm.web.message";
+
     public ServletContext loadServlet(String urlBase, String rootDir);
 
     public boolean unloadServlet(String contextRoot);
