@@ -414,7 +414,7 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
     {
         Integer exitValue = this.execManager().execResult(CREATE_UID_SCRIPT);
         if (0 != exitValue) {
-            logger.error("Unable to activate (" + exitValue + ")");
+            logger.error("Unable to create UID (" + exitValue + ")");
             return false;
         } else {
             logger.info("UID Created.");
