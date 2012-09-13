@@ -1,4 +1,4 @@
-#! /bin/sh
+#! /bin/bassh
 
 #
 # The script sets a plethora of untangle-vm parameters based on hardware
