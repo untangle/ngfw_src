@@ -8,10 +8,15 @@ BuildEnv::SRC.installTarget.register_dependency(uvm_lib)
 uvm = BuildEnv::SRC['untangle-vm']
 BuildEnv::SRC.installTarget.register_dependency(uvm)
 
-## Heir
+## Hier
 ms = MoveSpec.new("./uvm/hier", FileList["./uvm/hier/**/*"], uvm.distDirectory)
 cf = CopyFiles.new(uvm, ms, 'hier', BuildEnv::SRC.filterset)
 uvm.registerTarget('hier', cf)
+
+# accomodate for python2.6
+ms = MoveSpec.new("./uvm/hier/usr/lib/python2.5", FileList["./uvm/hier/usr/lib/python2.5/**/*"], "#{uvm.distDirectory}/usr/lib/python2.6/")
+cf = CopyFiles.new(uvm, ms, 'hier', BuildEnv::SRC.filterset)
+uvm.registerTarget('hier2', cf)
 
 ## Pycli
 ms = [ MoveSpec.new("#{BuildEnv::downloads}/python-jsonrpc-r19", 'jsonrpc/*.py', "#{uvm.distDirectory}/usr/share/untangle/pycli/") ]
@@ -20,6 +25,9 @@ uvm.registerTarget('python-jsonrpc', cf)
 ms = [ MoveSpec.new("#{BuildEnv::downloads}/python-jsonrpc-r19", 'jsonrpc/*.py', "#{uvm.distDirectory}/usr/lib/python2.5/") ]
 cf = CopyFiles.new(uvm, ms, 'python-jsonrpc', BuildEnv::SRC.filterset)
 uvm.registerTarget('python-jsonrpc2', cf)
+ms = [ MoveSpec.new("#{BuildEnv::downloads}/python-jsonrpc-r19", 'jsonrpc/*.py', "#{uvm.distDirectory}/usr/lib/python2.6/") ]
+cf = CopyFiles.new(uvm, ms, 'python-jsonrpc', BuildEnv::SRC.filterset)
+uvm.registerTarget('python-jsonrpc3', cf)
 
 jts = []
 
