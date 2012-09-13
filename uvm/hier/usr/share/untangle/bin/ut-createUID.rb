@@ -4,7 +4,7 @@ require 'gpgme'
 require 'optparse'
 
 # The format of a UID is:
-#   xxxx-xxxx-xxxx-xxPV-xxxxxxx-xxxxxxx-xxxxPVx
+#   xxxx-xxxx-xxxx-xxPV
 #   P = platform bit
 #   V = version bit
 #   x = uuid bit
