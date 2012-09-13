@@ -81,6 +81,10 @@ class NodeBuilder
       ms = MoveSpec.new("#{home}/#{dirName}/hier", hierFiles, node.distDirectory)
       cf = CopyFiles.new(node, ms, 'hier', buildEnv.filterset)
       buildEnv.hierTarget.register_dependency(cf)
+
+      ms = MoveSpec.new("#{home}/#{dirName}/hier/usr/lib/python2.5", FileList["#{home}/#{dirName}/hier/usr/lib/python2.5/**/*"], "#{node.distDirectory}/usr/lib/python2.6/")
+      cf = CopyFiles.new(node, ms, 'python2.6', buildEnv.filterset)
+      buildEnv.hierTarget.register_dependency(cf)
     end
 
     FileList["#{home}/#{dirName}/**/*.js"].each do |f|
