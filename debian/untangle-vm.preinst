@@ -15,7 +15,12 @@ if [ -n "$oldVersion" ]; then
     ps ax | grep reporting-generate-reports.py | grep -v grep | awk '{print $1}' | xargs kill 2>/dev/null
 
     # restart postgres to make sure there are no active queries
-    /etc/init.d/postgresql-8.3 restart ; sleep 5
+    if [ -f /etc/init.d/postgresql-8.3 ] ; then
+      /etc/init.d/postgresql-8.3 restart
+    else
+      /etc/init.d/postgresql restart
+    fi
+    sleep 5
 
     if dpkg --compare-versions "$oldVersion" le 9.3.0 ; then
       echo "Dropping events schema..."
