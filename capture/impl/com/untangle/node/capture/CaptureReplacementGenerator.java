@@ -51,7 +51,7 @@ class CaptureReplacementGenerator extends ReplacementGenerator<CaptureBlockDetai
     {
         CaptureBlockDetails details = getNonceData(nonce);
         logger.debug("getRedirectUrl " + details.toString());
-        String retval =  ("http://" + host + "/capture/request?nonce=" + nonce);
+        String retval =  ("http://" + host + "/capture?nonce=" + nonce);
         retval = (retval + "&tid=" + nodeSettings.getId());
         retval = (retval + "&host=" + details.getHost());
         retval = (retval + "&uri=" + details.getUri());
