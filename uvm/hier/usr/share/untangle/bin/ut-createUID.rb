@@ -22,7 +22,8 @@ PLATFORMS = { :sarge    => 0,
               :gutsy    => 4,
               :hardy    => 5,
               :intrepid => 6,
-              :lenny    => 7 }
+              :lenny    => 7,
+              :squeeze  => 8 }
 
 VERSIONS = { :hardware => 1,
              :iso      => 2,
@@ -117,6 +118,8 @@ def getPlatform
     :sarge
   when /5\.0/
     :lenny
+  when /6\.0/
+    :squeeze
   when /(7\.04|feisty)/
     :feisty
   when /(7\.10|gutsy)/
