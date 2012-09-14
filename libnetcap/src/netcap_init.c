@@ -67,8 +67,12 @@ static struct {
 static int _netcap_init();
 static int _tls_init   ( void* buf, size_t size );
 
-static int ip_nonlocal = 30; 
-static int ip_saddr_option = 21; 
+static int ip_transparent = 0;
+static int ip_nonlocal = 21; 
+static int ip_saddr = 22; 
+static int ip_recvnfmark = 23;
+static int ip_sendnfmark = 24;
+static int ip_firstnfmark = 25;
 
 int netcap_init()
 {
@@ -105,6 +109,35 @@ static int _netcap_init()
     if ( pthread_key_create( &_init.tls_key, uthread_tls_free ) != 0 )
         return perrlog( "pthread_key_create\n" );
 
+    if (uname(&utsn) < 0) {
+        return perrlog("uname");
+    }
+    if ( strstr(utsn.release,"2.6.26") != NULL) {
+        ip_transparent = 0;
+        ip_nonlocal = 19;
+        ip_saddr = 20;
+        ip_recvnfmark = 22;
+        ip_sendnfmark = 23;
+        ip_firstnfmark = 24;
+    }
+    else if ( strstr(utsn.release,"2.6.32") != NULL) {
+        ip_transparent = 19;
+        ip_nonlocal = 21;
+        ip_saddr = 22;
+        ip_recvnfmark = 23;
+        ip_sendnfmark = 24;
+        ip_firstnfmark = 25;
+    }
+    else {
+        /* unknown kernel */ 
+        ip_transparent = 19;
+        ip_nonlocal = 21;
+        ip_saddr = 22;
+        ip_recvnfmark = 23;
+        ip_sendnfmark = 24;
+        ip_firstnfmark = 25;
+    }
+    
     if (netcap_arp_init()<0)
         return errlog(ERR_CRITICAL,"netcap_arp_init\n");
     if (netcap_sesstable_init()<0)
@@ -130,20 +163,6 @@ static int _netcap_init()
     if (netcap_virtual_interface_init( NETCAP_TUN_DEVICE_NAME ) < 0 )
         return errlog( ERR_CRITICAL, "netcap_virtual_interface_init\n" );
     
-    if (uname(&utsn) < 0) {
-        return perrlog("uname");
-    }
-    if ( strstr(utsn.release,"2.6.26") != NULL) {
-        ip_nonlocal = 19;
-        ip_saddr_option = 20;
-    }
-    else {
-        /* 2.6.32 or later */ 
-        ip_nonlocal = 30;
-        ip_saddr_option = 21;
-    }
-    debug(2,"Kernel Version: %s IP_NONLOCAL: %i\n",utsn.release, ip_nonlocal);
-
     debug(1,"NETCAP %s Initialized (kernel: %s)\n",netcap_version(), utsn.release);
 
     return 0;
@@ -230,6 +249,11 @@ netcap_tls_t* netcap_tls_get( void )
     return tls;
 }
 
+int IP_TRANSPARENT_VALUE ( )
+{
+    return ip_transparent;
+}
+
 int IP_NONLOCAL_VALUE ( )
 {
     return ip_nonlocal;
@@ -237,7 +261,22 @@ int IP_NONLOCAL_VALUE ( )
 
 int IP_SADDR_VALUE ( )
 {
-    return ip_saddr_option;
+    return ip_saddr;
+}
+
+int IP_RECVNFMARK_VALUE ( )
+{
+    return ip_recvnfmark;
+}
+
+int IP_SENDNFMARK_VALUE ( )
+{
+    return ip_sendnfmark;
+}
+
+int IP_FIRSTNFMARK_VALUE ( )
+{
+    return ip_firstnfmark;
 }
 
 static int _tls_init( void* buf, size_t size )

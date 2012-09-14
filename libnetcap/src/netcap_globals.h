@@ -61,35 +61,40 @@
 
 
 /**
- * This is no longer a constant because it changes depending on kernel version
- * 19 - 2.6.26
- * 30 - 2.6.32
+ * Returns IP_TRANSPARENT constant (varies by kernel version)
+ * Returns 0 if the kernel does not support IP_TRANSPARENT
+ */
+int IP_TRANSPARENT_VALUE ( );
+
+/**
+ * Returns IP_NONLOCAL constant (varies by kernel version)
  */
 int IP_NONLOCAL_VALUE ( );
 
 /**
- * This CMSG constant depends on the kernel version
- * 20 - 2.6.26
- * 21 - 2.6.32
+ * Returns IP_SADDR constant (varies by kernel version)
  */
 int IP_SADDR_VALUE ( );
 
-#ifndef IP_SADDR
-#define IP_SADDR	20
-#endif
-#ifndef IP_RECVNFMARK
-#define IP_RECVNFMARK	22
-#endif
-#ifndef IP_SENDNFMARK
+/**
+ * Returns IP_RECVNFMARK constant (varies by kernel version)
+ */
+int IP_RECVNFMARK_VALUE ( );
+
+/**
+ * Returns IP_SENDNFMARK constant (varies by kernel version)
+ */
+int IP_SENDNFMARK_VALUE ( );
+
+/**
+ * Returns IP_FIRSTNFMARK constant (varies by kernel version)
+ */
+int IP_FIRSTNFMARK_VALUE ( );
+
 struct ip_sendnfmark_opts {
     u_int32_t on;
     u_int32_t mark;
 };
-#define IP_SENDNFMARK	23
-#endif
-#ifndef IP_FIRSTNFMARK
-#define IP_FIRSTNFMARK	24
-#endif
 
 /* Bits for the Netfilter marks */
 #define MARK_ANTISUB   0x01000000

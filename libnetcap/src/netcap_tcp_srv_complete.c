@@ -141,6 +141,10 @@ static int  _netcap_tcp_setsockopt_srv ( int sock )
         .mark = MARK_NOTRACK | MARK_ANTISUB
     };
     
+    if ( IP_TRANSPARENT_VALUE() != 0 ) {
+        if (setsockopt(sock, SOL_IP, IP_TRANSPARENT_VALUE(), &one, sizeof(one) )<0) 
+            perrlog("setsockopt");
+    }
     if (setsockopt(sock,SOL_IP,IP_NONLOCAL_VALUE(),&one,sizeof(one))<0) 
         perrlog("setsockopt");
     if (setsockopt(sock,SOL_TCP,TCP_NODELAY,&one,sizeof(one))<0) 
@@ -156,7 +160,7 @@ static int  _netcap_tcp_setsockopt_srv ( int sock )
     if (setsockopt(sock,SOL_TCP,TCP_KEEPCNT,&nine,sizeof(nine)) < 0 )
         perrlog("setsockopt");
 
-    if (setsockopt(sock,SOL_IP,IP_SENDNFMARK,&nfmark,sizeof(nfmark))<0)
+    if (setsockopt(sock,SOL_IP,IP_SENDNFMARK_VALUE(),&nfmark,sizeof(nfmark))<0)
         return perrlog( "setsockopt" );
 
     return 0;

@@ -188,7 +188,7 @@ static int _netcap_tcp_get_mark ( int sock )
     };
     u_int size = sizeof(nfmark);
     
-    if ( getsockopt(sock,SOL_IP,IP_SENDNFMARK,&nfmark,&size) < 0 )
+    if ( getsockopt(sock,SOL_IP,IP_SENDNFMARK_VALUE(),&nfmark,&size) < 0 )
         return perrlog( "setsockopt" );
 
     return nfmark.mark;
@@ -205,7 +205,7 @@ static int _netcap_tcp_set_mark ( int sock, int mark )
         .mark = mark
     };
 
-    if ( setsockopt(sock,SOL_IP,IP_SENDNFMARK,&nfmark,sizeof(nfmark)) < 0 )
+    if ( setsockopt(sock,SOL_IP,IP_SENDNFMARK_VALUE(),&nfmark,sizeof(nfmark)) < 0 )
         return perrlog( "setsockopt" );
 
     return 0;
@@ -414,7 +414,7 @@ static int  _netcap_tcp_accept_hook ( int cli_sock, struct sockaddr_in client )
      * Get the mark
      * and convert it to and interface index
      */
-    if ( getsockopt(cli_sock, SOL_IP, IP_FIRSTNFMARK, &nfmark, &nfmark_len) < 0 )
+    if ( getsockopt(cli_sock, SOL_IP, IP_FIRSTNFMARK_VALUE(), &nfmark, &nfmark_len) < 0 )
         return perrlog("getsockopt");
     if ( netcap_interface_mark_to_cli_intf(nfmark,&cli_intf_idx) < 0 )
         return perrlog("netcap_interface_mark_to_intf");
