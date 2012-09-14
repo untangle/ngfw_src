@@ -16,18 +16,18 @@ import com.untangle.uvm.node.SessionTuple;
 @SuppressWarnings("serial")
 public class SessionEvent extends LogEvent
 {
-    private Long sessionId = -1L;
-    private Short protocol;
-    private Integer clientIntf;
-    private Integer serverIntf;
+    private long sessionId = -1L;
+    private short protocol = 0;
+    private int clientIntf = 0;
+    private int serverIntf = 0;
     private InetAddress cClientAddr;
     private InetAddress sClientAddr;
     private InetAddress cServerAddr;
     private InetAddress sServerAddr;
-    private Integer cClientPort;
-    private Integer sClientPort;
-    private Integer cServerPort;
-    private Integer sServerPort;
+    private int cClientPort = 0;
+    private int sClientPort = 0;
+    private int cServerPort = 0;
+    private int sServerPort = 0;
     private Long policyId;
     private String username;
     private String hostname;
@@ -38,7 +38,7 @@ public class SessionEvent extends LogEvent
      * This constructor is called by ArgonHook
      * The other fields are completed later
      */
-    public SessionEvent( Long sessionId, SessionTuple clientSide, String username, String hostname )
+    public SessionEvent( long sessionId, SessionTuple clientSide, String username, String hostname )
     {
         super();
         this.sessionId = sessionId;
@@ -48,7 +48,7 @@ public class SessionEvent extends LogEvent
         this.hostname = hostname;
     }
 
-    public void completeEndpoints( SessionTuple clientSide, SessionTuple serverSide, Long policyId )
+    public void completeEndpoints( SessionTuple clientSide, SessionTuple serverSide, long policyId )
     {
         cClientAddr = clientSide.getClientAddr();
         cClientPort = clientSide.getClientPort();
@@ -67,12 +67,12 @@ public class SessionEvent extends LogEvent
      *
      * @return the id of the session
      */
-    public Long getSessionId()
+    public long getSessionId()
     {
         return sessionId;
     }
 
-    public void setSessionId(Long sessionId)
+    public void setSessionId(long sessionId)
     {
         this.sessionId = sessionId;
     }
@@ -82,12 +82,12 @@ public class SessionEvent extends LogEvent
      *
      * @return the id of the session
      */
-    public Short getProtocol()
+    public short getProtocol()
     {
         return protocol;
     }
 
-    public void setProtocol(Short protocol)
+    public void setProtocol(short protocol)
     {
         this.protocol = protocol;
     }
@@ -97,12 +97,12 @@ public class SessionEvent extends LogEvent
      *
      * @return the number of the interface of the client
      */
-    public Integer getClientIntf()
+    public int getClientIntf()
     {
         return clientIntf;
     }
 
-    public void setClientIntf(Integer clientIntf)
+    public void setClientIntf(int clientIntf)
     {
         this.clientIntf = clientIntf;
     }
@@ -112,12 +112,12 @@ public class SessionEvent extends LogEvent
      *
      * @return the number of the interface of the server
      */
-    public Integer getServerIntf()
+    public int getServerIntf()
     {
         return serverIntf;
     }
 
-    public void setServerIntf(Integer serverIntf)
+    public void setServerIntf(int serverIntf)
     {
         this.serverIntf = serverIntf;
     }
@@ -187,12 +187,12 @@ public class SessionEvent extends LogEvent
      *
      * @return the port of the client (as seen at client side of pipeline)
      */
-    public Integer getCClientPort()
+    public int getCClientPort()
     {
         return cClientPort;
     }
 
-    public void setCClientPort(Integer cClientPort)
+    public void setCClientPort(int cClientPort)
     {
         this.cClientPort = cClientPort;
     }
@@ -202,12 +202,12 @@ public class SessionEvent extends LogEvent
      *
      * @return the port of the client (as seen at server side of pipeline)
      */
-    public Integer getSClientPort()
+    public int getSClientPort()
     {
         return sClientPort;
     }
 
-    public void setSClientPort(Integer sClientPort)
+    public void setSClientPort(int sClientPort)
     {
         this.sClientPort = sClientPort;
     }
@@ -217,12 +217,12 @@ public class SessionEvent extends LogEvent
      *
      * @return the port of the server (as seen at client side of pipeline)
      */
-    public Integer getCServerPort()
+    public int getCServerPort()
     {
         return cServerPort;
     }
 
-    public void setCServerPort(Integer cServerPort)
+    public void setCServerPort(int cServerPort)
     {
         this.cServerPort = cServerPort;
     }
@@ -232,12 +232,12 @@ public class SessionEvent extends LogEvent
      *
      * @return the port of the server (as seen at server side of pipeline)
      */
-    public Integer getSServerPort()
+    public int getSServerPort()
     {
         return sServerPort;
     }
 
-    public void setSServerPort(Integer sServerPort)
+    public void setSServerPort(int sServerPort)
     {
         this.sServerPort = sServerPort;
     }
@@ -334,7 +334,7 @@ public class SessionEvent extends LogEvent
     {
         if (o instanceof SessionEvent) {
             SessionEvent pe = (SessionEvent)o;
-            return getSessionId().equals(pe.getSessionId());
+            return getSessionId() == pe.getSessionId();
         } else {
             return false;
         }
@@ -344,15 +344,8 @@ public class SessionEvent extends LogEvent
     {
         String clientAddr = (getCClientAddr() != null ? getCClientAddr().getHostAddress() : "null");
         String serverAddr = (getSServerAddr() != null ? getSServerAddr().getHostAddress() : "null");
-        String clientPort = (getCClientPort() != null ? getCClientPort().toString() : "null");
-        String serverPort = (getSServerPort() != null ? getSServerPort().toString() : "null");
         String protocol  = getProtocolName();
         
-        return "SessionEvent: [" + protocol + "] " + clientAddr + ":" + clientPort + " -> " + serverAddr + ":" + serverPort;
-    }
-
-    public int hashCode()
-    {
-        return getSessionId().hashCode();
+        return "SessionEvent: [" + protocol + "] " + clientAddr + ":" + getCClientPort() + " -> " + serverAddr + ":" + getSServerPort();
     }
 }
