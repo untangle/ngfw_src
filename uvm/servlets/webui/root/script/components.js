@@ -4076,6 +4076,7 @@ Ext.define('Ung.EditorGrid', {
             plugins: [
             ],
             viewConfig: {
+                enableTextSelection: true,
                 stripeRows: true,
                 listeners: {
                     "drop": {
