@@ -173,7 +173,7 @@ static int  _netcap_icmp_send( char *data, int data_len, netcap_pkt_t* pkt, int 
     }
     cmsg->cmsg_len   = CMSG_LEN(sizeof( struct in_addr ));
     cmsg->cmsg_level = SOL_IP;
-    cmsg->cmsg_type  = IP_SADDR;
+    cmsg->cmsg_type  = IP_SADDR_VALUE();
     memcpy( CMSG_DATA(cmsg), &pkt->src.host, sizeof( struct in_addr ));
 
     /* nfmark */
@@ -184,7 +184,7 @@ static int  _netcap_icmp_send( char *data, int data_len, netcap_pkt_t* pkt, int 
     }
     cmsg->cmsg_len = CMSG_LEN(sizeof(nfmark));
     cmsg->cmsg_level = SOL_IP;
-    cmsg->cmsg_type  = IP_SENDNFMARK;
+    cmsg->cmsg_type  = IP_SENDNFMARK_VALUE();
     memcpy( CMSG_DATA( cmsg ), &nfmark, sizeof(nfmark));
 
     /* sanity check */

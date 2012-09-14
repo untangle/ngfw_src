@@ -22,7 +22,6 @@
 #include <semaphore.h>
 #include <sys/types.h>
 #include <sys/socket.h>
-#include <netinet/in.h>
 #include <netinet/ip.h>
 #include <netinet/udp.h>
 #include <arpa/inet.h>
@@ -97,7 +96,11 @@ int  netcap_udp_init ()
     if (setsockopt(_udp.send_sock, SOL_SOCKET, SO_BROADCAST,&one, sizeof(one)) < 0) {
         return perrlog ( "setsockopt" );
     }
-
+    if ( IP_TRANSPARENT_VALUE() != 0 ) {
+        if (setsockopt(_udp.send_sock, SOL_IP, IP_TRANSPARENT_VALUE(), &one, sizeof(one)) < 0) 
+            return perrlog ( "setsockopt" );
+    }
+    
     return 0;
 }
 
@@ -164,22 +167,26 @@ int  netcap_udp_recvfrom (int sock, void* buf, size_t len, int flags, netcap_pkt
         unknown = 0;
         
         if ( cmsg->cmsg_level == SOL_IP ) {
-            switch ( cmsg->cmsg_type ) {
-            case IP_PKTINFO:
+            if ( cmsg->cmsg_type == IP_PKTINFO ) {
                 pkti = (struct in_pktinfo*) CMSG_DATA(cmsg);
                 memcpy(&pkt->dst.host,&pkti->ipi_addr,sizeof(struct in_addr));
-                break;
-
-            case IP_TTL: pkt->ttl = *(u_char*)CMSG_DATA(cmsg); break;
-            case IP_TOS: pkt->tos = *(u_char*)CMSG_DATA(cmsg); break;
-            case IP_RECVNFMARK:  pkt->nfmark = *(u_int*)CMSG_DATA(cmsg); break;
-            case IP_RETOPTS:
+            }
+            else if ( cmsg->cmsg_type == IP_TTL ) {
+                pkt->ttl = *(u_char*)CMSG_DATA(cmsg); 
+            }
+            else if ( cmsg->cmsg_type == IP_TOS ) {
+                pkt->tos = *(u_char*)CMSG_DATA(cmsg); 
+            }
+            else if ( cmsg->cmsg_type == IP_RECVNFMARK_VALUE() ) {
+                pkt->nfmark = *(u_int*)CMSG_DATA(cmsg);
+            }
+            else if ( cmsg->cmsg_type == IP_RETOPTS ) {
                 pkt->opts_len = cmsg->cmsg_len-CMSG_LEN(0);
                 pkt->opts = malloc(pkt->opts_len);
                 if( !pkt->opts ) return errlogmalloc();
                 memcpy(pkt->opts,CMSG_DATA(cmsg),pkt->opts_len);
-                break;
-            default: unknown = 1;
+            } else {
+                unknown = 1;
             }
         } else if  ( cmsg->cmsg_level == SOL_UDP ) {
             switch ( cmsg->cmsg_type ) {
@@ -471,7 +478,7 @@ static int _netcap_udp_sendto (int sock, void* data, size_t data_len, int flags,
     }
     cmsg->cmsg_len = CMSG_LEN(sizeof(nfmark));
     cmsg->cmsg_level = SOL_IP;
-    cmsg->cmsg_type  = IP_SENDNFMARK;
+    cmsg->cmsg_type  = IP_SENDNFMARK_VALUE();
     memcpy( CMSG_DATA( cmsg ), &nfmark, sizeof(nfmark) );
 
     /* src ip */
