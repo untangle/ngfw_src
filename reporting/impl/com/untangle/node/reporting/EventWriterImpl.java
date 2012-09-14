@@ -244,7 +244,7 @@ public class EventWriterImpl implements Runnable
                         try {
                             pstmt.execute();
                         } catch (SQLException e) {
-                            logger.warn("Failed SQL query: \"" + pstmt + "\": " + e.getMessage());
+                            logger.warn("Failed SQL query: \"" + pstmt + "\"", e);
                         }
                     }
                     long write_t1 = System.currentTimeMillis();
@@ -262,7 +262,7 @@ public class EventWriterImpl implements Runnable
                     }
                 }
             } catch (Exception e) {
-                logger.warn("Failed SQL query(s) for event: \"" + event.getClass(), e);
+                logger.warn("Failed SQL query(s) for event \"" + event.getClass() + "\" object: \"" + event.toJSONString() + "\"", e);
             }
 
 
