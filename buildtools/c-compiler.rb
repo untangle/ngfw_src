@@ -90,7 +90,7 @@ class CCompilerEnv
   end
 
   def CCompilerEnv.defaultDebugFlags
-    ( $DevelBuild ) ?  "-g -ggdb -DDEBUG_ON" : ""
+    ( $DevelBuild ) ?  "-g -ggdb -DDEBUG_ON" : " -DDEBUG_ON "
   end
 
   def CCompilerEnv.defaultOptimizations

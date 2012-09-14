@@ -24,7 +24,6 @@
 
 #define UTIL_DEBUG_PKG 255
 
-#define DEBUG_ON
 #ifdef DEBUG_ON
 #include <stdio.h>
 

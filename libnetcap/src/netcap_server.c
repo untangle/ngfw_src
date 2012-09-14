@@ -226,12 +226,14 @@ int  netcap_server (void)
         
     while(1) {
 
+        debug(10,"netcap_server: epoll()\n");
         if ((num_events = epoll_wait(_epoll_fd,events,EPOLL_MAX_EVENT,-1)) < 0) {
             _server_unlock();
             perrlog("epoll_wait");
             usleep(10000); /* just in case - prevent spinning */
             goto entry;
         }
+        debug(10,"netcap_server: epoll() return\n");
 
         /**
          * handle events
