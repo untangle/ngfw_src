@@ -49,19 +49,11 @@ typedef struct session_tuple {
 } session_tuple_t;
 
 static u_char _tuple_equ_func (const void* input,const void* input2);
-static u_long  _tuple_hash_func (const void* input);
-static session_tuple_t* _tuple_create (u_short proto, 
-                                       in_addr_t shost, in_addr_t dhost, 
-                                       u_short sport, u_short dport, u_int seq);
-
-static int _netcap_sesstable_merge_tuple( netcap_session_t* netcap_sess, int proto, 
-                                          in_addr_t src, in_addr_t dst, u_short sport, u_short dport,
-                                          netcap_intf_t intf, int icmp_pid );
-
+static u_long _tuple_hash_func (const void* input);
+static session_tuple_t* _tuple_create (u_short proto, in_addr_t shost, in_addr_t dhost, u_short sport, u_short dport, u_int seq);
+static int _netcap_sesstable_merge_tuple( netcap_session_t* netcap_sess, int proto, in_addr_t src, in_addr_t dst, u_short sport, u_short dport, netcap_intf_t intf, int icmp_pid );
 static int _netcap_sesstable_remove (netcap_session_t* netcap_sess);
-static int _netcap_sesstable_remove_tuple (u_short proto, 
-                                           in_addr_t shost, in_addr_t dhost, 
-                                           u_short sport, u_short dport, u_int seq);
+static int _netcap_sesstable_remove_tuple (u_short proto, in_addr_t shost, in_addr_t dhost, u_short sport, u_short dport, u_int seq);
 
 static int    _initialized = 0;
 static ht_t   _sess_id_table;
@@ -132,22 +124,22 @@ netcap_session_t* netcap_nc_sesstable_get (int if_lock, u_int64_t id)
 
     if ( if_lock ) SESSTABLE_RDLOCK();
 
-    session = (netcap_session_t*)ht_lookup(&_sess_id_table,(void*)(u_int32_t)id); /* XXX loss of precision */
-
+#if __WORDSIZE == 32
+    session = (netcap_session_t*)ht_lookup(&_sess_id_table,(void*)(u_int32_t)id);
+#else
+    session = (netcap_session_t*)ht_lookup(&_sess_id_table,(void*)id);
+#endif
     if ( if_lock ) SESSTABLE_UNLOCK();
     
     return session;
 }
 
-netcap_session_t* netcap_sesstable_get_tuple ( int proto, in_addr_t src, in_addr_t dst, 
-                                               u_short sport, u_short dport)
+netcap_session_t* netcap_sesstable_get_tuple ( int proto, in_addr_t src, in_addr_t dst, u_short sport, u_short dport)
 {
     return netcap_nc_sesstable_get_tuple(NC_SESSTABLE_LOCK,proto,src,dst,sport,dport,0);
 }
 
-
-netcap_session_t* netcap_nc_sesstable_get_tuple ( int if_lock, int proto, in_addr_t src, in_addr_t dst, 
-                                                  u_short sport, u_short dport, u_int seq )
+netcap_session_t* netcap_nc_sesstable_get_tuple ( int if_lock, int proto, in_addr_t src, in_addr_t dst, u_short sport, u_short dport, u_int seq )
 {
     session_tuple_t st = { .proto = proto, .shost = src, .dhost = dst, .sport = sport, .dport = dport, .seq = seq };
     netcap_session_t* session;
@@ -165,7 +157,7 @@ netcap_session_t* netcap_nc_sesstable_get_tuple ( int if_lock, int proto, in_add
     if ( if_lock ) SESSTABLE_RDLOCK();
 
     session = ht_lookup(&_sess_tuple_table,(void*)&st);
-
+    
     if ( if_lock ) SESSTABLE_UNLOCK();
     
     return session;
@@ -176,8 +168,7 @@ int        netcap_sesstable_numsessions ( void )
     return netcap_nc_sesstable_numsessions(NC_SESSTABLE_LOCK);
 }
 
-
-int        netcap_nc_sesstable_numsessions (int if_lock)
+int        netcap_nc_sesstable_numsessions (int if_lock )
 {
     int ret;
 
@@ -197,7 +188,6 @@ list_t*    netcap_sesstable_get_all_sessions ( void )
     return netcap_nc_sesstable_get_all_sessions (NC_SESSTABLE_LOCK);
 }
 
-
 list_t*    netcap_nc_sesstable_get_all_sessions ( int if_lock )
 {
     list_t* sessions;
@@ -213,12 +203,12 @@ list_t*    netcap_nc_sesstable_get_all_sessions ( int if_lock )
     return sessions;
 }
 
-int        netcap_sesstable_add (netcap_session_t* netcap_sess)
+int        netcap_sesstable_add ( netcap_session_t* netcap_sess )
 {
     return netcap_nc_sesstable_add(NC_SESSTABLE_LOCK,netcap_sess);
 }
 
-int        netcap_nc_sesstable_add (int if_lock, netcap_session_t* netcap_sess)
+int        netcap_nc_sesstable_add ( int if_lock, netcap_session_t* netcap_sess )
 {
     if ( !netcap_sess ) return errlogargs();
 
@@ -228,27 +218,29 @@ int        netcap_nc_sesstable_add (int if_lock, netcap_session_t* netcap_sess)
 
     if ( if_lock) SESSTABLE_WRLOCK();
 
-     /* XXX loss of precision */
+#if __WORDSIZE == 32
     if ( ht_add( &_sess_id_table, (void*)(u_int32_t)netcap_sess->session_id, (void*)netcap_sess ) < 0 ) {
         if ( if_lock ) SESSTABLE_UNLOCK();
         return perrlog( "hash_add" );
     }
+#else
+    if ( ht_add( &_sess_id_table, (void*)netcap_sess->session_id, (void*)netcap_sess ) < 0 ) {
+        if ( if_lock ) SESSTABLE_UNLOCK();
+        return perrlog( "hash_add" );
+    }
+#endif
 
     if ( if_lock) SESSTABLE_UNLOCK();
 
     return 0;
 }
 
-int        netcap_sesstable_add_tuple (netcap_session_t* netcap_sess, int protocol,
-                                       in_addr_t src, in_addr_t dst, 
-                                       u_short sport, u_short dport)
+int        netcap_sesstable_add_tuple ( netcap_session_t* netcap_sess, int protocol, in_addr_t src, in_addr_t dst, u_short sport, u_short dport )
 {
     return netcap_nc_sesstable_add_tuple( NC_SESSTABLE_LOCK, netcap_sess, protocol,src,dst, sport, dport, 0);
 }
 
-int        netcap_nc_sesstable_add_tuple (int if_lock, netcap_session_t* sess, int protocol,
-                                          in_addr_t src, in_addr_t dst,
-                                          u_short sport, u_short dport, u_int seq)
+int        netcap_nc_sesstable_add_tuple ( int if_lock, netcap_session_t* sess, int protocol, in_addr_t src, in_addr_t dst, u_short sport, u_short dport, u_int seq )
 {
     session_tuple_t* st;
     
@@ -280,14 +272,12 @@ int        netcap_nc_sesstable_add_tuple (int if_lock, netcap_session_t* sess, i
     return 0;
 }
 
-int        netcap_sesstable_merge_udp_tuple ( netcap_session_t* netcap_sess, in_addr_t src, in_addr_t dst,
-                                              u_short sport, u_short dport, netcap_intf_t intf )
+int        netcap_sesstable_merge_udp_tuple ( netcap_session_t* netcap_sess, in_addr_t src, in_addr_t dst, u_short sport, u_short dport, netcap_intf_t intf )
 {
     return _netcap_sesstable_merge_tuple( netcap_sess, IPPROTO_UDP, src, dst, sport, dport, intf, 0 );
 }
 
-int        netcap_sesstable_merge_icmp_tuple ( netcap_session_t* netcap_sess, in_addr_t src, in_addr_t dst, 
-                                               netcap_intf_t intf, int icmp_pid )
+int        netcap_sesstable_merge_icmp_tuple ( netcap_session_t* netcap_sess, in_addr_t src, in_addr_t dst, netcap_intf_t intf, int icmp_pid )
                                                
 {
     /* If unspecified, use the ID from the client side */
@@ -303,9 +293,7 @@ int        netcap_sesstable_merge_icmp_tuple ( netcap_session_t* netcap_sess, in
     return _netcap_sesstable_merge_tuple( netcap_sess, IPPROTO_ICMP, src, dst, 0, 0, intf, icmp_pid ); 
 }
 
-int        netcap_sesstable_remove_tuple (int if_lock, int proto, 
-                                          in_addr_t shost, in_addr_t dhost, 
-                                          u_short sport, u_short dport, u_int seq)
+int        netcap_sesstable_remove_tuple (int if_lock, int proto, in_addr_t shost, in_addr_t dhost, u_short sport, u_short dport, u_int seq )
 {
     debug(4,"SESSTAB: %s :: (%i,%s:%i -> ","Removing tuple", proto,
           inet_ntoa(*(struct in_addr*)&shost),sport);
@@ -325,7 +313,7 @@ int        netcap_sesstable_remove_tuple (int if_lock, int proto,
     return 0;
 }
 
-int netcap_sesstable_remove (int if_lock, netcap_session_t* netcap_sess)
+int        netcap_sesstable_remove ( int if_lock, netcap_session_t* netcap_sess )
 {
     int ret;
 
@@ -346,7 +334,7 @@ int netcap_sesstable_remove (int if_lock, netcap_session_t* netcap_sess)
    return ret;
 }
 
-int netcap_sesstable_remove_session (int if_lock, netcap_session_t* netcap_sess)
+int        netcap_sesstable_remove_session ( int if_lock, netcap_session_t* netcap_sess )
 {
     netcap_endpoints_t* endpoints;
 
@@ -402,21 +390,65 @@ int netcap_sesstable_remove_session (int if_lock, netcap_session_t* netcap_sess)
     return 0;
 }
 
-static int _netcap_sesstable_remove (netcap_session_t* netcap_sess)
+int        netcap_sesstable_kill_all_sessions ( void (*kill_all_function)(list_t *sessions) )
+{
+    list_t *sessions;
+    int count;
+    
+    if ( kill_all_function == NULL ) return errlogargs();
+
+    _verify_initialized();
+    
+    SESSTABLE_RDLOCK();
+
+    count = ht_num_entries(&_sess_id_table);
+    
+    if ( count < 0 ) {
+        SESSTABLE_UNLOCK();
+        return perrlog("ht_num_entries");
+    }
+
+    if ( count == 0 ) {
+        SESSTABLE_UNLOCK();
+        return 0;
+    }
+
+    sessions = ht_get_content_list ( &_sess_id_table);
+    
+    if ( sessions == NULL ) {
+        SESSTABLE_UNLOCK();
+        return perrlog("ht_get_content_list");        
+    }
+
+    kill_all_function(sessions);
+    
+    SESSTABLE_UNLOCK();
+    
+    list_destroy(sessions);
+    list_free(sessions);
+    
+    return count;
+}
+
+static int _netcap_sesstable_remove ( netcap_session_t* netcap_sess )
 {
     /* Static/private function, no error checking necessary */
-    /* XXX loss of precision */
+#if __WORDSIZE == 32
     if (ht_remove(&_sess_id_table,(void*)(u_int32_t)netcap_sess->session_id)<0) {
-        /* XXX Why are errors ignored ???? */
+        perrlog("ht_remove");
         return -1;
     }
+#else
+    if (ht_remove(&_sess_id_table,(void*)netcap_sess->session_id)<0) {
+        perrlog("ht_remove");
+        return -1;
+    }
+#endif
     
     return 0;
 }
 
-static int _netcap_sesstable_remove_tuple(u_short proto, 
-                                          in_addr_t shost, in_addr_t dhost, 
-                                          u_short sport, u_short dport, u_int seq) 
+static int _netcap_sesstable_remove_tuple ( u_short proto, in_addr_t shost, in_addr_t dhost, u_short sport, u_short dport, u_int seq ) 
 {    
     /* Static/private function, no error checking necessary */
     session_tuple_t st = {proto,shost,dhost,sport,dport,seq};
@@ -442,9 +474,7 @@ static int _netcap_sesstable_remove_tuple(u_short proto,
  *   6. Put all of the UDP packets in the current session client mailbox
  *      into this servers server mailbox. (XXX Only if UDP or ICMP)
  */
-static int _netcap_sesstable_merge_tuple( netcap_session_t* netcap_sess, int proto, 
-                                          in_addr_t src, in_addr_t dst, u_short sport, u_short dport,
-                                          netcap_intf_t intf, int icmp_pid )
+static int _netcap_sesstable_merge_tuple( netcap_session_t* netcap_sess, int proto, in_addr_t src, in_addr_t dst, u_short sport, u_short dport, netcap_intf_t intf, int icmp_pid )
 {
     netcap_session_t* current_sess;
     session_tuple_t* st = NULL;
@@ -528,48 +558,7 @@ static int _netcap_sesstable_merge_tuple( netcap_session_t* netcap_sess, int pro
     return 0;    
 }
 
-int netcap_sesstable_kill_all_sessions ( void (*kill_all_function)(list_t *sessions))
-{
-    list_t *sessions;
-    int count;
-    
-    if ( kill_all_function == NULL ) return errlogargs();
-
-    _verify_initialized();
-    
-    SESSTABLE_RDLOCK();
-
-    count = ht_num_entries(&_sess_id_table);
-    
-    if ( count < 0 ) {
-        SESSTABLE_UNLOCK();
-        return perrlog("ht_num_entries");
-    }
-
-    if ( count == 0 ) {
-        SESSTABLE_UNLOCK();
-        return 0;
-    }
-
-    sessions = ht_get_content_list ( &_sess_id_table);
-    
-    if ( sessions == NULL ) {
-        SESSTABLE_UNLOCK();
-        return perrlog("ht_get_content_list");        
-    }
-
-    kill_all_function(sessions);
-    
-    SESSTABLE_UNLOCK();
-    
-    list_destroy(sessions);
-    list_free(sessions);
-    
-    return count;
-}
-
-static session_tuple_t* _tuple_create ( u_short proto, in_addr_t shost, in_addr_t dhost, 
-                                        u_short sport, u_short dport, u_int seq)
+static session_tuple_t* _tuple_create ( u_short proto, in_addr_t shost, in_addr_t dhost, u_short sport, u_short dport, u_int seq)
 {
     session_tuple_t* st;
 
