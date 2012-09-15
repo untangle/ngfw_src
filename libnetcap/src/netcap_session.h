@@ -74,14 +74,12 @@ int netcap_tcp_session_init( netcap_session_t* netcap_sess,
                              in_addr_t client_addr, u_short client_port,
                              int client_sock, in_addr_t server_addr, 
                              u_short server_port, int server_sock,
-                             netcap_intf_t cli_intf, netcap_intf_t srv_intf, 
-                             int flags, u_int seq );
+                             netcap_intf_t cli_intf, netcap_intf_t srv_intf, u_int seq );
 
 netcap_session_t* netcap_tcp_session_create(in_addr_t client_addr, u_short client_port,
                                             int client_sock, in_addr_t server_addr,
                                             u_short server_port, int server_sock,
-                                            netcap_intf_t cli_intf, netcap_intf_t srv_intf,
-                                            int flags, u_int seq);
+                                            netcap_intf_t cli_intf, netcap_intf_t srv_intf, u_int seq);
 
 void netcap_tcp_session_debug(netcap_session_t* netcap_sess, int level, char *msg);
 

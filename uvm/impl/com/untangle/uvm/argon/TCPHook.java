@@ -95,7 +95,6 @@ public class TCPHook implements NetcapHook
             int clientPort;
             InetAddress serverAddr;
             int serverPort;
-            int flags = NetcapTCPSession.NON_LOCAL_BIND;
 
             if ( sessionList.isEmpty()) {
                 clientAddr = netcapTCPSession.serverSide().client().host();
@@ -120,17 +119,13 @@ public class TCPHook implements NetcapHook
 
             if ( logger.isInfoEnabled()) {
                 logger.info( "TCP - Completing server connection: " + sessionGlobalState );
-
-                if (( flags & NetcapTCPSession.NON_LOCAL_BIND) == NetcapTCPSession.NON_LOCAL_BIND ) {
-                    logger.debug( "Using non-local binding" );
-                }
                 logger.debug( "Client: " + clientAddr + ":" + clientPort );
                 logger.debug( "Server: " + serverAddr + ":" + serverPort );
             }
 
             try {
                 int intfId = clientSide.getServerIntf();
-                netcapTCPSession.serverComplete( clientAddr, clientPort, serverAddr, serverPort, intfId, flags );
+                netcapTCPSession.serverComplete( clientAddr, clientPort, serverAddr, serverPort, intfId );
                 netcapTCPSession.tcpServerSide().blocking( false );
                 ifServerComplete = true;
             } catch ( Exception e ) {

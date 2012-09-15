@@ -1,21 +1,6 @@
-/*
- * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License, version 2,
- * as published by the Free Software Foundation.
- *
- * This program is distributed in the hope that it will be useful, but
- * AS-IS and WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE, TITLE, or
- * NONINFRINGEMENT.  See the GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
+/**
+ * $Id$
  */
-
 package com.untangle.jnetcap;
 
 import java.net.InetAddress;
@@ -25,9 +10,6 @@ public class NetcapUDPSession extends NetcapSession
 {
     protected static final int MERGED_DEAD = 0xDEAD00D;
 
-    private static final int DEFAULT_LIBERATE_FLAGS = 0;
-    //unused private static final int DEFAULT_SERVER_COMPLETE_FLAGS = 0;
-    
     /** These cannot conflict with the flags inside of NetcapTCPSession and NetcapSession */
     private final static int FLAG_TTL            = 64;
     private final static int FLAG_TOS            = 65;
@@ -94,7 +76,7 @@ public class NetcapUDPSession extends NetcapSession
      */
     public void liberate()
     {
-        liberate( pointer.value(), DEFAULT_LIBERATE_FLAGS );
+        liberate( pointer.value() );
     }
 
     /**
@@ -105,7 +87,7 @@ public class NetcapUDPSession extends NetcapSession
         /* Move the first packet over to the server sink, this is used to confirm 
          * The conntrack entry */
         transferFirstPacketID( pointer.value(), serverTraffic.pointer());
-        // serverComplete( pointer.value(), DEFAULT_SERVER_COMPLETE_FLAGS );
+        // serverComplete( pointer.value() );
     }
 
     public void setServerTraffic(IPTraffic serverTraffic)
@@ -172,10 +154,10 @@ public class NetcapUDPSession extends NetcapSession
     private static native int  send( long packetPointer );
 
     /* Release a session that was previously captured */
-    private static native void liberate( long sessionPointer, int flags );
+    private static native void liberate( long sessionPointer );
 
     /* Complete a session that was previously captured */
-	private static native void serverComplete( long sessionPointer, int flags );
+	private static native void serverComplete( long sessionPointer );
 
     /* Move over the first packet ID in the session */
     private static native void transferFirstPacketID( long sessionPointer, long serverTraffic );

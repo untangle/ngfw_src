@@ -44,10 +44,6 @@ typedef enum {
 } netcap_intf_t;
 
 typedef enum {
-    SRV_COMPLETE_NONLOCAL_BIND = 1
-} netcap_callback_flag_t;
-
-typedef enum {
     CONN_STATE_INCOMPLETE = 1,
     CONN_STATE_COMPLETE,
     CONN_STATE_NULL
@@ -200,7 +196,7 @@ typedef struct netcap_pkt {
 
 typedef struct netcap_session {
     /**
-     * this will be IPPROTO_TCP or IPPROTO_UDP \n
+     * this will be IPPROTO_TCP or IPPROTO_UDP
      */
     int protocol; 
 
@@ -213,8 +209,10 @@ typedef struct netcap_session {
      */
     short alive;
 
-    /* Indicates whether or not to remove the tuples associated with
-     * traf_srv and traf_cli */
+    /**
+     * Indicates whether or not to remove the tuples associated with
+     * traf_srv and traf_cli
+     */
     short remove_tuples;
 
     /**
@@ -302,8 +300,7 @@ typedef struct netcap_session {
      * in the case of SRV_UNFINI or CLI_UNFINI this can be used to complete the
      * connection
      */
-    int  (*callback) ( struct netcap_session* netcap_sess, netcap_callback_action_t action,
-                       netcap_callback_flag_t flags );
+    int  (*callback) ( struct netcap_session* netcap_sess, netcap_callback_action_t action );
 
     /**
      * The state of this TCP session

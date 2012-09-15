@@ -63,21 +63,13 @@ static struct {
 /* XX May make more sense to call extern functions that are not global netcap functions
  * just _tcp rather than prefixing with netcap.
  */
-extern int  _netcap_tcp_callback_cli_complete( netcap_session_t* netcap_sess, 
-                                               netcap_callback_action_t action, 
-                                               netcap_callback_flag_t flags );
+extern int  _netcap_tcp_callback_cli_complete( netcap_session_t* netcap_sess, netcap_callback_action_t action );
 
-extern int  _netcap_tcp_callback_srv_complete( netcap_session_t* netcap_sess, 
-                                               netcap_callback_action_t action, 
-                                               netcap_callback_flag_t flags );
+extern int  _netcap_tcp_callback_srv_complete( netcap_session_t* netcap_sess, netcap_callback_action_t action );
 
-extern int  _netcap_tcp_callback_cli_reject  ( netcap_session_t* netcap_sess, 
-                                               netcap_callback_action_t action, 
-                                               netcap_callback_flag_t flags );
+extern int  _netcap_tcp_callback_cli_reject  ( netcap_session_t* netcap_sess, netcap_callback_action_t action );
 
-extern int  _netcap_tcp_callback_liberate    ( netcap_session_t* netcap_sess, 
-                                               netcap_callback_action_t action, 
-                                               netcap_callback_flag_t flags );
+extern int  _netcap_tcp_callback_liberate    ( netcap_session_t* netcap_sess, netcap_callback_action_t action );
 
 /* Initialization and cleanup routines */
 static int  _redirect_ports_open( void );
@@ -101,8 +93,7 @@ static int _netcap_tcp_set_mark ( int sock, int mark );
 static netcap_session_t* _netcap_get_or_create_sess( int* created_flag,
                                                      in_addr_t cli_addr, u_short cli_port, int cli_sock,
                                                      in_addr_t srv_addr, u_short srv_port, int srv_sock,
-                                                     netcap_intf_t cli_intf, netcap_intf_t srv_intf, 
-                                                     int flags, u_int seq );
+                                                     netcap_intf_t cli_intf, netcap_intf_t srv_intf, u_int seq );
 
 int  netcap_tcp_init ( void )
 {
@@ -217,15 +208,15 @@ int  netcap_tcp_syn_mode ( int toggle )
     return 0;
 }
 
-int  netcap_tcp_callback ( netcap_session_t* netcap_sess, netcap_callback_action_t action, netcap_callback_flag_t flags )
+int  netcap_tcp_callback ( netcap_session_t* netcap_sess, netcap_callback_action_t action )
 {
     if ( netcap_sess == NULL ) return errlogargs();
 
     switch ( action ) {
     case CLI_COMPLETE: 
-        return _netcap_tcp_callback_cli_complete( netcap_sess, action, flags );
+        return _netcap_tcp_callback_cli_complete( netcap_sess, action  );
     case SRV_COMPLETE: 
-        return _netcap_tcp_callback_srv_complete( netcap_sess, action, flags );
+        return _netcap_tcp_callback_srv_complete( netcap_sess, action );
     case CLI_RESET:
         /* fallthrough */
     case CLI_DROP:
@@ -233,9 +224,9 @@ int  netcap_tcp_callback ( netcap_session_t* netcap_sess, netcap_callback_action
     case CLI_ICMP:
         /* fallthrough */
     case CLI_FORWARD_REJECT:
-        return _netcap_tcp_callback_cli_reject( netcap_sess, action,flags );
+        return _netcap_tcp_callback_cli_reject( netcap_sess, action );
     case LIBERATE:
-        return _netcap_tcp_callback_liberate( netcap_sess, action, flags );
+        return _netcap_tcp_callback_liberate( netcap_sess, action );
 
     default:
         return errlog( ERR_CRITICAL, "Unknown action: %i\n", action );
@@ -404,7 +395,6 @@ static int  _netcap_tcp_accept_hook ( int cli_sock, struct sockaddr_in client )
     u_short   cli_port,srv_port;
     struct sockaddr_in server;
     u_int server_len = sizeof(server);
-    int   flags = 0;  /* XXX Ignored now that subscriptions are gone */
     int   new_sess_flag = 0;
     netcap_session_t* sess = NULL;
     int nfmark;
@@ -438,8 +428,7 @@ static int  _netcap_tcp_accept_hook ( int cli_sock, struct sockaddr_in client )
     sess = _netcap_get_or_create_sess(&new_sess_flag,
                                       cli_addr,cli_port,cli_sock,
                                       srv_addr,srv_port,-1,
-                                      cli_intf_idx,NF_INTF_UNKNOWN,
-                                      flags,0);
+                                      cli_intf_idx,NF_INTF_UNKNOWN, 0);
 
     if (!sess)
         return errlog(ERR_CRITICAL,"Could not find or create new session\n");
@@ -476,7 +465,6 @@ static int  _netcap_tcp_syn_hook ( netcap_pkt_t* syn )
         
     in_addr_t cli_addr,srv_addr;
     u_short   cli_port,srv_port;
-    int   flags = 0;
     void* arg = NULL;
     int   new_sess_flag = 0;
     netcap_session_t* sess = NULL;
@@ -489,7 +477,6 @@ static int  _netcap_tcp_syn_hook ( netcap_pkt_t* syn )
     srv_intf = syn->dst_intf;
 
     arg   = NULL; /* XXX */
-    flags = 0;    /* XXX */
 
     debug( 8, "SYN: Intercepted packet ::  (%s:%-5i -> %s:%i) (intf:%d,%d) (syn:%i ack:%i)\n",
            unet_next_inet_ntoa( cli_addr ), cli_port, unet_next_inet_ntoa( srv_addr ), srv_port, 
@@ -497,7 +484,7 @@ static int  _netcap_tcp_syn_hook ( netcap_pkt_t* syn )
 
     /* XXXXX Need to hold a lock between calling the get and putting the SYN in the mailbox
      * so the mailbox cannot be deleted from underneath the function */
-    sess = _netcap_get_or_create_sess( &new_sess_flag, cli_addr, cli_port, -1, srv_addr, srv_port, -1, cli_intf, srv_intf, flags, 0 );
+    sess = _netcap_get_or_create_sess( &new_sess_flag, cli_addr, cli_port, -1, srv_addr, srv_port, -1, cli_intf, srv_intf, 0 );
 
     if ( sess == NULL ) {
         return errlog( ERR_CRITICAL, "Could not find or create new session\n" );
@@ -633,8 +620,7 @@ static int  _session_put_complete_fd ( netcap_session_t* netcap_sess, int client
 static netcap_session_t* _netcap_get_or_create_sess ( int* created_flag,
                                                       in_addr_t cli_addr, u_short cli_port, int cli_sock,
                                                       in_addr_t srv_addr, u_short srv_port, int srv_sock,
-                                                      netcap_intf_t cli_intf, netcap_intf_t srv_intf, 
-                                                      int flags, u_int seq )
+                                                      netcap_intf_t cli_intf, netcap_intf_t srv_intf, u_int seq )
 {
     netcap_session_t* sess;
 
@@ -666,7 +652,7 @@ static netcap_session_t* _netcap_get_or_create_sess ( int* created_flag,
 
     sess = netcap_tcp_session_create( cli_addr, cli_port, cli_sock,
                                       srv_addr, srv_port, srv_sock,
-                                      cli_intf, srv_intf, flags, seq );
+                                      cli_intf, srv_intf, seq );
 
     if ( netcap_nc_sesstable_add_tuple( !NC_SESSTABLE_LOCK, sess, IPPROTO_TCP,
                                         cli_addr, srv_addr,

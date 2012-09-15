@@ -49,7 +49,7 @@ int  netcap_tcp_redirect_socks( int** socket_array );
 int  netcap_tcp_syn_hook ( netcap_pkt_t* pkt );
 int  netcap_tcp_accept_hook ( int cli_sock, struct sockaddr_in client );
 
-int  netcap_tcp_callback ( netcap_session_t* tcp_sess, netcap_callback_action_t action, netcap_callback_flag_t flags );
+int  netcap_tcp_callback ( netcap_session_t* tcp_sess, netcap_callback_action_t action );
 
 void netcap_tcp_null_hook         ( netcap_session_t* netcap_sess, void *arg );
 int  netcap_tcp_syn_null_hook     ( netcap_pkt_t* pkt );

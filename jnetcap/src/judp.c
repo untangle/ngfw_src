@@ -1,21 +1,6 @@
-/*
- * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License, version 2,
- * as published by the Free Software Foundation.
- *
- * This program is distributed in the hope that it will be useful, but
- * AS-IS and WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE, TITLE, or
- * NONINFRINGEMENT.  See the GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
+/**
+ * $Id$
  */
-
 #include <jni.h>
 
 #include <stdio.h>
@@ -66,7 +51,7 @@
   } while (0)
 
 
-static void _udp_callback( jlong session_ptr, netcap_callback_action_t action, jint _flags );
+static void _udp_callback( jlong session_ptr, netcap_callback_action_t action );
 
 static netcap_endpoint_t* _get_pkt_endpoint( netcap_pkt_t* pkt, int req_id )
 {
@@ -434,9 +419,9 @@ JNIEXPORT jlong JNICALL JF_UDPSession( mailboxPointer )
  * Signature: (JI)I
  */
 JNIEXPORT void JNICALL JF_UDPSession( liberate )
-    ( JNIEnv *env, jclass _class, jlong session_ptr, jint flags )
+    ( JNIEnv *env, jclass _class, jlong session_ptr )
 {
-    _udp_callback( session_ptr, LIBERATE, flags );
+    _udp_callback( session_ptr, LIBERATE );
 }
 
 /*
@@ -499,15 +484,14 @@ JNIEXPORT void JNICALL JF_UDPSession( setSessionMark )
  * Signature: (JI)I
  */
 JNIEXPORT void JNICALL JF_UDPSession( serverComplete )
-    ( JNIEnv *env, jclass _class, jlong session_ptr, jint flags )
+    ( JNIEnv *env, jclass _class, jlong session_ptr  )
 {
-    _udp_callback( session_ptr, SRV_COMPLETE, flags );
+    _udp_callback( session_ptr, SRV_COMPLETE );
 }
 
-static void _udp_callback( jlong session_ptr, netcap_callback_action_t action, jint _flags )
+static void _udp_callback( jlong session_ptr, netcap_callback_action_t action )
 {
     netcap_session_t* netcap_sess;
-    int flags = 0;
 
     JLONG_TO_SESSION_VOID( netcap_sess, session_ptr );
     VERIFY_PKT_SESSION_VOID( netcap_sess );    
@@ -516,7 +500,7 @@ static void _udp_callback( jlong session_ptr, netcap_callback_action_t action, j
         return jmvutil_error_void( JMVUTIL_ERROR_STT, ERR_CRITICAL, "JPKT: null callback %d\n", action );
     }
 
-    if ( netcap_sess->callback( netcap_sess, action, flags ) < 0 ) {
+    if ( netcap_sess->callback( netcap_sess, action ) < 0 ) {
         debug( 2, "JPKT: callback failed=%d\n", action );
 
         /* Throw an error, but don't print an error message */

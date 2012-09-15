@@ -1,19 +1,5 @@
-/*
- * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License, version 2,
- * as published by the Free Software Foundation.
- *
- * This program is distributed in the hope that it will be useful, but
- * AS-IS and WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE, TITLE, or
- * NONINFRINGEMENT.  See the GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
+/**
+ * $Id$
  */
 #include "netcap_tcp.h"
 
@@ -60,14 +46,14 @@
 
 static int  _netcap_tcp_setsockopt_srv ( int sock );
 
-static int _srv_complete_connection( netcap_session_t* netcap_sess, int flags );
-static int _srv_start_connection( netcap_session_t* netcap_sess, struct sockaddr_in* dst_addr, int flags );
+static int _srv_complete_connection( netcap_session_t* netcap_sess );
+static int _srv_start_connection( netcap_session_t* netcap_sess, struct sockaddr_in* dst_addr );
 static int _srv_wait_complete( int ep_fd, netcap_session_t* netcap_sess, struct sockaddr_in* dst_addr );
 
 static int _icmp_mailbox_init    ( netcap_session_t* netcap_sess );
 static int _icmp_mailbox_destroy ( netcap_session_t* netcap_sess );
 
-int  _netcap_tcp_callback_srv_complete ( netcap_session_t* netcap_sess, netcap_callback_action_t action, netcap_callback_flag_t flags )
+int  _netcap_tcp_callback_srv_complete ( netcap_session_t* netcap_sess, netcap_callback_action_t action )
 {
     int ret = 0;
 
@@ -88,25 +74,6 @@ int  _netcap_tcp_callback_srv_complete ( netcap_session_t* netcap_sess, netcap_c
     
     ret = 0;
 
-    
-#if 0
-    /**
-     * Delete the conntrack entry
-     */
-    debug( 10, "FLAG attemping to delete the conntrack entry\n");
-
-    netcap_nfconntrack_ipv4_tuple_t tuple;
-    tuple.protocol = netcap_sess->protocol;
-    tuple.src_address = netcap_sess->cli.cli.host.s_addr;
-    tuple.src_port = htons((u_int16_t)netcap_sess->cli.cli.port);
-    tuple.dst_address = netcap_sess->cli.srv.host.s_addr;
-    tuple.dst_port = htons((u_int16_t)netcap_sess->cli.srv.port);
-
-    if(netcap_nfconntrack_del_entry_tuple(&tuple ,NFCONNTRACK_DIRECTION_ORIG) < 0){
-      return errlog( ERR_CRITICAL,"netcap_nfconntrack_del_entry_tuple\n");
-    }
-#endif
-    
     /* Grab the session table lock */
     SESSTABLE_WRLOCK();
     ret = _icmp_mailbox_init( netcap_sess );
@@ -114,7 +81,7 @@ int  _netcap_tcp_callback_srv_complete ( netcap_session_t* netcap_sess, netcap_c
     
     if ( ret < 0 ) return errlog( ERR_CRITICAL, "_icmp_mailbox_init\n" );    
 
-    if ( _srv_complete_connection( netcap_sess, flags ) < 0 ) {
+    if ( _srv_complete_connection( netcap_sess ) < 0 ) {
         ret = -1;
     } else {
         ret = 0;
@@ -166,14 +133,14 @@ static int  _netcap_tcp_setsockopt_srv ( int sock )
     return 0;
 }
 
-static int _srv_complete_connection( netcap_session_t* netcap_sess, int flags )
+static int _srv_complete_connection( netcap_session_t* netcap_sess )
 {
     struct sockaddr_in dst_addr;
     int ret = 0;
     int ep_fd;
 
     netcap_sess->dead_tcp.exit_type = TCP_CLI_DEAD_NULL;
-    if ( _srv_start_connection( netcap_sess, &dst_addr, flags ) < 0 ) {
+    if ( _srv_start_connection( netcap_sess, &dst_addr ) < 0 ) {
         /* Some codes like net unreachable may be returned immediately */
         if ( netcap_sess->dead_tcp.exit_type == TCP_CLI_DEAD_NULL ) {
             netcap_sess->dead_tcp.exit_type = TCP_CLI_DEAD_RESET;
@@ -352,7 +319,7 @@ static int _srv_wait_complete( int ep_fd, netcap_session_t* netcap_sess, struct 
     return errlog( ERR_CRITICAL, "invalid server complete\n" );
 }
 
-static int _srv_start_connection( netcap_session_t* netcap_sess, struct sockaddr_in* dst_addr, int flags )
+static int _srv_start_connection( netcap_session_t* netcap_sess, struct sockaddr_in* dst_addr )
 {
     int newsocket;
     struct sockaddr_in src_addr;
@@ -376,16 +343,10 @@ static int _srv_start_connection( netcap_session_t* netcap_sess, struct sockaddr
     if ( _netcap_tcp_setsockopt_srv( newsocket ) < 0 ) return perrlog("_netcap_tcp_setsockopt_srv");
     
     do {
-        if ( flags & SRV_COMPLETE_NONLOCAL_BIND ) {
-            debug( 8,"TCP: (%10u) Binding %i to %s:%i\n", netcap_sess->session_id, newsocket,
-                   unet_next_inet_ntoa( src_addr.sin_addr.s_addr ), ntohs( src_addr.sin_port ));
-            if ( bind( newsocket, (struct sockaddr*)&src_addr, sizeof(src_addr)) < 0 ) {
-                ret = errlog( ERR_WARNING,"bind(%s) failed: %s\n",unet_next_inet_ntoa( src_addr.sin_addr.s_addr ), errstr );
-                break;
-            }
-        }
-        else {
-            debug( 8, "TCP: (%10u) Skipping binding\n", netcap_sess->session_id );
+        debug( 8,"TCP: (%10u) Binding %i to %s:%i\n", netcap_sess->session_id, newsocket, unet_next_inet_ntoa( src_addr.sin_addr.s_addr ), ntohs( src_addr.sin_port ));
+        if ( bind( newsocket, (struct sockaddr*)&src_addr, sizeof(src_addr)) < 0 ) {
+            ret = errlog( ERR_WARNING,"bind(%s) failed: %s\n",unet_next_inet_ntoa( src_addr.sin_addr.s_addr ), errstr );
+            break;
         }
         
         /**

@@ -1,22 +1,6 @@
-/*
- * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License, version 2,
- * as published by the Free Software Foundation.
- *
- * This program is distributed in the hope that it will be useful, but
- * AS-IS and WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE, TITLE, or
- * NONINFRINGEMENT.  See the GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
+/**
+ * $Id$
  */
-
-
 package com.untangle.jnetcap;
 
 import java.net.InetAddress;
@@ -27,17 +11,6 @@ public class NetcapTCPSession extends NetcapSession
     private static final int FLAG_FD                    = 32;
     private static final int FLAG_ACKED                 = 33;
 
-    public  static final int NON_LOCAL_BIND             = 1;
-    
-    //unused private static final int DEFAULT_SERVER_START_FLAGS    = 0;
-    private static final int DEFAULT_SERVER_COMPLETE_FLAGS = NON_LOCAL_BIND;
-    private static final int DEFAULT_CLIENT_COMPLETE_FLAGS = 0;
-    private static final int DEFAULT_RESET_FLAGS           = 0;
-    private static final int DEFAULT_LIBERATE_FLAGS        = 0;
-    private static final int DEFAULT_DROP_FLAGS            = 0;
-    private static final int DEFAULT_SEND_ICMP_FLAGS       = 0;
-    private static final int DEFAULT_FORWARD_REJECT_FLAGS  = 0;
-    
     public NetcapTCPSession( long id )
     {
         super( id, Netcap.IPPROTO_TCP );
@@ -69,37 +42,18 @@ public class NetcapTCPSession extends NetcapSession
      * the connection is not completed succesfully.</p>
      * @param flags - Flags for the client complete.
      */
-    public void clientComplete( int flags )
-    {
-        clientComplete( pointer.value(), flags );
-    }
-
-    /**
-     * Complete the connection to a client with the default flags.
-     * this will throw an exception if the connection is not completed 
-     * succesfully.</p>
-     * @param flags - Flags for the client complete.
-     */
     public void clientComplete()
     {
-        clientComplete( DEFAULT_CLIENT_COMPLETE_FLAGS );
+        clientComplete( pointer.value() );
     }
 
     /**
      * Reset the connection to the client.</p>
      * @param flags - Flags for the client reset.
      */
-    public void clientReset( int flags )
-    {
-        clientReset( pointer.value(), flags );
-    }
-
-    /**
-     * Reset the connection to the client with default flags.
-     */
     public void clientReset()
     {
-        clientReset( pointer.value(), DEFAULT_RESET_FLAGS );
+        clientReset( pointer.value() );
     }
 
     /**
@@ -107,7 +61,7 @@ public class NetcapTCPSession extends NetcapSession
      */
     public void liberate()
     {
-        liberate( pointer.value(), DEFAULT_LIBERATE_FLAGS );
+        liberate( pointer.value() );
     }
 
     /**
@@ -115,7 +69,7 @@ public class NetcapTCPSession extends NetcapSession
      */
     public void clientDrop()
     {
-        clientDrop( pointer.value(), DEFAULT_DROP_FLAGS );
+        clientDrop( pointer.value() );
     }
 
     /**
@@ -126,7 +80,7 @@ public class NetcapTCPSession extends NetcapSession
      */
     public void clientSendIcmp()
     {
-        clientSendIcmp( pointer.value(), DEFAULT_SEND_ICMP_FLAGS );
+        clientSendIcmp( pointer.value() );
     }
 
     /**
@@ -134,7 +88,7 @@ public class NetcapTCPSession extends NetcapSession
      */
     public void clientSendIcmpDestUnreach( byte code )
     {
-        clientSendIcmpDestUnreach( pointer.value(), DEFAULT_SEND_ICMP_FLAGS, code );
+        clientSendIcmpDestUnreach( pointer.value(), code );
     }
 
     /**
@@ -142,25 +96,18 @@ public class NetcapTCPSession extends NetcapSession
      */
     public void clientForwardReject()
     {
-        clientForwardReject( pointer.value(), DEFAULT_FORWARD_REJECT_FLAGS );
+        clientForwardReject( pointer.value() );
     }
     
     /* Deprecated (intf must be specified before completion) (made non-public) */
     /* Complete the connection, every other function should call this after setup */
-    private void   serverComplete( int flags )
+    private void   serverComplete( )
     {
-        serverComplete( pointer.value(), flags );
-    }
-
-    /* Deprecated (intf must be specified before completion) (made non-public) */
-	private void   serverComplete()
-    {
-        serverComplete( DEFAULT_SERVER_COMPLETE_FLAGS );
+        serverComplete( pointer.value() );
     }
 
     /* Connect to the server with new settings on the traffic side */
-    public void   serverComplete( InetAddress clientAddress, int clientPort,
-                                  InetAddress serverAddress, int serverPort, int intf, int flags )
+    public void   serverComplete( InetAddress clientAddress, int clientPort, InetAddress serverAddress, int serverPort, int intf )
     {
         if ( clientAddress == null ) clientAddress = serverSide.client().host();
         if ( clientPort    == 0    ) clientPort    = serverSide.client().port();
@@ -175,35 +122,26 @@ public class NetcapTCPSession extends NetcapSession
         /* XXX If the destination is local, then you have to remap the connection, this
          * will be dealt with at a later date */
         
-        serverComplete( flags );
-    }
-    
-    public void   serverComplete( InetAddress clientAddress, int clientPort,
-                                  InetAddress serverAddress, int serverPort, int intf ) 
-    {
-        serverComplete( clientAddress, clientPort, serverAddress, serverPort, intf, DEFAULT_SERVER_COMPLETE_FLAGS );
+        serverComplete( );
     }
     
     private static native int setServerEndpoint ( long sessionPointer, long clientAddress, int clientPort, long serverAddress, int serverPort, int intf );
 
-    private static native void clientComplete           ( long sessionPointer, int flags );
-    private static native void clientReset              ( long sessionPointer, int flags );
-    private static native void liberate                 ( long sessionPointer, int flags );
-    private static native void clientDrop               ( long sessionPointer, int flags );
-    private static native void clientSendIcmp           ( long sessionPointer, int flags );
-    private static native void clientForwardReject      ( long sessionPointer, int flags );
-    private static native void clientSendIcmpDestUnreach( long sessionPointer, int flags, byte code );    
-
-    private static native void serverComplete   ( long sessionPointer, int flags );
-
-    private static native void close( long sessionPointer, boolean ifClient );
+    private static native void clientComplete           ( long sessionPointer );
+    private static native void clientReset              ( long sessionPointer );
+    private static native void liberate                 ( long sessionPointer );
+    private static native void clientDrop               ( long sessionPointer );
+    private static native void clientSendIcmp           ( long sessionPointer );
+    private static native void clientForwardReject      ( long sessionPointer );
+    private static native void clientSendIcmpDestUnreach( long sessionPointer, byte code );    
+    private static native void serverComplete           ( long sessionPointer );
+    private static native void close                    ( long sessionPointer, boolean ifClient );
     
     private static native int read( long sessionPointer, boolean ifClient, byte[] data );
     private static native int write( long sessionPointer, boolean ifClient, byte[] data );
 
     /**
-     * Set the blocking flag for one of the file descriptors.  This will throw an
-     * error if it is unable to set the flag.
+     * Set the blocking mode for one of the file descriptors.  This will throw an error if it fails.
      */
     private static native void blocking( long sessionPointer, boolean ifClient, boolean mode );
 
@@ -217,8 +155,7 @@ public class NetcapTCPSession extends NetcapSession
         public int fd() { return getIntValue( buildMask( FLAG_FD ), pointer.value()); }
         
         /**
-         * Set the blocking flag for one of the file descriptors.  This will throw an
-         * error if it is unable to set the flag.
+         * Set the blocking mode for one of the file descriptors.  This will throw an if it fails.
          */
         public void blocking( boolean mode ) {
             NetcapTCPSession.blocking( pointer.value(), ifClientSide, mode );

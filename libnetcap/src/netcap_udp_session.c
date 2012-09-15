@@ -1,4 +1,6 @@
-/* $HeadURL$ */
+/**
+ * $Id$
+ */
 #include <stdlib.h>
 #include <netinet/ip.h>
 #include <netinet/udp.h>
@@ -12,10 +14,10 @@
 #include "netcap_sesstable.h"
 
 /* callback for a UDP session */
-static int _callback    ( netcap_session_t* netcap_sess, netcap_callback_action_t action, netcap_callback_flag_t flags );
+static int _callback    ( netcap_session_t* netcap_sess, netcap_callback_action_t action );
 
 /* liberate a session from being caught by netcap */
-static int  _liberate   ( netcap_session_t* netcap_sess, netcap_callback_action_t action, netcap_callback_flag_t flags );
+static int  _liberate   ( netcap_session_t* netcap_sess, netcap_callback_action_t action );
 
 /* Liberate an individual packet */
 static int _liberate_pkt( netcap_session_t* netcap_sess, netcap_pkt_t* pkt );
@@ -122,7 +124,7 @@ int netcap_udp_session_raze(int if_lock, netcap_session_t* netcap_sess)
 
 /**************************************** STATIC ****************************************/
 
-static int _callback ( netcap_session_t* netcap_sess, netcap_callback_action_t action, netcap_callback_flag_t flags )
+static int _callback ( netcap_session_t* netcap_sess, netcap_callback_action_t action )
 {
     if ( netcap_sess == NULL ) return errlogargs();
         
@@ -145,7 +147,7 @@ static int _callback ( netcap_session_t* netcap_sess, netcap_callback_action_t a
         return 0;
         
     case LIBERATE:
-        return _liberate( netcap_sess, action, flags );
+        return _liberate( netcap_sess, action );
 
     default:
         return errlog( ERR_CRITICAL, "Unknown action: %i\n", action );
@@ -155,8 +157,7 @@ static int _callback ( netcap_session_t* netcap_sess, netcap_callback_action_t a
 }
 
 /* liberate a session from being caught by netcap */
-static int  _liberate( netcap_session_t* netcap_sess, netcap_callback_action_t action,
-                       netcap_callback_flag_t flags )
+static int  _liberate( netcap_session_t* netcap_sess, netcap_callback_action_t action )
 {
     netcap_pkt_t* pkt = NULL;
     int count = 0;

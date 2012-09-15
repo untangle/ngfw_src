@@ -1,21 +1,6 @@
-/*
- * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License, version 2,
- * as published by the Free Software Foundation.
- *
- * This program is distributed in the hope that it will be useful, but
- * AS-IS and WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE, TITLE, or
- * NONINFRINGEMENT.  See the GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
+/**
+ * $Id$
  */
-
 #include <jni.h>
 
 #include <stdio.h>
@@ -47,7 +32,7 @@
    return jmvutil_error_void( JMVUTIL_ERROR_ARGS, ERR_CRITICAL, \
                               "JTCP: Expecting a TCP Session: %d\n", (session)->protocol )
 
-static void _tcp_callback( jlong session_ptr, netcap_callback_action_t type, jint flags );
+static void _tcp_callback( jlong session_ptr, netcap_callback_action_t type );
 
 static __inline__ int* _get_sock_ptr( netcap_session_t* session, int if_client )
 {
@@ -65,8 +50,7 @@ static __inline__ int _get_sock( netcap_session_t* session, int if_client )
  * Signature: (JIJI)I
  */
 JNIEXPORT jint JNICALL JF_TCPSession( setServerEndpoint )
-  (JNIEnv *env, jclass _class, jlong session_ptr, jlong client_addr, jint client_port, 
-   jlong server_addr,  jint server_port, jint intf )
+  (JNIEnv *env, jclass _class, jlong session_ptr, jlong client_addr, jint client_port, jlong server_addr,  jint server_port, jint intf )
 {
     netcap_session_t* session;
 
@@ -94,9 +78,9 @@ JNIEXPORT jint JNICALL JF_TCPSession( setServerEndpoint )
  * Signature: (JI)I
  */
 JNIEXPORT void JNICALL JF_TCPSession( serverComplete )
-    ( JNIEnv *env, jclass _class, jlong session_ptr, jint flags )
+    ( JNIEnv *env, jclass _class, jlong session_ptr )
 {
-    _tcp_callback( session_ptr, SRV_COMPLETE, flags );
+    _tcp_callback( session_ptr, SRV_COMPLETE );
 }
 
 /*
@@ -105,9 +89,9 @@ JNIEXPORT void JNICALL JF_TCPSession( serverComplete )
  * Signature: (JI)I
  */
 JNIEXPORT void JNICALL JF_TCPSession( clientComplete )
-    ( JNIEnv *env, jclass _class, jlong session_ptr, jint flags )
+    ( JNIEnv *env, jclass _class, jlong session_ptr )
 {
-    _tcp_callback( session_ptr, CLI_COMPLETE, flags );
+    _tcp_callback( session_ptr, CLI_COMPLETE  );
 }
 
 /*
@@ -116,9 +100,9 @@ JNIEXPORT void JNICALL JF_TCPSession( clientComplete )
  * Signature: (JI)I
  */
 JNIEXPORT void JNICALL JF_TCPSession( clientReset )
-    ( JNIEnv *env, jclass _class, jlong session_ptr, jint flags )
+    ( JNIEnv *env, jclass _class, jlong session_ptr  )
 {
-    _tcp_callback( session_ptr, CLI_RESET, flags );
+    _tcp_callback( session_ptr, CLI_RESET  );
 }
 
 /*
@@ -127,9 +111,9 @@ JNIEXPORT void JNICALL JF_TCPSession( clientReset )
  * Signature: (JI)I
  */
 JNIEXPORT void JNICALL JF_TCPSession( clientDrop )
-    ( JNIEnv *env, jclass _class, jlong session_ptr, jint flags )
+    ( JNIEnv *env, jclass _class, jlong session_ptr  )
 {
-    _tcp_callback( session_ptr, CLI_DROP, flags );
+    _tcp_callback( session_ptr, CLI_DROP  );
 }
 
 /*
@@ -138,9 +122,9 @@ JNIEXPORT void JNICALL JF_TCPSession( clientDrop )
  * Signature: (JI)I
  */
 JNIEXPORT void JNICALL JF_TCPSession( clientForwardReject )
-    ( JNIEnv *env, jclass _class, jlong session_ptr, jint flags )
+    ( JNIEnv *env, jclass _class, jlong session_ptr  )
 {
-    _tcp_callback( session_ptr, CLI_FORWARD_REJECT, flags );
+    _tcp_callback( session_ptr, CLI_FORWARD_REJECT );
 }
 
 /*
@@ -149,9 +133,9 @@ JNIEXPORT void JNICALL JF_TCPSession( clientForwardReject )
  * Signature: (JI)I
  */
 JNIEXPORT void JNICALL JF_TCPSession( liberate )
-    ( JNIEnv *env, jclass _class, jlong session_ptr, jint flags )
+    ( JNIEnv *env, jclass _class, jlong session_ptr  )
 {
-    _tcp_callback( session_ptr, LIBERATE, flags );
+    _tcp_callback( session_ptr, LIBERATE );
 }
 
 /*
@@ -160,9 +144,9 @@ JNIEXPORT void JNICALL JF_TCPSession( liberate )
  * Signature: (JI)I
  */
 JNIEXPORT void JNICALL JF_TCPSession( clientSendIcmp )
-    ( JNIEnv *env, jclass _class, jlong session_ptr, jint flags )
+    ( JNIEnv *env, jclass _class, jlong session_ptr )
 {
-    _tcp_callback( session_ptr, CLI_ICMP, flags );
+    _tcp_callback( session_ptr, CLI_ICMP );
 }
 
 /*
@@ -171,7 +155,7 @@ JNIEXPORT void JNICALL JF_TCPSession( clientSendIcmp )
  * Signature: (JI)I
  */
 JNIEXPORT void JNICALL JF_TCPSession( clientSendIcmpDestUnreach )
-    ( JNIEnv *env, jclass _class, jlong session_ptr, jint flags, jbyte icmp_code )
+    ( JNIEnv *env, jclass _class, jlong session_ptr, jbyte icmp_code )
 {
     netcap_session_t* session;
 
@@ -186,7 +170,7 @@ JNIEXPORT void JNICALL JF_TCPSession( clientSendIcmpDestUnreach )
     session->dead_tcp.type      = ICMP_DEST_UNREACH;
     session->dead_tcp.code      = icmp_code;
     
-    _tcp_callback( session_ptr, CLI_ICMP, flags );
+    _tcp_callback( session_ptr, CLI_ICMP );
 }
 
 /*
@@ -310,27 +294,23 @@ JNIEXPORT void JNICALL JF_TCPSession( blocking )
     else                    ret = unet_blocking_disable( sock );
     
     if ( ret < 0 ) {
-        return jmvutil_error_void( JMVUTIL_ERROR_STT, ERR_CRITICAL, 
-                                   "JTCP: Unable to change blocking flags for fd: %d\n", sock );
+        return jmvutil_error_void( JMVUTIL_ERROR_STT, ERR_CRITICAL, "JTCP: Unable to change blocking for fd: %d\n", sock );
     }
 }
 
-static void _tcp_callback( jlong session_ptr, netcap_callback_action_t action, jint _flags )
+static void _tcp_callback( jlong session_ptr, netcap_callback_action_t action  )
 {
     netcap_session_t* session;
-    int flags = 0;
 
     JLONG_TO_SESSION_VOID( session, session_ptr );
     VERIFY_TCP_SESSION_VOID( session );    
-    
-    if ( _flags & JN_TCPSession( NON_LOCAL_BIND )) flags |= SRV_COMPLETE_NONLOCAL_BIND;
     
     /* Verify that the callback is non-null */
     if ( session->callback == NULL ) {
         return jmvutil_error_void( JMVUTIL_ERROR_STT, ERR_CRITICAL, "JTCP: null callback %d\n", action );
     }
 
-    if ( session->callback( session, action, flags ) < 0 ) {
+    if ( session->callback( session, action ) < 0 ) {
         debug( 2, "JTCP: callback failed=%d\n", action );
 
         /* Throw an error, but don't print an error message */
