@@ -104,8 +104,6 @@ public class EventWriterImpl implements Runnable
                      */
                     if (logQueue.size() > 0)
                         persist(logQueue);
-                    else
-                        logger.info("persist():     0 events");
                 
                 } catch (Exception e) {
                     logger.warn("Failed to write events.", e);
