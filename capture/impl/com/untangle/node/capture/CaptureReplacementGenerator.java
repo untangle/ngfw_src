@@ -51,11 +51,11 @@ class CaptureReplacementGenerator extends ReplacementGenerator<CaptureBlockDetai
     {
         CaptureBlockDetails details = getNonceData(nonce);
         logger.debug("getRedirectUrl " + details.toString());
-        String retval =  ("http://" + host + "/capture?nonce=" + nonce);
-        retval = (retval + "&tid=" + nodeSettings.getId());
+        String retval =  ("http://" + host + "/capture/handler.py/index?nonce=" + nonce);
+        retval = (retval + "&method=" + details.getMethod());
+        retval = (retval + "&appid=" + nodeSettings.getId());
         retval = (retval + "&host=" + details.getHost());
         retval = (retval + "&uri=" + details.getUri());
-        retval = (retval + "&method=" + details.getMethod());
         return(retval);
     }
 }
