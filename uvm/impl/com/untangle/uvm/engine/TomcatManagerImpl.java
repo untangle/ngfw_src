@@ -162,7 +162,7 @@ public class TomcatManagerImpl implements TomcatManager
             if (null != baseHost) {
                 Container c = baseHost.findChild(contextRoot);
                 if (null != c) {
-                    logger.info("Removing web app " + contextRoot);
+                    logger.info("Unloading Servlet: " + contextRoot);
                     baseHost.removeChild(c);
                     try {
                         ((StandardContext)c).destroy();
@@ -348,7 +348,8 @@ public class TomcatManagerImpl implements TomcatManager
     {
         String fqRoot = webAppRoot + "/" + rootDir;
 
-        logger.info("Adding web app " + fqRoot);
+        logger.info("Loading Servlet: " + urlBase);
+
         try {
             StandardContext ctx = (StandardContext)emb.createContext(urlBase, fqRoot);
             if (options.allowLinking)
