@@ -298,8 +298,7 @@ static int _srv_wait_complete( int ep_fd, netcap_session_t* netcap_sess, struct 
             } else if ( events[0].data.fd == sock ) {
                 /* Check if the connection was established */
                 if ( connect( sock, (struct sockaddr*)dst_addr, sizeof(struct sockaddr_in)) < 0 ) {
-                    debug( 4, "TCP: (%10u) Server connection failed '%s'\n", netcap_sess->session_id, 
-                           strerror( errno ));
+                    debug( 4, "TCP: (%10u) Server connection failed '%s'\n", netcap_sess->session_id, strerror( errno ));
                     netcap_sess->dead_tcp.exit_type = TCP_CLI_DEAD_RESET;
                     return -1;
                 } else {
