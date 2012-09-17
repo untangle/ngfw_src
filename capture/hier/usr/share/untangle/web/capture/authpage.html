@@ -1,0 +1,52 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta content="en-us" http-equiv="Content-Language" />
+<meta content="text/html; charset=utf-8" http-equiv="Content-Type" />
+<title>| Captive Portal</title>
+<style type="text/css">
+.style1 {
+	font-family: "Arial Rounded MT Bold";
+	}
+.style2 {
+	font-family: Arial, Helvetica, sans-serif;
+}
+.style3 {
+	font-family: "Arial Black";
+}
+</style>
+</head>
+<body style="background-color: #F4F4F4">
+
+<table border=0><tr>
+	<td><img src="/capture/BrandingLogo.gif" /></td>
+	<td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>
+	<td><h1 class="style1">Captive Portal</h1></td>
+</tr><tr>
+	<td colspan=3>&nbsp;</td>
+</tr><tr>
+	<td colspan=3><center><img src="/capture/castle.png" /></center></td>
+</tr></table>
+
+<table border=0>
+<tr><td><h3 class="style1">Welcome to the Untangle Captive Portal</h3></td></tr>
+<tr><td style="width: 480px" class="style2">
+Listen up Sparky.  If you want to wet your beak in the sea of the
+interwebs, you need to login with a valid username and password.
+</td></tr>
+</table>
+
+<form method="post" action="/capture/handler.py/login">
+<table border=0 cellpadding=8>
+	<tr><td><span class="style1">Username:</span></td><td><input name="username" style="width: 200px" type="text" /></td></tr>
+	<tr><td><span class="style1">Password:</span></td><td><input name="password" style="width: 200px" type="password" /></td></tr>
+	<tr><td colspan=2><center><input name="login" type="submit" value="Login" class="style3" style="width: 150px; height: 40px"></input></center></td></tr>
+</table>
+	<input name="method" type="hidden" value="$.method.$" />
+	<input name="nonce" type="hidden" value="$.nonce.$" />
+	<input name="appid" type="hidden" value="$.appid.$" />
+	<input name="host" type="hidden" value="$.host.$" />
+	<input name="uri" type="hidden" value="$.uri.$" />
+</form>
+</body>
+</html>
