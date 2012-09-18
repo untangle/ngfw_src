@@ -36,7 +36,9 @@ syslog_out = syslog.openlog("uvmwrapper");
 
 def debug(string):
     print string
+    sys.stdout.flush()
     syslog.syslog(string);
+    
 
 #
 # Set the process name
@@ -217,7 +219,21 @@ def monitor_uvm(pid):
         if needToRestart(pid):
             debug("*** Killing untangle-vm(%i)." % pid);
             os.system("kill %i" % pid);
-            os.system("pkill -%s -f com.untangle.uvm.engine.Main" % str(signal));
+            os.system("pkill -f com.untangle.uvm.engine.Main");
+            # wait for shutdown
+            time.sleep(10)
+            # check if proc is still alive
+            try:
+                os.kill(pid, 0)
+            except OSError:
+                # proc is dead
+                debug("*** Killed untangle-vm(%i)." % pid);
+                return
+            else:
+                # proc is still alive
+                debug("*** Killing -9 untangle-vm(%i)." % pid);
+                os.system("kill -9 %i" % pid);
+                
     return;
 
 # Return True if we need to kill the UVM
@@ -412,12 +428,6 @@ while True:
     
     debug("*** untangle-vm unexpectedly exited (%i)" % result);
     
-    # if the untangle-vm returns in the dev env, don't bother restarting it
-    if developmentEnv:
-        debug("*** Development environment: not restarting untangle-vm");
-        resetIptables();    
-        sys.exit(1);
-
     flushConntrack();
 
     debug("*** copied %s to %s.crash ***" % (uvm_console_log, uvm_console_log))
@@ -426,6 +436,7 @@ while True:
     os.system("cp -fa %s.crash.1 %s.crash.2 2>/dev/null" % (uvm_console_log, uvm_console_log));
     os.system("cp -fa %s.crash   %s.crash.1 2>/dev/null" % (uvm_console_log, uvm_console_log));
     os.system("cp -fa %s         %s.crash   2>/dev/null" % (uvm_console_log, uvm_console_log));
+    os.system("echo >| %s" % uvm_console_log) # nuke the console.log 
     os.system("cp -fa %s.crash.1 %s.crash.2 2>/dev/null" % (uvm_uvm_log, uvm_uvm_log));
     os.system("cp -fa %s.crash   %s.crash.1 2>/dev/null" % (uvm_uvm_log, uvm_uvm_log));
     os.system("cp -fa %s         %s.crash   2>/dev/null" % (uvm_uvm_log, uvm_uvm_log));
@@ -439,6 +450,12 @@ while True:
     os.system("cp -fa %s.crash   %s.crash.1 2>/dev/null" % (uvm_packages_log, uvm_packages_log));
     os.system("dpkg -l 'untangle*' >| %s.crash" % (uvm_packages_log));
     
+    # if the untangle-vm returns in the dev env, don't bother restarting it
+    if developmentEnv:
+        debug("*** Development environment: not restarting untangle-vm");
+        resetIptables();    
+        sys.exit(1);
+
     # we sleep here to allow the system to recover from unexpected crashes
     # This will allow the kernel time to close sockets so they will be available when the UVM restarts
     time.sleep(30); 
