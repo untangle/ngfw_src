@@ -13,6 +13,7 @@ import java.util.Comparator;
 import java.util.Map;
 import java.util.HashMap;
 import java.util.Collections;
+import java.util.Date;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
@@ -32,7 +33,8 @@ import com.untangle.uvm.logging.LogEvent;
 public class EventWriterImpl implements Runnable
 {
     private static final int SYNC_TIME = 60*1000; /* 60 seconds */
-
+    private static final int MAX_EVENTS_PER_CYCLE = 10000; /* maximum events to write per write cycle */
+    
     private final Logger logger = Logger.getLogger(getClass());
 
     private static boolean forceFlush = false;
@@ -51,6 +53,20 @@ public class EventWriterImpl implements Runnable
      * using a weighted mixture of the current value with the old value
      */
     private double avgWriteTimePerEvent = 0.0;
+
+    /**
+     * This stores the maximum queue delay for the last batch
+     * That is difference between now() and the oldest event in the batch
+     * This approximates the delay its taking for events to be written to the database
+     * If the event writer falls behind this value can get large.
+     * Typical values less than a minute. A value of one hour would mean its behind and writing events slower than they are being created
+     * and that it is currently taking one hour before new events are written to the database
+     */
+    private long writeDelaySec = 0;
+
+    /**
+     * Stores the total number of events written
+     */
     private long totalEventsWritten = 0;
     
     /**
@@ -68,7 +84,7 @@ public class EventWriterImpl implements Runnable
     {
         thread = Thread.currentThread();
 
-        List<LogEvent> logQueue = new LinkedList<LogEvent>();
+        LinkedList<LogEvent> logQueue = new LinkedList<LogEvent>();
         LogEvent event = null;
 
         /**
@@ -77,8 +93,10 @@ public class EventWriterImpl implements Runnable
         while (thread != null) {
             /**
              * Sleep until next log time
+             * If force flush was called, don't sleep
+             * If there is already a full runs worth of events, don't sleep
              */
-            if (!forceFlush)
+            if (!forceFlush && inputQueue.size() < MAX_EVENTS_PER_CYCLE)
                 try {Thread.sleep(SYNC_TIME);} catch (Exception e) {}
 
             synchronized( this ) {
@@ -95,10 +113,10 @@ public class EventWriterImpl implements Runnable
                     /**
                      * Copy all events out of the queue
                      */
-                    while ((event = inputQueue.poll()) != null) {
+                    while ((event = inputQueue.poll()) != null && logQueue.size() < MAX_EVENTS_PER_CYCLE) {
                         logQueue.add(event);
                     }
-                
+
                     /**
                      * If there is anything to log, log it to the database
                      */
@@ -194,11 +212,22 @@ public class EventWriterImpl implements Runnable
                          
         return this.avgWriteTimePerEvent;
     }
+
+    public long getWriteDelaySec()
+    {
+        /**
+         * If too few datapoints, just return 0
+         */
+        if (totalEventsWritten < 100)
+            return 0;
+                         
+        return this.writeDelaySec;
+    }
     
     /**
      * write the logQueue to the database
      */
-    private void persist( List<LogEvent> logQueue )
+    private void persist( LinkedList<LogEvent> logQueue )
     {
         /**
          * These map stores the type of objects being written and stats purely for debugging output
@@ -222,6 +251,15 @@ public class EventWriterImpl implements Runnable
             }
         }
 
+        /**
+         * Calculate the write delay
+         */
+        LogEvent first = null;
+        try {first = logQueue.getFirst();} catch (Exception e) {}
+        if (first != null && first.getTimeStamp() != null) {
+            this.writeDelaySec = (System.currentTimeMillis() - first.getTimeStamp().getTime())/1000L;
+        }
+        
         int count = logQueue.size();
         long t0 = System.currentTimeMillis();
 
@@ -298,7 +336,12 @@ public class EventWriterImpl implements Runnable
             long t1 = System.currentTimeMillis();
             long elapsedTime = t1-t0;
             double avgTime = ((double)elapsedTime/((double)count));
-            logger.info("persist(): " + String.format("%5d",count) + " events [" + String.format("%5d",elapsedTime) + " ms] [" + String.format("%4.1f",avgTime) + " avg] " + mapOutput);
+            logger.info("persist(): " +
+                        String.format("%5d",count) +
+                        " events [" + String.format("%5d",elapsedTime) +
+                        " ms] [" + String.format("%4.1f",avgTime) +
+                        " avg] [" + String.format("%5d",writeDelaySec) +
+                        "s delay] " + mapOutput);
 
             /**
              * update avgWriteTimePerEvent and totalEventsWritten

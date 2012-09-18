@@ -61,6 +61,7 @@ public class AlertManagerImpl implements AlertManager
         try { testInterfaceErrors(alertList); } catch (Exception e) { logger.warn("Alert test exception",e); }
         try { testSpamDNSServers(alertList); } catch (Exception e) { logger.warn("Alert test exception",e); }
         try { testEventWriteTime(alertList); } catch (Exception e) { logger.warn("Alert test exception",e); }
+        try { testEventWriteDelay(alertList); } catch (Exception e) { logger.warn("Alert test exception",e); }
 
         return alertList;
     }
@@ -450,6 +451,31 @@ public class AlertManagerImpl implements AlertManager
             alertText += i18nUtil.tr("Event processing is slow");
             alertText += " (";
             alertText += String.format("%.1f",avgTime) + " ms";
+            alertText += "). ";
+            alertText += i18nUtil.tr("Data retention time may be too high. Check Reports settings.");
+
+            alertList.add(alertText);
+        }
+    }
+
+    /**
+     * This test that the event writing delay is not too long
+     */
+    private void testEventWriteDelay(List<String> alertList)
+    {
+        final long MAX_TIME_DELAY_SEC = 600; /* 10 minutes */
+            
+        Reporting reporting = (Reporting) UvmContextFactory.context().nodeManager().node("untangle-node-reporting");
+        /* if reports not installed - no events - just return */
+        if (reporting == null)
+            return;
+        
+        long delay = reporting.getWriteDelaySec();
+        if (delay > MAX_TIME_DELAY_SEC) {
+            String alertText = "";
+            alertText += i18nUtil.tr("Event processing is behind");
+            alertText += " (";
+            alertText += String.format("%.1f",(((float)delay)/60.0)) + " minute delay";
             alertText += "). ";
             alertText += i18nUtil.tr("Data retention time may be too high. Check Reports settings.");
 

@@ -20,4 +20,6 @@ public interface Reporting
     void createSchemas();
 
     double getAvgWriteTimePerEvent();
+
+    long getWriteDelaySec();
 }

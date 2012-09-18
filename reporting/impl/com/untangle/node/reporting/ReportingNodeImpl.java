@@ -189,6 +189,11 @@ public class ReportingNodeImpl extends NodeBase implements ReportingNode, Report
     {
         return this.eventWriter.getAvgWriteTimePerEvent();
     }
+
+    public long getWriteDelaySec()
+    {
+        return this.eventWriter.getWriteDelaySec();
+    }
     
     public java.sql.ResultSet getEventsResultSet( final String query, final Long policyId, final int limit )
     {
