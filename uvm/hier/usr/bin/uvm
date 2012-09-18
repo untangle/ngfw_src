@@ -253,7 +253,7 @@ def needToRestart(pid):
     p = os.popen('tail -50 %s | grep -ci "FATAL ERROR:"' % uvm_console_log);
     output = p.readline().rstrip();
     fatal_count = int(output);
-    if (fatal_count > 1):
+    if (fatal_count >= 1):
         debug("*** Fatal Error in console.log (%i)" % (fatal_count));
         return True;
 
@@ -428,6 +428,7 @@ while True:
     
     debug("*** untangle-vm unexpectedly exited (%i)" % result);
     
+    resetIptables();
     flushConntrack();
 
     debug("*** copied %s to %s.crash ***" % (uvm_console_log, uvm_console_log))
@@ -453,7 +454,6 @@ while True:
     # if the untangle-vm returns in the dev env, don't bother restarting it
     if developmentEnv:
         debug("*** Development environment: not restarting untangle-vm");
-        resetIptables();    
         sys.exit(1);
 
     # we sleep here to allow the system to recover from unexpected crashes
