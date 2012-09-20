@@ -1,7 +1,7 @@
 /**
  * $Id: CaptureRuleMatcher.java,v 1.00 2011/08/24 14:54:43 dmorris Exp $
  */
-package com.untangle.node.firewall;
+package com.untangle.node.capture;
 
 import java.util.List;
 import java.io.Serializable;

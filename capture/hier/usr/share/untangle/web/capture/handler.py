@@ -1,4 +1,25 @@
 from mod_python import apache
+import pprint
+
+def get_node_settings(a):
+    return None
+def get_node_settings_item(a,b):
+    return None
+def get_uvm_settings(a):
+    return None
+def get_uvm_settings_item(a,b):
+    return None
+def get_settings_item(a,b):
+    return None
+
+try:
+    from uvm.settings_reader import get_node_settings
+    from uvm.settings_reader import get_node_settings_item
+    from uvm.settings_reader import get_uvm_settings
+    from uvm.settings_reader import get_uvm_settings_item
+    from uvm.settings_reader import get_settings_item
+except ImportError:
+    pass
 
 #-----------------------------------------------------------------------------
 
@@ -13,6 +34,12 @@ def index(req):
     # get the original destination and other arguments passed
     # in the URL when the redirect was generated
     args = split_args(req.args);
+
+    branding_settings = get_node_settings("branding")
+    capture_settings = get_node_settings("capture")
+    debug = "<HR>";
+    debug += pprint.pformat(branding_settings) + pprint.pformat(capture_settings)
+    page = page.replace('$.debug.$', debug)
 
     # plug the values into the hidden form fields of the authentication page
     # page by doing  search and replace for each of the placeholder text tags

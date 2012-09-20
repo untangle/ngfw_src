@@ -19,7 +19,7 @@
 <body style="background-color: #F4F4F4">
 
 <table border=0><tr>
-	<td><img src="/capture/BrandingLogo.gif" /></td>
+	<td><img src="/images/BrandingLogo.gif" /></td>
 	<td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>
 	<td><h1 class="style1">Captive Portal</h1></td>
 </tr><tr>
@@ -31,15 +31,15 @@
 <table border=0>
 <tr><td><h3 class="style1">Welcome to the Untangle Captive Portal</h3></td></tr>
 <tr><td style="width: 480px" class="style2">
-Listen up Sparky.  If you want to wet your beak in the sea of the
-interwebs, you need to login with a valid username and password.
+Listen up Sparky.  If you want to wet your beak in the sea of interwebs, you
+need to login with a valid username and password.
 </td></tr>
 </table>
 
 <form method="post" action="/capture/handler.py/login">
 <table border=0 cellpadding=8>
 	<tr><td><span class="style1">Username:</span></td><td><input name="username" style="width: 200px" type="text" /></td></tr>
-	<tr><td><span class="style1">Password:</span></td><td><input name="password" style="width: 200px" type="password" /></td></tr>
+	<tr><td><span class="style1">Password:</span></td><td><input name="password" style="width: 200px" type="password" autocomplete="off" /></td></tr>
 	<tr><td colspan=2><center><input name="login" type="submit" value="Login" class="style3" style="width: 150px; height: 40px"></input></center></td></tr>
 </table>
 	<input name="method" type="hidden" value="$.method.$" />
@@ -48,5 +48,6 @@ interwebs, you need to login with a valid username and password.
 	<input name="host" type="hidden" value="$.host.$" />
 	<input name="uri" type="hidden" value="$.uri.$" />
 </form>
+$.debug.$
 </body>
 </html>
