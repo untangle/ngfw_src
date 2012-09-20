@@ -249,6 +249,14 @@ def needToRestart(pid):
         debug("*** Frequent CMF failures (%i)" % (cmf_count));
         return True;
 
+    # If the untangle-vm garbage collection failed, kill it
+    p = os.popen('tail -50 %s | grep -ci "promotion failed"' % uvm_gc_log);
+    output = p.readline().rstrip();
+    promo_count = int(output);
+    if (promo_count > 2):
+        debug("*** Promotion failures (%i)" % promo_count);
+        return True;
+
     # If console log contains a fatal error
     p = os.popen('tail -50 %s | grep -ci "FATAL ERROR:"' % uvm_console_log);
     output = p.readline().rstrip();
