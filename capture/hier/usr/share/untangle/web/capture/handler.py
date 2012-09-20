@@ -1,25 +1,7 @@
 from mod_python import apache
 import pprint
 
-def get_node_settings(a):
-    return None
-def get_node_settings_item(a,b):
-    return None
-def get_uvm_settings(a):
-    return None
-def get_uvm_settings_item(a,b):
-    return None
-def get_settings_item(a,b):
-    return None
-
-try:
-    from uvm.settings_reader import get_node_settings
-    from uvm.settings_reader import get_node_settings_item
-    from uvm.settings_reader import get_uvm_settings
-    from uvm.settings_reader import get_uvm_settings_item
-    from uvm.settings_reader import get_settings_item
-except ImportError:
-    pass
+from uvm import Uvm
 
 #-----------------------------------------------------------------------------
 
@@ -35,13 +17,24 @@ def index(req):
     # in the URL when the redirect was generated
     args = split_args(req.args);
 
-    branding_settings = get_node_settings("untangle-node-branding")
-    capture_settings = get_node_settings("untangle-node-capture")
+    uvmContext = Uvm().getUvmContext()
+    captureNode = uvmContext.nodeManager().node(long(args['APPID']))
+    captureSettings = captureNode.getSettings()
+    brandingNode = uvmContext.nodeManager().node("untangle-node-branding");
+
+    if (brandingNode != None):
+        brandingSettings = brandingNode.getSettings()
+    else:
+        brandingSettings = None
+
     debug = "<HR>";
+    debug += "<BR>===== ARGUMENTS =====<BR>\r\n"
+    debug += pprint.pformat(args)
     debug +="<BR>===== CAPTURE SETTINGS =====<BR>\r\n"
-    debug += pprint.pformat(branding_settings)
+    debug += pprint.pformat(captureSettings)
     debug += "<BR>===== BRANDING SETTINGS =====<BR>\r\n"
-    debug += pprint.pformat(capture_settings)
+    debug += pprint.pformat(brandingSettings)
+
     page = page.replace('$.debug.$', debug)
 
     # plug the values into the hidden form fields of the authentication page
@@ -85,25 +78,5 @@ def split_args(args):
         else:
             canon_args[tmp[0].upper()] = tmp[1]
     return canon_args
-
-#-----------------------------------------------------------------------------
-
-def build_response(req):
-    message = "<HTML><HEAD><TITLE>Testing</TITLE></HEAD><BODY>\r\n"
-    message += "Hello World!<BR><BR>"
-    message += "FILE: " + req.filename + "<BR><BR>\r\n"
-    message += "PATH: " + req.filename[0:req.filename.rindex('/')]
-
-    final = req.filename.rindex('/')
-    message += "LOC: " + str(final)
-    message += "PATH: " + req.filename[0:final]
-
-    parmlist = split_args(req.args)
-    for item in parmlist:
-        name = items
-        message += (item + " = " + parmlist[item] + "<BR>\r\n")
-
-    message += "</BODY></HTML>\r\n"
-    return message
 
 #-----------------------------------------------------------------------------
