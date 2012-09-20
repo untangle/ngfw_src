@@ -405,7 +405,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
                         border: false
                     },{
                         xtype: 'radio',
-                        boxLabel: this.i18n._('Use External IP address (default)'),
+                        boxLabel: this.i18n._('Use IP address from External interface (default)'),
                         hideLabel: true,
                         name: 'publicUrl',
                         checked: this.getSystemSettings().publicUrlMethod == "external",
