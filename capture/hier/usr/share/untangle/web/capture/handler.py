@@ -35,10 +35,13 @@ def index(req):
     # in the URL when the redirect was generated
     args = split_args(req.args);
 
-    branding_settings = get_node_settings("branding")
-    capture_settings = get_node_settings("capture")
+    branding_settings = get_node_settings("untangle-node-branding")
+    capture_settings = get_node_settings("untangle-node-capture")
     debug = "<HR>";
-    debug += pprint.pformat(branding_settings) + pprint.pformat(capture_settings)
+    debug +="<BR>===== CAPTURE SETTINGS =====<BR>\r\n"
+    debug += pprint.pformat(branding_settings)
+    debug += "<BR>===== BRANDING SETTINGS =====<BR>\r\n"
+    debug += pprint.pformat(capture_settings)
     page = page.replace('$.debug.$', debug)
 
     # plug the values into the hidden form fields of the authentication page
@@ -97,7 +100,7 @@ def build_response(req):
 
     parmlist = split_args(req.args)
     for item in parmlist:
-        name = item;
+        name = items
         message += (item + " = " + parmlist[item] + "<BR>\r\n")
 
     message += "</BODY></HTML>\r\n"

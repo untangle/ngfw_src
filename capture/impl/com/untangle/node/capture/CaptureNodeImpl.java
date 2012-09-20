@@ -29,6 +29,7 @@ import com.untangle.uvm.vnet.NodeTCPSession;
 import com.untangle.uvm.util.I18nUtil;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.UvmContextFactory;
+import com.untangle.uvm.BrandingManager;
 import com.untangle.uvm.SettingsManager;
 import com.untangle.uvm.node.License;
 import com.untangle.uvm.node.EventLogQuery;
@@ -130,6 +131,22 @@ public class CaptureNodeImpl extends NodeBase implements CaptureNode
 
         // create a new settings object
         CaptureSettings localSettings = new CaptureSettings();
+
+        //  setup all the defaults
+        BrandingManager brand = UvmContextFactory.context().brandingManager();
+
+        localSettings.setBasicLoginPageTitle("Captive Portal");
+        localSettings.setBasicLoginPageWelcome("Welcome to the " + brand.getCompanyName() + " Captive Portal");
+        localSettings.setBasicLoginUsername("Username:");
+        localSettings.setBasicLoginPassword("Password:");
+        localSettings.setBasicLoginMessageText("Please enter your username and password to connect to the Internet.");
+        localSettings.setBasicLoginFooter("If you have any questions, please contact your network administrator.");
+        localSettings.setBasicMessagePageTitle("Captive Portal");
+        localSettings.setBasicMessagePageWelcome("Welcome to the " + brand.getCompanyName() + " Captive Portal");
+        localSettings.setBasicMessageMessageText("Click Continue to connect to the Internet.");
+        localSettings.setBasicMessageAgreeBox(false);
+        localSettings.setBasicMessageAgreeText("Clicking here means you agree to the terms above.");
+        localSettings.setBasicMessageFooter("If you have any questions, please contact your network administrator.");
 
         // the set function takes care of writing the settings to
         // disk and applying the settings to the node
