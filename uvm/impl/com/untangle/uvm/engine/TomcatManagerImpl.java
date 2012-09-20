@@ -103,7 +103,6 @@ public class TomcatManagerImpl implements TomcatManager
 
             ctx = loadServlet("/setup", "setup", new AdministrationValve() );
             ctx.setAttribute("threadRequest", threadRequest);
-            loadServlet("/library", "library", new AdministrationValve() );
             
         } finally {
             Thread.currentThread().setContextClassLoader(uvmCl);
