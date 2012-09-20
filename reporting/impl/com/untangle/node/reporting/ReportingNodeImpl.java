@@ -98,9 +98,9 @@ public class ReportingNodeImpl extends NodeBase implements ReportingNode, Report
             }
             try {
                 String lines[] = result.getOutput().split("\\r?\\n");
-                logger.warn("Creating Schema: ");
+                logger.info("Creating Schema: ");
                 for ( String line : lines )
-                    logger.warn("Schema: " + line);
+                    logger.info("Schema: " + line);
             } catch (Exception e) {}
         }
     }
