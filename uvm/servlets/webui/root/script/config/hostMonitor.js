@@ -157,17 +157,67 @@ if (!Ung.hasResource["Ung.HostMonitor"]) {
                 },{
                     xtype: 'checkbox',
                     checked: true,
-                    boxLabel: this.i18n._("Directory Connector Username"),
-                    gridColumnHeader: this.i18n._("Directory Connector Username"),
+                    boxLabel: this.i18n._("Penalty Boxed"),
+                    gridColumnHeader: this.i18n._("Penalty Boxed"),
+                    gridColumnDataIndex: "platform-penaltyboxed",
+                    gridColumnWidth: 100
+                },{
+                    xtype: 'checkbox',
+                    checked: true,
+                    boxLabel: this.i18n._("Penalty Box Entry Time"),
+                    gridColumnHeader: this.i18n._("Penalty Box Entry Time"),
+                    gridColumnDataIndex: "platform-penaltybox-entry-time",
+                    gridColumnWidth: 100,
+                    gridColumnRenderer: function(value) {
+                        return i18n.timestampFormat(value);
+                    }
+                },{
+                    xtype: 'checkbox',
+                    checked: true,
+                    boxLabel: this.i18n._("Penalty Box Exit Time"),
+                    gridColumnHeader: this.i18n._("Penalty Box Exit Time"),
+                    gridColumnDataIndex: "platform-penaltybox-exit-time",
+                    gridColumnWidth: 100,
+                    gridColumnRenderer: function(value) {
+                        return i18n.timestampFormat(value);
+                    }
+                },{
+                    xtype: 'checkbox',
+                    checked: true,
+                    boxLabel: "Directory Connector" + " - " + this.i18n._("Username"),
+                    gridColumnHeader: "Directory Connector" + " - " + this.i18n._("Username"),
                     gridColumnDataIndex: "adconnector-username",
                     gridColumnWidth: 100
                 },{
                     xtype: 'checkbox',
                     checked: true,
-                    boxLabel: this.i18n._("Captive Portal Username"),
-                    gridColumnHeader: this.i18n._("Captive Portal Username"),
+                    boxLabel: "Captive Portal" + " - " + this.i18n._("Username"),
+                    gridColumnHeader: "Captive Portal" + " - " + this.i18n._("Username"),
                     gridColumnDataIndex: "capture-username",
                     gridColumnWidth: 100
+                },{
+                    xtype: 'checkbox',
+                    checked: true,
+                    boxLabel: "Bandwidth Control" + " - " + this.i18n._("Penalty Box Priority"),
+                    gridColumnHeader: "Bandwidth Control" + " - " + this.i18n._("Penalty Box Priority"),
+                    gridColumnDataIndex: "bandwidth-penaltybox-priority",
+                    gridColumnWidth: 100,
+                    gridColumnRenderer: function(value) {
+                        if (value == null || value == "")
+                            return "";
+                        
+                        switch(value) {
+                          case 0: return "";
+                          case 1: return i18n._("Very High");
+                          case 2: return i18n._("High");
+                          case 3: return i18n._("Medium");
+                          case 4: return i18n._("Low");
+                          case 5: return i18n._("Limited");
+                          case 6: return i18n._("Limited More");
+                          case 7: return i18n._("Limited Severely");
+                        default: return Ext.String.format(i18n._("Unknown Priority: {0}"), value);
+                        }
+                    }
                 }]
             });
         },
@@ -243,9 +293,17 @@ if (!Ung.hasResource["Ung.HostMonitor"]) {
                 },{
                     name: "platform-username"
                 },{
+                    name: "platform-penaltyboxed"
+                },{
+                    name: "platform-penaltybox-entry-time"
+                },{
+                    name: "platform-penaltybox-exit-time"
+                },{
                     name: "adconnector-username"
                 },{
                     name: "capture-username"
+                },{
+                    name: "bandwidth-penaltybox-priority"
                 }],
                 columns: columns,
                 initComponent: function() {
