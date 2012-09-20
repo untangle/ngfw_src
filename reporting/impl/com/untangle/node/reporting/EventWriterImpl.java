@@ -32,9 +32,30 @@ import com.untangle.uvm.logging.LogEvent;
  */
 public class EventWriterImpl implements Runnable
 {
-    private static final int SYNC_TIME = 60*1000; /* 60 seconds */
-    private static final int MAX_EVENTS_PER_CYCLE = 10000; /* maximum events to write per write cycle */
-    
+    /**
+     * The amount of time for the event write to sleep
+     * if there is not a lot of work to be done
+     */
+    private static final int SYNC_TIME = 30*1000; /* 30 seconds */
+
+    /**
+     * Maximum number of events to write per work cycle
+     */
+    private static final int MAX_EVENTS_PER_CYCLE = 10000; 
+
+    /**
+     * If the event queue length reaches the high water mark
+     * Then the eventWriter is not able to keep up with demand
+     * In this case the overloadedFlag is set to true
+     */
+    private static final int HIGH_WATER_MARK = 1000000;
+
+    /**
+     * If overloadedFlag is set to true and the queue shrinks to this size
+     * then overloadedFlag will be set to false
+     */
+    private static final int LOW_WATER_MARK = 100000;
+
     private final Logger logger = Logger.getLogger(getClass());
 
     private static boolean forceFlush = false;
@@ -47,6 +68,13 @@ public class EventWriterImpl implements Runnable
 
     private long lastLoggedWarningTime = System.currentTimeMillis();
 
+    /**
+     * If true then the eventWriter is considered "overloaded" and can not keep up with demand
+     * This is set if the event queue length reaches the high water mark
+     * In this case we stop logging events entirely until we are no longer overloaded
+     */
+    private boolean overloadedFlag = false;
+    
     /**
      * This stores the approximate write times of events
      * It is updated each time the events are flushed
@@ -95,9 +123,15 @@ public class EventWriterImpl implements Runnable
              * Sleep until next log time
              * If force flush was called, don't sleep
              * If there is already a full runs worth of events, don't sleep
+             * If events are significantly delayed (more than 2x SYNC_TIME), don't sleep
              */
-            if (!forceFlush && inputQueue.size() < MAX_EVENTS_PER_CYCLE)
+            if ( forceFlush ||
+                 (inputQueue.size() > MAX_EVENTS_PER_CYCLE) ||
+                 (writeDelaySec*1000 >  SYNC_TIME*2) ) {
+                logger.debug("persist(): skipping sleep");
+            } else {
                 try {Thread.sleep(SYNC_TIME);} catch (Exception e) {}
+            }
 
             synchronized( this ) {
                 try {
@@ -117,6 +151,18 @@ public class EventWriterImpl implements Runnable
                         logQueue.add(event);
                     }
 
+                    /**
+                     * Check queue lengths
+                     */
+                    if (!this.overloadedFlag && inputQueue.size() > HIGH_WATER_MARK)  {
+                        logger.warn("OVERLOAD: High Water Mark reached.");
+                        this.overloadedFlag = true;
+                    }
+                    if (this.overloadedFlag && inputQueue.size() < LOW_WATER_MARK) {
+                        logger.warn("OVERLOAD: Low Water Mark reached. Continuing normal operation.");
+                        this.overloadedFlag = false;
+                    }
+                    
                     /**
                      * If there is anything to log, log it to the database
                      */
@@ -177,6 +223,13 @@ public class EventWriterImpl implements Runnable
         if ( this.thread == null ) {
             if ( System.currentTimeMillis() - this.lastLoggedWarningTime > 10000 ) {
                 logger.warn("Reporting node not running, discarding event");
+                this.lastLoggedWarningTime = System.currentTimeMillis();
+            }
+            return;
+        }
+        if ( this.overloadedFlag ) {
+            if ( System.currentTimeMillis() - this.lastLoggedWarningTime > 10000 ) {
+                logger.warn("Event Writer overloaded, discarding event");
                 this.lastLoggedWarningTime = System.currentTimeMillis();
             }
             return;
@@ -336,12 +389,13 @@ public class EventWriterImpl implements Runnable
             long t1 = System.currentTimeMillis();
             long elapsedTime = t1-t0;
             double avgTime = ((double)elapsedTime/((double)count));
-            logger.info("persist(): " +
+            logger.info("persist(): EventStats " +
                         String.format("%5d",count) +
                         " events [" + String.format("%5d",elapsedTime) +
                         " ms] [" + String.format("%4.1f",avgTime) +
                         " avg] [" + String.format("%5d",writeDelaySec) +
-                        "s delay] " + mapOutput);
+                        "s delay] [" + String.format("%5d",inputQueue.size()) + " pending]");
+            logger.info("persist(): EventMap   " + mapOutput);
 
             /**
              * update avgWriteTimePerEvent and totalEventsWritten
@@ -358,7 +412,8 @@ public class EventWriterImpl implements Runnable
 
     protected void stop()
     {
-        forceFlush(); /* flush last few events */
+        // this is disabled because it causes boxes to hang on stopping the uvm
+        // forceFlush(); /* flush last few events */
 
         Thread tmp = thread;
         thread = null; /* thread will exit if thread is null */
