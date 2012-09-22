@@ -34,11 +34,8 @@
 </table>
 
 <form method="post" action="/capture/handler.py/login">
-<table border=0 cellpadding=8>
-	<tr><td><span class="styleNormal">$.UserLabel.$</span></td><td><input name="username" style="width: 200px" type="text" /></td></tr>
-	<tr><td><span class="styleNormal">$.PassLabel.$</span></td><td><input name="password" style="width: 200px" type="password" autocomplete="off" /></td></tr>
-	<tr><td colspan=2><center><input name="login" type="submit" value="Login" class="styleNormal" style="width: 150px; height: 40px"></input></center></td></tr>
-</table>
+	<p><input name="agree" type="$.AgreeBox.$" /><span class="styleNormal">$.AgreeText.$</span></p>
+	<input name="login" type="submit" value="Continue" class="styleNormal" style="width: 150px; height: 40px"></input>
 	<input name="method" type="hidden" value="$.method.$" />
 	<input name="nonce" type="hidden" value="$.nonce.$" />
 	<input name="appid" type="hidden" value="$.appid.$" />

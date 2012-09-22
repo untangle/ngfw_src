@@ -139,7 +139,7 @@ public class CaptureNodeImpl extends NodeBase implements CaptureNode
         localSettings.setBasicLoginPageWelcome("Welcome to the " + brand.getCompanyName() + " Captive Portal");
         localSettings.setBasicLoginUsername("Username:");
         localSettings.setBasicLoginPassword("Password:");
-        localSettings.setBasicLoginMessageText("Please enter your username and password to connect to the Internet.");
+        localSettings.setBasicLoginMessageText("If you want to wet your beak in the sea of interwebs, you need to login with a valid username and password.");
         localSettings.setBasicLoginFooter("If you have any questions, please contact your network administrator.");
         localSettings.setBasicMessagePageTitle("Captive Portal");
         localSettings.setBasicMessagePageWelcome("Welcome to the " + brand.getCompanyName() + " Captive Portal");

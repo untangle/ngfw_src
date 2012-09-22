@@ -6,36 +6,61 @@ from uvm import Uvm
 #-----------------------------------------------------------------------------
 
 def index(req):
+    # get the original destination and other arguments passed
+    # in the URL when the redirect was generated
+    args = split_args(req.args);
+    if (not 'METHOD' in args):   args['METHOD'] = "Empty"
+    if (not 'NONCE' in args):   args['NONCE'] = "Empty"
+    if (not 'APPID' in args):   args['APPID'] = "Empty"
+    if (not 'HOST' in args):    args['HOST'] = "Empty"
+    if (not 'URI' in args):   args['URI'] = "Empty"
 
-    # use the path from the request filename to locate the authpage template
-    name = req.filename[:req.filename.rindex('/')] + "/authpage.html"
+    # read the node and branding settings from the uvm
+    uvmContext = Uvm().getUvmContext()
+    captureNode = uvmContext.nodeManager().node(long(args['APPID']))
+    brandingNode = uvmContext.nodeManager().node("untangle-node-branding");
+
+    if (captureNode == None):
+        captureSettings = None
+    else:
+        captureSettings = captureNode.getSettings()
+
+    if (brandingNode == None):
+        brandingSettings = {}
+        brandingSettings['companyName'] = 'Untangle'
+    else:
+        brandingSettings = brandingNode.getSettings()
+
+    # use the path from the request filename to locate the correct template
+    if (captureSettings['pageType'] == 'BASIC_LOGIN'): name = req.filename[:req.filename.rindex('/')] + "/authpage.html"
+    if (captureSettings['pageType'] == 'BASIC_MESSAGE'): name = req.filename[:req.filename.rindex('/')] + "/infopage.html"
+    if (captureSettings['pageType'] == 'CUSTOM'): name = req.filename[:req.filename.rindex('/')] + "/custom.html"
     file = open(name, "r")
     page = file.read();
     file.close()
 
-    # get the original destination and other arguments passed
-    # in the URL when the redirect was generated
-    args = split_args(req.args);
+    if (captureSettings['pageType'] == 'BASIC_LOGIN'):
+        page = page.replace('$.CompanyName.$', brandingSettings['companyName'])
+        page = page.replace('$.PageTitle.$', captureSettings['basicLoginPageTitle'])
+        page = page.replace('$.WelcomeText.$', captureSettings['basicLoginPageWelcome'])
+        page = page.replace('$.MessageText.$', captureSettings['basicLoginMessageText'])
+        page = page.replace('$.UserLabel.$', captureSettings['basicLoginUsername'])
+        page = page.replace('$.PassLabel.$', captureSettings['basicLoginPassword'])
+        page = page.replace('$.FooterText.$', captureSettings['basicLoginFooter'])
 
-    uvmContext = Uvm().getUvmContext()
-    captureNode = uvmContext.nodeManager().node(long(args['APPID']))
-    captureSettings = captureNode.getSettings()
-    brandingNode = uvmContext.nodeManager().node("untangle-node-branding");
+    if (captureSettings['pageType'] == 'BASIC_MESSAGE'):
+        page = page.replace('$.CompanyName.$', brandingSettings['companyName'])
+        page = page.replace('$.PageTitle.$', captureSettings['basicMessagePageTitle'])
+        page = page.replace('$.WelcomeText.$', captureSettings['basicMessagePageWelcome'])
+        page = page.replace('$.MessageText.$', captureSettings['basicMessageMessageText'])
+        page = page.replace('$.FooterText.$', captureSettings['basicMessageFooter'])
 
-    if (brandingNode != None):
-        brandingSettings = brandingNode.getSettings()
-    else:
-        brandingSettings = None
-
-    debug = "<HR>";
-    debug += "<BR>===== ARGUMENTS =====<BR>\r\n"
-    debug += pprint.pformat(args)
-    debug +="<BR>===== CAPTURE SETTINGS =====<BR>\r\n"
-    debug += pprint.pformat(captureSettings)
-    debug += "<BR>===== BRANDING SETTINGS =====<BR>\r\n"
-    debug += pprint.pformat(brandingSettings)
-
-    page = page.replace('$.debug.$', debug)
+        if (captureSettings['basicMessageAgreeBox'] == True):
+            page = page.replace('$.AgreeText.$', captureSettings['basicMessageAgreeText'])
+            page = page.replace('$.AgreeBox.$','checkbox')
+        else:
+            page = page.replace('$.AgreeText.$', '')
+            page = page.replace('$.AgreeBox.$','hidden')
 
     # plug the values into the hidden form fields of the authentication page
     # page by doing  search and replace for each of the placeholder text tags
@@ -44,6 +69,15 @@ def index(req):
     page = page.replace('$.appid.$', args['APPID'])
     page = page.replace('$.host.$', args['HOST'])
     page = page.replace('$.uri.$', args['URI'])
+
+    debug = "<BR><HR><BR>";
+    debug += "<BR>===== ARGUMENTS =====<BR>\r\n"
+    debug += pprint.pformat(args)
+    debug +="<BR>===== CAPTURE SETTINGS =====<BR>\r\n"
+    debug += pprint.pformat(captureSettings)
+    debug += "<BR>===== BRANDING SETTINGS =====<BR>\r\n"
+    debug += pprint.pformat(brandingSettings)
+    page = page.replace('<!--DEBUG-->', debug)
 
     # return the login page we just created
     return(page)

@@ -14,22 +14,16 @@ public class CaptureSettings implements Serializable
     public static enum AuthenticationType { ACTIVE_DIRECTORY, RADIUS, LOCAL_DIRECTORY, NONE };
     public static enum PageType { BASIC_LOGIN, BASIC_MESSAGE, CUSTOM };
 
-    private Long id;
-
     private List<CaptureRule> captureRules = new LinkedList<CaptureRule>();
-
     private List<PassedAddress> passedClients = new LinkedList<PassedAddress>();
     private List<PassedAddress> passedServers = new LinkedList<PassedAddress>();
 
-    private boolean captureBypassedTraffic = false;
     private AuthenticationType authenticationType = AuthenticationType.NONE;
     private int idleTimeout = 0;
     private int timeout = 3600;
     private boolean areConcurrentLoginsEnabled = true;
     private PageType pageType = PageType.BASIC_MESSAGE;
     private String redirectUrl = "";
-    private boolean useHttpsPage= false;
-    private boolean isRedirectHttpsEnabled = false;
 
     private String basicLoginPageTitle = "";
     private String basicLoginPageWelcome = "";
@@ -37,6 +31,7 @@ public class CaptureSettings implements Serializable
     private String basicLoginPassword = "";
     private String basicLoginMessageText = "";
     private String basicLoginFooter = "";
+
     private String basicMessagePageTitle = "";
     private String basicMessagePageWelcome = "";
     private String basicMessageMessageText = "";
@@ -81,16 +76,6 @@ public class CaptureSettings implements Serializable
     public void setPassedServers(List<PassedAddress> newValue)
     {
         this.passedServers = newValue;
-    }
-
-    public boolean getCaptureBypassedTraffic()
-    {
-        return this.captureBypassedTraffic;
-    }
-
-    public void setCaptureBypassedTraffic(boolean newValue)
-    {
-        this.captureBypassedTraffic = newValue;
     }
 
     public AuthenticationType getAuthenticationType()
@@ -151,26 +136,6 @@ public class CaptureSettings implements Serializable
     public void setRedirectUrl( String newValue)
     {
         this.redirectUrl = newValue;
-    }
-
-    public boolean getUseHttpsPage()
-    {
-        return this.useHttpsPage;
-    }
-
-    public void setUseHttpsPage( boolean newValue)
-    {
-        this.useHttpsPage = newValue;
-    }
-
-    public boolean getRedirectHttpsEnabled()
-    {
-        return this.isRedirectHttpsEnabled;
-    }
-
-    public void setRedirectHttpsEnabled( boolean newValue)
-    {
-        this.isRedirectHttpsEnabled = newValue;
     }
 
     public String getBasicLoginPageTitle()      { return this.basicLoginPageTitle; }

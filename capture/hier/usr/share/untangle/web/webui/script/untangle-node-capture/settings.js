@@ -941,8 +941,7 @@ if (!Ung.hasResource["Ung.Capture"]) {
                                                      this.i18n._("You must save your settings before previewing the page." ));
                                 return;
                             }
-
-                            window.open("/capture", "_blank");
+                            window.open("/capture/handler.py/index?appid=" + this.node.nodeId , "_blank");
                         }, this)
                     }]
                 },{
@@ -953,33 +952,11 @@ if (!Ung.hasResource["Ung.Capture"]) {
                         name: "redirectUrl",
                         width: 200,
                         fieldLabel: this.i18n._("Redirect URL"),
-                        tooltip: this.i18n._("Users will be redirected to this page immediately after authentication. Blank sends the user to their original destination."),
+                        tooltip: this.i18n._("Users will be redirected to this page immediately after authentication. Leave this field blank to send users to their original destination."),
                         value: this.settings.redirectUrl,
                         listeners: {
                             "change": Ext.bind(function( elem, newValue ) {
                                 this.settings.redirectUrl = newValue;
-                            }, this)
-                        }
-                    },{
-                        xtype: "checkbox",
-                        boxLabel: this.i18n._("Redirect HTTP traffic to HTTPS captive page"),
-                        tooltip: this.i18n._("If unchecked, HTTP traffic to unauthenticated hosts will be redirect to the HTTP Captive page. If checked, users will be redirected to an HTTPS captive page."),
-                        hideLabel: true,
-                        checked: this.settings.useHttpsPage,
-                        listeners: {
-                            "change": Ext.bind(function(elem, checked) {
-                                this.settings.useHttpsPage = checked;
-                            }, this)
-                        }
-                    },{
-                        xtype: "checkbox",
-                        boxLabel: this.i18n._("Redirect HTTPS traffic to HTTPS captive page"),
-                        tooltip: this.i18n._("If unchecked, HTTPS traffic for unauthenticated users is blocked. If checked HTTPS traffic will be redirected to the HTTPS captive page. Warning: This will cause certificate warning errors in the browser."),
-                        hideLabel: true,
-                        checked: this.settings.redirectHttpsEnabled,
-                        listeners: {
-                            "change": Ext.bind(function(elem, checked) {
-                                this.settings.redirectHttpsEnabled = checked;
                             }, this)
                         }
                     }]
