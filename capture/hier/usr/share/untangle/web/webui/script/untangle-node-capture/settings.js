@@ -2,6 +2,22 @@ if (!Ung.hasResource["Ung.Capture"]) {
     Ung.hasResource["Ung.Capture"] = true;
     Ung.NodeWin.registerClassName("untangle-node-capture", "Ung.Capture");
 
+    Ung.CaptureUtil={
+        getMatchers: function (settingsCmp) {
+            return [
+                {name:"DST_ADDR",displayName: settingsCmp.i18n._("Destination Address"), type: "text", visible: true, vtype:"ipAddress"},
+                {name:"DST_PORT",displayName: settingsCmp.i18n._("Destination Port"), type: "text",vtype:"port", visible: true},
+                {name:"DST_INTF",displayName: settingsCmp.i18n._("Destination Interface"), type: "checkgroup", values: Ung.Util.getInterfaceList(true, false), visible: true},
+                {name:"SRC_ADDR",displayName: settingsCmp.i18n._("Source Address"), type: "text", visible: true, vtype:"ipAddress"},
+                {name:"SRC_PORT",displayName: settingsCmp.i18n._("Source Port"), type: "text",vtype:"port", visible: false},
+                {name:"SRC_INTF",displayName: settingsCmp.i18n._("Source Interface"), type: "checkgroup", values: Ung.Util.getInterfaceList(true, false), visible: true},
+                {name:"PROTOCOL",displayName: settingsCmp.i18n._("Protocol"), type: "checkgroup", values: [["TCP","TCP"],["UDP","UDP"],["any","any"]], visible: true},
+                {name:"DIRECTORY_CONNECTOR_USERNAME",displayName: settingsCmp.i18n._("Directory Connector: Username"), type: "editor", editor: Ext.create('Ung.UserEditorWindow',{}), visible: true},
+                {name:"DIRECTORY_CONNECTOR_GROUP",displayName: settingsCmp.i18n._("Directory Connector: User in Group"), type: "editor", editor: Ext.create('Ung.GroupEditorWindow',{}), visible: true}
+            ];
+        }
+    };
+
     Ext.define('Ung.Capture', {
         extend:'Ung.NodeWin',
         panelCaptiveStatus: null,
@@ -141,291 +157,222 @@ if (!Ung.hasResource["Ung.Capture"]) {
             });
         },
 
-        // Rules Panel
         buildCaptureRules: function() {
-            this.buildGridCaptureRules();
             this.panelCaptureRules = Ext.create('Ext.panel.Panel',{
-                name: "panelCaptureRules",
-                helpSource: "captive_hosts",
+                name: 'panelCaptureRules',
+                helpSource: 'capture_rules',
                 parentId: this.getId(),
-                title: this.i18n._("Capture Rules"),
-                layout: "anchor",
-                cls: "ung-panel",
+                title: this.i18n._('Capture Rules'),
+                layout: 'anchor',
+                cls: 'ung-panel',
                 items: [{
                     xtype: 'fieldset',
                     cls: 'description',
-                    title: this.i18n._("Note"),
-                    html: this.i18n._("The Capture Rules are a  set of rules to define which hosts and traffic are subject to the Captive Portal.  The rules are evaluated in order.")
-                }, this.gridCaptureRules, {
-                    xtype: "fieldset",
-                    items: [{
-                        xtype: "checkbox",
-                        boxLabel: this.i18n._("Capture Bypassed Traffic"),
-                        tooltip: this.i18n._("If enabled, traffic that is bypassed in Bypass Rules will also captured until the host is authenticated."),
-                        hideLabel: true,
-                        checked: this.settings.captureBypassedTraffic,
-                        listeners: {
-                            "change": Ext.bind(function(elem, checked) {
-                                this.settings.captureBypassedTraffic = checked;
-                            }, this)
-                        }
-                    }]
-                }]
-            });
-        },
-
-        buildGridCaptureRules: function() {
-            this.gridCaptureRules = Ext.create('Ung.EditorGrid', {
-                anchor: '100% -120',
-                name: "gridCaptureRules",
-                settingsCmp: this,
-                hasReorder: true,
-                emptyRow: {
-                    "live": true,
-                    "capture": true,
-                    "log": false,
-                    "clientInterface": "1",
-                    "clientAddress": "any",
-                    "serverAddress": "any",
-                    "days": "mon,tue,wed,thu,fri,sat,sun",
-                    "startTime": "00:00",
-                    "endTime": "23:59",
-                    "name": this.i18n._("[no name]"),
-                    "category": this.i18n._("[no category]"),
-                    "description": this.i18n._("[no description]"),
-                    "javaClass": "com.untangle.node.capture.CaptureRule"
-                },
-                title: this.i18n._("Rules"),
-                qtip: this.i18n._("The Capture Rules are a set of rules to define which hosts and traffic are subject to the Captive Portal. All enabled rules are evaluated in order."),
-                recordJavaClass: "com.untangle.node.capture.CaptureRule",
-                paginated: false,
-                dataProperty: "captureRules",
-                fields: [{
-                    name: "id"
-                },{
-                    name: "live"
-                },{
-                    name: "capture"
-                },{
-                    name: "log"
-                },{
-                    name: "clientInterface"
-                },{
-                    name: "clientAddress"
-                },{
-                    name: "serverAddress"
-                },{
-                    name: "name"
-                },{
-                    name: "category"
-                },{
-                    name: "description"
-                },{
-                    name: "startTime"
-                },{
-                    name: "endTime"
-                },{
-                    name: "days"
-                },{
-                    name: "javaClass"
-                }],
-                columns: [
-                    {
-                        xtype:'checkcolumn',
-                        header: this.i18n._("Enable"),
-                        dataIndex: "live",
-                        fixed: true,
-                        width:55
-
+                    title: this.i18n._('Rules'),
+                    height: 70,
+                    html: this.i18n._("Network access is controlled based on the set of rules defined below. To learn more click on the <b>Help</b> button below.")
+                },  this.gridCaptureRules= Ext.create('Ung.EditorGrid',{
+                    anchor: '100% -80',
+                    name: 'Rules',
+                    settingsCmp: this,
+                    paginated: false,
+                    hasReorder: true,
+                    addAtTop: false,
+                    emptyRow: {
+                        "ruleId": 0,
+                        "enabled": true,
+                        "block": false,
+                        "log": true,
+                        "description": this.i18n._("[no description]"),
+                        "javaClass": "com.untangle.node.capture.CaptureRule"
                     },
-                    {
-                        xtype:'checkcolumn',
-                        header: this.i18n._("Capture"),
-                        dataIndex: "capture",
-                        fixed: true,
-                        width:55
-                    },
-                    {
-                        header: this.i18n._("Description"),
-                        width: 200,
-                        dataIndex: "description",
-                        flex:1,
-                        editor: {
-                            xtype:'textfield',
-                            allowBlank: false
-                        }
-                    }
-                ],
-                columnsDefaultSortable: false
-            });
-
-            var rowEditor = this.buildGridCaptureRulesRowEditor();
-            this.gridCaptureRules.rowEditor = rowEditor;
-        },
-
-        buildGridCaptureRulesRowEditor: function() {
-            return Ext.create('Ung.RowEditorWindow',{
-                grid: this.gridCaptureRules,
-                title: this.i18n._("Capture Rule"),
-                inputLines: [{
-                    xtype: "checkbox",
-                    name: "live",
-                    dataIndex: "live",
-                    boxLabel: this.i18n._("Enabled"),
-                    hideLabel: true
-                },{
-                    xtype: "checkbox",
-                    name: "capture",
-                    dataIndex: "capture",
-                    boxLabel: this.i18n._("Capture"),
-                    hideLabel: true
-                },{
-                    xtype: 'textarea',
-                    name: "description",
-                    width: 400,
-                    height: 60,
-                    dataIndex: "description",
-                    fieldLabel: this.i18n._("Description"),
-                    allowBlank: false
-                },{
-                    xtype: "fieldset",
-                    title: this.i18n._("Interface"),
-                    items: [{
-                        cls: "description",
-                        border: false,
-                        html: this.i18n._("The ethernet interface (NIC).")
-                    }, new Ung.Util.InterfaceCombo({
-                        name: "Client",
-                        dataIndex: "clientInterface",
-                        fieldLabel: this.i18n._("Client"),
-                        simpleMatchers: true
-                    })]
-                },{
-                    xtype: "fieldset",
-                    title: this.i18n._("Address"),
-                    items: [{
-                        cls: "description",
-                        border: false,
-                        html: this.i18n._("The IP addresses.")
-                    },{
-                        xtype: "textfield",
-                        name: "clientAddress",
-                        dataIndex: "clientAddress",
-                        fieldLabel: this.i18n._("Client"),
-                        allowBlank: false
-                    },{
-                        xtype: "textfield",
-                        name: "serverAddress",
-                        dataIndex: "serverAddress",
-                        fieldLabel: this.i18n._("Server"),
-                        allowBlank: false
-                    }]
-                },{
-                    xtype: "fieldset",
-                    title: this.i18n._("Time of Day"),
-                    items: [{
-                        cls: "description",
-                        border: false,
-                        html: this.i18n._("The time of day.")
-                    },{
-                        xtype: "timefield",
-                        name: "startTime",
-                        dataIndex: "startTimeAsDate",
-                        fieldLabel: this.i18n._("Start Time"),
-                        allowBlank: false
-                    },{
-                        xtype: "timefield",
-                        endTime: true,
-                        name: "endTime",
-                        dataIndex: "endTimeAsDate",
-                        fieldLabel: this.i18n._("End Time"),
-                        allowBlank: false
-                    }]
-                },{
-                    xtype: "fieldset",
-                    title: this.i18n._("Days of Week"),
-                    items: [{
-                        cls: "description",
-                        border: false,
-                        html: this.i18n._("The days of the week.")
-                    },{
-                        xtype: "checkbox",
-                        name: "sunday",
-                        dataIndex: "sun",
-                        boxLabel: this.i18n._("Sunday"),
-                        hideLabel: true
-                    },{
-                        xtype: "checkbox",
-                        name: "monday",
-                        dataIndex: "mon",
-                        boxLabel: this.i18n._("Monday"),
-                        hideLabel: true
-                    },{
-                        xtype: "checkbox",
-                        name: "tuesday",
-                        dataIndex: "tue",
-                        boxLabel: this.i18n._("Tuesday"),
-                        hideLabel: true
+                    title: this.i18n._("Rules"),
+                    recordJavaClass: "com.untangle.node.capture.CaptureRule",
+                    dataProperty:'captureRules',
+                    fields: [{
+                        name: 'ruleId'
                     }, {
-                        xtype: "checkbox",
-                        name: "wednesday",
-                        dataIndex: "wed",
-                        boxLabel: this.i18n._("Wednesday"),
-                        hideLabel: true
+                        name: 'enabled'
                     }, {
-                        xtype: "checkbox",
-                        name: "thursday",
-                        dataIndex: "thu",
-                        boxLabel: this.i18n._("Thursday"),
-                        hideLabel: true
+                        name: 'block'
                     }, {
-                        xtype: "checkbox",
-                        name: "friday",
-                        dataIndex: "fri",
-                        boxLabel: this.i18n._("Friday"),
-                        hideLabel: true
+                        name: 'log'
                     }, {
-                        xtype: "checkbox",
-                        name: "saturday",
-                        dataIndex: "sat",
-                        boxLabel: this.i18n._("Saturday"),
-                        hideLabel: true
-                    }]
-                }],
+                        name: 'matchers'
+                    },{
+                        name: 'description'
+                    }, {
+                        name: 'javaClass'
+                    }],
+                    columns: [{
+                                header: this.i18n._("Rule Id"),
+                                width: 50,
+                                dataIndex: 'ruleId',
+                                renderer: function(value) {
+                                    if (value < 0) {
+                                        return i18n._("new");
+                                    } else {
+                                        return value;
+                                    }
+                                }
+                            },
+                            {
+                                xtype:'checkcolumn',
+                                header: this.i18n._("Enable"),
+                                dataIndex: 'enabled',
+                                fixed: true,
+                                width:55
+                            },
+                            {
+                                header: this.i18n._("Description"),
+                                width: 200,
+                                dataIndex: 'description',
+                                flex:1
+                            },
+                            {
+                                xtype:'checkcolumn',
+                                header: this.i18n._("Block"),
+                                dataIndex: 'block',
+                                fixed: true,
+                                width:55
+                            },
+                            {
+                                xtype:'checkcolumn',
+                                header: this.i18n._("Log"),
+                                dataIndex: 'log',
+                                fixed: true,
+                                width:55
+                            }],
+                    columnsDefaultSortable: false,
 
-                populate: function(record, addMode) {
-                    var days = record.get("days").split( "," );
-                    for ( var c = 0 ; c < Ung.Capture.daysOfWeek.length ; c++ ) {
-                        var day = Ung.Capture.daysOfWeek[c];
-                        record.set( day, days.indexOf( day ) >= 0 );
-                    }
-                    record.set( "startTimeAsDate", Ext.Date.parse(record.get("startTime"), "H:i") || Ext.Date.parse(record.get("startTime"), "G:i") )
-                    record.set( "endTimeAsDate", Ext.Date.parse(record.get("endTime"), "H:i") || Ext.Date.parse(record.get("endTime"), "G:i"))
+                    initComponent: function() {
+                        this.rowEditor = Ext.create('Ung.RowEditorWindow',{
+                            grid: this,
+                            sizeToComponent: this.settingsCmp,
+                            inputLines: this.rowEditorInputLines,
+                            rowEditorLabelWidth: 100,
+                            populate: function(record, addMode) {
+                                return this.populateTree(record, addMode);
+                            },
+                            // updateAction is called to update the record after the edit
+                            updateAction: function() {
+                                return this.updateActionTree();
+                            },
+                            isDirty: function() {
+                                if (this.record !== null) {
+                                    if (this.inputLines) {
+                                        for (var i = 0; i < this.inputLines.length; i++) {
+                                            var inputLine = this.inputLines[i];
+                                            if(inputLine.dataIndex!=null) {
+                                                if (this.record.get(inputLine.dataIndex) != inputLine.getValue()) {
+                                                    return true;
+                                                }
+                                            }
+                                            /* for fieldsets */
+                                            if(inputLine.items !=null && inputLine.items.dataIndex != null) {
+                                                if (this.record.get(inputLine.items.dataIndex) != inputLine.items.getValue()) {
+                                                    return true;
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                                return Ext.getCmp('builder').isDirty();
+                            },
+                            isFormValid: function() {
+                                for (var i = 0; i < this.inputLines.length; i++) {
+                                    var item = null;
+                                    if ( this.inputLines.get != null ) {
+                                        item = this.inputLines.get(i);
+                                    } else {
+                                        item = this.inputLines[i];
+                                    }
+                                    if ( item == null ) {
+                                        continue;
+                                    }
 
-                    Ung.RowEditorWindow.prototype.populateTree.call(this, record, addMode);
-                },
-                isFormValid: function() {
-                    return Ung.RowEditorWindow.prototype.isFormValid.call(this);
-                },
-                updateAction: function() {
-                    Ung.RowEditorWindow.prototype.updateActionTree.call(this);
+                                    if ( item.isValid != null) {
+                                        if(!item.isValid()) {
+                                            return false;
+                                        }
+                                    } else if(item.items !=null && item.items.getCount()>0) {
+                                        /* for fieldsets */
+                                        for (var j = 0; j < item.items.getCount(); j++) {
+                                            var subitem=item.items.get(j);
+                                            if ( subitem == null ) {
+                                                continue;
+                                            }
 
-                    if ( this.record !== null ) {
-                        /* Create an array of the days, and then convert it to a string */
-                        var days = [];
-                        for ( var c = 0 ; c < Ung.Capture.daysOfWeek.length ; c++ ) {
-                            var day = Ung.Capture.daysOfWeek[c];
-                            if ( this.record.get( day ) === true ) {
-                                days.push( day );
+                                            if ( subitem.isValid != null && !subitem.isValid()) {
+                                                return false;
+                                            }
+                                        }
+                                    }
+
+                                }
+                                return true;
                             }
-                            this.record.set( day, null );
-                        }
+                        });
+                        Ung.EditorGrid.prototype.initComponent.call(this);
+                    },
 
-                        this.record.set( "days", days.join( "," ));
-                        this.record.set( "startTime", Ext.Date.format(this.record.get("startTimeAsDate"),"H:i") )
-                        this.record.set( "endTime", Ext.Date.format(this.record.get("endTimeAsDate"),"H:i") )
-                    }
-                }
+                    rowEditorInputLines: [
+                        {
+                            xtype:'checkbox',
+                            name: "Enable Rule",
+                            dataIndex: "enabled",
+                            fieldLabel: this.i18n._("Enable Rule")
+                        }
+                        ,
+                        {
+                            xtype:'textfield',
+                            name: "Description",
+                            dataIndex: "description",
+                            fieldLabel: this.i18n._("Description"),
+                            width: 500
+                        },
+                        {
+                            xtype:'fieldset',
+                            title: this.i18n._("Rule") ,
+                            title: "If all of the following conditions are met:",
+                            items:[{
+                                xtype:'rulebuilder',
+                                settingsCmp: this,
+                                javaClass: "com.untangle.node.capture.CaptureRuleMatcher",
+                                anchor:"98%",
+                                width: 900,
+                                dataIndex: "matchers",
+                                matchers: Ung.CaptureUtil.getMatchers(this),
+                                id:'builder'
+                            }]
+                        },
+                        {
+                            xtype: 'fieldset',
+                            cls:'description',
+                            title: i18n._('Perform the following action(s):'),
+                            border: false
+                        },
+                        {
+                            xtype: "combo",
+                            name: "actionType",
+                            allowBlank: false,
+                            dataIndex: "block",
+                            fieldLabel: this.i18n._("Action Type"),
+                            editable: false,
+                            store: [[true,i18n._('Block')], [false,i18n._('Pass')]],
+                            valueField: "value",
+                            displayField: "displayName",
+                            queryMode: 'local',
+                            triggerAction: 'all',
+                            listClass: 'x-combo-list-small'
+                        },
+                        {
+                            xtype:'checkbox',
+                            name: "Log",
+                            dataIndex: "log",
+                            fieldLabel: this.i18n._("Log")
+                        }]
+                })]
             });
         },
 
