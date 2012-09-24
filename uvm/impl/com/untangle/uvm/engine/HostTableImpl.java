@@ -139,6 +139,4 @@ public class HostTableImpl implements HostTable
         return entry;
     }
 
-    
-    
 }

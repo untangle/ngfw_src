@@ -56,8 +56,6 @@ import com.untangle.uvm.util.I18nUtil;
  */
 class MailSenderImpl implements MailSender
 {
-    private static final String SETTINGS_CONVERSION_SCRIPT = System.getProperty( "uvm.bin.dir" ) + "/untangle-vm-convert-mail-settings.py";
-
     public static final String UNTANGLE_SMTP_RELAY = "mail.untangle.com";
 
     public static final String Mailer = "UVM MailSender";
@@ -115,30 +113,6 @@ class MailSenderImpl implements MailSender
             readSettings = settingsManager.load( MailSettings.class, settingsFileName );
         } catch (SettingsManager.SettingsException e) {
             logger.warn("Failed to load settings:",e);
-        }
-
-        /**
-         * If there are no settings, run the conversion script to see if there are any in the database
-         * Then check again for the file
-         */
-        if (readSettings == null) {
-            logger.warn("No settings found - Running conversion script to check DB");
-            try {
-                String convertCmd = SETTINGS_CONVERSION_SCRIPT + " " + settingsFileName + ".js";
-                logger.warn("Running: " + convertCmd);
-                UvmContextFactory.context().execManager().exec( convertCmd );
-            } catch ( Exception e ) {
-                logger.warn( "Conversion script failed.", e );
-            } 
-
-            try {
-                readSettings = settingsManager.load( MailSettings.class, settingsFileName );
-                if (readSettings != null) {
-                    logger.warn("Found settings imported from database");
-                }
-            } catch (SettingsManager.SettingsException e) {
-                logger.warn("Failed to load settings:",e);
-            }
         }
 
         /**

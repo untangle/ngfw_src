@@ -48,7 +48,6 @@ public class ReportingNodeImpl extends NodeBase implements ReportingNode, Report
 {
     private static final Logger logger = Logger.getLogger(ReportingNodeImpl.class);
 
-    private static final String SETTINGS_CONVERSION_SCRIPT = System.getProperty( "uvm.bin.dir" ) + "/reporting-convert-settings.py";
     private static final String REPORTS_SCRIPT = System.getProperty("uvm.home") + "/bin/reporting-generate-reports.py";
     private static final String REPORTS_LOG = System.getProperty("uvm.log.dir") + "/reporter.log";
 
@@ -247,30 +246,6 @@ public class ReportingNodeImpl extends NodeBase implements ReportingNode, Report
             logger.warn("Failed to load settings:",e);
         }
         
-        /**
-         * If there are no settings, run the conversion script to see if there are any in the database
-         * Then check again for the file
-         */
-        if (readSettings == null) {
-            logger.warn("No settings found - Running conversion script to check DB");
-            try {
-                String convertCmd = SETTINGS_CONVERSION_SCRIPT + " " + nodeID.toString() + " " + settingsFileName + ".js";
-                logger.warn("Running: " + convertCmd);
-                UvmContextFactory.context().execManager().exec( convertCmd );
-            } catch ( Exception e ) {
-                logger.warn( "Conversion script failed.", e );
-            } 
-
-            try {
-                readSettings = settingsManager.load( ReportingSettings.class, settingsFileName );
-                if (readSettings != null) {
-                    logger.warn("Found settings imported from database");
-                }
-            } catch (SettingsManager.SettingsException e) {
-                logger.warn("Failed to load settings:",e);
-            }
-        }
-
         /**
          * If there are still no settings, just initialize
          */

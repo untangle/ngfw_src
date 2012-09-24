@@ -18,7 +18,6 @@ import com.untangle.uvm.UvmContextFactory;
  */
 public class HttpNodeImpl extends NodeBase implements HttpNode
 {
-    private static final String SETTINGS_CONVERSION_SCRIPT = System.getProperty( "uvm.bin.dir" ) + "/http-casing-convert-settings.py";
     private final CasingPipeSpec pipeSpec = new CasingPipeSpec("http", this, new HttpCasingFactory(this), Fitting.HTTP_STREAM, Fitting.HTTP_TOKENS);
     private final PipeSpec[] pipeSpecs = new PipeSpec[] { pipeSpec };
     private final Logger logger = Logger.getLogger(HttpNodeImpl.class);
@@ -71,52 +70,18 @@ public class HttpNodeImpl extends NodeBase implements HttpNode
         HttpSettings readSettings = null;
         logger.info("Loading settings from " + settingsFile );
 
-        try
-        {
+        try {
             // first we try to read our json settings
             readSettings = settingsManager.load( HttpSettings.class, settingsName );
-        }
-
-        catch (Exception exn)
-        {
+        } catch (Exception exn) {
             logger.error("postInit()",exn);
         }
 
-        // if no settings found try importing from the database
-        if (readSettings == null)
-        {
-            logger.info("No json settings found... attempting to import from database");
-
-            try
-            {
-                String convertCmd = SETTINGS_CONVERSION_SCRIPT + " " + settingsFile;
-                logger.info("Running: " + convertCmd);
-                UvmContextFactory.context().execManager().exec( convertCmd );
-            }
-
-            catch (Exception exn)
-            {
-                logger.error("Conversion script failed", exn);
-            }
-
-            try
-            {
-                // try to read the settings created by the conversion script
-                readSettings = settingsManager.load( HttpSettings.class, settingsName );
-            }
-
-            catch (Exception exn)
-            {
-                logger.error("Could not read node settings", exn);
-            }
-        }
-
-        try
-        {
+        try {
             // still no settings found so init with defaults
             if (readSettings == null)
             {
-                logger.warn("No database or json settings found... initializing with defaults");
+                logger.warn("No settings found... initializing with defaults");
                 setHttpSettings(new HttpSettings());
             }
 
@@ -127,10 +92,7 @@ public class HttpNodeImpl extends NodeBase implements HttpNode
                 this.settings = readSettings;
                 reconfigure();
             }
-        }
-
-        catch (Exception exn)
-        {
+        } catch (Exception exn) {
             logger.error("Could not apply node settings",exn);
         }
 

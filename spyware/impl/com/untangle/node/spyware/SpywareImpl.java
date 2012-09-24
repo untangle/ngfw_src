@@ -49,7 +49,6 @@ import com.untangle.node.token.TokenAdaptor;
 
 public class SpywareImpl extends NodeBase implements Spyware
 {
-    private static final String SETTINGS_CONVERSION_SCRIPT = System.getProperty( "uvm.bin.dir" ) + "/spyware-convert-settings.py";
     private static final String GET_LAST_SIGNATURE_UPDATE = System.getProperty( "uvm.bin.dir" ) + "/spyware-get-last-update";
 
     private static final String COOKIE_LIST = "/usr/share/untangle-webfilter-init/spyware-cookie";
@@ -309,31 +308,6 @@ public class SpywareImpl extends NodeBase implements Spyware
             logger.warn("Failed to load settings:",e);
         }
         
-        /**
-         * If there are no settings, run the conversion script to see if there are any in the database
-         * Then check again for the file
-         */
-        if (readSettings == null) {
-            logger.warn("No settings found - Running conversion script to check DB");
-            try {
-                String convertCmd = SETTINGS_CONVERSION_SCRIPT + " " + nodeID.toString() + " " + settingsFileName + ".js";
-
-                logger.warn("Running: " + convertCmd);
-                UvmContextFactory.context().execManager().exec( convertCmd );
-            } catch ( Exception e ) {
-                logger.warn( "Conversion script failed.", e );
-            } 
-
-            try {
-                readSettings = settingsManager.load( SpywareSettings.class, settingsFileName );
-                if (readSettings != null) {
-                    logger.warn("Found settings imported from database");
-                }
-            } catch (SettingsManager.SettingsException e) {
-                logger.warn("Failed to load settings:",e);
-            }
-        }
-
         /**
          * If there are still no settings, just initialize
          */

@@ -35,8 +35,6 @@ import com.untangle.uvm.vnet.SoloPipeSpec;
 
 public class VpnNodeImpl extends NodeBase implements VpnNode, com.untangle.uvm.node.OpenVpn
 {
-    private static final String SETTINGS_CONVERSION_SCRIPT = System.getProperty( "uvm.bin.dir" ) + "/openvpn-convert-settings.py";
-
     private static final String STAT_PASS = "pass";
     private static final String STAT_CONNECT = "connect";
 
@@ -123,30 +121,9 @@ public class VpnNodeImpl extends NodeBase implements VpnNode, com.untangle.uvm.n
             logger.error("Could not read node settings", exn);
         }
 
-        // if no settings found try getting them from the database
-        if (readSettings == null) {
-            logger.warn("No json settings found... attempting to import from database");
-
-            try {
-                String convertCmd = SETTINGS_CONVERSION_SCRIPT + " " + nodeID.toString() + " " + settingsFile;
-                logger.warn("Running: " + convertCmd);
-                UvmContextFactory.context().execManager().exec( convertCmd );
-            } catch (Exception exn) {
-                logger.error("Conversion script failed", exn);
-            }
-
-            try {
-                readSettings = settingsManager.load( VpnSettings.class, settingsName);
-            } catch (Exception exn) {
-                logger.error("Could not read node settings", exn);
-            }
-
-            if (readSettings != null) logger.warn("Database settings successfully imported");
-        }
-
         try {
             if (readSettings == null) {
-                logger.warn("No database or json settings found... initializing with defaults");
+                logger.warn("No settings found... initializing with defaults");
                 initializeSettings();
             }
             else {

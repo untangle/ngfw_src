@@ -38,8 +38,6 @@ import com.untangle.uvm.ExecManagerResult;
  */
 public class AdminManagerImpl implements AdminManager
 {
-    private static final String SETTINGS_CONVERSION_SCRIPT = System.getProperty( "uvm.bin.dir" ) + "/untangle-vm-convert-admin-settings.py";
-
     private static final String INITIAL_USER_DESCRIPTION = "System Administrator";
     private static final String INITIAL_USER_LOGIN = "admin";
     private static final String INITIAL_USER_PASSWORD = "passwd";
@@ -66,30 +64,6 @@ public class AdminManagerImpl implements AdminManager
             readSettings = settingsManager.load( AdminSettings.class, settingsFileName );
         } catch (SettingsManager.SettingsException e) {
             logger.warn("Failed to load settings:",e);
-        }
-
-        /**
-         * If there are no settings, run the conversion script to see if there are any in the database
-         * Then check again for the file
-         */
-        if (readSettings == null) {
-            logger.warn("No settings found - Running conversion script to check DB");
-            try {
-                String convertCmd = SETTINGS_CONVERSION_SCRIPT + " " + settingsFileName + ".js";
-                logger.warn("Running: " + convertCmd);
-                UvmContextFactory.context().execManager().exec( convertCmd );
-            } catch ( Exception e ) {
-                logger.warn( "Conversion script failed.", e );
-            } 
-
-            try {
-                readSettings = settingsManager.load( AdminSettings.class, settingsFileName );
-                if (readSettings != null) {
-                    logger.warn("Found settings imported from database");
-                }
-            } catch (SettingsManager.SettingsException e) {
-                logger.warn("Failed to load settings:",e);
-            }
         }
 
         /**

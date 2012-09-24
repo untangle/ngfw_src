@@ -44,8 +44,6 @@ import com.untangle.uvm.vnet.NodeTCPSession;
  */
 public abstract class VirusNodeImpl extends NodeBase implements VirusNode
 {
-    private static final String SETTINGS_CONVERSION_SCRIPT = System.getProperty( "uvm.bin.dir" ) + "/virus-base-convert-settings.py";
-
     private static final String STAT_SCAN = "scan";
     private static final String STAT_PASS = "pass";
     private static final String STAT_BLOCK = "block";
@@ -378,33 +376,6 @@ public abstract class VirusNodeImpl extends NodeBase implements VirusNode
             readSettings = settingsManager.load( VirusSettings.class, settingsFileName );
         } catch (SettingsManager.SettingsException e) {
             logger.warn("Failed to load settings:",e);
-        }
-
-        /**
-         * If there are no settings, run the conversion script to see if there are any in the database
-         * Then check again for the file
-         */
-        if (readSettings == null) {
-            logger.warn("No settings found - Running conversion script to check DB");
-            try {
-                String convertCmd = SETTINGS_CONVERSION_SCRIPT + " " + nodeID.toString() + " " + this.getName() + " " + settingsFileName + ".js";
-                logger.warn("Running: " + convertCmd);
-                UvmContextFactory.context().execManager().exec( convertCmd );
-            } catch ( Exception e ) {
-                logger.warn( "Conversion script failed.", e );
-            } 
-
-            try {
-                readSettings = settingsManager.load( VirusSettings.class, settingsFileName );
-                if (readSettings != null) {
-                    logger.warn("Found settings imported from database");
-                    /* reinitialize the lists from scratch */
-                    initMimeTypes(readSettings);
-                    initFileExtensions(readSettings);
-                }
-            } catch (SettingsManager.SettingsException e) {
-                logger.warn("Failed to load settings:",e);
-            }
         }
 
         /**

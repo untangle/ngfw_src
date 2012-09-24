@@ -18,7 +18,6 @@ import com.untangle.uvm.UvmContextFactory;
 public class FtpNodeImpl extends NodeBase
     implements FtpNode
 {
-    private static final String SETTINGS_CONVERSION_SCRIPT = System.getProperty( "uvm.bin.dir" ) + "/ftp-casing-convert-settings.py";
     private final PipeSpec ctlPipeSpec = new CasingPipeSpec("ftp", this, FtpCasingFactory.factory(),Fitting.FTP_CTL_STREAM, Fitting.FTP_CTL_TOKENS);
     private final PipeSpec dataPipeSpec = new CasingPipeSpec("ftp", this, FtpCasingFactory.factory(),Fitting.FTP_DATA_STREAM, Fitting.FTP_DATA_TOKENS);
     private final PipeSpec[] pipeSpecs = new PipeSpec[] { ctlPipeSpec, dataPipeSpec };
@@ -79,52 +78,18 @@ public class FtpNodeImpl extends NodeBase
         FtpSettings readSettings = null;
         logger.info("Loading settings from " + settingsFile );
 
-        try
-        {
+        try {
             // first we try to read our json settings
             readSettings = settingsManager.load( FtpSettings.class, settingsName );
-        }
-
-        catch (Exception exn)
-        {
+        } catch (Exception exn) {
             logger.error("postInit()",exn);
         }
 
-        // if no settings found try importing from the database
-        if (readSettings == null)
-        {
-            logger.info("No json settings found... attempting to import from database");
-
-            try
-            {
-                String convertCmd = SETTINGS_CONVERSION_SCRIPT + " " + settingsFile;
-                logger.info("Running: " + convertCmd);
-                UvmContextFactory.context().execManager().exec( convertCmd );
-            }
-
-            catch (Exception exn)
-            {
-                logger.error("Conversion script failed", exn);
-            }
-
-            try
-            {
-                // try to read the settings created by the conversion script
-                readSettings = settingsManager.load( FtpSettings.class, settingsName );
-            }
-
-            catch (Exception exn)
-            {
-                logger.error("Could not read node settings", exn);
-            }
-        }
-
-        try
-        {
+        try {
             // still no settings found so init with defaults
             if (readSettings == null)
             {
-                logger.warn("No database or json settings found... initializing with defaults");
+                logger.warn("No settings found... initializing with defaults");
                 setFtpSettings(new FtpSettings());
             }
 
@@ -135,10 +100,7 @@ public class FtpNodeImpl extends NodeBase
                 this.settings = readSettings;
                 reconfigure();
             }
-        }
-
-        catch (Exception exn)
-        {
+        } catch (Exception exn) {
             logger.error("Could not apply node settings",exn);
         }
     }

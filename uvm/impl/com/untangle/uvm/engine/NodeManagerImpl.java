@@ -53,7 +53,6 @@ import com.untangle.uvm.util.Pulse;
 public class NodeManagerImpl implements NodeManager
 {
     private final static String NODE_MANAGER_SETTINGS_FILE = System.getProperty( "uvm.settings.dir" ) + "/untangle-vm/nodes";
-    private final static String NODE_MANAGER_CONVERSION_SCRIPT = System.getProperty( "uvm.bin.dir" ) + "/untangle-vm-convert-node-manager.py";
 
     private final Logger logger = Logger.getLogger(getClass());
 
@@ -643,31 +642,6 @@ public class NodeManagerImpl implements NodeManager
         } catch (SettingsManager.SettingsException e) {
             logger.warn("Failed to load settings:",e);
         }
-
-        /**
-         * If there are no settings, run the conversion script to see if there are any in the database
-         * Then check again for the file
-         */
-        if (readSettings == null) {
-            logger.warn("No settings found - Running conversion script to check DB");
-            try {
-                String convertCmd = NODE_MANAGER_CONVERSION_SCRIPT + " " + settingsFileName + ".js";
-                logger.warn("Running: " + convertCmd);
-                UvmContextFactory.context().execManager().exec( convertCmd );
-            } catch ( Exception e ) {
-                logger.warn( "Conversion script failed.", e );
-            } 
-
-            try {
-                readSettings = settingsManager.load( NodeManagerSettings.class, settingsFileName );
-                if (readSettings != null) {
-                    logger.warn("Found settings imported from database");
-                }
-            } catch (SettingsManager.SettingsException e) {
-                logger.warn("Failed to load settings:",e);
-            }
-        }
-        
 
         /**
          * If there are still no settings, just initialize

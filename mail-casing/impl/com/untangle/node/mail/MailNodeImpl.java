@@ -48,7 +48,6 @@ import com.untangle.uvm.SettingsManager;
 
 public class MailNodeImpl extends NodeBase implements MailNode, MailExport
 {
-    private static final String SETTINGS_CONVERSION_SCRIPT = System.getProperty( "uvm.bin.dir" ) + "/mail-casing-convert-settings.py";
     private static final String QUARANTINE_JS_URL = "/quarantine/app.js";
 
     private final SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
@@ -282,86 +281,42 @@ public class MailNodeImpl extends NodeBase implements MailNode, MailExport
         MailNodeSettings readSettings = null;
         logger.info("Loading settings from " + settingsFile );
 
-        try
-            {
-                // first we try to read our json settings
-                readSettings = settingsManager.load( MailNodeSettings.class, settingsName );
+        try {
+            // first we try to read our json settings
+            readSettings = settingsManager.load( MailNodeSettings.class, settingsName );
+        } catch (Exception exn) {
+            logger.error("postInit()",exn);
+        }
+
+
+        try {
+            // still no settings found so init with defaults
+            if (readSettings == null) {
+                logger.warn("No settings found... initializing with defaults");
+                initializeMailNodeSettings();
             }
-
-        catch (Exception exn)
-            {
-                logger.error("postInit()",exn);
+            // otherwise apply the loaded or imported settings from the file
+            else {
+                logger.info("Loaded settings from " + settingsFile);
+                
+                settings = readSettings;
+                s_quarantine.setSettings(this, settings.getQuarantineSettings());
+                s_safelistMngr.setSettings(this, settings);
+                reconfigure();
             }
-
-        // if no settings found try importing from the database
-        if (readSettings == null)
-            {
-                logger.info("No json settings found... attempting to import from database");
-
-                try
-                    {
-                        String convertCmd = SETTINGS_CONVERSION_SCRIPT + " " + settingsFile;
-                        logger.info("Running: " + convertCmd);
-                        UvmContextFactory.context().execManager().exec( convertCmd );
-                    }
-
-                catch (Exception exn)
-                    {
-                        logger.error("Conversion script failed", exn);
-                    }
-
-                try
-                    {
-                        // try to read the settings created by the conversion script
-                        readSettings = settingsManager.load( MailNodeSettings.class, settingsName );
-                    }
-
-                catch (Exception exn)
-                    {
-                        logger.error("Could not read node settings", exn);
-                    }
-            }
-
-        try
-            {
-                // still no settings found so init with defaults
-                if (readSettings == null)
-                    {
-                        logger.warn("No database or json settings found... initializing with defaults");
-                        initializeMailNodeSettings();
-                    }
-
-                // otherwise apply the loaded or imported settings from the file
-                else
-                    {
-                        logger.info("Loaded settings from " + settingsFile);
-
-                        settings = readSettings;
-                        s_quarantine.setSettings(this, settings.getQuarantineSettings());
-                        s_safelistMngr.setSettings(this, settings);
-                        reconfigure();
-                    }
-            }
-
-        catch (Exception exn)
-            {
-                logger.error("Could not apply node settings",exn);
-            }
+        } catch (Exception exn) {
+            logger.error("Could not apply node settings",exn);
+        }
 
         // At this point the settings have either been loaded from disk
         // or initialized to defaults so now we do all the other setup
-
-        try
-            {
-                // create GLOBAL safelist for admin to manage POP/IMAP accounts
-                // (GLOBAL safelist is created only if it doesn't exist yet)
-                s_safelistMngr.createSafelist("GLOBAL");
-            }
-
-        catch (Exception exn)
-            {
-                logger.error("Could not create global safelist",exn);
-            }
+        try {
+            // create GLOBAL safelist for admin to manage POP/IMAP accounts
+            // (GLOBAL safelist is created only if it doesn't exist yet)
+            s_safelistMngr.createSafelist("GLOBAL");
+        } catch (Exception exn) {
+            logger.error("Could not create global safelist",exn);
+        }
 
         deployWebAppIfRequired(logger);
         s_quarantine.open();

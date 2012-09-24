@@ -32,8 +32,6 @@ public class SystemManagerImpl implements SystemManager
     private static final String SNMP_CONF_FILE_NAME = "/etc/snmp/snmpd.conf";
     private static final String SNMP_WRAPPER_NAME = "/usr/share/untangle/bin/snmpd-restart";
 
-    private static final String SETTINGS_CONVERSION_SCRIPT = System.getProperty( "uvm.bin.dir" ) + "/untangle-vm-convert-system-settings.py";
-
     private final Logger logger = Logger.getLogger(this.getClass());
 
     private SystemSettings settings;
@@ -51,30 +49,6 @@ public class SystemManagerImpl implements SystemManager
             readSettings = settingsManager.load( SystemSettings.class, settingsFileName );
         } catch (SettingsManager.SettingsException e) {
             logger.warn("Failed to load settings:",e);
-        }
-
-        /**
-         * If there are no settings, run the conversion script to see if there are any in the database
-         * Then check again for the file
-         */
-        if (readSettings == null) {
-            logger.warn("No settings found - Running conversion script to check DB");
-            try {
-                String convertCmd = SETTINGS_CONVERSION_SCRIPT + " " + settingsFileName + ".js";
-                logger.warn("Running: " + convertCmd);
-                UvmContextFactory.context().execManager().exec( convertCmd );
-            } catch ( Exception e ) {
-                logger.warn( "Conversion script failed.", e );
-            } 
-
-            try {
-                readSettings = settingsManager.load( SystemSettings.class, settingsFileName );
-                if (readSettings != null) {
-                    logger.warn("Found settings imported from database");
-                }
-            } catch (SettingsManager.SettingsException e) {
-                logger.warn("Failed to load settings:",e);
-            }
         }
 
         /**

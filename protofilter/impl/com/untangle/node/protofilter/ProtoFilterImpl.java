@@ -25,8 +25,6 @@ import com.untangle.uvm.SettingsManager;
 
 public class ProtoFilterImpl extends NodeBase implements ProtoFilter
 {
-    private static final String SETTINGS_CONVERSION_SCRIPT = System.getProperty( "uvm.bin.dir" ) + "/protofilter-convert-settings.py";
-
     private static final String STAT_SCAN = "scan";
     private static final String STAT_DETECT = "detect";
     private static final String STAT_BLOCK = "block";
@@ -178,45 +176,15 @@ public class ProtoFilterImpl extends NodeBase implements ProtoFilter
             logger.error("Could not read node settings", exn);
         }
 
-        // if no settings found try getting them from the database
-        if (readSettings == null) {
-            logger.warn("No json settings found... attempting to import from database");
-            
-            try {
-                String convertCmd = SETTINGS_CONVERSION_SCRIPT + " " + nodeID.toString() + " " + settingsFile;;
-                logger.warn("Running: " + convertCmd);
-                UvmContextFactory.context().execManager().exec( convertCmd );
-            }
-
-            catch (Exception exn) {
-                logger.error("Conversion script failed", exn);
-            }
-
-            try {
-                readSettings =  settingsManager.load( ProtoFilterSettings.class, settingsBase);
-            }
-
-            catch (Exception exn) {
-                logger.error("Could not read node settings", exn);
-            }
-            
-            if (readSettings != null) logger.warn("Database settings successfully imported");
-        }
-
-        try
-        {
+        try {
             if (readSettings == null) {
-                logger.warn("No database or json settings found... initializing with defaults");
+                logger.warn("No settings found... initializing with defaults");
                 initializeSettings();
-            }
-            
-            else {
+            } else {
                 nodeSettings = readSettings;
                 reconfigure();
             }
-        }
-        
-        catch (Exception exn) {
+        } catch (Exception exn) {
             logger.error("Could not apply node settings", exn);
         }
     }

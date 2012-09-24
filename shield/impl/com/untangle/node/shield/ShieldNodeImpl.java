@@ -36,8 +36,6 @@ public class ShieldNodeImpl extends NodeBase  implements ShieldNode
         + " FROM n_shield_rejection_evt "
         + " ORDER BY time_stamp DESC LIMIT ?";
 
-    private static final String SETTINGS_CONVERSION_SCRIPT = System.getProperty( "uvm.bin.dir" ) + "/shield-convert-settings.py";
-    
     private static final int CREATE_DATE_IDX =  1;
     private static final int CLIENT_ADDR_IDX =  2;
     private static final int CLIENT_INTF_IDX =  3;
@@ -114,32 +112,6 @@ public class ShieldNodeImpl extends NodeBase  implements ShieldNode
             logger.warn("Failed to load settings:",e);
         }
         
-        /**
-         * If there are no settings, run the conversion script to see if there are any in the database
-         * Then check again for the file
-         */
-        if (readSettings == null) {
-            logger.warn("No settings found - Running conversion script to check DB");
-            try {
-                String convertCmd = SETTINGS_CONVERSION_SCRIPT + " " + nodeID.toString() + " " + settingsFileName + ".js";
-                logger.warn("Running: " + convertCmd);
-                UvmContextFactory.context().execManager().exec( convertCmd );
-            } catch ( Exception e ) {
-                logger.warn( "Conversion script failed.", e );
-            } 
-
-            try {
-                readSettings = settingsManager.load( ShieldSettings.class, settingsFileName );
-                if (readSettings != null) {
-                    logger.warn("Found settings imported from database");
-                }
-                this._setSettings(readSettings);
-
-            } catch (SettingsManager.SettingsException e) {
-                logger.warn("Failed to load settings:",e);
-            }
-        }
-
         /**
          * If there are still no settings, just initialize
          */

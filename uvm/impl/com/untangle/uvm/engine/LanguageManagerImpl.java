@@ -50,7 +50,6 @@ import com.untangle.uvm.SettingsManager;
  */
 public class LanguageManagerImpl implements LanguageManager
 {
-    private static final String SETTINGS_CONVERSION_SCRIPT = System.getProperty( "uvm.bin.dir" ) + "/untangle-vm-convert-language-settings.py";
     private static final String LANGUAGES_DIR;
     private static final String LANGUAGES_COMMUNITY_DIR;
     private static final String LANGUAGES_OFFICIAL_DIR;
@@ -530,29 +529,8 @@ public class LanguageManagerImpl implements LanguageManager
             logger.error("Could not read language settings", exn);
         }
 
-        // if no settings found try getting them from the database
         if (readSettings == null) {
-            logger.warn("No json language settings found... attempting to import from database");
-
-            try {
-                String convertCmd = SETTINGS_CONVERSION_SCRIPT + " " + settingsFile;
-                logger.warn("Running: " + convertCmd);
-                UvmContextFactory.context().execManager().exec( convertCmd );
-            } catch (Exception exn) {
-                logger.error("Conversion script failed", exn);
-            }
-
-            try {
-                readSettings = settingsManager.load( LanguageSettings.class, settingsName);
-            } catch (Exception exn) {
-                logger.error("Could not read language settings", exn);
-            }
-
-        if (readSettings != null) logger.warn("Database language settings successfully imported");
-        }
-
-        if (readSettings == null) {
-            logger.warn("No database or json language settings found... initializing with defaults");
+            logger.warn("No settings found... initializing with defaults");
             languageSettings = new LanguageSettings();
             languageSettings.setLanguage(DEFAULT_LANGUAGE);
             setLanguageSettings(languageSettings);
