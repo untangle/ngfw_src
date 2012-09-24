@@ -69,8 +69,11 @@ def mail_reports(end_date, report_days, file, mail_reports, attach_csv, attachme
     report_users = __get_report_users()
 
     for receiver in receivers:
-        has_web_access = receiver in report_users
-        mail(file, zip_file, sender, receiver, end_date, company_name, has_web_access, url, report_days, attachment_size_limit)
+        try:
+            has_web_access = receiver in report_users
+            mail(file, zip_file, sender, receiver, end_date, company_name, has_web_access, url, report_days, attachment_size_limit)
+        except:
+            logger.warn("Failed to send email summary to '%s'" % (receiver), exc_info=True)
 
     if zip_file:
         shutil.rmtree(zip_dir)
@@ -112,23 +115,27 @@ def mail(file, zip_file, sender, receiver, date, company_name, has_web_access, u
         length_name = "Weekly"
     else:
         length_name = "Monthly"
-    msgRoot['Subject'] = _('%s %s Report [%s]') % (company_name, length_name, os.uname[1])
+
+    machine_name = ""
+    try:
+        machine_name = str(os.uname()[1])
+    except:
+        pass
+    msgRoot['Subject'] = _('%s %s Report [%s]') % (company_name, length_name, machine_name)
     msgRoot['From'] = sender
     msgRoot['To'] = receiver
 
     part = MIMEBase('application', "pdf")
     part.set_payload(open(file, 'rb').read())
     Encoders.encode_base64(part)
-    part.add_header('Content-Disposition', 'attachment; filename="reports-%s-%s.pdf"'
-                    % (h['date_end'].replace('/', '_'),a))
+    part.add_header('Content-Disposition', 'attachment; filename="reports-%s-%s.pdf"'% (h['date_end'].replace('/', '_'),length_name))
     msgRoot.attach(part)
 
     if zip_file and not attachment_too_big:
         part = MIMEBase('application', "zip")
         part.set_payload(open(zip_file, 'rb').read())
         Encoders.encode_base64(part)
-        part.add_header('Content-Disposition', 'attachment; filename="reports-%s-%s.zip"'
-                        % (h['date_end'].replace('/', '_'),a))
+        part.add_header('Content-Disposition', 'attachment; filename="reports-%s-%s.zip"' % (h['date_end'].replace('/', '_'),length_name))
         msgRoot.attach(part)
 
     smtp = smtplib.SMTP()
