@@ -120,6 +120,8 @@ RequestExecutionLevel admin
   
 ;--------------------------------
 ;Language Strings
+
+  LangString DESC_SecUACTest ${LANG_ENGLISH} "UAC Test (Beta)."
   
   LangString DESC_SecOpenVPNUserSpace ${LANG_ENGLISH} "Install OpenVPN user-space components, including openvpn.exe."
  
@@ -132,7 +134,7 @@ RequestExecutionLevel admin
   LangString DESC_SecOpenSSLUtilities ${LANG_ENGLISH} "Install the OpenSSL Utilities (used for generating public/private key pairs)."
 
   LangString DESC_SecAddPath ${LANG_ENGLISH} "Add OpenVPN executable directory to the current user's PATH."
-
+  
   LangString DESC_SecAddShortcuts ${LANG_ENGLISH} "Add shortcuts to the current user's Start Menu."
 
   LangString DESC_SecFileAssociation ${LANG_ENGLISH} "Register OpenVPN config file association (*.${SERV_CONFIG_EXT})"
@@ -392,6 +394,39 @@ Section "Add OpenVPN to PATH" SecAddPath
 
 SectionEnd
 
+Section /o "UAC Fix (BETA)" SecUACTest
+
+  Call GetWindowsVersion
+  Pop $1
+  StrCmp $1 "2000" skipuac
+  StrCmp $1 "XP" skipuac
+  StrCmp $1 "2003" skipuac
+  StrCmp $1 "VISTA" uac
+  StrCmp $1 "7" uac
+  StrCmp $1 "8" uac
+  goto end
+
+  uac:
+  DetailPrint "You are running Vista/7/8 Fix will be applyed"
+
+  DetailPrint "Adding UAC registry value"
+    SetRegView 64
+    WriteRegStr HKLM "Software\Microsoft\Windows NT\CurrentVersion\AppCompatFlags\Layers" "$INSTDIR\bin\openvpn-gui.exe" "RUNASADMIN"
+    SetRegView 32
+    WriteRegStr HKLM "Software\Microsoft\Windows NT\CurrentVersion\AppCompatFlags\Layers" "$INSTDIR\bin\openvpn-gui.exe" "RUNASADMIN"
+
+  DetailPrint "Adding Autostart Task"
+  nsExec::ExecToStack 'SCHTASKS /Create /SC ONLOGON /RL HIGHEST  /TN "OpenVPNGui" /TR "\"$INSTDIR\bin\openvpn-gui.exe\"'
+  goto end
+
+  skipuac:
+  DetailPrint "UAC fix not necessary on your system"
+  goto end
+
+  end:
+SectionEnd
+
+
 Section "Add Shortcuts to Start Menu" SecAddShortcuts
   SetShellVarContext all
 
@@ -406,11 +441,33 @@ Section "Add Shortcuts to Start Menu" SecAddShortcuts
   IntOp $R0 $R0 & ${SF_SELECTED}
   IntCmp $R0 ${SF_SELECTED} "" nogui nogui
 
-  CreateShortCut "$SMPROGRAMS\OpenVPN\OpenVPN GUI.lnk" "$INSTDIR\bin\openvpn-gui.exe"
   CreateShortCut "$SMPROGRAMS\OpenVPN\OpenVPN GUI ReadMe.lnk" "$INSTDIR\OpenVPN_GUI_ReadMe.txt"
 
-nogui:
+  Call GetWindowsVersion
+  Pop $1
+  StrCmp $1 "2000" nouac
+  StrCmp $1 "XP" nouac
+  StrCmp $1 "2003" nouac
+  StrCmp $1 "VISTA" uac
+  StrCmp $1 "7" uac
+  StrCmp $1 "8" uac
+  goto nogui
 
+  uac:
+  SectionGetFlags ${SecUACTest} $R2
+  IntOp $R2 $R2 & ${SF_SELECTED}
+  IntCmp $R2 ${SF_SELECTED} "" nouac nouac
+
+  CreateShortCut "$SMPROGRAMS\OpenVPN\OpenVPN GUI.lnk" "$SYSDIR\schtasks.exe" "/run /tn OpenVPNGui" "$INSTDIR\bin\openvpn-gui.exe"
+  goto end
+
+  nouac:
+  CreateShortCut "$SMPROGRAMS\OpenVPN\OpenVPN GUI.lnk" "$INSTDIR\bin\openvpn-gui.exe"
+  goto end
+
+  nogui:
+  end:
+  
 SectionEnd
 
 
@@ -541,7 +598,14 @@ Section -post
   IntOp $R0 $R0 & ${SF_SELECTED}
   IntCmp $R0 ${SF_SELECTED} "" nogui nogui
 
-    ; set registry parameters for openvpn-gui	
+  ;If UAC is slected then skip adding regvalue to autostart.
+    SectionGetFlags ${SecUACTest} $R1
+    IntOp $R1 $R1 & ${SF_SELECTED}
+    IntCmp $R1 ${SF_SELECTED} "" nouac nouac
+    ; set registry parameters for openvpn-gui
+    goto nogui
+    
+ nouac:
     !insertmacro WriteRegStringIfUndef HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\Run" "openvpn-gui"  "$INSTDIR\bin\openvpn-gui.exe"
 
  nogui:
@@ -608,6 +672,7 @@ SectionEnd
 
 !insertmacro MUI_FUNCTION_DESCRIPTION_BEGIN
   !insertmacro MUI_DESCRIPTION_TEXT ${SecOpenVPNUserSpace} $(DESC_SecOpenVPNUserSpace)
+  !insertmacro MUI_DESCRIPTION_TEXT ${SecUACTest} $(DESC_SecUACTest)
   !insertmacro MUI_DESCRIPTION_TEXT ${SecGUI} $(DESC_SecGUI)
   !insertmacro MUI_DESCRIPTION_TEXT ${SecGUIAuto} $(DESC_SecGUIAuto)
   !insertmacro MUI_DESCRIPTION_TEXT ${SecTAP} $(DESC_SecTAP)
@@ -797,6 +862,8 @@ SetShellVarContext all
   DeleteRegKey HKLM SOFTWARE\OpenVPN-GUI
   DeleteRegKey HKCU "Software\${PRODUCT_NAME}"
   DeleteRegKey HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\OpenVPN"
+  DeleteRegValue HKLM "SOFTWARE\Microsoft\Windows NT\CurrentVersion\AppCompactFlags\Layers" "$INSTDIR\bin\openvpn-gui.exe"
   DeleteRegValue HKLM "Software\Microsoft\Windows\CurrentVersion\Run" "openvpn-gui"
-
+  nsExec::ExecToStack 'SCHTASKS /delete /TN "OpenVPNGui" /F'
+  
 SectionEnd
