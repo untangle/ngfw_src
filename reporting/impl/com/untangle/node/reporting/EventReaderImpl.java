@@ -30,7 +30,7 @@ public class EventReaderImpl
 
     private ReportingNodeImpl node;
 
-    private Connection dbConnection;
+    private Connection dbConnection = null;
 
     private HashMap<String,Class<?>> columnTypeMap = new HashMap<String,Class<?>>();
     
@@ -80,6 +80,7 @@ public class EventReaderImpl
             
         } catch (SQLException e) {
             logger.warn("Failed to query database", e );
+            dbConnection = null;
             throw new RuntimeException( "Failed to query database.", e );
         }
     }
@@ -119,6 +120,7 @@ public class EventReaderImpl
             return newList;
         } catch (SQLException e) {
             logger.warn("Failed to query database", e );
+            dbConnection = null;
             throw new RuntimeException( "Failed to query database.", e );
         }
     }
