@@ -93,27 +93,27 @@ abstract class IPNewSessionRequestImpl implements IPNewSessionRequest
         return argonRequest.sessionEvent();
     }
 
-    public void getClientAddr(InetAddress addr)
+    public void setClientAddr( InetAddress addr )
     {
-        argonRequest.getClientAddr(addr);
+        argonRequest.setClientAddr(addr);
         modified = true;
     }
 
-    public void getServerAddr(InetAddress addr)
+    public void setServerAddr( InetAddress addr )
     {
-        argonRequest.getServerAddr(addr);
+        argonRequest.setServerAddr(addr);
         modified = true;
     }
 
-    public void getClientPort(int port)
+    public void setClientPort( int port )
     {
-        argonRequest.getClientPort(port);
+        argonRequest.setClientPort(port);
         modified = true;
     }
 
-    public void getServerPort(int port)
+    public void setServerPort( int port )
     {
-        argonRequest.getServerPort(port);
+        argonRequest.setServerPort(port);
         modified = true;
     }
 

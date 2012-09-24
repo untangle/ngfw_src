@@ -12,22 +12,22 @@ public interface ArgonIPNewSessionRequest extends ArgonNewSessionRequest
     /**
      * Sets the client address for this session.</p>
      */
-    void getClientAddr( InetAddress addr );
+    void setClientAddr( InetAddress addr );
 
     /**
      * Sets the client port for this session.</p>
      */
-    void getClientPort( int port );
+    void setClientPort( int port );
 
     /**
      * Sets the server address for this session.</p>
      */
-    void getServerAddr( InetAddress addr );
+    void setServerAddr( InetAddress addr );
 
     /**
      * Sets the server port for this session.</p>
      */
-    void getServerPort( int port );
+    void setServerPort( int port );
 
     SessionEvent sessionEvent();
 

@@ -120,7 +120,7 @@ class RouterEventHandler extends AbstractEventHandler
 
             /* Update the session information so it matches what is in the NAT info */
             /* Here is where we have to insert the magic, just for TCP */
-            request.getClientAddr( newClientAddr );
+            request.setClientAddr( newClientAddr );
             if( protocol == Protocol.TCP && !origClientAddr.equals(newClientAddr)){
                 // if we changed the source addr of a TCP connection,
                 // we will need to allocate client port manually because the kernel will not know about
@@ -129,13 +129,13 @@ class RouterEventHandler extends AbstractEventHandler
                 if ( logger.isDebugEnabled()) {
                     logger.debug( "Mangling client port from " + origClientPort + " to " + port );
                 }
-                request.getClientPort( port );
+                request.setClientPort( port );
                 attachment.releasePort( port );
             } else {
-                request.getClientPort( newClientPort );
+                request.setClientPort( newClientPort );
             }
-            request.getServerAddr( newServerAddr );
-            request.getServerPort( newServerPort );
+            request.setServerAddr( newServerAddr );
+            request.setServerPort( newServerPort );
 
 
             if (isFtp(request,protocol)){

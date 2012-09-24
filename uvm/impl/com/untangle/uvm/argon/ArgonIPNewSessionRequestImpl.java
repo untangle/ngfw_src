@@ -1,4 +1,6 @@
-/* $HeadURL$*/
+/**
+ * $Id$
+ */
 package com.untangle.uvm.argon;
 
 import java.net.InetAddress;
@@ -93,7 +95,7 @@ public abstract class ArgonIPNewSessionRequestImpl extends ArgonNewSessionReques
         return clientAddr;
     }
 
-    public void getClientAddr( InetAddress addr )
+    public void setClientAddr( InetAddress addr )
     {
         clientAddr = addr;
     }
@@ -103,7 +105,7 @@ public abstract class ArgonIPNewSessionRequestImpl extends ArgonNewSessionReques
         return clientPort;
     }
 
-    public void getClientPort( int port )
+    public void setClientPort( int port )
     {
         clientPort = port;
     }
@@ -118,7 +120,7 @@ public abstract class ArgonIPNewSessionRequestImpl extends ArgonNewSessionReques
         return serverAddr;
     }
 
-    public void getServerAddr( InetAddress addr )
+    public void setServerAddr( InetAddress addr )
     {
         serverAddr = addr;
     }
@@ -128,7 +130,7 @@ public abstract class ArgonIPNewSessionRequestImpl extends ArgonNewSessionReques
         return serverPort;
     }
 
-    public void getServerPort( int port )
+    public void setServerPort( int port )
     {
         serverPort = port;
     }

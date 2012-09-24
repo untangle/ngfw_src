@@ -1,4 +1,4 @@
-/*
+/**
  * $Id$
  */
 package com.untangle.uvm.vnet;
@@ -16,22 +16,22 @@ public interface IPNewSessionRequest extends NewSessionRequest, SessionTuple
     /**
      * Sets the client address for this session.
      */
-    void getClientAddr( InetAddress addr );
+    void setClientAddr( InetAddress addr );
 
     /**
      * Sets the client port for this session.
      */
-    void getClientPort( int port );
+    void setClientPort( int port );
 
     /**
      * Sets the server address for this session.
      */
-    void getServerAddr( InetAddress addr );
+    void setServerAddr( InetAddress addr );
 
     /**
      * Sets the server port for this session.
      */
-    void getServerPort( int port );
+    void setServerPort( int port );
 
     /**
      *
