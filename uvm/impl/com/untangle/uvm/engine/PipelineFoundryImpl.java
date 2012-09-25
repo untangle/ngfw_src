@@ -172,11 +172,6 @@ public class PipelineFoundryImpl implements PipelineFoundry
         return new SessionEvent(sessionId, start, username, hostname);
     }
 
-    public void registerEndpoints(SessionEvent pe)
-    {
-        UvmContextFactory.context().logEvent(pe);
-    }
-
     public void destroy( long sessionId )
     {
         PipelineImpl pipeline = pipelines.remove( sessionId );
