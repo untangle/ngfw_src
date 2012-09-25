@@ -187,12 +187,25 @@ public abstract class ArgonHook implements Runnable
 
             pipelineAgents = pipelineFoundry.weld( sessionGlobalState.id(), clientSide, policyId );
 
-            /* Create the (fake) sessionEvent early so they can be
-             * available at request time. */
-            sessionEvent = pipelineFoundry.createInitialSessionEvent( sessionGlobalState.id(), clientSide, username, hostname );
-
-            /* Initialize all of the nodes, sending the request events
-             * to each in turn */
+            /* Create the sessionEvent early so they can be available at request time. */
+            sessionEvent =  new SessionEvent( );
+            sessionEvent.setSessionId( sessionGlobalState.id() );
+            sessionEvent.setProtocol( sessionGlobalState.getProtocol() );
+            sessionEvent.setClientIntf( clientSide.getClientIntf() );
+            sessionEvent.setServerIntf( clientSide.getServerIntf() );
+            sessionEvent.setUsername( username );
+            sessionEvent.setHostname( hostname );
+            sessionEvent.setPolicyId(policyId);
+            sessionEvent.setCClientAddr( clientSide.getClientAddr() );
+            sessionEvent.setCClientPort( clientSide.getClientPort() );
+            sessionEvent.setCServerAddr( clientSide.getServerAddr() );
+            sessionEvent.setCServerPort( clientSide.getServerPort() );
+            sessionEvent.setSClientAddr( clientSide.getClientAddr() );
+            sessionEvent.setSClientPort( clientSide.getClientPort() );
+            sessionEvent.setSServerAddr( clientSide.getServerAddr() );
+            sessionEvent.setSServerPort( clientSide.getServerPort() );
+            
+            /* Initialize all of the nodes, sending the request events to each in turn */
             initNodes( sessionEvent );
 
             /* Connect to the server */
@@ -214,7 +227,12 @@ public abstract class ArgonHook implements Runnable
             /* Connect to the client */
             clientActionCompleted = connectClient();
 
-            sessionEvent.completeEndpoints(clientSide, serverSide, policyId);
+            /* Re-set any attribute thats may have been changed by the node */
+            sessionEvent.setSClientAddr( serverSide.getClientAddr() );
+            sessionEvent.setSClientPort( serverSide.getClientPort() );
+            sessionEvent.setSServerAddr( serverSide.getServerAddr() );
+            sessionEvent.setSServerPort( serverSide.getServerPort() );
+            sessionEvent.setServerIntf( serverSide.getServerIntf() );
 
             /* log the session if it completed - XXX */
             if (serverActionCompleted && clientActionCompleted) {
@@ -356,13 +374,13 @@ public abstract class ArgonHook implements Runnable
     /**
      * Initialize each of the nodes for the new session. </p>
      */
-    private void initNodes( SessionEvent pe )
+    private void initNodes( SessionEvent event )
     {
         for ( Iterator<ArgonAgent> iter = pipelineAgents.iterator() ; iter.hasNext() ; ) {
             ArgonAgent agent = iter.next();
 
             if ( state == ArgonIPNewSessionRequest.REQUESTED ) {
-                newSessionRequest( agent, iter, pe );
+                newSessionRequest( agent, iter, event );
             } else {
                 /* NodeSession has been rejected or endpointed, remaining
                  * nodes need not be informed 
