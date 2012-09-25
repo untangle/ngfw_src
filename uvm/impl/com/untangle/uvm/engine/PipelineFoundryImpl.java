@@ -167,16 +167,6 @@ public class PipelineFoundryImpl implements PipelineFoundry
         return argonAgentList;
     }
 
-    public SessionEvent createInitialSessionEvent(Long sessionId, SessionTuple start, String username, String hostname)
-    {
-        return new SessionEvent(sessionId, start, username, hostname);
-    }
-
-    public void registerEndpoints(SessionEvent pe)
-    {
-        UvmContextFactory.context().logEvent(pe);
-    }
-
     public void destroy( long sessionId )
     {
         PipelineImpl pipeline = pipelines.remove( sessionId );

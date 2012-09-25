@@ -32,34 +32,9 @@ public class SessionEvent extends LogEvent
     private String username;
     private String hostname;
     
-    public SessionEvent() { }
-
-    /**
-     * This constructor is called by ArgonHook
-     * The other fields are completed later
-     */
-    public SessionEvent( Long sessionId, SessionTuple clientSide, String username, String hostname )
+    public SessionEvent()
     {
         super();
-        this.sessionId = sessionId;
-        protocol = clientSide.getProtocol();
-        clientIntf = clientSide.getClientIntf();
-        this.username = username;
-        this.hostname = hostname;
-    }
-
-    public void completeEndpoints( SessionTuple clientSide, SessionTuple serverSide, Long policyId )
-    {
-        cClientAddr = clientSide.getClientAddr();
-        cClientPort = clientSide.getClientPort();
-        cServerAddr = clientSide.getServerAddr();
-        cServerPort = clientSide.getServerPort();
-        sClientAddr = serverSide.getClientAddr();
-        sClientPort = serverSide.getClientPort();
-        sServerAddr = serverSide.getServerAddr();
-        sServerPort = serverSide.getServerPort();
-        serverIntf = serverSide.getServerIntf();
-        this.policyId = policyId;
     }
 
     /**
