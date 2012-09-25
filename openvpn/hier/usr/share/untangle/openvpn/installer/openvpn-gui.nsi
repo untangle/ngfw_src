@@ -121,7 +121,7 @@ RequestExecutionLevel admin
 ;--------------------------------
 ;Language Strings
 
-  LangString DESC_SecUACTest ${LANG_ENGLISH} "UAC Test (Beta)."
+  LangString DESC_SecUACFix ${LANG_ENGLISH} "UAC Fix."
   
   LangString DESC_SecOpenVPNUserSpace ${LANG_ENGLISH} "Install OpenVPN user-space components, including openvpn.exe."
  
@@ -394,7 +394,7 @@ Section "Add OpenVPN to PATH" SecAddPath
 
 SectionEnd
 
-Section /o "UAC Fix (BETA)" SecUACTest
+Section "UAC Fix" SecUACFix
 
   Call GetWindowsVersion
   Pop $1
@@ -407,7 +407,7 @@ Section /o "UAC Fix (BETA)" SecUACTest
   goto end
 
   uac:
-  DetailPrint "You are running Vista/7/8 Fix will be applyed"
+  DetailPrint "You are running Vista/7/8 UAC Fix will be applyed"
 
   DetailPrint "Adding UAC registry value"
     SetRegView 64
@@ -672,7 +672,7 @@ SectionEnd
 
 !insertmacro MUI_FUNCTION_DESCRIPTION_BEGIN
   !insertmacro MUI_DESCRIPTION_TEXT ${SecOpenVPNUserSpace} $(DESC_SecOpenVPNUserSpace)
-  !insertmacro MUI_DESCRIPTION_TEXT ${SecUACTest} $(DESC_SecUACTest)
+  !insertmacro MUI_DESCRIPTION_TEXT ${SecUACTest} $(DESC_SecUACFix)
   !insertmacro MUI_DESCRIPTION_TEXT ${SecGUI} $(DESC_SecGUI)
   !insertmacro MUI_DESCRIPTION_TEXT ${SecGUIAuto} $(DESC_SecGUIAuto)
   !insertmacro MUI_DESCRIPTION_TEXT ${SecTAP} $(DESC_SecTAP)
@@ -862,8 +862,10 @@ SetShellVarContext all
   DeleteRegKey HKLM SOFTWARE\OpenVPN-GUI
   DeleteRegKey HKCU "Software\${PRODUCT_NAME}"
   DeleteRegKey HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\OpenVPN"
-  DeleteRegValue HKLM "SOFTWARE\Microsoft\Windows NT\CurrentVersion\AppCompactFlags\Layers" "$INSTDIR\bin\openvpn-gui.exe"
+  DeleteRegKey HKLM "SYSTEM\ControlSet002\services\OpenVPNService"
+  DeleteRegValue HKLM "SOFTWARE\Microsoft\Windows NT\CurrentVersion\AppCompatFlags\Layers"
   DeleteRegValue HKLM "Software\Microsoft\Windows\CurrentVersion\Run" "openvpn-gui"
+  DeleteRegValue HKCU "Software\Microsoft\Windows NT\CurrentVersion\AppCompatFlags\Layers"
   nsExec::ExecToStack 'SCHTASKS /delete /TN "OpenVPNGui" /F'
   
 SectionEnd
