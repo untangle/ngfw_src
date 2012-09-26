@@ -1,1 +1,1 @@
-../../../uvm/servlets/webui/root/script/components.js
+../../webui/script/components.js
