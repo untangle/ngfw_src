@@ -300,11 +300,11 @@ public class TomcatManagerImpl implements TomcatManager
         final Valve valve;
 
         WebAppOptions() {
-            this(false, DEFAULT_SESSION_TIMEOUT);
+            this(true, DEFAULT_SESSION_TIMEOUT);
         }
 
         WebAppOptions(Valve valve) {
-            this(false, valve);
+            this(true, valve);
         }
 
         WebAppOptions(boolean allowLinking, Valve valve) {
