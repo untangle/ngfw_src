@@ -194,7 +194,10 @@ public class SystemManagerImpl implements SystemManager
         SystemSettings newSettings = new SystemSettings();
         newSettings.setVersion(2);
         newSettings.setInsideHttpEnabled( true );
-        newSettings.setOutsideHttpsEnabled( false );
+        if (UvmContextImpl.context().isDevel())
+            newSettings.setOutsideHttpsEnabled( true );
+        else
+            newSettings.setOutsideHttpsEnabled( false );
         newSettings.setHttpsPort( 443 );
 
         newSettings.setPublicUrlMethod( SystemSettings.PUBLIC_URL_EXTERNAL_IP );
