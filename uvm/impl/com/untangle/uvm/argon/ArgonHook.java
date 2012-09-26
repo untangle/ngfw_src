@@ -81,13 +81,13 @@ public abstract class ArgonHook implements Runnable
     {
         long start = 0;
         SessionEvent sessionEvent = null;
-        boolean serverActionCompleted = false;
-        boolean clientActionCompleted = false;
         
         try {
             Thread.currentThread().setContextClassLoader(getClass().getClassLoader());
 
             sessionGlobalState = new SessionGlobalState( netcapSession(), clientSideListener(), serverSideListener(), this );
+            boolean serverActionCompleted = false;
+            boolean clientActionCompleted = false;
             NetcapSession netcapSession = sessionGlobalState.netcapSession();
             int clientIntf = netcapSession.clientSide().interfaceId();
             int serverIntf = netcapSession.serverSide().interfaceId();
@@ -231,10 +231,8 @@ public abstract class ArgonHook implements Runnable
             sessionEvent.setSServerPort( serverSide.getServerPort() );
             sessionEvent.setServerIntf( serverSide.getServerIntf() );
 
-            /* log the session if it completed - XXX */
-            if (serverActionCompleted && clientActionCompleted) {
-                UvmContextFactory.context().logEvent(sessionEvent);
-            } 
+            /* log the event */
+            UvmContextFactory.context().logEvent(sessionEvent);
             
             /* Remove all non-vectored sessions, it is non-efficient
              * to iterate the session list twice, but the list is
@@ -311,22 +309,17 @@ public abstract class ArgonHook implements Runnable
         try {
             /* Let the pipeline foundry know */
             if (clientSide != null) {
-                /* Don't log statEvent that don't complete properly */
-                if ( serverActionCompleted && clientActionCompleted )  {
-                    SessionStatsEvent statEvent = new SessionStatsEvent(sessionEvent);
+                SessionStatsEvent statEvent = new SessionStatsEvent(sessionEvent);
+                statEvent.setC2pBytes(sessionGlobalState.clientSideListener().rxBytes);
+                statEvent.setP2cBytes(sessionGlobalState.clientSideListener().txBytes);
+                statEvent.setC2pChunks(sessionGlobalState.clientSideListener().rxChunks);
+                statEvent.setP2cChunks(sessionGlobalState.clientSideListener().txChunks);
+                statEvent.setS2pBytes(sessionGlobalState.serverSideListener().rxBytes);
+                statEvent.setP2sBytes(sessionGlobalState.serverSideListener().txBytes);
+                statEvent.setS2pChunks(sessionGlobalState.serverSideListener().rxChunks);
+                statEvent.setP2sChunks(sessionGlobalState.serverSideListener().txChunks);
+                UvmContextFactory.context().logEvent( statEvent );
 
-                    statEvent.setC2pBytes(sessionGlobalState.clientSideListener().rxBytes);
-                    statEvent.setP2cBytes(sessionGlobalState.clientSideListener().txBytes);
-                    statEvent.setC2pChunks(sessionGlobalState.clientSideListener().rxChunks);
-                    statEvent.setP2cChunks(sessionGlobalState.clientSideListener().txChunks);
-
-                    statEvent.setS2pBytes(sessionGlobalState.serverSideListener().rxBytes);
-                    statEvent.setP2sBytes(sessionGlobalState.serverSideListener().txBytes);
-                    statEvent.setS2pChunks(sessionGlobalState.serverSideListener().rxChunks);
-                    statEvent.setP2sChunks(sessionGlobalState.serverSideListener().txChunks);
-                        
-                    UvmContextFactory.context().logEvent( statEvent );
-                }
                 /* log and destroy the session */
                 pipelineFoundry.destroy( sessionGlobalState.id() );
             }
