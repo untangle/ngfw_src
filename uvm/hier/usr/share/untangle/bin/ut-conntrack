@@ -1,28 +1,103 @@
-#!/bin/dash
+#!/usr/bin/python
 
-first=0
-count=0
+import sys
+import string
 
-echo -n "{ javaClass: java.util.LinkedList, list : ["
+def parse_segment(segment):
+    if segment == None:
+        return None
+    segments = segment.split("=")
+    if len(segments) != 2:
+        return None
+    return segments[1]
 
-cat /proc/net/ip_conntrack | grep -v '127.0.0.1' | sed 's/\[.*\]//g' | sed 's/[a-z]*=//g' | while read i ; do
-    if [ $first -eq 0 ] ; then first=1 ; else echo -n "," ; fi
+def parse_line(line):
+    dict = {}
+    try:
+        line_parts = line.split()
+
+        # Protocol name.
+        # Protocol number. (6 = TCP. 17 = UDP.)
+        # Seconds until this entry expires.
+        # TCP only: TCP connection state.
+        # Source address of original
+        # Destination address of original-side packets.
+        # Source port of original-side packets.
+        # Destination port of original-side packets.
+        # [UNREPLIED], if this connection has not seen traffic in both directions. Otherwise not present.
+        # Source address of reply-side packets (packets from the side that received the connection).
+        # Destination address of reply-side packets.
+        # Source port of reply-side packets.
+        # Destination port of reply-side packets.
+        # [ASSURED], if this connection has seen traffic in both directions (for UDP) or an ACK in an ESTABLISHED connection (for TCP). Otherwise not present.
+        # Use count of this connection structure.
+        idx = 0
+        dict['protocol']       = string.upper(line_parts[idx]); idx=idx+1;
+        dict['protocol_id']    = int(line_parts[idx]); idx=idx+1;
+        dict['expiration_sec'] = int(line_parts[idx]); idx=idx+1;
+        # skip tcp connection state
+        if dict['protocol'] == "TCP": idx=idx+1
+        dict['orig_src']       = parse_segment(line_parts[idx]); idx=idx+1;
+        dict['orig_dst']       = parse_segment(line_parts[idx]); idx=idx+1;
+        dict['orig_src_port']  = int(parse_segment(line_parts[idx])); idx=idx+1;
+        dict['orig_dst_port']  = int(parse_segment(line_parts[idx])); idx=idx+1;
+        dict['orig_packets']   = int(parse_segment(line_parts[idx])); idx=idx+1;
+        dict['orig_bytes']     = int(parse_segment(line_parts[idx])); idx=idx+1;
+        # skip UNREPLIED
+        if line_parts[idx] == "[UNREPLIED]": idx=idx+1
+        dict['reply_src']      = parse_segment(line_parts[idx]); idx=idx+1;
+        dict['reply_dst']      = parse_segment(line_parts[idx]); idx=idx+1;
+        dict['reply_src_port'] = int(parse_segment(line_parts[idx])); idx=idx+1;
+        dict['reply_dst_port'] = int(parse_segment(line_parts[idx])); idx=idx+1;
+        dict['reply_packets']  = int(parse_segment(line_parts[idx])); idx=idx+1;
+        dict['reply_bytes']    = int(parse_segment(line_parts[idx])); idx=idx+1;
+        # skip ASSURED
+        if line_parts[idx] == "[ASSURED]": idx=idx+1
+        dict['mark']           = int(parse_segment(line_parts[idx])); idx=idx+1;
+        dict['use_count']      = int(parse_segment(line_parts[idx])); idx=idx+1;
+        
+        dict['bypassed']      = ((dict['mark'] & 0x01000000) >> 24) != 0
+        dict['qos_priority']  = ((dict['mark'] & 0x00700000) >> 20)
+        dict['local_traffic'] = ((dict['mark'] & 0x00010000) >> 16) != 0
+        
+        return dict
+    except Exception,e:
+        print "error!"
+        print e
+        return None
 
 
-    # marks
-    # 0x01000000 (antisubscribe/bypass) 24 bits left
-    # 0x00700000 (QoS) 20 bits left
-    # 0x00010000 (local traffic) 8 bits left
+print "{ javaClass: java.util.LinkedList, list : ["
 
-    if [ "`echo $i | grep tcp`" ] ; then
-        echo $i | awk '{printf "{ protocol:\"%s\", state:\"%s\", preNatClient:\"%s\", preNatServer:\"%s\", preNatClientPort:\"%s\", preNatServerPort:\"%s\", packets:\"%s\", bytes:\"%s\", postNatClient:\"%s\", postNatServer:\"%s\", postNatClientPort:\"%s\", postNatServerPort:\"%s\", qosPriority:\"%x\", bypassed:\"%s\", localTraffic:\"%s\", javaClass:\"com.untangle.uvm.SessionMonitorEntry\" }\n", toupper($1), $4, $5, $6, $7, $8, $9, $10, $12, $11, $14, $13, rshift(and($17,0x00700000),20), rshift(and($17,0x01000000),24) == 1 ? "true" : "false", rshift(and($17,0x00010000),8) == 1 ? "true" : "false"}'
-    elif [ "`echo $i | grep udp`" ] ; then
-        echo $i | awk '{printf "{ protocol:\"%s\", preNatClient:\"%s\", preNatServer:\"%s\", preNatClientPort:\"%s\",preNatServerPort:\"%s\", packets:\"%s\", bytes:\"%s\", postNatClient:\"%s\", postNatServer:\"%s\", postNatClientPort:\"%s\", postNatServerPort:\"%s\", qosPriority:\"%x\", bypassed:\"%s\", localTraffic:\"%s\",javaClass:\"com.untangle.uvm.SessionMonitorEntry\" }\n", toupper($1), $4, $5, $6, $7, $8, $9, $11, $10, $13, $12, rshift(and($16,0x00700000),20), rshift(and($16,0x01000000),24) == 1 ? "true" : "false", rshift(and($16,0x00010000),8) == 1 ? "true" : "false"}'
-    else
-        #don't print it
-        first=0
-    fi
+ip_conntrack_file = open("/proc/net/ip_conntrack")
 
-done
+first=True
+for line in ip_conntrack_file.readlines():
+    # ignore all 127.0.0.1 traffic
+    if "127.0.0.1" in line:
+        continue
 
-echo "] }"
+    # ignore first line
+    if first:
+        first=False
+    else:
+        print ","
+
+    dict = parse_line(line)
+    print "{ protocol:\"%s\", preNatClient:\"%s\", preNatServer:\"%s\", preNatClientPort:\"%s\", preNatServerPort:\"%s\", packets:\"%s\", bytes:\"%s\", postNatClient:\"%s\", postNatServer:\"%s\", postNatClientPort:\"%s\", postNatServerPort:\"%s\", qosPriority:\"%x\", bypassed:\"%s\", localTraffic:\"%s\", javaClass:\"com.untangle.uvm.SessionMonitorEntry\" }" % (
+        dict['protocol'],
+        dict['orig_src'],
+        dict['orig_dst'],
+        dict['orig_src_port'],
+        dict['orig_dst_port'],
+        dict['orig_packets'],
+        dict['orig_bytes'],
+        dict['reply_src'],
+        dict['reply_dst'],
+        dict['reply_src_port'],
+        dict['reply_dst_port'],
+        dict['qos_priority'],
+        dict['bypassed'],
+        dict['local_traffic'])
+
+print "] }"

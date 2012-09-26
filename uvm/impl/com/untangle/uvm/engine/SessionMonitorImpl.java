@@ -135,7 +135,7 @@ class SessionMonitorImpl implements SessionMonitor
                         if (policyId == null)
                             session.setPolicy("");
                         else
-                            session.setPolicy(policyId.toString()); /* FIXME getName */
+                            session.setPolicy(policyId.toString()); 
 
                         session.setSessionId(argonSession.id());
                         session.setBypassed(Boolean.FALSE);
