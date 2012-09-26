@@ -169,7 +169,7 @@ public class EventWriterImpl implements Runnable
                     if (logQueue.size() > 0)
                         persist(logQueue);
                     else
-                        logger.info("persist():     0 events");
+                        try {Thread.sleep(1000);} catch (Exception e) {}
                 
                 } catch (Exception e) {
                     logger.warn("Failed to write events.", e);
