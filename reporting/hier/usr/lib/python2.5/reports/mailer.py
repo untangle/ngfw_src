@@ -36,6 +36,7 @@ import os.path
 import os
 import smtplib
 import reports
+import reports.engine
 import reports.i18n_helper
 import reports.sql_helper as sql_helper
 import tempfile
@@ -179,7 +180,7 @@ def __get_url(date):
     publicUrlMethod = get_uvm_settings_item('system','publicUrlMethod')
     httpsPort = get_uvm_settings_item('system','httpsPort')
     if publicUrlMethod == "external":
-        url = get_wan_ip() + ":" + str(httpsPort)
+        url = reports.engine.get_wan_ip() + ":" + str(httpsPort)
     elif publicUrlMethod == "hostname":
         url = os.uname()[1] + ":" + str(httpsPort)
     elif publicUrlMethod == "address_and_port":
