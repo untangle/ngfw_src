@@ -77,13 +77,17 @@ for line in ip_conntrack_file.readlines():
     if "127.0.0.1" in line:
         continue
 
+    dict = parse_line(line)
+
+    if dict == None:
+        continue;
+
     # ignore first line
     if first:
         first=False
     else:
         print ","
 
-    dict = parse_line(line)
     print "{ protocol:\"%s\", preNatClient:\"%s\", preNatServer:\"%s\", preNatClientPort:\"%s\", preNatServerPort:\"%s\", packets:\"%s\", bytes:\"%s\", postNatClient:\"%s\", postNatServer:\"%s\", postNatClientPort:\"%s\", postNatServerPort:\"%s\", qosPriority:\"%x\", bypassed:\"%s\", localTraffic:\"%s\", javaClass:\"com.untangle.uvm.SessionMonitorEntry\" }" % (
         dict['protocol'],
         dict['orig_src'],
