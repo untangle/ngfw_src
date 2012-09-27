@@ -8,6 +8,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Hashtable;
 import java.util.HashSet;
+import java.util.Timer;
+
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 
@@ -36,17 +38,20 @@ import com.untangle.uvm.node.EventLogQuery;
 
 public class CaptureNodeImpl extends NodeBase implements CaptureNode
 {
+    private final int CLEANUP_INTERVAL = 60000;
     private final Logger logger = Logger.getLogger(getClass());
 
     private final SoloPipeSpec trafficPipe = new SoloPipeSpec("capture-traffic", this, new CaptureTrafficHandler(this), Fitting.OCTET_STREAM, Affinity.SERVER, 0);
     private final SoloPipeSpec httpPipe = new SoloPipeSpec("capture-http", this, new TokenAdaptor(this, new CaptureHttpFactory(this)), Fitting.HTTP_TOKENS, Affinity.CLIENT, 0);
-    private final PipeSpec[] pipeSpecs = new PipeSpec[] { httpPipe, trafficPipe };
+    private final PipeSpec[] pipeSpecs = new PipeSpec[] { trafficPipe, httpPipe };
     private final SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
     private final String settingsFile = (System.getProperty("uvm.settings.dir") + "/untangle-node-capture/settings_" + getNodeSettings().getId().toString());
     private final CaptureReplacementGenerator replacementGenerator;
 
     protected CaptureStatistics statistics;
     protected CaptureSettings settings;
+    protected CaptureUserTable userTable;
+    protected Timer timer;
 
     private EventLogQuery allEventQuery;
     private EventLogQuery flaggedEventQuery;
@@ -59,6 +64,7 @@ public class CaptureNodeImpl extends NodeBase implements CaptureNode
 
         replacementGenerator = new CaptureReplacementGenerator(getNodeSettings());
         statistics = new CaptureStatistics();
+        userTable = new CaptureUserTable();
 
         this.allEventQuery = new EventLogQuery(I18nUtil.marktr("All Sessions"),
             "SELECT * FROM reports.sessions " +
@@ -211,11 +217,14 @@ public class CaptureNodeImpl extends NodeBase implements CaptureNode
     @Override
     protected void postStart()
     {
+        timer = new Timer();
+        timer.schedule(new CaptureTimer(this),CLEANUP_INTERVAL,CLEANUP_INTERVAL);
     }
 
     @Override
     protected void preStop()
     {
+        timer.cancel();
     }
 
     @Override

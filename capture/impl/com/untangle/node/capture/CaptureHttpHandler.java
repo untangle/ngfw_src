@@ -55,7 +55,6 @@ class CaptureHttpHandler extends HttpStateMachine
         String method = getRequestLine().getMethod().toString();
         String host = getRequestLine().getRequestUri().getHost();
         String uri = getRequestLine().getRequestUri().toString();
-               
 
         if (host == null)
         {
