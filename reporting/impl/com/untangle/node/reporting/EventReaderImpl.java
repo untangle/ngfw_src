@@ -64,12 +64,18 @@ public class EventReaderImpl
             } else {
                 queryStr = queryStr.replace(":policyId", Long.toString( policyId ) );
             }
-            queryStr += " LIMIT " + limit + " ";
+            if (limit > 0)
+                queryStr += " LIMIT " + limit + " ";
 
             logger.debug("getEventsResultSet( query: " + query + " policyId: " + policyId + " limit: " + limit + " )");
             logger.info("getEventsResultSet( queryStr: \"" + queryStr + "\")");
             
             Statement statement = dbConnection.createStatement();
+
+            /* If this is an unlimited query - set a fetch size so we don't load all into memory */
+            if (limit < 0 || limit > 100000)
+                statement.setFetchSize(1000);
+            
             if (statement == null) {
                 logger.warn("Unable to create Statement");
                 throw new RuntimeException("Unable to create Statement");

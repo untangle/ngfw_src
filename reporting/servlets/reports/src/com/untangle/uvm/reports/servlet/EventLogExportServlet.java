@@ -33,7 +33,6 @@ import com.untangle.node.reporting.ReportingNode;
 @SuppressWarnings({ "serial", "unchecked" })
 public class EventLogExportServlet extends HttpServlet
 {
-    private final int MAX_RESULTS = 10000000;
 	private final Logger logger = Logger.getLogger(getClass());
 
     /** character encoding */
@@ -66,7 +65,7 @@ public class EventLogExportServlet extends HttpServlet
             logger.warn("reporting node not found");
             return;
         }
-        ResultSet resultSet = reporting.getEventsResultSet( query, policyId, MAX_RESULTS );
+        ResultSet resultSet = reporting.getEventsResultSet( query, policyId, -1 );
         
         // Write content type and also length (determined via byte array).
         resp.setCharacterEncoding(CHARACTER_ENCODING);
@@ -74,6 +73,7 @@ public class EventLogExportServlet extends HttpServlet
         resp.setHeader("Content-Disposition","attachment; filename="+name+".csv");
         // Write the header
         resp.getWriter().write(columnListStr + "\n");
+        resp.getWriter().flush();
 
         if (resultSet == null)
             return;
