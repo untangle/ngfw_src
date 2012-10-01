@@ -47,6 +47,7 @@ public class EventReaderImpl
         if ( dbConnection == null ) {
             try {
                 dbConnection = this.node.getDbConnection();
+                dbConnection.setAutoCommit(false);
             } catch (Exception e) {
                 logger.warn("Unable to create connection to DB",e);
             }
