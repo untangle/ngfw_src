@@ -863,9 +863,9 @@ SetShellVarContext all
   DeleteRegKey HKCU "Software\${PRODUCT_NAME}"
   DeleteRegKey HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\OpenVPN"
   DeleteRegKey HKLM "SYSTEM\ControlSet002\services\OpenVPNService"
-  DeleteRegValue HKLM "SOFTWARE\Microsoft\Windows NT\CurrentVersion\AppCompatFlags\Layers"
+  DeleteRegValue HKLM "SOFTWARE\Microsoft\Windows NT\CurrentVersion\AppCompatFlags\Layers" "$INSTDIR\bin\openvpn-gui.exe"
   DeleteRegValue HKLM "Software\Microsoft\Windows\CurrentVersion\Run" "openvpn-gui"
-  DeleteRegValue HKCU "Software\Microsoft\Windows NT\CurrentVersion\AppCompatFlags\Layers"
+  DeleteRegKey HKCU "Software\Microsoft\Windows NT\CurrentVersion\AppCompatFlags\Layers"
   nsExec::ExecToStack 'SCHTASKS /delete /TN "OpenVPNGui" /F'
   
 SectionEnd
