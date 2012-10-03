@@ -1,7 +1,7 @@
 /**
  * $Id: EventLogExportServlet.java,v 1.00 2011/12/18 20:38:21 dmorris Exp $
  */
-package com.untangle.uvm.reports.servlet;
+package com.untangle.uvm.webui.servlet;
 
 import java.io.IOException;
 import java.io.PrintWriter;
