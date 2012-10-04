@@ -17,6 +17,7 @@ import com.untangle.node.token.Header;
 import com.untangle.node.token.Token;
 import com.untangle.node.token.TokenAdaptor;
 import com.untangle.node.http.ReplacementGenerator;
+import com.untangle.uvm.node.DirectoryConnector;
 import com.untangle.uvm.node.IPMaskedAddress;
 import com.untangle.uvm.node.PortRange;
 import com.untangle.uvm.node.NodeMetric;
@@ -257,5 +258,96 @@ public class CaptureNodeImpl extends NodeBase implements CaptureNode
     {
         logger.debug("generateResponse");
         return replacementGenerator.generateResponse(block, session, false);
+    }
+
+    public boolean userAuthenticate(String address, String username, String password)
+    {
+        boolean isAuthenticated = false;
+
+        switch( settings.getAuthenticationType() )
+        {
+            case NONE:
+                isAuthenticated = true;
+                break;
+
+            case ACTIVE_DIRECTORY:
+                try
+                {
+                    DirectoryConnector adconnector = (DirectoryConnector)UvmContextFactory.context().nodeManager().node("untangle-node-adconnector");
+                    if (adconnector != null) isAuthenticated = adconnector.activeDirectoryAuthenticate( username, password );
+                }
+                catch (Exception e)
+                {
+                    logger.warn( "Unable to authenticate users.", e );
+                    isAuthenticated = false;
+                }
+                break;
+
+            case LOCAL_DIRECTORY:
+                try
+                {
+                    isAuthenticated = UvmContextFactory.context().localDirectory().authenticate( username, password );
+                }
+                catch (Exception e)
+                {
+                    logger.warn( "Unable to authenticate users.", e );
+                    isAuthenticated = false;
+                }
+                break;
+
+            case RADIUS:
+                try
+                {
+                    DirectoryConnector adconnector = (DirectoryConnector)UvmContextFactory.context().nodeManager().node("untangle-node-adconnector");
+                    if (adconnector != null) isAuthenticated = adconnector.radiusAuthenticate( username, password );
+                }
+                catch (Exception e)
+                {
+                    logger.warn( "Unable to authenticate users.", e );
+                    isAuthenticated = false;
+                }
+                break;
+            }
+
+        if ( !isAuthenticated ) return false;
+
+        /* Expire the cache on the phonebook */
+        /* This will force adconnector to relookup the address and log any associated events */
+// TODO        DirectoryConnector adconnector = (DirectoryConnector)UvmContextFactory.context().nodeManager().node("untangle-node-adconnector");
+// TODO        if (adconnector != null) adconnector.getIpUsernameMap().expireUser( address );
+
+        CaptureLoginEvent.EventType eventType = isAuthenticated ? CaptureLoginEvent.EventType.LOGIN : CaptureLoginEvent.EventType.FAILED;
+        CaptureLoginEvent event = new CaptureLoginEvent( address, username, settings.getAuthenticationType(), eventType );
+
+// TODO        this.cpd.logEvent(event);
+
+// TODO        if ( isAuthenticated ) this.cpd.incrementCount(BlingerType.AUTHORIZE, 1);
+
+        return isAuthenticated;
+    }
+
+    public boolean userLogout(String address)
+    {
+        CaptureUserEntry user = userTable.searchTable(address);
+
+        if (user == null)
+        {
+            logger.info("User not found in table: " + address);
+            return(false);
+        }
+
+        /* Expire the cache on the phonebook */
+        /* This will force adconnector to relookup the address and log any associated events */
+        DirectoryConnector adconnector = (DirectoryConnector)UvmContextFactory.context().nodeManager().node("untangle-node-adconnector");
+
+        if (adconnector != null)
+        {
+// TODO            adconnector.getIpUsernameMap().expireUser( address );
+        }
+
+        CaptureLoginEvent event = new CaptureLoginEvent( address, "", settings.getAuthenticationType(), CaptureLoginEvent.EventType.LOGOUT );
+        logEvent(event);
+
+        return true;
     }
 }

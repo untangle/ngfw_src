@@ -85,14 +85,22 @@ def index(req):
 #-----------------------------------------------------------------------------
 
 def login(req,username,password,method,nonce,appid,host,uri):
+    address = req.get_remote_host(apache.REMOTE_NOLOOKUP,None)
+
+    uvmContext = Uvm().getUvmContext()
+    captureNode = uvmContext.nodeManager().node(long(appid))
+    result = captureNode.userAuthenticate(address, username, password)
+
     page = "<HTML><HEAD><TITLE>Testing</TITLE></HEAD><BODY>\r\n"
     page += "USERNAME: " + username + "<BR>\r\n"
     page += "PASSWORD: " + password + "<BR>\r\n"
+    page += "ADDRESS: " + address + "<BR>\r\n"
     page += "METHOD: " + method + "<BR>\r\n"
     page += "NONCE: " + nonce + "<BR>\r\n"
     page += "APPID: " + appid + "<BR>\r\n"
     page += "HOST: " + host + "<BR>\r\n"
     page += "URI: " + uri + "<BR>\r\n"
+    page += "RESULT: " + str(result) + "<BR>\r\n"
     page += "</BODY></HTML>\r\n"
     return(page)
 

@@ -1,5 +1,5 @@
 /**
- * $Id: CaptureLogEvent.java,v 1.00 2011/12/14 01:02:03 mahotz Exp $
+ * $Id: CaptureRuleEvent.java,v 1.00 2011/12/14 01:02:03 mahotz Exp $
  */
 
 package com.untangle.node.capture; // API
@@ -8,16 +8,16 @@ import com.untangle.uvm.logging.LogEvent;
 import com.untangle.uvm.node.SessionEvent;
 
 @SuppressWarnings("serial")
-public class CaptureLogEvent extends LogEvent
+public class CaptureRuleEvent extends LogEvent
 {
     private SessionEvent sessionEvent;
     private Integer ruleid = null;
     private boolean flagged = false;
     private boolean blocked = false;
 
-    public CaptureLogEvent() { }
+    public CaptureRuleEvent() { }
 
-    public CaptureLogEvent( SessionEvent sessionEvent, Integer ruleid, boolean flagged, boolean blocked )
+    public CaptureRuleEvent( SessionEvent sessionEvent, Integer ruleid, boolean flagged, boolean blocked )
     {
         this.sessionEvent = sessionEvent;
         this.ruleid = ruleid;
@@ -63,7 +63,7 @@ public class CaptureLogEvent extends LogEvent
     {
         String string = new String();
         SessionEvent pe = getSessionEvent();
-        string+=("CaptureLogEvent(");
+        string+=("CaptureRuleEvent(");
         string+=(" clientaddr:" + pe.getCClientAddr());
         string+=(" clientport:" + pe.getCClientPort());
         string+=(" serveraddr:" + pe.getCServerAddr());

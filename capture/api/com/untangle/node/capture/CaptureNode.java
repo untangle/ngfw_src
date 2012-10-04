@@ -15,8 +15,10 @@ public interface CaptureNode extends Node
     void setSettings(CaptureSettings settings);
 
     EventLogQuery[] getEventQueries();
-
     EventLogQuery[] getRuleEventQueries();
 
     CaptureStatistics getStatistics();
+
+    boolean userAuthenticate(String address, String username, String password);
+    boolean userLogout(String address);
 }
