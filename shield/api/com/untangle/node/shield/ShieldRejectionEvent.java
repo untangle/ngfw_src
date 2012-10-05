@@ -94,7 +94,7 @@ public class ShieldRejectionEvent extends LogEvent implements Serializable
         pstmt.setObject(++i, getClientAddr().getHostAddress(), java.sql.Types.OTHER);
         pstmt.setInt(++i, getClientIntf());
         pstmt.setInt(++i, getMode());
-        pstmt.setInt(++i, getRejected());
+        pstmt.setInt(++i, getReputation());
         pstmt.setInt(++i, getLimited());
         pstmt.setInt(++i, getDropped());
         pstmt.setInt(++i, getRejected());
