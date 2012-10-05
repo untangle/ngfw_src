@@ -46,9 +46,11 @@ class UvmNode(Node):
 
         self.__do_housekeeping()
 
-        self.__make_n_admin_logins_table()
+        self.__build_n_admin_logins_table()
 
-        self.__make_sessions_table()
+        self.__build_sessions_table()
+
+        self.__build_penaltybox_table()
 
         ft = FactTable('reports.session_totals',
                        'reports.sessions',
@@ -76,7 +78,7 @@ class UvmNode(Node):
         return None
 
     @print_timing
-    def __make_n_admin_logins_table(self):
+    def __build_n_admin_logins_table(self):
         sql_helper.create_fact_table("""\
 CREATE TABLE reports.n_admin_logins (
     time_stamp timestamp without time zone,
@@ -106,7 +108,8 @@ CREATE TABLE reports.n_admin_logins (
                            [VmHighlight(self.name, self.branded_name),
                             BandwidthUsage(),
                             SessionsPerMinute(),
-                            DestinationPorts()])
+                            DestinationPorts(),
+                            HostsByPenalty()])
 
         sections.append(s)
         sections.append(AdministrativeLoginsDetail())
@@ -167,7 +170,7 @@ INSERT INTO reports.hnames (date, hname)
             raise e
 
     @print_timing
-    def __make_sessions_table( self ):
+    def __build_sessions_table( self ):
         sql_helper.create_fact_table("""\
 CREATE TABLE reports.sessions (
         session_id int8 NOT NULL,
@@ -304,6 +307,25 @@ GROUP BY time, uid, hname, client_intf, server_intf
         except Exception, e:
             conn.rollback()
             raise e
+
+    def __build_penaltybox_table( self ):
+        sql_helper.create_fact_table("""
+CREATE TABLE reports.uvm_penaltybox (
+        address inet,
+        start_time timestamp,
+        end_time timestamp,
+        event_id bigserial,
+        time_stamp timestamp)""")
+
+        sql_helper.add_column('reports', 'uvm_penaltybox', 'event_id', 'bigserial')
+        sql_helper.add_column('reports', 'uvm_penaltybox', 'time_stamp', 'timestamp')
+
+        # we used to create event_id as serial instead of bigserial - convert if necessary
+        sql_helper.convert_column("reports","uvm_penaltybox","event_id","integer","bigint");
+
+        sql_helper.create_index("reports","uvm_penaltybox","event_id");
+        sql_helper.create_index("reports","uvm_penaltybox","time_stamp");
+        sql_helper.create_index("reports","uvm_penaltybox","start_time");
 
     def teardown(self):
         pass
@@ -545,6 +567,54 @@ ORDER BY sessions DESC"""
 
         plot = Chart(type=PIE_CHART, title=self.title, xlabel=_('Port'),
                      ylabel=_('Sessions'))
+
+        plot.add_pie_dataset(pds, display_limit=10)
+
+        return (lks, plot, 10)
+
+class HostsByPenalty(Graph):
+    def __init__(self):
+        Graph.__init__(self, 'hosts-by-penalty', _('Top Penalty Box Hosts'))
+
+    @print_timing
+    def get_graph(self, end_date, report_days, host=None, user=None,
+                  email=None):
+        if email or host or user:
+            return None
+
+        ed = DateFromMx(end_date)
+        one_week = DateFromMx(end_date - mx.DateTime.DateTimeDelta(report_days))
+
+        lks = []
+
+        query = """
+SELECT address, 
+       ROUND(COALESCE(EXTRACT('epoch' FROM sum(end_time - start_time)::interval),0)::numeric,1) AS time
+FROM reports.uvm_penaltybox
+WHERE start_time >= %s AND start_time < %s"""
+
+        query += " GROUP BY address ORDER BY time DESC"
+
+        conn = sql_helper.get_connection()
+        try:
+            curs = conn.cursor()
+
+            curs.execute(query, (one_week, ed))
+
+            lks = []
+            pds = {}
+
+            for r in curs.fetchall():
+                address = r[0]
+                time = r[1]
+                ks = KeyStatistic(address, time, _('seconds'), link_type=reports.HNAME_LINK)
+                lks.append(ks)
+                pds[address] = time
+        finally:
+            conn.commit()
+
+        plot = Chart(type=PIE_CHART, title=self.title, xlabel=_('Address'),
+                     ylabel=_('seconds'))
 
         plot.add_pie_dataset(pds, display_limit=10)
 

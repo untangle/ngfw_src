@@ -9,6 +9,12 @@ import java.net.InetAddress;
 
 public interface HostTable
 {
+    public interface PenaltyBoxListener
+    {
+        public void enteringPenaltyBox( InetAddress addr );
+        public void exitingPenaltyBox( InetAddress addr );
+    }
+
     public class HostTableEntry
     {
         public InetAddress addr;
@@ -48,13 +54,23 @@ public interface HostTable
         HostTable.KEY_PENALTY_BOX_PRIORITY
     };
     
-    public void setAttachment(InetAddress addr, String key, Object ob);
+    public void setAttachment( InetAddress addr, String key, Object ob );
 
-    public Object getAttachment(InetAddress addr, String key);
+    public Object getAttachment( InetAddress addr, String key );
 
     public String[] getPossibleAttachments();
 
     public LinkedList<HostTableEntry> getHosts();
+
+    public void addHostToPenaltyBox( InetAddress address, int priority, int time_sec );
+
+    public void releaseHostFromPenaltyBox( InetAddress address );
+    
+    public boolean hostInPenaltyBox( InetAddress address );
+
+    public void registerListener( PenaltyBoxListener listener );
+
+    public void unregisterListener( PenaltyBoxListener listener );
     
 }
 

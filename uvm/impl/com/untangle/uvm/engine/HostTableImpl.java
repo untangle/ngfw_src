@@ -5,11 +5,16 @@ package com.untangle.uvm.engine;
 
 import java.util.LinkedList;
 import java.util.Hashtable;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.Date;
 import java.net.InetAddress;
 
 import org.apache.log4j.Logger;
 
+import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.HostTable;
+import com.untangle.uvm.node.PenaltyBoxEvent;
 
 /**
  * HostTable stores a global table of all "local" IPs that have recently been seen.
@@ -24,12 +29,14 @@ public class HostTableImpl implements HostTable
 
     private Hashtable<InetAddress, HostTableEntry> hostTable;
 
+    private Set<HostTable.PenaltyBoxListener> penaltyBoxListeners = new HashSet<PenaltyBoxListener>();
+    
     protected HostTableImpl()
     {
         this.hostTable = new Hashtable<InetAddress, HostTableEntry>();
     }
     
-    public void setAttachment(InetAddress addr, String key, Object ob)
+    public void setAttachment( InetAddress addr, String key, Object ob )
     {
         if ( addr == null || key == null ) {
             logger.warn( "Invalid arguments: setAttachment( " + addr + " , " + key + " , " + ob + " )");
@@ -48,7 +55,7 @@ public class HostTableImpl implements HostTable
         return;
     }
 
-    public Object getAttachment(InetAddress addr, String key)
+    public Object getAttachment( InetAddress addr, String key )
     {
         if ( addr == null || key == null ) {
             logger.warn( "Invalid arguments: getAttachment( " + addr + " , " + key + " )");
@@ -115,6 +122,149 @@ public class HostTableImpl implements HostTable
         return hosts;
     }
     
+    public synchronized void addHostToPenaltyBox( InetAddress address, int priority, int time_sec )
+    {
+        Long entryTime = System.currentTimeMillis();
+        Long exitTime  = entryTime + (time_sec * 1000L);
+
+        logger.info("Adding " + address.getHostAddress() + " to Penalty box for " + time_sec + " seconds");
+
+        /**
+         * Set PENALTY_BOXED boolean to true
+         */
+        Boolean currentFlag = (Boolean) getAttachment( address, HostTable.KEY_PENALTY_BOXED );
+        setAttachment( address, HostTable.KEY_PENALTY_BOXED, Boolean.TRUE );
+        setAttachment( address, HostTable.KEY_PENALTY_BOX_PRIORITY, Integer.valueOf(priority) );
+
+        /**
+         * If the entry time is null, set it.
+         * If it is not null, the host was probably already in the penalty box so don't update it
+         */
+        Long currentEntryTime = (Long) getAttachment( address, HostTable.KEY_PENALTY_BOX_ENTRY_TIME );
+        if (currentEntryTime == null)
+            setAttachment( address, HostTable.KEY_PENALTY_BOX_ENTRY_TIME, entryTime );
+        currentEntryTime = (Long) getAttachment( address, HostTable.KEY_PENALTY_BOX_ENTRY_TIME );
+
+        /**
+         * Update the exit time, if the proposed value is after the current value
+         */
+        Long currentExitTime = (Long) getAttachment( address, HostTable.KEY_PENALTY_BOX_EXIT_TIME );
+        if (currentExitTime == null || exitTime > currentExitTime)
+            setAttachment( address, HostTable.KEY_PENALTY_BOX_EXIT_TIME, exitTime );
+        currentExitTime = (Long) getAttachment( address, HostTable.KEY_PENALTY_BOX_EXIT_TIME );
+            
+        /**
+         * If the host was not previously in the penalty box, reprioritize sessions
+         */
+        /* FIXME */
+        /* XXXXX */
+        //         if (currentFlag == null || currentFlag == Boolean.FALSE) {
+        //             node.reprioritizeHostSessions(address);
+        //         }
+
+        int action;
+        if (currentFlag != null && currentFlag ) {
+            action = PenaltyBoxEvent.ACTION_REENTER; /* was already there */
+        } else {
+            action = PenaltyBoxEvent.ACTION_ENTER; /* new entry */
+        }
+        PenaltyBoxEvent evt = new PenaltyBoxEvent( action, address, priority, new Date(currentEntryTime), new Date(currentExitTime) ) ;
+        logger.warn("PENALTY BOX EVENT: " + evt);
+        UvmContextFactory.context().logEvent(evt);
+
+        /**
+         * Call listeners
+         */
+        if (action == PenaltyBoxEvent.ACTION_ENTER) {
+            for ( PenaltyBoxListener listener : this.penaltyBoxListeners ) {
+                try {
+                    listener.enteringPenaltyBox( address );
+                } catch ( Exception e ) {
+                    logger.error( "Exception calling listener", e );
+                }
+            }
+        }
+        
+        return;
+    }
+
+    public synchronized void releaseHostFromPenaltyBox( InetAddress address )
+    {
+
+        /**
+         * Set PENALTY_BOXED boolean to false
+         */
+        Boolean currentFlag = (Boolean) getAttachment( address, HostTable.KEY_PENALTY_BOXED );
+        setAttachment( address, HostTable.KEY_PENALTY_BOXED, null );
+        setAttachment( address, HostTable.KEY_PENALTY_BOX_PRIORITY, null );
+            
+        /**
+         * If the host was previously in the penalty box, reprioritize sessions
+         */
+        /* FIXME */
+        /* XXXXX */
+        //         if (currentFlag != null || currentFlag == Boolean.TRUE) {
+        //             node.reprioritizeHostSessions(address);
+        //         }
+
+        /**
+         * If the host was previously in the penalty box, Update metric and log event
+         */
+        if (currentFlag != null || currentFlag == Boolean.TRUE) {
+            Long currentEntryTime = (Long) getAttachment( address, HostTable.KEY_PENALTY_BOX_ENTRY_TIME );
+            Long currentExitTime = (Long) getAttachment( address, HostTable.KEY_PENALTY_BOX_EXIT_TIME );
+            
+            Date entryDate = new Date();
+            if (currentEntryTime != null)
+                entryDate = new Date(currentEntryTime);
+
+            Date exitTime = new Date();
+            /**
+             * If current date is before planned exit time, use it instead, otherwise just log the exit time
+             */
+            if (exitTime.after(new Date(currentExitTime))) {
+                logger.info("Removing " + address.getHostAddress() + " from Penalty box. (expired)");
+                exitTime = new Date(currentExitTime);
+            } else {
+                logger.info("Removing " + address.getHostAddress() + " from Penalty box. (admin requested)");
+            }
+            
+            UvmContextFactory.context().logEvent( new PenaltyBoxEvent( PenaltyBoxEvent.ACTION_EXIT, address, 0, entryDate, exitTime ) );
+        }
+
+        /**
+         * Call listeners
+         */
+        for ( PenaltyBoxListener listener : this.penaltyBoxListeners ) {
+            try {
+                listener.exitingPenaltyBox( address );
+            } catch ( Exception e ) {
+                logger.error( "Exception calling listener", e );
+            }
+        }
+        
+        return;
+    }
+    
+    public boolean hostInPenaltyBox( InetAddress address )
+    {
+        Boolean currentFlag = (Boolean) getAttachment( address, HostTable.KEY_PENALTY_BOXED );
+        if (currentFlag == null)
+            return false;
+        else
+            return currentFlag;
+    }
+
+    public void registerListener( HostTable.PenaltyBoxListener listener )
+    {
+        this.penaltyBoxListeners.add( listener );
+    }
+
+    public void unregisterListener( HostTable.PenaltyBoxListener listener )
+    {
+        this.penaltyBoxListeners.remove( listener );
+    }
+
     private HostTableEntry getHostTableEntry( InetAddress addr, boolean createIfNecessary )
     {
         HostTableEntry entry = hostTable.get( addr );
@@ -139,4 +289,5 @@ public class HostTableImpl implements HostTable
         return entry;
     }
 
+    
 }
