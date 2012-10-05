@@ -24,17 +24,11 @@ import com.untangle.uvm.vnet.NodeBase;
 import com.untangle.uvm.vnet.PipeSpec;
 
 public class ShieldNodeImpl extends NodeBase  implements ShieldNode
-
 {
     protected static final String STAT_ACCEPT = "accept";
     protected static final String STAT_LIMIT = "limit";
     protected static final String STAT_DROP = "drop";
     protected static final String STAT_REJECT = "reject";
-
-    private static final String SHIELD_REJECTION_EVENT_QUERY
-        = "SELECT time_stamp, client_addr, client_intf, reputation, limited, dropped, rejected"
-        + " FROM n_shield_rejection_evt "
-        + " ORDER BY time_stamp DESC LIMIT ?";
 
     private static final int CREATE_DATE_IDX =  1;
     private static final int CLIENT_ADDR_IDX =  2;
