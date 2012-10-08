@@ -100,7 +100,6 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
     private LanguageManagerImpl languageManager;
     private DefaultLicenseManagerImpl defaultLicenseManager;
     private TomcatManagerImpl tomcatManager;
-    private HeapMonitor heapMonitor;
     private UploadManagerImpl uploadManager;
     private SettingsManagerImpl settingsManager;
     private OemManagerImpl oemManager;
@@ -546,12 +545,6 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
         // Start statistic gathering
         messageManager.start();
 
-        this.heapMonitor = new HeapMonitor();
-        String useHeapMonitor = System.getProperty(HeapMonitor.KEY_ENABLE_MONITOR);
-        if (null != useHeapMonitor && Boolean.valueOf(useHeapMonitor)) {
-            this.heapMonitor.start();
-        }
-
         if (isFactoryDefaults())
             initializeWizard();
 
@@ -638,14 +631,6 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
             cronManager = null;
         } catch (Exception exn) {
             logger.warn("could not stop CronManager", exn);
-        }
-
-        try {
-            if (null != this.heapMonitor) {
-                this.heapMonitor.stop();
-            }
-        } catch (Exception exn) {
-            logger.warn("unable to stop the heap monitor",exn);
         }
 
         logger.info("UvmContext destroyed");
