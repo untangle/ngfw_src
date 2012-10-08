@@ -153,23 +153,15 @@ public class HostTableImpl implements HostTable
             setAttachment( address, HostTable.KEY_PENALTY_BOX_EXIT_TIME, exitTime );
         currentExitTime = (Long) getAttachment( address, HostTable.KEY_PENALTY_BOX_EXIT_TIME );
             
-        /**
-         * If the host was not previously in the penalty box, reprioritize sessions
-         */
-        /* FIXME */
-        /* XXXXX */
-        //         if (currentFlag == null || currentFlag == Boolean.FALSE) {
-        //             node.reprioritizeHostSessions(address);
-        //         }
-
         int action;
         if (currentFlag != null && currentFlag ) {
             action = PenaltyBoxEvent.ACTION_REENTER; /* was already there */
         } else {
             action = PenaltyBoxEvent.ACTION_ENTER; /* new entry */
         }
+
         PenaltyBoxEvent evt = new PenaltyBoxEvent( action, address, priority, new Date(currentEntryTime), new Date(currentExitTime) ) ;
-        logger.warn("PENALTY BOX EVENT: " + evt);
+        logger.warn("PENALTY BOX EVENT (" + action + ") : " + evt + " currentEntryTime: " + currentEntryTime ); /* FIXME remove me */
         UvmContextFactory.context().logEvent(evt);
 
         /**
@@ -197,40 +189,34 @@ public class HostTableImpl implements HostTable
         Boolean currentFlag = (Boolean) getAttachment( address, HostTable.KEY_PENALTY_BOXED );
         setAttachment( address, HostTable.KEY_PENALTY_BOXED, null );
         setAttachment( address, HostTable.KEY_PENALTY_BOX_PRIORITY, null );
+        setAttachment( address, HostTable.KEY_PENALTY_BOX_ENTRY_TIME, null );
+        setAttachment( address, HostTable.KEY_PENALTY_BOX_EXIT_TIME, null );
             
         /**
-         * If the host was previously in the penalty box, reprioritize sessions
+         * If the host is not in the penalty box, just return
          */
-        /* FIXME */
-        /* XXXXX */
-        //         if (currentFlag != null || currentFlag == Boolean.TRUE) {
-        //             node.reprioritizeHostSessions(address);
-        //         }
+        if ( currentFlag == null || currentFlag == Boolean.FALSE )
+            return;
+                
+        Long currentEntryTime = (Long) getAttachment( address, HostTable.KEY_PENALTY_BOX_ENTRY_TIME );
+        Long currentExitTime = (Long) getAttachment( address, HostTable.KEY_PENALTY_BOX_EXIT_TIME );
+            
+        Date entryDate = new Date();
+        if (currentEntryTime != null)
+            entryDate = new Date(currentEntryTime);
 
+        Date exitTime = new Date();
         /**
-         * If the host was previously in the penalty box, Update metric and log event
+         * If current date is before planned exit time, use it instead, otherwise just log the exit time
          */
-        if (currentFlag != null || currentFlag == Boolean.TRUE) {
-            Long currentEntryTime = (Long) getAttachment( address, HostTable.KEY_PENALTY_BOX_ENTRY_TIME );
-            Long currentExitTime = (Long) getAttachment( address, HostTable.KEY_PENALTY_BOX_EXIT_TIME );
-            
-            Date entryDate = new Date();
-            if (currentEntryTime != null)
-                entryDate = new Date(currentEntryTime);
-
-            Date exitTime = new Date();
-            /**
-             * If current date is before planned exit time, use it instead, otherwise just log the exit time
-             */
-            if (exitTime.after(new Date(currentExitTime))) {
-                logger.info("Removing " + address.getHostAddress() + " from Penalty box. (expired)");
-                exitTime = new Date(currentExitTime);
-            } else {
-                logger.info("Removing " + address.getHostAddress() + " from Penalty box. (admin requested)");
-            }
-            
-            UvmContextFactory.context().logEvent( new PenaltyBoxEvent( PenaltyBoxEvent.ACTION_EXIT, address, 0, entryDate, exitTime ) );
+        if (exitTime.after(new Date(currentExitTime))) {
+            logger.info("Removing " + address.getHostAddress() + " from Penalty box. (expired)");
+            exitTime = new Date(currentExitTime);
+        } else {
+            logger.info("Removing " + address.getHostAddress() + " from Penalty box. (admin requested)");
         }
+            
+        UvmContextFactory.context().logEvent( new PenaltyBoxEvent( PenaltyBoxEvent.ACTION_EXIT, address, 0, entryDate, exitTime ) );
 
         /**
          * Call listeners
