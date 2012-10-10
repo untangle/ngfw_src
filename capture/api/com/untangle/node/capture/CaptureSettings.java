@@ -20,7 +20,7 @@ public class CaptureSettings implements Serializable
 
     private AuthenticationType authenticationType = AuthenticationType.NONE;
     private int idleTimeout = 0;
-    private int timeout = 3600;
+    private int userTimeout = 3600;
     private boolean areConcurrentLoginsEnabled = true;
     private PageType pageType = PageType.BASIC_MESSAGE;
     private String redirectUrl = "";
@@ -98,14 +98,14 @@ public class CaptureSettings implements Serializable
         this.idleTimeout = newValue;
     }
 
-    public int getTimeout()
+    public int getUserTimeout()
     {
-        return this.timeout;
+        return this.userTimeout;
     }
 
-    public void setTimeout( int newValue )
+    public void setUserTimeout( int newValue )
     {
-        this.timeout = newValue;
+        this.userTimeout = newValue;
     }
 
     public boolean getConcurrentLoginsEnabled()

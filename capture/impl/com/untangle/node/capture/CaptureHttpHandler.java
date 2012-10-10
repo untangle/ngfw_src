@@ -52,6 +52,20 @@ class CaptureHttpHandler extends HttpStateMachine
     protected Header doRequestHeader(Header requestHeader)
     {
         NodeTCPSession sess = getSession();
+        String address = getSession().getClientAddr().getHostAddress().toString();
+
+        CaptureUserEntry user = node.captureUserTable.searchForUser(address);
+
+            if (user != null)
+            {
+                logger.debug("Allowing HTTP traffic for authenticated user " + address);
+                user.updateActivityTimer();
+                releaseRequest();
+                return requestHeader;
+            }
+
+        logger.debug("Sending HTTP redirect to unauthenticated user " + address);
+
         String method = getRequestLine().getMethod().toString();
         String host = getRequestLine().getRequestUri().getHost();
         String uri = getRequestLine().getRequestUri().toString();
@@ -70,7 +84,6 @@ class CaptureHttpHandler extends HttpStateMachine
         host = host.toLowerCase();
 
         CaptureBlockDetails details = new CaptureBlockDetails(host, uri, method);
-        logger.debug("doRequestHeader " + details.toString());
         Token[] response = node.generateResponse(details, sess);
         blockRequest(response);
         return requestHeader;
@@ -79,47 +92,47 @@ class CaptureHttpHandler extends HttpStateMachine
     @Override
     protected Chunk doRequestBody(Chunk chunk) throws TokenException
     {
-        logger.debug("doRequestBody");
+//        logger.debug("doRequestBody");
         return chunk;
     }
 
     @Override
     protected void doRequestBodyEnd() throws TokenException
     {
-        logger.debug("doRequestBodyEnd");
+//        logger.debug("doRequestBodyEnd");
     }
 
     @Override
     protected Header doResponseHeader(Header header)
     {
-        logger.debug("doResponseHeader");
+//        logger.debug("doResponseHeader");
         return header;
     }
 
     @Override
     protected Chunk doResponseBody( Chunk chunk ) throws TokenException
     {
-        logger.debug("doResponseBody");
+//        logger.debug("doResponseBody");
         return chunk;
     }
 
     @Override
     protected void doResponseBodyEnd( ) throws TokenException
     {
-        logger.debug("doResponseBodyEnd");
+//        logger.debug("doResponseBodyEnd");
     }
 
     @Override
     protected RequestLineToken doRequestLine(RequestLineToken requestLine) throws TokenException
     {
-        logger.debug("doRequestLine");
+//        logger.debug("doRequestLine");
         return requestLine;
     }
 
     @Override
     protected StatusLine doStatusLine(StatusLine statusLine) throws TokenException
     {
-        logger.debug("doStatusLine");
+//        logger.debug("doStatusLine");
         return statusLine;
     }
 

@@ -49,9 +49,9 @@ public class CaptureNodeImpl extends NodeBase implements CaptureNode
     private final String settingsFile = (System.getProperty("uvm.settings.dir") + "/untangle-node-capture/settings_" + getNodeSettings().getId().toString());
     private final CaptureReplacementGenerator replacementGenerator;
 
-    protected CaptureStatistics statistics;
-    protected CaptureSettings settings;
-    protected CaptureUserTable userTable;
+    protected CaptureStatistics captureStatistics;
+    protected CaptureSettings captureSettings;
+    protected CaptureUserTable captureUserTable;
     protected Timer timer;
 
     private EventLogQuery allEventQuery;
@@ -64,8 +64,8 @@ public class CaptureNodeImpl extends NodeBase implements CaptureNode
         super( nodeSettings, nodeProperties );
 
         replacementGenerator = new CaptureReplacementGenerator(getNodeSettings());
-        statistics = new CaptureStatistics();
-        userTable = new CaptureUserTable();
+        captureStatistics = new CaptureStatistics();
+        captureUserTable = new CaptureUserTable();
 
         this.allEventQuery = new EventLogQuery(I18nUtil.marktr("All Sessions"),
             "SELECT * FROM reports.sessions " +
@@ -100,13 +100,13 @@ public class CaptureNodeImpl extends NodeBase implements CaptureNode
     @Override
     public CaptureStatistics getStatistics()
     {
-        return(statistics);
+        return(captureStatistics);
     }
 
     @Override
     public CaptureSettings getSettings()
     {
-        return(this.settings);
+        return(this.captureSettings);
     }
 
     @Override
@@ -201,7 +201,7 @@ public class CaptureNodeImpl extends NodeBase implements CaptureNode
         // it gives us a single place to do stuff when applying a new
         // settings object to the node.
 
-        this.settings = argSettings;
+        this.captureSettings = argSettings;
     }
 
     @Override
@@ -256,7 +256,7 @@ public class CaptureNodeImpl extends NodeBase implements CaptureNode
 
     protected Token[] generateResponse(CaptureBlockDetails block, NodeTCPSession session)
     {
-        logger.debug("generateResponse");
+//        logger.debug("generateResponse");
         return replacementGenerator.generateResponse(block, session, false);
     }
 
@@ -264,7 +264,7 @@ public class CaptureNodeImpl extends NodeBase implements CaptureNode
     {
         boolean isAuthenticated = false;
 
-        switch( settings.getAuthenticationType() )
+        switch( captureSettings.getAuthenticationType() )
         {
             case NONE:
                 isAuthenticated = true;
@@ -309,26 +309,29 @@ public class CaptureNodeImpl extends NodeBase implements CaptureNode
                 break;
             }
 
-        if ( !isAuthenticated ) return false;
+        if ( !isAuthenticated )
+        {
+            CaptureLoginEvent event = new CaptureLoginEvent( address, username, captureSettings.getAuthenticationType(), CaptureLoginEvent.EventType.FAILED );
+            logEvent(event);
 
-        /* Expire the cache on the phonebook */
-        /* This will force adconnector to relookup the address and log any associated events */
-// TODO        DirectoryConnector adconnector = (DirectoryConnector)UvmContextFactory.context().nodeManager().node("untangle-node-adconnector");
-// TODO        if (adconnector != null) adconnector.getIpUsernameMap().expireUser( address );
+            // TODO blinger
+            logger.info("Login failure " + username + " " + address);
+            return false;
+        }
 
-        CaptureLoginEvent.EventType eventType = isAuthenticated ? CaptureLoginEvent.EventType.LOGIN : CaptureLoginEvent.EventType.FAILED;
-        CaptureLoginEvent event = new CaptureLoginEvent( address, username, settings.getAuthenticationType(), eventType );
+        CaptureLoginEvent event = new CaptureLoginEvent( address, username, captureSettings.getAuthenticationType(), CaptureLoginEvent.EventType.LOGIN );
+        logEvent(event);
+        
+        captureUserTable.insertActiveUser(address,username,password);
 
-// TODO        this.cpd.logEvent(event);
-
-// TODO        if ( isAuthenticated ) this.cpd.incrementCount(BlingerType.AUTHORIZE, 1);
-
-        return isAuthenticated;
+        // TODO blinger
+        logger.info("Login success " + username + " " + address);
+        return(true);
     }
 
     public boolean userLogout(String address)
     {
-        CaptureUserEntry user = userTable.searchTable(address);
+        CaptureUserEntry user = captureUserTable.searchForUser(address);
 
         if (user == null)
         {
@@ -336,16 +339,10 @@ public class CaptureNodeImpl extends NodeBase implements CaptureNode
             return(false);
         }
 
-        /* Expire the cache on the phonebook */
-        /* This will force adconnector to relookup the address and log any associated events */
-        DirectoryConnector adconnector = (DirectoryConnector)UvmContextFactory.context().nodeManager().node("untangle-node-adconnector");
+        logger.info("User logout success: " + address);
+        captureUserTable.removeActiveUser(address);
 
-        if (adconnector != null)
-        {
-// TODO            adconnector.getIpUsernameMap().expireUser( address );
-        }
-
-        CaptureLoginEvent event = new CaptureLoginEvent( address, "", settings.getAuthenticationType(), CaptureLoginEvent.EventType.LOGOUT );
+        CaptureLoginEvent event = new CaptureLoginEvent( address, "", captureSettings.getAuthenticationType(), CaptureLoginEvent.EventType.LOGOUT );
         logEvent(event);
 
         return true;

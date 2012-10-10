@@ -25,6 +25,7 @@ public class CaptureTimer extends TimerTask
 
     private void SessionCleanup()
     {
-        logger.debug("SessionCleanup");
+        int cleanup = node.captureUserTable.cleanupStaleUsers(node.getSettings().getIdleTimeout(),node.getSettings().getUserTimeout());
+        if (cleanup > 0) logger.info("Cleaned up " + cleanup + " expired sessions");
     }
 }

@@ -29,11 +29,10 @@ public class CaptureTrafficHandler extends AbstractEventHandler
     }
 
 ///// TCP stuff --------------------------------------------------
-    
+
     @Override
     public void handleTCPNewSessionRequest(TCPNewSessionRequestEvent event)
     {
-        logger.debug("handleTCPNewSessionRequest()");
         super.handleTCPNewSessionRequest(event);
     }
 
@@ -41,20 +40,32 @@ public class CaptureTrafficHandler extends AbstractEventHandler
     public void handleTCPNewSession(TCPSessionEvent event)
     {
         NodeTCPSession session = event.session();
-        String user = session.getClientAddr().getHostAddress();
-        logger.debug("handleTCPNewSession " + user);
+        String address = session.getClientAddr().getHostAddress();
+        CaptureUserEntry user = node.captureUserTable.searchForUser(address);
 
-            // if the user is not in the active table we block the traffic
-            if ((session.getServerPort() != 80) && (node.userTable.searchTable(user) == null))
-            {
-                logger.debug("Blocking TCP traffic for unauthenticated user " + user);
-                session.resetClient();
-                session.resetServer();
-            }
+        // if we have an authenticated user allow traffic and release session
+        if (user != null)
+        {
+            logger.debug("Allowing TCP traffic for authenticated user " + address);
+            user.updateActivityTimer();
+            session.release();
+            return;
+        }
 
-        // release all sessions
+        // not authenicated so allow all web traffic so the http
+        // casing can create the redirect to the captive page
+        if (session.getServerPort() == 80)
+        {
+            logger.debug("Allowing HTTP traffic for unauthenticated user " + address);
+            session.release();
+            return;
+        }
+
+        // user not authenticated and not http traffic so block
+        logger.debug("Blocking TCP traffic for unauthenticated user " + address);
+        session.resetClient();
+        session.resetServer();
         session.release();
-        super.handleTCPNewSession(event);
     }
 
 ///// UDP stuff --------------------------------------------------
@@ -62,7 +73,6 @@ public class CaptureTrafficHandler extends AbstractEventHandler
     @Override
     public void handleUDPNewSessionRequest(UDPNewSessionRequestEvent event)
     {
-        logger.debug("handleUDPNewSessionRequest()");
         super.handleUDPNewSessionRequest(event);
     }
 
@@ -70,20 +80,32 @@ public class CaptureTrafficHandler extends AbstractEventHandler
     public void handleUDPNewSession(UDPSessionEvent event)
     {
         NodeUDPSession session = event.session();
-        String user = session.getClientAddr().getHostAddress();
-        logger.debug("handleUDPNewSession " + user);
-        
-        // if the user is not in the active table we block the traffic
-        if ((session.getServerPort() != 53) && (node.userTable.searchTable(user) == null))
+        String address = session.getClientAddr().getHostAddress();
+        CaptureUserEntry user = node.captureUserTable.searchForUser(address);
+
+        // if we have an authenticated user allow traffic and release session
+        if (user != null)
         {
-            logger.debug("Blocking UDP traffic for unauthenticated user " + user);
-            session.expireClient();
-            session.expireServer();
+            logger.debug("Allowing UDP traffic for authenticated user " + address);
+            user.updateActivityTimer();
+            session.release();
+            return;
         }
 
-        // release all sessions
+        // not authenticated so we allow UDP traffic so the initial DNS lookup
+        // will succeed allowing for the redirect to the captive page
+        if (session.getServerPort() == 53)
+        {
+            logger.debug("Allowing DNS traffic for unauthenticated user " + address);
+            session.release();
+            return;
+        }
+
+        // user not authenticated and not dns traffic so block
+        logger.debug("Blocking UDP traffic for unauthenticated user " + address);
+        session.expireClient();
+        session.expireServer();
         session.release();
-        super.handleUDPNewSession(event);
     }
 
 ///// PRIVATE stuff ----------------------------------------------
