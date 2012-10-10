@@ -98,7 +98,7 @@ class VirusTests(unittest.TestCase):
         startTime = datetime.now()
         fname = sys._getframe().f_code.co_name
         # download the email script
-        result = clientControl.runCommand("wget -O /tmp/email_script.py http://metaloft.com/test/email_script.py 1>/dev/null 2>&1")
+        result = clientControl.runCommand("wget -O /tmp/email_script.py http://test.untangle.com/test/email_script.py 1>/dev/null 2>&1")
         assert (result == 0)
         result = clientControl.runCommand("chmod 775 /tmp/email_script.py")
         assert (result == 0)
@@ -127,7 +127,7 @@ class VirusTests(unittest.TestCase):
         result = clientControl.runCommand("echo '%s' > /tmp/attachment-%s" % (fname, fname))
         assert (result == 0)
         # download the email script
-        result = clientControl.runCommand("wget -O /tmp/email_script.py http://metaloft.com/test/email_script.py 1>/dev/null 2>&1")
+        result = clientControl.runCommand("wget -O /tmp/email_script.py http://test.untangle.com/test/email_script.py 1>/dev/null 2>&1")
         assert (result == 0)
         result = clientControl.runCommand("chmod 775 /tmp/email_script.py")
         assert (result == 0)
