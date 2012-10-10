@@ -574,9 +574,9 @@ if (!Ung.hasResource["Ung.Capture"]) {
                         minValue: 0,
                         hideTrigger:true,
                         invalidText: this.i18n._( "The Idle Timeout must be between 0 minutes and 24 hours." ),
-                        fieldLabel: this.i18n._( "Idle Timeout" ),
-                        boxLabel: this.i18n._( "minutes" ),
-                        tooltip: this.i18n._( "Clients will be unauthenticated after this amount of idle time. They may re-authenticate immediately." ),
+                        fieldLabel: this.i18n._( "Idle Timeout (minutes)" ),
+// TODO                        toolTip: this.i18n._( "minutes" ),
+                        boxLabel: this.i18n._( "Clients will be unauthenticated after this amount of idle time. They may re-authenticate immediately.  Use zero to disable." ),
                         value: this.settings.idleTimeout / 60,
                         listeners: {
                             "change": Ext.bind(function( elem, newValue ) {
@@ -587,18 +587,18 @@ if (!Ung.hasResource["Ung.Capture"]) {
                         xtype: "numberfield",
                         allowNegative: false,
                         allowBlank: false,
-                        name: "timeout",
+                        name: "userTimeout",
                         maxValue: 24 * 60,
                         minValue: 5,
                         hideTrigger:true,
-                        fieldLabel: this.i18n._( "Timeout" ),
-                        boxLabel: this.i18n._( "minutes" ),
+                        fieldLabel: this.i18n._( "Timeout (minutes)" ),
+// TODO                       toolTip: this.i18n._( "minutes" ),
                         invalidText: this.i18n._( "The Timeout must be between 5 minutes and 24 hours." ),
-                        tooltip: this.i18n._( "Clients will be unauthenticated after this amount of time regardless of activity. They may re-authenticate immediately." ),
-                        value: this.settings.timeout / 60,
+                        boxLabel: this.i18n._( "Clients will be unauthenticated after this amount of time regardless of activity. They may re-authenticate immediately." ),
+                        value: this.settings.userTimeout / 60,
                         listeners: {
                             "change": Ext.bind(function( elem, newValue ) {
-                                this.settings.timeout = newValue * 60;
+                                this.settings.userTimeout = newValue * 60;
                             }, this)
                         }
                     },{
@@ -1091,7 +1091,7 @@ if (!Ung.hasResource["Ung.Capture"]) {
         validate: function() {
             // Iterate all of the fields checking if they are valid
             if ( !this.query('numberfield[name="idleTimeout"]')[0].isValid() ||
-                 !this.query('numberfield[name="timeout"]')[0].isValid()) {
+                 !this.query('numberfield[name="userTimeout"]')[0].isValid()) {
                 Ext.MessageBox.alert(this.i18n._("Warning"),
                                      this.i18n._("Please correct any highlighted fields."),
                                      Ext.bind(function () {

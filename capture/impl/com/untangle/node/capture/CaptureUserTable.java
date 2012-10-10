@@ -24,31 +24,36 @@ public class CaptureUserTable
     public synchronized int cleanupStaleUsers(long idleTimeout,long userTimeout)
     {
         ArrayList<String> wipeList = new ArrayList<String>();
-        long currentTime = System.currentTimeMillis();
+        long currentTime,idleTrigger,userTrigger;
         int wipecount;
         int flag;
 
+        currentTime = (System.currentTimeMillis() / 1000);
         Enumeration ee = userTable.elements();
         wipecount = 0;
 
         while (ee.hasMoreElements())
         {
             CaptureUserEntry item = (CaptureUserEntry)ee.nextElement();
+            idleTrigger = ((item.grabActivityTime() / 1000) + idleTimeout);
+            userTrigger = ((item.grabCreationTime() / 1000) + userTimeout);
             flag = 0;
+            
+            logger.debug("CURR:" + currentTime + " IDLE:" + idleTrigger + " USER:" + userTrigger);
 
-                // look for users with no traffic within the configured idle timeout 
-                if ( (idleTimeout > 0) && (currentTime > (item.grabActivityTime() + (idleTimeout * 1000))) )
+                // look for users with no traffic within the configured non-zero idle timeout 
+                if ( (idleTimeout > 0) && (currentTime > idleTrigger) )
                 {
-                    logger.debug("Idle timeout removing user " + item.getUserAddress() + " " + item.getUserName());
+                    logger.info("Idle timeout removing user " + item.getUserAddress() + " " + item.getUserName());
                     wipeList.add(item.getUserAddress());
                     wipecount++;
                     flag = 1;
                 }
 
                 // look for users who have exceeded the configured maximum session time
-                if ( (userTimeout > 0) && (currentTime > (item.grabCreationTime() + (userTimeout * 1000))) )
+                if (currentTime > userTrigger)
                 {
-                    logger.debug("Session timeout removing user " + item.getUserAddress() + " " + item.getUserName());
+                    logger.info("Session timeout removing user " + item.getUserAddress() + " " + item.getUserName());
                     wipeList.add(item.getUserAddress());
                     wipecount++;
                     flag = 2;

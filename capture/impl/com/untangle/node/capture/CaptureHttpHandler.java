@@ -92,49 +92,42 @@ class CaptureHttpHandler extends HttpStateMachine
     @Override
     protected Chunk doRequestBody(Chunk chunk) throws TokenException
     {
-//        logger.debug("doRequestBody");
         return chunk;
     }
 
     @Override
     protected void doRequestBodyEnd() throws TokenException
     {
-//        logger.debug("doRequestBodyEnd");
     }
 
     @Override
     protected Header doResponseHeader(Header header)
     {
-//        logger.debug("doResponseHeader");
+        releaseResponse();
         return header;
     }
 
     @Override
     protected Chunk doResponseBody( Chunk chunk ) throws TokenException
     {
-//        logger.debug("doResponseBody");
         return chunk;
     }
 
     @Override
     protected void doResponseBodyEnd( ) throws TokenException
     {
-//        logger.debug("doResponseBodyEnd");
     }
 
     @Override
     protected RequestLineToken doRequestLine(RequestLineToken requestLine) throws TokenException
     {
-//        logger.debug("doRequestLine");
         return requestLine;
     }
 
     @Override
     protected StatusLine doStatusLine(StatusLine statusLine) throws TokenException
     {
-//        logger.debug("doStatusLine");
         return statusLine;
     }
 
-    // private methods --------------------------------------------------------
 }
