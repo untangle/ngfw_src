@@ -2912,7 +2912,7 @@ Ext.define("Ung.GridEventLog", {
             var out;
             
             out = [];
-            out.push('<select name="Event Type" id="selectQuery_' + this.getId() + '_' + this.settingsCmp.node.nodeId + '">');
+            out.push('<select name="Event Type" id="selectQuery_' + this.getId() + '">');
             for (i = 0; i < queryList.length; i++) {
                 var queryDesc = queryList[i];
                 var selOpt = (i === 0) ? "selected": "";
@@ -2922,9 +2922,12 @@ Ext.define("Ung.GridEventLog", {
             Ext.getCmp('querySelector_' + this.getId()).setText(out.join(""));
 
             displayStyle="";
-            if (this.settingsCmp.node.nodeProperties.type == "SERVICE") displayStyle = "display:none;"; //hide rack selector for services
+            if (this.settingsCmp.node != null &&
+                this.settingsCmp.node.nodeProperties != null && 
+                this.settingsCmp.node.nodeProperties.type == "SERVICE")
+                displayStyle = "display:none;"; //hide rack selector for services
             out = [];
-            out.push('<select name="Rack" id="selectPolicy_' + this.getId() + '_' + this.settingsCmp.node.nodeId + '" style="'+displayStyle+'">');
+            out.push('<select name="Rack" id="selectPolicy_' + this.getId() + '" style="'+displayStyle+'">');
             out.push('<option value="-1" ' + selOpt + '>' + i18n._('All Racks') + '</option>');
             for (i = 0; i < rpc.policies.length; i++) {
                 var policy = rpc.policies[i];
@@ -2937,7 +2940,7 @@ Ext.define("Ung.GridEventLog", {
     },
     // get selected query value
     getSelectedQuery: function() {
-        var selObj = document.getElementById('selectQuery_' + this.getId() + '_' + this.settingsCmp.node.nodeId);
+        var selObj = document.getElementById('selectQuery_' + this.getId());
         var result = null;
         if (selObj !== null && selObj.selectedIndex >= 0) {
             result = selObj.options[selObj.selectedIndex].value;
@@ -2946,7 +2949,7 @@ Ext.define("Ung.GridEventLog", {
     },
     // get selected query name
     getSelectedQueryName: function() {
-        var selObj = document.getElementById('selectQuery_' + this.getId() + '_' + this.settingsCmp.node.nodeId);
+        var selObj = document.getElementById('selectQuery_' + this.getId());
         var result = "";
         if (selObj !== null && selObj.selectedIndex >= 0) {
             result = selObj.options[selObj.selectedIndex].label;
@@ -2955,7 +2958,7 @@ Ext.define("Ung.GridEventLog", {
     },
     // get selected policy
     getSelectedPolicy: function() {
-        var selObj = document.getElementById('selectPolicy_' + this.getId() + '_' + this.settingsCmp.node.nodeId);
+        var selObj = document.getElementById('selectPolicy_' + this.getId());
         var result = "";
         if (selObj !== null && selObj.selectedIndex >= 0) {
             result = selObj.options[selObj.selectedIndex].value;

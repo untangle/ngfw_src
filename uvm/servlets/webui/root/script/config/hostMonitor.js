@@ -13,8 +13,13 @@ if (!Ung.hasResource["Ung.HostMonitor"]) {
                 title: this.i18n._('Host Viewer')
             }];
 
-            this.buildPanel();
-            this.items = [this.hostsPanel];
+            this.buildHostsPanel();
+            this.buildGridPenaltyBox();
+            this.buildPenaltyBoxEventLog();
+            this.buildHostTableEventLog();
+
+            var pageTabs = [this.hostsPanel, this.gridHostTableEventLog, this.gridPenaltyBox, this.gridPenaltyBoxEventLog];
+            this.buildTabPanel(pageTabs);
             this.callParent(arguments);
         },
         closeWindow: function() {
@@ -25,7 +30,7 @@ if (!Ung.hasResource["Ung.HostMonitor"]) {
             if (!this.isVisible())
                 return {javaClass:"java.util.LinkedList", list:[]};
 
-            var hosts = rpc.jsonrpc.UvmContext.hostTable().getHosts();
+            var hosts = rpc.hostTable.getHosts();
             // iterate through each host and change its attachments map to properties
             for (var i = 0; i < hosts.list.length ; i++) {
                 var host = hosts.list[i];
@@ -37,7 +42,202 @@ if (!Ung.hasResource["Ung.HostMonitor"]) {
             }
             return hosts;
         },
-        buildPanel: function() {
+        getPenaltyBoxedHosts: function() {
+            var hosts = rpc.hostTable.getPenaltyBoxedHosts();
+            // iterate through each host and change its attachments map to properties
+            for (var i = 0; i < hosts.list.length ; i++) {
+                var host = hosts.list[i];
+                if (host.attachments != null) {
+                    for (var prop in host.attachments.map) {
+                        host[prop] = host.attachments.map[prop];
+                    }
+                }
+            }
+            return hosts;
+        },
+        buildGridPenaltyBox: function() {
+            this.gridPenaltyBox = Ext.create('Ung.EditorGrid',{
+                anchor: '100% -60',
+                name: "gridPenaltyBox",
+                settingsCmp: this,
+                parentId: this.getId(),
+                hasAdd: false,
+                hasEdit: false,
+                hasDelete: false,
+                columnsDefaultSortable: true,
+                title: this.i18n._("Penalty Box Hosts"),
+                qtip: this.i18n._("This shows all hosts currently in the Penalty Box."),
+                paginated: false,
+                bbar: Ext.create('Ext.toolbar.Toolbar',{
+                    items: [
+                        '-',
+                        {
+                            xtype: 'button',
+                            text: i18n._('Refresh'),
+                            name: "Refresh",
+                            tooltip: i18n._('Refresh'),
+                            iconCls: 'icon-refresh',
+                            handler: Ext.bind(function() {
+                                this.gridPenaltyBox.reload();
+                            }, this)
+                        }
+                    ]
+                }),
+                recordJavaClass: "com.untangle.uvm.HostTable.HostTableEntry",
+                dataFn: Ext.bind(this.getPenaltyBoxedHosts, this),
+                //testData: [{address:"aaa",priority:1, entryTime: {time:1},exitTime:{time:4654324}}, {address:"1.2.3.4",priority:2, entryTime: {time:36434},exitTime:{time:56534}}],
+                fields: [{
+                    name: "addr"
+                },{
+                    name: "penaltybox-priority"
+                },{
+                    name: "penaltybox-entry-time"
+                },{
+                    name: "penaltybox-exit-time"
+                },{
+                    name: "id"
+                }],
+                columns: [{
+                    header: this.i18n._("IP Address"),
+                    dataIndex: 'addr',
+                    width: 150
+                },{
+                    header: this.i18n._("Penalty Priority"),
+                    dataIndex: 'penaltybox-priority',
+                    width: 200,
+                    renderer: function(value) {
+                        if (value == null || value == "") return "";
+                        switch(value) {
+                          case 0: return "";
+                          case 1: return i18n._("Very High");
+                          case 2: return i18n._("High");
+                          case 3: return i18n._("Medium");
+                          case 4: return i18n._("Low");
+                          case 5: return i18n._("Limited");
+                          case 6: return i18n._("Limited More");
+                          case 7: return i18n._("Limited Severely");
+                        default: return Ext.String.format(i18n._("Unknown Priority: {0}"), value);
+                        }
+                    }
+                },{
+                    header: this.i18n._("Entry Time"),
+                    dataIndex: 'penaltybox-entry-time',
+                    width: 180,
+                    renderer: function(value) { return i18n.timestampFormat(value); }
+                },{
+                    header: this.i18n._("Planned Exit Time"),
+                    dataIndex: 'penaltybox-exit-time',
+                    width: 180,
+                    renderer: function(value) { return i18n.timestampFormat(value); }
+                }, Ext.create('Ext.grid.column.Action', {
+                    width: 80,
+                    header: this.i18n._("Control"),
+                    dataIndex: null,
+                    handler: Ext.bind(function(view, rowIndex, colIndex) {
+                        var record = view.getStore().getAt(rowIndex);
+                        Ext.MessageBox.wait(this.i18n._("Releasing host..."), this.i18n._("Please wait"));
+                        rpc.hostTable.releaseHostFromPenaltyBox(Ext.bind(function(result,exception) {
+                            Ext.MessageBox.hide();
+                            if(Ung.Util.handleException(exception)) return;
+                            this.gridPenaltyBox.reload();
+                        }, this), record.data.addr );
+                    }, this ),
+                    renderer: Ext.bind(function(value, metadata, record,rowIndex,colIndex,store,view) {
+                        var out= '';
+                        if(record.data.internalId>=0) {
+                            //adding the x-action-col-0 class to force the processing of click event
+                            out= '<div class="x-action-col-0 ung-button button-column" style="text-align:center;">' + this.i18n._("Release") + '</div>';
+                        }
+                        return out;
+                    }, this)
+                })]
+            });
+
+        },
+        buildPenaltyBoxEventLog: function() {
+            this.gridPenaltyBoxEventLog = Ext.create('Ung.GridEventLog',{
+                settingsCmp: this,
+                eventQueriesFn: rpc.hostTable.getPenaltyBoxEventQueries,
+                title: this.i18n._("Penalty Box Event Log"),
+                fields: [{
+                    name: 'time_stamp',
+                    sortType: Ung.SortTypes.asTimestamp
+                }, {
+                    name: 'start_time',
+                    sortType: Ung.SortTypes.asTimestamp
+                }, {
+                    name: 'end_time',
+                    sortType: Ung.SortTypes.asTimestamp
+                }, {
+                    name: 'address'
+                }],
+                columns: [{
+                    header: this.i18n._("Start Time"),
+                    width: Ung.Util.timestampFieldWidth,
+                    sortable: true,
+                    dataIndex: 'start_time',
+                    renderer: function(value) {
+                        return i18n.timestampFormat(value);
+                    }
+                }, {
+                    header: this.i18n._("End Time"),
+                    width: Ung.Util.timestampFieldWidth,
+                    sortable: true,
+                    dataIndex: 'end_time',
+                    renderer: function(value) {
+                        return i18n.timestampFormat(value);
+                    }
+                }, {
+                    header: this.i18n._("Address"),
+                    flex:1,
+                    width: Ung.Util.ipFieldWidth,
+                    sortable: true,
+                    dataIndex: 'address'
+                }]
+            });
+        },
+        buildHostTableEventLog: function() {
+            this.gridHostTableEventLog = Ext.create('Ung.GridEventLog',{
+                settingsCmp: this,
+                eventQueriesFn: rpc.hostTable.getHostTableEventQueries,
+                title: this.i18n._("Host Table Event Log"),
+                fields: [{
+                    name: 'time_stamp',
+                    sortType: Ung.SortTypes.asTimestamp
+                }, {
+                    name: 'address'
+                }, {
+                    name: 'key'
+                }, {
+                    name: 'value'
+                }],
+                columns: [{
+                    header: this.i18n._("Timestamp"),
+                    width: Ung.Util.timestampFieldWidth,
+                    sortable: true,
+                    dataIndex: 'time_stamp',
+                    renderer: function(value) {
+                        return i18n.timestampFormat(value);
+                    }
+                }, {
+                    header: this.i18n._("Address"),
+                    width: Ung.Util.ipFieldWidth,
+                    sortable: true,
+                    dataIndex: 'address'
+                }, {
+                    header: this.i18n._("Key"),
+                    width: 250,
+                    sortable: true,
+                    dataIndex: 'key'
+                }, {
+                    header: this.i18n._("Value"),
+                    width: 300,
+                    sortable: true,
+                    dataIndex: 'value'
+                }]
+            });
+        },
+        buildHostsPanel: function() {
             this.enabledColumns = {};
             this.columns = [];
             this.groupField = null;
@@ -93,7 +293,7 @@ if (!Ung.hasResource["Ung.HostMonitor"]) {
                     this.gridCurrentHosts.forceComponentLayout();
                 }
                 if ( this.gridCurrentHosts !== undefined ) {
-                    this.gridCurrentHosts.setTitle(i18n._("Current Hosts") + groupStr );
+                    this.gridCurrentHosts.setTitle(i18n._("Host Table") + groupStr );
                     this.gridCurrentHosts.reload();
 
                 }
@@ -105,12 +305,13 @@ if (!Ung.hasResource["Ung.HostMonitor"]) {
             this.buildColumnSelectorPanel();
             this.reRenderGrid();
             this.buildGridCurrentHosts(this.columns, this.groupField);
-            this.buildHostsPanel();
-        },
-        buildHostsPanel: function() {
+
             this.hostsPanel = Ext.create('Ext.panel.Panel',{
-                name: 'Host Viewer',
+                name: 'Host Table',
                 helpSource: 'host_monitor',
+                parentId: this.getId(),
+                title: this.i18n._('Host Table'),
+                cls: 'ung-panel',
                 layout: "anchor",
                 defaults: {
                     anchor: '98%',
@@ -145,41 +346,41 @@ if (!Ung.hasResource["Ung.HostMonitor"]) {
                     checked: true,
                     boxLabel: this.i18n._("Hostname"),
                     gridColumnHeader: this.i18n._("Hostname"),
-                    gridColumnDataIndex: "platform-hostname",
+                    gridColumnDataIndex: "hostname",
                     gridColumnWidth: 100
                 },{
                     xtype: 'checkbox',
                     checked: true,
                     boxLabel: this.i18n._("Username"),
                     gridColumnHeader: this.i18n._("Username"),
-                    gridColumnDataIndex: "platform-username",
+                    gridColumnDataIndex: "username",
                     gridColumnWidth: 100
                 },{
                     xtype: 'checkbox',
                     checked: true,
                     boxLabel: this.i18n._("Penalty Boxed"),
                     gridColumnHeader: this.i18n._("Penalty Boxed"),
-                    gridColumnDataIndex: "platform-penaltyboxed",
+                    gridColumnDataIndex: "penaltybox",
                     gridColumnWidth: 100
                 },{
                     xtype: 'checkbox',
                     checked: true,
                     boxLabel: this.i18n._("Penalty Box Entry Time"),
                     gridColumnHeader: this.i18n._("Penalty Box Entry Time"),
-                    gridColumnDataIndex: "platform-penaltybox-entry-time",
+                    gridColumnDataIndex: "penaltybox-entry-time",
                     gridColumnWidth: 100,
                     gridColumnRenderer: function(value) {
-                        return i18n.timestampFormat(value);
+                        return value == null || value == "" ? "" : i18n.timestampFormat(value);
                     }
                 },{
                     xtype: 'checkbox',
                     checked: true,
                     boxLabel: this.i18n._("Penalty Box Exit Time"),
                     gridColumnHeader: this.i18n._("Penalty Box Exit Time"),
-                    gridColumnDataIndex: "platform-penaltybox-exit-time",
+                    gridColumnDataIndex: "penaltybox-exit-time",
                     gridColumnWidth: 100,
                     gridColumnRenderer: function(value) {
-                        return i18n.timestampFormat(value);
+                        return value == null || value == "" ? "" : i18n.timestampFormat(value);
                     }
                 },{
                     xtype: 'checkbox',
@@ -200,7 +401,7 @@ if (!Ung.hasResource["Ung.HostMonitor"]) {
                     checked: true,
                     boxLabel: "Bandwidth Control" + " - " + this.i18n._("Penalty Box Priority"),
                     gridColumnHeader: "Bandwidth Control" + " - " + this.i18n._("Penalty Box Priority"),
-                    gridColumnDataIndex: "bandwidth-penaltybox-priority",
+                    gridColumnDataIndex: "penaltybox-priority",
                     gridColumnWidth: 100,
                     gridColumnRenderer: function(value) {
                         if (value == null || value == "")
@@ -289,21 +490,21 @@ if (!Ung.hasResource["Ung.HostMonitor"]) {
                 },{
                     name: "addr"
                 },{
-                    name: "platform-hostname"
+                    name: "hostname"
                 },{
-                    name: "platform-username"
+                    name: "username"
                 },{
-                    name: "platform-penaltyboxed"
+                    name: "penaltybox"
                 },{
-                    name: "platform-penaltybox-entry-time"
+                    name: "penaltybox-entry-time"
                 },{
-                    name: "platform-penaltybox-exit-time"
+                    name: "penaltybox-exit-time"
                 },{
                     name: "adconnector-username"
                 },{
                     name: "capture-username"
                 },{
-                    name: "bandwidth-penaltybox-priority"
+                    name: "penaltybox-priority"
                 }],
                 columns: columns,
                 initComponent: function() {

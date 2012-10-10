@@ -66,7 +66,7 @@ public class PenaltyBoxEvent extends LogEvent implements Serializable
         switch(action) {
         case ACTION_ENTER:
             sql =
-                "INSERT INTO reports.uvm_penaltybox " +
+                "INSERT INTO reports.penaltybox " +
                 "(start_time, end_time, address, time_stamp) " +
                 "values " +
                 "( ?, ?, ?, ?) ";
@@ -78,7 +78,7 @@ public class PenaltyBoxEvent extends LogEvent implements Serializable
             return pstmt;
         case ACTION_EXIT:
             sql =
-                "UPDATE reports.uvm_penaltybox " + 
+                "UPDATE reports.penaltybox " + 
                 "SET end_time = ? " +
                 "WHERE start_time = ? ";
             pstmt = conn.prepareStatement( sql );
@@ -87,7 +87,7 @@ public class PenaltyBoxEvent extends LogEvent implements Serializable
             return pstmt;
         case ACTION_REENTER:
             sql =
-                "UPDATE reports.uvm_penaltybox " + 
+                "UPDATE reports.penaltybox " + 
                 "SET end_time = ? " + 
                 "WHERE start_time = ? ";
             pstmt = conn.prepareStatement( sql );

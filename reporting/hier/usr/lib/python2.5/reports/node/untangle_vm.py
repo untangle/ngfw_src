@@ -52,6 +52,8 @@ class UvmNode(Node):
 
         self.__build_penaltybox_table()
 
+        self.__build_host_table_updates_table()
+
         ft = FactTable('reports.session_totals',
                        'reports.sessions',
                        'time_stamp',
@@ -100,6 +102,8 @@ CREATE TABLE reports.n_admin_logins (
         sql_helper.drop_fact_table("sessions", cutoff)
         sql_helper.drop_fact_table("session_totals", cutoff)
         sql_helper.drop_fact_table("session_counts", cutoff)
+        sql_helper.drop_fact_table("penaltybox", cutoff)
+        sql_helper.drop_fact_table("host_table_updates", cutoff)
 
     def get_report(self):
         sections = []
@@ -310,22 +314,24 @@ GROUP BY time, uid, hname, client_intf, server_intf
 
     def __build_penaltybox_table( self ):
         sql_helper.create_fact_table("""
-CREATE TABLE reports.uvm_penaltybox (
+CREATE TABLE reports.penaltybox (
         address inet,
         start_time timestamp,
         end_time timestamp,
-        event_id bigserial,
         time_stamp timestamp)""")
 
-        sql_helper.add_column('reports', 'uvm_penaltybox', 'event_id', 'bigserial')
-        sql_helper.add_column('reports', 'uvm_penaltybox', 'time_stamp', 'timestamp')
+        sql_helper.create_index("reports","penaltybox","time_stamp");
+        sql_helper.create_index("reports","penaltybox","start_time");
 
-        # we used to create event_id as serial instead of bigserial - convert if necessary
-        sql_helper.convert_column("reports","uvm_penaltybox","event_id","integer","bigint");
+    def __build_host_table_updates_table( self ):
+        sql_helper.create_fact_table("""
+CREATE TABLE reports.host_table_updates (
+        address inet,
+        key text,
+        value text,
+        time_stamp timestamp)""")
 
-        sql_helper.create_index("reports","uvm_penaltybox","event_id");
-        sql_helper.create_index("reports","uvm_penaltybox","time_stamp");
-        sql_helper.create_index("reports","uvm_penaltybox","start_time");
+        sql_helper.create_index("reports","penaltybox","time_stamp");
 
     def teardown(self):
         pass
@@ -590,7 +596,7 @@ class HostsByPenalty(Graph):
         query = """
 SELECT address, 
        ROUND(COALESCE(EXTRACT('epoch' FROM sum(end_time - start_time)::interval),0)::numeric,1) AS time
-FROM reports.uvm_penaltybox
+FROM reports.penaltybox
 WHERE start_time >= %s AND start_time < %s"""
 
         query += " GROUP BY address ORDER BY time DESC"

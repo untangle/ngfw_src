@@ -7,6 +7,8 @@ import java.util.LinkedList;
 import java.util.Hashtable;
 import java.net.InetAddress;
 
+import com.untangle.uvm.node.EventLogQuery;
+
 public interface HostTable
 {
     public interface PenaltyBoxListener
@@ -29,18 +31,18 @@ public interface HostTable
         
     };
 
-    public final String KEY_HOSTNAME = "platform-hostname"; /* String - stores the hostname associated with this host */
-    public final String KEY_USERNAME = "platform-username"; /* String - stores the username associated with this host (can come from several places) */
-    public final String KEY_USERNAME_SOURCE = "platform-username-source"; /* String - stores the source of the global username above */
-    public final String KEY_PENALTY_BOXED = "platform-penaltyboxed"; /* Boolean  - stores whether or not this host is "penalty boxed" */
-    public final String KEY_PENALTY_BOX_EXIT_TIME = "platform-penaltybox-exit-time"; /* Long  - stores the exit time for the penalty box if this host is penalty boxed */
-    public final String KEY_PENALTY_BOX_ENTRY_TIME = "platform-penaltybox-entry-time"; /* Long  - stores the entry time for the penalty box if this host is penalty boxed */
+    public final String KEY_HOSTNAME = "hostname"; /* String - stores the hostname associated with this host */
+    public final String KEY_USERNAME = "username"; /* String - stores the username associated with this host (can come from several places) */
+    public final String KEY_USERNAME_SOURCE = "username-source"; /* String - stores the source of the global username above */
+    public final String KEY_PENALTY_BOXED = "penaltybox"; /* Boolean  - stores whether or not this host is "penalty boxed" */
+    public final String KEY_PENALTY_BOX_EXIT_TIME = "penaltybox-exit-time"; /* Long  - stores the exit time for the penalty box if this host is penalty boxed */
+    public final String KEY_PENALTY_BOX_ENTRY_TIME = "penaltybox-entry-time"; /* Long  - stores the entry time for the penalty box if this host is penalty boxed */
 
     public final String KEY_ADCONNECTOR_USERNAME = "adconnector-username"; /* String - stores the username associated with this host according to adconnector/adpb */
 
     public final String KEY_CAPTURE_USERNAME = "capture-username"; /* String  - stores the username associated with this host according to capture */
 
-    public final String KEY_PENALTY_BOX_PRIORITY = "bandwidth-penaltybox-priority"; /* Integer  - stores the bandwidth control priority for this penalty boxed host if bandwidth control penalty boxed this host */
+    public final String KEY_PENALTY_BOX_PRIORITY = "penaltybox-priority"; /* Integer  - stores the bandwidth control priority for this penalty boxed host if bandwidth control penalty boxed this host */
 
     public final String[] ALL_ATTACHMENTS = new String[] {
         HostTable.KEY_HOSTNAME,
@@ -68,9 +70,15 @@ public interface HostTable
     
     public boolean hostInPenaltyBox( InetAddress address );
 
+    public LinkedList<HostTable.HostTableEntry> getPenaltyBoxedHosts();
+
     public void registerListener( PenaltyBoxListener listener );
 
     public void unregisterListener( PenaltyBoxListener listener );
+
+    public EventLogQuery[] getPenaltyBoxEventQueries();
+
+    public EventLogQuery[] getHostTableEventQueries();
     
 }
 
