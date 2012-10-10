@@ -1,19 +1,69 @@
 from mod_python import apache
+from mod_python import util
 import pprint
 
 from uvm import Uvm
 
 #-----------------------------------------------------------------------------
+# This is the default function that gets called when a client is redirected
+# to the captive portal because they have not yet authenticated.
 
 def index(req):
+
     # get the original destination and other arguments passed
     # in the URL when the redirect was generated
     args = split_args(req.args);
-    if (not 'METHOD' in args):   args['METHOD'] = "Empty"
+    if (not 'METHOD' in args):  args['METHOD'] = "Empty"
     if (not 'NONCE' in args):   args['NONCE'] = "Empty"
     if (not 'APPID' in args):   args['APPID'] = "Empty"
     if (not 'HOST' in args):    args['HOST'] = "Empty"
-    if (not 'URI' in args):   args['URI'] = "Empty"
+    if (not 'URI' in args):     args['URI'] = "Empty"
+
+    # pass the reqest object and arguments to the page generator
+    page = generate_login_page(req,args)
+
+    # return the login page we just created
+    return(page)
+
+#-----------------------------------------------------------------------------
+# This function is called by both authpage.html and infopage.html when
+# the submit button is clicked.  It is called as a POST method with the
+# arguments corresponding to the form fields submitted by the page.
+
+def login(req,username,password,method,nonce,appid,host,uri):
+
+    # get the network address of the client
+    address = req.get_remote_host(apache.REMOTE_NOLOOKUP,None)
+
+    # call the node to authenticate the user
+    uvmContext = Uvm().getUvmContext()
+    captureNode = uvmContext.nodeManager().node(long(appid))
+    result = captureNode.userAuthenticate(address, username, password)
+
+    # on successful login redirect to the page originally requested
+    if (result == True):
+        util.redirect(req, "http://" + host + uri)
+        return
+
+    # authentication failed so re-create the list of args that
+    # we can pass to the login page generator
+    args = {}
+    args['METHOD'] = method
+    args['NONCE'] = nonce
+    args['APPID'] = appid
+    args['HOST'] = host
+    args['URI'] = uri
+
+    # pass the request object and post arguments to the page generator
+    page = generate_login_page(req,args)
+
+    # return the login page we just created
+    return(page)
+
+#-----------------------------------------------------------------------------
+# This function generates the actual
+
+def generate_login_page(req,args):
 
     # read the node and branding settings from the uvm
     uvmContext = Uvm().getUvmContext()
@@ -83,30 +133,10 @@ def index(req):
     return(page)
 
 #-----------------------------------------------------------------------------
-
-def login(req,username,password,method,nonce,appid,host,uri):
-    address = req.get_remote_host(apache.REMOTE_NOLOOKUP,None)
-
-    uvmContext = Uvm().getUvmContext()
-    captureNode = uvmContext.nodeManager().node(long(appid))
-    result = captureNode.userAuthenticate(address, username, password)
-
-    page = "<HTML><HEAD><TITLE>Testing</TITLE></HEAD><BODY>\r\n"
-    page += "USERNAME: " + username + "<BR>\r\n"
-    page += "PASSWORD: " + password + "<BR>\r\n"
-    page += "ADDRESS: " + address + "<BR>\r\n"
-    page += "METHOD: " + method + "<BR>\r\n"
-    page += "NONCE: " + nonce + "<BR>\r\n"
-    page += "APPID: " + appid + "<BR>\r\n"
-    page += "HOST: " + host + "<BR>\r\n"
-    page += "URI: " + uri + "<BR>\r\n"
-    page += "RESULT: " + str(result) + "<BR>\r\n"
-    page += "</BODY></HTML>\r\n"
-    return(page)
-
-#-----------------------------------------------------------------------------
+# Pulls page arguments out of a URI and stores them in a list.
 
 def split_args(args):
+
     canon_args = {}                     # Start an empty list
     if args == None:                    # Return the empty list if no args
         return canon_args
