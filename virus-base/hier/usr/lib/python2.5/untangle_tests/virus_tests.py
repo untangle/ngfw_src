@@ -97,9 +97,14 @@ class VirusTests(unittest.TestCase):
     def test_102_eventlog_smtpVirus(self):
         startTime = datetime.now()
         fname = sys._getframe().f_code.co_name
-        result = clientControl.runCommand("mime-construct --to junk@test.untangle.com --subject '%s' --string 'body' --file-attach /tmp/eicar" % (fname))
+        # download the email script
+        result = clientControl.runCommand("wget -O /tmp/email_script.py http://metaloft.com/test/email_script.py 1>/dev/null 2>&1")
         assert (result == 0)
-        time.sleep(20) # this is needed because mime-construct doesnt block (it just hands it off to exim)
+        result = clientControl.runCommand("chmod 775 /tmp/email_script.py")
+        assert (result == 0)
+        # email the file
+        result = clientControl.runCommand("/tmp/email_script.py --server=74.123.29.140 --from=junk@test.untangle.com --to=junk@test.untangle.com --subject='%s' --body='body' --file=/tmp/eicar" % (fname))
+        assert (result == 0)
         flushEvents()
         query = None;
         for q in node.getMailEventQueries():
@@ -121,9 +126,14 @@ class VirusTests(unittest.TestCase):
         fname = sys._getframe().f_code.co_name
         result = clientControl.runCommand("echo '%s' > /tmp/attachment-%s" % (fname, fname))
         assert (result == 0)
-        result = clientControl.runCommand("mime-construct --to junk@test.untangle.com --subject '%s' --string 'body' --file-attach /tmp/attachment-%s" % (fname, fname))
+        # download the email script
+        result = clientControl.runCommand("wget -O /tmp/email_script.py http://metaloft.com/test/email_script.py 1>/dev/null 2>&1")
         assert (result == 0)
-        time.sleep(20) # this is needed because mime-construct doesnt block (it just hands it off to exim)
+        result = clientControl.runCommand("chmod 775 /tmp/email_script.py")
+        assert (result == 0)
+        # email the file
+        result = clientControl.runCommand("/tmp/email_script.py --server=74.123.29.140 --from=junk@test.untangle.com --to=junk@test.untangle.com --subject='%s' --body='body' --file=/tmp/attachment-%s" % (fname, fname))
+        assert (result == 0)
         flushEvents()
         query = None;
         for q in node.getMailEventQueries():
