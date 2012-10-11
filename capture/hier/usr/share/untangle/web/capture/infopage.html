@@ -33,14 +33,14 @@
 </td></tr>
 </table>
 
-<form method="post" action="/capture/handler.py/login">
-	<p><input name="agree" type="$.AgreeBox.$" /><span class="styleNormal">$.AgreeText.$</span></p>
+<form method="post" action="/capture/handler.py/infopost">
 	<input name="login" type="submit" value="Continue" class="styleNormal" style="width: 150px; height: 40px"></input>
 	<input name="method" type="hidden" value="$.method.$" />
 	<input name="nonce" type="hidden" value="$.nonce.$" />
 	<input name="appid" type="hidden" value="$.appid.$" />
 	<input name="host" type="hidden" value="$.host.$" />
 	<input name="uri" type="hidden" value="$.uri.$" />
+	<p><input name="agree" type="$.AgreeBox.$" value="agree" /><span class="styleNormal">$.AgreeText.$</span></p>
 </form>
 <p class="styleNormal">$.FooterText.$</p>
 <!--DEBUG-->

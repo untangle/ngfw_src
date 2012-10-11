@@ -26,11 +26,11 @@ def index(req):
     return(page)
 
 #-----------------------------------------------------------------------------
-# This function is called by both authpage.html and infopage.html when
-# the submit button is clicked.  It is called as a POST method with the
-# arguments corresponding to the form fields submitted by the page.
+# Called as a POST method by authpage.html when the Login button is clicked.
+# Arguments include username and password along with several hidden fields
+# that store the details of the page originally requested.
 
-def login(req,username,password,method,nonce,appid,host,uri):
+def authpost(req,username,password,method,nonce,appid,host,uri):
 
     # get the network address of the client
     address = req.get_remote_host(apache.REMOTE_NOLOOKUP,None)
@@ -39,6 +39,46 @@ def login(req,username,password,method,nonce,appid,host,uri):
     uvmContext = Uvm().getUvmContext()
     captureNode = uvmContext.nodeManager().node(long(appid))
     result = captureNode.userAuthenticate(address, username, password)
+
+    # on successful login redirect to the page originally requested
+    if (result == True):
+        util.redirect(req, "http://" + host + uri)
+        return
+
+    # authentication failed so re-create the list of args that
+    # we can pass to the login page generator
+    args = {}
+    args['METHOD'] = method
+    args['NONCE'] = nonce
+    args['APPID'] = appid
+    args['HOST'] = host
+    args['URI'] = uri
+
+    # pass the request object and post arguments to the page generator
+    page = generate_login_page(req,args)
+
+    # return the login page we just created
+    return(page)
+
+#-----------------------------------------------------------------------------
+# Called as a POST method by infopage.html when the Continue button is clicked.
+# Static arguments are the hidden fields that store the details of the page
+# originally requested.  The agree field is special.  When no agree box is
+# included on the page, it is configured as a hidden field with the value
+# set to 'agree'.  When the agree box is enabled, it is configured as a checkbox
+# which will return 'agree' if checked.  If unchecked, it will not be included
+# in the POST data.  To handle this scenario, we use a function parameter
+# default of 'empty' which will cause node.userActivate to return false.
+
+def infopost(req,method,nonce,appid,host,uri,agree='empty'):
+
+    # get the network address of the client
+    address = req.get_remote_host(apache.REMOTE_NOLOOKUP,None)
+
+    # call the node to authenticate the user
+    uvmContext = Uvm().getUvmContext()
+    captureNode = uvmContext.nodeManager().node(long(appid))
+    result = captureNode.userActivate(address,agree)
 
     # on successful login redirect to the page originally requested
     if (result == True):

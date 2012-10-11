@@ -256,7 +256,6 @@ public class CaptureNodeImpl extends NodeBase implements CaptureNode
 
     protected Token[] generateResponse(CaptureBlockDetails block, NodeTCPSession session)
     {
-//        logger.debug("generateResponse");
         return replacementGenerator.generateResponse(block, session, false);
     }
 
@@ -321,11 +320,33 @@ public class CaptureNodeImpl extends NodeBase implements CaptureNode
 
         CaptureLoginEvent event = new CaptureLoginEvent( address, username, captureSettings.getAuthenticationType(), CaptureLoginEvent.EventType.LOGIN );
         logEvent(event);
-        
-        captureUserTable.insertActiveUser(address,username,password);
 
+        captureUserTable.insertActiveUser(address,username,password);
         // TODO blinger
-        logger.info("Login success " + username + " " + address);
+        logger.info("Authenticate success " + username + " " + address);
+        return(true);
+    }
+
+    public boolean userActivate(String address, String agree)
+    {
+        logger.debug("ADDRESS:" + address + " AGREE:" + agree);
+        
+            if (agree.equals("agree") == false)
+            {
+                CaptureLoginEvent event = new CaptureLoginEvent( address, address, captureSettings.getAuthenticationType(), CaptureLoginEvent.EventType.FAILED );
+                logEvent(event);
+
+                // TODO blinger
+                logger.info("Activate failure " + address);
+                return false;
+            }
+
+        CaptureLoginEvent event = new CaptureLoginEvent( address, address, captureSettings.getAuthenticationType(), CaptureLoginEvent.EventType.LOGIN );
+        logEvent(event);
+
+        captureUserTable.insertActiveUser(address,address,address);
+        // TODO blinger
+        logger.info("Activate success " + address);
         return(true);
     }
 
