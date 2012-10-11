@@ -38,11 +38,17 @@ def authpost(req,username,password,method,nonce,appid,host,uri):
     # call the node to authenticate the user
     uvmContext = Uvm().getUvmContext()
     captureNode = uvmContext.nodeManager().node(long(appid))
+    captureSettings = captureNode.getSettings()
     result = captureNode.userAuthenticate(address, username, password)
 
-    # on successful login redirect to the page originally requested
+    # on successful login redirect to the redirectUrl if not empty
+    # otherwise send them to the page originally requested
     if (result == True):
-        util.redirect(req, "http://" + host + uri)
+        if (len(captureSettings['redirectUrl']) != 0):
+            target = str(captureSettings['redirectUrl'])
+        else:
+            target = str("http://" + host + uri)
+        util.redirect(req, target)
         return
 
     # authentication failed so re-create the list of args that
@@ -78,11 +84,17 @@ def infopost(req,method,nonce,appid,host,uri,agree='empty'):
     # call the node to authenticate the user
     uvmContext = Uvm().getUvmContext()
     captureNode = uvmContext.nodeManager().node(long(appid))
+    captureSettings = captureNode.getSettings()
     result = captureNode.userActivate(address,agree)
 
-    # on successful login redirect to the page originally requested
+    # on successful login redirect to the redirectUrl if not empty
+    # otherwise send them to the page originally requested
     if (result == True):
-        util.redirect(req, "http://" + host + uri)
+        if (len(captureSettings['redirectUrl']) != 0):
+            target = str(captureSettings['redirectUrl'])
+        else:
+            target = str("http://" + host + uri)
+        util.redirect(req, target)
         return
 
     # authentication failed so re-create the list of args that
