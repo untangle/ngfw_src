@@ -20,7 +20,7 @@ def index(req):
     if (not 'URI' in args):     args['URI'] = "Empty"
 
     # pass the reqest object and arguments to the page generator
-    page = generate_login_page(req,args)
+    page = generate_page(req,args)
 
     # return the login page we just created
     return(page)
@@ -55,7 +55,7 @@ def authpost(req,username,password,method,nonce,appid,host,uri):
     args['URI'] = uri
 
     # pass the request object and post arguments to the page generator
-    page = generate_login_page(req,args)
+    page = generate_page(req,args,"Invalid username or password. Please try again.")
 
     # return the login page we just created
     return(page)
@@ -95,7 +95,7 @@ def infopost(req,method,nonce,appid,host,uri,agree='empty'):
     args['URI'] = uri
 
     # pass the request object and post arguments to the page generator
-    page = generate_login_page(req,args)
+    page = generate_page(req,args,"You must enable the checkbox above to continue.")
 
     # return the login page we just created
     return(page)
@@ -103,7 +103,7 @@ def infopost(req,method,nonce,appid,host,uri,agree='empty'):
 #-----------------------------------------------------------------------------
 # This function generates the actual
 
-def generate_login_page(req,args):
+def generate_page(req,args,extra=''):
 
     # read the node and branding settings from the uvm
     uvmContext = Uvm().getUvmContext()
@@ -159,6 +159,9 @@ def generate_login_page(req,args):
     page = page.replace('$.appid.$', args['APPID'])
     page = page.replace('$.host.$', args['HOST'])
     page = page.replace('$.uri.$', args['URI'])
+
+    # replace the text in the problem section with the agumented value
+    page = page.replace('$.ProblemText.$',extra)
 
     debug = "<BR><HR><BR>";
     debug += "<BR>===== ARGUMENTS =====<BR>\r\n"

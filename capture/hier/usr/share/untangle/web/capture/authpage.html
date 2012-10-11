@@ -13,6 +13,10 @@
 .styleNormal {
 	font-family: Arial, Helvetica, sans-serif;
 }
+.styleProblem {
+	font-family: Arial, Helvetica, sans-serif;
+	color: rgb(255,0,0);
+}
 </style>
 </head>
 <body style="background-color: #F4F4F4" onload="FocusOnInput()">
@@ -46,7 +50,10 @@
 	<input name="host" type="hidden" value="$.host.$" />
 	<input name="uri" type="hidden" value="$.uri.$" />
 </form>
-<p class="styleNormal">$.FooterText.$</p>
+<table border=0>
+<tr><td class="styleProblem">$.ProblemText.$</td></tr>
+<tr><td class="styleNormal">$.FooterText.$</td></tr>
+</table>
 <!--DEBUG-->
 </body>
 </html>
