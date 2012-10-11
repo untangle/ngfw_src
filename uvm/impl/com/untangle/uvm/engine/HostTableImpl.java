@@ -26,9 +26,15 @@ import com.untangle.uvm.node.HostTableEvent;
  *
  * Different applications can add known information about various hosts by attaching objects with keys
  * Other applications can check what is known about various hosts by looking up objected stored for the various keys
+ *
+ * Other Documentation in HostTable.java
  */
 public class HostTableImpl implements HostTable
 {
+    private static final int CLEANER_SLEEP_TIME_MILLI = 60 * 1000; /* 60 seconds */
+    private static final int CLEANER_LAST_ACCESS_MAX_TIME = 5 * 60 * 1000; /* 5 minutes */
+    
+
     private final Logger logger = Logger.getLogger(getClass());
 
     private Hashtable<InetAddress, HostTableEntry> hostTable;
@@ -37,6 +43,9 @@ public class HostTableImpl implements HostTable
 
     private EventLogQuery penaltyBoxEventQuery;
     private EventLogQuery hostTableEventQuery;
+
+    private volatile Thread cleanerThread;
+    private HostTableCleaner cleaner = new HostTableCleaner();
     
     protected HostTableImpl()
     {
@@ -44,6 +53,8 @@ public class HostTableImpl implements HostTable
 
         this.penaltyBoxEventQuery = new EventLogQuery(I18nUtil.marktr("PenaltyBox Events"), "SELECT * FROM reports.penaltybox ORDER BY time_stamp DESC");
         this.hostTableEventQuery = new EventLogQuery(I18nUtil.marktr("Host Table Events"), "SELECT * FROM reports.host_table_updates ORDER BY time_stamp DESC");
+
+        UvmContextFactory.context().newThread(this.cleaner).start();
     }
     
     public void setAttachment( InetAddress addr, String key, Object ob )
@@ -57,6 +68,8 @@ public class HostTableImpl implements HostTable
 
         HostTableEntry entry = getHostTableEntry( addr, true );
 
+        entry.lastAccessTime = System.currentTimeMillis();
+        
         if (ob != null)
             entry.attachments.put( key, ob );
         else
@@ -108,8 +121,10 @@ public class HostTableImpl implements HostTable
         HostTableEntry entry = getHostTableEntry( addr, false );
         if (entry == null)
             return null;
-        else
+        else {
+            entry.lastAccessTime = System.currentTimeMillis();
             return entry.attachments.get( key );
+        }
     }
 
     public String[] getPossibleAttachments()
@@ -266,9 +281,8 @@ public class HostTableImpl implements HostTable
          * As such, release the host from the penalty box immediately and return false
          */
         Long exitTime = (Long) getAttachment( address, HostTable.KEY_PENALTY_BOX_EXIT_TIME );
-        Date exitDate = new Date(exitTime);
-        Date now = new Date();
-        if (now.after(exitDate)) {
+        Long now = System.currentTimeMillis();
+        if (exitTime == null || now > exitTime) {
             releaseHostFromPenaltyBox( address );
             return false;
         }
@@ -333,5 +347,37 @@ public class HostTableImpl implements HostTable
         return entry;
     }
 
-    
+    private class HostTableCleaner implements Runnable
+    {
+        public void run()
+        {
+            cleanerThread = Thread.currentThread();
+
+            while (cleanerThread != null) {
+                try {Thread.sleep(CLEANER_SLEEP_TIME_MILLI);} catch (Exception e) {}
+                logger.debug("HostTableCleaner: Running... ");
+
+                try {
+                    Long now = System.currentTimeMillis();
+                    /**
+                     * Remove old entries
+                     */
+                    LinkedList<InetAddress> keys = new LinkedList<InetAddress>(hostTable.keySet());
+                    for (InetAddress addr : keys) {
+                        HostTableEntry entry = getHostTableEntry( addr, false );
+
+                        if (entry == null)
+                            continue;
+
+                        if ( now > (entry.lastAccessTime + CLEANER_LAST_ACCESS_MAX_TIME) ) {
+                            logger.debug("HostTableCleaner: Removing " + addr.getHostAddress());
+                            hostTable.remove(addr);
+                        }
+                    }
+                } catch (Exception e) {
+                    logger.warn("Exception while cleaning host table",e);
+                }
+            }
+        }
+    }
 }
