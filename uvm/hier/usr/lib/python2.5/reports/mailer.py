@@ -186,7 +186,7 @@ def __get_url(date):
     elif publicUrlMethod == "address_and_port":
         publicUrlAddress = get_uvm_settings_item('system','publicUrlAddress')
         publicUrlPort = get_uvm_settings_item('system','publicUrlPort')
-        url = publicUrlAddress + ":" + publicUrlPort
+        url = str(publicUrlAddress) + ":" + str(publicUrlPort)
         
     return 'https://%s/reports?time=%s' % ( url, date.strftime(locale.nl_langinfo(locale.D_FMT)), )
 
