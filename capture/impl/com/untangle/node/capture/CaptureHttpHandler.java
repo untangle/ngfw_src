@@ -54,7 +54,7 @@ class CaptureHttpHandler extends HttpStateMachine
         NodeTCPSession sess = getSession();
         String address = getSession().getClientAddr().getHostAddress().toString();
 
-        CaptureUserEntry user = node.captureUserTable.searchForUser(address);
+        CaptureUserEntry user = node.captureUserTable.searchByAddress(address);
 
             if (user != null)
             {

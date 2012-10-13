@@ -259,9 +259,24 @@ public class CaptureNodeImpl extends NodeBase implements CaptureNode
         return replacementGenerator.generateResponse(block, session, false);
     }
 
-    public boolean userAuthenticate(String address, String username, String password)
+    public int userAuthenticate(String address, String username, String password)
     {
         boolean isAuthenticated = false;
+
+        if (captureSettings.getConcurrentLoginsEnabled() == false)
+        {
+            CaptureUserEntry entry = captureUserTable.searchByUsername(username);
+
+            if (entry != null)
+            {
+                CaptureLoginEvent event = new CaptureLoginEvent( address, username, captureSettings.getAuthenticationType(), CaptureLoginEvent.EventType.CONCURRENT );
+                logEvent(event);
+
+                // TODO blinger
+                logger.info("Login collision " + username + " " + address);
+                return(2);
+            }
+        }
 
         switch( captureSettings.getAuthenticationType() )
         {
@@ -315,7 +330,7 @@ public class CaptureNodeImpl extends NodeBase implements CaptureNode
 
             // TODO blinger
             logger.info("Login failure " + username + " " + address);
-            return false;
+            return(1);
         }
 
         CaptureLoginEvent event = new CaptureLoginEvent( address, username, captureSettings.getAuthenticationType(), CaptureLoginEvent.EventType.LOGIN );
@@ -324,13 +339,13 @@ public class CaptureNodeImpl extends NodeBase implements CaptureNode
         captureUserTable.insertActiveUser(address,username,password);
         // TODO blinger
         logger.info("Authenticate success " + username + " " + address);
-        return(true);
+        return(0);
     }
 
-    public boolean userActivate(String address, String agree)
+    public int userActivate(String address, String agree)
     {
         logger.debug("ADDRESS:" + address + " AGREE:" + agree);
-        
+
             if (agree.equals("agree") == false)
             {
                 CaptureLoginEvent event = new CaptureLoginEvent( address, address, captureSettings.getAuthenticationType(), CaptureLoginEvent.EventType.FAILED );
@@ -338,7 +353,7 @@ public class CaptureNodeImpl extends NodeBase implements CaptureNode
 
                 // TODO blinger
                 logger.info("Activate failure " + address);
-                return false;
+                return(1);
             }
 
         CaptureLoginEvent event = new CaptureLoginEvent( address, address, captureSettings.getAuthenticationType(), CaptureLoginEvent.EventType.LOGIN );
@@ -347,17 +362,17 @@ public class CaptureNodeImpl extends NodeBase implements CaptureNode
         captureUserTable.insertActiveUser(address,address,address);
         // TODO blinger
         logger.info("Activate success " + address);
-        return(true);
+        return(0);
     }
 
-    public boolean userLogout(String address)
+    public int userLogout(String address)
     {
-        CaptureUserEntry user = captureUserTable.searchForUser(address);
+        CaptureUserEntry user = captureUserTable.searchByAddress(address);
 
         if (user == null)
         {
             logger.info("User not found in table: " + address);
-            return(false);
+            return(1);
         }
 
         logger.info("User logout success: " + address);
@@ -366,6 +381,6 @@ public class CaptureNodeImpl extends NodeBase implements CaptureNode
         CaptureLoginEvent event = new CaptureLoginEvent( address, "", captureSettings.getAuthenticationType(), CaptureLoginEvent.EventType.LOGOUT );
         logEvent(event);
 
-        return true;
+        return(0);
     }
 }

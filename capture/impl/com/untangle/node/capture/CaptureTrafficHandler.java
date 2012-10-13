@@ -41,7 +41,7 @@ public class CaptureTrafficHandler extends AbstractEventHandler
     {
         NodeTCPSession session = event.session();
         String address = session.getClientAddr().getHostAddress();
-        CaptureUserEntry user = node.captureUserTable.searchForUser(address);
+        CaptureUserEntry user = node.captureUserTable.searchByAddress(address);
 
         // if we have an authenticated user allow traffic and release session
         if (user != null)
@@ -81,7 +81,7 @@ public class CaptureTrafficHandler extends AbstractEventHandler
     {
         NodeUDPSession session = event.session();
         String address = session.getClientAddr().getHostAddress();
-        CaptureUserEntry user = node.captureUserTable.searchForUser(address);
+        CaptureUserEntry user = node.captureUserTable.searchByAddress(address);
 
         // if we have an authenticated user allow traffic and release session
         if (user != null)

@@ -11,7 +11,7 @@ public class CaptureUserEntry
     private String userPassword;
     private long sessionCreation;
     private long sessionActivity;
-    
+
     public CaptureUserEntry(String userAddress,String userName,String userPassword)
     {
         this.userAddress = userAddress;
@@ -19,27 +19,27 @@ public class CaptureUserEntry
         this.userPassword = userPassword;
         sessionCreation = sessionActivity = System.currentTimeMillis();
     }
-    
+
     public void updateActivityTimer()
     {
         sessionActivity = System.currentTimeMillis();
     }
-    
+
     public long grabCreationTime()
     {
         return(sessionCreation);
     }
-    
+
     public long grabActivityTime()
     {
         return(sessionActivity);
     }
-    
+
     public String getUserAddress()
     {
         return(userAddress);
     }
-    
+
     public String getUserName()
     {
         return(userName);

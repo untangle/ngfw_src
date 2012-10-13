@@ -38,10 +38,10 @@ public class CaptureUserTable
             idleTrigger = ((item.grabActivityTime() / 1000) + idleTimeout);
             userTrigger = ((item.grabCreationTime() / 1000) + userTimeout);
             flag = 0;
-            
+
             logger.debug("CURR:" + currentTime + " IDLE:" + idleTrigger + " USER:" + userTrigger);
 
-                // look for users with no traffic within the configured non-zero idle timeout 
+                // look for users with no traffic within the configured non-zero idle timeout
                 if ( (idleTimeout > 0) && (currentTime > idleTrigger) )
                 {
                     logger.info("Idle timeout removing user " + item.getUserAddress() + " " + item.getUserName());
@@ -88,8 +88,21 @@ public class CaptureUserTable
         return(true);
     }
 
-    public CaptureUserEntry searchForUser(String search)
+    public CaptureUserEntry searchByAddress(String address)
     {
-        return(userTable.get(search));
+        return(userTable.get(address));
+    }
+
+    public CaptureUserEntry searchByUsername(String username)
+    {
+        Enumeration ee = userTable.elements();
+
+        while (ee.hasMoreElements())
+        {
+            CaptureUserEntry item = (CaptureUserEntry)ee.nextElement();
+            if (username.equals(item.getUserName()) == true) return(item);
+        }
+
+        return(null);
     }
 }

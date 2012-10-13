@@ -19,7 +19,7 @@ public interface CaptureNode extends Node
 
     CaptureStatistics getStatistics();
 
-    boolean userAuthenticate(String address, String username, String password);
-    boolean userActivate(String address, String agree);
-    boolean userLogout(String address);
+    int userAuthenticate(String address, String username, String password);
+    int userActivate(String address, String agree);
+    int userLogout(String address);
 }

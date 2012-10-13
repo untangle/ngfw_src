@@ -10,7 +10,7 @@ import com.untangle.uvm.logging.LogEvent;
 @SuppressWarnings("serial")
 public class CaptureLoginEvent extends LogEvent
 {
-    public enum EventType { LOGIN, UPDATE, FAILED, LOGOUT };
+    public enum EventType { LOGIN, UPDATE, FAILED, CONCURRENT, LOGOUT };
 
     private String clientAddr;
     private String loginName;
