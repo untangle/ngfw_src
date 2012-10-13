@@ -39,15 +39,16 @@ def authpost(req,username,password,method,nonce,appid,host,uri):
     uvmContext = Uvm().getUvmContext()
     captureNode = uvmContext.nodeManager().node(long(appid))
     captureSettings = captureNode.getSettings()
-    result = captureNode.userAuthenticate(address, username, password)
+    authResult = captureNode.userAuthenticate(address, username, password)
 
     # on successful login redirect to the redirectUrl if not empty
     # otherwise send them to the page originally requested
-    if (result == True):
+    if (authResult == 0):
         if (len(captureSettings['redirectUrl']) != 0):
             target = str(captureSettings['redirectUrl'])
         else:
             target = str("http://" + host + uri)
+
         util.redirect(req, target)
         return
 
@@ -61,7 +62,12 @@ def authpost(req,username,password,method,nonce,appid,host,uri):
     args['URI'] = uri
 
     # pass the request object and post arguments to the page generator
-    page = generate_page(req,args,"Invalid username or password. Please try again.")
+    if (authResult == 1):
+        page = generate_page(req,args,"Invalid username or password. Please try again.")
+    elif (authResult == 2):
+        page = generate_page(req,args,"You are already logged in from another location.")
+    else:
+        page = generate_page(req,args,"The server returned an unexpected error.")
 
     # return the login page we just created
     return(page)
@@ -85,11 +91,11 @@ def infopost(req,method,nonce,appid,host,uri,agree='empty'):
     uvmContext = Uvm().getUvmContext()
     captureNode = uvmContext.nodeManager().node(long(appid))
     captureSettings = captureNode.getSettings()
-    result = captureNode.userActivate(address,agree)
+    authResult = captureNode.userActivate(address,agree)
 
     # on successful login redirect to the redirectUrl if not empty
     # otherwise send them to the page originally requested
-    if (result == True):
+    if (authResult == 0):
         if (len(captureSettings['redirectUrl']) != 0):
             target = str(captureSettings['redirectUrl'])
         else:
@@ -107,7 +113,10 @@ def infopost(req,method,nonce,appid,host,uri,agree='empty'):
     args['URI'] = uri
 
     # pass the request object and post arguments to the page generator
-    page = generate_page(req,args,"You must enable the checkbox above to continue.")
+    if (authResult == 1):
+        page = generate_page(req,args,"You must enable the checkbox above to continue.")
+    else:
+        page = generate_page(req,args,"The server returned an unexpected error.")
 
     # return the login page we just created
     return(page)
