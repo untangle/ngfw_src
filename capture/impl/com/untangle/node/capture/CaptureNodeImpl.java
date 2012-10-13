@@ -4,10 +4,7 @@
 
 package com.untangle.node.capture;
 
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Hashtable;
-import java.util.HashSet;
+import java.util.ArrayList;
 import java.util.Timer;
 
 import org.apache.log4j.Level;
@@ -49,7 +46,6 @@ public class CaptureNodeImpl extends NodeBase implements CaptureNode
     private final String settingsFile = (System.getProperty("uvm.settings.dir") + "/untangle-node-capture/settings_" + getNodeSettings().getId().toString());
     private final CaptureReplacementGenerator replacementGenerator;
 
-    protected CaptureStatistics captureStatistics;
     protected CaptureSettings captureSettings;
     protected CaptureUserTable captureUserTable;
     protected Timer timer;
@@ -64,7 +60,6 @@ public class CaptureNodeImpl extends NodeBase implements CaptureNode
         super( nodeSettings, nodeProperties );
 
         replacementGenerator = new CaptureReplacementGenerator(getNodeSettings());
-        captureStatistics = new CaptureStatistics();
         captureUserTable = new CaptureUserTable();
 
         this.allEventQuery = new EventLogQuery(I18nUtil.marktr("All Sessions"),
@@ -98,12 +93,6 @@ public class CaptureNodeImpl extends NodeBase implements CaptureNode
     }
 
     @Override
-    public CaptureStatistics getStatistics()
-    {
-        return(captureStatistics);
-    }
-
-    @Override
     public CaptureSettings getSettings()
     {
         return(this.captureSettings);
@@ -117,6 +106,12 @@ public class CaptureNodeImpl extends NodeBase implements CaptureNode
 
         // now we call the shared apply function
         applyNodeSettings(newSettings);
+    }
+
+    @Override
+    public ArrayList<CaptureUserEntry> getCaptiveStatus()
+    {
+        return(captureUserTable.buildUserList());
     }
 
     @Override
@@ -273,7 +268,7 @@ public class CaptureNodeImpl extends NodeBase implements CaptureNode
                 logEvent(event);
 
                 // TODO blinger
-                logger.info("Login collision " + username + " " + address);
+                logger.info("Authenticate collision " + username + " " + address);
                 return(2);
             }
         }
@@ -329,14 +324,14 @@ public class CaptureNodeImpl extends NodeBase implements CaptureNode
             logEvent(event);
 
             // TODO blinger
-            logger.info("Login failure " + username + " " + address);
+            logger.info("Authenticate failure " + username + " " + address);
             return(1);
         }
 
         CaptureLoginEvent event = new CaptureLoginEvent( address, username, captureSettings.getAuthenticationType(), CaptureLoginEvent.EventType.LOGIN );
         logEvent(event);
 
-        captureUserTable.insertActiveUser(address,username,password);
+        captureUserTable.insertActiveUser(address,username);
         // TODO blinger
         logger.info("Authenticate success " + username + " " + address);
         return(0);
@@ -359,7 +354,7 @@ public class CaptureNodeImpl extends NodeBase implements CaptureNode
         CaptureLoginEvent event = new CaptureLoginEvent( address, address, captureSettings.getAuthenticationType(), CaptureLoginEvent.EventType.LOGIN );
         logEvent(event);
 
-        captureUserTable.insertActiveUser(address,address,address);
+        captureUserTable.insertActiveUser(address,address);
         // TODO blinger
         logger.info("Activate success " + address);
         return(0);

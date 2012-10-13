@@ -102,9 +102,9 @@ if (!Ung.hasResource["Ung.Capture"]) {
                 recordJavaClass: "com.untangle.node.capture.HostDatabaseEntry",
                 dataFn: this.getRpcNode().getCaptiveStatus,
                 fields: [{
-                    name: "ipv4Address"
+                    name: "userAddress"
                 },{
-                    name: "username"
+                    name: "userName"
                 },{
                     name: "lastSession"
                 },{
@@ -118,11 +118,11 @@ if (!Ung.hasResource["Ung.Capture"]) {
                 }],
                 columns: [{
                     header: this.i18n._("IP Address"),
-                    dataIndex:'ipv4Address',
+                    dataIndex:'userAddress',
                     width: 150
                 },{
                     header: this.i18n._("User Name"),
-                    dataIndex:'username',
+                    dataIndex:'userName',
                     width: 200
                 },{
                     header: this.i18n._("Last Session"),

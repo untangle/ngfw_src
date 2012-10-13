@@ -2,9 +2,8 @@
  * $Id: CaptureUserTable.java,v 1.00 2011/12/14 01:02:03 mahotz Exp $
  */
 
-package com.untangle.node.capture; // IMPL
+package com.untangle.node.capture; // API
 
-import java.awt.List;
 import java.util.Enumeration;
 import java.util.ArrayList;
 import java.util.Hashtable;
@@ -73,9 +72,9 @@ public class CaptureUserTable
         return(wipecount);
     }
 
-    public CaptureUserEntry insertActiveUser(String address,String username,String password)
+    public CaptureUserEntry insertActiveUser(String address,String username)
     {
-        CaptureUserEntry local = new CaptureUserEntry(address,username,password);
+        CaptureUserEntry local = new CaptureUserEntry(address,username);
         userTable.put(address,local);
         return(local);
     }
@@ -104,5 +103,11 @@ public class CaptureUserTable
         }
 
         return(null);
+    }
+    
+    public ArrayList<CaptureUserEntry> buildUserList()
+    {
+        ArrayList<CaptureUserEntry> userList = new ArrayList<CaptureUserEntry>(userTable.values());
+        return(userList);
     }
 }

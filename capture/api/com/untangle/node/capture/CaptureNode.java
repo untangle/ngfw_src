@@ -4,8 +4,7 @@
 
 package com.untangle.node.capture; // API
 
-import java.util.LinkedList;
-import java.util.List;
+import java.util.ArrayList;
 import com.untangle.uvm.node.Node;
 import com.untangle.uvm.node.EventLogQuery;
 
@@ -13,11 +12,11 @@ public interface CaptureNode extends Node
 {
     CaptureSettings getSettings();
     void setSettings(CaptureSettings settings);
+    
+    ArrayList<CaptureUserEntry> getCaptiveStatus();
 
     EventLogQuery[] getEventQueries();
     EventLogQuery[] getRuleEventQueries();
-
-    CaptureStatistics getStatistics();
 
     int userAuthenticate(String address, String username, String password);
     int userActivate(String address, String agree);

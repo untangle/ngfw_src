@@ -2,21 +2,19 @@
  * $Id: CaptureUserEntry.java,v 1.00 2011/12/14 01:02:03 mahotz Exp $
  */
 
-package com.untangle.node.capture; // IMPL
+package com.untangle.node.capture; // API
 
 public class CaptureUserEntry
 {
     private String userAddress;
     private String userName;
-    private String userPassword;
     private long sessionCreation;
     private long sessionActivity;
 
-    public CaptureUserEntry(String userAddress,String userName,String userPassword)
+    public CaptureUserEntry(String userAddress,String userName)
     {
         this.userAddress = userAddress;
         this.userName = userName;
-        this.userPassword = userPassword;
         sessionCreation = sessionActivity = System.currentTimeMillis();
     }
 
