@@ -109,7 +109,7 @@ public class CaptureNodeImpl extends NodeBase implements CaptureNode
     }
 
     @Override
-    public ArrayList<CaptureUserEntry> getCaptiveStatus()
+    public ArrayList<CaptureUserEntry> getActiveUsers()
     {
         return(captureUserTable.buildUserList());
     }
@@ -268,7 +268,7 @@ public class CaptureNodeImpl extends NodeBase implements CaptureNode
                 logEvent(event);
 
                 // TODO blinger
-                logger.info("Authenticate collision " + username + " " + address);
+                logger.info("Authenticate duplicate " + username + " " + address);
                 return(2);
             }
         }
@@ -370,7 +370,7 @@ public class CaptureNodeImpl extends NodeBase implements CaptureNode
             return(1);
         }
 
-        logger.info("User logout success: " + address);
+        logger.info("Logout success: " + address);
         captureUserTable.removeActiveUser(address);
 
         CaptureLoginEvent event = new CaptureLoginEvent( address, "", captureSettings.getAuthenticationType(), CaptureLoginEvent.EventType.LOGOUT );

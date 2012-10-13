@@ -25,7 +25,7 @@ public class CaptureUserTable
         ArrayList<String> wipeList = new ArrayList<String>();
         long currentTime,idleTrigger,userTrigger;
         int wipecount;
-        int flag;
+        int wipeflag;
 
         currentTime = (System.currentTimeMillis() / 1000);
         Enumeration ee = userTable.elements();
@@ -34,9 +34,9 @@ public class CaptureUserTable
         while (ee.hasMoreElements())
         {
             CaptureUserEntry item = (CaptureUserEntry)ee.nextElement();
-            idleTrigger = ((item.grabActivityTime() / 1000) + idleTimeout);
-            userTrigger = ((item.grabCreationTime() / 1000) + userTimeout);
-            flag = 0;
+            userTrigger = ((item.getSessionCreation() / 1000) + userTimeout);
+            idleTrigger = ((item.getSessionActivity() / 1000) + idleTimeout);
+            wipeflag = 0;
 
             logger.debug("CURR:" + currentTime + " IDLE:" + idleTrigger + " USER:" + userTrigger);
 
@@ -46,7 +46,7 @@ public class CaptureUserTable
                     logger.info("Idle timeout removing user " + item.getUserAddress() + " " + item.getUserName());
                     wipeList.add(item.getUserAddress());
                     wipecount++;
-                    flag = 1;
+                    wipeflag = 1;
                 }
 
                 // look for users who have exceeded the configured maximum session time
@@ -55,10 +55,10 @@ public class CaptureUserTable
                     logger.info("Session timeout removing user " + item.getUserAddress() + " " + item.getUserName());
                     wipeList.add(item.getUserAddress());
                     wipecount++;
-                    flag = 2;
+                    wipeflag = 2;
                 }
 
-                if (flag == 0)
+                if (wipeflag == 0)
                 {
                     logger.debug("Keeping active user " + item.getUserAddress() + " " + item.getUserName());
                 }

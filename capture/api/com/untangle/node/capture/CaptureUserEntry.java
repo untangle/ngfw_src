@@ -10,27 +10,19 @@ public class CaptureUserEntry
     private String userName;
     private long sessionCreation;
     private long sessionActivity;
+    private long sessionCounter;
 
     public CaptureUserEntry(String userAddress,String userName)
     {
         this.userAddress = userAddress;
         this.userName = userName;
-        sessionCreation = sessionActivity = System.currentTimeMillis();
+        sessionCreation = System.currentTimeMillis();
+        sessionActivity = sessionCreation;
     }
 
-    public void updateActivityTimer()
+    public String getUserName()
     {
-        sessionActivity = System.currentTimeMillis();
-    }
-
-    public long grabCreationTime()
-    {
-        return(sessionCreation);
-    }
-
-    public long grabActivityTime()
-    {
-        return(sessionActivity);
+        return(userName);
     }
 
     public String getUserAddress()
@@ -38,8 +30,24 @@ public class CaptureUserEntry
         return(userAddress);
     }
 
-    public String getUserName()
+    public long getSessionCreation()
     {
-        return(userName);
+        return(sessionCreation);
+    }
+
+    public long getSessionActivity()
+    {
+        return(sessionActivity);
+    }
+
+    public long getSessionCounter()
+    {
+        return(sessionCounter);
+    }
+
+    public void updateActivityTimer()
+    {
+        sessionActivity = System.currentTimeMillis();
+        sessionCounter++;
     }
 }

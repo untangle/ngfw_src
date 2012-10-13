@@ -13,7 +13,7 @@ public interface CaptureNode extends Node
     CaptureSettings getSettings();
     void setSettings(CaptureSettings settings);
     
-    ArrayList<CaptureUserEntry> getCaptiveStatus();
+    ArrayList<CaptureUserEntry> getActiveUsers();
 
     EventLogQuery[] getEventQueries();
     EventLogQuery[] getRuleEventQueries();

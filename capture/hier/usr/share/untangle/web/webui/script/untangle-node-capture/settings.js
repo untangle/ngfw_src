@@ -100,19 +100,17 @@ if (!Ung.hasResource["Ung.Capture"]) {
                     ]
                 }),
                 recordJavaClass: "com.untangle.node.capture.HostDatabaseEntry",
-                dataFn: this.getRpcNode().getCaptiveStatus,
+                dataFn: this.getRpcNode().getActiveUsers,
                 fields: [{
                     name: "userAddress"
                 },{
                     name: "userName"
                 },{
-                    name: "lastSession"
+                    name: "sessionCreation"
                 },{
-                    name: "sessionStart"
+                    name: "sessionActivity"
                 },{
-                    name: "expirationDate"
-                },{
-                    name: "hardwareAddress"
+                    name: "sessionCounter"
                 },{
                     name: "id"
                 }],
@@ -125,20 +123,19 @@ if (!Ung.hasResource["Ung.Capture"]) {
                     dataIndex:'userName',
                     width: 200
                 },{
-                    header: this.i18n._("Last Session"),
-                    dataIndex:'lastSession',
+                    header: this.i18n._("Login Time"),
+                    dataIndex:'sessionCreation',
                     width: 180,
                     renderer: function(value) { return i18n.timestampFormat(value); }
                 },{
-                    header: this.i18n._("Current Session"),
-                    dataIndex:'sessionStart',
+                    header: this.i18n._("Last Activity"),
+                    dataIndex:'sessionActivity',
                     width: 180,
                     renderer: function(value) { return i18n.timestampFormat(value); }
                 },{
-                    header: this.i18n._("Expiration"),
-                    dataIndex:'expirationDate',
-                    width: 180,
-                    renderer: function(value) { return i18n.timestampFormat(value); }
+                    header: this.i18n._("Session Count"),
+                    dataIndex:'sessionCounter',
+                    width: 120
                 },{
                     header: this.i18n._("Logout"),
                     xtype: 'actioncolumn',
@@ -149,7 +146,7 @@ if (!Ung.hasResource["Ung.Capture"]) {
                         tooltip: 'Click to logout',
                         handler: Ext.bind(function(grid,row,col) {
                             var rec = grid.getStore().getAt(row);
-                            this.getRpcNode().logout(rec.data.ipv4Address);
+                            this.getRpcNode().userLogout(rec.data.userAddress);
                             this.gridCaptiveStatus.reload();
                         }, this)
                     }]
