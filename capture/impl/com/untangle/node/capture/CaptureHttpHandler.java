@@ -58,14 +58,13 @@ class CaptureHttpHandler extends HttpStateMachine
 
             if (user != null)
             {
-                logger.debug("Allowing HTTP traffic for authenticated user " + address);
                 user.updateActivityTimer();
                 node.incrementBlinger(CaptureNode.BlingerType.SESSALLOW,1);
                 releaseRequest();
                 return requestHeader;
             }
 
-        logger.debug("Sending HTTP redirect to unauthenticated user " + address);
+        logger.info("Sending HTTP redirect to unauthenticated user " + address);
 
         String method = getRequestLine().getMethod().toString();
         String host = getRequestLine().getRequestUri().getHost();
@@ -131,5 +130,4 @@ class CaptureHttpHandler extends HttpStateMachine
     {
         return statusLine;
     }
-
 }

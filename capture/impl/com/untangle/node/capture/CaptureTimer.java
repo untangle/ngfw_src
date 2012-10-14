@@ -5,6 +5,7 @@
 package com.untangle.node.capture; // IMPL
 
 import java.util.TimerTask;
+import java.util.ArrayList;
 import org.apache.log4j.Logger;
 import com.untangle.uvm.util.LoadAvg;
 
@@ -25,7 +26,15 @@ public class CaptureTimer extends TimerTask
 
     private void SessionCleanup()
     {
-        int cleanup = node.captureUserTable.cleanupStaleUsers(node.getSettings().getIdleTimeout(),node.getSettings().getUserTimeout());
-        if (cleanup > 0) logger.info("Cleaned up " + cleanup + " expired sessions");
+        ArrayList<String> staleUsers = node.captureUserTable.buildStaleList(node.getSettings().getIdleTimeout(),node.getSettings().getUserTimeout());
+        int counter = 0;
+        
+        for(String item: staleUsers)
+        {
+            node.userLogout(item);
+            counter++;
+        }
+
+        if (counter > 0) logger.info("Cleaned up " + counter + " expired sessions");
     }
 }

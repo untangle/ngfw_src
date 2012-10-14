@@ -18,18 +18,15 @@ public class CaptureHttpFactory implements TokenHandlerFactory
 
     CaptureHttpFactory(CaptureNodeImpl node)
     {
-        logger.debug("CaptureHttpFactory");
         this.node = node;
     }
 
     public TokenHandler tokenHandler(NodeTCPSession session)
     {
-        logger.debug("tokenHandler");
         return new CaptureHttpHandler(session, node);
     }
 
     public void handleNewSessionRequest(TCPNewSessionRequest tsr)
     {
-        logger.debug("handleNewSessionRequest");
     }
 }

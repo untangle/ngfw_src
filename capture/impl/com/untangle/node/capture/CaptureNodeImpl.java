@@ -316,7 +316,7 @@ public class CaptureNodeImpl extends NodeBase implements CaptureNode
                 }
                 catch (Exception e)
                 {
-                    logger.warn( "Unable to authenticate users.", e );
+                    logger.warn("Active Directory failure", e);
                     isAuthenticated = false;
                 }
                 break;
@@ -328,7 +328,7 @@ public class CaptureNodeImpl extends NodeBase implements CaptureNode
                 }
                 catch (Exception e)
                 {
-                    logger.warn( "Unable to authenticate users.", e );
+                    logger.warn("Local Directory failure", e);
                     isAuthenticated = false;
                 }
                 break;
@@ -341,7 +341,7 @@ public class CaptureNodeImpl extends NodeBase implements CaptureNode
                 }
                 catch (Exception e)
                 {
-                    logger.warn( "Unable to authenticate users.", e );
+                    logger.warn( "Radius Directory failure", e );
                     isAuthenticated = false;
                 }
                 break;
@@ -367,8 +367,6 @@ public class CaptureNodeImpl extends NodeBase implements CaptureNode
 
     public int userActivate(String address, String agree)
     {
-        logger.debug("ADDRESS:" + address + " AGREE:" + agree);
-
             if (agree.equals("agree") == false)
             {
                 CaptureLoginEvent event = new CaptureLoginEvent( address, address, captureSettings.getAuthenticationType(), CaptureLoginEvent.EventType.FAILED );
@@ -393,15 +391,15 @@ public class CaptureNodeImpl extends NodeBase implements CaptureNode
 
         if (user == null)
         {
-            logger.info("User not found in table: " + address);
+            logger.info("Logout failure: " + address);
             return(1);
         }
 
+        captureUserTable.removeActiveUser(address);
+
         CaptureLoginEvent event = new CaptureLoginEvent( user.getUserAddress(), user.getUserName(), captureSettings.getAuthenticationType(), CaptureLoginEvent.EventType.LOGOUT );
         logEvent(event);
-        incrementBlinger(BlingerType.AUTHGOOD,1);
         logger.info("Logout success: " + address);
-        captureUserTable.removeActiveUser(address);
 
         return(0);
     }
