@@ -48,6 +48,7 @@ public class CaptureTrafficHandler extends AbstractEventHandler
         {
             logger.debug("Allowing TCP traffic for authenticated user " + address);
             user.updateActivityTimer();
+            node.incrementBlinger(CaptureNode.BlingerType.SESSALLOW,1);
             session.release();
             return;
         }
@@ -57,12 +58,14 @@ public class CaptureTrafficHandler extends AbstractEventHandler
         if (session.getServerPort() == 80)
         {
             logger.debug("Allowing HTTP traffic for unauthenticated user " + address);
+            node.incrementBlinger(CaptureNode.BlingerType.SESSALLOW,1);
             session.release();
             return;
         }
 
         // user not authenticated and not http traffic so block
         logger.debug("Blocking TCP traffic for unauthenticated user " + address);
+        node.incrementBlinger(CaptureNode.BlingerType.SESSBLOCK,1);
         session.resetClient();
         session.resetServer();
         session.release();
@@ -88,6 +91,7 @@ public class CaptureTrafficHandler extends AbstractEventHandler
         {
             logger.debug("Allowing UDP traffic for authenticated user " + address);
             user.updateActivityTimer();
+            node.incrementBlinger(CaptureNode.BlingerType.SESSALLOW,1);
             session.release();
             return;
         }
@@ -97,12 +101,14 @@ public class CaptureTrafficHandler extends AbstractEventHandler
         if (session.getServerPort() == 53)
         {
             logger.debug("Allowing DNS traffic for unauthenticated user " + address);
+            node.incrementBlinger(CaptureNode.BlingerType.SESSALLOW,1);            
             session.release();
             return;
         }
 
         // user not authenticated and not dns traffic so block
         logger.debug("Blocking UDP traffic for unauthenticated user " + address);
+        node.incrementBlinger(CaptureNode.BlingerType.SESSBLOCK,1);
         session.expireClient();
         session.expireServer();
         session.release();

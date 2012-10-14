@@ -10,12 +10,15 @@ import com.untangle.uvm.node.EventLogQuery;
 
 public interface CaptureNode extends Node
 {
+    enum BlingerType { SESSALLOW, SESSBLOCK, AUTHGOOD, AUTHFAIL }
+
     CaptureSettings getSettings();
     void setSettings(CaptureSettings settings);
     
     ArrayList<CaptureUserEntry> getActiveUsers();
-
-    EventLogQuery[] getEventQueries();
+    
+    EventLogQuery[] getLoginEventQueries();
+    EventLogQuery[] getBlockEventQueries();
     EventLogQuery[] getRuleEventQueries();
 
     int userAuthenticate(String address, String username, String password);

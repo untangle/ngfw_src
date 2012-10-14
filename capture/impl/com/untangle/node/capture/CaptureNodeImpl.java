@@ -39,6 +39,11 @@ public class CaptureNodeImpl extends NodeBase implements CaptureNode
     private final int CLEANUP_INTERVAL = 60000;
     private final Logger logger = Logger.getLogger(getClass());
 
+    private static final String STAT_SESSALLOW = "sessallow";
+    private static final String STAT_SESSBLOCK = "sessblock";
+    private static final String STAT_AUTHGOOD = "authgood";
+    private static final String STAT_AUTHFAIL = "authfail";
+
     private final SoloPipeSpec trafficPipe = new SoloPipeSpec("capture-traffic", this, new CaptureTrafficHandler(this), Fitting.OCTET_STREAM, Affinity.SERVER, 0);
     private final SoloPipeSpec httpPipe = new SoloPipeSpec("capture-http", this, new TokenAdaptor(this, new CaptureHttpFactory(this)), Fitting.HTTP_TOKENS, Affinity.CLIENT, 0);
     private final PipeSpec[] pipeSpecs = new PipeSpec[] { trafficPipe, httpPipe };
@@ -50,6 +55,8 @@ public class CaptureNodeImpl extends NodeBase implements CaptureNode
     protected CaptureUserTable captureUserTable;
     protected Timer timer;
 
+    private EventLogQuery loginEventQuery;
+    private EventLogQuery blockEventQuery;
     private EventLogQuery allEventQuery;
     private EventLogQuery flaggedEventQuery;
     private EventLogQuery blockedEventQuery;
@@ -61,6 +68,12 @@ public class CaptureNodeImpl extends NodeBase implements CaptureNode
 
         replacementGenerator = new CaptureReplacementGenerator(getNodeSettings());
         captureUserTable = new CaptureUserTable();
+
+        this.loginEventQuery = new EventLogQuery(I18nUtil.marktr("Login Events"),
+            "SELECT * FROM reports.n_capture_login_events evt ORDER BY time_stamp DESC");
+
+        this.blockEventQuery = new EventLogQuery(I18nUtil.marktr("Block Events"),
+            "SELECT * FROM reports.n_capture_block_events evt ORDER BY time_stamp DESC");
 
         this.allEventQuery = new EventLogQuery(I18nUtil.marktr("All Sessions"),
             "SELECT * FROM reports.sessions " +
@@ -86,10 +99,10 @@ public class CaptureNodeImpl extends NodeBase implements CaptureNode
              "AND classd_ruleid IS NOT NULL " +
              "ORDER BY time_stamp DESC");
 
-//        this.addMetric(new NodeMetric(STAT_SCAN, I18nUtil.marktr("Session scanned")));
-//        this.addMetric(new NodeMetric(STAT_PASS, I18nUtil.marktr("Sessions passed")));
-//        this.addMetric(new NodeMetric(STAT_FLAG, I18nUtil.marktr("Sessions flagged")));
-//        this.addMetric(new NodeMetric(STAT_BLOCK, I18nUtil.marktr("Sessions blocked")));
+        addMetric(new NodeMetric(STAT_SESSALLOW, I18nUtil.marktr("Sessions allowed")));
+        addMetric(new NodeMetric(STAT_SESSBLOCK, I18nUtil.marktr("Sessions blocked")));
+        addMetric(new NodeMetric(STAT_AUTHGOOD, I18nUtil.marktr("Login Success")));
+        addMetric(new NodeMetric(STAT_AUTHFAIL, I18nUtil.marktr("Login Failure")));
     }
 
     @Override
@@ -115,15 +128,32 @@ public class CaptureNodeImpl extends NodeBase implements CaptureNode
     }
 
     @Override
-    public EventLogQuery[] getEventQueries()
+    public EventLogQuery[] getLoginEventQueries()
     {
-        return new EventLogQuery[] { this.allEventQuery, this.flaggedEventQuery, this.blockedEventQuery };
+        return new EventLogQuery[] { this.loginEventQuery };
+    }
+
+    @Override
+    public EventLogQuery[] getBlockEventQueries()
+    {
+        return new EventLogQuery[] { this.blockEventQuery };
     }
 
     @Override
     public EventLogQuery[] getRuleEventQueries()
     {
         return new EventLogQuery[] { this.ruleEventQuery };
+    }
+
+    public void incrementBlinger(BlingerType blingerType, long delta )
+    {
+        switch ( blingerType )
+        {
+        case SESSALLOW: adjustMetric(STAT_SESSALLOW, delta); break;
+        case SESSBLOCK: adjustMetric(STAT_SESSBLOCK, delta); break;
+        case AUTHGOOD: adjustMetric(STAT_AUTHGOOD, delta); break;
+        case AUTHFAIL: adjustMetric(STAT_AUTHFAIL, delta); break;
+        }
     }
 
     @Override
@@ -264,10 +294,9 @@ public class CaptureNodeImpl extends NodeBase implements CaptureNode
 
             if (entry != null)
             {
-                CaptureLoginEvent event = new CaptureLoginEvent( address, username, captureSettings.getAuthenticationType(), CaptureLoginEvent.EventType.CONCURRENT );
+                CaptureLoginEvent event = new CaptureLoginEvent( address, username, captureSettings.getAuthenticationType(), CaptureLoginEvent.EventType.FAILED );
                 logEvent(event);
-
-                // TODO blinger
+                incrementBlinger(BlingerType.AUTHFAIL,1);
                 logger.info("Authenticate duplicate " + username + " " + address);
                 return(2);
             }
@@ -322,17 +351,16 @@ public class CaptureNodeImpl extends NodeBase implements CaptureNode
         {
             CaptureLoginEvent event = new CaptureLoginEvent( address, username, captureSettings.getAuthenticationType(), CaptureLoginEvent.EventType.FAILED );
             logEvent(event);
-
-            // TODO blinger
+            incrementBlinger(BlingerType.AUTHFAIL,1);
             logger.info("Authenticate failure " + username + " " + address);
             return(1);
         }
 
+        captureUserTable.insertActiveUser(address,username);
+
         CaptureLoginEvent event = new CaptureLoginEvent( address, username, captureSettings.getAuthenticationType(), CaptureLoginEvent.EventType.LOGIN );
         logEvent(event);
-
-        captureUserTable.insertActiveUser(address,username);
-        // TODO blinger
+        incrementBlinger(BlingerType.AUTHGOOD,1);
         logger.info("Authenticate success " + username + " " + address);
         return(0);
     }
@@ -345,17 +373,16 @@ public class CaptureNodeImpl extends NodeBase implements CaptureNode
             {
                 CaptureLoginEvent event = new CaptureLoginEvent( address, address, captureSettings.getAuthenticationType(), CaptureLoginEvent.EventType.FAILED );
                 logEvent(event);
-
-                // TODO blinger
+                incrementBlinger(BlingerType.AUTHFAIL,1);
                 logger.info("Activate failure " + address);
                 return(1);
             }
 
+        captureUserTable.insertActiveUser(address,address);
+
         CaptureLoginEvent event = new CaptureLoginEvent( address, address, captureSettings.getAuthenticationType(), CaptureLoginEvent.EventType.LOGIN );
         logEvent(event);
-
-        captureUserTable.insertActiveUser(address,address);
-        // TODO blinger
+        incrementBlinger(BlingerType.AUTHGOOD,1);
         logger.info("Activate success " + address);
         return(0);
     }
@@ -370,11 +397,11 @@ public class CaptureNodeImpl extends NodeBase implements CaptureNode
             return(1);
         }
 
+        CaptureLoginEvent event = new CaptureLoginEvent( user.getUserAddress(), user.getUserName(), captureSettings.getAuthenticationType(), CaptureLoginEvent.EventType.LOGOUT );
+        logEvent(event);
+        incrementBlinger(BlingerType.AUTHGOOD,1);
         logger.info("Logout success: " + address);
         captureUserTable.removeActiveUser(address);
-
-        CaptureLoginEvent event = new CaptureLoginEvent( address, "", captureSettings.getAuthenticationType(), CaptureLoginEvent.EventType.LOGOUT );
-        logEvent(event);
 
         return(0);
     }

@@ -60,6 +60,7 @@ class CaptureHttpHandler extends HttpStateMachine
             {
                 logger.debug("Allowing HTTP traffic for authenticated user " + address);
                 user.updateActivityTimer();
+                node.incrementBlinger(CaptureNode.BlingerType.SESSALLOW,1);
                 releaseRequest();
                 return requestHeader;
             }
@@ -85,6 +86,7 @@ class CaptureHttpHandler extends HttpStateMachine
 
         CaptureBlockDetails details = new CaptureBlockDetails(host, uri, method);
         Token[] response = node.generateResponse(details, sess);
+        node.incrementBlinger(CaptureNode.BlingerType.SESSBLOCK,1);
         blockRequest(response);
         return requestHeader;
     }
