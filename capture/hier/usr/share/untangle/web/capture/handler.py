@@ -4,6 +4,12 @@ import pprint
 
 from uvm import Uvm
 
+# global objects that we retrieve from the uvm
+uvmContext = None
+captureNode = None
+captureSettings = None
+brandingSettings = None
+
 #-----------------------------------------------------------------------------
 # This is the default function that gets called when a client is redirected
 # to the captive portal because they have not yet authenticated.
@@ -18,6 +24,9 @@ def index(req):
     if (not 'APPID' in args):   args['APPID'] = "Empty"
     if (not 'HOST' in args):    args['HOST'] = "Empty"
     if (not 'URI' in args):     args['URI'] = "Empty"
+
+    # setup the global variables
+    global_setup(req,args['APPID'])
 
     # pass the reqest object and arguments to the page generator
     page = generate_page(req,args)
@@ -35,10 +44,10 @@ def authpost(req,username,password,method,nonce,appid,host,uri):
     # get the network address of the client
     address = req.get_remote_host(apache.REMOTE_NOLOOKUP,None)
 
+    # setup the global variables
+    global_setup(req,appid)
+
     # call the node to authenticate the user
-    uvmContext = Uvm().getUvmContext()
-    captureNode = uvmContext.nodeManager().node(long(appid))
-    captureSettings = captureNode.getSettings()
     authResult = captureNode.userAuthenticate(address, username, password)
 
     # on successful login redirect to the redirectUrl if not empty
@@ -87,10 +96,10 @@ def infopost(req,method,nonce,appid,host,uri,agree='empty'):
     # get the network address of the client
     address = req.get_remote_host(apache.REMOTE_NOLOOKUP,None)
 
+    # setup the global variables
+    global_setup(req,appid)
+
     # call the node to authenticate the user
-    uvmContext = Uvm().getUvmContext()
-    captureNode = uvmContext.nodeManager().node(long(appid))
-    captureSettings = captureNode.getSettings()
     authResult = captureNode.userActivate(address,agree)
 
     # on successful login redirect to the redirectUrl if not empty
@@ -126,26 +135,16 @@ def infopost(req,method,nonce,appid,host,uri,agree='empty'):
 
 def generate_page(req,args,extra=''):
 
-    # read the node and branding settings from the uvm
-    uvmContext = Uvm().getUvmContext()
-    captureNode = uvmContext.nodeManager().node(long(args['APPID']))
-    brandingNode = uvmContext.nodeManager().node("untangle-node-branding");
-
-    if (captureNode == None):
-        captureSettings = None
-    else:
-        captureSettings = captureNode.getSettings()
-
-    if (brandingNode == None):
-        brandingSettings = {}
-        brandingSettings['companyName'] = 'Untangle'
-    else:
-        brandingSettings = brandingNode.getSettings()
-
     # use the path from the request filename to locate the correct template
-    if (captureSettings['pageType'] == 'BASIC_LOGIN'): name = req.filename[:req.filename.rindex('/')] + "/authpage.html"
-    if (captureSettings['pageType'] == 'BASIC_MESSAGE'): name = req.filename[:req.filename.rindex('/')] + "/infopage.html"
-    if (captureSettings['pageType'] == 'CUSTOM'): name = req.filename[:req.filename.rindex('/')] + "/custom.html"
+    if (captureSettings['pageType'] == 'BASIC_LOGIN'):
+        name = req.filename[:req.filename.rindex('/')] + "/authpage.html"
+
+    if (captureSettings['pageType'] == 'BASIC_MESSAGE'):
+        name = req.filename[:req.filename.rindex('/')] + "/infopage.html"
+
+    if (captureSettings['pageType'] == 'CUSTOM'):
+        name = req.filename[:req.filename.rindex('/')] + "/custom.html"
+
     file = open(name, "r")
     page = file.read();
     file.close()
@@ -214,5 +213,47 @@ def split_args(args):
         else:
             canon_args[tmp[0].upper()] = tmp[1]
     return canon_args
+
+#-----------------------------------------------------------------------------
+
+def global_setup(req,appid=None):
+
+    global uvmContext
+    global captureNode
+    global captureSettings
+    global brandingSettings
+
+    # first we get the uvm context
+    uvmContext = Uvm().getUvmContext()
+
+    # if no appid provided we lookup capture node by name
+    # otherwise we use the appid passed to us
+    if (appid == None):
+        captureNode = uvmContext.nodeManager().node("untangle-node-capture")
+    else:
+        captureNode = uvmContext.nodeManager().node(long(appid))
+
+    # if we can't find the node then we are done
+    # otherwise load the node settings
+    if (captureNode == None):
+        raise Exception("The uvm node manager could not locate untangle-node-capture")
+    else:
+        captureSettings = captureNode.getSettings()
+
+    # lookup the branding node by name since there should only be one
+    brandingNode = uvmContext.nodeManager().node("untangle-node-branding");
+
+    # if branding isn't installed then setup the defaults
+    # otherwise load the node settings
+    if (brandingNode == None):
+        brandingSettings = {}
+        brandingSettings['companyName'] = 'Untangle'
+    else:
+        brandingSettings = brandingNode.getSettings()
+
+    # add some headers to prevent caching any of our stuff
+    req.headers_out.add("Cache-Control", "no-store, no-cache, must-revalidate, post-check=0, pre-check=0")
+    req.headers_out.add("Pragma", "no-cache")
+    req.headers_out.add("Expires", "Sat, 1 Jan 2000 00:00:00 GMT");
 
 #-----------------------------------------------------------------------------
