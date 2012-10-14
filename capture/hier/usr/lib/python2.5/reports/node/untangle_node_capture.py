@@ -118,7 +118,7 @@ CREATE TABLE reports.n_capture_login_events (
     login_name text,
     event text,
     auth_type text,
-    client_addr inet,
+    client_addr text,
     event_id bigserial)""")
 
         sql_helper.add_column('reports', 'n_capture_login_events', 'event_id', 'bigserial')
