@@ -102,6 +102,7 @@ public class CaptureTrafficHandler extends AbstractEventHandler
     {
         NodeUDPSession session = event.session();
         DNSPacket packet = (DNSPacket)session.attachment();
+        InetAddress addr = null;
         session.attach(null);
 
         // extract the DNS query from the client packet
@@ -119,17 +120,27 @@ public class CaptureTrafficHandler extends AbstractEventHandler
                 session.release();
             }
 
-        // get the IP address of this server from the client perspective
-        InetAddress addr = UvmContextFactory.context().networkManager().getInternalHttpAddress(session.getClientIntf());
+        // we have a valid query so lets lookup the address
+        try
+        {
+            addr = InetAddress.getByName(packet.getQname());
+        }
 
-        // craft a DNS response pointing to our server
+        // resolution failed so addr will be null and the DNS packet
+        // response generator will substitute 0.0.0.0
+        catch (Exception e)
+        {
+            logger.info("Unable to resolve " + packet.getQname());
+        }
+
+        // craft a DNS response pointing to the address we got back
         ByteBuffer bb = packet.GenerateResponse(addr);
 
         // send the packet to the client
         session.sendClientPacket(bb,event.header());
 
         // increment our counter and release the session
-        node.incrementBlinger(CaptureNode.BlingerType.SESSADAPT,1);
+        node.incrementBlinger(CaptureNode.BlingerType.SESSPROXY,1);
         session.release();
     }
 }

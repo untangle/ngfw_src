@@ -2,7 +2,7 @@
  * $Id: DNSPacket.java,v 1.00 2012/10/14 22:30:00 mahotz Exp $
  */
 
-package com.untangle.node.capture; // API
+package com.untangle.node.capture; // IMPL
 
 import java.net.InetAddress;
 import java.nio.ByteBuffer;
@@ -148,7 +148,9 @@ class DNSPacket
     bb.putShort((short)0x0001);         // class = IN
     bb.putInt(0x00000001);              // TTL = 1 second
     bb.putShort((short)0x0004);         // size of A record data
-    bb.put(address.getAddress(),0,4);   // address passed to us
+    
+    if (address == null) bb.putInt(0);      // address is null so insert 0.0.0.0
+    else bb.put(address.getAddress(),0,4);  // insert IP address passed to us
 
     // flip the buffer and return
     bb.flip();
@@ -171,6 +173,11 @@ class DNSPacket
         if (ns_count != 0) return(false);   // server count should be zero
         if (ar_count != 0) return(false);   // additional count should be zero
         return(true);
+    }
+    
+    public String getQname()
+    {
+        return(qname);
     }
 
     public String toString()

@@ -2,7 +2,7 @@
  * $Id: CaptureNodeImpl.java,v 1.00 2011/12/12 13:31:21 mahotz Exp $
  */
 
-package com.untangle.node.capture;
+package com.untangle.node.capture; // IMPL
 
 import java.util.ArrayList;
 import java.util.Timer;
@@ -41,7 +41,7 @@ public class CaptureNodeImpl extends NodeBase implements CaptureNode
 
     private static final String STAT_SESSALLOW = "sessallow";
     private static final String STAT_SESSBLOCK = "sessblock";
-    private static final String STAT_SESSADAPT = "sessadapt";
+    private static final String STAT_SESSPROXY = "sessproxy";
     private static final String STAT_AUTHGOOD = "authgood";
     private static final String STAT_AUTHFAIL = "authfail";
 
@@ -102,7 +102,7 @@ public class CaptureNodeImpl extends NodeBase implements CaptureNode
 
         addMetric(new NodeMetric(STAT_SESSALLOW, I18nUtil.marktr("Sessions allowed")));
         addMetric(new NodeMetric(STAT_SESSBLOCK, I18nUtil.marktr("Sessions blocked")));
-        addMetric(new NodeMetric(STAT_SESSADAPT, I18nUtil.marktr("Sessions adapted")));
+        addMetric(new NodeMetric(STAT_SESSPROXY, I18nUtil.marktr("Sessions proxied")));
         addMetric(new NodeMetric(STAT_AUTHGOOD, I18nUtil.marktr("Login Success")));
         addMetric(new NodeMetric(STAT_AUTHFAIL, I18nUtil.marktr("Login Failure")));
     }
@@ -153,7 +153,7 @@ public class CaptureNodeImpl extends NodeBase implements CaptureNode
         {
         case SESSALLOW: adjustMetric(STAT_SESSALLOW, delta); break;
         case SESSBLOCK: adjustMetric(STAT_SESSBLOCK, delta); break;
-        case SESSADAPT: adjustMetric(STAT_SESSADAPT, delta); break;
+        case SESSPROXY: adjustMetric(STAT_SESSPROXY, delta); break;
         case AUTHGOOD: adjustMetric(STAT_AUTHGOOD, delta); break;
         case AUTHFAIL: adjustMetric(STAT_AUTHFAIL, delta); break;
         }
