@@ -10,7 +10,7 @@ import com.untangle.uvm.node.EventLogQuery;
 
 public interface CaptureNode extends Node
 {
-    enum BlingerType { SESSALLOW, SESSBLOCK, AUTHGOOD, AUTHFAIL }
+    enum BlingerType { SESSALLOW, SESSBLOCK, SESSADAPT, AUTHGOOD, AUTHFAIL }
 
     CaptureSettings getSettings();
     void setSettings(CaptureSettings settings);

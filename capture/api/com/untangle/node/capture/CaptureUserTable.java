@@ -14,7 +14,6 @@ public class CaptureUserTable
 {
     private final Logger logger = Logger.getLogger(getClass());
     private Hashtable<String,CaptureUserEntry> userTable;
-   
 
     public CaptureUserTable()
     {
@@ -53,13 +52,13 @@ public class CaptureUserTable
 
         return(null);
     }
-    
+
     public ArrayList<CaptureUserEntry> buildUserList()
     {
         ArrayList<CaptureUserEntry> userList = new ArrayList<CaptureUserEntry>(userTable.values());
         return(userList);
     }
-    
+
     public ArrayList<String> buildStaleList(long idleTimeout,long userTimeout)
     {
         ArrayList<String> wipeList = new ArrayList<String>();
