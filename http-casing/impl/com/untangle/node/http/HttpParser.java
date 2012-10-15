@@ -3,6 +3,7 @@
  */
 package com.untangle.node.http;
 
+import java.net.InetAddress;
 import java.nio.ByteBuffer;
 import java.util.Collections;
 import java.util.LinkedList;
@@ -19,17 +20,19 @@ import com.untangle.node.token.ParseResult;
 import com.untangle.node.token.Token;
 import com.untangle.node.token.TokenStreamer;
 import com.untangle.node.util.AsciiCharBuffer;
+import com.untangle.node.util.UserAgentString;
+import com.untangle.uvm.UvmContextFactory;
+import com.untangle.uvm.HostTable;
 import com.untangle.uvm.node.MimeType;
 import com.untangle.uvm.vnet.NodeTCPSession;
 
 /**
  * An HTTP <code>Parser</code>.
- *
- * @author <a href="mailto:amread@untangle.com">Aaron Read</a>
- * @version 1.0
  */
 public class HttpParser extends AbstractParser
 {
+    private final Logger logger = Logger.getLogger(HttpParser.class);
+
     private static final byte SP = ' ';
     private static final byte HT = '\t';
     private static final byte CR = '\r';
@@ -63,8 +66,6 @@ public class HttpParser extends AbstractParser
     private final int maxRequestLine;
     private final boolean blockLongUris;
     private final String sessStr;
-
-    private final Logger logger = Logger.getLogger(HttpParser.class);
 
     private RequestLineToken requestLineToken;
     private StatusLine statusLine;
@@ -105,7 +106,7 @@ public class HttpParser extends AbstractParser
         if (logger.isDebugEnabled()) {
             logger.debug(sessStr + "parsing chunk: " + b);
         }
-        List<Token> l = new LinkedList<Token>();
+        List<Token> tokenList = new LinkedList<Token>();
 
         boolean done = false;
         while (!done) {
@@ -155,7 +156,7 @@ public class HttpParser extends AbstractParser
                     }
 
                     if (completeLine(b)) {
-                        l.add(firstLine(b));
+                        tokenList.add(firstLine(b));
 
                         state = ACCUMULATE_HEADER_STATE;
                     } else {
@@ -205,7 +206,7 @@ public class HttpParser extends AbstractParser
                         logger.debug(sessStr + "in HEADER_STATE");
                     }
                     header = header(b);
-                    l.add(header);
+                    tokenList.add(header);
 
                     // Done with buf now
                     this.buf = null;
@@ -220,9 +221,7 @@ public class HttpParser extends AbstractParser
                             }
                         }
                     } else {
-                        /* XXX This is a problem because it doesn't actually log anything.
-                         * Ignoring not sure if removing it will have effects */
-                        @SuppressWarnings("unused")
+                        /* This is saved internally and used later with getRequestEvent */
                         HttpRequestEvent evt = new HttpRequestEvent(requestLineToken.getRequestLine(), header.getValue("host"), lengthCounter);
                     }
 
@@ -260,7 +259,7 @@ public class HttpParser extends AbstractParser
                     if (logger.isDebugEnabled()) {
                         logger.debug(sessStr + "in CLOSED_BODY_STATE!");
                     }
-                    l.add(closedBody(b));
+                    tokenList.add(closedBody(b));
                     b = null;
                     done = true;
                     break;
@@ -270,7 +269,7 @@ public class HttpParser extends AbstractParser
                     if (logger.isDebugEnabled()) {
                         logger.debug(sessStr + "in CONTENT_LENGTH_BODY_STATE");
                     }
-                    l.add(chunk(b));
+                    tokenList.add(chunk(b));
                     if (0 == contentLength) {
                         b = null;
                         // XXX handle trailer
@@ -320,7 +319,7 @@ public class HttpParser extends AbstractParser
                         logger.debug(sessStr + "in CHUNKED_BODY_STATE");
                     }
 
-                    l.add(chunk(b));
+                    tokenList.add(chunk(b));
 
                     if (0 == contentLength) {
                         lineBuffering(true);
@@ -383,7 +382,7 @@ public class HttpParser extends AbstractParser
                         logger.debug(sessStr + "in END_MARKER_STATE");
                     }
                     EndMarker endMarker = EndMarker.MARKER;
-                    l.add(endMarker);
+                    tokenList.add(endMarker);
                     lineBuffering(true);
                     b = null;
                     state = PRE_FIRST_LINE_STATE;
@@ -408,6 +407,24 @@ public class HttpParser extends AbstractParser
                         }
 
                         casing.getNode().logEvent(evt);
+                        
+                        /**
+                         * Update host table with header info
+                         */
+                        InetAddress clientAddr = getSession().sessionEvent().getCClientAddr();
+                        String agentString = header.getValue("user-agent");
+                        logger.warn("XXX: " + clientAddr + " = " + agentString);
+                        if (clientAddr != null && agentString != null) {
+                            UserAgentString uas = new UserAgentString(agentString);
+                            HostTable hostTable = UvmContextFactory.context().hostTable();
+                            
+                            if ( hostTable.getAttachment( clientAddr, HostTable.KEY_HTTP_AGENT_STRING ) == null ) {
+                                hostTable.setAttachment( clientAddr, HostTable.KEY_HTTP_AGENT_STRING, agentString);
+                            }
+                            if ( hostTable.getAttachment( clientAddr, HostTable.KEY_HTTP_AGENT_STRING_OS ) == null ) {
+                                hostTable.setAttachment( clientAddr, HostTable.KEY_HTTP_AGENT_STRING_OS, uas.getOsInfo());
+                            }
+                        }
                     }
 
                     // Free up header storage
@@ -435,7 +452,7 @@ public class HttpParser extends AbstractParser
             throw new ParseException(msg);
         }
 
-        return new ParseResult(l, b);
+        return new ParseResult(tokenList, b);
     }
 
     private boolean completeLine(ByteBuffer b)

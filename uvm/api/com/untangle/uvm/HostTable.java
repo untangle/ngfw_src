@@ -47,6 +47,8 @@ public interface HostTable
     public final String KEY_PENALTY_BOX_ENTRY_TIME = "penaltybox-entry-time"; /* Long  - stores the entry time for the penalty box if this host is penalty boxed */
     public final String KEY_ADCONNECTOR_USERNAME = "adconnector-username"; /* String - stores the username associated with this host according to adconnector/adpb */
     public final String KEY_CAPTURE_USERNAME = "capture-username"; /* String  - stores the username associated with this host according to capture */
+    public final String KEY_HTTP_AGENT_STRING = "http-user-agent"; /* String  - stores the HTTP agent string that the client presented in the header */
+    public final String KEY_HTTP_AGENT_STRING_OS = "http-user-agent-os"; /* String  - stores OS informanio from the HTTP agent string that the client presented in the header */
     public final String KEY_PENALTY_BOX_PRIORITY = "penaltybox-priority"; /* Integer  - stores the bandwidth control priority for this penalty boxed host if bandwidth control penalty boxed this host */
 
     /**
@@ -61,6 +63,8 @@ public interface HostTable
         HostTable.KEY_PENALTY_BOX_ENTRY_TIME,
         HostTable.KEY_ADCONNECTOR_USERNAME,
         HostTable.KEY_CAPTURE_USERNAME,
+        HostTable.KEY_HTTP_AGENT_STRING,
+        HostTable.KEY_HTTP_AGENT_STRING_OS,
         HostTable.KEY_PENALTY_BOX_PRIORITY
     };
     

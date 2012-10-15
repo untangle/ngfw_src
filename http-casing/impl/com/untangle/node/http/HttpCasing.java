@@ -15,9 +15,6 @@ import com.untangle.uvm.vnet.NodeTCPSession;
 
 /**
  * An HTTP <code>Casing</code>.
- *
- * @author <a href="mailto:amread@untangle.com">Aaron Read</a>
- * @version 1.0
  */
 class HttpCasing implements Casing
 {
@@ -30,8 +27,7 @@ class HttpCasing implements Casing
 
     // constructors -----------------------------------------------------------
 
-    HttpCasing(NodeTCPSession session, boolean clientSide,
-               HttpNodeImpl node)
+    public HttpCasing(NodeTCPSession session, boolean clientSide, HttpNodeImpl node)
     {
         this.node = node;
         parser = new HttpParser(session, clientSide, this);

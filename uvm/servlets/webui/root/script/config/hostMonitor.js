@@ -213,6 +213,20 @@ if (!Ung.hasResource["Ung.HostMonitor"]) {
                 },{
                     xtype: 'checkbox',
                     checked: true,
+                    boxLabel: "HTTP" + " - " + this.i18n._("User Agent"),
+                    gridColumnHeader: "HTTP" + " - " + this.i18n._("User Agent"),
+                    gridColumnDataIndex: "http-user-agent",
+                    gridColumnWidth: 100
+                },{
+                    xtype: 'checkbox',
+                    checked: true,
+                    boxLabel: "HTTP" + " - " + this.i18n._("User Agent OS"),
+                    gridColumnHeader: "HTTP" + " - " + this.i18n._("User Agent OS"),
+                    gridColumnDataIndex: "http-user-agent-os",
+                    gridColumnWidth: 100
+                },{
+                    xtype: 'checkbox',
+                    checked: true,
                     boxLabel: "Directory Connector" + " - " + this.i18n._("Username"),
                     gridColumnHeader: "Directory Connector" + " - " + this.i18n._("Username"),
                     gridColumnDataIndex: "adconnector-username",
@@ -343,6 +357,10 @@ if (!Ung.hasResource["Ung.HostMonitor"]) {
                     name: "penaltybox-exit-time"
                 },{
                     name: "adconnector-username"
+                },{
+                    name: "http-user-agent"
+                },{
+                    name: "http-user-agent-os"
                 },{
                     name: "capture-username"
                 },{
