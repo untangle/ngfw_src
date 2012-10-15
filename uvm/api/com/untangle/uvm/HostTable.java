@@ -66,6 +66,7 @@ public interface HostTable
         HostTable.KEY_CAPTURE_USERNAME,
         HostTable.KEY_HTTP_AGENT_STRING,
         HostTable.KEY_HTTP_AGENT_STRING_OS,
+        HostTable.KEY_HTTP_AGENT_STRING_DATE_LONG_MILLIS,
         HostTable.KEY_PENALTY_BOX_PRIORITY
     };
     
