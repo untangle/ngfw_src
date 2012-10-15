@@ -413,16 +413,22 @@ public class HttpParser extends AbstractParser
                          */
                         InetAddress clientAddr = getSession().sessionEvent().getCClientAddr();
                         String agentString = header.getValue("user-agent");
-                        logger.warn("XXX: " + clientAddr + " = " + agentString);
                         if (clientAddr != null && agentString != null) {
                             UserAgentString uas = new UserAgentString(agentString);
                             HostTable hostTable = UvmContextFactory.context().hostTable();
+                            Long agentStringSetTime = (Long) hostTable.getAttachment( clientAddr, HostTable.KEY_HTTP_AGENT_STRING_DATE_LONG_MILLIS );
                             
-                            if ( hostTable.getAttachment( clientAddr, HostTable.KEY_HTTP_AGENT_STRING ) == null ) {
+                            /**
+                             * If the current agent string is null
+                             * or if its not null it was set more than 60 seconds ago
+                             * set the agent string and agent string information
+                             */
+                            if ( hostTable.getAttachment( clientAddr, HostTable.KEY_HTTP_AGENT_STRING ) == null ||
+                                 agentStringSetTime == null  ||
+                                 ( System.currentTimeMillis() > agentStringSetTime + (60*1000) ) ) {
                                 hostTable.setAttachment( clientAddr, HostTable.KEY_HTTP_AGENT_STRING, agentString);
-                            }
-                            if ( hostTable.getAttachment( clientAddr, HostTable.KEY_HTTP_AGENT_STRING_OS ) == null ) {
                                 hostTable.setAttachment( clientAddr, HostTable.KEY_HTTP_AGENT_STRING_OS, uas.getOsInfo());
+                                hostTable.setAttachment( clientAddr, HostTable.KEY_HTTP_AGENT_STRING_DATE_LONG_MILLIS, System.currentTimeMillis());
                             }
                         }
                     }

@@ -49,6 +49,7 @@ public interface HostTable
     public final String KEY_CAPTURE_USERNAME = "capture-username"; /* String  - stores the username associated with this host according to capture */
     public final String KEY_HTTP_AGENT_STRING = "http-user-agent"; /* String  - stores the HTTP agent string that the client presented in the header */
     public final String KEY_HTTP_AGENT_STRING_OS = "http-user-agent-os"; /* String  - stores OS informanio from the HTTP agent string that the client presented in the header */
+    public final String KEY_HTTP_AGENT_STRING_DATE_LONG_MILLIS = "http-user-agent-date"; /* Long  - stores timestamp that the agent string was set - used to renew it occasionally */
     public final String KEY_PENALTY_BOX_PRIORITY = "penaltybox-priority"; /* Integer  - stores the bandwidth control priority for this penalty boxed host if bandwidth control penalty boxed this host */
 
     /**
