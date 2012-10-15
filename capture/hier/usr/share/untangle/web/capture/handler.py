@@ -183,14 +183,9 @@ def generate_page(req,args,extra=''):
     # replace the text in the problem section with the agumented value
     page = page.replace('$.ProblemText.$',extra)
 
-    debug = "<BR><HR><BR>";
-    debug += "<BR>===== ARGUMENTS =====<BR>\r\n"
-    debug += pprint.pformat(args)
-    debug +="<BR>===== CAPTURE SETTINGS =====<BR>\r\n"
-    debug += pprint.pformat(captureSettings)
-    debug += "<BR>===== BRANDING SETTINGS =====<BR>\r\n"
-    debug += pprint.pformat(brandingSettings)
-    page = page.replace('<!--DEBUG-->', debug)
+#    debug = create_debug(args)
+    debug = ""
+    page = page.replace('<!--DEBUG-->',debug)
 
     # return the login page we just created
     return(page)
@@ -202,7 +197,7 @@ def split_args(args):
 
     canon_args = {}                     # Start an empty list
     if args == None:                    # Return the empty list if no args
-        return canon_args
+        return(canon_args)
 
     arglist = args.split('&')           # Split into list of name=value strings
 
@@ -212,7 +207,7 @@ def split_args(args):
             canon_args[tmp[0]] = None   # and value in the second part
         else:
             canon_args[tmp[0].upper()] = tmp[1]
-    return canon_args
+    return(canon_args)
 
 #-----------------------------------------------------------------------------
 
@@ -255,5 +250,18 @@ def global_setup(req,appid=None):
     req.headers_out.add("Cache-Control", "no-store, no-cache, must-revalidate, post-check=0, pre-check=0")
     req.headers_out.add("Pragma", "no-cache")
     req.headers_out.add("Expires", "Sat, 1 Jan 2000 00:00:00 GMT");
+
+#-----------------------------------------------------------------------------
+
+def create_debug(args):
+
+    debug = "<BR><HR><BR>";
+    debug += "<BR>===== ARGUMENTS =====<BR>\r\n"
+    debug += pprint.pformat(args)
+    debug +="<BR>===== CAPTURE SETTINGS =====<BR>\r\n"
+    debug += pprint.pformat(captureSettings)
+    debug += "<BR>===== BRANDING SETTINGS =====<BR>\r\n"
+    debug += pprint.pformat(brandingSettings)
+    return(debug)
 
 #-----------------------------------------------------------------------------
