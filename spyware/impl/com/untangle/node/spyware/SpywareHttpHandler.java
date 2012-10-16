@@ -78,8 +78,8 @@ public class SpywareHttpHandler extends HttpStateMachine
         if (null == host) {
             host = requestHeader.getValue("host");
             if (null == host) {
-                InetAddress clientIp = getSession().getClientAddr();
-                host = clientIp.getHostAddress();
+                InetAddress serverIp = getSession().getServerAddr();
+                host = serverIp.getHostAddress();
             }
         }
         host = host.toLowerCase();

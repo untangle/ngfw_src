@@ -56,8 +56,8 @@ public class PhishHttpHandler extends HttpStateMachine
         if (host == null) {
             host = requestHeader.getValue("host");
             if (host == null) {
-                InetAddress clientIp = getSession().getClientAddr();
-                host = clientIp.getHostAddress();
+                InetAddress serverIp = getSession().getServerAddr();
+                host = serverIp.getHostAddress();
             }
         }
         host = host.toLowerCase();
