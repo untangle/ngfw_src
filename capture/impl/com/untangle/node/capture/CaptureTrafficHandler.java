@@ -37,17 +37,6 @@ public class CaptureTrafficHandler extends AbstractEventHandler
         String clientAddr = session.getClientAddr().getHostAddress().toString();
         String serverAddr = session.getServerAddr().getHostAddress().toString();
 
-        CaptureUserEntry user = node.captureUserTable.searchByAddress(clientAddr);
-
-        // if we have an authenticated user release session and allow traffic
-        if (user != null)
-        {
-            user.updateActivityTimer();
-            node.incrementBlinger(CaptureNode.BlingerType.SESSALLOW,1);
-            session.release();
-            return;
-        }
-
         // check all the rules to see if traffic is allowed
         if (node.isSessionAllowed(clientAddr,serverAddr) == true)
         {
@@ -81,16 +70,6 @@ public class CaptureTrafficHandler extends AbstractEventHandler
         NodeUDPSession session = event.session();
         String clientAddr = session.getClientAddr().getHostAddress().toString();
         String serverAddr = session.getServerAddr().getHostAddress().toString();
-        CaptureUserEntry user = node.captureUserTable.searchByAddress(clientAddr);
-
-        // if we have an authenticated user release session and allow traffic
-        if (user != null)
-        {
-            user.updateActivityTimer();
-            node.incrementBlinger(CaptureNode.BlingerType.SESSALLOW,1);
-            session.release();
-            return;
-        }
 
         // check all the rules to see if traffic is allowed
         if (node.isSessionAllowed(clientAddr,serverAddr) == true)

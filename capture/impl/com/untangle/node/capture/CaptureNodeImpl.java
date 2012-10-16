@@ -313,7 +313,7 @@ public class CaptureNodeImpl extends NodeBase implements CaptureNode
 
 ///// ------------------------------------------------------------------------
 ///// public methods for user control
-    
+
     public int userAuthenticate(String address, String username, String password)
     {
         boolean isAuthenticated = false;
@@ -436,9 +436,19 @@ public class CaptureNodeImpl extends NodeBase implements CaptureNode
 
 ///// ------------------------------------------------------------------------
 ///// public method for testing all rules for a session
-    
+
     public boolean isSessionAllowed(String clientAddr,String serverAddr)
     {
+        // see if the client is authenticated
+        CaptureUserEntry user = captureUserTable.searchByAddress(clientAddr);
+
+        // if we have an authenticated user update activity and allow
+        if (user != null)
+        {
+            user.updateActivityTimer();
+            return(true);
+        }
+
         // see if the client is in the pass list
         if (passedClientHash.get(clientAddr) != null) return(true);
 

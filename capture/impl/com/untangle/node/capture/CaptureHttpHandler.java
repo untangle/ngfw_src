@@ -1,4 +1,4 @@
-/*
+/**
  * $Id: CaptureHttpHandler.java 31921 2012-05-12 02:44:47Z mahotz $
  */
 
@@ -54,18 +54,6 @@ class CaptureHttpHandler extends HttpStateMachine
         NodeTCPSession sess = getSession();
         String clientAddr = getSession().getClientAddr().getHostAddress().toString();
         String serverAddr = getSession().getServerAddr().getHostAddress().toString();
-
-        // see if the client is authenticated
-        CaptureUserEntry user = node.captureUserTable.searchByAddress(clientAddr);
-
-            // found in the table so update activity and allow traffic
-            if (user != null)
-            {
-                user.updateActivityTimer();
-                node.incrementBlinger(CaptureNode.BlingerType.SESSALLOW,1);
-                releaseRequest();
-                return(requestHeader);
-            }
 
             // check all the rules to see if traffic is allowed
             if (node.isSessionAllowed(clientAddr,serverAddr) == true)
