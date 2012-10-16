@@ -5,7 +5,9 @@
 package com.untangle.node.capture; // IMPL
 
 import java.util.ArrayList;
+import java.util.Hashtable;
 import java.util.Timer;
+import java.util.List;
 
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
@@ -52,6 +54,8 @@ public class CaptureNodeImpl extends NodeBase implements CaptureNode
     private final String settingsFile = (System.getProperty("uvm.settings.dir") + "/untangle-node-capture/settings_" + getNodeSettings().getId().toString());
     private final CaptureReplacementGenerator replacementGenerator;
 
+    protected Hashtable<String,PassedAddress> passedClientHash = new Hashtable<String,PassedAddress>();
+    protected Hashtable<String,PassedAddress> passedServerHash = new Hashtable<String,PassedAddress>();
     protected CaptureSettings captureSettings;
     protected CaptureUserTable captureUserTable;
     protected Timer timer;
@@ -230,6 +234,26 @@ public class CaptureNodeImpl extends NodeBase implements CaptureNode
         // settings object to the node.
 
         this.captureSettings = argSettings;
+        List<PassedAddress> clientList = captureSettings.getPassedClients();
+        List<PassedAddress> serverList = captureSettings.getPassedServers();
+        PassedAddress local;
+
+        passedClientHash.clear();
+        passedServerHash.clear();
+
+        // put all the passed clients into a hashtable
+        for (int cc = 0; cc < clientList.size(); cc++)
+        {
+            local = clientList.get(cc);
+            passedClientHash.put(local.getAddress(),local);
+        }
+
+        // put all of the passed servers into a hashtable
+        for(int ss = 0; ss < serverList.size(); ss++)
+        {
+            local = serverList.get(ss);
+            passedServerHash.put(local.getAddress(),local);
+        }
     }
 
     @Override
@@ -287,6 +311,9 @@ public class CaptureNodeImpl extends NodeBase implements CaptureNode
         return replacementGenerator.generateResponse(block, session, false);
     }
 
+///// ------------------------------------------------------------------------
+///// public methods for user control
+    
     public int userAuthenticate(String address, String username, String password)
     {
         boolean isAuthenticated = false;
@@ -405,5 +432,19 @@ public class CaptureNodeImpl extends NodeBase implements CaptureNode
         logger.info("Logout success: " + address);
 
         return(0);
+    }
+
+///// ------------------------------------------------------------------------
+///// public method for testing all rules for a session
+    
+    public boolean isSessionAllowed(String clientAddr,String serverAddr)
+    {
+        // see if the client is in the pass list
+        if (passedClientHash.get(clientAddr) != null) return(true);
+
+        // see if the server is in the pass list
+        if (passedServerHash.get(serverAddr) != null) return(true);
+
+        return(false);
     }
 }

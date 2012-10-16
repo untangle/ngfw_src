@@ -52,34 +52,43 @@ class CaptureHttpHandler extends HttpStateMachine
     protected Header doRequestHeader(Header requestHeader)
     {
         NodeTCPSession sess = getSession();
-        String address = getSession().getClientAddr().getHostAddress().toString();
+        String clientAddr = getSession().getClientAddr().getHostAddress().toString();
+        String serverAddr = getSession().getServerAddr().getHostAddress().toString();
 
-        CaptureUserEntry user = node.captureUserTable.searchByAddress(address);
+        // see if the client is authenticated
+        CaptureUserEntry user = node.captureUserTable.searchByAddress(clientAddr);
 
+            // found in the table so update activity and allow traffic
             if (user != null)
             {
                 user.updateActivityTimer();
                 node.incrementBlinger(CaptureNode.BlingerType.SESSALLOW,1);
                 releaseRequest();
-                return requestHeader;
+                return(requestHeader);
             }
 
-        logger.info("Sending HTTP redirect to unauthenticated user " + address);
+            // check all the rules to see if traffic is allowed
+            if (node.isSessionAllowed(clientAddr,serverAddr) == true)
+            {
+                // TODO event log here
+                node.incrementBlinger(CaptureNode.BlingerType.SESSALLOW,1);
+                releaseRequest();
+                return(requestHeader);
+            }
+
+        logger.info("Sending HTTP redirect to unauthenticated user " + clientAddr);
 
         String method = getRequestLine().getMethod().toString();
-        String host = getRequestLine().getRequestUri().getHost();
         String uri = getRequestLine().getRequestUri().toString();
 
-        if (host == null)
-        {
-            host = requestHeader.getValue("host");
-        }
+        // look for a host in the request line
+        String host = getRequestLine().getRequestUri().getHost();
 
-        if (host == null)
-        {
-            InetAddress clientIp = getSession().getClientAddr();
-            host = clientIp.getHostAddress();
-        }
+        // if not found there look in the request header
+        if (host == null) host = requestHeader.getValue("host");
+
+        // if still not found then just use the IP address of the server
+        if (host == null) host = getSession().getServerAddr().getHostAddress().toString();
 
         host = host.toLowerCase();
 

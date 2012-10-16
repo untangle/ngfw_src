@@ -24,4 +24,6 @@ public interface CaptureNode extends Node
     int userAuthenticate(String address, String username, String password);
     int userActivate(String address, String agree);
     int userLogout(String address);
+    
+    boolean isSessionAllowed(String clientAddr,String serverAddr);
 }

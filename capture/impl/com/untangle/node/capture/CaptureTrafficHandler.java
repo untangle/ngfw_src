@@ -34,8 +34,10 @@ public class CaptureTrafficHandler extends AbstractEventHandler
     public void handleTCPNewSession(TCPSessionEvent event)
     {
         NodeTCPSession session = event.session();
-        String address = session.getClientAddr().getHostAddress();
-        CaptureUserEntry user = node.captureUserTable.searchByAddress(address);
+        String clientAddr = session.getClientAddr().getHostAddress().toString();
+        String serverAddr = session.getServerAddr().getHostAddress().toString();
+
+        CaptureUserEntry user = node.captureUserTable.searchByAddress(clientAddr);
 
         // if we have an authenticated user release session and allow traffic
         if (user != null)
@@ -46,8 +48,17 @@ public class CaptureTrafficHandler extends AbstractEventHandler
             return;
         }
 
-        // not authenicated so allow all web traffic so the http
-        // casing can create the redirect to the captive page
+        // check all the rules to see if traffic is allowed
+        if (node.isSessionAllowed(clientAddr,serverAddr) == true)
+        {
+            // TODO event log here
+            node.incrementBlinger(CaptureNode.BlingerType.SESSALLOW,1);
+            session.release();
+            return;
+        }
+
+        // traffic not yet allowed so check for and pass web traffic so
+        // the http casing can create the redirect to the captive page
         if (session.getServerPort() == 80)
         {
             node.incrementBlinger(CaptureNode.BlingerType.SESSALLOW,1);
@@ -55,7 +66,7 @@ public class CaptureTrafficHandler extends AbstractEventHandler
             return;
         }
 
-        // user not authenticated and not http traffic so block
+        // not allowed and not web traffic so we block
         node.incrementBlinger(CaptureNode.BlingerType.SESSBLOCK,1);
         session.resetClient();
         session.resetServer();
@@ -68,8 +79,9 @@ public class CaptureTrafficHandler extends AbstractEventHandler
     public void handleUDPNewSession(UDPSessionEvent event)
     {
         NodeUDPSession session = event.session();
-        String address = session.getClientAddr().getHostAddress();
-        CaptureUserEntry user = node.captureUserTable.searchByAddress(address);
+        String clientAddr = session.getClientAddr().getHostAddress().toString();
+        String serverAddr = session.getServerAddr().getHostAddress().toString();
+        CaptureUserEntry user = node.captureUserTable.searchByAddress(clientAddr);
 
         // if we have an authenticated user release session and allow traffic
         if (user != null)
@@ -80,9 +92,20 @@ public class CaptureTrafficHandler extends AbstractEventHandler
             return;
         }
 
-        // not authenticated so we hook DNS traffic so we can respond
-        // to all queries with our own IP address which will cause
-        // any HTTP requests to redirect to the captive page
+        // check all the rules to see if traffic is allowed
+        if (node.isSessionAllowed(clientAddr,serverAddr) == true)
+        {
+            // TODO event log here
+            node.incrementBlinger(CaptureNode.BlingerType.SESSALLOW,1);
+            session.release();
+            return;
+        }
+
+        // traffic not yet allowed so we hook DNS traffic which will
+        // allow us to do the lookup ourselves.  this will ensure we
+        // can't be circumvented by creative UDP port 53 traffic and it
+        // will allow HTTP requests to become established which is
+        // required for the http-casing to do the redirect
         if (session.getServerPort() == 53)
         {
             DNSPacket packet = new DNSPacket();
@@ -90,7 +113,7 @@ public class CaptureTrafficHandler extends AbstractEventHandler
             return;
         }
 
-        // user not authenticated and not DNS traffic so block
+        // not allow and not DNS traffic so block
         node.incrementBlinger(CaptureNode.BlingerType.SESSBLOCK,1);
         session.expireClient();
         session.expireServer();

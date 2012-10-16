@@ -62,7 +62,7 @@ if (!Ung.hasResource["Ung.Capture"]) {
                     xtype: 'fieldset',
                     cls: 'description',
                     title: this.i18n._('Status'),
-                    height: 70,
+                    height: 50,
                     html: this.i18n._('Captive Portal allows administrators to require network users to complete a defined process, such as logging in or accepting a network usage policy, before accessing the internet.')
                  }]
             });
@@ -165,8 +165,8 @@ if (!Ung.hasResource["Ung.Capture"]) {
                 items: [{
                     xtype: 'fieldset',
                     cls: 'description',
-                    title: this.i18n._('Rules'),
-                    height: 70,
+                    title: this.i18n._('Capture Rules'),
+                    height: 50,
                     html: this.i18n._("Network access is controlled based on the set of rules defined below. To learn more click on the <b>Help</b> button below.")
                 },  this.gridCaptureRules= Ext.create('Ung.EditorGrid',{
                     anchor: '100% -80',
@@ -377,14 +377,12 @@ if (!Ung.hasResource["Ung.Capture"]) {
             this.gridPassedClients =
                 this.buildGridPassedList( "gridPassedClients",
                                           this.i18n._( "Pass Listed Client Addresses"),
-                                          "com.untangle.node.capture.PassedAddress",
                                           "passedClients",
                                           "Pass Listed Client Addresses is a list of Client IPs that are not subjected to the Captive Portal.");
 
                 this.gridPassedServers =
                 this.buildGridPassedList( "gridPassedServers",
                                           this.i18n._( "Pass Listed Server Addresses"),
-                                          "com.untangle.node.capture.PassedAddress",
                                           "passedServers",
                                           "Pass Listed Server Addresses is a list of Server IPs that unauthenticated clients can access without authentication.");
 
@@ -398,28 +396,32 @@ if (!Ung.hasResource["Ung.Capture"]) {
                 autoScroll: true,
                 border: false,
                 cls: "ung-panel",
-                items: [ this.gridPassedClients, this.gridPassedServers ]
+                items: [{
+                    xtype: 'fieldset',
+                    cls: 'description',
+                    title: this.i18n._('Passed Hosts'),
+                    height: 50,
+                    html: this.i18n._("The pass lists provide a quick alternative way to allow access from specific clients, or to specific servers.")
+                }, this.gridPassedClients, this.gridPassedServers ]
             });
         },
 
-        buildGridPassedList: function( name, title, javaClass, dataProperty , tooltip) {
+        buildGridPassedList: function( name, title, dataProperty , tooltip) {
             return Ext.create('Ung.EditorGrid', {
                 name: name,
                 tooltip: tooltip,
                 settingsCmp: this,
                 hasEdit: false,
-                anchor: "100% 49%",
+                anchor: "100% 45%",
                 emptyRow: {
                     "live": true,
                     "log": false,
-                    "address": "any",
-                    "name": this.i18n._("[no name]"),
-                    "category": this.i18n._("[no category]"),
+                    "address": "0.0.0.0",
                     "description": this.i18n._("[no description]"),
-                    "javaClass": javaClass
+                    "javaClass": "com.untangle.node.capture.PassedAddress"
                 },
                 title: this.i18n._(title),
-                recordJavaClass: javaClass,
+                recordJavaClass: "com.untangle.node.capture.PassedAddress",
                 paginated: false,
                 dataProperty: dataProperty,
                 fields: [{
@@ -430,14 +432,8 @@ if (!Ung.hasResource["Ung.Capture"]) {
                     name: "log"
                 },{
                     name: "address"
-                },{
-                    name: "name"
-                },{
-                    name: "category"
                 }, {
                     name: "description"
-                }, {
-                    name: "javaClass"
                 }],
                 columns: [
                     {
@@ -448,22 +444,29 @@ if (!Ung.hasResource["Ung.Capture"]) {
                         width:55
                     },
                     {
-                        header: this.i18n._("Description"),
-                        width: 200,
-                        dataIndex: "description",
-                        editor: {
-                            xtype:'textfield',
-                            allowBlank:false
-                        }
+                        xtype:'checkcolumn',
+                        header: this.i18n._("Log"),
+                        dataIndex: "log",
+                        fixed: true,
+                        width:55
                     },
                     {
                         header: this.i18n._("Address"),
                         width: 200,
                         dataIndex: "address",
-                        flex:1,
                         editor:{
                             xtype:'textfield',
                             allowBlank: false
+                        }
+                    },
+                    {
+                        header: this.i18n._("Description"),
+                        width: 400,
+                        flex:1,
+                        dataIndex: "description",
+                        editor: {
+                            xtype:'textfield',
+                            allowBlank:false
                         }
                     }
                 ],
@@ -658,7 +661,7 @@ if (!Ung.hasResource["Ung.Capture"]) {
                 },
                 items: [{
                     xtype: "fieldset",
-                    title: this.i18n._( "Captive Portal Page" ),
+                    title: this.i18n._( "Captive Page" ),
                     items: [{
                         xtype: "radio",
                         boxLabel: this.i18n._("Basic Message"),
