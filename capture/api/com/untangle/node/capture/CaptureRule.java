@@ -1,6 +1,7 @@
 /*
  * $Id: CaptureRule.java 32638 2012-08-16 18:54:27Z dmorris $
  */
+
 package com.untangle.node.capture;
 
 import java.util.List;
@@ -32,7 +33,7 @@ public class CaptureRule implements JSONString, Serializable
     private Boolean log;
     private Boolean block;
     private String description;
-    
+
     public CaptureRule()
     {
     }
@@ -45,7 +46,7 @@ public class CaptureRule implements JSONString, Serializable
         this.setBlock(Boolean.valueOf(block));
         this.setDescription(description);
     }
-    
+
     public List<CaptureRuleMatcher> getMatchers()
     {
         return this.matchers;
@@ -113,7 +114,7 @@ public class CaptureRule implements JSONString, Serializable
     {
         this.log = log;
     }
-    
+
     public String getDescription()
     {
         return description;
@@ -123,13 +124,13 @@ public class CaptureRule implements JSONString, Serializable
     {
         this.description = description;
     }
-    
+
     public String toJSONString()
     {
         JSONObject jO = new JSONObject(this);
         return jO.toString();
     }
-    
+
     public boolean isMatch( short protocol,
                             int srcIntf, int dstIntf,
                             InetAddress srcAddress, InetAddress dstAddress,
@@ -140,7 +141,7 @@ public class CaptureRule implements JSONString, Serializable
             return false;
 
         //logger.debug("Checking rule " + getId() + " against [" + protocol + " " + srcAddress + ":" + srcPort + " -> " + dstAddress + ":" + dstPort + " (" + username + ")]");
-            
+
         /**
          * If no matchers return true
          */
@@ -162,6 +163,4 @@ public class CaptureRule implements JSONString, Serializable
          */
         return true;
     }
-    
 }
-

@@ -1,4 +1,4 @@
-/**
+/*
  * $Id: CaptureTrafficHandler.java,v 1.00 2011/12/14 01:02:03 mahotz Exp $
  */
 
@@ -11,6 +11,7 @@ import com.untangle.uvm.vnet.event.TCPSessionEvent;
 import com.untangle.uvm.vnet.event.UDPSessionEvent;
 import com.untangle.uvm.vnet.event.UDPPacketEvent;
 import com.untangle.uvm.vnet.AbstractEventHandler;
+import com.untangle.uvm.vnet.IPNewSessionRequest;
 import com.untangle.uvm.vnet.NodeTCPSession;
 import com.untangle.uvm.vnet.NodeUDPSession;
 import com.untangle.uvm.UvmContextFactory;
@@ -34,10 +35,20 @@ public class CaptureTrafficHandler extends AbstractEventHandler
     public void handleTCPNewSession(TCPSessionEvent event)
     {
         NodeTCPSession session = event.session();
+
+        // we look for and ignore all traffic on port 80 since
+        // the http-casing handler will take care of all that
+        if (session.getServerPort() == 80)
+        {
+            session.release();
+            return;
+        }
+
         String clientAddr = session.getClientAddr().getHostAddress().toString();
         String serverAddr = session.getServerAddr().getHostAddress().toString();
 
-        // check all the rules to see if traffic is allowed
+        // first check is to see if the user is already authenticated
+        // or the client or server is in one of the pass lists
         if (node.isSessionAllowed(clientAddr,serverAddr) == true)
         {
             // TODO event log here
@@ -46,16 +57,21 @@ public class CaptureTrafficHandler extends AbstractEventHandler
             return;
         }
 
-        // traffic not yet allowed so check for and pass web traffic so
-        // the http casing can create the redirect to the captive page
-        if (session.getServerPort() == 80)
+        // not authenticated and no pass list match so check the rules
+        CaptureRule rule = node.checkCaptureRules(session);
+
+        // by default we block until authentication so we only need to
+        // look for an explicit pass rule and allow the traffic if found
+        if ((rule != null) && (rule.getBlock() == false))
         {
+            // TODO event log here
             node.incrementBlinger(CaptureNode.BlingerType.SESSALLOW,1);
             session.release();
             return;
         }
 
-        // not allowed and not web traffic so we block
+        // not yet allowed and not web traffic so we block
+        // TODO event log here
         node.incrementBlinger(CaptureNode.BlingerType.SESSBLOCK,1);
         session.resetClient();
         session.resetServer();
@@ -71,10 +87,23 @@ public class CaptureTrafficHandler extends AbstractEventHandler
         String clientAddr = session.getClientAddr().getHostAddress().toString();
         String serverAddr = session.getServerAddr().getHostAddress().toString();
 
-        // check all the rules to see if traffic is allowed
+        // first check is to see if the user is already authenticated
+        // or the client or server is in one of the pass lists
         if (node.isSessionAllowed(clientAddr,serverAddr) == true)
         {
             // TODO event log here
+            node.incrementBlinger(CaptureNode.BlingerType.SESSALLOW,1);
+            session.release();
+            return;
+        }
+
+        // not authenticated and no pass list match so check the rules
+        CaptureRule rule = node.checkCaptureRules(session);
+
+        // by default we block until authentication so we only need to
+        // look for an explicit pass rule and allow the traffic if found
+        if ((rule != null) && (rule.getBlock() == false))
+        {
             node.incrementBlinger(CaptureNode.BlingerType.SESSALLOW,1);
             session.release();
             return;
@@ -87,12 +116,13 @@ public class CaptureTrafficHandler extends AbstractEventHandler
         // required for the http-casing to do the redirect
         if (session.getServerPort() == 53)
         {
+            // attach an empty for the packet handler to use
             DNSPacket packet = new DNSPacket();
             session.attach(packet);
             return;
         }
 
-        // not allow and not DNS traffic so block
+        // not yet allowed and not DNS traffic so block
         node.incrementBlinger(CaptureNode.BlingerType.SESSBLOCK,1);
         session.expireClient();
         session.expireServer();

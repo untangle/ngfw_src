@@ -1,4 +1,4 @@
-/**
+/*
  * $Id: CaptureHttpHandler.java 31921 2012-05-12 02:44:47Z mahotz $
  */
 
@@ -51,18 +51,32 @@ class CaptureHttpHandler extends HttpStateMachine
     @Override
     protected Header doRequestHeader(Header requestHeader)
     {
-        NodeTCPSession sess = getSession();
-        String clientAddr = getSession().getClientAddr().getHostAddress().toString();
-        String serverAddr = getSession().getServerAddr().getHostAddress().toString();
+        NodeTCPSession session = getSession();
+        String clientAddr = session.getClientAddr().getHostAddress().toString();
+        String serverAddr = session.getServerAddr().getHostAddress().toString();
 
-            // check all the rules to see if traffic is allowed
-            if (node.isSessionAllowed(clientAddr,serverAddr) == true)
-            {
-                // TODO event log here
-                node.incrementBlinger(CaptureNode.BlingerType.SESSALLOW,1);
-                releaseRequest();
-                return(requestHeader);
-            }
+        // first check is to see if the user is already authenticated
+        // or the client or server is in one of the pass lists
+        if (node.isSessionAllowed(clientAddr,serverAddr) == true)
+        {
+            // TODO event log here
+            node.incrementBlinger(CaptureNode.BlingerType.SESSALLOW,1);
+            releaseRequest();
+            return(requestHeader);
+        }
+
+        // not authenticated and no pass list match so check the rules
+        CaptureRule rule = node.checkCaptureRules(session);
+
+        // by default we block until authentication so we only need to
+        // look for an explicit pass rule and allow the traffic if found
+        if ((rule != null) && (rule.getBlock() == false))
+        {
+            // TODO event log here
+            node.incrementBlinger(CaptureNode.BlingerType.SESSALLOW,1);
+            releaseRequest();
+            return(requestHeader);
+        }
 
         logger.info("Sending HTTP redirect to unauthenticated user " + clientAddr);
 
@@ -81,7 +95,7 @@ class CaptureHttpHandler extends HttpStateMachine
         host = host.toLowerCase();
 
         CaptureBlockDetails details = new CaptureBlockDetails(host, uri, method);
-        Token[] response = node.generateResponse(details, sess);
+        Token[] response = node.generateResponse(details, session);
         node.incrementBlinger(CaptureNode.BlingerType.SESSBLOCK,1);
         blockRequest(response);
         return requestHeader;

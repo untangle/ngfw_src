@@ -1,4 +1,4 @@
-/**
+/*
  * $Id: CaptureNodeImpl.java,v 1.00 2011/12/12 13:31:21 mahotz Exp $
  */
 
@@ -20,6 +20,7 @@ import com.untangle.uvm.node.DirectoryConnector;
 import com.untangle.uvm.node.IPMaskedAddress;
 import com.untangle.uvm.node.PortRange;
 import com.untangle.uvm.node.NodeMetric;
+import com.untangle.uvm.vnet.NodeSession;
 import com.untangle.uvm.vnet.Affinity;
 import com.untangle.uvm.vnet.Protocol;
 import com.untangle.uvm.vnet.Fitting;
@@ -439,15 +440,16 @@ public class CaptureNodeImpl extends NodeBase implements CaptureNode
 
     public boolean isSessionAllowed(String clientAddr,String serverAddr)
     {
-        // see if the client is authenticated
+        // first we see if the client is authenticated since if they
+        // are we are done and the traffic is allowed
         CaptureUserEntry user = captureUserTable.searchByAddress(clientAddr);
 
-        // if we have an authenticated user update activity and allow
-        if (user != null)
-        {
-            user.updateActivityTimer();
-            return(true);
-        }
+            // if we have an authenticated user update activity and allow
+            if (user != null)
+            {
+                user.updateActivityTimer();
+                return(true);
+            }
 
         // see if the client is in the pass list
         if (passedClientHash.get(clientAddr) != null) return(true);
@@ -456,5 +458,26 @@ public class CaptureNodeImpl extends NodeBase implements CaptureNode
         if (passedServerHash.get(serverAddr) != null) return(true);
 
         return(false);
+    }
+
+    public CaptureRule checkCaptureRules(NodeSession session)
+    {
+        List<CaptureRule> ruleList = captureSettings.getCaptureRules();
+
+            // check the session against the rule list
+            for (CaptureRule rule : ruleList)
+            {
+                if (rule.isMatch(session.getProtocol(),
+                    session.getClientIntf(), session.getServerIntf(),
+                    session.getClientAddr(), session.getServerAddr(),
+                    session.getClientPort(), session.getServerPort(),
+                    (String)session.globalAttachment(NodeSession.KEY_PLATFORM_USERNAME)))
+                    {
+                    logger.debug("MATCH: " + rule.getDescription() + " BLOCK:" + rule.getBlock());
+                    return(rule);
+                    }
+            }
+
+        return(null);
     }
 }
