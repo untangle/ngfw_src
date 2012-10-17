@@ -13,6 +13,8 @@ import org.apache.log4j.Logger;
 import org.json.JSONObject;
 import org.json.JSONString;
 
+import com.untangle.uvm.UvmContextFactory;
+import com.untangle.uvm.HostTable;
 import com.untangle.uvm.vnet.NodeSession;
 import com.untangle.uvm.vnet.NodeIPSession;
 import com.untangle.uvm.node.IPMatcher;
@@ -22,7 +24,6 @@ import com.untangle.uvm.node.UserMatcher;
 import com.untangle.uvm.node.GroupMatcher;
 import com.untangle.uvm.node.ProtocolMatcher;
 import com.untangle.uvm.node.RuleMatcher;
-import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.node.DirectoryConnector;
 import com.untangle.node.util.GlobUtil;
 
@@ -61,6 +62,8 @@ public class RuleMatcher implements JSONString, Serializable
             BANDWIDTH_SERVER_QUOTA_EXCEEDED, /* none */
             HTTP_HOST, /* "playboy.com" "any" */
             HTTP_URI, /* "/foo.html" "any" */
+            HTTP_USER_AGENT, /* "playboy.com" "any" */
+            HTTP_USER_AGENT_OS, /* "*Mozilla*" "any" */
             PROTOCOL_CONTROL_SIGNATURE, /* "Bittorrent" "*" */
             PROTOCOL_CONTROL_CATEGORY, /* "Networking" "*" */
             PROTOCOL_CONTROL_DESCRIPTION, /* "description" "*" */
@@ -271,6 +274,8 @@ public class RuleMatcher implements JSONString, Serializable
 
         case HTTP_HOST:
         case HTTP_URI:
+        case HTTP_USER_AGENT:
+        case HTTP_USER_AGENT_OS:
         case PROTOCOL_CONTROL_SIGNATURE:
         case PROTOCOL_CONTROL_CATEGORY:
         case PROTOCOL_CONTROL_DESCRIPTION:
@@ -384,6 +389,18 @@ public class RuleMatcher implements JSONString, Serializable
                 return false;
             return Pattern.matches(regexValue, attachment);
 
+        case HTTP_USER_AGENT:
+            attachment = (String) UvmContextFactory.context().hostTable().getAttachment( sess.getClientAddr(), HostTable.KEY_HTTP_AGENT_STRING );
+            if (attachment == null)
+                return false;
+            return Pattern.matches(regexValue, attachment);
+            
+        case HTTP_USER_AGENT_OS:
+            attachment = (String)UvmContextFactory.context().hostTable().getAttachment( sess.getClientAddr(), HostTable.KEY_HTTP_AGENT_STRING_OS );
+            if (attachment == null)
+                return false;
+            return Pattern.matches(regexValue, attachment);
+            
         case PROTOCOL_CONTROL_SIGNATURE:
             attachment = (String) sess.globalAttachment(NodeSession.KEY_PROTOFILTER_SIGNATURE);
             if (attachment == null)
@@ -642,6 +659,18 @@ public class RuleMatcher implements JSONString, Serializable
             
             logger.debug("Checking if " + username + " is in group \"" + value + "\" : " + isMemberOf);
             return isMemberOf;
+
+        case HTTP_USER_AGENT:
+            attachment = (String) UvmContextFactory.context().hostTable().getAttachment( srcAddress, HostTable.KEY_HTTP_AGENT_STRING );
+            if (attachment == null)
+                return false;
+            return Pattern.matches(regexValue, attachment);
+            
+        case HTTP_USER_AGENT_OS:
+            attachment = (String)UvmContextFactory.context().hostTable().getAttachment( srcAddress, HostTable.KEY_HTTP_AGENT_STRING_OS );
+            if (attachment == null)
+                return false;
+            return Pattern.matches(regexValue, attachment);
             
         default:
             logger.error("Unknown Matcher Type: \"" + this.matcherType + "\""); 
