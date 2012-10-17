@@ -637,6 +637,12 @@ public class RuleMatcher implements JSONString, Serializable
                 return true;
             return false;
 
+        case CLIENT_IN_PENALTY_BOX:
+            return UvmContextFactory.context().hostTable().hostInPenaltyBox( srcAddress );
+            
+        case SERVER_IN_PENALTY_BOX:
+            return UvmContextFactory.context().hostTable().hostInPenaltyBox( dstAddress );
+
         case DIRECTORY_CONNECTOR_GROUP:
             if (username == null)
                 return false;
