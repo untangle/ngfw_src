@@ -1,6 +1,7 @@
 import unittest
 import time
 import sys
+import traceback
 from jsonrpc import ServiceProxy
 from jsonrpc import JSONRPCException
 from uvm import Manager
@@ -314,6 +315,43 @@ class FirewallTests(unittest.TestCase):
     def test_065_blockSrcIntfWan(self):
         nukeRules();
         appendRule( createSingleMatcherRule( "SRC_INTF", "wan" ) );
+        result = clientControl.runCommand("wget -o /dev/null -t 1 --timeout=3 http://test.untangle.com/")
+        assert (result == 0)
+
+    # verify src penalty box wan not blocked
+    def test_066_blockSrcPenaltyBox(self):
+        nukeRules();
+        appendRule( createSingleMatcherRule( "CLIENT_IN_PENALTY_BOX", None ) );
+        result = clientControl.runCommand("wget -o /dev/null -t 1 --timeout=3 http://test.untangle.com/")
+        assert (result == 0)
+
+    # verify src penalty box wan is blocked when client in penalty box
+    def test_067_blockSrcPenaltyBox2(self):
+        uvmContext.hostTable().addHostToPenaltyBox( ClientControl.hostIP, 1, 60 );
+        nukeRules();
+        appendRule( createSingleMatcherRule( "CLIENT_IN_PENALTY_BOX", None ) );
+        result = clientControl.runCommand("wget -o /dev/null -t 1 --timeout=3 http://test.untangle.com/")
+        assert (result == 1)
+        uvmContext.hostTable().releaseHostFromPenaltyBox( ClientControl.hostIP );
+
+    # verify src penalty box wan not blocked
+    def test_068_blockDstPenaltyBox(self):
+        nukeRules();
+        appendRule( createSingleMatcherRule( "SERVER_IN_PENALTY_BOX", None ) );
+        result = clientControl.runCommand("wget -o /dev/null -t 1 --timeout=3 http://test.untangle.com/")
+        assert (result == 0)
+
+    # verify bogus user agent match not blocked
+    def test_070_blockUserAgent(self):
+        nukeRules();
+        appendRule( createSingleMatcherRule( "HTTP_USER_AGENT", "*testtesttesttesttesttesttest*" ) );
+        result = clientControl.runCommand("wget -o /dev/null -t 1 --timeout=3 http://test.untangle.com/")
+        assert (result == 0)
+
+    # verify bogus user agent match not blocked
+    def test_072_blockUserAgentOs(self):
+        nukeRules();
+        appendRule( createSingleMatcherRule( "HTTP_USER_AGENT_OS", "*testtesttesttesttesttesttest*" ) );
         result = clientControl.runCommand("wget -o /dev/null -t 1 --timeout=3 http://test.untangle.com/")
         assert (result == 0)
 
