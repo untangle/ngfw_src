@@ -57,6 +57,11 @@ public class HostTableImpl implements HostTable
         UvmContextFactory.context().newThread(this.cleaner).start();
     }
     
+    public void setAttachment( InetAddress addr, String key, String str )
+    {
+        setAttachment( addr, key, (Object)str);
+    }
+
     public void setAttachment( InetAddress addr, String key, Object ob )
     {
         if ( addr == null || key == null ) {

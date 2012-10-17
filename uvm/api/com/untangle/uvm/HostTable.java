@@ -77,6 +77,12 @@ public interface HostTable
     public void setAttachment( InetAddress addr, String key, Object ob );
 
     /**
+     * Same as above, but for String types
+     * This is needed for python RPC, because it does not do the string->object resolution correctly
+     */
+    public void setAttachment( InetAddress addr, String key, String str );
+    
+    /**
      * Get the attachment on a host's table for the specified key
      * Returns null if there is no host table entry for this host
      * Returns null if there is no attachment for this key for this host
