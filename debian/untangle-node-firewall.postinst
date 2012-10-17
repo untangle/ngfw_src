@@ -2,7 +2,6 @@
 
 /usr/bin/ucli -q -t 30 register $DPKG_MAINTSCRIPT_PACKAGE 2>/dev/null || true
 
-touch /etc/untangle/reports-to-restart
 
 # 9.4 conversion
 sed -i -e 's/"DIRECTORY_CONNECTOR_USERNAME"/"USERNAME"/g' /usr/share/untangle/settings/$DPKG_MAINTSCRIPT_PACKAGE/*.js
