@@ -40,7 +40,7 @@ class Firewall(Node):
     @sql_helper.print_timing
     def setup(self):
         ft = reports.engine.get_fact_table('reports.session_totals')
-        ft.measures.append(Column('firewall_blocks', 'integer', "count(CASE WHEN firewall_was_blocked THEN 1 ELSE null END)"))
+        ft.measures.append(Column('firewall_blocks', 'integer', "count(CASE WHEN firewall_blocked THEN 1 ELSE null END)"))
         ft.dimensions.append(Column('firewall_rule_index', 'integer'))
 
     def get_toc_membership(self):
@@ -138,8 +138,8 @@ class DailyRules(reports.Graph):
                 unit = "Day"
                 formatter = DATE_FORMATTER
 
-            sums = ["COUNT(CASE WHEN firewall_rule_index IS NOT NULL AND NOT firewall_was_blocked THEN 1 ELSE null END)",
-                    "COUNT(CASE WHEN firewall_was_blocked THEN 1 ELSE null END)"]
+            sums = ["COUNT(CASE WHEN firewall_rule_index IS NOT NULL AND NOT firewall_blocked THEN 1 ELSE null END)",
+                    "COUNT(CASE WHEN firewall_blocked THEN 1 ELSE null END)"]
 
             extra_where = []
             if host:
@@ -387,7 +387,7 @@ class FirewallDetail(DetailSection):
             rv.append(ColumnDesc('uid', _('User'), 'UserLink'))
 
         rv = rv + [ColumnDesc('firewall_rule_index', _('Rule Applied')),
-                   ColumnDesc('firewall_was_blocked', _('Blocked')),
+                   ColumnDesc('firewall_blocked', _('Blocked')),
                    ColumnDesc('c_server_addr', _('Destination Ip')),
                    ColumnDesc('c_server_port', _('Destination Port')),
                    ColumnDesc('c_client_addr', _('Source Ip')),
@@ -406,7 +406,7 @@ class FirewallDetail(DetailSection):
         if not user:
             sql = sql + "uid, "
 
-        sql = sql + ("""firewall_rule_index, firewall_was_blocked::text, host(c_server_addr), c_server_port, host(c_client_addr), c_client_port
+        sql = sql + ("""firewall_rule_index, firewall_blocked::text, host(c_server_addr), c_server_port, host(c_client_addr), c_client_port
 FROM reports.sessions
 WHERE time_stamp >= %s::timestamp without time zone AND time_stamp < %s::timestamp without time zone
 AND NOT firewall_rule_index IS NULL""" % (DateFromMx(start_date),

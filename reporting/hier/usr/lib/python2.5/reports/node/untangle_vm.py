@@ -204,9 +204,9 @@ CREATE TABLE reports.sessions (
         sql_helper.add_column('reports', 'sessions', 'server_intf', 'int2')
         sql_helper.add_column('reports', 'sessions', 'bandwidth_priority', 'bigint')
         sql_helper.add_column('reports', 'sessions', 'bandwidth_rule', 'bigint')
-        sql_helper.add_column('reports', 'sessions', 'firewall_was_blocked', 'boolean')
+        sql_helper.add_column('reports', 'sessions', 'firewall_blocked', 'boolean')
+        sql_helper.add_column('reports', 'sessions', 'firewall_flagged', 'boolean')
         sql_helper.add_column('reports', 'sessions', 'firewall_rule_index', 'integer')
-        sql_helper.add_column('reports', 'sessions', 'firewall_rule_description', 'text')
         sql_helper.add_column('reports', 'sessions', 'pf_protocol', 'text')
         sql_helper.add_column('reports', 'sessions', 'pf_blocked', 'boolean')
         sql_helper.add_column('reports', 'sessions', 'classd_application', 'text')
@@ -226,6 +226,7 @@ CREATE TABLE reports.sessions (
 
         # drop obsolete column
         sql_helper.drop_column('reports', 'sessions', 'ips_name')
+        sql_helper.drop_column('reports', 'sessions', 'firewall_rule_description')
 
         # we used to create event_id as serial instead of bigserial - convert if necessary
         sql_helper.convert_column("reports","sessions","event_id","integer","bigint");
@@ -252,9 +253,12 @@ CREATE TABLE reports.sessions (
         sql_helper.create_index("reports","sessions","policy_id");
         sql_helper.create_index("reports","sessions","time_stamp");
 
+        # 9.4 conversion
+        sql_helper.rename_column("reports","sessions","firewall_was_blocked","firewall_blocked");
+
         # firewall event log query indexes
         # sql_helper.create_index("reports","sessions","firewall_rule_index");
-        # sql_helper.create_index("reports","sessions","firewall_was_blocked");
+        # sql_helper.create_index("reports","sessions","firewall_blocked");
 
         # spyware event log query indexes
         # sql_helper.create_index("reports","sessions","sw_access_ident");

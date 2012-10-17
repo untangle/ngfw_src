@@ -36,7 +36,7 @@ public class FirewallImpl extends NodeBase implements Firewall
     private final Logger logger = Logger.getLogger(getClass());
 
     private static final String STAT_BLOCK = "block";
-    private static final String STAT_LOG = "log";
+    private static final String STAT_FLAG = "flag";
     private static final String STAT_PASS = "pass";
     
     private final EventHandler handler;
@@ -44,6 +44,7 @@ public class FirewallImpl extends NodeBase implements Firewall
     private final SoloPipeSpec[] pipeSpecs;
 
     private EventLogQuery allEventsQuery;
+    private EventLogQuery flaggedEventsQuery;
     private EventLogQuery blockedEventsQuery;
     
     private FirewallSettings settings = null;
@@ -111,20 +112,26 @@ public class FirewallImpl extends NodeBase implements Firewall
                                                 "AND firewall_rule_index IS NOT NULL " +
                                                 "ORDER BY time_stamp DESC");   
 
+        this.flaggedEventsQuery = new EventLogQuery(I18nUtil.marktr("Flagged Events"),
+                                                    "SELECT * FROM reports.sessions " + 
+                                                    "WHERE policy_id = :policyId " +
+                                                    "AND firewall_flagged IS TRUE " +
+                                                    "ORDER BY time_stamp DESC");
+
         this.blockedEventsQuery = new EventLogQuery(I18nUtil.marktr("Blocked Events"),
                                                     "SELECT * FROM reports.sessions " + 
                                                     "WHERE policy_id = :policyId " +
-                                                    "AND firewall_was_blocked IS TRUE " +
+                                                    "AND firewall_blocked IS TRUE " +
                                                     "ORDER BY time_stamp DESC");
 
         this.addMetric(new NodeMetric(STAT_PASS, I18nUtil.marktr("Sessions passed")));
-        this.addMetric(new NodeMetric(STAT_LOG, I18nUtil.marktr("Sessions logged")));
+        this.addMetric(new NodeMetric(STAT_FLAG, I18nUtil.marktr("Sessions flagged")));
         this.addMetric(new NodeMetric(STAT_BLOCK, I18nUtil.marktr("Sessions blocked")));
     }
 
     public EventLogQuery[] getEventQueries()
     {
-        return new EventLogQuery[] { this.allEventsQuery, this.blockedEventsQuery };
+        return new EventLogQuery[] { this.allEventsQuery, this.flaggedEventsQuery, this.blockedEventsQuery };
     }
 
     public FirewallSettings getSettings()
@@ -177,9 +184,9 @@ public class FirewallImpl extends NodeBase implements Firewall
         this.incrementMetric(STAT_PASS);
     }
 
-    public void incrementLogCount() 
+    public void incrementFlagCount() 
     {
-        this.incrementMetric(STAT_LOG);
+        this.incrementMetric(STAT_FLAG);
     }
 
     @Override
@@ -303,10 +310,15 @@ public class FirewallImpl extends NodeBase implements Firewall
         /**
          * set the new ID of each rule
          * We use 1000*nodeInstanceNum as a starting point so rule IDs don't overlap with other firewall
+         *
+         * Also set flag to true if rule is blocked
          */
         int idx = (this.nodeInstanceNum * 1000);
         for (FirewallRule rule : newSettings.getRules()) {
             rule.setId(++idx);
+
+            if (rule.getBlock())
+                rule.setFlag(true);
         }
         
         /**

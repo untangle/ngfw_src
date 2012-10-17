@@ -60,7 +60,7 @@ if (!Ung.hasResource["Ung.Firewall"]) {
                         "ruleId": 0,
                         "enabled": true,
                         "block": false,
-                        "log": true,
+                        "flag": false,
                         "description": this.i18n._("[no description]"),
                         "javaClass": "com.untangle.node.firewall.FirewallRule"
                     },
@@ -74,7 +74,7 @@ if (!Ung.hasResource["Ung.Firewall"]) {
                     }, {
                         name: 'block'
                     }, {
-                        name: 'log'
+                        name: 'flag'
                     }, {
                         name: 'matchers'
                     },{
@@ -116,8 +116,8 @@ if (!Ung.hasResource["Ung.Firewall"]) {
                             },
                             {
                                 xtype:'checkcolumn',
-                                header: this.i18n._("Log"),
-                                dataIndex: 'log',
+                                header: this.i18n._("Flag"),
+                                dataIndex: 'flag',
                                 fixed: true,
                                 width:55
                             }],
@@ -249,10 +249,10 @@ if (!Ung.hasResource["Ung.Firewall"]) {
                         }, 
                         {
                             xtype:'checkbox',
-                            name: "Log",
-                            dataIndex: "log",
+                            name: "Flag",
+                            dataIndex: "flag",
                             itemCls:'firewall-spacing-1',
-                            fieldLabel: this.i18n._("Log")
+                            fieldLabel: this.i18n._("Flag")
                         }]
                 })]
             });
@@ -268,7 +268,10 @@ if (!Ung.hasResource["Ung.Firewall"]) {
                     sortType: Ung.SortTypes.asTimestamp
                 }, {
                     name: 'blocked',
-                    mapping: 'firewall_was_blocked'
+                    mapping: 'firewall_blocked'
+                }, {
+                    name: 'flagged',
+                    mapping: 'firewall_flagged'
                 }, {
                     name: 'firewall_rule_index'
                 }, {
@@ -315,11 +318,23 @@ if (!Ung.hasResource["Ung.Firewall"]) {
                     sortable: true,
                     dataIndex: 'blocked'
                 }, {
+                    header: this.i18n._("Flagged"),
+                    width: Ung.Util.booleanFieldWidth,
+                    sortable: true,
+                    dataIndex: 'flagged'
+                }, {
                     header: this.i18n._('Rule Id'),
                     width: 60,
                     sortable: true,
                     flex:1,
-                    dataIndex: 'firewall_rule_index'
+                    dataIndex: 'firewall_rule_index',
+                    renderer: function(value) {
+                        if (value <= 0) {
+                            return i18n._("none");
+                        } else {
+                            return value;
+                        }
+                    }
                 }, {
                     header: this.i18n._("Server") ,
                     width: Ung.Util.ipFieldWidth + 40, // +40 for column header

@@ -15,7 +15,7 @@ testsiteIP = "74.123.29.140"
 testsiteIPRange = "74.123.29.139-74.123.29.141"
 testsiteIPRange2 = "74.123.27.139-74.123.30.141"
 
-def createSingleMatcherRule( matcherType, value, blocked=True ):
+def createSingleMatcherRule( matcherType, value, blocked=True, flagged=True ):
     matcherTypeStr = str(matcherType)
     valueStr = str(value)
     return {
@@ -23,7 +23,7 @@ def createSingleMatcherRule( matcherType, value, blocked=True ):
         "id": 1, 
         "enabled": True, 
         "description": "Single Matcher: " + matcherTypeStr + " = " + valueStr, 
-        "log": True, 
+        "flag": flagged, 
         "block": blocked, 
         "matchers": {
             "javaClass": "java.util.LinkedList", 
@@ -38,7 +38,7 @@ def createSingleMatcherRule( matcherType, value, blocked=True ):
             }
         };
 
-def createDualMatcherRule( matcherType, value, matcherType2, value2, blocked=True ):
+def createDualMatcherRule( matcherType, value, matcherType2, value2, blocked=True, flagged=True ):
     matcherTypeStr = str(matcherType)
     valueStr = str(value)
     matcherTypeStr2 = str(matcherType2)
@@ -48,7 +48,7 @@ def createDualMatcherRule( matcherType, value, matcherType2, value2, blocked=Tru
         "id": 1, 
         "enabled": True, 
         "description": "Dual Matcher: " + matcherTypeStr + " = " + valueStr + " && " + matcherTypeStr2 + " = " + valueStr2, 
-        "log": True, 
+        "flag": flagged, 
         "block": blocked, 
         "matchers": {
             "javaClass": "java.util.LinkedList", 
@@ -365,12 +365,34 @@ class FirewallTests(unittest.TestCase):
         assert(events['list'][0]['c_client_addr'] == ClientControl.hostIP)
         assert(events['list'][0]['s_server_port'] == 80)
         assert(events['list'][0]['firewall_rule_index'] != 0 and events['list'][0]['firewall_rule_index'] != None)
-        assert(events['list'][0]['firewall_was_blocked'] == True)
+        assert(events['list'][0]['firewall_blocked'] == True)
+        assert(events['list'][0]['firewall_flagged'] == True)
 
-    # verify a log port 80 rule works
-    def test_101_logDstPort80EventLog(self):
+    # verify a flag port 80 rule works
+    def test_101_flagDstPort80EventLog(self):
         nukeRules();
-        appendRule(createSingleMatcherRule("DST_PORT","80",blocked=False));
+        appendRule(createSingleMatcherRule("DST_PORT","80",blocked=False,flagged=True));
+        result = clientControl.runCommand("wget -o /dev/null -t 1 --timeout=3 http://test.untangle.com/")
+        assert (result == 0)
+        flushEvents()
+        query = None;
+        for q in node.getEventQueries():
+            if q['name'] == 'Flagged Events': query = q;
+        assert(query != None)
+        events = uvmContext.getEvents(query['query'],defaultRackId,1)
+        assert(events != None)
+        assert(events['list'] != None)
+        assert(len(events['list']) > 0)
+        assert(events['list'][0]['c_client_addr'] == ClientControl.hostIP)
+        assert(events['list'][0]['s_server_port'] == 80)
+        assert(events['list'][0]['firewall_rule_index'] != 0 and events['list'][0]['firewall_rule_index'] != None)
+        assert(events['list'][0]['firewall_flagged'] == True)
+        assert(events['list'][0]['firewall_blocked'] == False)
+
+    # verify a port 80 rule log
+    def test_102_logDstPort80EventLog(self):
+        nukeRules();
+        appendRule(createSingleMatcherRule("DST_PORT","80",blocked=False,flagged=False));
         result = clientControl.runCommand("wget -o /dev/null -t 1 --timeout=3 http://test.untangle.com/")
         assert (result == 0)
         flushEvents()
@@ -385,7 +407,8 @@ class FirewallTests(unittest.TestCase):
         assert(events['list'][0]['c_client_addr'] == ClientControl.hostIP)
         assert(events['list'][0]['s_server_port'] == 80)
         assert(events['list'][0]['firewall_rule_index'] != 0 and events['list'][0]['firewall_rule_index'] != None)
-        assert(events['list'][0]['firewall_was_blocked'] == False)
+        assert(events['list'][0]['firewall_blocked'] == False)
+        assert(events['list'][0]['firewall_flagged'] == False)
 
     def test_999_finalTearDown(self):
         global node

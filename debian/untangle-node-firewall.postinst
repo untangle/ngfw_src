@@ -7,5 +7,8 @@ touch /etc/untangle/reports-to-restart
 # 9.4 conversion
 sed -i -e 's/"DIRECTORY_CONNECTOR_USERNAME"/"USERNAME"/g' /usr/share/untangle/settings/$DPKG_MAINTSCRIPT_PACKAGE/*.js
 
+# 9.4 log renamed to flag
+sed -i -e 's/"log"/"flag"/g' /usr/share/untangle/settings/$DPKG_MAINTSCRIPT_PACKAGE/*.js
+
 exit 0
 

@@ -30,7 +30,6 @@ public class CaptureRule implements JSONString, Serializable
 
     private Integer ruleId;
     private Boolean enabled;
-    private Boolean log;
     private Boolean block;
     private String description;
 
@@ -38,11 +37,10 @@ public class CaptureRule implements JSONString, Serializable
     {
     }
 
-    public CaptureRule(boolean enabled, List<CaptureRuleMatcher> matchers, boolean log, boolean block, String description)
+    public CaptureRule(boolean enabled, List<CaptureRuleMatcher> matchers, boolean block, String description)
     {
         this.setMatchers(matchers);
         this.setEnabled(Boolean.valueOf(enabled));
-        this.setLog(Boolean.valueOf(log));
         this.setBlock(Boolean.valueOf(block));
         this.setDescription(description);
     }
@@ -103,16 +101,6 @@ public class CaptureRule implements JSONString, Serializable
     public void setBlock( Boolean block )
     {
         this.block = block;
-    }
-
-    public Boolean getLog()
-    {
-        return log;
-    }
-
-    public void setLog( Boolean log )
-    {
-        this.log = log;
     }
 
     public String getDescription()

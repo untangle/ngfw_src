@@ -53,7 +53,7 @@ class EventHandler extends AbstractEventHandler
     private void handleNewSessionRequest(IPNewSessionRequest request, Protocol protocol)
     {
         boolean block = false;
-        boolean log = false;
+        boolean flag = false;
         int ruleIndex     = 0;
         FirewallRule matchedRule = null;
 
@@ -73,7 +73,7 @@ class EventHandler extends AbstractEventHandler
         
         if (matchedRule != null) {
             block = matchedRule.getBlock();
-            log = matchedRule.getLog();
+            flag = matchedRule.getFlag();
             ruleIndex = matchedRule.getId();
         }
 
@@ -86,40 +86,39 @@ class EventHandler extends AbstractEventHandler
             }
 
             if (blockSilently) {
-                /* use finalization only if logging */
-                request.rejectSilently(log);
+                request.rejectSilently( true );
             } else {
                 if (protocol == Protocol.UDP) {
-                    request.rejectReturnUnreachable(IPNewSessionRequest.PORT_UNREACHABLE, log);
+                    request.rejectReturnUnreachable( IPNewSessionRequest.PORT_UNREACHABLE, true );
                 } else {
-                    ((TCPNewSessionRequest)request).rejectReturnRst(log);
+                    ((TCPNewSessionRequest)request).rejectReturnRst( true );
                 }
             }
 
-            /* Increment the block counter */
+            /* Increment the block counter and flag counter*/
             node.incrementBlockCount(); 
+            if (flag) node.incrementFlagCount();
 
             /* We just blocked, so we have to log too, regardless of what the rule actually says */
-            FirewallEvent fwe = new FirewallEvent(request.sessionEvent(), block, ruleIndex);
+            FirewallEvent fwe = new FirewallEvent(request.sessionEvent(), block, flag, ruleIndex);
             request.attach(fwe);
-            node.incrementLogCount(); 
+
         } else { /* not blocked */
+
             if (logger.isDebugEnabled()) {
                 logger.debug("Releasing session: " + request);
             }
 
             /* only finalize if logging */
-            request.release(log);
+            request.release( true );
 
-            /* Increment the pass counter */
+            /* Increment the pass counter and flag counter */
             node.incrementPassCount();
+            if (flag) node.incrementFlagCount();
 
             /* If necessary log the event */
-            if (log) {
-                FirewallEvent fwe = new FirewallEvent(request.sessionEvent(), block, ruleIndex);
-                request.attach(fwe);
-                node.incrementLogCount();
-            }
+            FirewallEvent fwe = new FirewallEvent(request.sessionEvent(), block, flag, ruleIndex);
+            request.attach(fwe);
         }
     }
 

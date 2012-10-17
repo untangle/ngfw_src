@@ -29,7 +29,7 @@ public class FirewallRule implements JSONString, Serializable
 
     private Integer ruleId;
     private Boolean enabled;
-    private Boolean log;
+    private Boolean flag;
     private Boolean block;
     private String description;
     
@@ -37,11 +37,11 @@ public class FirewallRule implements JSONString, Serializable
     {
     }
 
-    public FirewallRule(boolean enabled, List<FirewallRuleMatcher> matchers, boolean log, boolean block, String description)
+    public FirewallRule(boolean enabled, List<FirewallRuleMatcher> matchers, boolean flag, boolean block, String description)
     {
         this.setMatchers(matchers);
         this.setEnabled(Boolean.valueOf(enabled));
-        this.setLog(Boolean.valueOf(log));
+        this.setFlag(Boolean.valueOf(flag));
         this.setBlock(Boolean.valueOf(block));
         this.setDescription(description);
     }
@@ -104,14 +104,14 @@ public class FirewallRule implements JSONString, Serializable
         this.block = block;
     }
 
-    public Boolean getLog()
+    public Boolean getFlag()
     {
-        return log;
+        return flag;
     }
 
-    public void setLog( Boolean log )
+    public void setFlag( Boolean flag )
     {
-        this.log = log;
+        this.flag = flag;
     }
     
     public String getDescription()
