@@ -361,6 +361,36 @@ public class NodeManagerImpl implements NodeManager
         }
     }
 
+    protected void restart( String name )
+    {
+        ToolboxManager tbm = UvmContextFactory.context().toolboxManager();
+
+        PackageDesc pd = tbm.packageDesc(name);
+        if (pd == null) {
+            logger.warn("Failed to restart: Unable to find package \"" + name + "\"");
+            return;
+        }
+        String availVer = pd.getInstalledVersion();
+
+        synchronized (this) {
+            boolean unloaded = false;
+
+            for (Node node : nodeInstances(name)) {
+                PackageDesc md = node.getPackageDesc();
+                if (!md.getInstalledVersion().equals(availVer)) {
+                    logger.info("Restarting \"" + name + "\" - new version available. (" + availVer + " > " + md.getInstalledVersion() + ")");
+                    unload( node );
+                    unloaded = true;
+                } else {
+                    logger.info("Skipping Restart \"" + name + "\" - no new version available. (" + availVer + " = " + md.getInstalledVersion() + ")");
+                }
+            }
+
+            if (unloaded)
+                restartUnloaded();
+        }
+    }
+
     protected void startAutoStart( PackageDesc extraPkg )
     {
         ToolboxManagerImpl tbm = (ToolboxManagerImpl)UvmContextFactory.context().toolboxManager();
@@ -505,7 +535,8 @@ public class NodeManagerImpl implements NodeManager
         try {
             for (Iterator<Runnable> riter = restarters.iterator(); riter.hasNext();) {
                 while (getRunnableCount(threads) < loadLimit && riter.hasNext()) {
-                    Thread t = UvmContextFactory.context().newThread(riter.next(), "START_" + startThreadNum++);
+                    Thread t = UvmContextFactory.context().
+                        newThread(riter.next(), "START_" + startThreadNum++);
                     threads.add(t);
                     t.start();
                 }

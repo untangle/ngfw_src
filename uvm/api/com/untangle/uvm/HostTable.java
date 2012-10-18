@@ -45,16 +45,12 @@ public interface HostTable
     public final String KEY_PENALTY_BOXED = "penaltybox"; /* Boolean  - stores whether or not this host is "penalty boxed" */
     public final String KEY_PENALTY_BOX_EXIT_TIME = "penaltybox-exit-time"; /* Long  - stores the exit time for the penalty box if this host is penalty boxed */
     public final String KEY_PENALTY_BOX_ENTRY_TIME = "penaltybox-entry-time"; /* Long  - stores the entry time for the penalty box if this host is penalty boxed */
-    public final String KEY_PENALTY_BOX_PRIORITY = "penaltybox-priority"; /* Integer  - stores the bandwidth control priority for this penalty boxed host if bandwidth control penalty boxed this host */
-    public final String KEY_QUOTA_SIZE = "quota-size"; /* Long - original quota size */
-    public final String KEY_QUOTA_REMAINING = "quota-remaining"; /* Long - remaining quota */
-    public final String KEY_QUOTA_ISSUE_TIME = "quota-issue-time"; /* Long - quota issue time */
-    public final String KEY_QUOTA_EXPIRATION_TIME = "quota-expiration-time"; /* Long - quota expiration time */
     public final String KEY_ADCONNECTOR_USERNAME = "adconnector-username"; /* String - stores the username associated with this host according to adconnector/adpb */
     public final String KEY_CAPTURE_USERNAME = "capture-username"; /* String  - stores the username associated with this host according to capture */
     public final String KEY_HTTP_AGENT_STRING = "http-user-agent"; /* String  - stores the HTTP agent string that the client presented in the header */
     public final String KEY_HTTP_AGENT_STRING_OS = "http-user-agent-os"; /* String  - stores OS informanio from the HTTP agent string that the client presented in the header */
     public final String KEY_HTTP_AGENT_STRING_DATE_LONG_MILLIS = "http-user-agent-date"; /* Long  - stores timestamp that the agent string was set - used to renew it occasionally */
+    public final String KEY_PENALTY_BOX_PRIORITY = "penaltybox-priority"; /* Integer  - stores the bandwidth control priority for this penalty boxed host if bandwidth control penalty boxed this host */
 
     /**
      * A list of all attachment keys

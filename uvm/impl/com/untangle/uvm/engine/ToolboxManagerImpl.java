@@ -572,7 +572,7 @@ class ToolboxManagerImpl implements ToolboxManager
         mm.submitMessage(mir);
     }
     
-    // registers a new package that has been added to the system
+    // registers a package and restarts all instances in previous state
     public void register(String pkgName) throws PackageInstallException
     {
         logger.info("registering package: " + pkgName);
@@ -585,6 +585,7 @@ class ToolboxManagerImpl implements ToolboxManager
         }
         
         NodeManagerImpl nm = (NodeManagerImpl)UvmContextFactory.context().nodeManager();
+        nm.restart(pkgName);
         nm.startAutoStart(packageDesc(pkgName));
     }
 

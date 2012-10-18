@@ -273,20 +273,6 @@ public class HostTableImpl implements HostTable
         
         return;
     }
-
-    public synchronized void giveHostQuota( InetAddress address, long quotaBytes, int time_sec )
-    {
-        Long currentQuotaExpiration = (Long) getAttachment( address, HostTable.KEY_QUOTA_EXPIRATION_TIME );
-        long now = System.currentTimeMillis();
-
-        /* If there already is a quota and it will be reset */
-        setAttachment( address, HostTable.KEY_QUOTA_SIZE, quotaBytes );
-        setAttachment( address, HostTable.KEY_QUOTA_REMAINING, quotaBytes );
-        setAttachment( address, HostTable.KEY_QUOTA_ISSUE_TIME, now );
-        setAttachment( address, HostTable.KEY_QUOTA_EXPIRATION_TIME, (now + (time_sec*1000)) );
-
-        return;
-    }
     
     public boolean hostInPenaltyBox( InetAddress address )
     {
