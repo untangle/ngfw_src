@@ -373,17 +373,21 @@ public class NodeManagerImpl implements NodeManager
         String availVer = pd.getInstalledVersion();
 
         synchronized (this) {
+            boolean unloaded = false;
+
             for (Node node : nodeInstances(name)) {
                 PackageDesc md = node.getPackageDesc();
                 if (!md.getInstalledVersion().equals(availVer)) {
                     logger.info("Restarting \"" + name + "\" - new version available. (" + availVer + " > " + md.getInstalledVersion() + ")");
                     unload( node );
+                    unloaded = true;
                 } else {
                     logger.info("Skipping Restart \"" + name + "\" - no new version available. (" + availVer + " = " + md.getInstalledVersion() + ")");
                 }
             }
-            
-            restartUnloaded();
+
+            if (unloaded)
+                restartUnloaded();
         }
     }
 
