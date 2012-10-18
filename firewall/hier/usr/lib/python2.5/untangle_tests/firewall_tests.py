@@ -352,15 +352,11 @@ class FirewallTests(unittest.TestCase):
     def test_071_blockUserAgent2(self):
         nukeRules();
         print uvmContext.hostTable().getAttachment( ClientControl.hostIP, "http-user-agent" );
-        try:
-            uvmContext.hostTable().setAttachment( ClientControl.hostIP, "http-user-agent", "Mozilla foo bar" );
-            appendRule( createSingleMatcherRule( "HTTP_USER_AGENT", "*Mozilla*" ) );
-            result = clientControl.runCommand("wget -o /dev/null -t 1 --timeout=3 http://test.untangle.com/")
-            assert (result == 1)
-            uvmContext.hostTable().setAttachment( ClientControl.hostIP, "http-user-agent", None );
-        except JSONRPCException, e:
-            traceback.print_exc(e)
-            print e.error
+        uvmContext.hostTable().setAttachment( ClientControl.hostIP, "http-user-agent", "Mozilla foo bar" );
+        appendRule( createSingleMatcherRule( "HTTP_USER_AGENT", "*Mozilla*" ) );
+        result = clientControl.runCommand("wget -o /dev/null -t 1 --timeout=3 http://test.untangle.com/")
+        assert (result == 1)
+        uvmContext.hostTable().setAttachment( ClientControl.hostIP, "http-user-agent", None );
 
     # verify bogus user agent OS match not blocked
     def test_072_blockUserAgentOs(self):
