@@ -14,11 +14,15 @@ if (!Ung.hasResource["Ung.HostMonitor"]) {
             }];
 
             this.buildHostsPanel();
-            this.buildGridPenaltyBox();
-            this.buildPenaltyBoxEventLog();
             this.buildHostTableEventLog();
 
-            var pageTabs = [this.hostsPanel, this.gridHostTableEventLog, this.gridPenaltyBox, this.gridPenaltyBoxEventLog];
+            this.buildGridPenaltyBox();
+            this.buildPenaltyBoxEventLog();
+
+            this.buildGridQuotaBox();
+            this.buildQuotaEventLog();
+
+            var pageTabs = [this.hostsPanel, this.gridHostTableEventLog, this.gridPenaltyBox, this.gridPenaltyBoxEventLog, this.gridQuotaBox, this.gridQuotaEventLog];
             this.buildTabPanel(pageTabs);
             this.callParent(arguments);
         },
@@ -44,6 +48,32 @@ if (!Ung.hasResource["Ung.HostMonitor"]) {
         },
         getPenaltyBoxedHosts: function() {
             var hosts = rpc.hostTable.getPenaltyBoxedHosts();
+            // iterate through each host and change its attachments map to properties
+            for (var i = 0; i < hosts.list.length ; i++) {
+                var host = hosts.list[i];
+                if (host.attachments != null) {
+                    for (var prop in host.attachments.map) {
+                        host[prop] = host.attachments.map[prop];
+                    }
+                }
+            }
+            return hosts;
+        },
+        megaByteRenderer: function(bytes) {
+            var units = ["bytes","Kbytes","Mbytes","Gbytes"];
+            var units_itr = 0;
+            
+            while ((bytes >= 1000 || bytes <= -1000) && units_itr < 3) {
+                bytes = bytes/1000;
+                units_itr++;
+            }
+            
+            bytes = Math.round(bytes*100)/100;
+            
+            return "" + bytes + " " + units[units_itr];
+        },
+        getQuotaHosts: function() {
+            var hosts = rpc.hostTable.getQuotaHosts();
             // iterate through each host and change its attachments map to properties
             for (var i = 0; i < hosts.list.length ; i++) {
                 var host = hosts.list[i];
@@ -157,7 +187,7 @@ if (!Ung.hasResource["Ung.HostMonitor"]) {
                     checked: true,
                     boxLabel: this.i18n._("IP"),
                     gridColumnHeader: this.i18n._("IP"),
-                    gridColumnDataIndex: "addr",
+                    gridColumnDataIndex: "address",
                     gridColumnWidth: 100
                 }, {
                     xtype: 'checkbox',
@@ -304,7 +334,7 @@ if (!Ung.hasResource["Ung.HostMonitor"]) {
                     name: 'groupingRadio',
                     checked: false,
                     boxLabel: this.i18n._("Address"),
-                    groupField: "addr"
+                    groupField: "address"
                 },{
                     xtype: 'button',
                     id: "refresh_grouping",
@@ -342,7 +372,7 @@ if (!Ung.hasResource["Ung.HostMonitor"]) {
                 fields: [{
                     name: "id"
                 },{
-                    name: "addr"
+                    name: "address"
                 },{
                     name: "hostname"
                 },{
@@ -460,9 +490,8 @@ if (!Ung.hasResource["Ung.HostMonitor"]) {
                 }),
                 recordJavaClass: "com.untangle.uvm.HostTable.HostTableEntry",
                 dataFn: Ext.bind(this.getPenaltyBoxedHosts, this),
-                //testData: [{address:"aaa",priority:1, entryTime: {time:1},exitTime:{time:4654324}}, {address:"1.2.3.4",priority:2, entryTime: {time:36434},exitTime:{time:56534}}],
                 fields: [{
-                    name: "addr"
+                    name: "address"
                 },{
                     name: "penaltybox-priority"
                 },{
@@ -474,7 +503,7 @@ if (!Ung.hasResource["Ung.HostMonitor"]) {
                 }],
                 columns: [{
                     header: this.i18n._("IP Address"),
-                    dataIndex: 'addr',
+                    dataIndex: 'address',
                     width: 150
                 },{
                     header: this.i18n._("Penalty Priority"),
@@ -515,7 +544,7 @@ if (!Ung.hasResource["Ung.HostMonitor"]) {
                             Ext.MessageBox.hide();
                             if(Ung.Util.handleException(exception)) return;
                             this.gridPenaltyBox.reload();
-                        }, this), record.data.addr );
+                        }, this), record.data.address );
                     }, this ),
                     renderer: Ext.bind(function(value, metadata, record,rowIndex,colIndex,store,view) {
                         var out= '';
@@ -529,47 +558,118 @@ if (!Ung.hasResource["Ung.HostMonitor"]) {
             });
 
         },
-        buildPenaltyBoxEventLog: function() {
-            this.gridPenaltyBoxEventLog = Ext.create('Ung.GridEventLog',{
+        buildGridQuotaBox: function() {
+            this.gridQuotaBox = Ext.create('Ung.EditorGrid',{
+                anchor: '100% -60',
+                name: "gridQuotaBox",
                 settingsCmp: this,
-                eventQueriesFn: rpc.hostTable.getPenaltyBoxEventQueries,
-                title: this.i18n._("Penalty Box Event Log"),
+                parentId: this.getId(),
+                hasAdd: false,
+                hasEdit: false,
+                hasDelete: false,
+                columnsDefaultSortable: true,
+                title: this.i18n._("Current Quotas"),
+                qtip: this.i18n._("This shows all hosts currently with quotas."),
+                paginated: false,
+                bbar: Ext.create('Ext.toolbar.Toolbar',{
+                    items: [
+                        '-',
+                        {
+                            xtype: 'button',
+                            text: i18n._('Refresh'),
+                            name: "Refresh",
+                            tooltip: i18n._('Refresh'),
+                            iconCls: 'icon-refresh',
+                            handler: Ext.bind(function() {
+                                this.gridQuotaBox.reload();
+                            }, this)
+                        }
+                    ]
+                }),
+                recordJavaClass: "com.untangle.node.bandwidth.QuotaBoxEntry",
+                dataFn: Ext.bind(this.getQuotaHosts, this),
                 fields: [{
-                    name: 'time_stamp',
-                    sortType: Ung.SortTypes.asTimestamp
-                }, {
-                    name: 'start_time',
-                    sortType: Ung.SortTypes.asTimestamp
-                }, {
-                    name: 'end_time',
-                    sortType: Ung.SortTypes.asTimestamp
-                }, {
-                    name: 'address'
+                    name: "address"
+                },{
+                    name: "quota-size"
+                },{
+                    name: "quota-remaining"
+                },{
+                    name: "quota-issue-time"
+                },{
+                    name: "quota-expiration-time"
+                },{
+                    name: "id"
                 }],
                 columns: [{
-                    header: this.i18n._("Start Time"),
-                    width: Ung.Util.timestampFieldWidth,
-                    sortable: true,
-                    dataIndex: 'start_time',
-                    renderer: function(value) {
-                        return i18n.timestampFormat(value);
-                    }
-                }, {
-                    header: this.i18n._("End Time"),
-                    width: Ung.Util.timestampFieldWidth,
-                    sortable: true,
-                    dataIndex: 'end_time',
-                    renderer: function(value) {
-                        return i18n.timestampFormat(value);
-                    }
-                }, {
-                    header: this.i18n._("Address"),
-                    flex:1,
-                    width: Ung.Util.ipFieldWidth,
-                    sortable: true,
-                    dataIndex: 'address'
-                }]
+                    header: this.i18n._("IP Address"),
+                    dataIndex: 'address',
+                    width: 150
+                },{
+                    header: this.i18n._("Quota Size"),
+                    dataIndex: 'quota-size',
+                    width: 100,
+                    renderer: Ext.bind(this.megaByteRenderer, this)
+                },{
+                    header: this.i18n._("Quota Remaining"),
+                    dataIndex: 'quota-remaining',
+                    width: 100,
+                    renderer: Ext.bind(this.megaByteRenderer, this)
+                },{
+                    header: this.i18n._("Allocated"),
+                    dataIndex: 'quota-issue-time',
+                    width: 180,
+                    renderer: function(value) { return i18n.timestampFormat(value); }
+                },{
+                    header: this.i18n._("Expires"),
+                    dataIndex: 'quota-expiration-time',
+                    width: 180,
+                    renderer: function(value) { return i18n.timestampFormat(value); }
+                }, Ext.create('Ext.grid.column.Action',{
+                    width: 80,
+                    header: this.i18n._("Refill Quota"),
+                    dataIndex: null,
+                    handler: Ext.bind(function(view, rowIndex, colIndex) {
+                        var record = view.getStore().getAt(rowIndex);
+                        Ext.MessageBox.wait(this.i18n._("Refilling..."), this.i18n._("Please wait"));
+                        rpc.hostTable.refillQuota(Ext.bind(function(result,exception) {
+                            Ext.MessageBox.hide();
+                            if(Ung.Util.handleException(exception)) return;
+                            this.gridQuotaBox.reload();
+                        }, this), record.data.address );
+                    }, this ),
+                    renderer: Ext.bind(function(value, metadata, record) {
+                        var out= '';
+                        if(record.data.internalId>=0) {
+                            //adding the x-action-col-0 class to force the processing of click event
+                            out= '<div class="x-action-col-0 ung-button button-column" style="text-align:center;" >' + this.i18n._("Refill") + '</div>';
+                        }
+                        return out;
+                    }, this)
+                }), Ext.create('Ext.grid.column.Action',{
+                    width: 80,
+                    header: this.i18n._("Drop Quota"),
+                    dataIndex: null,
+                    handler: Ext.bind(function(view, rowIndex, colIndex) {
+                        var record = view.getStore().getAt(rowIndex);
+                        Ext.MessageBox.wait(this.i18n._("Removing Quota..."), this.i18n._("Please wait"));
+                        rpc.hostTable.removeQuota(Ext.bind(function(result,exception) {
+                            Ext.MessageBox.hide();
+                            if(Ung.Util.handleException(exception)) return;
+                            this.gridQuotaBox.reload();
+                        }, this), record.data.address );
+                    }, this ),
+                    renderer: Ext.bind(function(value, metadata, record) {
+                        var out= '';
+                        if(record.data.internalId>=0) {
+                            //adding the x-action-col-0 class to force the processing of click event
+                            out= '<div class="x-action-col-0 ung-button button-column" style="text-align:center;" >' + this.i18n._("Drop") + '</div>';
+                        }
+                        return out;
+                    }, this)
+                })]
             });
+
         },
         buildHostTableEventLog: function() {
             this.gridHostTableEventLog = Ext.create('Ung.GridEventLog',{
@@ -609,6 +709,110 @@ if (!Ung.hasResource["Ung.HostMonitor"]) {
                     width: 300,
                     sortable: true,
                     dataIndex: 'value'
+                }]
+            });
+        },
+        buildPenaltyBoxEventLog: function() {
+            this.gridPenaltyBoxEventLog = Ext.create('Ung.GridEventLog',{
+                settingsCmp: this,
+                eventQueriesFn: rpc.hostTable.getPenaltyBoxEventQueries,
+                title: this.i18n._("Penalty Box Event Log"),
+                fields: [{
+                    name: 'time_stamp',
+                    sortType: Ung.SortTypes.asTimestamp
+                }, {
+                    name: 'start_time',
+                    sortType: Ung.SortTypes.asTimestamp
+                }, {
+                    name: 'end_time',
+                    sortType: Ung.SortTypes.asTimestamp
+                }, {
+                    name: 'address'
+                }, {
+                    name: 'reason'
+                }],
+                columns: [{
+                    header: this.i18n._("Start Time"),
+                    width: Ung.Util.timestampFieldWidth,
+                    sortable: true,
+                    dataIndex: 'start_time',
+                    renderer: function(value) {
+                        return i18n.timestampFormat(value);
+                    }
+                }, {
+                    header: this.i18n._("End Time"),
+                    width: Ung.Util.timestampFieldWidth,
+                    sortable: true,
+                    dataIndex: 'end_time',
+                    renderer: function(value) {
+                        return i18n.timestampFormat(value);
+                    }
+                }, {
+                    header: this.i18n._("Address"),
+                    width: Ung.Util.ipFieldWidth,
+                    sortable: true,
+                    dataIndex: 'address'
+                },{
+                    header: this.i18n._("Reason"),
+                    width: 100,
+                    flex: 1,
+                    dataIndex: 'reason'
+                }]
+            });
+        },
+        buildQuotaEventLog: function() {
+            this.gridQuotaEventLog = Ext.create('Ung.GridEventLog',{
+                settingsCmp: this,
+                eventQueriesFn: rpc.hostTable.getQuotaEventQueries,
+                title: this.i18n._("Quota Event Log"),
+                fields: [{
+                    name: 'time_stamp',
+                    sortType: Ung.SortTypes.asTimestamp
+                }, {
+                    name: 'action'
+                }, {
+                    name: 'address'
+                }, {
+                    name: 'size'
+                }, {
+                    name: 'reason'
+                }],
+                columns: [{
+                    header: this.i18n._("Timestamp"),
+                    width: Ung.Util.timestampFieldWidth,
+                    sortable: true,
+                    dataIndex: 'time_stamp',
+                    renderer: function(value) {
+                        return i18n.timestampFormat(value);
+                    }
+                }, {
+                    header: this.i18n._("Address"),
+                    width: Ung.Util.ipFieldWidth,
+                    sortable: true,
+                    dataIndex: 'address'
+                }, {
+                    header: this.i18n._("Action"),
+                    width: 150,
+                    sortable: true,
+                    dataIndex: 'action',
+                    renderer: Ext.bind(function(value, metadata, record) {
+                        switch (value) {
+                            case 0: return "";
+                            case 1: return "Quota Given";
+                            case 2: return "Quota Exceeded";
+                            default: return "Unknown";
+                        }
+                    }, this)
+                },{
+                    header: this.i18n._("Quota Size"),
+                    width: 150,
+                    dataIndex: 'size',
+                    renderer: Ext.bind(this.megaByteRenderer, this)
+                },{
+                    header: this.i18n._("Reason"),
+                    width: 100,
+                    flex: 1,
+                    dataIndex: 'reason'
                 }]
             });
         }

@@ -17,8 +17,9 @@ import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.HostTable;
 import com.untangle.uvm.util.I18nUtil;
 import com.untangle.uvm.node.EventLogQuery;
-import com.untangle.uvm.node.PenaltyBoxEvent;
 import com.untangle.uvm.node.HostTableEvent;
+import com.untangle.uvm.node.PenaltyBoxEvent;
+import com.untangle.uvm.node.QuotaEvent;
 
 /**
  * HostTable stores a global table of all "local" IPs that have recently been seen.
@@ -33,16 +34,16 @@ public class HostTableImpl implements HostTable
 {
     private static final int CLEANER_SLEEP_TIME_MILLI = 60 * 1000; /* 60 seconds */
     private static final int CLEANER_LAST_ACCESS_MAX_TIME = 5 * 60 * 1000; /* 5 minutes */
-    
 
     private final Logger logger = Logger.getLogger(getClass());
 
     private Hashtable<InetAddress, HostTableEntry> hostTable;
 
-    private Set<HostTable.PenaltyBoxListener> penaltyBoxListeners = new HashSet<PenaltyBoxListener>();
+    private Set<HostTable.HostTableListener> listeners = new HashSet<HostTableListener>();
 
     private EventLogQuery penaltyBoxEventQuery;
     private EventLogQuery hostTableEventQuery;
+    private EventLogQuery quotaEventQuery;
 
     private volatile Thread cleanerThread;
     private HostTableCleaner cleaner = new HostTableCleaner();
@@ -53,6 +54,7 @@ public class HostTableImpl implements HostTable
 
         this.penaltyBoxEventQuery = new EventLogQuery(I18nUtil.marktr("PenaltyBox Events"), "SELECT * FROM reports.penaltybox ORDER BY time_stamp DESC");
         this.hostTableEventQuery = new EventLogQuery(I18nUtil.marktr("Host Table Events"), "SELECT * FROM reports.host_table_updates ORDER BY time_stamp DESC");
+        this.quotaEventQuery = new EventLogQuery(I18nUtil.marktr("Quota Events"), "SELECT * FROM reports.quotas ORDER BY time_stamp DESC");
 
         UvmContextFactory.context().newThread(this.cleaner).start();
     }
@@ -69,7 +71,7 @@ public class HostTableImpl implements HostTable
             return;
         }
 
-        logger.info("setAttachment( " + addr + " , " + key + " , " + ob + " )");
+        logger.info("setAttachment( " + addr.getHostAddress() + " , " + key + " , " + ob + " )");
 
         HostTableEntry entry = getHostTableEntry( addr, true );
 
@@ -95,7 +97,7 @@ public class HostTableImpl implements HostTable
             return null;
         }
             
-        logger.debug("getAttachment( " + addr + " , " + key + " )");
+        logger.debug("getAttachment( " + addr.getHostAddress() + " , " + key + " )");
 
         /**
          * Special treatment for USERNAME
@@ -148,7 +150,7 @@ public class HostTableImpl implements HostTable
              */
             entry.attachments = new Hashtable<String, Object>(entry.attachments); 
             for ( String key : HostTable.ALL_ATTACHMENTS) {
-                Object value = getAttachment( entry.addr, key );
+                Object value = getAttachment( entry.address, key );
                 if (value != null) 
                     entry.attachments.put( key, value );
             }
@@ -157,7 +159,7 @@ public class HostTableImpl implements HostTable
         return hosts;
     }
     
-    public synchronized void addHostToPenaltyBox( InetAddress address, int priority, int time_sec )
+    public synchronized void addHostToPenaltyBox( InetAddress address, int priority, int time_sec, String reason )
     {
         Long entryTime = System.currentTimeMillis();
         Long exitTime  = entryTime + (time_sec * 1000L);
@@ -195,14 +197,14 @@ public class HostTableImpl implements HostTable
             action = PenaltyBoxEvent.ACTION_ENTER; /* new entry */
         }
 
-        PenaltyBoxEvent evt = new PenaltyBoxEvent( action, address, priority, new Date(currentEntryTime), new Date(currentExitTime) ) ;
+        PenaltyBoxEvent evt = new PenaltyBoxEvent( action, address, priority, new Date(currentEntryTime), new Date(currentExitTime), reason ) ;
         UvmContextFactory.context().logEvent(evt);
 
         /**
          * Call listeners
          */
         if (action == PenaltyBoxEvent.ACTION_ENTER) {
-            for ( PenaltyBoxListener listener : this.penaltyBoxListeners ) {
+            for ( HostTableListener listener : this.listeners ) {
                 try {
                     listener.enteringPenaltyBox( address );
                 } catch ( Exception e ) {
@@ -258,12 +260,12 @@ public class HostTableImpl implements HostTable
             exitTime = now; /* set exitTime to now, because the host was release prematurely */
         }
             
-        UvmContextFactory.context().logEvent( new PenaltyBoxEvent( PenaltyBoxEvent.ACTION_EXIT, address, 0, entryDate, exitTime ) );
+        UvmContextFactory.context().logEvent( new PenaltyBoxEvent( PenaltyBoxEvent.ACTION_EXIT, address, 0, entryDate, exitTime, null ) );
 
         /**
          * Call listeners
          */
-        for ( PenaltyBoxListener listener : this.penaltyBoxListeners ) {
+        for ( HostTableListener listener : this.listeners ) {
             try {
                 listener.exitingPenaltyBox( address );
             } catch ( Exception e ) {
@@ -272,6 +274,125 @@ public class HostTableImpl implements HostTable
         }
         
         return;
+    }
+
+    public synchronized void giveHostQuota( InetAddress address, long quotaBytes, int time_sec, String reason )
+    {
+        if (address == null) {
+            logger.warn("Invalid argument: address is null");
+            return;
+        }
+
+        long now = System.currentTimeMillis();
+
+        /* If there already is a quota and it will be reset */
+        setAttachment( address, HostTable.KEY_QUOTA_SIZE, quotaBytes );
+        setAttachment( address, HostTable.KEY_QUOTA_REMAINING, quotaBytes );
+        setAttachment( address, HostTable.KEY_QUOTA_ISSUE_TIME, now );
+        setAttachment( address, HostTable.KEY_QUOTA_EXPIRATION_TIME, (now + (time_sec*1000)) );
+
+        /**
+         * Call listeners
+         */
+        for ( HostTableListener listener : this.listeners ) {
+            try {
+                listener.quotaGiven( address );
+            } catch ( Exception e ) {
+                logger.error( "Exception calling listener", e );
+            }
+        }
+
+        UvmContextFactory.context().logEvent( new QuotaEvent( QuotaEvent.ACTION_GIVEN, address, reason, quotaBytes ) );
+        
+        return;
+    }
+
+    public synchronized void removeQuota( InetAddress address )
+    {
+        if (address == null) {
+            logger.warn("Invalid argument: address is null");
+            return;
+        }
+
+        setAttachment( address, HostTable.KEY_QUOTA_SIZE, null );
+        setAttachment( address, HostTable.KEY_QUOTA_REMAINING, null );
+        setAttachment( address, HostTable.KEY_QUOTA_ISSUE_TIME, null );
+        setAttachment( address, HostTable.KEY_QUOTA_EXPIRATION_TIME, null );
+
+        /**
+         * Call listeners
+         */
+        for ( HostTableListener listener : this.listeners ) {
+            try {
+                listener.quotaRemoved( address );
+            } catch ( Exception e ) {
+                logger.error( "Exception calling listener", e );
+            }
+        }
+    }
+
+    public boolean hostQuotaExceeded( InetAddress address )
+    {
+        if (address == null) {
+            logger.warn("Invalid argument: address is null");
+            return false;
+        }
+
+        Long currentQuotaExpiration = (Long) getAttachment( address, HostTable.KEY_QUOTA_EXPIRATION_TIME );
+        long now = System.currentTimeMillis();
+
+        if (currentQuotaExpiration == null)
+            return false;
+        if (now > currentQuotaExpiration) {
+            removeQuota( address );
+            return false;
+        }
+
+        Long remaining = (Long) getAttachment( address, HostTable.KEY_QUOTA_REMAINING );
+        if (remaining == null) {
+            logger.warn("Missing quota remaining value");
+            return false;
+        }
+
+        if (remaining <= 0)
+            return true;
+        return false;
+    }
+
+    public synchronized void refillQuota(InetAddress address)
+    {
+        if (address == null) {
+            logger.warn("Invalid argument: address is null");
+            return;
+        }
+
+        Long currentQuotaSize = (Long) getAttachment( address, HostTable.KEY_QUOTA_SIZE );
+
+        if (currentQuotaSize == null) {
+            logger.warn("Quota not found: " + address);
+            return;
+        }
+
+        setAttachment( address, HostTable.KEY_QUOTA_REMAINING, currentQuotaSize );
+    }
+
+    public synchronized boolean decrementQuota(InetAddress addr, long bytes)
+    {
+        Long remaining = (Long) getAttachment( addr, HostTable.KEY_QUOTA_REMAINING );
+        if (remaining != null) {
+            Long newRemaning = remaining - bytes;
+            setAttachment( addr, HostTable.KEY_QUOTA_REMAINING, newRemaning );
+
+            if (remaining > 0 && newRemaning <= 0) {
+                Long original = (Long) getAttachment( addr, HostTable.KEY_QUOTA_SIZE );
+                logger.info("Host " + addr.getHostAddress() + " exceeded quota.");
+
+                UvmContextFactory.context().logEvent( new QuotaEvent( QuotaEvent.ACTION_EXCEEDED, addr, null, original) );
+                return true;
+            }
+        }
+
+        return false;
     }
     
     public boolean hostInPenaltyBox( InetAddress address )
@@ -301,21 +422,40 @@ public class HostTableImpl implements HostTable
 
         for (Iterator i = list.iterator(); i.hasNext(); ) {
             HostTable.HostTableEntry entry = (HostTable.HostTableEntry) i.next();
-            if (! UvmContextFactory.context().hostTable().hostInPenaltyBox( entry.getAddr() ) )
+            if (! UvmContextFactory.context().hostTable().hostInPenaltyBox( entry.getAddress() ) )
+                i.remove();
+        }
+
+        return list;
+    }
+
+    public LinkedList<HostTable.HostTableEntry> getQuotaHosts()
+    {
+        LinkedList<HostTable.HostTableEntry> list = new LinkedList<HostTable.HostTableEntry>(UvmContextFactory.context().hostTable().getHosts());
+
+        for (Iterator i = list.iterator(); i.hasNext(); ) {
+            HostTable.HostTableEntry entry = (HostTable.HostTableEntry) i.next();
+            Long quotaSize = (Long) getAttachment( entry.getAddress(), HostTable.KEY_QUOTA_SIZE );
+            if ( quotaSize == null )
                 i.remove();
         }
 
         return list;
     }
     
-    public void registerListener( HostTable.PenaltyBoxListener listener )
+    public void registerListener( HostTable.HostTableListener listener )
     {
-        this.penaltyBoxListeners.add( listener );
+        this.listeners.add( listener );
     }
 
-    public void unregisterListener( HostTable.PenaltyBoxListener listener )
+    public void unregisterListener( HostTable.HostTableListener listener )
     {
-        this.penaltyBoxListeners.remove( listener );
+        this.listeners.remove( listener );
+    }
+
+    public EventLogQuery[] getHostTableEventQueries()
+    {
+        return new EventLogQuery[] { this.hostTableEventQuery };
     }
 
     public EventLogQuery[] getPenaltyBoxEventQueries()
@@ -323,9 +463,9 @@ public class HostTableImpl implements HostTable
         return new EventLogQuery[] { this.penaltyBoxEventQuery };
     }
 
-    public EventLogQuery[] getHostTableEventQueries()
+    public EventLogQuery[] getQuotaEventQueries()
     {
-        return new EventLogQuery[] { this.hostTableEventQuery };
+        return new EventLogQuery[] { this.quotaEventQuery };
     }
     
     private HostTableEntry getHostTableEntry( InetAddress addr, boolean createIfNecessary )
@@ -340,11 +480,11 @@ public class HostTableImpl implements HostTable
         return entry;
     }
 
-    private HostTableEntry createNewHostTableEntry( InetAddress addr )
+    private HostTableEntry createNewHostTableEntry( InetAddress address )
     {
         HostTableEntry entry = new HostTableEntry();
 
-        entry.addr = addr;
+        entry.address = address;
         entry.attachments = new Hashtable<String, Object>();
         entry.creationTime = System.currentTimeMillis();
         entry.lastAccessTime = entry.creationTime;
@@ -374,7 +514,19 @@ public class HostTableImpl implements HostTable
                         if (entry == null)
                             continue;
 
+                        /**
+                         * If this host hasnt been touched recently, delete it
+                         */
                         if ( now > (entry.lastAccessTime + CLEANER_LAST_ACCESS_MAX_TIME) ) {
+
+                            /**
+                             * if this host has a quota that isnt expired dont remove the entry
+                             *  even though its not been used recently
+                             */
+                            Long quotaExpirationTime = (Long) getAttachment( addr, HostTable.KEY_QUOTA_EXPIRATION_TIME );
+                            if (quotaExpirationTime != null && now < quotaExpirationTime)
+                                continue;
+
                             logger.debug("HostTableCleaner: Removing " + addr.getHostAddress());
                             hostTable.remove(addr);
                         }

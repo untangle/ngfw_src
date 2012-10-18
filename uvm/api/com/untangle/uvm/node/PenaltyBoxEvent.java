@@ -26,16 +26,18 @@ public class PenaltyBoxEvent extends LogEvent implements Serializable
     private int priority; /* 0 if action = EXIT */
     private Timestamp entryTime;
     private Timestamp exitTime;
+    private String reason;
 
     // constructors -----------------------------------------------------------
 
     public PenaltyBoxEvent() { }
 
-    public PenaltyBoxEvent(int action, InetAddress address, int priority, Date entryTime, Date exitTime)
+    public PenaltyBoxEvent(int action, InetAddress address, int priority, Date entryTime, Date exitTime, String reason)
     {
         this.action = action;
         this.address = address;
         this.priority = priority;
+        this.reason = reason;
         this.entryTime = new Timestamp(entryTime.getTime());
         this.exitTime = new Timestamp(exitTime.getTime());
     }
@@ -67,14 +69,15 @@ public class PenaltyBoxEvent extends LogEvent implements Serializable
         case ACTION_ENTER:
             sql =
                 "INSERT INTO reports.penaltybox " +
-                "(start_time, end_time, address, time_stamp) " +
+                "(start_time, end_time, address, time_stamp, reason) " +
                 "values " +
-                "( ?, ?, ?, ?) ";
+                "( ?, ?, ?, ?, ?) ";
             pstmt = conn.prepareStatement( sql );
             pstmt.setTimestamp(++i, entryTime);
             pstmt.setTimestamp(++i, exitTime);
             pstmt.setObject(++i, getAddress().getHostAddress(), java.sql.Types.OTHER);
             pstmt.setTimestamp(++i, entryTime);
+            pstmt.setString(++i, reason);
             return pstmt;
         case ACTION_EXIT:
             sql =

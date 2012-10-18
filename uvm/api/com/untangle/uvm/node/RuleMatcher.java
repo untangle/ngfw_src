@@ -54,12 +54,12 @@ public class RuleMatcher implements JSONString, Serializable
             USERNAME, /* "dmorris" or "none" or "*" */
             CLIENT_IN_PENALTY_BOX, /* none */
             SERVER_IN_PENALTY_BOX, /* none */
+            CLIENT_HAS_NO_QUOTA, /* none */
+            SERVER_HAS_NO_QUOTA, /* none */
+            CLIENT_QUOTA_EXCEEDED, /* none */
+            SERVER_QUOTA_EXCEEDED, /* none */
 
             /* application specific matchers */
-            BANDWIDTH_CLIENT_HAS_NO_QUOTA, /* none */
-            BANDWIDTH_SERVER_HAS_NO_QUOTA, /* none */
-            BANDWIDTH_CLIENT_QUOTA_EXCEEDED, /* none */
-            BANDWIDTH_SERVER_QUOTA_EXCEEDED, /* none */
             HTTP_HOST, /* "playboy.com" "any" */
             HTTP_URI, /* "/foo.html" "any" */
             HTTP_USER_AGENT, /* "playboy.com" "any" */
@@ -269,6 +269,10 @@ public class RuleMatcher implements JSONString, Serializable
         case SITEFILTER_FLAGGED:
         case CLIENT_IN_PENALTY_BOX:
         case SERVER_IN_PENALTY_BOX:
+        case CLIENT_HAS_NO_QUOTA:
+        case SERVER_HAS_NO_QUOTA:
+        case CLIENT_QUOTA_EXCEEDED:
+        case SERVER_QUOTA_EXCEEDED:
             // nothing necessary
             break;
 
@@ -377,6 +381,18 @@ public class RuleMatcher implements JSONString, Serializable
 
             return protocolMatcher.isMatch(sess.getProtocol());
 
+        case CLIENT_HAS_NO_QUOTA:
+            return (UvmContextFactory.context().hostTable().getAttachment( sess.getClientAddr(), HostTable.KEY_QUOTA_REMAINING ) == null);
+
+        case SERVER_HAS_NO_QUOTA:
+            return (UvmContextFactory.context().hostTable().getAttachment( sess.getServerAddr(), HostTable.KEY_QUOTA_REMAINING ) == null);
+
+        case CLIENT_QUOTA_EXCEEDED:
+            return UvmContextFactory.context().hostTable().hostQuotaExceeded( sess.getClientAddr() );
+
+        case SERVER_QUOTA_EXCEEDED:
+            return UvmContextFactory.context().hostTable().hostQuotaExceeded( sess.getServerAddr() );
+            
         case HTTP_HOST:
             attachment = (String) sess.globalAttachment(NodeSession.KEY_HTTP_HOSTNAME);
             if (attachment == null)
@@ -643,6 +659,18 @@ public class RuleMatcher implements JSONString, Serializable
         case SERVER_IN_PENALTY_BOX:
             return UvmContextFactory.context().hostTable().hostInPenaltyBox( dstAddress );
 
+        case CLIENT_HAS_NO_QUOTA:
+            return (UvmContextFactory.context().hostTable().getAttachment( srcAddress, HostTable.KEY_QUOTA_REMAINING ) == null);
+
+        case SERVER_HAS_NO_QUOTA:
+            return (UvmContextFactory.context().hostTable().getAttachment( dstAddress, HostTable.KEY_QUOTA_REMAINING ) == null);
+
+        case CLIENT_QUOTA_EXCEEDED:
+            return UvmContextFactory.context().hostTable().hostQuotaExceeded( srcAddress );
+
+        case SERVER_QUOTA_EXCEEDED:
+            return UvmContextFactory.context().hostTable().hostQuotaExceeded( dstAddress );
+            
         case DIRECTORY_CONNECTOR_GROUP:
             if (username == null)
                 return false;

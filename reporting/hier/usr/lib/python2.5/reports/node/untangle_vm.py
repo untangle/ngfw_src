@@ -52,6 +52,8 @@ class UvmNode(Node):
 
         self.__build_penaltybox_table()
 
+        self.__build_quotas_table()
+
         self.__build_host_table_updates_table()
 
         ft = FactTable('reports.session_totals',
@@ -103,6 +105,7 @@ CREATE TABLE reports.n_admin_logins (
         sql_helper.drop_fact_table("session_totals", cutoff)
         sql_helper.drop_fact_table("session_counts", cutoff)
         sql_helper.drop_fact_table("penaltybox", cutoff)
+        sql_helper.drop_fact_table("quotas", cutoff)
         sql_helper.drop_fact_table("host_table_updates", cutoff)
 
     def get_report(self):
@@ -320,12 +323,26 @@ GROUP BY time, uid, hname, client_intf, server_intf
         sql_helper.create_fact_table("""
 CREATE TABLE reports.penaltybox (
         address inet,
+        reason text,
         start_time timestamp,
         end_time timestamp,
         time_stamp timestamp)""")
 
         sql_helper.create_index("reports","penaltybox","time_stamp");
         sql_helper.create_index("reports","penaltybox","start_time");
+
+    def __build_quotas_table( self ):
+        sql_helper.create_fact_table("""
+CREATE TABLE reports.quotas (
+        time_stamp timestamp,
+        address inet,
+        action integer,
+        size bigint,
+        reason text,
+        event_id bigserial)""")
+
+        sql_helper.create_index("reports","quotas","event_id");
+        sql_helper.create_index("reports","quotas","time_stamp");
 
     def __build_host_table_updates_table( self ):
         sql_helper.create_fact_table("""

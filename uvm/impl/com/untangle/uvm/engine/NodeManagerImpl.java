@@ -501,7 +501,7 @@ public class NodeManagerImpl implements NodeManager
         }
 
         Set<Thread> threads = new HashSet<Thread>(restarters.size());
-        int loadLimit = Runtime.getRuntime().availableProcessors() << 1;
+        int loadLimit = Runtime.getRuntime().availableProcessors() * 2;
         try {
             for (Iterator<Runnable> riter = restarters.iterator(); riter.hasNext();) {
                 while (getRunnableCount(threads) < loadLimit && riter.hasNext()) {
