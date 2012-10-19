@@ -4,7 +4,10 @@
 
 package com.untangle.node.capture;
 
-public class CaptureUserEntry
+import java.io.Serializable;
+
+@SuppressWarnings("serial")
+public class CaptureUserEntry implements Serializable
 {
     private String userAddress;
     private String userName;

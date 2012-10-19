@@ -51,14 +51,16 @@ public class CaptureNodeImpl extends NodeBase implements CaptureNode
     private final SoloPipeSpec trafficPipe = new SoloPipeSpec("capture-traffic", this, new CaptureTrafficHandler(this), Fitting.OCTET_STREAM, Affinity.SERVER, 0);
     private final SoloPipeSpec httpPipe = new SoloPipeSpec("capture-http", this, new TokenAdaptor(this, new CaptureHttpFactory(this)), Fitting.HTTP_TOKENS, Affinity.CLIENT, 0);
     private final PipeSpec[] pipeSpecs = new PipeSpec[] { trafficPipe, httpPipe };
-    private final SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
-    private final String settingsFile = (System.getProperty("uvm.settings.dir") + "/untangle-node-capture/settings_" + getNodeSettings().getId().toString());
     private final CaptureReplacementGenerator replacementGenerator;
 
+    protected final SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
+    protected final String settingsFile = (System.getProperty("uvm.settings.dir") + "/untangle-node-capture/settings_" + getNodeSettings().getId().toString());
+    protected final String authlistFile = (System.getProperty("uvm.settings.dir") + "/untangle-node-capture/authlist_" + getNodeSettings().getId().toString());
     protected Hashtable<String,PassedAddress> passedClientHash = new Hashtable<String,PassedAddress>();
     protected Hashtable<String,PassedAddress> passedServerHash = new Hashtable<String,PassedAddress>();
     protected CaptureSettings captureSettings;
     protected CaptureUserTable captureUserTable;
+    protected CaptureTimer captureTimer = new CaptureTimer(this);
     protected Timer timer;
 
     private EventLogQuery loginEventQuery;
@@ -73,7 +75,6 @@ public class CaptureNodeImpl extends NodeBase implements CaptureNode
         super( nodeSettings, nodeProperties );
 
         replacementGenerator = new CaptureReplacementGenerator(getNodeSettings());
-        captureUserTable = new CaptureUserTable();
 
         this.loginEventQuery = new EventLogQuery(I18nUtil.marktr("Login Events"),
             "SELECT * FROM reports.n_capture_login_events evt ORDER BY time_stamp DESC");
@@ -131,7 +132,7 @@ public class CaptureNodeImpl extends NodeBase implements CaptureNode
     @Override
     public ArrayList<CaptureUserEntry> getActiveUsers()
     {
-        return(captureUserTable.buildUserList());
+        return(captureUserTable.getUserList());
     }
 
     @Override
@@ -272,12 +273,13 @@ public class CaptureNodeImpl extends NodeBase implements CaptureNode
     protected void postStart()
     {
         timer = new Timer();
-        timer.schedule(new CaptureTimer(this),CLEANUP_INTERVAL,CLEANUP_INTERVAL);
+        timer.schedule(captureTimer,CLEANUP_INTERVAL,CLEANUP_INTERVAL);
     }
 
     @Override
     protected void preStop()
     {
+        // stop the session cleanup timer thread
         timer.cancel();
     }
 
@@ -305,6 +307,9 @@ public class CaptureNodeImpl extends NodeBase implements CaptureNode
                 // to the common apply function
                 applyNodeSettings(readSettings);
             }
+
+        // load the list of authenticated users
+        importUserTable();
     }
 
     protected Token[] generateResponse(CaptureBlockDetails block, NodeTCPSession session)
@@ -388,6 +393,7 @@ public class CaptureNodeImpl extends NodeBase implements CaptureNode
         }
 
         captureUserTable.insertActiveUser(address,username);
+        exportUserTable();
 
         CaptureLoginEvent event = new CaptureLoginEvent( address, username, captureSettings.getAuthenticationType(), CaptureLoginEvent.EventType.LOGIN );
         logEvent(event);
@@ -408,6 +414,7 @@ public class CaptureNodeImpl extends NodeBase implements CaptureNode
             }
 
         captureUserTable.insertActiveUser(address,address);
+        exportUserTable();
 
         CaptureLoginEvent event = new CaptureLoginEvent( address, address, captureSettings.getAuthenticationType(), CaptureLoginEvent.EventType.LOGIN );
         logEvent(event);
@@ -427,6 +434,7 @@ public class CaptureNodeImpl extends NodeBase implements CaptureNode
         }
 
         captureUserTable.removeActiveUser(address);
+        exportUserTable();
 
         CaptureLoginEvent event = new CaptureLoginEvent( user.getUserAddress(), user.getUserName(), captureSettings.getAuthenticationType(), CaptureLoginEvent.EventType.LOGOUT );
         logEvent(event);
@@ -479,5 +487,52 @@ public class CaptureNodeImpl extends NodeBase implements CaptureNode
             }
 
         return(null);
+    }
+
+///// ------------------------------------------------------------------------
+///// private methods for loading and saving the user table
+
+    private void importUserTable()
+    {
+        CaptureUserTable readTable = null;
+
+        try
+        {
+            readTable = settingsManager.load(CaptureUserTable.class, authlistFile);
+        }
+
+        catch (Exception e)
+        {
+            logger.warn("Error importing user table",e);
+        }
+
+        if (readTable == null)
+        {
+            logger.info("Initializing empty user table");
+            captureUserTable = new CaptureUserTable();
+            return;
+        }
+
+        logger.info("Imported user table from " + authlistFile);
+
+        // save the loaded table and run a cleanup cycle
+        captureUserTable = readTable;
+        captureTimer.SessionCleanup();
+    }
+
+    private void exportUserTable()
+    {
+        try
+        {
+            settingsManager.save(CaptureUserTable.class, authlistFile, this.captureUserTable);
+        }
+
+        catch (Exception e)
+        {
+            logger.warn("Error exporting user table",e);
+            return;
+        }
+
+        logger.info("Exported user table to " + authlistFile);
     }
 }
