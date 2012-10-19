@@ -1,8 +1,8 @@
-/*
+/**
  * $Id: CaptureHttpHandler.java 31921 2012-05-12 02:44:47Z mahotz $
  */
 
-package com.untangle.node.capture; // IMPL
+package com.untangle.node.capture;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -68,9 +68,9 @@ class CaptureHttpHandler extends HttpStateMachine
         // not authenticated and no pass list match so check the rules
         CaptureRule rule = node.checkCaptureRules(session);
 
-        // by default we block until authentication so we only need to
-        // look for an explicit pass rule and allow the traffic if found
-        if ((rule != null) && (rule.getBlock() == false))
+        // by default we allow traffic so if there is no rule or we
+        // find a pass rule then let the traffic continue here
+        if ((rule == null) || (rule.getBlock() == false))
         {
             // TODO event log here
             node.incrementBlinger(CaptureNode.BlingerType.SESSALLOW,1);

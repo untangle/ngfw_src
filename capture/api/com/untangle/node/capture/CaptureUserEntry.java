@@ -2,7 +2,7 @@
  * $Id: CaptureUserEntry.java,v 1.00 2011/12/14 01:02:03 mahotz Exp $
  */
 
-package com.untangle.node.capture; // API
+package com.untangle.node.capture;
 
 public class CaptureUserEntry
 {

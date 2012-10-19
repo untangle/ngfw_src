@@ -1,4 +1,4 @@
-/*
+/**
  * $Id: CaptureRule.java 32638 2012-08-16 18:54:27Z dmorris $
  */
 

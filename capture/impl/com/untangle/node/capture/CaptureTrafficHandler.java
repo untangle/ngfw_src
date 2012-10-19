@@ -1,8 +1,8 @@
-/*
+/**
  * $Id: CaptureTrafficHandler.java,v 1.00 2011/12/14 01:02:03 mahotz Exp $
  */
 
-package com.untangle.node.capture; // IMPL
+package com.untangle.node.capture;
 
 import java.net.InetAddress;
 import java.nio.ByteBuffer;
@@ -36,7 +36,7 @@ public class CaptureTrafficHandler extends AbstractEventHandler
     {
         NodeTCPSession session = event.session();
 
-        // we look for and ignore all traffic on port 80 since
+        // first we look for and ignore all traffic on port 80 since
         // the http-casing handler will take care of all that
         if (session.getServerPort() == 80)
         {
@@ -47,7 +47,7 @@ public class CaptureTrafficHandler extends AbstractEventHandler
         String clientAddr = session.getClientAddr().getHostAddress().toString();
         String serverAddr = session.getServerAddr().getHostAddress().toString();
 
-        // first check is to see if the user is already authenticated
+        // next check is to see if the user is already authenticated
         // or the client or server is in one of the pass lists
         if (node.isSessionAllowed(clientAddr,serverAddr) == true)
         {
@@ -60,9 +60,9 @@ public class CaptureTrafficHandler extends AbstractEventHandler
         // not authenticated and no pass list match so check the rules
         CaptureRule rule = node.checkCaptureRules(session);
 
-        // by default we block until authentication so we only need to
-        // look for an explicit pass rule and allow the traffic if found
-        if ((rule != null) && (rule.getBlock() == false))
+        // by default we allow traffic so if there is no rule or we
+        // find a pass rule then let the traffic continue here
+        if ((rule == null) || (rule.getBlock() == false))
         {
             // TODO event log here
             node.incrementBlinger(CaptureNode.BlingerType.SESSALLOW,1);
@@ -70,7 +70,7 @@ public class CaptureTrafficHandler extends AbstractEventHandler
             return;
         }
 
-        // not yet allowed and not web traffic so we block
+        // not yet allowed and we found a block rule so shut it down
         // TODO event log here
         node.incrementBlinger(CaptureNode.BlingerType.SESSBLOCK,1);
         session.resetClient();
@@ -100,10 +100,11 @@ public class CaptureTrafficHandler extends AbstractEventHandler
         // not authenticated and no pass list match so check the rules
         CaptureRule rule = node.checkCaptureRules(session);
 
-        // by default we block until authentication so we only need to
-        // look for an explicit pass rule and allow the traffic if found
-        if ((rule != null) && (rule.getBlock() == false))
+        // by default we allow traffic so if there is no rule or we
+        // find a pass rul then let the traffic continue here
+        if ((rule == null) || (rule.getBlock() == false))
         {
+            // TODO event log here
             node.incrementBlinger(CaptureNode.BlingerType.SESSALLOW,1);
             session.release();
             return;
@@ -122,7 +123,9 @@ public class CaptureTrafficHandler extends AbstractEventHandler
             return;
         }
 
-        // not yet allowed and not DNS traffic so block
+        // not yet allowed and we found a block rule and the traffic
+        // isn't DNS so shut it down
+        // TODO event log here
         node.incrementBlinger(CaptureNode.BlingerType.SESSBLOCK,1);
         session.expireClient();
         session.expireServer();

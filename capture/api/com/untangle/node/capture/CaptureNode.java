@@ -1,8 +1,8 @@
-/*
+/**
  * $Id: CaptureNode.java,v 1.00 2011/12/27 09:42:36 mahotz Exp $
  */
 
-package com.untangle.node.capture; // API
+package com.untangle.node.capture;
 
 import com.untangle.uvm.vnet.NodeSession;
 import com.untangle.uvm.node.EventLogQuery;

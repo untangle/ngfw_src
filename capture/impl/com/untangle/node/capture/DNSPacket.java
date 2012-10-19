@@ -2,7 +2,7 @@
  * $Id: DNSPacket.java,v 1.00 2012/10/14 22:30:00 mahotz Exp $
  */
 
-package com.untangle.node.capture; // IMPL
+package com.untangle.node.capture;
 
 import java.net.InetAddress;
 import java.nio.ByteBuffer;

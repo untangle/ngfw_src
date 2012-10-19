@@ -2,7 +2,7 @@
  * $Id: CaptureTimer.java,v 1.00 2011/12/14 01:02:03 mahotz Exp $
  */
 
-package com.untangle.node.capture; // IMPL
+package com.untangle.node.capture;
 
 import java.util.TimerTask;
 import java.util.ArrayList;

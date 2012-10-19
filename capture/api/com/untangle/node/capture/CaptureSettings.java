@@ -1,8 +1,8 @@
-/*
+/**
  * $Id: CaptureSettings.java,v 1.00 2011/12/14 01:02:03 mahotz Exp $
  */
 
-package com.untangle.node.capture; // API
+package com.untangle.node.capture;
 
 import java.io.Serializable;
 import java.util.LinkedList;
