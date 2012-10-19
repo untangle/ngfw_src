@@ -8,11 +8,9 @@ import java.util.Enumeration;
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.TimerTask;
-import java.io.Serializable;
 import org.apache.log4j.Logger;
 
-@SuppressWarnings("serial")
-public class CaptureUserTable implements Serializable
+public class CaptureUserTable
 {
     private final Logger logger = Logger.getLogger(getClass());
     private Hashtable<String,CaptureUserEntry> userTable;
@@ -22,29 +20,11 @@ public class CaptureUserTable implements Serializable
         userTable = new Hashtable<String,CaptureUserEntry>();
     }
 
-///// ------------------------------------------------------------------------
-///// getter and setter functions for loading and saving the table
-
-    public ArrayList<CaptureUserEntry> getUserList()
+    public ArrayList<CaptureUserEntry> buildUserList()
     {
         ArrayList<CaptureUserEntry> userList = new ArrayList<CaptureUserEntry>(userTable.values());
         return(userList);
     }
-
-    public void setUserList(ArrayList<CaptureUserEntry> loadList)
-    {
-        Hashtable<String,CaptureUserEntry>loadTable = new Hashtable<String,CaptureUserEntry>();
-
-        for (CaptureUserEntry entry : loadList)
-        {
-            loadTable.put(entry.getUserAddress(),entry);
-        }
-
-        userTable = loadTable;
-    }
-
-///// ------------------------------------------------------------------------
-///// other public functions for authentication, logout, and such
 
     public CaptureUserEntry insertActiveUser(String address,String username)
     {
