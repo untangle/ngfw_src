@@ -12,24 +12,19 @@ public class CaptureRuleEvent extends LogEvent
 {
     private SessionEvent sessionEvent;
     private Integer ruleid = null;
-    private boolean flagged = false;
     private boolean blocked = false;
 
     public CaptureRuleEvent() { }
 
-    public CaptureRuleEvent( SessionEvent sessionEvent, Integer ruleid, boolean flagged, boolean blocked )
+    public CaptureRuleEvent( SessionEvent sessionEvent, CaptureRule rule )
     {
         this.sessionEvent = sessionEvent;
-        this.ruleid = ruleid;
-        this.flagged = flagged;
-        this.blocked = blocked;
+        this.ruleid = rule.getId();
+        this.blocked = rule.getBlock();
     }
 
     public Integer getRuleId() { return(ruleid); }
     public void setRuleId( Integer ruleid ) { this.ruleid = ruleid; }
-
-    public boolean getFlagged() { return(flagged); }
-    public void setFlagged( boolean flagged ) { this.flagged = flagged; }
 
     public boolean getBlocked() { return(blocked); }
     public void setBlocked( boolean blocked ) { this.blocked = blocked; }
@@ -43,17 +38,20 @@ public class CaptureRuleEvent extends LogEvent
         String sql =
             "UPDATE reports.sessions " +
             "SET ";
+
         if (ruleid != null)
             sql += " capture_ruleid = ?, ";
-        sql += " capture_flagged = ?, ";
+
         sql += " capture_blocked = ? ";
         sql += " WHERE session_id = ? ";
+
         java.sql.PreparedStatement pstmt = conn.prepareStatement( sql );
 
         int i=0;
+
         if (ruleid != null)
             pstmt.setInt(++i, getRuleId());
-        pstmt.setBoolean(++i, getFlagged());
+
         pstmt.setBoolean(++i, getBlocked());
         pstmt.setLong(++i, sessionEvent.getSessionId());
         return pstmt;
@@ -69,7 +67,6 @@ public class CaptureRuleEvent extends LogEvent
         string+=(" serveraddr:" + pe.getCServerAddr());
         string+=(" serverport:" + pe.getCServerPort());
         string+=(" ruleid:" + ruleid);
-        string+=(" flagged:" + flagged);
         string+=(" blocked:" + blocked);
         string+=(")");
         return string;

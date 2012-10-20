@@ -34,9 +34,9 @@ _ = reports.i18n_helper.get_translation('untangle-node-capture').lgettext
 def N_(message): return message
 
 LOGIN = _('Login')
-UPDATE = _('Update')
 LOGOUT = _('Logout')
 FAILED = _('Failed')
+TIMEOUT = _('Timeout')
 
 def auto_incr(start_value=0, amount = 1):
     v = [start_value]
@@ -63,9 +63,9 @@ class Capture(Node):
         ft.measures.append(Column('logins',
                                     'integer',
                                     "count(CASE WHEN event = 'LOGIN' THEN 1 ELSE NULL END)"))
-        ft.measures.append(Column('updates',
+        ft.measures.append(Column('timeouts',
                                     'integer',
-                                    "count(CASE WHEN event = 'UPDATE' THEN 1 ELSE NULL END)"))
+                                    "count(CASE WHEN event = 'TIMEOUT' THEN 1 ELSE NULL END)"))
         ft.measures.append(Column('logouts',
                                     'integer',
                                     "count(CASE WHEN event = 'LOGOUT' THEN 1 ELSE NULL END)"))

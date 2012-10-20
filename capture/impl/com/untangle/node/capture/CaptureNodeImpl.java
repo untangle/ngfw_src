@@ -420,6 +420,11 @@ public class CaptureNodeImpl extends NodeBase implements CaptureNode
 
     public int userLogout(String address)
     {
+        return(userLogout(address,CaptureLoginEvent.EventType.LOGOUT));
+    }
+
+    public int userLogout(String address,CaptureLoginEvent.EventType reason)
+    {
         CaptureUserEntry user = captureUserTable.searchByAddress(address);
 
         if (user == null)
@@ -430,7 +435,7 @@ public class CaptureNodeImpl extends NodeBase implements CaptureNode
 
         captureUserTable.removeActiveUser(address);
 
-        CaptureLoginEvent event = new CaptureLoginEvent( user.getUserAddress(), user.getUserName(), captureSettings.getAuthenticationType(), CaptureLoginEvent.EventType.LOGOUT );
+        CaptureLoginEvent event = new CaptureLoginEvent( user.getUserAddress(), user.getUserName(), captureSettings.getAuthenticationType(), reason );
         logEvent(event);
         logger.info("Logout success: " + address);
 
@@ -475,7 +480,7 @@ public class CaptureNodeImpl extends NodeBase implements CaptureNode
                     session.getClientPort(), session.getServerPort(),
                     (String)session.globalAttachment(NodeSession.KEY_PLATFORM_USERNAME)))
                     {
-                    logger.debug("MATCH: " + rule.getDescription() + " BLOCK:" + rule.getBlock());
+//                    logger.debug("MATCH: " + rule.getDescription() + " BLOCK:" + rule.getBlock());
                     return(rule);
                     }
             }

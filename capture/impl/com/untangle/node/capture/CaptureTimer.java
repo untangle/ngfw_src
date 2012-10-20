@@ -31,7 +31,7 @@ public class CaptureTimer extends TimerTask
         
         for(String item: staleUsers)
         {
-            node.userLogout(item);
+            node.userLogout(item,CaptureLoginEvent.EventType.TIMEOUT);
             counter++;
         }
 

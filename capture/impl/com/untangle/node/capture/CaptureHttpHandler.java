@@ -48,7 +48,6 @@ class CaptureHttpHandler extends HttpStateMachine
         // or the client or server is in one of the pass lists
         if (node.isSessionAllowed(clientAddr,serverAddr) == true)
         {
-            // TODO event log here
             node.incrementBlinger(CaptureNode.BlingerType.SESSALLOW,1);
             releaseRequest();
             return(requestHeader);
@@ -61,7 +60,8 @@ class CaptureHttpHandler extends HttpStateMachine
         // find a pass rule then let the traffic continue here
         if ((rule == null) || (rule.getBlock() == false))
         {
-            // TODO event log here
+            CaptureRuleEvent logevt = new CaptureRuleEvent(session.sessionEvent(), rule);
+            node.logEvent(logevt);
             node.incrementBlinger(CaptureNode.BlingerType.SESSALLOW,1);
             releaseRequest();
             return(requestHeader);
@@ -85,6 +85,9 @@ class CaptureHttpHandler extends HttpStateMachine
 
         CaptureBlockDetails details = new CaptureBlockDetails(host, uri, method);
         Token[] response = node.generateResponse(details, session);
+
+        CaptureRuleEvent logevt = new CaptureRuleEvent(session.sessionEvent(), rule);
+        node.logEvent(logevt);
         node.incrementBlinger(CaptureNode.BlingerType.SESSBLOCK,1);
         blockRequest(response);
         return requestHeader;

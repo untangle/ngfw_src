@@ -989,8 +989,8 @@ if (!Ung.hasResource["Ung.Capture"]) {
                             return this.i18n._( "authenticated" );
                         case "FAILED":
                             return this.i18n._( "access denied" );
-                        case "UPDATE":
-                            return this.i18n._( "re-authenticated" );
+                        case "TIMEOUT":
+                            return this.i18n._( "timeout" );
                         case "LOGOUT":
                             return this.i18n._( "logout" );
                         }
