@@ -1168,12 +1168,6 @@ Ext.define("Ung.AppItem", {
             this.displayButtonsOrProgress(true);
             this.download=null;
             break;
-          case "unactivating":
-            this.displayButtonsOrProgress(false);
-            this.progressBar.reset();
-            progressString = this.stylizeProgressText(i18n._("Unactivating..."));
-            this.progressBar.waitDefault(progressString);
-            break;
           case "download":
             this.displayButtonsOrProgress(false);
             this.progressBar.reset();
@@ -1281,9 +1275,9 @@ Ext.define("Ung.AppItem", {
         if(!this.progressBar.hidden) {
             return;
         }
-            main.warnOnUpgrades(Ext.bind(function() {
-                main.openLibItemStore(this.libItem.name,Ext.String.format(i18n._("More Info - {0}"), this.item.displayName));
-            }, this));
+        main.warnOnUpgrades(Ext.bind(function() {
+            main.openLibItemStore( this.libItem.name, Ext.String.format(i18n._("More Info - {0}"), this.item.displayName) );
+        }, this));
     },
     // install node / uninstall App
     installNodeFn: function(e) {
@@ -1291,11 +1285,7 @@ Ext.define("Ung.AppItem", {
         if(!this.progressBar.hidden) {
             return;
         }
-        if (e.shiftKey) { // uninstall App
-            main.unactivateNode(this.node);
-        } else { // install node
-            main.installNode(this.node, this);
-        }
+        main.installNode(this.node, this);
     }
 
 });
