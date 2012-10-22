@@ -63,8 +63,12 @@ public class CaptureTrafficHandler extends AbstractEventHandler
         // find a pass rule then let the traffic continue here
         if ((rule == null) || (rule.getBlock() == false))
         {
-            CaptureRuleEvent logevt = new CaptureRuleEvent(session.sessionEvent(), rule);
-            node.logEvent(logevt);
+            if (rule != null)
+            {
+                CaptureRuleEvent logevt = new CaptureRuleEvent(session.sessionEvent(), rule);
+                node.logEvent(logevt);
+            }
+
             node.incrementBlinger(CaptureNode.BlingerType.SESSALLOW,1);
             session.release();
             return;
@@ -101,11 +105,15 @@ public class CaptureTrafficHandler extends AbstractEventHandler
         CaptureRule rule = node.checkCaptureRules(session);
 
         // by default we allow traffic so if there is no rule or we
-        // find a pass rul then let the traffic continue here
+        // find a pass rule then let the traffic continue here
         if ((rule == null) || (rule.getBlock() == false))
         {
-            CaptureRuleEvent logevt = new CaptureRuleEvent(session.sessionEvent(), rule);
-            node.logEvent(logevt);
+            if (rule != null)
+            {
+                CaptureRuleEvent logevt = new CaptureRuleEvent(session.sessionEvent(), rule);
+                node.logEvent(logevt);
+            }
+
             node.incrementBlinger(CaptureNode.BlingerType.SESSALLOW,1);
             session.release();
             return;

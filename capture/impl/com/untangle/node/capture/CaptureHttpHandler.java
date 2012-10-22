@@ -60,8 +60,12 @@ class CaptureHttpHandler extends HttpStateMachine
         // find a pass rule then let the traffic continue here
         if ((rule == null) || (rule.getBlock() == false))
         {
-            CaptureRuleEvent logevt = new CaptureRuleEvent(session.sessionEvent(), rule);
-            node.logEvent(logevt);
+            if (rule != null)
+            {
+                CaptureRuleEvent logevt = new CaptureRuleEvent(session.sessionEvent(), rule);
+                node.logEvent(logevt);
+            }
+
             node.incrementBlinger(CaptureNode.BlingerType.SESSALLOW,1);
             releaseRequest();
             return(requestHeader);
