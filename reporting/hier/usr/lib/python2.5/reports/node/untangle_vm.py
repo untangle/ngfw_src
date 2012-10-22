@@ -212,6 +212,8 @@ CREATE TABLE reports.sessions (
         sql_helper.add_column('reports', 'sessions', 'firewall_rule_index', 'integer')
         sql_helper.add_column('reports', 'sessions', 'pf_protocol', 'text')
         sql_helper.add_column('reports', 'sessions', 'pf_blocked', 'boolean')
+        sql_helper.add_column('reports', 'sessions', 'capture_blocked', 'boolean')
+        sql_helper.add_column('reports', 'sessions', 'capture_rule_index', 'integer')
         sql_helper.add_column('reports', 'sessions', 'classd_application', 'text')
         sql_helper.add_column('reports', 'sessions', 'classd_protochain', 'text')
         sql_helper.add_column('reports', 'sessions', 'classd_blocked', 'boolean')

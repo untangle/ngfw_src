@@ -40,7 +40,7 @@ public class CaptureRuleEvent extends LogEvent
             "SET ";
 
         if (ruleid != null)
-            sql += " capture_ruleid = ?, ";
+            sql += " capture_rule_index = ?, ";
 
         sql += " capture_blocked = ? ";
         sql += " WHERE session_id = ? ";

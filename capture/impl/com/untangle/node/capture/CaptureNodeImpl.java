@@ -66,9 +66,6 @@ public class CaptureNodeImpl extends NodeBase implements CaptureNode
     private EventLogQuery loginEventQuery;
     private EventLogQuery blockEventQuery;
     private EventLogQuery allEventQuery;
-    private EventLogQuery flaggedEventQuery;
-    private EventLogQuery blockedEventQuery;
-    private EventLogQuery ruleEventQuery;
 
     public CaptureNodeImpl( com.untangle.uvm.node.NodeSettings nodeSettings, com.untangle.uvm.node.NodeProperties nodeProperties )
     {
@@ -79,32 +76,17 @@ public class CaptureNodeImpl extends NodeBase implements CaptureNode
         this.loginEventQuery = new EventLogQuery(I18nUtil.marktr("Login Events"),
             "SELECT * FROM reports.n_capture_login_events evt ORDER BY time_stamp DESC");
 
-        this.blockEventQuery = new EventLogQuery(I18nUtil.marktr("Block Events"),
-            "SELECT * FROM reports.n_capture_block_events evt ORDER BY time_stamp DESC");
-
-        this.allEventQuery = new EventLogQuery(I18nUtil.marktr("All Sessions"),
-            "SELECT * FROM reports.sessions " +
+        this.allEventQuery = new EventLogQuery(I18nUtil.marktr("All Events"),
+            "SELECT * FROM reports.sessions " + 
             "WHERE policy_id = :policyId " +
-            "AND classd_application IS NOT NULL " +
-            "ORDER BY time_stamp DESC");
+            "AND capture_rule_index IS NOT NULL " +
+            "ORDER BY time_stamp DESC");   
 
-        this.flaggedEventQuery = new EventLogQuery(I18nUtil.marktr("Flagged Sessions"),
-            "SELECT * FROM reports.sessions " +
+        this.blockEventQuery = new EventLogQuery(I18nUtil.marktr("Blocked Events"),
+            "SELECT * FROM reports.sessions " + 
             "WHERE policy_id = :policyId " +
-            "AND classd_flagged IS TRUE " +
+            "AND capture_blocked IS TRUE " +
             "ORDER BY time_stamp DESC");
-
-        this.blockedEventQuery = new EventLogQuery(I18nUtil.marktr("Blocked Sessions"),
-            "SELECT * FROM reports.sessions " +
-            "WHERE policy_id = :policyId " +
-            "AND classd_blocked IS TRUE " +
-            "ORDER BY time_stamp DESC");
-
-        this.ruleEventQuery = new EventLogQuery(I18nUtil.marktr("Matched Rules"),
-            "SELECT * FROM reports.sessions " +
-             "WHERE policy_id = :policyId " +
-             "AND classd_ruleid IS NOT NULL " +
-             "ORDER BY time_stamp DESC");
 
         addMetric(new NodeMetric(STAT_SESSALLOW, I18nUtil.marktr("Sessions allowed")));
         addMetric(new NodeMetric(STAT_SESSBLOCK, I18nUtil.marktr("Sessions blocked")));
@@ -145,12 +127,6 @@ public class CaptureNodeImpl extends NodeBase implements CaptureNode
     public EventLogQuery[] getBlockEventQueries()
     {
         return new EventLogQuery[] { this.blockEventQuery };
-    }
-
-    @Override
-    public EventLogQuery[] getRuleEventQueries()
-    {
-        return new EventLogQuery[] { this.ruleEventQuery };
     }
 
     public void incrementBlinger(BlingerType blingerType, long delta )

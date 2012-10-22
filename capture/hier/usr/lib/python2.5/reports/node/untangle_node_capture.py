@@ -53,7 +53,6 @@ class Capture(Node):
 
     def setup(self):
         self.__make_n_capture_login_events_table()
-        self.__make_n_capture_block_events_table()
 
         ft = FactTable('reports.n_capture_login_totals',
                        'reports.n_capture_login_events',
@@ -73,15 +72,9 @@ class Capture(Node):
                                   'integer',
                                   "count(CASE WHEN event = 'FAILED' THEN 1 ELSE NULL END)"))
 
-        ft = FactTable('reports.n_capture_block_totals',
-                       'reports.n_capture_block_events',
-                       'time_stamp',
-                       [Column('proto', 'INT2'),
-                        Column('client_intf','INT2'),
-                        Column('client_address','INET'),
-                        Column('server_address','INET')],
-                       [Column('blocks','bigint', 'count(*)')])
-        reports.engine.register_fact_table(ft)
+        ft = reports.engine.get_fact_table('reports.session_totals')
+        ft.measures.append(Column('capture_blocks', 'integer', "count(CASE WHEN capture_blocked THEN 1 ELSE null END)"))
+        ft.dimensions.append(Column('capture_rule_index', 'integer'))
 
     def get_toc_membership(self):
         return [TOP_LEVEL]
@@ -107,8 +100,6 @@ class Capture(Node):
     def reports_cleanup(self, cutoff):
         sql_helper.drop_fact_table("n_capture_login_events", cutoff)
         sql_helper.drop_fact_table("n_capture_login_totals", cutoff)
-        sql_helper.drop_fact_table("n_capture_block_events", cutoff)
-        sql_helper.drop_fact_table("n_capture_block_totals", cutoff)
 
     @print_timing
     def __make_n_capture_login_events_table(self):
@@ -128,27 +119,6 @@ CREATE TABLE reports.n_capture_login_events (
 
         sql_helper.create_index("reports","n_capture_login_events","event_id");
         sql_helper.create_index("reports","n_capture_login_events","time_stamp");
-
-    @print_timing
-    def __make_n_capture_block_events_table(self):
-        sql_helper.create_fact_table("""\
-CREATE TABLE reports.n_capture_block_events (
-    time_stamp timestamp without time zone,
-    proto INT2,
-    client_intf INT2,
-    client_address INET,
-    client_port INT4,
-    server_address INET,
-    server_port INT4,
-    event_id bigserial)""")
-
-        sql_helper.add_column('reports', 'n_capture_block_events', 'event_id', 'bigserial')
-
-        # we used to create event_id as serial instead of bigserial - convert if necessary
-        sql_helper.convert_column("reports","n_capture_block_events","event_id","integer","bigint");
-
-        sql_helper.create_index("reports","n_capture_block_events","event_id");
-        sql_helper.create_index("reports","n_capture_block_events","time_stamp");
 
 class CaptureHighlight(Highlight):
     def __init__(self, name):
@@ -203,12 +173,14 @@ class DailyUsage(Graph):
         query = """
 SELECT COALESCE(SUM(dt.logins_pd)/%s,0), COALESCE(MAX(dt.logins_pd),0),
        COALESCE(SUM(dt.logouts_pd)/%s,0), COALESCE(MAX(dt.logouts_pd),0),
+       COALESCE(SUM(dt.timeouts_pd)/%s,0), COALESCE(MAX(dt.timeouts_pd),0),
        COALESCE(SUM(dt.failures_pd)/%s,0), COALESCE(MAX(dt.failures_pd),0),
        COALESCE(SUM(dt.logins_pd + dt.logouts_pd + dt.failures_pd)/%s,0),
        COALESCE(MAX(dt.logins_pd + dt.logouts_pd + dt.failures_pd),0)
        FROM (
            SELECT SUM(logins) AS logins_pd,
                   SUM(logouts) AS logouts_pd,
+                  SUM(timeouts) AS timeouts_pd,
                   SUM(failures) AS failures_pd,
                   DATE_TRUNC('day',trunc_time) AS day
            FROM reports.n_capture_login_totals
@@ -221,6 +193,7 @@ SELECT COALESCE(SUM(dt.logins_pd)/%s,0), COALESCE(MAX(dt.logins_pd),0),
         try:
             sums = ["COALESCE(SUM(logins), 0)::float",
                     "COALESCE(SUM(logouts), 0)::float",
+                    "COALESCE(SUM(timeouts), 0)::float",
                     "COALESCE(SUM(failures), 0)::float"]
 
             extra_where = []
@@ -244,18 +217,22 @@ SELECT COALESCE(SUM(dt.logins_pd)/%s,0), COALESCE(MAX(dt.logins_pd),0),
             dates = []
             logins = []
             logouts = []
+            timeouts = []
             failures = []
 
             for r in curs.fetchall():
                 dates.append(r[0])
                 logins.append(r[1])
                 logouts.append(r[2])
-                failures.append(r[3])
+                timeouts.append(r[3])
+                failures.append(r[4])
 
             if not logins:
                 logins = [0,]
             if not logouts:
                 logouts = [0,]
+            if not timeouts:
+                timeouts = [0,]
             if not failures:
                 failures = [0,]
 
@@ -267,10 +244,17 @@ SELECT COALESCE(SUM(dt.logins_pd)/%s,0), COALESCE(MAX(dt.logins_pd),0),
             lks.append(ks)
             ks = KeyStatistic(_('Max Logins'), max(logins),
                               N_('Events')+'/'+_(unit))
+            lks.append(ks)
             ks = KeyStatistic(_('Average Logouts'), sum(logouts) / len(rp),
                               N_('Events')+'/'+_(unit))
             lks.append(ks)
             ks = KeyStatistic(_('Max Logouts'), max(logouts),
+                              N_('Events')+'/'+_(unit))
+            lks.append(ks)
+            ks = KeyStatistic(_('Average Timeouts'), sum(timeouts) / len(rp),
+                              N_('Events')+'/'+_(unit))
+            lks.append(ks)
+            ks = KeyStatistic(_('Max Timeouts'), max(timeouts),
                               N_('Events')+'/'+_(unit))
             lks.append(ks)
             ks = KeyStatistic(_('Average Failures'), sum(failures) / len(rp),
@@ -298,6 +282,8 @@ SELECT COALESCE(SUM(dt.logins_pd)/%s,0), COALESCE(MAX(dt.logins_pd),0),
         plot.add_dataset(dates, logins, label=_('Logins'),
                          color=colors.goodness)
         plot.add_dataset(dates, logouts, label=_('Logouts'),
+                         color=colors.detected)
+        plot.add_dataset(dates, logouts, label=_('Timeouts'),
                          color=colors.detected)
         plot.add_dataset(dates, failures, label=_('Failures'),
                          color=colors.badness)
@@ -431,17 +417,15 @@ ORDER BY time_stamp DESC
 
 class BlockDetail(DetailSection):
     def __init__(self):
-        DetailSection.__init__(self, 'capture-block-events', _('Capture Blocked Events'))
+        DetailSection.__init__(self, 'capture-rule-events', _('Capture Rule Events'))
 
     def get_columns(self, host=None, user=None, email=None):
         if email or user or host:
             return None
 
         rv = [ColumnDesc('time_stamp', _('Time'), 'Date'),
-              ColumnDesc('client_address', _('Client Address')),
-              ColumnDesc('client_port', _('Client Port')),
-              ColumnDesc('server_address', _('Server Address')),
-              ColumnDesc('server_port', _('Server Port'))]
+              ColumnDesc('capture_rule_index', _('Rule Applied')),
+              ColumnDesc('capture_blocked', _('Blocked'))]
 
         return rv
 
@@ -451,8 +435,8 @@ class BlockDetail(DetailSection):
 
         sql = """
 SELECT time_stamp, host(client_address), client_port,
-       host(server_address), server_port
-FROM reports.n_capture_block_events
+       host(server_address), server_port, capture_rule_index, capture_blocked::text
+FROM reports.sessions
 WHERE time_stamp >= %s::timestamp without time zone AND time_stamp < %s::timestamp without time zone
 ORDER BY time_stamp DESC
 """ % (DateFromMx(start_date),
