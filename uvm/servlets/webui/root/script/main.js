@@ -913,6 +913,11 @@ Ext.define("Ung.Main", {
             });
             this.noIEToolTip.render(Ext.getBody());
         }
+        if (Ext.isIE6 || Ext.isIE7 || Ext.isIE8 ) {
+            Ext.MessageBox.alert( i18n._("Warning"),
+                                  i18n._("Internet Explorer 8 and prior are not supported for administration.") + "<br/>" +
+                                  i18n._("Please upgrade to a newer browser.") );
+        }
     },
     checkForAlerts: function (handler) {
         //check for upgrades
