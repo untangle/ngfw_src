@@ -394,11 +394,8 @@ Ext.define("Ung.Main", {
     closeStore: function() {
         if(this.iframeWin!=null && this.iframeWin.isVisible() ) {
             this.iframeWin.closeWindow();
-        } else if(this.IEWin != null) {
-            this.IEWin.close();
-            this.IEWin=null;
-            this.reloadLicenses();
-        }
+        } 
+        this.reloadLicenses();
     },
 
     initExtI18n: function() {
@@ -903,6 +900,12 @@ Ext.define("Ung.Main", {
             });
             this.noIEToolTip.render(Ext.getBody());
         }
+        if (Ext.isIE6 || Ext.isIE7 || Ext.isIE8 ) {
+            Ext.MessageBox.alert( i18n._("Warning"),
+                                  i18n._("Internet Explorer 8 and prior are not supported for administration.") + "<br/>" +
+                                  i18n._("Please upgrade to a newer browser.") );
+        }
+        
     },
     checkForAlerts: function (handler) {
         //check for upgrades
