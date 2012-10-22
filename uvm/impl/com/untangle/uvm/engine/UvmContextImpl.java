@@ -73,6 +73,12 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
     private static final String WIZARD_COMPLETE_FLAG_FILE = System.getProperty("uvm.conf.dir") + "/wizard-complete-flag";
 
     private static final String PROPERTY_IS_DEVEL = "com.untangle.isDevel"; /* devel Env */
+    private static final String PROPERTY_STORE_URL = "uvm.store.url";
+    private static final String DEFAULT_STORE_URL = "https://www.untangle.com/store";
+    private static final String PROPERTY_HELP_URL = "uvm.help.url";
+    private static final String DEFAULT_HELP_URL = "http://www.untangle.com/docs/get.php";
+    private static final String PROPERTY_LEGAL_URL = "uvm.legal.url";
+    private static final String DEFAULT_LEGAL_URL = "http://www.untangle.com/legal";
 
     private static final String FACTORY_DEFAULT_FLAG = System.getProperty("uvm.conf.dir") + "/factory-defaults";
     
@@ -452,6 +458,30 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
         return this.brandingManager.getCompanyName();
     }
 
+    public String getStoreUrl()
+    {
+        String url = System.getProperty(PROPERTY_STORE_URL);
+        if (url == null)
+            url = DEFAULT_STORE_URL;
+        return url;
+    }
+
+    public String getHelpUrl()
+    {
+        String url = System.getProperty(PROPERTY_HELP_URL);
+        if (url == null)
+            url = DEFAULT_HELP_URL;
+        return url;
+    }
+
+    public String getLegalUrl()
+    {
+        String url = System.getProperty(PROPERTY_LEGAL_URL);
+        if (url == null)
+            url = DEFAULT_LEGAL_URL;
+        return url;
+    }
+    
     public void logEvent(LogEvent evt)
     {
         if (this.reportingNode == null)

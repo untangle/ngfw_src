@@ -1273,20 +1273,8 @@ Ext.define("Ung.AppItem", {
             }
         }
     },
-    // open store buy page in a new frame
-    linkToStoreBuyFn: function(e) {
-        if (e!=null) {
-            e.stopEvent();
-        }
-        if(!this.progressBar.hidden) {
-            return;
-        }
-        main.warnOnUpgrades(Ext.bind(function() {
-            main.openStoreToLibItem(this.libItem.name,Ext.String.format(i18n._("More Info - {0}"), this.item.displayName),"buy");
-        }, this));
-    },
     // open store page in a new frame
-    linkToStoreFn: function(e,action) {
+    linkToStoreFn: function(e) {
         if (e!=null) {
             e.stopEvent();
         }
@@ -1294,7 +1282,7 @@ Ext.define("Ung.AppItem", {
             return;
         }
             main.warnOnUpgrades(Ext.bind(function() {
-                main.openStoreToLibItem(this.libItem.name,Ext.String.format(i18n._("More Info - {0}"), this.item.displayName),action);
+                main.openLibItemStore(this.libItem.name,Ext.String.format(i18n._("More Info - {0}"), this.item.displayName));
             }, this));
     },
     // install node / uninstall App
@@ -1634,18 +1622,12 @@ Ext.define("Ung.Node", {
     onBuyNowAction: function() {
         var appItem=Ung.AppItem.getApp(this.displayName);
         if(appItem!=null) {
-            appItem.linkToStoreFn(null,"buy");
+            appItem.linkToStoreFn(null);
         }
     },
     getNode: function(handler) {
         if(handler==null) {handler=Ext.emptyFn;}
         if (this.rpcNode === undefined) {
-            // This asynchronous call was removed because it causes firebug to freak out
-            // XXX
-            //            rpc.nodeManager.node(Ext.bind(function(result, exception) {
-            //                if(Ung.Util.handleException(exception)) return;
-            //                this.rpcNode = result;
-            //            }.createSequence(handler), this), this.nodeSettings["id");
             this.rpcNode = rpc.nodeManager.node(this.nodeSettings["id"]);
             handler.call(this);
         } else {

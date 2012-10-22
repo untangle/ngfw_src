@@ -297,7 +297,7 @@ Ext.define("Ung.Main", {
                     text: i18n._('My Account'),
                     tooltip: i18n._('You can access your online account and reinstall apps you already purchased, redeem vouchers, or buy new ones.'),
                     handler: function() {
-                       main.openStore("my_account", i18n._("My Account"));
+                       main.openMyAccountScreen();
                     }
                 }, {
                     xtype: 'button',
@@ -330,64 +330,62 @@ Ext.define("Ung.Main", {
         this.loadConfig();
         this.loadPolicies();
     },
-    openStore: function (action,title) {
-        var currentLocation = window.location;
-        var query = "host=" + currentLocation.hostname;
-        query += "&port=" + currentLocation.port;
-        query += "&protocol=" + currentLocation.protocol.replace(/:$/, "");
-        query += "&action="+action;
+    systemInfo: function ()
+    {
+        var query = "";
+        query = query + "uid=" + rpc.jsonrpc.UvmContext.getServerUID();
+        query = query + "&" + "version=" + rpc.jsonrpc.UvmContext.getFullVersion();
+        query = query + "&" + "webui=true";
+        query = query + "&" + "lang=" + rpc.languageManager.getLanguageSettings()['language'];
 
-        this.openWindow( query, storeWindowName, title );
+        return query;
     },
-    openStoreToLibItem: function (libItemName, title,action) {
-        var currentLocation = window.location,
-        query = "host=" + currentLocation.hostname;
-        if(!action) {
-            action = 'browse';
-        } else {
-            if(action != 'buy') {
-                action = "browse";
-            }
-        }
-        query += "&port=" + currentLocation.port;
-        query += "&protocol=" + currentLocation.protocol.replace(/:$/, "");
-        query += "&action="+action;
-        query += "&libitem=" + libItemName;
-
-        this.openWindow( query, storeWindowName, title );
+    openFailureScreen: function () {
+        var url = "/webui/offline.jsp";
+        this.openIFrame( url, i18n._("Warning") );
     },
-    openWindow: function( query, windowName, title, url) {
-        //var useIframeStore = Ung.Util.getQueryStringParam("useIframeStore");
-        var useIframeStore = true; //uncomment this line to force open store in right iframe window for IE. also comment the previous line 
-        if( url==null ) {
-            url =   '../library/launcher?' + query;
-        }
-        /* browser specific code ... we has it. */
-        if ( !Ext.isIE || useIframeStore) {
-            this.openIFrame(url, title);
-            return;
-        }
-
-        /** This code is not used for now we just open in an iframe as above */
-        /* If we decide to go back to a new window for whatever then use this */
-        var w = window.open(url, windowName, "location=0, resizable=1, scrollbars=1");
-
-        var m = Ext.String.format( i18n._( "Click {1}here{2} or disable your pop-up blocker and try again." ),
-                               '<br/>', "<a href='" + url + "' target='" + windowName + "'>", '</a>' );
-
-        if ( w == null ) {
-            Ext.MessageBox.show({
-                title: i18n._( "Unable to open a new window" ),
-                msg: m,
-                buttons: Ext.MessageBox.OK,
-                icon: Ext.MessageBox.INFO
-            });
-        } else {
-            if ( w ) w.focus();
-            this.IEWin = w;
-        }
+    openUpgradeScreen: function() {
+        var url = "/webui/upgrade.jsp";
+        this.openIFrame( url, i18n._("Upgrades") );
+    },
+    openRunSetupScreen: function() {
+        var url = "/webui/runsetup.jsp";
+        this.openIFrame( url, i18n._("Welcome") );
+    },     
+    openSetupWizardScreen: function() {
+        var url = "/setup/";
+        this.openIFrame( url, i18n._("Setup Wizard") );
+    },     
+    openLegal: function( topic ) {
+        var baseUrl =  rpc.jsonrpc.UvmContext.getLegalUrl();
+        var url = baseUrl + "?" + this.systemInfo();
+        this.openIFrame( url, i18n._("Legal") );
+    },
+    openHelp: function( topic ) {
+        var baseUrl =  rpc.jsonrpc.UvmContext.getHelpUrl();
+        var url = baseUrl + "?" + "source=" + topic + "&" + this.systemInfo();
+        //this.openIFrame( url, i18n._("Help") );
+        window.open(url); // open a new window
+    },
+    openMyAccountScreen: function() {
+        var baseUrl =  rpc.jsonrpc.UvmContext.getStoreUrl();
+        var url = baseUrl + "?" + "action=my_account" + "&" + this.systemInfo();
+        this.openIFrame( url, i18n._("Welcome") );
+    },
+    openWelcomeScreen: function () {
+        var baseUrl =  rpc.jsonrpc.UvmContext.getStoreUrl();
+        var url = baseUrl + "?" + "action=welcome" + "&" + this.systemInfo();
+        this.openIFrame( url, i18n._("Welcome") );
+    },
+    openLibItemStore: function (libItemName, title) {
+        var baseUrl =  rpc.jsonrpc.UvmContext.getStoreUrl();
+        var url = baseUrl + "?" + "libitem=" + libItemName + "&" + this.systemInfo() ;
+        this.openIFrame( url, title );
     },
     openIFrame: function( url, title ) {
+        if ( url == null ) {
+            alert("can not open window to null URL");
+        }
         var iframeWin = main.getIframeWin();
         iframeWin.show();
         iframeWin.setTitle(title);
@@ -622,17 +620,6 @@ Ext.define("Ung.Main", {
                 }
         },packageDesc), packageDesc.name);
     },
-
-    // open context sensitive help
-    openHelp: function(source) {
-        var url = "../library/launcher?";
-        url += "action=help";
-        if(source) {
-            url += "&source=" + source;
-        }
-        window.open(url);
-    },
-    
     // load policies list
     loadPolicies: function() {
         Ext.MessageBox.wait(i18n._("Loading Apps..."), i18n._("Please wait"));
@@ -1274,12 +1261,12 @@ Ext.define("Ung.Main", {
     upgradeCheckCallback: function () {
         if(main.upgradeLastCheckTime!=null && (new Date()).getTime()-main.upgradeLastCheckTime<300000 && main.upgradeStatus!=null) {
             if(main.upgradeStatus.upgradesAvailable===true) {
-                this.showUpgradeScreen();            
+                this.openUpgradeScreen();            
             } else {
-                this.showWelcomeScreen();
+                this.openWelcomeScreen();
             }                
         } else {
-            this.showWelcomeScreen();
+            this.openWelcomeScreen();
         }
         this.postInitialScreen();                   
     },
@@ -1318,43 +1305,13 @@ Ext.define("Ung.Main", {
                 main.checkForUpgrades(this.upgradeCheckCallback);
                 return;
             } else {
-                this.showFailureScreen();        
+                this.openFailureScreen();        
             }        
         } else {
-            this.showRunSetupScreen();
+            this.openRunSetupScreen();
         }
         this.postInitialScreen();          
     },
-    /**
-     *  Displays the run setup first screen
-     **/         
-    showRunSetupScreen: function() {
-        this.openWindow( "", "runsetup", i18n._("Welcome"), "/webui/runsetup.jsp");
-    },     
-    /**
-     *  Displays the offline welcome screen
-     **/             
-    showFailureScreen: function () {
-        this.openStore("offline",i18n._("Welcome"));
-    },
-    /**
-     *  Displays the online welcome screen
-     **/         
-    showWelcomeScreen: function () {
-        this.openStore("online-welcome",i18n._("Welcome"));            
-    },
-    /**
-     * Display the upgrade screen
-     */
-     showUpgradeScreen: function() {
-        this.openStore('upgrade',i18n._("Welcome"));
-     },
-    /**
-     *  Displays the setup wizard
-     **/         
-    showSetupWizardScreen: function() {
-        this.openWindow( "", "setupwizard", i18n._("Setup Wizard"), "/setup/");
-    },     
     /**
      *  Hides the welcome screen
      */         

@@ -246,7 +246,7 @@ if (!Ung.hasResource["Ung.System"]) {
                                Ext.String.format(this.i18n._("You are about to re-run the Setup Wizard.  This may reconfigure the {0} Server and {1}overwrite your current settings.{2}"), this.companyName, "<b>", "</b>" ),
                                Ext.bind(function(btn) {
                                    if (btn == "yes") {
-                                       main.showSetupWizardScreen();
+                                       main.openSetupWizardScreen();
                                    }
                                }, this));
                         }, this)

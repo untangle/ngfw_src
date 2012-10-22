@@ -76,7 +76,9 @@ if (!Ung.hasResource["Ung.SystemInfo"]) {
                     text: this.i18n._("View License"),
                     name: "View License",
                     iconCls: "reboot-icon",
-                    handler: function() {window.open("../library/launcher?action=legal");}
+                    handler: function() {
+                        main.openLegal();
+                    }
                 }]
                 
            });

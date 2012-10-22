@@ -361,6 +361,13 @@ public interface UvmContext
     ArrayList getEvents( final String query, final Long policyId, final int limit );
 
     /**
+     * Get URLs
+     */
+    String getStoreUrl();
+    String getHelpUrl();
+    String getLegalUrl();
+
+    /**
      * Convenience method, log an event to the database
      */
     void logEvent(LogEvent evt);
