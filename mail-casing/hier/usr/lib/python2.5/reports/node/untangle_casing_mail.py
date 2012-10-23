@@ -140,6 +140,7 @@ CREATE TABLE reports.n_mail_addrs (
         sql_helper.create_index("reports","n_mail_addrs","policy_id");
         sql_helper.create_index("reports","n_mail_addrs","time_stamp");
         sql_helper.create_index("reports","n_mail_addrs","addr_kind");
+        sql_helper.create_index("reports","n_mail_addrs","msg_id", unique=False);
 
         # virus blocker event log query indexes
         # sql_helper.create_index("reports","n_mail_addrs","virus_commtouch_clean");
