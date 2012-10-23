@@ -80,12 +80,17 @@ class CaptureHttpHandler extends HttpStateMachine
         String host = getRequestLine().getRequestUri().getHost();
 
         // if not found there look in the request header
-        if (host == null) host = requestHeader.getValue("host");
+        if (host == null) host = requestHeader.getValue("Host");
 
         // if still not found then just use the IP address of the server
         if (host == null) host = getSession().getServerAddr().getHostAddress().toString();
 
         host = host.toLowerCase();
+
+        // look for prefetch shenaniganery 
+        String prefetch = requestHeader.getValue("X-moz");
+        if (prefetch != null) logger.debug("PREFETCH: " + prefetch);
+        // TODO need to 503 block this stuff here 
 
         CaptureBlockDetails details = new CaptureBlockDetails(host, uri, method);
         Token[] response = node.generateResponse(details, session);
