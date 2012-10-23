@@ -146,13 +146,46 @@ public interface HostTable
      */
     EventLogQuery[] getPenaltyBoxEventQueries();
 
+    /**
+     * Give an address a quota
+     * Utility function to set the appropriate attachment values
+     */
     void giveHostQuota( InetAddress address, long quotaBytes, int time_sec, String reason );
+
+    /**
+     * Remove a quota from the provided address
+     * Utility function to set the appropriate attachment values
+     */
     void removeQuota( InetAddress address );
-    void refillQuota(InetAddress address);
-    boolean hostQuotaExceeded( InetAddress address );
-    LinkedList<HostTable.HostTableEntry> getQuotaHosts();
-    EventLogQuery[] getQuotaEventQueries();
+
+    /**
+     * Refill an existing quota
+     * Will do nothing if the address does not have a quota
+     * Utility function to set the appropriate attachment values
+     */
+    void refillQuota( InetAddress address );
+
+    /**
+     * Decrement the available quota by the provided amount
+     * Utility function to set the appropriate attachment values
+     */
     boolean decrementQuota(InetAddress addr, long bytes);
+    
+    /**
+     * Check if the provided address has a quota that is exceeded
+     */
+    boolean hostQuotaExceeded( InetAddress address );
+
+    /**
+     * Return a list of all the table entries for hosts with quotas
+     * This is used for display in the UI
+     */
+    LinkedList<HostTable.HostTableEntry> getQuotaHosts();
+
+    /**
+     * Get the event log query for quota events
+     */
+    EventLogQuery[] getQuotaEventQueries();
     
     /**
      * A penalty box listener is a hook called when hosts enter or exit the penalty box
