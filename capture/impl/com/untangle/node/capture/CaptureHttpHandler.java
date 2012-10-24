@@ -41,6 +41,7 @@ class CaptureHttpHandler extends HttpStateMachine
     protected Header doRequestHeader(Header requestHeader)
     {
         NodeTCPSession session = getSession();
+
         String clientAddr = session.getClientAddr().getHostAddress().toString();
         String serverAddr = session.getServerAddr().getHostAddress().toString();
 
@@ -87,10 +88,11 @@ class CaptureHttpHandler extends HttpStateMachine
 
         host = host.toLowerCase();
 
-        // look for prefetch shenaniganery 
+        // look for prefetch shenaniganery
         String prefetch = requestHeader.getValue("X-moz");
         if (prefetch != null) logger.debug("PREFETCH: " + prefetch);
-        // TODO need to 503 block this stuff here 
+
+// TODO need to 503 block this stuff here
 
         CaptureBlockDetails details = new CaptureBlockDetails(host, uri, method);
         Token[] response = node.generateResponse(details, session);

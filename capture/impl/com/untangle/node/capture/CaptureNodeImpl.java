@@ -18,17 +18,18 @@ import com.untangle.node.token.TokenAdaptor;
 import com.untangle.node.http.ReplacementGenerator;
 import com.untangle.uvm.node.DirectoryConnector;
 import com.untangle.uvm.node.IPMaskedAddress;
-import com.untangle.uvm.node.PortRange;
-import com.untangle.uvm.node.NodeMetric;
 import com.untangle.uvm.vnet.NodeSession;
+import com.untangle.uvm.node.NodeMetric;
+import com.untangle.uvm.node.PortRange;
+import com.untangle.uvm.vnet.IPNewSessionRequest;
+import com.untangle.uvm.vnet.NodeTCPSession;
+import com.untangle.uvm.vnet.Subscription;
+import com.untangle.uvm.vnet.SoloPipeSpec;
 import com.untangle.uvm.vnet.Affinity;
 import com.untangle.uvm.vnet.Protocol;
 import com.untangle.uvm.vnet.Fitting;
 import com.untangle.uvm.vnet.PipeSpec;
-import com.untangle.uvm.vnet.SoloPipeSpec;
-import com.untangle.uvm.vnet.Subscription;
 import com.untangle.uvm.vnet.NodeBase;
-import com.untangle.uvm.vnet.NodeTCPSession;
 import com.untangle.uvm.util.I18nUtil;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.UvmContextFactory;
@@ -77,13 +78,13 @@ public class CaptureNodeImpl extends NodeBase implements CaptureNode
             "SELECT * FROM reports.n_capture_login_events evt ORDER BY time_stamp DESC");
 
         this.allEventQuery = new EventLogQuery(I18nUtil.marktr("All Events"),
-            "SELECT * FROM reports.sessions " + 
+            "SELECT * FROM reports.sessions " +
             "WHERE policy_id = :policyId " +
             "AND capture_rule_index IS NOT NULL " +
-            "ORDER BY time_stamp DESC");   
+            "ORDER BY time_stamp DESC");
 
         this.blockEventQuery = new EventLogQuery(I18nUtil.marktr("Blocked Events"),
-            "SELECT * FROM reports.sessions " + 
+            "SELECT * FROM reports.sessions " +
             "WHERE policy_id = :policyId " +
             "AND capture_blocked IS TRUE " +
             "ORDER BY time_stamp DESC");
@@ -443,7 +444,28 @@ public class CaptureNodeImpl extends NodeBase implements CaptureNode
         return(false);
     }
 
-    public CaptureRule checkCaptureRules(NodeSession session)
+    public CaptureRule checkCaptureRules(IPNewSessionRequest sessreq)
+    {
+        List<CaptureRule> ruleList = captureSettings.getCaptureRules();
+
+            // check the session against the rule list
+            for (CaptureRule rule : ruleList)
+            {
+                if (rule.isMatch(sessreq.getProtocol(),
+                    sessreq.getClientIntf(), sessreq.getServerIntf(),
+                    sessreq.getClientAddr(), sessreq.getServerAddr(),
+                    sessreq.getClientPort(), sessreq.getServerPort(),
+                    (String)sessreq.globalAttachment(NodeSession.KEY_PLATFORM_USERNAME)))
+                    {
+//                    logger.debug("MATCH: " + rule.getDescription() + " BLOCK:" + rule.getBlock());
+                    return(rule);
+                    }
+            }
+
+        return(null);
+    }
+
+    public CaptureRule checkCaptureRules(NodeTCPSession session)
     {
         List<CaptureRule> ruleList = captureSettings.getCaptureRules();
 

@@ -4,13 +4,13 @@
 
 package com.untangle.node.capture;
 
-import com.untangle.uvm.logging.LogEvent;
 import com.untangle.uvm.node.SessionEvent;
+import com.untangle.uvm.logging.LogEvent;
 
 @SuppressWarnings("serial")
 public class CaptureRuleEvent extends LogEvent
 {
-    private SessionEvent sessionEvent;
+    private SessionEvent sessionEvent = null;
     private Integer ruleid = null;
     private boolean blocked = false;
 
@@ -23,14 +23,14 @@ public class CaptureRuleEvent extends LogEvent
         this.blocked = rule.getBlock();
     }
 
-    public Integer getRuleId() { return(ruleid); }
-    public void setRuleId( Integer ruleid ) { this.ruleid = ruleid; }
+    public SessionEvent getSessionEvent() { return sessionEvent; }
+    public void setSessionEvent( SessionEvent sessionEvent ) { this.sessionEvent = sessionEvent; }
 
     public boolean getBlocked() { return(blocked); }
     public void setBlocked( boolean blocked ) { this.blocked = blocked; }
 
-    public SessionEvent getSessionEvent() { return sessionEvent; }
-    public void setSessionEvent( SessionEvent sessionEvent ) { this.sessionEvent = sessionEvent; }
+    public Integer getRuleId() { return(ruleid); }
+    public void setRuleId( Integer ruleid ) { this.ruleid = ruleid; }
 
     @Override
     public java.sql.PreparedStatement getDirectEventSql( java.sql.Connection conn ) throws Exception

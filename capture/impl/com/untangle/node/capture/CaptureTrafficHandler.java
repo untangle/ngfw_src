@@ -7,7 +7,9 @@ package com.untangle.node.capture;
 import java.net.InetAddress;
 import java.nio.ByteBuffer;
 
+import com.untangle.uvm.vnet.event.TCPNewSessionRequestEvent;
 import com.untangle.uvm.vnet.event.TCPSessionEvent;
+import com.untangle.uvm.vnet.event.UDPNewSessionRequestEvent;
 import com.untangle.uvm.vnet.event.UDPSessionEvent;
 import com.untangle.uvm.vnet.event.UDPPacketEvent;
 import com.untangle.uvm.vnet.AbstractEventHandler;
@@ -32,32 +34,32 @@ public class CaptureTrafficHandler extends AbstractEventHandler
 ///// TCP stuff --------------------------------------------------
 
     @Override
-    public void handleTCPNewSession(TCPSessionEvent event)
+    public void handleTCPNewSessionRequest(TCPNewSessionRequestEvent event)
     {
-        NodeTCPSession session = event.session();
+        IPNewSessionRequest sessreq = event.sessionRequest();
 
         // first we look for and ignore all traffic on port 80 since
         // the http-casing handler will take care of all that
-        if (session.getServerPort() == 80)
+        if (sessreq.getNatToPort() == 80)
         {
-            session.release();
+            sessreq.release();
             return;
         }
 
-        String clientAddr = session.getClientAddr().getHostAddress().toString();
-        String serverAddr = session.getServerAddr().getHostAddress().toString();
+        String clientAddr = sessreq.getClientAddr().getHostAddress().toString();
+        String serverAddr = sessreq.getServerAddr().getHostAddress().toString();
 
         // next check is to see if the user is already authenticated
         // or the client or server is in one of the pass lists
         if (node.isSessionAllowed(clientAddr,serverAddr) == true)
         {
             node.incrementBlinger(CaptureNode.BlingerType.SESSALLOW,1);
-            session.release();
+            sessreq.release();
             return;
         }
 
         // not authenticated and no pass list match so check the rules
-        CaptureRule rule = node.checkCaptureRules(session);
+        CaptureRule rule = node.checkCaptureRules(sessreq);
 
         // by default we allow traffic so if there is no rule or we
         // find a pass rule then let the traffic continue here
@@ -65,44 +67,43 @@ public class CaptureTrafficHandler extends AbstractEventHandler
         {
             if (rule != null)
             {
-                CaptureRuleEvent logevt = new CaptureRuleEvent(session.sessionEvent(), rule);
+                CaptureRuleEvent logevt = new CaptureRuleEvent(sessreq.sessionEvent(), rule);
                 node.logEvent(logevt);
             }
 
             node.incrementBlinger(CaptureNode.BlingerType.SESSALLOW,1);
-            session.release();
+            sessreq.release();
             return;
         }
 
         // not yet allowed and we found a block rule so shut it down
-        CaptureRuleEvent logevt = new CaptureRuleEvent(session.sessionEvent(), rule);
+        CaptureRuleEvent logevt = new CaptureRuleEvent(sessreq.sessionEvent(), rule);
         node.logEvent(logevt);
         node.incrementBlinger(CaptureNode.BlingerType.SESSBLOCK,1);
-        session.resetClient();
-        session.resetServer();
-        session.release();
+        sessreq.rejectSilently();
     }
 
 ///// UDP stuff --------------------------------------------------
 
     @Override
-    public void handleUDPNewSession(UDPSessionEvent event)
+    public void handleUDPNewSessionRequest(UDPNewSessionRequestEvent event)
     {
-        NodeUDPSession session = event.session();
-        String clientAddr = session.getClientAddr().getHostAddress().toString();
-        String serverAddr = session.getServerAddr().getHostAddress().toString();
+        IPNewSessionRequest sessreq = event.sessionRequest();
+
+        String clientAddr = sessreq.getClientAddr().getHostAddress().toString();
+        String serverAddr = sessreq.getServerAddr().getHostAddress().toString();
 
         // first check is to see if the user is already authenticated
         // or the client or server is in one of the pass lists
         if (node.isSessionAllowed(clientAddr,serverAddr) == true)
         {
             node.incrementBlinger(CaptureNode.BlingerType.SESSALLOW,1);
-            session.release();
+            sessreq.release();
             return;
         }
 
         // not authenticated and no pass list match so check the rules
-        CaptureRule rule = node.checkCaptureRules(session);
+        CaptureRule rule = node.checkCaptureRules(sessreq);
 
         // by default we allow traffic so if there is no rule or we
         // find a pass rule then let the traffic continue here
@@ -110,12 +111,12 @@ public class CaptureTrafficHandler extends AbstractEventHandler
         {
             if (rule != null)
             {
-                CaptureRuleEvent logevt = new CaptureRuleEvent(session.sessionEvent(), rule);
+                CaptureRuleEvent logevt = new CaptureRuleEvent(sessreq.sessionEvent(), rule);
                 node.logEvent(logevt);
             }
 
             node.incrementBlinger(CaptureNode.BlingerType.SESSALLOW,1);
-            session.release();
+            sessreq.release();
             return;
         }
 
@@ -124,22 +125,20 @@ public class CaptureTrafficHandler extends AbstractEventHandler
         // can't be circumvented by creative UDP port 53 traffic and it
         // will allow HTTP requests to become established which is
         // required for the http-casing to do the redirect
-        if (session.getServerPort() == 53)
+        if (sessreq.getServerPort() == 53)
         {
             // attach an empty for the packet handler to use
             DNSPacket packet = new DNSPacket();
-            session.attach(packet);
+            sessreq.attach(packet);
             return;
         }
 
         // not yet allowed and we found a block rule and the traffic
         // isn't DNS so shut it down
-        CaptureRuleEvent logevt = new CaptureRuleEvent(session.sessionEvent(), rule);
+        CaptureRuleEvent logevt = new CaptureRuleEvent(sessreq.sessionEvent(), rule);
         node.logEvent(logevt);
         node.incrementBlinger(CaptureNode.BlingerType.SESSBLOCK,1);
-        session.expireClient();
-        session.expireServer();
-        session.release();
+        sessreq.rejectSilently();
     }
 
     @Override

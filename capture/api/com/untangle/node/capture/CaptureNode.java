@@ -4,7 +4,8 @@
 
 package com.untangle.node.capture;
 
-import com.untangle.uvm.vnet.NodeSession;
+import com.untangle.uvm.vnet.IPNewSessionRequest;
+import com.untangle.uvm.vnet.NodeTCPSession;
 import com.untangle.uvm.node.EventLogQuery;
 import com.untangle.uvm.node.Node;
 import java.util.ArrayList;
@@ -26,5 +27,6 @@ public interface CaptureNode extends Node
     int userLogout(String address);
 
     boolean isSessionAllowed(String clientAddr,String serverAddr);
-    CaptureRule checkCaptureRules(NodeSession session);
+    CaptureRule checkCaptureRules(IPNewSessionRequest sessreq);
+    CaptureRule checkCaptureRules(NodeTCPSession session);
 }
