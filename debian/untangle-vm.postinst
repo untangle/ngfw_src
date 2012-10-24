@@ -113,7 +113,8 @@ find /usr/share/untangle/settings -name '*.tmp' -exec rm -rf {} \;
 # 9.3.2 remove obsolete files
 rm -rf /etc/untangle-net-alpaca/iptables-rules.d/800-qos
 rm -rf /etc/untangle-net-alpaca/iptables-rules.d/*single-nic*
-rm -rf /etc/apache/untangle-conf.d/proxy.conf
+rm -rf /etc/apache2/untangle-conf.d/proxy.conf
+rm -rf /etc/apache2/mods-enabled/proxy*
 
 
 exit 0
