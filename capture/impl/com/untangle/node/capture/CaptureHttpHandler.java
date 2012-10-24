@@ -17,6 +17,7 @@ import com.untangle.node.http.RequestLineToken;
 import com.untangle.node.http.RequestLine;
 import com.untangle.node.http.StatusLine;
 import com.untangle.node.token.TokenException;
+import com.untangle.node.token.EndMarker;
 import com.untangle.node.token.Header;
 import com.untangle.node.token.Chunk;
 import com.untangle.node.token.Token;
@@ -40,6 +41,7 @@ class CaptureHttpHandler extends HttpStateMachine
     @Override
     protected Header doRequestHeader(Header requestHeader)
     {
+        Token[] response = null;
         NodeTCPSession session = getSession();
 
         String clientAddr = session.getClientAddr().getHostAddress().toString();
@@ -72,8 +74,6 @@ class CaptureHttpHandler extends HttpStateMachine
             return(requestHeader);
         }
 
-        logger.info("Sending HTTP redirect to unauthenticated user " + clientAddr);
-
         String method = getRequestLine().getMethod().toString();
         String uri = getRequestLine().getRequestUri().toString();
 
@@ -90,12 +90,19 @@ class CaptureHttpHandler extends HttpStateMachine
 
         // look for prefetch shenaniganery
         String prefetch = requestHeader.getValue("X-moz");
-        if (prefetch != null) logger.debug("PREFETCH: " + prefetch);
 
-// TODO need to 503 block this stuff here
+            // found a prefetch request so return a special error response
+            if ((prefetch != null) && (prefetch.contains("prefetch") == true))
+            {
+                response = generatePrefetchResponse();
+            }
 
-        CaptureBlockDetails details = new CaptureBlockDetails(host, uri, method);
-        Token[] response = node.generateResponse(details, session);
+            // not a prefetch so generate the captive portal redirect
+            else
+            {
+                CaptureBlockDetails details = new CaptureBlockDetails(host, uri, method);
+                response = node.generateResponse(details, session);
+            }
 
         CaptureRuleEvent logevt = new CaptureRuleEvent(session.sessionEvent(), rule);
         node.logEvent(logevt);
@@ -143,5 +150,27 @@ class CaptureHttpHandler extends HttpStateMachine
     protected StatusLine doStatusLine(StatusLine statusLine) throws TokenException
     {
         return statusLine;
+    }
+
+///// Generate a forbidden response for prefetch queries
+
+    private Token[] generatePrefetchResponse()
+    {
+        Token response[] = new Token[4];
+
+        StatusLine sl = new StatusLine("HTTP/1.1", 503, "Service Unavailable");
+        response[0] = sl;
+
+        Header h = new Header();
+        h.addField("Cache-Control", "no-store, no-cache, must-revalidate, post-check=0, pre-check=0");
+        h.addField("Pragma", "no-cache");
+        h.addField("Expires", "Sat, 1 Jan 2000 00:00:00 GMT");
+        h.addField("Content-Length", "0");
+        h.addField("Connection", "Close");
+        response[1] = h;
+
+        response[2] = Chunk.EMPTY;
+        response[3] = EndMarker.MARKER;
+        return(response);
     }
 }
