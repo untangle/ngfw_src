@@ -107,6 +107,7 @@ class CaptureHttpHandler extends HttpStateMachine
         CaptureRuleEvent logevt = new CaptureRuleEvent(session.sessionEvent(), rule);
         node.logEvent(logevt);
         node.incrementBlinger(CaptureNode.BlingerType.SESSBLOCK,1);
+        session.resetServer();
         blockRequest(response);
         return requestHeader;
     }
@@ -161,13 +162,13 @@ class CaptureHttpHandler extends HttpStateMachine
         StatusLine sl = new StatusLine("HTTP/1.1", 503, "Service Unavailable");
         response[0] = sl;
 
-        Header h = new Header();
-        h.addField("Cache-Control", "no-store, no-cache, must-revalidate, post-check=0, pre-check=0");
-        h.addField("Pragma", "no-cache");
-        h.addField("Expires", "Sat, 1 Jan 2000 00:00:00 GMT");
-        h.addField("Content-Length", "0");
-        h.addField("Connection", "Close");
-        response[1] = h;
+        Header head = new Header();
+        head.addField("Cache-Control", "no-store, no-cache, must-revalidate, post-check=0, pre-check=0");
+        head.addField("Pragma", "no-cache");
+        head.addField("Expires", "Mon, 10 Jan 2000 00:00:00 GMT");
+        head.addField("Content-Length", "0");
+        head.addField("Connection", "Close");
+        response[1] = head;
 
         response[2] = Chunk.EMPTY;
         response[3] = EndMarker.MARKER;
