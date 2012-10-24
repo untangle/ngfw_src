@@ -410,184 +410,48 @@ if (!Ung.hasResource["Ung.System"]) {
             protocolSettingsItems.push({
                 border: false,
                 cls: "description",
-                html: this.i18n._("Warning: These settings should not be changed unless instructed to do so by support.")
+                html: "<b>" + "<font color=\"red\">" + this.i18n._("Warning:") + "</font>&nbsp;" + this.i18n._("These settings should not be changed unless instructed to do so by support.") + "</b>"
             });
 
             if (this.isHttpLoaded()) {
                 protocolSettingsItems.push({
-                    xtype: "fieldset",
-                    collapsible: true,
-                    collapsed: true,
                     title: this.i18n._("HTTP"),
-                    defaults: {
-                        xtype: "fieldset"
-                    },
                     items: [{
-                        title: this.i18n._("Web Override"),
-                        items: [{
-                            xtype: "radio",
-                            boxLabel: Ext.String.format(this.i18n._("{0}Enable Processing{1} of web traffic.  (This is the default setting)"), "<b>", "</b>"),
-                            hideLabel: true,
-                            name: "Web Override",
-                            checked: this.getHttpSettings().enabled,
-                            listeners: {
-                                "change": {
-                                    fn: Ext.bind(function(elem, checked) {
-                                        this.getHttpSettings().enabled = checked;
-                                    }, this)
-                                }
+                        xtype: "radio",
+                        boxLabel: this.i18n._("Enable processing of HTTP traffic.  (This is the default setting)"),
+                        hideLabel: true,
+                        name: "Web Override",
+                        checked: this.getHttpSettings().enabled,
+                        listeners: {
+                            "change": {
+                                fn: Ext.bind(function(elem, checked) {
+                                    this.getHttpSettings().enabled = checked;
+                                }, this)
                             }
-                        },{
-                            xtype: "radio",
-                            boxLabel: Ext.String.format(this.i18n._("{0}Disable Processing{1} of web traffic."), "<b>", "</b>"),
-                            hideLabel: true,
-                            name: "Web Override",
-                            checked: !this.getHttpSettings().enabled,
-                            listeners: {
-                                "change": {
-                                    fn: Ext.bind(function(elem, checked) {
-                                        this.getHttpSettings().enabled = !checked;
-                                    }, this)
-                                }
-                            }
-                        }]
+                        }
                     },{
-                        title: this.i18n._("Long URIs"),
-                        labelWidth: 250,
-                        items: [{
-                            xtype: "radio",
-                            boxLabel: Ext.String.format(this.i18n._("{0}Enable Processing{1} of long URIs.  The traffic is considered \"Non-Http\".  (This is the default setting)"), "<b>", "</b>"),
-                            hideLabel: true,
-                            name: "Long URIs",
-                            checked: !this.getHttpSettings().blockLongUris,
-                            listeners: {
-                                "change": {
-                                    fn: Ext.bind(function(elem, checked) {
-                                        this.getHttpSettings().blockLongUris = !checked;
-                                    }, this)
-                                }
+                        xtype: "radio",
+                        boxLabel: this.i18n._("Disable processing of HTTP traffic."),
+                        hideLabel: true,
+                        name: "Web Override",
+                        checked: !this.getHttpSettings().enabled,
+                        listeners: {
+                            "change": {
+                                fn: Ext.bind(function(elem, checked) {
+                                    this.getHttpSettings().enabled = !checked;
+                                }, this)
                             }
-                        },{
-                            xtype: "radio",
-                            boxLabel: Ext.String.format(this.i18n._("{0}Disable Processing{1} of long URIs."), "<b>", "</b>"),
-                            hideLabel: true,
-                            name: "Long URIs",
-                            checked: this.getHttpSettings().blockLongUris,
-                            listeners: {
-                                "change": {
-                                    fn: Ext.bind(function(elem, checked) {
-                                        this.getHttpSettings().blockLongUris = checked;
-                                    }, this)
-                                }
-                            }
-                        },{
-                            xtype: "numberfield",
-                            fieldLabel: this.i18n._("Max URI Length (characters)"),
-                            name: "Max URI Length",
-                            id: "system_protocolSettings_maxUriLength",
-                            value: this.getHttpSettings().maxUriLength,
-                            labelWidth: 200,
-                            allowDecimals: false,
-                            allowNegative: false,
-                            minValue: 1024,
-                            maxValue: 4096,
-                            listeners: {
-                                "change": {
-                                    fn: Ext.bind(function(elem, newValue) {
-                                        this.getHttpSettings().maxUriLength = newValue;
-                                    }, this)
-                                }
-                            }
-                        }]
-                    },{
-                        title: this.i18n._("Long Headers"),
-                        labelWidth: 250,
-                        items: [{
-                            xtype: "radio",
-                            boxLabel: Ext.String.format(this.i18n._("{0}Enable Processing{1} of long headers.  The traffic is considered \"Non-Http\".  (This is the default setting)"), "<b>", "</b>"),
-                            hideLabel: true,
-                            name: "Long Headers",
-                            checked: !this.getHttpSettings().blockLongHeaders,
-                            listeners: {
-                                "change": {
-                                    fn: Ext.bind(function(elem, checked) {
-                                        this.getHttpSettings().blockLongHeaders = !checked;
-                                    }, this)
-                                }
-                            }
-                        },{
-                            xtype: "radio",
-                            boxLabel: Ext.String.format(this.i18n._("{0}Disable Processing{1} of long headers."), "<b>", "</b>"),
-                            hideLabel: true,
-                            name: "Long Headers",
-                            checked: this.getHttpSettings().blockLongHeaders,
-                            listeners: {
-                                "change": {
-                                    fn: Ext.bind(function(elem, checked) {
-                                        this.getHttpSettings().blockLongHeaders = checked;
-                                    }, this)
-                                }
-                            }
-                        },{
-                            xtype: "numberfield",
-                            fieldLabel: this.i18n._("Max Header Length (characters)"),
-                            name: "Max Header Length",
-                            id: "system_protocolSettings_maxHeaderLength",
-                            value: this.getHttpSettings().maxHeaderLength,
-                            labelWidth: 200,
-                            allowDecimals: false,
-                            allowNegative: false,
-                            minValue: 1024,
-                            maxValue: 8192,
-                            listeners: {
-                                "change": {
-                                    fn: Ext.bind(function(elem, newValue) {
-                                        this.getHttpSettings().maxHeaderLength = newValue;
-                                    }, this)
-                                }
-                            }
-                        }]
-                    },{
-                        title: this.i18n._("Non-Http Blocking"),
-                        items: [{
-                            xtype: "radio",
-                            boxLabel: Ext.String.format(this.i18n._("{0}Allow{1} non-Http traffic to travel over port 80.  (This is the default setting)"), "<b>", "</b>"),
-                            hideLabel: true,
-                            name: "Non-Http Blocking",
-                            checked: !this.getHttpSettings().nonHttpBlocked,
-                            listeners: {
-                                "change": {
-                                    fn: Ext.bind(function(elem, checked) {
-                                        this.getHttpSettings().nonHttpBlocked = !checked;
-                                    }, this)
-                                }
-                            }
-                        },{
-                            xtype: "radio",
-                            boxLabel: Ext.String.format(this.i18n._("{0}Stop{1} non-Http traffic to travel over port 80."), "<b>", "</b>"),
-                            hideLabel: true,
-                            name: "Non-Http Blocking",
-                            checked: this.getHttpSettings().nonHttpBlocked,
-                            listeners: {
-                                "change": {
-                                    fn: Ext.bind(function(elem, checked) {
-                                        this.getHttpSettings().nonHttpBlocked = checked;
-                                    }, this)
-                                }
-                            }
-                        }]
+                        }
                     }]
                 });
             }
 
             if (this.isFtpLoaded()) {
                 protocolSettingsItems.push({
-                    collapsible: true,
-                    collapsed: true,
                     title: this.i18n._("FTP"),
                     items: [{
                         xtype: "radio",
-                        boxLabel: Ext.String.format(this.i18n._("{0}Enable Processing{1} of File Transfer traffic.  (This is the default setting)"), "<b>", "</b>"),
+                        boxLabel: this.i18n._("Enable processing of FTP traffic.  (This is the default setting)"),
                         hideLabel: true,
                         name: "FTP",
                         checked: this.getFtpSettings().enabled,
@@ -600,7 +464,7 @@ if (!Ung.hasResource["Ung.System"]) {
                         }
                     },{
                         xtype: "radio",
-                        boxLabel: Ext.String.format(this.i18n._("{0}Disable Processing{1} of File Transfer traffic."), "<b>", "</b>"),
+                        boxLabel: this.i18n._("Disable processing of FTP traffic."),
                         hideLabel: true,
                         name: "FTP",
                         checked: !this.getFtpSettings().enabled,
@@ -617,13 +481,11 @@ if (!Ung.hasResource["Ung.System"]) {
 
             if (this.isMailLoaded()) {
                 protocolSettingsItems.push({
-                    collapsible: true,
-                    collapsed: true,
                     title: this.i18n._("SMTP"),
                     labelWidth: 200,
                     items: [{
                         xtype: "radio",
-                        boxLabel: Ext.String.format(this.i18n._("{0}Enable SMTP{1} email processing.  (This is the default setting)"), "<b>", "</b>"),
+                        boxLabel: this.i18n._("Enable processing of SMTP traffic.  (This is the default setting)"),
                         hideLabel: true,
                         name: "SMTP",
                         checked: this.getMailNodeSettings().smtpEnabled,
@@ -636,7 +498,7 @@ if (!Ung.hasResource["Ung.System"]) {
                         }
                     },{
                         xtype: "radio",
-                        boxLabel: Ext.String.format(this.i18n._("{0}Disable SMTP{1} email processing."), "<b>", "</b>"),
+                        boxLabel: this.i18n._("Disable processing of SMTP traffic."),
                         hideLabel: true,
                         name: "SMTP",
                         checked: !this.getMailNodeSettings().smtpEnabled,
@@ -647,61 +509,14 @@ if (!Ung.hasResource["Ung.System"]) {
                                 }, this)
                             }
                         }
-                    },{
-                        xtype: "numberfield",
-                        fieldLabel: this.i18n._("SMTP timeout (seconds)"),
-                        name: "SMTP timeout",
-                        id: "system_protocolSettings_smtpTimeout",
-                        value: this.getMailNodeSettings().smtpTimeout/1000,
-                        labelWidth: 200,
-                        allowDecimals: false,
-                        allowNegative: false,
-                        minValue: 0,
-                        maxValue: 86400,
-                        listeners: {
-                            "change": {
-                                fn: Ext.bind(function(elem, newValue) {
-                                    this.getMailNodeSettings().smtpTimeout = newValue*1000;
-                                }, this)
-                            }
-                        }
-                    },{
-                        xtype: "radio",
-                        boxLabel: Ext.String.format(this.i18n._("{0}Allow TLS{1} encryption over SMTP."), "<b>", "</b>"),
-                        hideLabel: true,
-                        name: "AllowTLS",
-                        checked: this.getMailNodeSettings().smtpAllowTLS,
-                        listeners: {
-                            "change": {
-                                fn: Ext.bind(function(elem, checked) {
-                                    this.getMailNodeSettings().smtpAllowTLS = checked;
-                                }, this)
-                            }
-                        }
-                    },{
-                        xtype: "radio",
-                        boxLabel: Ext.String.format(this.i18n._("{0}Stop TLS{1} encryption over SMTP.  (This is the default setting)"), "<b>", "</b>"),
-                        hideLabel: true,
-                        name: "AllowTLS",
-                        checked: !this.getMailNodeSettings().smtpAllowTLS,
-                        listeners: {
-                            "change": {
-                                fn: Ext.bind(function(elem, checked) {
-                                    this.getMailNodeSettings().smtpAllowTLS = !checked;
-                                }, this)
-                            }
-                        }
                     }]
                 });
                 protocolSettingsItems.push({
-                    collapsible: true,
-                    collapsed: true,
-                    xtype: "fieldset",
                     title: this.i18n._("POP3"),
                     labelWidth: 200,
                     items: [{
                         xtype: "radio",
-                        boxLabel: Ext.String.format(this.i18n._("{0}Enable POP3{1} email processing.  (This is the default setting)"), "<b>", "</b>"),
+                        boxLabel: this.i18n._("Enable processing of POP3 traffic.  (This is the default setting)"),
                         hideLabel: true,
                         name: "POP3",
                         checked: this.getMailNodeSettings().popEnabled,
@@ -714,7 +529,7 @@ if (!Ung.hasResource["Ung.System"]) {
                         }
                     },{
                         xtype: "radio",
-                        boxLabel: Ext.String.format(this.i18n._("{0}Disable POP3{1} email processing."), "<b>", "</b>"),
+                        boxLabel: this.i18n._("Disable processing of POP3 traffic."),
                         hideLabel: true,
                         name: "POP3",
                         checked: !this.getMailNodeSettings().popEnabled,
@@ -725,34 +540,14 @@ if (!Ung.hasResource["Ung.System"]) {
                                 }, this)
                             }
                         }
-                    },{
-                        xtype: "numberfield",
-                        fieldLabel: this.i18n._("POP3 timeout (seconds)"),
-                        name: "POP3 timeout",
-                        id: "system_protocolSettings_popTimeout",
-                        value: this.getMailNodeSettings().popTimeout/1000,
-                        labelWidth: 200,
-                        allowDecimals: false,
-                        allowNegative: false,
-                        minValue: 0,
-                        maxValue: 86400,
-                        listeners: {
-                            "change": {
-                                fn: Ext.bind(function(elem, newValue) {
-                                    this.getMailNodeSettings().popTimeout = newValue*1000;
-                                }, this)
-                            }
-                        }
                     }]
                 });
                 protocolSettingsItems.push({
-                    collapsible: true,
-                    collapsed: true,
                     title: this.i18n._("IMAP"),
                     labelWidth: 200,
                     items: [{
                         xtype: "radio",
-                        boxLabel: Ext.String.format(this.i18n._("{0}Enable IMAP{1} email processing.  (This is the default setting)"), "<b>", "</b>"),
+                        boxLabel: this.i18n._("Enable processing of IMAP traffic.  (This is the default setting)"),
                         hideLabel: true,
                         name: "IMAP",
                         checked: this.getMailNodeSettings().imapEnabled,
@@ -765,7 +560,7 @@ if (!Ung.hasResource["Ung.System"]) {
                         }
                     },{
                         xtype: "radio",
-                        boxLabel: Ext.String.format(this.i18n._("{0}Disable IMAP{1} email processing."), "<b>", "</b>"),
+                        boxLabel: this.i18n._("Disable processing of IMAP traffic."),
                         hideLabel: true,
                         name: "IMAP",
                         checked: !this.getMailNodeSettings().imapEnabled,
@@ -773,24 +568,6 @@ if (!Ung.hasResource["Ung.System"]) {
                             "change": {
                                 fn: Ext.bind(function(elem, checked) {
                                     this.getMailNodeSettings().imapEnabled = !checked;
-                                }, this)
-                            }
-                        }
-                    },{
-                        xtype: "numberfield",
-                        fieldLabel: this.i18n._("IMAP timeout (seconds)"),
-                        name: "IMAP timeout",
-                        id: "system_protocolSettings_imapTimeout",
-                        value: this.getMailNodeSettings().imapTimeout/1000,
-                        labelWidth: 200,
-                        allowDecimals: false,
-                        allowNegative: false,
-                        minValue: 0,
-                        maxValue: 86400,
-                        listeners: {
-                            "change": {
-                                fn: Ext.bind(function(elem, newValue) {
-                                    this.getMailNodeSettings().imapTimeout = newValue*1000;
                                 }, this)
                             }
                         }
@@ -924,22 +701,19 @@ if (!Ung.hasResource["Ung.System"]) {
                         id: "upload_language_form",
                         url: "upload",
                         border: false,
-                        items: [
-                        {
-                          xtype: 'filefield',
-                          fieldLabel:this.i18n._("File"),
-                          width: 500,
-                          size: 50,
-                          labelWidth: 50,
-                          name: 'file',
-                          allowBlank: false,
-                        },
-                        {
+                        items: [{
+                            xtype: 'filefield',
+                            fieldLabel:this.i18n._("File"),
+                            width: 500,
+                            size: 50,
+                            labelWidth: 50,
+                            name: 'file',
+                            allowBlank: false
+                        }, {
                             xtype: "hidden",
                             name: "type",
                             value: "language"
-                        },
-                        {
+                        }, {
                             xtype: "button",
                             text: this.i18n._("Upload"),
                             name: "Upload",
