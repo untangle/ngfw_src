@@ -504,17 +504,6 @@ class ToolboxManagerImpl implements ToolboxManager
     {
         final AptLogTail alt;
 
-        PackageDesc uvmDesc = packageDesc("untangle-vm");
-        /* if its upgrade to something other than 9.3 - don't allow upgrade if CPD is installed */
-        if (! uvmDesc.getAvailableVersion().contains("9.3") ) {
-            List<Node> cpds = UvmContextFactory.context().nodeManager().nodeInstances("untangle-node-cpd");
-            if (cpds.size() > 0) {
-                throw new PackageException("Captive Portal has been replaced with a new implementation in v9.4 and later." + "<br/>" +
-                                           "The Captive Portal in 9.3 can not be upgraded and must be removed from the rack before upgrading.");
-            }
-
-        }
-        
         synchronized (tails) {
             long i = ++lastTailKey;
             alt = new AptLogTail(i, null);

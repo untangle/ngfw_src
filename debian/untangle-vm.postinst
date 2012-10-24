@@ -50,7 +50,7 @@ fi
 
 # 9.x change sources.list to point to stable-10
 if [ -f /etc/apt/sources.list.d/untangle.list ] ; then
-    sed -i 's/\sstable\s/ stable-94 /' /etc/apt/sources.list.d/untangle.list
+    sed -i 's/\sstable\s/ stable-9 /' /etc/apt/sources.list.d/untangle.list
 fi
 
 # set up uvm to start at boot
@@ -108,11 +108,5 @@ rm -f /var/log/uvm/iptables*
 rm -f /usr/lib/python2.5/reports/node/untangle_node_template*
 rm -f /usr/share/untangle/conf/openvpn/packet-filter-rules
 find /usr/share/untangle/settings -name '*.tmp' -exec rm -rf {} \;
-
-# 9.3.2 remove obsolete files
-rm -rf /etc/untangle-net-alpaca/iptables-rules.d/800-qos
-rm -rf /etc/untangle-net-alpaca/iptables-rules.d/*single-nic*
-rm -rf /etc/apache/untangle-conf.d/proxy.conf
-
 
 exit 0
