@@ -6,6 +6,7 @@ from jsonrpc import JSONRPCException
 from uvm import Manager
 from uvm import Uvm
 from untangle_tests import ClientControl
+from untangle_tests import TestDict
 
 uvmContext = Uvm().getUvmContext()
 defaultRackId = 1
@@ -89,6 +90,7 @@ class SpywareTests(unittest.TestCase):
         node = None
         
 
+TestDict.registerNode("spyware", SpywareTests)
 
 
 

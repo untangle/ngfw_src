@@ -8,6 +8,7 @@ from jsonrpc import JSONRPCException
 from uvm import Manager
 from uvm import Uvm
 from untangle_tests import ClientControl
+from untangle_tests import TestDict
 
 uvmContext = Uvm().getUvmContext()
 defaultRackId = 1
@@ -17,7 +18,7 @@ node = None
 
 #pdb.set_trace()
 
-class OpenVPNTests(unittest.TestCase):
+class OpenVpnTests(unittest.TestCase):
 
     @staticmethod
     def nodeName():
@@ -40,3 +41,6 @@ class OpenVPNTests(unittest.TestCase):
         global node
         uvmContext.nodeManager().destroy( node.getNodeSettings()["id"] )
         node = None
+
+TestDict.registerNode("openvpn", OpenVpnTests)
+

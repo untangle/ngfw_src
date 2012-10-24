@@ -9,6 +9,7 @@ from datetime import datetime
 from uvm import Manager
 from uvm import Uvm
 from untangle_tests import ClientControl
+from untangle_tests import TestDict
 
 uvmContext = Uvm().getUvmContext()
 defaultRackId = 1
@@ -71,3 +72,5 @@ class ShieldTests(unittest.TestCase):
         node = None
         nodeSettings = None
         
+
+TestDict.registerNode("shield", ShieldTests)

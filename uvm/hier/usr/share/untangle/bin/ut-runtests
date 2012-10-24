@@ -2,26 +2,18 @@
 import sys
 import getopt
 import signal
+import os
 sys.path.insert(0, '@PREFIX@/usr/lib/python2.5/')
 
 import unittest
 import uvm
 import untangle_tests
 from   untangle_tests import *
-from   untangle_tests.webfilter_tests import WebFilterTests
-from   untangle_tests.sitefilter_tests import SiteFilterTests
-from   untangle_tests.firewall_tests import FirewallTests
-from   untangle_tests.classd_tests import ClassdTests
-from   untangle_tests.spyware_tests import SpywareTests
-from   untangle_tests.shield_tests import ShieldTests
-from   untangle_tests.clam_tests import ClamTests
-from   untangle_tests.commtouchav_tests import CommtouchAvTests
-from   untangle_tests.adconnector_tests import DirectoryConnectorTests
-from   untangle_tests.openvpn_tests import OpenVPNTests
-from   untangle_tests.ipsec_tests import IPsecTests
-from   untangle_tests.policy_tests import PolicyTests
-from   untangle_tests.adblocker_tests import AdBlockerTests
-from   untangle_tests.ips_tests import IpsTests
+
+for f in os.listdir('@PREFIX@/usr/lib/python2.5/untangle_tests'):
+    if f.endswith('py'):
+        (m, e) = os.path.splitext(f)
+        __import__('untangle_tests.%s' % m)
 
 class ArgumentParser(object):
     def __init__(self):
@@ -188,66 +180,22 @@ if (not uvm.Uvm().getUvmContext().nodeManager().isInstantiated('untangle-node-re
 
 if ("environment" in parser.nodesToTest or "all" in parser.nodesToTest):
     runTestEnvironmentTests()
+if "all" in parser.nodesToTest:
+    parser.nodesToTest = TestDict.allNodes()
 
 while True:
     rc = 0
     total = 0
-    if ("webfilter" in parser.nodesToTest or "all" in parser.nodesToTest):
-        errors, subTotal = runTestSuite(WebFilterTests)
+
+    for node in parser.nodesToTest:
+        testClz = TestDict.test(node)
+        if testClz == None:
+           print "Unable to find tests for \"%s\" - skipping." % node
+           continue
+        errors, subTotal = runTestSuite(testClz)
         rc += errors
         total += subTotal
-    if ("sitefilter" in parser.nodesToTest or "all" in parser.nodesToTest):
-        errors, subTotal = runTestSuite(SiteFilterTests)
-        rc += errors
-        total += subTotal
-    if ("firewall" in parser.nodesToTest or "all" in parser.nodesToTest):
-        errors, subTotal = runTestSuite(FirewallTests)
-        rc += errors
-        total += subTotal
-    if ("classd" in parser.nodesToTest or "all" in parser.nodesToTest):
-        errors, subTotal = runTestSuite(ClassdTests)
-        rc += errors
-        total += subTotal
-    if ("spyware" in parser.nodesToTest or "all" in parser.nodesToTest):
-        errors, subTotal = runTestSuite(SpywareTests)
-        rc += errors
-        total += subTotal
-    if ("shield" in parser.nodesToTest or "all" in parser.nodesToTest):
-        errors, subTotal = runTestSuite(ShieldTests)
-        rc += errors
-        total += subTotal
-    if ("clam" in parser.nodesToTest or "all" in parser.nodesToTest):
-        errors, subTotal = runTestSuite(ClamTests)
-        rc += errors
-        total += subTotal
-    if ("commtouchav" in parser.nodesToTest or "all" in parser.nodesToTest):
-        errors, subTotal = runTestSuite(CommtouchAvTests)
-        rc += errors
-        total += subTotal
-    if ("adconnector" in parser.nodesToTest or "all" in parser.nodesToTest):
-        errors, subTotal = runTestSuite(DirectoryConnectorTests)
-        rc += errors
-        total += subTotal
-    if ("openvpn" in parser.nodesToTest or "all" in parser.nodesToTest):
-        errors, subTotal = runTestSuite(OpenVPNTests)
-        rc += errors
-        total += subTotal
-    if ("ipsec" in parser.nodesToTest or "all" in parser.nodesToTest):
-        errors, subTotal = runTestSuite(IPsecTests)
-        rc += errors
-        total += subTotal
-    if ("policy" in parser.nodesToTest or "all" in parser.nodesToTest):
-        errors, subTotal = runTestSuite(PolicyTests)
-        rc += errors
-        total += subTotal
-    if ("adblocker" in parser.nodesToTest or "all" in parser.nodesToTest):
-        errors, subTotal = runTestSuite(AdBlockerTests)
-        rc += errors
-        total += subTotal
-    if ("ips" in parser.nodesToTest or "all" in parser.nodesToTest):
-        errors, subTotal = runTestSuite(IpsTests)
-        rc += errors
-        total += subTotal
+
     if not parser.repeat:
         break
 

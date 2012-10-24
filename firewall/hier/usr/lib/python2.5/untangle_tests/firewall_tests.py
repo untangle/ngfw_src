@@ -7,6 +7,7 @@ from jsonrpc import JSONRPCException
 from uvm import Manager
 from uvm import Uvm
 from untangle_tests import ClientControl
+from untangle_tests import TestDict
 
 uvmContext = Uvm().getUvmContext()
 defaultRackId = 1
@@ -473,7 +474,7 @@ class FirewallTests(unittest.TestCase):
         uvmContext.nodeManager().destroy( node.getNodeSettings()["id"] )
         node = None
         
-
+TestDict.registerNode("firewall", FirewallTests)
 
 
 

@@ -8,6 +8,7 @@ from uvm import Manager
 from uvm import Uvm
 from untangle_tests import ClientControl
 from untangle_tests.virus_tests import VirusTests
+from untangle_tests import TestDict
 
 #
 # Just extends the virus base tests
@@ -26,3 +27,5 @@ class ClamTests(VirusTests):
     def test_009_clamdIsRunning(self):
         result = os.system("ps aux | grep clamd | grep -v grep >/dev/null 2>&1")
         assert (result == 0)
+
+TestDict.registerNode("clam", ClamTests)
