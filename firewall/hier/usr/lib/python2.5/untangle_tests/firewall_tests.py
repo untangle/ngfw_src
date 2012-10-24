@@ -327,8 +327,9 @@ class FirewallTests(unittest.TestCase):
 
     # verify src penalty box wan is blocked when client in penalty box
     def test_067_blockSrcPenaltyBox2(self):
+        fname = sys._getframe().f_code.co_name
         nukeRules();
-        uvmContext.hostTable().addHostToPenaltyBox( ClientControl.hostIP, 1, 60 );
+        uvmContext.hostTable().addHostToPenaltyBox( ClientControl.hostIP, 1, 60, fname );
         appendRule( createSingleMatcherRule( "CLIENT_IN_PENALTY_BOX", None ) );
         result = clientControl.runCommand("wget -o /dev/null -t 1 --timeout=3 http://test.untangle.com/")
         assert (result == 1)
