@@ -2264,10 +2264,6 @@ Ext.define("Ung.SystemStats", {
     },
     update: function(stats) {
         var sessionsText = '<font color="#55BA47">' + stats.map.uvmSessions + "</font>";
-        if (stats.map.uvmSessions > 8000)
-            sessionsText = '<font color="orange">' + stats.map.uvmSessions + "</font>";
-        if (stats.map.uvmSessions > 9000)
-            sessionsText = '<font color="red">' + stats.map.uvmSessions + "</font>";
         this.getEl().down("div[class=sessions]").dom.innerHTML=sessionsText;
         
         this.getEl().down("div[class=cpu]").dom.innerHTML=stats.map.oneMinuteLoadAvg;
@@ -2297,7 +2293,7 @@ Ext.define("Ung.SystemStats", {
         }
         if(this.sessionsToolTip.rendered) {
             var toolTipEl=this.sessionsToolTip.getEl();
-            toolTipEl.down("span[name=totalSessions]").dom.innerHTML=stats.map.uvmSessions /* XXX plus bypassed sessions */ ; 
+            toolTipEl.down("span[name=totalSessions]").dom.innerHTML=stats.map.uvmSessions ; 
             toolTipEl.down("span[name=uvmTCPSessions]").dom.innerHTML=stats.map.uvmTCPSessions;
             toolTipEl.down("span[name=uvmUDPSessions]").dom.innerHTML=stats.map.uvmUDPSessions;
         }
