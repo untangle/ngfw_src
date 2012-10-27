@@ -4,6 +4,7 @@
 
 package com.untangle.node.capture;
 
+import java.util.LinkedList;
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.Timer;
@@ -165,6 +166,18 @@ public class CaptureNodeImpl extends NodeBase implements CaptureNode
         localSettings.setBasicMessageAgreeBox(false);
         localSettings.setBasicMessageAgreeText("Clicking here means you agree to the terms above.");
         localSettings.setBasicMessageFooter("If you have any questions, please contact your network administrator.");
+
+        // create a few example rules
+        List<CaptureRule> ruleList = new LinkedList<CaptureRule>();
+        LinkedList<CaptureRuleMatcher> matcherList = null;
+
+        // example interface rule
+        CaptureRuleMatcher interfaceMatch = new CaptureRuleMatcher(CaptureRuleMatcher.MatcherType.SRC_INTF, "2");
+        matcherList = new LinkedList<CaptureRuleMatcher>();
+        matcherList.add(interfaceMatch);
+        ruleList.add(new CaptureRule(false, matcherList, true, "Capture all traffic on the internal interface"));
+
+        localSettings.setCaptureRules(ruleList);
 
         // the set function takes care of writing the settings to
         // disk and applying the settings to the node

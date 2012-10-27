@@ -187,7 +187,6 @@ if (!Ung.hasResource["Ung.Capture"]) {
                         "ruleId": 0,
                         "enabled": true,
                         "block": false,
-                        "log": true,
                         "description": this.i18n._("[no description]"),
                         "javaClass": "com.untangle.node.capture.CaptureRule"
                     },
@@ -200,8 +199,6 @@ if (!Ung.hasResource["Ung.Capture"]) {
                         name: 'enabled'
                     }, {
                         name: 'block'
-                    }, {
-                        name: 'log'
                     }, {
                         name: 'matchers'
                     },{
@@ -238,13 +235,6 @@ if (!Ung.hasResource["Ung.Capture"]) {
                                 xtype:'checkcolumn',
                                 header: this.i18n._("Block"),
                                 dataIndex: 'block',
-                                fixed: true,
-                                width:55
-                            },
-                            {
-                                xtype:'checkcolumn',
-                                header: this.i18n._("Log"),
-                                dataIndex: 'log',
                                 fixed: true,
                                 width:55
                             }],
@@ -370,12 +360,6 @@ if (!Ung.hasResource["Ung.Capture"]) {
                             queryMode: 'local',
                             triggerAction: 'all',
                             listClass: 'x-combo-list-small'
-                        },
-                        {
-                            xtype:'checkbox',
-                            name: "Log",
-                            dataIndex: "log",
-                            fieldLabel: this.i18n._("Log")
                         }]
                 })]
             });
