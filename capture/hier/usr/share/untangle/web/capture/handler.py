@@ -131,6 +131,16 @@ def infopost(req,method,nonce,appid,host,uri,agree='empty'):
     return(page)
 
 #-----------------------------------------------------------------------------
+# This function handles the custom page upload
+
+def upload(req,custom_file):
+
+    file = open("/tmp/custom.upload","w")
+    file.write(custom_file.file.read())
+    file.close()
+    return("{success:true,message:'" + custom_file.filename + "'}")
+
+#-----------------------------------------------------------------------------
 # This function generates the actual
 
 def generate_page(req,args,extra=''):

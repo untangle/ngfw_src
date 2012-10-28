@@ -843,24 +843,21 @@ if (!Ung.hasResource["Ung.Capture"]) {
                             xtype: "form",
                             bodyStyle: "padding:0px 0px 0px 25px",
                             buttonAlign: "left",
-                            id: "upload_custom_php",
-                            url: "upload",
+                            id: "upload_form",
+                            url: "/capture/handler.py/upload",
                             pageType: "CUSTOM",
                             border: false,
                             items: [{
-                                xtype: 'filefield',
-                                name: "customUploadFile",
+                                xtype: 'fileuploadfield',
+                                name: "custom_file",
+                                id: "custom_file",
                                 width: 500,
                                 size: 50
                             },{
                                 xtype: "button",
-                                name: "customSendFile",
+                                name: "submit",
                                 text: i18n._("Upload File"),
                                 handler: Ext.bind(this.onUploadCustomFile, this)
-                            },{
-                                xtype: "hidden",
-                                name: "type",
-                                value: "capture-custom-page"
                             }]
                         }]
                     },{
@@ -889,9 +886,9 @@ if (!Ung.hasResource["Ung.Capture"]) {
                     items: [{
                         xtype: "textfield",
                         name: "redirectUrl",
-                        width: 200,
+                        width: 400,
                         fieldLabel: this.i18n._("Redirect URL"),
-                        tooltip: this.i18n._("Users will be redirected to this page immediately after authentication. Leave this field blank to send users to their original destination."),
+                        tooltip: this.i18n._("Page to display after successful user authentication."),
                         value: this.settings.redirectUrl,
                         listeners: {
                             "change": Ext.bind(function( elem, newValue ) {
@@ -899,12 +896,18 @@ if (!Ung.hasResource["Ung.Capture"]) {
                             }, this)
                         }
                     }]
+                },{
+                    xtype: 'fieldset',
+                    cls: 'description',
+                    height: 100,
+                    width: 500,
+                    html: this.i18n._('NOTE: The Redirect URL field allows you to specify a page to display immediately after user authentication.  If you leave this field blank, users will instead be forwarded to their original destination.')
                 }]
             });
         },
 
         onUploadCustomFile: function() {
-            var form = Ext.getCmp('upload_custom_php').getForm();
+            var form = Ext.getCmp('upload_form').getForm();
             form.submit({
                 parentID: this.panelCaptivePage.getId(),
                 waitMsg: this.i18n._("Please wait while uploading your custom captive portal page..."),
@@ -913,15 +916,16 @@ if (!Ung.hasResource["Ung.Capture"]) {
             });
         },
 
-        uploadCustomFileSuccess: function() {
-            Ext.MessageBox.alert( this.i18n._("Succeeded"), this.i18n._("Uploading Custom Captive Portal Page succeeded"));
-            var field = this.panelCaptivePage.query('textfield[name="customUploadFile"]')[0];
+        uploadCustomFileSuccess: function(origin,reply) {
+            Ext.MessageBox.alert(this.i18n._("Custom Page Upload Success"),
+                                 this.i18n._(reply.result.message));
+            var field = this.panelCaptivePage.query('textfield[name="custom_file"]')[0];
             field.reset();
         },
 
-        uploadCustomFileFailure: function() {
-            Ext.MessageBox.alert(this.i18n._("Failed"),
-                                 this.i18n._("There was an error uploading the Custom Captive Portal Page." ));
+        uploadCustomFileFailure: function(origin,reply) {
+            Ext.MessageBox.alert(this.i18n._("Custom Page Upload Error"),
+                                 this.i18n._(reply.result.message));
         },
 
         buildLoginEventLog: function() {
