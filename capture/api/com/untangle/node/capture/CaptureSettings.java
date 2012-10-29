@@ -23,6 +23,7 @@ public class CaptureSettings implements Serializable
     private int userTimeout = 3600;
     private boolean areConcurrentLoginsEnabled = true;
     private PageType pageType = PageType.BASIC_MESSAGE;
+    private String customFileName = "";
     private String redirectUrl = "";
 
     private String basicLoginPageTitle = "";
@@ -136,6 +137,16 @@ public class CaptureSettings implements Serializable
     public void setRedirectUrl( String newValue)
     {
         this.redirectUrl = newValue;
+    }
+    
+    public String getCustomFilename()
+    {
+        return this.customFileName;
+    }
+    
+    public void setCustomFilename( String newValue )
+    {
+        this.customFileName = newValue;
     }
 
     public String getBasicLoginPageTitle()      { return this.basicLoginPageTitle; }

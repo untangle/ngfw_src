@@ -1,5 +1,6 @@
 from mod_python import apache
 from mod_python import util
+import os.path
 import zipfile
 import pprint
 
@@ -134,30 +135,73 @@ def infopost(req,method,nonce,appid,host,uri,agree='empty'):
 #-----------------------------------------------------------------------------
 # This function handles the custom page upload
 
-def upload(req,custom_file=None):
+def custom_upload(req,upload_file=None):
 
+    # use the path from the request filename to setup the custom path
+    custpath = req.filename[:req.filename.rindex('/')] + "/custom/"
+
+    # temporary location to save the uploaded file
     tempfile = "/tmp/custom.upload"
 
     # first make sure we got a valid form and filename
-    if ((not custom_file) or (not custom_file.filename)):
+    if ((not upload_file) or (not upload_file.filename)):
         return extjs_reply(False,'Invalid or missing filename in upload request')
 
+    # save the zip file that was uploaded
     file = open(tempfile,"w")
-    file.write(custom_file.file.read())
+    file.write(upload_file.file.read())
     file.close()
 
+    # make sure it's really a zip file
     if (not zipfile.is_zipfile(tempfile)):
-        return extjs_reply(False,"%s is not a valid ZIP file" % custom_file.filename)
+        return extjs_reply(False,"%s is not a valid ZIP file" % upload_file.filename)
 
+    # open the file and look for the custom.html page
     zfile = zipfile.ZipFile("/tmp/custom.upload","r")
     zlist = zfile.namelist()
     if (not 'custom.html' in zlist):
         return extjs_reply(False,'The uploaded ZIP file does not contain custom.html')
 
-    return extjs_reply(True,custom_file.filename)
+    # setup the message we return to the caller
+    detail = "Extracted the following files from " + upload_file.filename + "<HR>"
+
+    # extract all of the files into the custom directory and append the
+    # name of each one to the result message we'll be sending back
+    try:
+        for item in zlist:
+            (dirname,filename) = os.path.split(item)
+            fd = open(custpath + filename,"w")
+            fd.write(zfile.read(item))
+            fd.close()
+            detail += " " + filename
+    except:
+        return extjs_reply(False,'Unknown error extracting ZIP file contents')
+
+    # return the status
+    return extjs_reply(True,detail,upload_file.filename)
 
 #-----------------------------------------------------------------------------
-# This function generates the actual
+# This function handles the custom page cleanup
+
+def custom_remove(req,custom_file=None):
+
+    # use the path from the request filename to setup the custom path
+    custpath = req.filename[:req.filename.rindex('/')] + "/custom/"
+
+    # get the list of files in the custom directory
+    filelist = os.listdir(custpath)
+    counter = 0
+
+    # get rid of everything
+    for filename in filelist:
+        os.remove(custpath + filename)
+        counter += 1
+
+    detail = "Removed %d custom files" % counter
+    return extjs_reply(True,detail)
+
+#-----------------------------------------------------------------------------
+# This function generates the actual captive portal page
 
 def generate_page(req,args,extra=''):
 
@@ -169,7 +213,7 @@ def generate_page(req,args,extra=''):
         name = req.filename[:req.filename.rindex('/')] + "/infopage.html"
 
     if (captureSettings['pageType'] == 'CUSTOM'):
-        name = req.filename[:req.filename.rindex('/')] + "/custom.html"
+        name = req.filename[:req.filename.rindex('/')] + "/custom/custom.html"
 
     file = open(name, "r")
     page = file.read();
@@ -297,11 +341,11 @@ def create_debug(args):
 # generates a simply reply object that the extjs script uses to determine
 # the status of a custom upload form post request
 
-def extjs_reply(status,message):
+def extjs_reply(status,message,filename=""):
 
     if (status == True):
-        result = "{success:true,message:\"%s\"}" % message
+        result = "{success:true,message:\"%s\",filename:\"%s\"}" % (message,filename)
     else:
-        result = "{success:false,message:\"%s\"}" % message
+        result = "{success:false,message:\"%s\",filename:\"%s\"}" % (message,filename)
 
     return(result)

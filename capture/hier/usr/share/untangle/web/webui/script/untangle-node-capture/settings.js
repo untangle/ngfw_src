@@ -833,23 +833,50 @@ if (!Ung.hasResource["Ung.Capture"]) {
                             }
                         },{
                             xtype: "form",
-                            bodyStyle: "padding:0px 0px 0px 25px",
+                            bodyStyle: "padding:0px 0px 10px 25px",
                             buttonAlign: "left",
                             id: "upload_form",
-                            url: "/capture/handler.py/upload",
+                            url: "/capture/handler.py/custom_upload",
                             pageType: "CUSTOM",
                             border: false,
                             items: [{
                                 xtype: 'fileuploadfield',
-                                name: "custom_file",
-                                id: "custom_file",
+                                name: "upload_file",
+                                id: "upload_file",
                                 width: 500,
                                 size: 50
                             },{
                                 xtype: "button",
-                                name: "submit",
-                                text: i18n._("Upload File"),
+                                name: "upload",
+                                text: i18n._("Upload Custom File"),
                                 handler: Ext.bind(this.onUploadCustomFile, this)
+                            }]
+                        },{
+                            xtype: "form",
+                            bodyPadding: "10px 0px 0px 25px",
+                            buttonAlign: "left",
+                            id: "remove_form",
+                            url: "/capture/handler.py/custom_remove",
+                            pageType: "CUSTOM",
+                            border: false,
+                            items: [{
+                                xtype: "label",
+                                forId: "custom_file",
+                                text: "Active Custom File"
+                            },{
+
+                                xtype: 'textfield',
+                                readOnly: true,
+                                name: "custom_file",
+                                id: "custom_file",
+                                value: this.settings.customFilename,
+                                width: 500,
+                                size: 50
+                            },{
+                                xtype: "button",
+                                name: "remove",
+                                text: i18n._("Remove Custom File"),
+                                handler: Ext.bind(this.onRemoveCustomFile, this)
                             }]
                         }]
                     },{
@@ -899,10 +926,10 @@ if (!Ung.hasResource["Ung.Capture"]) {
         },
 
         onUploadCustomFile: function() {
-            var filepick = Ext.getCmp('custom_file')
+            var filepick = Ext.getCmp('upload_file')
             if (filepick.getValue() == "")
             {
-                Ext.MessageBox.alert(this.i18n._("Missing Filename"),this.i18n._("You must select a file to upload"))
+                Ext.MessageBox.alert(this.i18n._("Missing Filename"),this.i18n._("Click the Browse button to select a custom file to upload"))
                 return;
             }
             var form = Ext.getCmp('upload_form').getForm();
@@ -917,12 +944,36 @@ if (!Ung.hasResource["Ung.Capture"]) {
         uploadCustomFileSuccess: function(origin,reply) {
             Ext.MessageBox.alert(this.i18n._("Custom Page Upload Success"),
                                  this.i18n._(reply.result.message));
-            var filepick = Ext.getCmp('custom_file')
-            filepick.setValue("")
+            this.settings.customFilename = reply.result.filename;
+            var worker = Ext.getCmp('custom_file')
+            worker.setValue(reply.result.filename);
         },
 
         uploadCustomFileFailure: function(origin,reply) {
             Ext.MessageBox.alert(this.i18n._("Custom Page Upload Failure"),
+                                 this.i18n._(reply.result.message));
+        },
+
+        onRemoveCustomFile: function() {
+            var form = Ext.getCmp('remove_form').getForm();
+            form.submit({
+                parentID: this.panelCaptivePage.getId(),
+                waitMsg: this.i18n._("Please wait while the previous custom file is removed..."),
+                success: Ext.bind(this.removeCustomFileSuccess, this ),
+                failure: Ext.bind(this.removeCustomFileFailure, this )
+            });
+        },
+
+        removeCustomFileSuccess: function(origin,reply) {
+            Ext.MessageBox.alert(this.i18n._("Custom Page Remove Success"),
+                                 this.i18n._(reply.result.message));
+            this.settings.customFilename = "";
+            var worker = Ext.getCmp('custom_file')
+            worker.setValue("");
+        },
+
+        removeCustomFileFailure: function(origin,reply) {
+            Ext.MessageBox.alert(this.i18n._("Custom Page Remove Failure"),
                                  this.i18n._(reply.result.message));
         },
 
@@ -1015,11 +1066,11 @@ if (!Ung.hasResource["Ung.Capture"]) {
                     name: "time_stamp",
                     sortType: Ung.SortTypes.asTimestamp
                 },{
-                    name: "client_address"
+                    name: "c_client_addr"
                 },{
                     name: "client_port"
                 },{
-                    name: "server_address"
+                    name: "s_server_addr"
                 },{
                     name: "server_port"
                 },{
@@ -1053,7 +1104,7 @@ if (!Ung.hasResource["Ung.Capture"]) {
                     header: this.i18n._("Client"),
                     width: Ung.Util.ipFieldWidth,
                     sortable: true,
-                    dataIndex: "client_address"
+                    dataIndex: "c_client_addr"
                 },{
                     header: this.i18n._("Reason"),
                     width: 100,
@@ -1066,7 +1117,7 @@ if (!Ung.hasResource["Ung.Capture"]) {
                     header: this.i18n._("Server"),
                     width: Ung.Util.ipFieldWidth,
                     sortable: true,
-                    dataIndex: "server_address"
+                    dataIndex: "s_server_addr"
                 }]
             });
         },
