@@ -1,5 +1,6 @@
 from mod_python import apache
 from mod_python import util
+import zipfile
 import pprint
 
 from uvm import Uvm
@@ -133,12 +134,27 @@ def infopost(req,method,nonce,appid,host,uri,agree='empty'):
 #-----------------------------------------------------------------------------
 # This function handles the custom page upload
 
-def upload(req,custom_file):
+def upload(req,custom_file=None):
 
-    file = open("/tmp/custom.upload","w")
+    tempfile = "/tmp/custom.upload"
+
+    # first make sure we got a valid form and filename
+    if ((not custom_file) or (not custom_file.filename)):
+        return extjs_reply(False,'Invalid or missing filename in upload request')
+
+    file = open(tempfile,"w")
     file.write(custom_file.file.read())
     file.close()
-    return("{success:true,message:'" + custom_file.filename + "'}")
+
+    if (not zipfile.is_zipfile(tempfile)):
+        return extjs_reply(False,"%s is not a valid ZIP file" % custom_file.filename)
+
+    zfile = zipfile.ZipFile("/tmp/custom.upload","r")
+    zlist = zfile.namelist()
+    if (not 'custom.html' in zlist):
+        return extjs_reply(False,'The uploaded ZIP file does not contain custom.html')
+
+    return extjs_reply(True,custom_file.filename)
 
 #-----------------------------------------------------------------------------
 # This function generates the actual
@@ -220,6 +236,7 @@ def split_args(args):
     return(canon_args)
 
 #-----------------------------------------------------------------------------
+# loads node and other common stuff into global variables
 
 def global_setup(req,appid=None):
 
@@ -262,6 +279,8 @@ def global_setup(req,appid=None):
     req.headers_out.add("Expires", "Sat, 1 Jan 2000 00:00:00 GMT");
 
 #-----------------------------------------------------------------------------
+# builds a string of debug info which includes the global capture and
+# branding settings along with the passed arguments
 
 def create_debug(args):
 
@@ -275,3 +294,14 @@ def create_debug(args):
     return(debug)
 
 #-----------------------------------------------------------------------------
+# generates a simply reply object that the extjs script uses to determine
+# the status of a custom upload form post request
+
+def extjs_reply(status,message):
+
+    if (status == True):
+        result = "{success:true,message:\"%s\"}" % message
+    else:
+        result = "{success:false,message:\"%s\"}" % message
+
+    return(result)

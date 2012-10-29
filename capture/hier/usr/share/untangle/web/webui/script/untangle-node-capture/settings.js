@@ -217,21 +217,18 @@ if (!Ung.hasResource["Ung.Capture"]) {
                                         return value;
                                     }
                                 }
-                            },
-                            {
+                            },{
                                 xtype:'checkcolumn',
                                 header: this.i18n._("Enable"),
                                 dataIndex: 'enabled',
                                 fixed: true,
                                 width:55
-                            },
-                            {
+                            },{
                                 header: this.i18n._("Description"),
                                 width: 200,
                                 dataIndex: 'description',
                                 flex:1
-                            },
-                            {
+                            },{
                                 xtype:'checkcolumn',
                                 header: this.i18n._("Block"),
                                 dataIndex: 'block',
@@ -317,16 +314,13 @@ if (!Ung.hasResource["Ung.Capture"]) {
                             name: "Enable Rule",
                             dataIndex: "enabled",
                             fieldLabel: this.i18n._("Enable Rule")
-                        }
-                        ,
-                        {
+                        },{
                             xtype:'textfield',
                             name: "Description",
                             dataIndex: "description",
                             fieldLabel: this.i18n._("Description"),
                             width: 500
-                        },
-                        {
+                        },{
                             xtype:'fieldset',
                             title: this.i18n._("Rule") ,
                             title: "If all of the following conditions are met:",
@@ -340,14 +334,12 @@ if (!Ung.hasResource["Ung.Capture"]) {
                                 matchers: Ung.CaptureUtil.getMatchers(this),
                                 id:'builder'
                             }]
-                        },
-                        {
+                        },{
                             xtype: 'fieldset',
                             cls:'description',
                             title: i18n._('Perform the following action(s):'),
                             border: false
-                        },
-                        {
+                        },{
                             xtype: "combo",
                             name: "actionType",
                             allowBlank: false,
@@ -907,6 +899,12 @@ if (!Ung.hasResource["Ung.Capture"]) {
         },
 
         onUploadCustomFile: function() {
+            var filepick = Ext.getCmp('custom_file')
+            if (filepick.getValue() == "")
+            {
+                Ext.MessageBox.alert(this.i18n._("Missing Filename"),this.i18n._("You must select a file to upload"))
+                return;
+            }
             var form = Ext.getCmp('upload_form').getForm();
             form.submit({
                 parentID: this.panelCaptivePage.getId(),
@@ -919,12 +917,12 @@ if (!Ung.hasResource["Ung.Capture"]) {
         uploadCustomFileSuccess: function(origin,reply) {
             Ext.MessageBox.alert(this.i18n._("Custom Page Upload Success"),
                                  this.i18n._(reply.result.message));
-            var field = this.panelCaptivePage.query('textfield[name="custom_file"]')[0];
-            field.reset();
+            var filepick = Ext.getCmp('custom_file')
+            filepick.setValue("")
         },
 
         uploadCustomFileFailure: function(origin,reply) {
-            Ext.MessageBox.alert(this.i18n._("Custom Page Upload Error"),
+            Ext.MessageBox.alert(this.i18n._("Custom Page Upload Failure"),
                                  this.i18n._(reply.result.message));
         },
 
