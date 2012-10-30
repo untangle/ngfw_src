@@ -86,9 +86,12 @@ public class EventReaderImpl
             return resultSet;
             
         } catch (SQLException e) {
+            closeDbConnection();
             logger.warn("Failed to query database", e );
-            dbConnection = null;
             throw new RuntimeException( "Failed to query database.", e );
+        } finally {
+            if (dbConnection != null)
+                try {dbConnection.commit();} catch(Exception exn) {}
         }
     }
         
@@ -126,10 +129,22 @@ public class EventReaderImpl
             }
             return newList;
         } catch (SQLException e) {
+            closeDbConnection();
             logger.warn("Failed to query database", e );
-            dbConnection = null;
             throw new RuntimeException( "Failed to query database.", e );
         }
     }
-        
+
+    private void closeDbConnection()
+    {
+        try {
+            if (dbConnection != null) {
+                try{dbConnection.commit();} catch(Exception e) {}
+                dbConnection.close();
+            }
+        } catch(Exception exn) {
+            logger.warn("Failed to close connection",exn);
+        }
+        dbConnection = null;
+    }
 }
