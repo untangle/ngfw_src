@@ -166,7 +166,7 @@ def custom_upload(req,upload_file=None):
         return extjs_reply(False,'The uploaded ZIP file does not contain custom.html')
 
     # setup the message we return to the caller
-    detail = "Extracted the following files from " + upload_file.filename + "<HR>"
+    detail = "Extracted the following files from " + upload_file.filename + "&LT;HR&GT;"
 
     # extract all of the files into the custom directory and append the
     # name of each one to the result message we'll be sending back
@@ -194,14 +194,17 @@ def custom_remove(req,custom_file=None):
     # use the path from the request filename to setup the custom path
     custpath = req.filename[:req.filename.rindex('/')] + "/custom/"
 
-    # get the list of files in the custom directory
-    filelist = os.listdir(custpath)
-    counter = 0
+    try:
+        # get the list of files in the custom directory
+        filelist = os.listdir(custpath)
+        counter = 0
 
-    # get rid of everything
-    for filename in filelist:
-        os.remove(custpath + filename)
-        counter += 1
+        # get rid of everything
+        for filename in filelist:
+            os.remove(custpath + filename)
+            counter += 1
+    except:
+        return extjs_reply(False,"Unknown error removing custom files")
 
     detail = "Removed %d custom files" % counter
     return extjs_reply(True,detail)
@@ -350,8 +353,8 @@ def create_debug(args):
 def extjs_reply(status,message,filename=""):
 
     if (status == True):
-        result = "{\"success\":true,\"msg\":\"%s\",\"filename\":\"%s\"}" % (message,filename)
+        result = "{success:true,msg:\"%s\",filename:\"%s\"}" % (message,filename)
     else:
-        result = "{\"success\":false,\"msg\":\"%s\",\"filename\":\"%s\"}" % (message,filename)
+        result = "{success:false,msg:\"%s\",filename:\"%s\"}" % (message,filename)
 
     return(result)
