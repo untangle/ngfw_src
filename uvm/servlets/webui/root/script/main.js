@@ -365,6 +365,7 @@ Ext.define("Ung.Main", {
         var baseUrl =  rpc.jsonrpc.UvmContext.getHelpUrl();
         var url = baseUrl + "?" + "source=" + topic + "&" + this.systemInfo();
         //this.openIFrame( url, i18n._("Help") );
+        console.log("Open Window:", url);
         window.open(url); // open a new window
     },
     openMyAccountScreen: function() {
@@ -383,6 +384,7 @@ Ext.define("Ung.Main", {
         this.openIFrame( url, title );
     },
     openIFrame: function( url, title ) {
+        console.log("Open IFrame:", url);
         if ( url == null ) {
             alert("can not open window to null URL");
         }
