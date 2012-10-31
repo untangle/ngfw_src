@@ -99,7 +99,9 @@ def create_table_from_query(tablename, query, args=None):
     create_table_as_sql(tablename, query, args)
 
 def create_table_as_sql(tablename, query, args):
-    run_sql("CREATE TABLE %s AS %s" % (tablename, query), args)
+    sql = "CREATE TABLE %s AS %s" % (tablename, query)
+    logger.info(sql)
+    run_sql(sql, args)
 
 #
 # Runs the sql command and returns true if the sql command returns a "1" and false otherwise
@@ -154,25 +156,31 @@ def run_sql(sql, args=None, connection=None, auto_commit=True, force_propagate=F
         except:
             pass
 
-def add_column(schema, tablename, columnname, type):
+def column_exists(schema, tablename, columnname):
     column_exists = run_sql_one("select 1 from information_schema.columns where table_schema = '%s' and table_name = '%s' and  column_name = '%s'" % (schema, tablename, columnname))
     if column_exists:
+        return True
+    return False
+
+def add_column(schema, tablename, columnname, type):
+    if column_exists(schema, tablename, columnname):
         return
     sql = "ALTER TABLE %s.%s ADD COLUMN %s %s" % (schema, tablename, columnname, type)
+    logger.info(sql)
     run_sql(sql)
 
 def drop_column(schema, tablename, columnname):
-    column_exists = run_sql_one("select 1 from information_schema.columns where table_schema = '%s' and table_name = '%s' and  column_name = '%s'" % (schema, tablename, columnname))
-    if not column_exists:
+    if not column_exists(schema, tablename, columnname):
         return
     sql = "ALTER TABLE %s.%s DROP COLUMN %s" % (schema, tablename, columnname)
+    logger.info(sql)
     run_sql(sql)
 
 def rename_column(schema, tablename, oldname, newname):
-    column_exists = run_sql_one("select 1 from information_schema.columns where table_schema = '%s' and table_name = '%s' and  column_name = '%s'" % (schema, tablename, oldname))
-    if not column_exists:
+    if not column_exists(schema, tablename, newname):
         return
     sql = "ALTER TABLE %s.%s RENAME COLUMN %s to %s" % (schema, tablename, oldname, newname)
+    logger.info(sql)
     run_sql(sql)
 
 def convert_column(schema, tablename, columnname, oldtype, newtype):
@@ -180,8 +188,8 @@ def convert_column(schema, tablename, columnname, oldtype, newtype):
     if not column_type_exists:
         return
     sql = "ALTER TABLE %s.%s ALTER COLUMN %s TYPE %s" % (schema, tablename, columnname, newtype)
+    logger.info(sql)
     run_sql(sql);
-    return;
 
 def index_exists(schema, tablename, columnname, unique=False):
     if unique:
@@ -199,8 +207,8 @@ def create_index(schema, tablename, columnname, unique=False):
     else:
         uniqueStr1=""
         uniqueStr2=""
-    logger.warn("CREATE INDEX %s_%s_%sidx" % (tablename, columnname, uniqueStr1))
     sql = 'CREATE %s INDEX %s_%s_%sidx ON %s.%s(%s)' % (uniqueStr2, tablename, columnname, uniqueStr1, schema, tablename, columnname)
+    logger.info(sql)
     run_sql(sql)
 
 def drop_index(schema, tablename, columnname, unique=False):
@@ -210,8 +218,8 @@ def drop_index(schema, tablename, columnname, unique=False):
         uniqueStr1="unique_"
     else:
         uniqueStr1=""
-    logger.warn("DROP INDEX %s.%s_%s_%sidx" % (schema, tablename, columnname, uniqueStr1))
     sql = 'DROP INDEX %s.%s_%s_%sidx' % (schema, tablename, columnname, uniqueStr1 )
+    logger.info(sql)
     run_sql(sql)
                                     
 def rename_index(schema, oldname, newname):
@@ -219,6 +227,7 @@ def rename_index(schema, oldname, newname):
     if not already_exists:
         return
     sql = 'ALTER INDEX %s.%s RENAME TO %s' % (schema, oldname, newname)
+    logger.info(sql)
     run_sql(sql)
 
 def create_schema(schema):
@@ -226,6 +235,7 @@ def create_schema(schema):
     if already_exists:
         return
     sql = "CREATE SCHEMA %s" % (schema)
+    logger.info(sql)
     run_sql(sql)
 
 def create_table(schema, tablename, sql):
@@ -235,6 +245,7 @@ def create_table(schema, tablename, sql):
 
 def clean_table(schema, tablename, cutoff):
     sql = "DELETE FROM %s.%s WHERE time_stamp < %%s;" % (schema, tablename)
+    logger.info(sql)
     run_sql(sql, (cutoff,))
     
 def drop_fact_table(tablename, cutoff_date):
@@ -243,19 +254,12 @@ def drop_fact_table(tablename, cutoff_date):
       drop_table(t, schema=SCHEMA)
 
   tablename = re.sub(r'(\-[a-z]+|reports\.|\[.+\])', '', tablename)
-  try:
-    run_sql("DELETE FROM reports.%s WHERE time_stamp < %%s" % tablename,
-            (cutoff_date,),
-            force_propagate=True)
-  except:
-    try:
-      run_sql("DELETE FROM reports.%s WHERE trunc_time < %%s" % tablename,
-              (cutoff_date,),
-              force_propagate=True)
-    except:
-      run_sql("DELETE FROM reports.%s WHERE date < %%s" % tablename,
-              (cutoff_date,),
-              force_propagate=True)
+  if column_exists("reports",tablename,"time_stamp"):
+      run_sql("DELETE FROM reports.%s WHERE time_stamp < %%s" % tablename, (cutoff_date,), force_propagate=True)
+  if column_exists("reports",tablename,"trunc_time"):
+      run_sql("DELETE FROM reports.%s WHERE trunc_time < %%s" % tablename, (cutoff_date,), force_propagate=True)
+  if column_exists("reports",tablename,"date"):
+      run_sql("DELETE FROM reports.%s WHERE date < %%s" % tablename, (cutoff_date,), force_propagate=True)
 
 def create_fact_table(table_ddl):
     (schema, tablename) = __get_tablename(table_ddl)
