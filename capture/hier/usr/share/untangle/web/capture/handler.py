@@ -137,6 +137,9 @@ def infopost(req,method,nonce,appid,host,uri,agree='empty'):
 
 def custom_upload(req,upload_file=None):
 
+    # first set the content type for the response
+    req.content_type = "text/html"
+
     # use the path from the request filename to setup the custom path
     custpath = req.filename[:req.filename.rindex('/')] + "/custom/"
 
@@ -184,6 +187,9 @@ def custom_upload(req,upload_file=None):
 # This function handles the custom page cleanup
 
 def custom_remove(req,custom_file=None):
+
+    # first set the content type for the response
+    req.content_type = "text/html"
 
     # use the path from the request filename to setup the custom path
     custpath = req.filename[:req.filename.rindex('/')] + "/custom/"
@@ -344,8 +350,8 @@ def create_debug(args):
 def extjs_reply(status,message,filename=""):
 
     if (status == True):
-        result = "{success:true,message:\"%s\",filename:\"%s\"}" % (message,filename)
+        result = "{\"success\":true,\"msg\":\"%s\",\"filename\":\"%s\"}" % (message,filename)
     else:
-        result = "{success:false,message:\"%s\",filename:\"%s\"}" % (message,filename)
+        result = "{\"success\":false,\"msg\":\"%s\",\"filename\":\"%s\"}" % (message,filename)
 
     return(result)

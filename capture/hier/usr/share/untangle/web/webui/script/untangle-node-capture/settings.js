@@ -943,7 +943,7 @@ if (!Ung.hasResource["Ung.Capture"]) {
 
         uploadCustomFileSuccess: function(origin,reply) {
             Ext.MessageBox.alert(this.i18n._("Custom Page Upload Success"),
-                                 this.i18n._(reply.result.message));
+                                 this.i18n._(reply.result.msg));
             this.settings.customFilename = reply.result.filename;
             var worker = Ext.getCmp('custom_file')
             worker.setValue(reply.result.filename);
@@ -951,7 +951,7 @@ if (!Ung.hasResource["Ung.Capture"]) {
 
         uploadCustomFileFailure: function(origin,reply) {
             Ext.MessageBox.alert(this.i18n._("Custom Page Upload Failure"),
-                                 this.i18n._(reply.result.message));
+                                 this.i18n._(reply.result.msg));
         },
 
         onRemoveCustomFile: function() {
@@ -966,7 +966,7 @@ if (!Ung.hasResource["Ung.Capture"]) {
 
         removeCustomFileSuccess: function(origin,reply) {
             Ext.MessageBox.alert(this.i18n._("Custom Page Remove Success"),
-                                 this.i18n._(reply.result.message));
+                                 this.i18n._(reply.result.msg));
             this.settings.customFilename = "";
             var worker = Ext.getCmp('custom_file')
             worker.setValue("");
@@ -974,7 +974,7 @@ if (!Ung.hasResource["Ung.Capture"]) {
 
         removeCustomFileFailure: function(origin,reply) {
             Ext.MessageBox.alert(this.i18n._("Custom Page Remove Failure"),
-                                 this.i18n._(reply.result.message));
+                                 this.i18n._(reply.result.msg));
         },
 
         buildLoginEventLog: function() {
