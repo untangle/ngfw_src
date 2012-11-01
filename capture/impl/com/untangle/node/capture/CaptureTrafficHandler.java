@@ -146,45 +146,43 @@ public class CaptureTrafficHandler extends AbstractEventHandler
     {
         NodeUDPSession session = event.session();
         DNSPacket packet = (DNSPacket)session.attachment();
+        ByteBuffer response = null;
         InetAddress addr = null;
         session.attach(null);
 
         // extract the DNS query from the client packet
         packet.ExtractQuery(event.data().array(),event.data().limit());
-        logger.debug(packet.toString());
+        logger.debug(packet.queryString());
 
             // this handler will only see UDP packets with a target port
             // of 53 sent from unauthenticated client so if it doesn't seem
-            // like a valid DNS query we just ignore and block
+            // like a valid DNS A query we build a refused message by
+            // passing null to the packet response generator
             if (packet.isValidDNSQuery() != true)
             {
                 node.incrementBlinger(CaptureNode.BlingerType.SESSBLOCK,1);
-                session.expireClient();
-                session.expireServer();
-                session.release();
+                response = packet.GenerateResponse(null);
+            }
+            
+            // we have a good query for an A record so do the lookup 
+            else
+            {
+                try { addr = InetAddress.getByName(packet.getQname()); }
+
+                // if resolution fails for any reason addr will be null and
+                // the response generator will create a servfail message
+                catch (Exception e) { logger.info("Exception attempting to resolve " + packet.getQname() + " = " + e); }
+
+                node.incrementBlinger(CaptureNode.BlingerType.SESSPROXY,1);
+                response = packet.GenerateResponse(addr);
             }
 
-        // we have a valid query so lets lookup the address
-        try
-        {
-            addr = InetAddress.getByName(packet.getQname());
-        }
-
-        // resolution failed so addr will be null and the DNS packet
-        // response generator will substitute 0.0.0.0
-        catch (Exception e)
-        {
-            logger.info("Unable to resolve " + packet.getQname());
-        }
-
-        // craft a DNS response pointing to the address we got back
-        ByteBuffer bb = packet.GenerateResponse(addr);
-
         // send the packet to the client
-        session.sendClientPacket(bb,event.header());
+        session.sendClientPacket(response,event.header());
+
+        logger.debug(packet.replyString());
 
         // increment our counter and release the session
-        node.incrementBlinger(CaptureNode.BlingerType.SESSPROXY,1);
         session.release();
     }
 }

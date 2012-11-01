@@ -9,6 +9,7 @@ import java.nio.ByteBuffer;
 
 class DNSPacket
 {
+    private InetAddress raddr = null;
     private String qname = null;
     private int qtype = 0;
     private int qclass = 0;
@@ -88,6 +89,9 @@ class DNSPacket
     {
     ByteBuffer bb = ByteBuffer.allocate(256);
     int flags,find,len,x;
+    
+    // save the response address we were passed
+    raddr = address;
 
     aa_flag = 0;    // turn off the authoritative answer flag
     qr_flag = 1;    // set the query/response flag to response
@@ -95,6 +99,12 @@ class DNSPacket
     re_code = 0;    // set the response code to zero
     qd_count = 1;    // set the question count
     an_count = 1;    // set the answer count
+
+    if (address == null)
+    {
+        an_count = 0;
+        re_code = 5;
+    }
 
     // assemble the flags value from all the bitfield values
     flags = 0;
@@ -142,15 +152,17 @@ class DNSPacket
     bb.putShort((short)qtype);
     bb.putShort((short)qclass);
 
-    // now we stuff an answer record in the packet
-    bb.putShort((short)0xC00C);         // pointer to the qname
-    bb.putShort((short)0x0001);         // type = A
-    bb.putShort((short)0x0001);         // class = IN
-    bb.putInt(0x00000001);              // TTL = 1 second
-    bb.putShort((short)0x0004);         // size of A record data
-    
-    if (address == null) bb.putInt(0);      // address is null so insert 0.0.0.0
-    else bb.put(address.getAddress(),0,4);  // insert IP address passed to us
+    // now we stuff an answer record in the packet but
+    // only if we were passed a valid address
+    if (address != null)
+    {
+        bb.putShort((short)0xC00C);         // pointer to the qname
+        bb.putShort((short)0x0001);         // type = A
+        bb.putShort((short)0x0001);         // class = IN
+        bb.putInt(0x00000001);              // TTL = 1 second
+        bb.putShort((short)0x0004);         // size of A record data
+        bb.put(address.getAddress(),0,4);  // insert IP address passed to us
+    }
 
     // flip the buffer and return
     bb.flip();
@@ -174,21 +186,28 @@ class DNSPacket
         if (ar_count != 0) return(false);   // additional count should be zero
         return(true);
     }
-    
+
     public String getQname()
     {
         return(qname);
     }
 
-    public String toString()
+    public String queryString()
     {
     String string = new String();
-
-    string += String.format("ID: %d ",query_id);
+    string += String.format("ID:%d ",query_id);
     string += String.format("QR:%d OPCODE:%d AA:%d TC:%d RD:%d RA:%d Z:%d RCODE:%d ",qr_flag,op_code,aa_flag,tc_flag,rd_flag,ra_flag,zz_flag,re_code);
     string += String.format("QD:%d AN:%d NS:%d AR:%d ",qd_count,an_count,ns_count,ar_count);
     string += String.format("QNAME:%s QTYPE:%d QCLASS:%d ",qname,qtype,qclass);
+    return(string);
+    }
 
+    public String replyString()
+    {
+    String string = new String();
+    string += String.format("ID:%d ",query_id);
+    if (raddr == null) string += String.format("REFUSED ");
+    else string += String.format("ADDR:%s ",raddr.getHostAddress().toString());
     return(string);
     }
 }
