@@ -135,13 +135,13 @@ def infopost(req,method,nonce,appid,host,uri,agree='empty'):
 #-----------------------------------------------------------------------------
 # This function handles the custom page upload
 
-def custom_upload(req,upload_file=None):
+def custom_upload(req,upload_file,appid):
 
     # first set the content type for the response
     req.content_type = "text/html"
 
     # use the path from the request filename to setup the custom path
-    custpath = req.filename[:req.filename.rindex('/')] + "/custom/"
+    custpath = req.filename[:req.filename.rindex('/')] + "/custom_" + str(appid) + "/"
 
     # temporary location to save the uploaded file
     tempfile = "/tmp/custom.upload"
@@ -178,6 +178,7 @@ def custom_upload(req,upload_file=None):
             fd.close()
             detail += " " + filename
     except:
+        return extjs_reply(False,custpath + filename)
         return extjs_reply(False,'Unknown error extracting ZIP file contents')
 
     # return the status
@@ -186,13 +187,13 @@ def custom_upload(req,upload_file=None):
 #-----------------------------------------------------------------------------
 # This function handles the custom page cleanup
 
-def custom_remove(req,custom_file=None):
+def custom_remove(req,custom_file,appid):
 
     # first set the content type for the response
     req.content_type = "text/html"
 
     # use the path from the request filename to setup the custom path
-    custpath = req.filename[:req.filename.rindex('/')] + "/custom/"
+    custpath = req.filename[:req.filename.rindex('/')] + "/custom_" + str(appid) + "/"
 
     try:
         # get the list of files in the custom directory
@@ -222,7 +223,7 @@ def generate_page(req,args,extra=''):
         name = req.filename[:req.filename.rindex('/')] + "/infopage.html"
 
     if (captureSettings['pageType'] == 'CUSTOM'):
-        name = req.filename[:req.filename.rindex('/')] + "/custom/custom.html"
+        name = req.filename[:req.filename.rindex('/')] + "/custom_" + str(args['APPID']) + "/custom.html"
 
     file = open(name, "r")
     page = file.read();
@@ -250,6 +251,10 @@ def generate_page(req,args,extra=''):
         else:
             page = page.replace('$.AgreeText.$', '')
             page = page.replace('$.AgreeBox.$','hidden')
+
+    if (captureSettings['pageType'] == 'CUSTOM'):
+        path = "/capture/custom_" + str(args['APPID'])
+        page = page.replace('$.CustomPath.$',path)
 
     # plug the values into the hidden form fields of the authentication page
     # page by doing  search and replace for each of the placeholder text tags

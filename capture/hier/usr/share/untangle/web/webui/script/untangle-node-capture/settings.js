@@ -837,7 +837,6 @@ if (!Ung.hasResource["Ung.Capture"]) {
                             buttonAlign: "left",
                             id: "upload_form",
                             url: "/capture/handler.py/custom_upload",
-                            pageType: "CUSTOM",
                             border: false,
                             items: [{
                                 xtype: 'fileuploadfield',
@@ -846,6 +845,10 @@ if (!Ung.hasResource["Ung.Capture"]) {
                                 allowBlank:false,
                                 width: 500,
                                 size: 50
+                            },{
+                                xtype: 'hidden',
+                                name: 'appid',
+                                value: this.node.nodeId
                             },{
                                 xtype: "button",
                                 name: "upload",
@@ -858,7 +861,6 @@ if (!Ung.hasResource["Ung.Capture"]) {
                             buttonAlign: "left",
                             id: "remove_form",
                             url: "/capture/handler.py/custom_remove",
-                            pageType: "CUSTOM",
                             border: false,
                             items: [{
                                 xtype: "label",
@@ -873,6 +875,10 @@ if (!Ung.hasResource["Ung.Capture"]) {
                                 value: this.settings.customFilename,
                                 width: 500,
                                 size: 50
+                            },{
+                                xtype: 'hidden',
+                                name: 'appid',
+                                value: this.node.nodeId
                             },{
                                 xtype: "button",
                                 name: "remove",

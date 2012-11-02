@@ -195,7 +195,7 @@ class DNSPacket
     public String queryString()
     {
     String string = new String();
-    string += String.format("ID:%d ",query_id);
+    string += String.format("QUERY ID:%d ",query_id);
     string += String.format("QR:%d OPCODE:%d AA:%d TC:%d RD:%d RA:%d Z:%d RCODE:%d ",qr_flag,op_code,aa_flag,tc_flag,rd_flag,ra_flag,zz_flag,re_code);
     string += String.format("QD:%d AN:%d NS:%d AR:%d ",qd_count,an_count,ns_count,ar_count);
     string += String.format("QNAME:%s QTYPE:%d QCLASS:%d ",qname,qtype,qclass);
@@ -205,7 +205,7 @@ class DNSPacket
     public String replyString()
     {
     String string = new String();
-    string += String.format("ID:%d ",query_id);
+    string += String.format("REPLY ID:%d ",query_id);
     if (raddr == null) string += String.format("REFUSED ");
     else string += String.format("ADDR:%s ",raddr.getHostAddress().toString());
     return(string);

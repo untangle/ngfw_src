@@ -1,0 +1,14 @@
+#!/bin/sh
+
+if [ -z $1 ];
+then
+  printf "You must provide the name of the directory to be created\n"
+  exit 1
+fi
+
+# create the target directory
+mkdir $1
+
+# give www-data full access so the mod_python handler
+# can manage custom files in the target directory
+chown www-data:www-data $1

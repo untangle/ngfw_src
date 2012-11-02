@@ -44,6 +44,10 @@ public class CaptureNodeImpl extends NodeBase implements CaptureNode
     private final int CLEANUP_INTERVAL = 60000;
     private final Logger logger = Logger.getLogger(getClass());
 
+    private final String CAPTURE_CUSTOM_CREATE_SCRIPT = System.getProperty("uvm.home") + "/bin/capture-custom-create";
+    private final String CAPTURE_CUSTOM_REMOVE_SCRIPT = System.getProperty("uvm.home") + "/bin/capture-custom-remove";
+    private final String CAPTURE_PERMISSIONS_SCRIPT = System.getProperty("uvm.home") + "/bin/capture-permissions";
+
     private static final String STAT_SESSALLOW = "sessallow";
     private static final String STAT_SESSBLOCK = "sessblock";
     private static final String STAT_SESSPROXY = "sessproxy";
@@ -57,6 +61,7 @@ public class CaptureNodeImpl extends NodeBase implements CaptureNode
 
     private final SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
     private final String settingsFile = (System.getProperty("uvm.settings.dir") + "/untangle-node-capture/settings_" + getNodeSettings().getId().toString());
+    private final String customPath = (System.getProperty("uvm.web.dir") + "/capture/custom_" + getNodeSettings().getId().toString());
     private final Hashtable<String,PassedAddress> passedClientHash = new Hashtable<String,PassedAddress>();
     private final Hashtable<String,PassedAddress> passedServerHash = new Hashtable<String,PassedAddress>();
 
@@ -257,6 +262,12 @@ public class CaptureNodeImpl extends NodeBase implements CaptureNode
     @Override
     protected void preStart()
     {
+
+        // run a script to add www-data to the uvmlogin group
+        UvmContextFactory.context().execManager().execOutput( CAPTURE_PERMISSIONS_SCRIPT );
+        
+        // run a script to create the directory for the custom captive page
+        UvmContextFactory.context().execManager().execOutput( CAPTURE_CUSTOM_CREATE_SCRIPT + " " + customPath );
     }
 
     @Override
@@ -470,7 +481,6 @@ public class CaptureNodeImpl extends NodeBase implements CaptureNode
                     sessreq.getClientPort(), sessreq.getServerPort(),
                     (String)sessreq.globalAttachment(NodeSession.KEY_PLATFORM_USERNAME)))
                     {
-//                    logger.debug("MATCH: " + rule.getDescription() + " BLOCK:" + rule.getBlock());
                     return(rule);
                     }
             }
@@ -491,7 +501,6 @@ public class CaptureNodeImpl extends NodeBase implements CaptureNode
                     session.getClientPort(), session.getServerPort(),
                     (String)session.globalAttachment(NodeSession.KEY_PLATFORM_USERNAME)))
                     {
-//                    logger.debug("MATCH: " + rule.getDescription() + " BLOCK:" + rule.getBlock());
                     return(rule);
                     }
             }
