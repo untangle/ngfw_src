@@ -138,12 +138,12 @@ public class CaptureSettings implements Serializable
     {
         this.redirectUrl = newValue;
     }
-    
+
     public String getCustomFilename()
     {
         return this.customFileName;
     }
-    
+
     public void setCustomFilename( String newValue )
     {
         this.customFileName = newValue;

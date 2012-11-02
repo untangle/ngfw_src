@@ -265,7 +265,7 @@ public class CaptureNodeImpl extends NodeBase implements CaptureNode
 
         // run a script to add www-data to the uvmlogin group
         UvmContextFactory.context().execManager().execOutput( CAPTURE_PERMISSIONS_SCRIPT );
-        
+
         // run a script to create the directory for the custom captive page
         UvmContextFactory.context().execManager().execOutput( CAPTURE_CUSTOM_CREATE_SCRIPT + " " + customPath );
     }
@@ -317,7 +317,6 @@ public class CaptureNodeImpl extends NodeBase implements CaptureNode
         // run a script to remove the directory for the custom captive page
         UvmContextFactory.context().execManager().execOutput( CAPTURE_CUSTOM_REMOVE_SCRIPT + " " + customPath );
     }
-    
 
     protected Token[] generateResponse(CaptureBlockDetails block, NodeTCPSession session)
     {

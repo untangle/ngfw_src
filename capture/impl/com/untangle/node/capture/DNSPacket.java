@@ -89,7 +89,7 @@ class DNSPacket
     {
     ByteBuffer bb = ByteBuffer.allocate(256);
     int flags,find,len,x;
-    
+
     // save the response address we were passed
     raddr = address;
 
