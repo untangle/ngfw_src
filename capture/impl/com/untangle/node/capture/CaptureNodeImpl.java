@@ -310,6 +310,15 @@ public class CaptureNodeImpl extends NodeBase implements CaptureNode
             }
     }
 
+    @Override protected void uninstall()
+    {
+        super.uninstall();
+
+        // run a script to remove the directory for the custom captive page
+        UvmContextFactory.context().execManager().execOutput( CAPTURE_CUSTOM_REMOVE_SCRIPT + " " + customPath );
+    }
+    
+
     protected Token[] generateResponse(CaptureBlockDetails block, NodeTCPSession session)
     {
         return replacementGenerator.generateResponse(block, session, false);

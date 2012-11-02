@@ -1,0 +1,18 @@
+#!/bin/sh
+
+if [ -z $1 ];
+then
+  printf "You must provide the name of the directory to be removed\n"
+  exit 1
+fi
+
+# as a safety precaution make sure the argumented directory contains
+# a custom.html file otherwise it may not be what we think it is
+if [ ! -f $1/custom.html ]
+then
+  printf "The target directory does not contain custom.html\n"
+  exit 2
+fi
+
+# remove the target directory
+rm -r -f $1
