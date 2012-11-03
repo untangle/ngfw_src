@@ -10,7 +10,7 @@ import com.untangle.uvm.logging.LogEvent;
 @SuppressWarnings("serial")
 public class CaptureLoginEvent extends LogEvent
 {
-    public enum EventType { LOGIN, FAILED, TIMEOUT, LOGOUT };
+    public enum EventType { LOGIN, FAILED, TIMEOUT, INACTIVE, USER_LOGOUT, ADMIN_LOGOUT };
 
     private String clientAddr;
     private String loginName;
@@ -42,10 +42,10 @@ public class CaptureLoginEvent extends LogEvent
 
     public EventType getEvent() { return EventType.valueOf(this.eventValue); }
     public void setEvent( EventType newEvent ) { this.eventValue = newEvent.toString(); }
-    
+
     private String getAuthenticationTypeValue() { return authenticationTypeValue; }
     private void setAuthenticationTypeValue( String newValue ) { this.authenticationTypeValue = newValue; }
-    
+
     public AuthenticationType getAuthenticationType() { return AuthenticationType.valueOf(this.authenticationTypeValue); }
     public void setAuthenticationType( AuthenticationType newValue ) { this.authenticationTypeValue = newValue.toString(); }
 
@@ -58,7 +58,7 @@ public class CaptureLoginEvent extends LogEvent
     public java.sql.PreparedStatement getDirectEventSql( java.sql.Connection conn ) throws Exception
     {
         java.sql.PreparedStatement pstmt = conn.prepareStatement( sql );
-        
+
         int i = 0;
         pstmt.setTimestamp(++i,getTimeStamp());
         pstmt.setString(++i, getLoginName());

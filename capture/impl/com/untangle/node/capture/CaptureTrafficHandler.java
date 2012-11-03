@@ -163,8 +163,8 @@ public class CaptureTrafficHandler extends AbstractEventHandler
                 node.incrementBlinger(CaptureNode.BlingerType.SESSBLOCK,1);
                 response = packet.GenerateResponse(null);
             }
-            
-            // we have a good query for an A record so do the lookup 
+
+            // we have a good query for an A record so do the lookup
             else
             {
                 try { addr = InetAddress.getByName(packet.getQname()); }

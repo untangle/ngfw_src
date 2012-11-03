@@ -154,7 +154,7 @@ if (!Ung.hasResource["Ung.Capture"]) {
                         tooltip: 'Click to logout',
                         handler: Ext.bind(function(grid,row,col) {
                             var rec = grid.getStore().getAt(row);
-                            this.getRpcNode().userLogout(rec.data.userAddress);
+                            this.getRpcNode().userAdminLogout(rec.data.userAddress);
                             this.gridCaptiveStatus.reload();
                         }, this)
                     }]
@@ -1055,9 +1055,13 @@ if (!Ung.hasResource["Ung.Capture"]) {
                         case "FAILED":
                             return this.i18n._( "access denied" );
                         case "TIMEOUT":
-                            return this.i18n._( "timeout" );
-                        case "LOGOUT":
-                            return this.i18n._( "logout" );
+                            return this.i18n._( "session timeout" );
+                        case "INACTIVE":
+                            return this.i18n._(" idle timeout");
+                        case "USER_LOGOUT":
+                            return this.i18n._( "user logout" );
+                        case "ADMIN_LOGOUT":
+                            return this.i18n._( "admin logout" );
                         }
                         return "";
                     }, this )

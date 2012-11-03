@@ -15,6 +15,18 @@ public class CaptureUserTable
     private final Logger logger = Logger.getLogger(getClass());
     private Hashtable<String,CaptureUserEntry> userTable;
 
+    public class StaleUser
+    {
+        CaptureLoginEvent.EventType reason;
+        String address;
+
+        StaleUser(String address,CaptureLoginEvent.EventType reason)
+        {
+            this.address = address;
+            this.reason = reason;
+        }
+    }
+
     public CaptureUserTable()
     {
         userTable = new Hashtable<String,CaptureUserEntry>();
@@ -59,12 +71,12 @@ public class CaptureUserTable
         return(null);
     }
 
-    public ArrayList<String> buildStaleList(long idleTimeout,long userTimeout)
+    public ArrayList<StaleUser> buildStaleList(long idleTimeout,long userTimeout)
     {
-        ArrayList<String> wipeList = new ArrayList<String>();
+        ArrayList<StaleUser> wipelist = new ArrayList<StaleUser>();
         long currentTime,idleTrigger,userTrigger;
+        StaleUser stale;
         int wipecount;
-        int wipeflag;
 
         currentTime = (System.currentTimeMillis() / 1000);
         Enumeration ee = userTable.elements();
@@ -75,32 +87,26 @@ public class CaptureUserTable
             CaptureUserEntry item = (CaptureUserEntry)ee.nextElement();
             userTrigger = ((item.getSessionCreation() / 1000) + userTimeout);
             idleTrigger = ((item.getSessionActivity() / 1000) + idleTimeout);
-            wipeflag = 0;
 
                 // look for users with no traffic within the configured non-zero idle timeout
                 if ( (idleTimeout > 0) && (currentTime > idleTrigger) )
                 {
                     logger.info("Idle timeout removing user " + item.getUserAddress() + " " + item.getUserName());
-                    wipeList.add(item.getUserAddress());
+                    stale = new StaleUser(item.getUserAddress(),CaptureLoginEvent.EventType.INACTIVE);
+                    wipelist.add(stale);
                     wipecount++;
-                    wipeflag = 1;
                 }
 
                 // look for users who have exceeded the configured maximum session time
                 if (currentTime > userTrigger)
                 {
                     logger.info("Session timeout removing user " + item.getUserAddress() + " " + item.getUserName());
-                    wipeList.add(item.getUserAddress());
+                    stale = new StaleUser(item.getUserAddress(),CaptureLoginEvent.EventType.TIMEOUT);
+                    wipelist.add(stale);
                     wipecount++;
-                    wipeflag = 2;
-                }
-
-                if (wipeflag == 0)
-                {
-                    logger.debug("Keeping active user " + item.getUserAddress() + " " + item.getUserName());
                 }
             }
 
-        return(wipeList);
+        return(wipelist);
     }
 }

@@ -429,7 +429,12 @@ public class CaptureNodeImpl extends NodeBase implements CaptureNode
 
     public int userLogout(String address)
     {
-        return(userLogout(address,CaptureLoginEvent.EventType.LOGOUT));
+        return(userLogout(address,CaptureLoginEvent.EventType.USER_LOGOUT));
+    }
+
+    public int userAdminLogout(String address)
+    {
+        return(userLogout(address,CaptureLoginEvent.EventType.ADMIN_LOGOUT));
     }
 
     public int userLogout(String address,CaptureLoginEvent.EventType reason)
