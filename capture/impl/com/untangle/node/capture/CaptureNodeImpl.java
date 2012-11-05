@@ -86,7 +86,6 @@ public class CaptureNodeImpl extends NodeBase implements CaptureNode
         this.allEventQuery = new EventLogQuery(I18nUtil.marktr("All Events"),
             "SELECT * FROM reports.sessions " +
             "WHERE policy_id = :policyId " +
-            "AND capture_rule_index IS NOT NULL " +
             "ORDER BY time_stamp DESC");
 
         this.blockEventQuery = new EventLogQuery(I18nUtil.marktr("Blocked Events"),
@@ -133,7 +132,7 @@ public class CaptureNodeImpl extends NodeBase implements CaptureNode
     @Override
     public EventLogQuery[] getBlockEventQueries()
     {
-        return new EventLogQuery[] { this.blockEventQuery };
+        return new EventLogQuery[] { this.allEventQuery, this.blockEventQuery };
     }
 
     public void incrementBlinger(BlingerType blingerType, long delta )
@@ -459,10 +458,9 @@ public class CaptureNodeImpl extends NodeBase implements CaptureNode
 ///// ------------------------------------------------------------------------
 ///// public method for testing all rules for a session
 
-    public boolean isSessionAllowed(String clientAddr,String serverAddr)
+    public boolean isClientAuthenticated(String clientAddr)
     {
-        // first we see if the client is authenticated since if they
-        // are we are done and the traffic is allowed
+        // search for the address in the active user table
         CaptureUserEntry user = captureUserTable.searchByAddress(clientAddr);
 
             // if we have an authenticated user update activity and allow
@@ -472,13 +470,22 @@ public class CaptureNodeImpl extends NodeBase implements CaptureNode
                 return(true);
             }
 
+        return(false);
+    }
+
+    public PassedAddress isSessionAllowed(String clientAddr,String serverAddr)
+    {
+        PassedAddress checker = null;
+
         // see if the client is in the pass list
-        if (passedClientHash.get(clientAddr) != null) return(true);
+        checker = passedClientHash.get(clientAddr);
+        if (checker != null) return(checker);
 
         // see if the server is in the pass list
-        if (passedServerHash.get(serverAddr) != null) return(true);
+        checker = passedServerHash.get(serverAddr);
+        if (checker != null) return(checker);
 
-        return(false);
+        return(null);
     }
 
     public CaptureRule checkCaptureRules(IPNewSessionRequest sessreq)

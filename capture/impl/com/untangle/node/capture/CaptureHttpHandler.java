@@ -47,14 +47,29 @@ class CaptureHttpHandler extends HttpStateMachine
         String clientAddr = session.getClientAddr().getHostAddress().toString();
         String serverAddr = session.getServerAddr().getHostAddress().toString();
 
-        // first check is to see if the user is already authenticated
-        // or the client or server is in one of the pass lists
-        if (node.isSessionAllowed(clientAddr,serverAddr) == true)
+        // first check to see if the user is already authenticated
+        if (node.isClientAuthenticated(clientAddr) == true)
         {
             node.incrementBlinger(CaptureNode.BlingerType.SESSALLOW,1);
             releaseRequest();
             return(requestHeader);
         }
+
+        // not authenticated so check both of the pass lists
+        PassedAddress passed = node.isSessionAllowed(clientAddr,serverAddr);
+
+            if (passed != null)
+            {
+                if (passed.getLog() == true)
+                {
+                CaptureRuleEvent logevt = new CaptureRuleEvent(session.sessionEvent());
+                node.logEvent(logevt);
+                }
+
+            node.incrementBlinger(CaptureNode.BlingerType.SESSALLOW,1);
+            releaseRequest();
+            return(requestHeader);
+            }
 
         // not authenticated and no pass list match so check the rules
         CaptureRule rule = node.checkCaptureRules(session);

@@ -50,13 +50,28 @@ public class CaptureTrafficHandler extends AbstractEventHandler
         String serverAddr = sessreq.getServerAddr().getHostAddress().toString();
 
         // next check is to see if the user is already authenticated
-        // or the client or server is in one of the pass lists
-        if (node.isSessionAllowed(clientAddr,serverAddr) == true)
+        if (node.isClientAuthenticated(clientAddr) == true)
         {
             node.incrementBlinger(CaptureNode.BlingerType.SESSALLOW,1);
             sessreq.release();
             return;
         }
+
+        // not authenticated so check both of the pass lists
+        PassedAddress passed = node.isSessionAllowed(clientAddr,serverAddr);
+
+            if (passed != null)
+            {
+                if (passed.getLog() == true)
+                {
+                CaptureRuleEvent logevt = new CaptureRuleEvent(sessreq.sessionEvent());
+                node.logEvent(logevt);
+                }
+
+            node.incrementBlinger(CaptureNode.BlingerType.SESSALLOW,1);
+            sessreq.release();
+            return;
+            }
 
         // not authenticated and no pass list match so check the rules
         CaptureRule rule = node.checkCaptureRules(sessreq);
@@ -94,13 +109,28 @@ public class CaptureTrafficHandler extends AbstractEventHandler
         String serverAddr = sessreq.getServerAddr().getHostAddress().toString();
 
         // first check is to see if the user is already authenticated
-        // or the client or server is in one of the pass lists
-        if (node.isSessionAllowed(clientAddr,serverAddr) == true)
+        if (node.isClientAuthenticated(clientAddr) == true)
         {
             node.incrementBlinger(CaptureNode.BlingerType.SESSALLOW,1);
             sessreq.release();
             return;
         }
+
+        // not authenticated so check both of the pass lists
+        PassedAddress passed = node.isSessionAllowed(clientAddr,serverAddr);
+
+            if (passed != null)
+            {
+                if (passed.getLog() == true)
+                {
+                CaptureRuleEvent logevt = new CaptureRuleEvent(sessreq.sessionEvent());
+                node.logEvent(logevt);
+                }
+
+            node.incrementBlinger(CaptureNode.BlingerType.SESSALLOW,1);
+            sessreq.release();
+            return;
+            }
 
         // not authenticated and no pass list match so check the rules
         CaptureRule rule = node.checkCaptureRules(sessreq);

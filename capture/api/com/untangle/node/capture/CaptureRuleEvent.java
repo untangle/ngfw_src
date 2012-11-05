@@ -23,6 +23,13 @@ public class CaptureRuleEvent extends LogEvent
         this.blocked = rule.getBlock();
     }
 
+    public CaptureRuleEvent( SessionEvent sessionEvent )
+    {
+        this.sessionEvent = sessionEvent;
+        this.ruleid = 0;
+        this.blocked = false;
+    }
+
     public SessionEvent getSessionEvent() { return sessionEvent; }
     public void setSessionEvent( SessionEvent sessionEvent ) { this.sessionEvent = sessionEvent; }
 

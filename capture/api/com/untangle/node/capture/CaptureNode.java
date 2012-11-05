@@ -27,7 +27,8 @@ public interface CaptureNode extends Node
     int userAdminLogout(String address);
     int userLogout(String address);
 
-    boolean isSessionAllowed(String clientAddr,String serverAddr);
+    boolean isClientAuthenticated(String clientAddr);
+    PassedAddress isSessionAllowed(String clientAddr,String serverAddr);
     CaptureRule checkCaptureRules(IPNewSessionRequest sessreq);
     CaptureRule checkCaptureRules(NodeTCPSession session);
 }
