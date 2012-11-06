@@ -1095,29 +1095,27 @@ if (!Ung.hasResource["Ung.Capture"]) {
                 eventQueriesFn: this.getRpcNode().getBlockEventQueries,
                 settingsCmp: this,
                 fields: [{
+                    name: "capture_rule_index"
+                },{
                     name: "time_stamp",
                     sortType: Ung.SortTypes.asTimestamp
                 },{
                     name: "c_client_addr"
                 },{
-                    name: "client_port"
+                    name: "c_client_port"
                 },{
                     name: "s_server_addr"
                 },{
-                    name: "server_port"
+                    name: "s_server_port"
                 },{
-                    name: "client",
-                    convert: function(value, record) {
-                        return record.client_address + ":" + record.client_port;
-                    }
-                }, {
-                    name: "server",
-                    convert: function(value, record) {
-                        return record.server_address + ":" + record.server_port;
-                    }
+                    name: "capture_blocked"
                 }],
 
                 columns: [{
+                    header: this.i18n._("Rule ID"),
+                    width: 50,
+                    dataIndex: 'capture_rule_index'
+                },{
                     header: this.i18n._("Timestamp"),
                     width: Ung.Util.timestampFieldWidth,
                     sortable: true,
@@ -1126,30 +1124,30 @@ if (!Ung.hasResource["Ung.Capture"]) {
                         return i18n.timestampFormat(value);
                     }
                 },{
-                    header: this.i18n._("Action"),
-                    width: 80,
-                    sortable: false,
-                    renderer: Ext.bind(function(value) {
-                        return this.i18n._( "block" );
-                    }, this )
-                },{
-                    header: this.i18n._("Client"),
+                    header: this.i18n._("Client Address"),
                     width: Ung.Util.ipFieldWidth,
                     sortable: true,
                     dataIndex: "c_client_addr"
                 },{
-                    header: this.i18n._("Reason"),
-                    width: 100,
-                    sortable: false,
-                    flex:1,
-                    renderer: Ext.bind(function(value) {
-                        return this.i18n._( "unauthenticated" );
-                    }, this )
+                    header: this.i18n._("Client Port"),
+                    width: 120,
+                    sortable: true,
+                    dataIndex: "c_client_port"
                 },{
-                    header: this.i18n._("Server"),
+                    header: this.i18n._("Server Address"),
                     width: Ung.Util.ipFieldWidth,
                     sortable: true,
                     dataIndex: "s_server_addr"
+                },{
+                    header: this.i18n._("Server Port"),
+                    width: 120,
+                    sortable: true,
+                    dataIndex: "s_server_port"
+                },{
+                    header: this.i18n._("Captured"),
+                    width: 50,
+                    sortable: true,
+                    dataIndex: "capture_blocked"
                 }]
             });
         },

@@ -64,7 +64,7 @@ public class CaptureTrafficHandler extends AbstractEventHandler
             {
                 if (passed.getLog() == true)
                 {
-                CaptureRuleEvent logevt = new CaptureRuleEvent(sessreq.sessionEvent());
+                CaptureRuleEvent logevt = new CaptureRuleEvent(sessreq.sessionEvent(), false);
                 node.logEvent(logevt);
                 }
 
@@ -123,7 +123,7 @@ public class CaptureTrafficHandler extends AbstractEventHandler
             {
                 if (passed.getLog() == true)
                 {
-                CaptureRuleEvent logevt = new CaptureRuleEvent(sessreq.sessionEvent());
+                CaptureRuleEvent logevt = new CaptureRuleEvent(sessreq.sessionEvent(), false);
                 node.logEvent(logevt);
                 }
 

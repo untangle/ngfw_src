@@ -62,7 +62,7 @@ class CaptureHttpHandler extends HttpStateMachine
             {
                 if (passed.getLog() == true)
                 {
-                CaptureRuleEvent logevt = new CaptureRuleEvent(session.sessionEvent());
+                CaptureRuleEvent logevt = new CaptureRuleEvent(session.sessionEvent(), false);
                 node.logEvent(logevt);
                 }
 
