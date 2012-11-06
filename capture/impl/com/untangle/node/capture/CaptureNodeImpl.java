@@ -74,9 +74,19 @@ public class CaptureNodeImpl extends NodeBase implements CaptureNode
     private EventLogQuery blockEventQuery;
     private EventLogQuery allEventQuery;
 
+/**
+ * nodeInstanceCount stores the number of this node type initialized thus far
+ * nodeInstanceNum stores the number of this given node type
+ * This is done so each node of this type has a unique sequential identifier
+ */
+    private static int nodeInstanceCount = 0;
+    private final int  nodeInstanceNum;
+
     public CaptureNodeImpl( com.untangle.uvm.node.NodeSettings nodeSettings, com.untangle.uvm.node.NodeProperties nodeProperties )
     {
         super( nodeSettings, nodeProperties );
+
+        synchronized(getClass()) { this.nodeInstanceNum = nodeInstanceCount++; };
 
         replacementGenerator = new CaptureReplacementGenerator(getNodeSettings());
 
@@ -229,9 +239,12 @@ public class CaptureNodeImpl extends NodeBase implements CaptureNode
         // it gives us a single place to do stuff when applying a new
         // settings object to the node.
 
-        this.captureSettings = argSettings;
-        List<PassedAddress> clientList = captureSettings.getPassedClients();
-        List<PassedAddress> serverList = captureSettings.getPassedServers();
+        // set a unique id for each capture rule
+        int idx = (this.nodeInstanceNum * 1000);
+        for (CaptureRule rule : argSettings.getCaptureRules()) rule.setId(++idx);
+
+        List<PassedAddress> clientList = argSettings.getPassedClients();
+        List<PassedAddress> serverList = argSettings.getPassedServers();
         PassedAddress local;
 
         passedClientHash.clear();
@@ -250,6 +263,8 @@ public class CaptureNodeImpl extends NodeBase implements CaptureNode
             local = serverList.get(ss);
             passedServerHash.put(local.getAddress(),local);
         }
+
+        this.captureSettings = argSettings;
     }
 
     @Override

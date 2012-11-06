@@ -230,7 +230,7 @@ if (!Ung.hasResource["Ung.Capture"]) {
                                 flex:1
                             },{
                                 xtype:'checkcolumn',
-                                header: this.i18n._("Block"),
+                                header: this.i18n._("Capture"),
                                 dataIndex: 'block',
                                 fixed: true,
                                 width:55
@@ -346,7 +346,7 @@ if (!Ung.hasResource["Ung.Capture"]) {
                             dataIndex: "block",
                             fieldLabel: this.i18n._("Action Type"),
                             editable: false,
-                            store: [[true,i18n._('Block')], [false,i18n._('Pass')]],
+                            store: [[true,i18n._('Capture')], [false,i18n._('Pass')]],
                             valueField: "value",
                             displayField: "displayName",
                             queryMode: 'local',
@@ -1007,7 +1007,7 @@ if (!Ung.hasResource["Ung.Capture"]) {
 
         buildLoginEventLog: function() {
             this.gridLoginEventLog = Ext.create('Ung.GridEventLog',{
-                title: this.i18n._( "Login Event Log" ),
+                title: this.i18n._( "User Event Log" ),
                 helpSource: "login_event_log",
                 eventQueriesFn: this.getRpcNode().getLoginEventQueries,
                 settingsCmp: this,
@@ -1090,7 +1090,7 @@ if (!Ung.hasResource["Ung.Capture"]) {
 
         buildBlockEventLog: function() {
             this.gridBlockEventLog = Ext.create('Ung.GridEventLog',{
-                title: this.i18n._( "Block Event Log" ),
+                title: this.i18n._( "Rule Event Log" ),
                 helpSource: "block_event_log",
                 eventQueriesFn: this.getRpcNode().getBlockEventQueries,
                 settingsCmp: this,
@@ -1113,11 +1113,11 @@ if (!Ung.hasResource["Ung.Capture"]) {
 
                 columns: [{
                     header: this.i18n._("Rule ID"),
-                    width: 50,
+                    width: 80,
                     dataIndex: 'capture_rule_index'
                 },{
                     header: this.i18n._("Timestamp"),
-                    width: Ung.Util.timestampFieldWidth,
+                    width: Ung.Util.timestampFieldWidth + 20,
                     sortable: true,
                     dataIndex: "time_stamp",
                     renderer: function(value) {
@@ -1125,27 +1125,27 @@ if (!Ung.hasResource["Ung.Capture"]) {
                     }
                 },{
                     header: this.i18n._("Client Address"),
-                    width: Ung.Util.ipFieldWidth,
+                    width: Ung.Util.ipFieldWidth + 20,
                     sortable: true,
                     dataIndex: "c_client_addr"
                 },{
                     header: this.i18n._("Client Port"),
-                    width: 120,
+                    width: 100,
                     sortable: true,
                     dataIndex: "c_client_port"
                 },{
                     header: this.i18n._("Server Address"),
-                    width: Ung.Util.ipFieldWidth,
+                    width: Ung.Util.ipFieldWidth + 20,
                     sortable: true,
                     dataIndex: "s_server_addr"
                 },{
                     header: this.i18n._("Server Port"),
-                    width: 120,
+                    width: 100,
                     sortable: true,
                     dataIndex: "s_server_port"
                 },{
                     header: this.i18n._("Captured"),
-                    width: 50,
+                    width: 100,
                     sortable: true,
                     dataIndex: "capture_blocked"
                 }]
