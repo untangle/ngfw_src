@@ -47,6 +47,9 @@ public class HostTableImpl implements HostTable
 
     private volatile Thread cleanerThread;
     private HostTableCleaner cleaner = new HostTableCleaner();
+
+    private volatile Thread reverseLookupThread;
+    private HostTableReverseHostnameLookup reverseLookup = new HostTableReverseHostnameLookup();
     
     protected HostTableImpl()
     {
@@ -57,6 +60,7 @@ public class HostTableImpl implements HostTable
         this.quotaEventQuery = new EventLogQuery(I18nUtil.marktr("Quota Events"), "SELECT * FROM reports.quotas ORDER BY time_stamp DESC");
 
         UvmContextFactory.context().newThread(this.cleaner).start();
+        UvmContextFactory.context().newThread(this.reverseLookup).start();
     }
     
     public void setAttachment( InetAddress addr, String key, String str )
@@ -510,8 +514,7 @@ public class HostTableImpl implements HostTable
                     LinkedList<InetAddress> keys = new LinkedList<InetAddress>(hostTable.keySet());
                     for (InetAddress addr : keys) {
                         HostTableEntry entry = getHostTableEntry( addr, false );
-
-                        if (entry == null)
+                        if ( entry == null )
                             continue;
 
                         /**
@@ -537,4 +540,57 @@ public class HostTableImpl implements HostTable
             }
         }
     }
+
+    private class HostTableReverseHostnameLookup implements Runnable
+    {
+        public void run()
+        {
+            reverseLookupThread = Thread.currentThread();
+
+            while (reverseLookupThread != null) {
+                try {Thread.sleep(CLEANER_SLEEP_TIME_MILLI);} catch (Exception e) {}
+                logger.debug("HostTableReverseHostnameLookup: Running... ");
+
+                try {
+                    Long now = System.currentTimeMillis();
+                    /**
+                     * Remove old entries
+                     */
+                    LinkedList<InetAddress> keys = new LinkedList<InetAddress>(hostTable.keySet());
+                    for (InetAddress addr : keys) {
+                        if ( addr == null )
+                            continue;
+                        String currentHostname = (String) UvmContextFactory.context().hostTable().getAttachment( addr, HostTable.KEY_HOSTNAME );
+                        /* if hostname is already known via some other method (and its not just the IP), dont bother doing reverse lookup */
+                        if (currentHostname != null && !currentHostname.equals(addr.getHostAddress()) )
+                            continue;
+                        
+                        try {
+                            String hostname = addr.getHostName();
+
+                            if ( hostname == null )
+                                continue;
+                            if ( hostname.equals( currentHostname ) )
+                                continue;
+                            if ( hostname.equals( addr.getHostAddress() ) )
+                                continue;
+
+                            /* use just the first part of the name */
+                            int firstdot = hostname.indexOf('.');
+                            if ( firstdot != -1 )
+                                hostname = hostname.substring(0,firstdot);
+                            
+                            logger.debug("HostTable Reverse lookup hostname = " + hostname);
+                            UvmContextFactory.context().hostTable().setAttachment( addr, HostTable.KEY_HOSTNAME, hostname );
+                        } catch (Exception e) {
+                            logger.warn("Exception in reverse lookup",e);
+                        }
+                    }
+                } catch (Exception e) {
+                    logger.warn("Exception while cleaning host table",e);
+                }
+            }
+        }
+    }
+    
 }

@@ -173,6 +173,10 @@ public abstract class ArgonHook implements Runnable
             if (hostname != null && hostname.length() > 0 ) {
                 logger.debug( "hostname information: " + hostname );
                 sessionGlobalState.attach( NodeSession.KEY_PLATFORM_HOSTNAME, hostname );
+                /* If hostname isn't set in host table, set it */
+                if ( UvmContextFactory.context().hostTable().getAttachment( clientAddr, HostTable.KEY_HOSTNAME ) == null ) {
+                    UvmContextFactory.context().hostTable().setAttachment( clientAddr, HostTable.KEY_HOSTNAME, hostname );
+                }
             }
             
             PolicyManager policyManager = (PolicyManager) UvmContextFactory.context().nodeManager().node("untangle-node-policy");
