@@ -4,14 +4,18 @@
 
 package com.untangle.node.capture;
 
+import java.net.InetAddress;
 import java.util.Enumeration;
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.TimerTask;
 import org.apache.log4j.Logger;
+import com.untangle.uvm.UvmContextFactory;
+import com.untangle.uvm.HostTable;
 
 public class CaptureUserTable
 {
+    private final HostTable hostTable = UvmContextFactory.context().hostTable();
     private final Logger logger = Logger.getLogger(getClass());
     private Hashtable<String,CaptureUserEntry> userTable;
 
@@ -42,6 +46,20 @@ public class CaptureUserTable
     {
         CaptureUserEntry local = new CaptureUserEntry(address,username);
         userTable.put(address,local);
+
+        InetAddress netaddr = null;
+
+        try
+        {
+            netaddr = InetAddress.getByName(address);
+        }
+
+        catch (Exception e)
+        {
+            logger.warn("Invalid network address", e);
+        }
+
+        hostTable.setAttachment( netaddr, HostTable.KEY_CAPTURE_USERNAME, username);
         return(local);
     }
 
@@ -50,6 +68,20 @@ public class CaptureUserTable
         CaptureUserEntry user = userTable.get(address);
         if (user == null) return(false);
         userTable.remove(address);
+
+        InetAddress netaddr = null;
+
+        try
+        {
+            netaddr = InetAddress.getByName(address);
+        }
+
+        catch (Exception e)
+        {
+            logger.warn("Invalid network address", e);
+        }
+
+        hostTable.setAttachment( netaddr, HostTable.KEY_CAPTURE_USERNAME, null);
         return(true);
     }
 
