@@ -173,8 +173,11 @@ public abstract class ArgonHook implements Runnable
             if (hostname != null && hostname.length() > 0 ) {
                 logger.debug( "hostname information: " + hostname );
                 sessionGlobalState.attach( NodeSession.KEY_PLATFORM_HOSTNAME, hostname );
-                /* If hostname isn't set in host table, set it */
-                if ( UvmContextFactory.context().hostTable().getAttachment( clientAddr, HostTable.KEY_HOSTNAME ) == null ) {
+                /* If its a local host (not from WAN) and hostname isn't set in host table, set it */
+                InterfaceConfiguration intfConf = UvmContextFactory.context().networkManager().getNetworkConfiguration().findById( netcapSession.clientSide().interfaceId() );
+                if ( intfConf != null &&
+                     !intfConf.isWAN() &&
+                     UvmContextFactory.context().hostTable().getAttachment( clientAddr, HostTable.KEY_HOSTNAME ) == null ) {
                     UvmContextFactory.context().hostTable().setAttachment( clientAddr, HostTable.KEY_HOSTNAME, hostname );
                 }
             }

@@ -52,6 +52,8 @@ public class RuleMatcher implements JSONString, Serializable
             DST_INTF, /* "External" "any" */
             PROTOCOL, /* "TCP" "UDP" "TCP,UDP" "any" */
             USERNAME, /* "dmorris" or "none" or "*" */
+            CLIENT_HOSTNAME, /* glob */
+            SERVER_HOSTNAME, /* glob */
             CLIENT_IN_PENALTY_BOX, /* none */
             SERVER_IN_PENALTY_BOX, /* none */
             CLIENT_HAS_NO_QUOTA, /* none */
@@ -276,6 +278,8 @@ public class RuleMatcher implements JSONString, Serializable
             // nothing necessary
             break;
 
+        case CLIENT_HOSTNAME:
+        case SERVER_HOSTNAME:
         case HTTP_HOST:
         case HTTP_URI:
         case HTTP_USER_AGENT:
@@ -567,6 +571,18 @@ public class RuleMatcher implements JSONString, Serializable
             else
                 return false;
 
+        case CLIENT_HOSTNAME:
+            attachment = (String)UvmContextFactory.context().hostTable().getAttachment( sess.getClientAddr(), HostTable.KEY_HOSTNAME );
+            if (attachment == null)
+                return false;
+            return Pattern.matches(regexValue, attachment);
+            
+        case SERVER_HOSTNAME:
+            attachment = (String)UvmContextFactory.context().hostTable().getAttachment( sess.getServerAddr(), HostTable.KEY_HOSTNAME );
+            if (attachment == null)
+                return false;
+            return Pattern.matches(regexValue, attachment);
+
         case CLIENT_IN_PENALTY_BOX:
             return UvmContextFactory.context().hostTable().hostInPenaltyBox( sess.getClientAddr() );
             
@@ -653,6 +669,18 @@ public class RuleMatcher implements JSONString, Serializable
                 return true;
             return false;
 
+        case CLIENT_HOSTNAME:
+            attachment = (String)UvmContextFactory.context().hostTable().getAttachment( srcAddress, HostTable.KEY_HOSTNAME );
+            if (attachment == null)
+                return false;
+            return Pattern.matches(regexValue, attachment);
+            
+        case SERVER_HOSTNAME:
+            attachment = (String)UvmContextFactory.context().hostTable().getAttachment( dstAddress, HostTable.KEY_HOSTNAME );
+            if (attachment == null)
+                return false;
+            return Pattern.matches(regexValue, attachment);
+            
         case CLIENT_IN_PENALTY_BOX:
             return UvmContextFactory.context().hostTable().hostInPenaltyBox( srcAddress );
             

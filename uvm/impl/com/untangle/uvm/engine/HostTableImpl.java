@@ -479,6 +479,7 @@ public class HostTableImpl implements HostTable
         if ( entry == null && createIfNecessary ) {
             entry = createNewHostTableEntry( addr );
             hostTable.put( addr, entry );
+            this.reverseLookupThread.interrupt(); /* wake it up to force hostname lookup */
         }
 
         return entry;
@@ -496,6 +497,10 @@ public class HostTableImpl implements HostTable
         return entry;
     }
 
+    /**
+     * This thread periodically walks through the entries and removes expired entries
+     * It also explicitly releases hosts from the penalty box and quotas after expiration
+     */
     private class HostTableCleaner implements Runnable
     {
         public void run()
@@ -562,6 +567,12 @@ public class HostTableImpl implements HostTable
         }
     }
 
+    /**
+     * This thread periodically walks through the entries and does a reverse lookup on the IP 
+     * to see if it can determine the host's hostname (for hosts without a known hostname)
+     *
+     * This is done in a separate thread because it may hang on the DNS lookup.
+     */
     private class HostTableReverseHostnameLookup implements Runnable
     {
         public void run()
