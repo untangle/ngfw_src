@@ -23,6 +23,7 @@ import com.untangle.node.util.AsciiCharBuffer;
 import com.untangle.node.util.UserAgentString;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.HostTable;
+import com.untangle.uvm.HostTableEntry;
 import com.untangle.uvm.node.MimeType;
 import com.untangle.uvm.vnet.NodeTCPSession;
 
@@ -78,7 +79,7 @@ public class HttpParser extends AbstractParser
 
     // constructors -----------------------------------------------------------
 
-    HttpParser(NodeTCPSession session, boolean clientSide, HttpCasing casing)
+    protected HttpParser(NodeTCPSession session, boolean clientSide, HttpCasing casing)
     {
         super(session, clientSide);
         HttpNodeImpl node = casing.getNode();
@@ -410,25 +411,26 @@ public class HttpParser extends AbstractParser
                         
                         /**
                          * Update host table with header info
+                         * if an entry already exists for this host
                          */
                         InetAddress clientAddr = getSession().sessionEvent().getCClientAddr();
                         String agentString = header.getValue("user-agent");
-                        if (clientAddr != null && agentString != null) {
+                        HostTableEntry entry = UvmContextFactory.context().hostTable().getHostTableEntry( clientAddr );
+                        if (clientAddr != null && agentString != null && entry != null ) {
                             UserAgentString uas = new UserAgentString(agentString);
-                            HostTable hostTable = UvmContextFactory.context().hostTable();
-                            Long agentStringSetTime = (Long) hostTable.getAttachment( clientAddr, HostTable.KEY_HTTP_AGENT_STRING_DATE_LONG_MILLIS );
+                            long setDate = entry.getHttpUserAgentSetDate();
                             
                             /**
                              * If the current agent string is null
                              * or if its not null it was set more than 60 seconds ago
                              * set the agent string and agent string information
                              */
-                            if ( hostTable.getAttachment( clientAddr, HostTable.KEY_HTTP_AGENT_STRING ) == null ||
-                                 agentStringSetTime == null  ||
-                                 ( System.currentTimeMillis() > agentStringSetTime + (60*1000) ) ) {
-                                hostTable.setAttachment( clientAddr, HostTable.KEY_HTTP_AGENT_STRING, agentString);
-                                hostTable.setAttachment( clientAddr, HostTable.KEY_HTTP_AGENT_STRING_OS, uas.getOsInfo());
-                                hostTable.setAttachment( clientAddr, HostTable.KEY_HTTP_AGENT_STRING_DATE_LONG_MILLIS, System.currentTimeMillis());
+                            if ( entry.getHttpUserAgent() == null || setDate == 0 ||
+                                 ( System.currentTimeMillis() > setDate + (60*1000) ) ) {
+                                entry.setHttpUserAgent( agentString );
+                                logger.warn("Setting UAS OS : " + uas.getOsInfo() + " from " + agentString );
+                                entry.setHttpUserAgentOs( uas.getOsInfo() );
+                                entry.setHttpUserAgentSetDate( System.currentTimeMillis() );
                             }
                         }
                     }

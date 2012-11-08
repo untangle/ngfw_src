@@ -24,6 +24,7 @@ import com.untangle.uvm.IntfConstants;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.NetworkManager;
 import com.untangle.uvm.HostTable;
+import com.untangle.uvm.HostTableEntry;
 import com.untangle.uvm.engine.PipelineFoundryImpl;
 import com.untangle.uvm.node.SessionTuple;
 import com.untangle.uvm.node.SessionTupleImpl;
@@ -154,7 +155,8 @@ public abstract class ArgonHook implements Runnable
             serverSide = clientSide;
 
             /* lookup the user information */
-            String username = (String) UvmContextFactory.context().hostTable().getAttachment( clientAddr, HostTable.KEY_USERNAME );
+            HostTableEntry entry = UvmContextFactory.context().hostTable().getHostTableEntry( clientAddr );
+            String username = ( entry == null ? null : entry.getUsername() );
             if (username != null && username.length() > 0 ) { 
                 logger.debug( "user information: " + username );
                 sessionGlobalState.setUser( username );
@@ -173,12 +175,12 @@ public abstract class ArgonHook implements Runnable
             if (hostname != null && hostname.length() > 0 ) {
                 logger.debug( "hostname information: " + hostname );
                 sessionGlobalState.attach( NodeSession.KEY_PLATFORM_HOSTNAME, hostname );
-                /* If its a local host (not from WAN) and hostname isn't set in host table, set it */
-                InterfaceConfiguration intfConf = UvmContextFactory.context().networkManager().getNetworkConfiguration().findById( netcapSession.clientSide().interfaceId() );
-                if ( intfConf != null &&
-                     !intfConf.isWAN() &&
-                     UvmContextFactory.context().hostTable().getAttachment( clientAddr, HostTable.KEY_HOSTNAME ) == null ) {
-                    UvmContextFactory.context().hostTable().setAttachment( clientAddr, HostTable.KEY_HOSTNAME, hostname );
+                /* If its a local host (not from WAN) then set hostname */
+                if ( ! UvmContextFactory.context().networkManager().isWanInterface( netcapSession.clientSide().interfaceId() ) ) {
+                    /* create/gete entry */
+                    entry = UvmContextFactory.context().hostTable().getHostTableEntry( clientAddr, true );
+                    if ( ! entry.isHostnameKnown() )
+                        entry.setHostname( hostname );
                 }
             }
             

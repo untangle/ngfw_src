@@ -15,6 +15,7 @@ import org.json.JSONString;
 
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.HostTable;
+import com.untangle.uvm.HostTableEntry;
 import com.untangle.uvm.vnet.NodeSession;
 import com.untangle.uvm.vnet.NodeIPSession;
 import com.untangle.uvm.node.IPMatcher;
@@ -327,6 +328,7 @@ public class RuleMatcher implements JSONString, Serializable
     {
         String  attachment = null;
         Integer attachmentInt = null;
+        HostTableEntry entry;
         
         switch (this.matcherType) {
         case SRC_ADDR:
@@ -386,10 +388,16 @@ public class RuleMatcher implements JSONString, Serializable
             return protocolMatcher.isMatch(sess.getProtocol());
 
         case CLIENT_HAS_NO_QUOTA:
-            return (UvmContextFactory.context().hostTable().getAttachment( sess.getClientAddr(), HostTable.KEY_QUOTA_REMAINING ) == null);
+            entry = UvmContextFactory.context().hostTable().getHostTableEntry( sess.getClientAddr() );
+            if (entry == null)
+                return true;
+            return ( entry.getQuotaSize() == 0 );
 
         case SERVER_HAS_NO_QUOTA:
-            return (UvmContextFactory.context().hostTable().getAttachment( sess.getServerAddr(), HostTable.KEY_QUOTA_REMAINING ) == null);
+            entry = UvmContextFactory.context().hostTable().getHostTableEntry( sess.getServerAddr() );
+            if (entry == null)
+                return true;
+            return ( entry.getQuotaSize() == 0 );
 
         case CLIENT_QUOTA_EXCEEDED:
             return UvmContextFactory.context().hostTable().hostQuotaExceeded( sess.getClientAddr() );
@@ -410,13 +418,19 @@ public class RuleMatcher implements JSONString, Serializable
             return Pattern.matches(regexValue, attachment);
 
         case HTTP_USER_AGENT:
-            attachment = (String) UvmContextFactory.context().hostTable().getAttachment( sess.getClientAddr(), HostTable.KEY_HTTP_AGENT_STRING );
+            entry = UvmContextFactory.context().hostTable().getHostTableEntry( sess.getClientAddr() );
+            if (entry == null)
+                return false;
+            attachment = entry.getHttpUserAgent();
             if (attachment == null)
                 return false;
             return Pattern.matches(regexValue, attachment);
             
         case HTTP_USER_AGENT_OS:
-            attachment = (String)UvmContextFactory.context().hostTable().getAttachment( sess.getClientAddr(), HostTable.KEY_HTTP_AGENT_STRING_OS );
+            entry = UvmContextFactory.context().hostTable().getHostTableEntry( sess.getClientAddr() );
+            if (entry == null)
+                return false;
+            attachment = entry.getHttpUserAgentOs();
             if (attachment == null)
                 return false;
             return Pattern.matches(regexValue, attachment);
@@ -572,13 +586,19 @@ public class RuleMatcher implements JSONString, Serializable
                 return false;
 
         case CLIENT_HOSTNAME:
-            attachment = (String)UvmContextFactory.context().hostTable().getAttachment( sess.getClientAddr(), HostTable.KEY_HOSTNAME );
+            entry = UvmContextFactory.context().hostTable().getHostTableEntry( sess.getClientAddr() );
+            if (entry == null)
+                return false;
+            attachment = entry.getHostname();
             if (attachment == null)
                 return false;
             return Pattern.matches(regexValue, attachment);
             
         case SERVER_HOSTNAME:
-            attachment = (String)UvmContextFactory.context().hostTable().getAttachment( sess.getServerAddr(), HostTable.KEY_HOSTNAME );
+            entry = UvmContextFactory.context().hostTable().getHostTableEntry( sess.getServerAddr() );
+            if (entry == null)
+                return false;
+            attachment = entry.getHostname();
             if (attachment == null)
                 return false;
             return Pattern.matches(regexValue, attachment);
@@ -604,6 +624,7 @@ public class RuleMatcher implements JSONString, Serializable
                               String username)
     {
         String attachment = null;
+        HostTableEntry entry;
         
         switch (this.matcherType) {
         case SRC_ADDR:
@@ -670,13 +691,19 @@ public class RuleMatcher implements JSONString, Serializable
             return false;
 
         case CLIENT_HOSTNAME:
-            attachment = (String)UvmContextFactory.context().hostTable().getAttachment( srcAddress, HostTable.KEY_HOSTNAME );
+            entry = UvmContextFactory.context().hostTable().getHostTableEntry( srcAddress );
+            if (entry == null)
+                return false;
+            attachment = entry.getHostname();
             if (attachment == null)
                 return false;
             return Pattern.matches(regexValue, attachment);
             
         case SERVER_HOSTNAME:
-            attachment = (String)UvmContextFactory.context().hostTable().getAttachment( dstAddress, HostTable.KEY_HOSTNAME );
+            entry = UvmContextFactory.context().hostTable().getHostTableEntry( dstAddress );
+            if (entry == null)
+                return false;
+            attachment = entry.getHostname();
             if (attachment == null)
                 return false;
             return Pattern.matches(regexValue, attachment);
@@ -688,10 +715,16 @@ public class RuleMatcher implements JSONString, Serializable
             return UvmContextFactory.context().hostTable().hostInPenaltyBox( dstAddress );
 
         case CLIENT_HAS_NO_QUOTA:
-            return (UvmContextFactory.context().hostTable().getAttachment( srcAddress, HostTable.KEY_QUOTA_REMAINING ) == null);
+            entry = UvmContextFactory.context().hostTable().getHostTableEntry( srcAddress );
+            if (entry == null)
+                return true;
+            return ( entry.getQuotaSize() == 0 );
 
         case SERVER_HAS_NO_QUOTA:
-            return (UvmContextFactory.context().hostTable().getAttachment( dstAddress, HostTable.KEY_QUOTA_REMAINING ) == null);
+            entry = UvmContextFactory.context().hostTable().getHostTableEntry( dstAddress );
+            if (entry == null)
+                return true;
+            return ( entry.getQuotaSize() == 0 );
 
         case CLIENT_QUOTA_EXCEEDED:
             return UvmContextFactory.context().hostTable().hostQuotaExceeded( srcAddress );
@@ -723,13 +756,19 @@ public class RuleMatcher implements JSONString, Serializable
             return isMemberOf;
 
         case HTTP_USER_AGENT:
-            attachment = (String) UvmContextFactory.context().hostTable().getAttachment( srcAddress, HostTable.KEY_HTTP_AGENT_STRING );
+            entry = UvmContextFactory.context().hostTable().getHostTableEntry( dstAddress );
+            if (entry == null)
+                return false;
+            attachment = entry.getHttpUserAgent();
             if (attachment == null)
                 return false;
             return Pattern.matches(regexValue, attachment);
             
         case HTTP_USER_AGENT_OS:
-            attachment = (String)UvmContextFactory.context().hostTable().getAttachment( srcAddress, HostTable.KEY_HTTP_AGENT_STRING_OS );
+            entry = UvmContextFactory.context().hostTable().getHostTableEntry( dstAddress );
+            if (entry == null)
+                return false;
+            attachment = entry.getHttpUserAgentOs();
             if (attachment == null)
                 return false;
             return Pattern.matches(regexValue, attachment);

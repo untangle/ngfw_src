@@ -34,30 +34,10 @@ if (!Ung.hasResource["Ung.HostMonitor"]) {
             if (!this.isVisible())
                 return {javaClass:"java.util.LinkedList", list:[]};
 
-            var hosts = rpc.hostTable.getHosts();
-            // iterate through each host and change its attachments map to properties
-            for (var i = 0; i < hosts.list.length ; i++) {
-                var host = hosts.list[i];
-                if (host.attachments != null) {
-                    for (var prop in host.attachments.map) {
-                        host[prop] = host.attachments.map[prop];
-                    }
-                }
-            }
-            return hosts;
+            return rpc.hostTable.getHosts();
         },
         getPenaltyBoxedHosts: function() {
-            var hosts = rpc.hostTable.getPenaltyBoxedHosts();
-            // iterate through each host and change its attachments map to properties
-            for (var i = 0; i < hosts.list.length ; i++) {
-                var host = hosts.list[i];
-                if (host.attachments != null) {
-                    for (var prop in host.attachments.map) {
-                        host[prop] = host.attachments.map[prop];
-                    }
-                }
-            }
-            return hosts;
+            return rpc.hostTable.getPenaltyBoxedHosts();
         },
         megaByteRenderer: function(bytes) {
             var units = ["bytes","Kbytes","Mbytes","Gbytes"];
@@ -73,17 +53,7 @@ if (!Ung.hasResource["Ung.HostMonitor"]) {
             return "" + bytes + " " + units[units_itr];
         },
         getQuotaHosts: function() {
-            var hosts = rpc.hostTable.getQuotaHosts();
-            // iterate through each host and change its attachments map to properties
-            for (var i = 0; i < hosts.list.length ; i++) {
-                var host = hosts.list[i];
-                if (host.attachments != null) {
-                    for (var prop in host.attachments.map) {
-                        host[prop] = host.attachments.map[prop];
-                    }
-                }
-            }
-            return hosts;
+            return rpc.hostTable.getQuotaHosts();
         },
         buildHostsPanel: function() {
             this.enabledColumns = {};
@@ -197,7 +167,7 @@ if (!Ung.hasResource["Ung.HostMonitor"]) {
                     gridColumnDataIndex: "lastAccessTime",
                     gridColumnWidth: 100,
                     gridColumnRenderer: function(value) {
-                        return value == null || value == "" ? "" : i18n.timestampFormat(value);
+                        return value == 0 || value == "" ? "" : i18n.timestampFormat(value);
                     }
                 }, {
                     xtype: 'checkbox',
@@ -218,62 +188,99 @@ if (!Ung.hasResource["Ung.HostMonitor"]) {
                     checked: true,
                     boxLabel: this.i18n._("Penalty Boxed"),
                     gridColumnHeader: this.i18n._("Penalty Boxed"),
-                    gridColumnDataIndex: "penaltybox",
+                    gridColumnDataIndex: "penaltyBoxed",
                     gridColumnWidth: 100
                 },{
                     xtype: 'checkbox',
-                    checked: true,
+                    checked: false,
                     boxLabel: this.i18n._("Penalty Box Entry Time"),
                     gridColumnHeader: this.i18n._("Penalty Box Entry Time"),
-                    gridColumnDataIndex: "penaltybox-entry-time",
+                    gridColumnDataIndex: "penaltyBoxEntryTime",
                     gridColumnWidth: 100,
                     gridColumnRenderer: function(value) {
-                        return value == null || value == "" ? "" : i18n.timestampFormat(value);
+                        return value == 0 || value == "" ? "" : i18n.timestampFormat(value);
                     }
                 },{
                     xtype: 'checkbox',
-                    checked: true,
+                    checked: false,
                     boxLabel: this.i18n._("Penalty Box Exit Time"),
                     gridColumnHeader: this.i18n._("Penalty Box Exit Time"),
-                    gridColumnDataIndex: "penaltybox-exit-time",
+                    gridColumnDataIndex: "penaltyBoxExitTime",
                     gridColumnWidth: 100,
                     gridColumnRenderer: function(value) {
-                        return value == null || value == "" ? "" : i18n.timestampFormat(value);
+                        return value == 0 || value == "" ? "" : i18n.timestampFormat(value);
                     }
                 },{
                     xtype: 'checkbox',
                     checked: true,
+                    boxLabel: this.i18n._("Quota Size"),
+                    gridColumnHeader: this.i18n._("Quota Size"),
+                    gridColumnDataIndex: "quotaSize",
+                    gridColumnWidth: 100,
+                    gridColumnRenderer: function(value) {
+                        return value == 0 || value == "" ? "" : value;
+                    }
+                },{
+                    xtype: 'checkbox',
+                    checked: false,
+                    boxLabel: this.i18n._("Quota Remaining"),
+                    gridColumnHeader: this.i18n._("Quota Remaining"),
+                    gridColumnDataIndex: "quotaRemaining",
+                    gridColumnWidth: 100
+                },{
+                    xtype: 'checkbox',
+                    checked: false,
+                    boxLabel: this.i18n._("Quota Issue Time"),
+                    gridColumnHeader: this.i18n._("Quota Issue Time"),
+                    gridColumnDataIndex: "quotaIssueTime",
+                    gridColumnWidth: 100,
+                    gridColumnRenderer: function(value) {
+                        return value == 0 || value == "" ? "" : i18n.timestampFormat(value);
+                    }
+                },{
+                    xtype: 'checkbox',
+                    checked: false,
+                    boxLabel: this.i18n._("Quota Expiration Time"),
+                    gridColumnHeader: this.i18n._("Quota Expiration Time"),
+                    gridColumnDataIndex: "quotaExpirationTime",
+                    gridColumnWidth: 100,
+                    gridColumnRenderer: function(value) {
+                        return value == 0 || value == "" ? "" : i18n.timestampFormat(value);
+                    }
+                },{
+                    xtype: 'checkbox',
+                    checked: false,
                     boxLabel: "HTTP" + " - " + this.i18n._("User Agent"),
                     gridColumnHeader: "HTTP" + " - " + this.i18n._("User Agent"),
-                    gridColumnDataIndex: "http-user-agent",
-                    gridColumnWidth: 100
+                    gridColumnDataIndex: "httpUserAgent",
+                    gridColumnWidth: 200
                 },{
                     xtype: 'checkbox',
                     checked: true,
                     boxLabel: "HTTP" + " - " + this.i18n._("User Agent OS"),
                     gridColumnHeader: "HTTP" + " - " + this.i18n._("User Agent OS"),
-                    gridColumnDataIndex: "http-user-agent-os",
-                    gridColumnWidth: 100
+                    gridColumnDataIndex: "httpUserAgentOs",
+                    gridColumnWidth: 200
                 },{
                     xtype: 'checkbox',
-                    checked: true,
+                    checked: false,
                     boxLabel: "Directory Connector" + " - " + this.i18n._("Username"),
                     gridColumnHeader: "Directory Connector" + " - " + this.i18n._("Username"),
-                    gridColumnDataIndex: "adconnector-username",
+                    gridColumnDataIndex: "usernameAdconnector",
                     gridColumnWidth: 100
                 },{
                     xtype: 'checkbox',
-                    checked: true,
+                    checked: false,
                     boxLabel: "Captive Portal" + " - " + this.i18n._("Username"),
                     gridColumnHeader: "Captive Portal" + " - " + this.i18n._("Username"),
-                    gridColumnDataIndex: "capture-username",
+                    gridColumnDataIndex: "usernameCapture",
                     gridColumnWidth: 100
                 },{
                     xtype: 'checkbox',
-                    checked: true,
+                    checked: false,
                     boxLabel: "Bandwidth Control" + " - " + this.i18n._("Penalty Box Priority"),
                     gridColumnHeader: "Bandwidth Control" + " - " + this.i18n._("Penalty Box Priority"),
-                    gridColumnDataIndex: "penaltybox-priority",
+                    gridColumnDataIndex: "penaltyBoxPriority",
                     gridColumnWidth: 100,
                     gridColumnRenderer: function(value) {
                         if (value == null || value == "")
@@ -380,21 +387,29 @@ if (!Ung.hasResource["Ung.HostMonitor"]) {
                 },{
                     name: "username"
                 },{
-                    name: "penaltybox"
+                    name: "usernameAdconnector"
                 },{
-                    name: "penaltybox-entry-time"
+                    name: "usernameCapture"
                 },{
-                    name: "penaltybox-exit-time"
+                    name: "penaltyBoxed"
                 },{
-                    name: "adconnector-username"
+                    name: "penaltyBoxEntryTime"
                 },{
-                    name: "http-user-agent"
+                    name: "penaltyBoxExitTime"
                 },{
-                    name: "http-user-agent-os"
+                    name: "penaltyBoxPriority"
                 },{
-                    name: "capture-username"
+                    name: "quotaSize"
                 },{
-                    name: "penaltybox-priority"
+                    name: "quotaRemaining"
+                },{
+                    name: "quotaIssueTime"
+                },{
+                    name: "quotaExpirationTime"
+                },{
+                    name: "httpUserAgent"
+                },{
+                    name: "httpUserAgentOs"
                 }],
                 columns: columns,
                 initComponent: function() {
@@ -493,11 +508,11 @@ if (!Ung.hasResource["Ung.HostMonitor"]) {
                 fields: [{
                     name: "address"
                 },{
-                    name: "penaltybox-priority"
+                    name: "penaltyBoxPriority"
                 },{
-                    name: "penaltybox-entry-time"
+                    name: "penaltyBoxEntryTime"
                 },{
-                    name: "penaltybox-exit-time"
+                    name: "penaltyBoxExitTime"
                 },{
                     name: "id"
                 }],
@@ -507,7 +522,7 @@ if (!Ung.hasResource["Ung.HostMonitor"]) {
                     width: 150
                 },{
                     header: this.i18n._("Penalty Priority"),
-                    dataIndex: 'penaltybox-priority',
+                    dataIndex: 'penaltyBoxPriority',
                     width: 200,
                     renderer: function(value) {
                         if (value == null || value == "") return "";
@@ -525,12 +540,12 @@ if (!Ung.hasResource["Ung.HostMonitor"]) {
                     }
                 },{
                     header: this.i18n._("Entry Time"),
-                    dataIndex: 'penaltybox-entry-time',
+                    dataIndex: 'penaltyBoxEntryTime',
                     width: 180,
                     renderer: function(value) { return i18n.timestampFormat(value); }
                 },{
                     header: this.i18n._("Planned Exit Time"),
-                    dataIndex: 'penaltybox-exit-time',
+                    dataIndex: 'penaltyBoxExitTime',
                     width: 180,
                     renderer: function(value) { return i18n.timestampFormat(value); }
                 }, Ext.create('Ext.grid.column.Action', {
@@ -591,13 +606,13 @@ if (!Ung.hasResource["Ung.HostMonitor"]) {
                 fields: [{
                     name: "address"
                 },{
-                    name: "quota-size"
+                    name: "quotaSize"
                 },{
-                    name: "quota-remaining"
+                    name: "quotaRemaining"
                 },{
-                    name: "quota-issue-time"
+                    name: "quotaIssueTime"
                 },{
-                    name: "quota-expiration-time"
+                    name: "quotaExpirationTime"
                 },{
                     name: "id"
                 }],
@@ -607,22 +622,22 @@ if (!Ung.hasResource["Ung.HostMonitor"]) {
                     width: 150
                 },{
                     header: this.i18n._("Quota Size"),
-                    dataIndex: 'quota-size',
+                    dataIndex: 'quotaSize',
                     width: 100,
                     renderer: Ext.bind(this.megaByteRenderer, this)
                 },{
                     header: this.i18n._("Quota Remaining"),
-                    dataIndex: 'quota-remaining',
+                    dataIndex: 'quotaRemaining',
                     width: 100,
                     renderer: Ext.bind(this.megaByteRenderer, this)
                 },{
                     header: this.i18n._("Allocated"),
-                    dataIndex: 'quota-issue-time',
+                    dataIndex: 'quotaIssueTime',
                     width: 180,
                     renderer: function(value) { return i18n.timestampFormat(value); }
                 },{
                     header: this.i18n._("Expires"),
-                    dataIndex: 'quota-expiration-time',
+                    dataIndex: 'quotaExpirationTime',
                     width: 180,
                     renderer: function(value) { return i18n.timestampFormat(value); }
                 }, Ext.create('Ext.grid.column.Action',{

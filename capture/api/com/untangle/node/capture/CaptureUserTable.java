@@ -15,7 +15,6 @@ import com.untangle.uvm.HostTable;
 
 public class CaptureUserTable
 {
-    private final HostTable hostTable = UvmContextFactory.context().hostTable();
     private final Logger logger = Logger.getLogger(getClass());
     private Hashtable<String,CaptureUserEntry> userTable;
 
@@ -59,7 +58,7 @@ public class CaptureUserTable
             logger.warn("Invalid network address", e);
         }
 
-        hostTable.setAttachment( netaddr, HostTable.KEY_CAPTURE_USERNAME, username);
+        UvmContextFactory.context().hostTable().getHostTableEntry( netaddr, true).setUsernameCapture( username );
         return(local);
     }
 
@@ -81,7 +80,7 @@ public class CaptureUserTable
             logger.warn("Invalid network address", e);
         }
 
-        hostTable.setAttachment( netaddr, HostTable.KEY_CAPTURE_USERNAME, null);
+        UvmContextFactory.context().hostTable().getHostTableEntry( netaddr, true).setUsernameCapture( null );
         return(true);
     }
 

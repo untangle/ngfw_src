@@ -3,6 +3,7 @@
  */
 package com.untangle.uvm.engine;
 
+import java.util.Collection;
 import java.util.LinkedList;
 import java.util.Hashtable;
 import java.util.HashSet;
@@ -15,6 +16,7 @@ import org.apache.log4j.Logger;
 
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.HostTable;
+import com.untangle.uvm.HostTableEntry;
 import com.untangle.uvm.util.I18nUtil;
 import com.untangle.uvm.node.EventLogQuery;
 import com.untangle.uvm.node.HostTableEvent;
@@ -63,139 +65,63 @@ public class HostTableImpl implements HostTable
         UvmContextFactory.context().newThread(this.reverseLookup).start();
     }
     
-    public void setAttachment( InetAddress addr, String key, String str )
+    public HostTableEntry getHostTableEntry( InetAddress addr )
     {
-        setAttachment( addr, key, (Object)str);
+        return getHostTableEntry( addr, false );
     }
 
-    public void setAttachment( InetAddress addr, String key, Object ob )
+    public HostTableEntry getHostTableEntry( InetAddress addr, boolean createIfNecessary )
     {
-        if ( addr == null || key == null ) {
-            logger.warn( "Invalid arguments: setAttachment( " + addr + " , " + key + " , " + ob + " )");
-            return;
+        HostTableEntry entry = hostTable.get( addr );
+
+        if ( entry == null && createIfNecessary ) {
+            entry = createNewHostTableEntry( addr );
+            hostTable.put( addr, entry );
+            this.reverseLookupThread.interrupt(); /* wake it up to force hostname lookup */
         }
 
-        logger.info("setAttachment( " + addr.getHostAddress() + " , " + key + " , " + ob + " )");
-
-        HostTableEntry entry = getHostTableEntry( addr, true );
-
-        entry.lastAccessTime = System.currentTimeMillis();
-        
-        if (ob != null)
-            entry.attachments.put( key, ob );
-        else
-            entry.attachments.remove( key ); /* if null, remove object */
-
-        if (ob == null)
-            UvmContextFactory.context().logEvent(new HostTableEvent( addr, key, null ) );
-        else
-            UvmContextFactory.context().logEvent(new HostTableEvent( addr, key, ob.toString() ) );
-        
-        return;
-    }
-
-    public Object getAttachment( InetAddress addr, String key )
-    {
-        if ( addr == null || key == null ) {
-            logger.warn( "Invalid arguments: getAttachment( " + addr + " , " + key + " )");
-            return null;
-        }
-            
-        logger.debug("getAttachment( " + addr.getHostAddress() + " , " + key + " )");
-
-        /**
-         * Special treatment for USERNAME
-         */
-        if (key.equals(HostTable.KEY_USERNAME)) {
-            String capture_username = (String) getAttachment( addr, HostTable.KEY_CAPTURE_USERNAME );
-            if (capture_username != null)
-                return capture_username;
-            String adconnector_username = (String) getAttachment( addr, HostTable.KEY_ADCONNECTOR_USERNAME );
-            if (adconnector_username != null)
-                return adconnector_username;
-        }
-        /**
-         * Special treatment for USERNAME_SOURCE
-         */
-        if (key.equals(HostTable.KEY_USERNAME_SOURCE)) {
-            String capture_username = (String) getAttachment( addr, HostTable.KEY_CAPTURE_USERNAME );
-            if (capture_username != null)
-                return "capture";
-            String adconnector_username = (String) getAttachment( addr, HostTable.KEY_ADCONNECTOR_USERNAME );
-            if (adconnector_username != null)
-                return "adconnector";
-        }
-
-        /**
-         * just return whatever is found in the table
-         */
-        HostTableEntry entry = getHostTableEntry( addr, false );
-        if (entry == null)
-            return null;
-        else {
-            entry.lastAccessTime = System.currentTimeMillis();
-            return entry.attachments.get( key );
-        }
-    }
-
-    public String[] getPossibleAttachments()
-    {
-        return HostTable.ALL_ATTACHMENTS;
+        return entry;
     }
 
     public LinkedList<HostTableEntry> getHosts()
     {
-        LinkedList<HostTableEntry> hosts = new LinkedList<HostTableEntry>(hostTable.values());
-
-        for (HostTableEntry entry: hosts) {
-            /**
-             * create a copy of the hash table so the original can not be modified
-             * Iterate through all keys, this handles non-persistent keys like USERNAME
-             */
-            entry.attachments = new Hashtable<String, Object>(entry.attachments); 
-            for ( String key : HostTable.ALL_ATTACHMENTS) {
-                Object value = getAttachment( entry.address, key );
-                if (value != null) 
-                    entry.attachments.put( key, value );
-            }
-        }
-
-        return hosts;
+        return new LinkedList<HostTableEntry>(hostTable.values());
     }
     
     public synchronized void addHostToPenaltyBox( InetAddress address, int priority, int time_sec, String reason )
     {
-        Long entryTime = System.currentTimeMillis();
-        Long exitTime  = entryTime + (time_sec * 1000L);
+        HostTableEntry entry = getHostTableEntry( address, true );
+        long entryTime = System.currentTimeMillis();
+        long exitTime  = entryTime + (time_sec * 1000L);
 
         logger.info("Adding " + address.getHostAddress() + " to Penalty box for " + time_sec + " seconds");
 
         /**
-         * Set PENALTY_BOXED boolean to true
+         * Set Penalty Boxed flag
          */
-        Boolean currentFlag = (Boolean) getAttachment( address, HostTable.KEY_PENALTY_BOXED );
-        setAttachment( address, HostTable.KEY_PENALTY_BOXED, Boolean.TRUE );
-        setAttachment( address, HostTable.KEY_PENALTY_BOX_PRIORITY, Integer.valueOf(priority) );
+        boolean currentFlag = entry.getPenaltyBoxed();
+        entry.setPenaltyBoxed(true);
+        entry.setPenaltyBoxPriority(priority);
 
         /**
          * If the entry time is null, set it.
          * If it is not null, the host was probably already in the penalty box so don't update it
          */
-        Long currentEntryTime = (Long) getAttachment( address, HostTable.KEY_PENALTY_BOX_ENTRY_TIME );
-        if (currentEntryTime == null)
-            setAttachment( address, HostTable.KEY_PENALTY_BOX_ENTRY_TIME, entryTime );
-        currentEntryTime = (Long) getAttachment( address, HostTable.KEY_PENALTY_BOX_ENTRY_TIME );
+        long currentEntryTime = entry.getPenaltyBoxEntryTime();
+        if (currentEntryTime == 0)
+            entry.setPenaltyBoxEntryTime( entryTime );
+        currentEntryTime = entryTime;
 
         /**
          * Update the exit time, if the proposed value is after the current value
          */
-        Long currentExitTime = (Long) getAttachment( address, HostTable.KEY_PENALTY_BOX_EXIT_TIME );
-        if (currentExitTime == null || exitTime > currentExitTime)
-            setAttachment( address, HostTable.KEY_PENALTY_BOX_EXIT_TIME, exitTime );
-        currentExitTime = (Long) getAttachment( address, HostTable.KEY_PENALTY_BOX_EXIT_TIME );
+        long currentExitTime = entry.getPenaltyBoxExitTime();
+        if (currentExitTime == 0 || exitTime > currentExitTime)
+            entry.setPenaltyBoxExitTime( exitTime );
+        currentExitTime = exitTime;
             
         int action;
-        if (currentFlag != null && currentFlag ) {
+        if ( currentFlag ) {
             action = PenaltyBoxEvent.ACTION_REENTER; /* was already there */
         } else {
             action = PenaltyBoxEvent.ACTION_ENTER; /* new entry */
@@ -222,49 +148,50 @@ public class HostTableImpl implements HostTable
 
     public synchronized void releaseHostFromPenaltyBox( InetAddress address )
     {
-        Date now = new Date();
-
-        /**
-         * Set PENALTY_BOXED boolean to false
-         */
-        Boolean currentFlag = (Boolean) getAttachment( address, HostTable.KEY_PENALTY_BOXED );
-        Long currentEntryTime = (Long) getAttachment( address, HostTable.KEY_PENALTY_BOX_ENTRY_TIME );
-        Long currentExitTime = (Long) getAttachment( address, HostTable.KEY_PENALTY_BOX_EXIT_TIME );
-
-        setAttachment( address, HostTable.KEY_PENALTY_BOXED, null );
-        setAttachment( address, HostTable.KEY_PENALTY_BOX_PRIORITY, null );
-        setAttachment( address, HostTable.KEY_PENALTY_BOX_ENTRY_TIME, null );
-        setAttachment( address, HostTable.KEY_PENALTY_BOX_EXIT_TIME, null );
-            
-        /**
-         * If the host is not in the penalty box, just return
-         */
-        if ( currentFlag == null || currentFlag == Boolean.FALSE )
+        HostTableEntry entry = getHostTableEntry( address );
+        if (entry == null) /* host not in penalty box */
             return;
-            
-        if ( currentEntryTime == null) {
+        
+        long now = System.currentTimeMillis();
+
+        /**
+         * Save previous values and remove from penalty box
+         */
+        boolean currentFlag = entry.getPenaltyBoxed();
+        long currentEntryTime = entry.getPenaltyBoxEntryTime();
+        long currentExitTime  = entry.getPenaltyBoxExitTime();
+        entry.setPenaltyBoxed( false );
+        entry.setPenaltyBoxEntryTime( 0 );
+        entry.setPenaltyBoxExitTime( 0 );
+        entry.setPenaltyBoxPriority( 0 );
+        
+        /**
+         * If the host was in the penalty box, we must log the event and call the listeners
+         */
+
+        if ( !currentFlag ) {
+            return;
+        }
+        if ( currentEntryTime == 0 ) {
             logger.warn("Entry time not set for penalty boxed host");
             return;
         }
-        if ( currentExitTime == null) {
+        if ( currentExitTime == 0 ) {
             logger.warn("Exit time not set for penalty boxed host");
             return;
         }
         
-        Date entryDate = new Date(currentEntryTime);
-        Date exitTime = new Date(currentExitTime);
-        
         /**
          * If current date is before planned exit time, use it instead, otherwise just log the exit time
          */
-        if ( now.after( exitTime ) ) {
+        if ( now > currentExitTime ) {
             logger.info("Removing " + address.getHostAddress() + " from Penalty box. (expired)");
         } else {
             logger.info("Removing " + address.getHostAddress() + " from Penalty box. (admin requested)");
-            exitTime = now; /* set exitTime to now, because the host was release prematurely */
+            currentExitTime = now; /* set exitTime to now, because the host was release prematurely */
         }
             
-        UvmContextFactory.context().logEvent( new PenaltyBoxEvent( PenaltyBoxEvent.ACTION_EXIT, address, 0, entryDate, exitTime, null ) );
+        UvmContextFactory.context().logEvent( new PenaltyBoxEvent( PenaltyBoxEvent.ACTION_EXIT, address, 0, new Date(currentEntryTime), new Date(currentExitTime), null ) );
 
         /**
          * Call listeners
@@ -286,14 +213,14 @@ public class HostTableImpl implements HostTable
             logger.warn("Invalid argument: address is null");
             return;
         }
-
+        HostTableEntry entry = getHostTableEntry( address, true );
         long now = System.currentTimeMillis();
 
         /* If there already is a quota and it will be reset */
-        setAttachment( address, HostTable.KEY_QUOTA_SIZE, quotaBytes );
-        setAttachment( address, HostTable.KEY_QUOTA_REMAINING, quotaBytes );
-        setAttachment( address, HostTable.KEY_QUOTA_ISSUE_TIME, now );
-        setAttachment( address, HostTable.KEY_QUOTA_EXPIRATION_TIME, (now + (time_sec*1000)) );
+        entry.setQuotaSize( quotaBytes );
+        entry.setQuotaRemaining( quotaBytes );
+        entry.setQuotaIssueTime( now );
+        entry.setQuotaExpirationTime( now + (time_sec*1000) );
 
         /**
          * Call listeners
@@ -317,11 +244,14 @@ public class HostTableImpl implements HostTable
             logger.warn("Invalid argument: address is null");
             return;
         }
+        HostTableEntry entry = getHostTableEntry( address );
+        if (entry == null)
+            return;
 
-        setAttachment( address, HostTable.KEY_QUOTA_SIZE, null );
-        setAttachment( address, HostTable.KEY_QUOTA_REMAINING, null );
-        setAttachment( address, HostTable.KEY_QUOTA_ISSUE_TIME, null );
-        setAttachment( address, HostTable.KEY_QUOTA_EXPIRATION_TIME, null );
+        entry.setQuotaSize( 0 );
+        entry.setQuotaRemaining( 0 );
+        entry.setQuotaIssueTime( 0 );
+        entry.setQuotaExpirationTime( 0 );
 
         /**
          * Call listeners
@@ -341,24 +271,22 @@ public class HostTableImpl implements HostTable
             logger.warn("Invalid argument: address is null");
             return false;
         }
-
-        Long currentQuotaExpiration = (Long) getAttachment( address, HostTable.KEY_QUOTA_EXPIRATION_TIME );
-        long now = System.currentTimeMillis();
-
-        if (currentQuotaExpiration == null)
+        HostTableEntry entry = getHostTableEntry( address );
+        if ( entry == null )
             return false;
-        if (now > currentQuotaExpiration) {
+        if (entry.getQuotaSize() <= 0)
+            return false;
+
+        /**
+         * Check if its expired, if it is - remove the quota
+         */
+        long now = System.currentTimeMillis();
+        if (now > entry.getQuotaExpirationTime()) {
             removeQuota( address );
             return false;
         }
 
-        Long remaining = (Long) getAttachment( address, HostTable.KEY_QUOTA_REMAINING );
-        if (remaining == null) {
-            logger.warn("Missing quota remaining value");
-            return false;
-        }
-
-        if (remaining <= 0)
+        if (entry.getQuotaRemaining() <= 0)
             return true;
         return false;
     }
@@ -369,31 +297,39 @@ public class HostTableImpl implements HostTable
             logger.warn("Invalid argument: address is null");
             return;
         }
-
-        Long currentQuotaSize = (Long) getAttachment( address, HostTable.KEY_QUOTA_SIZE );
-
-        if (currentQuotaSize == null) {
-            logger.warn("Quota not found: " + address);
+        HostTableEntry entry = getHostTableEntry( address );
+        if ( entry == null )
             return;
-        }
+        if ( entry.getQuotaSize() <= 0 )
+            return;
 
-        setAttachment( address, HostTable.KEY_QUOTA_REMAINING, currentQuotaSize );
+        entry.setQuotaRemaining( entry.getQuotaSize() );
     }
 
-    public synchronized boolean decrementQuota(InetAddress addr, long bytes)
+    public synchronized boolean decrementQuota( InetAddress address, long bytes )
     {
-        Long remaining = (Long) getAttachment( addr, HostTable.KEY_QUOTA_REMAINING );
-        if (remaining != null) {
-            Long newRemaning = remaining - bytes;
-            setAttachment( addr, HostTable.KEY_QUOTA_REMAINING, newRemaning );
+        if (address == null) {
+            logger.warn("Invalid argument: address is null");
+            return false;
+        }
+        HostTableEntry entry = getHostTableEntry( address );
+        if ( entry == null )
+            return false;
+        if ( entry.getQuotaSize() <= 0 )
+            return false;
 
-            if (remaining > 0 && newRemaning <= 0) {
-                Long original = (Long) getAttachment( addr, HostTable.KEY_QUOTA_SIZE );
-                logger.info("Host " + addr.getHostAddress() + " exceeded quota.");
+        /**
+         * Decrement
+         */
+        long remaining = entry.getQuotaRemaining();
+        long newRemaning = remaining - bytes;
+        entry.setQuotaRemaining( newRemaning );
 
-                UvmContextFactory.context().logEvent( new QuotaEvent( QuotaEvent.ACTION_EXCEEDED, addr, null, original) );
-                return true;
-            }
+
+        if (remaining > 0 && newRemaning <= 0) {
+            logger.info("Host " + address.getHostAddress() + " exceeded quota.");
+            UvmContextFactory.context().logEvent( new QuotaEvent( QuotaEvent.ACTION_EXCEEDED, address, null, entry.getQuotaSize()) );
+            return true;
         }
 
         return false;
@@ -401,18 +337,23 @@ public class HostTableImpl implements HostTable
     
     public boolean hostInPenaltyBox( InetAddress address )
     {
-        Boolean currentFlag = (Boolean) getAttachment( address, HostTable.KEY_PENALTY_BOXED );
-
-        if (currentFlag == null || currentFlag == Boolean.FALSE)
+        if (address == null) {
+            logger.warn("Invalid argument: address is null");
+            return false;
+        }
+        HostTableEntry entry = getHostTableEntry( address );
+        if ( entry == null )
+            return false;
+        if ( !entry.getPenaltyBoxed() )
             return false;
 
         /**
          * If the exit time has already passed the host is no longer penalty boxed
          * As such, release the host from the penalty box immediately and return false
          */
-        Long exitTime = (Long) getAttachment( address, HostTable.KEY_PENALTY_BOX_EXIT_TIME );
-        Long now = System.currentTimeMillis();
-        if (exitTime == null || now > exitTime) {
+        long exitTime = entry.getPenaltyBoxExitTime();
+        long now = System.currentTimeMillis();
+        if ( exitTime != 0 && now > exitTime ) {
             releaseHostFromPenaltyBox( address );
             return false;
         }
@@ -420,27 +361,26 @@ public class HostTableImpl implements HostTable
         return true;
     }
 
-    public LinkedList<HostTable.HostTableEntry> getPenaltyBoxedHosts()
+    public LinkedList<HostTableEntry> getPenaltyBoxedHosts()
     {
-        LinkedList<HostTable.HostTableEntry> list = new LinkedList<HostTable.HostTableEntry>(UvmContextFactory.context().hostTable().getHosts());
+        LinkedList<HostTableEntry> list = new LinkedList<HostTableEntry>(UvmContextFactory.context().hostTable().getHosts());
 
         for (Iterator i = list.iterator(); i.hasNext(); ) {
-            HostTable.HostTableEntry entry = (HostTable.HostTableEntry) i.next();
-            if (! UvmContextFactory.context().hostTable().hostInPenaltyBox( entry.getAddress() ) )
+            HostTableEntry entry = (HostTableEntry) i.next();
+            if (! hostInPenaltyBox( entry.getAddress() ) )
                 i.remove();
         }
 
         return list;
     }
 
-    public LinkedList<HostTable.HostTableEntry> getQuotaHosts()
+    public LinkedList<HostTableEntry> getQuotaHosts()
     {
-        LinkedList<HostTable.HostTableEntry> list = new LinkedList<HostTable.HostTableEntry>(UvmContextFactory.context().hostTable().getHosts());
+        LinkedList<HostTableEntry> list = new LinkedList<HostTableEntry>(UvmContextFactory.context().hostTable().getHosts());
 
         for (Iterator i = list.iterator(); i.hasNext(); ) {
-            HostTable.HostTableEntry entry = (HostTable.HostTableEntry) i.next();
-            Long quotaSize = (Long) getAttachment( entry.getAddress(), HostTable.KEY_QUOTA_SIZE );
-            if ( quotaSize == null )
+            HostTableEntry entry = (HostTableEntry) i.next();
+            if ( entry.getQuotaSize() <= 0 )
                 i.remove();
         }
 
@@ -472,27 +412,13 @@ public class HostTableImpl implements HostTable
         return new EventLogQuery[] { this.quotaEventQuery };
     }
     
-    private HostTableEntry getHostTableEntry( InetAddress addr, boolean createIfNecessary )
-    {
-        HostTableEntry entry = hostTable.get( addr );
-
-        if ( entry == null && createIfNecessary ) {
-            entry = createNewHostTableEntry( addr );
-            hostTable.put( addr, entry );
-            this.reverseLookupThread.interrupt(); /* wake it up to force hostname lookup */
-        }
-
-        return entry;
-    }
-
     private HostTableEntry createNewHostTableEntry( InetAddress address )
     {
         HostTableEntry entry = new HostTableEntry();
 
-        entry.address = address;
-        entry.attachments = new Hashtable<String, Object>();
-        entry.creationTime = System.currentTimeMillis();
-        entry.lastAccessTime = entry.creationTime;
+        entry.setAddress( address );
+        entry.setCreationTime( System.currentTimeMillis() );
+        entry.setLastAccessTime( entry.getCreationTime() );
 
         return entry;
     }
@@ -516,21 +442,20 @@ public class HostTableImpl implements HostTable
                     /**
                      * Remove old entries
                      */
-                    LinkedList<InetAddress> keys = new LinkedList<InetAddress>(hostTable.keySet());
-                    for (InetAddress addr : keys) {
-                        HostTableEntry entry = getHostTableEntry( addr, false );
-                        if ( entry == null )
+                    Collection<HostTableEntry> entries = hostTable.values();
+                    for (HostTableEntry entry : entries) {
+                        InetAddress address = entry.getAddress();
+                        if ( address == null )
                             continue;
 
                         /**
                          * Check penalty box expiration
                          * Remove from penalty box if expired
                          */
-                        Boolean penaltyBoxed = (Boolean) getAttachment( addr, HostTable.KEY_PENALTY_BOXED );
-                        if (penaltyBoxed != null && penaltyBoxed == Boolean.TRUE) {
-                            Long exitTime = (Long) getAttachment( addr, HostTable.KEY_PENALTY_BOX_EXIT_TIME );
-                            if (exitTime == null || now > exitTime) {
-                                releaseHostFromPenaltyBox( addr );
+                        if ( entry.getPenaltyBoxed() ) {
+                            long exitTime = entry.getPenaltyBoxExitTime();
+                            if (now > exitTime) {
+                                releaseHostFromPenaltyBox( address );
                             }
                         }
 
@@ -538,26 +463,25 @@ public class HostTableImpl implements HostTable
                          * Check quota expiration
                          * Remove from quota if expired
                          */
-                        Long currentQuotaSize = (Long) getAttachment( addr, HostTable.KEY_QUOTA_SIZE );
-                        if (currentQuotaSize != null) {
-                            Long currentQuotaExpiration = (Long) getAttachment( addr, HostTable.KEY_QUOTA_EXPIRATION_TIME );
-                            if (currentQuotaExpiration == null || now > currentQuotaExpiration) {
-                                removeQuota( addr );
+                        if ( entry.getQuotaSize() > 0 ) {
+                            long expireTime = entry.getQuotaExpirationTime();
+                            if ( now > expireTime ) {
+                                removeQuota( address );
                             }
                         }
 
                         /**
                          * Don't remove host that are penalty boxed or have quotas
                          */
-                        if (currentQuotaSize != null || penaltyBoxed != null)
+                        if ( entry.getQuotaSize() > 0 || entry.getPenaltyBoxed() )
                             continue;
                         
                         /**
                          * If this host hasnt been touched recently, delete it
                          */
-                        if ( now > (entry.lastAccessTime + CLEANER_LAST_ACCESS_MAX_TIME) ) {
-                            logger.debug("HostTableCleaner: Removing " + addr.getHostAddress());
-                            hostTable.remove(addr);
+                        if ( now > (entry.getLastAccessTime() + CLEANER_LAST_ACCESS_MAX_TIME) ) {
+                            logger.debug("HostTableCleaner: Removing " + address.getHostAddress());
+                            hostTable.remove(address);
                         }
                     }
                 } catch (Exception e) {
@@ -588,23 +512,23 @@ public class HostTableImpl implements HostTable
                     /**
                      * Remove old entries
                      */
-                    LinkedList<InetAddress> keys = new LinkedList<InetAddress>(hostTable.keySet());
-                    for (InetAddress addr : keys) {
-                        if ( addr == null )
+                    Collection<HostTableEntry> entries = hostTable.values();
+                    for (HostTableEntry entry : entries) {
+                        String currentHostname = entry.getHostname();
+                        InetAddress address = entry.getAddress();
+                        if ( address == null )
                             continue;
-                        String currentHostname = (String) UvmContextFactory.context().hostTable().getAttachment( addr, HostTable.KEY_HOSTNAME );
-                        /* if hostname is already known via some other method (and its not just the IP), dont bother doing reverse lookup */
-                        if (currentHostname != null && !currentHostname.equals(addr.getHostAddress()) )
+                        if ( entry.isHostnameKnown() )
                             continue;
                         
                         try {
-                            String hostname = addr.getHostName();
+                            String hostname = address.getHostName();
 
                             if ( hostname == null )
                                 continue;
                             if ( hostname.equals( currentHostname ) )
                                 continue;
-                            if ( hostname.equals( addr.getHostAddress() ) )
+                            if ( hostname.equals( address.getHostAddress() ) )
                                 continue;
 
                             /* use just the first part of the name */
@@ -613,7 +537,7 @@ public class HostTableImpl implements HostTable
                                 hostname = hostname.substring(0,firstdot);
                             
                             logger.debug("HostTable Reverse lookup hostname = " + hostname);
-                            UvmContextFactory.context().hostTable().setAttachment( addr, HostTable.KEY_HOSTNAME, hostname );
+                            entry.setHostname( hostname );
                         } catch (Exception e) {
                             logger.warn("Exception in reverse lookup",e);
                         }

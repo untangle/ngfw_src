@@ -396,6 +396,17 @@ public class NetworkManagerImpl implements NetworkManager
         logger.info("Refreshed  Network Configuration.");
     }
 
+    public boolean isWanInterface( int intfId )
+    {
+        InterfaceConfiguration intfConf = getNetworkConfiguration().findById( intfId );
+        if (intfConf == null) {
+            logger.warn("Unabled to find interface: " + intfId);
+            return false;
+        }
+
+        return intfConf.isWAN();
+    }
+    
     public String[] getPossibleInterfaces()
     {
         LinkedList<String> possibleInterfaces = new LinkedList<String>();

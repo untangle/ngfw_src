@@ -82,4 +82,6 @@ public interface NetworkManager
 
     String[] getWanInterfaces();
 
+    boolean isWanInterface( int intfId );
+    
 }
