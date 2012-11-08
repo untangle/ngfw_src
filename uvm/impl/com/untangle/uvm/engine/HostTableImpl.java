@@ -518,18 +518,39 @@ public class HostTableImpl implements HostTable
                             continue;
 
                         /**
+                         * Check penalty box expiration
+                         * Remove from penalty box if expired
+                         */
+                        Boolean penaltyBoxed = (Boolean) getAttachment( addr, HostTable.KEY_PENALTY_BOXED );
+                        if (penaltyBoxed != null && penaltyBoxed == Boolean.TRUE) {
+                            Long exitTime = (Long) getAttachment( addr, HostTable.KEY_PENALTY_BOX_EXIT_TIME );
+                            if (exitTime == null || now > exitTime) {
+                                releaseHostFromPenaltyBox( addr );
+                            }
+                        }
+
+                        /**
+                         * Check quota expiration
+                         * Remove from quota if expired
+                         */
+                        Long currentQuotaSize = (Long) getAttachment( addr, HostTable.KEY_QUOTA_SIZE );
+                        if (currentQuotaSize != null) {
+                            Long currentQuotaExpiration = (Long) getAttachment( addr, HostTable.KEY_QUOTA_EXPIRATION_TIME );
+                            if (currentQuotaExpiration == null || now > currentQuotaExpiration) {
+                                removeQuota( addr );
+                            }
+                        }
+
+                        /**
+                         * Don't remove host that are penalty boxed or have quotas
+                         */
+                        if (currentQuotaSize != null || penaltyBoxed != null)
+                            continue;
+                        
+                        /**
                          * If this host hasnt been touched recently, delete it
                          */
                         if ( now > (entry.lastAccessTime + CLEANER_LAST_ACCESS_MAX_TIME) ) {
-
-                            /**
-                             * if this host has a quota that isnt expired dont remove the entry
-                             *  even though its not been used recently
-                             */
-                            Long quotaExpirationTime = (Long) getAttachment( addr, HostTable.KEY_QUOTA_EXPIRATION_TIME );
-                            if (quotaExpirationTime != null && now < quotaExpirationTime)
-                                continue;
-
                             logger.debug("HostTableCleaner: Removing " + addr.getHostAddress());
                             hostTable.remove(addr);
                         }
