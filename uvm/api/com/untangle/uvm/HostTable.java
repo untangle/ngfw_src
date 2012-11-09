@@ -30,7 +30,13 @@ public interface HostTable
      * If create is true a new entry will be created if no entry exists
      */
     HostTableEntry getHostTableEntry( InetAddress addr, boolean create );
-    
+
+    /**
+     * Save the specified entry for the specified addr
+     * Will overwrite existing value
+     */
+    void setHostTableEntry( InetAddress addr, HostTableEntry entry );
+
     /**
      * Returns a duplicated list of all current hosts
      */

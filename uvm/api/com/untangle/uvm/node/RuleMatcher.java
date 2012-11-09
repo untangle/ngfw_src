@@ -756,7 +756,7 @@ public class RuleMatcher implements JSONString, Serializable
             return isMemberOf;
 
         case HTTP_USER_AGENT:
-            entry = UvmContextFactory.context().hostTable().getHostTableEntry( dstAddress );
+            entry = UvmContextFactory.context().hostTable().getHostTableEntry( srcAddress );
             if (entry == null)
                 return false;
             attachment = entry.getHttpUserAgent();
@@ -765,7 +765,7 @@ public class RuleMatcher implements JSONString, Serializable
             return Pattern.matches(regexValue, attachment);
             
         case HTTP_USER_AGENT_OS:
-            entry = UvmContextFactory.context().hostTable().getHostTableEntry( dstAddress );
+            entry = UvmContextFactory.context().hostTable().getHostTableEntry( srcAddress );
             if (entry == null)
                 return false;
             attachment = entry.getHttpUserAgentOs();

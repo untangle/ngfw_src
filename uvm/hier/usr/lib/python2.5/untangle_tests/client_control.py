@@ -26,7 +26,7 @@ class ClientControl:
 
     # runs a given command
     # returns 0 if the process returned 0, 1 otherwise
-    def runCommand(self, command, com_stdout=0):
+    def runCommand(self, command, stdout=False):
 
         if (ClientControl.verbosity <= 0):
             shellRedirect = " >/dev/null 2>&1 "
@@ -43,7 +43,7 @@ class ClientControl:
                 print "\nRunning command          : %s" % sshCommand
             if (ClientControl.verbosity > 0):
                 print "\nRunning command on client: %s" % command
-            if (com_stdout == 0):
+            if (not stdout):
                 result = os.system(sshCommand)
                 #print child_stdout.read()
                 #print child_stdout.read()

@@ -82,6 +82,11 @@ public class HostTableImpl implements HostTable
 
         return entry;
     }
+    
+    public void setHostTableEntry( InetAddress addr, HostTableEntry entry )
+    {
+        hostTable.put( addr, entry );
+    }
 
     public LinkedList<HostTableEntry> getHosts()
     {

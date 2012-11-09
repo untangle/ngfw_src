@@ -353,12 +353,17 @@ class FirewallTests(unittest.TestCase):
     # verify bogus user agent match is blocked after setting agent
     def test_071_blockUserAgent2(self):
         nukeRules();
-        print uvmContext.hostTable().getAttachment( ClientControl.hostIP, "http-user-agent" );
-        uvmContext.hostTable().setAttachment( ClientControl.hostIP, "http-user-agent", "Mozilla foo bar" );
+
+        entry = uvmContext.hostTable().getHostTableEntry( ClientControl.hostIP )
+        entry['httpUserAgent'] = "Mozilla foo bar";
+        uvmContext.hostTable().setHostTableEntry( ClientControl.hostIP, entry )
+
         appendRule( createSingleMatcherRule( "HTTP_USER_AGENT", "*Mozilla*" ) );
         result = clientControl.runCommand("wget -o /dev/null -t 1 --timeout=3 http://test.untangle.com/")
         assert (result == 1)
-        uvmContext.hostTable().setAttachment( ClientControl.hostIP, "http-user-agent", None );
+
+        entry['httpUserAgent'] = None;
+        uvmContext.hostTable().setHostTableEntry( ClientControl.hostIP, entry )
 
     # verify bogus user agent OS match not blocked
     def test_072_blockUserAgentOs(self):
@@ -370,11 +375,40 @@ class FirewallTests(unittest.TestCase):
     # verify bogus user agent OS match blocked after setting OS
     def test_073_blockUserAgentOs2(self):
         nukeRules();
-        uvmContext.hostTable().setAttachment( ClientControl.hostIP, "http-user-agent-os", "FOo Linux bar" );
+
+        entry = uvmContext.hostTable().getHostTableEntry( ClientControl.hostIP )
+        entry['httpUserAgentOs'] = "foobar Linux barbaz" ;
+        uvmContext.hostTable().setHostTableEntry( ClientControl.hostIP, entry )
+
         appendRule( createSingleMatcherRule( "HTTP_USER_AGENT_OS", "*Linux*" ) );
         result = clientControl.runCommand("wget -o /dev/null -t 1 --timeout=3 http://test.untangle.com/")
         assert (result == 1)
-        uvmContext.hostTable().setAttachment( ClientControl.hostIP, "http-user-agent-os", None );
+
+        entry['httpUserAgentOs'] = None ;
+        uvmContext.hostTable().setHostTableEntry( ClientControl.hostIP, entry )
+
+    # verify bogus user agent OS match not blocked
+    def test_074_blockClientHostname(self):
+        nukeRules();
+        appendRule( createSingleMatcherRule( "CLIENT_HOSTNAME", "*testtesttesttesttesttesttest*" ) );
+        result = clientControl.runCommand("wget -o /dev/null -t 1 --timeout=3 http://test.untangle.com/")
+        assert (result == 0)
+
+    # verify bogus user agent OS match blocked after setting OS
+    def test_075_blockClientHostname2(self):
+        nukeRules();
+
+        hostname = clientControl.runCommand("hostname -s", stdout=True)
+        entry = uvmContext.hostTable().getHostTableEntry( ClientControl.hostIP )
+        entry['hostname'] = hostname
+        uvmContext.hostTable().setHostTableEntry( ClientControl.hostIP, entry )
+
+        appendRule( createSingleMatcherRule( "CLIENT_HOSTNAME", hostname ) );
+        result = clientControl.runCommand("wget -o /dev/null -t 1 --timeout=3 http://test.untangle.com/")
+        assert (result == 1)
+
+        entry['hostname'] = None ;
+        uvmContext.hostTable().setHostTableEntry( ClientControl.hostIP, entry )
 
     # verify rules that a rule with two matching matchers works
     def test_080_dualMatcherRule(self):

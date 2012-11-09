@@ -84,10 +84,10 @@ public class HostTableEntry implements Serializable, JSONString
     public void setQuotaExpirationTime( long quotaExpirationTime ) { this.quotaExpirationTime = quotaExpirationTime; updateAccessTime(); }
     
     public String getHttpUserAgent() { return this.httpUserAgent; }
-    public void setHttpUserAgent( String httpUserAgent ) { this.httpUserAgent = httpUserAgent; updateAccessTime(); }
+    public void setHttpUserAgent( String httpUserAgent ) { this.httpUserAgent = httpUserAgent; updateAccessTime(); this.httpUserAgentSetDate = System.currentTimeMillis(); }
 
     public String getHttpUserAgentOs() { return this.httpUserAgentOs; }
-    public void setHttpUserAgentOs( String httpUserAgentOs ) { this.httpUserAgentOs = httpUserAgentOs; updateAccessTime(); }
+    public void setHttpUserAgentOs( String httpUserAgentOs ) { this.httpUserAgentOs = httpUserAgentOs; updateAccessTime(); this.httpUserAgentSetDate = System.currentTimeMillis(); }
 
     public long getHttpUserAgentSetDate() { return this.httpUserAgentSetDate; }
     public void setHttpUserAgentSetDate( long httpUserAgentSetDate ) { this.httpUserAgentSetDate = httpUserAgentSetDate; updateAccessTime(); }
