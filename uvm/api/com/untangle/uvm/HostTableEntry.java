@@ -30,7 +30,6 @@ public class HostTableEntry implements Serializable, JSONString
     private boolean penaltyBoxed = false;
     private long    penaltyBoxExitTime;
     private long    penaltyBoxEntryTime;
-    private int     penaltyBoxPriority;
 
     private long quotaSize; /* the quota size - 0 means no quota assigned */
     private long quotaRemaining; /* the quota remaining */
@@ -67,9 +66,6 @@ public class HostTableEntry implements Serializable, JSONString
 
     public long getPenaltyBoxEntryTime() { return this.penaltyBoxEntryTime; }
     public void setPenaltyBoxEntryTime( long penaltyBoxEntryTime ) { this.penaltyBoxEntryTime = penaltyBoxEntryTime; updateAccessTime(); }
-
-    public int getPenaltyBoxPriority() { return this.penaltyBoxPriority; }
-    public void setPenaltyBoxPriority( int penaltyBoxPriority ) { this.penaltyBoxPriority = penaltyBoxPriority; updateAccessTime(); }
 
     public long getQuotaSize() { return this.quotaSize; }
     public void setQuotaSize( long quotaSize ) { this.quotaSize = quotaSize; updateAccessTime(); }

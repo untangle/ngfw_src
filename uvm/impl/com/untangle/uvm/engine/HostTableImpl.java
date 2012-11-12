@@ -93,7 +93,7 @@ public class HostTableImpl implements HostTable
         return new LinkedList<HostTableEntry>(hostTable.values());
     }
     
-    public synchronized void addHostToPenaltyBox( InetAddress address, int priority, int time_sec, String reason )
+    public synchronized void addHostToPenaltyBox( InetAddress address, int time_sec, String reason )
     {
         HostTableEntry entry = getHostTableEntry( address, true );
         long entryTime = System.currentTimeMillis();
@@ -106,7 +106,6 @@ public class HostTableImpl implements HostTable
          */
         boolean currentFlag = entry.getPenaltyBoxed();
         entry.setPenaltyBoxed(true);
-        entry.setPenaltyBoxPriority(priority);
 
         /**
          * If the entry time is null, set it.
@@ -132,7 +131,7 @@ public class HostTableImpl implements HostTable
             action = PenaltyBoxEvent.ACTION_ENTER; /* new entry */
         }
 
-        PenaltyBoxEvent evt = new PenaltyBoxEvent( action, address, priority, new Date(currentEntryTime), new Date(currentExitTime), reason ) ;
+        PenaltyBoxEvent evt = new PenaltyBoxEvent( action, address, new Date(currentEntryTime), new Date(currentExitTime), reason ) ;
         UvmContextFactory.context().logEvent(evt);
 
         /**
@@ -168,7 +167,6 @@ public class HostTableImpl implements HostTable
         entry.setPenaltyBoxed( false );
         entry.setPenaltyBoxEntryTime( 0 );
         entry.setPenaltyBoxExitTime( 0 );
-        entry.setPenaltyBoxPriority( 0 );
         
         /**
          * If the host was in the penalty box, we must log the event and call the listeners
@@ -196,7 +194,7 @@ public class HostTableImpl implements HostTable
             currentExitTime = now; /* set exitTime to now, because the host was release prematurely */
         }
             
-        UvmContextFactory.context().logEvent( new PenaltyBoxEvent( PenaltyBoxEvent.ACTION_EXIT, address, 0, new Date(currentEntryTime), new Date(currentExitTime), null ) );
+        UvmContextFactory.context().logEvent( new PenaltyBoxEvent( PenaltyBoxEvent.ACTION_EXIT, address, new Date(currentEntryTime), new Date(currentExitTime), null ) );
 
         /**
          * Call listeners

@@ -23,7 +23,6 @@ public class PenaltyBoxEvent extends LogEvent implements Serializable
     private int action;
 
     private InetAddress address;
-    private int priority; /* 0 if action = EXIT */
     private Timestamp entryTime;
     private Timestamp exitTime;
     private String reason;
@@ -32,11 +31,10 @@ public class PenaltyBoxEvent extends LogEvent implements Serializable
 
     public PenaltyBoxEvent() { }
 
-    public PenaltyBoxEvent(int action, InetAddress address, int priority, Date entryTime, Date exitTime, String reason)
+    public PenaltyBoxEvent(int action, InetAddress address, Date entryTime, Date exitTime, String reason)
     {
         this.action = action;
         this.address = address;
-        this.priority = priority;
         this.reason = reason;
         this.entryTime = new Timestamp(entryTime.getTime());
         this.exitTime = new Timestamp(exitTime.getTime());
@@ -47,9 +45,6 @@ public class PenaltyBoxEvent extends LogEvent implements Serializable
     public int getAction() { return action; }
     public void setAction( int action ) { this.action = action; }
 
-    public int getPriority() { return priority; }
-    public void setPriority( int priority ) { this.priority = priority; }
-    
     public InetAddress getAddress() { return address; }
     public void setAddress( InetAddress address ) { this.address = address; }
 

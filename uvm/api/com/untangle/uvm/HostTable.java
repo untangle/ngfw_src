@@ -51,7 +51,7 @@ public interface HostTable
      * Add a host to the penalty box for the specified amount of time at the specified priority
      * This sets all the appropriate attachments and calls the listeners
      */
-    void addHostToPenaltyBox( InetAddress address, int priority, int time_sec, String reason );
+    void addHostToPenaltyBox( InetAddress address, int time_sec, String reason );
 
     /**
      * Release a host from the penalty box

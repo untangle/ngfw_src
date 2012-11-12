@@ -276,29 +276,6 @@ if (!Ung.hasResource["Ung.HostMonitor"]) {
                     gridColumnDataIndex: "usernameCapture",
                     gridColumnWidth: 100
                 },{
-                    xtype: 'checkbox',
-                    checked: false,
-                    boxLabel: "Bandwidth Control" + " - " + this.i18n._("Penalty Box Priority"),
-                    gridColumnHeader: "Bandwidth Control" + " - " + this.i18n._("Penalty Box Priority"),
-                    gridColumnDataIndex: "penaltyBoxPriority",
-                    gridColumnWidth: 100,
-                    gridColumnRenderer: function(value) {
-                        if (value == null || value == "")
-                            return "";
-                        
-                        switch(value) {
-                          case 0: return "";
-                          case 1: return i18n._("Very High");
-                          case 2: return i18n._("High");
-                          case 3: return i18n._("Medium");
-                          case 4: return i18n._("Low");
-                          case 5: return i18n._("Limited");
-                          case 6: return i18n._("Limited More");
-                          case 7: return i18n._("Limited Severely");
-                        default: return Ext.String.format(i18n._("Unknown Priority: {0}"), value);
-                        }
-                    }
-                },{
                     border: false,
                     html: '&nbsp;',
                     colspan: 6
@@ -396,8 +373,6 @@ if (!Ung.hasResource["Ung.HostMonitor"]) {
                     name: "penaltyBoxEntryTime"
                 },{
                     name: "penaltyBoxExitTime"
-                },{
-                    name: "penaltyBoxPriority"
                 },{
                     name: "quotaSize"
                 },{
@@ -508,8 +483,6 @@ if (!Ung.hasResource["Ung.HostMonitor"]) {
                 fields: [{
                     name: "address"
                 },{
-                    name: "penaltyBoxPriority"
-                },{
                     name: "penaltyBoxEntryTime"
                 },{
                     name: "penaltyBoxExitTime"
@@ -520,24 +493,6 @@ if (!Ung.hasResource["Ung.HostMonitor"]) {
                     header: this.i18n._("IP Address"),
                     dataIndex: 'address',
                     width: 150
-                },{
-                    header: this.i18n._("Penalty Priority"),
-                    dataIndex: 'penaltyBoxPriority',
-                    width: 200,
-                    renderer: function(value) {
-                        if (value == null || value == "") return "";
-                        switch(value) {
-                          case 0: return "";
-                          case 1: return i18n._("Very High");
-                          case 2: return i18n._("High");
-                          case 3: return i18n._("Medium");
-                          case 4: return i18n._("Low");
-                          case 5: return i18n._("Limited");
-                          case 6: return i18n._("Limited More");
-                          case 7: return i18n._("Limited Severely");
-                        default: return Ext.String.format(i18n._("Unknown Priority: {0}"), value);
-                        }
-                    }
                 },{
                     header: this.i18n._("Entry Time"),
                     dataIndex: 'penaltyBoxEntryTime',
