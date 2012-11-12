@@ -9,7 +9,6 @@ fi
 }
 
 UVM_LOGDIR="/var/log/uvm"
-UVM_CACHEDIR="/var/lib/uvm"
 
 USER=root
 GROUP=adm
@@ -44,9 +43,9 @@ else
     sed -i -e "s|^.*pam_limits.so.*|${LOGIN_LINE}|g" ${LOGIN_FILE}
 fi
 
-# right permissions for all those dirs
-/bin/chown -R $USER:$GROUP ${UVM_LOGDIR} ${UVM_CACHEDIR}
-/bin/chmod 775 ${UVM_LOGDIR} ${UVM_CACHEDIR}
+# right permissions for log dir
+/bin/chown -R $USER:$GROUP ${UVM_LOGDIR}
+/bin/chmod 775 ${UVM_LOGDIR}
 
 # 9.x change sources.list to point to stable-10
 if [ -f /etc/apt/sources.list.d/untangle.list ] ; then
