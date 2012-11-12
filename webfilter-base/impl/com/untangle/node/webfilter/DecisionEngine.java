@@ -228,13 +228,14 @@ public abstract class DecisionEngine
      * If for any reason the visit is block a nonce is returned.
      * Otherwise null is return and the response is passed
      */
-    public String checkResponse( InetAddress clientIp, RequestLineToken requestLine, Header header )
+    public String checkResponse( NodeTCPSession sess, InetAddress clientIp, RequestLineToken requestLine, Header header )
     {
         if (null == requestLine) {
             return null;
         }
 
         String contentType = header.getValue("content-type");
+        
         URI uri = null;
         try {
             uri = new URI(requestLine.getRequestUri().normalize().toString().replaceAll("/+", "/"));

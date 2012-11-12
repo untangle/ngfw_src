@@ -452,7 +452,6 @@ public abstract class HttpStateMachine extends AbstractTokenHandler
                 h = doRequestHeader(h);
 
                 String host = h.getValue("host");
-
                 hosts.put(requestLineToken, host);
 
                 /**
@@ -648,6 +647,22 @@ public abstract class HttpStateMachine extends AbstractTokenHandler
             if (Mode.BLOCKED != responseMode) {
                 Header h = (Header)token;
                 responsePersistent = isPersistent(h);
+
+                /**
+                 * Attach metadata
+                 */
+                String contentType = h.getValue("content-type");
+                if (contentType != null) {
+                    this.session.globalAttach( NodeSession.KEY_HTTP_CONTENT_TYPE, contentType );
+                }
+                String contentLength = h.getValue("content-length");
+                if (contentLength != null) {
+                    try {
+                        Long contentLengthLong = Long.parseLong(contentLength);
+                        this.session.globalAttach(NodeSession.KEY_HTTP_CONTENT_LENGTH, contentLengthLong );
+                    } catch (NumberFormatException e) { /* ignore it if it doesnt parse */ }
+                }
+
                 h = doResponseHeader(h);
 
                 switch (responseMode) {

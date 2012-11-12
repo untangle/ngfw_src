@@ -427,6 +427,13 @@ if (!Ung.hasResource["Ung.SessionMonitor"]) {
                 },{
                     xtype: 'checkbox',
                     checked: false,
+                    boxLabel: "Web Filter - " + this.i18n._("Content Type"),
+                    gridColumnHeader: this.i18n._("Content Type") + " (Web Filter)",
+                    gridColumnDataIndex: "esoft-content-type",
+                    gridColumnWidth: 50
+                },{
+                    xtype: 'checkbox',
+                    checked: false,
                     boxLabel: "Web Filter - " + this.i18n._("Flagged"),
                     gridColumnHeader: this.i18n._("Flagged") + " (Web Filter)",
                     gridColumnDataIndex: "esoft-flagged",
@@ -829,6 +836,12 @@ if (!Ung.hasResource["Ung.SessionMonitor"]) {
                     checked: false,
                     boxLabel: this.i18n._("Web Filter - Category Blocked"),
                     groupField: "esoft-best-category-blocked"
+                },{
+                    xtype: 'radio',
+                    name: 'groupingRadio',
+                    checked: false,
+                    boxLabel: this.i18n._("Web Filter - Content Type"),
+                    groupField: "esoft-content-type"
                 },{
                     xtype: 'radio',
                     name: 'groupingRadio',

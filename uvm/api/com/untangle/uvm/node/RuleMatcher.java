@@ -65,6 +65,9 @@ public class RuleMatcher implements JSONString, Serializable
             /* application specific matchers */
             HTTP_HOST, /* "playboy.com" "any" */
             HTTP_URI, /* "/foo.html" "any" */
+            HTTP_CONTENT_TYPE, /* "image/jpeg" "any" */
+            HTTP_CONTENT_LENGTH_GREATER_THAN, /* "800" "any" */
+            HTTP_CONTENT_LENGTH_LESS_THAN, /* "800" "any" */
             HTTP_USER_AGENT, /* "playboy.com" "any" */
             HTTP_USER_AGENT_OS, /* "*Mozilla*" "any" */
             PROTOCOL_CONTROL_SIGNATURE, /* "Bittorrent" "*" */
@@ -112,6 +115,7 @@ public class RuleMatcher implements JSONString, Serializable
     private ProtocolMatcher protocolMatcher = null;
     private String          regexValue      = null;
     private Integer         intValue        = null;
+    private Long            longValue        = null;
     
     public RuleMatcher( )
     {
@@ -283,6 +287,7 @@ public class RuleMatcher implements JSONString, Serializable
         case SERVER_HOSTNAME:
         case HTTP_HOST:
         case HTTP_URI:
+        case HTTP_CONTENT_TYPE:
         case HTTP_USER_AGENT:
         case HTTP_USER_AGENT_OS:
         case PROTOCOL_CONTROL_SIGNATURE:
@@ -295,6 +300,17 @@ public class RuleMatcher implements JSONString, Serializable
         case CLASSD_PROTOCHAIN:
         case CLASSD_DETAIL:
             this.regexValue = GlobUtil.globToRegex(value);
+            break;
+
+        case HTTP_CONTENT_LENGTH_GREATER_THAN:
+        case HTTP_CONTENT_LENGTH_LESS_THAN:
+            try {
+                this.longValue = Long.parseLong(value);
+            }
+            catch (Exception e) {
+                logger.warn("Invalid long matcher: " + value, e);
+                this.longValue = 100L;
+            }
             break;
 
         case CLASSD_CONFIDENCE_GREATER_THAN:
@@ -328,6 +344,7 @@ public class RuleMatcher implements JSONString, Serializable
     {
         String  attachment = null;
         Integer attachmentInt = null;
+        Long    attachmentLong = null;
         HostTableEntry entry;
         
         switch (this.matcherType) {
@@ -417,6 +434,12 @@ public class RuleMatcher implements JSONString, Serializable
                 return false;
             return Pattern.matches(regexValue, attachment);
 
+        case HTTP_CONTENT_TYPE:
+            attachment = (String) sess.globalAttachment(NodeSession.KEY_HTTP_CONTENT_TYPE);
+            if (attachment == null)
+                return false;
+            return Pattern.matches(regexValue, attachment);
+            
         case HTTP_USER_AGENT:
             entry = UvmContextFactory.context().hostTable().getHostTableEntry( sess.getClientAddr() );
             if (entry == null)
@@ -434,6 +457,20 @@ public class RuleMatcher implements JSONString, Serializable
             if (attachment == null)
                 return false;
             return Pattern.matches(regexValue, attachment);
+
+        case HTTP_CONTENT_LENGTH_GREATER_THAN:
+            attachmentLong = (Long) sess.globalAttachment(NodeSession.KEY_HTTP_CONTENT_LENGTH);
+            if (attachmentLong != null && attachmentLong > this.longValue)
+                return true;
+            else
+                return false;
+
+        case HTTP_CONTENT_LENGTH_LESS_THAN:
+            attachmentLong = (Long) sess.globalAttachment(NodeSession.KEY_HTTP_CONTENT_LENGTH);
+            if (attachmentLong != null && attachmentLong < this.longValue)
+                return true;
+            else
+                return false;
             
         case PROTOCOL_CONTROL_SIGNATURE:
             attachment = (String) sess.globalAttachment(NodeSession.KEY_PROTOFILTER_SIGNATURE);

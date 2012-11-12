@@ -428,7 +428,6 @@ public class HttpParser extends AbstractParser
                             if ( entry.getHttpUserAgent() == null || setDate == 0 ||
                                  ( System.currentTimeMillis() > setDate + (60*1000) ) ) {
                                 entry.setHttpUserAgent( agentString );
-                                logger.warn("Setting UAS OS : " + uas.getOsInfo() + " from " + agentString );
                                 entry.setHttpUserAgentOs( uas.getOsInfo() );
                                 entry.setHttpUserAgentSetDate( System.currentTimeMillis() );
                             }
