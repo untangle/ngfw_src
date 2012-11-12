@@ -54,9 +54,11 @@ fi
 
 # set up uvm to start at boot
 if [ -x "/etc/init.d/untangle-vm" ]; then
-    # (remove to allow replacement when upgrading from 5.2 to 5.3)
-    update-rc.d -f untangle-vm remove
     update-rc.d untangle-vm defaults 95 5 > /dev/null
+fi
+# set pyconnector to start at boot
+if [ -x "/etc/init.d/untangle-pyconnector" ]; then
+    update-rc.d untangle-pyconnector defaults 95 5 > /dev/null
 fi
 
 ## Nuke the work directory for the servlets.
