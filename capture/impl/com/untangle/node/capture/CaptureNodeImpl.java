@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.Timer;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
@@ -36,8 +37,9 @@ import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.BrandingManager;
 import com.untangle.uvm.SettingsManager;
-import com.untangle.uvm.node.License;
+import com.untangle.uvm.SessionMatcher;
 import com.untangle.uvm.node.EventLogQuery;
+import com.untangle.uvm.node.SessionTuple;
 
 public class CaptureNodeImpl extends NodeBase implements CaptureNode
 {
@@ -454,6 +456,7 @@ public class CaptureNodeImpl extends NodeBase implements CaptureNode
     public int userLogout(String address,CaptureLoginEvent.EventType reason)
     {
         CaptureUserEntry user = captureUserTable.searchByAddress(address);
+        final String userAddress = address;
 
         if (user == null)
         {
@@ -461,7 +464,49 @@ public class CaptureNodeImpl extends NodeBase implements CaptureNode
             return(1);
         }
 
+        // remove from the user table
         captureUserTable.removeActiveUser(address);
+
+        // shut down any outstanding sessions for the user
+        this.killMatchingSessions(new SessionMatcher()
+        {
+            List<CaptureRule> ruleList = captureSettings.getCaptureRules();
+
+            // for every session we have to check all the rules to make
+            // sure we don't kill anything that shouldn't be captured
+            public boolean isMatch( Long policyId, SessionTuple client, SessionTuple server, Map<String, Object> attachments )
+            {
+                // if session is not for this user return false
+                if (userAddress.equals(client.getClientAddr().getHostAddress().toString()) == false) return(false);
+
+                // if session matches any pass list return false
+                if (isSessionAllowed(client.getClientAddr().getHostAddress().toString(),client.getServerAddr().getHostAddress().toString()) != null) return(false);
+
+                // check the session against the rule list
+                for (CaptureRule rule : ruleList)
+                {
+                    if (rule.isMatch(client.getProtocol(),
+                        client.getClientIntf(), server.getServerIntf(),
+                        client.getClientAddr(), client.getServerAddr(),
+                        client.getClientPort(), client.getServerPort(),
+                        (String)attachments.get(NodeSession.KEY_PLATFORM_USERNAME)))
+                        {
+                        // on a matching rule continue if block is false
+                        if (rule.getBlock() == false) continue;
+
+                        // block is true so log and kill the session
+                        logger.debug("Killing " +
+                            client.getClientAddr().getHostAddress().toString() + ":" + client.getClientPort() + " --> " +
+                            client.getServerAddr().getHostAddress().toString() + ":" + client.getServerPort()
+                            );
+                        return(true);
+                        }
+                }
+
+                // no matches anywhere so leave the session alone
+                return(false);
+            }
+        });
 
         CaptureLoginEvent event = new CaptureLoginEvent( user.getUserAddress(), user.getUserName(), captureSettings.getAuthenticationType(), reason );
         logEvent(event);
