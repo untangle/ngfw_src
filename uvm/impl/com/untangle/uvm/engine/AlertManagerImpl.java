@@ -379,10 +379,15 @@ public class AlertManagerImpl implements AlertManager
     {
         List<Node> spamassassinList = UvmContextFactory.context().nodeManager().nodeInstances("untangle-node-spamassassin");
         List<Node> commtouchasList = UvmContextFactory.context().nodeManager().nodeInstances("untangle-node-commtouchas");
-
+        String nodeName = "Spam Blocker";
+        
         if (spamassassinList.size() == 0 && commtouchasList.size() == 0)
             return;
-
+        if (spamassassinList.size() > 0)
+            nodeName = "Spam Blocker Lite";
+        if (commtouchasList.size() > 0)
+            nodeName = "Spam Blocker";
+        
         NetworkConfiguration networkConf = UvmContextFactory.context().networkManager().getNetworkConfiguration();
         
         for (InterfaceConfiguration intf : networkConf.getInterfaceList()) {
@@ -405,7 +410,7 @@ public class AlertManagerImpl implements AlertManager
                      "208.67.222.222".equals( dnsServer ) || /* openDNS */
                      "208.67.222.220".equals( dnsServer ) /* openDNS */ ) {
                     String alertText = "";
-                    alertText += i18nUtil.tr("Spam Blocker [Lite] is installed but an unsupported DNS server is used");
+                    alertText += nodeName + " " + i18nUtil.tr("is installed but an unsupported DNS server is used");
                     alertText += " (";
                     alertText += intf.getName();
                     alertText += ",";
@@ -419,7 +424,7 @@ public class AlertManagerImpl implements AlertManager
                     int result = UvmContextFactory.context().execManager().execResult("host 2.0.0.127.zen.spamhaus.org " + dnsServer);
                     if (result != 0) {
                         String alertText = "";
-                        alertText += i18nUtil.tr("Spam Blocker [Lite] is installed but a DNS server ");
+                        alertText += nodeName + " " + i18nUtil.tr("is installed but but a DNS server");
                         alertText += " (";
                         alertText += intf.getName();
                         alertText += ",";

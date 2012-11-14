@@ -56,7 +56,7 @@ public class ArgonSessionTable
         return activeSessions.size();
     }
 
-    synchronized int count(short protocol)
+    synchronized int count( short protocol )
     {
         int count = 0;
         
