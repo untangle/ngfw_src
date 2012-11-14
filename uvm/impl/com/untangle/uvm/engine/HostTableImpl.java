@@ -445,7 +445,7 @@ public class HostTableImpl implements HostTable
                     /**
                      * Remove old entries
                      */
-                    Collection<HostTableEntry> entries = hostTable.values();
+                    LinkedList<HostTableEntry> entries = new LinkedList<HostTableEntry>(hostTable.values());
                     for (HostTableEntry entry : entries) {
                         InetAddress address = entry.getAddress();
                         if ( address == null )
@@ -474,10 +474,14 @@ public class HostTableImpl implements HostTable
                         }
 
                         /**
-                         * Don't remove host that are penalty boxed or have quotas
+                         * Don't remove host that:
+                         * Have quotas
+                         * Are penalty boxed
+                         * have known usernames
                          */
-                        if ( entry.getQuotaSize() > 0 || entry.getPenaltyBoxed() )
-                            continue;
+                        if ( entry.getQuotaSize() > 0 ) continue;
+                        if ( entry.getPenaltyBoxed() ) continue;
+                        if ( entry.getUsername() != null ) continue;
                         
                         /**
                          * If this host hasnt been touched recently, delete it
