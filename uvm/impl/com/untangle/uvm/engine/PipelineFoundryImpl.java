@@ -549,8 +549,15 @@ public class PipelineFoundryImpl implements PipelineFoundry
         return -1;
     }
 
-    private boolean policyMatch(Long nodePolicy, Long policyId)
+    private boolean policyMatch( Long nodePolicy, Long policyId )
     {
+        /**
+         * This returns true if the nodePolicy would process the session on policyId
+         * This is true if nodePolicy == null (its a service app and thus processes all sessions)
+         * This is true if policyId == nodePolicy (its a filtering app and lives in the policyId rack)
+         * or if one of policyId's parents' policyId == nodePolicy. (its a filtering app and lives one of policyId rack's parents, grandparents, etc)
+         */
+
         PolicyManager policyManager = (PolicyManager) UvmContextFactory.context().nodeManager().node("untangle-node-policy");
 
         /**
@@ -576,7 +583,7 @@ public class PipelineFoundryImpl implements PipelineFoundry
         /**
          * Now check the parents if policyManager exists otherwise return false
          */
-        if (policyManager == null)
+        if ( policyManager == null )
             return false;
 
         /**
