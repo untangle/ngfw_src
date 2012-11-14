@@ -380,7 +380,7 @@ Ext.define("Ung.Main", {
     },
     openLibItemStore: function (libItemName, title) {
         var baseUrl =  rpc.jsonrpc.UvmContext.getStoreUrl();
-        var url = baseUrl + "?" + "libitem=" + libItemName + "&" + this.systemInfo() ;
+        var url = baseUrl + "?" + "action=buy" + "&" + "libitem=" + libItemName + "&" + this.systemInfo() ;
         this.openIFrame( url, title );
     },
     openIFrame: function( url, title ) {
