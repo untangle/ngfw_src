@@ -86,6 +86,7 @@ public class OpenVpnManager
     /* Key management directives */
     private static final String SERVER_DEFAULTS[] = new String[] {
         "mode server",
+        "multihome",
         "ca   data/ca.crt",
         "cert data/server.crt",
         "key  data/server.key",
