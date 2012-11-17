@@ -19,8 +19,8 @@ public interface CaptureNode extends Node
 
     ArrayList<CaptureUserEntry> getActiveUsers();
 
-    EventLogQuery[] getLoginEventQueries();
-    EventLogQuery[] getBlockEventQueries();
+    EventLogQuery[] getUserEventQueries();
+    EventLogQuery[] getRuleEventQueries();
 
     int userAuthenticate(String address, String username, String password);
     int userActivate(String address, String agree);

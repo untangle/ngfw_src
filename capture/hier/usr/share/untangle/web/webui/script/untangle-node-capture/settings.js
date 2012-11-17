@@ -40,8 +40,8 @@ if (!Ung.hasResource["Ung.Capture"]) {
         panelUserAuthentication: null,
         panelCaptivePage: null,
 
-        gridLoginEventLog: null,
-        gridBlockEventLog: null,
+        gridUserEventLog: null,
+        gridRuleEventLog: null,
         initComponent: function() {
             Ung.Util.clearInterfaceStore();
 
@@ -51,12 +51,12 @@ if (!Ung.hasResource["Ung.Capture"]) {
             this.buildPassedHosts();
             this.buildCaptivePage();
             this.buildUserAuthentication();
-            this.buildLoginEventLog();
-            this.buildBlockEventLog();
+            this.buildUserEventLog();
+            this.buildRuleEventLog();
 
             // builds the tab panel with the tabs
             this.buildTabPanel([ this.panelCaptiveStatus, this.panelCaptureRules, this.panelPassedHosts, this.panelCaptivePage,
-                                 this.panelUserAuthentication, this.gridLoginEventLog, this.gridBlockEventLog ]);
+                                 this.panelUserAuthentication, this.gridUserEventLog, this.gridRuleEventLog ]);
             this.callParent(arguments);
         },
 
@@ -188,7 +188,7 @@ if (!Ung.hasResource["Ung.Capture"]) {
                     emptyRow: {
                         "ruleId": 0,
                         "enabled": true,
-                        "block": false,
+                        "capture": false,
                         "description": this.i18n._("[no description]"),
                         "javaClass": "com.untangle.node.capture.CaptureRule"
                     },
@@ -200,7 +200,7 @@ if (!Ung.hasResource["Ung.Capture"]) {
                     }, {
                         name: 'enabled'
                     }, {
-                        name: 'block'
+                        name: 'capture'
                     }, {
                         name: 'matchers'
                     },{
@@ -233,7 +233,7 @@ if (!Ung.hasResource["Ung.Capture"]) {
                             },{
                                 xtype:'checkcolumn',
                                 header: this.i18n._("Capture"),
-                                dataIndex: 'block',
+                                dataIndex: 'capture',
                                 fixed: true,
                                 width:55
                             }],
@@ -345,7 +345,7 @@ if (!Ung.hasResource["Ung.Capture"]) {
                             xtype: "combo",
                             name: "actionType",
                             allowBlank: false,
-                            dataIndex: "block",
+                            dataIndex: "capture",
                             fieldLabel: this.i18n._("Action Type"),
                             editable: false,
                             store: [[true,i18n._('Capture')], [false,i18n._('Pass')]],
@@ -1007,11 +1007,11 @@ if (!Ung.hasResource["Ung.Capture"]) {
             })
         },
 
-        buildLoginEventLog: function() {
-            this.gridLoginEventLog = Ext.create('Ung.GridEventLog',{
+        buildUserEventLog: function() {
+            this.gridUserEventLog = Ext.create('Ung.GridEventLog',{
                 title: this.i18n._( "User Event Log" ),
                 helpSource: "login_event_log",
-                eventQueriesFn: this.getRpcNode().getLoginEventQueries,
+                eventQueriesFn: this.getRpcNode().getUserEventQueries,
                 settingsCmp: this,
                 fields: [{
                     name: "time_stamp",
@@ -1090,11 +1090,11 @@ if (!Ung.hasResource["Ung.Capture"]) {
             });
         },
 
-        buildBlockEventLog: function() {
-            this.gridBlockEventLog = Ext.create('Ung.GridEventLog',{
+        buildRuleEventLog: function() {
+            this.gridRuleEventLog = Ext.create('Ung.GridEventLog',{
                 title: this.i18n._( "Rule Event Log" ),
-                helpSource: "block_event_log",
-                eventQueriesFn: this.getRpcNode().getBlockEventQueries,
+                helpSource: "rule_event_log",
+                eventQueriesFn: this.getRpcNode().getRuleEventQueries,
                 settingsCmp: this,
                 fields: [{
                     name: "capture_rule_index"

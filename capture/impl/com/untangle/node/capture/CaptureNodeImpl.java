@@ -72,9 +72,11 @@ public class CaptureNodeImpl extends NodeBase implements CaptureNode
     private CaptureTimer captureTimer = new CaptureTimer(this);
     private Timer timer;
 
-    private EventLogQuery loginEventQuery;
-    private EventLogQuery blockEventQuery;
+    private EventLogQuery userEventQuery;
+
     private EventLogQuery allEventQuery;
+    private EventLogQuery passEventQuery;
+    private EventLogQuery captureEventQuery;
 
 /**
  * nodeInstanceCount stores the number of this node type initialized thus far
@@ -92,19 +94,26 @@ public class CaptureNodeImpl extends NodeBase implements CaptureNode
 
         replacementGenerator = new CaptureReplacementGenerator(getNodeSettings());
 
-        this.loginEventQuery = new EventLogQuery(I18nUtil.marktr("Login Events"),
+        this.userEventQuery = new EventLogQuery(I18nUtil.marktr("User Events"),
             "SELECT * FROM reports.n_capture_login_events evt ORDER BY time_stamp DESC");
 
         this.allEventQuery = new EventLogQuery(I18nUtil.marktr("All Events"),
             "SELECT * FROM reports.sessions " +
             "WHERE policy_id = :policyId " +
+            "AND capture_blocked IS NOT NULL " +
             "ORDER BY time_stamp DESC");
 
-        this.blockEventQuery = new EventLogQuery(I18nUtil.marktr("Blocked Events"),
+        this.passEventQuery = new EventLogQuery(I18nUtil.marktr("Pass Events"),
             "SELECT * FROM reports.sessions " +
             "WHERE policy_id = :policyId " +
-            "AND capture_blocked IS TRUE " +
+            "AND capture_blocked IS FALSE " +
             "ORDER BY time_stamp DESC");
+
+        this.captureEventQuery = new EventLogQuery(I18nUtil.marktr("Capture Events"),
+                "SELECT * FROM reports.sessions " +
+                "WHERE policy_id = :policyId " +
+                "AND capture_blocked IS TRUE " +
+                "ORDER BY time_stamp DESC");
 
         addMetric(new NodeMetric(STAT_SESSALLOW, I18nUtil.marktr("Sessions allowed")));
         addMetric(new NodeMetric(STAT_SESSBLOCK, I18nUtil.marktr("Sessions blocked")));
@@ -136,15 +145,15 @@ public class CaptureNodeImpl extends NodeBase implements CaptureNode
     }
 
     @Override
-    public EventLogQuery[] getLoginEventQueries()
+    public EventLogQuery[] getUserEventQueries()
     {
-        return new EventLogQuery[] { this.loginEventQuery };
+        return new EventLogQuery[] { this.userEventQuery };
     }
 
     @Override
-    public EventLogQuery[] getBlockEventQueries()
+    public EventLogQuery[] getRuleEventQueries()
     {
-        return new EventLogQuery[] { this.allEventQuery, this.blockEventQuery };
+        return new EventLogQuery[] { this.allEventQuery, this.captureEventQuery, this.passEventQuery };
     }
 
     public void incrementBlinger(BlingerType blingerType, long delta )
@@ -491,10 +500,10 @@ public class CaptureNodeImpl extends NodeBase implements CaptureNode
                         client.getClientPort(), client.getServerPort(),
                         (String)attachments.get(NodeSession.KEY_PLATFORM_USERNAME)))
                         {
-                        // on a matching rule continue if block is false
-                        if (rule.getBlock() == false) continue;
+                        // on a matching rule continue if capture is false
+                        if (rule.getCapture() == false) continue;
 
-                        // block is true so log and kill the session
+                        // capture is true so log and kill the session
                         logger.debug("Killing " +
                             client.getClientAddr().getHostAddress().toString() + ":" + client.getClientPort() + " --> " +
                             client.getServerAddr().getHostAddress().toString() + ":" + client.getServerPort()

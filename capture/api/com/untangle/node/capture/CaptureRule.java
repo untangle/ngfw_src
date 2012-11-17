@@ -19,7 +19,7 @@ import com.untangle.uvm.vnet.NodeIPSession;
  * This in the implementation of a Capture Rule
  *
  * A rule is basically a collection of CaptureRuleMatchers (matchers)
- * and what to do if the matchers match (block, log, etc)
+ * and what to do if the matchers match (capture, log, etc)
  */
 @SuppressWarnings("serial")
 public class CaptureRule implements JSONString, Serializable
@@ -30,18 +30,18 @@ public class CaptureRule implements JSONString, Serializable
 
     private Integer ruleId;
     private Boolean enabled;
-    private Boolean block;
+    private Boolean capture;
     private String description;
 
     public CaptureRule()
     {
     }
 
-    public CaptureRule(boolean enabled, List<CaptureRuleMatcher> matchers, boolean block, String description)
+    public CaptureRule(boolean enabled, List<CaptureRuleMatcher> matchers, boolean capture, String description)
     {
         this.setMatchers(matchers);
         this.setEnabled(Boolean.valueOf(enabled));
-        this.setBlock(Boolean.valueOf(block));
+        this.setCapture(Boolean.valueOf(capture));
         this.setDescription(description);
     }
 
@@ -93,14 +93,14 @@ public class CaptureRule implements JSONString, Serializable
         this.enabled = enabled;
     }
 
-    public Boolean getBlock()
+    public Boolean getCapture()
     {
-        return block;
+        return capture;
     }
 
-    public void setBlock( Boolean block )
+    public void setCapture( Boolean capture )
     {
-        this.block = block;
+        this.capture = capture;
     }
 
     public String getDescription()

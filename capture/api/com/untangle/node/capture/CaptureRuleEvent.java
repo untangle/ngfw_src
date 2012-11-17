@@ -12,7 +12,7 @@ public class CaptureRuleEvent extends LogEvent
 {
     private SessionEvent sessionEvent = null;
     private Integer ruleid = null;
-    private boolean blocked = false;
+    private boolean captured = false;
 
     public CaptureRuleEvent() { }
 
@@ -20,20 +20,20 @@ public class CaptureRuleEvent extends LogEvent
     {
         this.sessionEvent = sessionEvent;
         this.ruleid = rule.getId();
-        this.blocked = rule.getBlock();
+        this.captured = rule.getCapture();
     }
 
-    public CaptureRuleEvent( SessionEvent sessionEvent, boolean blocked )
+    public CaptureRuleEvent( SessionEvent sessionEvent, boolean captured )
     {
         this.sessionEvent = sessionEvent;
-        this.blocked = blocked;
+        this.captured = captured;
     }
 
     public SessionEvent getSessionEvent() { return sessionEvent; }
     public void setSessionEvent( SessionEvent sessionEvent ) { this.sessionEvent = sessionEvent; }
 
-    public boolean getBlocked() { return(blocked); }
-    public void setBlocked( boolean blocked ) { this.blocked = blocked; }
+    public boolean getCaptured() { return(captured); }
+    public void setCaptured( boolean captured ) { this.captured = captured; }
 
     public Integer getRuleId() { return(ruleid); }
     public void setRuleId( Integer ruleid ) { this.ruleid = ruleid; }
@@ -44,10 +44,7 @@ public class CaptureRuleEvent extends LogEvent
         String sql =
             "UPDATE reports.sessions " +
             "SET ";
-
-        if (ruleid != null)
-            sql += " capture_rule_index = ?, ";
-
+        sql += " capture_rule_index = ?, ";
         sql += " capture_blocked = ? ";
         sql += " WHERE session_id = ? ";
 
@@ -55,10 +52,9 @@ public class CaptureRuleEvent extends LogEvent
 
         int i=0;
 
-        if (ruleid != null)
-            pstmt.setInt(++i, getRuleId());
-
-        pstmt.setBoolean(++i, getBlocked());
+        if (ruleid == null) pstmt.setInt(++i, 0);
+        else pstmt.setInt(++i, getRuleId());
+        pstmt.setBoolean(++i, getCaptured());
         pstmt.setLong(++i, sessionEvent.getSessionId());
         return pstmt;
     }
@@ -73,7 +69,7 @@ public class CaptureRuleEvent extends LogEvent
         string+=(" serveraddr:" + pe.getCServerAddr());
         string+=(" serverport:" + pe.getCServerPort());
         string+=(" ruleid:" + ruleid);
-        string+=(" blocked:" + blocked);
+        string+=(" captured:" + captured);
         string+=(")");
         return string;
     }

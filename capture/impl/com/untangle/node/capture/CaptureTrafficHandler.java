@@ -76,15 +76,19 @@ public class CaptureTrafficHandler extends AbstractEventHandler
         // not authenticated and no pass list match so check the rules
         CaptureRule rule = node.checkCaptureRules(sessreq);
 
-        // by default we allow traffic so if there is no rule or we
-        // find a pass rule then let the traffic continue here
-        if ((rule == null) || (rule.getBlock() == false))
+        // by default we allow traffic so if there is no rule pass the traffic
+        if (rule == null)
         {
-            if (rule != null)
-            {
-                CaptureRuleEvent logevt = new CaptureRuleEvent(sessreq.sessionEvent(), rule);
-                node.logEvent(logevt);
-            }
+            node.incrementBlinger(CaptureNode.BlingerType.SESSALLOW,1);
+            sessreq.release();
+            return;
+        }
+
+        // if we found a pass rule then log and let the traffic pass
+        if (rule.getCapture() == false)
+        {
+            CaptureRuleEvent logevt = new CaptureRuleEvent(sessreq.sessionEvent(), rule);
+            node.logEvent(logevt);
 
             node.incrementBlinger(CaptureNode.BlingerType.SESSALLOW,1);
             sessreq.release();
@@ -135,15 +139,19 @@ public class CaptureTrafficHandler extends AbstractEventHandler
         // not authenticated and no pass list match so check the rules
         CaptureRule rule = node.checkCaptureRules(sessreq);
 
-        // by default we allow traffic so if there is no rule or we
-        // find a pass rule then let the traffic continue here
-        if ((rule == null) || (rule.getBlock() == false))
+        // by default we allow traffic so if there is no rule pass the traffic
+        if (rule == null)
         {
-            if (rule != null)
-            {
-                CaptureRuleEvent logevt = new CaptureRuleEvent(sessreq.sessionEvent(), rule);
-                node.logEvent(logevt);
-            }
+            node.incrementBlinger(CaptureNode.BlingerType.SESSALLOW,1);
+            sessreq.release();
+            return;
+        }
+
+        // if we found a pass rule then log and let the traffic pass
+        if (rule.getCapture() == false)
+        {
+            CaptureRuleEvent logevt = new CaptureRuleEvent(sessreq.sessionEvent(), rule);
+            node.logEvent(logevt);
 
             node.incrementBlinger(CaptureNode.BlingerType.SESSALLOW,1);
             sessreq.release();
