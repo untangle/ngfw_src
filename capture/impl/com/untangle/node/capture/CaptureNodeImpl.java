@@ -69,7 +69,7 @@ public class CaptureNodeImpl extends NodeBase implements CaptureNode
 
     protected CaptureUserTable captureUserTable = new CaptureUserTable();
     private CaptureSettings captureSettings;
-    private CaptureTimer captureTimer = new CaptureTimer(this);
+    private CaptureTimer captureTimer;
     private Timer timer;
 
     private EventLogQuery userEventQuery;
@@ -298,6 +298,8 @@ public class CaptureNodeImpl extends NodeBase implements CaptureNode
     @Override
     protected void postStart()
     {
+        logger.debug("Creating session cleanup timer task");
+        captureTimer = new CaptureTimer(this);
         timer = new Timer();
         timer.schedule(captureTimer,CLEANUP_INTERVAL,CLEANUP_INTERVAL);
     }
@@ -306,6 +308,7 @@ public class CaptureNodeImpl extends NodeBase implements CaptureNode
     protected void preStop()
     {
         // stop the session cleanup timer thread
+        logger.debug("Destroying session cleanup timer task");
         timer.cancel();
     }
 
