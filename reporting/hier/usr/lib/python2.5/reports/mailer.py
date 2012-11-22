@@ -6,22 +6,22 @@ REPORTS_PYTHON_DIR = '%s/usr/lib/python2.5' % PREFIX
 REPORTS_OUTPUT_BASE = '%s/usr/share/untangle/web/reports' % PREFIX
 NODE_MODULE_DIR = '%s/reports/node' % REPORTS_PYTHON_DIR
 
-BODY_TEMPLATE_SIMPLE = """
+BODY_TEMPLATE_SIMPLE = u"""
 The %(company)s Summary Reports for %(date_start)s - %(date_end)s are attached.
 The PDF file requires Adobe Reader to view.
 """
 
-BODY_TEMPLATE_LINK = BODY_TEMPLATE_SIMPLE + """
+BODY_TEMPLATE_LINK = BODY_TEMPLATE_SIMPLE + u"""
 For more in-depth online reports, click %(link)s to view
 Online %(company)s Reports.
 """
 
-ATTACHMENT_TOO_BIG_TEMPLATE = """
+ATTACHMENT_TOO_BIG_TEMPLATE = u"""
 The detailed reports were %sMB, which is too large to attach to this email:
 the user-defined limit is currently %sMB.
 """
 
-HTML_LINK_TEMPLATE = '<a href="%s">here</a>'
+HTML_LINK_TEMPLATE = u'<a href="%s">here</a>'
 
 import sys
 
@@ -45,7 +45,10 @@ import shutil
 from reports.log import *
 logger = getLogger(__name__)
 
-from email import Encoders
+from cStringIO import StringIO
+from email import Charset, Encoders
+from email.generator import Generator
+from email.header import Header
 from email.MIMEBase import MIMEBase
 from email.MIMEImage import MIMEImage
 from email.MIMEMultipart import MIMEMultipart
@@ -80,6 +83,7 @@ def mail_reports(end_date, report_days, file, mail_reports, attach_csv, attachme
         shutil.rmtree(zip_dir)
 
 def mail(file, zip_file, sender, receiver, date, company_name, has_web_access, url, report_days, attachment_size_limit):
+    Charset.add_charset('utf-8', Charset.QP, Charset.QP, 'utf-8')
     msgRoot = MIMEMultipart('alternative')
 
     h = { 'company': company_name,
@@ -103,8 +107,8 @@ def mail(file, zip_file, sender, receiver, date, company_name, has_web_access, u
           msg_plain += note
           msg_html += note
 
-    msgRoot.attach(MIMEText(msg_plain, 'plain'))
-    msgRoot.attach(MIMEText("<HTML>" + msg_html + "</HTML>", 'html'))
+    msgRoot.attach(MIMEText(msg_plain.encode('utf-8'), 'plain', 'utf-8'))
+    msgRoot.attach(MIMEText((u"<HTML>" + msg_html + u"</HTML>").encode('utf-8'), 'html', 'utf-8'))
 
     tmpMsgRoot = msgRoot
     msgRoot = MIMEMultipart('related')
@@ -122,9 +126,9 @@ def mail(file, zip_file, sender, receiver, date, company_name, has_web_access, u
         machine_name = str(os.uname()[1])
     except:
         pass
-    msgRoot['Subject'] = _('%s %s Report [%s]') % (company_name, length_name, machine_name)
-    msgRoot['From'] = sender
-    msgRoot['To'] = receiver
+    msgRoot['Subject'] = Header(_('%s %s Report [%s]') % (company_name, length_name, machine_name), 'utf-8')
+    msgRoot['From'] = "%s" % Header(sender, 'utf-8')
+    msgRoot['To'] = "%s" % Header(receiver, 'utf-8')
 
     part = MIMEBase('application', "pdf")
     part.set_payload(open(file, 'rb').read())
@@ -142,7 +146,10 @@ def mail(file, zip_file, sender, receiver, date, company_name, has_web_access, u
     smtp = smtplib.SMTP()
     smtp.connect('localhost')
     logger.info("Emailing out: from '%s' to '%s'" % (sender, receiver))
-    smtp.sendmail(sender, receiver, msgRoot.as_string())
+    str_io = StringIO()
+    g = Generator(str_io, False)
+    g.flatten(msgRoot)
+    smtp.sendmail(sender, receiver, str_io.getvalue())
     smtp.quit()
 
 def __get_mail_info():
