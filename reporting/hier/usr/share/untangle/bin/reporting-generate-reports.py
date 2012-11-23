@@ -276,10 +276,18 @@ reports.engine.init_engine(NODE_MODULE_DIR)
 
 if report_lengths != []:
      init_date = end_date - mx.DateTime.DateTimeDelta(max(report_lengths))
-     reports.engine.setup()
+     try:
+          reports.engine.setup()
+     except Exception, e:
+          logger.critical("Exception while setting up reports engine: %s" % (e,), exc_info=True)
+          sys.exit(1)
      if not create_schemas:
-          reports.engine.process_fact_tables(init_date, start_time)
-          reports.engine.post_facttable_setup(init_date, start_time)
+          try:
+               reports.engine.process_fact_tables(init_date, start_time)
+               reports.engine.post_facttable_setup(init_date, start_time)
+          except Exception, e:
+               logger.critical("Exception while doing fact-tables: %s" % (e,), exc_info=True)
+               sys.exit(1)
 
 if not create_schemas:
      mail_reports = []
@@ -320,4 +328,3 @@ logger.debug('%s took %0.1f sec' % (sys.argv[0], (total_end_time-total_start_tim
 if os.path.isfile(LOCKFILE):
   logger.info("Removing pidfile (pid: %s)" % os.getpid())
   os.remove(LOCKFILE)
-
