@@ -121,6 +121,9 @@ Ext.define("Ung.Main", {
         // get the host table
         rpc.hostTable=rpc.jsonrpc.UvmContext.hostTable();
 
+        //get session monitor
+        rpc.sessionMonitor = rpc.jsonrpc.UvmContext.sessionMonitor();
+        
         // get network manager
         rpc.networkManager=rpc.jsonrpc.UvmContext.networkManager();
         this.hostName = rpc.networkManager.getNetworkConfiguration().hostname; 

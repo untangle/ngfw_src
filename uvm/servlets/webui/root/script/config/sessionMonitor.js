@@ -24,8 +24,7 @@ if (!Ung.hasResource["Ung.SessionMonitor"]) {
         getSessions: function(nodeId) {
             if (!this.isVisible())
                 return {javaClass:"java.util.LinkedList", list:[]};
-
-            var sessions = rpc.jsonrpc.UvmContext.sessionMonitor().getMergedSessions(nodeId);
+            var sessions = rpc.sessionMonitor.getMergedSessions(nodeId);
             // iterate through each session and change its attachments map to properties
             for (var i = 0; i < sessions.list.length ; i++) {
                 var session = sessions.list[i];
