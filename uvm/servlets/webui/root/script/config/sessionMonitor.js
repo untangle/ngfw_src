@@ -574,11 +574,12 @@ if (!Ung.hasResource["Ung.SessionMonitor"]) {
                 dataFnArg: 0
             }];
             var nodeIds = rpc.nodeManager.nodeInstancesIds();
+            var allNodeProperties = rpc.nodeManager.allNodeProperties();
+            var allNodeSettings = rpc.nodeManager.allNodeSettings();
             for (var i = 0 ; i < nodeIds.list.length ; i++) {
                 var nodeId = nodeIds.list[i];
-                var node = rpc.nodeManager.node(nodeId);
-                var nodeProperties = node.getNodeProperties();
-                var nodeSettings = node.getNodeSettings();
+                var nodeProperties = allNodeProperties.map[nodeId];
+                var nodeSettings = allNodeSettings.map[nodeId];
                 if (nodeProperties.viewPosition != null) {
                     items.push({
                         xtype: 'radio',

@@ -146,4 +146,18 @@ public interface NodeManager
      */
     boolean isInstantiated( String nodeName );
     
+    
+    /**
+     * Get the nodeSettings for all nodes in one call.
+     *
+     * @return a <code>Map</code> from node ID to NodeSettings for all nodes
+     */
+    Map<Long, NodeSettings> allNodeSettings();
+    /**
+     * Get the nodeProperties for all nodes in one call.
+     *
+     * @return a <code>Map</code> from node ID to NodeProperties for all nodes
+     */
+    Map<Long, NodeProperties> allNodeProperties();
+    
 }

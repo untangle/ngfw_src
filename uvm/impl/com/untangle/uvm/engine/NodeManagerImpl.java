@@ -324,6 +324,26 @@ public class NodeManagerImpl implements NodeManager
         return (this.node(nodeName) != null);
     }
 
+
+    
+    public Map<Long, NodeSettings> allNodeSettings()
+    {
+        HashMap<Long, NodeSettings> result = new HashMap<Long, NodeSettings>();
+        for (Node node : loadedNodesMap.values()) {
+            result.put(node.getNodeSettings().getId(), node.getNodeSettings());
+        }
+        return result;
+    }
+    
+    public Map<Long, NodeProperties> allNodeProperties()
+    {
+        HashMap<Long, NodeProperties> result = new HashMap<Long, NodeProperties>();
+        for (Node node : loadedNodesMap.values()) {
+            result.put(node.getNodeSettings().getId(), node.getNodeProperties());
+        }
+        return result;
+    }
+
     // Manager lifetime -------------------------------------------------------
 
     protected void init()
