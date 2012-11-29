@@ -45,6 +45,7 @@ public class CaptureNodeImpl extends NodeBase implements CaptureNode
 {
     private final int CLEANUP_INTERVAL = 60000;
     private final Logger logger = Logger.getLogger(getClass());
+    private final Long policyId = getNodeSettings().getPolicyId();
 
     private final String CAPTURE_CUSTOM_CREATE_SCRIPT = System.getProperty("uvm.home") + "/bin/capture-custom-create";
     private final String CAPTURE_CUSTOM_REMOVE_SCRIPT = System.getProperty("uvm.home") + "/bin/capture-custom-remove";
@@ -73,6 +74,12 @@ public class CaptureNodeImpl extends NodeBase implements CaptureNode
     private Timer timer;
 
     private EventLogQuery userEventQuery;
+    private EventLogQuery userSuccessQuery;
+    private EventLogQuery userFailureQuery;
+    private EventLogQuery userTimeoutQuery;
+    private EventLogQuery userInactiveQuery;
+    private EventLogQuery userLogoutQuery;
+    private EventLogQuery adminLogoutQuery;
 
     private EventLogQuery allEventQuery;
     private EventLogQuery passEventQuery;
@@ -84,7 +91,7 @@ public class CaptureNodeImpl extends NodeBase implements CaptureNode
  * This is done so each node of this type has a unique sequential identifier
  */
     private static int nodeInstanceCount = 0;
-    private final int  nodeInstanceNum;
+    private final int nodeInstanceNum;
 
     public CaptureNodeImpl( com.untangle.uvm.node.NodeSettings nodeSettings, com.untangle.uvm.node.NodeProperties nodeProperties )
     {
@@ -94,25 +101,64 @@ public class CaptureNodeImpl extends NodeBase implements CaptureNode
 
         replacementGenerator = new CaptureReplacementGenerator(getNodeSettings());
 
-        this.userEventQuery = new EventLogQuery(I18nUtil.marktr("User Events"),
-            "SELECT * FROM reports.n_capture_login_events evt ORDER BY time_stamp DESC");
+        this.userEventQuery = new EventLogQuery(I18nUtil.marktr("All Events"),
+                "SELECT * FROM reports.n_capture_user_events " +
+                "WHERE policy_id = :policyId " +
+                "ORDER BY time_stamp DESC");
 
-        this.allEventQuery = new EventLogQuery(I18nUtil.marktr("All Events"),
-            "SELECT * FROM reports.sessions " +
-            "WHERE policy_id = :policyId " +
-            "AND capture_blocked IS NOT NULL " +
-            "ORDER BY time_stamp DESC");
+        this.userSuccessQuery = new EventLogQuery(I18nUtil.marktr("Login Success"),
+                "SELECT * FROM reports.n_capture_user_events " +
+                "WHERE policy_id = :policyId " +
+                "AND event_info = 'LOGIN' " +
+                "ORDER BY time_stamp DESC");
 
-        this.passEventQuery = new EventLogQuery(I18nUtil.marktr("Pass Events"),
-            "SELECT * FROM reports.sessions " +
-            "WHERE policy_id = :policyId " +
-            "AND capture_blocked IS FALSE " +
-            "ORDER BY time_stamp DESC");
+        this.userFailureQuery = new EventLogQuery(I18nUtil.marktr("Login Failure"),
+                "SELECT * FROM reports.n_capture_user_events " +
+                "WHERE policy_id = :policyId " +
+                "AND event_info = 'FAILED' " +
+                "ORDER BY time_stamp DESC");
+
+        this.userTimeoutQuery = new EventLogQuery(I18nUtil.marktr("Session Timeout"),
+                "SELECT * FROM reports.n_capture_user_events " +
+                "WHERE policy_id = :policyId " +
+                "AND event_info = 'TIMEOUT' " +
+                "ORDER BY time_stamp DESC");
+
+        this.userInactiveQuery = new EventLogQuery(I18nUtil.marktr("Idle Timeout"),
+                "SELECT * FROM reports.n_capture_user_events " +
+                "WHERE policy_id = :policyId " +
+                "AND event_info = 'INACTIVE' " +
+                "ORDER BY time_stamp DESC");
+
+        this.userLogoutQuery = new EventLogQuery(I18nUtil.marktr("User Logout"),
+                "SELECT * FROM reports.n_capture_user_events " +
+                "WHERE policy_id = :policyId " +
+                "AND event_info = 'USER_LOGOUT' " +
+                "ORDER BY time_stamp DESC");
+
+        this.adminLogoutQuery = new EventLogQuery(I18nUtil.marktr("Admin Logout"),
+                "SELECT * FROM reports.n_capture_user_events " +
+                "WHERE policy_id = :policyId " +
+                "AND event_info = 'ADMIN_LOGOUT' " +
+                "ORDER BY time_stamp DESC");
 
         this.captureEventQuery = new EventLogQuery(I18nUtil.marktr("Capture Events"),
                 "SELECT * FROM reports.sessions " +
                 "WHERE policy_id = :policyId " +
                 "AND capture_blocked IS TRUE " +
+                "ORDER BY time_stamp DESC");
+
+        this.passEventQuery = new EventLogQuery(I18nUtil.marktr("Pass Events"),
+                "SELECT * FROM reports.sessions " +
+                "WHERE policy_id = :policyId " +
+                "AND capture_blocked IS FALSE " +
+                "ORDER BY time_stamp DESC");
+
+        this.allEventQuery = new EventLogQuery(I18nUtil.marktr("All Events"),
+                "SELECT * FROM reports.sessions " +
+                "WHERE policy_id = :policyId " +
+                "AND capture_blocked IS TRUE " +
+                "OR capture_blocked IS FALSE " +
                 "ORDER BY time_stamp DESC");
 
         addMetric(new NodeMetric(STAT_SESSALLOW, I18nUtil.marktr("Sessions allowed")));
@@ -147,13 +193,13 @@ public class CaptureNodeImpl extends NodeBase implements CaptureNode
     @Override
     public EventLogQuery[] getUserEventQueries()
     {
-        return new EventLogQuery[] { this.userEventQuery };
+        return new EventLogQuery[] { this.userEventQuery, this.userSuccessQuery, this.userFailureQuery, this.userTimeoutQuery, this.userInactiveQuery, this.userLogoutQuery, this.adminLogoutQuery };
     }
 
     @Override
     public EventLogQuery[] getRuleEventQueries()
     {
-        return new EventLogQuery[] { this.allEventQuery, this.captureEventQuery, this.passEventQuery };
+        return new EventLogQuery[] { this.captureEventQuery, this.passEventQuery, this.allEventQuery };
     }
 
     public void incrementBlinger(BlingerType blingerType, long delta )
@@ -364,7 +410,7 @@ public class CaptureNodeImpl extends NodeBase implements CaptureNode
 
             if (entry != null)
             {
-                CaptureLoginEvent event = new CaptureLoginEvent( address, username, captureSettings.getAuthenticationType(), CaptureLoginEvent.EventType.FAILED );
+                CaptureUserEvent event = new CaptureUserEvent( policyId, address, username, captureSettings.getAuthenticationType(), CaptureUserEvent.EventType.FAILED );
                 logEvent(event);
                 incrementBlinger(BlingerType.AUTHFAIL,1);
                 logger.info("Authenticate duplicate " + username + " " + address);
@@ -419,7 +465,7 @@ public class CaptureNodeImpl extends NodeBase implements CaptureNode
 
         if ( !isAuthenticated )
         {
-            CaptureLoginEvent event = new CaptureLoginEvent( address, username, captureSettings.getAuthenticationType(), CaptureLoginEvent.EventType.FAILED );
+            CaptureUserEvent event = new CaptureUserEvent( policyId, address, username, captureSettings.getAuthenticationType(), CaptureUserEvent.EventType.FAILED );
             logEvent(event);
             incrementBlinger(BlingerType.AUTHFAIL,1);
             logger.info("Authenticate failure " + username + " " + address);
@@ -428,7 +474,7 @@ public class CaptureNodeImpl extends NodeBase implements CaptureNode
 
         captureUserTable.insertActiveUser(address,username);
 
-        CaptureLoginEvent event = new CaptureLoginEvent( address, username, captureSettings.getAuthenticationType(), CaptureLoginEvent.EventType.LOGIN );
+        CaptureUserEvent event = new CaptureUserEvent( policyId, address, username, captureSettings.getAuthenticationType(), CaptureUserEvent.EventType.LOGIN );
         logEvent(event);
         incrementBlinger(BlingerType.AUTHGOOD,1);
         logger.info("Authenticate success " + username + " " + address);
@@ -439,7 +485,7 @@ public class CaptureNodeImpl extends NodeBase implements CaptureNode
     {
             if (agree.equals("agree") == false)
             {
-                CaptureLoginEvent event = new CaptureLoginEvent( address, address, captureSettings.getAuthenticationType(), CaptureLoginEvent.EventType.FAILED );
+                CaptureUserEvent event = new CaptureUserEvent( policyId, address, address, captureSettings.getAuthenticationType(), CaptureUserEvent.EventType.FAILED );
                 logEvent(event);
                 incrementBlinger(BlingerType.AUTHFAIL,1);
                 logger.info("Activate failure " + address);
@@ -448,7 +494,7 @@ public class CaptureNodeImpl extends NodeBase implements CaptureNode
 
         captureUserTable.insertActiveUser(address,address);
 
-        CaptureLoginEvent event = new CaptureLoginEvent( address, address, captureSettings.getAuthenticationType(), CaptureLoginEvent.EventType.LOGIN );
+        CaptureUserEvent event = new CaptureUserEvent( policyId, address, address, captureSettings.getAuthenticationType(), CaptureUserEvent.EventType.LOGIN );
         logEvent(event);
         incrementBlinger(BlingerType.AUTHGOOD,1);
         logger.info("Activate success " + address);
@@ -457,15 +503,15 @@ public class CaptureNodeImpl extends NodeBase implements CaptureNode
 
     public int userLogout(String address)
     {
-        return(userLogout(address,CaptureLoginEvent.EventType.USER_LOGOUT));
+        return(userLogout(address,CaptureUserEvent.EventType.USER_LOGOUT));
     }
 
     public int userAdminLogout(String address)
     {
-        return(userLogout(address,CaptureLoginEvent.EventType.ADMIN_LOGOUT));
+        return(userLogout(address,CaptureUserEvent.EventType.ADMIN_LOGOUT));
     }
 
-    public int userLogout(String address,CaptureLoginEvent.EventType reason)
+    public int userLogout(String address,CaptureUserEvent.EventType reason)
     {
         CaptureUserEntry user = captureUserTable.searchByAddress(address);
         final String userAddress = address;
@@ -520,7 +566,7 @@ public class CaptureNodeImpl extends NodeBase implements CaptureNode
             }
         });
 
-        CaptureLoginEvent event = new CaptureLoginEvent( user.getUserAddress(), user.getUserName(), captureSettings.getAuthenticationType(), reason );
+        CaptureUserEvent event = new CaptureUserEvent( policyId, user.getUserAddress(), user.getUserName(), captureSettings.getAuthenticationType(), reason );
         logEvent(event);
         logger.info("Logout success: " + address);
 

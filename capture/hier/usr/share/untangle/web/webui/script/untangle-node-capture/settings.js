@@ -1023,7 +1023,7 @@ if (!Ung.hasResource["Ung.Capture"]) {
                 },{
                     name: "auth_type"
                 },{
-                    name: "event"
+                    name: "event_info"
                 }],
 
                 columns: [{
@@ -1049,21 +1049,21 @@ if (!Ung.hasResource["Ung.Capture"]) {
                     header: this.i18n._("Action"),
                     width: 165,
                     sortable: true,
-                    dataIndex: "event",
+                    dataIndex: "event_info",
                     renderer: Ext.bind(function( value ) {
                         switch ( value ) {
                         case "LOGIN":
-                            return this.i18n._( "authenticated" );
+                            return this.i18n._( "Login Success" );
                         case "FAILED":
-                            return this.i18n._( "access denied" );
+                            return this.i18n._( "Login Failure" );
                         case "TIMEOUT":
-                            return this.i18n._( "session timeout" );
+                            return this.i18n._( "Session Timeout" );
                         case "INACTIVE":
-                            return this.i18n._(" idle timeout");
+                            return this.i18n._( "Idle Timeout" );
                         case "USER_LOGOUT":
-                            return this.i18n._( "user logout" );
+                            return this.i18n._( "User Logout" );
                         case "ADMIN_LOGOUT":
-                            return this.i18n._( "admin logout" );
+                            return this.i18n._( "Admin Logout" );
                         }
                         return "";
                     }, this )

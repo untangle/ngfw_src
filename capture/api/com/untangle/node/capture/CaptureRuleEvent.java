@@ -41,9 +41,7 @@ public class CaptureRuleEvent extends LogEvent
     @Override
     public java.sql.PreparedStatement getDirectEventSql( java.sql.Connection conn ) throws Exception
     {
-        String sql =
-            "UPDATE reports.sessions " +
-            "SET ";
+        String sql = "UPDATE reports.sessions SET ";
         sql += " capture_rule_index = ?, ";
         sql += " capture_blocked = ? ";
         sql += " WHERE session_id = ? ";

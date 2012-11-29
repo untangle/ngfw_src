@@ -52,25 +52,25 @@ class Capture(Node):
         Node.__init__(self, 'untangle-node-capture')
 
     def setup(self):
-        self.__make_n_capture_login_events_table()
+        self.__make_n_capture_user_events_table()
 
-        ft = FactTable('reports.n_capture_login_totals',
-                       'reports.n_capture_login_events',
+        ft = FactTable('reports.n_capture_user_totals',
+                       'reports.n_capture_user_events',
                        'time_stamp', [], [])
         reports.engine.register_fact_table(ft)
 
         ft.measures.append(Column('logins',
                                     'integer',
-                                    "count(CASE WHEN event = 'LOGIN' THEN 1 ELSE NULL END)"))
+                                    "count(CASE WHEN event_info = 'LOGIN' THEN 1 ELSE NULL END)"))
         ft.measures.append(Column('timeouts',
                                     'integer',
-                                    "count(CASE WHEN event = 'TIMEOUT' THEN 1 ELSE NULL END)"))
+                                    "count(CASE WHEN event_info = 'TIMEOUT' THEN 1 ELSE NULL END)"))
         ft.measures.append(Column('logouts',
                                     'integer',
-                                    "count(CASE WHEN event = 'LOGOUT' THEN 1 ELSE NULL END)"))
+                                    "count(CASE WHEN event_info = 'LOGOUT' THEN 1 ELSE NULL END)"))
         ft.measures.append(Column('failures',
                                   'integer',
-                                  "count(CASE WHEN event = 'FAILED' THEN 1 ELSE NULL END)"))
+                                  "count(CASE WHEN event_info = 'FAILED' THEN 1 ELSE NULL END)"))
 
         ft = reports.engine.get_fact_table('reports.session_totals')
         ft.measures.append(Column('capture_blocks', 'integer', "count(CASE WHEN capture_blocked THEN 1 ELSE null END)"))
@@ -98,34 +98,35 @@ class Capture(Node):
         return Report(self, sections)
 
     def reports_cleanup(self, cutoff):
-        sql_helper.drop_fact_table("n_capture_login_events", cutoff)
-        sql_helper.drop_fact_table("n_capture_login_totals", cutoff)
+        sql_helper.drop_fact_table("n_capture_user_events", cutoff)
+        sql_helper.drop_fact_table("n_capture_user_totals", cutoff)
 
     @print_timing
-    def __make_n_capture_login_events_table(self):
+    def __make_n_capture_user_events_table(self):
         sql_helper.create_fact_table("""\
-CREATE TABLE reports.n_capture_login_events (
+CREATE TABLE reports.n_capture_user_events (
     time_stamp timestamp without time zone,
+    policy_id bigint,
     login_name text,
-    event text,
+    event_info text,
     auth_type text,
     client_addr text,
     event_id bigserial)""")
 
-        sql_helper.add_column('reports', 'n_capture_login_events', 'event_id', 'bigserial')
+        sql_helper.add_column('reports', 'n_capture_user_events', 'event_id', 'bigserial')
 
         # we used to create event_id as serial instead of bigserial - convert if necessary
-        sql_helper.convert_column("reports","n_capture_login_events","event_id","integer","bigint");
+        sql_helper.convert_column("reports","n_capture_user_events","event_id","integer","bigint");
 
-        sql_helper.create_index("reports","n_capture_login_events","event_id");
-        sql_helper.create_index("reports","n_capture_login_events","time_stamp");
+        sql_helper.create_index("reports","n_capture_user_events","event_id");
+        sql_helper.create_index("reports","n_capture_user_events","time_stamp");
 
 class CaptureHighlight(Highlight):
     def __init__(self, name):
         Highlight.__init__(self, name,
                            _(name) + " " +
                            _("processed") + " " + "%(logins)s" + " " +
-                           _("user login events"))
+                           _("user events"))
 
     @print_timing
     def get_highlights(self, end_date, report_days,
@@ -183,7 +184,7 @@ SELECT COALESCE(SUM(dt.logins_pd)/%s,0), COALESCE(MAX(dt.logins_pd),0),
                   SUM(timeouts) AS timeouts_pd,
                   SUM(failures) AS failures_pd,
                   DATE_TRUNC('day',trunc_time) AS day
-           FROM reports.n_capture_login_totals
+           FROM reports.n_capture_user_totals
            WHERE trunc_time >= %s::timestamp without time zone AND trunc_time < %s::timestamp without time zone
            GROUP BY day
        ) AS dt
@@ -207,7 +208,7 @@ SELECT COALESCE(SUM(dt.logins_pd)/%s,0), COALESCE(MAX(dt.logins_pd),0),
                 unit = "Day"
                 formatter = DATE_FORMATTER
 
-            q, h = sql_helper.get_averaged_query(sums, "reports.n_capture_login_totals",
+            q, h = sql_helper.get_averaged_query(sums, "reports.n_capture_user_totals",
                                                  start_date,
                                                  end_date,
                                                  extra_where = extra_where,
@@ -306,9 +307,9 @@ class TopUsers(Graph):
 
         query = """
 SELECT login_name,count(*)::int as logins
-FROM reports.n_capture_login_events
+FROM reports.n_capture_user_events
 WHERE NOT login_name IS NULL
-AND event != 'FAILED'
+AND event_info != 'FAILED'
 AND time_stamp >= %s::timestamp without time zone AND time_stamp < %s::timestamp without time zone
 GROUP BY login_name"""
 
@@ -384,9 +385,9 @@ GROUP BY client_address"""
         return (lks, plot, 10)
 
 
-class LoginDetail(DetailSection):
+class userDetail(DetailSection):
     def __init__(self):
-        DetailSection.__init__(self, 'capture-login-events', _('Capture Login Events'))
+        DetailSection.__init__(self, 'capture-user-events', _('Capture User Events'))
 
     def get_columns(self, host=None, user=None, email=None):
         if email or user or host:
@@ -394,7 +395,7 @@ class LoginDetail(DetailSection):
 
         rv = [ColumnDesc('time_stamp', _('Time'), 'Date'),
               ColumnDesc('login_name', _('Login Name')),
-              ColumnDesc('event', _('Type'))]
+              ColumnDesc('event_info', _('Type'))]
 
         return rv
 
@@ -404,9 +405,9 @@ class LoginDetail(DetailSection):
 
         sql = """
 SELECT time_stamp, login_name,
-CASE WHEN event = 'LOGIN' THEN '%s'
-     WHEN event = 'FAILED' THEN '%s' END
-FROM reports.n_capture_login_events
+CASE WHEN event_info = 'LOGIN' THEN '%s'
+     WHEN event_info = 'FAILED' THEN '%s' END
+FROM reports.n_capture_user_events
 WHERE time_stamp >= %s::timestamp without time zone AND time_stamp < %s::timestamp without time zone
 ORDER BY time_stamp DESC
 """ % (LOGIN, FAILED,

@@ -20,10 +20,10 @@ public class CaptureUserTable
 
     public class StaleUser
     {
-        CaptureLoginEvent.EventType reason;
+        CaptureUserEvent.EventType reason;
         String address;
 
-        StaleUser(String address,CaptureLoginEvent.EventType reason)
+        StaleUser(String address,CaptureUserEvent.EventType reason)
         {
             this.address = address;
             this.reason = reason;
@@ -123,7 +123,7 @@ public class CaptureUserTable
                 if ( (idleTimeout > 0) && (currentTime > idleTrigger) )
                 {
                     logger.info("Idle timeout removing user " + item.getUserAddress() + " " + item.getUserName());
-                    stale = new StaleUser(item.getUserAddress(),CaptureLoginEvent.EventType.INACTIVE);
+                    stale = new StaleUser(item.getUserAddress(),CaptureUserEvent.EventType.INACTIVE);
                     wipelist.add(stale);
                     wipecount++;
                 }
@@ -132,7 +132,7 @@ public class CaptureUserTable
                 if (currentTime > userTrigger)
                 {
                     logger.info("Session timeout removing user " + item.getUserAddress() + " " + item.getUserName());
-                    stale = new StaleUser(item.getUserAddress(),CaptureLoginEvent.EventType.TIMEOUT);
+                    stale = new StaleUser(item.getUserAddress(),CaptureUserEvent.EventType.TIMEOUT);
                     wipelist.add(stale);
                     wipecount++;
                 }
