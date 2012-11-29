@@ -25,6 +25,53 @@ if (!Ung.hasResource["Ung.SessionMonitor"]) {
             if (!this.isVisible())
                 return {javaClass:"java.util.LinkedList", list:[]};
             var sessions = rpc.sessionMonitor.getMergedSessions(nodeId);
+            if(testMode) {
+                var testSessionsSize=2000;
+                for(var i=0;i<testSessionsSize;i++) {
+                    sessions.list.push({
+                        "postNatServer": "184.27.239."+(i%10),
+                        "bypassed": false,
+                        "state": null,
+                        "natted": true,
+                        "totalKBps": null,
+                        "localTraffic": false,
+                        "priority": 4,
+                        "postNatClient": "50.193.63."+((i+1)%10),
+                        "postNatClientPort": (i+1000),
+                        "preNatClient": "10.0.0."+((i+2)%10),
+                        "preNatServer": "184.27.239."+((i+3)%10),
+                        "attachments": {
+                            "map": {
+                                "esoft-best-category-name": "Social Networking",
+                                "protofilter-matched": false,
+                                "esoft-best-category-description": "Social Networking",
+                                "esoft-best-category-blocked": false,
+                                "esoft-flagged": false,
+                                "platform-hostname": "acct07-wxp",
+                                "esoft-best-category-flagged": false,
+                                "esoft-best-category-id": null,
+                                "http-uri": "/t.gif",
+                                "platform-username": "rbooroojian",
+                                "http-hostname": "p.twitter.com"
+                            },
+                            "javaClass": "java.util.HashMap"
+                        },
+                        "protocol": "TCP",
+                        "serverKBps": null,
+                        "portForwarded": false,
+                        "preNatClientPort": 1471,
+                        "preNatServerPort": i+1500,
+                        "serverIntf": 5,
+                        "clientIntf": 2,
+                        "sessionId": 88616525732127+i,
+                        "javaClass": "com.untangle.uvm.SessionMonitorEntry",
+                        "qosPriority": 4,
+                        "clientKBps": null,
+                        "policy": "1",
+                        "postNatServerPort": (i+2000)
+                    });                 
+                }
+            }
             // iterate through each session and change its attachments map to properties
             for (var i = 0; i < sessions.list.length ; i++) {
                 var session = sessions.list[i];
