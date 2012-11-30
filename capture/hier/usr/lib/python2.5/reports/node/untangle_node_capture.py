@@ -33,10 +33,12 @@ from reports.sql_helper import print_timing
 _ = reports.i18n_helper.get_translation('untangle-node-capture').lgettext
 def N_(message): return message
 
-LOGIN = _('Login')
-LOGOUT = _('Logout')
-FAILED = _('Failed')
-TIMEOUT = _('Timeout')
+LOGIN = _('Login Success')
+FAILED = _('Login Failure')
+TIMEOUT = _('Session Timeout')
+INACTIVE = _('Idle Timeout')
+USER_LOGOUT = _('User Logout')
+ADMIN_LOGOUT = _('Admin Logout')
 
 def auto_incr(start_value=0, amount = 1):
     v = [start_value]
@@ -59,18 +61,24 @@ class Capture(Node):
                        'time_stamp', [], [])
         reports.engine.register_fact_table(ft)
 
-        ft.measures.append(Column('logins',
+        ft.measures.append(Column('success',
                                     'integer',
                                     "count(CASE WHEN event_info = 'LOGIN' THEN 1 ELSE NULL END)"))
-        ft.measures.append(Column('timeouts',
+        ft.measures.append(Column('failure',
+                                    'integer',
+                                    "count(CASE WHEN event_info = 'FAILED' THEN 1 ELSE NULL END)"))
+        ft.measures.append(Column('timeout',
                                     'integer',
                                     "count(CASE WHEN event_info = 'TIMEOUT' THEN 1 ELSE NULL END)"))
-        ft.measures.append(Column('logouts',
+        ft.measures.append(Column('inactive',
                                     'integer',
-                                    "count(CASE WHEN event_info = 'LOGOUT' THEN 1 ELSE NULL END)"))
-        ft.measures.append(Column('failures',
-                                  'integer',
-                                  "count(CASE WHEN event_info = 'FAILED' THEN 1 ELSE NULL END)"))
+                                    "count(CASE WHEN event_info = 'INACTIVE' THEN 1 ELSE NULL END)"))
+        ft.measures.append(Column('user_logout',
+                                    'integer',
+                                    "count(CASE WHEN event_info = 'USER_LOGOUT' THEN 1 ELSE NULL END)"))
+        ft.measures.append(Column('admin_logout',
+                                    'integer',
+                                    "count(CASE WHEN event_info = 'ADMIN_LOGOUT' THEN 1 ELSE NULL END)"))
 
         ft = reports.engine.get_fact_table('reports.session_totals')
         ft.measures.append(Column('capture_blocks', 'integer', "count(CASE WHEN capture_blocked THEN 1 ELSE null END)"))
@@ -92,8 +100,8 @@ class Capture(Node):
                             TopBlockedClients()])
         sections.append(s)
 
-        sections.append(LoginDetail())
-        sections.append(BlockDetail())
+        sections.append(UserDetail())
+        sections.append(RuleDetail())
 
         return Report(self, sections)
 
@@ -126,7 +134,7 @@ class CaptureHighlight(Highlight):
         Highlight.__init__(self, name,
                            _(name) + " " +
                            _("processed") + " " + "%(logins)s" + " " +
-                           _("user events"))
+                           _("user login events"))
 
     @print_timing
     def get_highlights(self, end_date, report_days,
@@ -138,8 +146,8 @@ class CaptureHighlight(Highlight):
         one_week = DateFromMx(end_date - mx.DateTime.DateTimeDelta(report_days))
 
         query = """\
-SELECT COALESCE(sum(logins), 0) as logins
-FROM reports.n_capture_login_totals
+SELECT COALESCE(sum(success), 0) as logins
+FROM reports.n_capture_user_totals
 WHERE trunc_time >= %s::timestamp without time zone AND trunc_time < %s::timestamp without time zone"""
 
         conn = sql_helper.get_connection()
@@ -172,17 +180,19 @@ class DailyUsage(Graph):
         # pd = Per Day.  This is the number of a particular event per day.
         lks = []
         query = """
-SELECT COALESCE(SUM(dt.logins_pd)/%s,0), COALESCE(MAX(dt.logins_pd),0),
-       COALESCE(SUM(dt.logouts_pd)/%s,0), COALESCE(MAX(dt.logouts_pd),0),
-       COALESCE(SUM(dt.timeouts_pd)/%s,0), COALESCE(MAX(dt.timeouts_pd),0),
-       COALESCE(SUM(dt.failures_pd)/%s,0), COALESCE(MAX(dt.failures_pd),0),
-       COALESCE(SUM(dt.logins_pd + dt.logouts_pd + dt.failures_pd)/%s,0),
-       COALESCE(MAX(dt.logins_pd + dt.logouts_pd + dt.failures_pd),0)
+SELECT COALESCE(SUM(dt.success_pd)/%s,0), COALESCE(MAX(dt.success_pd),0),
+       COALESCE(SUM(dt.failure_pd)/%s,0), COALESCE(MAX(dt.failure_pd),0),
+       COALESCE(SUM(dt.timeout_pd)/%s,0), COALESCE(MAX(dt.timeout_pd),0),
+       COALESCE(SUM(dt.inactive_pd)/%s,0), COALESCE(MAX(dt.inactive_pd),0),
+       COALESCE(SUM(dt.user_logout_pd)/%s,0), COALESCE(MAX(dt.user_logout_pd),0),
+       COALESCE(SUM(dt.admin_logout_pd)/%s,0), COALESCE(MAX(dt.admin_logout_pd),0),
        FROM (
-           SELECT SUM(logins) AS logins_pd,
-                  SUM(logouts) AS logouts_pd,
-                  SUM(timeouts) AS timeouts_pd,
-                  SUM(failures) AS failures_pd,
+           SELECT SUM(success) AS success_pd,
+                  SUM(failure) AS failure_pd,
+                  SUM(timeout) AS timeout_pd,
+                  SUM(inactive) AS inactive_pd,
+                  SUM(user_logout) AS user_logout_pd,
+                  SUM(admin_logout) AS admin_logout_pd,
                   DATE_TRUNC('day',trunc_time) AS day
            FROM reports.n_capture_user_totals
            WHERE trunc_time >= %s::timestamp without time zone AND trunc_time < %s::timestamp without time zone
@@ -192,10 +202,12 @@ SELECT COALESCE(SUM(dt.logins_pd)/%s,0), COALESCE(MAX(dt.logins_pd),0),
         conn = sql_helper.get_connection()
         curs = conn.cursor()
         try:
-            sums = ["COALESCE(SUM(logins), 0)::float",
-                    "COALESCE(SUM(logouts), 0)::float",
-                    "COALESCE(SUM(timeouts), 0)::float",
-                    "COALESCE(SUM(failures), 0)::float"]
+            sums = ["COALESCE(SUM(success), 0)::float",
+                    "COALESCE(SUM(failure), 0)::float",
+                    "COALESCE(SUM(timeout), 0)::float",
+                    "COALESCE(SUM(inactive), 0)::float",
+                    "COALESCE(SUM(user_logout), 0)::float",
+                    "COALESCE(SUM(admin_logout), 0)::float"]
 
             extra_where = []
 
@@ -216,58 +228,66 @@ SELECT COALESCE(SUM(dt.logins_pd)/%s,0), COALESCE(MAX(dt.logins_pd),0),
             curs.execute(q, h)
 
             dates = []
-            logins = []
-            logouts = []
-            timeouts = []
-            failures = []
+            success = []
+            failure = []
+            timeout = []
+            inactive = []
+            user_logout = []
+            admin_logout = []
 
             for r in curs.fetchall():
                 dates.append(r[0])
-                logins.append(r[1])
-                logouts.append(r[2])
-                timeouts.append(r[3])
-                failures.append(r[4])
+                success.append(r[1])
+                failure.append(r[2])
+                timeout.append(r[3])
+                inactive.append(r[4])
+                user_logout.append(r[5])
+                admin_logout.append(r[6])
 
-            if not logins:
-                logins = [0,]
-            if not logouts:
-                logouts = [0,]
-            if not timeouts:
-                timeouts = [0,]
-            if not failures:
-                failures = [0,]
+            if not success:
+                success = [0,]
+            if not failure:
+                failure = [0,]
+            if not timeout:
+                timeout = [0,]
+            if not inactive:
+                inactive = [0,]
+            if not user_logout:
+                user_logout = [0,]
+            if not admin_logout:
+                logout = [0,]
 
             rp = sql_helper.get_required_points(start_date, end_date,
                                             mx.DateTime.DateTimeDeltaFromSeconds(time_interval))
 
-            ks = KeyStatistic(_('Average Logins'), sum(logins) / len(rp),
+            ks = KeyStatistic(_('Average Logins'), sum(success) / len(rp),
                               N_('Events')+'/'+_(unit))
             lks.append(ks)
-            ks = KeyStatistic(_('Max Logins'), max(logins),
+            ks = KeyStatistic(_('Max Logins'), max(success),
                               N_('Events')+'/'+_(unit))
             lks.append(ks)
-            ks = KeyStatistic(_('Average Logouts'), sum(logouts) / len(rp),
+            ks = KeyStatistic(_('Average Failures'), sum(failure) / len(rp),
                               N_('Events')+'/'+_(unit))
             lks.append(ks)
-            ks = KeyStatistic(_('Max Logouts'), max(logouts),
+            ks = KeyStatistic(_('Max Failures'), max(failure),
                               N_('Events')+'/'+_(unit))
             lks.append(ks)
-            ks = KeyStatistic(_('Average Timeouts'), sum(timeouts) / len(rp),
+            ks = KeyStatistic(_('Average Timeouts'), sum(timeout+inactive) / len(rp),
                               N_('Events')+'/'+_(unit))
             lks.append(ks)
-            ks = KeyStatistic(_('Max Timeouts'), max(timeouts),
+            ks = KeyStatistic(_('Max Timeouts'), max(timeout+inactive),
                               N_('Events')+'/'+_(unit))
             lks.append(ks)
-            ks = KeyStatistic(_('Average Failures'), sum(failures) / len(rp),
+            ks = KeyStatistic(_('Average Logouts'), sum(user_logout+admin_logout) / len(rp),
                               N_('Events')+'/'+_(unit))
             lks.append(ks)
-            ks = KeyStatistic(_('Max Failures'), max(failures),
+            ks = KeyStatistic(_('Max Logouts'), max(user_logout+admin_logout),
                               N_('Events')+'/'+_(unit))
             lks.append(ks)
-            ks = KeyStatistic(_('Average Events'), sum(logins+logouts+failures) / len(rp),
+            ks = KeyStatistic(_('Average Events'), sum(success+failure+timeout+inactive+user_logout+admin_logout) / len(rp),
                               N_('Events')+'/'+_(unit))
             lks.append(ks)
-            ks = KeyStatistic(_('Max Events'), max(logouts+logouts+failures),
+            ks = KeyStatistic(_('Max Events'), max(success+failure+timeout+inactive+user_logout+admin_logout),
                               N_('Events')+'/'+_(unit))
             lks.append(ks)
 
@@ -280,14 +300,14 @@ SELECT COALESCE(SUM(dt.logins_pd)/%s,0), COALESCE(MAX(dt.logins_pd),0),
                      ylabel=_('Events'),
                      major_formatter=HOUR_FORMATTER,
                      required_points=rp)
-        plot.add_dataset(dates, logins, label=_('Logins'),
+        plot.add_dataset(dates, success, label=_('Logins'),
                          color=colors.goodness)
-        plot.add_dataset(dates, logouts, label=_('Logouts'),
-                         color=colors.detected)
-        plot.add_dataset(dates, logouts, label=_('Timeouts'),
-                         color=colors.detected)
-        plot.add_dataset(dates, failures, label=_('Failures'),
+        plot.add_dataset(dates, failure, label=_('Failures'),
                          color=colors.badness)
+        plot.add_dataset(dates, timeout, label=_('Timeouts'),
+                         color=colors.blue)
+        plot.add_dataset(dates, inactive, label=_('Logouts'),
+                         color=colors.detected)
 
         return (lks, plot)
 
@@ -309,7 +329,7 @@ class TopUsers(Graph):
 SELECT login_name,count(*)::int as logins
 FROM reports.n_capture_user_events
 WHERE NOT login_name IS NULL
-AND event_info != 'FAILED'
+AND event_info = 'LOGIN'
 AND time_stamp >= %s::timestamp without time zone AND time_stamp < %s::timestamp without time zone
 GROUP BY login_name"""
 
@@ -353,10 +373,10 @@ class TopBlockedClients(Graph):
         one_week = DateFromMx(end_date - mx.DateTime.DateTimeDelta(report_days))
 
         query = """
-SELECT client_address,sum(blocks)::int as blocks
-FROM reports.n_capture_block_totals
-WHERE NOT client_address IS NULL AND trunc_time >= %s::timestamp without time zone AND trunc_time < %s::timestamp without time zone
-GROUP BY client_address"""
+SELECT host(c_client_addr),count(c_client_addr)::int as failure
+FROM reports.sessions
+WHERE NOT c_client_addr IS NULL AND capture_blocked = TRUE AND time_stamp >= %s::timestamp without time zone AND time_stamp < %s::timestamp without time zone
+GROUP BY c_client_addr"""
 
         conn = sql_helper.get_connection()
         try:
@@ -368,13 +388,13 @@ GROUP BY client_address"""
             pie_data = {}
 
             for r in curs.fetchall():
-                client_address = r[0]
-                blocks = r[1]
+                c_client_addr = r[0]
+                failure = r[1]
 
-                ks = KeyStatistic(client_address, blocks, _('Blocks'))
+                ks = KeyStatistic(c_client_addr, failure, _('Blocked'))
                 lks.append(ks)
 
-                pie_data[client_address] = blocks
+                pie_data[c_client_addr] = failure
         finally:
             conn.commit()
 
@@ -385,7 +405,7 @@ GROUP BY client_address"""
         return (lks, plot, 10)
 
 
-class userDetail(DetailSection):
+class UserDetail(DetailSection):
     def __init__(self):
         DetailSection.__init__(self, 'capture-user-events', _('Capture User Events'))
 
@@ -394,7 +414,7 @@ class userDetail(DetailSection):
             return None
 
         rv = [ColumnDesc('time_stamp', _('Time'), 'Date'),
-              ColumnDesc('login_name', _('Login Name')),
+              ColumnDesc('login_name', _('User Name')),
               ColumnDesc('event_info', _('Type'))]
 
         return rv
@@ -406,17 +426,21 @@ class userDetail(DetailSection):
         sql = """
 SELECT time_stamp, login_name,
 CASE WHEN event_info = 'LOGIN' THEN '%s'
-     WHEN event_info = 'FAILED' THEN '%s' END
+     WHEN event_info = 'FAILED' THEN '%s'
+     WHEN event_info = 'TIMEOUT' THEN '%s'
+     WHEN event_info = 'INACTIVE' THEN '%s'
+     WHEN event_info = 'USER_LOGOUT' THEN '%s'
+     WHEN event_info = 'ADMIN_LOGOUT' THEN '%s' END
 FROM reports.n_capture_user_events
 WHERE time_stamp >= %s::timestamp without time zone AND time_stamp < %s::timestamp without time zone
 ORDER BY time_stamp DESC
-""" % (LOGIN, FAILED,
+""" % (LOGIN, FAILED, TIMEOUT, INACTIVE, USER_LOGOUT, ADMIN_LOGOUT,
        DateFromMx(start_date),
        DateFromMx(end_date))
 
         return sql
 
-class BlockDetail(DetailSection):
+class RuleDetail(DetailSection):
     def __init__(self):
         DetailSection.__init__(self, 'capture-rule-events', _('Capture Rule Events'))
 
@@ -425,6 +449,10 @@ class BlockDetail(DetailSection):
             return None
 
         rv = [ColumnDesc('time_stamp', _('Time'), 'Date'),
+              ColumnDesc('c_client_addr', _('Client Address')),
+              ColumnDesc('c_client_port', _('Client Port')),
+              ColumnDesc('c_server_address', _('Server Address')),
+              ColumnDesc('c_server_port', _('Server Port')),
               ColumnDesc('capture_rule_index', _('Rule Applied')),
               ColumnDesc('capture_blocked', _('Blocked'))]
 
@@ -435,10 +463,11 @@ class BlockDetail(DetailSection):
             return None
 
         sql = """
-SELECT time_stamp, host(client_address), client_port,
-       host(server_address), server_port, capture_rule_index, capture_blocked::text
+SELECT time_stamp, host(c_client_addr), c_client_port,
+       host(c_server_addr), c_server_port, capture_rule_index, capture_blocked::text
 FROM reports.sessions
-WHERE time_stamp >= %s::timestamp without time zone AND time_stamp < %s::timestamp without time zone
+WHERE capture_blocked = TRUE OR capture_blocked = FALSE
+AND time_stamp >= %s::timestamp without time zone AND time_stamp < %s::timestamp without time zone
 ORDER BY time_stamp DESC
 """ % (DateFromMx(start_date),
        DateFromMx(end_date))
