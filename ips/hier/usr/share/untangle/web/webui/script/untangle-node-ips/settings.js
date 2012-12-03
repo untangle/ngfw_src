@@ -325,8 +325,7 @@ if (!Ung.hasResource["Ung.Ips"]) {
                     mapping: 'ips_blocked'
                 }, {
                     name: 'name',
-                    mapping: 'ips_name',
-                    type: 'string'
+                    mapping: 'ips_ruleid'
                 }, {
                     name: 'description',
                     mapping: 'ips_description',
@@ -374,7 +373,7 @@ if (!Ung.hasResource["Ung.Ips"]) {
                     dataIndex: 'name'
                 }, {
                     id: 'ruleDescription',
-                    header: this.i18n._('Rule Ddescription'),
+                    header: this.i18n._('Rule Description'),
                     width: 150,
                     sortable: true,
                     flex:1,

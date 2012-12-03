@@ -67,6 +67,7 @@ public class IpsLogEvent extends LogEvent
         "UPDATE reports.sessions " + 
         "SET " +
         " ips_blocked = ?, " + 
+        " ips_ruleid = ?, " + 
         " ips_description = ? " + 
         "WHERE session_id = ? " ;
 
@@ -77,6 +78,7 @@ public class IpsLogEvent extends LogEvent
 
         int i=0;
         pstmt.setBoolean(++i, getBlocked());
+        pstmt.setInt(++i, getRule().getSid());
         pstmt.setString(++i, getRule().getDescription());
         pstmt.setLong(++i, sessionEvent.getSessionId());
 

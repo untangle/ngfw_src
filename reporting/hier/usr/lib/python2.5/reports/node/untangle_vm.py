@@ -222,6 +222,7 @@ CREATE TABLE reports.sessions (
         sql_helper.add_column('reports', 'sessions', 'classd_ruleid', 'integer')
         sql_helper.add_column('reports', 'sessions', 'classd_detail', 'text')
         sql_helper.add_column('reports', 'sessions', 'ips_blocked', 'boolean')
+        sql_helper.add_column('reports', 'sessions', 'ips_ruleid', 'integer')
         sql_helper.add_column('reports', 'sessions', 'ips_description', 'text')
         sql_helper.add_column('reports', 'sessions', 'sw_access_ident', 'text')
         sql_helper.add_column('reports', 'sessions', 's_client_addr', 'inet')
