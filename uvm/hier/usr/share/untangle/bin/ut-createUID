@@ -13,7 +13,7 @@ if [[ $(cat /etc/debian_version) == 6* ]] ; then
 else
   REPOSITORY=lenny
 fi
-CURRENT_STABLE=stable-9
+CURRENT_STABLE=stable-94
 DEFAULT_UNTANGLE_SOURCE="deb http://${UID_TEMPLATE}:untangle@updates.untangle.com/public/${REPOSITORY} ${CURRENT_STABLE} main premium upstream\ndeb http://${UID_TEMPLATE}:untangle@updates.untangle.com/public/${REPOSITORY} hooper main premium upstream"
 
 if [ ! -f $UID_FILE ]; then
