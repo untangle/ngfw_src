@@ -61,6 +61,8 @@ public class RuleMatcher implements JSONString, Serializable
             SERVER_HAS_NO_QUOTA, /* none */
             CLIENT_QUOTA_EXCEEDED, /* none */
             SERVER_QUOTA_EXCEEDED, /* none */
+            DAY_OF_WEEK, /* "monday" "monday,tuesday" "any" */
+            TIME_OF_DAY, /* "any" "10:00-11:00" */
 
             /* application specific matchers */
             HTTP_HOST, /* "playboy.com" "any" */
@@ -107,15 +109,17 @@ public class RuleMatcher implements JSONString, Serializable
      * They are stored here so that repatitive evaluation is quicker
      * They are prepared by calling _computerMatchers()
      */
-    private IPMatcher       ipMatcher       = null;
-    private PortMatcher     portMatcher     = null;
-    private IntfMatcher     intfMatcher     = null;
-    private UserMatcher     userMatcher     = null;
-    private GroupMatcher    groupMatcher     = null;
-    private ProtocolMatcher protocolMatcher = null;
-    private String          regexValue      = null;
-    private Integer         intValue        = null;
-    private Long            longValue        = null;
+    private IPMatcher        ipMatcher       = null;
+    private PortMatcher      portMatcher     = null;
+    private IntfMatcher      intfMatcher     = null;
+    private UserMatcher      userMatcher     = null;
+    private GroupMatcher     groupMatcher     = null;
+    private ProtocolMatcher  protocolMatcher = null;
+    private TimeOfDayMatcher timeOfDayMatcher = null;
+    private DayOfWeekMatcher dayOfWeekMatcher = null;
+    private String           regexValue      = null;
+    private Integer          intValue        = null;
+    private Long             longValue        = null;
     
     public RuleMatcher( )
     {
@@ -273,6 +277,24 @@ public class RuleMatcher implements JSONString, Serializable
             }
             break;
             
+        case TIME_OF_DAY:
+            try {
+                this.timeOfDayMatcher = new TimeOfDayMatcher(this.value);
+            } catch (Exception e) {
+                logger.warn("Invalid Time Of Day Matcher: " + value, e);
+            }
+
+            break;
+
+        case DAY_OF_WEEK:
+            try {
+                this.dayOfWeekMatcher = new DayOfWeekMatcher(this.value);
+            } catch (Exception e) {
+                logger.warn("Invalid Day Of Week Matcher: " + value, e);
+            }
+
+            break;
+
         case SITEFILTER_FLAGGED:
         case CLIENT_IN_PENALTY_BOX:
         case SERVER_IN_PENALTY_BOX:
@@ -422,6 +444,22 @@ public class RuleMatcher implements JSONString, Serializable
         case SERVER_QUOTA_EXCEEDED:
             return UvmContextFactory.context().hostTable().hostQuotaExceeded( sess.getServerAddr() );
             
+        case TIME_OF_DAY:
+            if (timeOfDayMatcher == null) {
+                logger.warn("Invalid Time Of Day Matcher: " + this.timeOfDayMatcher);
+                return false;
+            }
+
+            return timeOfDayMatcher.isMatch();
+
+        case DAY_OF_WEEK:
+            if (dayOfWeekMatcher == null) {
+                logger.warn("Invalid Day Of Week Matcher: " + this.dayOfWeekMatcher);
+                return false;
+            }
+
+            return dayOfWeekMatcher.isMatch();
+
         case HTTP_HOST:
             attachment = (String) sess.globalAttachment(NodeSession.KEY_HTTP_HOSTNAME);
             if (attachment == null)
@@ -769,6 +807,22 @@ public class RuleMatcher implements JSONString, Serializable
         case SERVER_QUOTA_EXCEEDED:
             return UvmContextFactory.context().hostTable().hostQuotaExceeded( dstAddress );
             
+        case TIME_OF_DAY:
+            if (timeOfDayMatcher == null) {
+                logger.warn("Invalid Time Of Day Matcher: " + this.timeOfDayMatcher);
+                return false;
+            }
+
+            return timeOfDayMatcher.isMatch();
+
+        case DAY_OF_WEEK:
+            if (dayOfWeekMatcher == null) {
+                logger.warn("Invalid Day Of Week Matcher: " + this.dayOfWeekMatcher);
+                return false;
+            }
+
+            return dayOfWeekMatcher.isMatch();
+
         case DIRECTORY_CONNECTOR_GROUP:
             if (username == null)
                 return false;
