@@ -4,7 +4,7 @@
 package com.untangle.uvm.argon;
 
 import com.untangle.uvm.ArgonManager;
-import com.untangle.uvm.SessionMatcher;
+import com.untangle.uvm.SessionMatcherGlobal;
 
 /**
  * Argon manager.
@@ -32,7 +32,7 @@ public class ArgonManagerImpl implements ArgonManager
     }
     
     /** Shutdown all of the sessions that match <code>matcher</code> */
-    public void shutdownMatches( SessionMatcher matcher )
+    public void shutdownMatches( SessionMatcherGlobal matcher )
     {
         ArgonSessionTable.getInstance().shutdownMatches( matcher );
     }

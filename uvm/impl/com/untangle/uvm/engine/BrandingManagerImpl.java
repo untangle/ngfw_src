@@ -39,7 +39,10 @@ class BrandingManagerImpl implements BrandingManager
         /**
          * If there is an Branding name specified - use it instead
          */
-        String brandingName = this.getBrandingManager().getCompanyName();
+        BrandingManager bm = getBrandingManager();
+        if (bm == null)
+            return ret;
+        String brandingName = bm.getCompanyName();
         if (brandingName != null)
             ret = brandingName;
 

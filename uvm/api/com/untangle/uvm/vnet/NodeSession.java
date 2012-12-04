@@ -5,6 +5,7 @@ package com.untangle.uvm.vnet;
 
 import com.untangle.uvm.node.SessionTuple;
 
+import java.util.Map;
 import java.net.InetAddress;
 
 /**
@@ -143,6 +144,12 @@ public interface NodeSession extends SessionTuple
      */
     short getProtocol();
 
+
+    /**
+     * Return the policy Id for this session
+     */
+    long getPolicyId();
+    
     /**
      * Returns an argon interface for the client.</p>
      *
@@ -182,5 +189,15 @@ public interface NodeSession extends SessionTuple
      * @return the server port.
      */
     int getServerPort();
+
+    /**
+     * Get the attachments to this session
+     */
+    Map<String,Object> getAttachments();
+
+    /**
+     * Kill/Reset this session
+     */
+    void killSession();
 }
 

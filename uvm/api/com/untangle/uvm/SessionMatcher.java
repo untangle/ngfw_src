@@ -4,12 +4,17 @@
 package com.untangle.uvm;
 
 import java.util.Map;
-import com.untangle.uvm.node.SessionTuple;
+import java.net.InetAddress;
 
+import com.untangle.uvm.vnet.NodeSession;
+
+/**
+ * This is a simple class to overload to create a function/object for matching sessions using the NodeSession
+ */
 public interface SessionMatcher
 {
     /**
      * Tells if the session matches
      */
-    boolean isMatch( Long policyId, SessionTuple clientSide, SessionTuple serverSide, Map<String,Object> attachments );
+    boolean isMatch( NodeSession sess );
 }

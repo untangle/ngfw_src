@@ -53,7 +53,7 @@ public class FirewallImpl extends NodeBase implements Firewall
     private final SessionMatcher FIREWALL_SESSION_MATCHER = new SessionMatcher() {
             
             /* Kill all sessions that should be blocked */
-            public boolean isMatch(Long sessionPolicyId, SessionTuple client, SessionTuple server, Map<String,Object> attachments)
+            public boolean isMatch( NodeSession sess )
             {
                 if (handler == null)
                     return false;
@@ -64,11 +64,11 @@ public class FirewallImpl extends NodeBase implements Firewall
                  * Find the matching rule compute block/log verdicts
                  */
                 for (FirewallRule rule : settings.getRules()) {
-                    if (rule.isMatch(client.getProtocol(),
-                                     client.getClientIntf(), server.getServerIntf(),
-                                     client.getClientAddr(),  client.getServerAddr(),
-                                     client.getClientPort(), client.getServerPort(),
-                                     (String)attachments.get(NodeSession.KEY_PLATFORM_USERNAME))) {
+                    if (rule.isMatch(sess.getProtocol(),
+                                     sess.getClientIntf(), sess.getServerIntf(),
+                                     sess.getClientAddr(), sess.getServerAddr(),
+                                     sess.getClientPort(), sess.getServerPort(),
+                                     (String)sess.getAttachments().get(NodeSession.KEY_PLATFORM_USERNAME))) {
                         matchedRule = rule;
                         break;
                     }
@@ -78,8 +78,9 @@ public class FirewallImpl extends NodeBase implements Firewall
                     return false;
 
                 logger.info("Firewall Save Setting Matcher: " +
-                            client.getClientAddr() + ":" + client.getClientPort() + " -> " +
-                            server.getServerAddr() + ":" + server.getServerPort() + " :: block:" + matchedRule.getBlock());
+                            sess.getClientAddr().toString() + ":" + sess.getClientPort() + " -> " +
+                            sess.getServerAddr().toString() + ":" + sess.getServerPort() +
+                            " :: block:" + matchedRule.getBlock());
                 
                 return matchedRule.getBlock();
             }
@@ -202,12 +203,12 @@ public class FirewallImpl extends NodeBase implements Firewall
 
     protected void postStart()
     {
-        killSessions();
+        killAllSessions();
     }
 
     protected void postStop()
     {
-        killSessions();
+        killAllSessions();
     }
 
     protected void postInit()
@@ -340,22 +341,5 @@ public class FirewallImpl extends NodeBase implements Firewall
         try {logger.debug("New Settings: \n" + new org.json.JSONObject(this.settings).toString(2));} catch (Exception e) {}
 
         this.reconfigure();
-    }
-
-    private void killSessions()
-    {
-        /* Kill all active sessions */
-        if (getNodeSettings().getPolicyId() == null)
-            this.killMatchingSessions(new SessionMatcher() { public boolean isMatch( Long policyId, SessionTuple client, SessionTuple server, Map<String, Object> attachments ) { return true; } });
-        else 
-            this.killMatchingSessions(new SessionMatcher() {
-                    public boolean isMatch( Long policyId, SessionTuple client, SessionTuple server, Map<String, Object> attachments )
-                    {
-                        if (getNodeSettings().getPolicyId().equals( policyId ))
-                            return true;
-                        else
-                            return false;
-                    }
-                });
     }
 }

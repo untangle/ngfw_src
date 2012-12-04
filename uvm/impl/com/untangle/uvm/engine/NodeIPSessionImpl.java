@@ -23,12 +23,12 @@ import com.untangle.uvm.node.NodeSettings;
 import com.untangle.uvm.argon.PipelineListener;
 import com.untangle.uvm.argon.ArgonIPSession;
 import com.untangle.uvm.node.Node;
-import com.untangle.uvm.node.SessionEvent;
 import com.untangle.uvm.util.MetaEnv;
 import com.untangle.uvm.vnet.NodeIPSession;
 import com.untangle.uvm.vnet.NodeSessionStats;
 import com.untangle.uvm.vnet.event.IPStreamer;
 import com.untangle.uvm.node.NodeManager;
+import com.untangle.uvm.node.SessionEvent;
 
 /**
  * Abstract base class for all IP live sessions
@@ -42,8 +42,6 @@ abstract class NodeIPSessionImpl extends NodeSessionImpl implements NodeIPSessio
 
     protected final Dispatcher dispatcher;
 
-    protected final SessionEvent sessionEvent;
-
     @SuppressWarnings("unchecked") //generics array creation not supported java6
         protected final List<Crumb>[] crumbs2write = new ArrayList[] { null, null };
 
@@ -53,12 +51,11 @@ abstract class NodeIPSessionImpl extends NodeSessionImpl implements NodeIPSessio
 
     protected final NodeSessionStats stats;
 
-    protected NodeIPSessionImpl(Dispatcher disp, ArgonIPSession argonSession, SessionEvent pe)
+    protected NodeIPSessionImpl(Dispatcher disp, ArgonIPSession argonSession, SessionEvent sessionEvent)
     {
-        super(disp.argonConnector(), argonSession);
+        super(disp.argonConnector(), argonSession, sessionEvent);
         this.dispatcher = disp;
         this.stats = new NodeSessionStats();
-        this.sessionEvent = pe;
         logger = disp.argonConnector().sessionLogger();
     }
 
@@ -90,6 +87,11 @@ abstract class NodeIPSessionImpl extends NodeSessionImpl implements NodeIPSessio
     public int getServerPort()
     {
         return ((ArgonIPSession)argonSession).getServerPort();
+    }
+
+    public long getPolicyId()
+    {
+        return sessionEvent.getPolicyId();
     }
 
     public NodeSessionStats stats()

@@ -12,7 +12,7 @@ import java.util.LinkedList;
 import org.apache.log4j.Logger;
 
 import com.untangle.jvector.Vector;
-import com.untangle.uvm.SessionMatcher;
+import com.untangle.uvm.SessionMatcherGlobal;
 
 /**
  * This table stores a global list of all currently active sessions being vectored
@@ -77,8 +77,7 @@ public class ArgonSessionTable
     {
         if ( activeSessions.isEmpty()) return false;
 
-        for ( Iterator<Vector> iter = activeSessions.keySet().iterator();
-              iter.hasNext() ; ) {
+        for ( Iterator<Vector> iter = activeSessions.keySet().iterator(); iter.hasNext() ; ) {
             Vector vector = iter.next();
             vector.shutdown();
             /* Don't actually remove the item, it is removed when the session exits */
@@ -92,7 +91,7 @@ public class ArgonSessionTable
         return new LinkedList<SessionGlobalState>(this.activeSessions.values());
     }
     
-    synchronized void shutdownMatches( SessionMatcher matcher )
+    synchronized void shutdownMatches( SessionMatcherGlobal matcher )
     {
         boolean isDebugEnabled = logger.isDebugEnabled();
 
@@ -101,7 +100,6 @@ public class ArgonSessionTable
         if ( activeSessions.isEmpty()) return;
 
         /**
-         * XXX
          * THIS IS INCREDIBLY INEFFICIENT AND LOCKS THE CREATION OF NEW SESSIONS
          * XXX
          */
@@ -114,7 +112,11 @@ public class ArgonSessionTable
 
             ArgonHook argonHook = session.argonHook();
 
-            isMatch = matcher.isMatch( argonHook.policyId, argonHook.clientSide, argonHook.serverSide, session.getAttachments() );
+            isMatch = matcher.isMatch( argonHook.policyId, argonHook.clientSide.getProtocol(),
+                                       argonHook.clientSide.getClientIntf(), argonHook.serverSide.getServerIntf(),
+                                       argonHook.clientSide.getClientAddr(), argonHook.serverSide.getServerAddr(),
+                                       argonHook.clientSide.getClientPort(), argonHook.serverSide.getServerPort(),
+                                       session.getAttachments() );
 
             logger.info( "shutdownMatches(): Tested    session: " + session + " id: " + session.id() + " matched: " + isMatch );
             if ( isMatch ) {

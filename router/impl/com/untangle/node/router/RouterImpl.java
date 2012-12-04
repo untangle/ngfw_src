@@ -123,13 +123,13 @@ public class RouterImpl extends NodeBase implements Router
     protected void postStart()
     {
         /* Kill all active sessions */
-        killMatchingSessions(new SessionMatcher() { public boolean isMatch( Long policyId, SessionTuple client, SessionTuple server, Map<String, Object> attachments ) { return true; } });
+        killAllSessions();
     }
 
     protected void postStop() 
     {
         /* Kill all active sessions */
-        killMatchingSessions(new SessionMatcher() { public boolean isMatch( Long policyId, SessionTuple client, SessionTuple server, Map<String, Object> attachments ) { return true; } });
+        killAllSessions();
 
         dhcpMonitor.stop();
     }

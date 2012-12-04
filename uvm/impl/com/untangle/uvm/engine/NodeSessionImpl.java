@@ -3,9 +3,12 @@
  */
 package com.untangle.uvm.engine;
 
+import java.util.Map;
+
 import com.untangle.uvm.vnet.ArgonConnector;
 import com.untangle.uvm.vnet.NodeSession;
 import com.untangle.uvm.argon.ArgonSession;
+import com.untangle.uvm.node.SessionEvent;
 
 import org.apache.log4j.Logger;
 
@@ -18,6 +21,8 @@ abstract class NodeSessionImpl implements NodeSession
     
     protected ArgonConnectorImpl argonConnector;
 
+    protected final SessionEvent sessionEvent;
+
     /**
      * The argon session that corresponds to this (node) Session.
      */
@@ -25,10 +30,11 @@ abstract class NodeSessionImpl implements NodeSession
 
     protected volatile Object attachment = null;
 
-    protected NodeSessionImpl(ArgonConnectorImpl argonConnector, ArgonSession argonSession)
+    protected NodeSessionImpl(ArgonConnectorImpl argonConnector, ArgonSession argonSession, SessionEvent sessionEvent)
     {
         this.argonConnector = argonConnector;
         this.argonSession = argonSession;
+        this.sessionEvent = sessionEvent;
     }
 
     public ArgonConnector argonConnector()
@@ -72,4 +78,18 @@ abstract class NodeSessionImpl implements NodeSession
     {
         return this.argonSession.sessionGlobalState().attachment(key);
     }
+
+    public Map<String,Object> getAttachments()
+    {
+        return this.argonSession.sessionGlobalState().getAttachments();
+    }
+    
+    public void killSession()
+    {
+        if (this.argonSession == null)
+            return;
+
+        this.argonSession.killSession();
+    }
+
 }

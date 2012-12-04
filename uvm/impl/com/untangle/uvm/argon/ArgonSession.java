@@ -63,7 +63,7 @@ public interface ArgonSession extends SessionTuple
     void shutdownServer();
 
     /**
-     * Kill the entire session.  Only used when there is an error of some sort
+     * Kill the entire session.
      */
     void killSession();
 

@@ -40,6 +40,7 @@ import com.untangle.uvm.SettingsManager;
 import com.untangle.uvm.SessionMatcher;
 import com.untangle.uvm.node.EventLogQuery;
 import com.untangle.uvm.node.SessionTuple;
+import com.untangle.uvm.vnet.NodeSession;
 
 public class CaptureNodeImpl extends NodeBase implements CaptureNode
 {
@@ -339,31 +340,30 @@ public class CaptureNodeImpl extends NodeBase implements CaptureNode
 
             // for every session we have to check all the rules to make
             // sure we don't kill anything that shouldn't be captured
-            public boolean isMatch( Long policyId, SessionTuple client, SessionTuple server, Map<String, Object> attachments )
+            public boolean isMatch( NodeSession sess )
             {
                 // if session is for any active authenticated user return false
-                if (captureUserTable.searchByAddress(client.getClientAddr().getHostAddress().toString()) != null) return(false);
+                if ( captureUserTable.searchByAddress(sess.getClientAddr().toString() ) != null) return(false);
 
                 // if session matches any pass list return false
-                if (isSessionAllowed(client.getClientAddr().getHostAddress().toString(),client.getServerAddr().getHostAddress().toString()) != null) return(false);
+                if ( isSessionAllowed( sess.getClientAddr().toString(), sess.getServerAddr().toString() ) != null) return(false);
 
                 // check the session against the rule list
                 for (CaptureRule rule : ruleList)
                 {
-                    if (rule.isMatch(client.getProtocol(),
-                        client.getClientIntf(), server.getServerIntf(),
-                        client.getClientAddr(), client.getServerAddr(),
-                        client.getClientPort(), client.getServerPort(),
-                        (String)attachments.get(NodeSession.KEY_PLATFORM_USERNAME)))
+                    if ( rule.isMatch( sess.getProtocol(),
+                                       sess.getClientIntf(), sess.getServerIntf(),
+                                       sess.getClientAddr(), sess.getServerAddr(),
+                                       sess.getClientPort(), sess.getServerPort(),
+                                       (String)sess.getAttachments().get(NodeSession.KEY_PLATFORM_USERNAME)))
                         {
                         // on a matching rule continue if capture is false
                         if (rule.getCapture() == false) continue;
 
                         // capture is true so log and kill the session
                         logger.debug("Validate killing " +
-                            client.getClientAddr().getHostAddress().toString() + ":" + client.getClientPort() + " --> " +
-                            client.getServerAddr().getHostAddress().toString() + ":" + client.getServerPort()
-                            );
+                                     sess.getClientAddr().toString() + ":" + sess.getClientPort() + " --> " +
+                                     sess.getServerAddr().toString() + ":" + sess.getServerPort() );
                         return(true);
                         }
                 }
@@ -583,31 +583,30 @@ public class CaptureNodeImpl extends NodeBase implements CaptureNode
 
             // for every session we have to check all the rules to make
             // sure we don't kill anything that shouldn't be captured
-            public boolean isMatch( Long policyId, SessionTuple client, SessionTuple server, Map<String, Object> attachments )
+            public boolean isMatch( NodeSession sess )
             {
                 // if session is not for this user return false
-                if (userAddress.equals(client.getClientAddr().getHostAddress().toString()) == false) return(false);
+                if ( userAddress.equals( sess.getClientAddr().toString()) == false ) return(false);
 
                 // if session matches any pass list return false
-                if (isSessionAllowed(client.getClientAddr().getHostAddress().toString(),client.getServerAddr().getHostAddress().toString()) != null) return(false);
+                if ( isSessionAllowed( sess.getClientAddr().toString(), sess.getServerAddr().toString()) != null ) return(false);
 
                 // check the session against the rule list
                 for (CaptureRule rule : ruleList)
                 {
-                    if (rule.isMatch(client.getProtocol(),
-                        client.getClientIntf(), server.getServerIntf(),
-                        client.getClientAddr(), client.getServerAddr(),
-                        client.getClientPort(), client.getServerPort(),
-                        (String)attachments.get(NodeSession.KEY_PLATFORM_USERNAME)))
+                    if ( rule.isMatch( sess.getProtocol(),
+                                       sess.getClientIntf(), sess.getServerIntf(),
+                                       sess.getClientAddr(), sess.getServerAddr(),
+                                       sess.getClientPort(), sess.getServerPort(),
+                                       (String)sess.getAttachments().get(NodeSession.KEY_PLATFORM_USERNAME)))
                         {
                         // on a matching rule continue if capture is false
                         if (rule.getCapture() == false) continue;
 
                         // capture is true so log and kill the session
                         logger.debug("Logout killing " +
-                            client.getClientAddr().getHostAddress().toString() + ":" + client.getClientPort() + " --> " +
-                            client.getServerAddr().getHostAddress().toString() + ":" + client.getServerPort()
-                            );
+                                     sess.getClientAddr().toString() + ":" + sess.getClientPort() + " --> " +
+                                     sess.getServerAddr().toString() + ":" + sess.getServerPort() );
                         return(true);
                         }
                 }

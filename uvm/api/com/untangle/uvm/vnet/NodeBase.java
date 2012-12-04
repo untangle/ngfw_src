@@ -10,12 +10,14 @@ import java.util.LinkedList;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+import java.net.InetAddress;
 
 import org.apache.log4j.Logger;
 
 import com.untangle.uvm.UvmContext;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.SessionMatcher;
+import com.untangle.uvm.SessionMatcherGlobal;
 import com.untangle.uvm.node.NodeSettings;
 import com.untangle.uvm.node.NodeSettings.NodeState;
 import com.untangle.uvm.message.MessageManager;
@@ -517,15 +519,44 @@ public abstract class NodeBase implements Node
     protected void postDestroy() { }
 
     /**
-     * This kills/resets all of the matching sessions 
+     * This kills/resets all of the matching sessions (runs against all sessions globally)
      */
-    protected void killMatchingSessions( SessionMatcher matcher )
+    protected void killMatchingSessionsGlobal( SessionMatcherGlobal matcher )
     {
         if (matcher == null)
             return;
 
-        logger.info("killMatchingSessions()");
+        logger.info("killMatchingSessionsGlobal()");
         UvmContextFactory.context().argonManager().shutdownMatches( matcher );
+    }
+
+    /**
+     * This kills all of this nodes's session which match the supplied matcher function
+     */
+    public void killMatchingSessions( SessionMatcher matcher )
+    {
+        List<NodeIPSession> sessions = new LinkedList<NodeIPSession>();
+
+        if (null != pipeSpecs) {
+            for (PipeSpec ps : pipeSpecs) {
+                for (NodeIPSession sess : ps.liveSessions()) {
+
+                    boolean isMatch = matcher.isMatch( sess );
+
+                    if (isMatch)
+                        sess.killSession();
+                }
+            }
+        }
+        return;
+    }
+
+    /**
+     * This kills all this node's sessions (for all its pipespecs)
+     */
+    public void killAllSessions()
+    {
+        killMatchingSessions(new SessionMatcher() { public boolean isMatch( NodeSession sess ) { return true; } });
     }
 
     private void addChild( Node child )

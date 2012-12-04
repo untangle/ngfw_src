@@ -106,16 +106,7 @@ public class ArgonAgentImpl implements ArgonAgent
         /* Remove the listener */
         listener = NULL_NEW_SESSION_LISTENER;
 
-        UvmContextFactory.context().argonManager().shutdownMatches(
-                                                                   new SessionMatcher()
-                                                                   {
-                                                                       public boolean isMatch( Long policyId, SessionTuple client, SessionTuple server, Map<String, Object> attachments )
-                                                                       {
-                                                                           return true;
-                                                                       }
-                                                                   }
-                                                                   );
-
+        ArgonSessionTable.getInstance().shutdownActive();
 
         /* Remove all of the active sessions */
         activeSessions.clear();

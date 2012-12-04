@@ -35,6 +35,7 @@ import com.untangle.uvm.vnet.Protocol;
 import com.untangle.uvm.vnet.SoloPipeSpec;
 import com.untangle.uvm.vnet.Subscription;
 import com.untangle.uvm.vnet.NodeTCPSession;
+import com.untangle.uvm.vnet.NodeSession;
 
 /**
  * Virus Node.
@@ -102,28 +103,15 @@ public abstract class VirusNodeImpl extends NodeBase implements VirusNode
     /* This can't be static because it uses policy which is per node */
     private final SessionMatcher VIRUS_SESSION_MATCHER = new SessionMatcher() {
             /* Kill all FTP, HTTP, SMTP, POP3, IMAP sessions */
-            public boolean isMatch(Long sessionPolicyId, SessionTuple client, SessionTuple server, Map<String,Object> attachments)
+            public boolean isMatch( NodeSession sess )
             {
                 /* Don't kill any UDP NodeSession s */
-                if (client.getProtocol() == SessionTuple.PROTO_UDP) {
+                if (sess.getProtocol() == SessionTuple.PROTO_UDP) {
                     return false;
                 }
 
-                /* handle sessions with a null policy */
-                Long policyId = getNodeSettings().getPolicyId();
-                if (null != sessionPolicyId && null != policyId && !sessionPolicyId.equals( policyId )) {
-                    return false;
-                }
+                int serverPort = sess.getServerPort();
 
-                if (testServerPort(client.getServerPort()) || testServerPort(server.getServerPort())) {
-                    return true;
-                }
-
-                return false;
-            }
-
-            private boolean testServerPort( int serverPort )
-            {
                 /* FTP server is on 21, HTTP server is on 80 */
                 if (serverPort == 21 || serverPort == 80) {
                     return true;

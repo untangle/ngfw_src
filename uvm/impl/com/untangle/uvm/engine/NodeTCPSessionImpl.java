@@ -43,12 +43,12 @@ class NodeTCPSessionImpl extends NodeIPSessionImpl implements NodeTCPSession
     protected ByteBuffer[] readBuf = new ByteBuffer[] { null, null };
 
     protected NodeTCPSessionImpl(Dispatcher disp,
-                             ArgonTCPSession argonSession,
-                             SessionEvent pe,
-                             int clientReadBufferSize,
-                             int serverReadBufferSize)
+                                 ArgonTCPSession argonSession,
+                                 SessionEvent sessionEvent,
+                                 int clientReadBufferSize,
+                                 int serverReadBufferSize)
     {
-        super(disp, argonSession, pe);
+        super(disp, argonSession, sessionEvent);
 
         logPrefix = "TCP" + id();
 
