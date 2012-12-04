@@ -58,7 +58,8 @@ public class PackageDesc implements Serializable, JSONString
             try {
                 untangleType = Type.valueOf(ut.toUpperCase());
             } catch (IllegalArgumentException e) {
-                logger.warn("Unknown type: " + ut);
+                if (!"trial".equals(ut))
+                    logger.warn("Unknown type: " + ut);
                 untangleType = Type.UNKNOWN;
             }
         }
