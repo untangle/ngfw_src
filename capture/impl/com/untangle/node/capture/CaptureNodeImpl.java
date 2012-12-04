@@ -157,8 +157,7 @@ public class CaptureNodeImpl extends NodeBase implements CaptureNode
         this.allEventQuery = new EventLogQuery(I18nUtil.marktr("All Events"),
                 "SELECT * FROM reports.sessions " +
                 "WHERE policy_id = :policyId " +
-                "AND capture_blocked IS TRUE " +
-                "OR capture_blocked IS FALSE " +
+                "AND capture_blocked IS NOT NULL " +
                 "ORDER BY time_stamp DESC");
 
         addMetric(new NodeMetric(STAT_SESSALLOW, I18nUtil.marktr("Sessions allowed")));
