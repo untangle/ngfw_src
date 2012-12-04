@@ -548,7 +548,7 @@ class Stats
         long prevBytesRxTotal = this.bytesRxTotal;
         long prevBytesTxTotal = this.bytesTxTotal;
         this.bytesRxTotal = newBytesRxTotal;
-        this.bytesTxTotal = newBytesRxTotal;
+        this.bytesTxTotal = newBytesTxTotal;
         this.bytesRxDelta = this.bytesRxTotal - prevBytesRxTotal;
         this.bytesTxDelta = this.bytesTxTotal - prevBytesTxTotal;
         this.updated = true;
