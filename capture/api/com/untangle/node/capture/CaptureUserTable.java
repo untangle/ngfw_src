@@ -58,6 +58,7 @@ public class CaptureUserTable
             logger.warn("Invalid network address", e);
         }
 
+        logger.debug("Calling setUsernameCapture(" + username + ") for " + netaddr.getHostAddress().toString());
         UvmContextFactory.context().hostTable().getHostTableEntry( netaddr, true).setUsernameCapture( username );
         return(local);
     }
@@ -80,6 +81,7 @@ public class CaptureUserTable
             logger.warn("Invalid network address", e);
         }
 
+        logger.debug("Calling setUsernameCapture(null) for " + netaddr.getHostAddress().toString());
         UvmContextFactory.context().hostTable().getHostTableEntry( netaddr, true).setUsernameCapture( null );
         return(true);
     }
