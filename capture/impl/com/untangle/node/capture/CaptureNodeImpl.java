@@ -179,8 +179,12 @@ public class CaptureNodeImpl extends NodeBase implements CaptureNode
         // first we commit the new settings to disk
         saveNodeSettings(newSettings);
 
-        // now we call the shared apply function
+        // next we call the function to activate the new settings
         applyNodeSettings(newSettings);
+
+        // finally we validate all of the active sessions and cleanup
+        // anything that is not allowed based on the new settings
+        validateAllSessions();
     }
 
     @Override
@@ -249,9 +253,11 @@ public class CaptureNodeImpl extends NodeBase implements CaptureNode
 
         localSettings.setCaptureRules(ruleList);
 
-        // the set function takes care of writing the settings to
-        // disk and applying the settings to the node
-        setSettings(localSettings);
+        // save the settings to disk
+        saveNodeSettings(localSettings);
+
+        // apply the new settings to the node
+        applyNodeSettings(localSettings);
     }
 
     private CaptureSettings loadNodeSettings()
@@ -321,6 +327,52 @@ public class CaptureNodeImpl extends NodeBase implements CaptureNode
         }
 
         this.captureSettings = argSettings;
+    }
+
+    private void validateAllSessions()
+    {
+        // shut down any outstanding sessions that would not
+        // be allowed based on the active node settings
+        this.killMatchingSessions(new SessionMatcher()
+        {
+            List<CaptureRule> ruleList = captureSettings.getCaptureRules();
+
+            // for every session we have to check all the rules to make
+            // sure we don't kill anything that shouldn't be captured
+            public boolean isMatch( Long policyId, SessionTuple client, SessionTuple server, Map<String, Object> attachments )
+            {
+                // if session is for any active authenticated user return false
+                if (captureUserTable.searchByAddress(client.getClientAddr().getHostAddress().toString()) != null) return(false);
+
+                // if session matches any pass list return false
+                if (isSessionAllowed(client.getClientAddr().getHostAddress().toString(),client.getServerAddr().getHostAddress().toString()) != null) return(false);
+
+                // check the session against the rule list
+                for (CaptureRule rule : ruleList)
+                {
+                    if (rule.isMatch(client.getProtocol(),
+                        client.getClientIntf(), server.getServerIntf(),
+                        client.getClientAddr(), client.getServerAddr(),
+                        client.getClientPort(), client.getServerPort(),
+                        (String)attachments.get(NodeSession.KEY_PLATFORM_USERNAME)))
+                        {
+                        // on a matching rule continue if capture is false
+                        if (rule.getCapture() == false) continue;
+
+                        // capture is true so log and kill the session
+                        logger.debug("Validate killing " +
+                            client.getClientAddr().getHostAddress().toString() + ":" + client.getClientPort() + " --> " +
+                            client.getServerAddr().getHostAddress().toString() + ":" + client.getServerPort()
+                            );
+                        return(true);
+                        }
+                }
+
+                // no matches anywhere so leave the session alone
+                return(false);
+            }
+        });
+
     }
 
     @Override
@@ -552,7 +604,7 @@ public class CaptureNodeImpl extends NodeBase implements CaptureNode
                         if (rule.getCapture() == false) continue;
 
                         // capture is true so log and kill the session
-                        logger.debug("Killing " +
+                        logger.debug("Logout killing " +
                             client.getClientAddr().getHostAddress().toString() + ":" + client.getClientPort() + " --> " +
                             client.getServerAddr().getHostAddress().toString() + ":" + client.getServerPort()
                             );
@@ -596,11 +648,11 @@ public class CaptureNodeImpl extends NodeBase implements CaptureNode
 
         // see if the client is in the pass list
         checker = passedClientHash.get(clientAddr);
-        if (checker != null) return(checker);
+        if ((checker != null) && (checker.getLive() == true)) return(checker);
 
         // see if the server is in the pass list
         checker = passedServerHash.get(serverAddr);
-        if (checker != null) return(checker);
+        if ((checker != null) && (checker.getLive() == true)) return(checker);
 
         return(null);
     }
