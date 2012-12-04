@@ -4,6 +4,7 @@
 package com.untangle.uvm.engine;
 
 import java.util.LinkedList;
+import java.util.HashSet;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import org.apache.commons.codec.binary.Base64;
@@ -77,10 +78,21 @@ class LocalDirectoryImpl implements LocalDirectory
 
     public void setUsers(LinkedList<LocalDirectoryUser> users)
     {
+        HashSet<String> usersSeen = new HashSet<String>();
+        
         /**
          * Remove cleartext password before saving
          */
         for (LocalDirectoryUser user : users) {
+
+            /**
+             * Check for dupes
+             */
+            if (usersSeen.contains(user.getUsername()))
+                throw new RuntimeException("Duplicate user: " + user.getUsername());
+            else
+                usersSeen.add(user.getUsername());
+
             /**
              * If password hasn't changed - copy the hashes from the previous settings
              * We must do this because the UI does not send the same hashes back
