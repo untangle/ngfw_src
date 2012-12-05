@@ -1054,7 +1054,15 @@ if (!Ung.hasResource["Ung.Email"]) {
                 dataFn: Ext.bind(function() {
                     if(this.userQuarantinesDetailsGrid != null && this.quarantinesDetailsWin.account!= null) {
                         try {
-                            return this.getQuarantineMaintenenceView().getInboxRecords(this.quarantinesDetailsWin.account, 0, Ung.Util.maxRowCount, []);
+                            var mails = this.getQuarantineMaintenenceView().getInboxRecords(this.quarantinesDetailsWin.account, 0, Ung.Util.maxRowCount, []);
+                            for(var i=0; i<mails.list.length; i++) {
+                                /* copy values from mailSummary to object */
+                                mails.list[i].subject = mails.list[i].mailSummary.subject;
+                                mails.list[i].sender = mails.list[i].mailSummary.sender;
+                                mails.list[i].quarantineCategory = mails.list[i].mailSummary.quarantineCategory;
+                                mails.list[i].quarantineDetail = mails.list[i].mailSummary.quarantineDetail;
+                            }
+                            return mails;
                         } catch (e) {
                             Ung.Util.rpcExHandler(e, true);
                             return {
@@ -1071,28 +1079,26 @@ if (!Ung.hasResource["Ung.Email"]) {
                     name: 'mailID'
                 }, {
                     name: 'quarantinedDate',
-                    mapping: 'internDateAsDate'
+                    mapping: 'internDateAsDate',
+                    sortType: Ung.SortTypes.asTimestamp
                 }, {
                     name: 'size'
                 }, {
-                    name: 'sender',
-                    mapping: 'mailSummary'
+                    name: 'sender'
                 }, {
-                    name: 'subject',
-                    mapping: 'mailSummary'
+                    name: 'subject'
                 }, {
-                    name: 'category',
-                    mapping: 'mailSummary'
+                    name: 'quarantineCategory'
                 }, {
-                    name: 'quarantineDetail',
-                    mapping: 'mailSummary'
+                    name: 'quarantineDetail'
                 }],
-                columns: [{
-                    header: this.i18n._("MailID"),
-                    width: 200,
-                    dataIndex: 'mailID',
-                    sortable: false
-                }, {
+                columns: [//{
+                    //header: this.i18n._("MailID"),
+                    //width: 200,
+                    //dataIndex: 'mailID',
+                    //sortable: false
+                    //},
+                    {
                     header: this.i18n._("Date"),
                     width: 140,
                     dataIndex: 'quarantinedDate',
@@ -1102,18 +1108,12 @@ if (!Ung.hasResource["Ung.Email"]) {
                 }, {
                     header: this.i18n._("Sender"),
                     width: 180,
-                    dataIndex: 'sender',
-                    renderer: function(value) {
-                        return value.sender;
-                    }
+                    dataIndex: 'sender'
                 }, {
                     header: this.i18n._("Subject"),
                     width: 150,
                     flex: 1,
-                    dataIndex: 'subject',
-                    renderer: function(value) {
-                        return value.subject;
-                    }
+                    dataIndex: 'subject'
                 }, {
                     header: this.i18n._("Size (KB)"),
                     width: 85,
@@ -1125,20 +1125,16 @@ if (!Ung.hasResource["Ung.Email"]) {
                 }, {
                     header: this.i18n._("Category"),
                     width: 85,
-                    dataIndex: 'category',
-                    sortable: false,
-                    renderer: function(value) {
-                        return value.quarantineCategory;
-                    }
+                    dataIndex: 'quarantineCategory'
                 }, {
                     header: this.i18n._("Detail"),
                     width: 85,
                     dataIndex: 'quarantineDetail',
                     renderer: function(value) {
-                        var detail = value.quarantineDetail;
+                        var detail = value;
                         if (isNaN(parseFloat(detail))) {
                             if (detail == "Message determined to be a fraud attempt") {
-                                return this.i18n._("Identity Theft");
+                                return this.i18n._("Phish");
                             }
                         } else {
                             return i18n.numberFormat(parseFloat(detail).toFixed(3));
