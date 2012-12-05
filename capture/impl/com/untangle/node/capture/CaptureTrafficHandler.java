@@ -53,7 +53,7 @@ public class CaptureTrafficHandler extends AbstractEventHandler
         if (node.isClientAuthenticated(clientAddr) == true)
         {
             node.incrementBlinger(CaptureNode.BlingerType.SESSALLOW,1);
-            sessreq.release();
+            sessreq.release( true );
             return;
         }
 
@@ -69,7 +69,7 @@ public class CaptureTrafficHandler extends AbstractEventHandler
                 }
 
             node.incrementBlinger(CaptureNode.BlingerType.SESSALLOW,1);
-            sessreq.release();
+            sessreq.release( true );
             return;
             }
 
@@ -80,7 +80,7 @@ public class CaptureTrafficHandler extends AbstractEventHandler
         if (rule == null)
         {
             node.incrementBlinger(CaptureNode.BlingerType.SESSALLOW,1);
-            sessreq.release();
+            sessreq.release( true );
             return;
         }
 
@@ -91,7 +91,7 @@ public class CaptureTrafficHandler extends AbstractEventHandler
             node.logEvent(logevt);
 
             node.incrementBlinger(CaptureNode.BlingerType.SESSALLOW,1);
-            sessreq.release();
+            sessreq.release( true );
             return;
         }
 
@@ -116,7 +116,7 @@ public class CaptureTrafficHandler extends AbstractEventHandler
         if (node.isClientAuthenticated(clientAddr) == true)
         {
             node.incrementBlinger(CaptureNode.BlingerType.SESSALLOW,1);
-            sessreq.release();
+            sessreq.release( true );
             return;
         }
 
@@ -132,7 +132,7 @@ public class CaptureTrafficHandler extends AbstractEventHandler
                 }
 
             node.incrementBlinger(CaptureNode.BlingerType.SESSALLOW,1);
-            sessreq.release();
+            sessreq.release( true );
             return;
             }
 
@@ -143,7 +143,7 @@ public class CaptureTrafficHandler extends AbstractEventHandler
         if (rule == null)
         {
             node.incrementBlinger(CaptureNode.BlingerType.SESSALLOW,1);
-            sessreq.release();
+            sessreq.release( true );
             return;
         }
 
@@ -154,7 +154,7 @@ public class CaptureTrafficHandler extends AbstractEventHandler
             node.logEvent(logevt);
 
             node.incrementBlinger(CaptureNode.BlingerType.SESSALLOW,1);
-            sessreq.release();
+            sessreq.release( true );
             return;
         }
 
@@ -221,6 +221,6 @@ public class CaptureTrafficHandler extends AbstractEventHandler
         logger.debug(packet.replyString());
 
         // increment our counter and release the session
-        session.release();
+        session.release( true );
     }
 }
