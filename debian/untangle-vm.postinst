@@ -59,11 +59,8 @@ if [ -x "/etc/init.d/untangle-vm" ]; then
 fi
 # set pyconnector to start at boot
 if [ -x "/etc/init.d/untangle-pyconnector" ]; then
-    echo "starting pyconnector"
-    update-rc.d untangle-pyconnector defaults 95 5 
-    /etc/init.d/untangle-pyconnector start
-else
-    echo "untangle-pyconnector missing"
+    update-rc.d untangle-pyconnector defaults 95 5 >/dev/null 
+    /etc/init.d/untangle-pyconnector start >/dev/null 2>&1
 fi
 
 ## Nuke the work directory for the servlets.
