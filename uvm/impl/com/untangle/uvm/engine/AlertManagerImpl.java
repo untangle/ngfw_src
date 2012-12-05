@@ -9,6 +9,8 @@ import java.util.Map;
 import java.util.HashSet;
 import java.util.HashMap;
 import java.net.InetAddress;
+import java.net.Socket;
+import java.net.InetSocketAddress;
 
 import org.apache.log4j.Logger;
 
@@ -52,9 +54,11 @@ public class AlertManagerImpl implements AlertManager
     public List<String> getAlerts()
     {
         LinkedList<String> alertList = new LinkedList<String>();
-
+        boolean dnsWorking = false;
+        
         try { testUpgrades(alertList); } catch (Exception e) { logger.warn("Alert test exception",e); }
-        try { testDNS(alertList); } catch (Exception e) { logger.warn("Alert test exception",e); }
+        try { dnsWorking = testDNS(alertList); } catch (Exception e) { logger.warn("Alert test exception",e); }
+        try { if (dnsWorking) testConnectivity(alertList); } catch (Exception e) { logger.warn("Alert test exception",e); }
         try { testDupeApps(alertList); } catch (Exception e) { logger.warn("Alert test exception",e); }
         try { testRendundantApps(alertList); } catch (Exception e) { logger.warn("Alert test exception",e); }
         try { testBridgeBackwards(alertList); } catch (Exception e) { logger.warn("Alert test exception",e); }
@@ -82,7 +86,7 @@ public class AlertManagerImpl implements AlertManager
      * This test iterates through the DNS settings on each WAN and tests them individually
      * It creates an alert for each non-working DNS server
      */
-    private void testDNS(List<String> alertList)
+    private boolean testDNS(List<String> alertList)
     {
         NetworkConfiguration networkConf = UvmContextFactory.context().networkManager().getNetworkConfiguration();
         ConnectivityTesterImpl connectivityTester = (ConnectivityTesterImpl)UvmContextFactory.context().getConnectivityTester();
@@ -109,9 +113,42 @@ public class AlertManagerImpl implements AlertManager
                 alertText += ia.getHostAddress() + " ";
             }
             alertList.add(alertText);
+            return false;
         }
+        
+        return true;
     }
 
+    /**
+     * This test iterates through the DNS settings on each WAN and tests them individually
+     * It creates an alert for each non-working DNS server
+     */
+    private void testConnectivity(List<String> alertList)
+    {
+        Socket socket = null;
+
+        try {
+            socket = new Socket();
+            socket.connect(new InetSocketAddress("updates.untangle.com",80), 7000);
+        } catch ( Exception e ) {
+            alertList.add( i18nUtil.tr("Failed to connect to Untangle." +  " (updates.untangle.com:80)") ); 
+            logger.warn(e); 
+        } finally {
+            try {if (socket != null) socket.close();} catch (Exception e) {}
+        }
+
+        try {
+            socket = new Socket();
+            socket.connect(new InetSocketAddress("license.untangle.com",80), 7000);
+        } catch ( Exception e ) {
+            alertList.add( i18nUtil.tr("Failed to connect to Untangle." +  " (license.untangle.com:80)") ); 
+            logger.warn(e); 
+        } finally {
+            try {if (socket != null) socket.close();} catch (Exception e) {}
+        }
+
+    }
+    
     /**
      * This test for multiple instances of the same application in a given rack
      * This is never a good idea
