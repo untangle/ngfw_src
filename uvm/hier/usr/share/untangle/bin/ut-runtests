@@ -188,6 +188,8 @@ while True:
     total = 0
 
     for node in parser.nodesToTest:
+        if node == "environment":
+            continue
         testClz = TestDict.test(node)
         if testClz == None:
            print "Unable to find tests for \"%s\" - skipping." % node
