@@ -145,6 +145,11 @@ public class AlertManagerImpl implements AlertManager
             try {if (socket != null) socket.close();} catch (Exception e) {}
         }
 
+        if (!UvmContextFactory.context().isDevel()) {
+            int result = UvmContextFactory.context().execManager().execResult(System.getProperty("uvm.bin.dir") + "/ut-pyconnector-status");
+            if (result != 0)
+                alertList.add( i18nUtil.tr("Failed to connect to Untangle." +  " (cmd.untangle.com)") );
+        }
     }
     
     /**
