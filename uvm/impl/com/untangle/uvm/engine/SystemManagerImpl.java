@@ -166,12 +166,8 @@ public class SystemManagerImpl implements SystemManager
         try {
             if ( this.settings.getSupportEnabled()) {
                 UvmContextFactory.context().toolboxManager().install("untangle-support-agent");
-                UvmContextFactory.context().execManager().exec( "/usr/sbin/update-rc.d untangle-pyconnector defaults" );
-                UvmContextFactory.context().execManager().exec( "/etc/init.d/untangle-pyconnector start" );
             } else {
                 UvmContextFactory.context().toolboxManager().uninstall("untangle-support-agent");
-                UvmContextFactory.context().execManager().exec( "/etc/init.d/untangle-pyconnector stop" );
-                UvmContextFactory.context().execManager().exec( "/usr/sbin/update-rc.d -f untangle-pyconnector remove" );
             }
         } catch ( Exception ex ) {
             logger.error( "Unable to enable support", ex );
