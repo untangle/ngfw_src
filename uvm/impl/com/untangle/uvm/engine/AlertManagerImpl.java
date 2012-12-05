@@ -132,17 +132,15 @@ public class AlertManagerImpl implements AlertManager
             socket.connect(new InetSocketAddress("updates.untangle.com",80), 7000);
         } catch ( Exception e ) {
             alertList.add( i18nUtil.tr("Failed to connect to Untangle." +  " (updates.untangle.com:80)") ); 
-            logger.warn(e); 
         } finally {
             try {if (socket != null) socket.close();} catch (Exception e) {}
         }
 
         try {
             socket = new Socket();
-            socket.connect(new InetSocketAddress("license.untangle.com",80), 7000);
+            socket.connect(new InetSocketAddress("license.untangle.com",443), 7000);
         } catch ( Exception e ) {
-            alertList.add( i18nUtil.tr("Failed to connect to Untangle." +  " (license.untangle.com:80)") ); 
-            logger.warn(e); 
+            alertList.add( i18nUtil.tr("Failed to connect to Untangle." +  " (license.untangle.com:443)") ); 
         } finally {
             try {if (socket != null) socket.close();} catch (Exception e) {}
         }
