@@ -29,5 +29,14 @@ public interface ReportingNode extends Node, HostnameLookup
 
     ArrayList getEvents( final String query, final Long policyId, final int limit );
 
+    /**
+     * WARNING
+     * You must call getEventsResultSetCommit ALWAYS after calling this function
+     * getEventsResultSetCommit will call commit() on the SQL transaction
+     * If you forget to call it, it will maintain an open transaction on that table
+     * which will stop other queries (and vacuuming) from taking place
+     */
     ResultSet getEventsResultSet( final String query, final Long policyId, final int limit );
+
+    void getEventsResultSetCommit( );
 }

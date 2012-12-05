@@ -65,20 +65,21 @@ public class EventLogExportServlet extends HttpServlet
             logger.warn("reporting node not found");
             return;
         }
-        ResultSet resultSet = reporting.getEventsResultSet( query, policyId, -1 );
-        
-        // Write content type and also length (determined via byte array).
-        resp.setCharacterEncoding(CHARACTER_ENCODING);
-        resp.setHeader("Content-Type","text/csv");
-        resp.setHeader("Content-Disposition","attachment; filename="+name+".csv");
-        // Write the header
-        resp.getWriter().write(columnListStr + "\n");
-        resp.getWriter().flush();
-
-        if (resultSet == null)
-            return;
 
         try {
+            ResultSet resultSet = reporting.getEventsResultSet( query, policyId, -1 );
+        
+            // Write content type and also length (determined via byte array).
+            resp.setCharacterEncoding(CHARACTER_ENCODING);
+            resp.setHeader("Content-Type","text/csv");
+            resp.setHeader("Content-Disposition","attachment; filename="+name+".csv");
+            // Write the header
+            resp.getWriter().write(columnListStr + "\n");
+            resp.getWriter().flush();
+
+            if (resultSet == null)
+                return;
+
             ResultSetMetaData metadata = resultSet.getMetaData();
             int numColumns = metadata.getColumnCount();
             String[] columnList = columnListStr.split(",");
@@ -87,7 +88,7 @@ public class EventLogExportServlet extends HttpServlet
             while (resultSet.next()) {
                 // build JSON object from columns
                 int writtenColumnCount = 0;
-                
+
                 for ( String columnName : columnList ) {
                     Object o = null;
                     try {
@@ -108,6 +109,8 @@ public class EventLogExportServlet extends HttpServlet
             }
         } catch (Exception e) {
             logger.warn("Failed to export CSV.",e);
+        } finally {
+            reporting.getEventsResultSetCommit( );
         }
         
     }

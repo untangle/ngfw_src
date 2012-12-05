@@ -41,6 +41,13 @@ public class EventReaderImpl
         this.columnTypeMap.put("inet",String.class);
     }
 
+    /**
+     * WARNING
+     * You must call getEventsResultSetCommit ALWAYS after calling this function
+     * getEventsResultSetCommit will call commit() on the SQL transaction
+     * If you forget to call it, it will maintain an open transaction on that table
+     * which will stop other queries (and vacuuming) from taking place
+     */
     @SuppressWarnings("unchecked")
     public ResultSet getEventsResultSet( final String query, final Long policyId, final int limit )
     {
@@ -71,11 +78,11 @@ public class EventReaderImpl
             logger.debug("getEventsResultSet( query: " + query + " policyId: " + policyId + " limit: " + limit + " )");
             logger.info("getEventsResultSet( queryStr: \"" + queryStr + "\")");
             
-            Statement statement = dbConnection.createStatement();
+            Statement statement = dbConnection.createStatement( ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY, ResultSet.FETCH_FORWARD );
 
             /* If this is an unlimited query - set a fetch size so we don't load all into memory */
             if (limit < 0 || limit > 100000)
-                statement.setFetchSize(1000);
+                statement.setFetchSize(2000);
             
             if (statement == null) {
                 logger.warn("Unable to create Statement");
@@ -90,11 +97,15 @@ public class EventReaderImpl
             logger.warn("Failed to query database", e );
             throw new RuntimeException( "Failed to query database.", e );
         } finally {
-            if (dbConnection != null)
-                try {dbConnection.commit();} catch(Exception exn) {}
         }
     }
-        
+
+    public void getEventsResultSetCommit( )
+    {
+        if (dbConnection != null)
+            try {dbConnection.commit();} catch(Exception exn) {}
+    }
+    
     @SuppressWarnings("unchecked")
     public ArrayList getEvents( final String query, final Long policyId, final int limit )
     {
@@ -132,6 +143,8 @@ public class EventReaderImpl
             closeDbConnection();
             logger.warn("Failed to query database", e );
             throw new RuntimeException( "Failed to query database.", e );
+        } finally {
+            getEventsResultSetCommit();
         }
     }
 

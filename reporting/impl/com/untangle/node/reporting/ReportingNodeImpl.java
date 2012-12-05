@@ -199,6 +199,11 @@ public class ReportingNodeImpl extends NodeBase implements ReportingNode, Report
         return this.eventReader.getEventsResultSet( query, policyId, limit );
     }
 
+    public void getEventsResultSetCommit( )
+    {
+        this.eventReader.getEventsResultSetCommit();
+    }
+    
     public ArrayList getEvents( final String query, final Long policyId, final int limit )
     {
         return this.eventReader.getEvents( query, policyId, limit );
