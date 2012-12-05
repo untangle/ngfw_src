@@ -59,6 +59,7 @@ public class AlertManagerImpl implements AlertManager
         try { testUpgrades(alertList); } catch (Exception e) { logger.warn("Alert test exception",e); }
         try { dnsWorking = testDNS(alertList); } catch (Exception e) { logger.warn("Alert test exception",e); }
         try { if (dnsWorking) testConnectivity(alertList); } catch (Exception e) { logger.warn("Alert test exception",e); }
+        try { testDiskFree(alertList); } catch (Exception e) { logger.warn("Alert test exception",e); }
         try { testDupeApps(alertList); } catch (Exception e) { logger.warn("Alert test exception",e); }
         try { testRendundantApps(alertList); } catch (Exception e) { logger.warn("Alert test exception",e); }
         try { testBridgeBackwards(alertList); } catch (Exception e) { logger.warn("Alert test exception",e); }
@@ -131,7 +132,7 @@ public class AlertManagerImpl implements AlertManager
             socket = new Socket();
             socket.connect(new InetSocketAddress("updates.untangle.com",80), 7000);
         } catch ( Exception e ) {
-            alertList.add( i18nUtil.tr("Failed to connect to Untangle." +  " (updates.untangle.com:80)") ); 
+            alertList.add( i18nUtil.tr("Failed to connect to Untangle." +  " [updates.untangle.com:80]") ); 
         } finally {
             try {if (socket != null) socket.close();} catch (Exception e) {}
         }
@@ -140,7 +141,7 @@ public class AlertManagerImpl implements AlertManager
             socket = new Socket();
             socket.connect(new InetSocketAddress("license.untangle.com",443), 7000);
         } catch ( Exception e ) {
-            alertList.add( i18nUtil.tr("Failed to connect to Untangle." +  " (license.untangle.com:443)") ); 
+            alertList.add( i18nUtil.tr("Failed to connect to Untangle." +  " [license.untangle.com:443]") ); 
         } finally {
             try {if (socket != null) socket.close();} catch (Exception e) {}
         }
@@ -148,10 +149,28 @@ public class AlertManagerImpl implements AlertManager
         if (!UvmContextFactory.context().isDevel()) {
             int result = UvmContextFactory.context().execManager().execResult(System.getProperty("uvm.bin.dir") + "/ut-pyconnector-status");
             if (result != 0)
-                alertList.add( i18nUtil.tr("Failed to connect to Untangle." +  " (cmd.untangle.com)") );
+                alertList.add( i18nUtil.tr("Failed to connect to Untangle." +  " [cmd.untangle.com]") );
         }
     }
     
+
+    private void testDiskFree(List<String> alertList)
+    {
+        if (UvmContextFactory.context().isDevel()) /* dont test dev boxes */
+            return;
+
+        String result = UvmContextFactory.context().execManager().execOutput( "df -k / | awk '/\\//{printf(\"%d\",$5)}'");
+        logger.warn("DISK: " + result);
+        try {
+            int percentUsed = Integer.parseInt(result);
+            if (percentUsed > 75)
+                alertList.add( i18nUtil.tr("Free Disk space is low." +  " [ " + (100 - percentUsed) + "% free ]") );
+        } catch (Exception e) {
+            logger.warn("Unable to determine free disk space",e);
+        }
+
+    }
+
     /**
      * This test for multiple instances of the same application in a given rack
      * This is never a good idea
