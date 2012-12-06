@@ -60,7 +60,7 @@ fi
 # set pyconnector to start at boot
 if [ -x "/etc/init.d/untangle-pyconnector" ]; then
     update-rc.d untangle-pyconnector defaults 95 5 >/dev/null 
-    /etc/init.d/untangle-pyconnector start >/dev/null 2>&1
+    ourInit untangle-pyconnector start >/dev/null 2>&1
 fi
 
 ## Nuke the work directory for the servlets.
@@ -82,35 +82,11 @@ fi
 
 /etc/init.d/apache2 reload
 
-rm -f /etc/untangle/monit.d/uvm*
 touch /etc/untangle/monit-to-restart
 
 ## Restart untangle-hardware-config just in case.
 if [ -x "/etc/init.d/untangle-hardware-config" ]; then
     ourInit untangle-hardware-config restart
 fi
-
-# 9.2 upgrade
-# remove obsolete stuff
-rm -rf /usr/share/untangle/autodump
-rm -rf /usr/share/untangle/db
-rm -rf /usr/share/untangle/pycli/uvm
-
-# 9.3 upgrade - remove kav conversion cron job
-rm -f /var/spool/cron/atjobs/* 
-if [ -x "/etc/init.d/atd" ]; then
-    ourInit atd restart
-fi
-rm -f /var/log/uvm/schema*
-rm -f /var/log/uvm/iptables*
-rm -f /usr/share/untangle/conf/openvpn/packet-filter-rules
-find /usr/share/untangle/settings -name '*.tmp' -exec rm -rf {} \;
-
-# 9.3.2 remove obsolete files
-rm -rf /etc/untangle-net-alpaca/iptables-rules.d/800-qos
-rm -rf /etc/untangle-net-alpaca/iptables-rules.d/*single-nic*
-rm -rf /etc/apache2/untangle-conf.d/proxy.conf
-rm -rf /etc/apache2/mods-enabled/proxy*
-
 
 exit 0
