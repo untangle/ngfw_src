@@ -185,7 +185,7 @@ public class CaptureNodeImpl extends NodeBase implements CaptureNode
 
         // finally we validate all of the active sessions and cleanup
         // anything that is not allowed based on the new settings
-        validateAllSessions();
+        validateAllSessions(null);
     }
 
     @Override
@@ -330,8 +330,10 @@ public class CaptureNodeImpl extends NodeBase implements CaptureNode
         this.captureSettings = argSettings;
     }
 
-    private void validateAllSessions()
+    private void validateAllSessions(InetAddress argAddress)
     {
+        final InetAddress userAddress = argAddress;
+
         // shut down any outstanding sessions that would not
         // be allowed based on the active node settings
         this.killMatchingSessions(new SessionMatcher()
@@ -342,6 +344,10 @@ public class CaptureNodeImpl extends NodeBase implements CaptureNode
             // sure we don't kill anything that shouldn't be captured
             public boolean isMatch( Long policyId, short protocol, int clientIntf, int serverIntf, InetAddress clientAddr, InetAddress serverAddr, int clientPort, int serverPort, Map<String,Object> attachments )
             {
+                // if userAddress is not null and this session is for someone
+                // other than userAddress then we just leave it alone
+                if ( (userAddress != null) && (clientAddr.equals( userAddress ) == false ) ) return(false);
+
                 // if session is for any active authenticated user return false
                 if ( captureUserTable.searchByAddress(clientAddr ) != null) return(false);
 
@@ -552,6 +558,17 @@ public class CaptureNodeImpl extends NodeBase implements CaptureNode
         return(0);
     }
 
+    public int userLogin(InetAddress address, String username)
+    {
+        captureUserTable.insertActiveUser(address,username);
+
+        CaptureUserEvent event = new CaptureUserEvent( policyId, address, username, CaptureSettings.AuthenticationType.CUSTOM, CaptureUserEvent.EventType.LOGIN );
+        logEvent(event);
+        incrementBlinger(BlingerType.AUTHGOOD,1);
+        logger.info("Login success " + address);
+        return(0);
+    }
+
     public int userLogout(InetAddress address)
     {
         return(userLogout(address,CaptureUserEvent.EventType.USER_LOGOUT));
@@ -565,7 +582,6 @@ public class CaptureNodeImpl extends NodeBase implements CaptureNode
     public int userLogout(InetAddress address,CaptureUserEvent.EventType reason)
     {
         CaptureUserEntry user = captureUserTable.searchByAddress(address);
-        final InetAddress userAddress = address;
 
         if (user == null)
         {
@@ -576,45 +592,9 @@ public class CaptureNodeImpl extends NodeBase implements CaptureNode
         // remove from the user table
         captureUserTable.removeActiveUser(address);
 
-        // shut down any outstanding sessions for the user
-        this.killMatchingSessions(new SessionMatcher()
-        {
-            List<CaptureRule> ruleList = captureSettings.getCaptureRules();
-
-            // for every session we have to check all the rules to make
-            // sure we don't kill anything that shouldn't be captured
-            public boolean isMatch( Long policyId, short protocol, int clientIntf, int serverIntf, InetAddress clientAddr, InetAddress serverAddr, int clientPort, int serverPort, Map<String,Object> attachments )
-            {
-                // if session is not for this user return false
-                if ( userAddress.equals( clientAddr) == false ) return(false);
-
-                // if session matches any pass list return false
-                if ( isSessionAllowed( clientAddr, serverAddr ) != null ) return(false);
-
-                // check the session against the rule list
-                for (CaptureRule rule : ruleList)
-                {
-                    if ( rule.isMatch( protocol,
-                                       clientIntf, serverIntf,
-                                       clientAddr, serverAddr,
-                                       clientPort, serverPort,
-                                       (String)attachments.get(NodeSession.KEY_PLATFORM_USERNAME)))
-                        {
-                        // on a matching rule continue if capture is false
-                        if (rule.getCapture() == false) continue;
-
-                        // capture is true so log and kill the session
-                        logger.debug("Logout killing " +
-                                     clientAddr.getHostAddress().toString() + ":" + clientPort + " --> " +
-                                     serverAddr.getHostAddress().toString() + ":" + serverPort );
-                        return(true);
-                        }
-                }
-
-                // no matches anywhere so leave the session alone
-                return(false);
-            }
-        });
+        // call the session cleanup function passing the address of the
+        // user we just logged out to clean up any outstanding sessions
+        validateAllSessions(address);
 
         CaptureUserEvent event = new CaptureUserEvent( policyId, user.getUserAddress(), user.getUserName(), captureSettings.getAuthenticationType(), reason );
         logEvent(event);

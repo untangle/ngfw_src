@@ -1082,6 +1082,8 @@ if (!Ung.hasResource["Ung.Capture"]) {
                             return this.i18n._( "Active Directory" );
                         case "RADIUS":
                             return this.i18n._( "RADIUS" );
+                        case "CUSTOM":
+                            return this.i18n._( "Custom" )
                         }
 
                         return "";

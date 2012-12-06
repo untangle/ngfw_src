@@ -11,7 +11,7 @@ import java.util.List;
 @SuppressWarnings("serial")
 public class CaptureSettings implements Serializable
 {
-    public static enum AuthenticationType { ACTIVE_DIRECTORY, RADIUS, LOCAL_DIRECTORY, NONE };
+    public static enum AuthenticationType { ACTIVE_DIRECTORY, RADIUS, LOCAL_DIRECTORY, CUSTOM, NONE };
     public static enum PageType { BASIC_LOGIN, BASIC_MESSAGE, CUSTOM };
 
     private List<CaptureRule> captureRules = new LinkedList<CaptureRule>();
