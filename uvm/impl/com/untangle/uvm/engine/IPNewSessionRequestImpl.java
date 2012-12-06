@@ -12,9 +12,6 @@ import com.untangle.uvm.argon.ArgonIPNewSessionRequest;
 
 /**
  * Abstract base class for IP new session request implementations
- *
- * @author <a href="mailto:jdi@untangle.com">John Irwin</a>
- * @version 1.0
  */
 abstract class IPNewSessionRequestImpl implements IPNewSessionRequest
 {
@@ -22,9 +19,6 @@ abstract class IPNewSessionRequestImpl implements IPNewSessionRequest
     protected final ArgonConnectorImpl argonConnector;
 
     protected volatile Object attachment = null;
-
-    protected boolean needsFinalization = true;
-    protected boolean modified = false;
 
     /**
      * The pipeline request that corresponds to this (node) request.
@@ -96,36 +90,26 @@ abstract class IPNewSessionRequestImpl implements IPNewSessionRequest
     public void setClientAddr( InetAddress addr )
     {
         argonRequest.setClientAddr(addr);
-        modified = true;
     }
 
     public void setServerAddr( InetAddress addr )
     {
         argonRequest.setServerAddr(addr);
-        modified = true;
     }
 
     public void setClientPort( int port )
     {
         argonRequest.setClientPort(port);
-        modified = true;
     }
 
     public void setServerPort( int port )
     {
         argonRequest.setServerPort(port);
-        modified = true;
-    }
-
-    public void rejectSilently(boolean needsFinalization)
-    {
-        argonRequest.rejectSilently();
-        this.needsFinalization = needsFinalization;
     }
 
     public void rejectSilently()
     {
-        rejectSilently(false);
+        argonRequest.rejectSilently();
     }
 
     public void endpoint()
@@ -133,26 +117,14 @@ abstract class IPNewSessionRequestImpl implements IPNewSessionRequest
         argonRequest.endpoint();
     }
 
-    public void rejectReturnUnreachable(byte code, boolean needsFinalization)
+    public void rejectReturnUnreachable( byte code )
     {
         argonRequest.rejectReturnUnreachable(code);
-        this.needsFinalization = needsFinalization;
-    }
-
-    public void rejectReturnUnreachable(byte code)
-    {
-        rejectReturnUnreachable(code, false);
-    }
-
-    public void release(boolean needsFinalization)
-    {
-        this.needsFinalization = needsFinalization;
-        argonRequest.release();
     }
 
     public void release()
     {
-        release(false);
+        argonRequest.release();
     }
 
     public Object attach(Object ob)
@@ -180,16 +152,6 @@ abstract class IPNewSessionRequestImpl implements IPNewSessionRequest
     public byte state()
     {
         return argonRequest.state();
-    }
-
-    public boolean needsFinalization()
-    {
-        return needsFinalization;
-    }
-
-    public boolean modified()
-    {
-        return modified;
     }
 
     public InetAddress getNatFromHost()

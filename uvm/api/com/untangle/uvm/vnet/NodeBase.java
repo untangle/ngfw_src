@@ -536,7 +536,7 @@ public abstract class NodeBase implements Node
      */
     protected void killMatchingSessions( SessionMatcher matcher )
     {
-        logger.info("killMatchingSessionsPipeSpec()");
+        logger.info("killMatchingSessions()");
         if (matcher == null)
             return;
         if (pipeSpecs == null)

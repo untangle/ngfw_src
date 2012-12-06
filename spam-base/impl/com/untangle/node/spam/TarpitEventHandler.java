@@ -26,23 +26,11 @@ class TarpitEventHandler extends AbstractEventHandler
     }
 
     @Override
-    public void handleTCPComplete(TCPSessionEvent event)
-    {
-        NodeSession s = event.session();
-        SpamSmtpTarpitEvent tarpitEvent = (SpamSmtpTarpitEvent)s.attachment();
-        if (null != tarpitEvent) {
-            spamImpl.logEvent(tarpitEvent);
-        }
-    }
-
-    @Override
     public void handleTCPNewSessionRequest(TCPNewSessionRequestEvent event)
     {
         TCPNewSessionRequest tsr = event.sessionRequest();
         SpamSettings spamSettings = spamImpl.getSettings();
         SpamSmtpConfig spamConfig = spamSettings.getSmtpConfig();
-
-        boolean releaseSession = true;
 
         if (spamConfig.getTarpit()) {
 
@@ -58,14 +46,11 @@ class TarpitEventHandler extends AbstractEventHandler
 
             if ( dnsblChecker.check(tsr, spamConfig.getTarpitTimeout()) == true ) {
                 logger.debug("DNSBL hit confirmed, rejecting connection from: " + tsr.getClientAddr());
-                /* get finalization in order to log rejection */
-                tsr.rejectReturnRst(true);
-                /* don't reject and release */
-                releaseSession = false;
+                tsr.rejectReturnRst();
+                return;
             }
         }
 
-        /* release, only needs finalization if the attachment is non-null */
-        if (releaseSession) tsr.release(tsr.attachment() != null);
+        tsr.release();
     }
 }

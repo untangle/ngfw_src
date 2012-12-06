@@ -86,12 +86,12 @@ class EventHandler extends AbstractEventHandler
             }
 
             if (blockSilently) {
-                request.rejectSilently( true );
+                request.rejectSilently();
             } else {
                 if (protocol == Protocol.UDP) {
-                    request.rejectReturnUnreachable( IPNewSessionRequest.PORT_UNREACHABLE, true );
+                    request.rejectReturnUnreachable( IPNewSessionRequest.PORT_UNREACHABLE );
                 } else {
-                    ((TCPNewSessionRequest)request).rejectReturnRst( true );
+                    ((TCPNewSessionRequest)request).rejectReturnRst();
                 }
             }
 

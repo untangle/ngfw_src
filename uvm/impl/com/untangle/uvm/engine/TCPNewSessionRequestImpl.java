@@ -24,15 +24,9 @@ class TCPNewSessionRequestImpl extends IPNewSessionRequestImpl implements TCPNew
         return ((ArgonTCPNewSessionRequest)argonRequest).acked();
     }
 
-    public void rejectReturnRst(boolean needsFinalization)
-    {
-        ((ArgonTCPNewSessionRequest)argonRequest).rejectReturnRst();
-        this.needsFinalization = needsFinalization;
-    }
-
     public void rejectReturnRst()
     {
-        rejectReturnRst(false);
+        ((ArgonTCPNewSessionRequest)argonRequest).rejectReturnRst();
     }
 
 }

@@ -34,21 +34,15 @@ public interface IPNewSessionRequest extends NewSessionRequest, SessionTuple
     void setServerPort( int port );
 
     /**
-     *
+     * Get the Session Event for this session
      */
     SessionEvent sessionEvent();
 
     /**
-     * May only be called before session is established (from
-     * UDPNewSessionRequestEvent handler)
+     * May only be called before session is established (from SessionRequest handler)
      */
     void rejectSilently();
 
-    /**
-     * May only be called before session is established (from
-     * UDPNewSessionRequestEvent handler)
-     */
-    void rejectSilently(boolean needsFinalization);
 
     // Codes for rejectReturnUnreachable()
     static final byte NET_UNREACHABLE = 0;
@@ -62,35 +56,14 @@ public interface IPNewSessionRequest extends NewSessionRequest, SessionTuple
     static final byte PROHIBITED = 13;
 
     /**
-     * May only be called before session is established (from
-     * UDPNewSessionRequestEvent handler)
+     * May only be called before session is established (from SessionRequest handler)
      */
-    void rejectReturnUnreachable(byte code);
+    void rejectReturnUnreachable( byte code );
 
     /**
-     * May only be called before session is established (from
-     * UDPNewSessionRequestEvent handler)
-     */
-    void rejectReturnUnreachable(byte code, boolean needsFinalization);
-
-    /**
-     * <code>release</code> notifies the TAPI that this session may
-     * continue with the current settings (which may be modified, IE:
-     * NAT modifies the endpoint), but no data events will be
-     * delivered for the session.  If needsFinalization is false, no
-     * further events will be delivered for the session at all.  IF
-     * needsFinalization is true, then the only event that will be
-     * delivered is a Finalization event when the resulting session
-     * ends.
-     *
-     * @param needsFinalization a <code>boolean</code> true if the
-     * node needs a finalization event when the released session ends.
-     */
-    void release(boolean needsFinalization);
-
-    /**
-     * This is just release(false);
-     *
+     * Release this session from processing.
+     * If called in the SessionRequest handler, the session is entirely released from this node
+     * If called later, then the session still flows through this node, but no events are called.
      */
     void release();
 

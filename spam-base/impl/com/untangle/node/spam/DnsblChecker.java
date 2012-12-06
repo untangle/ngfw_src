@@ -139,7 +139,8 @@ public class DnsblChecker
                 isBlacklisted = false;
             } else {
                 logger.debug(client.getHostname() + " confirmed that " + ipAddr + " is on its blacklist");
-                tsr.attach(new SpamSmtpTarpitEvent(tsr.sessionEvent(), client.getHostname(), tsr.getClientAddr(), this.spamImpl.getVendor()));
+
+                this.spamImpl.logEvent( new SpamSmtpTarpitEvent(tsr.sessionEvent(), client.getHostname(), tsr.getClientAddr(), this.spamImpl.getVendor()) );
 
                 /* Indicate that there was a block event */
                 this.spamImpl.incrementBlockCount();

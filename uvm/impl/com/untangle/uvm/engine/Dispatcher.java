@@ -417,7 +417,7 @@ public class Dispatcher implements com.untangle.uvm.argon.NewSessionEventListene
     {
         NodeIPSessionImpl session = (NodeIPSessionImpl) event.session();
         elog(Level.DEBUG, "TCPFinalized", session.id());
-        if (sessionEventListener == null || (session.released() && !session.needsFinalization()))
+        if ( sessionEventListener == null || session.released() )
             releasedHandler.handleTCPFinalized(event);
         else
             sessionEventListener.handleTCPFinalized(event);
@@ -427,7 +427,7 @@ public class Dispatcher implements com.untangle.uvm.argon.NewSessionEventListene
     {
         NodeIPSessionImpl session = (NodeIPSessionImpl) event.session();
         elog(Level.DEBUG, "TCPComplete", session.id());
-        if (sessionEventListener == null || (session.released() && !session.needsFinalization()))
+        if ( sessionEventListener == null || session.released() )
             releasedHandler.handleTCPComplete(event);
         else
             sessionEventListener.handleTCPComplete(event);
@@ -477,7 +477,7 @@ public class Dispatcher implements com.untangle.uvm.argon.NewSessionEventListene
     {
         NodeIPSessionImpl session = (NodeIPSessionImpl) event.session();
         elog(Level.DEBUG, "UDPFinalized", session.id());
-        if (sessionEventListener == null || (session.released() && !session.needsFinalization()))
+        if ( sessionEventListener == null || session.released() )
             releasedHandler.handleUDPFinalized(event);
         else
             sessionEventListener.handleUDPFinalized(event);
@@ -487,7 +487,7 @@ public class Dispatcher implements com.untangle.uvm.argon.NewSessionEventListene
     {
         NodeIPSessionImpl session = (NodeIPSessionImpl) event.session();
         elog(Level.DEBUG, "UDPComplete", session.id());
-        if (sessionEventListener == null || (session.released() && !session.needsFinalization()))
+        if ( sessionEventListener == null || session.released() )
             releasedHandler.handleUDPComplete(event);
         else
             sessionEventListener.handleUDPComplete(event);
@@ -526,34 +526,13 @@ public class Dispatcher implements com.untangle.uvm.argon.NewSessionEventListene
             switch (treq.state()) {
             case ArgonIPNewSessionRequest.REJECTED:
             case ArgonIPNewSessionRequest.REJECTED_SILENT:
-                if (treq.needsFinalization()) {
-                    logger.debug("rejecting (with finalization)");
-                } else {
-                    logger.debug("rejecting");
-                    return null;
-                }
+                logger.debug("rejecting");
+                return null;
 
-                /* XX Otherwise fall through and create a "fake" session that
-                 * exists just to modify the session or to get the raze() call
-                 * from Argon when the session is razed. */
-                break;
             case ArgonIPNewSessionRequest.RELEASED:
-                boolean needsFinalization = treq.needsFinalization();
-                boolean modified = treq.modified();
-                if (needsFinalization)
-                    logger.debug("releasing (with finalization)");
-                else if (modified)
-                    logger.debug("releasing (with modification)");
-                else
-                    logger.debug("releasing");
-                if (!needsFinalization && !modified)
-                    // Then we don't need to create a session at all.
-                    return null;
+                logger.debug("releasing");
+                return null;
 
-                /* XX Otherwise fall through and create a "fake" session that
-                 * exists just to modify the session or to get the raze() call
-                 * from Argon when the session is razed. */
-                break;
             case ArgonIPNewSessionRequest.REQUESTED:
             case ArgonIPNewSessionRequest.ENDPOINTED:
             default:
@@ -573,7 +552,7 @@ public class Dispatcher implements com.untangle.uvm.argon.NewSessionEventListene
                             session.getClientAddr().getHostAddress() + ":" + session.getClientPort() + " -> " +
                             session.getServerAddr().getHostAddress() + ":" + session.getServerPort());
             if (treq.state() == ArgonIPNewSessionRequest.RELEASED) {
-                session.release(treq.needsFinalization());
+                session.release();
             } else {
                 TCPSessionEvent tevent = new TCPSessionEvent(argonConnector, session);
                 dispatchTCPNewSession(tevent);
@@ -612,34 +591,13 @@ public class Dispatcher implements com.untangle.uvm.argon.NewSessionEventListene
             switch (ureq.state()) {
             case ArgonIPNewSessionRequest.REJECTED:
             case ArgonIPNewSessionRequest.REJECTED_SILENT:
-                if (ureq.needsFinalization()) {
-                    logger.debug("rejecting (with finalization)");
-                } else {
-                    logger.debug("rejecting");
-                    return null;
-                }
+                logger.debug("rejecting");
+                return null;
 
-                /* XXX Otherwise fall through and create a "fake" session that
-                 * exists just to modify the session or to get the raze() call
-                 * from Argon when the session is razed. */
-                break;
             case ArgonIPNewSessionRequest.RELEASED:
-                boolean needsFinalization = ureq.needsFinalization();
-                boolean modified = ureq.modified();
-                if (needsFinalization)
-                    logger.debug("releasing (with finalization)");
-                else if (modified)
-                    logger.debug("releasing (with modification)");
-                else
-                    logger.debug("releasing");
-                if (!needsFinalization && !modified)
-                    // Then we don't need to create a session at all.
-                    return null;
+                logger.debug("releasing");
+                return null;
 
-                /* XXX Otherwise fall through and create a "fake" session that
-                 * exists just to modify the session or to get the raze() call
-                 * from Argon when the session is razed. */
-                break;
             case ArgonIPNewSessionRequest.REQUESTED:
             case ArgonIPNewSessionRequest.ENDPOINTED:
             default:
@@ -660,7 +618,7 @@ public class Dispatcher implements com.untangle.uvm.argon.NewSessionEventListene
                             session.getClientAddr().getHostAddress() + ":" + session.getClientPort() + " -> " +
                             session.getServerAddr().getHostAddress() + ":" + session.getServerPort());
             if (ureq.state() == ArgonIPNewSessionRequest.RELEASED) {
-                session.release(ureq.needsFinalization());
+                session.release();
             } else {
                 UDPSessionEvent tevent = new UDPSessionEvent(argonConnector, session);
                 dispatchUDPNewSession(tevent);
