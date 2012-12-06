@@ -62,7 +62,7 @@ public class SpywareEventHandler extends AbstractEventHandler
     public void handleTCPNewSessionRequest(TCPNewSessionRequestEvent event)
     {
         if (null != subnetSet) {
-            detectSpyware(event.sessionRequest(), true);
+            detectSpyware(event.sessionRequest());
         } else {
             logger.debug("spyware detection disabled");
         }
@@ -71,33 +71,13 @@ public class SpywareEventHandler extends AbstractEventHandler
     public void handleUDPNewSessionRequest(UDPNewSessionRequestEvent event)
     {
         if (null != subnetSet) {
-            detectSpyware(event.sessionRequest(), true);
+            detectSpyware(event.sessionRequest());
         } else {
             logger.debug("spyware detection disabled");
         }
     }
 
-    @Override
-    public void handleTCPComplete(TCPSessionEvent event)
-    {
-        NodeSession s = event.session();
-        SpywareAccessEvent spe = (SpywareAccessEvent)s.attachment();
-        if (null != spe) {
-            node.logEvent(spe);
-        }
-    }
-
-    @Override
-    public void handleUDPComplete(UDPSessionEvent event)
-    {
-        NodeSession s = event.session();
-        SpywareAccessEvent spe = (SpywareAccessEvent)s.attachment();
-        if (null != spe) {
-            node.logEvent(spe);
-        }
-    }
-
-    void detectSpyware(IPNewSessionRequest ipr, boolean release)
+    void detectSpyware( IPNewSessionRequest ipr )
     {
         IPMaskedAddress ipm = new IPMaskedAddress(ipr.getServerAddr().getHostAddress());
 
@@ -107,7 +87,7 @@ public class SpywareEventHandler extends AbstractEventHandler
             if (logger.isDebugEnabled()) {
                 logger.debug("Subnet scan: " + ipm.toString() + " -> clean.");
             }
-            if (release) { ipr.release(); }
+            ipr.release();
             return;
         }
 
@@ -131,8 +111,8 @@ public class SpywareEventHandler extends AbstractEventHandler
         }
 
         SpywareAccessEvent evt = new SpywareAccessEvent(ipr.sessionEvent(), ir.getName(), new IPMaskedAddress(ir.getString()), Boolean.FALSE);
-        ipr.attach(evt);
+        node.logEvent(evt);
 
-        if (release) { ipr.release(true); }
+        ipr.release();
     }
 }

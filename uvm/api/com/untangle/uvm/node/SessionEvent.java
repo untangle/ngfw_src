@@ -39,228 +39,93 @@ public class SessionEvent extends LogEvent
 
     /**
      * Session id.
-     *
-     * @return the id of the session
      */
-    public Long getSessionId()
-    {
-        return sessionId;
-    }
-
-    public void setSessionId(Long sessionId)
-    {
-        this.sessionId = sessionId;
-    }
+    public Long getSessionId() { return sessionId; }
+    public void setSessionId(Long sessionId) { this.sessionId = sessionId; }
 
     /**
      * Protocol.  Currently always either 6 (TCP) or 17 (UDP).
-     *
-     * @return the id of the session
      */
-    public Short getProtocol()
-    {
-        return protocol;
-    }
-
-    public void setProtocol(Short protocol)
-    {
-        this.protocol = protocol;
-    }
+    public Short getProtocol() { return protocol; }
+    public void setProtocol(Short protocol) { this.protocol = protocol; }
 
     /**
-     * Client interface number (at client).  (0 outside, 1 inside)
-     *
-     * @return the number of the interface of the client
+     * Client interface number (at client).
      */
-    public Integer getClientIntf()
-    {
-        return clientIntf;
-    }
-
-    public void setClientIntf(Integer clientIntf)
-    {
-        this.clientIntf = clientIntf;
-    }
+    public Integer getClientIntf() { return clientIntf; }
+    public void setClientIntf(Integer clientIntf) { this.clientIntf = clientIntf; }
 
     /**
-     * Server interface number (at server).  (0 outside, 1 inside)
-     *
-     * @return the number of the interface of the server
+     * Server interface number (at server).
      */
-    public Integer getServerIntf()
-    {
-        return serverIntf;
-    }
-
-    public void setServerIntf(Integer serverIntf)
-    {
-        this.serverIntf = serverIntf;
-    }
+    public Integer getServerIntf() { return serverIntf; }
+    public void setServerIntf(Integer serverIntf) { this.serverIntf = serverIntf; }
 
     /**
      * Client address, at the client side.
-     *
-     * @return the address of the client (as seen at client side of pipeline)
      */
-    public InetAddress getCClientAddr()
-    {
-        return cClientAddr;
-    }
-
-    public void setCClientAddr(InetAddress cClientAddr)
-    {
-        this.cClientAddr = cClientAddr;
-    }
+    public InetAddress getCClientAddr() { return cClientAddr; }
+    public void setCClientAddr(InetAddress cClientAddr) { this.cClientAddr = cClientAddr; }
 
     /**
      * Client address, at the server side.
-     *
-     * @return the address of the client (as seen at server side of pipeline)
      */
-    public InetAddress getSClientAddr()
-    {
-        return sClientAddr;
-    }
-
-    public void setSClientAddr(InetAddress sClientAddr)
-    {
-        this.sClientAddr = sClientAddr;
-    }
+    public InetAddress getSClientAddr() { return sClientAddr; }
+    public void setSClientAddr(InetAddress sClientAddr) { this.sClientAddr = sClientAddr; }
 
     /**
      * Server address, at the client side.
-     *
-     * @return the address of the server (as seen at client side of pipeline)
      */
-    public InetAddress getCServerAddr()
-    {
-        return cServerAddr;
-    }
-
-    public void setCServerAddr(InetAddress cServerAddr)
-    {
-        this.cServerAddr = cServerAddr;
-    }
+    public InetAddress getCServerAddr() { return cServerAddr; }
+    public void setCServerAddr(InetAddress cServerAddr) { this.cServerAddr = cServerAddr; }
 
     /**
      * Server address, at the server side.
-     *
-     * @return the address of the server (as seen at server side of pipeline)
      */
-    public InetAddress getSServerAddr()
-    {
-        return sServerAddr;
-    }
-
-    public void setSServerAddr(InetAddress sServerAddr)
-    {
-        this.sServerAddr = sServerAddr;
-    }
+    public InetAddress getSServerAddr() { return sServerAddr; }
+    public void setSServerAddr(InetAddress sServerAddr) { this.sServerAddr = sServerAddr; }
 
     /**
      * Client port, at the client side.
-     *
-     * @return the port of the client (as seen at client side of pipeline)
      */
-    public Integer getCClientPort()
-    {
-        return cClientPort;
-    }
-
-    public void setCClientPort(Integer cClientPort)
-    {
-        this.cClientPort = cClientPort;
-    }
+    public Integer getCClientPort() { return cClientPort; }
+    public void setCClientPort(Integer cClientPort) { this.cClientPort = cClientPort; }
 
     /**
      * Client port, at the server side.
-     *
-     * @return the port of the client (as seen at server side of pipeline)
      */
-    public Integer getSClientPort()
-    {
-        return sClientPort;
-    }
-
-    public void setSClientPort(Integer sClientPort)
-    {
-        this.sClientPort = sClientPort;
-    }
+    public Integer getSClientPort() { return sClientPort; }
+    public void setSClientPort(Integer sClientPort) { this.sClientPort = sClientPort; }
 
     /**
      * Server port, at the client side.
-     *
-     * @return the port of the server (as seen at client side of pipeline)
      */
-    public Integer getCServerPort()
-    {
-        return cServerPort;
-    }
-
-    public void setCServerPort(Integer cServerPort)
-    {
-        this.cServerPort = cServerPort;
-    }
+    public Integer getCServerPort() { return cServerPort; }
+    public void setCServerPort(Integer cServerPort) { this.cServerPort = cServerPort; }
 
     /**
      * Server port, at the server side.
-     *
-     * @return the port of the server (as seen at server side of pipeline)
      */
-    public Integer getSServerPort()
-    {
-        return sServerPort;
-    }
-
-    public void setSServerPort(Integer sServerPort)
-    {
-        this.sServerPort = sServerPort;
-    }
+    public Integer getSServerPort() { return sServerPort; }
+    public void setSServerPort(Integer sServerPort) { this.sServerPort = sServerPort; }
 
     /**
      * Policy that was applied for this pipeline.
-     *
-     * @return Policy for this pipeline
      */
-    public Long getPolicyId()
-    {
-        return policyId;
-    }
-
-    public void setPolicyId(Long policyId)
-    {
-        this.policyId = policyId;
-    }
+    public Long getPolicyId() { return policyId; }
+    public void setPolicyId(Long policyId) { this.policyId = policyId; }
 
     /**
      * The username associated with this session
-     *
-     * @return Username string for this session
      */
-    public String getUsername()
-    {
-        return username;
-    }
-
-    public void setUsername(String username)
-    {
-        this.username = username;
-    }
+    public String getUsername() { return username; }
+    public void setUsername(String username) { this.username = username; }
 
     /**
      * The hostname associated with this session
-     *
-     * @return Hostname string for this session
      */
-    public String getHostname()
-    {
-        return hostname;
-    }
-
-    public void setHostname(String hostname)
-    {
-        this.hostname = hostname;
-    }
+    public String getHostname() { return hostname; }
+    public void setHostname(String hostname) { this.hostname = hostname; }
     
     /* This doesn't really belong here */
     public String getProtocolName()

@@ -29,6 +29,7 @@ import com.untangle.uvm.engine.PipelineFoundryImpl;
 import com.untangle.uvm.node.SessionTuple;
 import com.untangle.uvm.node.SessionTupleImpl;
 import com.untangle.uvm.node.SessionEvent;
+import com.untangle.uvm.node.SessionNatEvent;
 import com.untangle.uvm.node.SessionStatsEvent;
 import com.untangle.uvm.node.PolicyManager;
 import com.untangle.uvm.vnet.NodeSession;
@@ -211,6 +212,9 @@ public abstract class ArgonHook implements Runnable
             sessionEvent.setSClientPort( clientSide.getClientPort() );
             sessionEvent.setSServerAddr( clientSide.getServerAddr() );
             sessionEvent.setSServerPort( clientSide.getServerPort() );
+
+            /* log the session event */
+            UvmContextFactory.context().logEvent(sessionEvent);
             
             /* Initialize all of the nodes, sending the request events to each in turn */
             initNodes( sessionEvent );
@@ -234,16 +238,28 @@ public abstract class ArgonHook implements Runnable
             /* Connect to the client */
             clientActionCompleted = connectClient();
 
-            /* Re-set any attribute thats may have been changed by the node */
-            sessionEvent.setSClientAddr( serverSide.getClientAddr() );
-            sessionEvent.setSClientPort( serverSide.getClientPort() );
-            sessionEvent.setSServerAddr( serverSide.getServerAddr() );
-            sessionEvent.setSServerPort( serverSide.getServerPort() );
-            sessionEvent.setServerIntf( serverSide.getServerIntf() );
+            /* If any NAT/transformation of the session has taken place, log a NAT event to update the server side attributes */
+            if (  clientSide.getServerIntf() != serverSide.getServerIntf() ||
+                ! clientSide.getClientAddr().equals( serverSide.getClientAddr() ) ||
+                  clientSide.getClientPort() !=  serverSide.getClientPort()  ||
+                ! clientSide.getServerAddr().equals( serverSide.getServerAddr() ) ||
+                  clientSide.getServerPort() != serverSide.getServerPort() ) {
+                SessionNatEvent natEvent = new SessionNatEvent( sessionEvent.getSessionId(),
+                                                                serverSide.getServerIntf(),
+                                                                serverSide.getClientAddr(),
+                                                                serverSide.getClientPort(),                                                               
+                                                                serverSide.getServerAddr(),
+                                                                serverSide.getServerPort());
+                UvmContextFactory.context().logEvent(natEvent);
 
-            /* log the event */
-            UvmContextFactory.context().logEvent(sessionEvent);
-            
+                /* Re-set any attribute thats may have been changed by the node */
+                sessionEvent.setSClientAddr( serverSide.getClientAddr() );
+                sessionEvent.setSClientPort( serverSide.getClientPort() );
+                sessionEvent.setSServerAddr( serverSide.getServerAddr() );
+                sessionEvent.setSServerPort( serverSide.getServerPort() );
+                sessionEvent.setServerIntf( serverSide.getServerIntf() );
+            }
+
             /* Remove all non-vectored sessions, it is non-efficient
              * to iterate the session list twice, but the list is
              * typically small and this logic may get very complex

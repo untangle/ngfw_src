@@ -101,7 +101,7 @@ class EventHandler extends AbstractEventHandler
 
             /* We just blocked, so we have to log too, regardless of what the rule actually says */
             FirewallEvent fwe = new FirewallEvent(request.sessionEvent(), block, flag, ruleIndex);
-            request.attach(fwe);
+            node.logEvent(fwe);
 
         } else { /* not blocked */
 
@@ -110,7 +110,7 @@ class EventHandler extends AbstractEventHandler
             }
 
             /* only finalize if logging */
-            request.release( true );
+            request.release();
 
             /* Increment the pass counter and flag counter */
             node.incrementPassCount();
@@ -118,27 +118,7 @@ class EventHandler extends AbstractEventHandler
 
             /* If necessary log the event */
             FirewallEvent fwe = new FirewallEvent(request.sessionEvent(), block, flag, ruleIndex);
-            request.attach(fwe);
-        }
-    }
-
-    @Override
-    public void handleTCPComplete(TCPSessionEvent event)
-    {
-        NodeSession s = event.session();
-        FirewallEvent fe = (FirewallEvent)s.attachment();
-        if (null != fe) {
-            node.logEvent(fe);
-        }
-    }
-
-    @Override
-    public void handleUDPComplete(UDPSessionEvent event)
-    {
-        NodeSession s = event.session();
-        FirewallEvent fe = (FirewallEvent)s.attachment();
-        if (null != fe) {
-            node.logEvent(fe);
+            node.logEvent(fwe);
         }
     }
 
