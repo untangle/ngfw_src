@@ -329,7 +329,7 @@ def global_setup(req,appid=None):
         brandingSettings = {}
         brandingSettings['companyName'] = 'Untangle'
     else:
-        brandingSettings = brandingNode.getSettings()
+        brandingSettings = brandingNode.getBrandingSettings()
 
     # add some headers to prevent caching any of our stuff
     req.headers_out.add("Cache-Control", "no-store, no-cache, must-revalidate, post-check=0, pre-check=0")
@@ -345,7 +345,7 @@ def create_debug(args):
     debug = "<BR><HR><BR>";
     debug += "<BR>===== ARGUMENTS =====<BR>\r\n"
     debug += pprint.pformat(args)
-    debug +="<BR>===== CAPTURE SETTINGS =====<BR>\r\n"
+    debug += "<BR>===== CAPTURE SETTINGS =====<BR>\r\n"
     debug += pprint.pformat(captureSettings)
     debug += "<BR>===== BRANDING SETTINGS =====<BR>\r\n"
     debug += pprint.pformat(brandingSettings)
