@@ -16,14 +16,14 @@ import com.untangle.uvm.HostTable;
 public class CaptureUserTable
 {
     private final Logger logger = Logger.getLogger(getClass());
-    private Hashtable<String,CaptureUserEntry> userTable;
+    private Hashtable<InetAddress,CaptureUserEntry> userTable;
 
     public class StaleUser
     {
         CaptureUserEvent.EventType reason;
-        String address;
+        InetAddress address;
 
-        StaleUser(String address,CaptureUserEvent.EventType reason)
+        StaleUser(InetAddress address,CaptureUserEvent.EventType reason)
         {
             this.address = address;
             this.reason = reason;
@@ -32,7 +32,7 @@ public class CaptureUserTable
 
     public CaptureUserTable()
     {
-        userTable = new Hashtable<String,CaptureUserEntry>();
+        userTable = new Hashtable<InetAddress,CaptureUserEntry>();
     }
 
     public ArrayList<CaptureUserEntry> buildUserList()
@@ -41,52 +41,26 @@ public class CaptureUserTable
         return(userList);
     }
 
-    public CaptureUserEntry insertActiveUser(String address,String username)
+    public CaptureUserEntry insertActiveUser(InetAddress address,String username)
     {
         CaptureUserEntry local = new CaptureUserEntry(address,username);
         userTable.put(address,local);
 
-        InetAddress netaddr = null;
-
-        try
-        {
-            netaddr = InetAddress.getByName(address);
-        }
-
-        catch (Exception e)
-        {
-            logger.warn("Invalid network address", e);
-        }
-
-        logger.debug("Calling setUsernameCapture(" + username + ") for " + netaddr.getHostAddress().toString());
-        UvmContextFactory.context().hostTable().getHostTableEntry( netaddr, true).setUsernameCapture( username );
+        UvmContextFactory.context().hostTable().getHostTableEntry( address, true).setUsernameCapture( username );
         return(local);
     }
 
-    public boolean removeActiveUser(String address)
+    public boolean removeActiveUser(InetAddress address)
     {
         CaptureUserEntry user = userTable.get(address);
         if (user == null) return(false);
         userTable.remove(address);
 
-        InetAddress netaddr = null;
-
-        try
-        {
-            netaddr = InetAddress.getByName(address);
-        }
-
-        catch (Exception e)
-        {
-            logger.warn("Invalid network address", e);
-        }
-
-        logger.debug("Calling setUsernameCapture(null) for " + netaddr.getHostAddress().toString());
-        UvmContextFactory.context().hostTable().getHostTableEntry( netaddr, true).setUsernameCapture( null );
+        UvmContextFactory.context().hostTable().getHostTableEntry( address, true).setUsernameCapture( null );
         return(true);
     }
 
-    public CaptureUserEntry searchByAddress(String address)
+    public CaptureUserEntry searchByAddress(InetAddress address)
     {
         return(userTable.get(address));
     }

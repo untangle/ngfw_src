@@ -9,6 +9,7 @@ import com.untangle.uvm.vnet.NodeTCPSession;
 import com.untangle.uvm.node.EventLogQuery;
 import com.untangle.uvm.node.Node;
 import java.util.ArrayList;
+import java.net.InetAddress;
 
 public interface CaptureNode extends Node
 {
@@ -22,13 +23,13 @@ public interface CaptureNode extends Node
     EventLogQuery[] getUserEventQueries();
     EventLogQuery[] getRuleEventQueries();
 
-    int userAuthenticate(String address, String username, String password);
-    int userActivate(String address, String agree);
-    int userAdminLogout(String address);
-    int userLogout(String address);
+    int userAuthenticate(InetAddress address, String username, String password);
+    int userActivate(InetAddress address, String agree);
+    int userAdminLogout(InetAddress address);
+    int userLogout(InetAddress address);
 
-    boolean isClientAuthenticated(String clientAddr);
-    PassedAddress isSessionAllowed(String clientAddr,String serverAddr);
+    boolean isClientAuthenticated(InetAddress clientAddr);
+    PassedAddress isSessionAllowed(InetAddress clientAddr,InetAddress serverAddr);
     CaptureRule checkCaptureRules(IPNewSessionRequest sessreq);
     CaptureRule checkCaptureRules(NodeTCPSession session);
 }

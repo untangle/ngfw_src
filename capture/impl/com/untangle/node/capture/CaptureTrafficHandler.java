@@ -46,11 +46,8 @@ public class CaptureTrafficHandler extends AbstractEventHandler
             return;
         }
 
-        String clientAddr = sessreq.getClientAddr().getHostAddress().toString();
-        String serverAddr = sessreq.getServerAddr().getHostAddress().toString();
-
         // next check is to see if the user is already authenticated
-        if (node.isClientAuthenticated(clientAddr) == true)
+        if (node.isClientAuthenticated(sessreq.getClientAddr()) == true)
         {
             node.incrementBlinger(CaptureNode.BlingerType.SESSALLOW,1);
             sessreq.release( true );
@@ -58,7 +55,7 @@ public class CaptureTrafficHandler extends AbstractEventHandler
         }
 
         // not authenticated so check both of the pass lists
-        PassedAddress passed = node.isSessionAllowed(clientAddr,serverAddr);
+        PassedAddress passed = node.isSessionAllowed(sessreq.getClientAddr(),sessreq.getServerAddr());
 
             if (passed != null)
             {
@@ -109,11 +106,8 @@ public class CaptureTrafficHandler extends AbstractEventHandler
     {
         IPNewSessionRequest sessreq = event.sessionRequest();
 
-        String clientAddr = sessreq.getClientAddr().getHostAddress().toString();
-        String serverAddr = sessreq.getServerAddr().getHostAddress().toString();
-
         // first check is to see if the user is already authenticated
-        if (node.isClientAuthenticated(clientAddr) == true)
+        if (node.isClientAuthenticated(sessreq.getClientAddr()) == true)
         {
             node.incrementBlinger(CaptureNode.BlingerType.SESSALLOW,1);
             sessreq.release( true );
@@ -121,7 +115,7 @@ public class CaptureTrafficHandler extends AbstractEventHandler
         }
 
         // not authenticated so check both of the pass lists
-        PassedAddress passed = node.isSessionAllowed(clientAddr,serverAddr);
+        PassedAddress passed = node.isSessionAllowed(sessreq.getClientAddr(),sessreq.getServerAddr());
 
             if (passed != null)
             {

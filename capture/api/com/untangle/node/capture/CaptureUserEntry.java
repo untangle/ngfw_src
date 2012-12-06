@@ -4,15 +4,17 @@
 
 package com.untangle.node.capture;
 
+import java.net.InetAddress;
+
 public class CaptureUserEntry
 {
-    private String userAddress;
+    private InetAddress userAddress;
     private String userName;
     private long sessionCreation;
     private long sessionActivity;
     private long sessionCounter;
 
-    public CaptureUserEntry(String userAddress,String userName)
+    public CaptureUserEntry(InetAddress userAddress,String userName)
     {
         this.userAddress = userAddress;
         this.userName = userName;
@@ -25,7 +27,7 @@ public class CaptureUserEntry
         return(userName);
     }
 
-    public String getUserAddress()
+    public InetAddress getUserAddress()
     {
         return(userAddress);
     }

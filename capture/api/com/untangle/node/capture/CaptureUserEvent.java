@@ -4,6 +4,8 @@
 
 package com.untangle.node.capture;
 
+import java.net.InetAddress;
+
 import com.untangle.node.capture.CaptureSettings.AuthenticationType;
 import com.untangle.uvm.logging.LogEvent;
 
@@ -12,7 +14,7 @@ public class CaptureUserEvent extends LogEvent
 {
     public enum EventType { LOGIN, FAILED, TIMEOUT, INACTIVE, USER_LOGOUT, ADMIN_LOGOUT };
 
-    private String clientAddr;
+    private InetAddress clientAddr;
     private String loginName;
     private String authenticationTypeValue;
     private String eventValue;
@@ -22,7 +24,7 @@ public class CaptureUserEvent extends LogEvent
 
     public CaptureUserEvent() { }
 
-    public CaptureUserEvent(Long policyId, String clientAddr, String loginName, AuthenticationType type, EventType event)
+    public CaptureUserEvent(Long policyId, InetAddress clientAddr, String loginName, AuthenticationType type, EventType event)
     {
         setPolicyId(policyId);
         setClientAddr(clientAddr);
@@ -33,8 +35,8 @@ public class CaptureUserEvent extends LogEvent
 
     // accessors -----------------------------------------------------------
 
-    public String getClientAddr() { return clientAddr; }
-    public void setClientAddr( String clientAddr ) { this.clientAddr = clientAddr; }
+    public InetAddress getClientAddr() { return clientAddr; }
+    public void setClientAddr( InetAddress clientAddr ) { this.clientAddr = clientAddr; }
 
     public String getLoginName() { return loginName; }
     public void setLoginName( String loginName ) { this.loginName = loginName; }
@@ -69,7 +71,7 @@ public class CaptureUserEvent extends LogEvent
         pstmt.setString(++i, getLoginName());
         pstmt.setString(++i, getEvent().toString());
         pstmt.setString(++i, getAuthenticationTypeValue());
-        pstmt.setString(++i, getClientAddr());
+        pstmt.setString(++i, getClientAddr().getHostAddress().toString());
         return pstmt;
     }
 }

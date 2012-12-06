@@ -44,11 +44,8 @@ class CaptureHttpHandler extends HttpStateMachine
         Token[] response = null;
         NodeTCPSession session = getSession();
 
-        String clientAddr = session.getClientAddr().getHostAddress().toString();
-        String serverAddr = session.getServerAddr().getHostAddress().toString();
-
         // first check to see if the user is already authenticated
-        if (node.isClientAuthenticated(clientAddr) == true)
+        if (node.isClientAuthenticated(session.getClientAddr()) == true)
         {
             node.incrementBlinger(CaptureNode.BlingerType.SESSALLOW,1);
             releaseRequest();
@@ -56,7 +53,7 @@ class CaptureHttpHandler extends HttpStateMachine
         }
 
         // not authenticated so check both of the pass lists
-        PassedAddress passed = node.isSessionAllowed(clientAddr,serverAddr);
+        PassedAddress passed = node.isSessionAllowed(session.getClientAddr(),session.getServerAddr());
 
             if (passed != null)
             {

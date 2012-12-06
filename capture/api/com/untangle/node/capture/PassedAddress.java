@@ -4,16 +4,18 @@
 
 package com.untangle.node.capture;
 
+import java.net.InetAddress;
+
 @SuppressWarnings("serial")
 public class PassedAddress
 {
     private boolean live = true;
     private boolean log = false;
-    private String address = "";
-    private String description = "";
+    private InetAddress address = null;
+    private String description = null;
 
-    public String getAddress() { return this.address; }
-    public void setAddress( String newValue ) { this.address = newValue; }
+    public InetAddress getAddress() { return this.address; }
+    public void setAddress( InetAddress newValue ) { this.address = newValue; }
 
     public boolean getLive() { return live; }
     public void setLive(boolean live) { this.live = live; }

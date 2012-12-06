@@ -10,6 +10,7 @@ import java.util.Hashtable;
 import java.util.Timer;
 import java.util.List;
 import java.util.Map;
+import java.net.InetAddress;
 
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
@@ -66,8 +67,8 @@ public class CaptureNodeImpl extends NodeBase implements CaptureNode
     private final SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
     private final String settingsFile = (System.getProperty("uvm.settings.dir") + "/untangle-node-capture/settings_" + getNodeSettings().getId().toString());
     private final String customPath = (System.getProperty("uvm.web.dir") + "/capture/custom_" + getNodeSettings().getId().toString());
-    private final Hashtable<String,PassedAddress> passedClientHash = new Hashtable<String,PassedAddress>();
-    private final Hashtable<String,PassedAddress> passedServerHash = new Hashtable<String,PassedAddress>();
+    private final Hashtable<InetAddress,PassedAddress> passedClientHash = new Hashtable<InetAddress,PassedAddress>();
+    private final Hashtable<InetAddress,PassedAddress> passedServerHash = new Hashtable<InetAddress,PassedAddress>();
 
     protected CaptureUserTable captureUserTable = new CaptureUserTable();
     private CaptureSettings captureSettings;
@@ -343,10 +344,10 @@ public class CaptureNodeImpl extends NodeBase implements CaptureNode
             public boolean isMatch( NodeSession sess )
             {
                 // if session is for any active authenticated user return false
-                if ( captureUserTable.searchByAddress(sess.getClientAddr().toString() ) != null) return(false);
+                if ( captureUserTable.searchByAddress(sess.getClientAddr() ) != null) return(false);
 
                 // if session matches any pass list return false
-                if ( isSessionAllowed( sess.getClientAddr().toString(), sess.getServerAddr().toString() ) != null) return(false);
+                if ( isSessionAllowed( sess.getClientAddr(), sess.getServerAddr() ) != null) return(false);
 
                 // check the session against the rule list
                 for (CaptureRule rule : ruleList)
@@ -451,7 +452,7 @@ public class CaptureNodeImpl extends NodeBase implements CaptureNode
 ///// ------------------------------------------------------------------------
 ///// public methods for user control
 
-    public int userAuthenticate(String address, String username, String password)
+    public int userAuthenticate(InetAddress address, String username, String password)
     {
         boolean isAuthenticated = false;
 
@@ -532,40 +533,40 @@ public class CaptureNodeImpl extends NodeBase implements CaptureNode
         return(0);
     }
 
-    public int userActivate(String address, String agree)
+    public int userActivate(InetAddress address, String agree)
     {
             if (agree.equals("agree") == false)
             {
-                CaptureUserEvent event = new CaptureUserEvent( policyId, address, address, captureSettings.getAuthenticationType(), CaptureUserEvent.EventType.FAILED );
+                CaptureUserEvent event = new CaptureUserEvent( policyId, address, "Anonymous", captureSettings.getAuthenticationType(), CaptureUserEvent.EventType.FAILED );
                 logEvent(event);
                 incrementBlinger(BlingerType.AUTHFAIL,1);
                 logger.info("Activate failure " + address);
                 return(1);
             }
 
-        captureUserTable.insertActiveUser(address,address);
+        captureUserTable.insertActiveUser(address,"Anonymous");
 
-        CaptureUserEvent event = new CaptureUserEvent( policyId, address, address, captureSettings.getAuthenticationType(), CaptureUserEvent.EventType.LOGIN );
+        CaptureUserEvent event = new CaptureUserEvent( policyId, address, "Anonymous", captureSettings.getAuthenticationType(), CaptureUserEvent.EventType.LOGIN );
         logEvent(event);
         incrementBlinger(BlingerType.AUTHGOOD,1);
         logger.info("Activate success " + address);
         return(0);
     }
 
-    public int userLogout(String address)
+    public int userLogout(InetAddress address)
     {
         return(userLogout(address,CaptureUserEvent.EventType.USER_LOGOUT));
     }
 
-    public int userAdminLogout(String address)
+    public int userAdminLogout(InetAddress address)
     {
         return(userLogout(address,CaptureUserEvent.EventType.ADMIN_LOGOUT));
     }
 
-    public int userLogout(String address,CaptureUserEvent.EventType reason)
+    public int userLogout(InetAddress address,CaptureUserEvent.EventType reason)
     {
         CaptureUserEntry user = captureUserTable.searchByAddress(address);
-        final String userAddress = address;
+        final InetAddress userAddress = address;
 
         if (user == null)
         {
@@ -586,10 +587,10 @@ public class CaptureNodeImpl extends NodeBase implements CaptureNode
             public boolean isMatch( NodeSession sess )
             {
                 // if session is not for this user return false
-                if ( userAddress.equals( sess.getClientAddr().getHostAddress().toString()) == false ) return(false);
+                if ( userAddress.equals( sess.getClientAddr()) == false ) return(false);
 
                 // if session matches any pass list return false
-                if ( isSessionAllowed( sess.getClientAddr().toString(), sess.getServerAddr().toString()) != null ) return(false);
+                if ( isSessionAllowed( sess.getClientAddr(), sess.getServerAddr() ) != null ) return(false);
 
                 // check the session against the rule list
                 for (CaptureRule rule : ruleList)
@@ -626,7 +627,7 @@ public class CaptureNodeImpl extends NodeBase implements CaptureNode
 ///// ------------------------------------------------------------------------
 ///// public method for testing all rules for a session
 
-    public boolean isClientAuthenticated(String clientAddr)
+    public boolean isClientAuthenticated(InetAddress clientAddr)
     {
         // search for the address in the active user table
         CaptureUserEntry user = captureUserTable.searchByAddress(clientAddr);
@@ -641,7 +642,7 @@ public class CaptureNodeImpl extends NodeBase implements CaptureNode
         return(false);
     }
 
-    public PassedAddress isSessionAllowed(String clientAddr,String serverAddr)
+    public PassedAddress isSessionAllowed(InetAddress clientAddr,InetAddress serverAddr)
     {
         PassedAddress checker = null;
 
