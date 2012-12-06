@@ -586,7 +586,7 @@ public class CaptureNodeImpl extends NodeBase implements CaptureNode
             public boolean isMatch( NodeSession sess )
             {
                 // if session is not for this user return false
-                if ( userAddress.equals( sess.getClientAddr().toString()) == false ) return(false);
+                if ( userAddress.equals( sess.getClientAddr().getHostAddress().toString()) == false ) return(false);
 
                 // if session matches any pass list return false
                 if ( isSessionAllowed( sess.getClientAddr().toString(), sess.getServerAddr().toString()) != null ) return(false);
