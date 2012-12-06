@@ -1,5 +1,5 @@
 /*
- * $Id: SessionMatcherGlobal.java,v 1.00 2012/12/04 13:17:13 dmorris Exp $
+ * $Id: SessionMatcher.java,v 1.00 2012/12/04 13:17:13 dmorris Exp $
  */
 package com.untangle.uvm;
 
@@ -11,7 +11,7 @@ import com.untangle.uvm.vnet.NodeSession;
 /**
  * This is a simple class to overload to create a function/object for matching sessions using its attributes
  */
-public interface SessionMatcherGlobal
+public interface SessionMatcher
 {
     /**
      * Alternate session match test

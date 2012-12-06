@@ -22,7 +22,7 @@ import com.untangle.node.token.Token;
 import com.untangle.node.token.TokenAdaptor;
 import com.untangle.uvm.UvmContext;
 import com.untangle.uvm.UvmContextFactory;
-import com.untangle.uvm.SessionMatcherGlobal;
+import com.untangle.uvm.SessionMatcher;
 import com.untangle.uvm.node.GenericRule;
 import com.untangle.uvm.node.EventLogQuery;
 import com.untangle.uvm.node.NodeMetric;
@@ -102,7 +102,7 @@ public abstract class VirusNodeImpl extends NodeBase implements VirusNode
     private EventLogQuery mailCleanEventQuery;
     
     /* This can't be static because it uses policy which is per node */
-    private final SessionMatcherGlobal VIRUS_SESSION_MATCHER = new SessionMatcherGlobal() {
+    private final SessionMatcher VIRUS_SESSION_MATCHER = new SessionMatcher() {
             /* Kill all FTP, HTTP, SMTP, POP3, IMAP sessions */
             public boolean isMatch( Long policyId, short protocol, int clientIntf, int serverIntf, InetAddress clientAddr, InetAddress serverAddr, int clientPort, int serverPort, Map<String,Object> attachments )
             {
@@ -511,7 +511,7 @@ public abstract class VirusNodeImpl extends NodeBase implements VirusNode
         /**
          * Reset existing sessions for this node only
          */
-        killMatchingSessionsNonGlobal(VIRUS_SESSION_MATCHER);
+        killMatchingSessions(VIRUS_SESSION_MATCHER);
     }
 
     

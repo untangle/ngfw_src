@@ -13,7 +13,7 @@ import org.apache.log4j.Logger;
 
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.SettingsManager;
-import com.untangle.uvm.SessionMatcherGlobal;
+import com.untangle.uvm.SessionMatcher;
 import com.untangle.uvm.node.NodeSettings;
 import com.untangle.uvm.node.NodeProperties;
 import com.untangle.uvm.node.NodeMetric;
@@ -51,7 +51,7 @@ public class FirewallImpl extends NodeBase implements Firewall
     private FirewallSettings settings = null;
 
     /* This can't be static because it uses policy which is per node */
-    private final SessionMatcherGlobal FIREWALL_SESSION_MATCHER = new SessionMatcherGlobal() {
+    private final SessionMatcher FIREWALL_SESSION_MATCHER = new SessionMatcher() {
             
             /* Kill all sessions that should be blocked */
             public boolean isMatch( Long policyId, short protocol, int clientIntf, int serverIntf, InetAddress clientAddr, InetAddress serverAddr, int clientPort, int serverPort, Map<String,Object> attachments )
@@ -288,7 +288,7 @@ public class FirewallImpl extends NodeBase implements Firewall
         logger.info("Reconfigure()");
 
         /* check for any sessions that should be killed according to new rules */
-        this.killMatchingSessionsNonGlobal(FIREWALL_SESSION_MATCHER);
+        this.killMatchingSessions(FIREWALL_SESSION_MATCHER);
 
         if (settings == null) {
             logger.warn("Invalid settings: null");

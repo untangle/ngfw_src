@@ -38,7 +38,7 @@ import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.BrandingManager;
 import com.untangle.uvm.SettingsManager;
-import com.untangle.uvm.SessionMatcherGlobal;
+import com.untangle.uvm.SessionMatcher;
 import com.untangle.uvm.node.EventLogQuery;
 import com.untangle.uvm.node.SessionTuple;
 
@@ -334,7 +334,7 @@ public class CaptureNodeImpl extends NodeBase implements CaptureNode
     {
         // shut down any outstanding sessions that would not
         // be allowed based on the active node settings
-        this.killMatchingSessionsNonGlobal(new SessionMatcherGlobal()
+        this.killMatchingSessions(new SessionMatcher()
         {
             List<CaptureRule> ruleList = captureSettings.getCaptureRules();
 
@@ -577,7 +577,7 @@ public class CaptureNodeImpl extends NodeBase implements CaptureNode
         captureUserTable.removeActiveUser(address);
 
         // shut down any outstanding sessions for the user
-        this.killMatchingSessionsNonGlobal(new SessionMatcherGlobal()
+        this.killMatchingSessions(new SessionMatcher()
         {
             List<CaptureRule> ruleList = captureSettings.getCaptureRules();
 

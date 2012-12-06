@@ -16,7 +16,7 @@ import org.apache.log4j.Logger;
 
 import com.untangle.uvm.UvmContext;
 import com.untangle.uvm.UvmContextFactory;
-import com.untangle.uvm.SessionMatcherGlobal;
+import com.untangle.uvm.SessionMatcher;
 import com.untangle.uvm.node.NodeSettings;
 import com.untangle.uvm.node.NodeSettings.NodeState;
 import com.untangle.uvm.message.MessageManager;
@@ -520,7 +520,7 @@ public abstract class NodeBase implements Node
     /**
      * This kills/resets all of the matching sessions (runs against all sessions globally)
      */
-    protected void killMatchingSessionsGlobal( SessionMatcherGlobal matcher )
+    protected void killMatchingSessionsGlobal( SessionMatcher matcher )
     {
         logger.info("killMatchingSessionsGlobal()");
 
@@ -530,7 +530,11 @@ public abstract class NodeBase implements Node
         UvmContextFactory.context().argonManager().shutdownMatches( matcher );
     }
 
-    protected void killMatchingSessionsNonGlobal( SessionMatcherGlobal matcher )
+    /**
+     * This kills/resets all of the matching sessions for this node's sessions
+     * This includes "released" sessions that we processed previously by one of this node's pipespecs
+     */
+    protected void killMatchingSessions( SessionMatcher matcher )
     {
         logger.info("killMatchingSessionsPipeSpec()");
         if (matcher == null)
@@ -547,7 +551,7 @@ public abstract class NodeBase implements Node
      */
     public void killAllSessions()
     {
-        killMatchingSessionsNonGlobal(new SessionMatcherGlobal() {
+        killMatchingSessions(new SessionMatcher() {
                 public boolean isMatch( Long policyId, short protocol, int clientIntf, int serverIntf, InetAddress clientAddr, InetAddress serverAddr, int clientPort, int serverPort, Map<String,Object> attachments ) { return true; }
             });
     }

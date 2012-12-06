@@ -12,7 +12,7 @@ import java.util.LinkedList;
 import org.apache.log4j.Logger;
 
 import com.untangle.jvector.Vector;
-import com.untangle.uvm.SessionMatcherGlobal;
+import com.untangle.uvm.SessionMatcher;
 import com.untangle.uvm.vnet.PipeSpec;
 import com.untangle.uvm.vnet.ArgonConnector;
 import com.untangle.uvm.engine.ArgonConnectorImpl;
@@ -94,7 +94,7 @@ public class ArgonSessionTable
         return new LinkedList<SessionGlobalState>(this.activeSessions.values());
     }
     
-    synchronized void shutdownMatches( SessionMatcherGlobal matcher )
+    synchronized void shutdownMatches( SessionMatcher matcher )
     {
         boolean isDebugEnabled = logger.isDebugEnabled();
 
@@ -127,7 +127,7 @@ public class ArgonSessionTable
         }
     }
 
-    synchronized void shutdownMatches( SessionMatcherGlobal matcher, PipeSpec ps )
+    synchronized void shutdownMatches( SessionMatcher matcher, PipeSpec ps )
     {
         boolean isDebugEnabled = logger.isDebugEnabled();
 
