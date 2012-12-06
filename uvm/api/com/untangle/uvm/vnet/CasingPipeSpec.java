@@ -89,7 +89,7 @@ public class CasingPipeSpec extends PipeSpec
         return releaseParseExceptions;
     }
 
-    public void setReleaseParseExceptions(boolean releaseParseExceptions)
+    public void setReleaseParseExceptions( boolean releaseParseExceptions )
     {
         this.releaseParseExceptions = releaseParseExceptions;
         insideAdaptor.setReleaseParseExceptions(releaseParseExceptions);
@@ -123,6 +123,15 @@ public class CasingPipeSpec extends PipeSpec
         }
     }
 
+    @Override
+    public List<ArgonConnector> getArgonConnectors()
+    {
+        ArrayList<ArgonConnector> connectors = new ArrayList<ArgonConnector>();
+        connectors.add(insideArgonConnector);
+        connectors.add(outsideArgonConnector);
+        return connectors;
+    }
+    
     @Override
     public List<NodeIPSession> liveSessions()
     {

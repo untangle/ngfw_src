@@ -25,14 +25,11 @@ import com.untangle.uvm.vnet.event.SessionEventListener;
  * Status and control of a pipe happen here.
  * Events are handled in Dispatcher instead.
  */
-class ArgonConnectorImpl implements ArgonConnector
+public class ArgonConnectorImpl implements ArgonConnector
 {
     protected ArgonAgent argon;
 
     private final PipeSpec pipeSpec;
-
-    private boolean lastSessionWriteFailed = false;
-    private long lastSessionWriteTime;
 
     private Dispatcher disp;
 
@@ -59,8 +56,6 @@ class ArgonConnectorImpl implements ArgonConnector
         sessionEventLogger = Logger.getLogger(NodeSession.class);
         sessionLoggerTCP = Logger.getLogger(NodeTCPSession.class);
         sessionLoggerUDP = Logger.getLogger(NodeUDPSession.class);
-
-        lastSessionWriteTime = MetaEnv.currentTimeMillis();
 
         try {
             start();
@@ -135,23 +130,6 @@ class ArgonConnectorImpl implements ArgonConnector
             return null;
     }
     
-    public void lastSessionWriteFailed(boolean failed)
-    {
-        lastSessionWriteFailed = failed;
-        if (!lastSessionWriteFailed)
-            lastSessionWriteTime = MetaEnv.currentTimeMillis();
-    }
-
-    public boolean lastWriteFailed()
-    {
-        return (lastSessionWriteFailed);
-    }
-    
-    public long lastSessionWriteTime()
-    {
-        return lastSessionWriteTime;
-    }
-
     private void start() 
     {
         if (isRunning()) {

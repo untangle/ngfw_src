@@ -77,6 +77,7 @@ public abstract class PipeSpec
 
     public abstract void connectArgonConnector();
     public abstract void disconnectArgonConnector();
+    public abstract List<ArgonConnector> getArgonConnectors();
     public abstract List<NodeIPSession> liveSessions();
 
     // accessors --------------------------------------------------------------

@@ -312,7 +312,6 @@ class NodeTCPSessionImpl extends NodeIPSessionImpl implements NodeTCPSession
             assert crumb2send != null;
             int numWritten = sendCrumb(crumb2send, out);
 
-            argonConnector.lastSessionWriteFailed(false);
             stats.wroteData(side, numWritten);
 
             if (logger.isDebugEnabled())

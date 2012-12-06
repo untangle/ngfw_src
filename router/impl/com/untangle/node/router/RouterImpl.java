@@ -8,7 +8,6 @@ import java.net.InetAddress;
 
 import com.untangle.node.token.TokenAdaptor;
 import com.untangle.uvm.UvmContextFactory;
-import com.untangle.uvm.SessionMatcher;
 import com.untangle.uvm.logging.LogEvent;
 import com.untangle.uvm.NetworkManager;
 import com.untangle.uvm.networking.NetworkConfigurationListener;

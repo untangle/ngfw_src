@@ -5,7 +5,7 @@ package com.untangle.uvm.vnet;
 
 import java.util.Set;
 import java.util.List;
-import java.util.LinkedList;
+import java.util.ArrayList;
 
 import org.apache.log4j.Logger;
 
@@ -17,22 +17,17 @@ import com.untangle.uvm.vnet.event.SessionEventListener;
 
 /**
  * <code>PipeSpec</code> for a regular Node.
- *
- * @author <a href="mailto:amread@untangle.com">Aaron Read</a>
- * @version 1.0
  */
 public class SoloPipeSpec extends PipeSpec
 {
-    private static final PipelineFoundry FOUNDRY;
-
     public static final int MIN_STRENGTH = 0;
     public static final int MAX_STRENGTH = 32;
+
+    private final Logger logger = Logger.getLogger(getClass());
 
     private final Fitting fitting;
     private final Affinity affinity;
     private final int strength;
-
-    private final Logger logger = Logger.getLogger(getClass());
 
     private final SessionEventListener listener;
     private ArgonConnector argonConnector;
@@ -122,8 +117,8 @@ public class SoloPipeSpec extends PipeSpec
     public void connectArgonConnector()
     {
         if (null == argonConnector) {
-            argonConnector = FOUNDRY.createArgonConnector(this, listener);
-            FOUNDRY.registerArgonConnector(argonConnector);
+            argonConnector = UvmContextFactory.context().pipelineFoundry().createArgonConnector(this, listener);
+            UvmContextFactory.context().pipelineFoundry().registerArgonConnector(argonConnector);
         } else {
             logger.warn("argonConnectors already connected");
         }
@@ -133,7 +128,7 @@ public class SoloPipeSpec extends PipeSpec
     public void disconnectArgonConnector()
     {
         if (null != argonConnector) {
-            FOUNDRY.deregisterArgonConnector(argonConnector);
+            UvmContextFactory.context().pipelineFoundry().deregisterArgonConnector(argonConnector);
             argonConnector.destroy();
             argonConnector = null;
         } else {
@@ -141,6 +136,14 @@ public class SoloPipeSpec extends PipeSpec
         }
     }
 
+    @Override
+    public List<ArgonConnector> getArgonConnectors()
+    {
+        ArrayList<ArgonConnector> connectors = new ArrayList<ArgonConnector>();
+        connectors.add(argonConnector);
+        return connectors;
+    }
+    
     @Override
     public List<NodeIPSession> liveSessions()
     {
@@ -157,11 +160,5 @@ public class SoloPipeSpec extends PipeSpec
     public String toString()
     {
         return "[SoloPipeSpec A: " + affinity + " S: " + strength + "]";
-    }
-
-    // static initialization --------------------------------------------------
-
-    static {
-        FOUNDRY = UvmContextFactory.context().pipelineFoundry();
     }
 }

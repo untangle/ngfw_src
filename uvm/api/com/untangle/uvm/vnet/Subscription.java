@@ -15,9 +15,6 @@ import com.untangle.uvm.node.SessionTuple;
  * makes sense, probably the best option would be for a node to
  * provide methods that would do the subscription making work for the
  * client.
- *
- * @author <a href="mailto:amread@untangle.com">Aaron Read</a>
- * @version 1.0
  */
 public class Subscription
 {

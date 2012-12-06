@@ -190,7 +190,6 @@ class NodeUDPSessionImpl extends NodeIPSessionImpl implements NodeUDPSession
             PacketCrumb packet2send = (PacketCrumb) nc;
             assert packet2send != null;
             int numWritten = sendCrumb(packet2send, out);
-            argonConnector.lastSessionWriteFailed(false);
 
             stats.wroteData(side, numWritten);
 

@@ -7,12 +7,13 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.net.InetAddress;
 
 import org.apache.log4j.Logger;
 
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.SettingsManager;
-import com.untangle.uvm.SessionMatcher;
+import com.untangle.uvm.SessionMatcherGlobal;
 import com.untangle.uvm.node.NodeSettings;
 import com.untangle.uvm.node.NodeProperties;
 import com.untangle.uvm.node.NodeMetric;
@@ -50,10 +51,10 @@ public class FirewallImpl extends NodeBase implements Firewall
     private FirewallSettings settings = null;
 
     /* This can't be static because it uses policy which is per node */
-    private final SessionMatcher FIREWALL_SESSION_MATCHER = new SessionMatcher() {
+    private final SessionMatcherGlobal FIREWALL_SESSION_MATCHER = new SessionMatcherGlobal() {
             
             /* Kill all sessions that should be blocked */
-            public boolean isMatch( NodeSession sess )
+            public boolean isMatch( Long policyId, short protocol, int clientIntf, int serverIntf, InetAddress clientAddr, InetAddress serverAddr, int clientPort, int serverPort, Map<String,Object> attachments )
             {
                 if (handler == null)
                     return false;
@@ -64,11 +65,11 @@ public class FirewallImpl extends NodeBase implements Firewall
                  * Find the matching rule compute block/log verdicts
                  */
                 for (FirewallRule rule : settings.getRules()) {
-                    if (rule.isMatch(sess.getProtocol(),
-                                     sess.getClientIntf(), sess.getServerIntf(),
-                                     sess.getClientAddr(), sess.getServerAddr(),
-                                     sess.getClientPort(), sess.getServerPort(),
-                                     (String)sess.getAttachments().get(NodeSession.KEY_PLATFORM_USERNAME))) {
+                    if (rule.isMatch(protocol,
+                                     clientIntf, serverIntf,
+                                     clientAddr, serverAddr,
+                                     clientPort, serverPort,
+                                     (String)attachments.get(NodeSession.KEY_PLATFORM_USERNAME))) {
                         matchedRule = rule;
                         break;
                     }
@@ -78,8 +79,8 @@ public class FirewallImpl extends NodeBase implements Firewall
                     return false;
 
                 logger.info("Firewall Save Setting Matcher: " +
-                            sess.getClientAddr().toString() + ":" + sess.getClientPort() + " -> " +
-                            sess.getServerAddr().toString() + ":" + sess.getServerPort() +
+                            clientAddr.getHostAddress().toString() + ":" + clientPort + " -> " +
+                            serverAddr.getHostAddress().toString() + ":" + serverPort +
                             " :: block:" + matchedRule.getBlock());
                 
                 return matchedRule.getBlock();
@@ -287,7 +288,7 @@ public class FirewallImpl extends NodeBase implements Firewall
         logger.info("Reconfigure()");
 
         /* check for any sessions that should be killed according to new rules */
-        this.killMatchingSessions(FIREWALL_SESSION_MATCHER);
+        this.killMatchingSessionsNonGlobal(FIREWALL_SESSION_MATCHER);
 
         if (settings == null) {
             logger.warn("Invalid settings: null");

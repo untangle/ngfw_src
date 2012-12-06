@@ -9,7 +9,6 @@ import java.util.Map;
 
 import org.apache.log4j.Logger;
 
-import com.untangle.uvm.SessionMatcher;
 import com.untangle.uvm.node.SessionTuple;
 import com.untangle.uvm.UvmContextFactory;
 

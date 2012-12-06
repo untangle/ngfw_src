@@ -5,12 +5,10 @@ package com.untangle.uvm.argon;
 
 import com.untangle.uvm.ArgonManager;
 import com.untangle.uvm.SessionMatcherGlobal;
+import com.untangle.uvm.vnet.PipeSpec;
 
 /**
  * Argon manager.
- *
- * @author <a href="mailto:rbscott@untangle.com">Robert Scott</a>
- * @version 1.0
  */
 public class ArgonManagerImpl implements ArgonManager
 {
@@ -37,6 +35,12 @@ public class ArgonManagerImpl implements ArgonManager
         ArgonSessionTable.getInstance().shutdownMatches( matcher );
     }
 
+    /** Shutdown all of the sessions that have been touch by the PipeSpec that match <code>matcher</code> */
+    public void shutdownMatches( SessionMatcherGlobal matcher, PipeSpec ps )
+    {
+        ArgonSessionTable.getInstance().shutdownMatches( matcher, ps );
+    }
+    
     public static final ArgonManagerImpl getInstance()
     {
         return INSTANCE;

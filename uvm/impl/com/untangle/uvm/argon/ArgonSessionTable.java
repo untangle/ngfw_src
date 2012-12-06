@@ -13,6 +13,9 @@ import org.apache.log4j.Logger;
 
 import com.untangle.jvector.Vector;
 import com.untangle.uvm.SessionMatcherGlobal;
+import com.untangle.uvm.vnet.PipeSpec;
+import com.untangle.uvm.vnet.ArgonConnector;
+import com.untangle.uvm.engine.ArgonConnectorImpl;
 
 /**
  * This table stores a global list of all currently active sessions being vectored
@@ -100,8 +103,7 @@ public class ArgonSessionTable
         if ( activeSessions.isEmpty()) return;
 
         /**
-         * THIS IS INCREDIBLY INEFFICIENT AND LOCKS THE CREATION OF NEW SESSIONS
-         * XXX
+         * Iterate through all sessions and reset matching sessions
          */
         for ( Iterator<Map.Entry<Vector,SessionGlobalState>> iter = activeSessions.entrySet().iterator() ; iter.hasNext() ; ) {
             Map.Entry<Vector,SessionGlobalState> e = iter.next();
@@ -109,7 +111,6 @@ public class ArgonSessionTable
 
             SessionGlobalState session = e.getValue();
             Vector vector  = e.getKey();
-
             ArgonHook argonHook = session.argonHook();
 
             isMatch = matcher.isMatch( argonHook.policyId, argonHook.clientSide.getProtocol(),
@@ -126,6 +127,61 @@ public class ArgonSessionTable
         }
     }
 
+    synchronized void shutdownMatches( SessionMatcherGlobal matcher, PipeSpec ps )
+    {
+        boolean isDebugEnabled = logger.isDebugEnabled();
+
+        logger.info( "shutdownMatches() called" );
+
+        if ( activeSessions.isEmpty()) return;
+
+        /**
+         * Build the list of agents associated with this pipespec
+         */
+        List<ArgonConnector> argonConnectors = ps.getArgonConnectors();
+        List<ArgonAgent> agents = new LinkedList<ArgonAgent>();
+        for (ArgonConnector connector : argonConnectors) {
+            ArgonConnectorImpl conn = (ArgonConnectorImpl) connector;
+            agents.add(conn.getArgonAgent());
+        }
+        
+        /**
+         * Iterate through all sessions and reset matching sessions
+         */
+        for ( Iterator<Map.Entry<Vector,SessionGlobalState>> iter = activeSessions.entrySet().iterator() ; iter.hasNext() ; ) {
+            Map.Entry<Vector,SessionGlobalState> e = iter.next();
+            boolean isMatch;
+
+            SessionGlobalState session = e.getValue();
+            Vector vector  = e.getKey();
+            ArgonHook argonHook = session.argonHook();
+
+            /**
+             * Only process sessions involving the specified pipespec and associated agents
+             */
+            if (session.getArgonAgents() == null)
+                continue;
+            boolean matchesOne = false;
+            for (ArgonAgent agent : agents)
+                if (session.getArgonAgents().contains(agent))
+                    matchesOne = true;
+            if (!matchesOne)
+                continue;
+
+            isMatch = matcher.isMatch( argonHook.policyId, argonHook.clientSide.getProtocol(),
+                                       argonHook.clientSide.getClientIntf(), argonHook.serverSide.getServerIntf(),
+                                       argonHook.clientSide.getClientAddr(), argonHook.serverSide.getServerAddr(),
+                                       argonHook.clientSide.getClientPort(), argonHook.serverSide.getServerPort(),
+                                       session.getAttachments() );
+
+            logger.info( "shutdownMatches(): Tested    session: " + session + " id: " + session.id() + " matched: " + isMatch );
+            if ( isMatch ) {
+                logger.info( "shutdownMatches(): Shutdown  session: " + session + " id: " + session.id() + " matched: " + isMatch );
+                vector.shutdown();
+            }
+        }
+    }
+    
     public static ArgonSessionTable getInstance()
     {
         return INSTANCE;

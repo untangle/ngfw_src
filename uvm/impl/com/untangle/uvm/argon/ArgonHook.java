@@ -192,7 +192,8 @@ public abstract class ArgonHook implements Runnable
             }
 
             pipelineAgents = pipelineFoundry.weld( sessionGlobalState.id(), clientSide, policyId );
-
+            sessionGlobalState.setArgonAgents(pipelineAgents);
+            
             /* Create the sessionEvent early so they can be available at request time. */
             sessionEvent =  new SessionEvent( );
             sessionEvent.setSessionId( sessionGlobalState.id() );

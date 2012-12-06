@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.Map;
+import java.net.InetAddress;
 
 import org.apache.log4j.Logger;
 import org.json.JSONString;
@@ -21,7 +22,7 @@ import com.untangle.node.token.Token;
 import com.untangle.node.token.TokenAdaptor;
 import com.untangle.uvm.UvmContext;
 import com.untangle.uvm.UvmContextFactory;
-import com.untangle.uvm.SessionMatcher;
+import com.untangle.uvm.SessionMatcherGlobal;
 import com.untangle.uvm.node.GenericRule;
 import com.untangle.uvm.node.EventLogQuery;
 import com.untangle.uvm.node.NodeMetric;
@@ -101,16 +102,14 @@ public abstract class VirusNodeImpl extends NodeBase implements VirusNode
     private EventLogQuery mailCleanEventQuery;
     
     /* This can't be static because it uses policy which is per node */
-    private final SessionMatcher VIRUS_SESSION_MATCHER = new SessionMatcher() {
+    private final SessionMatcherGlobal VIRUS_SESSION_MATCHER = new SessionMatcherGlobal() {
             /* Kill all FTP, HTTP, SMTP, POP3, IMAP sessions */
-            public boolean isMatch( NodeSession sess )
+            public boolean isMatch( Long policyId, short protocol, int clientIntf, int serverIntf, InetAddress clientAddr, InetAddress serverAddr, int clientPort, int serverPort, Map<String,Object> attachments )
             {
                 /* Don't kill any UDP NodeSession s */
-                if (sess.getProtocol() == SessionTuple.PROTO_UDP) {
+                if (protocol == SessionTuple.PROTO_UDP) {
                     return false;
                 }
-
-                int serverPort = sess.getServerPort();
 
                 /* FTP server is on 21, HTTP server is on 80 */
                 if (serverPort == 21 || serverPort == 80) {
@@ -393,7 +392,11 @@ public abstract class VirusNodeImpl extends NodeBase implements VirusNode
 
     protected void postStart()
     {
-        killMatchingSessions(VIRUS_SESSION_MATCHER);
+        /**
+         * killall sessions on HTTP, FTP, etc
+         * This is so it blocks viruses immediately, by forcing existing connections to be closed
+         */
+        killMatchingSessionsGlobal(VIRUS_SESSION_MATCHER);
     }
 
     @Override
@@ -506,9 +509,9 @@ public abstract class VirusNodeImpl extends NodeBase implements VirusNode
         try {logger.debug("New Settings: \n" + new org.json.JSONObject(this.settings).toString(2));} catch (Exception e) {}
 
         /**
-         * Reset existing sessions
+         * Reset existing sessions for this node only
          */
-        killMatchingSessions(VIRUS_SESSION_MATCHER);
+        killMatchingSessionsNonGlobal(VIRUS_SESSION_MATCHER);
     }
 
     

@@ -3,14 +3,15 @@
  */
 package com.untangle.uvm.argon;
 
-import com.untangle.jnetcap.NetcapSession;
-import com.untangle.jnetcap.NetcapTCPSession;
-import com.untangle.jnetcap.NetcapUDPSession;
+import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.apache.log4j.Logger;
 
-import java.util.HashMap;
-import java.util.Map;
+import com.untangle.jnetcap.NetcapSession;
+import com.untangle.jnetcap.NetcapTCPSession;
+import com.untangle.jnetcap.NetcapUDPSession;
 
 /**
  * This stores the global system-wide state for a given session
@@ -30,8 +31,20 @@ public class SessionGlobalState
 
     protected final ArgonHook argonHook;
 
+    /**
+     * This is the global list of attachments for this session
+     * It is used by various parts of the platform and apps to store metadata about the session
+     */
     protected HashMap<String,Object> attachments;
-        
+
+    /**
+     * Stores a list of the original agents/pipelinespecs processing this session
+     * Note: Even if a node/agent releases a session it will still be in this list
+     * This is used for resetting sessions with killMatchingSessions so we can only reset
+     * sessions that were originally processed by the node calling killMatchingSessions
+     */
+    private List<ArgonAgent> originalAgents;
+    
     SessionGlobalState( NetcapSession netcapSession, SideListener clientSideListener, SideListener serverSideListener, ArgonHook argonHook )
     {
         this.argonHook = argonHook;
@@ -98,6 +111,16 @@ public class SessionGlobalState
     public SideListener serverSideListener()
     {
         return serverSideListener;
+    }
+
+    public List<ArgonAgent> getArgonAgents()
+    {
+        return originalAgents;
+    }
+
+    public void setArgonAgents( List<ArgonAgent> agents )
+    {
+        this.originalAgents = agents;
     }
 
     public ArgonHook argonHook()
