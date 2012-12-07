@@ -1951,6 +1951,13 @@ Ung.MessageManager = {
                             time: { javaClass: "java.util.Date",time: 1343046146132}
                         })
                     }
+                    
+                    if(this.testRebootMessage) {
+                        this.testRebootMessage=false;
+                        messageQueue.messages.list.push({
+                            upgrade: true, javaClass: "com.untangle.uvm.toolbox.DownloadAllComplete",time: { javaClass: "java.util.Date",time: 1343046146132}
+                        })
+                    }
                     */
                 }
                 if(messageQueue.messages.list!=null && messageQueue.messages.list.length>0) {
@@ -2081,6 +2088,9 @@ Ung.MessageManager = {
                                         scope: this,
                                         fn: function() {
                                             console.log("Upgrade in Progress. Press ok to go to the Start Page...");
+                                            if(main.configWin!=null && main.configWin.isVisible()) {
+                                                main.configWin.closeWindow();    
+                                            }
                                             applyingUpgradesWindow.hide();
                                             Ext.MessageBox.hide();
                                             Ext.MessageBox.alert(
