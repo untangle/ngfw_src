@@ -24,15 +24,13 @@ var i18n=Ext.create('Ung.I18N',{"map":null}); // the main internationalization o
 var rpc=null; // the main json rpc object
 var testMode = false;
 
-if(Ext.getVersion().version=="4.1.1") {
-    Ext.override(Ext.MessageBox, {
-        alert: function() {
-            this.callParent(arguments);
-            //Hack to solve the issue with alert being displayed behind the current settings window after a jabsorb call.
-            Ext.defer(this.toFront, 10, this);
-        }
-    });
-};
+Ext.override(Ext.MessageBox, {
+    alert: function() {
+        this.callParent(arguments);
+        //Hack to solve the issue with alert being displayed behind the current settings window after a jabsorb call.
+        Ext.defer(this.toFront, 10, this);
+    }
+});
 
 Ext.override(Ext.Button, {
     listeners: {
