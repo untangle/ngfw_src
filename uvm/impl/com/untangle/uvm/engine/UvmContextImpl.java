@@ -425,6 +425,9 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
             logger.info("UID Created.");
         }
 
+        // restart pyconnector now that the UID has been generated
+        this.execManager().execResult("/etc/init.d/untangle-pyconnector restart");
+
         return true;
     }
     

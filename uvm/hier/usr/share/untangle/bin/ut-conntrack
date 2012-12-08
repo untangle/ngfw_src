@@ -33,9 +33,7 @@ def parse_line(line):
         # Use count of this connection structure.
         idx = 0
         dict['protocol']       = string.upper(line_parts[idx]); idx=idx+1;
-        if dict['protocol'] == "UNKNOWN":
-            return None
-
+        if dict['protocol'] == "UNKNOWN": return None
         dict['protocol_id']    = int(line_parts[idx]); idx=idx+1;
         dict['expiration_sec'] = int(line_parts[idx]); idx=idx+1;
         # skip tcp connection state
