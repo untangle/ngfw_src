@@ -1,3 +1,8 @@
+from uvm.settings_reader import get_node_settings_item
+from uvm.settings_reader import get_nodeid_settings
+from uvm.settings_reader import get_node_settings
+from uvm.settings_reader import get_settings_item
+
 from mod_python import apache
 from mod_python import util
 import os.path
@@ -10,7 +15,7 @@ from uvm import Uvm
 uvmContext = None
 captureNode = None
 captureSettings = None
-brandingSettings = None
+companyName = None
 
 #-----------------------------------------------------------------------------
 # This is the default function that gets called when a client is redirected
@@ -27,8 +32,8 @@ def index(req):
     if (not 'HOST' in args):    args['HOST'] = "Empty"
     if (not 'URI' in args):     args['URI'] = "Empty"
 
-    # setup the global variables
-    global_setup(req,args['APPID'])
+    # setup the global data
+    global_data_setup(req,args['APPID'])
 
     # pass the reqest object and arguments to the page generator
     page = generate_page(req,args)
@@ -46,8 +51,11 @@ def authpost(req,username,password,method,nonce,appid,host,uri):
     # get the network address of the client
     address = req.get_remote_host(apache.REMOTE_NOLOOKUP,None)
 
-    # setup the global variables
-    global_setup(req,appid)
+    # setup the global data
+    global_data_setup(req,appid)
+
+    # setup the uvm and node objects so we can make the RPC call
+    global_auth_setup(appid)
 
     # call the node to authenticate the user
     authResult = captureNode.userAuthenticate(address, username, password)
@@ -98,8 +106,11 @@ def infopost(req,method,nonce,appid,host,uri,agree='empty'):
     # get the network address of the client
     address = req.get_remote_host(apache.REMOTE_NOLOOKUP,None)
 
-    # setup the global variables
-    global_setup(req,appid)
+    # setup the global data
+    global_data_setup(req,appid)
+
+    # setup the uvm and node objects so we can make the RPC call
+    global_auth_setup(appid)
 
     # call the node to authenticate the user
     authResult = captureNode.userActivate(address,agree)
@@ -230,7 +241,7 @@ def generate_page(req,args,extra=''):
     file.close()
 
     if (captureSettings['pageType'] == 'BASIC_LOGIN'):
-        page = page.replace('$.CompanyName.$', brandingSettings['companyName'])
+        page = page.replace('$.CompanyName.$', companyName)
         page = page.replace('$.PageTitle.$', captureSettings['basicLoginPageTitle'])
         page = page.replace('$.WelcomeText.$', captureSettings['basicLoginPageWelcome'])
         page = page.replace('$.MessageText.$', captureSettings['basicLoginMessageText'])
@@ -239,7 +250,7 @@ def generate_page(req,args,extra=''):
         page = page.replace('$.FooterText.$', captureSettings['basicLoginFooter'])
 
     if (captureSettings['pageType'] == 'BASIC_MESSAGE'):
-        page = page.replace('$.CompanyName.$', brandingSettings['companyName'])
+        page = page.replace('$.CompanyName.$', companyName)
         page = page.replace('$.PageTitle.$', captureSettings['basicMessagePageTitle'])
         page = page.replace('$.WelcomeText.$', captureSettings['basicMessagePageWelcome'])
         page = page.replace('$.MessageText.$', captureSettings['basicMessageMessageText'])
@@ -294,14 +305,12 @@ def split_args(args):
     return(canon_args)
 
 #-----------------------------------------------------------------------------
-# loads node and other common stuff into global variables
+# loads the uvm and capture node objects for the authentication calls
 
-def global_setup(req,appid=None):
+def global_auth_setup(appid=None):
 
     global uvmContext
     global captureNode
-    global captureSettings
-    global brandingSettings
 
     # first we get the uvm context
     uvmContext = Uvm().getUvmContext()
@@ -313,23 +322,35 @@ def global_setup(req,appid=None):
     else:
         captureNode = uvmContext.nodeManager().node(long(appid))
 
-    # if we can't find the node then we are done
-    # otherwise load the node settings
+    # if we can't find the node then throw an exception
     if (captureNode == None):
         raise Exception("The uvm node manager could not locate untangle-node-capture")
-    else:
-        captureSettings = captureNode.getSettings()
 
-    # lookup the branding node by name since there should only be one
-    brandingNode = uvmContext.nodeManager().node("untangle-node-branding");
+#-----------------------------------------------------------------------------
+# loads the node settings and company name info into global variables
 
-    # if branding isn't installed then setup the defaults
-    # otherwise load the node settings
-    if (brandingNode == None):
-        brandingSettings = {}
-        brandingSettings['companyName'] = 'Untangle'
+def global_data_setup(req,appid=None):
+
+    global captureSettings
+    global companyName
+
+    companyName = 'Untangle'
+
+    oemName = get_settings_item("/usr/share/untangle/conf/oem.js","oemName")
+    if (oemName != None):
+        companyName = oemName
+
+    brandco = get_node_settings_item('untangle-node-branding','companyName')
+    if (brandco != None):
+        companyName = brandco
+
+    if not type(companyName) is str:
+        companyName = companyName.encode("utf-8")
+
+    if (appid == None):
+        captureSettings = get_node_settings('untangle-node-capture')
     else:
-        brandingSettings = brandingNode.getBrandingSettings()
+        captureSettings = get_nodeid_settings(long(appid))
 
     # add some headers to prevent caching any of our stuff
     req.headers_out.add("Cache-Control", "no-store, no-cache, must-revalidate, post-check=0, pre-check=0")
@@ -337,8 +358,8 @@ def global_setup(req,appid=None):
     req.headers_out.add("Expires", "Sat, 1 Jan 2000 00:00:00 GMT");
 
 #-----------------------------------------------------------------------------
-# builds a string of debug info which includes the global capture and
-# branding settings along with the passed arguments
+
+# builds a string of debug info which includes the global capture data
 
 def create_debug(args):
 
@@ -347,8 +368,6 @@ def create_debug(args):
     debug += pprint.pformat(args)
     debug += "<BR>===== CAPTURE SETTINGS =====<BR>\r\n"
     debug += pprint.pformat(captureSettings)
-    debug += "<BR>===== BRANDING SETTINGS =====<BR>\r\n"
-    debug += pprint.pformat(brandingSettings)
     return(debug)
 
 #-----------------------------------------------------------------------------
