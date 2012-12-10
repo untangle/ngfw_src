@@ -781,7 +781,9 @@ Ext.define("Ung.Main", {
     },
     reloadLicenses: function() {
         main.getLicenseManager().reloadLicenses(Ext.bind(function(result,exception) {
-            if(Ung.Util.handleException(exception)) return;
+            // do not pop-up license managerexceptions because they happen when offline
+            // if(Ung.Util.handleException(exception)) return; 
+            if (exception) return;
             
             var callback = Ext.bind(function(result,exception) {
                 if(Ung.Util.handleException(exception)) return;
