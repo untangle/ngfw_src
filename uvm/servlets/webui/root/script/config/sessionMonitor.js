@@ -1,6 +1,5 @@
 if (!Ung.hasResource["Ung.SessionMonitor"]) {
     Ung.hasResource["Ung.SessionMonitor"] = true;
-
     Ext.define('Ung.SessionMonitor', {
         extend: 'Ung.StatusWin',
         helpSource: 'session_monitor',
@@ -26,11 +25,11 @@ if (!Ung.hasResource["Ung.SessionMonitor"]) {
                 return {javaClass:"java.util.LinkedList", list:[]};
             var sessions = rpc.sessionMonitor.getMergedSessions(nodeId);
             if(testMode) {
-                var testSessionsSize=2000;
+                var testSessionsSize=500;
                 for(var i=0;i<testSessionsSize;i++) {
                     sessions.list.push({
                         "postNatServer": "184.27.239."+(i%10),
-                        "bypassed": false,
+                        "bypassed": ((i%3)==1),
                         "state": null,
                         "natted": true,
                         "totalKBps": null,
@@ -135,7 +134,8 @@ if (!Ung.hasResource["Ung.SessionMonitor"]) {
                                 header: item.gridColumnHeader,
                                 dataIndex: item.gridColumnDataIndex,
                                 width: item.gridColumnWidth,
-                                summaryType: item.gridColumnSummaryType
+                                summaryType: item.gridColumnSummaryType,
+                                filter: item.gridColumnFilter
                             };
                             if ( item.gridColumnRenderer !== undefined )
                                 newColumn.renderer = item.gridColumnRenderer;
@@ -220,14 +220,22 @@ if (!Ung.hasResource["Ung.SessionMonitor"]) {
                     boxLabel: this.i18n._("Protocol"),
                     gridColumnHeader: this.i18n._("Protocol"),
                     gridColumnDataIndex: "protocol",
-                    gridColumnWidth: 60
+                    gridColumnWidth: 60,
+                    gridColumnFilter: {
+                        type: 'string'
+                    }
                 },{
                     xtype: 'checkbox',
                     checked: true,
                     boxLabel: this.i18n._("Bypassed"),
                     gridColumnHeader: this.i18n._("Bypassed"),
                     gridColumnDataIndex: "bypassed",
-                    gridColumnWidth: 60
+                    gridColumnWidth: 60,
+                    gridColumnFilter: {
+                        type: 'boolean',
+                        yesText: 'true',
+                        noText: 'false'
+                    }
                 },{
                     xtype: 'checkbox',
                     checked: true,
@@ -291,28 +299,40 @@ if (!Ung.hasResource["Ung.SessionMonitor"]) {
                     boxLabel: this.i18n._("Client (Pre-NAT)"),
                     gridColumnHeader: this.i18n._("Client (Pre-NAT)"),
                     gridColumnDataIndex: "preNatClient",
-                    gridColumnWidth: 75
+                    gridColumnWidth: 75,
+                    gridColumnFilter: {
+                        type: 'string'
+                    }
                 },{
                     xtype: 'checkbox',
                     checked: false,
                     boxLabel: this.i18n._("Server (Pre-NAT)"),
                     gridColumnHeader: this.i18n._("Server (Pre-NAT)"),
                     gridColumnDataIndex: "preNatServer",
-                    gridColumnWidth: 75
+                    gridColumnWidth: 75,
+                    gridColumnFilter: {
+                        type: 'string'
+                    }
                 },{
                     xtype: 'checkbox',
                     checked: true,
                     boxLabel: this.i18n._("Client Port (Pre-NAT)"),
                     gridColumnHeader: this.i18n._("Client Port (Pre-NAT)"),
                     gridColumnDataIndex: "preNatClientPort",
-                    gridColumnWidth: 70
+                    gridColumnWidth: 70,
+                    gridColumnFilter: {
+                        type: 'numeric'
+                    }
                 },{
                     xtype: 'checkbox',
                     checked: false,
                     boxLabel: this.i18n._("Server Port (Pre-NAT)"),
                     gridColumnHeader: this.i18n._("Server Port (Pre-NAT)"),
                     gridColumnDataIndex: "preNatServerPort",
-                    gridColumnWidth: 70
+                    gridColumnWidth: 70,
+                    gridColumnFilter: {
+                        type: 'numeric'
+                    }
                 },{
                     border: false,
                     html: '&nbsp;',
@@ -323,28 +343,40 @@ if (!Ung.hasResource["Ung.SessionMonitor"]) {
                     boxLabel: this.i18n._("Client (Post-NAT)"),
                     gridColumnHeader: this.i18n._("Client (Post-NAT)"),
                     gridColumnDataIndex: "postNatClient",
-                    gridColumnWidth: 75
+                    gridColumnWidth: 75,
+                    gridColumnFilter: {
+                        type: 'string'
+                    }
                 },{
                     xtype: 'checkbox',
                     checked: true,
                     boxLabel: this.i18n._("Server (Post-NAT)"),
                     gridColumnHeader: this.i18n._("Server (Post-NAT)"),
                     gridColumnDataIndex: "postNatServer",
-                    gridColumnWidth: 75
+                    gridColumnWidth: 75,
+                    gridColumnFilter: {
+                        type: 'string'
+                    }
                 },{
                     xtype: 'checkbox',
                     checked: false,
                     boxLabel: this.i18n._("Client Port (Post-NAT)"),
                     gridColumnHeader: this.i18n._("Client Port (Post-NAT)"),
                     gridColumnDataIndex: "postNatClientPort",
-                    gridColumnWidth: 70
+                    gridColumnWidth: 70,
+                    gridColumnFilter: {
+                        type: 'numeric'
+                    }
                 },{
                     xtype: 'checkbox',
                     checked: true,
                     boxLabel: this.i18n._("Server Port (Post-NAT)"),
                     gridColumnHeader: this.i18n._("Server Port (Post-NAT)"),
                     gridColumnDataIndex: "postNatServerPort",
-                    gridColumnWidth: 70
+                    gridColumnWidth: 70,
+                    gridColumnFilter: {
+                        type: 'numeric'
+                    }
                 },{
                     border: false,
                     html: '&nbsp;',
@@ -355,21 +387,36 @@ if (!Ung.hasResource["Ung.SessionMonitor"]) {
                     boxLabel: this.i18n._("Local"),
                     gridColumnHeader: this.i18n._("Local"),
                     gridColumnDataIndex: "localTraffic",
-                    gridColumnWidth: 50
+                    gridColumnWidth: 50,
+                    gridColumnFilter: {
+                        type: 'boolean',
+                        yesText: 'true',
+                        noText: 'false'
+                    }
                 },{
                     xtype: 'checkbox',
                     checked: false,
                     boxLabel: this.i18n._("NATd"),
                     gridColumnHeader: this.i18n._("NATd"),
                     gridColumnDataIndex: "natted",
-                    gridColumnWidth: 50
+                    gridColumnWidth: 50,
+                    gridColumnFilter: {
+                        type: 'boolean',
+                        yesText: 'true',
+                        noText: 'false'
+                    }
                 },{
                     xtype: 'checkbox',
                     checked: false,
                     boxLabel: this.i18n._("Port Forwarded"),
                     gridColumnHeader: this.i18n._("Port Forwarded"),
                     gridColumnDataIndex: "portForwarded",
-                    gridColumnWidth: 50
+                    gridColumnWidth: 50,
+                    gridColumnFilter: {
+                        type: 'boolean',
+                        yesText: 'true',
+                        noText: 'false'
+                    }
                 },{
                     border: false,
                     html: '&nbsp;',
@@ -380,14 +427,20 @@ if (!Ung.hasResource["Ung.SessionMonitor"]) {
                     boxLabel: this.i18n._("Hostname"),
                     gridColumnHeader: this.i18n._("Hostname"),
                     gridColumnDataIndex: "platform-hostname",
-                    gridColumnWidth: 100
+                    gridColumnWidth: 100,
+                    gridColumnFilter: {
+                        type: 'string'
+                    }
                 },{
                     xtype: 'checkbox',
                     checked: true,
                     boxLabel: this.i18n._("Username"),
                     gridColumnHeader: this.i18n._("Username"),
                     gridColumnDataIndex: "platform-username",
-                    gridColumnWidth: 100
+                    gridColumnWidth: 100,
+                    gridColumnFilter: {
+                        type: 'string'
+                    }
                 },{
                     border: false,
                     html: '&nbsp;',
@@ -398,28 +451,42 @@ if (!Ung.hasResource["Ung.SessionMonitor"]) {
                     boxLabel: "Application Control Lite - " + this.i18n._("Protocol"),
                     gridColumnHeader: this.i18n._("Protocol") + " (Application Control Lite)",
                     gridColumnDataIndex: "protofilter-protocol",
-                    gridColumnWidth: 100
+                    gridColumnWidth: 100,
+                    gridColumnFilter: {
+                        type: 'string'
+                    }
                 },{
                     xtype: 'checkbox',
                     checked: false,
                     boxLabel: "Application Control Lite - " + this.i18n._("Category"),
                     gridColumnHeader: this.i18n._("Category") + " (Application Control Lite)",
                     gridColumnDataIndex: "protofilter-category",
-                    gridColumnWidth: 100
+                    gridColumnWidth: 100,
+                    gridColumnFilter: {
+                        type: 'string'
+                    }
                 },{
                     xtype: 'checkbox',
                     checked: false,
                     boxLabel: "Application Control Lite - " + this.i18n._("Description"),
                     gridColumnHeader: this.i18n._("Description") + " (Application Control Lite)",
                     gridColumnDataIndex: "protofilter-description",
-                    gridColumnWidth: 100
+                    gridColumnWidth: 100,
+                    gridColumnFilter: {
+                        type: 'string'
+                    }
                 },{
                     xtype: 'checkbox',
                     checked: false,
                     boxLabel: "Application Control Lite - " + this.i18n._("Matched?"),
                     gridColumnHeader: this.i18n._("Matched?") + " (Application Control Lite)",
                     gridColumnDataIndex: "protofilter-matched",
-                    gridColumnWidth: 100
+                    gridColumnWidth: 100,
+                    gridColumnFilter: {
+                        type: 'boolean',
+                        yesText: 'true',
+                        noText: 'false'
+                    }
                 },{
                     border: false,
                     html: '&nbsp;',
@@ -430,14 +497,20 @@ if (!Ung.hasResource["Ung.SessionMonitor"]) {
                     boxLabel: "HTTP - " + this.i18n._("Hostname"),
                     gridColumnHeader: this.i18n._("Hostname") + " (HTTP)",
                     gridColumnDataIndex: "http-hostname",
-                    gridColumnWidth: 120
+                    gridColumnWidth: 120,
+                    gridColumnFilter: {
+                        type: 'string'
+                    }
                 },{
                     xtype: 'checkbox',
                     checked: false,
                     boxLabel: "HTTP - " + this.i18n._("URI"),
                     gridColumnHeader: this.i18n._("URI") + " (HTTP)",
                     gridColumnDataIndex: "http-uri",
-                    gridColumnWidth: 120
+                    gridColumnWidth: 120,
+                    gridColumnFilter: {
+                        type: 'string'
+                    }
                 },{
                     border: false,
                     html: '&nbsp;',
@@ -448,42 +521,66 @@ if (!Ung.hasResource["Ung.SessionMonitor"]) {
                     boxLabel: "Web Filter - " + this.i18n._("Category Name"),
                     gridColumnHeader: this.i18n._("Category Name") + " (Web Filter)",
                     gridColumnDataIndex: "esoft-best-category-name",
-                    gridColumnWidth: 100
+                    gridColumnWidth: 100,
+                    gridColumnFilter: {
+                        type: 'string'
+                    }
                 },{
                     xtype: 'checkbox',
                     checked: false,
                     boxLabel: "Web Filter - " + this.i18n._("Category Description"),
                     gridColumnHeader: this.i18n._("Category Description") + " (Web Filter)",
                     gridColumnDataIndex: "esoft-best-category-description",
-                    gridColumnWidth: 100
+                    gridColumnWidth: 100,
+                    gridColumnFilter: {
+                        type: 'string'
+                    }
                 },{
                     xtype: 'checkbox',
                     checked: false,
                     boxLabel: "Web Filter - " + this.i18n._("Category Flagged"),
                     gridColumnHeader: this.i18n._("Category Flagged") + " (Web Filter)",
                     gridColumnDataIndex: "esoft-best-category-flagged",
-                    gridColumnWidth: 50
+                    gridColumnWidth: 50,
+                    gridColumnFilter: {
+                        type: 'boolean',
+                        yesText: 'true',
+                        noText: 'false'
+                    }
                 },{
                     xtype: 'checkbox',
                     checked: false,
                     boxLabel: "Web Filter - " + this.i18n._("Category Blocked"),
                     gridColumnHeader: this.i18n._("Category Blocked") + " (Web Filter)",
                     gridColumnDataIndex: "esoft-best-category-blocked",
-                    gridColumnWidth: 50
+                    gridColumnWidth: 50,
+                    gridColumnFilter: {
+                        type: 'boolean',
+                        yesText: 'true',
+                        noText: 'false'
+                    }
                 },{
                     xtype: 'checkbox',
                     checked: false,
                     boxLabel: "Web Filter - " + this.i18n._("Content Type"),
                     gridColumnHeader: this.i18n._("Content Type") + " (Web Filter)",
                     gridColumnDataIndex: "esoft-content-type",
-                    gridColumnWidth: 50
+                    gridColumnWidth: 50,
+                    gridColumnFilter: {
+                        type: 'string'
+                    }
                 },{
                     xtype: 'checkbox',
                     checked: false,
                     boxLabel: "Web Filter - " + this.i18n._("Flagged"),
                     gridColumnHeader: this.i18n._("Flagged") + " (Web Filter)",
                     gridColumnDataIndex: "esoft-flagged",
-                    gridColumnWidth: 50
+                    gridColumnWidth: 50,
+                    gridColumnFilter: {
+                        type: 'boolean',
+                        yesText: 'true',
+                        noText: 'false'
+                    }
                 },{
                     border: false,
                     html: '&nbsp;',
@@ -494,49 +591,70 @@ if (!Ung.hasResource["Ung.SessionMonitor"]) {
                     boxLabel: "Application Control - " + this.i18n._("Protochain"),
                     gridColumnHeader: this.i18n._("Protochain") + " (Application Control)",
                     gridColumnDataIndex: "classd-protochain",
-                    gridColumnWidth: 140
+                    gridColumnWidth: 140,
+                    gridColumnFilter: {
+                        type: 'string'
+                    }
                 },{
                     xtype: 'checkbox',
                     checked: false,
                     boxLabel: "Application Control - " + this.i18n._("Application"),
                     gridColumnHeader: this.i18n._("Application") + " (Application Control)",
                     gridColumnDataIndex: "classd-application",
-                    gridColumnWidth: 100
+                    gridColumnWidth: 100,
+                    gridColumnFilter: {
+                        type: 'string'
+                    }
                 },{
                     xtype: 'checkbox',
                     checked: false,
                     boxLabel: "Application Control - " + this.i18n._("Category"),
                     gridColumnHeader: this.i18n._("Category") + " (Application Control)",
                     gridColumnDataIndex: "classd-category",
-                    gridColumnWidth: 100
+                    gridColumnWidth: 100,
+                    gridColumnFilter: {
+                        type: 'string'
+                    }
                 },{
                     xtype: 'checkbox',
                     checked: false,
                     boxLabel: "Application Control - " + this.i18n._("Detail"),
                     gridColumnHeader: this.i18n._("Detail") + " (Application Control)",
                     gridColumnDataIndex: "classd-detail",
-                    gridColumnWidth: 120
+                    gridColumnWidth: 120,
+                    gridColumnFilter: {
+                        type: 'string'
+                    }
                 },{
                     xtype: 'checkbox',
                     checked: false,
                     boxLabel: "Application Control - " + this.i18n._("Confidence"),
                     gridColumnHeader: this.i18n._("Confidence") + " (Application Control)",
                     gridColumnDataIndex: "classd-confidence",
-                    gridColumnWidth: 50
+                    gridColumnWidth: 50,
+                    gridColumnFilter: {
+                        type: 'string'
+                    }
                 },{
                     xtype: 'checkbox',
                     checked: false,
                     boxLabel: "Application Control - " + this.i18n._("Productivity"),
                     gridColumnHeader: this.i18n._("Productivity") + " (Application Control)",
                     gridColumnDataIndex: "classd-productivity",
-                    gridColumnWidth: 50
+                    gridColumnWidth: 50,
+                    gridColumnFilter: {
+                        type: 'string'
+                    }
                 },{
                     xtype: 'checkbox',
                     checked: false,
                     boxLabel: "Application Control - " + this.i18n._("Risk"),
                     gridColumnHeader: this.i18n._("Risk") + " (Application Control)",
                     gridColumnDataIndex: "classd-risk",
-                    gridColumnWidth: 50
+                    gridColumnWidth: 50,
+                    gridColumnFilter: {
+                        type: 'string'
+                    }
                 },{
                     xtype: 'checkbox',
                     checked: this.defaultBandwidthColumns,
@@ -545,7 +663,10 @@ if (!Ung.hasResource["Ung.SessionMonitor"]) {
                     gridColumnHeader: this.i18n._("Client KB/s"),
                     gridColumnDataIndex: "clientKBps",
                     gridColumnWidth: 80,
-                    gridColumnSummaryType: "sum"
+                    gridColumnSummaryType: "sum",
+                    gridColumnFilter: {
+                        type: 'numeric'
+                    }
                 },{
                     xtype: 'checkbox',
                     checked: this.defaultBandwidthColumns,
@@ -554,7 +675,10 @@ if (!Ung.hasResource["Ung.SessionMonitor"]) {
                     gridColumnHeader: this.i18n._("Server KB/s"),
                     gridColumnDataIndex: "serverKBps",
                     gridColumnWidth: 80,
-                    gridColumnSummaryType: "sum"
+                    gridColumnSummaryType: "sum",
+                    gridColumnFilter: {
+                        type: 'numeric'
+                    }
                 },{
                     xtype: 'checkbox',
                     checked: this.defaultBandwidthColumns,
@@ -563,7 +687,10 @@ if (!Ung.hasResource["Ung.SessionMonitor"]) {
                     gridColumnHeader: this.i18n._("Total KB/s"),
                     gridColumnDataIndex: "totalKBps",
                     gridColumnWidth: 80,
-                    gridColumnSummaryType: "sum"
+                    gridColumnSummaryType: "sum",
+                    gridColumnFilter: {
+                        type: 'numeric'
+                    }
                 },{
                     xtype: 'checkbox',
                     checked: this.defaultBandwidthColumns,
@@ -576,7 +703,6 @@ if (!Ung.hasResource["Ung.SessionMonitor"]) {
                             return i18n._("None");
                         else
                             return [i18n._("Very High"), i18n._("High"), i18n._("Medium"), i18n._("Low"), i18n._("Limited"), i18n._("Limited More"), i18n._("Limited Severely")][value-1];
-                        
                     }
                 },{
                     border: false,
@@ -594,7 +720,6 @@ if (!Ung.hasResource["Ung.SessionMonitor"]) {
                             return i18n._("None");
                         else
                             return [i18n._("Very High"), i18n._("High"), i18n._("Medium"), i18n._("Low"), i18n._("Limited"), i18n._("Limited More"), i18n._("Limited Severely")][value-1];
-                        
                     }
                 },{
                     border: false,
@@ -1002,7 +1127,12 @@ if (!Ung.hasResource["Ung.SessionMonitor"]) {
                 qtip: this.i18n._("This shows all current sessions."),
                 paginated: false,
                 recordJavaClass: "com.untangle.uvm.SessionMonitorEntry",
+                
                 features: [{
+                    ftype: 'filters',
+                    encode: false,
+                    local: true
+                }, {
                     ftype: 'groupingsummary'
                 }],
                 dataFn: Ext.bind(this.getSessions, this),

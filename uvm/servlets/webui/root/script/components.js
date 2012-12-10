@@ -2,6 +2,11 @@ Ext.namespace('Ung');
 Ext.namespace('Ung.form');
 Ext.namespace('Ung.grid');
 Ext.BLANK_IMAGE_URL = '/ext4/resources/themes/images/default/tree/s.gif'; // The location of the blank pixel image
+Ext.Loader.setConfig({enabled: true});
+Ext.Loader.setPath('Ext.ux', '/ext4/examples/ux');
+Ext.require([
+    'Ext.ux.grid.FiltersFeature'
+]);
 
 if(typeof console === "undefined") {
     //Prevent console.log triggering errors on browsers without console support
