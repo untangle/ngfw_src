@@ -116,4 +116,9 @@ public class CaptureUserTable
 
         return(wipelist);
     }
+
+    public void purgeAllUsers()
+    {
+        userTable.clear();
+    }
 }

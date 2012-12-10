@@ -413,6 +413,12 @@ public class CaptureNodeImpl extends NodeBase implements CaptureNode
         // stop the session cleanup timer thread
         logger.debug("Destroying session cleanup timer task");
         timer.cancel();
+        
+        // shutdown any active sessions
+        killAllSessions();
+        
+        // clear out the list of active users
+        captureUserTable.purgeAllUsers();
     }
 
     @Override
