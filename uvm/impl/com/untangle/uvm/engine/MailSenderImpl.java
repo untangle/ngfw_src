@@ -419,6 +419,10 @@ class MailSenderImpl implements MailSender
             this.writeFile( sb, EXIM_CONF_FILE );
 
             UvmContextFactory.context().execManager().exec( EXIM_CMD_UPDATE_CONF + " >/dev/null 2>&1 & " );
+
+            // change root@localhost to blackhole
+            UvmContextFactory.context().execManager().exec( "/bin/sed -e \"s/^root:.*/root: :blackhole:/\" -i /etc/aliases" );
+            
         }
     }
 
