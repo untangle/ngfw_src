@@ -66,7 +66,7 @@ if (!Ung.hasResource["Ung.SessionMonitor"]) {
                         "javaClass": "com.untangle.uvm.SessionMonitorEntry",
                         "qosPriority": 4,
                         "clientKBps": null,
-                        "policy": "1",
+                        "policy": (i%5==2)?null:(i%5)+ "",
                         "postNatServerPort": (i+2000)
                     });                 
                 }
@@ -203,6 +203,11 @@ if (!Ung.hasResource["Ung.SessionMonitor"]) {
             });
         },
         buildColumnSelectorPanel: function() {
+            var policyListOptions=[[null, i18n._( "Services" )], ["0", i18n._("No Rack")]];
+            for( var i=0 ; i<rpc.policies.length ; i++ ) {
+                var policy = rpc.policies[i];
+                policyListOptions.push([policy.policyId+"", policy.name]);
+            }
             this.panelColumnSelector = Ext.create('Ext.panel.Panel',{
                 name:'advanced',
                 xtype:'fieldset',
@@ -244,9 +249,11 @@ if (!Ung.hasResource["Ung.SessionMonitor"]) {
                     gridColumnDataIndex: "policy",
                     gridColumnWidth: 80,
                     gridColumnRenderer: function(value) {
-                        if (value == null || value == "")
-                            return "";
                         return main.getPolicyName(value);
+                    },
+                    gridColumnFilter: {
+                        type: 'list',
+                        options: policyListOptions
                     }
                 },{
                     border: false,

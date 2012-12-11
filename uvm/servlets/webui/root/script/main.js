@@ -1176,7 +1176,7 @@ Ext.define("Ung.Main", {
 
     },
     getPolicyName: function(policyId) {
-        if (policyId == null)
+        if (policyId == null || policyId == "")
             return i18n._( "Services" );
 
         if (rpc.policyNamesMap[policyId] !== undefined) {

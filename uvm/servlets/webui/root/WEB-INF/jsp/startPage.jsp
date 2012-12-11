@@ -8,6 +8,9 @@
     <style type="text/css">
      @import "/ext4/resources/css/ext-all-gray.css?s=${buildStamp}";
      @import "/ext4/examples/ux/css/CheckHeader.css?s=${buildStamp}";
+     @import "/ext4/examples/ux/grid/css/GridFilters.css?s=${buildStamp}";
+     @import "/ext4/examples/ux/grid/css/RangeMenu.css?s=${buildStamp}";
+     
     </style>
 <c:if test="${isDebug==false}">
     <script type="text/javascript" src="/ext4/ext-all.js?s=${buildStamp}"></script>
