@@ -394,7 +394,6 @@ public class CaptureNodeImpl extends NodeBase implements CaptureNode
                 return(false);
             }
         });
-
     }
 
     @Override
@@ -506,8 +505,26 @@ public class CaptureNodeImpl extends NodeBase implements CaptureNode
             case ACTIVE_DIRECTORY:
                 try
                 {
+                    // first create a copy of the original username and another
+                    // that is stripped of all the Active Directory foo:
+                    //   domain*backslash*user -> user
+                    //   user@domain -> user
+                    // We'll always use the stripped version internally but
+                    // well try both for authentication.  See bug #7951
+                    String originalUsername = username;
+                    String strippedUsername = username;
+                    strippedUsername = strippedUsername.replaceAll(".*\\\\","");
+                    strippedUsername = strippedUsername.replaceAll("@.*","");
+
+                    // we always want to use the stripped version internally
+                    username = strippedUsername;
+
                     DirectoryConnector adconnector = (DirectoryConnector)UvmContextFactory.context().nodeManager().node("untangle-node-adconnector");
-                    if (adconnector != null) isAuthenticated = adconnector.activeDirectoryAuthenticate( username, password );
+                    if (adconnector == null) break;
+
+                    // try the original first and then the stripped version
+                    isAuthenticated = adconnector.activeDirectoryAuthenticate( originalUsername, password );
+                    if (isAuthenticated == false) isAuthenticated = adconnector.activeDirectoryAuthenticate( strippedUsername, password );
                 }
                 catch (Exception e)
                 {
