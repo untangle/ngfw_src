@@ -27,47 +27,48 @@ if (!Ung.hasResource["Ung.SessionMonitor"]) {
             if(testMode) {
                 var testSessionsSize=500;
                 for(var i=0;i<testSessionsSize;i++) {
+                    var ii=i+Math.floor((Math.random()*5));
                     sessions.list.push({
-                        "postNatServer": "184.27.239."+(i%10),
-                        "bypassed": ((i%3)==1),
+                        "postNatServer": "184.27.239."+(ii%10),
+                        "bypassed": ((ii%3)==1),
                         "state": null,
                         "natted": true,
                         "totalKBps": null,
                         "localTraffic": false,
-                        "priority": 4,
-                        "postNatClient": "50.193.63."+((i+1)%10),
-                        "postNatClientPort": (i+1000),
+                        "priority": (ii%7)+1,
+                        "postNatClient": "50.193.63."+((ii+1)%10),
+                        "postNatClientPort": (ii+1000),
                         "preNatClient": "10.0.0."+((i+2)%10),
                         "preNatServer": "184.27.239."+((i+3)%10),
                         "attachments": {
                             "map": {
                                 "esoft-best-category-name": "Social Networking",
-                                "protofilter-matched": false,
+                                "protofilter-matched": (ii%3==0),
                                 "esoft-best-category-description": "Social Networking",
                                 "esoft-best-category-blocked": false,
                                 "esoft-flagged": false,
-                                "platform-hostname": "acct07-wxp",
-                                "esoft-best-category-flagged": false,
+                                "platform-hostname": "acct07-wxp"+i,
+                                "esoft-best-category-flagged": (ii%2==1),
                                 "esoft-best-category-id": null,
                                 "http-uri": "/t.gif",
-                                "platform-username": "rbooroojian",
-                                "http-hostname": "p.twitter.com"
+                                "platform-username": "rbooroojian"+i,
+                                "http-hostname": "p.twitter.com"+i
                             },
                             "javaClass": "java.util.HashMap"
                         },
-                        "protocol": "TCP",
+                        "protocol": (ii%2==1)?"TCP":"UDP",
                         "serverKBps": null,
-                        "portForwarded": false,
+                        "portForwarded": (ii%2==0),
                         "preNatClientPort": 1471,
                         "preNatServerPort": i+1500,
-                        "serverIntf": 5,
-                        "clientIntf": 2,
+                        "serverIntf": ii%10,
+                        "clientIntf": i%9,
                         "sessionId": 88616525732127+i,
                         "javaClass": "com.untangle.uvm.SessionMonitorEntry",
-                        "qosPriority": 4,
+                        "qosPriority": (ii%8),
                         "clientKBps": null,
-                        "policy": (i%5==2)?null:(i%5)+ "",
-                        "postNatServerPort": (i+2000)
+                        "policy": (ii%5==2)?null:(ii%5)+ "",
+                        "postNatServerPort": (ii+2000)
                     });                 
                 }
             }
@@ -203,11 +204,14 @@ if (!Ung.hasResource["Ung.SessionMonitor"]) {
             });
         },
         buildColumnSelectorPanel: function() {
+            var interfaceStore=Ung.Util.getInterfaceStore();
             var policyListOptions=[[null, i18n._( "Services" )], ["0", i18n._("No Rack")]];
             for( var i=0 ; i<rpc.policies.length ; i++ ) {
                 var policy = rpc.policies[i];
                 policyListOptions.push([policy.policyId+"", policy.name]);
             }
+            var priorityList=[i18n._("Very High"), i18n._("High"), i18n._("Medium"), i18n._("Low"), i18n._("Limited"), i18n._("Limited More"), i18n._("Limited Severely")];
+            var priorityOptions = [[1, i18n._("Very High")], [2, i18n._("High")], [3, i18n._("Medium")] , [4, i18n._("Low")], [5, i18n._("Limited")], [6, i18n._("Limited More")], [7, i18n._("Limited Severely")]];
             this.panelColumnSelector = Ext.create('Ext.panel.Panel',{
                 name:'advanced',
                 xtype:'fieldset',
@@ -267,15 +271,11 @@ if (!Ung.hasResource["Ung.SessionMonitor"]) {
                     gridColumnDataIndex: "clientIntf",
                     gridColumnWidth: 85,
                     gridColumnRenderer: function(value) {
-                        var result = "";
-                        var store = Ung.Util.getInterfaceStore();
-                        if (store) {
-                            var index = store.find("key", value);
-                            if (index >= 0) {
-                                result = store.getAt(index).get("name");
-                            }
-                        }
-                        return result;
+                        var record = interfaceStore.findRecord("key", value);
+                        return record==null?value==null?"":Ext.String.format( i18n._("Interface {0}"), value ):record.get("name");
+                    },
+                    gridColumnFilter: {
+                        type: 'numeric'
                     }
                 },{
                     xtype: 'checkbox',
@@ -285,15 +285,11 @@ if (!Ung.hasResource["Ung.SessionMonitor"]) {
                     gridColumnDataIndex: "serverIntf",
                     gridColumnWidth: 85,
                     gridColumnRenderer: function(value) {
-                        var result = "";
-                        var store = Ung.Util.getInterfaceStore();
-                        if (store) {
-                            var index = store.find("key", value);
-                            if (index >= 0) {
-                                result = store.getAt(index).get("name");
-                            }
-                        }
-                        return result;
+                        var record = interfaceStore.findRecord("key", value);
+                        return record==null?value==null?"":Ext.String.format( i18n._("Interface {0}"), value ):record.get("name");
+                    },
+                    gridColumnFilter: {
+                        type: 'numeric'
                     }
                 },{
                     border: false,
@@ -706,10 +702,11 @@ if (!Ung.hasResource["Ung.SessionMonitor"]) {
                     gridColumnDataIndex: "priority",
                     gridColumnWidth: 80,
                     gridColumnRenderer: function(value) {
-                        if (value < 1 || value > 7)
-                            return i18n._("None");
-                        else
-                            return [i18n._("Very High"), i18n._("High"), i18n._("Medium"), i18n._("Low"), i18n._("Limited"), i18n._("Limited More"), i18n._("Limited Severely")][value-1];
+                        return (value < 1 || value > 7)?i18n._("None"):priorityList[value-1];
+                    },
+                    gridColumnFilter: {
+                        type: 'list',
+                        options: priorityOptions
                     }
                 },{
                     border: false,
@@ -723,10 +720,11 @@ if (!Ung.hasResource["Ung.SessionMonitor"]) {
                     gridColumnDataIndex: "qosPriority",
                     gridColumnWidth: 100,
                     gridColumnRenderer: function(value) {
-                        if (value < 1 || value > 7)
-                            return i18n._("None");
-                        else
-                            return [i18n._("Very High"), i18n._("High"), i18n._("Medium"), i18n._("Low"), i18n._("Limited"), i18n._("Limited More"), i18n._("Limited Severely")][value-1];
+                        return (value < 1 || value > 7)?i18n._("None"):priorityList[value-1];
+                    },
+                    gridColumnFilter: {
+                        type: 'list',
+                        options: priorityOptions
                     }
                 },{
                     border: false,
@@ -1122,7 +1120,7 @@ if (!Ung.hasResource["Ung.SessionMonitor"]) {
                 name: "gridCurrentSessions",
                 settingsCmp: this,
                 height: 500,
-                paginated: true,
+                paginated: false,
                 hasAdd: false,
                 hasEdit: false,
                 hasDelete: false,
@@ -1132,7 +1130,6 @@ if (!Ung.hasResource["Ung.SessionMonitor"]) {
                 columnsDefaultSortable: true,
                 title: this.i18n._("Current Sessions"),
                 qtip: this.i18n._("This shows all current sessions."),
-                paginated: false,
                 recordJavaClass: "com.untangle.uvm.SessionMonitorEntry",
                 
                 features: [{
@@ -1245,7 +1242,7 @@ if (!Ung.hasResource["Ung.SessionMonitor"]) {
                 }],
                 columns: columns,
                 initComponent: function() {
-                    this.bbar = ['-', {
+                    this.bbar = [{
                         xtype: 'button',
                         id: "refresh_"+this.getId(),
                         text: i18n._('Refresh'),
@@ -1253,9 +1250,7 @@ if (!Ung.hasResource["Ung.SessionMonitor"]) {
                         tooltip: i18n._('Refresh'),
                         iconCls: 'icon-refresh',
                         handler: Ext.bind(function() {
-                            this.setLoading(true);
                             this.reload();
-                            this.setLoading(false);
                         }, this)
                     },{
                         xtype: 'button',
@@ -1274,6 +1269,11 @@ if (!Ung.hasResource["Ung.SessionMonitor"]) {
                                 this.stopAutoRefresh();
                             }
                         }, this)
+                    },'-',{
+                        text: i18n._('Clear Filters'),
+                        handler: Ext.bind(function () {
+                            this.filters.clearFilters();
+                        }, this) 
                     }];
                     Ung.EditorGrid.prototype.initComponent.call(this);
                     this.loadMask=null;
@@ -1302,7 +1302,7 @@ if (!Ung.hasResource["Ung.SessionMonitor"]) {
                 autorefreshList: function() {
                     if(this!=null && this.autoRefreshEnabled && Ext.getCmp(this.id) != null) {
                         this.reload();
-                        Ext.defer(this.autorefreshList, 5000, this);
+                        Ext.defer(this.autorefreshList, 9000, this);
                     }
                 }
             });

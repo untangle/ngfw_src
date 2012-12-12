@@ -4510,15 +4510,17 @@ Ext.define('Ung.EditorGrid', {
         this.changedData = {};
         this.dirtyFlag=false;
         this.getView().setLoading(true);
-        this.buildData(Ext.bind(function() {
-            this.getStore().loadPage(this.getStore().currentPage, {
-                limit:this.isPaginated() ? this.recordsPerPage: Ung.Util.maxRowCount,
-                callback: function() {
-                    this.getView().setLoading(false);
-                },
-                scope: this
-            });
-        }, this));
+        Ext.defer(function(){
+            this.buildData(Ext.bind(function() {
+                this.getStore().loadPage(this.getStore().currentPage, {
+                    limit:this.isPaginated() ? this.recordsPerPage: Ung.Util.maxRowCount,
+                    callback: function() {
+                        this.getView().setLoading(false);
+                    },
+                    scope: this
+                });
+            }, this));
+        },10, this);
     },
     reload: function(options) {
         if(options && options.data) {
