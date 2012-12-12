@@ -66,7 +66,7 @@ def global_setup(req,appid=None):
     if (captureNode == None):
         raise Exception("The uvm node manager could not locate untangle-node-capture")
     else:
-        captureSettings = captureNode.getSettings()
+        captureSettings = captureNode.getCaptureSettings()
 
     # lookup the branding node by name since there should only be one
     brandingNode = uvmContext.nodeManager().node("untangle-node-branding");
@@ -77,7 +77,7 @@ def global_setup(req,appid=None):
         brandingSettings = {}
         brandingSettings['companyName'] = 'Untangle'
     else:
-        brandingSettings = brandingNode.getSettings()
+        brandingSettings = brandingNode.getBrandingSettings()
 
     # add some headers to prevent caching any of our stuff
     req.headers_out.add("Cache-Control", "no-store, no-cache, must-revalidate, post-check=0, pre-check=0")

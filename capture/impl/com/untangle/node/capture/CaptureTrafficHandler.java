@@ -205,7 +205,7 @@ public class CaptureTrafficHandler extends AbstractEventHandler
                 // the response generator will create a servfail message
                 catch (Exception e) { logger.info("Exception attempting to resolve " + packet.getQname() + " = " + e); }
 
-                node.incrementBlinger(CaptureNode.BlingerType.SESSPROXY,1);
+                node.incrementBlinger(CaptureNode.BlingerType.SESSQUERY,1);
                 response = packet.GenerateResponse(addr);
             }
 

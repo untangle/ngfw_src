@@ -52,7 +52,7 @@ class CaptureTests(unittest.TestCase):
                 print "ERROR: Node %s already installed" % self.nodeName()
                 raise Exception('node %s already instantiated' % self.nodeName())
             node = uvmContext.nodeManager().instantiate(self.nodeName(), defaultRackId)
-            nodeData = node.getSettings()
+            nodeData = node.getCaptureSettings()
 
     def test_010_clientIsOnline(self):
         result = clientControl.runCommand("wget -4 -t 2 --timeout=5 -a /tmp/capture_test_010.log -O /tmp/capture_test_010.out http://www.untangle.com/")

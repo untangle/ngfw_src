@@ -13,9 +13,12 @@ import java.net.InetAddress;
 
 public interface CaptureNode extends Node
 {
-    enum BlingerType { SESSALLOW, SESSBLOCK, SESSPROXY, AUTHGOOD, AUTHFAIL }
+    enum BlingerType { SESSALLOW, SESSBLOCK, SESSQUERY, AUTHGOOD, AUTHFAIL }
 
+    CaptureSettings getCaptureSettings();
     CaptureSettings getSettings();
+
+    void setCaptureSettings(CaptureSettings settings);
     void setSettings(CaptureSettings settings);
 
     ArrayList<CaptureUserEntry> getActiveUsers();

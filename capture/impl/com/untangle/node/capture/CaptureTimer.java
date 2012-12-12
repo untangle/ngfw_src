@@ -26,7 +26,7 @@ public class CaptureTimer extends TimerTask
 
     public void SessionCleanup()
     {
-        ArrayList<CaptureUserTable.StaleUser> staleUsers = node.captureUserTable.buildStaleList(node.getSettings().getIdleTimeout(),node.getSettings().getUserTimeout());
+        ArrayList<CaptureUserTable.StaleUser> staleUsers = node.captureUserTable.buildStaleList(node.getCaptureSettings().getIdleTimeout(),node.getCaptureSettings().getUserTimeout());
         int counter = 0;
 
         for(CaptureUserTable.StaleUser item: staleUsers)

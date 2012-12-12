@@ -54,7 +54,7 @@ public class CaptureNodeImpl extends NodeBase implements CaptureNode
 
     private static final String STAT_SESSALLOW = "sessallow";
     private static final String STAT_SESSBLOCK = "sessblock";
-    private static final String STAT_SESSPROXY = "sessproxy";
+    private static final String STAT_SESSQUERY = "sessquery";
     private static final String STAT_AUTHGOOD = "authgood";
     private static final String STAT_AUTHFAIL = "authfail";
 
@@ -161,21 +161,37 @@ public class CaptureNodeImpl extends NodeBase implements CaptureNode
                 "AND capture_blocked IS NOT NULL " +
                 "ORDER BY time_stamp DESC");
 
-        addMetric(new NodeMetric(STAT_SESSALLOW, I18nUtil.marktr("Sessions allowed")));
-        addMetric(new NodeMetric(STAT_SESSBLOCK, I18nUtil.marktr("Sessions blocked")));
-        addMetric(new NodeMetric(STAT_SESSPROXY, I18nUtil.marktr("Sessions proxied")));
+        addMetric(new NodeMetric(STAT_SESSALLOW, I18nUtil.marktr("Sessions Allowed")));
+        addMetric(new NodeMetric(STAT_SESSBLOCK, I18nUtil.marktr("Sessions Blocked")));
+        addMetric(new NodeMetric(STAT_SESSQUERY, I18nUtil.marktr("DNS Lookups")));
         addMetric(new NodeMetric(STAT_AUTHGOOD, I18nUtil.marktr("Login Success")));
         addMetric(new NodeMetric(STAT_AUTHFAIL, I18nUtil.marktr("Login Failure")));
     }
 
+/**
+ * The UI components seem to automagically call getSettings and setSettings
+ * to handle the load and save stuff, so these functions just call
+ * our getCaptureSettings and setCaptureSettings functions.
+ */
+
     @Override
     public CaptureSettings getSettings()
     {
-        return(this.captureSettings);
+        return(getCaptureSettings());
     }
 
     @Override
     public void setSettings(CaptureSettings newSettings)
+    {
+        this.setCaptureSettings(newSettings);
+    }
+
+    public CaptureSettings getCaptureSettings()
+    {
+        return(this.captureSettings);
+    }
+
+    public void setCaptureSettings(CaptureSettings newSettings)
     {
         // first we commit the new settings to disk
         saveNodeSettings(newSettings);
@@ -212,7 +228,7 @@ public class CaptureNodeImpl extends NodeBase implements CaptureNode
         {
         case SESSALLOW: adjustMetric(STAT_SESSALLOW, delta); break;
         case SESSBLOCK: adjustMetric(STAT_SESSBLOCK, delta); break;
-        case SESSPROXY: adjustMetric(STAT_SESSPROXY, delta); break;
+        case SESSQUERY: adjustMetric(STAT_SESSQUERY, delta); break;
         case AUTHGOOD: adjustMetric(STAT_AUTHGOOD, delta); break;
         case AUTHFAIL: adjustMetric(STAT_AUTHFAIL, delta); break;
         }
@@ -413,10 +429,10 @@ public class CaptureNodeImpl extends NodeBase implements CaptureNode
         // stop the session cleanup timer thread
         logger.debug("Destroying session cleanup timer task");
         timer.cancel();
-        
+
         // shutdown any active sessions
         killAllSessions();
-        
+
         // clear out the list of active users
         captureUserTable.purgeAllUsers();
     }
