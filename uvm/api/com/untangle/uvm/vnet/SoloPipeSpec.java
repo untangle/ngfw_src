@@ -34,9 +34,7 @@ public class SoloPipeSpec extends PipeSpec
 
     // constructors -----------------------------------------------------------
 
-    public SoloPipeSpec(String name, Node node, Set<Subscription> subscriptions,
-                        SessionEventListener listener,
-                        Fitting fitting, Affinity affinity, int strength)
+    public SoloPipeSpec(String name, Node node, Set<Subscription> subscriptions, SessionEventListener listener, Fitting fitting, Affinity affinity, int strength)
     {
         super(name, node, subscriptions);
 
@@ -50,10 +48,7 @@ public class SoloPipeSpec extends PipeSpec
         this.strength = strength;
     }
 
-    public SoloPipeSpec(String name, Node node,
-                        Subscription subscription,
-                        SessionEventListener listener, Fitting fitting,
-                        Affinity affinity, int strength)
+    public SoloPipeSpec(String name, Node node, Subscription subscription, SessionEventListener listener, Fitting fitting, Affinity affinity, int strength)
     {
         super(name, node, subscription);
 
@@ -67,10 +62,7 @@ public class SoloPipeSpec extends PipeSpec
         this.strength = strength;
     }
 
-    public SoloPipeSpec(String name, Node node,
-                        SessionEventListener listener,
-                        Fitting fitting, Affinity affinity,
-                        int strength)
+    public SoloPipeSpec(String name, Node node, SessionEventListener listener, Fitting fitting, Affinity affinity, int strength)
     {
         super(name, node);
 

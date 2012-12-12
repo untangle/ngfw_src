@@ -71,8 +71,9 @@ public class SpywareImpl extends NodeBase implements Spyware
     private EventLogQuery suspiciousQuery;
 
     private final PipeSpec[] pipeSpecs = new PipeSpec[] {
-        new SoloPipeSpec("spyware-http", this, tokenAdaptor, Fitting.HTTP_TOKENS, Affinity.SERVER, 2),
-        new SoloPipeSpec("spyware-byte", this, streamHandler, Fitting.OCTET_STREAM, Affinity.SERVER, 2) };
+        new SoloPipeSpec("spyware-http", this, tokenAdaptor, Fitting.HTTP_TOKENS, Affinity.SERVER, 3),
+        new SoloPipeSpec("spyware-byte", this, streamHandler, Fitting.OCTET_STREAM, Affinity.SERVER, 3)
+    };
 
     private final Map<InetAddress, Set<String>> unblockedSites = new HashMap<InetAddress, Set<String>>();
 

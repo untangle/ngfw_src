@@ -59,7 +59,7 @@ public class CaptureNodeImpl extends NodeBase implements CaptureNode
     private static final String STAT_AUTHFAIL = "authfail";
 
     private final SoloPipeSpec trafficPipe = new SoloPipeSpec("capture-traffic", this, new CaptureTrafficHandler(this), Fitting.OCTET_STREAM, Affinity.SERVER, 0);
-    private final SoloPipeSpec httpPipe = new SoloPipeSpec("capture-http", this, new TokenAdaptor(this, new CaptureHttpFactory(this)), Fitting.HTTP_TOKENS, Affinity.CLIENT, 0);
+    private final SoloPipeSpec httpPipe = new SoloPipeSpec("capture-http", this, new TokenAdaptor(this, new CaptureHttpFactory(this)), Fitting.HTTP_TOKENS, Affinity.CLIENT, 30);
     private final PipeSpec[] pipeSpecs = new PipeSpec[] { trafficPipe, httpPipe };
     private final CaptureReplacementGenerator replacementGenerator;
 
