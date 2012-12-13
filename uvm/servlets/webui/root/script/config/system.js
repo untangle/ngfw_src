@@ -816,91 +816,14 @@ if (!Ung.hasResource["Ung.System"]) {
                     if (currentTimeObj != null && currentTimeObj.body != null) {
                         currentTimeObj.body.update(result);
                         //Updates every 10 seconds to decrease data trafic...
-                        Ext.defer(this.timeUpdate, 10000, this)
+                        Ext.defer(this.timeUpdate, 10000, this);
                     }
                 }, this));
             }
         },
         // validation function
         validate: function() {
-            //validate timeout
-            return  (!this.isHttpLoaded() || this.validateMaxHeaderLength() && this.validateMaxUriLength()) &&
-               (!this.isMailLoaded() || this.validateSMTP() && this.validatePOP() && this.validateIMAP());
-        },
-        //validate Max URI Length
-        validateMaxUriLength: function() {
-            var maxUriLengthCmp = Ext.getCmp("system_protocolSettings_maxUriLength");
-            if (maxUriLengthCmp.isValid()) {
-                return true;
-            } else {
-                Ext.MessageBox.alert(this.i18n._("Warning"), this.i18n._("Max URI Length should be between 1024 and 4096!"),
-                    Ext.bind(function () {
-                        this.tabs.setActiveTab(this.panelProtocolSettings);
-                        maxUriLengthCmp.focus(true);
-                    }, this)
-                );
-                return false;
-            }
-        },
-        //validate Max Header Length
-        validateMaxHeaderLength: function() {
-            var maxHeaderLengthCmp = Ext.getCmp("system_protocolSettings_maxHeaderLength");
-            if (maxHeaderLengthCmp.isValid()) {
-                return true;
-            } else {
-                Ext.MessageBox.alert(this.i18n._("Warning"), this.i18n._("Max Header Length should be between 1024 and 8192!"),
-                    Ext.bind(function () {
-                        this.tabs.setActiveTab(this.panelProtocolSettings);
-                        maxHeaderLengthCmp.focus(true);
-                    }, this)
-                );
-                return false;
-            }
-        },
-        //validate SMTP timeout
-        validateSMTP: function() {
-            var smtpTimeoutCmp = Ext.getCmp("system_protocolSettings_smtpTimeout");
-            if (smtpTimeoutCmp.isValid()) {
-                return true;
-            } else {
-                Ext.MessageBox.alert(this.i18n._("Warning"), this.i18n._("SMTP timeout should be between 0 and 86400!"),
-                    Ext.bind(function () {
-                        this.tabs.setActiveTab(this.panelProtocolSettings);
-                        smtpTimeoutCmp.focus(true);
-                    }, this)
-                );
-                return false;
-            }
-        },
-        //validate POP timeout
-        validatePOP: function() {
-            var popTimeoutCmp = Ext.getCmp("system_protocolSettings_popTimeout");
-            if (popTimeoutCmp.isValid()) {
-                return true;
-            } else {
-                Ext.MessageBox.alert(this.i18n._("Warning"), this.i18n._("POP timeout should be between 0 and 86400!"),
-                    Ext.bind(function () {
-                        this.tabs.setActiveTab(this.panelProtocolSettings);
-                        popTimeoutCmp.focus(true);
-                    }, this)
-                );
-                return false;
-            }
-        },
-        //validate IMAP timeout
-        validateIMAP: function() {
-            var imapTimeoutCmp = Ext.getCmp("system_protocolSettings_imapTimeout");
-            if (imapTimeoutCmp.isValid()) {
-                return true;
-            } else {
-                Ext.MessageBox.alert(this.i18n._("Warning"), this.i18n._("IMAP timeout should be between 0 and 86400!"),
-                    Ext.bind(function () {
-                        this.tabs.setActiveTab(this.panelProtocolSettings);
-                        imapTimeoutCmp.focus(true);
-                    }, this)
-                );
-                return false;
-            }
+            return true;
         },
         save: function (isApply) {
             this.saveSemaphore = 6;
