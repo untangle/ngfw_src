@@ -123,7 +123,6 @@ class CaptureHttpHandler extends HttpStateMachine
         CaptureRuleEvent logevt = new CaptureRuleEvent(session.sessionEvent(), rule);
         node.logEvent(logevt);
         node.incrementBlinger(CaptureNode.BlingerType.SESSBLOCK,1);
-        session.resetServer();
         blockRequest(response);
         return requestHeader;
     }
