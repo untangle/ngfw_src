@@ -1,13 +1,17 @@
+from uvm.settings_reader import get_node_settings_item
+from uvm.settings_reader import get_nodeid_settings
+from uvm.settings_reader import get_node_settings
+from uvm.settings_reader import get_settings_item
 from mod_python import apache
+from uvm import Uvm
 import pprint
 
-from uvm import Uvm
 
 # global objects that we retrieve from the uvm
 uvmContext = None
 captureNode = None
 captureSettings = None
-brandingSettings = None
+companyName = None
 
 #-----------------------------------------------------------------------------
 # This is the default function that gets called for a client logout request
@@ -23,33 +27,35 @@ def index(req):
     page = file.read();
     file.close()
 
-    # setup the global variables
-    global_setup(req)
+    # setup the global data
+    global_data_setup(req)
+
+    # setup the uvm and node objects so we can make the RPC call
+    global_auth_setup()
 
     # call the node to logout the user
     exitResult = captureNode.userLogout(address)
 
     if (exitResult == 0):
-        page = page.replace('$.ExitMessage.$', 'You have successfully logged out')
-        page = page.replace('$.ExitStyle.$', 'styleNormal')
+        page = replace_marker(page,'$.ExitMessage.$', 'You have successfully logged out')
+        page = replace_marker(page,'$.ExitStyle.$', 'styleNormal')
     else:
-        page = page.replace('$.ExitMessage.$', 'You were already logged out')
-        page = page.replace('$.ExitStyle.$', 'styleProblem')
+        page = replace_marker(page,'$.ExitMessage.$', 'You were already logged out')
+        page = replace_marker(page,'$.ExitStyle.$', 'styleProblem')
 
-    page = page.replace('$.CompanyName.$', brandingSettings['companyName'])
-    page = page.replace('$.PageTitle.$', captureSettings['basicLoginPageTitle'])
+    page = replace_marker(page,'$.CompanyName.$', companyName)
+    page = replace_marker(page,'$.PageTitle.$', captureSettings['basicLoginPageTitle'])
 
     # return the logout page we just created
     return(page)
 
 #-----------------------------------------------------------------------------
+# loads the uvm and capture node objects for the authentication calls
 
-def global_setup(req,appid=None):
+def global_auth_setup(appid=None):
 
     global uvmContext
     global captureNode
-    global captureSettings
-    global brandingSettings
 
     # first we get the uvm context
     uvmContext = Uvm().getUvmContext()
@@ -61,23 +67,32 @@ def global_setup(req,appid=None):
     else:
         captureNode = uvmContext.nodeManager().node(long(appid))
 
-    # if we can't find the node then we are done
-    # otherwise load the node settings
+    # if we can't find the node then throw an exception
     if (captureNode == None):
         raise Exception("The uvm node manager could not locate untangle-node-capture")
-    else:
-        captureSettings = captureNode.getCaptureSettings()
 
-    # lookup the branding node by name since there should only be one
-    brandingNode = uvmContext.nodeManager().node("untangle-node-branding");
+#-----------------------------------------------------------------------------
+# loads the node settings and company name info into global variables
 
-    # if branding isn't installed then setup the defaults
-    # otherwise load the node settings
-    if (brandingNode == None):
-        brandingSettings = {}
-        brandingSettings['companyName'] = 'Untangle'
+def global_data_setup(req,appid=None):
+
+    global captureSettings
+    global companyName
+
+    companyName = 'Untangle'
+
+    oemName = get_settings_item("/usr/share/untangle/conf/oem.js","oemName")
+    if (oemName != None):
+        companyName = oemName
+
+    brandco = get_node_settings_item('untangle-node-branding','companyName')
+    if (brandco != None):
+        companyName = brandco
+
+    if (appid == None):
+        captureSettings = get_node_settings('untangle-node-capture')
     else:
-        brandingSettings = brandingNode.getBrandingSettings()
+        captureSettings = get_nodeid_settings(long(appid))
 
     # add some headers to prevent caching any of our stuff
     req.headers_out.add("Cache-Control", "no-store, no-cache, must-revalidate, post-check=0, pre-check=0")
@@ -85,3 +100,13 @@ def global_setup(req,appid=None):
     req.headers_out.add("Expires", "Sat, 1 Jan 2000 00:00:00 GMT");
 
 #-----------------------------------------------------------------------------
+# forces stuff loaded from settings files to be UTF-8 when plugged
+# into the page template files
+
+def replace_marker(page,marker,output):
+    if not type(output) is str:
+        output = output.encode("utf-8")
+
+    page = page.replace(marker,output)
+
+    return(page)

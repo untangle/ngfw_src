@@ -2,14 +2,12 @@ from uvm.settings_reader import get_node_settings_item
 from uvm.settings_reader import get_nodeid_settings
 from uvm.settings_reader import get_node_settings
 from uvm.settings_reader import get_settings_item
-
 from mod_python import apache
 from mod_python import util
+from uvm import Uvm
 import os.path
 import zipfile
 import pprint
-
-from uvm import Uvm
 
 # global objects that we retrieve from the uvm
 uvmContext = None
@@ -67,7 +65,6 @@ def authpost(req,username,password,method,nonce,appid,host,uri):
             target = str(captureSettings['redirectUrl'])
         else:
             target = str("http://" + host + uri)
-
         util.redirect(req, target)
         return
 
@@ -241,46 +238,46 @@ def generate_page(req,args,extra=''):
     file.close()
 
     if (captureSettings['pageType'] == 'BASIC_LOGIN'):
-        page = page.replace('$.CompanyName.$', companyName)
-        page = page.replace('$.PageTitle.$', captureSettings['basicLoginPageTitle'])
-        page = page.replace('$.WelcomeText.$', captureSettings['basicLoginPageWelcome'])
-        page = page.replace('$.MessageText.$', captureSettings['basicLoginMessageText'])
-        page = page.replace('$.UserLabel.$', captureSettings['basicLoginUsername'])
-        page = page.replace('$.PassLabel.$', captureSettings['basicLoginPassword'])
-        page = page.replace('$.FooterText.$', captureSettings['basicLoginFooter'])
+        page = replace_marker(page,'$.CompanyName.$', companyName)
+        page = replace_marker(page,'$.PageTitle.$', captureSettings['basicLoginPageTitle'])
+        page = replace_marker(page,'$.WelcomeText.$', captureSettings['basicLoginPageWelcome'])
+        page = replace_marker(page,'$.MessageText.$', captureSettings['basicLoginMessageText'])
+        page = replace_marker(page,'$.UserLabel.$', captureSettings['basicLoginUsername'])
+        page = replace_marker(page,'$.PassLabel.$', captureSettings['basicLoginPassword'])
+        page = replace_marker(page,'$.FooterText.$', captureSettings['basicLoginFooter'])
 
     if (captureSettings['pageType'] == 'BASIC_MESSAGE'):
-        page = page.replace('$.CompanyName.$', companyName)
-        page = page.replace('$.PageTitle.$', captureSettings['basicMessagePageTitle'])
-        page = page.replace('$.WelcomeText.$', captureSettings['basicMessagePageWelcome'])
-        page = page.replace('$.MessageText.$', captureSettings['basicMessageMessageText'])
-        page = page.replace('$.FooterText.$', captureSettings['basicMessageFooter'])
+        page = replace_marker(page,'$.CompanyName.$', companyName)
+        page = replace_marker(page,'$.PageTitle.$', captureSettings['basicMessagePageTitle'])
+        page = replace_marker(page,'$.WelcomeText.$', captureSettings['basicMessagePageWelcome'])
+        page = replace_marker(page,'$.MessageText.$', captureSettings['basicMessageMessageText'])
+        page = replace_marker(page,'$.FooterText.$', captureSettings['basicMessageFooter'])
 
         if (captureSettings['basicMessageAgreeBox'] == True):
-            page = page.replace('$.AgreeText.$', captureSettings['basicMessageAgreeText'])
-            page = page.replace('$.AgreeBox.$','checkbox')
+            page = replace_marker(page,'$.AgreeText.$', captureSettings['basicMessageAgreeText'])
+            page = replace_marker(page,'$.AgreeBox.$','checkbox')
         else:
-            page = page.replace('$.AgreeText.$', '')
-            page = page.replace('$.AgreeBox.$','hidden')
+            page = replace_marker(page,'$.AgreeText.$', '')
+            page = replace_marker(page,'$.AgreeBox.$','hidden')
 
     if (captureSettings['pageType'] == 'CUSTOM'):
         path = "/capture/custom_" + str(args['APPID'])
-        page = page.replace('$.CustomPath.$',path)
+        page = replace_marker(page,'$.CustomPath.$',path)
 
     # plug the values into the hidden form fields of the authentication page
     # page by doing  search and replace for each of the placeholder text tags
-    page = page.replace('$.method.$', args['METHOD'])
-    page = page.replace('$.nonce.$', args['NONCE'])
-    page = page.replace('$.appid.$', args['APPID'])
-    page = page.replace('$.host.$', args['HOST'])
-    page = page.replace('$.uri.$', args['URI'])
+    page = replace_marker(page,'$.method.$', args['METHOD'])
+    page = replace_marker(page,'$.nonce.$', args['NONCE'])
+    page = replace_marker(page,'$.appid.$', args['APPID'])
+    page = replace_marker(page,'$.host.$', args['HOST'])
+    page = replace_marker(page,'$.uri.$', args['URI'])
 
     # replace the text in the problem section with the agumented value
-    page = page.replace('$.ProblemText.$',extra)
+    page = replace_marker(page,'$.ProblemText.$',extra)
 
 #    debug = create_debug(args)
     debug = ""
-    page = page.replace('<!--DEBUG-->',debug)
+    page = replace_marker(page,'<!--DEBUG-->',debug)
 
     # return the login page we just created
     return(page)
@@ -344,9 +341,6 @@ def global_data_setup(req,appid=None):
     if (brandco != None):
         companyName = brandco
 
-    if not type(companyName) is str:
-        companyName = companyName.encode("utf-8")
-
     if (appid == None):
         captureSettings = get_node_settings('untangle-node-capture')
     else:
@@ -382,3 +376,15 @@ def extjs_reply(status,message,filename=""):
         result = "{success:false,msg:\"%s\",filename:\"%s\"}" % (message,filename)
 
     return(result)
+
+#-----------------------------------------------------------------------------
+# forces stuff loaded from settings files to be UTF-8 when plugged
+# into the page template files
+
+def replace_marker(page,marker,output):
+    if not type(output) is str:
+        output = output.encode("utf-8")
+
+    page = page.replace(marker,output)
+
+    return(page)
