@@ -5,12 +5,14 @@ package com.untangle.uvm.engine;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Date;
 import java.util.Map;
 import java.util.HashSet;
 import java.util.HashMap;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.net.InetSocketAddress;
+import java.io.File;
 
 import org.apache.log4j.Logger;
 
@@ -59,6 +61,7 @@ public class AlertManagerImpl implements AlertManager
         try { testUpgrades(alertList); } catch (Exception e) { logger.warn("Alert test exception",e); }
         try { dnsWorking = testDNS(alertList); } catch (Exception e) { logger.warn("Alert test exception",e); }
         try { if (dnsWorking) testConnectivity(alertList); } catch (Exception e) { logger.warn("Alert test exception",e); }
+        try { if (dnsWorking) testConnector(alertList); } catch (Exception e) { logger.warn("Alert test exception",e); }
         try { testDiskFree(alertList); } catch (Exception e) { logger.warn("Alert test exception",e); }
         try { testDupeApps(alertList); } catch (Exception e) { logger.warn("Alert test exception",e); }
         try { testRendundantApps(alertList); } catch (Exception e) { logger.warn("Alert test exception",e); }
@@ -121,8 +124,7 @@ public class AlertManagerImpl implements AlertManager
     }
 
     /**
-     * This test iterates through the DNS settings on each WAN and tests them individually
-     * It creates an alert for each non-working DNS server
+     * This test tests connectivity to key servers in the untangle datacenter
      */
     private void testConnectivity(List<String> alertList)
     {
@@ -147,9 +149,50 @@ public class AlertManagerImpl implements AlertManager
         }
 
         if (!UvmContextFactory.context().isDevel()) {
+            try {
+                File pidFile = new File("/var/run/ut-pyconnector.pid");
+                Date launchDate = new Date(pidFile.lastModified());
+
+                int result = UvmContextFactory.context().execManager().execResult(System.getProperty("uvm.bin.dir") + "/ut-pyconnector-status");
+                if (result != 0)
+                    alertList.add( i18nUtil.tr("Failed to connect to Untangle." +  " [cmd.untangle.com]") );
+            } catch (Exception e) {
+
+            }
+        }
+    }
+
+    /**
+     * This test that pyconnector is connected to cmd.untangle.com
+     */
+    private void testConnector(List<String> alertList)
+    {
+        try {
+            if ( UvmContextFactory.context().isDevel() )
+                return;
+
+            File pidFile = new File("/var/run/ut-pyconnector.pid");
+
+            if ( !pidFile.exists() ) {
+                alertList.add( i18nUtil.tr("Failed to connect to Untangle." +  " [cmd.untangle.com]") );
+                return;
+            }
+                
+            long launchTime = new Date(pidFile.lastModified()).getTime();
+            long now = new Date().getTime();
+
+            /**
+             * if pyconnector was just launched (<120 secs), dont test yet
+             * it needs time to connect to cmd.untangle.com
+             */
+            if (now - launchTime < 120000) 
+                return;
+
             int result = UvmContextFactory.context().execManager().execResult(System.getProperty("uvm.bin.dir") + "/ut-pyconnector-status");
             if (result != 0)
                 alertList.add( i18nUtil.tr("Failed to connect to Untangle." +  " [cmd.untangle.com]") );
+        } catch (Exception e) {
+
         }
     }
     
