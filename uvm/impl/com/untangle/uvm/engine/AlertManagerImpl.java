@@ -203,7 +203,7 @@ public class AlertManagerImpl implements AlertManager
             return;
 
         String result = UvmContextFactory.context().execManager().execOutput( "df -k / | awk '/\\//{printf(\"%d\",$5)}'");
-        logger.warn("DISK: " + result);
+
         try {
             int percentUsed = Integer.parseInt(result);
             if (percentUsed > 75)
