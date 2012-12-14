@@ -154,7 +154,7 @@ class ToolboxManagerImpl implements ToolboxManager
             PackageDesc.Type type = md.getType();
 
             if (type == PackageDesc.Type.LIB_ITEM) {
-                libitems.remove(dn);
+                //libitems.remove(dn); //do not remove installed libitems from list of available libitems
                 hiddenApps.remove(dn);
             } else if (!md.isInvisible() && (type == PackageDesc.Type.NODE || type == PackageDesc.Type.SERVICE)) {
                 displayNames.add(dn);
