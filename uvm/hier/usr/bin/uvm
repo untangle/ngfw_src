@@ -122,6 +122,9 @@ def prepareSystem():
         debug("Generating keystore... done")
 
     # setup environment variables
+
+    # must set lang to ensure proper handling of i18n characters in JSON serialization (bug #10609)
+    os.environ['LANG'] = "en_US.UTF-8"
     
     # build classpath
     os.environ['CLASSPATH'] = ""
