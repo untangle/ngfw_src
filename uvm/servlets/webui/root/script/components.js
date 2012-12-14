@@ -1455,7 +1455,7 @@ Ext.define("Ung.Node", {
             name: "Buy",
             id: 'node-buy-button_'+this.getId(),
             iconCls: 'icon-buy',
-            hidden: !(this.license && !this.license.trial), //show only if valid non-trial license
+            show: !(this.license && this.license.trial), //show only if trial license
             ctCls:'buy-button-text',
             text: i18n._('Buy Now'),
             handler: Ext.bind(this.onBuyNowAction, this)
