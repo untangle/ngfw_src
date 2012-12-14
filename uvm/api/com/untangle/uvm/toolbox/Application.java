@@ -9,24 +9,17 @@ import java.io.Serializable;
 public class Application implements Comparable<Application>, Serializable
 {
     private final PackageDesc libItem;
-    private final PackageDesc trialLibItem;
     private final PackageDesc node;
 
-    public Application(PackageDesc libItem, PackageDesc trialLibItem, PackageDesc node)
+    public Application(PackageDesc libItem, PackageDesc node)
     {
         this.libItem = libItem;
-        this.trialLibItem = trialLibItem;
         this.node = node;
     }
 
     public PackageDesc getLibItem()
     {
         return libItem;
-    }
-
-    public PackageDesc getTrialLibItem()
-    {
-        return trialLibItem;
     }
 
     public PackageDesc getNode()
@@ -36,14 +29,9 @@ public class Application implements Comparable<Application>, Serializable
 
     public int getViewPosition()
     {
-        if (libItem != null &&
-            libItem.getViewPosition() != PackageDesc.UNKNOWN_POSITION) {
+        if ( libItem != null && libItem.getViewPosition() != PackageDesc.UNKNOWN_POSITION ) {
             return libItem.getViewPosition();
-        } else if (trialLibItem != null
-                   && trialLibItem.getViewPosition() != PackageDesc.UNKNOWN_POSITION) {
-            return trialLibItem.getViewPosition();
-        } else if (node != null
-                   && node.getViewPosition() != PackageDesc.UNKNOWN_POSITION) {
+        } else if ( node != null && node.getViewPosition() != PackageDesc.UNKNOWN_POSITION ) {
             return node.getViewPosition();
         } else {
             return -1;
@@ -62,6 +50,6 @@ public class Application implements Comparable<Application>, Serializable
     @Override
     public String toString()
     {
-        return "(Application libItem: " + libItem + " trialLibItem: " + trialLibItem + " node: " + node + ")";
+        return "(Application libItem: " + libItem + " node: " + node + ")";
     }
 }

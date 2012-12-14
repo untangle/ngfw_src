@@ -1140,11 +1140,11 @@ Ext.define("Ung.AppItem", {
 
         this.actionEl = Ext.get("action_" + this.getId());
         this.progressBar.hide();
-        if(this.libItem!=null && this.node==null) { // libitem
+        if( this.libItem!=null && this.node==null ) { // node not installed
             this.getEl().on("click", this.linkToStoreFn, this);
             this.actionEl.insertHtml("afterBegin", i18n._("More Info"));
             this.actionEl.addCls("icon-info");
-        } else if(this.node!=null) { // node
+        } else if( this.node!=null ) { // node
             this.getEl().on("click", this.installNodeFn, this);
             this.actionEl.insertHtml("afterBegin", i18n._("Install"));
             this.actionEl.addCls("icon-arrow-install");
@@ -1455,7 +1455,7 @@ Ext.define("Ung.Node", {
             name: "Buy",
             id: 'node-buy-button_'+this.getId(),
             iconCls: 'icon-buy',
-            hidden: !(this.license && this.license.trial),
+            hidden: !(this.license && !this.license.trial), //show only if valid non-trial license
             ctCls:'buy-button-text',
             text: i18n._('Buy Now'),
             handler: Ext.bind(this.onBuyNowAction, this)

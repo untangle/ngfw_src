@@ -125,7 +125,6 @@ class ToolboxManagerImpl implements ToolboxManager
         PackageDesc[] installed = this.installed;
 
         Map<String, PackageDesc> nodes = new HashMap<String, PackageDesc>();
-        Map<String, PackageDesc> trials = new HashMap<String, PackageDesc>();
         Map<String, PackageDesc> libitems = new HashMap<String, PackageDesc>();
         Set<String> displayNames = new HashSet<String>();
         Set<String> hiddenApps = new HashSet<String>();
@@ -156,7 +155,6 @@ class ToolboxManagerImpl implements ToolboxManager
 
             if (type == PackageDesc.Type.LIB_ITEM) {
                 libitems.remove(dn);
-                trials.remove(dn);
                 hiddenApps.remove(dn);
             } else if (!md.isInvisible() && (type == PackageDesc.Type.NODE || type == PackageDesc.Type.SERVICE)) {
                 displayNames.add(dn);
@@ -185,11 +183,10 @@ class ToolboxManagerImpl implements ToolboxManager
         List<Application> apps = new ArrayList<Application>(displayNames.size());
         for (String dn : displayNames) {
             PackageDesc l = libitems.get(dn);
-            PackageDesc t = trials.get(dn);
             PackageDesc n = nodes.get(dn);
 
-            if (!hiddenApps.contains(dn) && ( l != null || t != null || n != null)) {
-                Application a = new Application(l, t, n);
+            if ( !hiddenApps.contains(dn) && ( l != null || n != null) ) {
+                Application a = new Application(l, n);
                 apps.add(a);
             }
         }
