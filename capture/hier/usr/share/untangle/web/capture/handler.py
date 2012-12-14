@@ -61,7 +61,7 @@ def authpost(req,username,password,method,nonce,appid,host,uri):
     # on successful login redirect to the redirectUrl if not empty
     # otherwise send them to the page originally requested
     if (authResult == 0):
-        if (len(captureSettings['redirectUrl']) != 0):
+        if (len(captureSettings['redirectUrl']) != 0) and (captureSettings['redirectUrl'].isspace() == False):
             target = str(captureSettings['redirectUrl'])
         else:
             target = str("http://" + host + uri)
@@ -115,7 +115,7 @@ def infopost(req,method,nonce,appid,host,uri,agree='empty'):
     # on successful login redirect to the redirectUrl if not empty
     # otherwise send them to the page originally requested
     if (authResult == 0):
-        if (len(captureSettings['redirectUrl']) != 0):
+        if (len(captureSettings['redirectUrl']) != 0) and (captureSettings['redirectUrl'].isspace() == False):
             target = str(captureSettings['redirectUrl'])
         else:
             target = str("http://" + host + uri)
