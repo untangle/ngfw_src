@@ -8,7 +8,7 @@ if [ -x /usr/bin/uvm-restart ]; then
 fi
 
 # need to run this after uvm-restart to avoid postgres deadlocks/conflicts with untangle-vm
-if [ -n "$oldVersion" ]; then
+if [ -n "$oldVersion" ] && [ -f /usr/bin/psql ]; then
     # remove obsolete events schema
 
     # kill any running reports process
@@ -19,7 +19,8 @@ if [ -n "$oldVersion" ]; then
       /etc/init.d/postgresql-8.3 restart
     elif [ -f /etc/init.d/postgresql ] ; then
       /etc/init.d/postgresql restart
-    fi
+    else
+        
     sleep 5
 
     # If upgrading from 9.3 or prior, drop events schema
