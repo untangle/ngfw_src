@@ -774,10 +774,15 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
         /**
          * Tell alpaca to initialize wizard settings
          */
-        try {
-            JsonClient.getInstance().callAlpaca( XMLRPCUtil.CONTROLLER_UVM, "wizard_start", null );
-        } catch (Exception exc) {
-            logger.error("Failed to initialize Factory Defaults (net-alpaca returned an error)",exc);
+        for ( int c = 0 ; c < 6 ; c++ ) {
+            try {
+                JsonClient.getInstance().callAlpaca( XMLRPCUtil.CONTROLLER_UVM, "wizard_start", null );
+                break; //if an exception wasnt thrown it was successful - break from loop
+            } 
+            catch (Exception e) {
+                logger.error("Failed to initialize Factory Defaults (net-alpaca returned an error). Retrying in 10 seconds...",e);
+                try { Thread.sleep(10000);} catch ( InterruptedException ie ) {}
+            }
         }
 
         /**
