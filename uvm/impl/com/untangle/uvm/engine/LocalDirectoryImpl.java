@@ -23,7 +23,6 @@ class LocalDirectoryImpl implements LocalDirectory
     private final Logger logger = Logger.getLogger(getClass());
 
     private final static String LOCAL_DIRECTORY_SETTINGS_FILE = System.getProperty( "uvm.settings.dir" ) + "/untangle-vm/local_directory";
-    private final static String LOCAL_DIRECTORY_CONVERSION_SCRIPT = System.getProperty( "uvm.bin.dir" ) + "/untangle-vm-convert-local-directory.py";
 
     private final static String UNCHANGED_PASSWORD = "***UNCHANGED***";
     
@@ -156,29 +155,7 @@ class LocalDirectoryImpl implements LocalDirectory
             logger.warn("Unable to read localDirectory file: ", e );
         }
 
-        // Failed to read settings - try the conversion script
-        if (users == null) {
-            logger.warn("No settings found - Running conversion script to check DB");
-            try {
-                String convertCmd = LOCAL_DIRECTORY_CONVERSION_SCRIPT + " " + LOCAL_DIRECTORY_SETTINGS_FILE + ".js";
-                logger.warn("Running: " + convertCmd);
-                UvmContextFactory.context().execManager().exec( convertCmd );
-            } catch ( Exception e ) {
-                logger.warn( "Conversion script failed.", e );
-            } 
-
-            try {
-                users = (LinkedList<LocalDirectoryUser>) settingsManager.load(LinkedList.class, LOCAL_DIRECTORY_SETTINGS_FILE);
-            } catch (SettingsManager.SettingsException e) {
-                logger.warn("Unable to read localDirectory file: ", e );
-            }
-
-            // Call the save function to calculate the hashes
-            if (users != null)
-                this.setUsers(users);
-        }
-
-        // Still no settings, just initialize new ones
+        // no settings? just initialize new ones
         if (users == null) {
             logger.warn("No settings found - Initializing new settings.");
             this.saveUsersList(new LinkedList<LocalDirectoryUser>());
