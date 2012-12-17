@@ -124,6 +124,9 @@ class ToolboxManagerImpl implements ToolboxManager
         PackageDesc[] available = this.available;
         PackageDesc[] installed = this.installed;
 
+        /**
+         * Build the list of nodes & libitems packages
+         */
         Map<String, PackageDesc> nodes = new HashMap<String, PackageDesc>();
         Map<String, PackageDesc> libitems = new HashMap<String, PackageDesc>();
         Set<String> displayNames = new HashSet<String>();
@@ -149,12 +152,49 @@ class ToolboxManagerImpl implements ToolboxManager
             }
         }
 
+        NodeManagerImpl nm = (NodeManagerImpl)UvmContextFactory.context().nodeManager();
+        List<Node> instances = nm.visibleNodes( policyId );
+
+        /**
+         * Build the license map
+         */
+        Map<String, License> licenseMap = new HashMap<String, License>();
+        LicenseManager lm = UvmContextFactory.context().licenseManager();
+        for (Node node : instances) {
+            String n = node.getNodeProperties().getName();
+            licenseMap.put(n, lm.getLicense(n));
+        }
+        Map<Long, NodeSettings.NodeState> runStates=nm.allNodeStates();
+
+        /**
+         * Iterate through installed libitems and make adjustments
+         *
+         * If its a libitem, hide it from the left-hand-nav and remove it from the hidden apps (so it will show even if hidden if installed)
+         * If its a node, put it in displayNames nodes and remove from hidden apps
+         */
         for (PackageDesc md : installed) {
             String dn = md.getDisplayName();
             PackageDesc.Type type = md.getType();
 
             if (type == PackageDesc.Type.LIB_ITEM) {
-                //libitems.remove(dn); //do not remove installed libitems from list of available libitems
+                /**
+                 * We treat untangle-libitem-premium-package and untangle-libitem-standard-package specially
+                 * Because if they disappear upon downloading a trial there is no buy button in the UI, so we keep showing them
+                 * on the left hand side during the trial period
+                 */
+                if ("untangle-libitem-premium-package".equals(md.getName())) {
+                    boolean justATrial = (lm.getLicense(License.POLICY) != null && lm.getLicense(License.POLICY).getTrial());
+                    if ( ! justATrial ) {
+                        libitems.remove(dn); /* remove it like normal */
+                    }
+                } else if ("untangle-libitem-standard-package".equals(md.getName())) {
+                    boolean justATrial = (lm.getLicense(License.POLICY) != null && lm.getLicense(License.POLICY).getTrial());
+                    if ( ! justATrial ) {
+                        libitems.remove(dn); /* remove it like normal */
+                    }
+                } else {
+                    libitems.remove(dn);
+                }
                 hiddenApps.remove(dn);
             } else if (!md.isInvisible() && (type == PackageDesc.Type.NODE || type == PackageDesc.Type.SERVICE)) {
                 displayNames.add(dn);
@@ -163,9 +203,9 @@ class ToolboxManagerImpl implements ToolboxManager
             } 
         }
 
-        NodeManagerImpl nm = (NodeManagerImpl)UvmContextFactory.context().nodeManager();
-        List<Node> instances = nm.visibleNodes( policyId );
-
+        /**
+         * Build the nodeMetrics (stats in the UI)
+         */
         Map<Long, List<NodeMetric>> nodeMetrics = new HashMap<Long, List<NodeMetric>>(instances.size());
         for (Node visibleNode : instances) {
             Long nodeId = visibleNode.getNodeSettings().getId();
@@ -180,6 +220,9 @@ class ToolboxManagerImpl implements ToolboxManager
 
         displayNames.remove(null);
 
+        /**
+         * Build the list of apps to show on the left hand nav
+         */
         List<Application> apps = new ArrayList<Application>(displayNames.size());
         for (String dn : displayNames) {
             PackageDesc l = libitems.get(dn);
@@ -192,14 +235,6 @@ class ToolboxManagerImpl implements ToolboxManager
         }
 
         Collections.sort(apps);
-
-        Map<String, License> licenseMap = new HashMap<String, License>();
-        LicenseManager lm = UvmContextFactory.context().licenseManager();
-        for (Node node : instances) {
-            String n = node.getNodeProperties().getName();
-            licenseMap.put(n, lm.getLicense(n));
-        }
-        Map<Long, NodeSettings.NodeState> runStates=nm.allNodeStates();
 
         List<NodeProperties> nodeProperties = new LinkedList<NodeProperties>();
         for (Node node : instances) {
