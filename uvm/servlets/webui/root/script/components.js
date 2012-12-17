@@ -1613,10 +1613,9 @@ Ext.define("Ung.Node", {
     },
     //on Buy Now Action
     onBuyNowAction: function() {
-        var appItem=Ung.AppItem.getApp(this.displayName);
-        if(appItem!=null) {
-            appItem.linkToStoreFn(null);
-        }
+        main.warnOnUpgrades(Ext.bind(function() {
+            main.openLibItemStore( this.name, Ext.String.format(i18n._("More Info - {0}"), this.displayName) );
+        }, this));
     },
     getNode: function(handler) {
         if(handler==null) {handler=Ext.emptyFn;}
