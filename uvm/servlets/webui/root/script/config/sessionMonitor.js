@@ -1,5 +1,287 @@
 if (!Ung.hasResource["Ung.SessionMonitor"]) {
     Ung.hasResource["Ung.SessionMonitor"] = true;
+ 
+    
+    // Monitor Grid class
+    Ext.define('Ung.MonitorGrid', {
+        extend:'Ext.grid.Panel',
+        selType: 'rowmodel',
+        //reserveScrollbar: true,
+        // record per page
+        recordsPerPage: 500,
+        // the total number of records
+        totalRecords: null,
+        // settings component
+        settingsCmp: null,
+        // the list of fields used to by the Store
+        fields: null,
+        // the default sort field
+        sortField: null,
+        // the default sort order
+        sortOrder: null,
+        // the default group field
+        groupField: null,
+        // the columns are sortable by default, if sortable is not specified
+        columnsDefaultSortable: true,
+        // paginate the grid by default
+        paginated: true,
+        // javaClass of the record, used in save function to create correct json-rpc
+        // object
+        async: true,
+        autoRefreshEnabled: false,        
+        // the map of changed data in the grid
+        // used by rendering functions and by save
+        enableColumnHide: false,
+        enableColumnMove: false,
+        features: [{
+            ftype: 'filters',
+            encode: false,
+            local: true
+        }, {ftype: 'groupingsummary'}],
+        constructor: function(config) {
+            var defaults = {
+                data: [],
+                plugins: [
+                ],
+                viewConfig: {
+                    enableTextSelection: true,
+                    stripeRows: true,
+                    loadMask:{
+                        msg: i18n._("Loading...")
+                    }
+                },
+                changedData: {},
+                subCmps:[]
+            };
+            Ext.applyIf(config, defaults);
+            this.callParent(arguments);
+        },
+        initComponent: function() {
+            for (var i = 0; i < this.columns.length; i++) {
+                var col=this.columns[i];
+                col.menuDisabled= true;
+                if( col.sortable == null) {
+                    col.sortable = this.columnsDefaultSortable;
+                }
+            }    
+            
+            if(this.dataFn) {
+                if(this.dataRoot === undefined) {
+                    this.dataRoot="list";
+                }
+            } else {
+                this.async=false;
+            }
+            
+            this.totalRecords = this.data.length;
+            this.store=Ext.create('Ext.data.Store',{
+                data: [],
+                fields: this.fields,
+                pageSize: this.paginated?this.recordsPerPage:null,
+                proxy: {
+                    type: this.paginated?'pagingmemory':'memory',
+                    reader: {
+                        type: 'json' 
+                    }
+                },
+                autoLoad: false,
+                sorters: this.sortField ? {
+                    property: this.sortField,
+                    direction: this.sortOrder ? this.sortOrder: "ASC"
+                }: null,
+                groupField: this.groupField,
+                remoteSort: this.paginated
+            });
+            this.bbar = [{
+                xtype: 'button',
+                id: "refresh_"+this.getId(),
+                text: i18n._('Refresh'),
+                name: "Refresh",
+                tooltip: i18n._('Refresh'),
+                iconCls: 'icon-refresh',
+                handler: Ext.bind(function() {
+                    this.reload();
+                }, this)
+            },{
+                xtype: 'button',
+                id: "auto_refresh_"+this.getId(),
+                text: i18n._('Auto Refresh'),
+                enableToggle: true,
+                pressed: false,
+                name: "Auto Refresh",
+                tooltip: i18n._('Auto Refresh'),
+                iconCls: 'icon-autorefresh',
+                handler: Ext.bind(function() {
+                    var autoRefreshButton=Ext.getCmp("auto_refresh_"+this.getId());
+                    if(autoRefreshButton.pressed) {
+                        this.startAutoRefresh();
+                    } else {
+                        this.stopAutoRefresh();
+                    }
+                }, this)
+            },'-',{
+                text: i18n._('Clear Filters'),
+                handler: Ext.bind(function () {
+                    this.filters.clearFilters();
+                }, this) 
+            }];
+            if(this.paginated) {
+                this.pagingToolbar = Ext.create('Ext.toolbar.Paging',{
+                    store: this.getStore(),
+                    style: "border:0; top:1px;",
+                    displayInfo: true,
+                    displayMsg: i18n._('Displaying sessions {0} - {1} of {2}'),
+                    emptyMsg: i18n._("No sessions to display")
+                });
+                this.bbar.push('-',this.pagingToolbar);
+            }
+            this.callParent(arguments);
+        },
+        afterRender: function() {
+            this.callParent(arguments);
+            this.initialLoad();
+        },
+        initialLoad: function() {
+            // load first page initialy
+            this.getView().setLoading(true);  
+            Ext.defer(function(){
+                this.buildData(Ext.bind(function() {
+                    this.getStore().loadPage(1, {
+                        limit:this.isPaginated() ? this.recordsPerPage: Ung.Util.maxRowCount,
+                        callback: function() {
+                            this.getView().setLoading(false);
+                        },
+                        scope: this
+                    });
+                }, this));
+            },10, this);
+        },
+        getData: function(data) {
+            if(!data) {
+                if(this.dataFn) {
+                    if (this.dataFnArg !== undefined && this.dataFnArg != null) {
+                        data = this.dataFn(this.dataFnArg);
+                    } else {
+                        data = this.dataFn();
+                    }
+                    this.data = (this.dataRoot!=null && this.dataRoot.length>0) ? data[this.dataRoot]:data;
+                }
+            } else {
+                this.data=(this.dataRoot!=null && this.dataRoot.length>0) ? data[this.dataRoot]:data;;
+            }
+
+            if(!this.data) {
+                this.data=[];
+            }
+            return this.data;
+        },
+        buildData: function(handler) {
+            if(this.async) {
+                if (this.dataFnArg !== undefined && this.dataFnArg != null) {
+                    this.dataFn(Ext.bind(function(result, exception) {
+                        if(Ung.Util.handleException(exception)) return;
+                        this.getData(result);
+                        this.afterDataBuild(handler);
+                    }, this),this.dataFnArg);
+                } else {
+                    this.dataFn(Ext.bind(function(result, exception) {
+                        if(Ung.Util.handleException(exception)) return;
+                        this.getData(result);
+                        this.afterDataBuild(handler);
+                    }, this));
+                }
+            } else {
+                this.getData();
+                this.afterDataBuild(handler);
+            }
+
+        },
+        afterDataBuild: function(handler) {
+            this.getStore().getProxy().data = this.data;
+            this.setTotalRecords(this.data.length);
+            if(handler) {
+                handler();
+            }
+        },
+        // is grid paginated
+        isPaginated: function() {
+            return  this.paginated && (this.totalRecords != null && this.totalRecords >= this.recordsPerPage);
+        },
+        beforeDestroy: function() {
+            Ext.each(this.subCmps, Ext.destroy);
+            this.callParent(arguments);
+        },
+        // load a page
+        loadPage: function(page, callback, scope, arg) {
+            this.getStore().loadPage(page, {
+                limit:this.isPaginated() ? this.recordsPerPage: Ung.Util.maxRowCount,
+                callback: callback,
+                scope: scope,
+                arg: arg
+            });
+        },
+        reload: function() {
+            this.getView().setLoading(true);
+            Ext.defer(function(){
+                this.buildData(Ext.bind(function() {
+                    this.getStore().loadPage(this.getStore().currentPage, {
+                        limit:this.isPaginated() ? this.recordsPerPage: Ung.Util.maxRowCount,
+                        callback: function() {
+                            this.getView().setLoading(false);
+                        },
+                        scope: this
+                    });
+                }, this));
+            },10, this);
+        },
+        // Set the total number of records
+        setTotalRecords: function(totalRecords) {
+            this.totalRecords = totalRecords;
+            if(this.paginated) {
+                var isPaginated=this.isPaginated();
+                this.getStore().pageSize=isPaginated?this.recordsPerPage:Ung.Util.maxRowCount;
+                if(!isPaginated) {
+                    //Needs to set currentPage to 1 when not using pagination toolbar.
+                    this.getStore().currentPage=1;
+                }
+                var bbar=this.getDockedItems('toolbar[dock="bottom"]')[0];
+                if (isPaginated) {
+                    this.pagingToolbar.show();
+                    this.pagingToolbar.enable();
+                } else {
+                    this.pagingToolbar.hide();
+                    this.pagingToolbar.disable();
+                }
+            }
+        },
+        startAutoRefresh: function(setButton) {
+            this.autoRefreshEnabled=true;
+            if(setButton) {
+                var autoRefreshButton=Ext.getCmp("auto_refresh_"+this.getId());
+                autoRefreshButton.toggle(true);
+            }
+            var refreshButton=Ext.getCmp("refresh_"+this.getId());
+            refreshButton.disable();
+            this.autorefreshList();
+
+        },
+        stopAutoRefresh: function(setButton) {
+            this.autoRefreshEnabled=false;
+            if(setButton) {
+                var autoRefreshButton=Ext.getCmp("auto_refresh_"+this.getId());
+                autoRefreshButton.toggle(false);
+            }
+            var refreshButton=Ext.getCmp("refresh_"+this.getId());
+            refreshButton.enable();
+        },
+        autorefreshList: function() {
+            if(this!=null && this.autoRefreshEnabled && Ext.getCmp(this.id) != null) {
+                this.reload();
+                Ext.defer(this.autorefreshList, 9000, this);
+            }
+        }
+    });
+    
     Ext.define('Ung.SessionMonitor', {
         extend: 'Ung.StatusWin',
         helpSource: 'session_monitor',
@@ -20,68 +302,76 @@ if (!Ung.hasResource["Ung.SessionMonitor"]) {
             this.gridCurrentSessions.stopAutoRefresh(true);
             this.hide();
         },
-        getSessions: function(nodeId) {
-            if (!this.isVisible())
-                return {javaClass:"java.util.LinkedList", list:[]};
-            var sessions = rpc.sessionMonitor.getMergedSessions(nodeId);
-            if(testMode) {
-                var testSessionsSize=500;
-                for(var i=0;i<testSessionsSize;i++) {
-                    var ii=i+Math.floor((Math.random()*5));
-                    sessions.list.push({
-                        "postNatServer": "184.27.239."+(ii%10),
-                        "bypassed": ((ii%3)==1),
-                        "state": null,
-                        "natted": true,
-                        "totalKBps": null,
-                        "localTraffic": false,
-                        "priority": (ii%7)+1,
-                        "postNatClient": "50.193.63."+((ii+1)%10),
-                        "postNatClientPort": (ii+1000),
-                        "preNatClient": "10.0.0."+((i+2)%10),
-                        "preNatServer": "184.27.239."+((i+3)%10),
-                        "attachments": {
-                            "map": {
-                                "esoft-best-category-name": "Social Networking",
-                                "protofilter-matched": (ii%3==0),
-                                "esoft-best-category-description": "Social Networking",
-                                "esoft-best-category-blocked": false,
-                                "esoft-flagged": false,
-                                "platform-hostname": "acct07-wxp"+i,
-                                "esoft-best-category-flagged": (ii%2==1),
-                                "esoft-best-category-id": null,
-                                "http-uri": "/t.gif",
-                                "platform-username": "rbooroojian"+i,
-                                "http-hostname": "p.twitter.com"+i
-                            },
-                            "javaClass": "java.util.HashMap"
-                        },
-                        "protocol": (ii%2==1)?"TCP":"UDP",
-                        "serverKBps": null,
-                        "portForwarded": (ii%2==0),
-                        "preNatClientPort": 1471,
-                        "preNatServerPort": i+1500,
-                        "serverIntf": ii%10,
-                        "clientIntf": i%9,
-                        "sessionId": 88616525732127+i,
-                        "javaClass": "com.untangle.uvm.SessionMonitorEntry",
-                        "qosPriority": (ii%8),
-                        "clientKBps": null,
-                        "policy": (ii%5==2)?null:(ii%5)+ "",
-                        "postNatServerPort": (ii+2000)
-                    });                 
-                }
+        getSessions: function(handler, nodeId) {
+            if (!this.isVisible()) {
+                 handler({javaClass:"java.util.LinkedList", list:[]});
+                 return;
             }
-            // iterate through each session and change its attachments map to properties
-            for (var i = 0; i < sessions.list.length ; i++) {
-                var session = sessions.list[i];
-                if (session.attachments != null) {
-                    for (var prop in session.attachments.map) {
-                        session[prop] = session.attachments.map[prop];
+            rpc.sessionMonitor.getMergedSessions(Ext.bind(function(result, exception) {
+                if(exception) {
+                    handler(result, exception)
+                    return;
+                }
+                var sessions = result.list;
+                if(testMode) {
+                    var testSessionsSize=450 + Math.floor((Math.random()*100));
+                    for(var i=0;i<testSessionsSize;i++) {
+                        var ii=i+Math.floor((Math.random()*5));
+                        sessions.push({
+                            "postNatServer": "184.27.239."+(ii%10),
+                            "bypassed": ((ii%3)==1),
+                            "state": null,
+                            "natted": true,
+                            "totalKBps": null,
+                            "localTraffic": false,
+                            "priority": (ii%7)+1,
+                            "postNatClient": "50.193.63."+((ii+1)%10),
+                            "postNatClientPort": (ii+1000),
+                            "preNatClient": "10.0.0."+((i+2)%10),
+                            "preNatServer": "184.27.239."+((i+3)%10),
+                            "attachments": {
+                                "map": {
+                                    "esoft-best-category-name": "Social Networking",
+                                    "protofilter-matched": (ii%3==0),
+                                    "esoft-best-category-description": "Social Networking",
+                                    "esoft-best-category-blocked": false,
+                                    "esoft-flagged": false,
+                                    "platform-hostname": "acct07-wxp"+i,
+                                    "esoft-best-category-flagged": (ii%2==1),
+                                    "esoft-best-category-id": null,
+                                    "http-uri": "/t.gif",
+                                    "platform-username": "rbooroojian"+i,
+                                    "http-hostname": "p.twitter.com"+i
+                                },
+                                "javaClass": "java.util.HashMap"
+                            },
+                            "protocol": (ii%2==1)?"TCP":"UDP",
+                            "serverKBps": null,
+                            "portForwarded": (ii%2==0),
+                            "preNatClientPort": 1471,
+                            "preNatServerPort": i+1500,
+                            "serverIntf": ii%10,
+                            "clientIntf": i%9,
+                            "sessionId": 88616525732127+i,
+                            "javaClass": "com.untangle.uvm.SessionMonitorEntry",
+                            "qosPriority": (ii%8),
+                            "clientKBps": null,
+                            "policy": (ii%5==2)?null:(ii%5)+ "",
+                            "postNatServerPort": (ii+2000)
+                        });                 
                     }
                 }
-            }
-            return sessions;
+                // iterate through each session and change its attachments map to properties
+                for (var i = 0; i < sessions.length ; i++) {
+                    var session = sessions[i];
+                    if (session.attachments != null) {
+                        for (var prop in session.attachments.map) {
+                            session[prop] = session.attachments.map[prop];
+                        }
+                    }
+                }
+                handler({javaClass:"java.util.LinkedList", list:sessions});
+            }, this), nodeId);
         },
         setFilterNodeId: function(nodeId) {
             // set dataFnArg (for node limit) as necessary
@@ -1116,31 +1406,18 @@ if (!Ung.hasResource["Ung.SessionMonitor"]) {
         },
         // Current Sessions Grid
         buildGridCurrentSessions: function(columns, groupField) {
-            this.gridCurrentSessions = Ext.create('Ung.EditorGrid',{
+            this.gridCurrentSessions = Ext.create('Ung.MonitorGrid',{
                 name: "gridCurrentSessions",
                 settingsCmp: this,
                 height: 500,
-                paginated: false,
-                hasAdd: false,
-                hasEdit: false,
-                hasDelete: false,
                 sortField: this.sortField,
                 sortOrder: this.sortOrder,
                 groupField: groupField,
-                columnsDefaultSortable: true,
                 title: this.i18n._("Current Sessions"),
                 qtip: this.i18n._("This shows all current sessions."),
-                recordJavaClass: "com.untangle.uvm.SessionMonitorEntry",
-                
-                features: [{
-                    ftype: 'filters',
-                    encode: false,
-                    local: true
-                }, {
-                    ftype: 'groupingsummary'
-                }],
                 dataFn: Ext.bind(this.getSessions, this),
                 dataFnArg: 0,
+                columns: columns,
                 fields: [{
                     name: "id"
                 },{
@@ -1239,72 +1516,7 @@ if (!Ung.hasResource["Ung.SessionMonitor"]) {
                     name: "priority"
                 },{
                     name: "qosPriority"
-                }],
-                columns: columns,
-                initComponent: function() {
-                    this.bbar = [{
-                        xtype: 'button',
-                        id: "refresh_"+this.getId(),
-                        text: i18n._('Refresh'),
-                        name: "Refresh",
-                        tooltip: i18n._('Refresh'),
-                        iconCls: 'icon-refresh',
-                        handler: Ext.bind(function() {
-                            this.reload();
-                        }, this)
-                    },{
-                        xtype: 'button',
-                        id: "auto_refresh_"+this.getId(),
-                        text: i18n._('Auto Refresh'),
-                        enableToggle: true,
-                        pressed: false,
-                        name: "Auto Refresh",
-                        tooltip: i18n._('Auto Refresh'),
-                        iconCls: 'icon-autorefresh',
-                        handler: Ext.bind(function() {
-                            var autoRefreshButton=Ext.getCmp("auto_refresh_"+this.getId());
-                            if(autoRefreshButton.pressed) {
-                                this.startAutoRefresh();
-                            } else {
-                                this.stopAutoRefresh();
-                            }
-                        }, this)
-                    },'-',{
-                        text: i18n._('Clear Filters'),
-                        handler: Ext.bind(function () {
-                            this.filters.clearFilters();
-                        }, this) 
-                    }];
-                    Ung.EditorGrid.prototype.initComponent.call(this);
-                    this.loadMask=null;
-                },                
-                autoRefreshEnabled:true,
-                startAutoRefresh: function(setButton) {
-                    this.autoRefreshEnabled=true;
-                    if(setButton) {
-                        var autoRefreshButton=Ext.getCmp("auto_refresh_"+this.getId());
-                        autoRefreshButton.toggle(true);
-                    }
-                    var refreshButton=Ext.getCmp("refresh_"+this.getId());
-                    refreshButton.disable();
-                    this.autorefreshList();
-
-                },
-                stopAutoRefresh: function(setButton) {
-                    this.autoRefreshEnabled=false;
-                    if(setButton) {
-                        var autoRefreshButton=Ext.getCmp("auto_refresh_"+this.getId());
-                        autoRefreshButton.toggle(false);
-                    }
-                    var refreshButton=Ext.getCmp("refresh_"+this.getId());
-                    refreshButton.enable();
-                },
-                autorefreshList: function() {
-                    if(this!=null && this.autoRefreshEnabled && Ext.getCmp(this.id) != null) {
-                        this.reload();
-                        Ext.defer(this.autorefreshList, 9000, this);
-                    }
-                }
+                }]
             });
         }
     });
