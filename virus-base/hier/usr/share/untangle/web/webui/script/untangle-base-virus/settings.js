@@ -65,7 +65,7 @@ if (!Ung.hasResource["Ung.Virus"]) {
                             items:    {
                                 xtype: 'button',
                                 name: 'File Extensions',
-                                text: this.i18n._('File Extensions'),
+                                text: this.i18n._('Edit File Extensions'),
                                 handler: Ext.bind(function() {
                                     this.panelWeb.onManageExtensions();
                                 }, this)
@@ -76,7 +76,7 @@ if (!Ung.hasResource["Ung.Virus"]) {
                         items: {
                             xtype: 'button',
                             name: 'MIME Types',
-                            text: this.i18n._('MIME Types'),
+                            text: this.i18n._('Edit MIME Types'),
                             handler: Ext.bind(function() {
                                 this.panelWeb.onManageMimeTypes();
                             }, this)
