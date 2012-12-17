@@ -17,9 +17,9 @@ if [ -n "$oldVersion" ] && [ -f /usr/bin/psql ]; then
     # restart postgres to make sure there are no active queries
     if [ -f /etc/init.d/postgresql-8.3 ] ; then
       /etc/init.d/postgresql-8.3 restart
-    elif [ -f /etc/init.d/postgresql ] ; then
+    else 
       /etc/init.d/postgresql restart
-    else
+    fi
         
     sleep 5
 
