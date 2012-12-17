@@ -152,7 +152,7 @@ class VirusHttpHandler extends HttpStateMachine
             totalSize = 0;
             setupFile(reason);
         } else {
-            header.replaceField("accept-ranges", "none");
+            /* header.replaceField("accept-ranges", "none"); */
             releaseResponse();
         }
 
