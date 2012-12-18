@@ -186,15 +186,19 @@ def __get_url(date):
     url = "unknown.ip"
     publicUrlMethod = get_uvm_settings_item('system','publicUrlMethod')
     httpsPort = get_uvm_settings_item('system','httpsPort')
-    if publicUrlMethod == "external":
-        url = reports.engine.get_wan_ip() + ":" + str(httpsPort)
-    elif publicUrlMethod == "hostname":
-        url = os.uname()[1] + ":" + str(httpsPort)
-    elif publicUrlMethod == "address_and_port":
-        publicUrlAddress = get_uvm_settings_item('system','publicUrlAddress')
-        publicUrlPort = get_uvm_settings_item('system','publicUrlPort')
-        url = str(publicUrlAddress) + ":" + str(publicUrlPort)
-        
+    try:
+        if publicUrlMethod == "external":
+            url = reports.engine.get_wan_ip() + ":" + str(httpsPort)
+        elif publicUrlMethod == "hostname":
+            url = os.uname()[1] + ":" + str(httpsPort)
+        elif publicUrlMethod == "address_and_port":
+            publicUrlAddress = get_uvm_settings_item('system','publicUrlAddress')
+            publicUrlPort = get_uvm_settings_item('system','publicUrlPort')
+            url = str(publicUrlAddress) + ":" + str(publicUrlPort)
+    except:
+        logger.warn('Could not calculate reports URL', exc_info=True)
+        url = "unknown"
+
     return 'https://%s/reports?time=%s' % ( url, date.strftime(locale.nl_langinfo(locale.D_FMT)), )
 
 def __get_report_users():
