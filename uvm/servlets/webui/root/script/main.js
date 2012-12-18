@@ -1210,16 +1210,14 @@ Ext.define("Ung.Main", {
         if ( main.sessionMonitorWin == null) {
             Ext.Function.defer(Ung.Util.loadResourceAndExecute,10, this,["Ung.SessionMonitor",Ung.Util.getScriptSrc("script/config/sessionMonitor.js"), function() {
                 main.sessionMonitorWin=Ext.create('Ung.SessionMonitor', {"name":"sessionMonitor", "helpSource":"session_viewer"});
-                main.sessionMonitorWin.setFilterNodeId(nodeIdArg);
                 main.sessionMonitorWin.show();
-                main.sessionMonitorWin.gridCurrentSessions.reload();
+                main.sessionMonitorWin.gridCurrentSessions.setSelectedApp(nodeIdArg);
                 Ext.MessageBox.hide();
             }]);
         } else {
             Ext.Function.defer(function() {
-                main.sessionMonitorWin.setFilterNodeId(nodeIdArg);
                 main.sessionMonitorWin.show();
-                main.sessionMonitorWin.gridCurrentSessions.reload();
+                main.sessionMonitorWin.gridCurrentSessions.setSelectedApp(nodeIdArg);
                 Ext.MessageBox.hide();
             }, 10, this);
         }
