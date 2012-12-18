@@ -172,7 +172,7 @@ if (!Ung.hasResource["Ung.SessionMonitor"]) {
             for(var i=0; i< selObj.options.length; i++) {
                 if(selObj.options[i].value==dataFnArg) {
                     selObj.selectedIndex=i;
-                    this.reload()
+                    this.reload();
                     return;
                 }
             }
@@ -348,7 +348,7 @@ if (!Ung.hasResource["Ung.SessionMonitor"]) {
             }
             rpc.sessionMonitor.getMergedSessions(Ext.bind(function(result, exception) {
                 if(exception) {
-                    handler(result, exception)
+                    handler(result, exception);
                     return;
                 }
                 var sessions = result.list;
@@ -422,7 +422,7 @@ if (!Ung.hasResource["Ung.SessionMonitor"]) {
                 var nodeProperties = allNodeProperties.map[nodeId];
                 var nodeSettings = allNodeSettings.map[nodeId];
                 if (nodeProperties.viewPosition != null) {
-                    appList.push({value: nodeSettings.id, name: i18n._('Sessions for') + ' ' + nodeProperties.displayName + " [" + main.getPolicyName(nodeSettings.policyId) + "] "})
+                    appList.push({value: nodeSettings.id, name: i18n._('Sessions for') + ' ' + nodeProperties.displayName + " [" + main.getPolicyName(nodeSettings.policyId) + "] "});
                 }
             }
             return appList;
@@ -458,7 +458,7 @@ if (!Ung.hasResource["Ung.SessionMonitor"]) {
                 dataIndex: "policy",
                 width: 80,
                 renderer: function(value) {
-                    return main.getPolicyName(value);
+                    return (value == null || value == "" ? "" : main.getPolicyName(value) );
                 },
                 filter: {
                     type: 'list',
@@ -470,7 +470,7 @@ if (!Ung.hasResource["Ung.SessionMonitor"]) {
                 width: 85,
                 renderer: function(value) {
                     var record = interfaceStore.findRecord("key", value);
-                    return record==null?value==null?"":Ext.String.format( i18n._("Interface {0}"), value ):record.get("name");
+                    return record==null ? ( value==null || value<0 ? "" : Ext.String.format( i18n._("Interface {0}"), value ) ) : record.get("name");
                 },
                 filter: {
                     type: 'numeric'
@@ -481,7 +481,7 @@ if (!Ung.hasResource["Ung.SessionMonitor"]) {
                 width: 85,
                 renderer: function(value) {
                     var record = interfaceStore.findRecord("key", value);
-                    return record==null?value==null?"":Ext.String.format( i18n._("Interface {0}"), value ):record.get("name");
+                    return record==null ? ( value==null || value<0 ? "" : Ext.String.format( i18n._("Interface {0}"), value ) ) : record.get("name");
                 },
                 filter: {
                     type: 'numeric'
