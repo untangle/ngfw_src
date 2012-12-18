@@ -568,7 +568,7 @@ public class CaptureNodeImpl extends NodeBase implements CaptureNode
             return(1);
         }
 
-        captureUserTable.insertActiveUser(address,username);
+        captureUserTable.insertActiveUser(address,username,false);
 
         CaptureUserEvent event = new CaptureUserEvent( policyId, address, username, captureSettings.getAuthenticationType(), CaptureUserEvent.EventType.LOGIN );
         logEvent(event);
@@ -588,7 +588,7 @@ public class CaptureNodeImpl extends NodeBase implements CaptureNode
                 return(1);
             }
 
-        captureUserTable.insertActiveUser(address,"Anonymous");
+        captureUserTable.insertActiveUser(address,"Anonymous",true);
 
         CaptureUserEvent event = new CaptureUserEvent( policyId, address, "Anonymous", captureSettings.getAuthenticationType(), CaptureUserEvent.EventType.LOGIN );
         logEvent(event);
@@ -599,7 +599,7 @@ public class CaptureNodeImpl extends NodeBase implements CaptureNode
 
     public int userLogin(InetAddress address, String username)
     {
-        captureUserTable.insertActiveUser(address,username);
+        captureUserTable.insertActiveUser(address,username,false);
 
         CaptureUserEvent event = new CaptureUserEvent( policyId, address, username, CaptureSettings.AuthenticationType.CUSTOM, CaptureUserEvent.EventType.LOGIN );
         logEvent(event);

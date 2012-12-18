@@ -41,12 +41,24 @@ public class CaptureUserTable
         return(userList);
     }
 
-    public CaptureUserEntry insertActiveUser(InetAddress address,String username)
+    public CaptureUserEntry insertActiveUser(InetAddress address,String username,Boolean anonymous)
     {
-        CaptureUserEntry local = new CaptureUserEntry(address,username);
+        CaptureUserEntry local = new CaptureUserEntry(address,username,anonymous);
         userTable.put(address,local);
 
-        UvmContextFactory.context().hostTable().getHostTableEntry( address, true).setUsernameCapture( username );
+            // for anonymous users clear the global capture username which
+            // shouldn't be required but always better safe than sorry
+            if (anonymous == true)
+            {
+                UvmContextFactory.context().hostTable().getHostTableEntry( address, true).setUsernameCapture( null );
+            }
+
+            // for all other users set the global capture username
+            else
+            {
+                UvmContextFactory.context().hostTable().getHostTableEntry( address, true).setUsernameCapture( username );
+            }
+
         return(local);
     }
 
