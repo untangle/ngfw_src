@@ -1455,9 +1455,9 @@ Ext.define("Ung.Node", {
             name: "Buy",
             id: 'node-buy-button_'+this.getId(),
             iconCls: 'icon-buy',
-            show: !(this.license && this.license.trial), //show only if trial license
+            hidden: !(this.license != null && this.license.trial), //show only if trial license
             ctCls:'buy-button-text',
-            text: i18n._('Buy Now'),
+            text: '<font color="green">' + i18n._('Buy Now') + '</font>',
             handler: Ext.bind(this.onBuyNowAction, this)
         }];
         var templateHTML = Ung.Node.template.applyTemplate({
