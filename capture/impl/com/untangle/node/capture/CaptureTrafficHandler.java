@@ -159,9 +159,8 @@ public class CaptureTrafficHandler extends AbstractEventHandler
         // required for the http-casing to do the redirect
         if (sessreq.getServerPort() == 53)
         {
-            // attach an empty for the packet handler to use
-            DNSPacket packet = new DNSPacket();
-            sessreq.attach(packet);
+            // just return here which will cause all subsequent query
+            // packets to hit the handleUDPClientPacket method
             return;
         }
 
@@ -177,10 +176,9 @@ public class CaptureTrafficHandler extends AbstractEventHandler
     public void handleUDPClientPacket(UDPPacketEvent event)
     {
         NodeUDPSession session = event.session();
-        DNSPacket packet = (DNSPacket)session.attachment();
+        DNSPacket packet =  new DNSPacket();
         ByteBuffer response = null;
         InetAddress addr = null;
-        session.attach(null);
 
         // extract the DNS query from the client packet
         packet.ExtractQuery(event.data().array(),event.data().limit());
@@ -211,10 +209,6 @@ public class CaptureTrafficHandler extends AbstractEventHandler
 
         // send the packet to the client
         session.sendClientPacket(response,event.header());
-
         logger.debug(packet.replyString());
-
-        // increment our counter and release the session
-        session.release();
     }
 }
