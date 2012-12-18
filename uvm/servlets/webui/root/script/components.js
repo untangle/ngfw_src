@@ -1774,13 +1774,13 @@ Ext.define("Ung.Node", {
         }
         if(this.license.trial) {
             if(this.license.expired) {
-                licenseMessage = i18n._("Free Trial Expired!");
+                licenseMessage = i18n._("Free trial expired!");
             } else if (this.license.daysRemaining < 2) {
-                licenseMessage = i18n._("Free Trial.") + " " + i18n._("Expires today");
+                licenseMessage = i18n._("Free trial.") + " " + i18n._("Expires today.");
             } else if (this.license.daysRemaining < 32) {
-                licenseMessage = i18n._("Free Trial.") + " " + Ext.String.format("{0} ", this.license.daysRemaining) + i18n._("days remain");
+                licenseMessage = i18n._("Free trial.") + " " + Ext.String.format("{0} ", this.license.daysRemaining) + i18n._("days remain.");
             } else {
-                licenseMessage = i18n._("Free Trial.");
+                licenseMessage = i18n._("Free trial.");
             }
         } else { // not a trial
             if (this.license.valid) { 
