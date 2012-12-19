@@ -14,8 +14,6 @@ import javax.mail.internet.MimeBodyPart;
  */
 public interface MailSender
 {
-    public static final String DEFAULT_SENDER = "untangle";
-
     /**
      * Set the mail settings.
      *

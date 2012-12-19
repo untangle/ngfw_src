@@ -26,8 +26,6 @@ import org.apache.log4j.Logger;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.SettingsManager;
 import com.untangle.uvm.LanguageSettings;
-import com.untangle.uvm.MailSender;
-import com.untangle.uvm.MailSettings;
 import com.untangle.uvm.AdminManager;
 import com.untangle.uvm.AdminSettings;
 import com.untangle.uvm.AdminUserSettings;

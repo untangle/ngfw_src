@@ -122,8 +122,8 @@ class MailSenderImpl implements MailSender
             logger.warn("No settings found - Initializing new settings.");
 
             settings = new MailSettings();
-            String fromSender = MailSender.DEFAULT_SENDER;
-            String fromHostname = UvmContextFactory.context().execManager().execOutput("/bin/cat /etc/mailname").replaceAll("(\\r|\\n)","");
+            String fromSender = UvmContextFactory.context().oemManager().getOemName().toLowerCase();
+            String fromHostname = UvmContextFactory.context().execManager().execOutput("hostname").replaceAll("(\\r|\\n)","");
             settings.setFromAddress(fromSender + "@" + fromHostname);
 
             this.setSettings(settings);
