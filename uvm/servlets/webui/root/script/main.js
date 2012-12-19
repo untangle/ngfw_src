@@ -371,6 +371,11 @@ Ext.define("Ung.Main", {
         console.log("Open Window:", url);
         window.open(url); // open a new window
     },
+    openSupportScreen: function() {
+        var baseUrl =  rpc.jsonrpc.UvmContext.getStoreUrl();
+        var url = baseUrl + "?" + "action=support" + "&" + this.systemInfo();
+        this.openIFrame( url, i18n._("Get Support") );
+    },
     openMyAccountScreen: function() {
         var baseUrl =  rpc.jsonrpc.UvmContext.getStoreUrl();
         var url = baseUrl + "?" + "action=my_account" + "&" + this.systemInfo();
