@@ -147,19 +147,6 @@ public class AlertManagerImpl implements AlertManager
         } finally {
             try {if (socket != null) socket.close();} catch (Exception e) {}
         }
-
-        if (!UvmContextFactory.context().isDevel()) {
-            try {
-                File pidFile = new File("/var/run/ut-pyconnector.pid");
-                Date launchDate = new Date(pidFile.lastModified());
-
-                int result = UvmContextFactory.context().execManager().execResult(System.getProperty("uvm.bin.dir") + "/ut-pyconnector-status");
-                if (result != 0)
-                    alertList.add( i18nUtil.tr("Failed to connect to Untangle." +  " [cmd.untangle.com]") );
-            } catch (Exception e) {
-
-            }
-        }
     }
 
     /**
@@ -182,10 +169,10 @@ public class AlertManagerImpl implements AlertManager
             long now = new Date().getTime();
 
             /**
-             * if pyconnector was just launched (<120 secs), dont test yet
+             * if pyconnector was just launched (<300 secs), dont test yet
              * it needs time to connect to cmd.untangle.com
              */
-            if (now - launchTime < 120000) 
+            if (now - launchTime < 300000) 
                 return;
 
             int result = UvmContextFactory.context().execManager().execResult(System.getProperty("uvm.bin.dir") + "/ut-pyconnector-status");
