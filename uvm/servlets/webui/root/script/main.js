@@ -1191,13 +1191,13 @@ Ext.define("Ung.Main", {
             Ext.Function.defer(Ung.Util.loadResourceAndExecute,10, this,["Ung.HostMonitor",Ung.Util.getScriptSrc("script/config/hostMonitor.js"), function() {
                 main.hostMonitorWin=Ext.create('Ung.HostMonitor', {"name":"hostMonitor", "helpSource":"host_viewer"});
                 main.hostMonitorWin.show();
-                //main.hostMonitorWin.gridCurrentHosts.reload(); // XXX needed?
+                main.hostMonitorWin.gridCurrentHosts.reload();
                 Ext.MessageBox.hide();
             }]);
         } else {
             Ext.Function.defer(function() {
                 main.hostMonitorWin.show();
-                //main.hostMonitorWin.gridCurrentHosts.reload(); // XXX needed?
+                main.hostMonitorWin.gridCurrentHosts.reload();
                 Ext.MessageBox.hide();
             }, 10, this);
         }

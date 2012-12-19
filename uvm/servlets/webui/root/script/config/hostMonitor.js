@@ -13,7 +13,7 @@ if (!Ung.hasResource["Ung.HostMonitor"]) {
                 title: this.i18n._('Host Viewer')
             }];
 
-            this.buildHostsPanel();
+            this.buildGridCurrentHosts();
             this.buildHostTableEventLog();
 
             this.buildGridPenaltyBox();
@@ -22,19 +22,44 @@ if (!Ung.hasResource["Ung.HostMonitor"]) {
             this.buildGridQuotaBox();
             this.buildQuotaEventLog();
 
-            var pageTabs = [this.hostsPanel, this.gridHostTableEventLog, this.gridPenaltyBox, this.gridPenaltyBoxEventLog, this.gridQuotaBox, this.gridQuotaEventLog];
-            this.buildTabPanel(pageTabs);
+            this.buildTabPanel([this.gridCurrentHosts, this.gridHostTableEventLog, this.gridPenaltyBox, this.gridPenaltyBoxEventLog, this.gridQuotaBox, this.gridQuotaEventLog]);
             this.callParent(arguments);
         },
         closeWindow: function() {
             this.gridCurrentHosts.stopAutoRefresh(true);
             this.hide();
         },
-        getHosts: function() {
-            if (!this.isVisible())
-                return {javaClass:"java.util.LinkedList", list:[]};
-
-            return rpc.hostTable.getHosts();
+        getHosts: function(handler) {
+            if (!this.isVisible()) {
+                handler({javaClass:"java.util.LinkedList", list:[]});
+                return;
+            }
+            rpc.hostTable.getHosts(Ext.bind(function(result, exception) {
+                if(testMode && result != null && result.list!=null ) {
+                    var testSize = 450 + Math.floor((Math.random()*100));
+                    for(var i=0;i<testSize;i++) {
+                        var ii=i+Math.floor((Math.random()*10));
+                        result.list.push({
+                            "address": "184.27.239."+(ii%10),
+                            "hostname": "p.twitter.com"+i,
+                            "lastAccessTime": 0,
+                            "username": "testuser"+i,
+                            "usernameAdconnector": "uad"+ii,
+                            "usernameCapture": "ucap"+(ii%50),
+                            "penaltyBoxed":(ii%2)==1,
+                            "penaltyBoxEntryTime": 0,
+                            "penaltyBoxExitTime": 0,
+                            "quotaSize": ii * 10000,
+                            "quotaRemaining": ii * 5000,
+                            "quotaIssueTime": 0,
+                            "quotaExpirationTime": 0,
+                            "httpUserAgent": "MOZFirefox",
+                            "httpUserAgentOs": "Win"
+                        });
+                    }
+                }
+                handler(result, exception);
+            }, this));
         },
         getPenaltyBoxedHosts: function() {
             return rpc.hostTable.getPenaltyBoxedHosts();
@@ -55,304 +80,18 @@ if (!Ung.hasResource["Ung.HostMonitor"]) {
         getQuotaHosts: function() {
             return rpc.hostTable.getQuotaHosts();
         },
-        buildHostsPanel: function() {
-            this.enabledColumns = {};
-            this.columns = [];
-            this.groupField = null;
-            var groupStr = "";
-            this.reRenderGrid = Ext.bind(function() {
-                this.columns = [];
-                this.enabledColumns = {};
-                this.groupField = null;
-                // add/remove columns as necessary
-                for ( var i = 0 ; i < this.panelColumnSelector.items.items.length ; i++ ) {
-                    var item = this.panelColumnSelector.items.items[i];
-                    if ( item.xtype == "checkbox" ) {
-                        this.enabledColumns[item.name] = item.checked;
-                        if (item.checked) {
-                            var newColumn = {
-                                header: item.gridColumnHeader,
-                                dataIndex: item.gridColumnDataIndex,
-                                width: item.gridColumnWidth,
-                                summaryType: item.gridColumnSummaryType
-                            };
-                            if ( item.gridColumnRenderer !== undefined )
-                                newColumn.renderer = item.gridColumnRenderer;
-                            this.columns.push( newColumn );
-                        }
-                    }
-                }
-                // add grouping if enabled
-                for ( var i = 0 ; i < this.panelGroupSelector.items.items.length ; i++ ) {
-                    var item = this.panelGroupSelector.items.items[i];
-                    if ( item.xtype == "radio" ) {
-                        if (item.checked) {
-                            this.groupField = item.groupField;
-                        }
-                    }
-                }
-                // if the grid is already rendered it - force re-render it
-                if ( this.gridCurrentHosts == undefined ) {
-                    this.buildGridCurrentHosts(this.columns, this.groupField);
-                } else {
-                    if ( this.groupField != null ) {
-                        groupStr = " - Grouping:" + this.groupField;
-                        this.gridCurrentHosts.getStore().group(this.groupField);
-                    } else {
-                        this.gridCurrentHosts.getStore().clearGrouping();
-                    }
-                    var headerCt = this.gridCurrentHosts.headerCt;
-                    headerCt.suspendLayout = true;
-                    headerCt.removeAll();
-                    headerCt.add(this.columns);
-                    this.gridCurrentHosts.groupField = this.groupField;
-                    this.gridCurrentHosts.getView().refresh();
-                    headerCt.suspendLayout = false;
-                    this.gridCurrentHosts.forceComponentLayout();
-                }
-                if ( this.gridCurrentHosts !== undefined ) {
-                    this.gridCurrentHosts.setTitle(i18n._("Host Table") + groupStr );
-                    this.gridCurrentHosts.reload();
-
-                }
-
-            }, this);
-            
-            // manually call the renderer for the first render
-            this.buildGroupSelectorPanel();
-            this.buildColumnSelectorPanel();
-            this.reRenderGrid();
-            this.buildGridCurrentHosts(this.columns, this.groupField);
-
-            this.hostsPanel = Ext.create('Ext.panel.Panel',{
-                name: 'Host Table',
-                helpSource: 'host_monitor',
-                parentId: this.getId(),
-                title: this.i18n._('Host Table'),
-                cls: 'ung-panel',
-                layout: "anchor",
-                defaults: {
-                    anchor: '98%',
-                    autoScroll: true
-                },
-                autoScroll: true,
-                cls: 'ung-panel',
-                items: [this.gridCurrentHosts, this.panelColumnSelector, this.panelGroupSelector]
-            });
-        },
-        buildColumnSelectorPanel: function() {
-            this.panelColumnSelector = Ext.create('Ext.panel.Panel',{
-                name:'advanced',
-                xtype:'fieldset',
-                layout: {
-                    type: 'table',
-                    columns: 7
-                },
-                title:i18n._("Column Selection"),
-                collapsible: true,
-                collapsed: true,
-                bodyStyle: 'padding:5px 5px 5px 5px;',
-                items: [{
-                    xtype: 'checkbox',
-                    checked: true,
-                    boxLabel: this.i18n._("IP"),
-                    gridColumnHeader: this.i18n._("IP"),
-                    gridColumnDataIndex: "address",
-                    gridColumnWidth: 100
-                }, {
-                    xtype: 'checkbox',
-                    checked: false,
-                    boxLabel: this.i18n._("Last Access Time"),
-                    gridColumnHeader: this.i18n._("Last Access Time"),
-                    gridColumnDataIndex: "lastAccessTime",
-                    gridColumnWidth: 100,
-                    gridColumnRenderer: function(value) {
-                        return value == 0 || value == "" ? "" : i18n.timestampFormat(value);
-                    }
-                }, {
-                    xtype: 'checkbox',
-                    checked: true,
-                    boxLabel: this.i18n._("Hostname"),
-                    gridColumnHeader: this.i18n._("Hostname"),
-                    gridColumnDataIndex: "hostname",
-                    gridColumnWidth: 100
-                },{
-                    xtype: 'checkbox',
-                    checked: true,
-                    boxLabel: this.i18n._("Username"),
-                    gridColumnHeader: this.i18n._("Username"),
-                    gridColumnDataIndex: "username",
-                    gridColumnWidth: 100
-                },{
-                    xtype: 'checkbox',
-                    checked: true,
-                    boxLabel: this.i18n._("Penalty Boxed"),
-                    gridColumnHeader: this.i18n._("Penalty Boxed"),
-                    gridColumnDataIndex: "penaltyBoxed",
-                    gridColumnWidth: 100
-                },{
-                    xtype: 'checkbox',
-                    checked: false,
-                    boxLabel: this.i18n._("Penalty Box Entry Time"),
-                    gridColumnHeader: this.i18n._("Penalty Box Entry Time"),
-                    gridColumnDataIndex: "penaltyBoxEntryTime",
-                    gridColumnWidth: 100,
-                    gridColumnRenderer: function(value) {
-                        return value == 0 || value == "" ? "" : i18n.timestampFormat(value);
-                    }
-                },{
-                    xtype: 'checkbox',
-                    checked: false,
-                    boxLabel: this.i18n._("Penalty Box Exit Time"),
-                    gridColumnHeader: this.i18n._("Penalty Box Exit Time"),
-                    gridColumnDataIndex: "penaltyBoxExitTime",
-                    gridColumnWidth: 100,
-                    gridColumnRenderer: function(value) {
-                        return value == 0 || value == "" ? "" : i18n.timestampFormat(value);
-                    }
-                },{
-                    xtype: 'checkbox',
-                    checked: true,
-                    boxLabel: this.i18n._("Quota Size"),
-                    gridColumnHeader: this.i18n._("Quota Size"),
-                    gridColumnDataIndex: "quotaSize",
-                    gridColumnWidth: 100,
-                    gridColumnRenderer: function(value) {
-                        return value == 0 || value == "" ? "" : value;
-                    }
-                },{
-                    xtype: 'checkbox',
-                    checked: false,
-                    boxLabel: this.i18n._("Quota Remaining"),
-                    gridColumnHeader: this.i18n._("Quota Remaining"),
-                    gridColumnDataIndex: "quotaRemaining",
-                    gridColumnWidth: 100
-                },{
-                    xtype: 'checkbox',
-                    checked: false,
-                    boxLabel: this.i18n._("Quota Issue Time"),
-                    gridColumnHeader: this.i18n._("Quota Issue Time"),
-                    gridColumnDataIndex: "quotaIssueTime",
-                    gridColumnWidth: 100,
-                    gridColumnRenderer: function(value) {
-                        return value == 0 || value == "" ? "" : i18n.timestampFormat(value);
-                    }
-                },{
-                    xtype: 'checkbox',
-                    checked: false,
-                    boxLabel: this.i18n._("Quota Expiration Time"),
-                    gridColumnHeader: this.i18n._("Quota Expiration Time"),
-                    gridColumnDataIndex: "quotaExpirationTime",
-                    gridColumnWidth: 100,
-                    gridColumnRenderer: function(value) {
-                        return value == 0 || value == "" ? "" : i18n.timestampFormat(value);
-                    }
-                },{
-                    xtype: 'checkbox',
-                    checked: false,
-                    boxLabel: "HTTP" + " - " + this.i18n._("User Agent"),
-                    gridColumnHeader: "HTTP" + " - " + this.i18n._("User Agent"),
-                    gridColumnDataIndex: "httpUserAgent",
-                    gridColumnWidth: 200
-                },{
-                    xtype: 'checkbox',
-                    checked: true,
-                    boxLabel: "HTTP" + " - " + this.i18n._("User Agent OS"),
-                    gridColumnHeader: "HTTP" + " - " + this.i18n._("User Agent OS"),
-                    gridColumnDataIndex: "httpUserAgentOs",
-                    gridColumnWidth: 200
-                },{
-                    xtype: 'checkbox',
-                    checked: false,
-                    boxLabel: "Directory Connector" + " - " + this.i18n._("Username"),
-                    gridColumnHeader: "Directory Connector" + " - " + this.i18n._("Username"),
-                    gridColumnDataIndex: "usernameAdconnector",
-                    gridColumnWidth: 100
-                },{
-                    xtype: 'checkbox',
-                    checked: false,
-                    boxLabel: "Captive Portal" + " - " + this.i18n._("Username"),
-                    gridColumnHeader: "Captive Portal" + " - " + this.i18n._("Username"),
-                    gridColumnDataIndex: "usernameCapture",
-                    gridColumnWidth: 100
-                },{
-                    border: false,
-                    html: '&nbsp;',
-                    colspan: 6
-                },{
-                    xtype: 'button',
-                    id: "refresh_columns",
-                    text: i18n._('Render'),
-                    name: "Render",
-                    tooltip: i18n._('Render the grid with the configured view'),
-                    iconCls: 'icon-refresh',
-                    handler: this.reRenderGrid
-                }]
-            });
-        },
-        // build the column selection panel (hidden by default)
-        buildGroupSelectorPanel: function() {
-            this.panelGroupSelector = Ext.create('Ext.panel.Panel',{
-                name:'advanced',
-                xtype:'fieldset',
-                layout: {
-                    type: 'table',
-                    columns: 7
-                },
-                title:i18n._("Grouping Field"),
-                collapsible: true,
-                collapsed: true,
-                bodyStyle: 'padding:5px 5px 5px 5px;',
-                items: [{
-                    xtype: 'radio',
-                    name: 'groupingRadio',
-                    checked: true,
-                    boxLabel: this.i18n._("No Grouping"),
-                    groupField: null
-                },{
-                    border: false,
-                    html: '&nbsp;',
-                    colspan: 6
-                },{
-                    xtype: 'radio',
-                    name: 'groupingRadio',
-                    checked: false,
-                    boxLabel: this.i18n._("Address"),
-                    groupField: "address"
-                },{
-                    xtype: 'button',
-                    id: "refresh_grouping",
-                    text: i18n._('Render'),
-                    name: "Render Columns",
-                    tooltip: i18n._('Render the grid with the configured view'),
-                    iconCls: 'icon-refresh',
-                    handler: this.reRenderGrid
-                }]
-            });
-        },
         // Current Hosts Grid
         buildGridCurrentHosts: function(columns, groupField) {
-            this.gridCurrentHosts = Ext.create('Ung.EditorGrid',{
+            this.gridCurrentHosts = Ext.create('Ung.MonitorGrid',{
                 name: "gridCurrentHosts",
                 settingsCmp: this,
                 height: 500,
-                paginated: true,
-                hasAdd: false,
-                hasEdit: false,
-                hasDelete: false,
                 sortField: this.sortField,
                 sortOrder: this.sortOrder,
-                groupField: groupField,
-                columnsDefaultSortable: true,
+                groupField: this.groupField,
                 title: this.i18n._("Current Hosts"),
-                qtip: this.i18n._("This shows all current hosts."),
-                paginated: false,
-                recordJavaClass: "com.untangle.uvm.HostMonitorEntry",
-                features: [{
-                    ftype: 'groupingsummary'
-                }],
+                tooltip: this.i18n._("This shows all current hosts."),
                 dataFn: Ext.bind(this.getHosts, this),
-                dataFnArg: 0,
                 fields: [{
                     name: "id"
                 },{
@@ -386,68 +125,95 @@ if (!Ung.hasResource["Ung.HostMonitor"]) {
                 },{
                     name: "httpUserAgentOs"
                 }],
-                columns: columns,
-                initComponent: function() {
-                    this.bbar = ['-', {
-                        xtype: 'button',
-                        id: "refresh_"+this.getId(),
-                        text: i18n._('Refresh'),
-                        name: "Refresh",
-                        tooltip: i18n._('Refresh'),
-                        iconCls: 'icon-refresh',
-                        handler: Ext.bind(function() {
-                            this.setLoading(true);
-                            this.reload();
-                            this.setLoading(false);
-                        }, this)
-                    },{
-                        xtype: 'button',
-                        id: "auto_refresh_"+this.getId(),
-                        text: i18n._('Auto Refresh'),
-                        enableToggle: true,
-                        pressed: false,
-                        name: "Auto Refresh",
-                        tooltip: i18n._('Auto Refresh'),
-                        iconCls: 'icon-autorefresh',
-                        handler: Ext.bind(function() {
-                            var autoRefreshButton=Ext.getCmp("auto_refresh_"+this.getId());
-                            if(autoRefreshButton.pressed) {
-                                this.startAutoRefresh();
-                            } else {
-                                this.stopAutoRefresh();
-                            }
-                        }, this)
-                    }];
-                    Ung.EditorGrid.prototype.initComponent.call(this);
-                    this.loadMask=null;
-                },                
-                autoRefreshEnabled:true,
-                startAutoRefresh: function(setButton) {
-                    this.autoRefreshEnabled=true;
-                    if(setButton) {
-                        var autoRefreshButton=Ext.getCmp("auto_refresh_"+this.getId());
-                        autoRefreshButton.toggle(true);
+                columns: [{
+                    header: this.i18n._("IP"),
+                    dataIndex: "address",
+                    width: 100
+                }, {
+                    hidden: true,
+                    header: this.i18n._("Last Access Time"),
+                    dataIndex: "lastAccessTime",
+                    width: 100,
+                    renderer: function(value) {
+                        return value == 0 || value == "" ? "" : i18n.timestampFormat(value);
                     }
-                    var refreshButton=Ext.getCmp("refresh_"+this.getId());
-                    refreshButton.disable();
-                    this.autorefreshList();
-
-                },
-                stopAutoRefresh: function(setButton) {
-                    this.autoRefreshEnabled=false;
-                    if(setButton) {
-                        var autoRefreshButton=Ext.getCmp("auto_refresh_"+this.getId());
-                        autoRefreshButton.toggle(false);
+                }, {
+                    header: this.i18n._("Hostname"),
+                    dataIndex: "hostname",
+                    width: 100
+                },{
+                    header: this.i18n._("Username"),
+                    dataIndex: "username",
+                    width: 100
+                },{
+                    boxLabel: this.i18n._("Penalty Boxed"),
+                    header: this.i18n._("Penalty Boxed"),
+                    dataIndex: "penaltyBoxed",
+                    width: 100
+                },{
+                    hidden: true,
+                    header: this.i18n._("Penalty Box Entry Time"),
+                    dataIndex: "penaltyBoxEntryTime",
+                    width: 100,
+                    renderer: function(value) {
+                        return value == 0 || value == "" ? "" : i18n.timestampFormat(value);
                     }
-                    var refreshButton=Ext.getCmp("refresh_"+this.getId());
-                    refreshButton.enable();
-                },
-                autorefreshList: function() {
-                    if(this!=null && this.autoRefreshEnabled && Ext.getCmp(this.id) != null) {
-                        this.reload();
-                        Ext.defer(this.autorefreshList, 5000, this);
+                },{
+                    hidden: true,
+                    header: this.i18n._("Penalty Box Exit Time"),
+                    dataIndex: "penaltyBoxExitTime",
+                    width: 100,
+                    renderer: function(value) {
+                        return value == 0 || value == "" ? "" : i18n.timestampFormat(value);
                     }
-                }
+                },{
+                    header: this.i18n._("Quota Size"),
+                    dataIndex: "quotaSize",
+                    width: 100,
+                    renderer: function(value) {
+                        return value == 0 || value == "" ? "" : value;
+                    }
+                },{
+                    hidden: true,
+                    header: this.i18n._("Quota Remaining"),
+                    dataIndex: "quotaRemaining",
+                    width: 100
+                },{
+                    hidden: true,
+                    header: this.i18n._("Quota Issue Time"),
+                    dataIndex: "quotaIssueTime",
+                    width: 100,
+                    renderer: function(value) {
+                        return value == 0 || value == "" ? "" : i18n.timestampFormat(value);
+                    }
+                },{
+                    hidden: true,
+                    header: this.i18n._("Quota Expiration Time"),
+                    dataIndex: "quotaExpirationTime",
+                    width: 100,
+                    renderer: function(value) {
+                        return value == 0 || value == "" ? "" : i18n.timestampFormat(value);
+                    }
+                },{
+                    hidden: true,
+                    header: "HTTP" + " - " + this.i18n._("User Agent"),
+                    dataIndex: "httpUserAgent",
+                    width: 200
+                },{
+                    header: "HTTP" + " - " + this.i18n._("User Agent OS"),
+                    dataIndex: "httpUserAgentOs",
+                    width: 200
+                },{
+                    hidden: true,
+                    header: "Directory Connector" + " - " + this.i18n._("Username"),
+                    dataIndex: "usernameAdconnector",
+                    width: 100
+                },{
+                    hidden: true,
+                    header: "Captive Portal" + " - " + this.i18n._("Username"),
+                    dataIndex: "usernameCapture",
+                    width: 100
+                }]
             });
         },
         buildGridPenaltyBox: function() {
