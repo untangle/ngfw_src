@@ -46,7 +46,6 @@ public class PackageDesc implements Serializable, JSONString
     private final int viewPosition;
     private final boolean autoStart;
     private final boolean invisible;
-    private final String hide;
 
     public PackageDesc(Map<String, String> m, String installedVersion)
     {
@@ -110,9 +109,6 @@ public class PackageDesc implements Serializable, JSONString
         }
 
         this.installedVersion = installedVersion;
-
-        // hide 
-        this.hide = m.get("untangle-hide");
     }
 
     public String getName()
@@ -190,11 +186,6 @@ public class PackageDesc implements Serializable, JSONString
     public boolean isInvisible()
     {
         return invisible;
-    }
-
-    public String getHide()
-    {
-        return hide;
     }
 
     // Object methods ----------------------------------------------------------

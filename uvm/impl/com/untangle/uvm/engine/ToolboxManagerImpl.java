@@ -137,18 +137,6 @@ class ToolboxManagerImpl implements ToolboxManager
             if (type == PackageDesc.Type.LIB_ITEM) {
                 displayNames.add(dn);
                 libitems.put(dn, md);
-                String hiddenConditions = md.getHide();
-                if (hiddenConditions != null) {
-                    if ( hiddenConditions.contains("true") ) {
-                        hiddenApps.add(dn);
-                    } else {
-                        for ( String str : hiddenConditions.split(",") ) {
-                            if (isInstalled(str)) {
-                                hiddenApps.add(dn);
-                            }
-                        }
-                    }
-                }
             }
         }
 
@@ -167,43 +155,6 @@ class ToolboxManagerImpl implements ToolboxManager
         Map<Long, NodeSettings.NodeState> runStates=nm.allNodeStates();
 
         /**
-         * Iterate through installed libitems and make adjustments
-         *
-         * If its a libitem, hide it from the left-hand-nav and remove it from the hidden apps (so it will show even if hidden if installed)
-         * If its a node, put it in displayNames nodes and remove from hidden apps
-         */
-        for (PackageDesc md : installed) {
-            String dn = md.getDisplayName();
-            PackageDesc.Type type = md.getType();
-
-            if (type == PackageDesc.Type.LIB_ITEM) {
-                /**
-                 * We treat untangle-libitem-premium-package and untangle-libitem-standard-package specially
-                 * Because if they disappear upon downloading a trial there is no buy button in the UI, so we keep showing them
-                 * on the left hand side during the trial period
-                 */
-                if ("untangle-libitem-premium-package".equals(md.getName())) {
-                    boolean justATrial = (lm.getLicense(License.POLICY) != null && lm.getLicense(License.POLICY).getTrial());
-                    if ( ! justATrial ) {
-                        libitems.remove(dn); /* remove it like normal */
-                    }
-                } else if ("untangle-libitem-standard-package".equals(md.getName())) {
-                    boolean justATrial = (lm.getLicense(License.POLICY) != null && lm.getLicense(License.POLICY).getTrial());
-                    if ( ! justATrial ) {
-                        libitems.remove(dn); /* remove it like normal */
-                    }
-                } else {
-                    libitems.remove(dn);
-                }
-                hiddenApps.remove(dn);
-            } else if (!md.isInvisible() && (type == PackageDesc.Type.NODE || type == PackageDesc.Type.SERVICE)) {
-                displayNames.add(dn);
-                nodes.put(dn, md);
-                hiddenApps.remove(dn);
-            } 
-        }
-
-        /**
          * Build the nodeMetrics (stats in the UI)
          */
         Map<Long, List<NodeMetric>> nodeMetrics = new HashMap<Long, List<NodeMetric>>(instances.size());
@@ -218,11 +169,111 @@ class ToolboxManagerImpl implements ToolboxManager
             }
         }
 
-        displayNames.remove(null);
+        /**
+         * Iterate through installed libitems and make adjustments
+         *
+         * If its a libitem, hide it from the left-hand-nav and remove it from the hidden apps (so it will show even if hidden if installed)
+         * If its a node, put it in displayNames nodes and remove from hidden apps
+         */
+        for (PackageDesc md : installed) {
+            String dn = md.getDisplayName();
+            PackageDesc.Type type = md.getType();
 
+            if (type == PackageDesc.Type.LIB_ITEM) {
+                hiddenApps.remove(dn); /* show it regardless if its installed */
+                libitems.remove(dn); /* don't show it on left hand apps pane */
+            } else if (!md.isInvisible() && (type == PackageDesc.Type.NODE || type == PackageDesc.Type.SERVICE)) {
+                displayNames.add(dn);
+                nodes.put(dn, md);
+                hiddenApps.remove(dn);
+            } 
+        }
+
+        /**
+         * Below is a list of special cases where we modify the default behavior of the appearance of libitems in the apps pane
+         */
+
+        /**
+         * SPECIAL CASE: If premium package is installed but its only a trial still show in apps pane
+         * This is so there is a place to "buy" the package
+         */
+        for (PackageDesc md : installed) {
+            if ("untangle-libitem-premium-package".equals(md.getName())) {
+                boolean justATrial = (lm.getLicense(License.POLICY) != null && lm.getLicense(License.POLICY).getTrial());
+                if ( justATrial ) 
+                    libitems.put(md.getDisplayName(), md); /* show it on the left hand pane */
+            }
+        }
+        /**
+         * SPECIAL CASE: If standard package is installed but its only a trial still show in apps pane
+         * This is so there is a place to "buy" the package
+         */
+        for (PackageDesc md : installed) {
+            if ("untangle-libitem-standard-package".equals(md.getName())) {
+                boolean justATrial = (lm.getLicense(License.POLICY) != null && lm.getLicense(License.POLICY).getTrial());
+                if ( justATrial ) 
+                    libitems.put(md.getDisplayName(), md); /* show it on the left hand pane */
+            }
+        }
+
+        /**
+         * SPECIAL CASE: If premium package or standard package is installed AND licensed - hide lite package (its included)
+         */
+        for (PackageDesc md : installed) {
+            if ("untangle-libitem-standard-package".equals(md.getName()) || "untangle-libitem-premium-package".equals(md.getName())) {
+                boolean justATrial = (lm.getLicense(License.POLICY) != null && lm.getLicense(License.POLICY).getTrial());
+                if ( ! justATrial ) {
+                    PackageDesc lite = null;
+                    for (PackageDesc libitem : libitems.values()) { /* find lite package in list */
+                        if ("untangle-libitem-lite-package".equals(libitem.getName())) 
+                            lite = libitem;
+                    }
+                    if (lite != null) libitems.remove(lite); /* hide lite package from left hand nav */
+                }
+            }
+        }
+
+        /**
+         * SPECIAL CASE: If Web Filter is installed OR licensed for non-trial, hide Web Filter Lite
+         */
+        PackageDesc webfilter = null;
+        for (PackageDesc libitem : libitems.values()) { /* find web filter lite package in list */
+            if ("untangle-libitem-webfilter".equals(libitem.getName())) 
+                webfilter = libitem;
+        }
+        if (webfilter != null) {
+            for (PackageDesc md : installed) {
+                if ("untangle-libitem-sitefilter".equals(md.getName())) {
+                    libitems.remove(webfilter); /* hide web filter lite from left hand nav */
+                }
+            }
+            if ( lm.getLicense(License.SITEFILTER) != null && !lm.getLicense(License.SITEFILTER).getTrial() )
+                libitems.remove(webfilter); /* hide web filter lite from left hand nav */
+        }
+
+        /**
+         * SPECIAL CASE: If Spam Blocker is installed OR licensed for non-trial, hide Spam Blocker Lite
+         */
+        PackageDesc spamassassin = null;
+        for (PackageDesc libitem : libitems.values()) { /* find spam blocker lite package in list */
+            if ("untangle-libitem-spamassassin".equals(libitem.getName())) 
+                spamassassin = libitem;
+        }
+        if (spamassassin != null) {
+            for (PackageDesc md : installed) {
+                if ("untangle-libitem-commtouchas".equals(md.getName())) {
+                    libitems.remove(spamassassin); /* hide spam blocker lite from left hand nav */
+                }
+            }
+            if ( lm.getLicense(License.SITEFILTER) != null && !lm.getLicense(License.SITEFILTER).getTrial() )
+                libitems.remove(spamassassin); /* hide spam blocker lite from left hand nav */
+        }
+        
+        
         /**
          * Build the list of apps to show on the left hand nav
          */
+        displayNames.remove(null);
         List<Application> apps = new ArrayList<Application>(displayNames.size());
         for (String dn : displayNames) {
             PackageDesc l = libitems.get(dn);
@@ -233,7 +284,7 @@ class ToolboxManagerImpl implements ToolboxManager
                 apps.add(a);
             }
         }
-
+        
         Collections.sort(apps);
 
         List<NodeProperties> nodeProperties = new LinkedList<NodeProperties>();
