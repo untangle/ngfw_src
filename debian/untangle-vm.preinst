@@ -41,4 +41,11 @@ if [ -n "$oldVersion" ] && [ -f /usr/bin/psql ]; then
     fi
 fi
 
+# If upgrading from 9.3.2 or prior, drop events schema
+if dpkg --compare-versions "$oldVersion" le 9.3.2 ; then
+    if [ -x /etc/init.d/untangle-pyconnector ] ; then
+        /etc/init.d/untangle-pyconnector restart
+    fi
+fi
+
 exit 0
