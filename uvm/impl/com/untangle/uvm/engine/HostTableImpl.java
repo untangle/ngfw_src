@@ -519,7 +519,7 @@ public class HostTableImpl implements HostTable
                     /**
                      * Remove old entries
                      */
-                    Collection<HostTableEntry> entries = hostTable.values();
+                    LinkedList<HostTableEntry> entries = new LinkedList<HostTableEntry>(hostTable.values());
                     for (HostTableEntry entry : entries) {
                         String currentHostname = entry.getHostname();
                         InetAddress address = entry.getAddress();
