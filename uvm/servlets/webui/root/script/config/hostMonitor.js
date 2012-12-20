@@ -39,16 +39,17 @@ if (!Ung.hasResource["Ung.HostMonitor"]) {
                     var testSize = 450 + Math.floor((Math.random()*100));
                     for(var i=0;i<testSize;i++) {
                         var ii=i+Math.floor((Math.random()*10));
+                        var d=new Date()
                         result.list.push({
                             "address": "184.27.239."+(ii%10),
                             "hostname": "p.twitter.com"+i,
-                            "lastAccessTime": 1355998312242+(ii*1000),
+                            "lastAccessTime": 0,//d.getTime()+(i*86400000),
                             "username": "testuser"+i,
                             "usernameAdconnector": "uad"+ii,
                             "usernameCapture": "ucap"+(ii%50),
                             "penaltyBoxed":(ii%2)==1,
-                            "penaltyBoxEntryTime": 1355998311157-(ii*5000),
-                            "penaltyBoxExitTime": 1356000111157+(ii*5000),
+                            "penaltyBoxEntryTime": d.getTime()-(ii*86400000),
+                            "penaltyBoxExitTime": d.getTime()+(ii*86400000),
                             "quotaSize": ii * 10000,
                             "quotaRemaining": ii * 5000,
                             "quotaIssueTime": 0,
@@ -82,6 +83,15 @@ if (!Ung.hasResource["Ung.HostMonitor"]) {
         },
         // Current Hosts Grid
         buildGridCurrentHosts: function(columns, groupField) {
+            var dateConvertFn = function(value) {
+                if( value == 0 || value == "") {
+                    return "";
+                } else {
+                    var d=new Date();
+                    d.setTime(value);
+                    return d;
+                }
+            };
             this.gridCurrentHosts = Ext.create('Ung.MonitorGrid',{
                 name: "gridCurrentHosts",
                 settingsCmp: this,
@@ -100,6 +110,10 @@ if (!Ung.hasResource["Ung.HostMonitor"]) {
                     name: "hostname"
                 },{
                     name: "lastAccessTime"
+                }, {
+                    name: "lastAccessTimeDate",
+                    mapping: "lastAccessTime",
+                    convert: dateConvertFn,
                 },{
                     name: "username"
                 },{
@@ -111,7 +125,15 @@ if (!Ung.hasResource["Ung.HostMonitor"]) {
                 },{
                     name: "penaltyBoxEntryTime"
                 },{
+                    name: "penaltyBoxEntryTimeDate",
+                    mapping: "penaltyBoxEntryTime",
+                    convert: dateConvertFn,
+                },{
                     name: "penaltyBoxExitTime"
+                },{
+                    name: "penaltyBoxExitTimeDate",
+                    mapping: "penaltyBoxExitTime",
+                    convert: dateConvertFn,
                 },{
                     name: "quotaSize"
                 },{
@@ -119,7 +141,15 @@ if (!Ung.hasResource["Ung.HostMonitor"]) {
                 },{
                     name: "quotaIssueTime"
                 },{
+                    name: "quotaIssueTimeDate",
+                    mapping: "quotaIssueTime",
+                    convert: dateConvertFn,
+                },{
                     name: "quotaExpirationTime"
+                },{
+                    name: "quotaExpirationTimeDate",
+                    mapping: "quotaExpirationTime",
+                    convert: dateConvertFn,
                 },{
                     name: "httpUserAgent"
                 },{
@@ -133,17 +163,17 @@ if (!Ung.hasResource["Ung.HostMonitor"]) {
                         type: 'string'
                     }
                 }, {
-                    hidden: true,
+                    //hidden: true,
                     header: this.i18n._("Last Access Time"),
-                    dataIndex: "lastAccessTime",
+                    dataIndex: "lastAccessTimeDate",
                     width: 100,
-                    renderer: function(value) {
-                        return value == 0 || value == "" ? "" : i18n.timestampFormat(value);
-                    }/*,
+                    renderer: function(value, metaData, record) {
+                        var val=record.get("lastAccessTime");
+                        return val == 0 || val == "" ? "" : i18n.timestampFormat(val);
+                    },
                     filter: {
-                        type: 'date',
-                        dateFormat: 'time'
-                    }*/
+                        type: 'date'
+                    }
                 }, {
                     header: this.i18n._("Hostname"),
                     dataIndex: "hostname",
@@ -171,18 +201,26 @@ if (!Ung.hasResource["Ung.HostMonitor"]) {
                 },{
                     hidden: true,
                     header: this.i18n._("Penalty Box Entry Time"),
-                    dataIndex: "penaltyBoxEntryTime",
+                    dataIndex: "penaltyBoxEntryTimeDate",
                     width: 100,
-                    renderer: function(value) {
-                        return value == 0 || value == "" ? "" : i18n.timestampFormat(value);
+                    renderer: function(value, metaData, record) {
+                        var val=record.get("penaltyBoxEntryTime");
+                        return val == 0 || val == "" ? "" : i18n.timestampFormat(val);
+                    },
+                    filter: {
+                        type: 'date'
                     }
                 },{
                     hidden: true,
                     header: this.i18n._("Penalty Box Exit Time"),
-                    dataIndex: "penaltyBoxExitTime",
+                    dataIndex: "penaltyBoxExitTimeDate",
                     width: 100,
-                    renderer: function(value) {
-                        return value == 0 || value == "" ? "" : i18n.timestampFormat(value);
+                    renderer: function(value, metaData, record) {
+                        var val=record.get("penaltyBoxExitTime");
+                        return val == 0 || val == "" ? "" : i18n.timestampFormat(val);
+                    },
+                    filter: {
+                        type: 'date'
                     }
                 },{
                     header: this.i18n._("Quota Size"),
@@ -205,18 +243,26 @@ if (!Ung.hasResource["Ung.HostMonitor"]) {
                 },{
                     hidden: true,
                     header: this.i18n._("Quota Issue Time"),
-                    dataIndex: "quotaIssueTime",
+                    dataIndex: "quotaIssueTimeDate",
                     width: 100,
-                    renderer: function(value) {
-                        return value == 0 || value == "" ? "" : i18n.timestampFormat(value);
+                    renderer: function(value, metaData, record) {
+                        var val=record.get("quotaIssueTime");
+                        return val == 0 || val == "" ? "" : i18n.timestampFormat(val);
+                    },
+                    filter: {
+                        type: 'date'
                     }
                 },{
                     hidden: true,
                     header: this.i18n._("Quota Expiration Time"),
-                    dataIndex: "quotaExpirationTime",
+                    dataIndex: "quotaExpirationTimeDate",
                     width: 100,
-                    renderer: function(value) {
-                        return value == 0 || value == "" ? "" : i18n.timestampFormat(value);
+                    renderer: function(value, metaData, record) {
+                        var val=record.get("quotaExpirationTime");
+                        return val == 0 || val == "" ? "" : i18n.timestampFormat(val);
+                    },
+                    filter: {
+                        type: 'date'
                     }
                 },{
                     hidden: true,
