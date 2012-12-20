@@ -167,11 +167,11 @@ public abstract class ArgonHook implements Runnable
             HostnameLookup router = (HostnameLookup) UvmContextFactory.context().nodeManager().node("untangle-node-router");
             HostnameLookup reporting = (HostnameLookup) UvmContextFactory.context().nodeManager().node("untangle-node-reporting");
             String hostname = ( entry == null ? null : entry.getHostname() );
-            if ((hostname == null || "".equals(hostname)) && reporting != null)
+            if ((hostname == null || hostname.length() == 0) && reporting != null)
                 hostname = reporting.lookupHostname( clientAddr );
-            if ((hostname == null || "".equals(hostname)) && router != null)
+            if ((hostname == null || hostname.length() == 0) && router != null)
                 hostname = router.lookupHostname( clientAddr );
-            if ((hostname == null || "".equals(hostname)))
+            if ((hostname == null || hostname.length() == 0))
                 hostname = clientAddr.getHostAddress();
             if (hostname != null && hostname.length() > 0 ) {
                 sessionGlobalState.attach( NodeSession.KEY_PLATFORM_HOSTNAME, hostname );
