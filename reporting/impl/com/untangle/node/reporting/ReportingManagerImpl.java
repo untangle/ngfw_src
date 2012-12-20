@@ -174,8 +174,7 @@ class ReportingManagerImpl implements ReportingManager
     {
         Application platform = new Application("untangle-vm", "System");
 
-        List<Application> apps = getApplications(getDateDir(d, numDays),
-                                                 "top-level");
+        List<Application> apps = getApplications(getDateDir(d, numDays),"top-level");
         List<User> users = getUsers(d, numDays);
         List<Host> hosts = getHosts(d, numDays);
         List<Email> emails = getEmails(d, numDays);
