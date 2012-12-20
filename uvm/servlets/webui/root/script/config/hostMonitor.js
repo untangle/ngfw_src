@@ -39,7 +39,7 @@ if (!Ung.hasResource["Ung.HostMonitor"]) {
                     var testSize = 450 + Math.floor((Math.random()*100));
                     for(var i=0;i<testSize;i++) {
                         var ii=i+Math.floor((Math.random()*10));
-                        var d=new Date()
+                        var d=new Date();
                         result.list.push({
                             "address": "184.27.239."+(ii%10),
                             "hostname": "p.twitter.com"+i,
@@ -113,7 +113,7 @@ if (!Ung.hasResource["Ung.HostMonitor"]) {
                 }, {
                     name: "lastAccessTimeDate",
                     mapping: "lastAccessTime",
-                    convert: dateConvertFn,
+                    convert: dateConvertFn
                 },{
                     name: "username"
                 },{
@@ -127,13 +127,13 @@ if (!Ung.hasResource["Ung.HostMonitor"]) {
                 },{
                     name: "penaltyBoxEntryTimeDate",
                     mapping: "penaltyBoxEntryTime",
-                    convert: dateConvertFn,
+                    convert: dateConvertFn
                 },{
                     name: "penaltyBoxExitTime"
                 },{
                     name: "penaltyBoxExitTimeDate",
                     mapping: "penaltyBoxExitTime",
-                    convert: dateConvertFn,
+                    convert: dateConvertFn
                 },{
                     name: "quotaSize"
                 },{
@@ -143,13 +143,13 @@ if (!Ung.hasResource["Ung.HostMonitor"]) {
                 },{
                     name: "quotaIssueTimeDate",
                     mapping: "quotaIssueTime",
-                    convert: dateConvertFn,
+                    convert: dateConvertFn
                 },{
                     name: "quotaExpirationTime"
                 },{
                     name: "quotaExpirationTimeDate",
                     mapping: "quotaExpirationTime",
-                    convert: dateConvertFn,
+                    convert: dateConvertFn
                 },{
                     name: "httpUserAgent"
                 },{
@@ -163,10 +163,10 @@ if (!Ung.hasResource["Ung.HostMonitor"]) {
                         type: 'string'
                     }
                 }, {
-                    //hidden: true,
+                    hidden: true,
                     header: this.i18n._("Last Access Time"),
                     dataIndex: "lastAccessTimeDate",
-                    width: 100,
+                    width: 150,
                     renderer: function(value, metaData, record) {
                         var val=record.get("lastAccessTime");
                         return val == 0 || val == "" ? "" : i18n.timestampFormat(val);
