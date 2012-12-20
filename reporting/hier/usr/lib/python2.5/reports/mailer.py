@@ -197,7 +197,6 @@ def __get_url(date):
             url = str(publicUrlAddress) + ":" + str(publicUrlPort)
     except:
         logger.warn('Could not calculate reports URL', exc_info=True)
-        url = "unknown"
 
     return 'https://%s/reports?time=%s' % ( url, date.strftime(locale.nl_langinfo(locale.D_FMT)), )
 

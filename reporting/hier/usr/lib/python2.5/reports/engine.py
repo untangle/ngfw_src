@@ -51,6 +51,8 @@ def get_wan_ip():
     wans = []
     for intf in NETCONFIG_JSON_OBJ['interfaceList']['list']:
         if intf['WAN'] is not None and intf['WAN'].lower() == 'true':
+            if not 'primaryAddressStr' in intf:
+                return "unknown.ip"
             addr = intf['primaryAddressStr']
             if addr == None:
                 return "unknown.ip"
