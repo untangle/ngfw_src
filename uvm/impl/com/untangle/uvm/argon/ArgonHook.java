@@ -166,7 +166,7 @@ public abstract class ArgonHook implements Runnable
             /* lookup the hostname information */
             HostnameLookup router = (HostnameLookup) UvmContextFactory.context().nodeManager().node("untangle-node-router");
             HostnameLookup reporting = (HostnameLookup) UvmContextFactory.context().nodeManager().node("untangle-node-reporting");
-            String hostname = null;
+            String hostname = ( entry == null ? null : entry.getHostname() );
             if ((hostname == null || "".equals(hostname)) && reporting != null)
                 hostname = reporting.lookupHostname( clientAddr );
             if ((hostname == null || "".equals(hostname)) && router != null)
@@ -174,14 +174,13 @@ public abstract class ArgonHook implements Runnable
             if ((hostname == null || "".equals(hostname)))
                 hostname = clientAddr.getHostAddress();
             if (hostname != null && hostname.length() > 0 ) {
-                logger.debug( "hostname information: " + hostname );
                 sessionGlobalState.attach( NodeSession.KEY_PLATFORM_HOSTNAME, hostname );
-                /* If its a local host (not from WAN) then set hostname */
-                if ( ! UvmContextFactory.context().networkManager().isWanInterface( netcapSession.clientSide().interfaceId() ) ) {
-                    /* create/gete entry */
-                    entry = UvmContextFactory.context().hostTable().getHostTableEntry( clientAddr, true );
-                    if ( ! entry.isHostnameKnown() )
+                /* If the hostname isn't known in the host table and its a local host (not from WAN) then set hostname */
+                if ( entry == null || !entry.isHostnameKnown()) {
+                    if ( !UvmContextFactory.context().networkManager().isWanInterface( netcapSession.clientSide().interfaceId() ) ) {
+                        entry = UvmContextFactory.context().hostTable().getHostTableEntry( clientAddr, true ); /* create/get entry */
                         entry.setHostname( hostname );
+                    }
                 }
             }
             

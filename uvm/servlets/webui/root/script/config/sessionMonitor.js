@@ -166,6 +166,13 @@ if (!Ung.hasResource["Ung.SessionMonitor"]) {
                     type: 'numeric'
                 }
             },{
+                header: this.i18n._("Hostname"),
+                dataIndex: "platform-hostname",
+                width: 100,
+                filter: {
+                    type: 'string'
+                }
+            },{
                 header: this.i18n._("Client (Pre-NAT)"),
                 dataIndex: "preNatClient",
                 width: 75,
@@ -254,14 +261,6 @@ if (!Ung.hasResource["Ung.SessionMonitor"]) {
                     type: 'boolean',
                     yesText: 'true',
                     noText: 'false'
-                }
-            },{
-                hidden: true,
-                header: this.i18n._("Hostname"),
-                dataIndex: "platform-hostname",
-                width: 100,
-                filter: {
-                    type: 'string'
                 }
             },{
                 header: this.i18n._("Username"),
