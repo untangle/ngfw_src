@@ -42,13 +42,13 @@ if (!Ung.hasResource["Ung.HostMonitor"]) {
                         result.list.push({
                             "address": "184.27.239."+(ii%10),
                             "hostname": "p.twitter.com"+i,
-                            "lastAccessTime": 0,
+                            "lastAccessTime": 1355998312242+(ii*1000),
                             "username": "testuser"+i,
                             "usernameAdconnector": "uad"+ii,
                             "usernameCapture": "ucap"+(ii%50),
                             "penaltyBoxed":(ii%2)==1,
-                            "penaltyBoxEntryTime": 0,
-                            "penaltyBoxExitTime": 0,
+                            "penaltyBoxEntryTime": 1355998311157-(ii*5000),
+                            "penaltyBoxExitTime": 1356000111157+(ii*5000),
                             "quotaSize": ii * 10000,
                             "quotaRemaining": ii * 5000,
                             "quotaIssueTime": 0,
@@ -128,7 +128,10 @@ if (!Ung.hasResource["Ung.HostMonitor"]) {
                 columns: [{
                     header: this.i18n._("IP"),
                     dataIndex: "address",
-                    width: 100
+                    width: 100,
+                    filter: {
+                        type: 'string'
+                    }
                 }, {
                     hidden: true,
                     header: this.i18n._("Last Access Time"),
@@ -136,20 +139,35 @@ if (!Ung.hasResource["Ung.HostMonitor"]) {
                     width: 100,
                     renderer: function(value) {
                         return value == 0 || value == "" ? "" : i18n.timestampFormat(value);
-                    }
+                    }/*,
+                    filter: {
+                        type: 'date',
+                        dateFormat: 'time'
+                    }*/
                 }, {
                     header: this.i18n._("Hostname"),
                     dataIndex: "hostname",
-                    width: 100
+                    width: 100,
+                    filter: {
+                        type: 'string'
+                    }
                 },{
                     header: this.i18n._("Username"),
                     dataIndex: "username",
-                    width: 100
+                    width: 100,
+                    filter: {
+                        type: 'string'
+                    }
                 },{
                     boxLabel: this.i18n._("Penalty Boxed"),
                     header: this.i18n._("Penalty Boxed"),
                     dataIndex: "penaltyBoxed",
-                    width: 100
+                    width: 100,
+                    filter: {
+                        type: 'boolean',
+                        yesText: 'true',
+                        noText: 'false'
+                    }
                 },{
                     hidden: true,
                     header: this.i18n._("Penalty Box Entry Time"),
@@ -172,12 +190,18 @@ if (!Ung.hasResource["Ung.HostMonitor"]) {
                     width: 100,
                     renderer: function(value) {
                         return value == 0 || value == "" ? "" : value;
+                    },
+                    filter: {
+                        type: 'numeric'
                     }
                 },{
                     hidden: true,
                     header: this.i18n._("Quota Remaining"),
                     dataIndex: "quotaRemaining",
-                    width: 100
+                    width: 100,
+                    filter: {
+                        type: 'numeric'
+                    }
                 },{
                     hidden: true,
                     header: this.i18n._("Quota Issue Time"),
@@ -198,21 +222,33 @@ if (!Ung.hasResource["Ung.HostMonitor"]) {
                     hidden: true,
                     header: "HTTP" + " - " + this.i18n._("User Agent"),
                     dataIndex: "httpUserAgent",
-                    width: 200
+                    width: 200,
+                    filter: {
+                        type: 'string'
+                    }
                 },{
                     header: "HTTP" + " - " + this.i18n._("User Agent OS"),
                     dataIndex: "httpUserAgentOs",
-                    width: 200
+                    width: 200,
+                    filter: {
+                        type: 'string'
+                    }
                 },{
                     hidden: true,
                     header: "Directory Connector" + " - " + this.i18n._("Username"),
                     dataIndex: "usernameAdconnector",
-                    width: 100
+                    width: 100,
+                    filter: {
+                        type: 'string'
+                    }
                 },{
                     hidden: true,
                     header: "Captive Portal" + " - " + this.i18n._("Username"),
                     dataIndex: "usernameCapture",
-                    width: 100
+                    width: 100,
+                    filter: {
+                        type: 'string'
+                    }
                 }]
             });
         },
