@@ -94,13 +94,11 @@ CREATE TABLE reports.n_admin_logins (
 
     def post_facttable_setup(self, start_date, end_date):
         self.__make_session_counts_table(start_date, end_date)
-        self.__make_hnames_table(start_date, end_date)
         self.__make_users_table(start_date, end_date)
 
     def reports_cleanup(self, cutoff):
         sql_helper.drop_fact_table("n_admin_logins", cutoff)
         sql_helper.drop_fact_table("users", cutoff)
-        sql_helper.drop_fact_table("hnames", cutoff)
         sql_helper.drop_fact_table("sessions", cutoff)
         sql_helper.drop_fact_table("session_totals", cutoff)
         sql_helper.drop_fact_table("session_counts", cutoff)
@@ -142,34 +140,6 @@ INSERT INTO reports.users (date, username)
     FROM reports.session_totals
     WHERE trunc_time >= %s::timestamp without time zone
     AND NOT uid ISNULL""", (sd,), connection=conn, auto_commit=False)
-            conn.commit()
-        except Exception, e:
-            print e
-            conn.rollback()
-            raise e
-
-    @print_timing
-    def __make_hnames_table(self, start_date, end_date):
-        sql_helper.create_fact_table("""\
-CREATE TABLE reports.hnames (
-        date date NOT NULL,
-        hname text NOT NULL,
-        PRIMARY KEY (date, hname));
-""")
-
-        sd = sql_helper.get_max_timestamp_with_interval('reports.hnames')
-
-        conn = sql_helper.get_connection()
-        try:
-            sql_helper.run_sql("""\
-INSERT INTO reports.hnames (date, hname)
-    SELECT DISTINCT date_trunc('day', trunc_time)::date, hname
-    FROM reports.session_totals
-    WHERE trunc_time >= %s::timestamp without time zone
-    AND server_intf IN """ + get_wan_clause() + """
-    AND client_intf NOT IN """ + get_wan_clause() + """
-    AND NOT hname ISNULL""", (sd,),
-                               connection=conn, auto_commit=False)
             conn.commit()
         except Exception, e:
             print e
