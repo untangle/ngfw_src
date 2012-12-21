@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -121,56 +122,60 @@ class ToolboxManagerImpl implements ToolboxManager
 
     public RackView getRackView(Long policyId)
     {
+        NodeManagerImpl nm = (NodeManagerImpl)UvmContextFactory.context().nodeManager();
+        LicenseManager lm = UvmContextFactory.context().licenseManager();
+
         PackageDesc[] available = this.available;
         PackageDesc[] installed = this.installed;
 
-        /**
-         * Build the list of nodes & libitems packages
-         */
-        Map<String, PackageDesc> nodes = new HashMap<String, PackageDesc>();
-        Map<String, PackageDesc> libitems = new HashMap<String, PackageDesc>();
+        /* This stores a list of all known display names for libitems/nodes */
         Set<String> displayNames = new HashSet<String>();
-        Set<String> hiddenApps = new HashSet<String>();
+        /* This stores a list of installable nodes. (for this rack) Display Name -> PackageDesc */
+        Map<String, PackageDesc> installableNodes = new HashMap<String, PackageDesc>();
+        /* This stores a list of installable libitems. (for this rack) Display Name -> PackageDesc */
+        Map<String, PackageDesc> installableLibitems = new HashMap<String, PackageDesc>();
+        /* This stores a list of all licenses */
+        Map<String, License> licenseMap = new HashMap<String, License>();
+        
+        /**
+         * First add all available libitems to installableLibitems List
+         */
         for (PackageDesc md : available) {
             String dn = md.getDisplayName();
+            String name = md.getName();
             PackageDesc.Type type = md.getType();
+
+            /**
+             * SPECIAL CASE: ignore obsolete libitems, even if they are available they should never be displayed
+             */
+            if ("untangle-libitem-cpd".equals(name) ||
+                "untangle-libitem-kav".equals(name) ||
+                "untangle-libitem-commtouch".equals(name) ||
+                "untangle-libitem-professional-package".equals(name))
+                continue;
+            
             if (type == PackageDesc.Type.LIB_ITEM) {
                 displayNames.add(dn);
-                libitems.put(dn, md);
+                installableLibitems.put(dn, md);
             }
         }
-
-        NodeManagerImpl nm = (NodeManagerImpl)UvmContextFactory.context().nodeManager();
-        List<Node> instances = nm.visibleNodes( policyId );
 
         /**
          * Build the license map
          */
-        Map<String, License> licenseMap = new HashMap<String, License>();
-        LicenseManager lm = UvmContextFactory.context().licenseManager();
-        for (Node node : instances) {
+        List<Node> visibleNodes = nm.visibleNodes( policyId );
+        for (Node node : visibleNodes) {
             String n = node.getNodeProperties().getName();
             licenseMap.put(n, lm.getLicense(n));
         }
+
+        /**
+         * Build the rack state
+         */
         Map<Long, NodeSettings.NodeState> runStates=nm.allNodeStates();
 
         /**
-         * Build the nodeMetrics (stats in the UI)
-         */
-        Map<Long, List<NodeMetric>> nodeMetrics = new HashMap<Long, List<NodeMetric>>(instances.size());
-        for (Node visibleNode : instances) {
-            Long nodeId = visibleNode.getNodeSettings().getId();
-            Long nodePolicyId = visibleNode.getNodeSettings().getPolicyId();
-            MessageManager lmm = UvmContextFactory.context().messageManager();
-            nodeMetrics.put( nodeId , visibleNode.getMetrics());
-
-            if ( nodePolicyId == null || nodePolicyId.equals( policyId ) ) {
-                nodes.remove( visibleNode.getNodeProperties().getDisplayName() );
-            }
-        }
-
-        /**
-         * Iterate through installed libitems and make adjustments
+         * Iterate through installed installableLibitems and make adjustments
          *
          * If its a libitem, hide it from the left-hand-nav and remove it from the hidden apps (so it will show even if hidden if installed)
          * If its a node, put it in displayNames nodes and remove from hidden apps
@@ -180,18 +185,28 @@ class ToolboxManagerImpl implements ToolboxManager
             PackageDesc.Type type = md.getType();
 
             if (type == PackageDesc.Type.LIB_ITEM) {
-                hiddenApps.remove(dn); /* show it regardless if its installed */
-                libitems.remove(dn); /* don't show it on left hand apps pane */
+                installableLibitems.remove(dn); /* don't show it on left hand apps pane */
             } else if (!md.isInvisible() && (type == PackageDesc.Type.NODE || type == PackageDesc.Type.SERVICE)) {
                 displayNames.add(dn);
-                nodes.put(dn, md);
-                hiddenApps.remove(dn);
+                installableNodes.put(dn, md);
             } 
         }
 
         /**
-         * Below is a list of special cases where we modify the default behavior of the appearance of libitems in the apps pane
+         * Build the nodeMetrics (stats in the UI)
+         * Remove visible installableNodes from installableNodes
          */
+        Map<Long, List<NodeMetric>> nodeMetrics = new HashMap<Long, List<NodeMetric>>(visibleNodes.size());
+        for (Node visibleNode : visibleNodes) {
+            Long nodeId = visibleNode.getNodeSettings().getId();
+            Long nodePolicyId = visibleNode.getNodeSettings().getPolicyId();
+            MessageManager lmm = UvmContextFactory.context().messageManager();
+            nodeMetrics.put( nodeId , visibleNode.getMetrics());
+
+            if ( nodePolicyId == null || nodePolicyId.equals( policyId ) ) {
+                installableNodes.remove( visibleNode.getNodeProperties().getDisplayName() );
+            }
+        }
 
         /**
          * SPECIAL CASE: If premium package is installed but its only a trial still show in apps pane
@@ -201,7 +216,7 @@ class ToolboxManagerImpl implements ToolboxManager
             if ("untangle-libitem-premium-package".equals(md.getName())) {
                 boolean justATrial = (lm.getLicense(License.POLICY) != null && lm.getLicense(License.POLICY).getTrial());
                 if ( justATrial ) 
-                    libitems.put(md.getDisplayName(), md); /* show it on the left hand pane */
+                    installableLibitems.put(md.getDisplayName(), md); /* show it on the left hand pane */
             }
         }
         /**
@@ -212,10 +227,25 @@ class ToolboxManagerImpl implements ToolboxManager
             if ("untangle-libitem-standard-package".equals(md.getName())) {
                 boolean justATrial = (lm.getLicense(License.POLICY) != null && lm.getLicense(License.POLICY).getTrial());
                 if ( justATrial ) 
-                    libitems.put(md.getDisplayName(), md); /* show it on the left hand pane */
+                    installableLibitems.put(md.getDisplayName(), md); /* show it on the left hand pane */
             }
         }
-
+        /**
+         * SPECIAL CASE: If premium package is installed and licensed - hide standard package (its included)
+         */
+        for (PackageDesc md : installed) {
+            if ("untangle-libitem-premium-package".equals(md.getName())) {
+                boolean justATrial = (lm.getLicense(License.POLICY) != null && lm.getLicense(License.POLICY).getTrial());
+                if ( ! justATrial ) {
+                    PackageDesc stan = null;
+                    for ( Iterator<PackageDesc> i = installableLibitems.values().iterator() ; i.hasNext() ; ) {
+                        PackageDesc pkgDesc = i.next();
+                        if ("untangle-libitem-standard-package".equals( pkgDesc.getName() ))
+                            i.remove();
+                    }
+                }
+            }
+        }
         /**
          * SPECIAL CASE: If premium package or standard package is installed AND licensed - hide lite package (its included)
          */
@@ -224,11 +254,11 @@ class ToolboxManagerImpl implements ToolboxManager
                 boolean justATrial = (lm.getLicense(License.POLICY) != null && lm.getLicense(License.POLICY).getTrial());
                 if ( ! justATrial ) {
                     PackageDesc lite = null;
-                    for (PackageDesc libitem : libitems.values()) { /* find lite package in list */
-                        if ("untangle-libitem-lite-package".equals(libitem.getName())) 
-                            lite = libitem;
+                    for ( Iterator<PackageDesc> i = installableLibitems.values().iterator() ; i.hasNext() ; ) {
+                        PackageDesc pkgDesc = i.next();
+                        if ("untangle-libitem-lite-package".equals( pkgDesc.getName() ))
+                            i.remove();
                     }
-                    if (lite != null) libitems.remove(lite); /* hide lite package from left hand nav */
                 }
             }
         }
@@ -236,63 +266,62 @@ class ToolboxManagerImpl implements ToolboxManager
         /**
          * SPECIAL CASE: If Web Filter is installed OR licensed for non-trial, hide Web Filter Lite
          */
-        PackageDesc webfilter = null;
-        for (PackageDesc libitem : libitems.values()) { /* find web filter lite package in list */
-            if ("untangle-libitem-webfilter".equals(libitem.getName())) 
-                webfilter = libitem;
-        }
-        if (webfilter != null) {
-            for (PackageDesc md : installed) {
-                if ("untangle-libitem-sitefilter".equals(md.getName())) {
-                    libitems.remove(webfilter); /* hide web filter lite from left hand nav */
-                }
+        for (PackageDesc md : installed) {
+            if ("untangle-libitem-sitefilter".equals(md.getName())) {
+                installableLibitems.remove("Web Filter Lite"); /* hide web filter lite from left hand nav */
+                installableNodes.remove("Web Filter Lite"); /* hide web filter lite from left hand nav */
             }
-            if ( lm.getLicense(License.SITEFILTER) != null && !lm.getLicense(License.SITEFILTER).getTrial() )
-                libitems.remove(webfilter); /* hide web filter lite from left hand nav */
         }
-
+        if ( lm.getLicense(License.SITEFILTER) != null && !lm.getLicense(License.SITEFILTER).getTrial() ) {
+            installableLibitems.remove("Web Filter Lite"); /* hide web filter lite from left hand nav */
+            installableNodes.remove("Web Filter Lite"); /* hide web filter lite from left hand nav */
+        }
+        
         /**
          * SPECIAL CASE: If Spam Blocker is installed OR licensed for non-trial, hide Spam Blocker Lite
          */
-        PackageDesc spamassassin = null;
-        for (PackageDesc libitem : libitems.values()) { /* find spam blocker lite package in list */
-            if ("untangle-libitem-spamassassin".equals(libitem.getName())) 
-                spamassassin = libitem;
-        }
-        if (spamassassin != null) {
-            for (PackageDesc md : installed) {
-                if ("untangle-libitem-commtouchas".equals(md.getName())) {
-                    libitems.remove(spamassassin); /* hide spam blocker lite from left hand nav */
-                }
+        for (PackageDesc md : installed) {
+            if ("untangle-libitem-commtouchas".equals(md.getName())) {
+                installableLibitems.remove("Spam Blocker Lite"); /* hide web filter lite from left hand nav */
+                installableNodes.remove("Spam Blocker Lite"); /* hide web filter lite from left hand nav */
             }
-            if ( lm.getLicense(License.SITEFILTER) != null && !lm.getLicense(License.SITEFILTER).getTrial() )
-                libitems.remove(spamassassin); /* hide spam blocker lite from left hand nav */
+        }
+        if ( lm.getLicense(License.COMMTOUCHAS) != null && !lm.getLicense(License.COMMTOUCHAS).getTrial() ) {
+            installableLibitems.remove("Spam Blocker Lite"); /* hide web filter lite from left hand nav */
+            installableNodes.remove("Spam Blocker Lite"); /* hide web filter lite from left hand nav */
         }
         
         
         /**
          * Build the list of apps to show on the left hand nav
          */
+        logger.debug("Building apps panel:");
         displayNames.remove(null);
         List<Application> apps = new ArrayList<Application>(displayNames.size());
         for (String dn : displayNames) {
-            PackageDesc l = libitems.get(dn);
-            PackageDesc n = nodes.get(dn);
+            PackageDesc l = installableLibitems.get(dn);
+            PackageDesc n = installableNodes.get(dn);
 
-            if ( !hiddenApps.contains(dn) && ( l != null || n != null) ) {
-                Application a = new Application(l, n);
-                apps.add(a);
-            }
+            if ( l == null && n == null )
+                continue;
+
+            if (l != null)
+                logger.debug("Adding app (libitem) : " + l.getName() + " dn: " + l.getDisplayName());
+            if (n != null)
+                logger.debug("Adding app (node   ) : " + n.getName() + " dn: " + n.getDisplayName());
+            
+            Application a = new Application(l, n);
+            apps.add(a);
         }
         
         Collections.sort(apps);
 
         List<NodeProperties> nodeProperties = new LinkedList<NodeProperties>();
-        for (Node node : instances) {
+        for (Node node : visibleNodes) {
             nodeProperties.add(node.getNodeProperties());
         }
         List<NodeSettings> nodeSettings  = new LinkedList<NodeSettings>();
-        for (Node node : instances) {
+        for (Node node : visibleNodes) {
             nodeSettings.add(node.getNodeSettings());
         }
 
