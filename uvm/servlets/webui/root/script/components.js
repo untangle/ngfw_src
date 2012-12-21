@@ -3219,6 +3219,8 @@ Ext.define('Ung.MonitorGrid', {
         });
         if(this.paginated) {
             this.pagingToolbar = Ext.create('Ext.toolbar.Paging',{
+                hidden: true,
+                disabled: true,
                 store: this.getStore(),
                 style: "border:0; top:1px;",
                 displayInfo: true,

@@ -32,7 +32,7 @@ if (!Ung.hasResource["Ung.SessionMonitor"]) {
                 }
                 var sessions = result.list;
                 if(testMode) {
-                    var testSessionsSize=450 + Math.floor((Math.random()*100));
+                    var testSessionsSize=400 + Math.floor((Math.random()*150));
                     for(var i=0;i<testSessionsSize;i++) {
                         var ii=i+Math.floor((Math.random()*5));
                         sessions.push({
