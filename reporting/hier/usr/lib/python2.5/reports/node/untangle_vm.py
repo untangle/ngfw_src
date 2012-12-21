@@ -47,13 +47,9 @@ class UvmNode(Node):
         self.__do_housekeeping()
 
         self.__build_n_admin_logins_table()
-
         self.__build_sessions_table()
-
         self.__build_penaltybox_table()
-
         self.__build_quotas_table()
-
         self.__build_host_table_updates_table()
 
         ft = FactTable('reports.session_totals',
@@ -94,11 +90,9 @@ CREATE TABLE reports.n_admin_logins (
 
     def post_facttable_setup(self, start_date, end_date):
         self.__make_session_counts_table(start_date, end_date)
-        self.__make_users_table(start_date, end_date)
 
     def reports_cleanup(self, cutoff):
         sql_helper.drop_fact_table("n_admin_logins", cutoff)
-        sql_helper.drop_fact_table("users", cutoff)
         sql_helper.drop_fact_table("sessions", cutoff)
         sql_helper.drop_fact_table("session_totals", cutoff)
         sql_helper.drop_fact_table("session_counts", cutoff)
@@ -120,31 +114,6 @@ CREATE TABLE reports.n_admin_logins (
         sections.append(AdministrativeLoginsDetail())
 
         return Report(self, sections)
-
-    @print_timing
-    def __make_users_table(self, start_date, end_date):
-        sql_helper.create_fact_table("""\
-CREATE TABLE reports.users (
-        date date NOT NULL,
-        username text NOT NULL,
-        PRIMARY KEY (date, username));
-""")
-
-        sd = sql_helper.get_max_timestamp_with_interval('reports.users')
-
-        conn = sql_helper.get_connection()
-        try:
-            sql_helper.run_sql("""\
-INSERT INTO reports.users (date, username)
-    SELECT DISTINCT date_trunc('day', trunc_time)::date AS day, uid
-    FROM reports.session_totals
-    WHERE trunc_time >= %s::timestamp without time zone
-    AND NOT uid ISNULL""", (sd,), connection=conn, auto_commit=False)
-            conn.commit()
-        except Exception, e:
-            print e
-            conn.rollback()
-            raise e
 
     @print_timing
     def __build_sessions_table( self ):
