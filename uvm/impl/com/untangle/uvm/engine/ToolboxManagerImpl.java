@@ -151,6 +151,9 @@ class ToolboxManagerImpl implements ToolboxManager
             if ("untangle-libitem-cpd".equals(name) ||
                 "untangle-libitem-kav".equals(name) ||
                 "untangle-libitem-commtouch".equals(name) ||
+                "untangle-libitem-rap".equals(name) ||
+                "untangle-libitem-pcremote".equals(name) ||
+                "untangle-libitem-nas".equals(name) ||
                 "untangle-libitem-professional-package".equals(name))
                 continue;
             
