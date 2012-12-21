@@ -269,29 +269,33 @@ class ToolboxManagerImpl implements ToolboxManager
         /**
          * SPECIAL CASE: If Web Filter is installed OR licensed for non-trial, hide Web Filter Lite
          */
-        for (PackageDesc md : installed) {
-            if ("untangle-libitem-sitefilter".equals(md.getName())) {
+        if ( ! UvmContextFactory.context().isDevel() ) {
+            for (PackageDesc md : installed) {
+                if ("untangle-libitem-sitefilter".equals(md.getName())) {
+                    installableLibitems.remove("Web Filter Lite"); /* hide web filter lite from left hand nav */
+                    installableNodes.remove("Web Filter Lite"); /* hide web filter lite from left hand nav */
+                }
+            }
+            if ( lm.getLicense(License.SITEFILTER) != null && !lm.getLicense(License.SITEFILTER).getTrial() ) {
                 installableLibitems.remove("Web Filter Lite"); /* hide web filter lite from left hand nav */
                 installableNodes.remove("Web Filter Lite"); /* hide web filter lite from left hand nav */
             }
-        }
-        if ( lm.getLicense(License.SITEFILTER) != null && !lm.getLicense(License.SITEFILTER).getTrial() ) {
-            installableLibitems.remove("Web Filter Lite"); /* hide web filter lite from left hand nav */
-            installableNodes.remove("Web Filter Lite"); /* hide web filter lite from left hand nav */
         }
         
         /**
          * SPECIAL CASE: If Spam Blocker is installed OR licensed for non-trial, hide Spam Blocker Lite
          */
-        for (PackageDesc md : installed) {
-            if ("untangle-libitem-commtouchas".equals(md.getName())) {
+        if ( ! UvmContextFactory.context().isDevel() ) {
+            for (PackageDesc md : installed) {
+                if ("untangle-libitem-commtouchas".equals(md.getName())) {
+                    installableLibitems.remove("Spam Blocker Lite"); /* hide web filter lite from left hand nav */
+                    installableNodes.remove("Spam Blocker Lite"); /* hide web filter lite from left hand nav */
+                }
+            }
+            if ( lm.getLicense(License.COMMTOUCHAS) != null && !lm.getLicense(License.COMMTOUCHAS).getTrial() ) {
                 installableLibitems.remove("Spam Blocker Lite"); /* hide web filter lite from left hand nav */
                 installableNodes.remove("Spam Blocker Lite"); /* hide web filter lite from left hand nav */
             }
-        }
-        if ( lm.getLicense(License.COMMTOUCHAS) != null && !lm.getLicense(License.COMMTOUCHAS).getTrial() ) {
-            installableLibitems.remove("Spam Blocker Lite"); /* hide web filter lite from left hand nav */
-            installableNodes.remove("Spam Blocker Lite"); /* hide web filter lite from left hand nav */
         }
         
         
