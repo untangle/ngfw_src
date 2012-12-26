@@ -19,7 +19,6 @@ import com.untangle.uvm.HostTable;
 import com.untangle.uvm.HostTableEntry;
 import com.untangle.uvm.util.I18nUtil;
 import com.untangle.uvm.node.EventLogQuery;
-import com.untangle.uvm.node.HostTableEvent;
 import com.untangle.uvm.node.PenaltyBoxEvent;
 import com.untangle.uvm.node.QuotaEvent;
 
@@ -398,11 +397,6 @@ public class HostTableImpl implements HostTable
     public void unregisterListener( HostTable.HostTableListener listener )
     {
         this.listeners.remove( listener );
-    }
-
-    public EventLogQuery[] getHostTableEventQueries()
-    {
-        return new EventLogQuery[] { this.hostTableEventQuery };
     }
 
     public EventLogQuery[] getPenaltyBoxEventQueries()

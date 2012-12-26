@@ -43,11 +43,6 @@ public interface HostTable
     LinkedList<HostTableEntry> getHosts();
 
     /**
-     * Return the event log query for host table updates
-     */
-    EventLogQuery[] getHostTableEventQueries();
-
-    /**
      * Add a host to the penalty box for the specified amount of time at the specified priority
      * This sets all the appropriate attachments and calls the listeners
      */

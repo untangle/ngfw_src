@@ -14,7 +14,6 @@ if (!Ung.hasResource["Ung.HostMonitor"]) {
             }];
 
             this.buildGridCurrentHosts();
-            this.buildHostTableEventLog();
 
             this.buildGridPenaltyBox();
             this.buildPenaltyBoxEventLog();
@@ -22,7 +21,7 @@ if (!Ung.hasResource["Ung.HostMonitor"]) {
             this.buildGridQuotaBox();
             this.buildQuotaEventLog();
 
-            this.buildTabPanel([this.gridCurrentHosts, this.gridHostTableEventLog, this.gridPenaltyBox, this.gridPenaltyBoxEventLog, this.gridQuotaBox, this.gridQuotaEventLog]);
+            this.buildTabPanel([this.gridCurrentHosts, this.gridPenaltyBox, this.gridPenaltyBoxEventLog, this.gridQuotaBox, this.gridQuotaEventLog]);
             this.callParent(arguments);
         },
         closeWindow: function() {
@@ -488,47 +487,6 @@ if (!Ung.hasResource["Ung.HostMonitor"]) {
                 })]
             });
 
-        },
-        buildHostTableEventLog: function() {
-            this.gridHostTableEventLog = Ext.create('Ung.GridEventLog',{
-                settingsCmp: this,
-                eventQueriesFn: rpc.hostTable.getHostTableEventQueries,
-                title: this.i18n._("Host Table Event Log"),
-                fields: [{
-                    name: 'time_stamp',
-                    sortType: Ung.SortTypes.asTimestamp
-                }, {
-                    name: 'address'
-                }, {
-                    name: 'key'
-                }, {
-                    name: 'value'
-                }],
-                columns: [{
-                    header: this.i18n._("Timestamp"),
-                    width: Ung.Util.timestampFieldWidth,
-                    sortable: true,
-                    dataIndex: 'time_stamp',
-                    renderer: function(value) {
-                        return i18n.timestampFormat(value);
-                    }
-                }, {
-                    header: this.i18n._("Address"),
-                    width: Ung.Util.ipFieldWidth,
-                    sortable: true,
-                    dataIndex: 'address'
-                }, {
-                    header: this.i18n._("Key"),
-                    width: 250,
-                    sortable: true,
-                    dataIndex: 'key'
-                }, {
-                    header: this.i18n._("Value"),
-                    width: 300,
-                    sortable: true,
-                    dataIndex: 'value'
-                }]
-            });
         },
         buildPenaltyBoxEventLog: function() {
             this.gridPenaltyBoxEventLog = Ext.create('Ung.GridEventLog',{
