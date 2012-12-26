@@ -275,7 +275,7 @@
   </category>
 
   <category name="com.untangle.node.capture">
-    <priority value="DEBUG"/>
+    <priority value="INFO"/>
   </category>
 
   <category name="com.untangle.node">
