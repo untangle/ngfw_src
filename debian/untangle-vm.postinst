@@ -47,6 +47,10 @@ fi
 /bin/chown -R $USER:$GROUP ${UVM_LOGDIR}
 /bin/chmod 775 ${UVM_LOGDIR}
 
+# enable en_US locale (used by java)
+sed -i -e "s/.*en_US.UTF-8 UTF-8.*/en_US.UTF-8 UTF-8/" /etc/locale.gen
+locale-gen
+
 # 9.4 change sources.list to point to stable-94
 if [ -f /etc/apt/sources.list.d/untangle.list ] ; then
     sed -i 's/\sstable\s/ stable-94 /' /etc/apt/sources.list.d/untangle.list
