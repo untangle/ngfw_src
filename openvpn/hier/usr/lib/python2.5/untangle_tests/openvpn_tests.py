@@ -40,6 +40,7 @@ class OpenVpnTests(unittest.TestCase):
     def test_999_finalTearDown(self):
         global node
         uvmContext.nodeManager().destroy( node.getNodeSettings()["id"] )
+        time.sleep(20) # sleep 20 seconds, the daemon needs time to restart
         node = None
 
 TestDict.registerNode("openvpn", OpenVpnTests)
