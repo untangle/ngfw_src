@@ -1,21 +1,6 @@
-/*
- * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License, version 2,
- * as published by the Free Software Foundation.
- *
- * This program is distributed in the hope that it will be useful, but
- * AS-IS and WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE, TITLE, or
- * NONINFRINGEMENT.  See the GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
+/**
+ * $Id$
  */
-
 #include <jni.h>
 #include <stdlib.h>
 #include <stdio.h>
@@ -50,11 +35,6 @@
  * UDP Poll is always writeable 
  */
 static eventmask_t   _poll ( mvpoll_key_t* key );
-
-/**
- * Accept the first packet that is in the session.
- */
-static int _accept_packet( char* data, int data_len, netcap_pkt_t* pkt );
 
 /*
  * Class:     UDPSink
@@ -117,15 +97,9 @@ JNIEXPORT jint JNICALL Java_com_untangle_jvector_UDPSink_write
     if ( tos != com_untangle_jvector_UDPSink_DISABLED) pkt->tos = tos;
     
     /* If first packet hasn't been sent */
-    if ( pkt->packet_id != 0 ) {
-        if ( _accept_packet( (char*)data, data_len, pkt ) < 0 ) {
-            errlog( ERR_CRITICAL, "_accept_packet" );
-        }
-        number_bytes = size; /* assume the whole packet was written */
-    } else {
-        if (( number_bytes = netcap_udp_send( (char*)data, data_len, pkt )) < 0 ) {
-            perrlog( "netcap_udp_send" );
-        }
+    errlog(ERR_WARNING,"UDPSink: netcap_udp_send()\n");
+    if (( number_bytes = netcap_udp_send( (char*)data, data_len, pkt )) < 0 ) {
+        perrlog( "netcap_udp_send" );
     }
 
     (*env)->ReleaseByteArrayElements( env, _data, data, 0 );
@@ -157,80 +131,5 @@ static eventmask_t   _poll ( mvpoll_key_t* key )
     return MVPOLLOUT;
 }
 
-/**
- * Accept the first packet that is in the session.
- */
-static int _accept_packet( char* data, int data_len, netcap_pkt_t* pkt )
-{
-    int packet_id = pkt->packet_id;
-    pkt->packet_id = 0;
-
-    struct iphdr* ip_header = NULL;
-    struct udphdr* udp_header = NULL;
-
-    u_int16_t ip_len = sizeof( struct iphdr ) + sizeof( struct udphdr ) + data_len;
-
-    int _critical_section() {
-        udp_header = (struct udphdr*)(((char*)ip_header) + sizeof( struct iphdr ));
-        
-        /* construct a zero length packet */
-        /* This is the size in words */
-        ip_header->ihl = sizeof( struct iphdr ) / 4;
-        ip_header->version = 4;
-        ip_header->tos = 0;
-        ip_header->tot_len = htons( ip_len );
-        /* xxxx this is bad */
-        ip_header->id = (u_int16_t)(packet_id * 67343 % 0x10000);
-        ip_header->frag_off = 0;
-        
-        ip_header->ttl = pkt->ttl - 1;
-        
-        ip_header->protocol = IPPROTO_UDP;
-        ip_header->check = 0;
-        ip_header->saddr = pkt->src.host.s_addr;
-        ip_header->daddr = pkt->dst.host.s_addr;
-        
-        /* Recalculate the checksum */
-        ip_header->check = unet_in_cksum((u_int16_t *)ip_header, sizeof( struct iphdr ));
-        
-        /* Fill in the UDP packet */
-        u_int16_t udp_len = sizeof( struct udphdr ) + data_len;
-        udp_header->source = (u_int16_t)htons( pkt->src.port );
-        udp_header->dest = (u_int16_t)htons( pkt->dst.port );
-        udp_header->len = htons( udp_len );
-        udp_header->check = 0;
-        /* Copy in the data */
-        memcpy( udp_header + 1, data, data_len );
-
-        udp_header->check = unet_udp_sum_calc( udp_len, (u_int8_t*)&ip_header->saddr, (u_int8_t*)&ip_header->daddr, (u_int8_t*)udp_header );
-        
-        debug( 10, "UDPSink: Sending packet using queue\n" );
-
-        /**
-         * accept the packet using NF_REPEAT with a special mark so that we won't get stuck in a loop
-         * an early rule in the tune chain checks for this mark and accepts the packet before it gets queued again
-         * The reason we do this instead of just NF_ACCEPT is so that we can save the correct QoS mark in the tune chain before sending the packet
-         */
-#define MARK_BYPASS 0x01000000
-        if ( netcap_set_verdict_mark( packet_id, NF_REPEAT, (u_char*)ip_header, ip_len, 1, (u_int32_t)pkt->nfmark | MARK_BYPASS )) {
-            return errlog( ERR_CRITICAL, "netcap_set_verdict\n" );
-        }
-        
-        return 0;
-    }
-
-    if (( ip_header = malloc( ip_len )) == NULL ) {
-        return errlog( ERR_CRITICAL, "UDP SESSION: malloc.\n" );
-    }
-    int ret = 0;
-    
-    if (( ret = _critical_section()) < 0 ) {
-        errlog( ERR_CRITICAL, "_critical_section\n" );
-    }
-
-    free( ip_header );
-    
-    return ret;
-}
 
 

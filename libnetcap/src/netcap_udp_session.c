@@ -184,28 +184,9 @@ static int _liberate_pkt( netcap_session_t* netcap_sess, netcap_pkt_t* pkt )
 {
     if ( pkt == NULL ) return errlogargs();
 
-    u_int32_t packet_id = netcap_sess->first_pkt_id;
-    netcap_sess->first_pkt_id = 0;
-    
     /* decrement the ttl on outgoing packets to discourage floods */
-    if ( 0 == pkt->ttl ) {
+    if ( pkt->ttl == 0 ) {
         debug( 10, "UDP_SESSION: dropping packet with TTL of zero.\n" );
-        
-        /* If the next packet has a TTL > 0, then it won't work, but is like a .0001 % case. */
-        if ( packet_id != 0 ) {
-            if ( netcap_set_verdict( packet_id, NF_DROP, NULL, 0 ) < 0 ) {
-                return errlog( ERR_CRITICAL, "netcap_set_verdict\n" );
-            }
-        }
-
-        /* If the packet also has a packet id, set the verdict on this packet as well. */
-        packet_id = pkt->packet_id;
-        pkt->packet_id = 0;
-        if ( packet_id != 0 ) {
-            if ( netcap_set_verdict( packet_id, NF_DROP, NULL, 0 ) < 0 ) {
-                return errlog( ERR_CRITICAL, "netcap_set_verdict\n" );
-            }
-        }
     } else {
         debug( 10, "UDP_SESSION: liberating a packet with TTL %d.\n", pkt->ttl );
         
@@ -216,47 +197,10 @@ static int _liberate_pkt( netcap_session_t* netcap_sess, netcap_pkt_t* pkt )
         pkt->is_marked = IS_MARKED_FORCE_FLAG;
         pkt->nfmark    = MARK_ANTISUB | MARK_LIBERATE | MARK_ANTISUB | MARK_DUPE;
        
-
-        if ( packet_id != 0 ) {
-            if ( netcap_set_verdict_mark( packet_id, NF_REPEAT, NULL, 0, 1, pkt->nfmark ) < 0 ) {  
-                return errlog( ERR_CRITICAL, "netcap_set_verdict_mark\n" );  
-            }
-
-            /* Nothing else to do */
-            if ( pkt->packet_id == 0 ) return 0;
-        }
-        
-        packet_id = pkt->packet_id;
-        pkt->packet_id = 0;
-
-        /* Actually release the packet */
-        /* have to determine which type of packet this is (use the nfqueued packet if possible) */
-        if ( packet_id != 0 ) {
-            if ( netcap_set_verdict_mark( packet_id, NF_REPEAT, NULL, 0, 1, pkt->nfmark ) < 0 ) {  
-                return errlog( ERR_CRITICAL, "netcap_set_verdict_mark\n" );  
-            }
-            packet_id = 0;
-        } else { 
-            /* XXX In order to make this work, the NATd address must be restored. XXXX */
-            /* !!!! ICMP or UDP !!!! */
-/*             switch ( pkt->proto ) { */
-/*             case IPPROTO_UDP: */
-/*                 if ( netcap_udp_send( pkt->data, pkt->data_len, pkt ) < 0 ) { */
-/*                     errlog( ERR_CRITICAL, "netcap_udp_send\n" );   */
-/*                 } */
-                
-                
-/*                 break; */
-                
-/*             case IPPROTO_ICMP: */
-/*                 netcap_icmp_send( pkt->data, pkt->data_len, pkt ); */
-/*                 break; */
-                
-/*             default: */
-/*                 return errlog( ERR_WARNING, "Unable to liberate packet of unknown protocol %d\n", */
-/*                                pkt->proto ); */
-/*             } */
-        }
+        /* XXX In order to make this work, the NATd address must be restored. XXXX */
+        if ( netcap_udp_send( (char*)pkt->data, pkt->data_len, pkt ) < 0 )  {
+            errlog( ERR_CRITICAL, "netcap_udp_send\n" );   
+        } 
     }
 
     return 0;

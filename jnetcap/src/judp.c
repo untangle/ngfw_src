@@ -426,55 +426,15 @@ JNIEXPORT void JNICALL JF_UDPSession( liberate )
 
 /*
  * Class:     com_untangle_jnetcap_NetcapUDPSession
- * Method:    transferFirstPacketID
- * Signature: (JII)I
- */
-JNIEXPORT void JNICALL JF_UDPSession( transferFirstPacketID )
-    ( JNIEnv *env, jclass _class, jlong session_ptr, jlong server_traffic_ptr )
-{
-    if ( session_ptr == 0 || server_traffic_ptr == 0 ) {
-        return (void)jmvutil_error( JMVUTIL_ERROR_ARGS, ERR_CRITICAL, "Invalid Arguments\n" );
-    }
-
-    netcap_session_t* session = (netcap_session_t*)JLONG_TO_ULONG( session_ptr );
-    netcap_pkt_t* server_traffic = (netcap_pkt_t*)JLONG_TO_ULONG( server_traffic_ptr );
-
-    debug( 10, "NetcapUDPSession: Transferring the first packet id\n" );
-
-    if ( session->first_pkt_id == 0 ) {
-        return (void)jmvutil_error( JMVUTIL_ERROR_ARGS, ERR_CRITICAL, "First packet ID is zero\n" );
-    }
-
-    if ( server_traffic->packet_id != 0 ) {
-        return (void)jmvutil_error( JMVUTIL_ERROR_ARGS, ERR_CRITICAL, "Packet ID is non-zero\n" );
-    }
-
-    /* Transfer the first packet id */
-    server_traffic->packet_id = session->first_pkt_id;
-    session->first_pkt_id = 0;
-}
-
-/*
- * Class:     com_untangle_jnetcap_NetcapUDPSession
  * Method:    setSessionMark
  * Signature: (JJI)I
  */
 JNIEXPORT void JNICALL JF_UDPSession( setSessionMark )
-    ( JNIEnv *env, jclass _class, jlong session_ptr, jlong server_traffic_ptr, jint mark )
+    ( JNIEnv *env, jclass _class, jlong session_ptr, jint mark )
 {
     netcap_session_t* session = (netcap_session_t*)JLONG_TO_ULONG( session_ptr );
-    netcap_pkt_t* server_traffic = (netcap_pkt_t*)JLONG_TO_ULONG( server_traffic_ptr );
-    int packet_id = 0;
     
-    if (server_traffic != NULL)
-        packet_id = server_traffic->packet_id;
-    
-    /**
-     * This updates the mark in the conntrack table directly
-     * However if the first packet ID still exists then it hasn't been released
-     * As such the conntrack entry doesn't exist yet so there is nothing to be done
-     */
-    if (session != NULL && session->first_pkt_id == 0 && packet_id == 0) 
+    if (session != NULL) 
         netcap_nfconntrack_update_mark( session, mark );
 }
 

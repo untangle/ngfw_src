@@ -84,9 +84,6 @@ public class NetcapUDPSession extends NetcapSession
      */
     public void serverComplete( IPTraffic serverTraffic )
     {
-        /* Move the first packet over to the server sink, this is used to confirm 
-         * The conntrack entry */
-        transferFirstPacketID( pointer.value(), serverTraffic.pointer());
         // serverComplete( pointer.value() );
     }
 
@@ -111,9 +108,7 @@ public class NetcapUDPSession extends NetcapSession
     {
         this.clientTraffic.mark(newmark);
 
-        /* ignore the packet specific bits */
-        /* pass in server traffic because it uses it to check for the first_packet_id */
-        setSessionMark(pointer.value(), this.serverTraffic.pointer(), newmark & 0xffffff00);
+        setSessionMark(pointer.value(), newmark & 0xffffff00);
     }
 
     @Override
@@ -127,9 +122,7 @@ public class NetcapUDPSession extends NetcapSession
     {
         this.serverTraffic.mark(newmark);
 
-        /* ignore the packet specific bits */
-        /* pass in server traffic because it uses it to check for the first_packet_id */
-        setSessionMark(pointer.value(), this.serverTraffic.pointer(), newmark & 0xffffff00);
+        setSessionMark(pointer.value(), newmark & 0xffffff00);
     }
     
     private static native long   read( long sessionPointer, boolean ifClient, int timeout );
@@ -159,11 +152,8 @@ public class NetcapUDPSession extends NetcapSession
     /* Complete a session that was previously captured */
 	private static native void serverComplete( long sessionPointer );
 
-    /* Move over the first packet ID in the session */
-    private static native void transferFirstPacketID( long sessionPointer, long serverTraffic );
-
     /* Set the Session mark */
-    private static native void setSessionMark( long sessionPointer, long serverTrafficPointer, int mark );
+    private static native void setSessionMark( long sessionPointer, int mark );
     
     class UDPSessionMailbox implements PacketMailbox
     {

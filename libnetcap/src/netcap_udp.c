@@ -1,21 +1,6 @@
-/*
- * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License, version 2,
- * as published by the Free Software Foundation.
- *
- * This program is distributed in the hope that it will be useful, but
- * AS-IS and WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE, TITLE, or
- * NONINFRINGEMENT.  See the GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
+/**
+ * $Id$
  */
-
 #include "netcap_udp.h"
 
 #include <stdlib.h>
@@ -64,12 +49,6 @@ static int _process_queue_pkt( netcap_pkt_t* pkt, u_char** full_pkt, int* full_p
  * Parse an UDP/IP header and set the received port.
  */
 static int _parse_udp_ip_header( netcap_pkt_t* pkt, char* header, int header_len, int buf_len );
-
-/**
- * This will release the first packet with a zero length header in order to
- * establish the conntrack session.
- */
-static int _insert_first_pkt( netcap_session_t* session, netcap_pkt_t* pkt );
 
 struct cmsghdr * my__cmsg_nxthdr(struct msghdr *msg, struct cmsghdr *cmsg, int size);
 
@@ -236,7 +215,6 @@ int  netcap_udp_recvfrom (int sock, void* buf, size_t len, int flags, netcap_pkt
     memcpy(&pkt->src.host,&cli.sin_addr,sizeof(struct in_addr));
     pkt->src.port = ntohs(cli.sin_port);
     pkt->proto = IPPROTO_UDP;
-    pkt->packet_id = 0;
     
     return pkt->data_len;
 }
@@ -310,13 +288,6 @@ int  netcap_udp_call_hooks (netcap_pkt_t* pkt, void* arg)
             full_pkt = NULL;
         }
         
-        if ( _insert_first_pkt( session, pkt ) < 0 ) {
-            netcap_udp_session_raze( !NC_SESSTABLE_LOCK, session );
-            //netcap_pkt_action_raze( pkt, NF_DROP );
-            SESSTABLE_UNLOCK();
-            return errlog( ERR_WARNING, "_insert_first_pkt\n" );
-        }
-
         SESSTABLE_UNLOCK();
 
         // XXX Right here if a packet comes through that matches the reverse
@@ -329,20 +300,7 @@ int  netcap_udp_call_hooks (netcap_pkt_t* pkt, void* arg)
         debug(10,"Calling UDP hook(s)\n");
         global_udp_hook(session,arg);
     } else {
-        /* Session has already started, so drop the packet (only need to accept the first one) */
-        int packet_id;
-        if (( packet_id = pkt->packet_id ) == 0 ) {
-            debug( 10, "UDP packet was already dropped or had zero id\n" );
-        } else {
-            pkt->packet_id = 0;
-            if ( netcap_set_verdict( packet_id, NF_DROP, NULL, 0 ) < 0 ) {
-                errlog( ERR_CRITICAL, "netcap_set_verdict\n" );
-                return -1;
-            }
-        }
-        
         netcap_intf_t intf;
-
 
         // Figure out the correct mailbox
         if ( pkt->src.host.s_addr == session->cli.cli.host.s_addr ) {
@@ -631,32 +589,6 @@ static int _parse_udp_ip_header( netcap_pkt_t* pkt, char* header, int header_len
     /* Update the packet length */
     pkt->data_len += header_len;
     
-    return 0;
-}
-
-static int _insert_first_pkt( netcap_session_t* session, netcap_pkt_t* pkt )
-{
-    /* Copy the packet id into the first_pkt structure */
-    session->first_pkt_id = pkt->packet_id;
-
-    if ( session->first_pkt_id == 0 ) {
-        if (_global_first_packet_flag) {
-            /**
-             * This is the first ever packet, which means its packet_id will actually be zero
-             * Unfortunately we use packet_id == 0 to mean there is no packet
-             * As such the easiest thing is to just drop this packet
-             */
-            _global_first_packet_flag = 0;
-            errlog( ERR_WARNING, "UDP: Dropping first packet\n" );
-            return -1;
-        } else {
-            errlog( ERR_WARNING, "UDP: Unexpected packet_id == 0, dropping\n" );
-        }
-        return 0;
-    }
-
-    pkt->packet_id = 0;
-
     return 0;
 }
 
