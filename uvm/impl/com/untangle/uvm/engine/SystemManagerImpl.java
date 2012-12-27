@@ -162,17 +162,6 @@ public class SystemManagerImpl implements SystemManager
     {
         logger.info("reconfigure()");
 
-        /* install support if necessary */
-        try {
-            if ( this.settings.getSupportEnabled()) {
-                UvmContextFactory.context().toolboxManager().install("untangle-support-agent");
-            } else {
-                UvmContextFactory.context().toolboxManager().uninstall("untangle-support-agent");
-            }
-        } catch ( Exception ex ) {
-            logger.error( "Unable to enable support", ex );
-        }
-
         /* sync SnmpSettings to disk */
         syncSnmpSettings(this.settings.getSnmpSettings());
     
