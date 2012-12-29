@@ -1615,7 +1615,7 @@ Ext.define("Ung.Node", {
     onBuyNowAction: function() {
         main.warnOnUpgrades(Ext.bind(function() {
             var libitem = this.name.replace("-node-","-libitem-");
-            main.openLibItemStore( this.name, Ext.String.format(i18n._("More Info - {0}"), this.displayName) );
+            main.openLibItemStore( libitem, Ext.String.format(i18n._("More Info - {0}"), this.displayName) );
         }, this));
     },
     getNode: function(handler) {
