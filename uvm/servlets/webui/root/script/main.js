@@ -878,13 +878,69 @@ Ext.define("Ung.Main", {
     // load Config
     loadConfig: function() {
         this.config =
-            [{"name":"networking","displayName":i18n._("Networking"),"iconClass":"icon-config-network","helpSource":"networking_config",handler: main.openNetworking},
-            {"name":"administration","displayName":i18n._("Administration"),"iconClass":"icon-config-admin","helpSource":"administration_config", className:"Ung.Administration", scriptFile:"administration.js", handler: main.openConfig},
-            {"name":"email","displayName":i18n._("Email"),"iconClass":"icon-config-email","helpSource":"email_config", className:"Ung.Email", scriptFile:"email.js", handler: main.openConfig},
-            {"name":"localDirectory","displayName":i18n._("Local Directory"),"iconClass":"icon-config-directory","helpSource":"local_directory_config", className:"Ung.LocalDirectory", scriptFile:"localDirectory.js", handler: main.openConfig},
-            {"name":"upgrade","displayName":i18n._("Upgrade"),"iconClass":"icon-config-upgrade","helpSource":"upgrade_config", className:"Ung.Upgrade", scriptFile:"upgrade.js", handler: main.openConfig},
-            {"name":"system","displayName":i18n._("System"),"iconClass":"icon-config-setup","helpSource":"system_config", className:"Ung.System", scriptFile:"system.js", handler: main.openConfig},
-            {"name":"systemInfo","displayName":i18n._("System Info"),"iconClass":"icon-config-support","helpSource":"system_info_config", className:"Ung.SystemInfo", scriptFile:"systemInfo.js", handler: main.openConfig}];
+            [{
+                "name":"networking",
+                "displayName":i18n._("Networking"),
+                "iconClass":"icon-config-network",
+                "helpSource":"networking_config",
+                handler: main.openNetworking
+            }, {
+                "name":"network",
+                "displayName":i18n._("Network"),
+                "iconClass":"icon-config-network",
+                "helpSource":"network_config",
+                "className":"Ung.Network",
+                "scriptFile":"network.js",
+                "handler": main.openConfig
+            }, {
+                "name":"administration",
+                "displayName":i18n._("Administration"),
+                "iconClass":"icon-config-admin",
+                "helpSource":"administration_config",
+                "className":"Ung.Administration",
+                "scriptFile":"administration.js",
+                "handler": main.openConfig
+            }, {
+                "name":"email",
+                "displayName":i18n._("Email"),
+                "iconClass":"icon-config-email",
+                "helpSource":"email_config",
+                "className":"Ung.Email",
+                "scriptFile":"email.js",
+                "handler": main.openConfig
+            }, {
+                "name":"localDirectory",
+                "displayName":i18n._("Local Directory"),
+                "iconClass":"icon-config-directory",
+                "helpSource":"local_directory_config",
+                "className":"Ung.LocalDirectory",
+                "scriptFile":"localDirectory.js",
+                "handler": main.openConfig
+            }, {
+                "name":"upgrade",
+                "displayName":i18n._("Upgrade"),
+                "iconClass":"icon-config-upgrade",
+                "helpSource":"upgrade_config",
+                "className":"Ung.Upgrade",
+                "scriptFile":"upgrade.js",
+                "handler": main.openConfig
+            }, {
+                "name":"system",
+                "displayName":i18n._("System"),
+                "iconClass":"icon-config-setup",
+                "helpSource":"system_config",
+                "className":"Ung.System",
+                "scriptFile":"system.js",
+                "handler": main.openConfig
+            }, {
+                "name":"systemInfo",
+                "displayName":i18n._("System Info"),
+                "iconClass":"icon-config-support",
+                "helpSource":"system_info_config",
+                "className":"Ung.SystemInfo",
+                "scriptFile":"systemInfo.js",
+                "handler": main.openConfig
+            }];
         this.buildConfig();
     },
     // build config buttons

@@ -12,15 +12,26 @@ import com.untangle.uvm.networking.InterfaceConfiguration;
 import com.untangle.uvm.networking.IPNetwork;
 import com.untangle.uvm.networking.NetworkConfigurationListener;
 import com.untangle.uvm.node.IPAddress;
+import com.untangle.uvm.NetworkSettings;
 import com.untangle.uvm.NetworkManager;
 
 public interface NetworkManager
 {
     /**
-     * Retrieve the network settings
+     * Retrieve the current network configuration
      */
     NetworkConfiguration getNetworkConfiguration();
 
+    /**
+     * Get the network settings
+     */
+    NetworkSettings getNetworkSettings();
+
+    /**
+     * Set the network settings
+     */
+    void setNetworkSettings( NetworkSettings newSettings );
+    
     /**
      * Save the network settings during the wizard.
      * This can double for refresh because it returns the new, populated network settings.
