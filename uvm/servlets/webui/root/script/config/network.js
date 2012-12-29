@@ -11,7 +11,7 @@ if (!Ung.hasResource["Ung.Network"]) {
                     this.cancelAction();
                 }, this)
             }, {
-                title: i18n._('System Info')
+                title: i18n._('Network')
             }];
             this.buildYay();
             
