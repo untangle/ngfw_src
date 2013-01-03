@@ -3213,7 +3213,7 @@ Ext.define('Ung.MonitorGrid', {
             }, this) 
         },{
             text: i18n._('Clear Grouping'),
-            tooltip: i18n._('Grouping be can be used by clicking on column headers arrow down menu and clicking Group by this field'),
+            tooltip: i18n._('Grouping can be used by clicking on column headers arrow down menu and clicking Group by this field'),
             handler: Ext.bind(function () {
                 this.getStore().clearGrouping();
             }, this) 
