@@ -96,8 +96,10 @@ public abstract class VirusNodeImpl extends NodeBase implements VirusNode
 
     private VirusSettings settings;
 
+    private EventLogQuery httpScannedEventQuery;
     private EventLogQuery httpInfectedEventQuery;
     private EventLogQuery httpCleanEventQuery;
+    private EventLogQuery mailScannedEventQuery;
     private EventLogQuery mailInfectedEventQuery;
     private EventLogQuery mailCleanEventQuery;
     
@@ -137,6 +139,11 @@ public abstract class VirusNodeImpl extends NodeBase implements VirusNode
 
         String vendor = scanner.getVendorName();
 
+        this.httpScannedEventQuery = new EventLogQuery(I18nUtil.marktr("Scanned Web Events"),
+                                                        " SELECT * FROM reports.n_http_events " + 
+                                                        " WHERE virus_" + vendor + "_clean IS NOT NULL" + 
+                                                        " AND policy_id = :policyId" + 
+                                                        " ORDER BY time_stamp DESC");
         this.httpInfectedEventQuery = new EventLogQuery(I18nUtil.marktr("Infected Web Events"),
                                                         " SELECT * FROM reports.n_http_events " + 
                                                         " WHERE virus_" + vendor + "_clean IS FALSE" + 
@@ -147,6 +154,12 @@ public abstract class VirusNodeImpl extends NodeBase implements VirusNode
                                                      " WHERE virus_" + vendor + "_clean IS TRUE" + 
                                                      " AND policy_id = :policyId" + 
                                                      " ORDER BY time_stamp DESC");
+        this.mailScannedEventQuery = new EventLogQuery(I18nUtil.marktr("Scanned Email Events"),
+                                                     " SELECT * FROM reports.n_mail_addrs " + 
+                                                        " WHERE addr_kind IN ('T', 'C')" +
+                                                        " AND virus_" + vendor + "_clean IS NOT NULL " + 
+                                                        " AND policy_id = :policyId" + 
+                                                        " ORDER BY time_stamp DESC");
         this.mailInfectedEventQuery = new EventLogQuery(I18nUtil.marktr("Infected Email Events"),
                                                      " SELECT * FROM reports.n_mail_addrs " + 
                                                         " WHERE addr_kind IN ('T', 'C')" +
@@ -192,12 +205,12 @@ public abstract class VirusNodeImpl extends NodeBase implements VirusNode
 
     public EventLogQuery[] getWebEventQueries()
     {
-        return new EventLogQuery[] { this.httpInfectedEventQuery, this.httpCleanEventQuery };
+        return new EventLogQuery[] { this.httpScannedEventQuery, this.httpInfectedEventQuery, this.httpCleanEventQuery };
     }
     
     public EventLogQuery[] getMailEventQueries()
     {
-        return new EventLogQuery[] { this.mailInfectedEventQuery, this.mailCleanEventQuery };
+        return new EventLogQuery[] { this.mailScannedEventQuery, this.mailInfectedEventQuery, this.mailCleanEventQuery };
     }
 
     public VirusBlockDetails getDetails( String nonce )
