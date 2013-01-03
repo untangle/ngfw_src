@@ -32,9 +32,6 @@ import com.untangle.uvm.vnet.NodeTCPSession;
 
 /**
  * Virus handler for HTTP.
- *
- * @author <a href="mailto:amread@untangle.com">Aaron Read</a>
- * @version 1.0
  */
 class VirusHttpHandler extends HttpStateMachine
 {
@@ -53,6 +50,7 @@ class VirusHttpHandler extends HttpStateMachine
     private int outstanding;
     private int totalSize;
     private String extension;
+    private String hostname;
     private File scanfile;
     private FileChannel outFile;
     private FileChannel inFile;
@@ -74,12 +72,12 @@ class VirusHttpHandler extends HttpStateMachine
     protected RequestLineToken doRequestLine(RequestLineToken requestLine)
     {
         String path = requestLine.getRequestUri().getPath();
-        if (null == path) {
-            extension = "";
+        
+        if ( path == null ) {
+            this.extension = "";
         } else {
             int i = path.lastIndexOf('.');
-            extension = (0 <= i && path.length() - 1 > i)
-                ? path.substring(i + 1) : null;
+            this.extension = (0 <= i && path.length() - 1 > i) ? path.substring(i + 1) : null;
 
             releaseRequest();
         }
@@ -89,17 +87,16 @@ class VirusHttpHandler extends HttpStateMachine
     @Override
     protected Header doRequestHeader(Header requestHeader)
     {
-        logger.debug("got a request header");
-
-        // no longer have a setting for blocking partial fetches
-        // it causes too many issues
-        //         if (null != requestHeader.getValue("range") && !node.getSettings().getAllowHttpResume()) {
-        //             String ua = requestHeader.getValue("user-agent");
-        //             if (!ua.startsWith("Microsoft BITS")) {
-        //                 requestHeader.removeField("range");
-        //             }
-        //         }
-
+        /* save hostname */
+        if ( this.hostname == null ) {
+            this.hostname = requestHeader.getValue("host");
+        }
+        if ( this.hostname == null ) {
+            RequestLineToken requestLine = getRequestLine();
+            if (requestLine != null)
+                this.hostname = requestLine.getRequestUri().normalize().getHost();
+        }
+        
         return requestHeader;
     }
 
@@ -129,6 +126,9 @@ class VirusHttpHandler extends HttpStateMachine
 
         if (null == rl || HttpMethod.HEAD == rl.getMethod()) {
             logger.debug("CONTINUE or HEAD");
+            this.scan = false;
+        } else if ( ignoredHost( this.hostname ) ) {
+            logger.debug("Ignoring downloads from: " + this.hostname);
             this.scan = false;
         } else if (matchesExtension(extension)) {
             logger.debug("matches extension");
@@ -416,5 +416,21 @@ class VirusHttpHandler extends HttpStateMachine
     {
         String con = header.getValue("connection");
         return null == con ? false : con.equalsIgnoreCase("keep-alive");
+    }
+
+    private boolean ignoredHost( String host )
+    {
+        if (host == null)
+            return false;
+        host = host.toLowerCase();
+        
+        if ("download.windowsupdate.com".equals(host))
+            return true;
+        if ("windowsupdate.microsoft.com".equals(host))
+            return true;
+        if ("update.microsoft.com".equals(host))
+            return true;
+
+        return false;
     }
 }
