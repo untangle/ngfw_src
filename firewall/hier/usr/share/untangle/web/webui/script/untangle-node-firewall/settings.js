@@ -89,44 +89,40 @@ if (!Ung.hasResource["Ung.Firewall"]) {
                         name: 'javaClass'
                     }],
                     columns: [{
-                                header: this.i18n._("Rule Id"),
-                                width: 50,
-                                dataIndex: 'ruleId',
-                                renderer: function(value) {
-                                    if (value < 0) {
-                                        return i18n._("new");
-                                    } else {
-                                        return value;
-                                    }
-                                }
-                            }, 
-                            {
-                                xtype:'checkcolumn',
-                                header: this.i18n._("Enable"),
-                                dataIndex: 'enabled',
-                                fixed: true,
-                                width:55
-                            },
-                            {
-                                header: this.i18n._("Description"),
-                                width: 200,
-                                dataIndex: 'description',
-                                flex:1
-                            },
-                            {
-                                xtype:'checkcolumn',
-                                header: this.i18n._("Block"),
-                                dataIndex: 'block',
-                                fixed: true,
-                                width:55
-                            },
-                            {
-                                xtype:'checkcolumn',
-                                header: this.i18n._("Flag"),
-                                dataIndex: 'flag',
-                                fixed: true,
-                                width:55
-                            }],
+                        header: this.i18n._("Rule Id"),
+                        width: 50,
+                        dataIndex: 'ruleId',
+                        renderer: function(value) {
+                            if (value < 0) {
+                                return i18n._("new");
+                            } else {
+                                return value;
+                            }
+                        }
+                    }, {
+                        xtype:'checkcolumn',
+                        header: this.i18n._("Enable"),
+                        dataIndex: 'enabled',
+                        fixed: true,
+                        width:55
+                    }, {
+                        header: this.i18n._("Description"),
+                        width: 200,
+                        dataIndex: 'description',
+                        flex:1
+                    }, {
+                        xtype:'checkcolumn',
+                        header: this.i18n._("Block"),
+                        dataIndex: 'block',
+                        fixed: true,
+                        width:55
+                    }, {
+                        xtype:'checkcolumn',
+                        header: this.i18n._("Flag"),
+                        dataIndex: 'flag',
+                        fixed: true,
+                        width:55
+                    }],
                     columnsDefaultSortable: false,
 
                     initComponent: function() {

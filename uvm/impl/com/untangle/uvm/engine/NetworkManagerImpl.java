@@ -52,7 +52,7 @@ public class NetworkManagerImpl implements NetworkManager
 
     private static final Object lock = new Object();
 
-    private NetworkSettings networkSettings;
+    private NetworkSettings networkSettings = new NetworkSettings();
     
     /* networkListeners stores parties interested in being notified of network changes */
     private Set<NetworkConfigurationListener> networkListeners = new HashSet<NetworkConfigurationListener>();

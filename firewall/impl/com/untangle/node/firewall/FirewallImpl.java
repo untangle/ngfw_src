@@ -317,7 +317,7 @@ public class FirewallImpl extends NodeBase implements Firewall
          */
         int idx = (this.nodeInstanceNum * 1000);
         for (FirewallRule rule : newSettings.getRules()) {
-            rule.setId(++idx);
+            rule.setRuleId(++idx);
 
             if (rule.getBlock())
                 rule.setFlag(true);

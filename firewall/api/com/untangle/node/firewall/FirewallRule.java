@@ -56,24 +56,6 @@ public class FirewallRule implements JSONString, Serializable
         this.matchers = matchers;
     }
 
-    /**
-     * Use RuleId instead
-     * Kept for backwards compatability
-     */
-    public Integer getId()
-    {
-        return this.ruleId;
-    }
-
-    /**
-     * Use RuleId instead
-     * Kept for backwards compatability
-     */
-    public void setId(Integer ruleId)
-    {
-        this.ruleId = ruleId;
-    }
-
     public Integer getRuleId()
     {
         return this.ruleId;
