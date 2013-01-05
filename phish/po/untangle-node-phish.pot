@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-08-09 15:36-0700\n"
+"POT-Creation-Date: 2013-01-04 16:39-0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -256,7 +256,7 @@ msgstr ""
 msgid "Spam detected"
 msgstr ""
 
-#: ../impl/com/untangle/node/phish/PhishNode.java:84
+#: ../impl/com/untangle/node/phish/PhishNode.java:80
 msgid "Blocked Web Events"
 msgstr ""
 
@@ -278,24 +278,4 @@ msgstr ""
 
 #: ../hier/usr/lib/python2.5/reports/node/untangle_node_phish.py:7
 msgid "Top Ten Phishing Victims"
-msgstr ""
-
-#: ../../uvm/servlets/blockpage/root/blockpage_template.jspx:71
-msgid "Host:"
-msgstr ""
-
-#: ../../uvm/servlets/blockpage/root/blockpage_template.jspx:72
-msgid "URL:"
-msgstr ""
-
-#: ../../uvm/servlets/blockpage/root/blockpage_template.jspx:74
-msgid "Reason:"
-msgstr ""
-
-#: ../../uvm/servlets/blockpage/root/blockpage_template.jspx:84
-msgid "Unblock For Now"
-msgstr ""
-
-#: ../../uvm/servlets/blockpage/root/blockpage_template.jspx:90
-msgid "Unblock Permanently"
 msgstr ""

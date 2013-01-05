@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-08-09 15:36-0700\n"
+"POT-Creation-Date: 2013-01-04 16:39-0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -48,23 +48,64 @@ msgid "Protocol"
 msgstr ""
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:15
-msgid "Directory Connector: Username"
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:317
+msgid "Username"
 msgstr ""
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:16
+msgid "Client Hostname"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:17
+msgid "Server Hostname"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:18
+msgid "Client in Penalty Box"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:19
+msgid "Server in Penalty Box"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:20
+msgid "Client has no Quota"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:21
+msgid "Server has no Quota"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:22
+msgid "Client has exceeded Quota"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:23
+msgid "Server has exceeded Quota"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:24
 msgid "Directory Connector: User in Group"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:40
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:63
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:25
+msgid "HTTP: Client User Agent"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:26
+msgid "HTTP: Client User OS"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:50
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:73
 msgid "Rules"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:46
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:56
 msgid "Note"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:47
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:57
 msgid ""
 " <b>Firewall</b> is a simple application designed to block and log network "
 "traffic based on a set of rules. To learn more click on the <b>Help</b> "
@@ -72,106 +113,114 @@ msgid ""
 "elsewhere in Config->Networking."
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:60
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:70
 msgid "[no description]"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:82
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:314
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:92
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:332
 msgid "Rule Id"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:87
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:97
 msgid "new"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:95
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:105
 msgid "Enable"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:101
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:206
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:111
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:216
 msgid "Description"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:108
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:239
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:118
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:249
 msgid "Block"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:115
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:251
-msgid "Log"
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:125
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:261
+msgid "Flag"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:198
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:208
 msgid "Enable Rule"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:212
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:222
 msgid "Rule"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:229
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:239
 msgid "Perform the following action(s):"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:237
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:247
 msgid "Action Type"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:239
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:249
 msgid "Pass"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:286
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:299
 msgid "Timestamp"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:294
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:307
 #: ../hier/usr/lib/python2.5/reports/node/untangle_node_firewall.py:385
 msgid "Client"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:299
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:312
 msgid "Client Port"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:304
-msgid "Username"
-msgstr ""
-
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:309
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:322
 #: ../hier/usr/lib/python2.5/reports/node/untangle_node_firewall.py:194
 #: ../hier/usr/lib/python2.5/reports/node/untangle_node_firewall.py:390
 msgid "Blocked"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:320
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:327
+msgid "Flagged"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:339
+msgid "none"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:345
 msgid "Server"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:325
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:350
 msgid "Server Port"
 msgstr ""
 
-#: ../impl/com/untangle/node/firewall/FirewallImpl.java:110
+#: ../impl/com/untangle/node/firewall/FirewallImpl.java:111
 msgid "All Events"
 msgstr ""
 
-#: ../impl/com/untangle/node/firewall/FirewallImpl.java:116
-msgid "Blocked Events"
-msgstr ""
-
-#: ../impl/com/untangle/node/firewall/FirewallImpl.java:122
-msgid "Sessions passed"
+#: ../impl/com/untangle/node/firewall/FirewallImpl.java:117
+msgid "Flagged Events"
 msgstr ""
 
 #: ../impl/com/untangle/node/firewall/FirewallImpl.java:123
-msgid "Sessions logged"
+msgid "Blocked Events"
 msgstr ""
 
-#: ../impl/com/untangle/node/firewall/FirewallImpl.java:124
+#: ../impl/com/untangle/node/firewall/FirewallImpl.java:129
+msgid "Sessions passed"
+msgstr ""
+
+#: ../impl/com/untangle/node/firewall/FirewallImpl.java:130
+msgid "Sessions flagged"
+msgstr ""
+
+#: ../impl/com/untangle/node/firewall/FirewallImpl.java:131
 msgid "Sessions blocked"
 msgstr ""
 

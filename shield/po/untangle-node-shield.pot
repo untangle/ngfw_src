@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-08-09 15:36-0700\n"
+"POT-Creation-Date: 2013-01-04 16:39-0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -125,23 +125,23 @@ msgstr ""
 msgid "type"
 msgstr ""
 
-#: ../impl/com/untangle/node/shield/ShieldNodeImpl.java:63
+#: ../impl/com/untangle/node/shield/ShieldNodeImpl.java:55
 msgid "Events"
 msgstr ""
 
-#: ../impl/com/untangle/node/shield/ShieldNodeImpl.java:65
+#: ../impl/com/untangle/node/shield/ShieldNodeImpl.java:57
 msgid "Sessions accepted"
 msgstr ""
 
-#: ../impl/com/untangle/node/shield/ShieldNodeImpl.java:66
+#: ../impl/com/untangle/node/shield/ShieldNodeImpl.java:58
 msgid "Sessions limited"
 msgstr ""
 
-#: ../impl/com/untangle/node/shield/ShieldNodeImpl.java:67
+#: ../impl/com/untangle/node/shield/ShieldNodeImpl.java:59
 msgid "Sessions dropped"
 msgstr ""
 
-#: ../impl/com/untangle/node/shield/ShieldNodeImpl.java:68
+#: ../impl/com/untangle/node/shield/ShieldNodeImpl.java:60
 msgid "Sessions rejected"
 msgstr ""
 

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-08-09 15:36-0700\n"
+"POT-Creation-Date: 2013-01-04 16:39-0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -694,35 +694,35 @@ msgstr ""
 msgid "OpenVPN Server Setup Wizard"
 msgstr ""
 
-#: ../impl/com/untangle/node/openvpn/VpnNodeImpl.java:104
+#: ../impl/com/untangle/node/openvpn/VpnNodeImpl.java:102
 msgid "Sessions passed"
 msgstr ""
 
-#: ../impl/com/untangle/node/openvpn/VpnNodeImpl.java:105
+#: ../impl/com/untangle/node/openvpn/VpnNodeImpl.java:103
 msgid "Clients Connected"
 msgstr ""
 
-#: ../impl/com/untangle/node/openvpn/VpnNodeImpl.java:107
+#: ../impl/com/untangle/node/openvpn/VpnNodeImpl.java:105
 msgid "Connections"
 msgstr ""
 
-#: ../impl/com/untangle/node/openvpn/OpenVpnManager.java:294
+#: ../impl/com/untangle/node/openvpn/OpenVpnManager.java:295
 msgid "Please input the following information into the \"VPN Client\" wizard."
 msgstr ""
 
-#: ../impl/com/untangle/node/openvpn/OpenVpnManager.java:295
+#: ../impl/com/untangle/node/openvpn/OpenVpnManager.java:296
 msgid "Server Address:"
 msgstr ""
 
-#: ../impl/com/untangle/node/openvpn/OpenVpnManager.java:296
+#: ../impl/com/untangle/node/openvpn/OpenVpnManager.java:297
 msgid "Passphrase:"
 msgstr ""
 
-#: ../impl/com/untangle/node/openvpn/OpenVpnManager.java:298
+#: ../impl/com/untangle/node/openvpn/OpenVpnManager.java:299
 msgid "Click here to download the OpenVPN client."
 msgstr ""
 
-#: ../impl/com/untangle/node/openvpn/OpenVpnManager.java:299
+#: ../impl/com/untangle/node/openvpn/OpenVpnManager.java:300
 msgid "Or copy and paste the following link into your Web Browser."
 msgstr ""
 
@@ -730,11 +730,11 @@ msgstr ""
 msgid "default"
 msgstr ""
 
-#: ../impl/com/untangle/node/openvpn/VpnNodeImpl.java:385
+#: ../impl/com/untangle/node/openvpn/VpnNodeImpl.java:362
 msgid "OpenVPN Client"
 msgstr ""
 
-#: ../impl/com/untangle/node/openvpn/VpnNodeImpl.java:596
+#: ../impl/com/untangle/node/openvpn/VpnNodeImpl.java:573
 msgid ""
 "You must configure OpenVPN as either a VPN Server or a VPN Client before you "
 "can turn it on.  You may do this through its Setup Wizard (in its settings)."

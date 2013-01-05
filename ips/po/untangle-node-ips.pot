@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-08-09 15:36-0700\n"
+"POT-Creation-Date: 2013-01-04 16:39-0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -147,54 +147,54 @@ msgstr ""
 msgid "Pass"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-ips/settings.js:347
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-ips/settings.js:346
 msgid "Timestamp"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-ips/settings.js:355
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-ips/settings.js:354
 #: ../hier/usr/lib/python2.5/reports/node/untangle_node_ips.py:262
 msgid "Client"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-ips/settings.js:360
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-ips/settings.js:359
 msgid "Username"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-ips/settings.js:365
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-ips/settings.js:364
 #: ../hier/usr/lib/python2.5/reports/node/untangle_node_ips.py:267
 msgid "Blocked"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-ips/settings.js:371
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-ips/settings.js:370
 msgid "Rule Id"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-ips/settings.js:377
-msgid "Rule Ddescription"
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-ips/settings.js:376
+msgid "Rule Description"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-ips/settings.js:383
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-ips/settings.js:382
 #: ../hier/usr/lib/python2.5/reports/node/untangle_node_ips.py:268
 msgid "Server"
 msgstr ""
 
-#: ../impl/com/untangle/node/ips/IpsNodeImpl.java:55
+#: ../impl/com/untangle/node/ips/IpsNodeImpl.java:54
 msgid "All Events"
 msgstr ""
 
-#: ../impl/com/untangle/node/ips/IpsNodeImpl.java:61
+#: ../impl/com/untangle/node/ips/IpsNodeImpl.java:60
 msgid "Blocked Events"
 msgstr ""
 
-#: ../impl/com/untangle/node/ips/IpsNodeImpl.java:70
+#: ../impl/com/untangle/node/ips/IpsNodeImpl.java:69
 msgid "Sessions scanned"
 msgstr ""
 
-#: ../impl/com/untangle/node/ips/IpsNodeImpl.java:71
+#: ../impl/com/untangle/node/ips/IpsNodeImpl.java:70
 msgid "Sessions logged"
 msgstr ""
 
-#: ../impl/com/untangle/node/ips/IpsNodeImpl.java:72
+#: ../impl/com/untangle/node/ips/IpsNodeImpl.java:71
 msgid "Sessions blocked"
 msgstr ""
 

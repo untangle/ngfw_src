@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-08-09 15:36-0700\n"
+"POT-Creation-Date: 2013-01-04 16:39-0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -132,23 +132,23 @@ msgstr ""
 msgid "Server"
 msgstr ""
 
-#: ../impl/com/untangle/node/protofilter/ProtoFilterImpl.java:52
+#: ../impl/com/untangle/node/protofilter/ProtoFilterImpl.java:50
 msgid "All Events"
 msgstr ""
 
-#: ../impl/com/untangle/node/protofilter/ProtoFilterImpl.java:58
+#: ../impl/com/untangle/node/protofilter/ProtoFilterImpl.java:56
 msgid "Blocked Events"
 msgstr ""
 
-#: ../impl/com/untangle/node/protofilter/ProtoFilterImpl.java:64
+#: ../impl/com/untangle/node/protofilter/ProtoFilterImpl.java:62
 msgid "Chunks scanned"
 msgstr ""
 
-#: ../impl/com/untangle/node/protofilter/ProtoFilterImpl.java:65
+#: ../impl/com/untangle/node/protofilter/ProtoFilterImpl.java:63
 msgid "Sessions logged"
 msgstr ""
 
-#: ../impl/com/untangle/node/protofilter/ProtoFilterImpl.java:66
+#: ../impl/com/untangle/node/protofilter/ProtoFilterImpl.java:64
 msgid "Sessions blocked"
 msgstr ""
 

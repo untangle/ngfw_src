@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-08-09 15:36-0700\n"
+"POT-Creation-Date: 2013-01-04 16:39-0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -235,6 +235,7 @@ msgstr ""
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:517
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:589
+#: ../hier/usr/lib/python2.5/reports/node/untangle_vm.py:537
 msgid "Port"
 msgstr ""
 
@@ -295,10 +296,328 @@ msgstr ""
 msgid "IP Address"
 msgstr ""
 
-#: ../impl/com/untangle/node/reporting/ReportingNodeImpl.java:358
+#: ../impl/com/untangle/node/reporting/ReportingNodeImpl.java:364
 msgid "Invalid Settings"
 msgstr ""
 
-#: ../impl/com/untangle/node/reporting/ReportingNodeImpl.java:358
+#: ../impl/com/untangle/node/reporting/ReportingNodeImpl.java:364
 msgid "has online access, but no password is set."
+msgstr ""
+
+#: ../hier/usr/lib/python2.5/reports/pdf.py:193
+msgid "Title Page"
+msgstr ""
+
+#: ../hier/usr/lib/python2.5/reports/pdf.py:197
+#: ../hier/usr/lib/python2.5/reports/pdf.py:218
+msgid "Table of Contents"
+msgstr ""
+
+#: ../hier/usr/lib/python2.5/reports/pdf.py:256
+#, python-format
+msgid "Page %d"
+msgstr ""
+
+#: ../hier/usr/lib/python2.5/reports/pdf.py:268
+msgid "day"
+msgstr ""
+
+#: ../hier/usr/lib/python2.5/reports/pdf.py:270
+msgid "days"
+msgstr ""
+
+#: ../hier/usr/lib/python2.5/reports/pdf.py:272
+msgid "Report for"
+msgstr ""
+
+#: ../hier/usr/lib/python2.5/reports/pdf.py:292
+msgid "Report"
+msgstr ""
+
+#: ../hier/usr/lib/python2.5/reports/pdf.py:317
+msgid "Highlights Summary"
+msgstr ""
+
+#: ../hier/usr/lib/python2.5/reports/pdf.py:318
+#: ../hier/usr/lib/python2.5/reports/__init__.py:471
+msgid "Highlights"
+msgstr ""
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_server.py:61
+#: ../hier/usr/lib/python2.5/reports/node/untangle_vm.py:106
+msgid "Summary Report"
+msgstr ""
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_server.py:91
+#: ../hier/usr/lib/python2.5/reports/node/untangle_server.py:143
+msgid "Free Memory"
+msgstr ""
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_server.py:130
+msgid "Avg Free Memory"
+msgstr ""
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_server.py:133
+msgid "Avg Cached Memory"
+msgstr ""
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_server.py:140
+#: ../hier/usr/lib/python2.5/reports/node/untangle_server.py:216
+#: ../hier/usr/lib/python2.5/reports/node/untangle_server.py:275
+#: ../hier/usr/lib/python2.5/reports/node/untangle_server.py:337
+#: ../hier/usr/lib/python2.5/reports/node/untangle_server.py:397
+#: ../hier/usr/lib/python2.5/reports/node/untangle_vm.py:638
+msgid "Time"
+msgstr ""
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_server.py:140
+msgid "Memory (MB)"
+msgstr ""
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_server.py:144
+msgid "Cached Memory"
+msgstr ""
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_server.py:150
+msgid "Cpu Load"
+msgstr ""
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_server.py:194
+msgid "Avg 1-min Load"
+msgstr ""
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_server.py:197
+msgid "Max 1-min Load"
+msgstr ""
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_server.py:200
+msgid "Avg 5-min Load"
+msgstr ""
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_server.py:203
+msgid "Max 5-min Load"
+msgstr ""
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_server.py:206
+msgid "Avg 15-min Load"
+msgstr ""
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_server.py:209
+msgid "Max 15-min Load"
+msgstr ""
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_server.py:216
+msgid "Load"
+msgstr ""
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_server.py:219
+msgid "1-min Load"
+msgstr ""
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_server.py:220
+msgid "5-min Load"
+msgstr ""
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_server.py:221
+msgid "15-min Load"
+msgstr ""
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_server.py:227
+msgid "Cpu Usage"
+msgstr ""
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_server.py:265
+msgid "Avg Cpu User"
+msgstr ""
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_server.py:268
+msgid "Avg Cpu System"
+msgstr ""
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_server.py:275
+msgid "CPU (%)"
+msgstr ""
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_server.py:278
+msgid "Cpu User"
+msgstr ""
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_server.py:279
+msgid "Cpu System"
+msgstr ""
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_server.py:285
+msgid "Disk Usage"
+msgstr ""
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_server.py:325
+#: ../hier/usr/lib/python2.5/reports/node/untangle_server.py:328
+msgid "Avg Disk Free"
+msgstr ""
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_server.py:337
+msgid "Disk (GB)"
+msgstr ""
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_server.py:341
+msgid "Free Disk"
+msgstr ""
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_server.py:347
+msgid "Swap Usage"
+msgstr ""
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_server.py:386
+msgid "Avg Swap Free"
+msgstr ""
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_server.py:389
+msgid "Avg Swap Used"
+msgstr ""
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_server.py:397
+msgid "Swap (MB)"
+msgstr ""
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_server.py:401
+msgid "Swap Used"
+msgstr ""
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_vm.py:319
+msgid "scanned"
+msgstr ""
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_vm.py:321
+#: ../hier/usr/lib/python2.5/reports/__init__.py:941
+msgid "GB"
+msgstr ""
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_vm.py:322
+msgid "and"
+msgstr ""
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_vm.py:323
+#: ../hier/usr/lib/python2.5/reports/node/untangle_vm.py:473
+msgid "sessions"
+msgstr ""
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_vm.py:358
+msgid "Bandwidth Usage"
+msgstr ""
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_vm.py:401
+msgid "Avg Data Rate"
+msgstr ""
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_vm.py:405
+msgid "Max Data Rate"
+msgstr ""
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_vm.py:407
+msgid "Data Transferred"
+msgstr ""
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_vm.py:415
+#: ../hier/usr/lib/python2.5/reports/node/untangle_vm.py:479
+msgid "Date"
+msgstr ""
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_vm.py:415
+msgid "Throughput (kB/s)"
+msgstr ""
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_vm.py:418
+#: ../hier/usr/lib/python2.5/reports/node/untangle_vm.py:482
+msgid "Usage"
+msgstr ""
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_vm.py:424
+msgid "Sessions per Minute"
+msgstr ""
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_vm.py:466
+msgid "Avg Sessions/Min"
+msgstr ""
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_vm.py:468
+#: ../hier/usr/lib/python2.5/reports/node/untangle_vm.py:471
+#: ../hier/usr/lib/python2.5/reports/node/untangle_vm.py:479
+#: ../hier/usr/lib/python2.5/reports/node/untangle_vm.py:531
+#: ../hier/usr/lib/python2.5/reports/node/untangle_vm.py:538
+msgid "Sessions"
+msgstr ""
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_vm.py:470
+msgid "Max Sessions/Min"
+msgstr ""
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_vm.py:473
+msgid "Total Sessions"
+msgstr ""
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_vm.py:488
+msgid "Top Destination Ports"
+msgstr ""
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_vm.py:546
+msgid "Top Penalty Box Hosts"
+msgstr ""
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_vm.py:579
+#: ../hier/usr/lib/python2.5/reports/node/untangle_vm.py:586
+msgid "seconds"
+msgstr ""
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_vm.py:585
+msgid "Address"
+msgstr ""
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_vm.py:632
+msgid "Administrative Logins Events"
+msgstr ""
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_vm.py:640
+msgid "Client Ip"
+msgstr ""
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_vm.py:641
+msgid "Login"
+msgstr ""
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_vm.py:642
+msgid "Success"
+msgstr ""
+
+#: ../hier/usr/lib/python2.5/reports/mailer.py:129
+#, python-format
+msgid "%s %s Report [%s]"
+msgstr ""
+
+#: ../hier/usr/lib/python2.5/reports/mailer.py:241
+msgid "This report has no detail data."
+msgstr ""
+
+#: ../hier/usr/lib/python2.5/reports/__init__.py:651
+#: ../hier/usr/lib/python2.5/reports/__init__.py:655
+msgid "Key Statistics"
+msgstr ""
+
+#: ../hier/usr/lib/python2.5/reports/__init__.py:898
+msgid "slice"
+msgstr ""
+
+#: ../hier/usr/lib/python2.5/reports/__init__.py:898
+msgid "value"
+msgstr ""
+
+#: ../hier/usr/lib/python2.5/reports/__init__.py:916
+msgid "Unknown"
+msgstr ""
+
+#: ../hier/usr/lib/python2.5/reports/__init__.py:933
+msgid "KB"
+msgstr ""
+
+#: ../hier/usr/lib/python2.5/reports/__init__.py:937
+msgid "MB"
 msgstr ""

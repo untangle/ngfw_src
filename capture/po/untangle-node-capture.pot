@@ -1,0 +1,701 @@
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-capture/settings.js:8
+msgid "Destination Address"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-capture/settings.js:9
+msgid "Destination Port"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-capture/settings.js:10
+msgid "Destination Interface"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-capture/settings.js:11
+msgid "Source Address"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-capture/settings.js:12
+msgid "Source Port"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-capture/settings.js:13
+msgid "Source Interface"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-capture/settings.js:14
+msgid "Protocol"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-capture/settings.js:15
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-capture/settings.js:1043
+msgid "Username"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-capture/settings.js:16
+msgid "Client Hostname"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-capture/settings.js:17
+msgid "Server Hostname"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-capture/settings.js:18
+msgid "Client in Penalty Box"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-capture/settings.js:19
+msgid "Server in Penalty Box"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-capture/settings.js:20
+msgid "Client has no Quota"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-capture/settings.js:21
+msgid "Server has no Quota"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-capture/settings.js:22
+msgid "Client has exceeded Quota"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-capture/settings.js:23
+msgid "Server has exceeded Quota"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-capture/settings.js:24
+msgid "Directory Connector: User in Group"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-capture/settings.js:25
+msgid "HTTP: Client User Agent"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-capture/settings.js:26
+msgid "HTTP: Client User OS"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-capture/settings.js:68
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-capture/settings.js:74
+msgid "Status"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-capture/settings.js:76
+msgid ""
+"Captive Portal allows administrators to require network users to complete a "
+"defined process, such as logging in or accepting a network usage policy, "
+"before accessing the internet."
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-capture/settings.js:93
+msgid "Active Sessions"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-capture/settings.js:94
+msgid "The Active Sessions list shows authenticated users."
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-capture/settings.js:102
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-capture/settings.js:104
+msgid "Refresh"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-capture/settings.js:128
+msgid "IP Address"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-capture/settings.js:132
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_capture.py:417
+msgid "User Name"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-capture/settings.js:136
+msgid "Login Time"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-capture/settings.js:141
+msgid "Last Activity"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-capture/settings.js:146
+msgid "Session Count"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-capture/settings.js:150
+msgid "Logout"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-capture/settings.js:172
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-capture/settings.js:178
+msgid "Capture Rules"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-capture/settings.js:180
+msgid ""
+"Network access is controlled based on the set of rules defined below. To "
+"learn more click on the <b>Help</b> button below."
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-capture/settings.js:192
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-capture/settings.js:406
+msgid "[no description]"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-capture/settings.js:195
+msgid "Rules"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-capture/settings.js:212
+msgid "Rule Id"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-capture/settings.js:217
+msgid "new"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-capture/settings.js:224
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-capture/settings.js:427
+msgid "Enable"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-capture/settings.js:229
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-capture/settings.js:323
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-capture/settings.js:449
+msgid "Description"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-capture/settings.js:235
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-capture/settings.js:351
+msgid "Capture"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-capture/settings.js:318
+msgid "Enable Rule"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-capture/settings.js:327
+msgid "Rule"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-capture/settings.js:342
+msgid "Perform the following action(s):"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-capture/settings.js:349
+msgid "Action Type"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-capture/settings.js:351
+msgid "Pass"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-capture/settings.js:365
+msgid "Pass Listed Client Addresses"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-capture/settings.js:371
+msgid "Pass Listed Server Addresses"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-capture/settings.js:380
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-capture/settings.js:388
+msgid "Passed Hosts"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-capture/settings.js:390
+msgid ""
+"The pass lists provide a quick alternative way to allow access from specific "
+"clients, or to specific servers."
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-capture/settings.js:434
+msgid "Log"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-capture/settings.js:440
+msgid "Address"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-capture/settings.js:482
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-capture/settings.js:488
+msgid "User Authentication"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-capture/settings.js:491
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-capture/settings.js:1078
+msgid "None"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-capture/settings.js:501
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-capture/settings.js:1080
+msgid "Local Directory"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-capture/settings.js:512
+msgid "Configure Local Directory"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-capture/settings.js:516
+msgid "RADIUS {0}(requires Directory Connector) {1}"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-capture/settings.js:530
+msgid "Configure RADIUS"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-capture/settings.js:534
+msgid "Active Directory {0}(requires Directory Connector) {1}"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-capture/settings.js:548
+msgid "Configure Active Directory"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-capture/settings.js:553
+msgid "Session Settings"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-capture/settings.js:562
+msgid "The Idle Timeout must be between 0 minutes and 24 hours."
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-capture/settings.js:563
+msgid "Idle Timeout (minutes)"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-capture/settings.js:564
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-capture/settings.js:581
+msgid "minutes"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-capture/settings.js:565
+msgid ""
+"Clients will be unauthenticated after this amount of idle time. They may re-"
+"authenticate immediately.  Use zero to disable."
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-capture/settings.js:580
+msgid "Timeout (minutes)"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-capture/settings.js:582
+msgid "The Timeout must be between 5 minutes and 24 hours."
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-capture/settings.js:583
+msgid ""
+"Clients will be unauthenticated after this amount of time regardless of "
+"activity. They may re-authenticate immediately."
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-capture/settings.js:592
+msgid "Allow Concurrent Logins"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-capture/settings.js:593
+msgid ""
+"This will allow multiple hosts to use the same username & password "
+"concurrently."
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-capture/settings.js:637
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-capture/settings.js:650
+msgid "Captive Page"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-capture/settings.js:653
+msgid "Basic Message"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-capture/settings.js:662
+msgid "Basic Login"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-capture/settings.js:671
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-capture/settings.js:1086
+msgid "Custom"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-capture/settings.js:681
+msgid "Captive Portal Page Configuration"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-capture/settings.js:686
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-capture/settings.js:762
+msgid "Page Title"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-capture/settings.js:698
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-capture/settings.js:775
+msgid "Welcome Text"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-capture/settings.js:711
+msgid "Username Text"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-capture/settings.js:723
+msgid "Password Text"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-capture/settings.js:737
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-capture/settings.js:790
+msgid "Message Text"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-capture/settings.js:749
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-capture/settings.js:827
+msgid "Lower Text"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-capture/settings.js:802
+msgid "Agree Checkbox"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-capture/settings.js:814
+msgid "Agree Text"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-capture/settings.js:858
+msgid "Upload Custom File"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-capture/settings.js:889
+msgid "Remove Custom File"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-capture/settings.js:896
+msgid "View Page"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-capture/settings.js:900
+msgid "Captive Portal is Disabled"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-capture/settings.js:901
+msgid "You must turn on the Captive Portal to preview the Captive Page."
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-capture/settings.js:906
+msgid "Unsaved Changes"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-capture/settings.js:907
+msgid "You must save your settings before previewing the page."
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-capture/settings.js:915
+msgid "Session Redirect"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-capture/settings.js:920
+msgid "Redirect URL"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-capture/settings.js:921
+msgid "Page to display after successful user authentication."
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-capture/settings.js:934
+msgid ""
+"NOTE: The Redirect URL field allows you to specify a page to display "
+"immediately after user authentication.  If you leave this field blank, users "
+"will instead be forwarded to their original destination."
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-capture/settings.js:943
+msgid "Missing Filename"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-capture/settings.js:944
+msgid "Click the Browse button to select a custom file to upload"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-capture/settings.js:952
+msgid "Please wait while uploading your custom captive portal page..."
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-capture/settings.js:963
+msgid "Custom Page Upload Success"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-capture/settings.js:972
+msgid "Custom Page Upload Failure"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-capture/settings.js:983
+msgid "Please wait while the previous custom file is removed..."
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-capture/settings.js:994
+msgid "Custom Page Remove Success"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-capture/settings.js:1003
+msgid "Custom Page Remove Failure"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-capture/settings.js:1012
+msgid "User Event Log"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-capture/settings.js:1030
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-capture/settings.js:1123
+msgid "Timestamp"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-capture/settings.js:1038
+msgid "Client"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-capture/settings.js:1049
+msgid "Action"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-capture/settings.js:1056
+#: ../impl/com/untangle/node/capture/CaptureNodeImpl.java:110
+#: ../impl/com/untangle/node/capture/CaptureNodeImpl.java:167
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_capture.py:36
+msgid "Login Success"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-capture/settings.js:1058
+#: ../impl/com/untangle/node/capture/CaptureNodeImpl.java:116
+#: ../impl/com/untangle/node/capture/CaptureNodeImpl.java:168
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_capture.py:37
+msgid "Login Failure"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-capture/settings.js:1060
+#: ../impl/com/untangle/node/capture/CaptureNodeImpl.java:122
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_capture.py:38
+msgid "Session Timeout"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-capture/settings.js:1062
+#: ../impl/com/untangle/node/capture/CaptureNodeImpl.java:128
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_capture.py:39
+msgid "Idle Timeout"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-capture/settings.js:1064
+#: ../impl/com/untangle/node/capture/CaptureNodeImpl.java:134
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_capture.py:40
+msgid "User Logout"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-capture/settings.js:1066
+#: ../impl/com/untangle/node/capture/CaptureNodeImpl.java:140
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_capture.py:41
+msgid "Admin Logout"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-capture/settings.js:1071
+msgid "Authentication"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-capture/settings.js:1082
+msgid "Active Directory"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-capture/settings.js:1084
+msgid "RADIUS"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-capture/settings.js:1097
+msgid "Rule Event Log"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-capture/settings.js:1119
+msgid "Rule ID"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-capture/settings.js:1131
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_capture.py:452
+msgid "Client Address"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-capture/settings.js:1136
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_capture.py:453
+msgid "Client Port"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-capture/settings.js:1141
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_capture.py:454
+msgid "Server Address"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-capture/settings.js:1146
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_capture.py:455
+msgid "Server Port"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-capture/settings.js:1151
+msgid "Captured"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-capture/settings.js:1174
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-capture/settings.js:1184
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-capture/settings.js:1193
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-capture/settings.js:1204
+msgid "Warning"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-capture/settings.js:1175
+msgid "Please correct any highlighted fields."
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-capture/settings.js:1185
+msgid "When using 'Basic Message', 'Authentication' must be set to 'None'."
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-capture/settings.js:1194
+msgid "When using 'Basic Message', 'Allow Concurrent Logins' must be enabled."
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-capture/settings.js:1205
+msgid "When using 'Basic Login', 'Authentication' cannot be set to 'None'."
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-capture/settings.js:1216
+msgid "Loading Config..."
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-capture/settings.js:1217
+msgid "Please wait"
+msgstr ""
+
+#: ../impl/com/untangle/node/capture/CaptureNodeImpl.java:105
+#: ../impl/com/untangle/node/capture/CaptureNodeImpl.java:158
+msgid "All Events"
+msgstr ""
+
+#: ../impl/com/untangle/node/capture/CaptureNodeImpl.java:146
+msgid "Capture Events"
+msgstr ""
+
+#: ../impl/com/untangle/node/capture/CaptureNodeImpl.java:152
+msgid "Pass Events"
+msgstr ""
+
+#: ../impl/com/untangle/node/capture/CaptureNodeImpl.java:164
+msgid "Sessions Allowed"
+msgstr ""
+
+#: ../impl/com/untangle/node/capture/CaptureNodeImpl.java:165
+msgid "Sessions Blocked"
+msgstr ""
+
+#: ../impl/com/untangle/node/capture/CaptureNodeImpl.java:166
+msgid "DNS Lookups"
+msgstr ""
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_capture.py:96
+msgid "Summary Report"
+msgstr ""
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_capture.py:136
+msgid "processed"
+msgstr ""
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_capture.py:137
+msgid "user login events"
+msgstr ""
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_capture.py:169
+msgid "Usage"
+msgstr ""
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_capture.py:263
+msgid "Average Logins"
+msgstr ""
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_capture.py:266
+msgid "Max Logins"
+msgstr ""
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_capture.py:269
+msgid "Average Failures"
+msgstr ""
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_capture.py:272
+msgid "Max Failures"
+msgstr ""
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_capture.py:275
+msgid "Average Timeouts"
+msgstr ""
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_capture.py:278
+msgid "Max Timeouts"
+msgstr ""
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_capture.py:281
+msgid "Average Logouts"
+msgstr ""
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_capture.py:284
+msgid "Max Logouts"
+msgstr ""
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_capture.py:287
+msgid "Average Events"
+msgstr ""
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_capture.py:290
+msgid "Max Events"
+msgstr ""
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_capture.py:300
+msgid "Events"
+msgstr ""
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_capture.py:303
+msgid "Logins"
+msgstr ""
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_capture.py:305
+msgid "Failures"
+msgstr ""
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_capture.py:307
+msgid "Timeouts"
+msgstr ""
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_capture.py:309
+msgid "Logouts"
+msgstr ""
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_capture.py:317
+msgid "Top Captive Portal Users"
+msgstr ""
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_capture.py:364
+msgid "Top Blocked Clients"
+msgstr ""
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_capture.py:394
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_capture.py:457
+msgid "Blocked"
+msgstr ""
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_capture.py:410
+msgid "Capture User Events"
+msgstr ""
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_capture.py:416
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_capture.py:451
+msgid "Time"
+msgstr ""
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_capture.py:418
+msgid "Type"
+msgstr ""
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_capture.py:445
+msgid "Capture Rule Events"
+msgstr ""
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_capture.py:456
+msgid "Rule Applied"
+msgstr ""
