@@ -2,7 +2,7 @@
 # untangle-node-webfiter and untangle-node-commtouchav are not needed since they rely on base-webfilter and base-virus
 ALL_MODULES='untangle-vm untangle-libuvm untangle-apache2-config untangle-net-alpaca untangle-casing-mail 
     untangle-base-virus untangle-base-webfilter untangle-node-adblocker 
-    untangle-node-firewall 
+    untangle-node-firewall untangle-node-capture
     untangle-node-ips untangle-node-openvpn untangle-node-phish 
     untangle-node-protofilter untangle-node-reporting untangle-node-shield 
     untangle-node-spamassassin untangle-node-spyware 
@@ -129,7 +129,7 @@ case "$1" in
     rm tmp_keys.pot
     update_po $1
     ;;
-"untangle-node-shield"|"untangle-node-protofilter"|"untangle-node-ips"|"untangle-node-firewall"|"untangle-node-reporting"|"untangle-node-adblocker"|"untangle-node-spamassassin")
+"untangle-node-shield"|"untangle-node-protofilter"|"untangle-node-ips"|"untangle-node-firewall"|"untangle-node-reporting"|"untangle-node-adblocker"|"untangle-node-spamassassin"|"untangle-node-capture")
     moduleName=`echo "$1"|cut -d"-" -f3`
     cd ../${moduleName}/po/
     echo 'get new keys'
