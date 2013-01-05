@@ -196,24 +196,20 @@ if (!Ung.hasResource["Ung.Firewall"]) {
                         Ung.EditorGrid.prototype.initComponent.call(this);
                     },
 
-                    rowEditorInputLines: [
-                        {
+                    rowEditorInputLines: [{
                             xtype:'checkbox',
                             name: "Enable Rule",
                             dataIndex: "enabled",
                             fieldLabel: this.i18n._("Enable Rule"),
                             itemCls:'firewall-spacing-1'
-                        }
-                        ,
-                        {
+                        }, {
                             xtype:'textfield',
                             name: "Description",
                             dataIndex: "description",
                             fieldLabel: this.i18n._("Description"),
                             itemCls:'firewall-spacing-1',
                             width: 500
-                        },
-                        {
+                        }, {
                             xtype:'fieldset',
                             title: this.i18n._("Rule") ,
                             cls:'firewall-spacing-2',
@@ -228,14 +224,12 @@ if (!Ung.hasResource["Ung.Firewall"]) {
                                 matchers: Ung.FirewallUtil.getMatchers(this),
                                 id:'builder'
                             }]
-                        },
-                        {
+                        }, {
                             xtype: 'fieldset',
                             cls:'description',
                             title: i18n._('Perform the following action(s):'),
                             border: false
-                        }, 
-                        {
+                        }, {
                             xtype: "combo",
                             name: "actionType",
                             allowBlank: false,
@@ -248,8 +242,7 @@ if (!Ung.hasResource["Ung.Firewall"]) {
                             queryMode: 'local',
                             triggerAction: 'all',
                             listClass: 'x-combo-list-small'
-                        }, 
-                        {
+                        }, {
                             xtype:'checkbox',
                             name: "Flag",
                             dataIndex: "flag",
