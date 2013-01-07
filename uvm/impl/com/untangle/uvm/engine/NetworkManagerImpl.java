@@ -24,7 +24,6 @@ import com.untangle.uvm.IntfConstants;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.UvmState;
 import com.untangle.uvm.NetworkManager;
-import com.untangle.uvm.NetworkSettings;
 import com.untangle.uvm.networking.InterfaceConfiguration;
 import com.untangle.uvm.networking.NetworkConfiguration;
 import com.untangle.uvm.networking.NetworkConfigurationListener;
@@ -52,8 +51,6 @@ public class NetworkManagerImpl implements NetworkManager
 
     private static final Object lock = new Object();
 
-    private NetworkSettings networkSettings = new NetworkSettings();
-    
     /* networkListeners stores parties interested in being notified of network changes */
     private Set<NetworkConfigurationListener> networkListeners = new HashSet<NetworkConfigurationListener>();
 
@@ -78,22 +75,6 @@ public class NetworkManagerImpl implements NetworkManager
             this.networkConfiguration.setDhcpServerEnabled(true);
         }
 
-    }
-
-    /**
-     * Get the network settings
-     */
-    public NetworkSettings getNetworkSettings()
-    {
-        return this.networkSettings;
-    }
-
-    /**
-     * Set the network settings
-     */
-    public void setNetworkSettings( NetworkSettings newSettings )
-    {
-        this.networkSettings = newSettings;
     }
 
     public void updateLinkStatus()

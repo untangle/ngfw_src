@@ -125,6 +125,7 @@ Ext.define("Ung.Main", {
         rpc.sessionMonitor = rpc.jsonrpc.UvmContext.sessionMonitor();
         
         // get network manager
+        rpc.newNetworkManager=rpc.jsonrpc.UvmContext.newNetworkManager();
         rpc.networkManager=rpc.jsonrpc.UvmContext.networkManager();
         this.hostName = rpc.networkManager.getNetworkConfiguration().hostname; 
         this.setDocumentTitle();

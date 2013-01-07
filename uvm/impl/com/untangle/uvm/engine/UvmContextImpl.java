@@ -33,6 +33,7 @@ import com.untangle.uvm.BrandingManager;
 import com.untangle.uvm.OemManager;
 import com.untangle.uvm.AlertManager;
 import com.untangle.uvm.CertificateManager;
+import com.untangle.uvm.NewNetworkManager;
 import com.untangle.uvm.NetworkManager;
 import com.untangle.uvm.ExecManager;
 import com.untangle.uvm.UvmException;
@@ -94,6 +95,7 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
     private LoggingManagerImpl loggingManager;
     private MailSenderImpl mailSender;
     private NetworkManagerImpl networkManager;
+    private NewNetworkManagerImpl newNetworkManager;
     private ConnectivityTesterImpl connectivityTester;
     private PipelineFoundryImpl pipelineFoundry;
     private ToolboxManagerImpl toolboxManager;
@@ -208,6 +210,11 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
         return this.networkManager;
     }
 
+    public NewNetworkManager newNetworkManager()
+    {
+        return this.newNetworkManager;
+    }
+    
     public ConnectivityTesterImpl getConnectivityTester()
     {
         return this.connectivityTester;
@@ -541,6 +548,7 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
         this.adminManager = new AdminManagerImpl();
 
         this.networkManager = new NetworkManagerImpl();
+        this.newNetworkManager = new NewNetworkManagerImpl();
 
         this.defaultLicenseManager = new DefaultLicenseManagerImpl();
 

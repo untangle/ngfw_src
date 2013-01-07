@@ -68,7 +68,8 @@ public interface UvmContext
      * @return the NetworkManager.
      */
     NetworkManager networkManager();
-
+    NewNetworkManager newNetworkManager();
+    
     /**
      * Get the <code>ConnectivityTester</code> singleton.
      *

@@ -31,6 +31,7 @@ if (!Ung.hasResource["Ung.Network"]) {
     Ext.define("Ung.Network", {
         extend: "Ung.ConfigWin",
         gridPortForwards: null,
+        gridNatRules: null,
         panelInterfaces: null,
         panelPortForwards: null,
         panelNatRules: null,
@@ -172,7 +173,7 @@ if (!Ung.hasResource["Ung.Network"]) {
                                         }
                                     }
                                 }
-                                return Ext.getCmp('builder').isDirty();
+                                return Ext.getCmp('portForwardBuilder').isDirty();
                             },
                             isFormValid: function() {
                                 for (var i = 0; i < this.inputLines.length; i++) {
@@ -234,7 +235,7 @@ if (!Ung.hasResource["Ung.Network"]) {
                                 width: 900,
                                 dataIndex: "matchers",
                                 matchers: Ung.NetworkUtil.getPortForwardMatchers(this),
-                                id:'builder'
+                                id:'portForwardBuilder'
                             }]
                         }, {
                             xtype: 'fieldset',
@@ -369,7 +370,7 @@ if (!Ung.hasResource["Ung.Network"]) {
                                         }
                                     }
                                 }
-                                return Ext.getCmp('builder').isDirty();
+                                return Ext.getCmp('natRuleBuilder').isDirty();
                             },
                             isFormValid: function() {
                                 for (var i = 0; i < this.inputLines.length; i++) {
@@ -431,7 +432,7 @@ if (!Ung.hasResource["Ung.Network"]) {
                                 width: 900,
                                 dataIndex: "matchers",
                                 matchers: Ung.NetworkUtil.getNatRuleMatchers(this),
-                                id:'builder'
+                                id:'natRuleBuilder'
                             }]
                         }, {
                             xtype: 'fieldset',
@@ -439,58 +440,55 @@ if (!Ung.hasResource["Ung.Network"]) {
                             title: i18n._('Perform the following action(s):'),
                             border: false
                         }, {
-                            xtype: "form",
-                            name: "Action",
-                            border: false,
-                            dataIndex: "action",
-                            defaults: {
-                                width: 350,
-                                labelWidth: 150
-                            },
-                            items: [{
-                                xtype: "combo",
-                                name: "auto",
-                                allowBlank: false,
-                                dataIndex: "auto",
-                                fieldLabel: this.i18n._("New Source"),
-                                editable: false,
-                                store: [[true,i18n._('Auto')], [false,i18n._('Custom')]],
-                                valueField: "value",
-                                displayField: "displayName",
-                                queryMode: 'local',
-                                triggerAction: 'all',
-                                listClass: 'x-combo-list-small',
-                                listeners: {
-                                    select: Ext.bind(function(combo, ewVal, oldVal) {
-                                        var form=this.gridNatRules.rowEditor.query('form[name="Action"]')[0];
-                                        form.syncRuleEditorComponents();
-                                    }, this )
-                                }
-                            }, {
-                                xtype:'textfield',
-                                name: "newSource",
-                                allowBlank: false,
-                                dataIndex: "newSource",
-                                fieldLabel: this.i18n._("New Source"),
-                                hidden: true,
-                                vtype: 'ipAddress'
-                            }],
-                            syncRuleEditorComponents: function () {
-                                var natType  = this.query('combo[name="auto"]')[0];
-                                var newSource = this.query('textfield[name="newSource"]')[0];
-
-                                newSource.disable();
-                                        
-                                switch(natType.value) {
-                                  case true:
-                                    break;
-                                  case false:
-                                    newSource.enable();
-                                    break;
-                                }
-                                newSource.setVisible(!newSource.disabled); 
+                            xtype: "combo",
+                            name: "auto",
+                            allowBlank: false,
+                            dataIndex: "auto",
+                            fieldLabel: this.i18n._("New Source"),
+                            editable: false,
+                            store: [[true,i18n._('Auto')], [false,i18n._('Custom')]],
+                            valueField: "value",
+                            displayField: "displayName",
+                            queryMode: 'local',
+                            triggerAction: 'all',
+                            listClass: 'x-combo-list-small',
+                            listeners: {
+                                select: Ext.bind(function(combo, ewVal, oldVal) {
+                                    if (combo.value == true) /* Auto */ {
+                                        Ext.getCmp('newSourceField').disable();
+                                        Ext.getCmp('newSourceField').setVisible(false);
+                                    } else {
+                                        Ext.getCmp('newSourceField').enable();
+                                        Ext.getCmp('newSourceField').setVisible(true);
+                                    }
+                                }, this )
                             }
-                        }]
+                        }, {
+                            id: 'newSourceField',
+                            xtype:'textfield',
+                            name: "newSource",
+                            allowBlank: false,
+                            dataIndex: "newSource",
+                            fieldLabel: this.i18n._("New Source"),
+                            hidden: true,
+                            vtype: 'ipAddress'
+                        }],
+                    
+                    syncRuleEditorComponents: function () {
+                        var natType  = this.query('combo[name="auto"]')[0];
+                        var newSource = this.query('textfield[name="newSource"]')[0];
+
+                        newSource.disable();
+                        
+                        switch(natType.value) {
+                          case true:
+                            break;
+                          case false:
+                            newSource.enable();
+                            break;
+                        }
+                        newSource.setVisible(!newSource.disabled); 
+                    }
                 })]
             });
         },
@@ -508,12 +506,12 @@ if (!Ung.hasResource["Ung.Network"]) {
         save: function (isApply) {
             this.saveSemaphore = 1;
             // save language settings
-            rpc.networkManager.setNetworkSettings(Ext.bind(function(result, exception) {
+            rpc.newNetworkManager.setNetworkSettings(Ext.bind(function(result, exception) {
                 this.afterSave(exception, isApply);
             }, this), this.settings);
         },
         refreshSettings: function() {
-            this.settings = rpc.networkManager.getNetworkSettings();
+            this.settings = rpc.newNetworkManager.getNetworkSettings();
         },
         afterSave: function(exception, isApply) {
             if(Ung.Util.handleException(exception)) return;
