@@ -513,6 +513,23 @@ if (!Ung.hasResource["Ung.Network"]) {
         refreshSettings: function() {
             this.settings = rpc.newNetworkManager.getNetworkSettings();
         },
+        beforeSave: function(isApply, handler) {
+            this.beforeSaveCount = 2;
+
+            this.gridPortForwards.getList(Ext.bind(function(saveList) {
+                this.settings.portForwards = saveList;
+                this.beforeSaveCount--;
+                if (this.beforeSaveCount <= 0)
+                    handler.call(this, isApply);
+            }, this));
+
+            this.gridNatRules.getList(Ext.bind(function(saveList) {
+                this.settings.natRules = saveList;
+                this.beforeSaveCount--;
+                if (this.beforeSaveCount <= 0)
+                    handler.call(this, isApply);
+            }, this));
+        },
         afterSave: function(exception, isApply) {
             if(Ung.Util.handleException(exception)) return;
 
