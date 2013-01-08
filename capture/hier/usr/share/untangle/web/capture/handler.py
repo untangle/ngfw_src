@@ -33,10 +33,33 @@ def index(req):
     # setup the global data
     global_data_setup(req,args['APPID'])
 
-    # pass the reqest object and arguments to the page generator
-    page = generate_page(req,args)
+    # if not using a custom capture page we generate and return a standard page
+    if (captureSettings['pageType'] != 'CUSTOM'):
+        page = generate_page(req,args)
+        return(page)
 
-    # return the login page we just created
+    # if we make it here they are using a custom page so we have to
+    # look to see if they are also using a custom.py script
+    rawpath = req.filename[:req.filename.rindex('/')] + "/custom_" + str(args['APPID']) + "/"
+    webpath = "/capture/custom_" + str(args['APPID']) + "/"
+
+    # found a custom.py file so load it up, grab the index function reference
+    # and call the index function to generate the capture page
+    if (os.path.exists(rawpath + "custom.py")):
+        cust = __import__(rawpath + "custom")
+        if not cust:
+            raise Exception("Unable to locate or import custom.py")
+        func = getattr(cust,"index")
+        if not func:
+            raise Exception("Unable to locate index function in custom.py")
+        if not hasattr(func,'__call__'):
+            raise Exception("The index in custom.py is not a callable function")
+        page = func(req,rawpath,webpath,str(args['APPID']),str(args['HOST']),str(args['URI']))
+    # no custom.py file so we generate the capture page ourselves
+    else:
+        page = generate_page(req,args)
+
+    # return the capture page we just created
     return(page)
 
 #-----------------------------------------------------------------------------
@@ -167,11 +190,14 @@ def custom_upload(req,upload_file,appid):
     if (not zipfile.is_zipfile(tempfile)):
         return extjs_reply(False,"%s is not a valid ZIP file" % upload_file.filename)
 
-    # open the file and look for the custom.html page
+    # open the file and look for the custom.html page or custom.py script
     zfile = zipfile.ZipFile("/tmp/custom.upload","r")
     zlist = zfile.namelist()
-    if (not 'custom.html' in zlist):
-        return extjs_reply(False,'The uploaded ZIP file does not contain custom.html')
+    checker = 0
+    if ('custom.html' in zlist): checker += 1
+    if ('custom.py' in zlist): checker += 1
+    if (checker == 0):
+        return extjs_reply(False,'The uploaded ZIP file does not contain custom.html or custom.py')
 
     # setup the message we return to the caller
     detail = "Extracted the following files from " + upload_file.filename + "&LT;HR&GT;"
@@ -382,9 +408,44 @@ def extjs_reply(status,message,filename=""):
 # into the page template files
 
 def replace_marker(page,marker,output):
+
     if not type(output) is str:
         output = output.encode("utf-8")
 
     page = page.replace(marker,output)
 
+    return(page)
+
+#-----------------------------------------------------------------------------
+# handler for custom.py integration which dynamically loads the custom.py
+# script and calls the handler function passing the apache request object,
+# full path to the custom files, and the appid.
+
+def custom_handler(req):
+
+    # first we need to extract the args so we can find the appid
+    args = split_args(req.args);
+
+    # make sure we have a valid appid
+    if (not 'APPID' in args):
+        raise Exception("The appid argument was not passed to custom_hander")
+
+    # construct the absolute and relative paths to the custom files
+    rawpath = req.filename[:req.filename.rindex('/')] + "/custom_" + str(args['APPID']) + "/"
+    webpath = "/capture/custom_" + str(args['APPID']) + "/"
+
+    # import the custom.py
+    cust = __import__(rawpath + "custom")
+    if not cust:
+        raise Exception("Unable to locate or import custom.py")
+
+    # get a reference to the handler function
+    func = getattr(cust,"handler")
+    if not func:
+        raise Exception("Unable to locate handler function in custom.py")
+    if not hasattr(func,'__call__'):
+        raise Exception("The handler in custom.py is not a callable function")
+
+    # call the handler and return anything we get back
+    page = func(req,rawpath,webpath,str(args['APPID']))
     return(page)
