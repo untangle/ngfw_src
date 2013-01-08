@@ -19,16 +19,20 @@ import com.untangle.uvm.network.NatRule;
 @SuppressWarnings("serial")
 public class NetworkSettings implements Serializable, JSONString
 {
-    List<PortForwardRule> portForwards = new LinkedList<PortForwardRule>();
-    List<NatRule> natRules = new LinkedList<NatRule>();
+    private List<InterfaceSettings> interfaces = null;
+    private List<PortForwardRule> portForwards = null;
+    private List<NatRule> natRules = null;
 
     public NetworkSettings() { }
 
     public List<PortForwardRule> getPortForwards() { return this.portForwards; }
-    public void setPortForwards( List<PortForwardRule> portForwards ) { this.portForwards = portForwards; }
+    public void setPortForwards( List<PortForwardRule> newportForwards ) { this.portForwards = newportForwards; }
 
     public List<NatRule> getNatRules() { return this.natRules; }
     public void setNatRules( List<NatRule> natRules ) { this.natRules = natRules; }
+
+    public List<InterfaceSettings> getInterfaces() { return this.interfaces; }
+    public void setInterfaces( List<InterfaceSettings> interfaces ) { this.interfaces = interfaces; }
     
     public String toJSONString()
     {

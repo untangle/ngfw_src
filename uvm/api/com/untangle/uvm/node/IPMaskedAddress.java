@@ -11,15 +11,7 @@ import java.util.LinkedList;
 import org.apache.log4j.Logger;
 
 /**
- * The class <code>IPMAddr</code> represents an (optionally) masked IP address.
- *
- * TODO: XXX
- * deal with address aliasing eventually (address bits non-zero in mask 0 area)
- * deal with masks only of form 1*0*
- * This implementation sux and should be refactored.
- *
- * @author <a href="mailto:jdi@untangle.com">John Irwin</a>
- * @version 1.0
+ * The class <code>IPMaskedAddress</code> represents a masked IP address.
  */
 @SuppressWarnings("serial")
 public class IPMaskedAddress implements Serializable, Comparable<IPMaskedAddress>
@@ -44,7 +36,7 @@ public class IPMaskedAddress implements Serializable, Comparable<IPMaskedAddress
      *
      * @param addr a <code>String</code> of the form addr
      */
-    public IPMaskedAddress(String addr)
+    public IPMaskedAddress( String addr )
     {
         if  (addr.contains("/")) {
             String[] strs = addr.split("/");
@@ -71,7 +63,7 @@ public class IPMaskedAddress implements Serializable, Comparable<IPMaskedAddress
      *
      * @param originalIPMaskedAddress an <code>IPMAddr</code> to be replicated
      */
-    public IPMaskedAddress(IPMaskedAddress originalIPMaskedAddress)
+    public IPMaskedAddress( IPMaskedAddress originalIPMaskedAddress )
     {
         if(originalIPMaskedAddress == null) {
             this.addr = null;
@@ -94,7 +86,7 @@ public class IPMaskedAddress implements Serializable, Comparable<IPMaskedAddress
      * @param addr a <code>String</code> of the form addr
      * @param numbits an <code>int</code> of the form maskbits
      */
-    public IPMaskedAddress(String addr, int numbits)
+    public IPMaskedAddress( String addr, int numbits )
     {
         this.addr = addr;
         this.mask = longToMask(numbits == 0 ? 0 : 0xffffffff << (32 - numbits));;
@@ -111,7 +103,7 @@ public class IPMaskedAddress implements Serializable, Comparable<IPMaskedAddress
      * @param addr a <code>String</code> of the form addr
      * @param mask a <code>String</code> of the form mask
      */
-    public IPMaskedAddress(String addr, String mask)
+    public IPMaskedAddress( String addr, String mask )
     {
         this.addr = addr;
         this.mask = mask;
@@ -123,7 +115,7 @@ public class IPMaskedAddress implements Serializable, Comparable<IPMaskedAddress
      * @param addr a <code>String</code> of the form addr
      * @param mask a <code>String</code> of the form mask
      */
-    public IPMaskedAddress(InetAddress addr, InetAddress mask)
+    public IPMaskedAddress( InetAddress addr, InetAddress mask )
     {
         this(addr.getHostAddress(),mask.getHostAddress());
     }
@@ -135,7 +127,7 @@ public class IPMaskedAddress implements Serializable, Comparable<IPMaskedAddress
      * @param addr a <code>String</code> of the form addr
      * @param mask a <code>String</code> of the form mask
      */
-    public IPMaskedAddress(InetAddress addr)
+    public IPMaskedAddress( InetAddress addr )
     {
         this(addr.getHostAddress());
     }
@@ -230,8 +222,7 @@ public class IPMaskedAddress implements Serializable, Comparable<IPMaskedAddress
             otherMaddr.isAny())
             return true;
 
-        return intersects(textToNumericFormat(addr), maskNumBits(),
-                          textToNumericFormat(otherMaddr.addr), otherMaddr.maskNumBits());
+        return intersects(textToNumericFormat(addr), maskNumBits(), textToNumericFormat(otherMaddr.addr), otherMaddr.maskNumBits());
     }
 
     /**
@@ -252,8 +243,7 @@ public class IPMaskedAddress implements Serializable, Comparable<IPMaskedAddress
                           testAddr.getAddress(), 32);
     }
 
-    private static boolean intersects(byte[] addr1, int maskBits1,
-                                      byte[] addr2, int maskBits2)
+    private static boolean intersects(byte[] addr1, int maskBits1, byte[] addr2, int maskBits2)
     {
         // Choose the shortest way
         int minBits = (maskBits1 < maskBits2 ? maskBits1 : maskBits2);

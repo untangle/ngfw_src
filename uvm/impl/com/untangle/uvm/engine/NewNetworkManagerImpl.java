@@ -3,12 +3,17 @@
  */
 package com.untangle.uvm.engine;
 
+import java.util.LinkedList;
+
 import org.apache.log4j.Logger;
 
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.SettingsManager;
 import com.untangle.uvm.NewNetworkManager;
 import com.untangle.uvm.network.NetworkSettings;
+import com.untangle.uvm.network.InterfaceSettings;
+import com.untangle.uvm.network.NatRule;
+import com.untangle.uvm.network.PortForwardRule;
 
 /**
  * The Network Manager handles all the network configuration
@@ -17,7 +22,7 @@ public class NewNetworkManagerImpl implements NewNetworkManager
 {
     private final Logger logger = Logger.getLogger(this.getClass());
 
-    private NetworkSettings networkSettings = new NetworkSettings();
+    private NetworkSettings networkSettings;
 
     protected NewNetworkManagerImpl()
     {
@@ -59,13 +64,14 @@ public class NewNetworkManagerImpl implements NewNetworkManager
      */
     public void setNetworkSettings( NetworkSettings newSettings )
     {
-        this.networkSettings = newSettings;
-        this._setSettings( this.networkSettings );
+        this._setSettings( newSettings );
         
     }
 
-    private void _setSettings( NetworkSettings newSettings )
+    private synchronized void _setSettings( NetworkSettings newSettings )
     {
+        this.networkSettings = newSettings;
+
         /**
          * Save the settings
          */
@@ -81,14 +87,30 @@ public class NewNetworkManagerImpl implements NewNetworkManager
          * Change current settings
          */
         this.networkSettings = newSettings;
-        try {logger.debug("New Settings: \n" + new org.json.JSONObject(this.networkSettings).toString(2));} catch (Exception e) {}
+        try {logger.warn("New Settings: \n" + new org.json.JSONObject(this.networkSettings).toString(2));} catch (Exception e) {}
 
         this.reconfigure();
     }
     
     private NetworkSettings defaultSettings()
     {
-        return new NetworkSettings();
+        NetworkSettings newSettings = new NetworkSettings();
+
+        LinkedList<InterfaceSettings> interfaces = new LinkedList<InterfaceSettings>();
+        interfaces.add( new InterfaceSettings( 1, "External", "eth0", "br.eth0", "dhcp", true) );
+        interfaces.add( new InterfaceSettings( 2, "Internal", "eth1", "eth1", "static", true) );
+        interfaces.add( new InterfaceSettings( 3, "DMZ", "eth2", "br.eth0", "bridged", true) );
+        interfaces.add( new InterfaceSettings( 3, "Wireless", "eth3", "eth3", "static", true) );
+        interfaces.add( new InterfaceSettings( 100, "External VLAN 2", "eth0.1", "eth0.1", "static", true) );
+        newSettings.setInterfaces(interfaces);
+
+        LinkedList<PortForwardRule> portForwards = new LinkedList<PortForwardRule>();
+        newSettings.setPortForwards( portForwards );
+
+        LinkedList<NatRule> natRules = new LinkedList<NatRule>();
+        newSettings.setNatRules( natRules );
+
+        return newSettings;
     }
 
     private void reconfigure() 
