@@ -34,6 +34,9 @@ public class SystemSettings implements Serializable, JSONString
     private String publicUrlAddress;
     private int publicUrlPort;
 
+    private String hostname;
+    private String domainNameSuffix;
+    
     private boolean autoUpgrade;
     private DayOfWeekMatcher autoUpgradeDays;
     private int autoUpgradeHour   = 2;
@@ -147,6 +150,18 @@ public class SystemSettings implements Serializable, JSONString
     public int getAutoUpgradeMinute() { return autoUpgradeMinute; }
     public void setAutoUpgradeMinute( int newValue) { this.autoUpgradeMinute = newValue; }
 
+    /**
+     * Sets the hostname of this server
+     */
+    public String getHostname() { return this.hostname; }
+    public void setHostname( String newValue ) { this.hostname = newValue; }
+
+    /**
+     * Sets the hostname of this server
+     */
+    public String getDomainNameSuffix() { return this.domainNameSuffix; }
+    public void setDomainNameSuffix( String newValue ) { this.domainNameSuffix = newValue; }
+    
     /**
      * Get the current settings version
      */

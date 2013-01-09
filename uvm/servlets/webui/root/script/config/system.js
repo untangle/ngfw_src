@@ -3,6 +3,7 @@ if (!Ung.hasResource["Ung.System"]) {
 
     Ext.define("Ung.System", {
         extend: "Ung.ConfigWin",
+        panelHostname: null,
         panelSupport: null,
         panelBackup: null,
         panelRestore: null,
@@ -24,13 +25,14 @@ if (!Ung.hasResource["Ung.System"]) {
             } else {
                 this.downloadLanguageHTML='';
             }
+            this.buildHostname();
             this.buildSupport();
             this.buildBackup();
             this.buildRestore();
             this.buildProtocolSettings();
             this.buildRegionalSettings();
             // builds the tab panel with the tabs
-            this.buildTabPanel([this.panelSupport, this.panelBackup, this.panelRestore, this.panelProtocolSettings, this.panelRegionalSettings]);
+            this.buildTabPanel([this.panelHostname, this.panelSupport, this.panelBackup, this.panelRestore, this.panelProtocolSettings, this.panelRegionalSettings]);
             if (!this.isHttpLoaded() && !this.isFtpLoaded() && !this.isMailLoaded() ) {
                 this.panelProtocolSettings.disable();
             }
@@ -48,7 +50,7 @@ if (!Ung.hasResource["Ung.System"]) {
             }
             return this.rpc.languageSettings;
         },
-        getAccessSettings: function(forceReload) {
+        getSystemSettings: function(forceReload) {
             if (forceReload || this.rpc.accessSettings === undefined) {
                 try {
                     this.rpc.accessSettings = rpc.systemManager.getSettings();
@@ -147,6 +149,53 @@ if (!Ung.hasResource["Ung.System"]) {
             }
             return this.rpc.timeZone;
         },
+        buildHostname: function() {
+            this.panelHostname = Ext.create('Ext.panel.Panel',{
+                // private fields
+                name: "Hostname",
+                helpSource: "hostname",
+                parentId: this.getId(),
+                title: this.i18n._("Hostname"),
+                cls: "ung-panel",
+                autoScroll: true,
+                items: [{
+                    xtype: "fieldset",
+                    title: this.i18n._("Hostname"),
+                    items: [{
+                        xtype: 'textfield',
+                        name: 'Hostname',
+                        fieldLabel: this.i18n._("Hostname"),
+                        id: 'hostname',
+                        boxLabel: '(' + this.i18n._('example') + ':' + 'hostname.example.com' + ')',
+                        width: 300,
+                        value: this.getSystemSettings().hostname,
+                        listeners: {
+                            "change": {
+                                fn: Ext.bind(function(elem, newValue) {
+                                    this.getSystemSettings().hostname = newValue;
+                                }, this)
+                            }
+                        }
+                    },{
+                        xtype: 'textfield',
+                        name: 'Domain Name Suffix',
+                        fieldLabel: this.i18n._("Domain Name Suffix"),
+                        id: 'domain_name',
+                        boxLabel: '(' + this.i18n._('example') + ':' + 'example.com' + ')',
+                        width: 300,
+                        value: this.getSystemSettings().domainNameSuffix,
+                        listeners: {
+                            "change": {
+                                fn: Ext.bind(function(elem, newValue) {
+                                    this.getSystemSettings().domainNameSuffix = newValue;
+                                }, this)
+                            }
+                        }
+                    }]
+                }]
+            });
+
+        },
         buildSupport: function() {
             this.panelSupport = Ext.create('Ext.panel.Panel',{
                 // private fields
@@ -164,11 +213,11 @@ if (!Ung.hasResource["Ung.System"]) {
                         name: "Allow secure access to your server for support purposes",
                         boxLabel: Ext.String.format(this.i18n._("{0}Allow{1} secure access to your server for support purposes."), "<b>", "</b>"),
                         hideLabel: true,
-                        checked: this.getAccessSettings().supportEnabled,
+                        checked: this.getSystemSettings().supportEnabled,
                         listeners: {
                             "change": {
                                 fn: Ext.bind(function(elem, newValue) {
-                                    this.getAccessSettings().supportEnabled = newValue;
+                                    this.getSystemSettings().supportEnabled = newValue;
                                 }, this)
                             }
                         }
@@ -835,7 +884,7 @@ if (!Ung.hasResource["Ung.System"]) {
             // save network settings
             rpc.systemManager.setSettings(Ext.bind(function(result, exception) {
                 this.afterSave(exception, isApply);
-            }, this), this.getAccessSettings());
+            }, this), this.getSystemSettings());
 
             // save http settings
             if (this.isHttpLoaded()) {
