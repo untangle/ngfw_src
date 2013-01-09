@@ -95,7 +95,7 @@ if (!Ung.hasResource["Ung.Shield"]) {
                     editor: {
                         xtype:'textfield',
                         allowBlank: false,
-                        vtype: 'ipAddress'
+                        vtype: 'ipMatcher'
                     }
                 }, {
                     header: this.i18n._("User Count"),
@@ -147,7 +147,7 @@ if (!Ung.hasResource["Ung.Shield"]) {
                     fieldLabel: this.i18n._("Address"),
                     allowBlank: false,
                     width: 400,
-                    vtype: 'ipAddress'
+                    vtype: 'ipMatcher'
                 }, {
                     xtype:'combo',
                     name: "User Count",

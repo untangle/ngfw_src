@@ -433,41 +433,46 @@ Ext.define("Ung.Main", {
     // Add the additional 'advanced' VTypes
     initExtVTypes: function() {
         Ext.apply(Ext.form.VTypes, {
-          ipAddress: function(val) {
-              if ( val.indexOf("/") == -1 && val.indexOf(",") == -1 && val.indexOf("-") == -1) {
-                  switch(val) {
+            ipMatcher: function(val) {
+                if ( val.indexOf("/") == -1 && val.indexOf(",") == -1 && val.indexOf("-") == -1) {
+                    switch(val) {
                       case 'any':
-                          return true;
-                      default:
-                          return Ung.RuleValidator.isSingleIpValid(val);
-                  }
-              }
-              if ( val.indexOf(",") != -1) {
-                  return Ung.RuleValidator.isIpListValid(val);
-              } else {
-                  if ( val.indexOf("-") != -1) {
-                      return Ung.RuleValidator.isIpRangeValid(val);
-                  }
-                  if ( val.indexOf("/") != -1) {
-                      var cidrValid = Ung.RuleValidator.isCIDRValid(val);
-                      var ipNetmaskValid = Ung.RuleValidator.isIpNetmaskValid(val);
-                      return cidrValid || ipNetmaskValid;
-                  }
-                  console.log("Unhandled case while handling vtype for ipAddr:", val, " returning true !");
-                  return true;
-              }
-          },
-          ipAddressText: i18n._('Invalid IP Address.'),
+                        return true;
+                    default:
+                        return Ung.RuleValidator.isSingleIpValid(val);
+                    }
+                }
+                if ( val.indexOf(",") != -1) {
+                    return Ung.RuleValidator.isIpListValid(val);
+                } else {
+                    if ( val.indexOf("-") != -1) {
+                        return Ung.RuleValidator.isIpRangeValid(val);
+                    }
+                    if ( val.indexOf("/") != -1) {
+                        var cidrValid = Ung.RuleValidator.isCIDRValid(val);
+                        var ipNetmaskValid = Ung.RuleValidator.isIpNetmaskValid(val);
+                        return cidrValid || ipNetmaskValid;
+                    }
+                    console.log("Unhandled case while handling vtype for ipAddr:", val, " returning true !");
+                    return true;
+                }
+            },
+            ipMatcherText: i18n._('Invalid IP Address.'),
 
-          ipAddressMatcher: function(val) {
-            var ipAddrMaskRe = /^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/;
-            return ipAddrMaskRe.test(val);
-          },
-          ipAddressMatcherText: i18n._('Invalid IP Address.'),
+            ipAddress: function(val) {
+                var ipAddrMaskRe = /^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/;
+                return ipAddrMaskRe.test(val);
+            },
+            ipAddressText: i18n._('Invalid IP Address.'),
 
-          port: function(val) {
-            switch(val) {
-                case 'any':
+            cidrBlock:  function(v) {
+                return (/^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\/\d{1,2}$/.test(v));
+            },
+            cidrBlockText: i18n._('Must be a network in CIDR format.') + ' ' + '(192.168.123.0/24)',
+            
+            portMatcher: function(val) {
+                switch(val) {
+                  case 'any':
                     return true;
                 default:
                     if ( val.indexOf('-') == -1 && val.indexOf(',') == -1) {
@@ -477,25 +482,25 @@ Ext.define("Ung.Main", {
                         return Ung.RuleValidator.isPortRangeValid(val);
                     }
                     return Ung.RuleValidator.isPortListValid(val);
-            }
-          },
-          portText: Ext.String.format(i18n._("The port must be an integer number between {0} and {1}."), 1, 65535),
+                }
+            },
+            portMatcherText: Ext.String.format(i18n._("The port must be an integer number between {0} and {1}."), 1, 65535),
 
-          portMatcher: function(val) {
-            var minValue = 1;
-            var maxValue = 65535;
-            return (minValue <= val && val <= maxValue) || (val == 'any' || val == 'all' || val == 'n/a' || val == 'none');
-          },
-          portMatcherText: Ext.String.format(i18n._("The port must be an integer number between {0} and {1} or one of the following values: any, all, n/a, none."), 1, 65535),
+            port: function(val) {
+                var minValue = 1;
+                var maxValue = 65535;
+                return (minValue <= val && val <= maxValue) || (val == 'any' || val == 'all' || val == 'n/a' || val == 'none');
+            },
+            portText: Ext.String.format(i18n._("The port must be an integer number between {0} and {1} or one of the following values: any, all, n/a, none."), 1, 65535),
 
-          password: function(val) {
-            if (field.initialPassField) {
-              var pwd = Ext.getCmp(field.initialPassField);
-              return (val == pwd.getValue());
-            }
-            return true;
-          },
-          passwordText: i18n._('Passwords do not match')
+            password: function(val) {
+                if (field.initialPassField) {
+                    var pwd = Ext.getCmp(field.initialPassField);
+                    return (val == pwd.getValue());
+                }
+                return true;
+            },
+            passwordText: i18n._('Passwords do not match')
         });
     },
     upgrade: function () {

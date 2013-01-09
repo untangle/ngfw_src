@@ -6247,8 +6247,8 @@ Ext.define('Ung.RuleBuilder', {
                 new_value.replace("&&","");
             }
             switch (record.get('vtype')) {
-                case "port": 
-                    if ( !Ext.form.field.VTypes.port(new_value)) {
+                case "portMatcher": 
+                    if ( !Ext.form.field.VTypes.portMatcher(new_value)) {
                         valObj.value='';
                         valObj.select();
                         valObj.setAttribute('style','border:1px #C30000 solid');
@@ -6257,8 +6257,8 @@ Ext.define('Ung.RuleBuilder', {
                         record.data.value=new_value;
                     }
                     break;
-                case "ipAddress": 
-                    if ( !Ext.form.field.VTypes.ipAddress(new_value)) {
+                case "ipMatcher": 
+                    if ( !Ext.form.field.VTypes.ipMatcher(new_value)) {
                         valObj.value='';
                         valObj.select();
                         valObj.setAttribute('style','border:1px #C30000 solid');
