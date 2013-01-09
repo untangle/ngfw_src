@@ -1,3 +1,72 @@
+Ext.define('Ung.InterfaceEditorWindow', {
+    extend:'Ung.UpdateWindow',
+    validate: null,
+    record: null,
+    initialRecordData: null,
+    sizeToGrid: true,
+    sizeToComponent: null,
+    title: i18n._('Edit Interface'),
+    initComponent: function() {
+        if (this.title == null) {
+            this.title = i18n._('Edit Interface');
+        }
+        if(this.bbar == null) {
+            this.bbar  = [
+                '->',
+                {
+                    name: "Cancel",
+                    id: this.getId() + "_cancelBtn",
+                    iconCls: 'cancel-icon',
+                    text: i18n._('Cancel'),
+                    handler: Ext.bind(function() {
+                        this.cancelAction();
+                    }, this)
+                },'-',{
+                    name: "Done",
+                    id: this.getId() + "_doneBtn",
+                    iconCls: 'apply-icon',
+                    text: i18n._('Done'),
+                    handler: Ext.bind(function() {
+                        Ext.defer(this.updateAction,1, this);
+                    }, this)
+            },'-'];         
+        }        
+        this.callParent(arguments);
+    },
+    // populate is called whent a record is edited, tot populate the edit window
+    // This function should be deprecated for populateTree.
+    populate: function(record) {
+        this.record  = record;
+        this.initialRecordData = Ext.encode(record.data);
+        /* FIXME */
+    },
+    // check if the form is valid;
+    isFormValid: function() {
+        /* FIXME */
+
+        return true;
+    },
+    // updateAction is called to update the record after the edit
+    updateAction: function() {
+        if (!this.isFormValid()) {
+            return;
+        }
+
+        /* FIXME */
+
+        this.hide();
+    },
+    isDirty: function() {
+        /* FIXME */
+        
+        return false;
+    },
+    closeWindow: function() {
+        this.record.data = Ext.decode(this.initialRecordData);
+        this.hide();
+    }
+});
+
 if (!Ung.hasResource["Ung.Network"]) {
     Ung.hasResource["Ung.Network"] = true;
 
@@ -565,6 +634,7 @@ if (!Ung.hasResource["Ung.Network"]) {
                         width:55
                     }],
                     initComponent: function() {
+                        this.rowEditor = Ext.create('Ung.InterfaceEditorWindow',{});
                         Ung.EditorGrid.prototype.initComponent.call(this);
                     }
                 })]
