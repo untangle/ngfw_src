@@ -494,13 +494,80 @@ if (!Ung.hasResource["Ung.Network"]) {
         },
         buildInterfaces: function() {
             this.panelInterfaces = Ext.create('Ext.panel.Panel',{
-                name: 'Interfaces',
-                helpSource: 'interfaces',
+                name: 'panelInterfaces',
+                helpSource: 'network_interfaces',
                 parentId: this.getId(),
                 title: this.i18n._('Interfaces'),
+                layout: 'anchor',
                 cls: 'ung-panel',
-                autoScroll: true,
-                html: this.i18n._('Interfaces go here.')
+                items: [{
+                    xtype: 'fieldset',
+                    cls: 'description',
+                    title: this.i18n._('Note'),
+                    html: this.i18n._(" <b>Interfaces</b> are legit. Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.")
+                },  this.gridInterfaces = Ext.create('Ung.EditorGrid',{
+                    anchor: '100% -80',
+                    name: 'Interfaces',
+                    settingsCmp: this,
+                    paginated: false,
+                    hasReorder: false,
+                    hasDelete: false,
+                    hasAdd: false,
+                    title: this.i18n._("Interfaces"),
+                    recordJavaClass: "com.untangle.uvm.network.InterfaceSettings",
+                    columnsDefaultSortable: false,
+                    dataProperty:'interfaces',
+                    fields: [{
+                        name: 'interfaceId'
+                    }, {
+                        name: 'name'
+                    }, {
+                        name: 'physicalDev'
+                    }, {
+                        name: 'symbolicDev'
+                    }, {
+                        name: 'configType'
+                    },{
+                        name: 'isWan'
+                    }, {
+                        name: 'javaClass'
+                    }],
+                    columns: [{
+                        header: this.i18n._("Interface Id"),
+                        width: 75,
+                        dataIndex: 'interfaceId',
+                        renderer: function(value) {
+                            if (value < 0) {
+                                return i18n._("new");
+                            } else {
+                                return value;
+                            }
+                        }
+                    }, {
+                        header: this.i18n._("Name"),
+                        dataIndex: 'name',
+                        width:100
+                    }, {
+                        header: this.i18n._("Physical Dev"),
+                        dataIndex: 'physicalDev',
+                        width:75
+                    }, {
+                        header: this.i18n._("Symbolic Dev"),
+                        dataIndex: 'symbolicDev',
+                        width:75
+                    }, {
+                        header: this.i18n._("Config"),
+                        dataIndex: 'configType',
+                        width:75
+                    }, {
+                        header: this.i18n._("is WAN"),
+                        dataIndex: 'isWan',
+                        width:55
+                    }],
+                    initComponent: function() {
+                        Ung.EditorGrid.prototype.initComponent.call(this);
+                    }
+                })]
             });
         },
         save: function (isApply) {
