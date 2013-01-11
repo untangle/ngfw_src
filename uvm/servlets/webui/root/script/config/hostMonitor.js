@@ -44,7 +44,7 @@ if (!Ung.hasResource["Ung.HostMonitor"]) {
                             "hostname": "p.twitter.com"+i,
                             "lastAccessTime": 0,//d.getTime()+(i*86400000),
                             "username": "testuser"+i,
-                            "usernameAdconnector": "uad"+ii,
+                            "usernameAdConnector": "uad"+ii,
                             "usernameCapture": "ucap"+(ii%50),
                             "penaltyBoxed":(ii%2)==1,
                             "penaltyBoxEntryTime": d.getTime()-(ii*86400000),
@@ -116,7 +116,7 @@ if (!Ung.hasResource["Ung.HostMonitor"]) {
                 },{
                     name: "username"
                 },{
-                    name: "usernameAdconnector"
+                    name: "usernameAdConnector"
                 },{
                     name: "usernameCapture"
                 },{
@@ -281,7 +281,7 @@ if (!Ung.hasResource["Ung.HostMonitor"]) {
                 },{
                     hidden: true,
                     header: "Directory Connector" + " - " + this.i18n._("Username"),
-                    dataIndex: "usernameAdconnector",
+                    dataIndex: "usernameAdConnector",
                     width: 100,
                     filter: {
                         type: 'string'
