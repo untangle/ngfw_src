@@ -22,17 +22,21 @@ public class NetworkSettings implements Serializable, JSONString
     private List<InterfaceSettings> interfaces = null;
     private List<PortForwardRule> portForwards = null;
     private List<NatRule> natRules = null;
+    private List<BypassRule> bypassRules = null;
 
     public NetworkSettings() { }
 
+    public List<InterfaceSettings> getInterfaces() { return this.interfaces; }
+    public void setInterfaces( List<InterfaceSettings> interfaces ) { this.interfaces = interfaces; }
+    
     public List<PortForwardRule> getPortForwards() { return this.portForwards; }
     public void setPortForwards( List<PortForwardRule> newportForwards ) { this.portForwards = newportForwards; }
 
     public List<NatRule> getNatRules() { return this.natRules; }
     public void setNatRules( List<NatRule> natRules ) { this.natRules = natRules; }
 
-    public List<InterfaceSettings> getInterfaces() { return this.interfaces; }
-    public void setInterfaces( List<InterfaceSettings> interfaces ) { this.interfaces = interfaces; }
+    public List<BypassRule> getBypassRules() { return this.bypassRules; }
+    public void setBypassRules( List<BypassRule> bypassRules ) { this.bypassRules = bypassRules; }
     
     public String toJSONString()
     {
