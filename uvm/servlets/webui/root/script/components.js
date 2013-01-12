@@ -3879,8 +3879,8 @@ Ext.define("Ung.StatusWin", {
 
 });
 
-// update window
-// has the content and 3 standard buttons: help, cancel, Update
+// update window 
+// has the content and 3 standard buttons: Save, Cancel, Apply
 Ext.define('Ung.UpdateWindow', {
     extend: 'Ung.Window',
     initComponent: function() {
@@ -3928,6 +3928,42 @@ Ext.define('Ung.UpdateWindow', {
     }
 });
 
+// edit window 
+// has the content and 2 standard buttons:  Cancel/Done
+// Done just closes the window and updates the data in the browser but does not save
+Ext.define('Ung.EditWindow', {
+    extend: 'Ung.Window',
+    initComponent: function() {
+        if(this.bbar==null) {
+            this.bbar  = [
+                '->',
+                {
+                    name: "Cancel",
+                    id: this.getId() + "_cancelBtn",
+                    iconCls: 'cancel-icon',
+                    text: i18n._('Cancel'),
+                    handler: Ext.bind(function() {
+                        this.cancelAction();
+                    }, this)
+                },'-',{
+                    name: "Done",
+                    id: this.getId() + "_doneBtn",
+                    iconCls: 'apply-icon',
+                    text: i18n._('Done'),
+                    handler: Ext.bind(function() {
+                        Ext.defer(this.updateAction,1, this);
+                    }, this)
+            },'-'];         
+        }
+        this.callParent(arguments);
+    },
+    // the update actions
+    // to override
+    updateAction: function() {
+        Ung.Util.todo();
+    }
+});
+
 // Manage list popup window
 Ext.define("Ung.ManageListWindow", {
     extend: "Ung.UpdateWindow",
@@ -3957,7 +3993,7 @@ Ext.define("Ung.ManageListWindow", {
 
 // Row editor window used by editor grid
 Ext.define('Ung.RowEditorWindow', {
-    extend:'Ung.UpdateWindow',
+    extend:'Ung.EditWindow',
     // the editor grid
     grid: null,
     // input lines for standard input lines (text, checkbox, textarea, ..)
@@ -3986,27 +4022,6 @@ Ext.define('Ung.RowEditorWindow', {
         if (this.rowEditorLabelWidth == null) {
             this.rowEditorLabelWidth = 100;
         }
-        if(this.bbar == null) {
-            this.bbar  = [
-                '->',
-                {
-                    name: "Cancel",
-                    id: this.getId() + "_cancelBtn",
-                    iconCls: 'cancel-icon',
-                    text: i18n._('Cancel'),
-                    handler: Ext.bind(function() {
-                        this.cancelAction();
-                    }, this)
-                },'-',{
-                    name: "Done",
-                    id: this.getId() + "_doneBtn",
-                    iconCls: 'apply-icon',
-                    text: i18n._('Done'),
-                    handler: Ext.bind(function() {
-                        Ext.defer(this.updateAction,1, this);
-                    }, this)
-            },'-'];         
-        }        
         this.items = Ext.create('Ext.panel.Panel',{
             anchor: "100% 100%",
             labelWidth: this.rowEditorLabelWidth,
@@ -4176,7 +4191,7 @@ Ext.define('Ung.RowEditorWindow', {
             return;
         }
         
-        if (component.dataIndex != null && component.setValue ) {
+        if (component.dataIndex != null && component.getValue ) {
             this.record.set(component.dataIndex, component.getValue());
         }
 
@@ -4564,7 +4579,7 @@ Ext.define('Ung.EditorGrid', {
         var rec= {};
         var property;
         for (var i=0; i<this.fields.length ; i++) {
-            property = (this.fields[i].mapping != null)?this.fields[i].mapping:this.fields[i].name
+            property = (this.fields[i].mapping != null)?this.fields[i].mapping:this.fields[i].name;
             rec[property]=
                 (property=='id')?index+1:
                 (property=='time_stamp')?{javaClass:"java.util.Date", time: (new Date(i*10000)).getTime()}:
@@ -5461,7 +5476,7 @@ Ext.define('Ung.ImportSettingsWindow', {
 
 // Base matcher pop-up editor window
 Ext.define('Ung.MatcherEditorWindow', {
-    extend:'Ung.UpdateWindow',
+    extend:'Ung.EditWindow',
     height: 210,
     width: 120,
     inputLines: null, //override me
@@ -5469,27 +5484,6 @@ Ext.define('Ung.MatcherEditorWindow', {
         if (this.title == null) {
             this.title = i18n._('Edit');
         }
-        if(this.bbar == null) {
-            this.bbar  = [
-                '->',
-                {
-                    name: "Cancel",
-                    id: this.getId() + "_cancelBtn",
-                    iconCls: 'cancel-icon',
-                    text: i18n._('Cancel'),
-                    handler: Ext.bind(function() {
-                        this.cancelAction();
-                    }, this)
-                },'-',{
-                    name: "Done",
-                    id: this.getId() + "_doneBtn",
-                    iconCls: 'apply-icon',
-                    text: i18n._('Done'),
-                    handler: Ext.bind(function() {
-                        Ext.defer(this.updateAction,1, this);
-                    }, this)
-            },'-'];         
-        }        
         this.items = Ext.create('Ext.panel.Panel',{
             anchor: "100% 100%",
             labelWidth: 100,

@@ -1,72 +1,3 @@
-Ext.define('Ung.InterfaceEditorWindow', {
-    extend:'Ung.UpdateWindow',
-    validate: null,
-    record: null,
-    initialRecordData: null,
-    sizeToGrid: true,
-    sizeToComponent: null,
-    title: i18n._('Edit Interface'),
-    initComponent: function() {
-        if (this.title == null) {
-            this.title = i18n._('Edit Interface');
-        }
-        if(this.bbar == null) {
-            this.bbar  = [
-                '->',
-                {
-                    name: "Cancel",
-                    id: this.getId() + "_cancelBtn",
-                    iconCls: 'cancel-icon',
-                    text: i18n._('Cancel'),
-                    handler: Ext.bind(function() {
-                        this.cancelAction();
-                    }, this)
-                },'-',{
-                    name: "Done",
-                    id: this.getId() + "_doneBtn",
-                    iconCls: 'apply-icon',
-                    text: i18n._('Done'),
-                    handler: Ext.bind(function() {
-                        Ext.defer(this.updateAction,1, this);
-                    }, this)
-            },'-'];         
-        }        
-        this.callParent(arguments);
-    },
-    // populate is called whent a record is edited, tot populate the edit window
-    // This function should be deprecated for populateTree.
-    populate: function(record) {
-        this.record  = record;
-        this.initialRecordData = Ext.encode(record.data);
-        /* FIXME */
-    },
-    // check if the form is valid;
-    isFormValid: function() {
-        /* FIXME */
-
-        return true;
-    },
-    // updateAction is called to update the record after the edit
-    updateAction: function() {
-        if (!this.isFormValid()) {
-            return;
-        }
-
-        /* FIXME */
-
-        this.hide();
-    },
-    isDirty: function() {
-        /* FIXME */
-        
-        return false;
-    },
-    closeWindow: function() {
-        this.record.data = Ext.decode(this.initialRecordData);
-        this.hide();
-    }
-});
-
 if (!Ung.hasResource["Ung.Network"]) {
     Ung.hasResource["Ung.Network"] = true;
 
@@ -96,6 +27,128 @@ if (!Ung.hasResource["Ung.Network"]) {
         }
 
     };
+
+
+    Ext.define('Ung.InterfaceEditorWindow', {
+        extend:'Ung.EditWindow',
+        validate: null,
+        record: null,
+        initialRecordData: null,
+        sizeToGrid: true,
+        sizeToComponent: null,
+        title: this.i18n._('Edit Interface'),
+        initComponent: function() {
+            this.inputLines = [{
+                xtype:'textfield',
+                id: "interface_name",
+                name: "Interface Name",
+                dataIndex: "name",
+                fieldLabel: i18n._("Interface Name"),
+                width: 500
+            }];
+                
+            this.items = [Ext.create('Ext.panel.Panel',{
+                 name: "EditInterface",
+                 parentId: this.getId(),
+                 autoScroll: true,
+                 bodyStyle: 'padding:10px 10px 0px 10px;',
+                 items: this.inputLines
+            })];
+
+            this.callParent(arguments);
+        },
+        populate: function(record) {
+            return this.populateTree(record);
+        },
+        populateTree: function(record) {
+            this.record = record;
+            this.initialRecordData = Ext.encode(record.data);
+            
+            this.populateChild(this, record);
+        },
+        populateChild: function(component,record) {
+            if ( component == null ) {
+                return;
+            }
+
+            if (component.dataIndex != null && component.setValue ) {
+                component.suspendEvents();
+                component.setValue(record.get(component.dataIndex));
+                component.resumeEvents();
+            }
+
+            var items = null;
+            if (component.items) {
+                items = component.items.getRange();
+            }
+
+            if ( items ) {
+                for (var i = 0; i < items.length; i++) {
+                    var item = null;
+                    if ( items.get != null ) {
+                        item = items.get(i);
+                    } else {
+                        item = items[i];
+                    }
+                    this.populateChild( item, record );
+                }
+            }
+        },
+        // check if the form is valid;
+        isFormValid: function() {
+            /* FIXME */
+
+            return true;
+        },
+        // updateAction is called to update the record after the edit
+        updateAction: function() {
+            if (!this.isFormValid()) {
+                return;
+            }
+
+            this.updateActionTree( this.record );
+
+            this.hide();
+        },
+        updateActionTree: function( record ) {
+            this.updateActionChild(this, record);
+        },
+        updateActionChild: function( component, record ) {
+            if ( component == null ) {
+                return;
+            }
+
+            if (component.dataIndex != null && component.getValue ) {
+                this.record.set(component.dataIndex, component.getValue());
+            }
+
+            var items = null;
+            if (component.items) {
+                items = component.items.getRange();
+            }
+
+            if ( items ) {
+                for (var i = 0; i < items.length; i++) {
+                    var item = null;
+                    if ( items.get != null ) {
+                        item = items.get(i);
+                    } else {
+                        item = items[i];
+                    }
+                    this.updateActionChild( item, record );
+                }
+            }
+        },
+        isDirty: function() {
+            /* FIXME */
+            
+            return false;
+        },
+        closeWindow: function() {
+            this.record.data = Ext.decode(this.initialRecordData);
+            this.hide();
+        }
+    });
     
     Ext.define("Ung.Network", {
         extend: "Ung.ConfigWin",
@@ -651,7 +704,14 @@ if (!Ung.hasResource["Ung.Network"]) {
             this.settings = rpc.newNetworkManager.getNetworkSettings();
         },
         beforeSave: function(isApply, handler) {
-            this.beforeSaveCount = 2;
+            this.beforeSaveCount = 3;
+
+            this.gridInterfaces.getList(Ext.bind(function(saveList) {
+                this.settings.interfaces = saveList;
+                this.beforeSaveCount--;
+                if (this.beforeSaveCount <= 0)
+                    handler.call(this, isApply);
+            }, this));
 
             this.gridPortForwards.getList(Ext.bind(function(saveList) {
                 this.settings.portForwards = saveList;
