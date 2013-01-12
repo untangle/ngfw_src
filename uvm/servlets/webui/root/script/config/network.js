@@ -54,9 +54,38 @@ if (!Ung.hasResource["Ung.Network"]) {
                 name: "Interface Name",
                 dataIndex: "name",
                 fieldLabel: i18n._("Interface Name"),
+                width: 300
+            }, {
+                xtype: "combo",
+                id: "interface_configType",
+                name: "configType",
+                allowBlank: false,
+                dataIndex: "configType",
+                fieldLabel: i18n._("Config Type"),
+                editable: false,
+                store: [["static",i18n._('Static')], ["dhcp",i18n._('Dynamic')], ["bridged",i18n._('Bridge')], ["pppoe",i18n._('PPPoE')], ["disabled",i18n._('Disabled')]],
+                valueField: "value",
+                displayField: "displayName",
+                queryMode: 'local',
+                triggerAction: 'all',
+                listClass: 'x-combo-list-small',
+                listeners: {
+                    select: Ext.bind(function(combo, ewVal, oldVal) {
+                        Ext.getCmp('interface_isWan').setVisible(false);
+
+                        if ( combo.value == "static" || combo.value == "dhcp" || combo.value == "pppoe" ) 
+                            Ext.getCmp('interface_isWan').setVisible(true);
+                    }, this )
+                }
+            }, {
+                xtype:'checkbox',
+                id: "interface_isWan",
+                name: "is WAN Inteface",
+                dataIndex: "isWan",
+                fieldLabel: i18n._("is WAN Interface"),
                 width: 500
             }];
-                
+
             this.items = [Ext.create('Ext.panel.Panel',{
                  name: "EditInterface",
                  parentId: this.getId(),
