@@ -68,7 +68,7 @@ public class InterfaceSettings implements Serializable, JSONString
     public void setConfigType( String configType ) { this.configType = configType; }
 
     public boolean getIsWan( ) { return this.isWan; }
-    public void setIsWan( boolean configType ) { this.isWan = isWan; }
+    public void setIsWan( boolean isWan ) { this.isWan = isWan; }
 
     public InetAddress getStaticAddress( ) { return this.staticAddress; }
     public void setStaticAddress( InetAddress staticAddress ) { this.staticAddress = staticAddress; }
