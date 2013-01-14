@@ -110,6 +110,9 @@ static int _netcap_init()
     if (uname(&utsn) < 0) {
         return perrlog("uname");
     }
+    if ( strstr(utsn.release,"2.6.26") != NULL) {
+        return perrlog( "Unsupported kernel: 2.6.26\n" );
+    }
     else if ( strstr(utsn.release,"2.6.32") != NULL) {
         ip_transparent = 19;
         ip_nonlocal = 21;
