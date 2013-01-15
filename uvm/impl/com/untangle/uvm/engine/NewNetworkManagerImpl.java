@@ -13,7 +13,6 @@ import com.untangle.uvm.NewNetworkManager;
 import com.untangle.uvm.network.NetworkSettings;
 import com.untangle.uvm.network.InterfaceSettings;
 import com.untangle.uvm.network.BypassRule;
-import com.untangle.uvm.network.RouteRule;
 import com.untangle.uvm.network.StaticRoute;
 import com.untangle.uvm.network.NatRule;
 import com.untangle.uvm.network.PortForwardRule;
@@ -115,9 +114,6 @@ public class NewNetworkManagerImpl implements NewNetworkManager
 
         LinkedList<BypassRule> bypassRules = new LinkedList<BypassRule>();
         newSettings.setBypassRules( bypassRules );
-
-        LinkedList<RouteRule> routeRules = new LinkedList<RouteRule>();
-        newSettings.setRouteRules( routeRules );
 
         LinkedList<StaticRoute> staticRoutes = new LinkedList<StaticRoute>();
         newSettings.setStaticRoutes( staticRoutes );

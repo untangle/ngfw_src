@@ -13,7 +13,6 @@ import org.json.JSONString;
 import com.untangle.uvm.network.PortForwardRule;
 import com.untangle.uvm.network.NatRule;
 import com.untangle.uvm.network.BypassRule;
-import com.untangle.uvm.network.RouteRule;
 import com.untangle.uvm.network.StaticRoute;
 
 /**
@@ -26,7 +25,6 @@ public class NetworkSettings implements Serializable, JSONString
     private List<PortForwardRule> portForwards = null;
     private List<NatRule> natRules = null;
     private List<BypassRule> bypassRules = null;
-    private List<RouteRule> routeRules = null;
     private List<StaticRoute> staticRoutes = null;
 
     public NetworkSettings() { }
@@ -42,9 +40,6 @@ public class NetworkSettings implements Serializable, JSONString
 
     public List<BypassRule> getBypassRules() { return this.bypassRules; }
     public void setBypassRules( List<BypassRule> bypassRules ) { this.bypassRules = bypassRules; }
-
-    public List<RouteRule> getRouteRules() { return this.routeRules; }
-    public void setRouteRules( List<RouteRule> routeRules ) { this.routeRules = routeRules; }
 
     public List<StaticRoute> getStaticRoutes() { return this.staticRoutes; }
     public void setStaticRoutes( List<StaticRoute> staticRoutes ) { this.staticRoutes = staticRoutes; }
