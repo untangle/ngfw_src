@@ -1,4 +1,4 @@
-/*
+/**
  * $Id: BypassRule.java 33317 2012-10-17 19:12:21Z dmorris $
  */
 package com.untangle.uvm.network;
@@ -10,9 +10,6 @@ import java.net.InetAddress;
 import org.json.JSONObject;
 import org.json.JSONString;
 import org.apache.log4j.Logger;
-
-import com.untangle.uvm.vnet.NodeSession;
-import com.untangle.uvm.vnet.NodeIPSession;
 
 /**
  * This in the implementation of a Bypass Rule
@@ -32,9 +29,7 @@ public class BypassRule implements JSONString, Serializable
     private Boolean bypass;
     private String description;
     
-    public BypassRule()
-    {
-    }
+    public BypassRule() { }
 
     public BypassRule(boolean enabled, List<BypassRuleMatcher> matchers, boolean bypass, String description)
     {
@@ -44,15 +39,8 @@ public class BypassRule implements JSONString, Serializable
         this.setDescription(description);
     }
     
-    public List<BypassRuleMatcher> getMatchers()
-    {
-        return this.matchers;
-    }
-
-    public void setMatchers( List<BypassRuleMatcher> matchers )
-    {
-        this.matchers = matchers;
-    }
+    public List<BypassRuleMatcher> getMatchers() { return this.matchers; }
+    public void setMatchers( List<BypassRuleMatcher> matchers ) { this.matchers = matchers; }
 
     public Integer getRuleId() { return this.ruleId; }
     public void setRuleId(Integer ruleId) { this.ruleId = ruleId; }

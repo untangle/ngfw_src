@@ -1,4 +1,4 @@
-/*
+/**
  * $Id: NatRule.java 33317 2012-10-17 19:12:21Z dmorris $
  */
 package com.untangle.uvm.network;
@@ -10,9 +10,6 @@ import java.net.InetAddress;
 import org.json.JSONObject;
 import org.json.JSONString;
 import org.apache.log4j.Logger;
-
-import com.untangle.uvm.vnet.NodeSession;
-import com.untangle.uvm.vnet.NodeIPSession;
 
 /**
  * This in the implementation of a Nat Rule
@@ -33,9 +30,7 @@ public class NatRule implements JSONString, Serializable
     private InetAddress newSource;
     private String description;
     
-    public NatRule()
-    {
-    }
+    public NatRule() { }
 
     public NatRule(boolean enabled, List<NatRuleMatcher> matchers, InetAddress newSource, String description)
     {
@@ -45,15 +40,8 @@ public class NatRule implements JSONString, Serializable
         this.setDescription(description);
     }
     
-    public List<NatRuleMatcher> getMatchers()
-    {
-        return this.matchers;
-    }
-
-    public void setMatchers( List<NatRuleMatcher> matchers )
-    {
-        this.matchers = matchers;
-    }
+    public List<NatRuleMatcher> getMatchers() { return this.matchers; }
+    public void setMatchers( List<NatRuleMatcher> matchers ) { this.matchers = matchers; }
 
     public Integer getRuleId() { return this.ruleId; }
     public void setRuleId(Integer ruleId) { this.ruleId = ruleId; }

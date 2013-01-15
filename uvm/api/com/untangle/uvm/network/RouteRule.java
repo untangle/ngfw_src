@@ -1,5 +1,5 @@
 /**
- * $Id: PortForwardRule.java 33317 2012-10-17 19:12:21Z dmorris $
+ * $Id: RouteRule.java 33317 2012-10-17 19:12:21Z dmorris $
  */
 package com.untangle.uvm.network;
 
@@ -12,37 +12,35 @@ import org.json.JSONString;
 import org.apache.log4j.Logger;
 
 /**
- * This in the implementation of a PortForward Rule
+ * This in the implementation of a Route Rule
  *
- * A rule is basically a collection of PortForwardRuleMatchers (matchers)
+ * A rule is basically a collection of RouteRuleMatchers (matchers)
  * and what to do if the matchers match (block, log, etc)
  */
 @SuppressWarnings("serial")
-public class PortForwardRule implements JSONString, Serializable
+public class RouteRule implements JSONString, Serializable
 {
     private final Logger logger = Logger.getLogger(getClass());
 
-    private List<PortForwardRuleMatcher> matchers;
+    private List<RouteRuleMatcher> matchers;
 
     private Integer ruleId;
     private Boolean enabled;
-    private InetAddress newDestination;
-    private Integer newPort;
+    private Boolean route;
     private String description;
     
-    public PortForwardRule() { }
+    public RouteRule() { }
 
-    public PortForwardRule(boolean enabled, List<PortForwardRuleMatcher> matchers, InetAddress newDestination, Integer newPort, String description)
+    public RouteRule(boolean enabled, List<RouteRuleMatcher> matchers, boolean route, String description)
     {
         this.setMatchers(matchers);
         this.setEnabled(Boolean.valueOf(enabled));
-        this.setNewDestination(newDestination);
-        this.setNewPort(newPort);
+        this.setRoute(route);
         this.setDescription(description);
     }
     
-    public List<PortForwardRuleMatcher> getMatchers() { return this.matchers; }
-    public void setMatchers( List<PortForwardRuleMatcher> matchers ) { this.matchers = matchers; }
+    public List<RouteRuleMatcher> getMatchers() { return this.matchers; }
+    public void setMatchers( List<RouteRuleMatcher> matchers ) { this.matchers = matchers; }
 
     public Integer getRuleId() { return this.ruleId; }
     public void setRuleId(Integer ruleId) { this.ruleId = ruleId; }
@@ -53,12 +51,9 @@ public class PortForwardRule implements JSONString, Serializable
     public String getDescription() { return description; }
     public void setDescription( String description ) { this.description = description; }
 
-    public InetAddress getNewDestination() { return newDestination; }
-    public void setNewDestination( InetAddress newDestination ) { this.newDestination = newDestination; }
+    public Boolean getRoute() { return route; }
+    public void setRoute( Boolean route ) { this.route = route; }
 
-    public Integer getNewPort() { return newPort; }
-    public void setNewPort( Integer newPort ) { this.newPort = newPort; }
-    
     public String toJSONString()
     {
         JSONObject jO = new JSONObject(this);
