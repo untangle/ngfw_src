@@ -1170,7 +1170,7 @@ Provides: untangle-node-cpd
 Conflicts: untangle-node-cpd
 Replaces: untangle-node-cpd
 XB-Display-Name: Captive Portal
-XB-View-Position: 55
+XB-View-Position: 105
 XB-Untangle-Type: node
 XB-Untangle-Pkg-Type: node
 XB-Desc-Icon: iVBORw0KGgoAAAANSUhEUgAAACoAAAAqCAYAAADFw8lbAAAACXBIWXMAAAsTAAALEwEAmpwYAAAA
