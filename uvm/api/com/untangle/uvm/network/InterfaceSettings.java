@@ -23,24 +23,36 @@ public class InterfaceSettings implements Serializable, JSONString
     public String name; /* human name: ie External, Internal, Wireless */
     public String physicalDev; /* physical interface name: eth0, etc */
     public String symbolicDev; /* symbolic interface name: eth0, eth0:0, eth0.1, etc */
-    public String configType; /* config type: static, dhcp, pppoe, bridged, disabled */
     public boolean isWan; /* is a WAN interface? */
+    public String config; /* config type: addressed, bridged, disabled */
 
-    public InetAddress staticAddress; /* the address  of this interface if configured static, or dhcp override */ 
-    public InetAddress staticNetmask; /* the netmask  of this interface if configured static, or dhcp override */
-    public InetAddress staticGateway; /* the gateway  of this interface if configured static, or dhcp override */
-    public InetAddress staticDns1; /* the dns1  of this interface if configured static, or dhcp override */
-    public InetAddress staticDns2; /* the dns2  of this interface if configured static, or dhcp override */
+    public String v4ConfigType; /* config type: static, auto, pppoe */
+    
+    public InetAddress v4StaticAddress; /* the address  of this interface if configured static, or dhcp override */ 
+    public InetAddress v4StaticNetmask; /* the netmask  of this interface if configured static, or dhcp override */
+    public InetAddress v4StaticGateway; /* the gateway  of this interface if configured static, or dhcp override */
+    public InetAddress v4StaticDns1; /* the dns1  of this interface if configured static, or dhcp override */
+    public InetAddress v4StaticDns2; /* the dns2  of this interface if configured static, or dhcp override */
 
+    public String v6ConfigType; /* config type: static, auto */
+    
+    public InetAddress v6StaticAddress; /* the address  of this interface if configured static, or dhcp override */ 
+    public Integer     v6StaticPrefixLength; /* the netmask  of this interface if configured static, or dhcp override */
+    public InetAddress v6StaticGateway; /* the gateway  of this interface if configured static, or dhcp override */
+    public InetAddress v6StaticDns1; /* the dns1  of this interface if configured static, or dhcp override */
+    public InetAddress v6StaticDns2; /* the dns2  of this interface if configured static, or dhcp override */
+    
     public List<IPMaskedAddress> aliases; /* alias addresses for static & dhcp */
     
-    public InterfaceSettings(int interfaceId, String name, String physicalDev, String symbolicDev, String configType, boolean isWan)
+    public InterfaceSettings(int interfaceId, String name, String physicalDev, String symbolicDev, String config, String v4ConfigType, String v6ConfigType, boolean isWan)
     {
         this.interfaceId = interfaceId;
         this.name = name;
         this.physicalDev = physicalDev;
         this.symbolicDev = symbolicDev;
-        this.configType = configType;
+        this.config = config;
+        this.v4ConfigType = v4ConfigType;
+        this.v6ConfigType = v6ConfigType;
         this.isWan = isWan;
     }
 
@@ -64,27 +76,48 @@ public class InterfaceSettings implements Serializable, JSONString
     public String getSymbolicDev( ) { return this.symbolicDev; }
     public void setSymbolicDev( String symbolicDev ) { this.symbolicDev = symbolicDev; }
 
-    public String getConfigType( ) { return this.configType; }
-    public void setConfigType( String configType ) { this.configType = configType; }
-
     public boolean getIsWan( ) { return this.isWan; }
     public void setIsWan( boolean isWan ) { this.isWan = isWan; }
 
-    public InetAddress getStaticAddress( ) { return this.staticAddress; }
-    public void setStaticAddress( InetAddress staticAddress ) { this.staticAddress = staticAddress; }
+    public String getConfig( ) { return this.config; }
+    public void setConfig( String config ) { this.config = config; }
 
-    public InetAddress getStaticNetmask( ) { return this.staticNetmask; }
-    public void setStaticNetmask( InetAddress staticNetmask ) { this.staticNetmask = staticNetmask; }
+    public String getV4ConfigType( ) { return this.v4ConfigType; }
+    public void setV4ConfigType( String v4ConfigType ) { this.v4ConfigType = v4ConfigType; }
 
-    public InetAddress getStaticGateway( ) { return this.staticGateway; }
-    public void setStaticGateway( InetAddress staticGateway ) { this.staticGateway = staticGateway; }
+    public InetAddress getv4StaticAddress( ) { return this.v4StaticAddress; }
+    public void setv4StaticAddress( InetAddress v4StaticAddress ) { this.v4StaticAddress = v4StaticAddress; }
 
-    public InetAddress getStaticDns1( ) { return this.staticDns1; }
-    public void setStaticDns1( InetAddress staticDns1 ) { this.staticDns1 = staticDns1; }
+    public InetAddress getV4StaticNetmask( ) { return this.v4StaticNetmask; }
+    public void setV4StaticNetmask( InetAddress v4StaticNetmask ) { this.v4StaticNetmask = v4StaticNetmask; }
 
-    public InetAddress getStaticDns2( ) { return this.staticDns2; }
-    public void setStaticDns2( InetAddress staticDns2 ) { this.staticDns2 = staticDns2; }
+    public InetAddress getV4StaticGateway( ) { return this.v4StaticGateway; }
+    public void setV4StaticGateway( InetAddress v4StaticGateway ) { this.v4StaticGateway = v4StaticGateway; }
 
+    public InetAddress getV4StaticDns1( ) { return this.v4StaticDns1; }
+    public void setV4StaticDns1( InetAddress v4StaticDns1 ) { this.v4StaticDns1 = v4StaticDns1; }
+
+    public InetAddress getV4StaticDns2( ) { return this.v4StaticDns2; }
+    public void setV4StaticDns2( InetAddress v4StaticDns2 ) { this.v4StaticDns2 = v4StaticDns2; }
+
+    public String getV6ConfigType( ) { return this.v6ConfigType; }
+    public void setV6ConfigType( String v6ConfigType ) { this.v6ConfigType = v6ConfigType; }
+
+    public InetAddress getv6StaticAddress( ) { return this.v6StaticAddress; }
+    public void setv6StaticAddress( InetAddress v6StaticAddress ) { this.v6StaticAddress = v6StaticAddress; }
+
+    public Integer getV6StaticPrefixLength( ) { return this.v6StaticPrefixLength; }
+    public void setV6StaticPrefixLength( Integer v6StaticNetmask ) { this.v6StaticPrefixLength = v6StaticPrefixLength; }
+
+    public InetAddress getV6StaticGateway( ) { return this.v6StaticGateway; }
+    public void setV6StaticGateway( InetAddress v6StaticGateway ) { this.v6StaticGateway = v6StaticGateway; }
+
+    public InetAddress getV6StaticDns1( ) { return this.v6StaticDns1; }
+    public void setV6StaticDns1( InetAddress v6StaticDns1 ) { this.v6StaticDns1 = v6StaticDns1; }
+
+    public InetAddress getV6StaticDns2( ) { return this.v6StaticDns2; }
+    public void setV6StaticDns2( InetAddress v6StaticDns2 ) { this.v6StaticDns2 = v6StaticDns2; }
+    
     public List<IPMaskedAddress> getAliases( ) { return this.aliases; }
     public void setAliases( List<IPMaskedAddress> aliases ) { this.aliases = aliases; }
     

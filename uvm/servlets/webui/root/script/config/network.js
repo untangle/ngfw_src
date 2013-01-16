@@ -35,7 +35,7 @@ if (!Ung.hasResource["Ung.Network"]) {
                 {name:"SRC_INTF",displayName: settingsCmp.i18n._("Source Interface"), type: "checkgroup", values: Ung.Util.getInterfaceList(true, false), visible: true},
                 {name:"PROTOCOL",displayName: settingsCmp.i18n._("Protocol"), type: "checkgroup", values: [["TCP","TCP"],["UDP","UDP"],["any","any"]], visible: true}
             ];
-        },
+        }
     };
 
 
@@ -57,13 +57,13 @@ if (!Ung.hasResource["Ung.Network"]) {
                 width: 300
             }, {
                 xtype: "combo",
-                id: "interface_configType",
-                name: "configType",
+                id: "interface_config",
+                name: "config",
                 allowBlank: false,
-                dataIndex: "configType",
+                dataIndex: "config",
                 fieldLabel: i18n._("Config Type"),
                 editable: false,
-                store: [["static",i18n._('Static')], ["dhcp",i18n._('Dynamic')], ["bridged",i18n._('Bridge')], ["pppoe",i18n._('PPPoE')], ["disabled",i18n._('Disabled')]],
+                store: [["addressed",i18n._('Addressed')], ["bridged",i18n._('Bridged')], ["disabled",i18n._('Disabled')]],
                 valueField: "value",
                 displayField: "displayName",
                 queryMode: 'local',
@@ -72,9 +72,14 @@ if (!Ung.hasResource["Ung.Network"]) {
                 listeners: {
                     select: Ext.bind(function(combo, ewVal, oldVal) {
                         Ext.getCmp('interface_isWan').setVisible(false);
+                        Ext.getCmp('interface_v4ConfigType').setVisible(false);
+                        Ext.getCmp('interface_v6ConfigType').setVisible(false);
 
-                        if ( combo.value == "static" || combo.value == "dhcp" || combo.value == "pppoe" ) 
+                        if ( combo.value == "addressed") {
                             Ext.getCmp('interface_isWan').setVisible(true);
+                            Ext.getCmp('interface_v4ConfigType').setVisible(true);
+                            Ext.getCmp('interface_v6ConfigType').setVisible(true);
+                        }
                     }, this )
                 }
             }, {
@@ -84,6 +89,44 @@ if (!Ung.hasResource["Ung.Network"]) {
                 dataIndex: "isWan",
                 fieldLabel: i18n._("is WAN Interface"),
                 width: 500
+            }, {
+                xtype: "combo",
+                id: "interface_v4ConfigType",
+                name: "v4ConfigType",
+                allowBlank: false,
+                dataIndex: "v4ConfigType",
+                fieldLabel: i18n._("IPv4 Config Type"),
+                editable: false,
+                store: [["static",i18n._('Static')], ["auto",i18n._('Auto (DHCP)')]],
+                valueField: "value",
+                displayField: "displayName",
+                queryMode: 'local',
+                triggerAction: 'all',
+                listClass: 'x-combo-list-small',
+                listeners: {
+                    select: Ext.bind(function(combo, ewVal, oldVal) {
+                        return;
+                    }, this )
+                }
+            }, {
+                xtype: "combo",
+                id: "interface_v6ConfigType",
+                name: "v6ConfigType",
+                allowBlank: false,
+                dataIndex: "v6ConfigType",
+                fieldLabel: i18n._("IPv6 Config Type"),
+                editable: false,
+                store: [["static",i18n._('Static')], ["auto",i18n._('Auto (SLAAC)')]],
+                valueField: "value",
+                displayField: "displayName",
+                queryMode: 'local',
+                triggerAction: 'all',
+                listClass: 'x-combo-list-small',
+                listeners: {
+                    select: Ext.bind(function(combo, ewVal, oldVal) {
+                        return;
+                    }, this )
+                }
             }];
 
             this.items = [Ext.create('Ext.panel.Panel',{
@@ -191,12 +234,12 @@ if (!Ung.hasResource["Ung.Network"]) {
     
     Ext.define("Ung.Network", {
         extend: "Ung.ConfigWin",
-        gridPortForwards: null,
+        gridPortForwardRules: null,
         gridNatRules: null,
         gridBypassRules: null,
         gridStaticRoutes: null,
         panelInterfaces: null,
-        panelPortForwards: null,
+        panelPortForwardRules: null,
         panelNatRules: null,
         panelRoutes: null,
         initComponent: function() {
@@ -213,19 +256,19 @@ if (!Ung.hasResource["Ung.Network"]) {
             
             // builds the tabs
             this.buildInterfaces();
-            this.buildPortForwards();
+            this.buildPortForwardRules();
             this.buildNatRules();
             this.buildBypassRules();
             this.buildRoutes();
             
             // builds the tab panel with the tabs
-            var pageTabs = [ this.panelInterfaces, this.panelPortForwards, this.panelNatRules, this.panelRoutes, this.panelBypassRules ];
+            var pageTabs = [ this.panelInterfaces, this.panelPortForwardRules, this.panelNatRules, this.panelRoutes, this.panelBypassRules ];
             this.buildTabPanel(pageTabs);
             this.callParent(arguments);
         },
-        // PortForwards Panel
-        buildPortForwards: function() {
-            this.gridPortForwards = Ext.create( 'Ung.EditorGrid', {
+        // PortForwardRules Panel
+        buildPortForwardRules: function() {
+            this.gridPortForwardRules = Ext.create( 'Ung.EditorGrid', {
                 anchor: '100% -80',
                 name: 'Port Forward Rules',
                 settingsCmp: this,
@@ -238,9 +281,9 @@ if (!Ung.hasResource["Ung.Network"]) {
                     "description": this.i18n._("[no description]"),
                     "javaClass": "com.untangle.uvm.network.PortForwardRule"
                 },
-                title: this.i18n._("Port Forwards"),
+                title: this.i18n._("Port Forward Rules"),
                 recordJavaClass: "com.untangle.uvm.network.PortForwardRule",
-                dataProperty:'portForwards',
+                dataProperty:'portForwardRules',
                 fields: [{
                     name: 'ruleId'
                 }, {
@@ -366,9 +409,9 @@ if (!Ung.hasResource["Ung.Network"]) {
 
                 rowEditorInputLines: [{
                     xtype:'checkbox',
-                    name: "Enable Port Forward",
+                    name: "Enable Port Forward Rule",
                     dataIndex: "enabled",
-                    fieldLabel: this.i18n._("Enable Port Forward")
+                    fieldLabel: this.i18n._("Enable Port Forward Rule")
                 }, {
                     xtype:'textfield',
                     name: "Description",
@@ -411,19 +454,19 @@ if (!Ung.hasResource["Ung.Network"]) {
                 }]
             });
             
-            this.panelPortForwards = Ext.create('Ext.panel.Panel',{
-                name: 'panelPortForwards',
+            this.panelPortForwardRules = Ext.create('Ext.panel.Panel',{
+                name: 'panelPortForwardRules',
                 helpSource: 'port_forwards',
                 parentId: this.getId(),
-                title: this.i18n._('Port Forwards'),
+                title: this.i18n._('Port Forward Rules'),
                 layout: 'anchor',
                 cls: 'ung-panel',
                 items: [{
                     xtype: 'fieldset',
                     cls: 'description',
                     title: this.i18n._('Note'),
-                    html: this.i18n._(" <b>Port Forwards</b>. Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.")
-                },  this.gridPortForwards]
+                    html: this.i18n._(" <b>Port Forward Rules</b>. Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.")
+                },  this.gridPortForwardRules]
             });
         },
         // NatRules Panel
@@ -982,9 +1025,13 @@ if (!Ung.hasResource["Ung.Network"]) {
                     }, {
                         name: 'symbolicDev'
                     }, {
-                        name: 'configType'
+                        name: 'config'
                     },{
                         name: 'isWan'
+                    }, {
+                        name: 'v4ConfigType'
+                    }, {
+                        name: 'v6ConfigType'
                     }, {
                         name: 'javaClass'
                     }],
@@ -1013,12 +1060,20 @@ if (!Ung.hasResource["Ung.Network"]) {
                         width:75
                     }, {
                         header: this.i18n._("Config"),
-                        dataIndex: 'configType',
+                        dataIndex: 'config',
                         width:75
                     }, {
                         header: this.i18n._("is WAN"),
                         dataIndex: 'isWan',
                         width:55
+                    }, {
+                        header: this.i18n._("v4 Config"),
+                        dataIndex: 'v4ConfigType',
+                        width:75
+                    }, {
+                        header: this.i18n._("v6 Config"),
+                        dataIndex: 'v6ConfigType',
+                        width:75
                     }],
                     initComponent: function() {
                         this.rowEditor = Ext.create('Ung.InterfaceEditorWindow',{});
@@ -1047,8 +1102,8 @@ if (!Ung.hasResource["Ung.Network"]) {
                     handler.call(this, isApply);
             }, this));
 
-            this.gridPortForwards.getList(Ext.bind(function(saveList) {
-                this.settings.portForwards = saveList;
+            this.gridPortForwardRules.getList(Ext.bind(function(saveList) {
+                this.settings.portForwardRules = saveList;
                 this.beforeSaveCount--;
                 if (this.beforeSaveCount <= 0)
                     handler.call(this, isApply);

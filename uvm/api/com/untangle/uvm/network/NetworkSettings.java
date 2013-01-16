@@ -22,7 +22,7 @@ import com.untangle.uvm.network.StaticRoute;
 public class NetworkSettings implements Serializable, JSONString
 {
     private List<InterfaceSettings> interfaces = null;
-    private List<PortForwardRule> portForwards = null;
+    private List<PortForwardRule> portForwardRules = null;
     private List<NatRule> natRules = null;
     private List<BypassRule> bypassRules = null;
     private List<StaticRoute> staticRoutes = null;
@@ -32,8 +32,8 @@ public class NetworkSettings implements Serializable, JSONString
     public List<InterfaceSettings> getInterfaces() { return this.interfaces; }
     public void setInterfaces( List<InterfaceSettings> interfaces ) { this.interfaces = interfaces; }
     
-    public List<PortForwardRule> getPortForwards() { return this.portForwards; }
-    public void setPortForwards( List<PortForwardRule> newportForwards ) { this.portForwards = newportForwards; }
+    public List<PortForwardRule> getPortForwardRules() { return this.portForwardRules; }
+    public void setPortForwardRules( List<PortForwardRule> portForwardRules ) { this.portForwardRules = portForwardRules; }
 
     public List<NatRule> getNatRules() { return this.natRules; }
     public void setNatRules( List<NatRule> natRules ) { this.natRules = natRules; }

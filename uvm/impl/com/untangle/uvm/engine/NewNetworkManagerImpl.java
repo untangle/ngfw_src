@@ -99,15 +99,15 @@ public class NewNetworkManagerImpl implements NewNetworkManager
         NetworkSettings newSettings = new NetworkSettings();
 
         LinkedList<InterfaceSettings> interfaces = new LinkedList<InterfaceSettings>();
-        interfaces.add( new InterfaceSettings( 1, "External", "eth0", "br.eth0", "dhcp", true) );
-        interfaces.add( new InterfaceSettings( 2, "Internal", "eth1", "eth1", "static", false) );
-        interfaces.add( new InterfaceSettings( 3, "DMZ", "eth2", "br.eth0", "bridged", false) );
-        interfaces.add( new InterfaceSettings( 3, "Wireless", "eth3", "eth3", "static", false) );
-        interfaces.add( new InterfaceSettings( 100, "External VLAN 2", "eth0.1", "eth0.1", "static", false) );
+        interfaces.add( new InterfaceSettings( 1, "External", "eth0", "br.eth0", "addressed", "auto", "auto", true) );
+        interfaces.add( new InterfaceSettings( 2, "Internal", "eth1", "eth1", "addressed", "static", "auto", false) );
+        interfaces.add( new InterfaceSettings( 3, "DMZ", "eth2", "br.eth0", "bridged", "auto", "auto", false) );
+        interfaces.add( new InterfaceSettings( 3, "Wireless", "eth3", "eth3", "addressed", "static", "auto", false) );
+        interfaces.add( new InterfaceSettings( 100, "External VLAN 2", "eth0.1", "eth0.1", "addressed", "static", "auto", false) );
         newSettings.setInterfaces(interfaces);
 
-        LinkedList<PortForwardRule> portForwards = new LinkedList<PortForwardRule>();
-        newSettings.setPortForwards( portForwards );
+        LinkedList<PortForwardRule> portForwardRules = new LinkedList<PortForwardRule>();
+        newSettings.setPortForwardRules( portForwardRules );
 
         LinkedList<NatRule> natRules = new LinkedList<NatRule>();
         newSettings.setNatRules( natRules );
