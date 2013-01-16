@@ -4,18 +4,18 @@
 
 package com.untangle.node.capture;
 
-import java.net.InetAddress;
+import com.untangle.uvm.node.IPMatcher;
 
 @SuppressWarnings("serial")
 public class PassedAddress
 {
     private boolean live = true;
     private boolean log = false;
-    private InetAddress address = null;
+    private IPMatcher address = IPMatcher.getNilMatcher();
     private String description = null;
 
-    public InetAddress getAddress() { return this.address; }
-    public void setAddress( InetAddress newValue ) { this.address = newValue; }
+    public IPMatcher getAddress() { return this.address; }
+    public void setAddress( IPMatcher newValue ) { this.address = newValue; }
 
     public boolean getLive() { return live; }
     public void setLive(boolean live) { this.live = live; }
