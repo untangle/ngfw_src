@@ -256,7 +256,6 @@ if __name__ == "__main__":
      parse_args()
      check_pid_file()
 
-     time.sleep(10)
      while True: 
           debug("")
           read_from_cmd()
