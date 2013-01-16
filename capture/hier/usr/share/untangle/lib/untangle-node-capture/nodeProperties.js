@@ -4,7 +4,7 @@
         "name" : "untangle-node-capture",
         "displayName" : "Captive Portal",
         "type" : "NODE",
-        "viewPosition" : 99,
+        "viewPosition" : 105,
         "autoStart" : true,
         "parents" : {
             "javaClass": "java.util.LinkedList",
