@@ -67,6 +67,9 @@ if [ -x "/etc/init.d/untangle-pyconnector" ]; then
     ourInit untangle-pyconnector start >/dev/null 2>&1
 fi
 
+# remove obsolete file
+rm -f /etc/untangle-net-alpaca/iptables-rules.d/850-cpd
+
 ## Nuke the work directory for the servlets.
 rm -rf /usr/share/untangle/work/tomcat
 
