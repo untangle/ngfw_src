@@ -6,7 +6,7 @@ package com.untangle.node.capture;
 
 import java.util.LinkedList;
 import java.util.ArrayList;
-import java.util.Hashtable;
+import java.util.Iterator;
 import java.util.Timer;
 import java.util.List;
 import java.util.Map;
@@ -21,13 +21,14 @@ import com.untangle.node.token.TokenAdaptor;
 import com.untangle.node.http.ReplacementGenerator;
 import com.untangle.uvm.node.DirectoryConnector;
 import com.untangle.uvm.node.IPMaskedAddress;
-import com.untangle.uvm.vnet.NodeSession;
 import com.untangle.uvm.node.NodeMetric;
 import com.untangle.uvm.node.PortRange;
+import com.untangle.uvm.node.IPMatcher;
 import com.untangle.uvm.vnet.IPNewSessionRequest;
 import com.untangle.uvm.vnet.NodeTCPSession;
 import com.untangle.uvm.vnet.Subscription;
 import com.untangle.uvm.vnet.SoloPipeSpec;
+import com.untangle.uvm.vnet.NodeSession;
 import com.untangle.uvm.vnet.Affinity;
 import com.untangle.uvm.vnet.Protocol;
 import com.untangle.uvm.vnet.Fitting;
@@ -66,8 +67,6 @@ public class CaptureNodeImpl extends NodeBase implements CaptureNode
     private final SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
     private final String settingsFile = (System.getProperty("uvm.settings.dir") + "/untangle-node-capture/settings_" + getNodeSettings().getId().toString());
     private final String customPath = (System.getProperty("uvm.web.dir") + "/capture/custom_" + getNodeSettings().getId().toString());
-    private final Hashtable<InetAddress,PassedAddress> passedClientHash = new Hashtable<InetAddress,PassedAddress>();
-    private final Hashtable<InetAddress,PassedAddress> passedServerHash = new Hashtable<InetAddress,PassedAddress>();
 
     protected CaptureUserTable captureUserTable = new CaptureUserTable();
     private CaptureSettings captureSettings;
@@ -321,27 +320,6 @@ public class CaptureNodeImpl extends NodeBase implements CaptureNode
         // set a unique id for each capture rule
         int idx = (this.nodeInstanceNum * 1000);
         for (CaptureRule rule : argSettings.getCaptureRules()) rule.setId(++idx);
-
-        List<PassedAddress> clientList = argSettings.getPassedClients();
-        List<PassedAddress> serverList = argSettings.getPassedServers();
-        PassedAddress local;
-
-        passedClientHash.clear();
-        passedServerHash.clear();
-
-        // put all the passed clients into a hashtable
-        for (int cc = 0; cc < clientList.size(); cc++)
-        {
-            local = clientList.get(cc);
-            passedClientHash.put(local.getAddress(),local);
-        }
-
-        // put all of the passed servers into a hashtable
-        for(int ss = 0; ss < serverList.size(); ss++)
-        {
-            local = serverList.get(ss);
-            passedServerHash.put(local.getAddress(),local);
-        }
 
         this.captureSettings = argSettings;
     }
@@ -662,15 +640,29 @@ public class CaptureNodeImpl extends NodeBase implements CaptureNode
 
     public PassedAddress isSessionAllowed(InetAddress clientAddr,InetAddress serverAddr)
     {
+        List<PassedAddress> clientList = getCaptureSettings().getPassedClients();
+        List<PassedAddress> serverList = getCaptureSettings().getPassedServers();
         PassedAddress checker = null;
 
         // see if the client is in the pass list
-        checker = passedClientHash.get(clientAddr);
-        if ((checker != null) && (checker.getLive() == true)) return(checker);
+        for (int cc = 0; cc < clientList.size(); cc++)
+        {
+            checker = clientList.get(cc);
+            if (checker.getLive() != true) continue;
+            if (checker.getAddress().isMatch(clientAddr) != true) continue;
+            logger.debug("Client " + clientAddr.getHostAddress().toString() + " found in pass list");
+            return(checker);
+        }
 
         // see if the server is in the pass list
-        checker = passedServerHash.get(serverAddr);
-        if ((checker != null) && (checker.getLive() == true)) return(checker);
+        for(int ss = 0; ss < serverList.size(); ss++)
+        {
+            checker = serverList.get(ss);
+            if (checker.getLive() != true) continue;
+            if (checker.getAddress().isMatch(serverAddr) != true) continue;
+            logger.debug("Server " + serverAddr.getHostAddress().toString() + " found in pass list");
+            return(checker);
+        }
 
         return(null);
     }
