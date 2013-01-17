@@ -143,6 +143,8 @@ int  netcap_nfconntrack_dump_expects( void )
 
 int  netcap_nfconntrack_update_mark( netcap_session_t* session, u_int32_t mark)
 {
+    errlog(ERR_CRITICAL,"netcap_nfconntrack_update_mark( 0x%08x )\n",mark);
+    
     struct nf_conntrack* ct = NULL;
     if (( ct = nfct_new()) == NULL ) return errlog( ERR_CRITICAL, "nfct_new\n" );
     
