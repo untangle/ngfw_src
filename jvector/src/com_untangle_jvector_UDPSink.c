@@ -97,7 +97,6 @@ JNIEXPORT jint JNICALL Java_com_untangle_jvector_UDPSink_write
     if ( tos != com_untangle_jvector_UDPSink_DISABLED) pkt->tos = tos;
     
     /* If first packet hasn't been sent */
-    errlog(ERR_WARNING,"UDPSink: netcap_udp_send()\n");
     if (( number_bytes = netcap_udp_send( (char*)data, data_len, pkt )) < 0 ) {
         perrlog( "netcap_udp_send" );
     }
