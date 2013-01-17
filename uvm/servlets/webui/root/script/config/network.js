@@ -262,7 +262,7 @@ if (!Ung.hasResource["Ung.Network"]) {
             this.buildRoutes();
             
             // builds the tab panel with the tabs
-            var pageTabs = [ this.panelInterfaces, this.panelPortForwardRules, this.panelNatRules, this.panelRoutes, this.panelBypassRules ];
+            var pageTabs = [ this.panelInterfaces, this.panelPortForwardRules, this.panelNatRules, this.panelBypassRules, this.panelRoutes ];
             this.buildTabPanel(pageTabs);
             this.callParent(arguments);
         },
@@ -927,52 +927,52 @@ if (!Ung.hasResource["Ung.Network"]) {
                 columns: [{
                     header: this.i18n._("Network"),
                     width: 170,
-                    dataIndex: 'network',
-                    editor: {
-                        xtype:'textfield',
-                        allowBlank: false
-                    }
+                    dataIndex: 'network'
                 }, {
                     header: this.i18n._("Next Hop"),
                     width: 300,
-                    dataIndex: 'nextHop',
-                    editor: {
-                        xtype:'textfield',
-                        allowBlank: false
-                    }
+                    dataIndex: 'nextHop'
                 }, {
                     header: this.i18n._("Description"),
                     width: 300,
                     dataIndex: 'description',
-                    flex:1,
-                    editor: {
-                        xtype:'textfield',
-                        allowBlank: false
-                    }
+                    flex:1
                 }],
                 sortField: 'network',
                 columnsDefaultSortable: true,
-                rowEditorInputLines: [{
-                    xtype:'textfield',
-                    name: "Network",
-                    dataIndex: "network",
-                    fieldLabel: this.i18n._("Network"),
-                    allowBlank: false,
-                    width: 300
-                }, {
-                    xtype:'textfield',
-                    name: "Next Hop",
-                    dataIndex: "nextHop",
-                    fieldLabel: this.i18n._("Next Hop"),
-                    allowBlank: false,
-                    width: 400
-                }, {
+                rowEditorInputLines: [, {
                     xtype:'textfield',
                     name: "Description",
                     dataIndex: "description",
                     fieldLabel: this.i18n._("Description"),
                     allowBlank: false,
                     width: 400
+                }, {
+                    xtype:'textfield',
+                    name: "Network",
+                    dataIndex: "network",
+                    fieldLabel: this.i18n._("Network"),
+                    allowBlank: false,
+                    vtype:"cidrBlock",
+                    width: 300
+                }, {
+                    xtype: "combobox",
+                    name: "next_hop",
+                    editable : true,
+                    allowBlank: false,
+                    dataIndex: "nextHop",
+                    fieldLabel: i18n._("Next Hop"),
+                    boxLabel: i18n._("IP address or Interface"),
+                    editable: true,
+                    store: [["eth0",i18n._('INTERFACE FIXME 1')], ["eth1",i18n._('INTERFACE FIXME 2')]],
+                    valueField: "value",
+                    displayField: "displayName",
+                    queryMode: 'local'
+                }, {
+                    xtype: 'fieldset',
+                    cls: 'description',
+                    html: this.i18n._("If <b>Next Hop</b> is an IP address that network will routed through the specified IP address.") + "<br/>" +
+                        this.i18n._("If <b>Next Hop</b> is an interface that network will be routed locally on that interface.")
                 }]
             });
 
@@ -980,14 +980,14 @@ if (!Ung.hasResource["Ung.Network"]) {
                 name: 'panelRoutes',
                 helpSource: 'route_rules',
                 parentId: this.getId(),
-                title: this.i18n._('Route Rules'),
+                title: this.i18n._('Routes'),
                 layout: 'anchor',
                 cls: 'ung-panel',
                 items: [{
                     xtype: 'fieldset',
                     cls: 'description',
                     title: this.i18n._('Note'),
-                    html: this.i18n._(" <b>Static Routes</b> are global routes that determining how traffic is routed by destination address. The most specific Static Route is taken for a particular packet, order is not important.")
+                    html: this.i18n._(" <b>Static Routes</b> are global routes that control how traffic is routed by destination address. The most specific Static Route is taken for a particular packet, order is not important.")
                 }, this.gridStaticRoutes]
             });
         },
