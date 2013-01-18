@@ -9,7 +9,7 @@ import pprint
 
 # global objects that we retrieve from the uvm
 uvmContext = None
-captureNode = None
+captureList = None
 captureSettings = None
 companyName = None
 
@@ -33,15 +33,21 @@ def index(req):
     # setup the uvm and node objects so we can make the RPC call
     global_auth_setup()
 
-    # call the node to logout the user
-    exitResult = captureNode.userLogout(address)
+    # track the number of successful calls to userLogout
+    exitCount = 0
 
-    if (exitResult == 0):
-        page = replace_marker(page,'$.ExitMessage.$', 'You have successfully logged out')
-        page = replace_marker(page,'$.ExitStyle.$', 'styleNormal')
-    else:
+    # call the logout function for each node instance
+    for node in captureList:
+        exitResult = node.userLogout(address)
+        if (exitResult == 0):
+            exitCount = exitCount + 1
+
+    if (exitCount == 0):
         page = replace_marker(page,'$.ExitMessage.$', 'You were already logged out')
         page = replace_marker(page,'$.ExitStyle.$', 'styleProblem')
+    else:
+        page = replace_marker(page,'$.ExitMessage.$', 'You have successfully logged out')
+        page = replace_marker(page,'$.ExitStyle.$', 'styleNormal')
 
     page = replace_marker(page,'$.CompanyName.$', companyName)
     page = replace_marker(page,'$.PageTitle.$', captureSettings['basicLoginPageTitle'])
@@ -55,20 +61,29 @@ def index(req):
 def global_auth_setup(appid=None):
 
     global uvmContext
-    global captureNode
+    global captureList
+
+    # create a list for all of the nodes we discover
+    captureList = list()
 
     # first we get the uvm context
     uvmContext = Uvm().getUvmContext()
 
-    # if no appid provided we lookup capture node by name
-    # otherwise we use the appid passed to us
+    # if no appid provided we lookup capture nodes by name
     if (appid == None):
-        captureNode = uvmContext.nodeManager().node("untangle-node-capture")
+        nodelist = uvmContext.nodeManager().nodeInstancesIds()
+        for item in nodelist['list']:
+            node = uvmContext.nodeManager().node(long(item))
+            name = node.getNodeSettings()['nodeName']
+            if (name == 'untangle-node-capture'):
+                captureList.append(node)
+    # appid was passed so use it
     else:
-        captureNode = uvmContext.nodeManager().node(long(appid))
+        node = uvmContext.nodeManager().node(long(appid))
+        captureList.append(node)
 
     # if we can't find the node then throw an exception
-    if (captureNode == None):
+    if (len(captureList) == 0):
         raise Exception("The uvm node manager could not locate untangle-node-capture")
 
 #-----------------------------------------------------------------------------
