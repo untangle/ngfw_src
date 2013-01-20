@@ -97,10 +97,10 @@ for line in ip_conntrack_file.readlines():
         dict['orig_dst_port'],
         dict['orig_packets'],
         dict['orig_bytes'],
-        dict['reply_src'],
         dict['reply_dst'],
-        dict['reply_src_port'],
+        dict['reply_src'],
         dict['reply_dst_port'],
+        dict['reply_src_port'],
         dict['qos_priority'],
         dict['bypassed'],
         dict['local_traffic'])
