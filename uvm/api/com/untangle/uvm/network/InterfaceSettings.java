@@ -31,6 +31,9 @@ public class InterfaceSettings implements Serializable, JSONString
     public InetAddress v4StaticAddress; /* the address  of this interface if configured static, or dhcp override */ 
     public InetAddress v4StaticNetmask; /* the netmask  of this interface if configured static, or dhcp override */
     public InetAddress v4StaticGateway; /* the gateway  of this interface if configured static, or dhcp override */
+    public InetAddress v4AutoAddressOverride; /* the dhcp override address (null means don't override) */ 
+    public InetAddress v4AutoNetmaskOverride; /* the dhcp override netmask (null means don't override) */ 
+    public InetAddress v4AutoGatewayOverride; /* the dhcp override gateway (null means don't override) */ 
 
     public String v6ConfigType; /* config type: static, auto */
     
@@ -88,11 +91,20 @@ public class InterfaceSettings implements Serializable, JSONString
     public void setv4StaticAddress( InetAddress v4StaticAddress ) { this.v4StaticAddress = v4StaticAddress; }
 
     public InetAddress getV4StaticNetmask( ) { return this.v4StaticNetmask; }
-    public void setV4StaticNetmask( InetAddress v4StaticNetmask ) { this.v4StaticNetmask = v4StaticNetmask; }
-
+    public void setv4StaticNetmask( InetAddress v4StaticNetmask ) { this.v4StaticNetmask = v4StaticNetmask; }
+    
     public InetAddress getV4StaticGateway( ) { return this.v4StaticGateway; }
-    public void setV4StaticGateway( InetAddress v4StaticGateway ) { this.v4StaticGateway = v4StaticGateway; }
-
+    public void setv4StaticGateway( InetAddress v4StaticGateway ) { this.v4StaticGateway = v4StaticGateway; }
+    
+    public InetAddress getv4AutoAddressOverride( ) { return this.v4AutoAddressOverride; }
+    public void setv4AutoAddressOverride( InetAddress v4AutoAddressOverride ) { this.v4AutoAddressOverride = v4AutoAddressOverride; }
+    
+    public InetAddress getV4AutoNetmaskOverride( ) { return this.v4AutoNetmaskOverride; }
+    public void setv4AutoNetmaskOverride( InetAddress v4AutoNetmaskOverride ) { this.v4AutoNetmaskOverride = v4AutoNetmaskOverride; }
+    
+    public InetAddress getV4AutoGatewayOverride( ) { return this.v4AutoGatewayOverride; }
+    public void setv4AutoGatewayOverride( InetAddress v4AutoGatewayOverride ) { this.v4AutoGatewayOverride = v4AutoGatewayOverride; }
+    
     public String getV6ConfigType( ) { return this.v6ConfigType; }
     public void setV6ConfigType( String v6ConfigType ) { this.v6ConfigType = v6ConfigType; }
 

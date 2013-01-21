@@ -49,40 +49,50 @@ if (!Ung.hasResource["Ung.Network"]) {
         title: this.i18n._('Edit Interface'),
         reRenderFields: Ext.bind( function() {
             var configValue = Ext.getCmp('interface_config').getValue();
-            var v4ConfigValue = Ext.getCmp('interface_v4ConfigType').getValue();
             var isWan = Ext.getCmp('interface_isWan').getValue();
 
+            // hide everything
             Ext.getCmp('interface_isWan').setVisible(false);
             Ext.getCmp('interface_v4Config').setVisible(false);
+            Ext.getCmp('interface_v4ConfigType').setVisible(false);
             Ext.getCmp('interface_v4StaticAddress').setVisible(false);
             Ext.getCmp('interface_v4StaticNetmask').setVisible(false);
             Ext.getCmp('interface_v4StaticGateway').setVisible(false);
+            Ext.getCmp('interface_v4AutoAddressOverride').setVisible(false);
+            Ext.getCmp('interface_v4AutoNetmaskOverride').setVisible(false);
+            Ext.getCmp('interface_v4AutoGatewayOverride').setVisible(false);
             Ext.getCmp('interface_v6Config').setVisible(false);
 
             if ( configValue == "addressed") {
                 Ext.getCmp('interface_isWan').setVisible(true);
+
                 Ext.getCmp('interface_v4Config').setVisible(true);
-                Ext.getCmp('interface_v6Config').setVisible(true);
 
-                Ext.getCmp('interface_v4StaticAddress').setFieldLabel(i18n._("IPv4 Address"));
-                Ext.getCmp('interface_v4StaticNetmask').setFieldLabel(i18n._("IPv4 Netmask"));
-                Ext.getCmp('interface_v4StaticGateway').setFieldLabel(i18n._("IPv4 Gateway"));
-
-                if (v4ConfigValue == "static") {
-                    Ext.getCmp('interface_v4StaticAddress').setVisible(true);
-                    Ext.getCmp('interface_v4StaticNetmask').setVisible(true);
-                    if (isWan)
-                        Ext.getCmp('interface_v4StaticGateway').setVisible(true);
+                // if not a WAN, must configure statically
+                // if a WAN, can use auto or static
+                if (!isWan) {
+                    Ext.getCmp('interface_v4ConfigType').setValue("static"); //don't allow auto/DHCP for non-WAN
+                    Ext.getCmp('interface_v4StaticGateway').setVisible(false); //don't allow auto/DHCP for non-WAN
                 } else {
-                    Ext.getCmp('interface_v4StaticAddress').setFieldLabel(i18n._("IPv4 Address Override"));
-                    Ext.getCmp('interface_v4StaticNetmask').setFieldLabel(i18n._("IPv4 Netmask Override"));
-                    Ext.getCmp('interface_v4StaticGateway').setFieldLabel(i18n._("IPv4 Gateway Override"));
+                    Ext.getCmp('interface_v4ConfigType').setVisible(true); 
+                }
 
+                // if DHCP show override fields
+                // if static show static fields
+                if ( Ext.getCmp('interface_v4ConfigType').getValue() == "auto" ) {
+                    Ext.getCmp('interface_v4AutoAddressOverride').setVisible(true);
+                    Ext.getCmp('interface_v4AutoNetmaskOverride').setVisible(true);
+                    if (isWan)
+                        Ext.getCmp('interface_v4AutoGatewayOverride').setVisible(true);
+                } else {
                     Ext.getCmp('interface_v4StaticAddress').setVisible(true);
                     Ext.getCmp('interface_v4StaticNetmask').setVisible(true);
                     if (isWan)
                         Ext.getCmp('interface_v4StaticGateway').setVisible(true);
                 }
+
+                Ext.getCmp('interface_v6Config').setVisible(true);
+                
             }
         }, this ),
         initComponent: function() {
@@ -147,6 +157,7 @@ if (!Ung.hasResource["Ung.Network"]) {
                     name: "IPv4 Address",
                     dataIndex: "v4StaticAddress",
                     fieldLabel: i18n._("IPv4 Address"),
+                    allowBlank: false,
                     vtype: "ipAddress",
                     width: 300
                 }, {
@@ -155,6 +166,7 @@ if (!Ung.hasResource["Ung.Network"]) {
                     name: "IPv4 Netmask",
                     dataIndex: "v4StaticNetmask",
                     fieldLabel: i18n._("IPv4 Netmask"),
+                    allowBlank: false,
                     vtype: "ipAddress",
                     width: 300
                 }, {
@@ -163,6 +175,31 @@ if (!Ung.hasResource["Ung.Network"]) {
                     name: "IPv4 Gateway",
                     dataIndex: "v4StaticGateway",
                     fieldLabel: i18n._("IPv4 Gateway"),
+                    allowBlank: false,
+                    vtype: "ipAddress",
+                    width: 300
+                }, {
+                    xtype:'textfield',
+                    id: "interface_v4AutoAddressOverride",
+                    name: "IPv4 Address Override",
+                    dataIndex: "v4AutoAddressOverride",
+                    fieldLabel: i18n._("IPv4 Address Override"),
+                    vtype: "ipAddress",
+                    width: 300
+                }, {
+                    xtype:'textfield',
+                    id: "interface_v4AutoNetmaskOverride",
+                    name: "IPv4 Netmask Override",
+                    dataIndex: "v4AutoNetmaskOverride",
+                    fieldLabel: i18n._("IPv4 Netmask Override"),
+                    vtype: "ipAddress",
+                    width: 300
+                }, {
+                    xtype:'textfield',
+                    id: "interface_v4AutoGatewayOverride",
+                    name: "IPv4 Gateway Override",
+                    dataIndex: "v4AutoGatewayOverride",
+                    fieldLabel: i18n._("IPv4 Gateway Override"),
                     vtype: "ipAddress",
                     width: 300
                 }]
@@ -1106,6 +1143,12 @@ if (!Ung.hasResource["Ung.Network"]) {
                         name: 'v4StaticNetmask'
                     }, {
                         name: 'v4StaticGateway'
+                    }, {
+                        name: 'v4AutoAddressOverride'
+                    }, {
+                        name: 'v4AutoNetmaskOverride'
+                    }, {
+                        name: 'v4AutoGatewayOverride'
                     }, {
                         name: 'v6ConfigType'
                     }, {
