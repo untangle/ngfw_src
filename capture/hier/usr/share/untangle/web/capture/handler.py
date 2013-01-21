@@ -168,7 +168,11 @@ def infopost(req,method,nonce,appid,host,uri,agree='empty'):
 
 def custom_upload(req,upload_file,appid):
 
-    # first set the content type for the response
+    # first we call the custom_remove function to make sure the target
+    # directory is empty.
+    custom_remove(req,upload_file,appid)
+
+    # now set the content type for the response
     req.content_type = "text/html"
 
     # use the path from the request filename to setup the custom path
@@ -222,8 +226,10 @@ def custom_upload(req,upload_file,appid):
 # This function handles the custom page cleanup
 
 def custom_remove(req,custom_file,appid):
-
-    # first set the content type for the response
+    # first set the content type for the response.  note that the custom_file
+    # argument is not used.  It's just a placeholder for the form field where
+    # the current custom upload file is displayed on the extjs page and thus
+    # is passed to our handler when the form is submitted.
     req.content_type = "text/html"
 
     # use the path from the request filename to setup the custom path
