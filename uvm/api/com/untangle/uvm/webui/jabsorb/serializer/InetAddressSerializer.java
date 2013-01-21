@@ -73,17 +73,22 @@ public class InetAddressSerializer extends AbstractSerializer {
         Object returnValue = null;
         String val = json instanceof String ? (String) json : json.toString();
         try {
-            returnValue = InetAddress.getByName(val);
+            if ("".equals(val)) {
+                returnValue = null;
+                state.setSerialized(json, returnValue);
+                return returnValue;
+            }
+            else
+                returnValue = InetAddress.getByName(val);
         } catch (Exception e) {
-            throw new UnmarshallException("Invalid \"InetAddress\" specified:"
-                                          + val);
+            throw new UnmarshallException("Invalid \"InetAddress\" specified:" + val);
         }
 		
         if (returnValue == null) {
             throw new UnmarshallException("invalid class " + clazz);
         }
+
         state.setSerialized(json, returnValue);
         return returnValue;
-		
     }
 }
