@@ -47,6 +47,44 @@ if (!Ung.hasResource["Ung.Network"]) {
         sizeToGrid: true,
         sizeToComponent: null,
         title: this.i18n._('Edit Interface'),
+        reRenderFields: Ext.bind( function() {
+            var configValue = Ext.getCmp('interface_config').getValue();
+            var v4ConfigValue = Ext.getCmp('interface_v4ConfigType').getValue();
+            var isWan = Ext.getCmp('interface_isWan').getValue();
+
+            Ext.getCmp('interface_isWan').setVisible(false);
+            Ext.getCmp('interface_v4Config').setVisible(false);
+            Ext.getCmp('interface_v4StaticAddress').setVisible(false);
+            Ext.getCmp('interface_v4StaticNetmask').setVisible(false);
+            Ext.getCmp('interface_v4StaticGateway').setVisible(false);
+            Ext.getCmp('interface_v6Config').setVisible(false);
+
+            if ( configValue == "addressed") {
+                Ext.getCmp('interface_isWan').setVisible(true);
+                Ext.getCmp('interface_v4Config').setVisible(true);
+                Ext.getCmp('interface_v6Config').setVisible(true);
+
+                Ext.getCmp('interface_v4StaticAddress').setFieldLabel(i18n._("IPv4 Address"));
+                Ext.getCmp('interface_v4StaticNetmask').setFieldLabel(i18n._("IPv4 Netmask"));
+                Ext.getCmp('interface_v4StaticGateway').setFieldLabel(i18n._("IPv4 Gateway"));
+
+                if (v4ConfigValue == "static") {
+                    Ext.getCmp('interface_v4StaticAddress').setVisible(true);
+                    Ext.getCmp('interface_v4StaticNetmask').setVisible(true);
+                    if (isWan)
+                        Ext.getCmp('interface_v4StaticGateway').setVisible(true);
+                } else {
+                    Ext.getCmp('interface_v4StaticAddress').setFieldLabel(i18n._("IPv4 Address Override"));
+                    Ext.getCmp('interface_v4StaticNetmask').setFieldLabel(i18n._("IPv4 Netmask Override"));
+                    Ext.getCmp('interface_v4StaticGateway').setFieldLabel(i18n._("IPv4 Gateway Override"));
+
+                    Ext.getCmp('interface_v4StaticAddress').setVisible(true);
+                    Ext.getCmp('interface_v4StaticNetmask').setVisible(true);
+                    if (isWan)
+                        Ext.getCmp('interface_v4StaticGateway').setVisible(true);
+                }
+            }
+        }, this ),
         initComponent: function() {
             this.inputLines = [{
                 xtype:'textfield',
@@ -70,17 +108,7 @@ if (!Ung.hasResource["Ung.Network"]) {
                 triggerAction: 'all',
                 listClass: 'x-combo-list-small',
                 listeners: {
-                    select: Ext.bind(function(combo, ewVal, oldVal) {
-                        Ext.getCmp('interface_isWan').setVisible(false);
-                        Ext.getCmp('interface_v4ConfigType').setVisible(false);
-                        Ext.getCmp('interface_v6ConfigType').setVisible(false);
-
-                        if ( combo.value == "addressed") {
-                            Ext.getCmp('interface_isWan').setVisible(true);
-                            Ext.getCmp('interface_v4ConfigType').setVisible(true);
-                            Ext.getCmp('interface_v6ConfigType').setVisible(true);
-                        }
-                    }, this )
+                    select: this.reRenderFields
                 }
             }, {
                 xtype:'checkbox',
@@ -88,45 +116,83 @@ if (!Ung.hasResource["Ung.Network"]) {
                 name: "is WAN Inteface",
                 dataIndex: "isWan",
                 fieldLabel: i18n._("is WAN Interface"),
-                width: 500
-            }, {
-                xtype: "combo",
-                id: "interface_v4ConfigType",
-                name: "v4ConfigType",
-                allowBlank: false,
-                dataIndex: "v4ConfigType",
-                fieldLabel: i18n._("IPv4 Config Type"),
-                editable: false,
-                store: [["static",i18n._('Static')], ["auto",i18n._('Auto (DHCP)')]],
-                valueField: "value",
-                displayField: "displayName",
-                queryMode: 'local',
-                triggerAction: 'all',
-                listClass: 'x-combo-list-small',
                 listeners: {
-                    select: Ext.bind(function(combo, ewVal, oldVal) {
-                        return;
-                    }, this )
+                    change: this.reRenderFields
                 }
             }, {
-                xtype: "combo",
-                id: "interface_v6ConfigType",
-                name: "v6ConfigType",
-                allowBlank: false,
-                dataIndex: "v6ConfigType",
-                fieldLabel: i18n._("IPv6 Config Type"),
-                editable: false,
-                store: [["static",i18n._('Static')], ["auto",i18n._('Auto (SLAAC)')]],
-                valueField: "value",
-                displayField: "displayName",
-                queryMode: 'local',
-                triggerAction: 'all',
-                listClass: 'x-combo-list-small',
-                listeners: {
-                    select: Ext.bind(function(combo, ewVal, oldVal) {
-                        return;
-                    }, this )
-                }
+                id:'interface_v4Config',
+                name:'interface_v4Config',
+                style: "border:1px solid;", // UGLY FIXME
+                xtype:'fieldset',
+                items: [{
+                    xtype: "combo",
+                    id: "interface_v4ConfigType",
+                    name: "v4ConfigType",
+                    allowBlank: false,
+                    dataIndex: "v4ConfigType",
+                    fieldLabel: i18n._("IPv4 Config Type"),
+                    editable: false,
+                    store: [["static",i18n._('Static')], ["auto",i18n._('Auto (DHCP)')]],
+                    valueField: "value",
+                    displayField: "displayName",
+                    queryMode: 'local',
+                    triggerAction: 'all',
+                    listClass: 'x-combo-list-small',
+                    listeners: {
+                        select: this.reRenderFields
+                    }
+                }, {
+                    xtype:'textfield',
+                    id: "interface_v4StaticAddress",
+                    name: "IPv4 Address",
+                    dataIndex: "v4StaticAddress",
+                    fieldLabel: i18n._("IPv4 Address"),
+                    vtype: "ipAddress",
+                    width: 300
+                }, {
+                    xtype:'textfield',
+                    id: "interface_v4StaticNetmask",
+                    name: "IPv4 Netmask",
+                    dataIndex: "v4StaticNetmask",
+                    fieldLabel: i18n._("IPv4 Netmask"),
+                    vtype: "ipAddress",
+                    width: 300
+                }, {
+                    xtype:'textfield',
+                    id: "interface_v4StaticGateway",
+                    name: "IPv4 Gateway",
+                    dataIndex: "v4StaticGateway",
+                    fieldLabel: i18n._("IPv4 Gateway"),
+                    vtype: "ipAddress",
+                    width: 300
+                }]
+            }, {
+                id:'interface_v6Config',
+                name:'interface_v6Config',
+                style: "border:1px solid;", // UGLY FIXME
+                xtype:'fieldset',
+                border:true,
+                items: [{
+                    border:true,
+                    xtype: "combo",
+                    id: "interface_v6ConfigType",
+                    name: "v6ConfigType",
+                    allowBlank: false,
+                    dataIndex: "v6ConfigType",
+                    fieldLabel: i18n._("IPv6 Config Type"),
+                    editable: false,
+                    store: [["static",i18n._('Static')], ["auto",i18n._('Auto (SLAAC/RA)')]],
+                    valueField: "value",
+                    displayField: "displayName",
+                    queryMode: 'local',
+                    triggerAction: 'all',
+                    listClass: 'x-combo-list-small',
+                    listeners: {
+                        select: Ext.bind(function(combo, ewVal, oldVal) {
+                            return;
+                        }, this )
+                    }
+                }]
             }];
 
             this.items = [Ext.create('Ext.panel.Panel',{
@@ -141,12 +207,16 @@ if (!Ung.hasResource["Ung.Network"]) {
         },
         populate: function(record) {
             return this.populateTree(record);
+
+            this.reRenderFields();
         },
         populateTree: function(record) {
             this.record = record;
             this.initialRecordData = Ext.encode(record.data);
             
             this.populateChild(this, record);
+
+            this.reRenderFields();
         },
         populateChild: function(component,record) {
             if ( component == null ) {
@@ -1031,7 +1101,17 @@ if (!Ung.hasResource["Ung.Network"]) {
                     }, {
                         name: 'v4ConfigType'
                     }, {
+                        name: 'v4StaticAddress'
+                    }, {
+                        name: 'v4StaticNetmask'
+                    }, {
+                        name: 'v4StaticGateway'
+                    }, {
                         name: 'v6ConfigType'
+                    }, {
+                        name: 'staticDns1'
+                    }, {
+                        name: 'staticDns2'
                     }, {
                         name: 'javaClass'
                     }],

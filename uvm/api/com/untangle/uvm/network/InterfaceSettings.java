@@ -31,16 +31,15 @@ public class InterfaceSettings implements Serializable, JSONString
     public InetAddress v4StaticAddress; /* the address  of this interface if configured static, or dhcp override */ 
     public InetAddress v4StaticNetmask; /* the netmask  of this interface if configured static, or dhcp override */
     public InetAddress v4StaticGateway; /* the gateway  of this interface if configured static, or dhcp override */
-    public InetAddress v4StaticDns1; /* the dns1  of this interface if configured static, or dhcp override */
-    public InetAddress v4StaticDns2; /* the dns2  of this interface if configured static, or dhcp override */
 
     public String v6ConfigType; /* config type: static, auto */
     
     public InetAddress v6StaticAddress; /* the address  of this interface if configured static, or dhcp override */ 
     public Integer     v6StaticPrefixLength; /* the netmask  of this interface if configured static, or dhcp override */
     public InetAddress v6StaticGateway; /* the gateway  of this interface if configured static, or dhcp override */
-    public InetAddress v6StaticDns1; /* the dns1  of this interface if configured static, or dhcp override */
-    public InetAddress v6StaticDns2; /* the dns2  of this interface if configured static, or dhcp override */
+
+    public InetAddress staticDns1; /* the dns1  of this interface if configured static, or dhcp override */
+    public InetAddress staticDns2; /* the dns2  of this interface if configured static, or dhcp override */
     
     public List<IPMaskedAddress> aliases; /* alias addresses for static & dhcp */
     
@@ -94,12 +93,6 @@ public class InterfaceSettings implements Serializable, JSONString
     public InetAddress getV4StaticGateway( ) { return this.v4StaticGateway; }
     public void setV4StaticGateway( InetAddress v4StaticGateway ) { this.v4StaticGateway = v4StaticGateway; }
 
-    public InetAddress getV4StaticDns1( ) { return this.v4StaticDns1; }
-    public void setV4StaticDns1( InetAddress v4StaticDns1 ) { this.v4StaticDns1 = v4StaticDns1; }
-
-    public InetAddress getV4StaticDns2( ) { return this.v4StaticDns2; }
-    public void setV4StaticDns2( InetAddress v4StaticDns2 ) { this.v4StaticDns2 = v4StaticDns2; }
-
     public String getV6ConfigType( ) { return this.v6ConfigType; }
     public void setV6ConfigType( String v6ConfigType ) { this.v6ConfigType = v6ConfigType; }
 
@@ -112,12 +105,12 @@ public class InterfaceSettings implements Serializable, JSONString
     public InetAddress getV6StaticGateway( ) { return this.v6StaticGateway; }
     public void setV6StaticGateway( InetAddress v6StaticGateway ) { this.v6StaticGateway = v6StaticGateway; }
 
-    public InetAddress getV6StaticDns1( ) { return this.v6StaticDns1; }
-    public void setV6StaticDns1( InetAddress v6StaticDns1 ) { this.v6StaticDns1 = v6StaticDns1; }
+    public InetAddress getStaticDns1( ) { return this.staticDns1; }
+    public void setStaticDns1( InetAddress staticDns1 ) { this.staticDns1 = staticDns1; }
 
-    public InetAddress getV6StaticDns2( ) { return this.v6StaticDns2; }
-    public void setV6StaticDns2( InetAddress v6StaticDns2 ) { this.v6StaticDns2 = v6StaticDns2; }
-    
+    public InetAddress getStaticDns2( ) { return this.staticDns2; }
+    public void setStaticDns2( InetAddress staticDns2 ) { this.staticDns2 = staticDns2; }
+
     public List<IPMaskedAddress> getAliases( ) { return this.aliases; }
     public void setAliases( List<IPMaskedAddress> aliases ) { this.aliases = aliases; }
     
