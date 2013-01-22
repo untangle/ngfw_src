@@ -58,41 +58,71 @@ if (!Ung.hasResource["Ung.Network"]) {
             Ext.getCmp('interface_v4StaticAddress').setVisible(false);
             Ext.getCmp('interface_v4StaticNetmask').setVisible(false);
             Ext.getCmp('interface_v4StaticGateway').setVisible(false);
+            Ext.getCmp('interface_v4StaticDns1').setVisible(false);
+            Ext.getCmp('interface_v4StaticDns2').setVisible(false);
             Ext.getCmp('interface_v4AutoAddressOverride').setVisible(false);
             Ext.getCmp('interface_v4AutoNetmaskOverride').setVisible(false);
             Ext.getCmp('interface_v4AutoGatewayOverride').setVisible(false);
+            Ext.getCmp('interface_v4AutoDns1Override').setVisible(false);
+            Ext.getCmp('interface_v4AutoDns2Override').setVisible(false);
             Ext.getCmp('interface_v6Config').setVisible(false);
+            Ext.getCmp('interface_v6ConfigType').setVisible(false);
+            Ext.getCmp('interface_v6StaticAddress').setVisible(false);
+            Ext.getCmp('interface_v6StaticPrefixLength').setVisible(false);
+            Ext.getCmp('interface_v6StaticGateway').setVisible(false);
+            Ext.getCmp('interface_v6StaticDns1').setVisible(false);
+            Ext.getCmp('interface_v6StaticDns2').setVisible(false);
 
             if ( configValue == "addressed") {
                 Ext.getCmp('interface_isWan').setVisible(true);
-
                 Ext.getCmp('interface_v4Config').setVisible(true);
+                Ext.getCmp('interface_v6Config').setVisible(true);
 
                 // if not a WAN, must configure statically
                 // if a WAN, can use auto or static
                 if (!isWan) {
                     Ext.getCmp('interface_v4ConfigType').setValue("static"); //don't allow auto/DHCP for non-WAN
+                    Ext.getCmp('interface_v6ConfigType').setValue("static"); //don't allow auto/DHCP for non-WAN
                     Ext.getCmp('interface_v4StaticGateway').setVisible(false); //don't allow auto/DHCP for non-WAN
+                    Ext.getCmp('interface_v6StaticGateway').setVisible(false); //don't allow auto/DHCP for non-WAN
                 } else {
                     Ext.getCmp('interface_v4ConfigType').setVisible(true); 
+                    Ext.getCmp('interface_v6ConfigType').setVisible(true); 
                 }
 
-                // if DHCP show override fields
+                // if auto show override fields
                 // if static show static fields
                 if ( Ext.getCmp('interface_v4ConfigType').getValue() == "auto" ) {
                     Ext.getCmp('interface_v4AutoAddressOverride').setVisible(true);
                     Ext.getCmp('interface_v4AutoNetmaskOverride').setVisible(true);
-                    if (isWan)
+                    if (isWan) {
                         Ext.getCmp('interface_v4AutoGatewayOverride').setVisible(true);
+                        Ext.getCmp('interface_v4AutoDns1Override').setVisible(true);
+                        Ext.getCmp('interface_v4AutoDns2Override').setVisible(true);
+                    }
                 } else {
                     Ext.getCmp('interface_v4StaticAddress').setVisible(true);
                     Ext.getCmp('interface_v4StaticNetmask').setVisible(true);
-                    if (isWan)
+                    if (isWan) {
                         Ext.getCmp('interface_v4StaticGateway').setVisible(true);
+                        Ext.getCmp('interface_v4StaticDns1').setVisible(true);
+                        Ext.getCmp('interface_v4StaticDns2').setVisible(true);
+                    }
                 }
 
-                Ext.getCmp('interface_v6Config').setVisible(true);
-                
+                // if auto show override fields
+                // if static show static fields
+                if ( Ext.getCmp('interface_v6ConfigType').getValue() == "auto" ) {
+                    // no overriding in IPv6
+                } else {
+                    Ext.getCmp('interface_v6StaticAddress').setVisible(true);
+                    Ext.getCmp('interface_v6StaticPrefixLength').setVisible(true);
+                    if (isWan) {
+                        Ext.getCmp('interface_v6StaticGateway').setVisible(true);
+                        Ext.getCmp('interface_v6StaticDns1').setVisible(true);
+                        Ext.getCmp('interface_v6StaticDns2').setVisible(true);
+                    }
+                }
             }
         }, this ),
         initComponent: function() {
@@ -180,6 +210,24 @@ if (!Ung.hasResource["Ung.Network"]) {
                     width: 300
                 }, {
                     xtype:'textfield',
+                    id: "interface_v4StaticDns1",
+                    name: "IPv4 Dns1",
+                    dataIndex: "v4StaticDns1",
+                    fieldLabel: i18n._("IPv4 Primary DNS"),
+                    allowBlank: false,
+                    vtype: "ipAddress",
+                    width: 300
+                }, {
+                    xtype:'textfield',
+                    id: "interface_v4StaticDns2",
+                    name: "IPv4 Dns2",
+                    dataIndex: "v4StaticDns2",
+                    fieldLabel: i18n._("IPv4 Secondary DNS"),
+                    allowBlank: false,
+                    vtype: "ipAddress",
+                    width: 300
+                }, {
+                    xtype:'textfield',
                     id: "interface_v4AutoAddressOverride",
                     name: "IPv4 Address Override",
                     dataIndex: "v4AutoAddressOverride",
@@ -200,6 +248,30 @@ if (!Ung.hasResource["Ung.Network"]) {
                     name: "IPv4 Gateway Override",
                     dataIndex: "v4AutoGatewayOverride",
                     fieldLabel: i18n._("IPv4 Gateway Override"),
+                    vtype: "ipAddress",
+                    width: 300
+                }, {
+                    xtype:'textfield',
+                    id: "interface_v4AutoNetmaskOverride",
+                    name: "IPv4 Netmask Override",
+                    dataIndex: "v4AutoNetmaskOverride",
+                    fieldLabel: i18n._("IPv4 Netmask Override"),
+                    vtype: "ipAddress",
+                    width: 300
+                }, {
+                    xtype:'textfield',
+                    id: "interface_v4AutoDns1Override",
+                    name: "IPv4 Dns1 Override",
+                    dataIndex: "v4AutoDns1Override",
+                    fieldLabel: i18n._("IPv4 Primary DNS Override"),
+                    vtype: "ipAddress",
+                    width: 300
+                }, {
+                    xtype:'textfield',
+                    id: "interface_v4AutoDns2Override",
+                    name: "IPv4 Dns2 Override",
+                    dataIndex: "v4AutoDns2Override",
+                    fieldLabel: i18n._("IPv4 Secondary DNS Override"),
                     vtype: "ipAddress",
                     width: 300
                 }]
@@ -225,10 +297,52 @@ if (!Ung.hasResource["Ung.Network"]) {
                     triggerAction: 'all',
                     listClass: 'x-combo-list-small',
                     listeners: {
-                        select: Ext.bind(function(combo, ewVal, oldVal) {
-                            return;
-                        }, this )
+                        change: this.reRenderFields
                     }
+                }, {
+                    xtype:'textfield',
+                    id: "interface_v6StaticAddress",
+                    name: "IPv6 Address",
+                    dataIndex: "v6StaticAddress",
+                    fieldLabel: i18n._("IPv6 Address"),
+                    allowBlank: false,
+                    vtype: "ipAddress",
+                    width: 500
+                }, {
+                    xtype:'textfield',
+                    id: "interface_v6StaticPrefixLength",
+                    name: "IPv6 Prefix Length",
+                    dataIndex: "v6StaticPrefixLength",
+                    fieldLabel: i18n._("IPv6 Prefix Length"),
+                    allowBlank: false,
+                    width: 150
+                }, {
+                    xtype:'textfield',
+                    id: "interface_v6StaticGateway",
+                    name: "IPv6 Gateway",
+                    dataIndex: "v6StaticGateway",
+                    fieldLabel: i18n._("IPv6 Gateway"),
+                    allowBlank: false,
+                    vtype: "ipAddress",
+                    width: 500
+                }, {
+                    xtype:'textfield',
+                    id: "interface_v6StaticDns1",
+                    name: "IPv6 Dns1",
+                    dataIndex: "v6StaticDns1",
+                    fieldLabel: i18n._("IPv6 Primary DNS"),
+                    allowBlank: false,
+                    vtype: "ipAddress",
+                    width: 500
+                }, {
+                    xtype:'textfield',
+                    id: "interface_v6StaticDns2",
+                    name: "IPv6 Dns2",
+                    dataIndex: "v6StaticDns2",
+                    fieldLabel: i18n._("IPv6 Secondary DNS"),
+                    allowBlank: false,
+                    vtype: "ipAddress",
+                    width: 500
                 }]
             }];
 
@@ -1144,17 +1258,31 @@ if (!Ung.hasResource["Ung.Network"]) {
                     }, {
                         name: 'v4StaticGateway'
                     }, {
+                        name: 'v4StaticDns1'
+                    }, {
+                        name: 'v4StaticDns2'
+                    }, {
                         name: 'v4AutoAddressOverride'
                     }, {
                         name: 'v4AutoNetmaskOverride'
                     }, {
                         name: 'v4AutoGatewayOverride'
                     }, {
+                        name: 'v4AutoDns1Override'
+                    }, {
+                        name: 'v4AutoDns2Override'
+                    }, {
                         name: 'v6ConfigType'
                     }, {
-                        name: 'staticDns1'
+                        name: 'v6StaticAddress'
                     }, {
-                        name: 'staticDns2'
+                        name: 'v6StaticPrefixLength'
+                    }, {
+                        name: 'v6StaticGateway'
+                    }, {
+                        name: 'v6StaticDns1'
+                    }, {
+                        name: 'v6StaticDns2'
                     }, {
                         name: 'javaClass'
                     }],
