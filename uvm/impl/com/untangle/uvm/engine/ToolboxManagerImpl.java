@@ -154,6 +154,8 @@ class ToolboxManagerImpl implements ToolboxManager
                 "untangle-libitem-rap".equals(name) ||
                 "untangle-libitem-pcremote".equals(name) ||
                 "untangle-libitem-nas".equals(name) ||
+                "untangle-libitem-opensource-package".equals(name) ||
+                "untangle-libitem-superbundle-package".equals(name) ||
                 "untangle-libitem-professional-package".equals(name))
                 continue;
             
