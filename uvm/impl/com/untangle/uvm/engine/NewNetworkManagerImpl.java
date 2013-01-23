@@ -86,6 +86,7 @@ public class NewNetworkManagerImpl implements NewNetworkManager
         /**
          * TODO:
          * calculate symbolic dev based on settings of each dev (pppoe, bridged, etc)
+         * calculate iptables dev based on settings of each dev
          */
         
         /**
