@@ -265,7 +265,7 @@ public class ReportingNodeImpl extends NodeBase implements ReportingNode, Report
             this.settings = readSettings;
 
             this.reconfigure();
-            logger.info("Settings: " + this.settings.toJSONString());
+            logger.debug("Settings: " + this.settings.toJSONString());
         }
 
         // intialize default settings

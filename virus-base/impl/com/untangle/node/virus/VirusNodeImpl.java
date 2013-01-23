@@ -392,7 +392,7 @@ public abstract class VirusNodeImpl extends NodeBase implements VirusNode
             // UPDATE settings if necessary
             
             this.settings = readSettings;
-            logger.info("Settings: " + this.settings.toJSONString());
+            logger.debug("Settings: " + this.settings.toJSONString());
         }
 
         deployWebAppIfRequired(logger);

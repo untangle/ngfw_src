@@ -120,7 +120,7 @@ public class ShieldNodeImpl extends NodeBase  implements ShieldNode
             logger.info("Loading Settings...");
 
             this.settings = readSettings;
-            logger.info("Settings: " + this.settings.toJSONString());
+            logger.debug("Settings: " + this.settings.toJSONString());
         }
 
         this.reconfigure();

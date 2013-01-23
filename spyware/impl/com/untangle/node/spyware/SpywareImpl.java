@@ -327,7 +327,7 @@ public class SpywareImpl extends NodeBase implements Spyware
             // UPDATE settings if necessary
             
             this.settings = readSettings;
-            logger.info("Settings: " + this.settings.toJSONString());
+            logger.debug("Settings: " + this.settings.toJSONString());
         }
 
         this.reconfigure();
