@@ -4,6 +4,7 @@
 package com.untangle.uvm.engine;
 
 import java.util.LinkedList;
+import java.net.InetAddress;
 
 import org.apache.log4j.Logger;
 
@@ -98,25 +99,72 @@ public class NewNetworkManagerImpl implements NewNetworkManager
     {
         NetworkSettings newSettings = new NetworkSettings();
 
-        LinkedList<InterfaceSettings> interfaces = new LinkedList<InterfaceSettings>();
-        interfaces.add( new InterfaceSettings( 1, "External", "eth0", "br.eth0", "addressed", "auto", "auto", true) );
-        interfaces.add( new InterfaceSettings( 2, "Internal", "eth1", "eth1", "addressed", "static", "auto", false) );
-        interfaces.add( new InterfaceSettings( 3, "DMZ", "eth2", "br.eth0", "bridged", "auto", "auto", false) );
-        interfaces.add( new InterfaceSettings( 3, "Wireless", "eth3", "eth3", "addressed", "static", "auto", false) );
-        interfaces.add( new InterfaceSettings( 100, "External VLAN 2", "eth0.1", "eth0.1", "addressed", "static", "auto", false) );
-        newSettings.setInterfaces(interfaces);
+        try {
+            LinkedList<InterfaceSettings> interfaces = new LinkedList<InterfaceSettings>();
+            InterfaceSettings external = new InterfaceSettings();
+            external.setInterfaceId(1);
+            external.setName("External");
+            external.setPhysicalDev("eth0");
+            external.setIptablesDev("eth0");
+            external.setSymbolicDev("br.eth0");
+            external.setConfig("addressed");
+            external.setV4ConfigType("static");
+            external.setV4StaticAddress(InetAddress.getByName("172.16.2.60"));
+            external.setV4StaticNetmask(InetAddress.getByName("255.255.0.0"));
+            external.setV4StaticGateway(InetAddress.getByName("172.16.2.1"));
+            external.setV4StaticDns1(InetAddress.getByName("172.16.2.1"));
+            external.setV6ConfigType("static");
+            external.setIsWan(true);
+        
+            InterfaceSettings internal = new InterfaceSettings();
+            internal.setInterfaceId(2);
+            internal.setName("Internal");
+            internal.setPhysicalDev("eth1");
+            internal.setIptablesDev("eth1");
+            internal.setSymbolicDev("br.eth0");
+            internal.setConfig("bridged");
+            internal.setBridgedTo(1);
 
-        LinkedList<PortForwardRule> portForwardRules = new LinkedList<PortForwardRule>();
-        newSettings.setPortForwardRules( portForwardRules );
+            InterfaceSettings foo3 = new InterfaceSettings();
+            foo3.setInterfaceId(3);
+            foo3.setName("Foo3");
+            foo3.setPhysicalDev("eth2");
+            foo3.setIptablesDev("eth2");
+            foo3.setSymbolicDev("br.eth0");
+            foo3.setConfig("bridged");
+            foo3.setBridgedTo(1);
 
-        LinkedList<NatRule> natRules = new LinkedList<NatRule>();
-        newSettings.setNatRules( natRules );
+            InterfaceSettings foo4 = new InterfaceSettings();
+            foo4.setInterfaceId(4);
+            foo4.setName("Foo4");
+            foo4.setPhysicalDev("eth2");
+            foo4.setIptablesDev("eth2");
+            foo4.setSymbolicDev("br.eth0");
+            foo4.setConfig("bridged");
+            foo4.setBridgedTo(1);
 
-        LinkedList<BypassRule> bypassRules = new LinkedList<BypassRule>();
-        newSettings.setBypassRules( bypassRules );
+            interfaces.add(external);
+            interfaces.add(internal);
+            interfaces.add(foo3);
+            interfaces.add(foo4);
+        
+            newSettings.setInterfaces(interfaces);
 
-        LinkedList<StaticRoute> staticRoutes = new LinkedList<StaticRoute>();
-        newSettings.setStaticRoutes( staticRoutes );
+            LinkedList<PortForwardRule> portForwardRules = new LinkedList<PortForwardRule>();
+            newSettings.setPortForwardRules( portForwardRules );
+
+            LinkedList<NatRule> natRules = new LinkedList<NatRule>();
+            newSettings.setNatRules( natRules );
+
+            LinkedList<BypassRule> bypassRules = new LinkedList<BypassRule>();
+            newSettings.setBypassRules( bypassRules );
+
+            LinkedList<StaticRoute> staticRoutes = new LinkedList<StaticRoute>();
+            newSettings.setStaticRoutes( staticRoutes );
+        }
+        catch (Exception e) {
+            logger.error("Error creating Network Settings",e);
+        }
         
         return newSettings;
     }

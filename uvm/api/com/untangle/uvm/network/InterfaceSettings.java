@@ -22,10 +22,13 @@ public class InterfaceSettings implements Serializable, JSONString
     public Integer interfaceId; /* the ID of the physical interface (1-254) */
     public String name; /* human name: ie External, Internal, Wireless */
     public String physicalDev; /* physical interface name: eth0, etc */
+    public String iptablesDev; /* iptables interface name: eth0, eth0:0, eth0.1, etc */
     public String symbolicDev; /* symbolic interface name: eth0, eth0:0, eth0.1, etc */
     public boolean isWan; /* is a WAN interface? */
     public String config; /* config type: addressed, bridged, disabled */
 
+    public Integer bridgedTo; /* device to bridge to in "bridged" case */
+    
     public String v4ConfigType; /* config type: static, auto, pppoe */
     
     public InetAddress v4StaticAddress; /* the address  of this interface if configured static, or dhcp override */ 
@@ -49,18 +52,6 @@ public class InterfaceSettings implements Serializable, JSONString
     
     public List<IPMaskedAddress> aliases; /* alias addresses for static & dhcp */
     
-    public InterfaceSettings(int interfaceId, String name, String physicalDev, String symbolicDev, String config, String v4ConfigType, String v6ConfigType, boolean isWan)
-    {
-        this.interfaceId = interfaceId;
-        this.name = name;
-        this.physicalDev = physicalDev;
-        this.symbolicDev = symbolicDev;
-        this.config = config;
-        this.v4ConfigType = v4ConfigType;
-        this.v6ConfigType = v6ConfigType;
-        this.isWan = isWan;
-    }
-
     public InterfaceSettings() { }
 
     public String toJSONString()
@@ -78,6 +69,9 @@ public class InterfaceSettings implements Serializable, JSONString
     public String getPhysicalDev( ) { return this.physicalDev; }
     public void setPhysicalDev( String newValue ) { this.physicalDev = newValue; }
 
+    public String getIptablesDev( ) { return this.iptablesDev; }
+    public void setIptablesDev( String newValue ) { this.iptablesDev = newValue; }
+
     public String getSymbolicDev( ) { return this.symbolicDev; }
     public void setSymbolicDev( String newValue ) { this.symbolicDev = newValue; }
 
@@ -87,17 +81,20 @@ public class InterfaceSettings implements Serializable, JSONString
     public String getConfig( ) { return this.config; }
     public void setConfig( String newValue ) { this.config = newValue; }
 
+    public Integer getBridgedTo( ) { return this.bridgedTo; }
+    public void setBridgedTo( Integer newValue ) { this.bridgedTo = newValue; }
+    
     public String getV4ConfigType( ) { return this.v4ConfigType; }
     public void setV4ConfigType( String newValue ) { this.v4ConfigType = newValue; }
 
-    public InetAddress getv4StaticAddress( ) { return this.v4StaticAddress; }
-    public void setv4StaticAddress( InetAddress newValue ) { this.v4StaticAddress = newValue; }
+    public InetAddress getV4StaticAddress( ) { return this.v4StaticAddress; }
+    public void setV4StaticAddress( InetAddress newValue ) { this.v4StaticAddress = newValue; }
 
     public InetAddress getV4StaticNetmask( ) { return this.v4StaticNetmask; }
-    public void setv4StaticNetmask( InetAddress newValue ) { this.v4StaticNetmask = newValue; }
+    public void setV4StaticNetmask( InetAddress newValue ) { this.v4StaticNetmask = newValue; }
     
     public InetAddress getV4StaticGateway( ) { return this.v4StaticGateway; }
-    public void setv4StaticGateway( InetAddress newValue ) { this.v4StaticGateway = newValue; }
+    public void setV4StaticGateway( InetAddress newValue ) { this.v4StaticGateway = newValue; }
     
     public InetAddress getV4StaticDns1( ) { return this.v4StaticDns1; }
     public void setV4StaticDns1( InetAddress newValue ) { this.v4StaticDns1 = newValue; }
@@ -105,26 +102,26 @@ public class InterfaceSettings implements Serializable, JSONString
     public InetAddress getV4StaticDns2( ) { return this.v4StaticDns2; }
     public void setV4StaticDns2( InetAddress newValue ) { this.v4StaticDns2 = newValue; }
 
-    public InetAddress getv4AutoAddressOverride( ) { return this.v4AutoAddressOverride; }
-    public void setv4AutoAddressOverride( InetAddress newValue ) { this.v4AutoAddressOverride = newValue; }
+    public InetAddress getV4AutoAddressOverride( ) { return this.v4AutoAddressOverride; }
+    public void setV4AutoAddressOverride( InetAddress newValue ) { this.v4AutoAddressOverride = newValue; }
     
     public InetAddress getV4AutoNetmaskOverride( ) { return this.v4AutoNetmaskOverride; }
-    public void setv4AutoNetmaskOverride( InetAddress newValue ) { this.v4AutoNetmaskOverride = newValue; }
+    public void setV4AutoNetmaskOverride( InetAddress newValue ) { this.v4AutoNetmaskOverride = newValue; }
     
     public InetAddress getV4AutoGatewayOverride( ) { return this.v4AutoGatewayOverride; }
-    public void setv4AutoGatewayOverride( InetAddress newValue ) { this.v4AutoGatewayOverride = newValue; }
+    public void setV4AutoGatewayOverride( InetAddress newValue ) { this.v4AutoGatewayOverride = newValue; }
 
     public InetAddress getV4AutoDns1Override( ) { return this.v4AutoDns1Override; }
-    public void setv4AutoDns1Override( InetAddress newValue ) { this.v4AutoDns1Override = newValue; }
+    public void setV4AutoDns1Override( InetAddress newValue ) { this.v4AutoDns1Override = newValue; }
 
     public InetAddress getV4AutoDns2Override( ) { return this.v4AutoDns2Override; }
-    public void setv4AutoDns2Override( InetAddress newValue ) { this.v4AutoDns2Override = newValue; }
+    public void setV4AutoDns2Override( InetAddress newValue ) { this.v4AutoDns2Override = newValue; }
     
     public String getV6ConfigType( ) { return this.v6ConfigType; }
     public void setV6ConfigType( String newValue ) { this.v6ConfigType = newValue; }
 
-    public InetAddress getv6StaticAddress( ) { return this.v6StaticAddress; }
-    public void setv6StaticAddress( InetAddress newValue ) { this.v6StaticAddress = newValue; }
+    public InetAddress getV6StaticAddress( ) { return this.v6StaticAddress; }
+    public void setV6StaticAddress( InetAddress newValue ) { this.v6StaticAddress = newValue; }
 
     public Integer getV6StaticPrefixLength( ) { return this.v6StaticPrefixLength; }
     public void setV6StaticPrefixLength( Integer newValue ) { this.v6StaticPrefixLength = newValue; }
