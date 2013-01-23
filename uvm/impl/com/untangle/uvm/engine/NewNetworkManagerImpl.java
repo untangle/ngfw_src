@@ -76,6 +76,19 @@ public class NewNetworkManagerImpl implements NewNetworkManager
         this.networkSettings = newSettings;
 
         /**
+         * TODO:
+         * validate settings
+         * validatU: routes must route traffic to reachable destinations
+         * validate: routes can not route traffic to self
+         * validate: two interfaces can't have the identical subnet (192.168.1.2/24 external and 192.168.1.3/24 internal)
+         */
+
+        /**
+         * TODO:
+         * calculate symbolic dev based on settings of each dev (pppoe, bridged, etc)
+         */
+        
+        /**
          * Save the settings
          */
         SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
