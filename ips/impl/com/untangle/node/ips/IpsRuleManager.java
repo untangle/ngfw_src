@@ -132,9 +132,10 @@ public class IpsRuleManager
     }
 
     // This is how a rule gets created
-    public IpsRule createRule(String text, String category) {
+    public IpsRule createRule(String text, String category)
+    {
         if(text == null || text.length() <= 0 || text.charAt(0) == '#') {
-            logger.warn("Ignoring empty rule: " + text);
+            logger.warn("Ignoring empty rule: " + text.substring(0,20));
             return null;
         }
 
@@ -151,16 +152,14 @@ public class IpsRuleManager
             String ruleParts[]   = IpsStringParser.parseRuleSplit(text);
             IpsRuleHeader header = IpsStringParser.parseHeader(ruleParts[0], rule.trans_getAction());
             if (header == null) {
-                logger.warn("Ignoring rule with bad header: " + text);
+                logger.warn("Ignoring rule with bad header: " + text.substring(0,20));
                 return null;
             }
 
-            IpsRuleSignature signature  = IpsRuleSignature
-                .parseSignature(ips, rule, ruleParts[1], rule.trans_getAction(),
-                                true, null);
+            IpsRuleSignature signature  = IpsRuleSignature.parseSignature(ips, rule, ruleParts[1], rule.trans_getAction(), true, null);
 
             if(signature.remove()) {
-                logger.warn("Ignoring rule with bad sig: " + text);
+                logger.warn("Ignoring rule with bad sig: " + text.substring(0,20));
                 return null;
             }
 

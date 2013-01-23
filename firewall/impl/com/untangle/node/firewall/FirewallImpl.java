@@ -239,7 +239,7 @@ public class FirewallImpl extends NodeBase implements Firewall
             // UPDATE settings if necessary
             
             this.settings = readSettings;
-            logger.info("Settings: " + this.settings.toJSONString());
+            logger.debug("Settings: " + this.settings.toJSONString());
         }
 
         this.reconfigure();

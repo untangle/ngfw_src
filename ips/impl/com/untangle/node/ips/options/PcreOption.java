@@ -44,8 +44,7 @@ public class PcreOption extends IpsOption
         int endIndex = params.lastIndexOf("/");
 
         if (endIndex < 0 || beginIndex < 0 || endIndex == beginIndex) {
-            logger.warn("Malformed pcre: " + params + ", ignoring rule: " +
-                        rule.getText());
+            logger.debug("Malformed pcre: " + params + ", ignoring rule ID: " + rule.getId());
             signature.remove(true);
         } else {
             try {
@@ -68,17 +67,15 @@ public class PcreOption extends IpsOption
                         flag = flag | Pattern.COMMENTS;
                         break;
                     default:
-                        logger.info("Unable to handle pcre option: "
-                                    + c + ", ignoring rule: " + rule.getText());
+                        logger.debug("Unable to handle pcre option: " + c + ", ignoring rule ID: " + rule.getId());
                         signature.remove(true);
                         break;
                     }
                 }
                 pcrePattern = Pattern.compile(pattern, flag);
             } catch(Exception e) {
-                logger.warn("Unable to parse pcre: " + params + " ("
-                            + e.getMessage() + "), ignoring rule: "
-                            + rule.getText());
+                //logger.warn("Unable to parse pcre: " + params + " (" + e.getMessage() + "), ignoring rule ID: " + rule.getId());
+                logger.debug("Unable to parse pcre. (" + e.getMessage() + "), ignoring rule ID: " + rule.getId());
                 signature.remove(true);
             }
         }

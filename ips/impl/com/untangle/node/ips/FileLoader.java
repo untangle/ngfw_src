@@ -143,7 +143,7 @@ class FileLoader
                     continue;
                 for (Pattern pat : IGNORED_RULE_PATTERNS) {
                     if (pat.matcher(str).find()) {
-                        logger.info("Skipping Active-X rule " + str);
+                        logger.info("Skipping ignored rule " + str.substring(0,20));
                         continue lineloop;
                     }
                 }
