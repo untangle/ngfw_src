@@ -29,29 +29,6 @@ var i18n=Ext.create('Ung.I18N',{"map":null}); // the main internationalization o
 var rpc=null; // the main json rpc object
 var testMode = false;
 
-//Temporary workaround for bug: #10806
-//We need to remove it if Firefox fixes the issue or if Exjs comes with an official fix
-if (Ext.firefoxVersion == 18) {
-    var noArgs = [];
-    Ext.override(Ext.Base, {
-        callParent : function(args) {
-           var method, superMethod = (method = this.callParent.caller) &&
-                    (method.$previous || ((method = method.$owner ?
-                            method :
-                            method.caller) && method.$owner.superclass[method.$name]));
-
-
-            // Workarround for Firefox 18. I don't know why this works, but it does. Perhaps functions wich have
-            // a try-catch block are handled differently
-            try {
-            } catch (e) {
-            }
-
-            return superMethod.apply(this, args || noArgs);
-        }
-    });
-}
-
 Ext.override(Ext.MessageBox, {
     alert: function() {
         this.callParent(arguments);
