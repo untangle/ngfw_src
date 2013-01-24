@@ -127,6 +127,10 @@ public class NewNetworkManagerImpl implements NewNetworkManager
             external.setV4StaticNetmask(InetAddress.getByName("255.255.0.0"));
             external.setV4StaticGateway(InetAddress.getByName("172.16.2.1"));
             external.setV4StaticDns1(InetAddress.getByName("172.16.2.1"));
+            //external.setV4StaticAddress(InetAddress.getByName("10.0.0.60"));
+            //external.setV4StaticNetmask(InetAddress.getByName("255.0.0.0"));
+            //external.setV4StaticGateway(InetAddress.getByName("10.0.0.1"));
+            //external.setV4StaticDns1(InetAddress.getByName("10.0.0.1"));
             external.setV6ConfigType("static");
             external.setIsWan(true);
         
@@ -151,8 +155,8 @@ public class NewNetworkManagerImpl implements NewNetworkManager
             InterfaceSettings foo4 = new InterfaceSettings();
             foo4.setInterfaceId(4);
             foo4.setName("Foo4");
-            foo4.setPhysicalDev("eth2");
-            foo4.setIptablesDev("eth2");
+            foo4.setPhysicalDev("eth3");
+            foo4.setIptablesDev("eth3");
             foo4.setSymbolicDev("br.eth0");
             foo4.setConfig("bridged");
             foo4.setBridgedTo(1);
