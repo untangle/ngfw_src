@@ -31,7 +31,7 @@ var testMode = false;
 
 //Temporary workaround for bug: #10806
 //We need to remove it if Firefox fixes the issue or if Exjs comes with an official fix
-if (Ext.firefoxVersion >= 18) {
+if (Ext.firefoxVersion == 18) {
     var noArgs = [];
     Ext.override(Ext.Base, {
         callParent : function(args) {
