@@ -22,7 +22,7 @@ public class InterfaceSettings implements Serializable, JSONString
     public Integer interfaceId; /* the ID of the physical interface (1-254) */
     public String name; /* human name: ie External, Internal, Wireless */
     public String physicalDev; /* physical interface name: eth0, etc */
-    public String iptablesDev; /* iptables interface name: eth0, eth0:0, eth0.1, etc */
+    public String systemDev; /* iptables interface name: eth0, eth0:0, eth0.1, etc */
     public String symbolicDev; /* symbolic interface name: eth0, eth0:0, eth0.1, etc */
     public boolean isWan; /* is a WAN interface? */
     public String config; /* config type: addressed, bridged, disabled */
@@ -69,8 +69,8 @@ public class InterfaceSettings implements Serializable, JSONString
     public String getPhysicalDev( ) { return this.physicalDev; }
     public void setPhysicalDev( String newValue ) { this.physicalDev = newValue; }
 
-    public String getIptablesDev( ) { return this.iptablesDev; }
-    public void setIptablesDev( String newValue ) { this.iptablesDev = newValue; }
+    public String getSystemDev( ) { return this.systemDev; }
+    public void setSystemDev( String newValue ) { this.systemDev = newValue; }
 
     public String getSymbolicDev( ) { return this.symbolicDev; }
     public void setSymbolicDev( String newValue ) { this.symbolicDev = newValue; }

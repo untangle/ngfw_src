@@ -161,8 +161,15 @@ if (!Ung.hasResource["Ung.Network"]) {
                 dataIndex: "isWan",
                 fieldLabel: i18n._("is WAN Interface"),
                 listeners: {
-                    change: this.reRenderFields
-                }
+                    change: Ext.bind( function( f, val ) {
+                        if ( val ) {
+                            // this is here because it should only switch to auto when unchecked
+                            Ext.getCmp('interface_v4ConfigType').setValue("auto"); // default to auto for WAN
+                            Ext.getCmp('interface_v6ConfigType').setValue("auto"); // default to auto for WAN
+                        }
+
+                        this.reRenderFields();
+                    }, this)}
             }, {
                 id:'interface_v4Config',
                 name:'interface_v4Config',
@@ -176,7 +183,7 @@ if (!Ung.hasResource["Ung.Network"]) {
                     dataIndex: "v4ConfigType",
                     fieldLabel: i18n._("IPv4 Config Type"),
                     editable: false,
-                    store: [["static",i18n._('Static')], ["auto",i18n._('Auto (DHCP)')]],
+                    store: [ ["auto",i18n._('Auto (DHCP)')], ["static",i18n._('Static')] ],
                     valueField: "value",
                     displayField: "displayName",
                     queryMode: 'local',
@@ -294,7 +301,7 @@ if (!Ung.hasResource["Ung.Network"]) {
                     dataIndex: "v6ConfigType",
                     fieldLabel: i18n._("IPv6 Config Type"),
                     editable: false,
-                    store: [["static",i18n._('Static')], ["auto",i18n._('Auto (SLAAC/RA)')]],
+                    store: [ ["auto",i18n._('Auto (SLAAC/RA)')], ["static",i18n._('Static')] ],
                     valueField: "value",
                     displayField: "displayName",
                     queryMode: 'local',
@@ -389,9 +396,10 @@ if (!Ung.hasResource["Ung.Network"]) {
             this.callParent(arguments);
         },
         populate: function(record) {
+            // refresh interface selector store (may have changed since last display)
+            Ext.getCmp('interface_bridgedTo').getStore().loadData( Ung.Util.getInterfaceAddressedList() );
+            
             return this.populateTree(record);
-
-            this.reRenderFields();
         },
         populateTree: function(record) {
             this.record = record;
@@ -540,6 +548,8 @@ if (!Ung.hasResource["Ung.Network"]) {
                 }, {
                     name: 'physicalDev'
                 }, {
+                    name: 'systemDev'
+                }, {
                     name: 'symbolicDev'
                 }, {
                     name: 'config'
@@ -602,6 +612,10 @@ if (!Ung.hasResource["Ung.Network"]) {
                 }, {
                     header: this.i18n._("Physical Dev"),
                     dataIndex: 'physicalDev',
+                    width:75
+                }, {
+                    header: this.i18n._("System Dev"),
+                    dataIndex: 'systemDev',
                     width:75
                 }, {
                     header: this.i18n._("Symbolic Dev"),
@@ -1421,6 +1435,8 @@ if (!Ung.hasResource["Ung.Network"]) {
         afterSave: function(exception, isApply) {
             if(Ung.Util.handleException(exception)) return;
 
+            Ung.Util.networkSettings = null; /* clear cached settings object */
+            
             this.saveSemaphore--;
             if (this.saveSemaphore == 0) {
                 this.refreshSettings();

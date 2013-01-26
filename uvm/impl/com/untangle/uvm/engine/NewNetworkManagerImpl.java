@@ -119,7 +119,7 @@ public class NewNetworkManagerImpl implements NewNetworkManager
             external.setInterfaceId(1);
             external.setName("External");
             external.setPhysicalDev("eth0");
-            external.setIptablesDev("eth0");
+            external.setSystemDev("eth0");
             external.setSymbolicDev("br.eth0");
             external.setConfig("addressed");
             external.setV4ConfigType("static");
@@ -138,7 +138,7 @@ public class NewNetworkManagerImpl implements NewNetworkManager
             internal.setInterfaceId(2);
             internal.setName("Internal");
             internal.setPhysicalDev("eth1");
-            internal.setIptablesDev("eth1");
+            internal.setSystemDev("eth1");
             internal.setSymbolicDev("br.eth0");
             internal.setConfig("bridged");
             internal.setBridgedTo(1);
@@ -147,7 +147,7 @@ public class NewNetworkManagerImpl implements NewNetworkManager
             foo3.setInterfaceId(3);
             foo3.setName("Foo3");
             foo3.setPhysicalDev("eth2");
-            foo3.setIptablesDev("eth2");
+            foo3.setSystemDev("eth2");
             foo3.setSymbolicDev("br.eth0");
             foo3.setConfig("bridged");
             foo3.setBridgedTo(1);
@@ -156,7 +156,7 @@ public class NewNetworkManagerImpl implements NewNetworkManager
             foo4.setInterfaceId(4);
             foo4.setName("Foo4");
             foo4.setPhysicalDev("eth3");
-            foo4.setIptablesDev("eth3");
+            foo4.setSystemDev("eth3");
             foo4.setSymbolicDev("br.eth0");
             foo4.setConfig("bridged");
             foo4.setBridgedTo(1);
