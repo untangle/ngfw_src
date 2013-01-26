@@ -73,8 +73,6 @@ public class NewNetworkManagerImpl implements NewNetworkManager
 
     private synchronized void _setSettings( NetworkSettings newSettings )
     {
-        this.networkSettings = newSettings;
-
         /**
          * TODO:
          * validate settings
@@ -85,10 +83,10 @@ public class NewNetworkManagerImpl implements NewNetworkManager
 
         /**
          * TODO:
-         * calculate symbolic dev based on settings of each dev (pppoe, bridged, etc)
-         * calculate iptables dev based on settings of each dev
+         * calculate system dev based on settings of each dev
          */
-        
+        sanitizeSettings( newSettings );
+
         /**
          * Save the settings
          */
@@ -191,5 +189,25 @@ public class NewNetworkManagerImpl implements NewNetworkManager
     {
         logger.info("reconfigure()");
     }
-    
+
+
+    private void sanitizeSettings( NetworkSettings networkSettings)
+    {
+        /**
+         * Determine if the interface is a bridge. If so set the symbolic device name
+         */
+        for ( InterfaceSettings intf : networkSettings.getInterfaces() ) {
+            for ( InterfaceSettings intf2 : networkSettings.getInterfaces() ) {
+                if ( "bridged".equals(intf2.getConfig()) &&
+                     intf2.getBridgedTo() != null &&
+                     intf2.getBridgedTo().equals( intf.getInterfaceId() ) ) {
+                        /* found an interface bridged to intf */
+                        intf.setSymbolicDev("br." + intf.getPhysicalDev());
+                        intf2.setSymbolicDev("br." + intf.getPhysicalDev());
+                }
+            }
+        }
+        
+
+    }
 }
