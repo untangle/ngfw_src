@@ -235,6 +235,26 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
             return lm;
     }
 
+    public UploadManager uploadManager()
+    {
+        return this.uploadManager;
+    }
+    
+    public SettingsManager settingsManager()
+    {
+        return this.settingsManager;
+    }
+
+    public OemManager oemManager()
+    {
+        return this.oemManager;
+    }
+
+    public AlertManager alertManager()
+    {
+        return this.alertManager;
+    }
+
     public PipelineFoundryImpl pipelineFoundry()
     {
         return this.pipelineFoundry;
@@ -257,11 +277,16 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
         return execManager;
     }
 
+    public TomcatManager tomcatManager()
+    {
+        return tomcatManager;
+    }
+
     public HostTable hostTable()
     {
         return this.hostTableImpl;
     }
-    
+
     public void waitForStartup()
     {
         synchronized (startupWaitLock) {
@@ -504,6 +529,71 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
         this.reportingNode.logEvent(evt);
     }
 
+    public String getServerUID()
+    {
+        if (this.uid == null) {
+            try {
+                File keyFile = new File(UID_FILE);
+                if (keyFile.exists()) {
+                    BufferedReader reader = new BufferedReader(new FileReader(keyFile));
+                    this.uid = reader.readLine();
+                    return this.uid;
+                }
+            } catch (IOException x) {
+                logger.error("Unable to get pop id: ", x);
+            }
+        }
+        return this.uid;
+    }
+    
+    public ArrayList getEvents( final String query, final Long policyId, final int limit )
+    {
+        if (this.reportingNode == null)
+            getReportingNode();
+        if (this.reportingNode == null)
+            return null;
+
+        return this.reportingNode.getEvents( query, policyId, limit );
+    }
+
+    /**
+     * This call returns one big JSONObject with references to all the important information
+     * This is used to avoid lots of separate synchornous calls via the Web UI.
+     * Reducing all these seperate calls to initialize the UI reduces startup time
+     */
+    public org.json.JSONObject getWebuiStartupInfo()
+    {
+        org.json.JSONObject json = new org.json.JSONObject();
+        
+        try {
+            json.put("languageManager", this.languageManager());
+            json.put( "skinManager", this.skinManager());
+            json.put( "nodeManager", this.nodeManager());
+            json.put( "policyManager", this.nodeManager().node("untangle-node-policy"));
+            json.put( "toolboxManager", this.toolboxManager());
+            json.put( "alertManager", this.alertManager());
+            json.put( "adminManager", this.adminManager());
+            json.put( "systemManager", this.systemManager());
+            json.put( "hostTable", this.hostTable());
+            json.put( "sessionMonitor", this.sessionMonitor());
+            json.put( "newNetworkManager", this.newNetworkManager());
+            json.put( "networkManager", this.networkManager());
+            json.put( "messageManager", this.messageManager());
+            json.put( "brandingManager", this.brandingManager());
+
+            json.put( "languageSettings", this.languageManager().getLanguageSettings());
+            json.put( "version", this.version());
+            json.put( "translations", this.languageManager().getTranslations("untangle-libuvm"));
+            json.put( "skinSettings", this.skinManager().getSettings());
+            json.put( "hostname", this.networkManager().getNetworkConfiguration().getHostname());
+            json.put( "messageManagerKey", this.messageManager().getMessageKey());
+            json.put( "companyName", this.brandingManager().getCompanyName());
+        } catch (Exception e) {
+            logger.error( "Error generating WebUI startup object", e );
+        }
+        return json;
+    }
+    
     // UvmContextBase methods --------------------------------------------------
 
     @Override
@@ -681,76 +771,20 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
 
     // package protected methods ----------------------------------------------
 
-    boolean refreshToolbox()
+    protected boolean refreshToolbox()
     {
         boolean result = main.refreshToolbox();
         return result;
     }
 
-    void fatalError(String throwingLocation, Throwable x)
+    protected void fatalError(String throwingLocation, Throwable x)
     {
         main.fatalError(throwingLocation, x);
     }
 
-    public TomcatManager tomcatManager()
-    {
-        return tomcatManager;
-    }
-
-    boolean loadUvmResource(String name)
+    protected boolean loadUvmResource(String name)
     {
         return main.loadUvmResource(name);
-    }
-
-    public String getServerUID()
-    {
-        if (this.uid == null) {
-            try {
-                File keyFile = new File(UID_FILE);
-                if (keyFile.exists()) {
-                    BufferedReader reader = new BufferedReader(new FileReader(keyFile));
-                    this.uid = reader.readLine();
-                    return this.uid;
-                }
-            } catch (IOException x) {
-                logger.error("Unable to get pop id: ", x);
-            }
-        }
-        return this.uid;
-    }
-    
-    @Override
-    public UploadManager uploadManager()
-    {
-        return this.uploadManager;
-    }
-    
-    @Override 
-        public SettingsManager settingsManager()
-    {
-        return this.settingsManager;
-    }
-
-    @Override
-    public OemManager oemManager()
-    {
-        return this.oemManager;
-    }
-
-    @Override
-    public AlertManager alertManager()
-    {
-        return this.alertManager;
-    }
-    
-    public ArrayList getEvents( final String query, final Long policyId, final int limit )
-    {
-        if (this.reportingNode == null)
-            getReportingNode();
-        if (this.reportingNode == null)
-            return null;
-
-        return this.reportingNode.getEvents( query, policyId, limit );
     }
 
     // private methods --------------------------------------------------------
@@ -807,12 +841,13 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
         networkManager.refreshNetworkConfig();
     }
 
-    /**
-     * This changes apache to show the regular screen again if it is currently showing the
-     * upgrade log (which is displayed during upgrades)
-     */
     private void hideUpgradeSplash()
     {
+        /**
+         * This changes apache to show the regular screen again if it is currently showing the
+         * upgrade log (which is displayed during upgrades)
+         */
+
         /**
          * The PID file seems to sometimes mysteriously disappear so also check for the HTML file
          */

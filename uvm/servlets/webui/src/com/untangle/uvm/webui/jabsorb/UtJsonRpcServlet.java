@@ -76,6 +76,45 @@ public class UtJsonRpcServlet extends JSONRPCServlet
 
             UvmContext uvm = UvmContextFactory.context();
             b.registerObject("UvmContext", uvm, UvmContext.class);
+
+            /**
+             * This section registers hints that these classes should always be
+             * serialized as callable references
+             */
+            try {
+                b.registerCallableReference(uvm.languageManager().getClass());
+                b.registerCallableReference(uvm.localDirectory().getClass());
+                b.registerCallableReference(uvm.brandingManager().getClass());
+                b.registerCallableReference(uvm.skinManager().getClass());
+                b.registerCallableReference(uvm.messageManager().getClass());
+                b.registerCallableReference(uvm.languageManager().getClass());
+                b.registerCallableReference(uvm.certificateManager().getClass());
+                b.registerCallableReference(uvm.toolboxManager().getClass());
+                b.registerCallableReference(uvm.nodeManager().getClass());
+                b.registerCallableReference(uvm.loggingManager().getClass());
+                b.registerCallableReference(uvm.mailSender().getClass());
+                b.registerCallableReference(uvm.adminManager().getClass());
+                b.registerCallableReference(uvm.systemManager().getClass());
+                b.registerCallableReference(uvm.networkManager().getClass());
+                b.registerCallableReference(uvm.newNetworkManager().getClass());
+                b.registerCallableReference(uvm.getConnectivityTester().getClass());
+                b.registerCallableReference(uvm.argonManager().getClass());
+                b.registerCallableReference(uvm.licenseManager().getClass());
+                b.registerCallableReference(uvm.uploadManager().getClass());
+                b.registerCallableReference(uvm.settingsManager().getClass());
+                b.registerCallableReference(uvm.oemManager().getClass());
+                b.registerCallableReference(uvm.alertManager().getClass());
+                b.registerCallableReference(uvm.pipelineFoundry().getClass());
+                b.registerCallableReference(uvm.sessionMonitor().getClass());
+                b.registerCallableReference(uvm.execManager().getClass());
+                b.registerCallableReference(uvm.tomcatManager().getClass());
+                b.registerCallableReference(uvm.hostTable().getClass());
+
+                b.registerCallableReference(com.untangle.uvm.node.Node.class);
+            }
+            catch (Exception e) {
+                logger.warn("Exception registering callable reference classes",e);
+            }
         }
     }
 }

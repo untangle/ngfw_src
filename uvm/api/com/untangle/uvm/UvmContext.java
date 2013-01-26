@@ -372,4 +372,6 @@ public interface UvmContext
      * Convenience method, log an event to the database
      */
     void logEvent(LogEvent evt);
+
+    org.json.JSONObject getWebuiStartupInfo();
 }
