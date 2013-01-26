@@ -523,6 +523,18 @@ Ext.define("Ung.Main", {
         return rpc.networkManager;
     },
 
+    getNewNetworkManager: function(forceReload) {
+        if (forceReload || rpc.newNetworkManager === undefined) {
+            try {
+                rpc.networkManager = rpc.jsonrpc.UvmContext.newNetworkManager();
+            } catch (e) {
+                Ung.Util.rpcExHandler(e);
+            }
+
+        }
+        return rpc.newNetworkManager;
+    },
+    
     getLoggingManager: function(forceReload) {
         if (forceReload || rpc.loggingManager === undefined) {
             try {

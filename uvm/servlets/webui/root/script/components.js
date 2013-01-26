@@ -568,8 +568,7 @@ Ung.Util = {
         var datacount = 0;
 
         if(Ung.Util.possibleInterfaces==null) {
-            var netManager = main.getNetworkManager();
-            Ung.Util.possibleInterfaces = netManager.getPossibleInterfaces();
+            Ung.Util.possibleInterfaces = main.getNetworkManager().getPossibleInterfaces();
         }
 
         for ( var c = 0 ; c < Ung.Util.possibleInterfaces.length ; c++ ) {
@@ -621,13 +620,32 @@ Ung.Util = {
         return data;
     },
     wanInterfaces: null,
+    getInterfaceAddressedList: function() {
+        var data = [];
+        var datacount = 0;
+
+        if( Ung.Util.networkSettings == null ) {
+            Ung.Util.networkSettings = main.getNewNetworkManager().getNetworkSettings();
+        }
+
+        for ( var c = 0 ; c < Ung.Util.networkSettings.interfaces.list.length ; c++ ) {
+            var intf = Ung.Util.networkSettings.interfaces.list[c];
+            var name = intf['name'];
+            var key = intf['interfaceId'];
+            
+            if ( intf['config'] == 'addressed' ) {
+                data[datacount] = [ key, name ];
+                datacount++;
+            }
+        }
+        return data;
+    },
     getWanList: function() {
         var data = [];
         var datacount = 0;
 
         if( Ung.Util.wanInterfaces==null ) {
-            var netManager = main.getNetworkManager();
-            Ung.Util.wanInterfaces = netManager.getWanInterfaces();
+            Ung.Util.wanInterfaces = main.getNetworkManager().getWanInterfaces();
         }
 
         for ( var c = 0 ; c < Ung.Util.wanInterfaces.length ; c++ ) {
@@ -943,42 +961,6 @@ Ung.Util.RetryHandler = {
         fn.apply( fnScope, params );
     }
 };
-
-Ext.define("Ung.Util.InterfaceCombo", {
-    extend: "Ext.form.ComboBox",
-    initComponent: function() {
-        if (( this.width == null ) && ( this.listWidth == null )) {
-          this.listWidth = 200;
-        }
-
-        if ( this.simpleMatchers === null ) {
-            this.simpleMatchers = false;
-        }
-        this.store = Ung.Util.getInterfaceStore( this.simpleMatchers );
-
-        this.callParent(arguments);
-    },
-    displayField: 'name',
-    valueField: 'key',
-    editable: false,
-    queryMode: 'local',
-    triggerAction: 'all',
-    listClass: 'x-combo-list-small'
-});
-
-Ext.define("Ung.Util.ProtocolCombo", {
-    extend: "Ext.form.ComboBox",
-    initComponent: function() {
-        this.store = Ung.Util.getProtocolStore();
-        this.callParent(arguments);
-    },
-    displayField: 'name',
-    valueField: 'key',
-    editable: false,
-    queryMode: 'local',
-    triggerAction: 'all',
-    listClass: 'x-combo-list-small'
-});
 
 // Defines custom sorting (casting?) comparison functions used when sorting data.
 Ung.SortTypes = {

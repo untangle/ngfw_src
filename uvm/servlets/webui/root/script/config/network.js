@@ -53,6 +53,7 @@ if (!Ung.hasResource["Ung.Network"]) {
 
             // hide everything
             Ext.getCmp('interface_isWan').setVisible(false);
+            Ext.getCmp('interface_bridgedTo').setVisible(false);
             Ext.getCmp('interface_v4Config').setVisible(false);
             Ext.getCmp('interface_v4ConfigType').setVisible(false);
             Ext.getCmp('interface_v4StaticAddress').setVisible(false);
@@ -123,7 +124,10 @@ if (!Ung.hasResource["Ung.Network"]) {
                         Ext.getCmp('interface_v6StaticDns2').setVisible(true);
                     }
                 }
+            } else if ( configValue == "bridged") {
+                Ext.getCmp('interface_bridgedTo').setVisible(true);
             }
+
         }, this ),
         initComponent: function() {
             this.inputLines = [{
@@ -345,6 +349,20 @@ if (!Ung.hasResource["Ung.Network"]) {
                     width: 500
                 }]
             }, {
+                xtype: "combo",
+                id: "interface_bridgedTo",
+                name: "Bridged To",
+                dataIndex: "bridgedTo",
+                fieldLabel: i18n._( "Bridged To" ),
+                store: Ung.Util.getInterfaceAddressedList(),
+                valueField: "value",
+                displayField: "displayName",
+                width: 180,
+                listWidth: 70,
+                triggerAction: "all",
+                queryMode: 'local',
+                editable: false
+            }, {
                 html: "TODO: DHCP settings link<br/>"
             }, {
                 html: "TODO: aliases grid<br/>"
@@ -500,6 +518,132 @@ if (!Ung.hasResource["Ung.Network"]) {
             var pageTabs = [ this.panelInterfaces, this.panelPortForwardRules, this.panelNatRules, this.panelBypassRules, this.panelRoutes ];
             this.buildTabPanel(pageTabs);
             this.callParent(arguments);
+        },
+        // Interfaces Panel
+        buildInterfaces: function() {
+            this.gridInterfaces = Ext.create('Ung.EditorGrid',{
+                name: 'Interfaces',
+                height: 400,
+                settingsCmp: this,
+                paginated: false,
+                hasReorder: false,
+                hasDelete: false,
+                hasAdd: false,
+                title: this.i18n._("Interfaces"),
+                recordJavaClass: "com.untangle.uvm.network.InterfaceSettings",
+                columnsDefaultSortable: false,
+                dataProperty:'interfaces',
+                fields: [{
+                    name: 'interfaceId'
+                }, {
+                    name: 'name'
+                }, {
+                    name: 'physicalDev'
+                }, {
+                    name: 'symbolicDev'
+                }, {
+                    name: 'config'
+                },{
+                    name: 'isWan'
+                }, {
+                    name: 'bridgedTo'
+                }, {
+                    name: 'v4ConfigType'
+                }, {
+                    name: 'v4StaticAddress'
+                }, {
+                    name: 'v4StaticNetmask'
+                }, {
+                    name: 'v4StaticGateway'
+                }, {
+                    name: 'v4StaticDns1'
+                }, {
+                    name: 'v4StaticDns2'
+                }, {
+                    name: 'v4AutoAddressOverride'
+                }, {
+                    name: 'v4AutoNetmaskOverride'
+                }, {
+                    name: 'v4AutoGatewayOverride'
+                }, {
+                    name: 'v4AutoDns1Override'
+                }, {
+                    name: 'v4AutoDns2Override'
+                }, {
+                    name: 'v6ConfigType'
+                }, {
+                    name: 'v6StaticAddress'
+                }, {
+                    name: 'v6StaticPrefixLength'
+                }, {
+                    name: 'v6StaticGateway'
+                }, {
+                    name: 'v6StaticDns1'
+                }, {
+                    name: 'v6StaticDns2'
+                }, {
+                    name: 'javaClass'
+                }],
+                columns: [{
+                    header: this.i18n._("Interface Id"),
+                    width: 75,
+                    dataIndex: 'interfaceId',
+                    renderer: function(value) {
+                        if (value < 0) {
+                            return i18n._("new");
+                        } else {
+                            return value;
+                        }
+                    }
+                }, {
+                    header: this.i18n._("Name"),
+                    dataIndex: 'name',
+                    width:100
+                }, {
+                    header: this.i18n._("Physical Dev"),
+                    dataIndex: 'physicalDev',
+                    width:75
+                }, {
+                    header: this.i18n._("Symbolic Dev"),
+                    dataIndex: 'symbolicDev',
+                    width:75
+                }, {
+                    header: this.i18n._("Config"),
+                    dataIndex: 'config',
+                    width:75
+                }, {
+                    header: this.i18n._("is WAN"),
+                    dataIndex: 'isWan',
+                    width:55
+                }, {
+                    header: this.i18n._("v4 Config"),
+                    dataIndex: 'v4ConfigType',
+                    width:75
+                }, {
+                    header: this.i18n._("v6 Config"),
+                    dataIndex: 'v6ConfigType',
+                    width:75
+                }],
+                initComponent: function() {
+                    this.rowEditor = Ext.create('Ung.InterfaceEditorWindow',{});
+                    Ung.EditorGrid.prototype.initComponent.call(this);
+                }
+            });
+            
+            this.panelInterfaces = Ext.create('Ext.panel.Panel',{
+                name: 'panelInterfaces',
+                helpSource: 'network_interfaces',
+                parentId: this.getId(),
+                title: this.i18n._('Interfaces'),
+                layout: 'anchor',
+                cls: 'ung-panel',
+                items: [{
+                    xtype: 'fieldset',
+                    cls: 'description',
+                    title: this.i18n._('Note'),
+                    html: this.i18n._(" <b>Interfaces</b> are legit. Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.")
+                }, this.gridInterfaces]
+            });
         },
         // PortForwardRules Panel
         buildPortForwardRules: function() {
@@ -1224,129 +1368,6 @@ if (!Ung.hasResource["Ung.Network"]) {
                     title: this.i18n._('Note'),
                     html: this.i18n._(" <b>Static Routes</b> are global routes that control how traffic is routed by destination address. The most specific Static Route is taken for a particular packet, order is not important.")
                 }, this.gridStaticRoutes]
-            });
-        },
-        buildInterfaces: function() {
-            this.gridInterfaces = Ext.create('Ung.EditorGrid',{
-                name: 'Interfaces',
-                height: 400,
-                settingsCmp: this,
-                paginated: false,
-                hasReorder: false,
-                hasDelete: false,
-                hasAdd: false,
-                title: this.i18n._("Interfaces"),
-                recordJavaClass: "com.untangle.uvm.network.InterfaceSettings",
-                columnsDefaultSortable: false,
-                dataProperty:'interfaces',
-                fields: [{
-                    name: 'interfaceId'
-                }, {
-                    name: 'name'
-                }, {
-                    name: 'physicalDev'
-                }, {
-                    name: 'symbolicDev'
-                }, {
-                    name: 'config'
-                },{
-                    name: 'isWan'
-                }, {
-                    name: 'v4ConfigType'
-                }, {
-                    name: 'v4StaticAddress'
-                }, {
-                    name: 'v4StaticNetmask'
-                }, {
-                    name: 'v4StaticGateway'
-                }, {
-                    name: 'v4StaticDns1'
-                }, {
-                    name: 'v4StaticDns2'
-                }, {
-                    name: 'v4AutoAddressOverride'
-                }, {
-                    name: 'v4AutoNetmaskOverride'
-                }, {
-                    name: 'v4AutoGatewayOverride'
-                }, {
-                    name: 'v4AutoDns1Override'
-                }, {
-                    name: 'v4AutoDns2Override'
-                }, {
-                    name: 'v6ConfigType'
-                }, {
-                    name: 'v6StaticAddress'
-                }, {
-                    name: 'v6StaticPrefixLength'
-                }, {
-                    name: 'v6StaticGateway'
-                }, {
-                    name: 'v6StaticDns1'
-                }, {
-                    name: 'v6StaticDns2'
-                }, {
-                    name: 'javaClass'
-                }],
-                columns: [{
-                    header: this.i18n._("Interface Id"),
-                    width: 75,
-                    dataIndex: 'interfaceId',
-                    renderer: function(value) {
-                        if (value < 0) {
-                            return i18n._("new");
-                        } else {
-                            return value;
-                        }
-                    }
-                }, {
-                    header: this.i18n._("Name"),
-                    dataIndex: 'name',
-                    width:100
-                }, {
-                    header: this.i18n._("Physical Dev"),
-                    dataIndex: 'physicalDev',
-                    width:75
-                }, {
-                    header: this.i18n._("Symbolic Dev"),
-                    dataIndex: 'symbolicDev',
-                    width:75
-                }, {
-                    header: this.i18n._("Config"),
-                    dataIndex: 'config',
-                    width:75
-                }, {
-                    header: this.i18n._("is WAN"),
-                    dataIndex: 'isWan',
-                    width:55
-                }, {
-                    header: this.i18n._("v4 Config"),
-                    dataIndex: 'v4ConfigType',
-                    width:75
-                }, {
-                    header: this.i18n._("v6 Config"),
-                    dataIndex: 'v6ConfigType',
-                    width:75
-                }],
-                initComponent: function() {
-                    this.rowEditor = Ext.create('Ung.InterfaceEditorWindow',{});
-                    Ung.EditorGrid.prototype.initComponent.call(this);
-                }
-            });
-            
-            this.panelInterfaces = Ext.create('Ext.panel.Panel',{
-                name: 'panelInterfaces',
-                helpSource: 'network_interfaces',
-                parentId: this.getId(),
-                title: this.i18n._('Interfaces'),
-                layout: 'anchor',
-                cls: 'ung-panel',
-                items: [{
-                    xtype: 'fieldset',
-                    cls: 'description',
-                    title: this.i18n._('Note'),
-                    html: this.i18n._(" <b>Interfaces</b> are legit. Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.")
-                }, this.gridInterfaces]
             });
         },
         save: function (isApply) {
