@@ -193,6 +193,9 @@ public class NewNetworkManagerImpl implements NewNetworkManager
 
     private void sanitizeSettings( NetworkSettings networkSettings)
     {
+        for ( InterfaceSettings intf : networkSettings.getInterfaces() ) {
+            intf.setSymbolicDev( intf.getSystemDev() );
+        }
         /**
          * Determine if the interface is a bridge. If so set the symbolic device name
          */

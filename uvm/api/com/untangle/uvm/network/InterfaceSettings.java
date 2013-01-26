@@ -19,7 +19,7 @@ import com.untangle.uvm.node.IPMaskedAddress;
 @SuppressWarnings("serial")
 public class InterfaceSettings implements Serializable, JSONString
 {
-    public Integer interfaceId; /* the ID of the physical interface (1-254) */
+    public int interfaceId; /* the ID of the physical interface (1-254) */
     public String name; /* human name: ie External, Internal, Wireless */
     public String physicalDev; /* physical interface name: eth0, etc */
     public String systemDev; /* iptables interface name: eth0, eth0:0, eth0.1, etc */
@@ -60,8 +60,8 @@ public class InterfaceSettings implements Serializable, JSONString
         return jO.toString();
     }
 
-    public Integer getInterfaceId( ) { return this.interfaceId; }
-    public void setInterfaceId( Integer newValue ) { this.interfaceId = newValue; }
+    public int getInterfaceId( ) { return this.interfaceId; }
+    public void setInterfaceId( int newValue ) { this.interfaceId = newValue; }
 
     public String getName( ) { return this.name; }
     public void setName( String newValue ) { this.name = newValue; }
