@@ -66,6 +66,12 @@ if (!Ung.hasResource["Ung.Network"]) {
             Ext.getCmp('interface_v4AutoGatewayOverride').setVisible(false);
             Ext.getCmp('interface_v4AutoDns1Override').setVisible(false);
             Ext.getCmp('interface_v4AutoDns2Override').setVisible(false);
+            Ext.getCmp('interface_v4PPPoEUsername').setVisible(false);
+            Ext.getCmp('interface_v4PPPoEPassword').setVisible(false);
+            Ext.getCmp('interface_v4PPPoEUsePeerDns').setVisible(false);
+            Ext.getCmp('interface_v4PPPoEDns1').setVisible(false);
+            Ext.getCmp('interface_v4PPPoEDns2').setVisible(false);
+
             Ext.getCmp('interface_v6Config').setVisible(false);
             Ext.getCmp('interface_v6ConfigType').setVisible(false);
             Ext.getCmp('interface_v6StaticAddress').setVisible(false);
@@ -91,17 +97,10 @@ if (!Ung.hasResource["Ung.Network"]) {
                     Ext.getCmp('interface_v6ConfigType').setVisible(true); 
                 }
 
-                // if auto show override fields
                 // if static show static fields
-                if ( Ext.getCmp('interface_v4ConfigType').getValue() == "auto" ) {
-                    Ext.getCmp('interface_v4AutoAddressOverride').setVisible(true);
-                    Ext.getCmp('interface_v4AutoNetmaskOverride').setVisible(true);
-                    if (isWan) {
-                        Ext.getCmp('interface_v4AutoGatewayOverride').setVisible(true);
-                        Ext.getCmp('interface_v4AutoDns1Override').setVisible(true);
-                        Ext.getCmp('interface_v4AutoDns2Override').setVisible(true);
-                    }
-                } else {
+                // if auto show override fields (auto is only allowed on WANs)
+                // if pppoe show pppoe fields (pppoe is only allowed on WANs)
+                if ( Ext.getCmp('interface_v4ConfigType').getValue() == "static" ) {
                     Ext.getCmp('interface_v4StaticAddress').setVisible(true);
                     Ext.getCmp('interface_v4StaticNetmask').setVisible(true);
                     if (isWan) {
@@ -109,13 +108,25 @@ if (!Ung.hasResource["Ung.Network"]) {
                         Ext.getCmp('interface_v4StaticDns1').setVisible(true);
                         Ext.getCmp('interface_v4StaticDns2').setVisible(true);
                     }
+                } else if ( Ext.getCmp('interface_v4ConfigType').getValue() == "auto" ) {
+                    Ext.getCmp('interface_v4AutoAddressOverride').setVisible(true);
+                    Ext.getCmp('interface_v4AutoNetmaskOverride').setVisible(true);
+                    Ext.getCmp('interface_v4AutoGatewayOverride').setVisible(true);
+                    Ext.getCmp('interface_v4AutoDns1Override').setVisible(true);
+                    Ext.getCmp('interface_v4AutoDns2Override').setVisible(true);
+                } else if ( Ext.getCmp('interface_v4ConfigType').getValue() == "pppoe" ) {
+                    Ext.getCmp('interface_v4PPPoEUsername').setVisible(true);
+                    Ext.getCmp('interface_v4PPPoEPassword').setVisible(true);
+                    Ext.getCmp('interface_v4PPPoEUsePeerDns').setVisible(true);
+                    if ( Ext.getCmp('interface_v4PPPoEUsePeerDns').getValue() == false ) {
+                        Ext.getCmp('interface_v4PPPoEDns1').setVisible(true);
+                        Ext.getCmp('interface_v4PPPoEDns2').setVisible(true);
+                    }
                 }
 
-                // if auto show override fields
                 // if static show static fields
-                if ( Ext.getCmp('interface_v6ConfigType').getValue() == "auto" ) {
-                    // no overriding in IPv6
-                } else {
+                // if auto show override fields
+                if ( Ext.getCmp('interface_v6ConfigType').getValue() == "static" ) {
                     Ext.getCmp('interface_v6StaticAddress').setVisible(true);
                     Ext.getCmp('interface_v6StaticPrefixLength').setVisible(true);
                     if (isWan) {
@@ -123,6 +134,8 @@ if (!Ung.hasResource["Ung.Network"]) {
                         Ext.getCmp('interface_v6StaticDns1').setVisible(true);
                         Ext.getCmp('interface_v6StaticDns2').setVisible(true);
                     }
+                } else /* auto */ {
+                    // no overriding in IPv6 so nothing to show
                 }
             } else if ( configValue == "bridged") {
                 Ext.getCmp('interface_bridgedTo').setVisible(true);
@@ -133,14 +146,12 @@ if (!Ung.hasResource["Ung.Network"]) {
             this.inputLines = [{
                 xtype:'textfield',
                 id: "interface_name",
-                name: "Interface Name",
                 dataIndex: "name",
                 fieldLabel: i18n._("Interface Name"),
                 width: 300
             }, {
                 xtype: "combo",
                 id: "interface_config",
-                name: "config",
                 allowBlank: false,
                 dataIndex: "config",
                 fieldLabel: i18n._("Config Type"),
@@ -157,7 +168,6 @@ if (!Ung.hasResource["Ung.Network"]) {
             }, {
                 xtype:'checkbox',
                 id: "interface_isWan",
-                name: "is WAN Inteface",
                 dataIndex: "isWan",
                 fieldLabel: i18n._("is WAN Interface"),
                 listeners: {
@@ -172,18 +182,19 @@ if (!Ung.hasResource["Ung.Network"]) {
                     }, this)}
             }, {
                 id:'interface_v4Config',
-                name:'interface_v4Config',
                 style: "border:1px solid;", // UGLY FIXME
                 xtype:'fieldset',
+                title:i18n._("IPv4 Configuration"),
+                collapsible: true,
+                collapsed: false,
                 items: [{
                     xtype: "combo",
                     id: "interface_v4ConfigType",
-                    name: "v4ConfigType",
                     allowBlank: false,
                     dataIndex: "v4ConfigType",
-                    fieldLabel: i18n._("IPv4 Config Type"),
+                    fieldLabel: i18n._("Config Type"),
                     editable: false,
-                    store: [ ["auto",i18n._('Auto (DHCP)')], ["static",i18n._('Static')] ],
+                    store: [ ["auto",i18n._('Auto (DHCP)')], ["static",i18n._('Static')],  ["pppoe",i18n._('PPPoE')]],
                     valueField: "value",
                     displayField: "displayName",
                     queryMode: 'local',
@@ -195,111 +206,138 @@ if (!Ung.hasResource["Ung.Network"]) {
                 }, {
                     xtype:'textfield',
                     id: "interface_v4StaticAddress",
-                    name: "IPv4 Address",
                     dataIndex: "v4StaticAddress",
-                    fieldLabel: i18n._("IPv4 Address"),
+                    fieldLabel: i18n._("Address"),
                     allowBlank: false,
                     vtype: "ipAddress",
                     width: 300
                 }, {
                     xtype:'textfield',
                     id: "interface_v4StaticNetmask",
-                    name: "IPv4 Netmask",
                     dataIndex: "v4StaticNetmask",
-                    fieldLabel: i18n._("IPv4 Netmask"),
+                    fieldLabel: i18n._("Netmask"),
                     allowBlank: false,
                     vtype: "ipAddress",
                     width: 300
                 }, {
                     xtype:'textfield',
                     id: "interface_v4StaticGateway",
-                    name: "IPv4 Gateway",
                     dataIndex: "v4StaticGateway",
-                    fieldLabel: i18n._("IPv4 Gateway"),
+                    fieldLabel: i18n._("Gateway"),
                     allowBlank: false,
                     vtype: "ipAddress",
                     width: 300
                 }, {
                     xtype:'textfield',
                     id: "interface_v4StaticDns1",
-                    name: "IPv4 Dns1",
                     dataIndex: "v4StaticDns1",
-                    fieldLabel: i18n._("IPv4 Primary DNS"),
+                    fieldLabel: i18n._("Primary DNS"),
                     allowBlank: false,
                     vtype: "ipAddress",
                     width: 300
                 }, {
                     xtype:'textfield',
                     id: "interface_v4StaticDns2",
-                    name: "IPv4 Dns2",
                     dataIndex: "v4StaticDns2",
-                    fieldLabel: i18n._("IPv4 Secondary DNS"),
+                    fieldLabel: i18n._("Secondary DNS"),
                     allowBlank: false,
                     vtype: "ipAddress",
                     width: 300
                 }, {
                     xtype:'textfield',
                     id: "interface_v4AutoAddressOverride",
-                    name: "IPv4 Address Override",
                     dataIndex: "v4AutoAddressOverride",
-                    fieldLabel: i18n._("IPv4 Address Override"),
+                    fieldLabel: i18n._("Address Override"),
                     vtype: "ipAddress",
                     width: 300
                 }, {
                     xtype:'textfield',
                     id: "interface_v4AutoNetmaskOverride",
-                    name: "IPv4 Netmask Override",
                     dataIndex: "v4AutoNetmaskOverride",
-                    fieldLabel: i18n._("IPv4 Netmask Override"),
+                    fieldLabel: i18n._("Netmask Override"),
                     vtype: "ipAddress",
                     width: 300
                 }, {
                     xtype:'textfield',
                     id: "interface_v4AutoGatewayOverride",
-                    name: "IPv4 Gateway Override",
                     dataIndex: "v4AutoGatewayOverride",
-                    fieldLabel: i18n._("IPv4 Gateway Override"),
+                    fieldLabel: i18n._("Gateway Override"),
                     vtype: "ipAddress",
                     width: 300
                 }, {
                     xtype:'textfield',
                     id: "interface_v4AutoNetmaskOverride",
-                    name: "IPv4 Netmask Override",
                     dataIndex: "v4AutoNetmaskOverride",
-                    fieldLabel: i18n._("IPv4 Netmask Override"),
+                    fieldLabel: i18n._("Netmask Override"),
                     vtype: "ipAddress",
                     width: 300
                 }, {
                     xtype:'textfield',
                     id: "interface_v4AutoDns1Override",
-                    name: "IPv4 Dns1 Override",
                     dataIndex: "v4AutoDns1Override",
-                    fieldLabel: i18n._("IPv4 Primary DNS Override"),
+                    fieldLabel: i18n._("Primary DNS Override"),
                     vtype: "ipAddress",
                     width: 300
                 }, {
                     xtype:'textfield',
                     id: "interface_v4AutoDns2Override",
-                    name: "IPv4 Dns2 Override",
                     dataIndex: "v4AutoDns2Override",
-                    fieldLabel: i18n._("IPv4 Secondary DNS Override"),
+                    fieldLabel: i18n._("Secondary DNS Override"),
+                    vtype: "ipAddress",
+                    width: 300
+                }, {
+                    xtype:'textfield',
+                    id: "interface_v4PPPoEUsername",
+                    dataIndex: "v4PPPoEUsername",
+                    fieldLabel: i18n._("Username"),
+                    width: 300
+                }, {
+                    xtype:'textfield',
+                    inputType:'password',
+                    id: "interface_v4PPPoEPassword",
+                    dataIndex: "v4PPPoEPassword",
+                    fieldLabel: i18n._("Password"),
+                    width: 300
+                }, {
+                    xtype:'checkbox',
+                    id: "interface_v4PPPoEUsePeerDns",
+                    dataIndex: "v4PPPoEUsePeerDns",
+                    fieldLabel: i18n._("Use Peer DNS"),
+                    vtype: "ipAddress",
+                    width: 300,
+                    listeners: {
+                        change: this.reRenderFields
+                    }
+                }, {
+                    xtype:'textfield',
+                    id: "interface_v4PPPoEDns1",
+                    dataIndex: "v4PPPoEDns1",
+                    fieldLabel: i18n._("Primary DNS"),
+                    vtype: "ipAddress",
+                    width: 300
+                }, {
+                    xtype:'textfield',
+                    id: "interface_v4PPPoEDns2",
+                    dataIndex: "v4PPPoEDns2",
+                    fieldLabel: i18n._("Secondary DNS"),
                     vtype: "ipAddress",
                     width: 300
                 }]
             }, {
                 id:'interface_v6Config',
-                name:'interface_v6Config',
                 style: "border:1px solid;", // UGLY FIXME
                 xtype:'fieldset',
                 border:true,
+                title:i18n._("IPv6 Configuration"),
+                collapsible: true,
+                collapsed: true,
                 items: [{
                     border:true,
                     xtype: "combo",
                     id: "interface_v6ConfigType",
-                    name: "v6ConfigType",
                     allowBlank: false,
                     dataIndex: "v6ConfigType",
-                    fieldLabel: i18n._("IPv6 Config Type"),
+                    fieldLabel: i18n._("Config Type"),
                     editable: false,
                     store: [ ["auto",i18n._('Auto (SLAAC/RA)')], ["static",i18n._('Static')] ],
                     valueField: "value",
@@ -313,44 +351,39 @@ if (!Ung.hasResource["Ung.Network"]) {
                 }, {
                     xtype:'textfield',
                     id: "interface_v6StaticAddress",
-                    name: "IPv6 Address",
                     dataIndex: "v6StaticAddress",
-                    fieldLabel: i18n._("IPv6 Address"),
+                    fieldLabel: i18n._("Address"),
                     allowBlank: false,
                     vtype: "ipAddress",
                     width: 500
                 }, {
                     xtype:'textfield',
                     id: "interface_v6StaticPrefixLength",
-                    name: "IPv6 Prefix Length",
                     dataIndex: "v6StaticPrefixLength",
-                    fieldLabel: i18n._("IPv6 Prefix Length"),
+                    fieldLabel: i18n._("Prefix Length"),
                     allowBlank: false,
                     width: 150
                 }, {
                     xtype:'textfield',
                     id: "interface_v6StaticGateway",
-                    name: "IPv6 Gateway",
                     dataIndex: "v6StaticGateway",
-                    fieldLabel: i18n._("IPv6 Gateway"),
+                    fieldLabel: i18n._("Gateway"),
                     allowBlank: false,
                     vtype: "ipAddress",
                     width: 500
                 }, {
                     xtype:'textfield',
                     id: "interface_v6StaticDns1",
-                    name: "IPv6 Dns1",
                     dataIndex: "v6StaticDns1",
-                    fieldLabel: i18n._("IPv6 Primary DNS"),
+                    fieldLabel: i18n._("Primary DNS"),
                     allowBlank: false,
                     vtype: "ipAddress",
                     width: 500
                 }, {
                     xtype:'textfield',
                     id: "interface_v6StaticDns2",
-                    name: "IPv6 Dns2",
                     dataIndex: "v6StaticDns2",
-                    fieldLabel: i18n._("IPv6 Secondary DNS"),
+                    fieldLabel: i18n._("Secondary DNS"),
                     allowBlank: false,
                     vtype: "ipAddress",
                     width: 500
@@ -358,7 +391,6 @@ if (!Ung.hasResource["Ung.Network"]) {
             }, {
                 xtype: "combo",
                 id: "interface_bridgedTo",
-                name: "Bridged To",
                 dataIndex: "bridgedTo",
                 fieldLabel: i18n._( "Bridged To" ),
                 store: Ung.Util.getInterfaceAddressedList(),
@@ -579,6 +611,16 @@ if (!Ung.hasResource["Ung.Network"]) {
                     name: 'v4AutoDns1Override'
                 }, {
                     name: 'v4AutoDns2Override'
+                }, {
+                    name: 'v4PPPoEUsername'
+                }, {
+                    name: 'v4PPPoEPassword'
+                }, {
+                    name: 'v4PPPoEUsePeerDns'
+                }, {
+                    name: 'v4PPPoEDns1'
+                }, {
+                    name: 'v4PPPoEDns2'
                 }, {
                     name: 'v6ConfigType'
                 }, {

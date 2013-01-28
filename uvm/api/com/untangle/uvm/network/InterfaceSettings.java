@@ -42,6 +42,12 @@ public class InterfaceSettings implements Serializable, JSONString
     public InetAddress v4AutoDns1Override; /* the dhcp override dns1 (null means don't override) */
     public InetAddress v4AutoDns2Override; /* the dhcp override dns2 (null means don't override) */
 
+    public String      v4PPPoEUsername; /* PPPoE Username */
+    public String      v4PPPoEPassword; /* PPPoE Password */
+    public Boolean     v4PPPoEUsePeerDns; /* If the DNS should be determined via PPP */
+    public InetAddress v4PPPoEDns1; /* the dns1  of this interface if configured static */
+    public InetAddress v4PPPoEDns2; /* the dns2  of this interface if configured static */
+    
     public String v6ConfigType; /* config type: static, auto */
     
     public InetAddress v6StaticAddress; /* the address  of this interface if configured static, or dhcp override */ 
@@ -116,6 +122,21 @@ public class InterfaceSettings implements Serializable, JSONString
 
     public InetAddress getV4AutoDns2Override( ) { return this.v4AutoDns2Override; }
     public void setV4AutoDns2Override( InetAddress newValue ) { this.v4AutoDns2Override = newValue; }
+
+    public String getV4PPPoEUsername( ) { return this.v4PPPoEUsername; }
+    public void setV4PPPoEUsername( String newValue ) { this.v4PPPoEUsername = newValue; }
+
+    public String getV4PPPoEPassword( ) { return this.v4PPPoEPassword; }
+    public void setV4PPPoEPassword( String newValue ) { this.v4PPPoEPassword = newValue; }
+
+    public Boolean getV4PPPoEUsePeerDns( ) { return this.v4PPPoEUsePeerDns; }
+    public void setV4PPPoEUsePeerDns( Boolean newValue ) { this.v4PPPoEUsePeerDns = newValue; }
+
+    public InetAddress getV4PPPoEDns1( ) { return this.v4PPPoEDns1; }
+    public void setV4PPPoEDns1( InetAddress newValue ) { this.v4PPPoEDns1 = newValue; }
+
+    public InetAddress getV4PPPoEDns2( ) { return this.v4PPPoEDns2; }
+    public void setV4PPPoEDns2( InetAddress newValue ) { this.v4PPPoEDns2 = newValue; }
     
     public String getV6ConfigType( ) { return this.v6ConfigType; }
     public void setV6ConfigType( String newValue ) { this.v6ConfigType = newValue; }

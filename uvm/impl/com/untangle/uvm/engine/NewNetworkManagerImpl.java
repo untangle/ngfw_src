@@ -193,9 +193,24 @@ public class NewNetworkManagerImpl implements NewNetworkManager
 
     private void sanitizeSettings( NetworkSettings networkSettings)
     {
+        /**
+         * Reset all symbolic devs to system devs
+         */
         for ( InterfaceSettings intf : networkSettings.getInterfaces() ) {
             intf.setSymbolicDev( intf.getSystemDev() );
         }
+
+
+        /**
+         * Set system names
+         */
+        for ( InterfaceSettings intf : networkSettings.getInterfaces() ) {
+            if ( "pppoe".equals(intf.getV4ConfigType()) ) {
+                String ethNum = intf.getPhysicalDev().replaceAll( "[^\\d]", "" ); /* remove all alpha characters */
+                intf.setSystemDev( "ppp" + ethNum );
+            }
+        }
+        
         /**
          * Determine if the interface is a bridge. If so set the symbolic device name
          */
