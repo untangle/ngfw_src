@@ -195,8 +195,10 @@ public class NewNetworkManagerImpl implements NewNetworkManager
     {
         /**
          * Reset all symbolic devs to system devs
+         * This is temporary XXX 
          */
         for ( InterfaceSettings intf : networkSettings.getInterfaces() ) {
+            intf.setSystemDev( intf.getPhysicalDev() );
             intf.setSymbolicDev( intf.getSystemDev() );
         }
 
@@ -204,10 +206,13 @@ public class NewNetworkManagerImpl implements NewNetworkManager
         /**
          * Set system names
          */
+        int pppCount = 0;
         for ( InterfaceSettings intf : networkSettings.getInterfaces() ) {
             if ( "pppoe".equals(intf.getV4ConfigType()) ) {
-                String ethNum = intf.getPhysicalDev().replaceAll( "[^\\d]", "" ); /* remove all alpha characters */
-                intf.setSystemDev( "ppp" + ethNum );
+                //String ethNum = intf.getPhysicalDev().replaceAll( "[^\\d]", "" ); /* remove all alpha characters */
+                //intf.setSystemDev( "ppp" + ethNum );
+                intf.setSystemDev("ppp" + pppCount);
+                pppCount++;
             }
         }
         

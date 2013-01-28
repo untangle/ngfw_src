@@ -354,7 +354,7 @@ if (!Ung.hasResource["Ung.Network"]) {
                     dataIndex: "v6StaticAddress",
                     fieldLabel: i18n._("Address"),
                     allowBlank: false,
-                    vtype: "ipAddress",
+                    //vtype: "ipAddress",
                     width: 500
                 }, {
                     xtype:'textfield',
@@ -369,23 +369,21 @@ if (!Ung.hasResource["Ung.Network"]) {
                     dataIndex: "v6StaticGateway",
                     fieldLabel: i18n._("Gateway"),
                     allowBlank: false,
-                    vtype: "ipAddress",
+                    //vtype: "ipAddress",
                     width: 500
                 }, {
                     xtype:'textfield',
                     id: "interface_v6StaticDns1",
                     dataIndex: "v6StaticDns1",
                     fieldLabel: i18n._("Primary DNS"),
-                    allowBlank: false,
-                    vtype: "ipAddress",
+                    //vtype: "ipAddress",
                     width: 500
                 }, {
                     xtype:'textfield',
                     id: "interface_v6StaticDns2",
                     dataIndex: "v6StaticDns2",
                     fieldLabel: i18n._("Secondary DNS"),
-                    allowBlank: false,
-                    vtype: "ipAddress",
+                    //vtype: "ipAddress",
                     width: 500
                 }]
             }, {
