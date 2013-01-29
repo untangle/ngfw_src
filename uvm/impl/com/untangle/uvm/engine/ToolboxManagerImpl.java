@@ -269,32 +269,32 @@ class ToolboxManagerImpl implements ToolboxManager
         }
 
         /**
-         * SPECIAL CASE: If Web Filter is installed OR licensed for non-trial, hide Web Filter Lite
+         * SPECIAL CASE: If Web Filter is installed in this rack OR licensed for non-trial, hide Web Filter Lite
          */
         if ( ! UvmContextFactory.context().isDevel() ) {
-            for (PackageDesc md : installed) {
-                if ("untangle-libitem-sitefilter".equals(md.getName())) {
-                    installableLibitems.remove("Web Filter Lite"); /* hide web filter lite from left hand nav */
-                    installableNodes.remove("Web Filter Lite"); /* hide web filter lite from left hand nav */
-                }
+            List<Node> sitefilterNodes = UvmContextFactory.context().nodeManager().nodeInstances( "untangle-node-sitefilter", policyId);
+            if (sitefilterNodes != null && sitefilterNodes.size() > 0) {
+                installableLibitems.remove("Web Filter Lite"); /* hide web filter lite from left hand nav */
+                installableNodes.remove("Web Filter Lite"); /* hide web filter lite from left hand nav */
             }
-            if ( lm.getLicense(License.SITEFILTER) != null && !lm.getLicense(License.SITEFILTER).getTrial() ) {
+            License sitefilterLicense = lm.getLicense(License.SITEFILTER);
+            if ( sitefilterLicense != null && sitefilterLicense.getValid() && !sitefilterLicense.getTrial() ) {
                 installableLibitems.remove("Web Filter Lite"); /* hide web filter lite from left hand nav */
                 installableNodes.remove("Web Filter Lite"); /* hide web filter lite from left hand nav */
             }
         }
         
         /**
-         * SPECIAL CASE: If Spam Blocker is installed OR licensed for non-trial, hide Spam Blocker Lite
+         * SPECIAL CASE: If Spam Blocker is installed in this rack OR licensed for non-trial, hide Spam Blocker Lite
          */
         if ( ! UvmContextFactory.context().isDevel() ) {
-            for (PackageDesc md : installed) {
-                if ("untangle-libitem-commtouchas".equals(md.getName())) {
-                    installableLibitems.remove("Spam Blocker Lite"); /* hide web filter lite from left hand nav */
-                    installableNodes.remove("Spam Blocker Lite"); /* hide web filter lite from left hand nav */
-                }
+            List<Node> commtouchAsNodes = UvmContextFactory.context().nodeManager().nodeInstances( "untangle-node-commtouchas", policyId);
+            if (commtouchAsNodes != null && commtouchAsNodes.size() > 0) {
+                installableLibitems.remove("Spam Blocker Lite"); /* hide web filter lite from left hand nav */
+                installableNodes.remove("Spam Blocker Lite"); /* hide web filter lite from left hand nav */
             }
-            if ( lm.getLicense(License.COMMTOUCHAS) != null && !lm.getLicense(License.COMMTOUCHAS).getTrial() ) {
+            License commtouchAsLicense = lm.getLicense(License.COMMTOUCHAS);
+            if ( commtouchAsLicense != null && commtouchAsLicense.getValid() && !commtouchAsLicense.getTrial() ) {
                 installableLibitems.remove("Spam Blocker Lite"); /* hide web filter lite from left hand nav */
                 installableNodes.remove("Spam Blocker Lite"); /* hide web filter lite from left hand nav */
             }
