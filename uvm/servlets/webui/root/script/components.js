@@ -2128,7 +2128,7 @@ Ung.MessageManager = {
             } catch (err) {
                 Ext.MessageBox.alert("Exception in MessageManager", err.message);
             }
-        }, this), rpc.messageKey, rpc.currentPolicy.policyId);
+        }, this), rpc.messageManagerKey, rpc.currentPolicy.policyId);
     }
 };
 Ext.define("Ung.SystemStats", {

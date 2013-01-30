@@ -54,7 +54,6 @@ Ext.define("Ung.Main", {
         //load all managers and startup info
         var startupInfo = rpc.jsonrpc.UvmContext.getWebuiStartupInfo();
         Ext.apply(rpc, startupInfo);
-
         i18n=new Ung.I18N({"map":rpc.translations.map});
         Ext.MessageBox.wait(i18n._("Starting..."), i18n._("Please wait"));
         Ung.Util.loadCss("/skins/"+rpc.skinSettings.skinName+"/css/admin.css");
@@ -80,7 +79,7 @@ Ext.define("Ung.Main", {
         this.startApplication();
     },
     setDocumentTitle: function() {
-        document.title = rpc.companyName + ((rpc.hostName!=null)?(" - " + rpc.hostName):"");
+        document.title = rpc.companyName + ((rpc.hostname!=null)?(" - " + rpc.hostname):"");
     },
     warnOnUpgrades: function(handler) {
         if(main.upgradeStatus!=null && main.upgradeStatus.upgradesAvailable ) {
