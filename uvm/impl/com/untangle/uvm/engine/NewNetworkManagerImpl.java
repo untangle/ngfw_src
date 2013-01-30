@@ -216,7 +216,7 @@ public class NewNetworkManagerImpl implements NewNetworkManager
     {
         /**
          * Reset all symbolic devs to system devs
-         * This is temporary XXX 
+         * This is temporary XXX FIXME or is it?
          */
         for ( InterfaceSettings intf : networkSettings.getInterfaces() ) {
             intf.setSystemDev( intf.getPhysicalDev() );
@@ -251,7 +251,5 @@ public class NewNetworkManagerImpl implements NewNetworkManager
                 }
             }
         }
-        
-
     }
 }

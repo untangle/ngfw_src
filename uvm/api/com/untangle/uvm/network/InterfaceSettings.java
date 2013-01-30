@@ -47,6 +47,9 @@ public class InterfaceSettings implements Serializable, JSONString
     public Boolean     v4PPPoEUsePeerDns; /* If the DNS should be determined via PPP */
     public InetAddress v4PPPoEDns1; /* the dns1  of this interface if configured static */
     public InetAddress v4PPPoEDns2; /* the dns2  of this interface if configured static */
+
+    public Boolean     v4NatEgressTraffic;
+    public Boolean     v4NatIngressTraffic;
     
     public String v6ConfigType; /* config type: static, auto */
     
@@ -137,6 +140,12 @@ public class InterfaceSettings implements Serializable, JSONString
 
     public InetAddress getV4PPPoEDns2( ) { return this.v4PPPoEDns2; }
     public void setV4PPPoEDns2( InetAddress newValue ) { this.v4PPPoEDns2 = newValue; }
+
+    public Boolean getV4NatEgressTraffic( ) { return this.v4NatEgressTraffic; }
+    public void setV4NatEgressTraffic( Boolean newValue ) { this.v4NatEgressTraffic = newValue; }
+
+    public Boolean getV4NatIngressTraffic( ) { return this.v4NatIngressTraffic; }
+    public void setV4NatIngressTraffic( Boolean newValue ) { this.v4NatIngressTraffic = newValue; }
     
     public String getV6ConfigType( ) { return this.v6ConfigType; }
     public void setV6ConfigType( String newValue ) { this.v6ConfigType = newValue; }

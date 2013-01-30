@@ -46,7 +46,7 @@ if (!Ung.hasResource["Ung.Network"]) {
         initialRecordData: null,
         sizeToGrid: true,
         sizeToComponent: null,
-        title: this.i18n._('Edit Interface'),
+        title: i18n._('Edit Interface'),
         reRenderFields: Ext.bind( function() {
             var configValue = Ext.getCmp('interface_config').getValue();
             var isWan = Ext.getCmp('interface_isWan').getValue();
@@ -71,7 +71,8 @@ if (!Ung.hasResource["Ung.Network"]) {
             Ext.getCmp('interface_v4PPPoEUsePeerDns').setVisible(false);
             Ext.getCmp('interface_v4PPPoEDns1').setVisible(false);
             Ext.getCmp('interface_v4PPPoEDns2').setVisible(false);
-
+            Ext.getCmp('interface_v4NatEgressTraffic').setVisible(false); 
+            Ext.getCmp('interface_v4NatIngressTraffic').setVisible(false); 
             Ext.getCmp('interface_v6Config').setVisible(false);
             Ext.getCmp('interface_v6ConfigType').setVisible(false);
             Ext.getCmp('interface_v6StaticAddress').setVisible(false);
@@ -80,6 +81,18 @@ if (!Ung.hasResource["Ung.Network"]) {
             Ext.getCmp('interface_v6StaticDns1').setVisible(false);
             Ext.getCmp('interface_v6StaticDns2').setVisible(false);
 
+            // if config disabled show nothing
+            if ( configValue == "disabled") {
+                return;
+            }
+
+            // if config bridged just show the one field 
+            if ( configValue == "bridged") {
+                Ext.getCmp('interface_bridgedTo').setVisible(true);
+                return;
+            }
+
+            // if config addressed show necessary options
             if ( configValue == "addressed") {
                 Ext.getCmp('interface_isWan').setVisible(true);
                 Ext.getCmp('interface_v4Config').setVisible(true);
@@ -87,16 +100,18 @@ if (!Ung.hasResource["Ung.Network"]) {
 
                 // if not a WAN, must configure statically
                 // if a WAN, can use auto or static
-                if (!isWan) {
-                    Ext.getCmp('interface_v4ConfigType').setValue("static"); //don't allow auto/DHCP for non-WAN
-                    Ext.getCmp('interface_v6ConfigType').setValue("static"); //don't allow auto/DHCP for non-WAN
-                    Ext.getCmp('interface_v4StaticGateway').setVisible(false); //don't allow auto/DHCP for non-WAN
-                    Ext.getCmp('interface_v6StaticGateway').setVisible(false); //don't allow auto/DHCP for non-WAN
+                if ( isWan ) {
+                    Ext.getCmp('interface_v4ConfigType').setVisible(true); //show full config options for WANs
+                    Ext.getCmp('interface_v6ConfigType').setVisible(true); //show full config options for WANs
+                    Ext.getCmp('interface_v4NatEgressTraffic').setVisible(true); // show NAT egress option on WANs
                 } else {
-                    Ext.getCmp('interface_v4ConfigType').setVisible(true); 
-                    Ext.getCmp('interface_v6ConfigType').setVisible(true); 
+                    Ext.getCmp('interface_v4ConfigType').setValue("static"); //don't allow auto/pppoe for non-WAN
+                    Ext.getCmp('interface_v6ConfigType').setValue("static"); //don't allow auto/pppoe for non-WAN
+                    Ext.getCmp('interface_v4StaticGateway').setVisible(false); // no gateways for non-WAN
+                    Ext.getCmp('interface_v6StaticGateway').setVisible(false); // no gateways for non-WAN
+                    Ext.getCmp('interface_v4NatIngressTraffic').setVisible(true); // show NAT ingress options on non-WANs
                 }
-
+                
                 // if static show static fields
                 // if auto show override fields (auto is only allowed on WANs)
                 // if pppoe show pppoe fields (pppoe is only allowed on WANs)
@@ -137,8 +152,6 @@ if (!Ung.hasResource["Ung.Network"]) {
                 } else /* auto */ {
                     // no overriding in IPv6 so nothing to show
                 }
-            } else if ( configValue == "bridged") {
-                Ext.getCmp('interface_bridgedTo').setVisible(true);
             }
 
         }, this ),
@@ -173,9 +186,11 @@ if (!Ung.hasResource["Ung.Network"]) {
                 listeners: {
                     change: Ext.bind( function( f, val ) {
                         if ( val ) {
-                            // this is here because it should only switch to auto when unchecked
-                            Ext.getCmp('interface_v4ConfigType').setValue("auto"); // default to auto for WAN
-                            Ext.getCmp('interface_v6ConfigType').setValue("auto"); // default to auto for WAN
+                            Ext.getCmp('interface_v4NatEgressTraffic').setValue( true ); // default to NAT egress on WANs
+                            Ext.getCmp('interface_v4NatIngressTraffic').setValue( false ); // disable hidden option
+                        } else {
+                            Ext.getCmp('interface_v4NatIngressTraffic').setValue( true ); // default to NAT ingress on non-WANs
+                            Ext.getCmp('interface_v4NatEgressTraffic').setValue( false ); // disable hidden option
                         }
 
                         this.reRenderFields();
@@ -303,7 +318,6 @@ if (!Ung.hasResource["Ung.Network"]) {
                     id: "interface_v4PPPoEUsePeerDns",
                     dataIndex: "v4PPPoEUsePeerDns",
                     fieldLabel: i18n._("Use Peer DNS"),
-                    vtype: "ipAddress",
                     width: 300,
                     listeners: {
                         change: this.reRenderFields
@@ -322,6 +336,26 @@ if (!Ung.hasResource["Ung.Network"]) {
                     fieldLabel: i18n._("Secondary DNS"),
                     vtype: "ipAddress",
                     width: 300
+                },{
+                    id:'interface_v4ExtraOptions',
+                    style: "border:1px solid;", // UGLY FIXME
+                    xtype:'fieldset',
+                    title:i18n._("IPv4 Options"),
+                    collapsible: true,
+                    collapsed: false,
+                    items: [{
+                        xtype:'checkbox',
+                        id: "interface_v4NatEgressTraffic",
+                        dataIndex: "v4NatEgressTraffic",
+                        boxLabel: i18n._("NAT traffic exiting this interface (and bridged peers)"),
+                        width: 400
+                    }, {
+                        xtype:'checkbox',
+                        id: "interface_v4NatIngressTraffic",
+                        dataIndex: "v4NatIngressTraffic",
+                        boxLabel: i18n._("NAT traffic coming from this interface (and bridged peers)"),
+                        width: 400
+                    }]
                 }]
             }, {
                 id:'interface_v6Config',
@@ -403,10 +437,6 @@ if (!Ung.hasResource["Ung.Network"]) {
                 html: "TODO: DHCP settings link<br/>"
             }, {
                 html: "TODO: aliases grid<br/>"
-            }, {
-                html: "TODO: NAT traffic leaving this interface from non-bridged interfaces setting<br/>"
-            }, {
-                html: "TODO: NAT traffic entering this interface setting<br/>"
             }, {
                 html: "TODO: ethernet device settings link<br/>"
             }, {
@@ -619,6 +649,10 @@ if (!Ung.hasResource["Ung.Network"]) {
                     name: 'v4PPPoEDns1'
                 }, {
                     name: 'v4PPPoEDns2'
+                }, {
+                    name: 'v4NatEgressTraffic'
+                }, {
+                    name: 'v4NatIngressTraffic'
                 }, {
                     name: 'v6ConfigType'
                 }, {
