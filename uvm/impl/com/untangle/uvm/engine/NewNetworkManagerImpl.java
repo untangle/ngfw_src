@@ -11,6 +11,7 @@ import org.apache.log4j.Logger;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.SettingsManager;
 import com.untangle.uvm.NewNetworkManager;
+import com.untangle.uvm.ExecManagerResult;
 import com.untangle.uvm.network.NetworkSettings;
 import com.untangle.uvm.network.InterfaceSettings;
 import com.untangle.uvm.network.BypassRule;
@@ -25,16 +26,17 @@ public class NewNetworkManagerImpl implements NewNetworkManager
 {
     private final Logger logger = Logger.getLogger(this.getClass());
 
+    private final String settingsFilename = System.getProperty("uvm.settings.dir") + "/untangle-vm/" + "network";
+    
     private NetworkSettings networkSettings;
 
     protected NewNetworkManagerImpl()
     {
         SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
         NetworkSettings readSettings = null;
-        String settingsFileName = System.getProperty("uvm.settings.dir") + "/untangle-vm/" + "network";
 
         try {
-            readSettings = settingsManager.load( NetworkSettings.class, settingsFileName );
+            readSettings = settingsManager.load( NetworkSettings.class, settingsFilename );
         } catch (SettingsManager.SettingsException e) {
             logger.warn("Failed to load settings:",e);
         }
@@ -68,6 +70,26 @@ public class NewNetworkManagerImpl implements NewNetworkManager
     public void setNetworkSettings( NetworkSettings newSettings )
     {
         this._setSettings( newSettings );
+        ExecManagerResult result;
+        
+        // Now sync those settings to the OS
+        String cmd = "/usr/share/untangle-netd/bin/sync-settings.py -v -f " + settingsFilename + ".js";
+        result = UvmContextFactory.context().execManager().exec( cmd );
+        try {
+            String lines[] = result.getOutput().split("\\r?\\n");
+            logger.info("Syncing settings to O/S: ");
+            for ( String line : lines )
+                logger.info("sync-settings.py: " + line);
+        } catch (Exception e) {}
+
+        // And restart networking
+        result = UvmContextFactory.context().execManager().exec( "/etc/init.d/networking restart" );
+        try {
+            String lines[] = result.getOutput().split("\\r?\\n");
+            logger.info("Restarting Networking: ");
+            for ( String line : lines )
+                logger.info("/etc/init.d/networking restart: " + line);
+        } catch (Exception e) {}
         
     }
 
@@ -102,7 +124,7 @@ public class NewNetworkManagerImpl implements NewNetworkManager
          * Change current settings
          */
         this.networkSettings = newSettings;
-        try {logger.warn("New Settings: \n" + new org.json.JSONObject(this.networkSettings).toString(2));} catch (Exception e) {}
+        try {logger.debug("New Settings: \n" + new org.json.JSONObject(this.networkSettings).toString(2));} catch (Exception e) {}
 
         this.reconfigure();
     }
@@ -189,7 +211,6 @@ public class NewNetworkManagerImpl implements NewNetworkManager
     {
         logger.info("reconfigure()");
     }
-
 
     private void sanitizeSettings( NetworkSettings networkSettings)
     {

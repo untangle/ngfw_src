@@ -270,7 +270,7 @@ class ToolboxManagerImpl implements ToolboxManager
          * SPECIAL CASE: If Web Filter is installed in this rack OR licensed for non-trial, hide Web Filter Lite
          */
         if ( ! UvmContextFactory.context().isDevel() ) {
-            List<Node> sitefilterNodes = UvmContextFactory.context().nodeManager().nodeInstances( "untangle-node-sitefilter", policyId);
+            List<Node> sitefilterNodes = UvmContextFactory.context().nodeManager().nodeInstances( "untangle-node-sitefilter", policyId );
             if (sitefilterNodes != null && sitefilterNodes.size() > 0) {
                 installableLibitems.remove("Web Filter Lite"); /* hide web filter lite from left hand nav */
                 installableNodes.remove("Web Filter Lite"); /* hide web filter lite from left hand nav */
