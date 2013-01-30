@@ -17,7 +17,6 @@ Ext.define("Ung.Main", {
     nodes: null,
     // the Ext.Viewport object for the application
     viewport: null,
-    initSemaphore: null,
     policySemaphore: null,
     contentLeftWidth: null,
     // the application build version
@@ -27,8 +26,6 @@ Ext.define("Ung.Main", {
     upgradeStatus:null,
     upgradeLastCheckTime: null,
     firstTimeRun: null,
-    companyName: document.title,
-    hostName: null,
     policyNodeWidget:null,
     
     // init function
@@ -51,34 +48,17 @@ Ext.define("Ung.Main", {
         JSONRpcClient.toplevel_ex_handler = Ung.Util.rpcExHandler;
         JSONRpcClient.max_req_active = 2;
 
-        this.initSemaphore = 1;
         rpc = {};
         // get JSONRpcClient
         rpc.jsonrpc = new JSONRpcClient("/webui/JSON-RPC");
+        //load all managers and startup info
+        var startupInfo = rpc.jsonrpc.UvmContext.getWebuiStartupInfo();
+        Ext.apply(rpc, startupInfo);
 
-        // below we load all the managers
-        // this used to be done (and should be done asynchronously with each result calling postinit when compelet)
-        // however this seems to cause some issues with the new firebug, which is now the only firebug.
-        // in the meantime I've changed them all to load synchronously.
-        // If we ever figure out the firebug issue we should revert back to the asynchronous loading of all the managers
-        
-        // get the language manager
-        rpc.languageManager = rpc.jsonrpc.UvmContext.languageManager();
-        i18n=new Ung.I18N({"map":rpc.languageManager.getTranslations("untangle-libuvm").map});
-        Ext.MessageBox.wait(i18n._("Initializing..."), i18n._("Please wait"));
-        Ext.defer(this.initSync, 5, this);
-    },
-    initSync: function() {
-        rpc.languageSettings = rpc.languageManager.getLanguageSettings();
-
-        // get the skin manager
-        rpc.skinManager = rpc.jsonrpc.UvmContext.skinManager();
-        // load the current skin
-        var skinSettings = rpc.skinManager.getSettings();
-        //TODO: find gray theme for extjs4
-        //Ung.Util.loadCss("/skins/"+skinSettings.skinName+"/css/ext-skin.css");
-        Ung.Util.loadCss("/skins/"+skinSettings.skinName+"/css/admin.css");
-        if (skinSettings.outOfDate) {
+        i18n=new Ung.I18N({"map":rpc.translations.map});
+        Ext.MessageBox.wait(i18n._("Starting..."), i18n._("Please wait"));
+        Ung.Util.loadCss("/skins/"+rpc.skinSettings.skinName+"/css/admin.css");
+        if (rpc.skinSettings.outOfDate) {
             var win = new Ext.Window({
                 layout: 'fit',
                 width: 300,
@@ -96,63 +76,11 @@ Ext.define("Ung.Main", {
             });
             win.show();
         }
-
-        // get node manager
-        rpc.nodeManager=rpc.jsonrpc.UvmContext.nodeManager();
-
-        // get policy manager
-        rpc.policyManager=rpc.jsonrpc.UvmContext.nodeManager().node("untangle-node-policy");
-
-        // get toolbox manager
-        rpc.toolboxManager=rpc.jsonrpc.UvmContext.toolboxManager();
-
-        // get toolbox manager
-        rpc.alertManager=rpc.jsonrpc.UvmContext.alertManager();
-        
-        // get admin manager
-        rpc.adminManager=rpc.jsonrpc.UvmContext.adminManager();
-
-        // get version
-        rpc.version=rpc.jsonrpc.UvmContext.version();
-
-        // get system manager
-        rpc.systemManager=rpc.jsonrpc.UvmContext.systemManager();
-
-        // get the host table
-        rpc.hostTable=rpc.jsonrpc.UvmContext.hostTable();
-
-        //get session monitor
-        rpc.sessionMonitor = rpc.jsonrpc.UvmContext.sessionMonitor();
-        
-        // get network manager
-        rpc.newNetworkManager=rpc.jsonrpc.UvmContext.newNetworkManager();
-        rpc.networkManager=rpc.jsonrpc.UvmContext.networkManager();
-        this.hostName = rpc.networkManager.getNetworkConfiguration().hostname; 
         this.setDocumentTitle();
-
-        // get message manager & message key
-        rpc.messageManager=rpc.jsonrpc.UvmContext.messageManager();
-        rpc.messageKey = rpc.messageManager.getMessageKey();
-
-        // get branding manager
-        rpc.brandingManager = rpc.jsonrpc.UvmContext.brandingManager();
-        this.companyName = rpc.brandingManager.getCompanyName();
-        this.setDocumentTitle();
-
         this.startApplication();
     },
-    initAsync: function() {
-        //TODO: re-implement the init asynchronously when we switch to chrome browser
-    },
-    postinit: function() {
-        this.initSemaphore--;
-        if(this.initSemaphore!=0) {
-            return;
-        }
-      this.startApplication();
-    },
     setDocumentTitle: function() {
-        document.title = main.companyName + ((main.hostName!=null)?(" - " + main.hostName):"");
+        document.title = rpc.companyName + ((rpc.hostName!=null)?(" - " + rpc.hostName):"");
     },
     warnOnUpgrades: function(handler) {
         if(main.upgradeStatus!=null && main.upgradeStatus.upgradesAvailable ) {
@@ -210,7 +138,6 @@ Ext.define("Ung.Main", {
         }
     },
     startApplication: function() {
-        Ext.MessageBox.wait(i18n._("Starting..."), i18n._("Please wait"));
         this.initExtI18n();
         this.initExtGlobal();
         this.initExtVTypes();
@@ -526,7 +453,7 @@ Ext.define("Ung.Main", {
     getNewNetworkManager: function(forceReload) {
         if (forceReload || rpc.newNetworkManager === undefined) {
             try {
-                rpc.networkManager = rpc.jsonrpc.UvmContext.newNetworkManager();
+                rpc.newNetworkManager = rpc.jsonrpc.UvmContext.newNetworkManager();
             } catch (e) {
                 Ung.Util.rpcExHandler(e);
             }
@@ -635,12 +562,6 @@ Ext.define("Ung.Main", {
                        if(Ung.Util.handleException(exception)) return;
                        main.setAppLastState(this.displayName);
                        main.loadApps();
-                        /*
-                        rpc.toolboxManager.unregister(Ext.bind(function (result, exception) {
-                            if(Ung.Util.handleException(exception)) return;
-                            main.loadApps();
-                        }, this), this.name);
-                        */
                     }, this), this.name);
                 }
         },packageDesc), packageDesc.name);
