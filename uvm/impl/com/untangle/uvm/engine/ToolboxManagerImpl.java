@@ -219,7 +219,7 @@ class ToolboxManagerImpl implements ToolboxManager
          */
         for (PackageDesc md : installed) {
             if ("untangle-libitem-premium-package".equals(md.getName())) {
-                boolean justATrial = (lm.getLicense(License.POLICY) != null && lm.getLicense(License.POLICY).getTrial());
+                boolean justATrial = (lm.getLicense(License.POLICY) != null && lm.getLicense(License.POLICY).getValid() && lm.getLicense(License.POLICY).getTrial());
                 if ( justATrial ) 
                     installableLibitems.put(md.getDisplayName(), md); /* show it on the left hand pane */
             }
@@ -230,7 +230,7 @@ class ToolboxManagerImpl implements ToolboxManager
          */
         for (PackageDesc md : installed) {
             if ("untangle-libitem-standard-package".equals(md.getName())) {
-                boolean justATrial = (lm.getLicense(License.POLICY) != null && lm.getLicense(License.POLICY).getTrial());
+                boolean justATrial = (lm.getLicense(License.POLICY) != null && lm.getLicense(License.POLICY).getValid() && lm.getLicense(License.POLICY).getTrial());
                 if ( justATrial ) 
                     installableLibitems.put(md.getDisplayName(), md); /* show it on the left hand pane */
             }
@@ -240,7 +240,7 @@ class ToolboxManagerImpl implements ToolboxManager
          */
         for (PackageDesc md : installed) {
             if ("untangle-libitem-premium-package".equals(md.getName())) {
-                boolean justATrial = (lm.getLicense(License.POLICY) != null && lm.getLicense(License.POLICY).getTrial());
+                boolean justATrial = (lm.getLicense(License.POLICY) != null && lm.getLicense(License.POLICY).getValid() && lm.getLicense(License.POLICY).getTrial());
                 if ( ! justATrial ) {
                     PackageDesc stan = null;
                     for ( Iterator<PackageDesc> i = installableLibitems.values().iterator() ; i.hasNext() ; ) {
@@ -256,7 +256,7 @@ class ToolboxManagerImpl implements ToolboxManager
          */
         for (PackageDesc md : installed) {
             if ("untangle-libitem-standard-package".equals(md.getName()) || "untangle-libitem-premium-package".equals(md.getName())) {
-                boolean justATrial = (lm.getLicense(License.POLICY) != null && lm.getLicense(License.POLICY).getTrial());
+                boolean justATrial = (lm.getLicense(License.POLICY) != null && lm.getLicense(License.POLICY).getValid() && lm.getLicense(License.POLICY).getTrial());
                 if ( ! justATrial ) {
                     PackageDesc lite = null;
                     for ( Iterator<PackageDesc> i = installableLibitems.values().iterator() ; i.hasNext() ; ) {
