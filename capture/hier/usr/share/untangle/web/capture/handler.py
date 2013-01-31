@@ -168,15 +168,15 @@ def infopost(req,method,nonce,appid,host,uri,agree='empty'):
 
 def custom_upload(req,upload_file,appid):
 
-    # first we call the custom_remove function to make sure the target
-    # directory is empty.
+    # first we call the custom_remove function to make sure the
+    # target directory is empty.
     custom_remove(req,upload_file,appid)
 
     # now set the content type for the response
     req.content_type = "text/html"
 
     # use the path from the request filename to setup the custom path
-    custpath = req.filename[:req.filename.rindex('/')] + "/custom_" + str(appid) + "/"
+    custpath = req.filename[:req.filename.rindex('/')] + "/custom_" + str(appid)
 
     # temporary location to save the uploaded file
     tempfile = "/tmp/custom.upload"
@@ -204,20 +204,30 @@ def custom_upload(req,upload_file,appid):
         return extjs_reply(False,'The uploaded ZIP file does not contain custom.html or custom.py')
 
     # setup the message we return to the caller
-    detail = "Extracted the following files from " + upload_file.filename + "&LT;HR&GT;"
+    detail = "Extracted the following files and directories from " + upload_file.filename + "&LT;HR&GT;"
 
     # extract all of the files into the custom directory and append the
-    # name of each one to the result message we'll be sending back
+    # name of each one to the result message we sending back
     try:
         for item in zlist:
-            (dirname,filename) = os.path.split(item)
-            fd = open(custpath + filename,"w")
-            fd.write(zfile.read(item))
-            fd.close()
-            detail += " " + filename
+            (filepath,filename) = os.path.split(item)
+            if (filename == ''):
+                if not os.path.exists(custpath + '/' + filepath):
+                    os.mkdir(custpath + '/' + filepath)
+            else:
+                if (filepath == ''):
+                    fd = open(custpath + '/' + filename,"w")
+                else:
+                    fd = open(custpath + '/' + filepath + '/' + filename,"w")
+                fd.write(zfile.read(item))
+                fd.close()
+
+            if (filepath == ''):
+                detail += " " + filename
+            else:
+                detail += ' ' + filepath + '/' + filename
     except:
-        return extjs_reply(False,custpath + filename)
-        return extjs_reply(False,'Unknown error extracting ZIP file contents')
+        return extjs_reply(False,custpath + '/' + filepath + '/' + filename)
 
     # return the status
     return extjs_reply(True,detail,upload_file.filename)
@@ -233,21 +243,22 @@ def custom_remove(req,custom_file,appid):
     req.content_type = "text/html"
 
     # use the path from the request filename to setup the custom path
-    custpath = req.filename[:req.filename.rindex('/')] + "/custom_" + str(appid) + "/"
+    custpath = req.filename[:req.filename.rindex('/')] + "/custom_" + str(appid)
+    dcount = fcount = 0
 
+    # remove all the files and all the dirs in the custom path
     try:
-        # get the list of files in the custom directory
-        filelist = os.listdir(custpath)
-        counter = 0
-
-        # get rid of everything
-        for filename in filelist:
-            os.remove(custpath + filename)
-            counter += 1
+        for cust,dlist,flist in os.walk(custpath,topdown=False):
+            for item in flist:
+                os.remove(cust + '/' + item)
+                fcount += 1
+            for item in dlist:
+                os.rmdir(cust + '/' + item)
+                dcount += 1
     except:
         return extjs_reply(False,"Unknown error removing custom files")
 
-    detail = "Removed %d custom files" % counter
+    detail = "Removed %d files and %d directories" % (fcount,dcount)
     return extjs_reply(True,detail)
 
 #-----------------------------------------------------------------------------
