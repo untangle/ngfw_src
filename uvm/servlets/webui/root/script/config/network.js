@@ -1431,7 +1431,7 @@ if (!Ung.hasResource["Ung.Network"]) {
                     fieldLabel: i18n._("Next Hop"),
                     boxLabel: i18n._("IP address or Interface"),
                     editable: true,
-                    store: [["eth0",i18n._('INTERFACE FIXME 1')], ["eth1",i18n._('INTERFACE FIXME 2')]],
+                    store: [["eth0",i18n._('Local on eth0 FIXME')], ["eth1",i18n._('Local on eth1 FIXME')]],
                     valueField: "value",
                     displayField: "displayName",
                     queryMode: 'local'

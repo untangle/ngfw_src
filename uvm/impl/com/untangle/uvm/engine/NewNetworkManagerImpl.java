@@ -72,6 +72,15 @@ public class NewNetworkManagerImpl implements NewNetworkManager
         this._setSettings( newSettings );
         ExecManagerResult result;
         
+        // stop interfaces
+        result = UvmContextFactory.context().execManager().exec( "ifdown -a --exclude=lo" );
+        try {
+            String lines[] = result.getOutput().split("\\r?\\n");
+            logger.info("ifdown -a: ");
+            for ( String line : lines )
+                logger.info("ifdown: " + line);
+        } catch (Exception e) {}
+    
         // Now sync those settings to the OS
         String cmd = "/usr/share/untangle-netd/bin/sync-settings.py -v -f " + settingsFilename + ".js";
         result = UvmContextFactory.context().execManager().exec( cmd );
@@ -82,13 +91,13 @@ public class NewNetworkManagerImpl implements NewNetworkManager
                 logger.info("sync-settings.py: " + line);
         } catch (Exception e) {}
 
-        // And restart networking
-        result = UvmContextFactory.context().execManager().exec( "/etc/init.d/networking restart" );
+        // start interfaces
+        result = UvmContextFactory.context().execManager().exec( "ifup -a --exclude=lo" );
         try {
             String lines[] = result.getOutput().split("\\r?\\n");
-            logger.info("Restarting Networking: ");
+            logger.info("ifup -a: ");
             for ( String line : lines )
-                logger.info("/etc/init.d/networking restart: " + line);
+                logger.info("ifup: " + line);
         } catch (Exception e) {}
         
     }
