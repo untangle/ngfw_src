@@ -224,6 +224,14 @@ public class NewNetworkManagerImpl implements NewNetworkManager
     private void sanitizeSettings( NetworkSettings networkSettings)
     {
         /**
+         * Fix NAT rule IDs
+         */
+        int idx = 0;
+        for (NatRule rule : networkSettings.getNatRules()) {
+            rule.setRuleId(++idx);
+        }
+
+        /**
          * Reset all symbolic devs to system devs
          * This is temporary XXX FIXME or is it?
          */

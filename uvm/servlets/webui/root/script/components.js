@@ -6076,10 +6076,19 @@ Ext.define('Ung.RuleBuilder', {
             menuDisabled: true,
             dataIndex: "invert",
             renderer: Ext.bind(function(value, metadata, record, rowIndex, colIndex, store) {
+                var name=record.get("name");
+                var rule=null;
+                for (var i = 0; i < this.matchers.length; i++) {
+                    if (this.matchers[i].name == name) {
+                        rule=this.matchers[i];
+                        break;
+                    }
+                }
                 var out=[];
                 out.push('<select class="rule_builder_invert" onchange="Ext.getCmp(\''+this.getId()+'\').changeRowInvert(\''+record.getId()+'\', this)">');
                 out.push('<option value="false" ' + ((value==false)?"selected":"") + '>' + 'is'     + '</option>');
-                out.push('<option value="true"  ' + ((value==true) ?"selected":"") + '>' + 'is NOT' + '</option>');
+                if (rule == null || rule.allowInvert == null || rule.allowInvert == true)
+                    out.push('<option value="true"  ' + ((value==true) ?"selected":"") + '>' + 'is NOT' + '</option>');
                 out.push("</select>");
                 return out.join("");
             }, this)
