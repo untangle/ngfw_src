@@ -146,7 +146,7 @@ public class NewNetworkManagerImpl implements NewNetworkManager
             LinkedList<InterfaceSettings> interfaces = new LinkedList<InterfaceSettings>();
             InterfaceSettings external = new InterfaceSettings();
             external.setInterfaceId(1);
-            external.setName("External");
+            external.setName("Externál");
             external.setPhysicalDev("eth0");
             external.setSystemDev("eth0");
             external.setSymbolicDev("br.eth0");
@@ -165,7 +165,7 @@ public class NewNetworkManagerImpl implements NewNetworkManager
         
             InterfaceSettings internal = new InterfaceSettings();
             internal.setInterfaceId(2);
-            internal.setName("Internal");
+            internal.setName("Internál");
             internal.setPhysicalDev("eth1");
             internal.setSystemDev("eth1");
             internal.setSymbolicDev("br.eth0");
@@ -224,16 +224,23 @@ public class NewNetworkManagerImpl implements NewNetworkManager
     private void sanitizeSettings( NetworkSettings networkSettings)
     {
         /**
-         * Fix NAT rule IDs
+         * Fix rule IDs
          */
         int idx = 0;
         for (NatRule rule : networkSettings.getNatRules()) {
             rule.setRuleId(++idx);
         }
+        idx = 0;
+        for (PortForwardRule rule : networkSettings.getPortForwardRules()) {
+            rule.setRuleId(++idx);
+        }
+        idx = 0;
+        for (BypassRule rule : networkSettings.getBypassRules()) {
+            rule.setRuleId(++idx);
+        }
 
         /**
          * Reset all symbolic devs to system devs
-         * This is temporary XXX FIXME or is it?
          */
         for ( InterfaceSettings intf : networkSettings.getInterfaces() ) {
             intf.setSystemDev( intf.getPhysicalDev() );
