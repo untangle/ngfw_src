@@ -1,6 +1,6 @@
 #!/bin/sh
 # untangle-node-webfiter and untangle-node-commtouchav are not needed since they rely on base-webfilter and base-virus
-ALL_MODULES='untangle-vm untangle-libuvm untangle-apache2-config untangle-net-alpaca untangle-casing-mail 
+ALL_MODULES='untangle-vm untangle-libuvm untangle-apache2-config untangle-casing-mail 
     untangle-base-virus untangle-base-webfilter untangle-node-adblocker 
     untangle-node-firewall 
     untangle-node-ips untangle-node-openvpn untangle-node-phish 
@@ -38,7 +38,6 @@ case "$1" in
 
     xgettext -j --copyright-holder='Untangle, Inc.' -L Python -ki18n._ -o tmp_keys.pot ../servlets/reports/root/script/*.js
 
-    xgettext -j --copyright-holder='Untangle, Inc.' -L Java -ktr -o tmp_keys.pot ../servlets/alpaca/src/com/untangle/uvm/servlet/alpaca/ProxyServlet.java
     xgettext -j --copyright-holder='Untangle, Inc.' -L Java -ktr -o tmp_keys.pot ../api/com/untangle/uvm/util/OutsideValve.java
     xgettext -j --copyright-holder='Untangle, Inc.' -L Java -ktr -o tmp_keys.pot ../bootstrap/com/untangle/uvm/engine/UvmErrorReportValve.java
     xgettext -j --copyright-holder='Untangle, Inc.' -L Java -ktr -o tmp_keys.pot ../impl/com/untangle/uvm/engine/MailSenderImpl.java
@@ -72,16 +71,6 @@ case "$1" in
 "untangle-apache2-config")
     cd ../../pkgs/untangle-apache2-config/po
     xgettext --copyright-holder='Untangle, Inc.' -L Python -k_ -o tmp_keys.pot ../*.py
-    msgmerge -U -N $1.pot tmp_keys.pot
-    rm tmp_keys.pot
-    update_po $1
-    ;;
-"untangle-net-alpaca")
-    cd ../../pkgs/untangle-net-alpaca/po
-    # choose a specific file to create the pot file; then we join messages to that file
-    xgettext --copyright-holder='Untangle, Inc.' -L Python -k_ -o tmp_keys.pot ../files/var/lib/rails/untangle-net-alpaca/app/controllers/application.rb -o tmp_keys.pot
-    find ../files/var/lib/rails/untangle-net-alpaca/app -name "*.rb" -exec xgettext -j --copyright-holder='Untangle, Inc.' -L Python -k_ -o tmp_keys.pot '{}' \;
-    find ../files/var/lib/rails/untangle-net-alpaca/public/javascripts/pages -name "*.js" -exec xgettext -j --copyright-holder='Untangle, Inc.' -L Python -ki18n._ -o tmp_keys.pot '{}' \;
     msgmerge -U -N $1.pot tmp_keys.pot
     rm tmp_keys.pot
     update_po $1

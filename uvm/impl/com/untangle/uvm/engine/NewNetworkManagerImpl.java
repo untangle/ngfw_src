@@ -175,21 +175,21 @@ public class NewNetworkManagerImpl implements NewNetworkManager
                 InterfaceSettings external = new InterfaceSettings();
                 external.setInterfaceId(1);
                 external.setName("Externál");
+                external.setIsWan(true);
                 external.setPhysicalDev(devices[0]);
                 external.setSystemDev(devices[0]);
                 external.setSymbolicDev(devices[0]);
                 external.setConfig("addressed");
-                external.setV4ConfigType("static");
-                external.setV4StaticAddress(InetAddress.getByName("172.16.2.60"));
-                external.setV4StaticNetmask(InetAddress.getByName("255.255.0.0"));
-                external.setV4StaticGateway(InetAddress.getByName("172.16.2.1"));
-                external.setV4StaticDns1(InetAddress.getByName("172.16.2.1"));
+                external.setV4ConfigType("auto");
+                //external.setV4StaticAddress(InetAddress.getByName("172.16.2.60"));
+                //external.setV4StaticNetmask(InetAddress.getByName("255.255.0.0"));
+                //external.setV4StaticGateway(InetAddress.getByName("172.16.2.1"));
+                //external.setV4StaticDns1(InetAddress.getByName("172.16.2.1"));
                 //external.setV4StaticAddress(InetAddress.getByName("10.0.0.60"));
                 //external.setV4StaticNetmask(InetAddress.getByName("255.0.0.0"));
                 //external.setV4StaticGateway(InetAddress.getByName("10.0.0.1"));
                 //external.setV4StaticDns1(InetAddress.getByName("10.0.0.1"));
                 external.setV6ConfigType("auto");
-                external.setIsWan(true);
                 interfaces.add(external);
             }
         

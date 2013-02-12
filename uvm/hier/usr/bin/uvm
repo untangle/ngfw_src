@@ -57,16 +57,17 @@ def set_proc_name(newname):
 # This will flush them so they will be recreated with the proper settings using WAN Balancer etc
 #
 def flushConntrack():
-    #debug("flushConntrack()")
+    # debug("flushConntrack()")
     os.system('conntrack -D --proto udp >/dev/null 2>&1');
 
 #
 # Tells alpaca to rewrite the iptables rules
 #
 def resetIptables():
-    ## Tell the alpaca to reload the rules
-    #debug("resetIptables()")
-    os.system('curl -s http://localhost:3000/alpaca/uvm/generate_rules?argyle=`head -n 1 /etc/untangle-net-alpaca/nonce` > /dev/null'); # uvmlogger
+    ## Rewrite all iptables rules
+    ## Would it be enough just to re-run uvm iptables script? FIXME
+    # debug("resetIptables()")
+    os.system('/usr/share/untangle-netd/bin/generate-iptables-rules.sh'); # uvmlogger
 
 #
 # This prepares the system for a running untangle-vm

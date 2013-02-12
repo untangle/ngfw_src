@@ -29,8 +29,6 @@ function tar_files()
 {
     tarfile=$1
 
-    [ -x  /usr/share/untangle-net-alpaca/scripts/backup ] && /usr/share/untangle-net-alpaca/scripts/backup /usr/share/untangle/conf/alpaca-backup.uab "UVM Backup"
-
     tar zcf $tarfile --ignore-failed-read -C / \
         etc/hostname \
         etc/network/interfaces \
@@ -41,7 +39,6 @@ function tar_files()
         usr/share/untangle/conf/openvpn/misc \
         usr/share/untangle/conf/openvpn/pki \
         usr/share/untangle/conf/dirbackup.ldif \
-        usr/share/untangle/conf/alpaca-backup.uab \
         usr/share/untangle/conf/wizard-complete-flag \
         usr/share/untangle/settings 
 
