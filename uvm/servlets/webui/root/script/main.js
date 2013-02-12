@@ -54,6 +54,10 @@ Ext.define("Ung.Main", {
         //load all managers and startup info
         var startupInfo = rpc.jsonrpc.UvmContext.getWebuiStartupInfo();
         Ext.apply(rpc, startupInfo);
+        
+        //Had to get policyManager this way because startupInfo.policyManager contains an object instead of a callableReference
+        rpc.policyManager=rpc.nodeManager.node("untangle-node-policy");
+        
         i18n=new Ung.I18N({"map":rpc.translations.map});
         Ext.MessageBox.wait(i18n._("Starting..."), i18n._("Please wait"));
         Ung.Util.loadCss("/skins/"+rpc.skinSettings.skinName+"/css/admin.css");
