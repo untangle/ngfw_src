@@ -1472,6 +1472,8 @@ if (!Ung.hasResource["Ung.Network"]) {
         beforeSave: function(isApply, handler) {
             this.beforeSaveCount = 5;
 
+            Ext.MessageBox.wait(i18n._("Applying Network Settings..."), i18n._("Please wait"));
+
             this.gridInterfaces.getList(Ext.bind(function(saveList) {
                 this.settings.interfaces = saveList;
                 this.beforeSaveCount--;

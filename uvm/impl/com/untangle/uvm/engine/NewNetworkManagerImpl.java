@@ -164,59 +164,65 @@ public class NewNetworkManagerImpl implements NewNetworkManager
     {
         NetworkSettings newSettings = new NetworkSettings();
 
+        ExecManagerResult result = UvmContextFactory.context().execManager().exec( "find /sys/class/net -type l -name 'eth*' | sed -e 's|/sys/class/net/||' | sort " );
+        String devices[] = result.getOutput().split("\\r?\\n");
+
+        
         try {
             LinkedList<InterfaceSettings> interfaces = new LinkedList<InterfaceSettings>();
-            InterfaceSettings external = new InterfaceSettings();
-            external.setInterfaceId(1);
-            external.setName("Externál");
-            external.setPhysicalDev("eth0");
-            external.setSystemDev("eth0");
-            external.setSymbolicDev("br.eth0");
-            external.setConfig("addressed");
-            external.setV4ConfigType("static");
-            external.setV4StaticAddress(InetAddress.getByName("172.16.2.60"));
-            external.setV4StaticNetmask(InetAddress.getByName("255.255.0.0"));
-            external.setV4StaticGateway(InetAddress.getByName("172.16.2.1"));
-            external.setV4StaticDns1(InetAddress.getByName("172.16.2.1"));
-            //external.setV4StaticAddress(InetAddress.getByName("10.0.0.60"));
-            //external.setV4StaticNetmask(InetAddress.getByName("255.0.0.0"));
-            //external.setV4StaticGateway(InetAddress.getByName("10.0.0.1"));
-            //external.setV4StaticDns1(InetAddress.getByName("10.0.0.1"));
-            external.setV6ConfigType("static");
-            external.setIsWan(true);
+
+            if (devices.length > 0) {
+                InterfaceSettings external = new InterfaceSettings();
+                external.setInterfaceId(1);
+                external.setName("Externál");
+                external.setPhysicalDev(devices[0]);
+                external.setSystemDev(devices[0]);
+                external.setSymbolicDev(devices[0]);
+                external.setConfig("addressed");
+                external.setV4ConfigType("static");
+                external.setV4StaticAddress(InetAddress.getByName("172.16.2.60"));
+                external.setV4StaticNetmask(InetAddress.getByName("255.255.0.0"));
+                external.setV4StaticGateway(InetAddress.getByName("172.16.2.1"));
+                external.setV4StaticDns1(InetAddress.getByName("172.16.2.1"));
+                //external.setV4StaticAddress(InetAddress.getByName("10.0.0.60"));
+                //external.setV4StaticNetmask(InetAddress.getByName("255.0.0.0"));
+                //external.setV4StaticGateway(InetAddress.getByName("10.0.0.1"));
+                //external.setV4StaticDns1(InetAddress.getByName("10.0.0.1"));
+                external.setV6ConfigType("auto");
+                external.setIsWan(true);
+                interfaces.add(external);
+            }
         
-            InterfaceSettings internal = new InterfaceSettings();
-            internal.setInterfaceId(2);
-            internal.setName("Internál");
-            internal.setPhysicalDev("eth1");
-            internal.setSystemDev("eth1");
-            internal.setSymbolicDev("br.eth0");
-            internal.setConfig("bridged");
-            internal.setBridgedTo(1);
+            if (devices.length > 1) {
+                InterfaceSettings internal = new InterfaceSettings();
+                internal.setInterfaceId(2);
+                internal.setName("Internál");
+                internal.setPhysicalDev(devices[1]);
+                internal.setSystemDev(devices[1]);
+                internal.setSymbolicDev(devices[1]);
+                internal.setConfig("addressed");
+                internal.setV4ConfigType("static");
+                internal.setV4StaticAddress(InetAddress.getByName("192.168.2.1"));
+                internal.setV4StaticNetmask(InetAddress.getByName("255.255.0.0"));
+                internal.setIsWan(false);
+                internal.setV6ConfigType("static");
+                internal.setV6StaticAddress(InetAddress.getByName("2001:db8:85a3:0:0:8a2e:370:7334"));
+                internal.setV6StaticPrefixLength(64);
+                internal.setBridgedTo(1);
+                interfaces.add(internal);
+            }
 
-            InterfaceSettings foo3 = new InterfaceSettings();
-            foo3.setInterfaceId(3);
-            foo3.setName("Foo3");
-            foo3.setPhysicalDev("eth2");
-            foo3.setSystemDev("eth2");
-            foo3.setSymbolicDev("br.eth0");
-            foo3.setConfig("bridged");
-            foo3.setBridgedTo(1);
+            for (int i = 2 ; i < devices.length ; i++ ) {
+                InterfaceSettings intf = new InterfaceSettings();
+                intf.setInterfaceId( i + 1 );
+                intf.setName("Interface " + (i + 1));
+                intf.setPhysicalDev(devices[i]);
+                intf.setSystemDev(devices[i]);
+                intf.setSymbolicDev(devices[i]);
+                intf.setConfig("disabled");
+                interfaces.add( intf );
+            }
 
-            InterfaceSettings foo4 = new InterfaceSettings();
-            foo4.setInterfaceId(4);
-            foo4.setName("Foo4");
-            foo4.setPhysicalDev("eth3");
-            foo4.setSystemDev("eth3");
-            foo4.setSymbolicDev("br.eth0");
-            foo4.setConfig("bridged");
-            foo4.setBridgedTo(1);
-
-            interfaces.add(external);
-            interfaces.add(internal);
-            interfaces.add(foo3);
-            interfaces.add(foo4);
-        
             newSettings.setInterfaces(interfaces);
 
             LinkedList<PortForwardRule> portForwardRules = new LinkedList<PortForwardRule>();
