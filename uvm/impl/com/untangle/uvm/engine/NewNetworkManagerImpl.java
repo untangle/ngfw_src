@@ -27,6 +27,7 @@ public class NewNetworkManagerImpl implements NewNetworkManager
     private final Logger logger = Logger.getLogger(this.getClass());
 
     private final String settingsFilename = System.getProperty("uvm.settings.dir") + "/untangle-vm/" + "network";
+    private final String settingsFilenameBackup = "/etc/untangle-netd/network";
     
     private NetworkSettings networkSettings;
 
@@ -36,11 +37,25 @@ public class NewNetworkManagerImpl implements NewNetworkManager
         NetworkSettings readSettings = null;
 
         try {
-            readSettings = settingsManager.load( NetworkSettings.class, settingsFilename );
+            readSettings = settingsManager.load( NetworkSettings.class, this.settingsFilename );
         } catch (SettingsManager.SettingsException e) {
             logger.warn("Failed to load settings:",e);
         }
 
+        /**
+         * If its the dev env, try loading from /etc
+         */
+        if ( readSettings == null && UvmContextFactory.context().isDevel() ) {
+            try {
+                readSettings = settingsManager.load( NetworkSettings.class, this.settingsFilenameBackup );
+                if (readSettings != null)
+                    settingsManager.save(NetworkSettings.class, this.settingsFilename, readSettings);
+                    
+            } catch (SettingsManager.SettingsException e) {
+                logger.warn("Failed to load settings:",e);
+            }
+        }
+        
         /**
          * If there are still no settings, just initialize
          */
@@ -123,7 +138,14 @@ public class NewNetworkManagerImpl implements NewNetworkManager
          */
         SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
         try {
-            settingsManager.save(NetworkSettings.class, System.getProperty("uvm.settings.dir") + "/" + "untangle-vm/" + "network", newSettings);
+            settingsManager.save(NetworkSettings.class, this.settingsFilename, newSettings);
+
+            /**
+             * If its the dev env also save to /etc
+             */
+            if ( UvmContextFactory.context().isDevel() ) {
+                settingsManager.save(NetworkSettings.class, this.settingsFilenameBackup, newSettings);
+            }
         } catch (SettingsManager.SettingsException e) {
             logger.warn("Failed to save settings.",e);
             return;

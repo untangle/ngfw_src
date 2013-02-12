@@ -545,8 +545,6 @@ public class NetworkManagerImpl implements NetworkManager
 
     public synchronized void refreshIptablesRules()
     {
-        /* Make an asynchronous request */
-        UvmContextFactory.context().newThread( new GenerateRules( null )).start();
     }
 
     private void initPriv() throws Exception
@@ -616,53 +614,5 @@ public class NetworkManagerImpl implements NetworkManager
         } 
         
         return settings;
-    }
-
-    class GenerateRules implements Runnable
-    {
-        private Exception exception;
-        private final Runnable callback;
-        
-        public GenerateRules( Runnable callback )
-        {
-            this.callback = callback;
-        }
-
-        public void run()
-        {
-            int tryCount = 0;
-            boolean success = false;
-
-            synchronized(NetworkManagerImpl.lock) {
-                logger.info("Refreshing iptables Rules...");
-                do {
-                    try {
-                        JsonClient.getInstance().callAlpaca( XMLRPCUtil.CONTROLLER_UVM, "generate_rules", null );
-                        success = true;
-                        break;
-                    } catch ( Exception e ) {
-                        logger.warn( "Error while generating iptables rules (trying again...)", e );
-                        this.exception = e;
-                    }
-
-                    try {Thread.sleep(3000);} catch(Exception e) {}
-                    tryCount++;
-                }
-                while (tryCount < 8);
-            }
-            
-            if (!success) {
-                logger.error( "Failed to generate iptables rules.");
-            } else {
-                logger.info("Refreshing iptables Rules... done");
-            }
-
-            if ( this.callback != null ) this.callback.run();
-        }
-        
-        public Exception getException()
-        {
-            return this.exception;
-        }
     }
 }
