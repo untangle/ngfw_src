@@ -1,52 +1,20 @@
-/*
- * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License, version 2,
- * as published by the Free Software Foundation.
- *
- * This program is distributed in the hope that it will be useful, but
- * AS-IS and WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE, TITLE, or
- * NONINFRINGEMENT.  See the GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
+/**
+ * $Id$
  */
 #ifndef __NETCAP_GLOBALS_
 #define __NETCAP_GLOBALS_
 
-#define NETCAP_SYNACK_MARK 0x20
-
 /**
  * maximum queue packet size
  */
-#define QUEUE_BUFSIZE 65535
 #define UDP_MAX_MESG_SIZE   65536
 #define QUEUE_MAX_MESG_SIZE 65536
 
 /**
- * size of the subscription table
- */
-#define SUBSCRIPTION_TABLE_SIZE 1025
-
-/**
- * max control massge size
+ * max control message size
  * WARNING: fragile
  */
 #define MAX_CONTROL_MSG 200
-
-/**
- * max length of an iptables command
- */
-#define MAX_CMD_LEN 500
-
-/**
- * max iptables commands per redirect
- */
-#define MAX_CMD_IPTABLES_PER_RDR 8
 
 /**
  * max fd in the epoll server
