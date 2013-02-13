@@ -142,18 +142,23 @@ remove_iptables_rules()
     ${IPTABLES} -D PREROUTING -t nat -i ${TUN_DEV} -p tcp -g "${UVM_REDIRECT_TABLE}" -m comment --comment 'Redirect utun traffic to untangle-vm' >/dev/null 2>&1
 }
 
-if [ "`is_uvm_running`x" = "truex" ]; then
-  echo "[`date`] The untangle-vm is running. Inserting iptables rules ... "
+rules_already_present()
+{
+    iptables -t raw -nvL OUTPUT | grep -q NOTRACK && echo "true"
+}
 
-  remove_iptables_rules
-  insert_iptables_rules
-  
-  echo "[`date`] The untangle-vm is running. Inserting iptables rules ... done"
+if [ "`is_uvm_running`x" = "truex" ]; then
+    if [ "`rules_already_present`x" = "truex" ]; then
+        echo "[`date`] The untangle-vm is running. Rules already exist. Doing nothing. "
+    else
+        echo "[`date`] The untangle-vm is running. Inserting iptables rules ... "
+        remove_iptables_rules # just in case
+        insert_iptables_rules
+        echo "[`date`] The untangle-vm is running. Inserting iptables rules ... done"
+    fi
 else
   echo "[`date`] The untangle-vm is not running. Removing iptables rules ..."
-
   remove_iptables_rules
-
   echo "[`date`] The untangle-vm is not running. Removing iptables rules ... done"
 fi
 
