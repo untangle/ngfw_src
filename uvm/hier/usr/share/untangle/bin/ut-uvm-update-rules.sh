@@ -20,8 +20,18 @@ iptables_debug()
    /sbin/iptables "$@"
 }
 
+iptables_debug_onerror()
+{
+    # Ignore -N errors
+    /sbin/iptables "$@" || {
+        [ "${3}x" != "-Nx" ] && echo "[`date`] Failed: /sbin/iptables $@"
+    }
+
+    true
+}
+
 if [ -z "${IPTABLES}" ] ; then
-    IPTABLES=iptables_debug
+    IPTABLES=iptables_debug_onerror
 fi
 
 ## Function to determine the pid of the process that owns the queue
