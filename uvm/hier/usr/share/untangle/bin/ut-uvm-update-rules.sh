@@ -31,7 +31,7 @@ iptables_debug_onerror()
 }
 
 if [ -z "${IPTABLES}" ] ; then
-    IPTABLES=iptables_debug_onerror
+    IPTABLES=iptables_debug
 fi
 
 ## Function to determine the pid of the process that owns the queue
@@ -75,8 +75,13 @@ insert_iptables_rules()
     ${IPTABLES} -t nat -N "${UVM_REDIRECT_TABLE}" >/dev/null 2>&1
     ${IPTABLES} -t nat -F "${UVM_REDIRECT_TABLE}" >/dev/null 2>&1
 
+    ${IPTABLES} -t tune -N queue-to-uvm >/dev/null 2>&1
+    ${IPTABLES} -t tune -F queue-to-uvm >/dev/null 2>&1
+
     # Insert redirect table in beginning of PREROUTING
-    ${IPTABLES} -I PREROUTING 1 -t nat -i ${TUN_DEV} -p tcp -g "${UVM_REDIRECT_TABLE}" -m comment --comment 'Redirect utun traffic to untangle-vm'
+    ${IPTABLES} -I PREROUTING -t nat -i ${TUN_DEV} -p tcp -g "${UVM_REDIRECT_TABLE}" -m comment --comment 'Redirect utun traffic to untangle-vm'
+
+    ${IPTABLES} -I POSTROUTING -t tune -j queue-to-uvm -m comment --comment 'Queue packets to the Untangle-VM'
 
     # We insert one -j DNAT rule for each local address
     # This is necessary so that the destination address is maintained when replying (with the SYN/ACK)
@@ -96,26 +101,21 @@ insert_iptables_rules()
     # t_tcp_port_range=`echo ${TCP_REDIRECT_PORTS} | sed 's|-|:|'`
     # ${IPTABLES} -t filter -I INPUT 1 ! -i utun -p tcp --destination-port ${t_tcp_port_range} -m conntrack --ctstate NEW,INVALID -j DROP -m comment --comment 'Drop traffic for untangle-vm listen ports except for redirected traffic"'
 
-    # when packets are released from the queue they restart at the top of the table.
-    # we set this mark on them before releasing and catch conmark them so we wont catch the rest of the session 
-    # or any related sesions from conntrack.
-    # ${IPTABLES} -A POSTROUTING -t tune -m mark --mark ${MASK_REINJECT}/${MASK_REINJECT} -j CONNMARK --set-mark ${MASK_BYPASS} -m comment --comment 'Set bypass bit on reinjected traffic'
-
     # Ignore traffic that is related to a session we are not watching.
     # If its "related" according to iptables, then original session must have been bypassed
-    ${IPTABLES} -A POSTROUTING -t tune -m conntrack --ctstate RELATED  -j RETURN -m comment --comment 'Do not queue (bypass) sessions related to other bypassed sessions'
+    ${IPTABLES} -A queue-to-uvm -t tune -m conntrack --ctstate RELATED  -j RETURN -m comment --comment 'Do not queue (bypass) sessions related to other bypassed sessions'
 
     # Ignore traffic that has no conntrack info because we cant NAT it.
-    ${IPTABLES} -A POSTROUTING -t tune -m conntrack --ctstate INVALID  -j RETURN -m comment --comment 'Do not queue (bypass) sessions without conntrack info'
+    ${IPTABLES} -A queue-to-uvm -t tune -m conntrack --ctstate INVALID  -j RETURN -m comment --comment 'Do not queue (bypass) sessions without conntrack info'
 
     # Ignore bypassed traffic.
-    ${IPTABLES} -A POSTROUTING -t tune -m mark --mark ${MASK_BYPASS}/${MASK_BYPASS} -j RETURN -m comment --comment 'Do not queue (bypass) all packets with bypass bit set'
+    ${IPTABLES} -A queue-to-uvm -t tune -m mark --mark ${MASK_BYPASS}/${MASK_BYPASS} -j RETURN -m comment --comment 'Do not queue (bypass) all packets with bypass bit set'
 
     # Queue all of the SYN packets.
-    ${IPTABLES} -A POSTROUTING -t tune -p tcp --syn -j NFQUEUE -m comment --comment 'Queue TCP SYN packets to the untangle-vm'
+    ${IPTABLES} -A queue-to-uvm -t tune -p tcp --syn -j NFQUEUE -m comment --comment 'Queue TCP SYN packets to the untangle-vm'
 
     # Queue all of the UDP packets.
-    ${IPTABLES} -A POSTROUTING -t tune -m addrtype --dst-type unicast -p udp -j NFQUEUE -m comment --comment 'Queue Unicast UDP packets to the untange-vm'
+    ${IPTABLES} -A queue-to-uvm -t tune -m addrtype --dst-type unicast -p udp -j NFQUEUE -m comment --comment 'Queue Unicast UDP packets to the untange-vm'
 
     ## Just in case these settings were lost.
     ifconfig ${TUN_DEV} ${TUN_ADDR} netmask 255.255.255.0 
@@ -136,15 +136,18 @@ insert_iptables_rules()
 remove_iptables_rules()
 {
     ${IPTABLES} -t nat -F "${UVM_REDIRECT_TABLE}" >/dev/null 2>&1
-    ${IPTABLES} -t tune -F POSTROUTING >/dev/null 2>&1
+    ${IPTABLES} -t tune -F queue-to-uvm >/dev/null 2>&1
 
     ${IPTABLES} -D OUTPUT -t raw -m mark --mark ${MASK_BYPASS}/${MASK_BYPASS} -j NOTRACK -m comment --comment 'NOTRACK packets with no-track bit mark set' >/dev/null 2>&1
     ${IPTABLES} -D PREROUTING -t nat -i ${TUN_DEV} -p tcp -g "${UVM_REDIRECT_TABLE}" -m comment --comment 'Redirect utun traffic to untangle-vm' >/dev/null 2>&1
+    ${IPTABLES} -D POSTROUTING -t tune -j queue-to-uvm -m comment --comment 'Queue packets to the Untangle-VM' >/dev/null 2>&1
 }
 
 rules_already_present()
 {
-    iptables -t raw -nvL OUTPUT | grep -q NOTRACK && echo "true"
+    # check two rules, if both exist, all rules probably exist
+    echo false
+    #iptables -t raw -nvL OUTPUT | grep -q NOTRACK && iptables -t tune -nvL OUTPUT | grep -q NFQUEUE && echo "true"
 }
 
 if [ "`is_uvm_running`x" = "truex" ]; then
