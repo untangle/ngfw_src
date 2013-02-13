@@ -60,18 +60,6 @@ insert_iptables_rules()
     # If its TCP its non-locally bound and won't go through iptables anyway
     ${IPTABLES} -A OUTPUT -t raw -m mark --mark ${MASK_BYPASS}/${MASK_BYPASS} -j NOTRACK -m comment --comment 'NOTRACK packets with no-track bit mark set'
 
-    # Dont queue ICMP packets released from the queue.
-    # ${IPTABLES} -A PREROUTING -t mangle -m mark --mark ${MASK_REINJECT}/${MASK_REINJECT} -j RETURN  -m comment --comment 'Do not re-queue reinjected packets'
-
-    # Set the bypass bit so that the untangle-vm never re-queues its own output
-    ${IPTABLES} -A OUTPUT -t mangle -j MARK --or-mark ${MASK_BYPASS} -m comment --comment 'Set bypass bit so untangle-vm does not re-queue output'
-
-    # Set the bypasss bit on all loopback traffic
-    ${IPTABLES} -A PREROUTING -t mangle -i lo -j MARK --or-mark ${MASK_BYPASS} -m comment --comment 'Set bypass bit all loopback packets'
-
-    # Set the bypasss bit on all packets in a bypassed session
-    ${IPTABLES} -A PREROUTING -t mangle -m connmark --mark ${MASK_BYPASS}/${MASK_BYPASS} -j MARK --or-mark  ${MASK_BYPASS} -m comment --comment 'Transfer bypass mark from conntrack to packet'
-
     # Redirect any re-injected packets from the TUN interface to us
     ## Add a redirect rule for each address,
     ${IPTABLES} -t nat -N "${UVM_REDIRECT_TABLE}" >/dev/null 2>&1
@@ -141,19 +129,9 @@ insert_iptables_rules()
 remove_iptables_rules()
 {
     ${IPTABLES} -t nat -F "${UVM_REDIRECT_TABLE}" >/dev/null 2>&1
-
     ${IPTABLES} -t tune -F POSTROUTING >/dev/null 2>&1
 
-    # Set the bypass bit so that the untangle-vm never re-queues its own output
-    ${IPTABLES} -D OUTPUT -t mangle -j MARK --or-mark ${MASK_BYPASS} -m comment --comment 'Set bypass bit so untangle-vm does not re-queue output' >/dev/null 2>&1
-
-    # Set the bypasss bit on all loopback traffic
-    ${IPTABLES} -D PREROUTING -t mangle -i lo -j MARK --or-mark ${MASK_BYPASS} -m comment --comment 'Set bypass bit all loopback packets' >/dev/null 2>&1
-
-    # Set the bypasss bit on all packets in a bypassed session
-    ${IPTABLES} -D PREROUTING -t mangle -m connmark --mark ${MASK_BYPASS}/${MASK_BYPASS} -j MARK --or-mark  ${MASK_BYPASS} -m comment --comment 'Transfer bypass mark from conntrack to packet' >/dev/null 2>&1
-
-    # Insert redirect table in beginning of PREROUTING
+    ${IPTABLES} -D OUTPUT -t raw -m mark --mark ${MASK_BYPASS}/${MASK_BYPASS} -j NOTRACK -m comment --comment 'NOTRACK packets with no-track bit mark set' >/dev/null 2>&1
     ${IPTABLES} -D PREROUTING -t nat -i ${TUN_DEV} -p tcp -g "${UVM_REDIRECT_TABLE}" -m comment --comment 'Redirect utun traffic to untangle-vm' >/dev/null 2>&1
 }
 
