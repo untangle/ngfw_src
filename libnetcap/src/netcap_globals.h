@@ -48,7 +48,6 @@
  */
 #define MAX_CMD_IPTABLES_PER_RDR 8
 
-
 /**
  * max fd in the epoll server
  */
@@ -58,7 +57,6 @@
  * Maximum number of messages inside of a mailbox for UDP/ICMP
  */
 #define MAX_MB_SIZE    16
-
 
 /**
  * Returns IP_TRANSPARENT constant (varies by kernel version)
@@ -98,25 +96,6 @@ struct ip_sendnfmark_opts {
 
 /* Bits for the Netfilter marks */
 #define MARK_BYPASS   0x01000000
-// #define MARK_NOTRACK   0x02000000
-// #define MARK_DUPE      0x20000000
-
-/* This mark is used to indicate that a packet came in on one of the internal interfaces.
- * this is used by the https server to determined.
- * XXXXXX This information shouldn't be here, it is not related to netcap it is only here to
- * avoid confusion.  netcap should reserve 8 bits for its own marks and then allow for helper
- * applications to use unreserved bits. */
-// #define MARK_INSIDE    0x04000000
-#define MARK_DHCP_SERVER_ANTISUBSCRIBE 0x08000000
-
-/* This mark is used to release a TCP/UDP/ICMP session that was queued */
-#define MARK_LIBERATE  0x10000000
-
-/* Indicates a packet destined for the local host */
-#define MARK_LOCAL     0x00010000
-
-#define MARK_LOCAL_OFFSET     4
-#define MARK_LOCAL_MASK    0xF0
 
 #ifndef SOL_UDP /* missing from early kernels */
 #define SOL_UDP 17

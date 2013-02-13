@@ -252,14 +252,6 @@ public class TCPHook implements NetcapHook
             }
         }
 
-        protected void liberate()
-        {
-            if (logger.isDebugEnabled()) {
-                logger.debug("Liberating TCP Session: "+netcapTCPSession);
-            }
-            netcapTCPSession.liberate();
-        }
-
         protected void raze()
         {
             netcapTCPSession.raze();

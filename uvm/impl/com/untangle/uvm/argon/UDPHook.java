@@ -229,14 +229,6 @@ public class UDPHook implements NetcapHook
             }
         }
 
-        protected void liberate()
-        {
-	    if (logger.isDebugEnabled()) {
-		logger.debug("Liberating UDP Session: "+netcapUDPSession);
-	    }
-            netcapUDPSession.liberate();
-        }
-
         protected void raze()
         {
             try {

@@ -131,16 +131,6 @@ public abstract class ArgonHook implements Runnable
                 netcapSession.setServerIntf(serverIntf);
             }
 
-
-            /**
-             * we dont want to watch traffic that is destined back to the same interface
-             */
-            if (serverIntf == clientIntf) {
-                liberate();
-                raze();
-                return;
-            }
-
             /**
              * Create the initial tuples based on current information
              * Set the current serverSide = clientSide, the apps (like router) will change the tuple if it gets NATd or port forwarded
@@ -703,8 +693,6 @@ public abstract class ArgonHook implements Runnable
 
         return false;
     }
-
-    protected abstract void liberate();
 
     protected void printRelays( List<Relay> relayList )
     {

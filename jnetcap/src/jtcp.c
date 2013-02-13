@@ -129,17 +129,6 @@ JNIEXPORT void JNICALL JF_TCPSession( clientForwardReject )
 
 /*
  * Class:     com_untangle_jnetcap_NetcapTCPSession
- * Method:    liberate
- * Signature: (JI)I
- */
-JNIEXPORT void JNICALL JF_TCPSession( liberate )
-    ( JNIEnv *env, jclass _class, jlong session_ptr  )
-{
-    _tcp_callback( session_ptr, LIBERATE );
-}
-
-/*
- * Class:     com_untangle_jnetcap_NetcapTCPSession
  * Method:    clientSendIcmp
  * Signature: (JI)I
  */

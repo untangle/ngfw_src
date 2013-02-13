@@ -31,10 +31,7 @@ typedef enum {
     CLI_DROP,
     CLI_ICMP,
     /* Forward whatever rejection the server sent to the client */
-    CLI_FORWARD_REJECT,
-    /* do whatever is necessary to treat this session as if it was antisubscribed,
-     * this only works if the session is in SYN mode. */
-    LIBERATE
+    CLI_FORWARD_REJECT
 } netcap_callback_action_t;
 
 typedef enum {

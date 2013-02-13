@@ -138,11 +138,6 @@ int netcap_tcp_session_destroy(int if_lock,netcap_session_t* netcap_sess)
         switch ( msg->type ) {
         case TCP_MSG_SYN:
             if ( msg->pkt != NULL ) {
-                /* Release it from the queue */
-                /* this may drop one or two packets that are
-                 * liberated, but the connection is marked so when
-                 * the client sends another SYN, then that will make
-                 * it through untouched */
                 if ( netcap_pkt_action_raze( msg->pkt, NF_DROP ) < 0 ) {
                     errlog( ERR_CRITICAL, "netcap_set_verdict\n" );
                 }

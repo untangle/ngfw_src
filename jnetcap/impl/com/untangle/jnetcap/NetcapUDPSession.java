@@ -72,14 +72,6 @@ public class NetcapUDPSession extends NetcapSession
     }
 
     /**
-     * liberate the connection.
-     */
-    public void liberate()
-    {
-        liberate( pointer.value() );
-    }
-
-    /**
      * Complete a connection.
      */
     public void serverComplete( IPTraffic serverTraffic )
@@ -145,9 +137,6 @@ public class NetcapUDPSession extends NetcapSession
     
     /* This is for sending the data associated with a netcap_pkt_t structure */
     private static native int  send( long packetPointer );
-
-    /* Release a session that was previously captured */
-    private static native void liberate( long sessionPointer );
 
     /* Complete a session that was previously captured */
 	private static native void serverComplete( long sessionPointer );

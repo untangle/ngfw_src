@@ -69,8 +69,6 @@ extern int  _netcap_tcp_callback_srv_complete( netcap_session_t* netcap_sess, ne
 
 extern int  _netcap_tcp_callback_cli_reject  ( netcap_session_t* netcap_sess, netcap_callback_action_t action );
 
-extern int  _netcap_tcp_callback_liberate    ( netcap_session_t* netcap_sess, netcap_callback_action_t action );
-
 /* Initialization and cleanup routines */
 static int  _redirect_ports_open( void );
 static void _redirect_ports_close( void );
@@ -225,8 +223,6 @@ int  netcap_tcp_callback ( netcap_session_t* netcap_sess, netcap_callback_action
         /* fallthrough */
     case CLI_FORWARD_REJECT:
         return _netcap_tcp_callback_cli_reject( netcap_sess, action );
-    case LIBERATE:
-        return _netcap_tcp_callback_liberate( netcap_sess, action );
 
     default:
         return errlog( ERR_CRITICAL, "Unknown action: %i\n", action );

@@ -57,14 +57,6 @@ public class NetcapTCPSession extends NetcapSession
     }
 
     /**
-     * liberate the connection.
-     */
-    public void liberate()
-    {
-        liberate( pointer.value() );
-    }
-
-    /**
      * Drop the next few incoming client SYNs
      */
     public void clientDrop()
@@ -129,7 +121,6 @@ public class NetcapTCPSession extends NetcapSession
 
     private static native void clientComplete           ( long sessionPointer );
     private static native void clientReset              ( long sessionPointer );
-    private static native void liberate                 ( long sessionPointer );
     private static native void clientDrop               ( long sessionPointer );
     private static native void clientSendIcmp           ( long sessionPointer );
     private static native void clientForwardReject      ( long sessionPointer );

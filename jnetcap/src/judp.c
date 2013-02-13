@@ -415,17 +415,6 @@ JNIEXPORT jlong JNICALL JF_UDPSession( mailboxPointer )
 
 /*
  * Class:     com_untangle_jnetcap_NetcapUDPSession
- * Method:    liberate
- * Signature: (JI)I
- */
-JNIEXPORT void JNICALL JF_UDPSession( liberate )
-    ( JNIEnv *env, jclass _class, jlong session_ptr )
-{
-    _udp_callback( session_ptr, LIBERATE );
-}
-
-/*
- * Class:     com_untangle_jnetcap_NetcapUDPSession
  * Method:    setSessionMark
  * Signature: (JJI)I
  */

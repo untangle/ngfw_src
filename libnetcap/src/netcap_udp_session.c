@@ -16,12 +16,6 @@
 /* callback for a UDP session */
 static int _callback    ( netcap_session_t* netcap_sess, netcap_callback_action_t action );
 
-/* liberate a session from being caught by netcap */
-static int  _liberate   ( netcap_session_t* netcap_sess, netcap_callback_action_t action );
-
-/* Liberate an individual packet */
-static int _liberate_pkt( netcap_session_t* netcap_sess, netcap_pkt_t* pkt );
-
 
 int netcap_udp_session_init( netcap_session_t* netcap_sess, netcap_pkt_t* pkt ) 
 {
@@ -145,9 +139,6 @@ static int _callback ( netcap_session_t* netcap_sess, netcap_callback_action_t a
         /* XXXX Should do something here */
         errlog( ERR_WARNING, "_udp_rejection type %d is not implemented, ignoring\n", action );
         return 0;
-        
-    case LIBERATE:
-        return _liberate( netcap_sess, action );
 
     default:
         return errlog( ERR_CRITICAL, "Unknown action: %i\n", action );
@@ -156,52 +147,3 @@ static int _callback ( netcap_session_t* netcap_sess, netcap_callback_action_t a
     return errlogcons();
 }
 
-/* liberate a session from being caught by netcap */
-static int  _liberate( netcap_session_t* netcap_sess, netcap_callback_action_t action )
-{
-    netcap_pkt_t* pkt = NULL;
-    int count = 0;
-
-    /* Iterate through all of the packets grabbing them out of the mailbox */
-    while (( pkt = (netcap_pkt_t*)mailbox_try_get( &netcap_sess->cli_mb )) != NULL ) {
-        if ( _liberate_pkt( netcap_sess, pkt ) < 0 ) errlog( ERR_CRITICAL, "_liberate_pkt\n" );
-
-        /* It will only be dropped if there was an error in liberate
-         * that didn't clear out the packet_id */
-        netcap_pkt_action_raze( pkt, NF_DROP );
-        count++;
-    }
-    
-    /* If there weren't any packets liberated and the session was alive, then print an error message */
-    if (  netcap_sess->alive && ( 0 == count )) {
-        errlog( ERR_WARNING, "_liberated a session that contained no packet\n" );
-    }
-
-    return 0;
-}
-
-static int _liberate_pkt( netcap_session_t* netcap_sess, netcap_pkt_t* pkt )
-{
-    if ( pkt == NULL ) return errlogargs();
-
-    /* decrement the ttl on outgoing packets to discourage floods */
-    if ( pkt->ttl == 0 ) {
-        debug( 10, "UDP_SESSION: dropping packet with TTL of zero.\n" );
-    } else {
-        debug( 10, "UDP_SESSION: liberating a packet with TTL %d.\n", pkt->ttl );
-        
-        /* decrement the ttl */
-        pkt->ttl--;
-        
-        /* Set the mark on the packet this guarantees that it is connmarked */
-        pkt->is_marked = IS_MARKED_FORCE_FLAG;
-        pkt->nfmark    = MARK_BYPASS | MARK_LIBERATE | MARK_BYPASS ;
-       
-        /* XXX In order to make this work, the NATd address must be restored. XXXX */
-        if ( netcap_udp_send( (char*)pkt->data, pkt->data_len, pkt ) < 0 )  {
-            errlog( ERR_CRITICAL, "netcap_udp_send\n" );   
-        } 
-    }
-
-    return 0;
-}
