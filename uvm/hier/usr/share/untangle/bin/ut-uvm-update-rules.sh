@@ -82,8 +82,9 @@ insert_iptables_rules()
     ${IPTABLES} -A "${UVM_REDIRECT_TABLE}"  -t nat -i ${TUN_DEV} -t nat -p tcp -j REDIRECT --to-ports ${TCP_REDIRECT_PORTS} -m comment --comment 'Redirect reinjected packets to the untangle-vm'
 
     ## Guard the ports (this part uses : not -)
-    t_tcp_port_range=`echo ${TCP_REDIRECT_PORTS} | sed 's|-|:|'`
-    ${IPTABLES} -t filter -I INPUT 1 ! -i utun -p tcp --destination-port ${t_tcp_port_range} -m conntrack --ctstate NEW,INVALID -j DROP -m comment --comment 'Drop traffic for untangle-vm listen ports except for redirected traffic"'
+    ## FIXME move this to packet filter
+    # t_tcp_port_range=`echo ${TCP_REDIRECT_PORTS} | sed 's|-|:|'`
+    # ${IPTABLES} -t filter -I INPUT 1 ! -i utun -p tcp --destination-port ${t_tcp_port_range} -m conntrack --ctstate NEW,INVALID -j DROP -m comment --comment 'Drop traffic for untangle-vm listen ports except for redirected traffic"'
 
     # when packets are released from the queue they restart at the top of the table.
     # we set this mark on them before releasing and catch conmark them so we wont catch the rest of the session 
@@ -108,20 +109,16 @@ insert_iptables_rules()
 
     ## Just in case these settings were lost.
     ifconfig ${TUN_DEV} ${TUN_ADDR} netmask 255.255.255.0 
-
-    # This needs to be turned off when the interface is brought up
-    if [ -f /proc/sys/net/ipv4/conf/utun/rp_filter ] ; then
-        echo 0 > /proc/sys/net/ipv4/conf/utun/rp_filter
-    fi
+    ifconfig ${TUN_DEV} up
 
     if [ -f /proc/sys/net/ipv4/conf/${TUN_DEV}/rp_filter ]; then
-        ifconfig ${TUN_DEV} up
         echo 0 > /proc/sys/net/ipv4/conf/${TUN_DEV}/rp_filter
     else
         echo "[`date`] ${TUN_DEV} device not exist."
     fi
 
     ## Ignore any traffic that is on the utun interface
+    ## FIXME move to packet filter
     # ${IPTABLES} -t mangle -I packet-filter-rules 1 -i ${TUN_DEV} -j RETURN -m comment --comment "Allow all traffic on utun interface"
 
 }
