@@ -7,27 +7,12 @@
 UVM_PID="invalid"
 
 TUN_DEV=utun
-TUN_ADDR="192.0.2.43"
+TUN_ADDR="192.0.2.42"
 
 MASK_BYPASS=$((0x01000000))
-# MASK_NOTRACK=$((0x02000000))
-# MASK_REINJECT=$((0x20000000))
-# MASK_FIRST_ALIAS=$((0x10000000))
-# MASK_LOCAL=$((0x10000))
 
-MASK_SRC_INTERFACE=$((0xff))
 UVM_REDIRECT_TABLE="uvm-tcp-redirect"
-
-## Always set this just in case.
 TCP_REDIRECT_PORTS="9500-9627"
-## This is the port the UVM is serving HTTPs on the external interface.
-HTTPS_PORT="443"
-
-## This is the address everything in the UVM binds to.
-# UVM_BIND_ADDRESS="192.0.2.42"
-
-## UDP Session timeout
-UDP_SESSION_TIMEOUT=70
 
 iptables_debug()
 {
@@ -63,34 +48,6 @@ is_uvm_running()
     if [ ! -f "/proc/${UVM_PID}/cmdline" ]; then return ; fi
     
     grep -q com.untangle.uvm /proc/${UVM_PID}/cmdline 2>| /dev/null  && echo "true"
-}
-
-## Sets all proc variables to appropriate values
-# FIXME this should be in /usr/bin/uvm
-set_proc_vars() 
-{  
-    ## This setting should always be disabled.
-    # this needs to be turned off when the interface is brought up
-    if [ -f /proc/sys/net/ipv4/conf/${TUN_DEV}/rp_filter ] ; then
-        echo 0 > /proc/sys/net/ipv4/conf/${TUN_DEV}/rp_filter
-    fi
-
-    ## increment the UDP timeout to 60 seconds, kind of a hack to have this here.
-    if [ -f /proc/sys/net/netfilter/nf_conntrack_udp_timeout ]; then
-        echo ${UDP_SESSION_TIMEOUT} > /proc/sys/net/netfilter/nf_conntrack_udp_timeout
-    fi
-
-    if [ -f /proc/sys/net/netfilter/nf_conntrack_udp_timeout_stream ]; then
-        echo 180 > /proc/sys/net/netfilter/nf_conntrack_udp_timeout_stream
-    fi
-
-    if [ -f /proc/sys/net/ipv4/netfilter/ip_conntrack_udp_timeout ]; then
-        echo ${UDP_SESSION_TIMEOUT} > /proc/sys/net/ipv4/netfilter/ip_conntrack_udp_timeout
-    fi
-
-    if [ -f /proc/sys/net/ipv4/netfilter/ip_conntrack_udp_timeout_stream ]; then
-        echo 180 > /proc/sys/net/ipv4/netfilter/ip_conntrack_udp_timeout_stream
-    fi
 }
 
 insert_iptables_rules()
@@ -162,8 +119,12 @@ insert_iptables_rules()
     ${IPTABLES} -A POSTROUTING -t tune -m addrtype --dst-type unicast -p udp -j NFQUEUE -m comment --comment 'Queue Unicast UDP packets to the untange-vm'
 
     ## Just in case these settings were lost.
-    # ifconfig dummy0 ${UVM_BIND_ADDRESS} netmask 255.255.255.0 up
     ifconfig ${TUN_DEV} ${TUN_ADDR} netmask 255.255.255.0 
+
+    # This needs to be turned off when the interface is brought up
+    if [ -f /proc/sys/net/ipv4/conf/utun/rp_filter ] ; then
+        echo 0 > /proc/sys/net/ipv4/conf/utun/rp_filter
+    fi
 
     if [ -f /proc/sys/net/ipv4/conf/${TUN_DEV}/rp_filter ]; then
         ifconfig ${TUN_DEV} up
@@ -195,8 +156,6 @@ remove_iptables_rules()
     # Insert redirect table in beginning of PREROUTING
     ${IPTABLES} -D PREROUTING -t nat -i ${TUN_DEV} -p tcp -g "${UVM_REDIRECT_TABLE}" -m comment --comment 'Redirect utun traffic to untangle-vm' >/dev/null 2>&1
 }
-
-set_proc_vars
 
 if [ "`is_uvm_running`x" = "truex" ]; then
   echo "[`date`] The untangle-vm is running. Inserting iptables rules ... "

@@ -70,7 +70,7 @@ int netcap_virtual_interface_init( char *name )
         /* same ioctl but on a the temporary socket "fd" */
         if ( ioctl( fd, SIOCGIFFLAGS, &ifr ) < 0 ) return perrlog( "ioctl [SIOCGIFFLAGS]" );
 
-	/* bring the interface up */
+        /* bring the interface up */
         ifr.ifr_flags |= IFF_UP;
         ifr.ifr_flags |= IFF_RUNNING;
         debug( 2, "Bringing up the tun interface: %s, %#010x\n", tun_dev.name, ifr.ifr_flags );

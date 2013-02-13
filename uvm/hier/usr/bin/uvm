@@ -88,10 +88,6 @@ def prepareSystem():
     # load nfnetlink_queue (if not already loaded)
     os.system('/sbin/modprobe -q nfnetlink_queue');
 
-    # bring up dummy0
-    # Obsolete in 10.x REMOVE ME - FIXME
-    # os.system('/sbin/ifconfig dummy0 192.0.2.42 netmask 255.255.255.0 up');
-
     # remove ip_queue (if not already removed)
     os.system('/sbin/modprobe -q -r ip_queue');
 
@@ -103,6 +99,10 @@ def prepareSystem():
     procset('/proc/sys/net/ipv4/netfilter/ip_conntrack_tcp_loose',"0",False); 
 
     # Optional proc settings
+    procset('/proc/sys/net/netfilter/nf_conntrack_udp_timeout_stream',"180",True)
+    procset('/proc/sys/net/ipv4/netfilter/ip_conntrack_udp_timeout_stream',"180",True)
+    procset('/proc/sys/net/netfilter/nf_conntrack_udp_timeout',"70",True);
+    procset('/proc/sys/net/ipv4/netfilter/ip_conntrack_udp_timeout',"70",True);
     procset('/proc/sys/vm/swappiness',"60",True);
     procset('/proc/sys/net/ipv4/tcp_synack_retries',"0",True);
     procset('/proc/sys/net/ipv4/tcp_syncookies',"1",True);
