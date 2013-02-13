@@ -789,13 +789,11 @@ if (!Ung.hasResource["Ung.Network"]) {
                     dataIndex: 'description',
                     flex:1
                 }, {
-                    xtype:'checkcolumn',
                     header: this.i18n._("New Destination"),
                     dataIndex: 'newDestination',
                     fixed: true,
-                    width:55
+                    width:150
                 }, {
-                    xtype:'checkcolumn',
                     header: this.i18n._("New Port"),
                     dataIndex: 'newPort',
                     fixed: true,
@@ -916,7 +914,7 @@ if (!Ung.hasResource["Ung.Network"]) {
                     name: "newPort",
                     allowBlank: false,
                     dataIndex: "newPort",
-                    fieldLabel: this.i18n._("New Port"),
+                    fieldLabel: this.i18n._("New Port (optional)"),
                     vtype: 'port'
                 }]
             });
