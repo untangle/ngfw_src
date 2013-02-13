@@ -26,6 +26,8 @@ public class NewNetworkManagerImpl implements NewNetworkManager
 {
     private final Logger logger = Logger.getLogger(this.getClass());
 
+    private final String updateRulesScript = System.getProperty("uvm.bin.dir") + "/ut-uvm-update-rules.sh";
+
     private final String settingsFilename = System.getProperty("uvm.settings.dir") + "/untangle-vm/" + "network";
     private final String settingsFilenameBackup = "/etc/untangle-netd/network";
     
@@ -47,7 +49,13 @@ public class NewNetworkManagerImpl implements NewNetworkManager
          */
         if ( readSettings == null && UvmContextFactory.context().isDevel() ) {
             try {
+                // check for "backup" settings in /etc
                 readSettings = settingsManager.load( NetworkSettings.class, this.settingsFilenameBackup );
+                
+                // check for "backup" settings in /usr/share/untangle/settings/
+                if (readSettings == null)
+                    readSettings = settingsManager.load( NetworkSettings.class, "/usr/share/untangle/settings/untangle-vm/network" );
+                    
                 if (readSettings != null)
                     settingsManager.save(NetworkSettings.class, this.settingsFilename, readSettings);
                     
@@ -117,6 +125,24 @@ public class NewNetworkManagerImpl implements NewNetworkManager
         
     }
 
+    /**
+     * Insert the iptables rules for capturing traffic
+     */
+    public void insertRules( )
+    {
+        int retCode = UvmContextFactory.context().execManager().execResult( "ln -fs " + this.updateRulesScript + " /etc/untangle-netd/iptables-rules.d/800-uvm" );
+        if ( retCode < 0 )
+            logger.warn("Unable to link iptables hook to update-rules script");
+        
+        ExecManagerResult result = UvmContextFactory.context().execManager().exec( this.updateRulesScript );
+        try {
+            String lines[] = result.getOutput().split("\\r?\\n");
+            logger.info("insert rules: ");
+            for ( String line : lines )
+                logger.info("insert rules: " + line);
+        } catch (Exception e) {}
+    }
+    
     private synchronized void _setSettings( NetworkSettings newSettings )
     {
         /**

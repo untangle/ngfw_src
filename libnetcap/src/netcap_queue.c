@@ -445,10 +445,10 @@ static int _nf_callback( struct nfq_q_handle *qh, struct nfgenmsg *nfmsg, struct
     pkt->proto = ip_header->protocol;
     pkt->nfmark  = nfq_get_nfmark( nfa );
 
-    if ( pkt->nfmark & (MARK_DUPE | MARK_ANTISUB)){
+    if ( pkt->nfmark & MARK_BYPASS){
       netcap_set_verdict(pkt->packet_id, NF_DROP, NULL, 0);
       pkt->packet_id = 0;
-      return errlog( ERR_WARNING, "Queued a REINJECTED or ANTISUBSCRIBED packet\n");
+      return errlog( ERR_WARNING, "Queued a bypassed packet\n");
     }
 
     if ( netcap_interface_mark_to_cli_intf( pkt->nfmark, &pkt->src_intf ) < 0 ) {

@@ -195,7 +195,7 @@ static int _liberate_pkt( netcap_session_t* netcap_sess, netcap_pkt_t* pkt )
         
         /* Set the mark on the packet this guarantees that it is connmarked */
         pkt->is_marked = IS_MARKED_FORCE_FLAG;
-        pkt->nfmark    = MARK_ANTISUB | MARK_LIBERATE | MARK_ANTISUB | MARK_DUPE;
+        pkt->nfmark    = MARK_BYPASS | MARK_LIBERATE | MARK_BYPASS ;
        
         /* XXX In order to make this work, the NATd address must be restored. XXXX */
         if ( netcap_udp_send( (char*)pkt->data, pkt->data_len, pkt ) < 0 )  {

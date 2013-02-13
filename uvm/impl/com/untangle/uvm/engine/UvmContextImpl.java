@@ -708,6 +708,7 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
 
         hideUpgradeSplash();
 
+        newNetworkManager.insertRules();
         networkManager.refreshNetworkConfig();
     }
 

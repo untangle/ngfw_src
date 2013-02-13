@@ -420,8 +420,7 @@ static int  _retrieve_and_reject( netcap_session_t* netcap_sess, netcap_callback
              * packet, since the verdict is set with the mark */
             drop_pkt = 0x0;
             /* to liberate just release the packet with the appropriate mark */
-            if ( netcap_set_verdict_mark( msg->pkt->packet_id, NF_REPEAT, NULL, 0, 1, 
-                                          msg->pkt->nfmark | MARK_ANTISUB | MARK_DUPE ) < 0 ) { 
+            if ( netcap_set_verdict_mark( msg->pkt->packet_id, NF_REPEAT, NULL, 0, 1, msg->pkt->nfmark | MARK_BYPASS ) < 0 ) { 
                 ret = errlog( ERR_CRITICAL, "netcap_set_verdict_mark\n" ); 
             }
             break;

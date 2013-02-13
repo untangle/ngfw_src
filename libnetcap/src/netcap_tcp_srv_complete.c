@@ -105,7 +105,7 @@ static int  _netcap_tcp_setsockopt_srv ( int sock )
     
     struct ip_sendnfmark_opts nfmark = {
         .on = 1,
-        .mark = MARK_NOTRACK | MARK_ANTISUB
+        .mark = MARK_BYPASS
     };
     
     if ( IP_TRANSPARENT_VALUE() != 0 ) {

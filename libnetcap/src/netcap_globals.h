@@ -97,16 +97,16 @@ struct ip_sendnfmark_opts {
 };
 
 /* Bits for the Netfilter marks */
-#define MARK_ANTISUB   0x01000000
-#define MARK_NOTRACK   0x02000000
-#define MARK_DUPE      0x20000000
+#define MARK_BYPASS   0x01000000
+// #define MARK_NOTRACK   0x02000000
+// #define MARK_DUPE      0x20000000
 
 /* This mark is used to indicate that a packet came in on one of the internal interfaces.
  * this is used by the https server to determined.
  * XXXXXX This information shouldn't be here, it is not related to netcap it is only here to
  * avoid confusion.  netcap should reserve 8 bits for its own marks and then allow for helper
  * applications to use unreserved bits. */
-#define MARK_INSIDE    0x04000000
+// #define MARK_INSIDE    0x04000000
 #define MARK_DHCP_SERVER_ANTISUBSCRIBE 0x08000000
 
 /* This mark is used to release a TCP/UDP/ICMP session that was queued */

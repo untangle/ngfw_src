@@ -64,10 +64,9 @@ def flushConntrack():
 # Tells alpaca to rewrite the iptables rules
 #
 def resetIptables():
-    ## Rewrite all iptables rules
-    ## Would it be enough just to re-run uvm iptables script? FIXME
+    ## Remove UVM iptables rules
     # debug("resetIptables()")
-    os.system('/usr/share/untangle-netd/bin/generate-iptables-rules.sh'); # uvmlogger
+    os.system('@PREFIX@/usr/share/untangle/bin/ut-uvm-update-rules.sh'); 
 
 #
 # This prepares the system for a running untangle-vm
@@ -90,7 +89,8 @@ def prepareSystem():
     os.system('/sbin/modprobe -q nfnetlink_queue');
 
     # bring up dummy0
-    os.system('/sbin/ifconfig dummy0 192.0.2.42 netmask 255.255.255.0 up');
+    # Obsolete in 10.x REMOVE ME - FIXME
+    # os.system('/sbin/ifconfig dummy0 192.0.2.42 netmask 255.255.255.0 up');
 
     # remove ip_queue (if not already removed)
     os.system('/sbin/modprobe -q -r ip_queue');

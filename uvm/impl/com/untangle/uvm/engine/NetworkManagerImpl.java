@@ -141,54 +141,7 @@ public class NetworkManagerImpl implements NetworkManager
 
     public InterfaceConfiguration setSetupSettings( InterfaceConfiguration wan ) throws Exception
     {
-        /* Send the call onto the alpaca */
-
-        JSONObject jsonObject = new JSONObject();
-        String method = null;
-        
-        try {
-            if ( InterfaceConfiguration.CONFIG_PPPOE.equals(wan.getConfigType()) ) {
-                /* PPPoE Setup */
-                method = "wizard_external_interface_pppoe";
-                jsonObject.put( "username", wan.getPPPoEUsername());
-                jsonObject.put( "password", wan.getPPPoEPassword());
-            } else if ( InterfaceConfiguration.CONFIG_DYNAMIC.equals(wan.getConfigType()) ) {
-                /* Dynamic address */
-                method = "wizard_external_interface_dynamic";
-            } else if ( InterfaceConfiguration.CONFIG_STATIC.equals(wan.getConfigType()) ) {
-                /* Must be a static address */
-                jsonObject.put( "ip", wan.getPrimaryAddress().getNetwork().toString());
-                jsonObject.put( "netmask", wan.getPrimaryAddress().getNetmask().toString());
-                jsonObject.put( "default_gateway", wan.getGateway().toString().replace("/",""));
-                jsonObject.put( "dns_1", wan.getDns1().toString().replace("/",""));
-                InetAddress dns2 = wan.getDns2();
-                if ( dns2 != null ) jsonObject.put( "dns_2", dns2.toString());
-                method = "wizard_external_interface_static";
-            } else {
-                throw new Exception( "Unknown config type: " + wan.getConfigType());
-            }
-        } catch ( JSONException e ) {
-            throw new Exception( "Unable to build JSON Object", e );
-        }
-
-        /* Make a synchronous request */
-        Exception e = retryAlpacaCall( method, jsonObject );
-        if ( e != null ) {
-            logger.warn( "Unable to configure the external interface.", e );
-            throw new Exception( "Unable to configure the external interface.", e );
-        }
-
-        /**
-         * now force a write of netConfig.js
-         * and re-read it
-         */
-        e = retryAlpacaCall( "write_files", null );
-        if ( e != null ) {
-            logger.warn( "Unable to write files.", e );
-        }
-        refreshNetworkConfig();
-
-        return getNetworkConfiguration().findFirstWAN();
+        return null;
     }
 
     /**
@@ -255,36 +208,12 @@ public class NetworkManagerImpl implements NetworkManager
     public void setWizardNatEnabled( IPAddress address, IPAddress netmask, boolean enableDhcpServer )
         throws Exception
     {
-        logger.debug( "enabling nat as requested by setup wizard: " + address + "/" + netmask );
-        logger.debug( "use-dhcp: " + enableDhcpServer );
-        
-        /* Make a synchronous request */
-        JSONObject jsonObject  = new JSONObject();
-        try {
-            jsonObject.put( "ip", address.toString());
-            jsonObject.put( "netmask", netmask.toString());
-            jsonObject.put( "is_dhcp_enabled", enableDhcpServer );
-        } catch ( JSONException e ) {
-            throw new Exception( "Unable to build JSON Object", e );
-        }
-        Exception e = retryAlpacaCall( "wizard_internal_interface_nat", jsonObject );
-
-        if ( e != null ) {
-            logger.warn( "unable to setup system for NAT in wizard.", e );
-            throw new Exception( "Unable to enable nat settings.", e );
-        }
+        // FIXME
     }
 
     public void setWizardNatDisabled() throws Exception
     {
-        logger.debug( "disabling nat in setup wizard: " );
-
-        /* Make a synchronous request */
-        Exception e = retryAlpacaCall( "wizard_internal_interface_bridge", null );
-        if ( e != null ) {
-            logger.warn( "Unable to disable NAT in wizard", e );
-            throw new Exception( "Unable to disable NAT.", e );
-        }
+        // FIXME
     }
 
     public Boolean isQosEnabled()
@@ -390,8 +319,6 @@ public class NetworkManagerImpl implements NetworkManager
         } catch ( Exception e ) {
             logger.error( "Exception in a listener", e );
         }
-
-        refreshIptablesRules();
 
         logger.info("Refreshed  Network Configuration.");
     }
@@ -543,57 +470,8 @@ public class NetworkManagerImpl implements NetworkManager
         this.networkListeners.remove( networkListener );
     }
 
-    public synchronized void refreshIptablesRules()
-    {
-    }
-
     private void initPriv() throws Exception
     {
-    }
-
-    /* Retry a call to the alpaca in case it was restarted. */
-    private Exception retryAlpacaCall( String method, JSONObject jsonObject )
-    {
-        /* Make a synchronous request */
-        for ( int c = 0 ; c < ALPACA_RETRY_COUNT ; c++ ) {
-            try {
-                if ( c != 0 ) {
-                    logger.warn( "sleeping then, retrying connection to alpaca." );
-                    Thread.sleep( ALPACA_RETRY_DELAY_MS );
-                }
-
-                JsonClient.getInstance().callAlpaca( XMLRPCUtil.CONTROLLER_UVM, method, jsonObject );
-
-                return null;
-            } catch ( JsonClient.ConnectionException e ) {
-                Throwable cause = e.getCause();
-                
-                if ( cause == null ) {
-                    return e;
-                }
-                
-                if ( cause instanceof ConnectTimeoutException ) {
-                    logger.warn( "timeout communicating with the alpaca, trying again." );
-                    continue;
-                }
-                
-                if ( cause instanceof ConnectException ) {
-                    logger.warn( "unable to connect to alpaca, sleeping and trying again.");
-                    try {
-                        Thread.sleep(1000);
-                    } catch ( InterruptedException ie ) {
-                        logger.warn( "Interrupted while retrying, continuing");
-                    }
-                    continue;
-                }
-                
-                return e;
-            } catch(Exception e) {
-                return e;
-            }            
-        }
-
-        return null;
     }
 
     /* Load the network configuration */

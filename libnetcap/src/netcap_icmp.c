@@ -119,7 +119,7 @@ static int  _netcap_icmp_send( char *data, int data_len, netcap_pkt_t* pkt, int 
     struct sockaddr_in dst;
     char               control[4096];
     int                ret;
-    u_int              nfmark = ( MARK_ANTISUB | MARK_NOTRACK | (pkt->is_marked ? pkt->nfmark : 0 )); 
+    u_int              nfmark = ( MARK_BYPASS | (pkt->is_marked ? pkt->nfmark : 0 )); 
     /* mark is  antisub + notrack + whatever packet marks are specified */
 
     /* if the caller uses the force flag, then override the default bits of the mark */
