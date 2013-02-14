@@ -194,6 +194,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
                         "passwordHashBase64": null
                     },
                     data: this.getAdminSettings().users.list,
+                    paginated: false,
                     // the list of fields; we need all as we get/set all records once
                     fields: [{
                         name: 'username'

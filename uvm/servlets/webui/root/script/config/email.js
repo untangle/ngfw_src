@@ -449,6 +449,7 @@ if (!Ung.hasResource["Ung.Email"]) {
                 title: this.i18n._('Global'),
                 hasEdit: false,
                 settingsCmp: this,
+                paginated: false,
                 anchor: "100% 48%",
                 style: "margin-bottom:10px;",
                 emptyRow: {
