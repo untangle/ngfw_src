@@ -101,6 +101,10 @@ insert_iptables_rules()
     # t_tcp_port_range=`echo ${TCP_REDIRECT_PORTS} | sed 's|-|:|'`
     # ${IPTABLES} -t filter -I INPUT 1 ! -i utun -p tcp --destination-port ${t_tcp_port_range} -m conntrack --ctstate NEW,INVALID -j DROP -m comment --comment 'Drop traffic for untangle-vm listen ports except for redirected traffic"'
 
+    # Ignore loopback traffic
+    ${IPTABLES} -A queue-to-uvm -t tune -i lo -j RETURN -m comment --comment 'Do not queue loopback traffic'
+    ${IPTABLES} -A queue-to-uvm -t tune -o lo -j RETURN -m comment --comment 'Do not queue loopback traffic'
+
     # Ignore traffic that is related to a session we are not watching.
     # If its "related" according to iptables, then original session must have been bypassed
     ${IPTABLES} -A queue-to-uvm -t tune -m conntrack --ctstate RELATED  -j RETURN -m comment --comment 'Do not queue (bypass) sessions related to other bypassed sessions'
