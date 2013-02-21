@@ -292,6 +292,10 @@ public class NewNetworkManagerImpl implements NewNetworkManager
         for (BypassRule rule : networkSettings.getBypassRules()) {
             rule.setRuleId(++idx);
         }
+        idx = 0;
+        for (StaticRoute rule : networkSettings.getStaticRoutes()) {
+            rule.setRuleId(++idx);
+        }
 
         /**
          * Reset all symbolic devs to system devs

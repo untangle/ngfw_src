@@ -25,11 +25,11 @@ public class StaticRoute implements JSONString, Serializable
 {
     private final Logger logger = Logger.getLogger(getClass());
     
-    private Integer ruleId;
-    private String description; 
-    private InetAddress network;
-    private Integer prefix; /* 0-32 */
-    private String nextHop; /* Can store the dev name "eth1" or IP "1.2.3.4" */
+    private Integer ruleId = null;
+    private String description = null; 
+    private InetAddress network = null;
+    private Integer prefix = null ; /* 0-32 */
+    private String nextHop = null; /* Can store the dev name "eth1" or IP "1.2.3.4" */
     
     public StaticRoute() {}
 
@@ -46,10 +46,10 @@ public class StaticRoute implements JSONString, Serializable
     public void setDescription( String description ) { this.description = description; }
 
     public InetAddress getNetwork() { return network; }
-    public void setNetwork( InetAddress network ) { this.network = network; }
+    public void setNetwork( InetAddress network ) { this.network = network; this.recalculateNetwork();}
 
     public Integer getPrefix() { return prefix; }
-    public void setPrefix( Integer prefix ) { this.prefix = prefix; }
+    public void setPrefix( Integer prefix ) { this.prefix = prefix; this.recalculateNetwork(); }
     
     public String getNextHop() { return nextHop; }
     public void setNextHop( String nextHop ) { this.nextHop = nextHop; }
@@ -69,5 +69,25 @@ public class StaticRoute implements JSONString, Serializable
         JSONObject jO = new JSONObject(this);
         return jO.toString();
     }
+
+    private void recalculateNetwork()
+    {
+        if (this.network == null)
+            return;
+        
+        try {
+            logger.warn( "ADJUSTING NETWORK: " + this.network );
+            
+            IPMaskedAddress maskedAddr = new IPMaskedAddress( this.network, this.prefix );
+            this.network = maskedAddr.getMaskedAddr();
+
+            logger.warn( "ADJUSTED  NETWORK: " + this.network );
+
+        } catch (Exception e) {
+            logger.warn("Exception: ",e);
+        }
+        
+    }
+    
 }
 

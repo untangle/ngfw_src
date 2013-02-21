@@ -12,6 +12,7 @@ import org.apache.log4j.Logger;
 
 /**
  * The class <code>IPMaskedAddress</code> represents a masked IP address.
+ * TODO: change mask to prefixLength
  */
 @SuppressWarnings("serial")
 public class IPMaskedAddress implements Serializable, Comparable<IPMaskedAddress>
@@ -113,13 +114,24 @@ public class IPMaskedAddress implements Serializable, Comparable<IPMaskedAddress
      * Creates a new <code>IPMaskedAddress</code> given the the address and netmask
      *
      * @param addr a <code>String</code> of the form addr
-     * @param mask a <code>String</code> of the form mask
+     * @param numbits an <code>int</code> of the form maskbits
+     */
+    public IPMaskedAddress( InetAddress addr, int numbits )
+    {
+        this(addr.getHostAddress(),numbits);
+    }
+
+    /**
+     * Creates a new <code>IPMaskedAddress</code> given the the address and netmask
+     *
+     * @param addr a <code>String</code> of the form addr
+     * @param mask a <code>String</code> of the 
      */
     public IPMaskedAddress( InetAddress addr, InetAddress mask )
     {
         this(addr.getHostAddress(),mask.getHostAddress());
     }
-
+    
     /**
      * Creates a new <code>IPMaskedAddress</code> given the the address with a
      * mask of 255.255.255.255
@@ -142,6 +154,34 @@ public class IPMaskedAddress implements Serializable, Comparable<IPMaskedAddress
         return mask;
     }
 
+    /**
+     * This bitwise ANDs the mask with addr and returns the result:
+     * Example getMaskedAddr of 192.168.1.1 and 255.255.0.0 returns 192.168.0.0
+     */
+    public InetAddress getMaskedAddr()
+    {
+        byte[] addr = textToNumericFormat( this.addr );
+        byte[] mask = textToNumericFormat( this.mask );
+        if (addr.length != mask.length) {
+            logger.warn("Invalid addr/mask: " + this.addr + "/" + this.mask);
+            return null;
+        }
+
+        byte[] result = addr;
+        for ( int i = 0; i < addr.length ; i++ ) {
+            result[i] = (byte)( addr[i] & mask[i] );
+        }
+
+
+        try {
+            InetAddress a = InetAddress.getByAddress( result );
+            return a;
+        } catch ( Exception e ) {
+            logger.warn( "Exception: ", e );
+            return null;
+        }
+    }
+    
     public int maskNumBits()
     {
         return maskToNumbits(mask);
@@ -160,10 +200,10 @@ public class IPMaskedAddress implements Serializable, Comparable<IPMaskedAddress
     public InetAddress inetAddress()
     {
         try {
-            return InetAddress.getByAddress(textToNumericFormat(addr));
-        } catch (UnknownHostException x) {
-            // impossible.
-            throw new Error();
+            return InetAddress.getByAddress( textToNumericFormat(addr) );
+        } catch ( Exception e ) {
+            logger.warn( "Exception: ", e );
+            return null;
         }
     }
 
@@ -239,8 +279,7 @@ public class IPMaskedAddress implements Serializable, Comparable<IPMaskedAddress
             return true;
         if (isNode())
             return false;
-        return intersects(textToNumericFormat(addr), maskNumBits(),
-                          testAddr.getAddress(), 32);
+        return intersects(textToNumericFormat(addr), maskNumBits(), testAddr.getAddress(), 32);
     }
 
     private static boolean intersects(byte[] addr1, int maskBits1, byte[] addr2, int maskBits2)
@@ -462,53 +501,63 @@ public class IPMaskedAddress implements Serializable, Comparable<IPMaskedAddress
 
     static final int INADDRSZ = 4;
 
-    // IPV4 only right now.  Get rid of this. XXX
+    /**
+     * FIXME IPv6 support
+     */
     static byte[] textToNumericFormat(String src)
     {
-        if (src.length() == 0) {
+        try {
+            InetAddress addr = InetAddress.getByName(src);
+            return addr.getAddress();
+        } catch (Exception e) {
+            logger.warn("textToNumericFormat Exception: ", e);
             return null;
         }
 
-        int octets;
-        char ch;
-        byte[] dst = new byte[INADDRSZ];
-        char[] srcb = src.toCharArray();
-        boolean saw_digit = false;
+//         if (src.length() == 0) {
+//             return null;
+//         }
 
-        octets = 0;
-        int i = 0;
-        int cur = 0;
-        while (i < srcb.length) {
-            ch = srcb[i++];
-            if (Character.isDigit(ch)) {
-                // note that Java byte is signed, so need to convert to int
-                int sum = (dst[cur] & 0xff)*10 + (Character.digit(ch, 10) & 0xff);
+//         int octets;
+//         char ch;
+//         byte[] dst = new byte[INADDRSZ];
+//         char[] srcb = src.toCharArray();
+//         boolean saw_digit = false;
 
-                if (sum > 255) {
-                    return null;
-                }
+//         octets = 0;
+//         int i = 0;
+//         int cur = 0;
+//         while (i < srcb.length) {
+//             ch = srcb[i++];
+//             if (Character.isDigit(ch)) {
+//                 // note that Java byte is signed, so need to convert to int
+//                 int sum = (dst[cur] & 0xff)*10 + (Character.digit(ch, 10) & 0xff);
 
-                dst[cur] = (byte)(sum & 0xff);
-                if (! saw_digit) {
-                    if (++octets > INADDRSZ) {
-                        return null;
-                    }
-                    saw_digit = true;
-                }
-            } else if (ch == '.' && saw_digit) {
-                if (octets == INADDRSZ) {
-                    return null;
-                }
-                cur++;
-                dst[cur] = 0;
-                saw_digit = false;
-            } else
-                return null;
-        }
-        if (octets < INADDRSZ) {
-            return null;
-        }
-        return dst;
+//                 if (sum > 255) {
+//                     return null;
+//                 }
+
+//                 dst[cur] = (byte)(sum & 0xff);
+//                 if (! saw_digit) {
+//                     if (++octets > INADDRSZ) {
+//                         return null;
+//                     }
+//                     saw_digit = true;
+//                 }
+//             } else if (ch == '.' && saw_digit) {
+//                 if (octets == INADDRSZ) {
+//                     return null;
+//                 }
+//                 cur++;
+//                 dst[cur] = 0;
+//                 saw_digit = false;
+//             } else
+//                 return null;
+//         }
+//         if (octets < INADDRSZ) {
+//             return null;
+//         }
+//         return dst;
     }
 
     static String numericToTextFormat(byte[] src)
