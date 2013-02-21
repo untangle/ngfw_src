@@ -560,6 +560,7 @@ if (!Ung.hasResource["Ung.Network"]) {
         gridBypassRules: null,
         gridStaticRoutes: null,
         panelInterfaces: null,
+        panelHostName: null,
         panelPortForwardRules: null,
         panelNatRules: null,
         panelRoutes: null,
@@ -577,13 +578,14 @@ if (!Ung.hasResource["Ung.Network"]) {
             
             // builds the tabs
             this.buildInterfaces();
+            this.buildHostName();
             this.buildPortForwardRules();
             this.buildNatRules();
             this.buildBypassRules();
             this.buildRoutes();
             
             // builds the tab panel with the tabs
-            var pageTabs = [ this.panelInterfaces, this.panelPortForwardRules, this.panelNatRules, this.panelBypassRules, this.panelRoutes ];
+            var pageTabs = [ this.panelInterfaces, this.panelHostName, this.panelPortForwardRules, this.panelNatRules, this.panelBypassRules, this.panelRoutes ];
             this.buildTabPanel(pageTabs);
             this.callParent(arguments);
         },
@@ -731,6 +733,111 @@ if (!Ung.hasResource["Ung.Network"]) {
                     title: this.i18n._('Note'),
                     html: this.i18n._(" <b>Interfaces</b> are legit. Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.")
                 }, this.gridInterfaces]
+            });
+        },
+        // HostName Panel
+        buildHostName: function() {
+            this.panelHostName = Ext.create('Ext.panel.Panel',{
+                name: 'panelHostName',
+                helpSource: 'network_interfaces',
+                parentId: this.getId(),
+                title: this.i18n._('Hostname'),
+                layout: 'anchor',
+                cls: 'ung-panel',
+                items: [{
+                    xtype: 'fieldset',
+                    cls: 'description',
+                    title: this.i18n._('Hostname'),
+                    items: [{
+                        xtype: "textfield",
+                        fieldLabel: this.i18n._("Hostname"),
+                        boxLabel: this.i18n._("(eg: hostname.example.com)"),
+                        name: 'HostName',
+                        value: this.settings.hostName,
+                        listeners: {
+                            "change": {
+                                fn: Ext.bind(function(elem, newValue) {
+                                    this.settings.hostName = newValue;
+                                }, this)
+                            }
+                        }
+                    },{
+                        xtype: "textfield",
+                        fieldLabel: this.i18n._("Domain Name"),
+                        boxLabel: this.i18n._("(eg: example.com)"),
+                        name: 'DomainName',
+                        value: this.settings.domainName,
+                        listeners: {
+                            "change": {
+                                fn: Ext.bind(function(elem, newValue) {
+                                    this.settings.domainName = newValue;
+                                }, this)
+                            }
+                        }
+                    }]
+                }, {
+                    xtype: 'fieldset',
+                    cls: 'description',
+                    title: this.i18n._('Dynmaic DNS Service Configuration'),
+                    items: [{
+                        xtype: "checkbox",
+                        fieldLabel: this.i18n._("Enabled"),
+                        checked: this.settings.dynamicDnsServiceEnabled,
+                        listeners: {
+                            "change": {
+                                fn: Ext.bind(function(elem, newValue) {
+                                    this.settings.dynamicDnsServiceEnabled = newValue;
+                                }, this)
+                            }
+                        }
+                    }, {
+                        xtype: "combo",
+                        fieldLabel: this.i18n._("Service"),
+                        value: this.settings.dynamicDnsServiceName,
+                        store: [['easydns','EasyDNS'], ['zoneedit','ZoneEdit'], ['dyndns','DynDNS'],['namecheap','Namecheap'],['dslreports','DSL-Reports'],['dnspark','DNSPark']],
+                        listeners: {
+                            "change": {
+                                fn: Ext.bind(function(elem, newValue) {
+                                    this.settings.dynamicDnsServiceName = newValue;
+                                }, this)
+                            }
+                        }
+                    }, {
+                        xtype: "textfield",
+                        fieldLabel: this.i18n._("Username"),
+                        value: this.settings.dynamicDnsServiceUsername,
+                        listeners: {
+                            "change": {
+                                fn: Ext.bind(function(elem, newValue) {
+                                    this.settings.dynamicDnsServiceUsername = newValue;
+                                }, this)
+                            }
+                        }
+                    }, {
+                        xtype: "textfield",
+                        fieldLabel: this.i18n._("Password"),
+                        value: this.settings.dynamicDnsServicePassword,
+                        inputType: 'password',
+                        listeners: {
+                            "change": {
+                                fn: Ext.bind(function(elem, newValue) {
+                                    this.settings.dynamicDnsServicePassword = newValue;
+                                }, this)
+                            }
+                        }
+                    }, {
+                        xtype: "textfield",
+                        fieldLabel: this.i18n._("Hostname(s)"),
+                        value: this.settings.dynamicDnsServiceHostnames,
+                        listeners: {
+                            "change": {
+                                fn: Ext.bind(function(elem, newValue) {
+                                    this.settings.dynamicDnsServiceHostnames = newValue;
+                                }, this)
+                            }
+                        }
+                    }]
+                }]
             });
         },
         // PortForwardRules Panel

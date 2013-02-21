@@ -27,6 +27,15 @@ public class NetworkSettings implements Serializable, JSONString
     private List<BypassRule> bypassRules = null;
     private List<StaticRoute> staticRoutes = null;
 
+    private String hostName;
+    private String domainName;
+
+    private boolean dynamicDnsServiceEnabled = false;
+    private String  dynamicDnsServiceName = null;
+    private String  dynamicDnsServiceUsername = null;
+    private String  dynamicDnsServicePassword = null;
+    private String  dynamicDnsServiceHostnames = null;
+
     public NetworkSettings() { }
 
     public List<InterfaceSettings> getInterfaces() { return this.interfaces; }
@@ -43,6 +52,27 @@ public class NetworkSettings implements Serializable, JSONString
 
     public List<StaticRoute> getStaticRoutes() { return this.staticRoutes; }
     public void setStaticRoutes( List<StaticRoute> staticRoutes ) { this.staticRoutes = staticRoutes; }
+
+    public String getHostName() { return this.hostName; }
+    public void setHostName( String newValue ) { this.hostName = newValue; }
+
+    public String getDomainName() { return this.domainName; }
+    public void setDomainName( String newValue ) { this.domainName = newValue; }
+
+    public boolean getDynamicDnsServiceEnabled() { return this.dynamicDnsServiceEnabled; }
+    public void setDynamicDnsServiceEnabled( boolean newValue ) { this.dynamicDnsServiceEnabled = newValue; }
+
+    public String getDynamicDnsServiceName() { return this.dynamicDnsServiceName; }
+    public void setDynamicDnsServiceName( String newValue ) { this.dynamicDnsServiceName = newValue; }
+
+    public String getDynamicDnsServiceUsername() { return this.dynamicDnsServiceUsername; }
+    public void setDynamicDnsServiceUsername( String newValue ) { this.dynamicDnsServiceUsername = newValue; }
+
+    public String getDynamicDnsServicePassword() { return this.dynamicDnsServicePassword; }
+    public void setDynamicDnsServicePassword( String newValue ) { this.dynamicDnsServicePassword = newValue; }
+    
+    public String getDynamicDnsServiceHostnames() { return this.dynamicDnsServiceHostnames; }
+    public void setDynamicDnsServiceHostnames( String newValue ) { this.dynamicDnsServiceHostnames = newValue; }
     
     public String toJSONString()
     {

@@ -190,9 +190,11 @@ public class NewNetworkManagerImpl implements NewNetworkManager
     {
         NetworkSettings newSettings = new NetworkSettings();
 
+        newSettings.setHostName("hostname.example.com");
+        newSettings.setDomainName("example.com");
+                                
         ExecManagerResult result = UvmContextFactory.context().execManager().exec( "find /sys/class/net -type l -name 'eth*' | sed -e 's|/sys/class/net/||' | sort " );
         String devices[] = result.getOutput().split("\\r?\\n");
-
         
         try {
             LinkedList<InterfaceSettings> interfaces = new LinkedList<InterfaceSettings>();
