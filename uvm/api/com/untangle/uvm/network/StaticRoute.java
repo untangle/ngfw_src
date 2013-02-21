@@ -27,12 +27,13 @@ public class StaticRoute implements JSONString, Serializable
     
     private Integer ruleId;
     private String description; 
-    private IPMaskedAddress network;
+    private InetAddress network;
+    private Integer prefix; /* 0-32 */
     private String nextHop; /* Can store the dev name "eth1" or IP "1.2.3.4" */
     
     public StaticRoute() {}
 
-    public StaticRoute( IPMaskedAddress network, String nextHop )
+    public StaticRoute( InetAddress network, String nextHop )
     {
         this.setNetwork( network );
         this.setNextHop( nextHop );
@@ -44,9 +45,12 @@ public class StaticRoute implements JSONString, Serializable
     public String getDescription() { return description; }
     public void setDescription( String description ) { this.description = description; }
 
-    public IPMaskedAddress getNetwork() { return network; }
-    public void setNetwork( IPMaskedAddress network ) { this.network = network; }
+    public InetAddress getNetwork() { return network; }
+    public void setNetwork( InetAddress network ) { this.network = network; }
 
+    public Integer getPrefix() { return prefix; }
+    public void setPrefix( Integer prefix ) { this.prefix = prefix; }
+    
     public String getNextHop() { return nextHop; }
     public void setNextHop( String nextHop ) { this.nextHop = nextHop; }
 

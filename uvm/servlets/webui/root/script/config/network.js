@@ -1371,7 +1371,8 @@ if (!Ung.hasResource["Ung.Network"]) {
                 settingsCmp: this,
                 emptyRow: {
                     "ruleId": -1,
-                    "network": "1.2.3.4/24",
+                    "network": "1.2.3.0",
+                    "prefix": "24",
                     "nextHop": "4.3.2.1",
                     "description": this.i18n._("[no description]"),
                     "javaClass": "com.untangle.uvm.network.StaticRoute"
@@ -1384,6 +1385,8 @@ if (!Ung.hasResource["Ung.Network"]) {
                 }, {
                     name: 'network'
                 }, {
+                    name: 'prefix'
+                }, {
                     name: 'nextHop'
                 },{
                     name: 'description'
@@ -1394,6 +1397,10 @@ if (!Ung.hasResource["Ung.Network"]) {
                     header: this.i18n._("Network"),
                     width: 170,
                     dataIndex: 'network'
+                }, {
+                    header: this.i18n._("Netmask/Prefix"),
+                    width: 170,
+                    dataIndex: 'prefix'
                 }, {
                     header: this.i18n._("Next Hop"),
                     width: 300,
@@ -1419,8 +1426,20 @@ if (!Ung.hasResource["Ung.Network"]) {
                     dataIndex: "network",
                     fieldLabel: this.i18n._("Network"),
                     allowBlank: false,
-                    vtype:"cidrBlock",
+                    vtype:"ipAddress",
                     width: 300
+                }, {
+                    xtype: "combo",
+                    dataIndex: "prefix",
+                    fieldLabel: i18n._( "Netmask/Prefix" ),
+                    store: Ung.Util.getV4NetmaskList(),
+                    valueField: "value",
+                    displayField: "displayName",
+                    width: 300,
+                    listWidth: 70,
+                    triggerAction: "all",
+                    queryMode: 'local',
+                    editable: false
                 }, {
                     xtype: "combobox",
                     name: "next_hop",
