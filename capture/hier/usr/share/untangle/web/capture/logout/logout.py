@@ -5,7 +5,7 @@ from uvm.settings_reader import get_settings_item
 from mod_python import apache
 from uvm import Uvm
 import pprint
-import time
+
 
 # global objects that we retrieve from the uvm
 uvmContext = None
@@ -61,8 +61,11 @@ def index(req):
 def global_auth_setup(appid=None):
 
     global uvmContext
-    global captureNode
+    global captureList
     counter = 0
+
+    # create a list for all of the nodes we discover
+    captureList = list()
 
     # first we get the uvm context
     uvmContext = Uvm().getUvmContext()
@@ -70,21 +73,26 @@ def global_auth_setup(appid=None):
     # for some reason the uvm calls sometimes throw an error which we don't
     # really understand so this counter loop will delay and retry multiple
     # times before we finally give up and spew an exception
-    while (counter < 10) and (captureNode == None):
+    while (counter < 10) and (len(captureList) == 0):
         try:
-            # if no appid provided we lookup capture node by name
-            # otherwise we use the appid passed to us
+            # if no appid provided we lookup capture nodes by name
             if (appid == None):
-                captureNode = uvmContext.nodeManager().node("untangle-node-capture")
+                nodelist = uvmContext.nodeManager().nodeInstancesIds()
+                for item in nodelist['list']:
+                    node = uvmContext.nodeManager().node(long(item))
+                    name = node.getNodeSettings()['nodeName']
+                    if (name == 'untangle-node-capture'):
+                        captureList.append(node)
+            # appid was passed so use it
             else:
-                captureNode = uvmContext.nodeManager().node(long(appid))
+                node = uvmContext.nodeManager().node(long(appid))
+                captureList.append(node)
         except:
-            # on any exception increment the loop counter and delay a bit
             counter = (counter + 1)
             time.sleep(1)
 
-    # if we didn't find the node then throw an exception
-    if (captureNode == None):
+    # if we can't find the node then throw an exception
+    if (len(captureList) == 0):
         raise Exception("The uvm node manager could not locate untangle-node-capture")
 
 #-----------------------------------------------------------------------------
