@@ -8,6 +8,7 @@ from uvm import Uvm
 import os.path
 import zipfile
 import pprint
+import time
 
 # global objects that we retrieve from the uvm
 uvmContext = None
@@ -351,18 +352,28 @@ def global_auth_setup(appid=None):
 
     global uvmContext
     global captureNode
+    counter = 0
 
     # first we get the uvm context
     uvmContext = Uvm().getUvmContext()
 
-    # if no appid provided we lookup capture node by name
-    # otherwise we use the appid passed to us
-    if (appid == None):
-        captureNode = uvmContext.nodeManager().node("untangle-node-capture")
-    else:
-        captureNode = uvmContext.nodeManager().node(long(appid))
+    # for some reason the uvm calls sometimes throw an error which we don't
+    # really understand so this counter loop will delay and retry multiple
+    # times before we finally give up and spew an exception
+    while (counter < 10) and (captureNode == None):
+        try:
+            # if no appid provided we lookup capture node by name
+            # otherwise we use the appid passed to us
+            if (appid == None):
+                captureNode = uvmContext.nodeManager().node("untangle-node-capture")
+            else:
+                captureNode = uvmContext.nodeManager().node(long(appid))
+        except:
+            # on any exception increment the loop counter and delay a bit
+            counter = (counter + 1)
+            time.sleep(1)
 
-    # if we can't find the node then throw an exception
+    # if we didn't find the node then throw an exception
     if (captureNode == None):
         raise Exception("The uvm node manager could not locate untangle-node-capture")
 
