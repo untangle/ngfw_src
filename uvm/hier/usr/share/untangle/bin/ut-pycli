@@ -19,7 +19,7 @@ class ArgumentParser(object):
         self.hostname = "localhost"
         self.username = None
         self.password = None
-        self.timeout = 30
+        self.timeout = 60
         self.policy_name = None
         self.verbosity = 0
         self.filename = None
@@ -80,7 +80,7 @@ def printUsage():
     -h hostname
     -u username
     -w password
-    -t timeout (default 120000)
+    -t timeout (default 60)
     -p policy
     -v (increase verbosity)
     -q (quiet, fails silently)

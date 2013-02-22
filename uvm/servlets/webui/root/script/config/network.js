@@ -80,6 +80,7 @@ if (!Ung.hasResource["Ung.Network"]) {
             Ext.getCmp('interface_v6StaticGateway').setVisible(false);
             Ext.getCmp('interface_v6StaticDns1').setVisible(false);
             Ext.getCmp('interface_v6StaticDns2').setVisible(false);
+            Ext.getCmp('interface_dhcp').setVisible(false);
 
             // if config disabled show nothing
             if ( configValue == "disabled") {
@@ -110,6 +111,7 @@ if (!Ung.hasResource["Ung.Network"]) {
                     Ext.getCmp('interface_v4StaticGateway').setVisible(false); // no gateways for non-WAN
                     Ext.getCmp('interface_v6StaticGateway').setVisible(false); // no gateways for non-WAN
                     Ext.getCmp('interface_v4NatIngressTraffic').setVisible(true); // show NAT ingress options on non-WANs
+                    Ext.getCmp('interface_dhcp').setVisible(true); // show DHCP options on non-WANs
                 }
                 
                 // if static show static fields
@@ -421,6 +423,68 @@ if (!Ung.hasResource["Ung.Network"]) {
                     width: 500
                 }]
             }, {
+                id:'interface_dhcp',
+                style: "border:1px solid;", // UGLY FIXME
+                xtype:'fieldset',
+                border:true,
+                title:i18n._("DHCP Configuration"),
+                collapsible: true,
+                collapsed: false,
+                items: [{
+                    xtype:'checkbox',
+                    id: "interface_dhcpEnabled",
+                    dataIndex: "dhcpEnabled",
+                    boxLabel: i18n._("Enable DHCP")
+                }, {
+                    xtype:'textfield',
+                    id: "interface_dhcpRangeStart",
+                    dataIndex: "dhcpRangeStart",
+                    fieldLabel: i18n._("Range Start"),
+                    vtype: "ipAddress"
+                }, {
+                    xtype:'textfield',
+                    id: "interface_dhcpRangeEnd",
+                    dataIndex: "dhcpRangeEnd",
+                    fieldLabel: i18n._("Range End"),
+                    vtype: "ipAddress"
+                }, {
+                    xtype:'textfield',
+                    id: "interface_dhcpLeaseDuration",
+                    dataIndex: "dhcpLeaseDuration",
+                    fieldLabel: i18n._("Lease Duration")
+                }, {
+                    xtype:'textfield',
+                    id: "interface_dhcpLeaseLimit",
+                    dataIndex: "dhcpLeaseLimit",
+                    fieldLabel: i18n._("Lease Limit")
+                }, {
+                    xtype:'checkbox',
+                    id: "interface_dhcpAuthoritative",
+                    dataIndex: "dhcpAuthoritative",
+                    fieldLabel: i18n._("Authoritative")
+                }, {
+                    xtype:'textfield',
+                    id: "interface_dhcpGatewayOverride",
+                    dataIndex: "dhcpGatewayOverride",
+                    fieldLabel: i18n._("Gateway Override"),
+                    labelStyle: 'width:120px',
+                    vtype: "ipAddress"
+                }, {
+                    xtype:'textfield',
+                    id: "interface_dhcpNetmaskOverride",
+                    dataIndex: "dhcpNetmaskOverride",
+                    fieldLabel: i18n._("Netmask Override"),
+                    labelStyle: 'width:120px',
+                    vtype: "ipAddress"
+                }, {
+                    xtype:'textfield',
+                    id: "interface_dhcpDnsOverride",
+                    dataIndex: "dhcpDnsOverride",
+                    fieldLabel: i18n._("DNS Override"),
+                    labelStyle: 'width:120px',
+                    vtype: "ipAddress"
+                }]
+            }, {
                 xtype: "combo",
                 id: "interface_bridgedTo",
                 dataIndex: "bridgedTo",
@@ -669,6 +733,24 @@ if (!Ung.hasResource["Ung.Network"]) {
                 }, {
                     name: 'v6StaticDns2'
                 }, {
+                    name: 'dhcpEnabled'
+                }, {
+                    name: 'dhcpAuthoritative'
+                }, {
+                    name: 'dhcpRangeStart'
+                }, {
+                    name: 'dhcpRangeEnd'
+                }, {
+                    name: 'dhcpLeaseDuration'
+                }, {
+                    name: 'dhcpLeaseLimit'
+                }, {
+                    name: 'dhcpGatewayOverride'
+                }, {
+                    name: 'dhcpNetmaskOverride'
+                }, {
+                    name: 'dhcpDnsOverride'
+                }, {
                     name: 'javaClass'
                 }],
                 columns: [{
@@ -718,7 +800,16 @@ if (!Ung.hasResource["Ung.Network"]) {
                 initComponent: function() {
                     this.rowEditor = Ext.create('Ung.InterfaceEditorWindow',{});
                     Ung.EditorGrid.prototype.initComponent.call(this);
-                }
+                },
+                bbar: [{
+                    xtype: "button",
+                    name: "remap_interfaces",
+                    iconCls: 'icon-refresh',
+                    text: this.i18n._("Remap Interfaces"),
+                    handler: Ext.bind(function() {
+                        //FIXME launch interface remapper 
+                    }, this)
+                }]
             });
             
             this.panelInterfaces = Ext.create('Ext.panel.Panel',{
@@ -771,7 +862,7 @@ if (!Ung.hasResource["Ung.Network"]) {
                             html: this.i18n._("(eg: hostname.example.com)"),
                             cls: 'boxlabel'
                         }]
-                      },{
+                    },{
                           xtype: 'container',
                           layout: 'column',
                           margin: '0 0 5 0',
@@ -1573,7 +1664,6 @@ if (!Ung.hasResource["Ung.Network"]) {
                     allowBlank: false,
                     dataIndex: "nextHop",
                     fieldLabel: i18n._("Next Hop"),
-                    boxLabel: i18n._("IP address or Interface"),
                     editable: true,
                     store: [["eth0",i18n._('Local on eth0 FIXME')], ["eth1",i18n._('Local on eth1 FIXME')]],
                     valueField: "value",
@@ -1582,8 +1672,8 @@ if (!Ung.hasResource["Ung.Network"]) {
                 }, {
                     xtype: 'fieldset',
                     cls: 'description',
-                    html: this.i18n._("If <b>Next Hop</b> is an IP address that network will routed through the specified IP address.") + "<br/>" +
-                        this.i18n._("If <b>Next Hop</b> is an interface that network will be routed locally on that interface.")
+                    html: this.i18n._("If <b>Next Hop</b> is an IP address that network will routed via the specified IP address.") + "<br/>" +
+                        this.i18n._("If <b>Next Hop</b> is an interface that network will be routed <b>locally</b> on that interface.")
                 }]
             });
 
@@ -1648,6 +1738,7 @@ if (!Ung.hasResource["Ung.Network"]) {
                 items: [{
                     xtype: "checkbox",
                     fieldLabel: this.i18n._("Enable SIP NAT Helper"),
+                    labelStyle: 'width:150px',
                     name: 'HostName',
                     checked: this.settings.enableSipNatHelper,
                     listeners: {
@@ -1660,6 +1751,7 @@ if (!Ung.hasResource["Ung.Network"]) {
                 },{
                     xtype: "checkbox",
                     fieldLabel: this.i18n._("Send ICMP Redirects"),
+                    labelStyle: 'width:150px',
                     name: 'DomainName',
                     checked: this.settings.sendIcmpRedirects,
                     listeners: {

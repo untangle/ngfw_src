@@ -58,6 +58,16 @@ public class InterfaceSettings implements Serializable, JSONString
     public InetAddress v6StaticGateway; /* the gateway  of this interface if configured static, or dhcp override */
     public InetAddress v6StaticDns1; /* the dns1  of this interface if configured static, or dhcp override */
     public InetAddress v6StaticDns2; /* the dns2  of this interface if configured static, or dhcp override */
+
+    private Boolean dhcpEnabled;
+    private Boolean dhcpAuthoritative;
+    private InetAddress dhcpRangeStart;
+    private InetAddress dhcpRangeEnd;
+    private Integer dhcpLeaseDuration;
+    private Integer dhcpLeaseLimit;
+    private InetAddress dhcpGatewayOverride;
+    private InetAddress dhcpNetmaskOverride;
+    private InetAddress dhcpDnsOverride;
     
     public List<IPMaskedAddress> aliases; /* alias addresses for static & dhcp */
     
@@ -167,5 +177,31 @@ public class InterfaceSettings implements Serializable, JSONString
     
     public List<IPMaskedAddress> getAliases( ) { return this.aliases; }
     public void setAliases( List<IPMaskedAddress> newValue ) { this.aliases = newValue; }
+
+    public Boolean getDhcpEnabled() { return this.dhcpEnabled; }
+    public void setDhcpEnabled( Boolean newValue ) { this.dhcpEnabled = newValue; }
+
+    public Boolean getDhcpAuthoritative() { return this.dhcpAuthoritative; }
+    public void setDhcpAuthoritative( Boolean newValue ) { this.dhcpAuthoritative = newValue; }
     
+    public InetAddress getDhcpRangeStart() { return this.dhcpRangeStart; }
+    public void setDhcpRangeStart( InetAddress newValue ) { this.dhcpRangeStart = newValue; }
+
+    public InetAddress getDhcpRangeEnd() { return this.dhcpRangeEnd; }
+    public void setDhcpRangeEnd( InetAddress newValue ) { this.dhcpRangeEnd = newValue; }
+
+    public Integer getDhcpLeaseDuration() { return this.dhcpLeaseDuration; }
+    public void setDhcpLeaseDuration( Integer newValue ) { this.dhcpLeaseDuration = newValue; }
+
+    public Integer getDhcpLeaseLimit() { return this.dhcpLeaseLimit; }
+    public void setDhcpLeaseLimit( Integer newValue ) { this.dhcpLeaseLimit = newValue; }
+    
+    public InetAddress getDhcpGatewayOverride() { return this.dhcpGatewayOverride; }
+    public void setDhcpGatewayOverride( InetAddress newValue ) { this.dhcpGatewayOverride = newValue; }
+
+    public InetAddress getDhcpNetmaskOverride() { return this.dhcpNetmaskOverride; }
+    public void setDhcpNetmaskOverride( InetAddress newValue ) { this.dhcpNetmaskOverride = newValue; }
+
+    public InetAddress getDhcpDnsOverride() { return this.dhcpDnsOverride; }
+    public void setDhcpDnsOverride( InetAddress newValue ) { this.dhcpDnsOverride = newValue; }
 }

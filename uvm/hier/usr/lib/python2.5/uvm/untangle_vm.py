@@ -12,11 +12,11 @@ from jsonrpc import JSONRPCException
 # urlgrabber, it doesn't support cookies which are required in order
 # for java callable references to work.
 class CurlRequestHandler(object):
-    def __init__( self, timeout=30 ):
+    def __init__( self, timeout=60 ):
         self.__curl = pycurl.Curl()
         self.__curl.setopt( pycurl.POST, 1 )
         self.__curl.setopt( pycurl.NOSIGNAL, 1 )
-        self.__curl.setopt( pycurl.CONNECTTIMEOUT, 30 )
+        self.__curl.setopt( pycurl.CONNECTTIMEOUT, 60 )
         self.__curl.setopt( pycurl.TIMEOUT, timeout )
         self.__curl.setopt( pycurl.COOKIEFILE, "" )
         self.__curl.setopt( pycurl.FOLLOWLOCATION, 0 )
