@@ -1590,6 +1590,8 @@ if (!Ung.hasResource["Ung.Network"]) {
             this.buildGeneral();
             this.buildQoS();
             this.buildPacketFilter();
+            this.buildDnsServer();
+            this.buildDnsAdvanced();
 
             this.advancedTabPanel = Ext.create('Ext.tab.Panel',{
                 activeTab: 0,
@@ -1597,7 +1599,7 @@ if (!Ung.hasResource["Ung.Network"]) {
                 parentId: this.getId(),
                 autoHeight: true,
                 flex: 1,
-                items: [ this.panelGeneral, this.panelQoS, this.panelPacketFilter ]
+                items: [ this.panelGeneral, this.panelQoS, this.panelPacketFilter, this.panelDnsServer, this.panelDnsAdvanced ]
             });
             
             this.panelAdvanced = Ext.create('Ext.panel.Panel',{
@@ -1676,6 +1678,30 @@ if (!Ung.hasResource["Ung.Network"]) {
                 items: []
             });
         },
+        // DnsServer Panel
+        buildDnsServer: function() {
+            this.panelDnsServer = Ext.create('Ext.panel.Panel',{
+                name: 'panelDnsServer',
+                helpSource: 'network_dns_server',
+                parentId: this.getId(),
+                title: this.i18n._('DNS Server'),
+                layout: 'anchor',
+                cls: 'ung-panel',
+                items: []
+            });
+        },        
+        // DnsAdvanced Panel
+        buildDnsAdvanced: function() {
+            this.panelDnsAdvanced = Ext.create('Ext.panel.Panel',{
+                name: 'panelDnsAdvanced',
+                helpSource: 'network_dns_server',
+                parentId: this.getId(),
+                title: this.i18n._('DNS Advanced'),
+                layout: 'anchor',
+                cls: 'ung-panel',
+                items: []
+            });
+        },        
         save: function (isApply) {
             this.saveSemaphore = 1;
             // save language settings
