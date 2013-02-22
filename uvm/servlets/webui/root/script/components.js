@@ -158,10 +158,17 @@ Ext.override( Ext.form.TextField, {
     afterRender: function() {
         this.callParent(arguments);
         if( this.boxLabel) {
-            Ext.QuickTips.register({
+            this.tooltipCmp = Ext.create('Ext.tip.ToolTip', {
+                showDelay: 0,
+                autoHide: false,
                 target: this.getEl(),
-                text: this.boxLabel
+                anchor: 'left',
+                anchorOffset: 0,
+                html: this.boxLabel
             });
+            this.addListener("beforedestroy", Ext.bind(function() {
+                this.tooltipCmp.destroy();
+            }, this));
         }
     }
 });

@@ -750,32 +750,50 @@ if (!Ung.hasResource["Ung.Network"]) {
                     cls: 'description',
                     title: this.i18n._('Hostname'),
                     items: [{
-                        xtype: "textfield",
-                        fieldLabel: this.i18n._("Hostname"),
-                        boxLabel: this.i18n._("(eg: hostname.example.com)"),
-                        name: 'HostName',
-                        value: this.settings.hostName,
-                        listeners: {
-                            "change": {
-                                fn: Ext.bind(function(elem, newValue) {
-                                    this.settings.hostName = newValue;
-                                }, this)
+                        xtype: 'container',
+                        layout: 'column',
+                        margin: '0 0 5 0',
+                        items: [{
+                            xtype: "textfield",
+                            fieldLabel: this.i18n._("Hostname"),
+                            emptyText: "hostname.example.com",
+                            name: 'HostName',
+                            value: this.settings.hostName,
+                            listeners: {
+                                "change": {
+                                    fn: Ext.bind(function(elem, newValue) {
+                                        this.settings.hostName = newValue;
+                                    }, this)
+                                }
                             }
-                        }
-                    },{
-                        xtype: "textfield",
-                        fieldLabel: this.i18n._("Domain Name"),
-                        boxLabel: this.i18n._("(eg: example.com)"),
-                        name: 'DomainName',
-                        value: this.settings.domainName,
-                        listeners: {
-                            "change": {
-                                fn: Ext.bind(function(elem, newValue) {
-                                    this.settings.domainName = newValue;
-                                }, this)
-                            }
-                        }
-                    }]
+                        },{
+                            xtype: 'label',
+                            html: this.i18n._("(eg: hostname.example.com)"),
+                            cls: 'boxlabel'
+                        }]
+                      },{
+                          xtype: 'container',
+                          layout: 'column',
+                          margin: '0 0 5 0',
+                          items: [{
+                              xtype: "textfield",
+                              fieldLabel: this.i18n._("Domain Name"),
+                              emptyText: "example.com",
+                              name: 'DomainName',
+                              value: this.settings.domainName,
+                              listeners: {
+                                  "change": {
+                                      fn: Ext.bind(function(elem, newValue) {
+                                          this.settings.domainName = newValue;
+                                      }, this)
+                                  }
+                              }
+                          },{
+                              xtype: 'label',
+                              html: this.i18n._("(eg: example.com)"),
+                              cls: 'boxlabel'
+                          }]
+                        }]
                 }, {
                     xtype: 'fieldset',
                     cls: 'description',
