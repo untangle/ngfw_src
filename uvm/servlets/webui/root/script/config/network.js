@@ -583,9 +583,10 @@ if (!Ung.hasResource["Ung.Network"]) {
             this.buildNatRules();
             this.buildBypassRules();
             this.buildRoutes();
+            this.buildAdvanced();
             
             // builds the tab panel with the tabs
-            var pageTabs = [ this.panelInterfaces, this.panelHostName, this.panelPortForwardRules, this.panelNatRules, this.panelBypassRules, this.panelRoutes ];
+            var pageTabs = [ this.panelInterfaces, this.panelHostName, this.panelPortForwardRules, this.panelNatRules, this.panelBypassRules, this.panelRoutes, this.panelAdvanced ];
             this.buildTabPanel(pageTabs);
             this.callParent(arguments);
         },
@@ -1028,7 +1029,7 @@ if (!Ung.hasResource["Ung.Network"]) {
             
             this.panelPortForwardRules = Ext.create('Ext.panel.Panel',{
                 name: 'panelPortForwardRules',
-                helpSource: 'port_forwards',
+                helpSource: 'network_port_forwards',
                 parentId: this.getId(),
                 title: this.i18n._('Port Forward Rules'),
                 layout: 'anchor',
@@ -1262,7 +1263,7 @@ if (!Ung.hasResource["Ung.Network"]) {
             
             this.panelNatRules = Ext.create('Ext.panel.Panel',{
                 name: 'panelNatRules',
-                helpSource: 'nat_rules',
+                helpSource: 'network_nat_rules',
                 parentId: this.getId(),
                 title: this.i18n._('NAT Rules'),
                 layout: 'anchor',
@@ -1457,7 +1458,7 @@ if (!Ung.hasResource["Ung.Network"]) {
             
             this.panelBypassRules = Ext.create('Ext.panel.Panel',{
                 name: 'panelBypassRules',
-                helpSource: 'bypass_rules',
+                helpSource: 'network_bypass_rules',
                 parentId: this.getId(),
                 title: this.i18n._('Bypass Rules'),
                 layout: 'anchor',
@@ -1570,7 +1571,7 @@ if (!Ung.hasResource["Ung.Network"]) {
 
             this.panelRoutes = Ext.create('Ext.panel.Panel',{
                 name: 'panelRoutes',
-                helpSource: 'route_rules',
+                helpSource: 'network_route_rules',
                 parentId: this.getId(),
                 title: this.i18n._('Routes'),
                 layout: 'anchor',
@@ -1581,6 +1582,98 @@ if (!Ung.hasResource["Ung.Network"]) {
                     title: this.i18n._('Note'),
                     html: this.i18n._(" <b>Static Routes</b> are global routes that control how traffic is routed by destination address. The most specific Static Route is taken for a particular packet, order is not important.")
                 }, this.gridStaticRoutes]
+            });
+        },
+        // Advanced Panel
+        buildAdvanced: function() {
+
+            this.buildGeneral();
+            this.buildQoS();
+            this.buildPacketFilter();
+
+            this.advancedTabPanel = Ext.create('Ext.tab.Panel',{
+                activeTab: 0,
+                deferredRender: false,
+                parentId: this.getId(),
+                autoHeight: true,
+                flex: 1,
+                items: [ this.panelGeneral, this.panelQoS, this.panelPacketFilter ]
+            });
+            
+            this.panelAdvanced = Ext.create('Ext.panel.Panel',{
+                name: 'panelAdvanced',
+                helpSource: 'network_advanced',
+                parentId: this.getId(),
+                title: this.i18n._('Advanced'),
+                layout: 'anchor',
+                cls: 'ung-panel',
+                layout: { type: 'vbox', pack: 'start', align: 'stretch' },
+                items: [{
+                    xtype: 'fieldset',
+                    cls: 'description',
+                    flex: 0,
+                    html: this.i18n._(" <b>Advanced</b> is for advanced settings. Don't change them. YES THIS MEANS YOU.")
+                }, this.advancedTabPanel]
+            });
+        },
+        // General Panel
+        buildGeneral: function() {
+            this.panelGeneral = Ext.create('Ext.panel.Panel',{
+                name: 'panelGeneral',
+                helpSource: 'network_general',
+                parentId: this.getId(),
+                title: this.i18n._('General'),
+                layout: 'anchor',
+                cls: 'ung-panel',
+                items: [{
+                    xtype: "checkbox",
+                    fieldLabel: this.i18n._("Enable SIP NAT Helper"),
+                    name: 'HostName',
+                    checked: this.settings.enableSipNatHelper,
+                    listeners: {
+                        "change": {
+                            fn: Ext.bind(function(elem, newValue) {
+                                this.settings.enableSipNatHelper = newValue;
+                            }, this)
+                        }
+                    }
+                },{
+                    xtype: "checkbox",
+                    fieldLabel: this.i18n._("Send ICMP Redirects"),
+                    name: 'DomainName',
+                    checked: this.settings.sendIcmpRedirects,
+                    listeners: {
+                        "change": {
+                            fn: Ext.bind(function(elem, newValue) {
+                                this.settings.sendIcmpRedirects = newValue;
+                            }, this)
+                        }
+                    }
+                }]
+            });
+        },
+        // QoS Panel
+        buildQoS: function() {
+            this.panelQoS = Ext.create('Ext.panel.Panel',{
+                name: 'panelQoS',
+                helpSource: 'network_qos',
+                parentId: this.getId(),
+                title: this.i18n._('QoS'),
+                layout: 'anchor',
+                cls: 'ung-panel',
+                items: []
+            });
+        },
+        // PacketFilter Panel
+        buildPacketFilter: function() {
+            this.panelPacketFilter = Ext.create('Ext.panel.Panel',{
+                name: 'panelPacketFilter',
+                helpSource: 'network_packet_filter',
+                parentId: this.getId(),
+                title: this.i18n._('Packet Filter'),
+                layout: 'anchor',
+                cls: 'ung-panel',
+                items: []
             });
         },
         save: function (isApply) {

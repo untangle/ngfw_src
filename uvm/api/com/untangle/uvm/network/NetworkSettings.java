@@ -36,6 +36,9 @@ public class NetworkSettings implements Serializable, JSONString
     private String  dynamicDnsServicePassword = null;
     private String  dynamicDnsServiceHostnames = null;
 
+    private boolean enableSipNatHelper = false;
+    private boolean sendIcmpRedirects = false;
+    
     public NetworkSettings() { }
 
     public List<InterfaceSettings> getInterfaces() { return this.interfaces; }
@@ -73,6 +76,12 @@ public class NetworkSettings implements Serializable, JSONString
     
     public String getDynamicDnsServiceHostnames() { return this.dynamicDnsServiceHostnames; }
     public void setDynamicDnsServiceHostnames( String newValue ) { this.dynamicDnsServiceHostnames = newValue; }
+    
+    public boolean getEnableSipNatHelper() { return this.enableSipNatHelper; }
+    public void setEnableSipNatHelper( boolean newValue ) { this.enableSipNatHelper = newValue; }
+
+    public boolean getSendIcmpRedirects() { return this.sendIcmpRedirects; }
+    public void setSendIcmpRedirects( boolean newValue ) { this.sendIcmpRedirects = newValue; }
     
     public String toJSONString()
     {
