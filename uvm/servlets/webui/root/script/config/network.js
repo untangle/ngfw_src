@@ -498,15 +498,9 @@ if (!Ung.hasResource["Ung.Network"]) {
                 queryMode: 'local',
                 editable: false
             }, {
-                html: "TODO: DHCP settings link<br/>"
-            }, {
                 html: "TODO: aliases grid<br/>"
             }, {
-                html: "TODO: ethernet device settings link<br/>"
-            }, {
                 html: "TODO: MTU settings<br/>"
-            }, {
-                html: "TODO: device mapper link<br/>"
             }];
 
             this.items = [Ext.create('Ext.panel.Panel',{
@@ -1700,6 +1694,7 @@ if (!Ung.hasResource["Ung.Network"]) {
             this.buildPacketFilter();
             this.buildDnsServer();
             this.buildDnsAdvanced();
+            this.buildNetworkCards();
 
             this.advancedTabPanel = Ext.create('Ext.tab.Panel',{
                 activeTab: 0,
@@ -1707,7 +1702,7 @@ if (!Ung.hasResource["Ung.Network"]) {
                 parentId: this.getId(),
                 autoHeight: true,
                 flex: 1,
-                items: [ this.panelGeneral, this.panelQoS, this.panelPacketFilter, this.panelDnsServer, this.panelDnsAdvanced ]
+                items: [ this.panelGeneral, this.panelQoS, this.panelPacketFilter, this.panelDnsServer, this.panelDnsAdvanced, this.panelNetworkCards ]
             });
             
             this.panelAdvanced = Ext.create('Ext.panel.Panel',{
@@ -1807,6 +1802,18 @@ if (!Ung.hasResource["Ung.Network"]) {
                 helpSource: 'network_dns_server',
                 parentId: this.getId(),
                 title: this.i18n._('DNS Advanced'),
+                layout: 'anchor',
+                cls: 'ung-panel',
+                items: []
+            });
+        },        
+        // NetworkCards Panel
+        buildNetworkCards: function() {
+            this.panelNetworkCards = Ext.create('Ext.panel.Panel',{
+                name: 'panelNetworkCards',
+                helpSource: 'network_dns_server',
+                parentId: this.getId(),
+                title: this.i18n._('Network Cards'),
                 layout: 'anchor',
                 cls: 'ung-panel',
                 items: []
