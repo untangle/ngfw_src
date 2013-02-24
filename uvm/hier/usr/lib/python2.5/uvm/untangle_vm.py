@@ -1,5 +1,6 @@
 import logging
 import pycurl
+import traceback
 from StringIO import StringIO
 from jsonrpc import ServiceProxy
 from jsonrpc import JSONRPCException
@@ -37,7 +38,16 @@ class CurlRequestHandler(object):
             print "Problem while asking for " + url
             raise e
 
-        if ( self.__curl.getinfo( pycurl.HTTP_CODE ) != 200 ): raise JSONRPCException("Invalid username or password")
+        http_code = self.__curl.getinfo( pycurl.HTTP_CODE ) 
+        if ( http_code != 200 ): 
+            if http_code == 302:
+                raise JSONRPCException( "Invalid username or password [code: %i]" % http_code )
+            elif http_code == 500:
+                raise JSONRPCException( "Internal server error [code: %i]" % http_code )
+            elif http_code == 502 or http_code == 503:
+                raise JSONRPCException( "Service unavailable [code: %i]" % http_code )
+            else:
+                raise JSONRPCException( "An error occurred [code: %i] response: %s" % (http_code, response.getvalue()) )
 
         return response.getvalue()
 
@@ -53,11 +63,12 @@ class Uvm:
         try:
             if ( username != None and password != None ):
                 handler.make_request( "http://" + hostname  + "/auth/login", urllib.urlencode({ "username" : username, "password" : password }))
-        except JSONRPCException:
-            pass
+        except JSONRPCException,e:
+            print "Login error: "
+            traceback.print_exc(e)
+            return None
         
         proxy = ServiceProxy( "http://" + hostname +  "/webui/JSON-RPC", None, handler )
-
         return proxy.UvmContext
 
 

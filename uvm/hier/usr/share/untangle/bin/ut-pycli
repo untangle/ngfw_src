@@ -100,6 +100,7 @@ def printUsage():
     ucli register <package-name - register a new package 
     ucli unregister <package-name> - unregister a package
   DEBUGGING:
+    ucli version - show the untangle-vm version
     ucli instances - list all nodes 
     ucli sessions <node_id> - list all sessions for a given node
     ucli available - shows available packages
@@ -115,7 +116,7 @@ if __name__ == "__main__":
 
   try:
       if ( sys.stdout.encoding != "UTF-8" ):
-          sys.stderr.write( "Changing to UTF-8 encoding\n" )
+          # sys.stderr.write( "Changing to UTF-8 encoding (from: %s)\n" % str(sys.stdout.encoding) )
           (e,d,sr,sw) = codecs.lookup("UTF-8")
 
           sys.stdout = sw(sys.stdout)
@@ -148,7 +149,9 @@ if __name__ == "__main__":
       if (not parser.quiet):
           print "ERROR: Failed to communicate with the untangle-vm: %s" % errorstr
           if (errorstr.find("password") != -1):
-              print "Is the untangle-vm running? Are you root? Did you supply a username/password?"
+              print "Are you root? Did you supply a username/password?"
+          if (errorstr.find("unavailable") != -1):
+              print "Is the untangle-vm running?"
       sys.exit(1)
 
   # If -c is specified exec the command and exit
