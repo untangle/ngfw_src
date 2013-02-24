@@ -727,7 +727,6 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
             logger.warn("could not destroy Argon", exn);
         }
 
-
         // stop nodes:
         try {
             nodeManager.destroy();

@@ -78,34 +78,6 @@ public class SetupContextImpl implements UtJsonRpcServlet.SetupContext
         return this.context.oemManager().getOemName();
     }
 
-    /**
-     * On first boot the netConfig.js doesn't get written out after DHCP is done
-     * I'm not sure why. However this function is used to re-sync all network settings
-     * so that they are correct on the first run of the wizard
-     */
-    public void refreshNetworkConfig()
-    {
-        /**
-         * First tell alpaca to write the files
-         */
-        try {
-            JsonClient.getInstance().callAlpaca( XMLRPCUtil.CONTROLLER_UVM, "write_files", null );
-        } catch ( Exception e ) {
-            logger.warn( "Failed to write UVM config files. (net-alpaca returned an error)", e );
-        }
-
-        /**
-         * Then tell the UVM to re-read the files
-         */
-        try {
-            this.context.networkManager().refreshNetworkConfig();
-        } catch ( Exception e ) {
-            logger.warn( "Failed to refresh Network Config", e );
-        }
-        
-        return;
-    }
-    
     public static UtJsonRpcServlet.SetupContext makeSetupContext()
     {
         UvmContext uvm = UvmContextFactory.context();

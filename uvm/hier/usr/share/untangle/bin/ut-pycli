@@ -147,7 +147,7 @@ if __name__ == "__main__":
   except JSONRPCException, e:
       errorstr = repr(e.error)
       if (not parser.quiet):
-          print "ERROR: Failed to communicate with the untangle-vm: %s" % errorstr
+          print "Error: %s" % errorstr
           if (errorstr.find("password") != -1):
               print "Are you root? Did you supply a username/password?"
           if (errorstr.find("unavailable") != -1):

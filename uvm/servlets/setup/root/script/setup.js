@@ -1,8 +1,6 @@
 Ext.namespace('Ung');
 Ext.namespace('Ung.SetupWizard');
 
-Ung.SetupWizard.BOGUS_ADDRESS = "192.0.2.1";
-
 // The location of the blank pixel image
 Ext.BLANK_IMAGE_URL = '/ext4/resources/themes/images/default/tree/s.gif'; // The location of the blank pixel image
 // the main internationalization object
@@ -197,7 +195,7 @@ Ext.define('Ung.SetupWizard.SettingsSaver', {
         // Cache the password to reauthenticate later
         Ung.SetupWizard.ReauthenticateHandler.password = this.password;
 
-        console.log("About to authenticate");
+        // console.log("Authenticating...");
         Ext.Ajax.request({
             params: {
                 username: 'admin',
@@ -219,7 +217,7 @@ Ext.define('Ung.SetupWizard.SettingsSaver', {
             // It is very wrong to do this all synchronously
             rpc.jsonrpc = new JSONRpcClient( "/webui/JSON-RPC" );
             rpc.adminManager = rpc.jsonrpc.UvmContext.adminManager();
-            rpc.networkManager = rpc.jsonrpc.UvmContext.networkManager();
+            rpc.newNetworkManager = rpc.jsonrpc.UvmContext.newNetworkManager();
             rpc.connectivityTester = rpc.jsonrpc.UvmContext.getConnectivityTester();
             rpc.toolboxManager = rpc.jsonrpc.UvmContext.toolboxManager();
             rpc.systemManager = rpc.jsonrpc.UvmContext.systemManager();
@@ -322,6 +320,7 @@ Ext.define('Ung.SetupWizard.Interfaces', {
         panelText += "<b>" + i18n._("Step 3: ") + "</b>";
         panelText += i18n._( "Repeat steps 1 and 2 for each network card and then click <i>Next</i>.");
         panelText += "<br/>";
+        panelText += "<br/><font color=\"red\">FIXME, this step is broken, just continue for now.</font><br/>";
         
         var panel = Ext.create('Ext.panel.Panel', {
             defaults: { cls: 'noborder' },
@@ -365,7 +364,6 @@ Ext.define('Ung.SetupWizard.Interfaces', {
                 
                 complete();
             }, this ),
-
             onNext: Ext.bind(this.saveInterfaceList, this )
         };
     },
@@ -396,6 +394,7 @@ Ext.define('Ung.SetupWizard.Interfaces', {
             }
         });
         sm.clearSelections();
+        return true;
     },
 
     // Given a list of interfaces, this takes out the ones that are not used
@@ -439,26 +438,27 @@ Ext.define('Ung.SetupWizard.Interfaces', {
 
         // disable auto refresh
         this.enableAutoRefresh = false;
-        
-        
-        // do this before the next step
-        rpc.setup.refreshNetworkConfig();
     },
 
     afterReauthenticate: function( handler ) {
+        Ext.MessageBox.hide();
+        handler();
+
+        //FIXME
+
         // Commit the store to get rid of the change marks
-        this.interfaceStore.sync();
+        //this.interfaceStore.sync();
 
         // Build the two interface arrays
-        var osArray = [];
-        var userArray = [];
-        this.interfaceStore.each( function( currentRow ) {
-            var status = currentRow.get( "status" );
-            userArray.push( currentRow.get( "name" ));
-            osArray.push( status[0] );
-        });
-
-        rpc.networkManager.remapInterfaces( Ext.bind(this.errorHandler, this, [ handler ], true ), osArray, userArray );
+        //var osArray = [];
+        //var userArray = [];
+        //this.interfaceStore.each( function( currentRow ) {
+        //    var status = currentRow.get( "status" );
+        //    userArray.push( currentRow.get( "name" ));
+        //    osArray.push( status[0] );
+        //});
+        
+        //rpc.networkManager.remapInterfaces( Ext.bind(this.errorHandler, this, [ handler ], true ), osArray, userArray );
     },
 
     errorHandler: function( result, exception, foo, handler ) {
@@ -489,13 +489,15 @@ Ext.define('Ung.SetupWizard.Interfaces', {
     },
     
     autoRefreshInterfaces: function() {
-        rpc.networkManager.updateLinkStatus();
-        rpc.networkManager.getNetworkConfiguration( Ext.bind(this.autoRefreshInterfacesCallback, this ) );
+        //FIXME
+        //rpc.networkManager.updateLinkStatus();
+        rpc.newNetworkManager.getNetworkSettings( Ext.bind(this.autoRefreshInterfacesCallback, this ) );
     },
     
     refreshInterfaces: function() {
-        rpc.networkManager.updateLinkStatus();
-        rpc.networkManager.getNetworkConfiguration( Ext.bind(this.completeRefreshInterfaces,this ) );
+        //FIXME
+        //rpc.networkManager.updateLinkStatus();
+        rpc.newNetworkManager.getNetworkSettings( Ext.bind(this.completeRefreshInterfaces,this ) );
     },
 
     completeRefreshInterfaces: function( result, exception ) {
@@ -510,17 +512,20 @@ Ext.define('Ung.SetupWizard.Interfaces', {
             return;
         }
 
-        var interfaceList = this.fixInterfaceList( result.interfaceList );
+        // FIXME
+        // result is now a NetworkSettings
+        // var interfaceList = this.fixInterfaceList( result.interfaceList );
 
         if ( interfaceList.length != this.interfaceStore.getCount()) {
             Ext.MessageBox.alert( i18n._( "New interfaces" ), i18n._ ( "There are new interfaces, please restart the wizard." ), "" );
             return;
         }
 
-        if ( interfaceList.length < 2) {
-            Ext.MessageBox.alert( i18n._( "Missing interfaces" ), i18n._ ( "Untangle requires two or more network cards. Please reinstall with at least two network cards." ), "" );
-            return;
-        }
+        // FIXME
+        //if ( interfaceList.length < 2) {
+        //    Ext.MessageBox.alert( i18n._( "Missing interfaces" ), i18n._ ( "Untangle requires two or more network cards. Please reinstall with at least two network cards." ), "" );
+        //    return;
+        //}
         
         var statusHash = {};
         //TODO: This status array is brittle and should be refactored.
@@ -543,13 +548,14 @@ Ext.define('Ung.SetupWizard.Interfaces', {
 
 Ext.define('Ung.SetupWizard.Internet', {
     constructor: function( config ) {
-        this.configTypes = [];
-        this.configTypes.push( [ "dynamic", i18n._( "Dynamic (DHCP)" ) ] );
-        this.configTypes.push( [ "static", i18n._( "Static" ) ] );
-        this.configTypes.push( [ "pppoe", i18n._( "PPPoE" ) ] );
+        this.v4ConfigTypes = [];
+        this.v4ConfigTypes.push( [ "auto",   i18n._( "Auto (DHCP)" ) ] );
+        this.v4ConfigTypes.push( [ "static", i18n._( "Static" ) ] );
+        this.v4ConfigTypes.push( [ "pppoe",  i18n._( "PPPoE" ) ] );
 
         this.cards = [];
 
+        // DHCP Panel
         this.cards.push( this.dhcpPanel = Ext.create('Ext.form.Panel', {
             saveData: Ext.bind(this.saveDHCP,this ),
             border: false,
@@ -592,6 +598,7 @@ Ext.define('Ung.SetupWizard.Internet', {
             }]
         }));
 
+        // Static Panel
         this.cards.push( this.staticPanel = Ext.create('Ext.form.Panel', {
             saveData: Ext.bind(this.saveStatic,this ),
             border: false,
@@ -646,7 +653,7 @@ Ext.define('Ung.SetupWizard.Internet', {
         }));
 
         // PPPoE Panel
-        this.pppoePanel = Ext.create('Ext.form.Panel', {
+        this.cards.push( this.pppoePanel = Ext.create('Ext.form.Panel', {
             saveData: Ext.bind(this.savePPPoE,this ),
             border: false,
             cls: 'network-card-form-margin',
@@ -718,8 +725,7 @@ Ext.define('Ung.SetupWizard.Internet', {
                 text: i18n._( 'Test Connectivity' ),
                 handler: Ext.bind( this.testConnectivity, this, [null] )
             }]
-        });
-        this.cards.push( this.pppoePanel );
+        }));
 
         this.cardPanel = Ext.create('Ext.panel.Panel', {
             cls: 'untangle-form-panel',
@@ -745,9 +751,9 @@ Ext.define('Ung.SetupWizard.Internet', {
             }, {
                 xtype: 'combo',
                 fieldLabel: i18n._('Configuration Type'),
-                name: 'configType',
+                name: 'v4ConfigType',
                 editable: false,
-                store: this.configTypes,
+                store: this.v4ConfigTypes,
                 labelWidth: Ung.SetupWizard.LabelWidth,
                 queryMode: 'local',
                 listeners: {
@@ -755,7 +761,7 @@ Ext.define('Ung.SetupWizard.Internet', {
                         fn: Ext.bind(this.onSelectConfig,this )
                     }
                 },
-                value: this.configTypes[0][0],
+                value: this.v4ConfigTypes[0][0],
                 triggerAction: 'all',
                 listClass: 'x-combo-list-small'
             }]
@@ -809,55 +815,58 @@ Ext.define('Ung.SetupWizard.Internet', {
             hideWindow = true;
         }
 
-        var wanConfig = Ung.SetupWizard.CurrentValues.wanConfiguration;
-        wanConfig.configType = "dynamic";
+        var wanSettings = this.getFirstWanSettings( Ung.SetupWizard.CurrentValues.networkSettings );
+        wanSettings.v4ConfigType = "auto";
 
         var complete = Ext.bind(this.complete, this, [ handler, hideWindow ], true );
-        rpc.networkManager.setSetupSettings( complete, wanConfig );
+        rpc.newNetworkManager.setNetworkSettings( complete, FIXME ); //FIXME
     },
 
     saveStatic: function( handler, hideWindow ) {
-        var wanConfig = Ung.SetupWizard.CurrentValues.wanConfiguration;
-        wanConfig.configType = "static";
+        var wanSettings = this.getFirstWanSettings( Ung.SetupWizard.CurrentValues.networkSettings );
+        wanSettings.v4ConfigType = "static";
 
         if ( hideWindow == null ) {
             hideWindow = true;
         }
 
         // delete unused stuff
-        delete wanConfig.primaryAddress;
-        delete wanConfig.dns1Str;
-        delete wanConfig.dns2Str;
-        delete wanConfig.gatewayStr;
+        delete wanSettings.v4StaticAddress;
+        delete wanSettings.v4StaticNetmask;
+        delete wanSettings.v4StaticGateway;
+        delete wanSettings.v4StaticDns1;
+        delete wanSettings.v4StaticDns2;
 
-        wanConfig.primaryAddressStr = this.staticPanel.query('textfield[name="ip"]')[0].getValue() + "/" + this.staticPanel.query('textfield[name="netmask"]')[0].getValue();
-        wanConfig.gateway = this.staticPanel.query('textfield[name="gateway"]')[0].getValue();
-        wanConfig.dns1 = this.staticPanel.query('textfield[name="dns1"]')[0].getValue();
-        var dns2 = this.staticPanel.query('textfield[name="dns2"]')[0].getValue();
+        wanSettings.v4StaticAddress = this.staticPanel.query('textfield[name="ip"]')[0].getValue();
+        wanSettings.v4StaticNetmask = this.staticPanel.query('textfield[name="netmask"]')[0].getValue();
+        wanSettings.v4StaticGateway = this.staticPanel.query('textfield[name="gateway"]')[0].getValue();
+        wanSettings.v4StaticDns1 = this.staticPanel.query('textfield[name="dns1"]')[0].getValue();
+        wanSettings.v4StaticDns2 = this.staticPanel.query('textfield[name="dns2"]')[0].getValue();
 
-        if ( dns2.length > 0 ) {
-            wanConfig.dns2 = dns2;
-        } else {
-            wanConfig.dns2 = null;
+        if ( wanSettings.v4StaticDns2 == 0 ) {
+            wanSettings.v4StaticDns2 = null;
         }
 
+        this.setFirstWanSettings( Ung.SetupWizard.CurrentValues.networkSettings, wanSettings );
+
+        //FIXME - change networkSettings
         var complete = Ext.bind(this.complete, this, [ handler, hideWindow ], true );
-        rpc.networkManager.setSetupSettings( complete, wanConfig );
+        rpc.newNetworkManager.setNetworkSettings( complete, Ung.SetupWizard.CurrentValues.networkSettings ); 
     },
 
     savePPPoE: function( handler, hideWindow ) {
-        var wanConfig = Ung.SetupWizard.CurrentValues.wanConfiguration;
-        wanConfig.configType = "pppoe";
+        var wanSettings = this.getFirstWanSettings( Ung.SetupWizard.CurrentValues.networkSettings );
+        wanSettings.v4ConfigType = "pppoe";
 
         if ( hideWindow == null ) {
             hideWindow = true;
         }
 
-        wanConfig.PPPoEUsername = this.pppoePanel.query('textfield[name="username"]')[0].getValue();
-        wanConfig.PPPoEPassword = this.pppoePanel.query('textfield[name="password"]')[0].getValue();
+        wanSettings.PPPoEUsername = this.pppoePanel.query('textfield[name="username"]')[0].getValue();
+        wanSettings.PPPoEPassword = this.pppoePanel.query('textfield[name="password"]')[0].getValue();
 
         var complete = Ext.bind(this.complete, this, [ handler, hideWindow ], true );
-        rpc.networkManager.setSetupSettings( complete, wanConfig );
+        rpc.newNetworkManager.setNetworkSettings( complete, FIXME ); //FIXME
     },
 
     complete: function( result, exception, foo, handler, hideWindow ) {
@@ -872,7 +881,7 @@ Ext.define('Ung.SetupWizard.Internet', {
             return;
         }
 
-        Ung.SetupWizard.CurrentValues.wanConfiguration = result;
+        Ung.SetupWizard.CurrentValues.networkSettings = result;
 
         this.refreshNetworkDisplay();
 
@@ -989,38 +998,61 @@ Ext.define('Ung.SetupWizard.Internet', {
         rpc.connectivityTester.getStatus(Ext.bind( this.completeConnectivityTest,this, [handler], true ));
     },
 
+    getFirstWanSettings: function( networkSettings ) {
+        for ( var c = 0 ; c < networkSettings['interfaces']['list'].length ; c++ ) {
+            if ( networkSettings['interfaces']['list'][c]['isWan'] )
+                return networkSettings['interfaces']['list'][c];
+        }
+        return null;
+    },
+
+    setFirstWanSettings: function( networkSettings, firstWanSettings ) {
+        for ( var c = 0 ; c < networkSettings['interfaces']['list'].length ; c++ ) {
+            if ( firstWanSettings['interfaceId'] == networkSettings['interfaces']['list'][c]['interfaceId'] )
+                networkSettings['interfaces']['list'][c] = firstWanSettings;
+        }
+    },
+
     // This does not reload the settings, it just updates what is
     // displayed inside of the User Interface.
     refreshNetworkDisplay: function() {
         var c = 0;
-        Ung.SetupWizard.CurrentValues.wanConfiguration = rpc.networkManager.getWizardWAN();
-        var wanConfig = Ung.SetupWizard.CurrentValues.wanConfiguration;
-        var isConfigured = (wanConfig.primaryAddress != null);
 
-        if ( wanConfig.primaryAddress == Ung.SetupWizard.BOGUS_ADDRESS ) {
-            wanConfig.primaryAddress = null;
-            wanConfig.gateway = null;
-            wanConfig.dns1 = null;
-            wanConfig.dns2 = null;
-            isConfigured = false;
+        Ung.SetupWizard.CurrentValues.networkSettings = rpc.newNetworkManager.getNetworkSettings();
+        var networkSettings = Ung.SetupWizard.CurrentValues.networkSettings;
+        if ( networkSettings['interfaces'] == null && networkSettings['interfaces']['list'] == null ) {
+            console.error("Missing interface information.");
+            return;
+        }
+
+        // first first WAN
+        var firstWan = this.getFirstWanSettings( networkSettings );
+        if ( firstWan == null ) {
+            console.error("Missing first WAN.");
+            return;
         }
         
+        Ung.SetupWizard.CurrentValues.wanSettings = firstWan;
+        var wanSettings = Ung.SetupWizard.CurrentValues.wanSettings;
+        
+        var isConfigured = (wanSettings.config != null && wanSettings.v4ConfigType != null);
+
         if (isConfigured) {
-            for ( c = 0; c < this.configTypes.length ; c++ ) {
-                if (this.configTypes[c][0] == wanConfig.configType)
+            for ( c = 0; c < this.v4ConfigTypes.length ; c++ ) {
+                if (this.v4ConfigTypes[c][0] == wanSettings.v4ConfigType)
                     this.cardPanel.layout.setActiveItem( c );
             }
 
-            this.updateValue( this.card.panel.query('combo[name="configType"]')[0], wanConfig.configType);
+            this.updateValue( this.card.panel.query('combo[name="v4ConfigType"]')[0], wanSettings.v4ConfigType);
             
             for ( c = 0; c < this.cards.length ; c++ ) {
                 var card = this.cards[c];
-                if (wanConfig.primaryAddress != null) {
-                    this.updateValue( card.query('textfield[name="ip"]')[0] , wanConfig.primaryAddress.network );
-                    this.updateValue( card.query('textfield[name="netmask"]')[0] , wanConfig.primaryAddress.netmask );
-                    this.updateValue( card.query('textfield[name="gateway"]')[0], wanConfig.gateway );
-                    this.updateValue( card.query('textfield[name="dns1"]')[0], wanConfig.dns1 );
-                    this.updateValue( card.query('textfield[name="dns2"]')[0], wanConfig.dns2 );
+                if (wanSettings.v4ConfigType == "static") {
+                    this.updateValue( card.query('textfield[name="ip"]')[0] , wanSettings.v4StaticAddress );
+                    this.updateValue( card.query('textfield[name="netmask"]')[0] , wanSettings.v4StaticNetmask );
+                    this.updateValue( card.query('textfield[name="gateway"]')[0], wanSettings.v4StaticGateway );
+                    this.updateValue( card.query('textfield[name="dns1"]')[0], wanSettings.v4StaticDns1 );
+                    this.updateValue( card.query('textfield[name="dns2"]')[0], wanSettings.v4StaticDns2 );
                 }
             }
         } else {
@@ -1158,11 +1190,12 @@ Ext.define('Ung.SetupWizard.InternalNetwork', {
 
         // find the internal interface and see if its currently set to static.
         // if so change the default to router
-        var netConf = rpc.networkManager.getNetworkConfiguration();
-        if (netConf != null && netConf.interfaceList != null) {
-            var intfs = netConf.interfaceList.list;
+        var networkSettings = rpc.newNetworkManager.getNetworkSettings(); //FIXME
+        if ( networkSettings != null && networkSettings['interfaces'] != null && networkSettings['interfaces']['list'] != null ) {
+            var intfs = networkSettings['interfaces']['list'];
             for ( var c = 0 ;  c < intfs.length ; c++ ) {
-                if (intfs[c].name == "Internal" && intfs[c].configType == "static" ) {
+                // find first non-WAN
+                if ( intfs[c]['isWan'] == false && intfs[c].v4ConfigType == "static" ) {
                     this.panel.query('radio[name="bridgeOrRouter"]')[0].setValue(true);
                     this.panel.query('radio[name="bridgeOrRouter"]')[1].setValue(false);
                 }
@@ -1172,7 +1205,8 @@ Ext.define('Ung.SetupWizard.InternalNetwork', {
         Ung.SetupWizard.ReauthenticateHandler.reauthenticate( Ext.bind(this.loadInternalSuggestion,this, [ complete ] ));
     },
     loadInternalSuggestion: function( complete ) {
-        rpc.networkManager.getWizardInternalAddressSuggestion( Ext.bind(this.completeLoadInternalSuggestion, this, [ complete ], true ), null );
+        //rpc.newNetworkManager.getWizardInternalAddressSuggestion( Ext.bind(this.completeLoadInternalSuggestion, this, [ complete ], true ), null ); // FIXME
+        complete();
     },
     completeLoadInternalSuggestion: function( result, exception, foo, handler ) {
         if ( exception ) {
@@ -1223,12 +1257,12 @@ Ext.define('Ung.SetupWizard.InternalNetwork', {
         var delegate = Ext.bind(this.complete, this, [ handler ], true );
         var value = this.panel.query('radio[name="bridgeOrRouter"]')[0].getGroupValue();
         if ( value == 'bridge' ) {
-            rpc.networkManager.setWizardNatDisabled( delegate );
+            rpc.newNetworkManager.setWizardNatDisabled( delegate ); // FIXME
         } else {
             var network = this.panel.query('textfield[name="network"]')[0].getValue();
             var netmask = this.panel.query('combo[name="netmask"]')[0].getRawValue();
             var enableDhcpServer = this.panel.query('checkbox[name="enableDhcpServer"]')[0].getValue();
-            rpc.networkManager.setWizardNatEnabled( delegate, network, netmask, enableDhcpServer );
+            rpc.newNetworkManager.setWizardNatEnabled( delegate, network, netmask, enableDhcpServer ); // FIXME
         }
     },
 
@@ -1447,7 +1481,7 @@ Ung.Setup = {
             renderTo: "container"
         });
 
-        if ( false ) {
+        if ( true ) {
             // DEBUGGING CODE (Change to true to dynamically go to any page you want on load.)
             var debugHandler = Ext.bind(function() {
                 this.wizard.goToPage( 4 );
@@ -1490,7 +1524,7 @@ Ung.SetupWizard.ReauthenticateHandler = {
             // It is very wrong to do this all synchronously
             rpc.jsonrpc = new JSONRpcClient( "/webui/JSON-RPC" );
             rpc.adminManager = rpc.jsonrpc.UvmContext.adminManager();
-            rpc.networkManager = rpc.jsonrpc.UvmContext.networkManager();
+            rpc.newNetworkManager = rpc.jsonrpc.UvmContext.newNetworkManager();
             rpc.connectivityTester = rpc.jsonrpc.UvmContext.getConnectivityTester();
             rpc.toolboxManager = rpc.jsonrpc.UvmContext.toolboxManager();
             rpc.mailSender = rpc.jsonrpc.UvmContext.mailSender();
