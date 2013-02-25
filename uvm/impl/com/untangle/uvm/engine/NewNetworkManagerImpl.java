@@ -18,6 +18,7 @@ import com.untangle.uvm.network.BypassRule;
 import com.untangle.uvm.network.StaticRoute;
 import com.untangle.uvm.network.NatRule;
 import com.untangle.uvm.network.PortForwardRule;
+import com.untangle.uvm.node.IPMaskedAddress;
 
 /**
  * The Network Manager handles all the network configuration
@@ -157,7 +158,7 @@ public class NewNetworkManagerImpl implements NewNetworkManager
          * TODO:
          * calculate system dev based on settings of each dev
          */
-        sanitizeSettings( newSettings );
+        sanitizeNetworkSettings( newSettings );
 
         /**
          * Save the settings
@@ -231,7 +232,7 @@ public class NewNetworkManagerImpl implements NewNetworkManager
                 internal.setConfig("addressed");
                 internal.setV4ConfigType("static");
                 internal.setV4StaticAddress(InetAddress.getByName("192.168.2.1"));
-                internal.setV4StaticNetmask(InetAddress.getByName("255.255.0.0"));
+                internal.setV4StaticNetmask(InetAddress.getByName("255.255.255.0"));
                 internal.setIsWan(false);
                 internal.setV6ConfigType("static");
                 internal.setV6StaticAddress(InetAddress.getByName("2001:db8:85a3:0:0:8a2e:370:7334"));
@@ -277,7 +278,7 @@ public class NewNetworkManagerImpl implements NewNetworkManager
         logger.info("reconfigure()");
     }
 
-    private void sanitizeSettings( NetworkSettings networkSettings)
+    private void sanitizeNetworkSettings( NetworkSettings networkSettings)
     {
         /**
          * Fix rule IDs
@@ -335,5 +336,89 @@ public class NewNetworkManagerImpl implements NewNetworkManager
                 }
             }
         }
+
+        /**
+         * Sanitize the interface Settings
+         */
+        for ( InterfaceSettings intf : networkSettings.getInterfaces() ) {
+            sanitizeInterfaceSettings( intf );
+        }
+        
     }
+
+    private void sanitizeInterfaceSettings( InterfaceSettings interfaceSettings)
+    {
+        /**
+         * DHCP can only be served on statically configured interfaces
+         */
+        if( interfaceSettings.getDhcpEnabled() && !"static".equals(interfaceSettings.getV4ConfigType()) ) {
+            logger.warn("DHCP only allowed on static interfaces [" + interfaceSettings.getV4ConfigType() + "]. Disabling");
+            interfaceSettings.setDhcpEnabled( false );
+        }
+
+        /**
+         * If DHCP settings are enabled, but settings arent picked, fill in reasonable defaults
+         */
+        if ( interfaceSettings.getDhcpEnabled() && interfaceSettings.getDhcpRangeStart() == null ) {
+            initializeDhcpDefaults( interfaceSettings );
+        }
+    }
+
+    /**
+     * This chooses "reasonable" DHCP defaults if dhcp is enabled on the given interface
+     */
+    private void initializeDhcpDefaults( InterfaceSettings interfaceSettings )
+    {
+        if (! interfaceSettings.getDhcpEnabled())
+            return;
+
+        try {
+            InetAddress addr = interfaceSettings.getV4StaticAddress();
+            InetAddress mask = interfaceSettings.getV4StaticNetmask();
+            if (addr == null || mask == null) {
+                logger.warn("Missing interface settings, disabling DHCP");
+                interfaceSettings.setDhcpEnabled( false );
+            }
+
+            InetAddress start;
+            InetAddress end;
+            IPMaskedAddress maddr = new IPMaskedAddress( addr, mask );
+
+            // This will only configure /24 or larger network, the logic for
+            // smaller networks is complicated and isn't really worth it.
+            if (maddr.maskNumBits() <= 24) {
+                start = InetAddress.getByName("0.0.0.100");
+                end   = InetAddress.getByName("0.0.0.200");
+            } else {
+                start = InetAddress.getByName("0.0.0.16");
+                end   = InetAddress.getByName("0.0.0.99");
+            }
+
+            // bitwise OR the selected start and end with the base address
+            InetAddress baseAddr = maddr.getMaskedAddr();
+            byte[] maskBytes = mask.getAddress();
+            byte[] baseAddrStartBytes = baseAddr.getAddress();
+            byte[] baseAddrEndBytes   = baseAddr.getAddress();
+            byte[] startBytes = start.getAddress();
+            byte[] endBytes   = end.getAddress();
+            for ( int i = 0 ; i < baseAddrStartBytes.length ; i++ ) {
+                baseAddrStartBytes[i] = (byte) ( baseAddrStartBytes[i] | ( startBytes[i] & (~maskBytes[i])) );
+                baseAddrEndBytes[i]   = (byte) ( baseAddrEndBytes[i] | ( endBytes[i] & (~maskBytes[i])) );
+            }
+
+            InetAddress suggestedStart = InetAddress.getByAddress( baseAddrStartBytes );
+            InetAddress suggestedEnd   = InetAddress.getByAddress( baseAddrEndBytes );
+
+            interfaceSettings.setDhcpRangeStart( suggestedStart );
+            interfaceSettings.setDhcpRangeEnd( suggestedEnd );
+            interfaceSettings.setDhcpAuthoritative( true );
+            interfaceSettings.setDhcpLeaseDuration( 24*60*60 ); // 24 hours
+            interfaceSettings.setDhcpLeaseLimit( 100 ); // 100
+        }
+        catch (Exception e) {
+            logger.warn("Exception initializing DHCP Address: ",e);
+            interfaceSettings.setDhcpEnabled( false );
+        }
+    }
+
 }

@@ -22,7 +22,6 @@ if(typeof console === "undefined") {
 Ung.SetupWizard.LabelWidth = 180;
 Ung.SetupWizard.LabelWidth2 = 120;
 
-
 Ext.apply(Ext.form.field.VTypes, {
     ipCheck: function( val, field ) {
         return val.match( this.ipCheckRegex );
@@ -34,22 +33,78 @@ Ext.apply(Ext.form.field.VTypes, {
             var pass_original = Ext.getCmp(field.comparePasswordField);
         return val == pass_original.getValue();
     },
-    passwordConfirmCheckText: 'Passwords do not match',
-
-    hostname: function( val, field ) {
-        var labels = val.split( "." );
-        for ( var c = 0 ; c < labels.length ; c++ ) {
-            if ( !labels[c].match( this.hostnameRegex )) {
-                return false;
-            }
-        }
-
-        return true;
-    },
-    hostnameRegex: /^[0-9A-Za-z]([-/_0-9A-Za-z]*[0-9A-Za-z])?$/,
-    hostnameText: "Please enter a valid hostname"
+    passwordConfirmCheckText: 'Passwords do not match'
 });
 
+Ext.define('Ung.SetupWizard.SettingsSaver', {
+    password: null,
+
+    constructor: function( panel, handler ) {
+        this.panel = panel;
+        this.handler = handler;
+    },
+
+    savePassword: function() {
+        // New Password
+        this.password = this.panel.query('textfield[name="password"]')[0].getValue();
+        rpc.setup.setAdminPassword( Ext.bind(this.saveTimeZone, this), this.password );
+    },
+
+    saveTimeZone: function( result, exception ) {
+        if( exception ) {
+            Ext.MessageBox.alert(i18n._( "Unable to save the admin password" ), exception.message );
+            return;
+            }
+
+        var timezone = this.panel.query('textfield[name="timezone"]')[0].getValue();
+
+        rpc.setup.setTimeZone( Ext.bind(this.authenticate,this ), timezone );
+    },
+
+    authenticate: function( result, exception ) {
+        if ( exception ) {
+            Ext.MessageBox.alert(i18n._("Unable to save Time zone settings"), exception.message);
+            return;
+        }
+
+        // console.log("Authenticating...");
+        Ext.Ajax.request({
+            params: {
+                username: 'admin',
+                password: this.password
+            },
+            // If it uses the default type then this will not work
+            // because the authentication handler does not like utf8
+            headers: {
+                'Content-Type': "application/x-www-form-urlencoded"
+            },
+            url: '/auth/login?url=/webui&realm=Administrator',
+            callback: Ext.bind(this.getManagers,this )
+        });
+    },
+
+    getManagers: function( options, success, response ) {
+        if ( success ) {
+            // It is very wrong to do this all synchronously
+            rpc.jsonrpc = new JSONRpcClient( "/webui/JSON-RPC" );
+            rpc.adminManager = rpc.jsonrpc.UvmContext.adminManager();
+            rpc.newNetworkManager = rpc.jsonrpc.UvmContext.newNetworkManager();
+            rpc.connectivityTester = rpc.jsonrpc.UvmContext.getConnectivityTester();
+            rpc.toolboxManager = rpc.jsonrpc.UvmContext.toolboxManager();
+            rpc.systemManager = rpc.jsonrpc.UvmContext.systemManager();
+            rpc.mailSender = rpc.jsonrpc.UvmContext.mailSender();
+
+            if (Ext.MessageBox.rendered) {
+                Ext.MessageBox.hide();
+            }
+            this.handler();
+        } else {
+            Ext.MessageBox.alert( i18n._( "Unable to save password." ));
+        }
+    }
+});
+
+// Setup Wizard - Welcome
 Ext.define('Ung.SetupWizard.Welcome', {
     constructor: function( config ) {
         var panel = Ext.create('Ext.form.Panel', {
@@ -73,7 +128,8 @@ Ext.define('Ung.SetupWizard.Welcome', {
     }
 });
 
-Ext.define('Ung.SetupWizard.Settings', {
+// Setup Wizard - Step 1 (Password and Timezone)
+Ext.define('Ung.SetupWizard.ServerSettings', {
     constructor: function( config ) {
         this.panel = Ext.create('Ext.form.Panel', {
             defaultType: 'fieldset',
@@ -161,78 +217,7 @@ Ext.define('Ung.SetupWizard.Settings', {
     }
 });
 
-Ext.define('Ung.SetupWizard.SettingsSaver', {
-    password: null,
-
-    constructor: function( panel, handler ) {
-        this.panel = panel;
-        this.handler = handler;
-    },
-
-    savePassword: function() {
-        // New Password
-        this.password = this.panel.query('textfield[name="password"]')[0].getValue();
-        rpc.setup.setAdminPassword( Ext.bind(this.saveTimeZone, this), this.password );
-    },
-
-    saveTimeZone: function( result, exception ) {
-        if( exception ) {
-            Ext.MessageBox.alert(i18n._( "Unable to save the admin password" ), exception.message );
-            return;
-            }
-
-        var timezone = this.panel.query('textfield[name="timezone"]')[0].getValue();
-
-        rpc.setup.setTimeZone( Ext.bind(this.authenticate,this ), timezone );
-    },
-
-    authenticate: function( result, exception ) {
-        if ( exception ) {
-            Ext.MessageBox.alert(i18n._("Unable to save Time zone settings"), exception.message);
-            return;
-        }
-
-        // Cache the password to reauthenticate later
-        //Ung.SetupWizard.ReauthenticateHandler.password = this.password;
-
-        // console.log("Authenticating...");
-        Ext.Ajax.request({
-            params: {
-                username: 'admin',
-                password: this.password
-            },
-            // If it uses the default type then this will not work
-            // because the authentication handler does not like utf8
-            headers: {
-                'Content-Type': "application/x-www-form-urlencoded"
-            },
-            url: '/auth/login?url=/webui/setupSettings.js&realm=Administrator',
-            callback: Ext.bind(this.getManagers,this )
-        });
-    },
-
-    getManagers: function( options, success, response ) {
-        if ( success ) {
-            eval( response.responseText );
-            // It is very wrong to do this all synchronously
-            rpc.jsonrpc = new JSONRpcClient( "/webui/JSON-RPC" );
-            rpc.adminManager = rpc.jsonrpc.UvmContext.adminManager();
-            rpc.newNetworkManager = rpc.jsonrpc.UvmContext.newNetworkManager();
-            rpc.connectivityTester = rpc.jsonrpc.UvmContext.getConnectivityTester();
-            rpc.toolboxManager = rpc.jsonrpc.UvmContext.toolboxManager();
-            rpc.systemManager = rpc.jsonrpc.UvmContext.systemManager();
-            rpc.mailSender = rpc.jsonrpc.UvmContext.mailSender();
-
-            if (Ext.MessageBox.rendered) {
-                Ext.MessageBox.hide();
-            }
-            this.handler();
-        } else {
-            Ext.MessageBox.alert( i18n._( "Unable to save password." ));
-        }
-    }
-});
-
+// Setup Wizard - Step 2 (Remap Interfaces)
 Ext.define('Ung.SetupWizard.Interfaces', {
     constructor: function() {
         this.interfaceStore = Ext.create('Ext.data.ArrayStore', {
@@ -369,10 +354,9 @@ Ext.define('Ung.SetupWizard.Interfaces', {
     },
 
     initializeDragAndDrop: function() {
-        var data = this.fixInterfaceList( Ung.SetupWizard.CurrentValues.interfaceArray );
-
+        //var data = this.fixInterfaceList( Ung.SetupWizard.CurrentValues.interfaceArray );
+        var data = [];
         this.interfaceStore.loadData( data );
-
     },
 
     onDrop: function(node,data,overModel,dropPosition,dropFunction, options) {
@@ -432,33 +416,16 @@ Ext.define('Ung.SetupWizard.Interfaces', {
     },
 
     saveInterfaceList: function( handler ) {
-        //Ung.SetupWizard.ReauthenticateHandler.reauthenticate( Ext.bind(this.afterReauthenticate,this, [ handler ] ));
-        handler();
-        
+
         // disable auto refresh
         this.enableAutoRefresh = false;
-    },
 
-//     afterReauthenticate: function( handler ) {
-//         Ext.MessageBox.hide();
-//         handler();
-
-//         //FIXME
-
-//         // Commit the store to get rid of the change marks
-//         //this.interfaceStore.sync();
-
-//         // Build the two interface arrays
-//         //var osArray = [];
-//         //var userArray = [];
-//         //this.interfaceStore.each( function( currentRow ) {
-//         //    var status = currentRow.get( "status" );
-//         //    userArray.push( currentRow.get( "name" ));
-//         //    osArray.push( status[0] );
-//         //});
+        Ext.MessageBox.wait( i18n._( "Saving Settings" ), i18n._( "Please Wait" ));
+        // FIXME save settings
         
-//         //rpc.networkManager.remapInterfaces( Ext.bind(this.errorHandler, this, [ handler ], true ), osArray, userArray );
-//     },
+        Ext.MessageBox.hide();
+        handler();
+    },
 
     errorHandler: function( result, exception, foo, handler ) {
         if(exception) {
@@ -510,7 +477,8 @@ Ext.define('Ung.SetupWizard.Interfaces', {
         // FIXME
         // result is now a NetworkSettings
         // var interfaceList = this.fixInterfaceList( result.interfaceList );
-
+        var interfaceList = [];
+        
         if ( interfaceList.length != this.interfaceStore.getCount()) {
             Ext.MessageBox.alert( i18n._( "New interfaces" ), i18n._ ( "There are new interfaces, please restart the wizard." ), "" );
             return;
@@ -541,6 +509,7 @@ Ext.define('Ung.SetupWizard.Interfaces', {
     }
 });
 
+// Setup Wizard - Step 3 (Configure WAN)
 Ext.define('Ung.SetupWizard.Internet', {
     constructor: function( config ) {
         this.v4ConfigTypes = [];
@@ -801,9 +770,14 @@ Ext.define('Ung.SetupWizard.Internet', {
         this.cardPanel.layout.setActiveItem( record[0].index );
     },
 
-//     afterReauthenticate: function( handler ) {
-//         this.cardPanel.layout.activeItem.saveData( handler );
-//     },
+    clearInterfaceSettings: function( wanSettings ) {
+        // delete unused stuff
+        delete wanSettings.v4StaticAddress;
+        delete wanSettings.v4StaticNetmask;
+        delete wanSettings.v4StaticGateway;
+        delete wanSettings.v4StaticDns1;
+        delete wanSettings.v4StaticDns2;
+    },
 
     saveDHCP: function( handler, hideWindow ) {
         if ( hideWindow == null ) {
@@ -811,57 +785,54 @@ Ext.define('Ung.SetupWizard.Internet', {
         }
 
         var wanSettings = this.getFirstWanSettings( Ung.SetupWizard.CurrentValues.networkSettings );
+        this.clearInterfaceSettings( wanSettings );
+
         wanSettings.v4ConfigType = "auto";
 
-        var complete = Ext.bind(this.complete, this, [ handler, hideWindow ], true );
+        this.setFirstWanSettings( Ung.SetupWizard.CurrentValues.networkSettings, wanSettings );
+
+        var complete = Ext.bind(this.complete, this, [ handler, hideWindow ], Ung.SetupWizard.CurrentValues.networkSettings );
         rpc.newNetworkManager.setNetworkSettings( complete, FIXME ); //FIXME
     },
 
     saveStatic: function( handler, hideWindow ) {
-        var wanSettings = this.getFirstWanSettings( Ung.SetupWizard.CurrentValues.networkSettings );
-        wanSettings.v4ConfigType = "static";
-
         if ( hideWindow == null ) {
             hideWindow = true;
         }
 
-        // delete unused stuff
-        delete wanSettings.v4StaticAddress;
-        delete wanSettings.v4StaticNetmask;
-        delete wanSettings.v4StaticGateway;
-        delete wanSettings.v4StaticDns1;
-        delete wanSettings.v4StaticDns2;
+        var wanSettings = this.getFirstWanSettings( Ung.SetupWizard.CurrentValues.networkSettings );
+        this.clearInterfaceSettings( wanSettings );
 
+        wanSettings.v4ConfigType = "static";
         wanSettings.v4StaticAddress = this.staticPanel.query('textfield[name="ip"]')[0].getValue();
         wanSettings.v4StaticNetmask = this.staticPanel.query('textfield[name="netmask"]')[0].getValue();
         wanSettings.v4StaticGateway = this.staticPanel.query('textfield[name="gateway"]')[0].getValue();
         wanSettings.v4StaticDns1 = this.staticPanel.query('textfield[name="dns1"]')[0].getValue();
         wanSettings.v4StaticDns2 = this.staticPanel.query('textfield[name="dns2"]')[0].getValue();
-
-        if ( wanSettings.v4StaticDns2 == 0 ) {
-            wanSettings.v4StaticDns2 = null;
-        }
+        if ( wanSettings.v4StaticDns2.length <= 0 ) wanSettings.v4StaticDns2 = null; //ignore empty box
 
         this.setFirstWanSettings( Ung.SetupWizard.CurrentValues.networkSettings, wanSettings );
 
-        //FIXME - change networkSettings
         var complete = Ext.bind(this.complete, this, [ handler, hideWindow ], true );
         rpc.newNetworkManager.setNetworkSettings( complete, Ung.SetupWizard.CurrentValues.networkSettings ); 
     },
 
     savePPPoE: function( handler, hideWindow ) {
-        var wanSettings = this.getFirstWanSettings( Ung.SetupWizard.CurrentValues.networkSettings );
-        wanSettings.v4ConfigType = "pppoe";
-
         if ( hideWindow == null ) {
             hideWindow = true;
         }
 
-        wanSettings.PPPoEUsername = this.pppoePanel.query('textfield[name="username"]')[0].getValue();
-        wanSettings.PPPoEPassword = this.pppoePanel.query('textfield[name="password"]')[0].getValue();
+        var wanSettings = this.getFirstWanSettings( Ung.SetupWizard.CurrentValues.networkSettings );
+        this.clearInterfaceSettings( wanSettings );
 
+        wanSettings.v4ConfigType = "pppoe";
+        wanSettings.v4PPPoEUsername = this.pppoePanel.query('textfield[name="username"]')[0].getValue();
+        wanSettings.v4PPPoEPassword = this.pppoePanel.query('textfield[name="password"]')[0].getValue();
+
+        this.setFirstWanSettings( Ung.SetupWizard.CurrentValues.networkSettings, wanSettings );
+        
         var complete = Ext.bind(this.complete, this, [ handler, hideWindow ], true );
-        rpc.newNetworkManager.setNetworkSettings( complete, FIXME ); //FIXME
+        rpc.newNetworkManager.setNetworkSettings( complete, Ung.SetupWizard.CurrentValues.networkSettings ); 
     },
 
     complete: function( result, exception, foo, handler, hideWindow ) {
@@ -880,7 +851,7 @@ Ext.define('Ung.SetupWizard.Internet', {
 
         this.refreshNetworkDisplay();
 
-        if ( hideWindow || ( hideWindow == null )) {
+        if ( hideWindow || ( hideWindow == null ) ) {
             Ext.MessageBox.hide();
         }
 
@@ -896,8 +867,7 @@ Ext.define('Ung.SetupWizard.Internet', {
             Ext.MessageBox.hide();
         };
 
-        //Ung.SetupWizard.ReauthenticateHandler.reauthenticate( Ext.bind(this.saveData,this, [ handler, false ] ));
-        this.saveData(handler, false);
+        this.saveData( handler, false );
     },
 
     testConnectivity: function( afterFn ) {
@@ -915,9 +885,7 @@ Ext.define('Ung.SetupWizard.Internet', {
         Ext.MessageBox.wait(i18n._("Saving Settings..."), i18n._("Please Wait"));
         var handler = Ext.bind( this.execConnectivityTest, this, [afterFn] );
 
-        //Ung.SetupWizard.ReauthenticateHandler.reauthenticate( Ext.bind(this.saveData, this, [ handler, false ] ));
-        this.saveData( handler, false);
-
+        this.saveData( handler, false );
     },
 
     saveData: function( handler, hideWindow ) {
@@ -925,8 +893,6 @@ Ext.define('Ung.SetupWizard.Internet', {
     },
 
     completeConnectivityTest: function( result, exception, foo, handler ) {
-        console.log("Completed connectivity test");
-        
         if ( Ext.MessageBox.rendered) {
             Ext.MessageBox.hide();
         }
@@ -996,8 +962,6 @@ Ext.define('Ung.SetupWizard.Internet', {
 
     execConnectivityTest: function( handler ) {
         Ext.MessageBox.wait(i18n._("Testing Connectivity..."), i18n._("Please Wait"));
-
-        console.log("Running connectivity test...");
         rpc.connectivityTester.getStatus( Ext.bind( this.completeConnectivityTest, this, [handler], true ) );
     },
 
@@ -1085,6 +1049,7 @@ Ext.define('Ung.SetupWizard.Internet', {
 
 });
 
+// Setup Wizard - Step 4 (Configure Internal)
 Ext.define('Ung.SetupWizard.InternalNetwork', {
     constructor: function( config ) {
         this.panel = Ext.create('Ext.form.Panel', {
@@ -1217,11 +1182,10 @@ Ext.define('Ung.SetupWizard.InternalNetwork', {
                     this.panel.query('textfield[name="network"]')[0].setValue( intfs[c]['v4StaticAddress'] );
                     this.panel.query('combo[name="netmask"]')[0].setValue( intfs[c]['v4StaticNetmask'] );
                 } else {
-                    // FIXME
-                    // FIXME pick something we are SURE doesnt conflict with WAN
-                    // FIXME
                     this.panel.query('textfield[name="network"]')[0].setValue( "192.168.2.1" );
-                    this.panel.query('combo[name="netmask"]')[0].setValue( "192.168.2.1" );
+                    this.panel.query('combo[name="netmask"]')[0].setValue( "255.255.255.0" );
+                    // FIXME get status/current addr of WAN interface
+                    // FIXME pick something we are SURE doesnt conflict with WAN addr
                 }
 
                 break;
@@ -1295,7 +1259,8 @@ Ext.define('Ung.SetupWizard.InternalNetwork', {
             firstNonWan['v4StaticAddress'] = network;
             firstNonWan['v4StaticNetmask'] = netmask;
             firstNonWan['dhcpEnabled'] = enableDhcpServer;
-            // FIXME - set good DHCP settings
+            delete firstNonWan.dhcpRangeStart; // new ones will be chosen
+            delete firstNonWan.dhcpRangeEnd; // new ones will be chosen
 
             this.setFirstNonWanSettings( Ung.SetupWizard.CurrentValues.networkSettings, firstNonWan );
             rpc.newNetworkManager.setNetworkSettings( delegate, Ung.SetupWizard.CurrentValues.networkSettings ); 
@@ -1313,6 +1278,7 @@ Ext.define('Ung.SetupWizard.InternalNetwork', {
     }
 });
 
+// Setup Wizard - Step 5 (Configure Upgrades)
 Ext.define('Ung.SetupWizard.AutoUpgrades', {
     constructor: function( config ) {
         this.panel = Ext.create('Ext.form.Panel', {
@@ -1390,9 +1356,6 @@ Ext.define('Ung.SetupWizard.AutoUpgrades', {
         }
         Ext.MessageBox.wait( i18n._( "Saving Automatic Upgrades Settings" ), i18n._( "Please Wait" ));
 
-        //Ung.SetupWizard.ReauthenticateHandler.reauthenticate( Ext.bind(this.afterReauthenticate, this, [ handler ] ));
-        //this.afterReauthenticate( handler );
-
         var delegate = Ext.bind(this.complete, this, [ handler ], true );
         var systemSettings = rpc.systemManager.getSettings();
         if ( value == "yes" ) {
@@ -1404,18 +1367,6 @@ Ext.define('Ung.SetupWizard.AutoUpgrades', {
         }
 
     },
-//    afterReauthenticate: function( handler ) {
-//         var delegate = Ext.bind(this.complete, this, [ handler ], true );
-//         var value = this.panel.query('radio[name="autoUpgradesRadio"]')[0].getGroupValue();
-//         var systemSettings = rpc.systemManager.getSettings();
-//         if ( value == "yes" ) {
-//             systemSettings.autoUpgrade = true;
-//             rpc.systemManager.setSettings( delegate, systemSettings );
-//         } else {
-//             systemSettings.autoUpgrade = false;
-//             rpc.systemManager.setSettings( delegate, systemSettings );
-//         }
-//     },
     complete: function( result, exception, foo, handler ) {
         if(exception) {
             Ext.MessageBox.alert(i18n._( "Local Network" ), i18n._( "Unable to save Automatic Upgrade Settings" ) + exception.message );
@@ -1500,13 +1451,13 @@ Ung.Setup = {
 
         document.title = i18n._( "Setup Wizard" );
 
-        var welcome = Ext.create('Ung.SetupWizard.Welcome', {});
-        var settings = Ext.create('Ung.SetupWizard.Settings', {});
+        var welcome    = Ext.create('Ung.SetupWizard.Welcome', {});
+        var settings   = Ext.create('Ung.SetupWizard.ServerSettings', {});
         var interfaces = Ext.create('Ung.SetupWizard.Interfaces', {});
-        var internet = Ext.create('Ung.SetupWizard.Internet', {});
-        var internal = Ext.create('Ung.SetupWizard.InternalNetwork', {});
-        var upgrades = Ext.create('Ung.SetupWizard.AutoUpgrades', {});
-        var complete = Ext.create('Ung.SetupWizard.Complete', {});
+        var internet   = Ext.create('Ung.SetupWizard.Internet', {});
+        var internal   = Ext.create('Ung.SetupWizard.InternalNetwork', {});
+        var upgrades   = Ext.create('Ung.SetupWizard.AutoUpgrades', {});
+        var complete   = Ext.create('Ung.SetupWizard.Complete', {});
 
         var cards = [];
         cards.push( welcome.card );
@@ -1545,40 +1496,3 @@ Ung.Setup = {
     }
 };
 
-// Ung.SetupWizard.ReauthenticateHandler = {
-//     username: "admin",
-//     password: "",
-
-//     // Must reauthenticate in order to refresh the managers
-//     reauthenticate: function( handler ) {
-//         console.log("ReAuthenticating...");
-//         Ext.Ajax.request({
-//             params: {
-//                 username: this.username,
-//                 password: this.password
-//             },
-//             // If it uses the default type then this will not work
-//             // because the authentication handler does not like utf8
-//             headers: {
-//                 'Content-Type': "application/x-www-form-urlencoded"
-//             },
-//             url: '/auth/login?url=/webui/setupSettings.js&realm=Administrator',
-//             callback: Ext.bind(this.reloadManagers, this, [ handler ], 4 )
-//         });
-//     },
-
-//     reloadManagers: function( options, success, response, handler ) {
-//         if ( success ) {
-//             // It is very wrong to do this all synchronously
-//             rpc.jsonrpc = new JSONRpcClient( "/webui/JSON-RPC" );
-//             rpc.adminManager = rpc.jsonrpc.UvmContext.adminManager();
-//             rpc.newNetworkManager = rpc.jsonrpc.UvmContext.newNetworkManager();
-//             rpc.connectivityTester = rpc.jsonrpc.UvmContext.getConnectivityTester();
-//             rpc.toolboxManager = rpc.jsonrpc.UvmContext.toolboxManager();
-//             rpc.mailSender = rpc.jsonrpc.UvmContext.mailSender();
-//             handler();
-//         } else {
-//             Ext.MessageBox.alert( i18n._( "Unable to save settings." ));
-//         }
-//     }
-// };
