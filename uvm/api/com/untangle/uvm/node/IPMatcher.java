@@ -15,8 +15,6 @@ import com.untangle.uvm.NetworkManager;
 import com.untangle.uvm.node.IPAddress;
 import com.untangle.uvm.node.ParseException;
 import com.untangle.uvm.networking.IPNetwork;
-import com.untangle.uvm.networking.NetworkConfigurationListener;
-import com.untangle.uvm.networking.NetworkConfiguration;
 import com.untangle.uvm.networking.InterfaceConfiguration;
 
 /**
@@ -30,13 +28,9 @@ public class IPMatcher
     private static final String MARKER_SEPERATOR = ",";
     private static final String MARKER_RANGE = "-";
     private static final String MARKER_SUBNET = "/";
-    private static final String MARKER_INTERNAL = "internal";
-    private static final String MARKER_EXTERNAL = "external";
 
     private static IPMatcher ANY_MATCHER = new IPMatcher(MARKER_ANY);
     private static IPMatcher NIL_MATCHER = new IPMatcher(MARKER_NONE);
-    private static IPMatcher INTERNAL_MATCHER = new IPMatcher(MARKER_INTERNAL);
-    private static IPMatcher EXTERNAL_MATCHER = new IPMatcher(MARKER_EXTERNAL);
 
     /* Number of bytes in an IPv4 address */
     private static final int INADDRSZ = 4; /* XXX IPv6 */
@@ -60,11 +54,9 @@ public class IPMatcher
 
     private static LinkedList<IPNetwork> internalNetworkList = null;
 
-    private static NetworkListener listener = null;
-
     private final Logger logger = Logger.getLogger(getClass());
 
-    public static enum IPMatcherType { ANY, NONE, SINGLE, RANGE, SUBNET, INTERNAL, EXTERNAL, LIST };
+    public static enum IPMatcherType { ANY, NONE, SINGLE, RANGE, SUBNET, LIST };
     
     /**
      * The string format of this matcher
@@ -99,12 +91,9 @@ public class IPMatcher
     private InetAddress single = null;
 
 
-    
     public IPMatcher( String matcher )
     {
         initialize(matcher);
-
-        initializeListerner();
     }
 
     /**
@@ -163,33 +152,6 @@ public class IPMatcher
             //logger.error("CHECK: " + address + " inside? " + Long.toHexString(this.subnetNetwork) + "/" + Long.toHexString(this.subnetNetmask) + " = " + match);
             return match;
             
-        case INTERNAL:
-            initializeListerner();
-            tmp = addrToLong( address );
-            if ( internalNetworkList != null ) {
-                for ( IPNetwork network : internalNetworkList ) {
-                    long subNetwork = addrToLong(network.getNetwork().getAddr());
-                    long subNetmask = addrToLong(network.getNetmask().getAddr());
-                    if (( tmp & subNetmask ) == subNetwork )
-                        return true;
-                }
-            }
-            return false;
-            
-        case EXTERNAL:
-            /* same as internal, but inverted */
-            initializeListerner();
-            tmp = addrToLong( address );
-            if ( internalNetworkList != null ) {
-                for ( IPNetwork network : internalNetworkList ) {
-                    long subNetwork = addrToLong(network.getNetwork().getAddr());
-                    long subNetmask = addrToLong(network.getNetmask().getAddr());
-                    if (( tmp & subNetmask ) == subNetwork )
-                        return false;
-                }
-            }
-            return true;
-
         case LIST:
             for (IPMatcher child : this.children) {
                 if (child.isMatch(address))
@@ -232,16 +194,6 @@ public class IPMatcher
         return NIL_MATCHER;
     }
     
-    public static IPMatcher getInternalMatcher()
-    {
-        return INTERNAL_MATCHER;
-    }
-
-    public static IPMatcher getExternalMatcher()
-    {
-        return EXTERNAL_MATCHER;
-    }
-
     public static IPMatcher makeSubnetMatcher( IPAddress network, IPAddress netmask )
     {
         return new IPMatcher( network, netmask );
@@ -255,31 +207,6 @@ public class IPMatcher
     public static synchronized void setInternalNetworks( LinkedList<IPNetwork> networkList )
     {
         internalNetworkList = networkList;
-    }
-    
-
-    /**
-     * This initialized the listener if it isnt already
-     * It is safe to call this function multiple times
-     */
-    private synchronized void initializeListerner()
-    {
-        /**
-         * If this is the first IPMatcher to be initialized
-         * start the network listener
-         */
-        if (listener == null) {
-            UvmContext context = UvmContextFactory.context();
-            if (context == null)
-                return;
-            
-            NetworkManager netMan = UvmContextFactory.context().networkManager();
-            if (netMan == null)
-                return;
-                    
-            this.listener = new NetworkListener();
-            netMan.registerListener( this.listener );
-        }
     }
     
     /**
@@ -323,14 +250,6 @@ public class IPMatcher
         }
         if (MARKER_NONE.equals(matcher)) {
             this.type = IPMatcherType.NONE;
-            return;
-        }
-        if (MARKER_INTERNAL.equals(matcher)) {
-            this.type = IPMatcherType.INTERNAL;
-            return;
-        }
-        if (MARKER_EXTERNAL.equals(matcher)) {
-            this.type = IPMatcherType.EXTERNAL;
             return;
         }
         
@@ -489,50 +408,6 @@ public class IPMatcher
         return num;
     }
 
-    /**
-     * This rebuilds the list for internal and external network matching
-     * This should be called whenever address change
-     */
-    private static void buildInternalNetworkList( NetworkConfiguration netConf )
-    {
-        LinkedList<IPNetwork> internalNetworkList = new LinkedList<IPNetwork>();
-
-        if (netConf == null) 
-            return;
-        
-        List<InterfaceConfiguration> intfConfs = netConf.getInterfaceList();
-        if (intfConfs == null) 
-            return;
-
-        for (InterfaceConfiguration intfConf : intfConfs) {
-            IPNetwork primary = intfConf.getPrimaryAddress();
-            if (primary != null)
-                internalNetworkList.add(primary);
-
-            List<IPNetwork> aliases = intfConf.getAliases();
-            if (aliases != null) {
-                for (IPNetwork alias : aliases) {
-                    if (alias != null)
-                        internalNetworkList.add(alias);
-                }
-            }
-        }
-
-        IPMatcher.internalNetworkList = internalNetworkList;
-    }
-
-    /**
-     * This listens to network configuration changes and refreshes the internal network list
-     * when necessary
-     */
-    private class NetworkListener implements NetworkConfigurationListener
-    {
-        public void event( NetworkConfiguration settings )
-        {
-            IPMatcher.buildInternalNetworkList(settings);
-        }
-    }
-
     static
     {
         int c = 0;
@@ -544,5 +419,4 @@ public class IPMatcher
             }
         }
     }
-
 }

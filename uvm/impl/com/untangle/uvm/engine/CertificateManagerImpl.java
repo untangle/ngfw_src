@@ -16,7 +16,6 @@ import com.untangle.uvm.CertificateManager;
 import com.untangle.uvm.networking.NetworkUtil;
 import com.untangle.uvm.security.CertInfo;
 import com.untangle.uvm.security.RFC2253Name;
-import com.untangle.uvm.networking.NetworkConfigurationListener;
 import com.untangle.uvm.networking.NetworkConfiguration;
 import com.untangle.uvm.UvmContextFactory;
 

@@ -153,17 +153,9 @@ public class IpsRuleHeader
         boolean clientIPMatch = false;
         Iterator<IPMatcher> clientIt = clientIpSet.iterator();
 
-        IPMatcher internalMatcher = IPMatcher.getInternalMatcher();
-        IPMatcher externalMatcher = IPMatcher.getExternalMatcher();
-
         while(clientIt.hasNext() && !clientIPMatch) {
             IPMatcher matcher = clientIt.next();
-            if (matcher == externalMatcher)
-                clientIPMatch = isInbound;
-            else if (matcher == internalMatcher)
-                clientIPMatch = !isInbound;
-            else
-                clientIPMatch = matcher.isMatch(cAddr);
+            clientIPMatch = matcher.isMatch(cAddr);
             // logger.debug("client matcher: " + matcher + " sez: " + clientIPMatch);
         }
 
@@ -172,12 +164,7 @@ public class IpsRuleHeader
         Iterator<IPMatcher> serverIt = serverIpSet.iterator();
         while(serverIt.hasNext() && !serverIPMatch) {
             IPMatcher matcher = serverIt.next();
-            if (matcher == externalMatcher)
-                serverIPMatch = !isInbound;
-            else if (matcher == internalMatcher)
-                serverIPMatch = isInbound;
-            else
-                serverIPMatch = matcher.isMatch(sAddr);
+            serverIPMatch = matcher.isMatch(sAddr);
             // logger.debug("server matcher: " + matcher + " sez: " + serverIPMatch);
         }
         boolean ipMatch = (clientIPMatch ^ clientIPFlag) && (serverIPMatch ^ serverIPFlag);
