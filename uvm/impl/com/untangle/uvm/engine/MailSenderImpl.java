@@ -44,9 +44,9 @@ import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.SettingsManager;
 import com.untangle.uvm.MailSender;
 import com.untangle.uvm.MailSettings;
-import com.untangle.uvm.networking.NetworkConfigurationListener;
-import com.untangle.uvm.networking.NetworkConfiguration;
 import com.untangle.uvm.AdminSettings;
+import com.untangle.uvm.network.NetworkSettingsListener;
+import com.untangle.uvm.network.NetworkSettings;
 import com.untangle.uvm.util.I18nUtil;
 
 /**
@@ -169,9 +169,9 @@ class MailSenderImpl implements MailSender
     // is up and runing
     void postInit()
     {
-        ((NetworkManagerImpl)UvmContextFactory.context().networkManager()).
-            registerListener(new NetworkConfigurationListener() {
-                    public void event( NetworkConfiguration settings )
+        ((NewNetworkManagerImpl)UvmContextFactory.context().newNetworkManager()).
+            registerListener(new NetworkSettingsListener() {
+                    public void event( NetworkSettings settings )
                     {
                         syncConfigFiles();
                     }
@@ -334,10 +334,10 @@ class MailSenderImpl implements MailSender
         File exim_dir = new File(EXIM_CONF_DIR);
         if (exim_dir.isDirectory()) {
 
-            NetworkConfiguration netConf = UvmContextFactory.context().networkManager().getNetworkConfiguration();
+            NetworkSettings netSettings = UvmContextFactory.context().newNetworkManager().getNetworkSettings();
             String hostName = null;
-            if (netConf != null)
-                hostName = netConf.getHostname();
+            if (netSettings != null)
+                hostName = netSettings.getHostName();
             if (hostName == null) {
                 logger.warn("null hostname, using untangle-server");
                 hostName = "untangle-server";

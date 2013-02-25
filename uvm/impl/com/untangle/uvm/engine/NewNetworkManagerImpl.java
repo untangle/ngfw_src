@@ -13,6 +13,7 @@ import com.untangle.uvm.SettingsManager;
 import com.untangle.uvm.NewNetworkManager;
 import com.untangle.uvm.ExecManagerResult;
 import com.untangle.uvm.network.NetworkSettings;
+import com.untangle.uvm.network.NetworkSettingsListener;
 import com.untangle.uvm.network.InterfaceSettings;
 import com.untangle.uvm.network.BypassRule;
 import com.untangle.uvm.network.StaticRoute;
@@ -34,6 +35,9 @@ public class NewNetworkManagerImpl implements NewNetworkManager
     
     private NetworkSettings networkSettings;
 
+    /* networkListeners stores parties interested in being notified of network settings change */
+    private LinkedList<NetworkSettingsListener> networkListeners = new LinkedList<NetworkSettingsListener>();
+    
     protected NewNetworkManagerImpl()
     {
         SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
@@ -123,7 +127,9 @@ public class NewNetworkManagerImpl implements NewNetworkManager
             for ( String line : lines )
                 logger.info("ifup: " + line);
         } catch (Exception e) {}
-        
+
+        // notify interested parties that the settings have changed
+        callNetworkListeners();
     }
 
     /**
@@ -144,6 +150,16 @@ public class NewNetworkManagerImpl implements NewNetworkManager
         } catch (Exception e) {}
     }
     
+    public void registerListener( NetworkSettingsListener networkListener )
+    {
+        this.networkListeners.add( networkListener );
+    }
+
+    public void unregisterListener( NetworkSettingsListener networkListener )
+    {
+        this.networkListeners.remove( networkListener );
+    }
+
     private synchronized void _setSettings( NetworkSettings newSettings )
     {
         /**
@@ -415,4 +431,20 @@ public class NewNetworkManagerImpl implements NewNetworkManager
         }
     }
 
+    /* Listener functions */
+    private void callNetworkListeners()
+    {
+        logger.debug( "Calling network listeners." );
+        for ( NetworkSettingsListener listener : this.networkListeners ) {
+            if ( logger.isDebugEnabled()) logger.debug( "Calling listener: " + listener );
+
+            try {
+                listener.event( this.networkSettings );
+            } catch ( Exception e ) {
+                logger.error( "Exception calling listener", e );
+            }
+        }
+        logger.debug( "Done calling network listeners." );
+    }
+    
 }

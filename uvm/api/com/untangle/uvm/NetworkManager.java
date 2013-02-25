@@ -10,7 +10,6 @@ import org.json.JSONArray;
 import com.untangle.uvm.networking.NetworkConfiguration;
 import com.untangle.uvm.networking.InterfaceConfiguration;
 import com.untangle.uvm.networking.IPNetwork;
-import com.untangle.uvm.networking.NetworkConfigurationListener;
 import com.untangle.uvm.node.IPAddress;
 import com.untangle.uvm.NetworkManager;
 
@@ -73,10 +72,6 @@ public interface NetworkManager
      # if HTTP is not reachable, this returns NULL
      */
     InetAddress getInternalHttpAddress( int clientIntf );
-
-    void registerListener( NetworkConfigurationListener networkListener );
-
-    void unregisterListener( NetworkConfigurationListener networkListener );
 
     String[] getPossibleInterfaces();
 

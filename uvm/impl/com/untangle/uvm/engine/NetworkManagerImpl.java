@@ -26,7 +26,6 @@ import com.untangle.uvm.UvmState;
 import com.untangle.uvm.NetworkManager;
 import com.untangle.uvm.networking.InterfaceConfiguration;
 import com.untangle.uvm.networking.NetworkConfiguration;
-import com.untangle.uvm.networking.NetworkConfigurationListener;
 import com.untangle.uvm.networking.IPNetwork;
 import com.untangle.uvm.node.SessionTuple;
 import com.untangle.uvm.node.IPAddress;
@@ -48,8 +47,6 @@ public class NetworkManagerImpl implements NetworkManager
 
     private static final Object lock = new Object();
 
-    /* networkListeners stores parties interested in being notified of network changes */
-    private Set<NetworkConfigurationListener> networkListeners = new HashSet<NetworkConfigurationListener>();
 
     /** The nuts and bolts of networking, the real bits of panther.  this my friend
      * should never be null */
@@ -315,12 +312,6 @@ public class NetworkManagerImpl implements NetworkManager
             logger.debug( "New network settings: " + this.networkConfiguration );
         }
 
-        try {
-            callNetworkListeners();
-        } catch ( Exception e ) {
-            logger.error( "Exception in a listener", e );
-        }
-
         logger.info("Refreshed  Network Configuration.");
     }
 
@@ -443,32 +434,6 @@ public class NetworkManagerImpl implements NetworkManager
         }
 
         return address.getAddr();
-    }
-
-    /* Listener functions */
-    private void callNetworkListeners()
-    {
-        logger.debug( "Calling network listeners." );
-        for ( NetworkConfigurationListener listener : this.networkListeners ) {
-            if ( logger.isDebugEnabled()) logger.debug( "Calling listener: " + listener );
-
-            try {
-                listener.event( this.networkConfiguration );
-            } catch ( Exception e ) {
-                logger.error( "Exception calling listener", e );
-            }
-        }
-        logger.debug( "Done calling network listeners." );
-    }
-
-    public void registerListener( NetworkConfigurationListener networkListener )
-    {
-        this.networkListeners.add( networkListener );
-    }
-
-    public void unregisterListener( NetworkConfigurationListener networkListener )
-    {
-        this.networkListeners.remove( networkListener );
     }
 
     private void initPriv() throws Exception

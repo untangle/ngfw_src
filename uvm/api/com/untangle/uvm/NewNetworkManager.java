@@ -4,6 +4,7 @@
 package com.untangle.uvm;
 
 import com.untangle.uvm.network.NetworkSettings;
+import com.untangle.uvm.network.NetworkSettingsListener;
 
 public interface NewNetworkManager
 {
@@ -16,4 +17,7 @@ public interface NewNetworkManager
      * Set the network settings
      */
     void setNetworkSettings( NetworkSettings newSettings );
+
+    void registerListener( NetworkSettingsListener networkListener );
+    void unregisterListener( NetworkSettingsListener networkListener );
 }
