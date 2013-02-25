@@ -156,7 +156,7 @@ Ext.define('Ung.SetupWizard.Settings', {
     },
     saveSettings: function( handler ) {
         Ext.MessageBox.wait( i18n._( "Saving Settings" ), i18n._( "Please Wait" ));
-        var saver = Ext.create('Ung.SetupWizard.SettingsSaver',this.panel, handler );
+        var saver = Ext.create('Ung.SetupWizard.SettingsSaver', this.panel, handler );
         saver.savePassword();
     }
 });
@@ -193,7 +193,7 @@ Ext.define('Ung.SetupWizard.SettingsSaver', {
         }
 
         // Cache the password to reauthenticate later
-        Ung.SetupWizard.ReauthenticateHandler.password = this.password;
+        //Ung.SetupWizard.ReauthenticateHandler.password = this.password;
 
         // console.log("Authenticating...");
         Ext.Ajax.request({
@@ -432,34 +432,33 @@ Ext.define('Ung.SetupWizard.Interfaces', {
     },
 
     saveInterfaceList: function( handler ) {
-        Ext.MessageBox.wait( i18n._( "Remapping Network Interfaces" ), i18n._( "Please Wait" ));
-
-        Ung.SetupWizard.ReauthenticateHandler.reauthenticate( Ext.bind(this.afterReauthenticate,this, [ handler ] ));
-
+        //Ung.SetupWizard.ReauthenticateHandler.reauthenticate( Ext.bind(this.afterReauthenticate,this, [ handler ] ));
+        handler();
+        
         // disable auto refresh
         this.enableAutoRefresh = false;
     },
 
-    afterReauthenticate: function( handler ) {
-        Ext.MessageBox.hide();
-        handler();
+//     afterReauthenticate: function( handler ) {
+//         Ext.MessageBox.hide();
+//         handler();
 
-        //FIXME
+//         //FIXME
 
-        // Commit the store to get rid of the change marks
-        //this.interfaceStore.sync();
+//         // Commit the store to get rid of the change marks
+//         //this.interfaceStore.sync();
 
-        // Build the two interface arrays
-        //var osArray = [];
-        //var userArray = [];
-        //this.interfaceStore.each( function( currentRow ) {
-        //    var status = currentRow.get( "status" );
-        //    userArray.push( currentRow.get( "name" ));
-        //    osArray.push( status[0] );
-        //});
+//         // Build the two interface arrays
+//         //var osArray = [];
+//         //var userArray = [];
+//         //this.interfaceStore.each( function( currentRow ) {
+//         //    var status = currentRow.get( "status" );
+//         //    userArray.push( currentRow.get( "name" ));
+//         //    osArray.push( status[0] );
+//         //});
         
-        //rpc.networkManager.remapInterfaces( Ext.bind(this.errorHandler, this, [ handler ], true ), osArray, userArray );
-    },
+//         //rpc.networkManager.remapInterfaces( Ext.bind(this.errorHandler, this, [ handler ], true ), osArray, userArray );
+//     },
 
     errorHandler: function( result, exception, foo, handler ) {
         if(exception) {
@@ -469,11 +468,6 @@ Ext.define('Ung.SetupWizard.Interfaces', {
 
         Ext.MessageBox.hide();
         handler();
-    },
-
-    refreshInterfaces: function() {
-        Ext.MessageBox.wait( i18n._( "Refreshing Network Interfaces" ), i18n._( "Please Wait" ));
-        Ung.SetupWizard.ReauthenticateHandler.reauthenticate( Ext.bind(this.refreshInterfaces,this ));
     },
 
     autoRefreshInterfacesCallback: function( result, exception ) {
@@ -495,6 +489,7 @@ Ext.define('Ung.SetupWizard.Interfaces', {
     },
     
     refreshInterfaces: function() {
+        Ext.MessageBox.wait( i18n._( "Refreshing Network Interfaces" ), i18n._( "Please Wait" ));
         //FIXME
         //rpc.networkManager.updateLinkStatus();
         rpc.newNetworkManager.getNetworkSettings( Ext.bind(this.completeRefreshInterfaces,this ) );
@@ -806,9 +801,9 @@ Ext.define('Ung.SetupWizard.Internet', {
         this.cardPanel.layout.setActiveItem( record[0].index );
     },
 
-    afterReauthenticate: function( handler ) {
-        this.cardPanel.layout.activeItem.saveData( handler );
-    },
+//     afterReauthenticate: function( handler ) {
+//         this.cardPanel.layout.activeItem.saveData( handler );
+//     },
 
     saveDHCP: function( handler, hideWindow ) {
         if ( hideWindow == null ) {
@@ -901,7 +896,8 @@ Ext.define('Ung.SetupWizard.Internet', {
             Ext.MessageBox.hide();
         };
 
-        Ung.SetupWizard.ReauthenticateHandler.reauthenticate( Ext.bind(this.saveData,this, [ handler, false ] ));
+        //Ung.SetupWizard.ReauthenticateHandler.reauthenticate( Ext.bind(this.saveData,this, [ handler, false ] ));
+        this.saveData(handler, false);
     },
 
     testConnectivity: function( afterFn ) {
@@ -918,7 +914,10 @@ Ext.define('Ung.SetupWizard.Internet', {
 
         Ext.MessageBox.wait(i18n._("Saving Settings..."), i18n._("Please Wait"));
         var handler = Ext.bind( this.execConnectivityTest, this, [afterFn] );
-        Ung.SetupWizard.ReauthenticateHandler.reauthenticate( Ext.bind(this.saveData, this, [ handler, false ] ));
+
+        //Ung.SetupWizard.ReauthenticateHandler.reauthenticate( Ext.bind(this.saveData, this, [ handler, false ] ));
+        this.saveData( handler, false);
+
     },
 
     saveData: function( handler, hideWindow ) {
@@ -926,6 +925,12 @@ Ext.define('Ung.SetupWizard.Internet', {
     },
 
     completeConnectivityTest: function( result, exception, foo, handler ) {
+        console.log("Completed connectivity test");
+        
+        if ( Ext.MessageBox.rendered) {
+            Ext.MessageBox.hide();
+        }
+
         if ( exception ) {
             Ext.MessageBox.show({
                 title:i18n._( "Network Settings" ),
@@ -935,11 +940,7 @@ Ext.define('Ung.SetupWizard.Internet', {
                 icon:Ext.MessageBox.INFO
             });
             return;
-        } else {
-            if ( Ext.MessageBox.rendered) {
-                Ext.MessageBox.hide();
-            }
-        }
+        } 
 
         var message = "";
 
@@ -995,7 +996,9 @@ Ext.define('Ung.SetupWizard.Internet', {
 
     execConnectivityTest: function( handler ) {
         Ext.MessageBox.wait(i18n._("Testing Connectivity..."), i18n._("Please Wait"));
-        rpc.connectivityTester.getStatus(Ext.bind( this.completeConnectivityTest,this, [handler], true ));
+
+        console.log("Running connectivity test...");
+        rpc.connectivityTester.getStatus( Ext.bind( this.completeConnectivityTest, this, [handler], true ) );
     },
 
     getFirstWanSettings: function( networkSettings ) {
@@ -1276,8 +1279,6 @@ Ext.define('Ung.SetupWizard.InternalNetwork', {
         Ext.MessageBox.wait( i18n._( "Saving Internal Network Settings" ), i18n._( "Please Wait" ));
 
         var delegate = Ext.bind(this.complete, this, [ handler ], true );
-
-        // XXX need refreshNetworkSettings
         var firstNonWan = this.getFirstNonWanSettings( Ung.SetupWizard.CurrentValues.networkSettings );
         
         if ( value == 'bridged' ) {
@@ -1389,11 +1390,10 @@ Ext.define('Ung.SetupWizard.AutoUpgrades', {
         }
         Ext.MessageBox.wait( i18n._( "Saving Automatic Upgrades Settings" ), i18n._( "Please Wait" ));
 
-        Ung.SetupWizard.ReauthenticateHandler.reauthenticate( Ext.bind(this.afterReauthenticate, this, [ handler ] ));
-    },
-    afterReauthenticate: function( handler ) {
+        //Ung.SetupWizard.ReauthenticateHandler.reauthenticate( Ext.bind(this.afterReauthenticate, this, [ handler ] ));
+        //this.afterReauthenticate( handler );
+
         var delegate = Ext.bind(this.complete, this, [ handler ], true );
-        var value = this.panel.query('radio[name="autoUpgradesRadio"]')[0].getGroupValue();
         var systemSettings = rpc.systemManager.getSettings();
         if ( value == "yes" ) {
             systemSettings.autoUpgrade = true;
@@ -1402,7 +1402,20 @@ Ext.define('Ung.SetupWizard.AutoUpgrades', {
             systemSettings.autoUpgrade = false;
             rpc.systemManager.setSettings( delegate, systemSettings );
         }
+
     },
+//    afterReauthenticate: function( handler ) {
+//         var delegate = Ext.bind(this.complete, this, [ handler ], true );
+//         var value = this.panel.query('radio[name="autoUpgradesRadio"]')[0].getGroupValue();
+//         var systemSettings = rpc.systemManager.getSettings();
+//         if ( value == "yes" ) {
+//             systemSettings.autoUpgrade = true;
+//             rpc.systemManager.setSettings( delegate, systemSettings );
+//         } else {
+//             systemSettings.autoUpgrade = false;
+//             rpc.systemManager.setSettings( delegate, systemSettings );
+//         }
+//     },
     complete: function( result, exception, foo, handler ) {
         if(exception) {
             Ext.MessageBox.alert(i18n._( "Local Network" ), i18n._( "Unable to save Automatic Upgrade Settings" ) + exception.message );
@@ -1516,7 +1529,7 @@ Ung.Setup = {
             renderTo: "container"
         });
 
-        if ( true ) {
+        if ( false ) {
             // DEBUGGING CODE (Change to true to dynamically go to any page you want on load.)
             var debugHandler = Ext.bind(function() {
                 this.wizard.goToPage( 4 );
@@ -1532,40 +1545,40 @@ Ung.Setup = {
     }
 };
 
-Ung.SetupWizard.ReauthenticateHandler = {
-    username: "admin",
-    password: "",
+// Ung.SetupWizard.ReauthenticateHandler = {
+//     username: "admin",
+//     password: "",
 
-    // Must reauthenticate in order to refresh the managers
-    reauthenticate: function( handler ) {
-        console.log("About to authenticate");
-        Ext.Ajax.request({
-            params: {
-                username: this.username,
-                password: this.password
-            },
-            // If it uses the default type then this will not work
-            // because the authentication handler does not like utf8
-            headers: {
-                'Content-Type': "application/x-www-form-urlencoded"
-            },
-            url: '/auth/login?url=/webui/setupSettings.js&realm=Administrator',
-            callback: Ext.bind(this.reloadManagers, this, [ handler ], 4 )
-        });
-    },
+//     // Must reauthenticate in order to refresh the managers
+//     reauthenticate: function( handler ) {
+//         console.log("ReAuthenticating...");
+//         Ext.Ajax.request({
+//             params: {
+//                 username: this.username,
+//                 password: this.password
+//             },
+//             // If it uses the default type then this will not work
+//             // because the authentication handler does not like utf8
+//             headers: {
+//                 'Content-Type': "application/x-www-form-urlencoded"
+//             },
+//             url: '/auth/login?url=/webui/setupSettings.js&realm=Administrator',
+//             callback: Ext.bind(this.reloadManagers, this, [ handler ], 4 )
+//         });
+//     },
 
-    reloadManagers: function( options, success, response, handler ) {
-        if ( success ) {
-            // It is very wrong to do this all synchronously
-            rpc.jsonrpc = new JSONRpcClient( "/webui/JSON-RPC" );
-            rpc.adminManager = rpc.jsonrpc.UvmContext.adminManager();
-            rpc.newNetworkManager = rpc.jsonrpc.UvmContext.newNetworkManager();
-            rpc.connectivityTester = rpc.jsonrpc.UvmContext.getConnectivityTester();
-            rpc.toolboxManager = rpc.jsonrpc.UvmContext.toolboxManager();
-            rpc.mailSender = rpc.jsonrpc.UvmContext.mailSender();
-            handler();
-        } else {
-            Ext.MessageBox.alert( i18n._( "Unable to save settings." ));
-        }
-    }
-};
+//     reloadManagers: function( options, success, response, handler ) {
+//         if ( success ) {
+//             // It is very wrong to do this all synchronously
+//             rpc.jsonrpc = new JSONRpcClient( "/webui/JSON-RPC" );
+//             rpc.adminManager = rpc.jsonrpc.UvmContext.adminManager();
+//             rpc.newNetworkManager = rpc.jsonrpc.UvmContext.newNetworkManager();
+//             rpc.connectivityTester = rpc.jsonrpc.UvmContext.getConnectivityTester();
+//             rpc.toolboxManager = rpc.jsonrpc.UvmContext.toolboxManager();
+//             rpc.mailSender = rpc.jsonrpc.UvmContext.mailSender();
+//             handler();
+//         } else {
+//             Ext.MessageBox.alert( i18n._( "Unable to save settings." ));
+//         }
+//     }
+// };
