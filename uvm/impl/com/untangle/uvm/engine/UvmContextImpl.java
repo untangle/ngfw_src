@@ -80,8 +80,6 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
     private static final String PROPERTY_LEGAL_URL = "uvm.legal.url";
     private static final String DEFAULT_LEGAL_URL = "http://www.untangle.com/legal";
 
-    private static final String FACTORY_DEFAULT_FLAG = System.getProperty("uvm.conf.dir") + "/factory-defaults";
-    
     private static final Object startupWaitLock = new Object();
 
     private static final Logger logger = Logger.getLogger(UvmContextImpl.class);
@@ -677,9 +675,6 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
         // Start statistic gathering
         messageManager.start();
 
-        if (isFactoryDefaults())
-            initializeWizard();
-
         state = UvmState.INITIALIZED;
     }
 
@@ -803,41 +798,6 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
             return "restored backup file.";
         }
         
-    }
-
-    private boolean isFactoryDefaults()
-    {
-        return (new File(FACTORY_DEFAULT_FLAG)).exists(); 
-    }
-
-    private void initializeWizard()
-    {
-        /**
-         * Tell alpaca to initialize wizard settings
-         */
-        for ( int c = 0 ; c < 6 ; c++ ) {
-            try {
-                JsonClient.getInstance().callAlpaca( XMLRPCUtil.CONTROLLER_UVM, "wizard_start", null );
-                break; //if an exception wasnt thrown it was successful - break from loop
-            } 
-            catch (Exception e) {
-                logger.error("Failed to initialize Factory Defaults (net-alpaca returned an error). Retrying in 10 seconds...",e);
-                try { Thread.sleep(10000);} catch ( InterruptedException ie ) {}
-            }
-        }
-
-        /**
-         * Remove the flag after setting initial settings
-         */
-        File f = new File(FACTORY_DEFAULT_FLAG);
-        if (f.exists()) {
-            f.delete();
-        }
-
-        /**
-         * Re-read network config
-         */
-        networkManager.refreshNetworkConfig();
     }
 
     private void hideUpgradeSplash()

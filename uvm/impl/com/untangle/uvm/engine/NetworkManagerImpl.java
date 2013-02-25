@@ -46,9 +46,6 @@ public class NetworkManagerImpl implements NetworkManager
 
     private final Logger logger = Logger.getLogger(getClass());
 
-    private static final long ALPACA_RETRY_COUNT = 3;
-    private static final long ALPACA_RETRY_DELAY_MS = 6000;
-
     private static final Object lock = new Object();
 
     /* networkListeners stores parties interested in being notified of network changes */
@@ -123,11 +120,11 @@ public class NetworkManagerImpl implements NetworkManager
             throw new Exception( "Unable to build JSON Object", e );
         }
 
-        try {
-            JsonClient.getInstance().callAlpaca( XMLRPCUtil.CONTROLLER_UVM, "remap_interfaces", jsonObject );
-        } catch ( Exception e ) {
-            throw new Exception( "Unable to configure the external interface.", e );
-        }
+//         try {
+//             JsonClient.getInstance().callAlpaca( XMLRPCUtil.CONTROLLER_UVM, "remap_interfaces", jsonObject );
+//         } catch ( Exception e ) {
+//             throw new Exception( "Unable to configure the external interface.", e );
+//         }
     }
 
     /* Get the current hostname */
@@ -218,69 +215,73 @@ public class NetworkManagerImpl implements NetworkManager
 
     public Boolean isQosEnabled()
     {
-        try {
-            JSONObject jsonObject = JsonClient.getInstance().callAlpaca( XMLRPCUtil.CONTROLLER_UVM, "get_qos_settings", null );
+        return null;
+//         try {
+//             JSONObject jsonObject = JsonClient.getInstance().callAlpaca( XMLRPCUtil.CONTROLLER_UVM, "get_qos_settings", null );
 
-            JSONObject result = jsonObject.getJSONObject("result");
-            if (result == null)
-                return Boolean.FALSE;
+//             JSONObject result = jsonObject.getJSONObject("result");
+//             if (result == null)
+//                 return Boolean.FALSE;
 
-            try {
-                Boolean enabled = result.getBoolean("enabled");
-                if (enabled == null) {
-                    logger.warn("Unable to retrieve QoS settings: null");
-                }
-                return enabled;
-            }
-            catch (org.json.JSONException e) {
-                //org.json.JSONException: JSONObject["enabled"] is not a Boolean.
-                //assume its off
-                return false;
-            }
+//             try {
+//                 Boolean enabled = result.getBoolean("enabled");
+//                 if (enabled == null) {
+//                     logger.warn("Unable to retrieve QoS settings: null");
+//                 }
+//                 return enabled;
+//             }
+//             catch (org.json.JSONException e) {
+//                 //org.json.JSONException: JSONObject["enabled"] is not a Boolean.
+//                 //assume its off
+//                 return false;
+//             }
             
-        } catch (Exception e) {
-            logger.error("Unable to retrieve QoS settings:",e);
-            return null;
-        }
+//         } catch (Exception e) {
+//             logger.error("Unable to retrieve QoS settings:",e);
+//             return null;
+//         }
     }
     
     public JSONArray getWANSettings()
     {
-        try {
-            JSONObject jsonObject = JsonClient.getInstance().callAlpaca( XMLRPCUtil.CONTROLLER_UVM, "get_wan_interfaces", null );
-            JSONArray result = jsonObject.getJSONArray("result");
-            return result;
+        return null;
+//         try {
+//             JSONObject jsonObject = JsonClient.getInstance().callAlpaca( XMLRPCUtil.CONTROLLER_UVM, "get_wan_interfaces", null );
+//             JSONArray result = jsonObject.getJSONArray("result");
+//             return result;
             
-        } catch (Exception e) {
-            logger.error("Unable to retrieve WAN settings:",e);
-            return null;
-        }
+//         } catch (Exception e) {
+//             logger.error("Unable to retrieve WAN settings:",e);
+//             return null;
+//         }
     }
 
     public void enableQos()
     {
-        try {
-            JSONObject jsonObject = JsonClient.getInstance().callAlpaca( XMLRPCUtil.CONTROLLER_UVM, "enable_qos", null );
-            return;
-        } catch (Exception e) {
-            logger.error("Unable to enable Qos:",e);
-            return;
-        }
+        return;
+//         try {
+//             JSONObject jsonObject = JsonClient.getInstance().callAlpaca( XMLRPCUtil.CONTROLLER_UVM, "enable_qos", null );
+//             return;
+//         } catch (Exception e) {
+//             logger.error("Unable to enable Qos:",e);
+//             return;
+//         }
     }
 
     private void _setWANSpeed(String name, String property, int speed)
     {
-        try {
-            JSONObject jsonObject = new JSONObject();
-            jsonObject.put("name",name);
-            jsonObject.put(property,speed);
+        return;
+        //         try {
+//             JSONObject jsonObject = new JSONObject();
+//             jsonObject.put("name",name);
+//             jsonObject.put(property,speed);
 
-            jsonObject = JsonClient.getInstance().callAlpaca( XMLRPCUtil.CONTROLLER_UVM, "set_wan_speed", jsonObject );
-            return;
-        } catch (Exception e) {
-            logger.error("Unable to set WAN settings:",e);
-            return;
-        }
+//             jsonObject = JsonClient.getInstance().callAlpaca( XMLRPCUtil.CONTROLLER_UVM, "set_wan_speed", jsonObject );
+//             return;
+//         } catch (Exception e) {
+//             logger.error("Unable to set WAN settings:",e);
+//             return;
+//         }
     }
     
     public void setWANDownloadBandwidth(String name, int speed)
@@ -477,20 +478,21 @@ public class NetworkManagerImpl implements NetworkManager
     /* Load the network configuration */
     private NetworkConfiguration loadNetworkConfiguration()
     {
-        SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
-        NetworkConfiguration settings = null;
+        return null;
+//         SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
+//         NetworkConfiguration settings = null;
         
-        try {
-            settings = settingsManager.load(NetworkConfiguration.class, "/etc/untangle-net-alpaca/netConfig");
-        } catch (SettingsManager.SettingsException e) {
-            logger.error("Unable to read netConfig file: ", e );
-            return null;
-        }
+//         try {
+//             settings = settingsManager.load(NetworkConfiguration.class, "/etc/untangle-net-alpaca/netConfig");
+//         } catch (SettingsManager.SettingsException e) {
+//             logger.error("Unable to read netConfig file: ", e );
+//             return null;
+//         }
 
-        if (settings == null) {
-            logger.error("Failed to read network settings");
-        } 
+//         if (settings == null) {
+//             logger.error("Failed to read network settings");
+//         } 
         
-        return settings;
+//         return settings;
     }
 }

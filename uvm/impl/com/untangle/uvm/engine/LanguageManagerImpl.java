@@ -42,7 +42,6 @@ import com.untangle.uvm.node.Node;
 import com.untangle.uvm.node.NodeProperties;
 import com.untangle.uvm.node.NodeManager;
 import com.untangle.uvm.servlet.UploadHandler;
-import com.untangle.uvm.util.JsonClient;
 import com.untangle.uvm.SettingsManager;
 
 /**
@@ -106,13 +105,6 @@ public class LanguageManagerImpl implements LanguageManager
         }
 
         this.languageSettings = newSettings;
-
-        try {
-            /* This is asynchronous */
-            JsonClient.getInstance().updateAlpacaSettings();
-        } catch ( Exception e ) {
-            logger.warn( "Unable to update alpaca settings." );
-        }
     }
 
     public boolean uploadLanguagePack(FileItem item) throws UvmException

@@ -25,7 +25,6 @@ import com.untangle.uvm.node.IPAddress;
 import com.untangle.uvm.node.EventLogQuery;
 import com.untangle.uvm.node.NodeMetric;
 import com.untangle.uvm.util.I18nUtil;
-import com.untangle.uvm.util.JsonClient;
 import com.untangle.uvm.util.XMLRPCUtil;
 import com.untangle.uvm.vnet.NodeBase;
 import com.untangle.uvm.vnet.Affinity;
@@ -218,8 +217,9 @@ public class VpnNodeImpl extends NodeBase implements VpnNode, com.untangle.uvm.n
                     this.openVpnMonitor.enable();
                 }
 
+                //FIXME insert rules
                 /* Make an asynchronous request */
-                UvmContextFactory.context().newThread( new GenerateRules( null )).start();
+                //UvmContextFactory.context().newThread( new GenerateRules( null )).start();
             }
 
         } catch ( Exception exn ) {
@@ -863,27 +863,6 @@ public class VpnNodeImpl extends NodeBase implements VpnNode, com.untangle.uvm.n
     {
         if ( setting == null || setting.trim().length() == 0 ) return false;
         return true;
-    }
-
-    class GenerateRules implements Runnable
-    {
-        private final Runnable callback;
-
-        public GenerateRules( Runnable callback )
-        {
-            this.callback = callback;
-        }
-
-        public void run()
-        {
-            try {
-                JsonClient.getInstance().callAlpaca( XMLRPCUtil.CONTROLLER_UVM, "generate_rules", null );
-            } catch ( Exception e ) {
-                logger.error( "Error while generating iptables rules", e );
-            }
-
-            if ( this.callback != null ) this.callback.run();
-        }
     }
 
     class DistributionCache

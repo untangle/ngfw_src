@@ -8,7 +8,6 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import com.untangle.uvm.util.JsonClient;
 import com.untangle.uvm.vnet.IPNewSessionRequest;
 import com.untangle.uvm.vnet.NodeIPSession;
 import com.untangle.uvm.vnet.Protocol;
@@ -282,7 +281,8 @@ class SessionRedirect
             jsonObject.put( "filter", redirectRuleFilter );
             jsonObject.put( "new_ip", redirectRuleIp );
             jsonObject.put( "new_port", redirectRulePort );
-            JsonClient.getInstance().callAlpaca("uvm", "session_redirect_create", jsonObject );
+            //JsonClient.getInstance().callAlpaca("uvm", "session_redirect_create", jsonObject );
+            //FIXME
         } catch(Exception e){
             logger.error("Failure creating redirect rule:"+ e);
         }
@@ -302,7 +302,8 @@ class SessionRedirect
             jsonObject.put( "filter", redirectRuleFilter );
             jsonObject.put( "new_ip", redirectRuleIp );
             jsonObject.put( "new_port", redirectRulePort );
-            JsonClient.getInstance().callAlpaca("uvm","session_redirect_delete", jsonObject );
+            //JsonClient.getInstance().callAlpaca("uvm","session_redirect_delete", jsonObject );
+            //FIXME
         } catch(Exception e){
             logger.error("Failure creating redirect rule:"+ e);
         }

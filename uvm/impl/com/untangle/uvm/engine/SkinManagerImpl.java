@@ -30,7 +30,6 @@ import com.untangle.uvm.SkinSettings;
 import com.untangle.uvm.UvmException;
 import com.untangle.uvm.node.License;
 import com.untangle.uvm.servlet.UploadHandler;
-import com.untangle.uvm.util.JsonClient;
 
 /**
  * Implementation of SkinManager.
@@ -247,13 +246,6 @@ class SkinManagerImpl implements SkinManager
     {
         /* Register a handler to upload skins */
         UvmContextImpl.context().uploadManager().registerHandler(new SkinUploadHandler());
-
-        try {
-            /* This is asynchronous */
-            JsonClient.getInstance().updateAlpacaSettings();
-        } catch ( Exception e ) {
-            logger.warn( "Unable to update alpaca settings." );
-        }
     }
     
     private void processSkinFolder(File dir, List<File> processedSkinFolders)

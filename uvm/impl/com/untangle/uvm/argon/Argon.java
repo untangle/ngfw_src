@@ -133,14 +133,6 @@ public class Argon
         /* Start the scheduler */
         Netcap.startScheduler();
 
-        /* Ensure that the alpaca has initialized all of the necessary files for the UVM */
-        /* Make a synchronous request */
-        try {
-            JsonClient.getInstance().callAlpaca( XMLRPCUtil.CONTROLLER_UVM, "write_files", null );
-        } catch ( Exception e ) {
-            logger.warn( "Failed to write UVM config files. (net-alpaca returned an error)", e );
-        }
-
         Vector.mvutilDebugLevel( mvutilDebugLevel );
         Vector.vectorDebugLevel( vectorDebugLevel );
         Vector.jvectorDebugLevel( jvectorDebugLevel );
