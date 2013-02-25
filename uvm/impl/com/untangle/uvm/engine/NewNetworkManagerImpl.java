@@ -349,18 +349,11 @@ public class NewNetworkManagerImpl implements NewNetworkManager
     private void sanitizeInterfaceSettings( InterfaceSettings interfaceSettings)
     {
         /**
-         * DHCP can only be served on statically configured interfaces
-         * FIXME: probably should move this part to python
-         */
-        if( interfaceSettings.getDhcpEnabled() && !"static".equals(interfaceSettings.getV4ConfigType()) ) {
-            logger.warn("DHCP only allowed on static interfaces [" + interfaceSettings.getV4ConfigType() + "]. Disabling");
-            interfaceSettings.setDhcpEnabled( false );
-        }
-
-        /**
          * If DHCP settings are enabled, but settings arent picked, fill in reasonable defaults
          */
-        if ( interfaceSettings.getDhcpEnabled() && interfaceSettings.getDhcpRangeStart() == null ) {
+        if ( interfaceSettings.getDhcpEnabled() != null &&
+             interfaceSettings.getDhcpEnabled() == Boolean.TRUE &&
+             interfaceSettings.getDhcpRangeStart() == null ) {
             initializeDhcpDefaults( interfaceSettings );
         }
     }
