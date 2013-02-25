@@ -1,5 +1,6 @@
 import logging
 import pycurl
+import urllib
 import traceback
 from StringIO import StringIO
 from jsonrpc import ServiceProxy
