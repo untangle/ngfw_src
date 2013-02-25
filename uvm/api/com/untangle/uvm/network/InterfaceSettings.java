@@ -19,13 +19,16 @@ import com.untangle.uvm.node.IPMaskedAddress;
 @SuppressWarnings("serial")
 public class InterfaceSettings implements Serializable, JSONString
 {
-    public int interfaceId; /* the ID of the physical interface (1-254) */
-    public String name; /* human name: ie External, Internal, Wireless */
-    public String physicalDev; /* physical interface name: eth0, etc */
-    public String systemDev; /* iptables interface name: eth0, eth0:0, eth0.1, etc */
-    public String symbolicDev; /* symbolic interface name: eth0, eth0:0, eth0.1, etc */
-    public boolean isWan; /* is a WAN interface? */
-    public String config; /* config type: addressed, bridged, disabled */
+    public int     interfaceId; /* the ID of the physical interface (1-254) */
+    public String  name; /* human name: ie External, Internal, Wireless */
+
+    public String  physicalDev; /* physical interface name: eth0, etc */
+    public String  systemDev; /* iptables interface name: eth0, eth0:0, eth0.1, etc */
+    public String  symbolicDev; /* symbolic interface name: eth0, eth0:0, eth0.1, etc */
+
+    public boolean isWan = false; /* is a WAN interface? */
+
+    public String  config; /* config type: addressed, bridged, disabled */
 
     public Integer bridgedTo; /* device to bridge to in "bridged" case */
     
@@ -59,15 +62,15 @@ public class InterfaceSettings implements Serializable, JSONString
     public InetAddress v6StaticDns1; /* the dns1  of this interface if configured static, or dhcp override */
     public InetAddress v6StaticDns2; /* the dns2  of this interface if configured static, or dhcp override */
 
-    private Boolean dhcpEnabled;
-    private Boolean dhcpAuthoritative;
-    private InetAddress dhcpRangeStart;
-    private InetAddress dhcpRangeEnd;
-    private Integer dhcpLeaseDuration;
-    private Integer dhcpLeaseLimit;
-    private InetAddress dhcpGatewayOverride;
-    private InetAddress dhcpNetmaskOverride;
-    private InetAddress dhcpDnsOverride;
+    private Boolean dhcpEnabled; /* is DHCP serving enabled on this interface? */
+    private Boolean dhcpAuthoritative; /* is the DHCP server authoritative? */
+    private InetAddress dhcpRangeStart; /* where do DHCP leases start? example: 192.168.2.100*/
+    private InetAddress dhcpRangeEnd; /* where do DHCP leases end? example: 192.168.2.200 */
+    private Integer dhcpLeaseDuration; /* DHCP lease duration in seconds */
+    private Integer dhcpLeaseLimit; /* simultaneous DHCP lease limit */
+    private InetAddress dhcpGatewayOverride; /* DHCP gateway override, if null defaults to this interface's IP */
+    private InetAddress dhcpNetmaskOverride; /* DHCP netmask override, if null defaults to this interface's netmask */
+    private InetAddress dhcpDnsOverride; /* DHCP DNS override, if null defaults to this interface's IP */
     
     public List<IPMaskedAddress> aliases; /* alias addresses for static & dhcp */
     
