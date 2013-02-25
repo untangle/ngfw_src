@@ -188,7 +188,6 @@ if (!Ung.hasResource["Ung.HostMonitor"]) {
                         type: 'string'
                     }
                 },{
-                    boxLabel: this.i18n._("Penalty Boxed"),
                     header: this.i18n._("Penalty Boxed"),
                     dataIndex: "penaltyBoxed",
                     width: 100,

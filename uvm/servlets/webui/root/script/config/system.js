@@ -162,35 +162,51 @@ if (!Ung.hasResource["Ung.System"]) {
                     xtype: "fieldset",
                     title: this.i18n._("Hostname"),
                     items: [{
-                        xtype: 'textfield',
-                        name: 'Hostname',
-                        fieldLabel: this.i18n._("Hostname"),
-                        id: 'hostname',
-                        boxLabel: '(' + this.i18n._('example') + ':' + 'hostname.example.com' + ')',
-                        width: 300,
-                        value: this.getSystemSettings().hostname,
-                        listeners: {
-                            "change": {
-                                fn: Ext.bind(function(elem, newValue) {
-                                    this.getSystemSettings().hostname = newValue;
-                                }, this)
+                        xtype: 'container',
+                        layout: 'column',
+                        margin: '0 0 5 0',
+                        items: [{
+                            xtype: 'textfield',
+                            name: 'Hostname',
+                            fieldLabel: this.i18n._("Hostname"),
+                            id: 'hostname',
+                            width: 300,
+                            value: this.getSystemSettings().hostname,
+                            listeners: {
+                                "change": {
+                                    fn: Ext.bind(function(elem, newValue) {
+                                        this.getSystemSettings().hostname = newValue;
+                                    }, this)
+                                }
                             }
-                        }
+                        },{
+                            xtype: 'label',
+                            html: '(' + this.i18n._('example') + ':' + 'hostname.example.com' + ')',
+                            cls: 'boxlabel'
+                        }]
                     },{
-                        xtype: 'textfield',
-                        name: 'Domain Name Suffix',
-                        fieldLabel: this.i18n._("Domain Name Suffix"),
-                        id: 'domain_name',
-                        boxLabel: '(' + this.i18n._('example') + ':' + 'example.com' + ')',
-                        width: 300,
-                        value: this.getSystemSettings().domainNameSuffix,
-                        listeners: {
-                            "change": {
-                                fn: Ext.bind(function(elem, newValue) {
-                                    this.getSystemSettings().domainNameSuffix = newValue;
-                                }, this)
+                        xtype: 'container',
+                        layout: 'column',
+                        margin: '0 0 5 0',
+                        items: [{
+                            xtype: 'textfield',
+                            name: 'Domain Name Suffix',
+                            fieldLabel: this.i18n._("Domain Name Suffix"),
+                            id: 'domain_name',
+                            width: 300,
+                            value: this.getSystemSettings().domainNameSuffix,
+                            listeners: {
+                                "change": {
+                                    fn: Ext.bind(function(elem, newValue) {
+                                        this.getSystemSettings().domainNameSuffix = newValue;
+                                    }, this)
+                                }
                             }
-                        }
+                        },{
+                            xtype: 'label',
+                            html: '(' + this.i18n._('example') + ':' + 'example.com' + ')',                            
+                            cls: 'boxlabel'
+                        }]
                     }]
                 }]
             });
