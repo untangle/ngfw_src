@@ -788,11 +788,12 @@ Ext.define('Ung.SetupWizard.Internet', {
         this.clearInterfaceSettings( wanSettings );
 
         wanSettings.v4ConfigType = "auto";
-
+        wanSettings.v4NatEgressTraffic = true;
+        
         this.setFirstWanSettings( Ung.SetupWizard.CurrentValues.networkSettings, wanSettings );
 
         var complete = Ext.bind(this.complete, this, [ handler, hideWindow ], Ung.SetupWizard.CurrentValues.networkSettings );
-        rpc.newNetworkManager.setNetworkSettings( complete, FIXME ); //FIXME
+        rpc.newNetworkManager.setNetworkSettings( complete, Ung.SetupWizard.CurrentValues.networkSettings );
     },
 
     saveStatic: function( handler, hideWindow ) {
@@ -804,6 +805,7 @@ Ext.define('Ung.SetupWizard.Internet', {
         this.clearInterfaceSettings( wanSettings );
 
         wanSettings.v4ConfigType = "static";
+        wanSettings.v4NatEgressTraffic = true;
         wanSettings.v4StaticAddress = this.staticPanel.query('textfield[name="ip"]')[0].getValue();
         wanSettings.v4StaticNetmask = this.staticPanel.query('textfield[name="netmask"]')[0].getValue();
         wanSettings.v4StaticGateway = this.staticPanel.query('textfield[name="gateway"]')[0].getValue();
@@ -826,6 +828,7 @@ Ext.define('Ung.SetupWizard.Internet', {
         this.clearInterfaceSettings( wanSettings );
 
         wanSettings.v4ConfigType = "pppoe";
+        wanSettings.v4NatEgressTraffic = true;
         wanSettings.v4PPPoEUsername = this.pppoePanel.query('textfield[name="username"]')[0].getValue();
         wanSettings.v4PPPoEPassword = this.pppoePanel.query('textfield[name="password"]')[0].getValue();
 
