@@ -1025,7 +1025,7 @@ Ext.define('Ung.SetupWizard.Internet', {
             return;
         }
 
-        // first first WAN
+        // Find first WAN
         var firstWan = this.getFirstWanSettings( networkSettings );
         if ( firstWan == null ) {
             console.error("Missing first WAN.");
@@ -1154,7 +1154,7 @@ Ext.define('Ung.SetupWizard.InternalNetwork', {
                 items: [{
                     xtype: 'radio',
                     name: 'bridgeOrRouter',
-                    inputValue: 'bridge',
+                    inputValue: 'bridged',
                     boxLabel: i18n._('Transparent Bridge'),
                     cls: 'large-option',
                     hideLabel: 'true',
@@ -1190,35 +1190,42 @@ Ext.define('Ung.SetupWizard.InternalNetwork', {
 
         // find the internal interface and see if its currently set to static.
         // if so change the default to router
-        var networkSettings = rpc.newNetworkManager.getNetworkSettings(); //FIXME
+        Ung.SetupWizard.CurrentValues.networkSettings = rpc.newNetworkManager.getNetworkSettings();
+        var networkSettings = Ung.SetupWizard.CurrentValues.networkSettings;
+
         if ( networkSettings != null && networkSettings['interfaces'] != null && networkSettings['interfaces']['list'] != null ) {
             var intfs = networkSettings['interfaces']['list'];
             for ( var c = 0 ;  c < intfs.length ; c++ ) {
                 // find first non-WAN
-                if ( intfs[c]['isWan'] == false && intfs[c].v4ConfigType == "static" ) {
+                if ( intfs[c]['isWan'] != null && intfs[c]['isWan'] )
+                    continue;
+                
+                if ( intfs[c].config == "bridged" ) {
+                    this.panel.query('radio[name="bridgeOrRouter"]')[0].setValue(false);
+                    this.panel.query('radio[name="bridgeOrRouter"]')[1].setValue(true);
+                }
+                else { /* addressed or disabled */
                     this.panel.query('radio[name="bridgeOrRouter"]')[0].setValue(true);
                     this.panel.query('radio[name="bridgeOrRouter"]')[1].setValue(false);
                 }
+
+                /* set static suggestion values */
+                if ( intfs[c]['v4StaticAddress'] != null && intfs[c]['v4StaticNetmask'] != null ) {
+                    this.panel.query('textfield[name="network"]')[0].setValue( intfs[c]['v4StaticAddress'] );
+                    this.panel.query('combo[name="netmask"]')[0].setValue( intfs[c]['v4StaticNetmask'] );
+                } else {
+                    // FIXME
+                    // FIXME pick something we are SURE doesnt conflict with WAN
+                    // FIXME
+                    this.panel.query('textfield[name="network"]')[0].setValue( "192.168.2.1" );
+                    this.panel.query('combo[name="netmask"]')[0].setValue( "192.168.2.1" );
+                }
+
+                break;
             }
         }
-        
-        Ung.SetupWizard.ReauthenticateHandler.reauthenticate( Ext.bind(this.loadInternalSuggestion,this, [ complete ] ));
-    },
-    loadInternalSuggestion: function( complete ) {
-        //rpc.newNetworkManager.getWizardInternalAddressSuggestion( Ext.bind(this.completeLoadInternalSuggestion, this, [ complete ], true ), null ); // FIXME
+
         complete();
-    },
-    completeLoadInternalSuggestion: function( result, exception, foo, handler ) {
-        if ( exception ) {
-            // Just ignore the attempt
-            handler();
-            return;
-        }
-
-        this.panel.query('textfield[name="network"]')[0].setValue( result["network"] );
-        this.panel.query('combo[name="netmask"]')[0].setValue( result["netmask"] );
-        handler();
-
     },
     onSetRouter: function(isSet) {
         var ar = [this.panel.query('textfield[name="network"]')[0],this.panel.query('combo[name="netmask"]')[0],this.panel.query('checkbox[name="enableDhcpServer"]')[0]];
@@ -1227,6 +1234,22 @@ Ext.define('Ung.SetupWizard.InternalNetwork', {
         }
         _invalidate(ar);
     },
+
+    getFirstNonWanSettings: function( networkSettings ) {
+        for ( var c = 0 ; c < networkSettings['interfaces']['list'].length ; c++ ) {
+            if ( ! networkSettings['interfaces']['list'][c]['isWan'] )
+                return networkSettings['interfaces']['list'][c];
+        }
+        return null;
+    },
+
+    setFirstNonWanSettings: function( networkSettings, firstWanSettings ) {
+        for ( var c = 0 ; c < networkSettings['interfaces']['list'].length ; c++ ) {
+            if ( firstWanSettings['interfaceId'] == networkSettings['interfaces']['list'][c]['interfaceId'] )
+                networkSettings['interfaces']['list'][c] = firstWanSettings;
+        }
+    },
+    
     validateInternalNetwork: function() {
         var rv = true;
         var nic = false;
@@ -1241,6 +1264,7 @@ Ext.define('Ung.SetupWizard.InternalNetwork', {
         }
         return rv;
     },
+
     saveInternalNetwork: function( handler ) {
         var value = this.panel.query('radio[name="bridgeOrRouter"]')[0].getGroupValue();
 
@@ -1251,18 +1275,29 @@ Ext.define('Ung.SetupWizard.InternalNetwork', {
 
         Ext.MessageBox.wait( i18n._( "Saving Internal Network Settings" ), i18n._( "Please Wait" ));
 
-        Ung.SetupWizard.ReauthenticateHandler.reauthenticate( Ext.bind(this.afterReauthenticate, this, [ handler ] ));
-    },
-    afterReauthenticate: function( handler ) {
         var delegate = Ext.bind(this.complete, this, [ handler ], true );
-        var value = this.panel.query('radio[name="bridgeOrRouter"]')[0].getGroupValue();
-        if ( value == 'bridge' ) {
-            rpc.newNetworkManager.setWizardNatDisabled( delegate ); // FIXME
+
+        // XXX need refreshNetworkSettings
+        var firstNonWan = this.getFirstNonWanSettings( Ung.SetupWizard.CurrentValues.networkSettings );
+        
+        if ( value == 'bridged' ) {
+            firstNonWan['config'] = 'bridged';
+            this.setFirstNonWanSettings( Ung.SetupWizard.CurrentValues.networkSettings, firstNonWan );
+
+            rpc.newNetworkManager.setNetworkSettings( delegate, Ung.SetupWizard.CurrentValues.networkSettings ); 
         } else {
             var network = this.panel.query('textfield[name="network"]')[0].getValue();
             var netmask = this.panel.query('combo[name="netmask"]')[0].getRawValue();
             var enableDhcpServer = this.panel.query('checkbox[name="enableDhcpServer"]')[0].getValue();
-            rpc.newNetworkManager.setWizardNatEnabled( delegate, network, netmask, enableDhcpServer ); // FIXME
+            firstNonWan['config'] = 'addressed';
+            firstNonWan['v4ConfigType'] = 'static';
+            firstNonWan['v4StaticAddress'] = network;
+            firstNonWan['v4StaticNetmask'] = netmask;
+            firstNonWan['dhcpEnabled'] = enableDhcpServer;
+            // FIXME - set good DHCP settings
+
+            this.setFirstNonWanSettings( Ung.SetupWizard.CurrentValues.networkSettings, firstNonWan );
+            rpc.newNetworkManager.setNetworkSettings( delegate, Ung.SetupWizard.CurrentValues.networkSettings ); 
         }
     },
 
