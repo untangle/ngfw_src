@@ -1,5 +1,6 @@
 import logging
 import pycurl
+import urllib
 from StringIO import StringIO
 from jsonrpc import ServiceProxy
 from jsonrpc import JSONRPCException
