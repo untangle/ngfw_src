@@ -350,6 +350,7 @@ public class NewNetworkManagerImpl implements NewNetworkManager
     {
         /**
          * DHCP can only be served on statically configured interfaces
+         * FIXME: probably should move this part to python
          */
         if( interfaceSettings.getDhcpEnabled() && !"static".equals(interfaceSettings.getV4ConfigType()) ) {
             logger.warn("DHCP only allowed on static interfaces [" + interfaceSettings.getV4ConfigType() + "]. Disabling");
