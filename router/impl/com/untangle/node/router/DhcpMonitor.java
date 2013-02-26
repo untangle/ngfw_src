@@ -99,14 +99,15 @@ class DhcpMonitor implements Runnable
         logger.debug( "Finished" );
     }
     
-    /* ----------------- Package ----------------- */
-    /* Retrieve the current lease for an IP address */
-    DhcpLease lookupLease( InetAddress address )
+    /**
+     * Retrieve the current lease for an IP address
+     */
+    protected DhcpLease lookupLease( InetAddress address )
     {
         return currentLeaseMap.get( address );
     }
 
-    String lookupHostname( InetAddress address )
+    protected String lookupHostname( InetAddress address )
     {
         DhcpLease lease = lookupLease( address );
         if (lease != null)
@@ -114,7 +115,7 @@ class DhcpMonitor implements Runnable
         return null;
     }
     
-    synchronized void start()
+    protected synchronized void start()
     {
         isAlive = true;
 
@@ -130,7 +131,7 @@ class DhcpMonitor implements Runnable
         thread.start();
     }
 
-    synchronized void stop()
+    protected synchronized void stop()
     {
         if ( thread != null ) {
             logger.debug( "Stopping thread" );
@@ -149,9 +150,6 @@ class DhcpMonitor implements Runnable
             logger.debug( "Monitor is already stopped." );
         }
     }
-
-
-    /* ----------------- Private ----------------- */
 
     private boolean hasDhcpChanged( Date now )
     {

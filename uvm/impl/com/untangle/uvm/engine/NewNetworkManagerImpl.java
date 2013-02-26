@@ -6,6 +6,8 @@ package com.untangle.uvm.engine;
 import java.util.LinkedList;
 import java.net.InetAddress;
 
+import org.json.JSONArray;
+import org.json.JSONObject;
 import org.apache.log4j.Logger;
 
 import com.untangle.uvm.UvmContextFactory;
@@ -160,7 +162,7 @@ public class NewNetworkManagerImpl implements NewNetworkManager
         this.networkListeners.remove( networkListener );
     }
 
-    public InetAddress getFirstWanAddress()
+   public InetAddress getFirstWanAddress()
     {
         if ( this.networkSettings == null || this.networkSettings.getInterfaces() == null ) {
             return null;
@@ -340,9 +342,15 @@ public class NewNetworkManagerImpl implements NewNetworkManager
             }
 
             for (int i = 2 ; i < devices.length ; i++ ) {
+                String[] greekNames = new String[]{"Alpha","Beta","Gamma","Delta","Epsilon","Zeta","Eta","Theta","Iota","Kappa","Lambda","Mu"};
+                
                 InterfaceSettings intf = new InterfaceSettings();
                 intf.setInterfaceId( i + 1 );
-                intf.setName("Interface " + (i + 1));
+                try {
+                    intf.setName("Interface " + greekNames[i + 1]);
+                } catch (Exception e) {
+                    intf.setName("Interface " + (i + 1));
+                }
                 intf.setPhysicalDev(devices[i]);
                 intf.setSystemDev(devices[i]);
                 intf.setSymbolicDev(devices[i]);

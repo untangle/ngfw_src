@@ -441,18 +441,6 @@ Ext.define("Ung.Main", {
         }, this));
     },
 
-    getNetworkManager: function(forceReload) {
-        if (forceReload || rpc.networkManager === undefined) {
-            try {
-                rpc.networkManager = rpc.jsonrpc.UvmContext.networkManager();
-            } catch (e) {
-                Ung.Util.rpcExHandler(e);
-            }
-
-        }
-        return rpc.networkManager;
-    },
-
     getNewNetworkManager: function(forceReload) {
         if (forceReload || rpc.newNetworkManager === undefined) {
             try {

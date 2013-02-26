@@ -610,64 +610,31 @@ Ung.Util = {
     },
     getInterfaceList: function(wanMatchers, anyMatcher) {
         var data = [];
-        var datacount = 0;
 
-        if(Ung.Util.possibleInterfaces==null) {
-            Ung.Util.possibleInterfaces = main.getNetworkManager().getPossibleInterfaces();
+        if( Ung.Util.networkSettings == null ) {
+            Ung.Util.networkSettings = main.getNewNetworkManager().getNetworkSettings();
         }
 
-        for ( var c = 0 ; c < Ung.Util.possibleInterfaces.length ; c++ ) {
-            var key =Ung.Util.possibleInterfaces[c];
-            var name = key;
-            switch ( key ) {
-            case "any":
-                if ( anyMatcher === false ) {
-                    key = null;
-                    break;
-                }
-                name = i18n._("Any") ;
-                break;
-            case "1": name = i18n._("External") ; break;
-            case "2": name = i18n._("Internal") ; break;
-            case "3": name = i18n._("DMZ") ; break;
-            case "250": name = i18n._("OpenVPN") ; break;
-            case "wan": 
-                if ( wanMatchers === false ) {
-                    key = null;
-                    break;
-                }
-                name = i18n._("Any WAN") ; 
-                break;
-
-            case "non_wan": 
-                if ( wanMatchers === false ) {
-                    key = null;
-                    break;
-                }
-                name = i18n._("Any non-WAN") ;
-                break;
-
-            case "4": 
-            case "5": 
-                /* ... */
-            case "254":
-            default:
-                name = Ext.String.format( i18n._("Interface {0}"), key );
-                break;
-
-            }
+        for ( var c = 0 ; c < Ung.Util.networkSettings.interfaces.list.length ; c++ ) {
+            var intf = Ung.Util.networkSettings.interfaces.list[c];
+            var name = intf['name'];
+            var key = intf['interfaceId'];
             
-            if ( key != null ) {
-                data[datacount] = [ key,name ];
-                datacount++;
-            }
+            data.push( [ key, name ] );
         }
+
+        if (wanMatchers) {
+            data.unshift( ["wan",i18n._("Any WAN")] );
+            data.unshift( ["non_wan",i18n._("Any Non-WAN")] );
+        }
+        if (anyMatcher) {
+            data.unshift( ["any",i18n._("Any")] );
+        }
+
         return data;
     },
-    wanInterfaces: null,
     getInterfaceAddressedList: function() {
         var data = [];
-        var datacount = 0;
 
         if( Ung.Util.networkSettings == null ) {
             Ung.Util.networkSettings = main.getNewNetworkManager().getNetworkSettings();
@@ -679,43 +646,28 @@ Ung.Util = {
             var key = intf['interfaceId'];
             
             if ( intf['config'] == 'addressed' ) {
-                data[datacount] = [ key, name ];
-                datacount++;
+                data.push( [ key, name ] );
             }
         }
         return data;
     },
     getWanList: function() {
         var data = [];
-        var datacount = 0;
 
-        if( Ung.Util.wanInterfaces==null ) {
-            Ung.Util.wanInterfaces = main.getNetworkManager().getWanInterfaces();
+        if( Ung.Util.networkSettings == null ) {
+            Ung.Util.networkSettings = main.getNewNetworkManager().getNetworkSettings();
         }
 
-        for ( var c = 0 ; c < Ung.Util.wanInterfaces.length ; c++ ) {
-            var key =Ung.Util.wanInterfaces[c];
-            var name = key;
-            switch ( key ) {
-            case "1": name = i18n._("External") ; break;
-            case "2": name = i18n._("Internal") ; break;
-            case "3": name = i18n._("DMZ") ; break;
-            case "250": name = i18n._("OpenVPN") ; break;
-            case "4": 
-            case "5": 
-                /* ... */
-            case "254":
-            default:
-                name = Ext.String.format( i18n._("Interface {0}"), key );
-                break;
-
-            }
+        for ( var c = 0 ; c < Ung.Util.networkSettings.interfaces.list.length ; c++ ) {
+            var intf = Ung.Util.networkSettings.interfaces.list[c];
+            var name = intf['name'];
+            var key = intf['interfaceId'];
             
-            if ( key != null ) {
-                data[datacount] = [ parseInt(key), name ];
-                datacount++;
+            if ( intf['isWan'] == true ) {
+                data.push( [ key, name ] );
             }
         }
+
         return data;
     },
     getInterfaceStore: function(simpleMatchers) {
