@@ -19,9 +19,7 @@ import com.untangle.uvm.SkinManager;
 import com.untangle.node.reporting.ReportingManager;
 
 import com.untangle.uvm.webui.jabsorb.serializer.EnumSerializer;
-import com.untangle.uvm.webui.jabsorb.serializer.HostAddressSerializer;
 import com.untangle.uvm.webui.jabsorb.serializer.IPMaskedAddressSerializer;
-import com.untangle.uvm.webui.jabsorb.serializer.IPAddressSerializer;
 import com.untangle.uvm.webui.jabsorb.serializer.InetAddressSerializer;
 import com.untangle.uvm.webui.jabsorb.serializer.MimeTypeSerializer;
 import com.untangle.uvm.webui.jabsorb.serializer.RFC2253NameSerializer;
@@ -121,8 +119,6 @@ public class UtJsonRpcServlet extends JSONRPCServlet
                 b.registerSerializer(new TimeSerializer());
                 // uvm related serializers
                 b.registerSerializer(new IPMaskedAddressSerializer());
-                b.registerSerializer(new IPAddressSerializer());
-                b.registerSerializer(new HostAddressSerializer());
                 b.registerSerializer(new TimeZoneSerializer());
 
                 b.registerSerializer(new MimeTypeSerializer());

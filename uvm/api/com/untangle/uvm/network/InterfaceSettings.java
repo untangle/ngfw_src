@@ -28,10 +28,16 @@ public class InterfaceSettings implements Serializable, JSONString
 
     public boolean isWan = false; /* is a WAN interface? */
 
+    public final static String CONFIG_ADDRESSED = "addressed";
+    public final static String CONFIG_BRIDGED   = "bridged";
+    public final static String CONFIG_DISABLED  = "disabled";
     public String  config; /* config type: addressed, bridged, disabled */
 
     public Integer bridgedTo; /* device to bridge to in "bridged" case */
     
+    public final static String V4CONFIGTYPE_STATIC = "static";
+    public final static String V4CONFIGTYPE_AUTO   = "auto";
+    public final static String V4CONFIGTYPE_PPPOE  = "pppoe";
     public String v4ConfigType; /* config type: static, auto, pppoe */
     
     public InetAddress v4StaticAddress; /* the address  of this interface if configured static, or dhcp override */ 
@@ -54,6 +60,8 @@ public class InterfaceSettings implements Serializable, JSONString
     public Boolean     v4NatEgressTraffic;
     public Boolean     v4NatIngressTraffic;
     
+    public final static String V6CONFIGTYPE_STATIC = "static";
+    public final static String V6CONFIGTYPE_AUTO   = "auto";
     public String v6ConfigType; /* config type: static, auto */
     
     public InetAddress v6StaticAddress; /* the address  of this interface if configured static, or dhcp override */ 

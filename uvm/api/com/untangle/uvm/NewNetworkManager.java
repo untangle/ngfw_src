@@ -3,6 +3,8 @@
  */
 package com.untangle.uvm;
 
+import java.net.InetAddress;
+
 import com.untangle.uvm.network.NetworkSettings;
 import com.untangle.uvm.network.NetworkSettingsListener;
 
@@ -20,4 +22,9 @@ public interface NewNetworkManager
 
     void registerListener( NetworkSettingsListener networkListener );
     void unregisterListener( NetworkSettingsListener networkListener );
+
+    InetAddress getFirstWanAddress();
+
+    InetAddress getInternalHttpAddress( int clientIntf );
+    
 }

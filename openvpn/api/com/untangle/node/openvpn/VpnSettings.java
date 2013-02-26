@@ -3,14 +3,13 @@
  */
 package com.untangle.node.openvpn;
 
+import java.net.InetAddress;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
-import com.untangle.uvm.node.HostAddress;
-import com.untangle.uvm.node.IPAddress;
 import com.untangle.uvm.node.NodeSettings;
 
 /**
@@ -42,7 +41,7 @@ public class VpnSettings implements Serializable
     private boolean isUntanglePlatformClient = false;
 
     /* The virtual address of the vpn server, or the address of the server to connect to. */
-    private HostAddress serverAddress;
+    private InetAddress serverAddress;
 
     /* List of addresses that should be visible to the VPN */
     private List<SiteNetwork> exportedAddressList;
@@ -58,8 +57,8 @@ public class VpnSettings implements Serializable
     private List<VpnSite> siteList;
 
     private boolean isDnsOverrideEnabled = false;
-    private IPAddress dns1;
-    private IPAddress dns2;
+    private InetAddress dns1;
+    private InetAddress dns2;
 
     /* Certificate information */
     private String  domain = "";
@@ -174,32 +173,32 @@ public class VpnSettings implements Serializable
         this.isDnsOverrideEnabled = newValue;
     }
 
-    public IPAddress getDns1()
+    public InetAddress getDns1()
     {
         return this.dns1;
     }
 
-    public void setDns1( IPAddress newValue )
+    public void setDns1( InetAddress newValue )
     {
         this.dns1 = newValue;
     }
 
-    public IPAddress getDns2()
+    public InetAddress getDns2()
     {
         return this.dns2;
     }
 
-    public void setDns2( IPAddress newValue )
+    public void setDns2( InetAddress newValue )
     {
         this.dns2 = newValue;
     }
 
-    public List<IPAddress> trans_getDnsServerList()
+    public List<InetAddress> trans_getDnsServerList()
     {
-        List<IPAddress> dnsServerList = new LinkedList<IPAddress>();
+        List<InetAddress> dnsServerList = new LinkedList<InetAddress>();
 
-        if (( this.dns1 != null ) && ( !this.dns1.isEmpty())) dnsServerList.add( this.dns1 );
-        if (( this.dns2 != null ) && ( !this.dns2.isEmpty())) dnsServerList.add( this.dns2 );
+        if ( this.dns1 != null ) dnsServerList.add( this.dns1 );
+        if ( this.dns2 != null ) dnsServerList.add( this.dns2 );
 
         return dnsServerList;
     }
@@ -223,12 +222,12 @@ public class VpnSettings implements Serializable
      *
      * @return virtual address of the open vpn server.
      */
-    public HostAddress getServerAddress()
+    public InetAddress getServerAddress()
     {
         return this.serverAddress;
     }
 
-    public void setServerAddress( HostAddress serverAddress )
+    public void setServerAddress( InetAddress serverAddress )
     {
         this.serverAddress = serverAddress;
     }

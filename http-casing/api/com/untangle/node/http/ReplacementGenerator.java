@@ -85,7 +85,7 @@ public abstract class ReplacementGenerator<T extends BlockDetails>
         if (imagePreferred(uri, requestHeader)) {
             return generateSimplePage(nonce, persistent, true);
         } else {
-            InetAddress addr = UvmContextFactory.context().networkManager().getInternalHttpAddress( session.getClientIntf() );
+            InetAddress addr = UvmContextFactory.context().newNetworkManager().getInternalHttpAddress( session.getClientIntf() );
                 
             if (addr == null) {
                 return generateSimplePage(nonce, persistent, false);

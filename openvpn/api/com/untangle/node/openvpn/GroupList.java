@@ -12,7 +12,6 @@ import java.util.Set;
 @SuppressWarnings("serial")
 public class GroupList implements Serializable
 {
-
     List<VpnGroup> groupList;
 
     public GroupList()
@@ -40,7 +39,7 @@ public class GroupList implements Serializable
         List<AddressRange> checkList = new LinkedList<AddressRange>();
 
         for ( VpnGroup group : this.groupList ) {
-            checkList.add( AddressRange.makeNetwork( group.getAddress().getAddr(), group.getNetmask().getAddr()));
+            checkList.add( AddressRange.makeNetwork( group.getAddress(), group.getNetmask()) );
         }
         
         return checkList;

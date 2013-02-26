@@ -3,7 +3,9 @@
  */
 package com.untangle.uvm.node;
 
+import java.net.InetAddress;
+
 public interface OpenVpn
 {
-    HostAddress getVpnServerAddress();
+    InetAddress getVpnServerAddress();
 }

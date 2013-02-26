@@ -3,6 +3,7 @@
  */
 package com.untangle.uvm.engine;
 
+import java.net.InetAddress;
 import java.io.File;
 import java.io.FileOutputStream;
 
@@ -15,7 +16,6 @@ import com.untangle.uvm.SystemManager;
 import com.untangle.uvm.SystemSettings;
 import com.untangle.uvm.SnmpSettings;
 import com.untangle.uvm.UvmState;
-import com.untangle.uvm.node.IPAddress;
 import com.untangle.uvm.node.DayOfWeekMatcher;
 import com.untangle.node.util.IOUtil;
 
@@ -105,28 +105,28 @@ public class SystemManagerImpl implements SystemManager
      */
     public String getPublicUrl()
     {
-        String httpsPortStr = Integer.toString(this.settings.getHttpsPort());
+        String httpsPortStr = Integer.toString( this.settings.getHttpsPort() );
         String primaryAddressStr = "unconfigured.example.com";
         
-        if ( SystemSettings.PUBLIC_URL_EXTERNAL_IP.equals(this.settings.getPublicUrlMethod()) ) {
-            IPAddress primaryAddress = UvmContextFactory.context().networkManager().getPrimaryAddress();
+        if ( SystemSettings.PUBLIC_URL_EXTERNAL_IP.equals( this.settings.getPublicUrlMethod() ) ) {
+            InetAddress primaryAddress = UvmContextFactory.context().newNetworkManager().getFirstWanAddress();
             if ( primaryAddress == null ) {
                 logger.warn("No WAN IP found");
             } else {
-                primaryAddressStr = primaryAddress.getAddr().getHostAddress();
+                primaryAddressStr = primaryAddress.getHostAddress();
             }
-        } else if ( SystemSettings.PUBLIC_URL_HOSTNAME.equals(this.settings.getPublicUrlMethod()) ) {
-            if ( UvmContextFactory.context().networkManager().getHostname() == null ) {
+        } else if ( SystemSettings.PUBLIC_URL_HOSTNAME.equals( this.settings.getPublicUrlMethod() ) ) {
+            if ( UvmContextFactory.context().newNetworkManager().getNetworkSettings().getHostName() == null ) {
                 logger.warn("No hostname is configured");
             } else {
-                primaryAddressStr = UvmContextFactory.context().networkManager().getHostname();
+                primaryAddressStr = UvmContextFactory.context().newNetworkManager().getNetworkSettings().getHostName();
             }
-        } else if ( SystemSettings.PUBLIC_URL_ADDRESS_AND_PORT.equals(this.settings.getPublicUrlMethod()) ) {
+        } else if ( SystemSettings.PUBLIC_URL_ADDRESS_AND_PORT.equals( this.settings.getPublicUrlMethod() ) ) {
             if ( this.settings.getPublicUrlAddress() == null ) {
                 logger.warn("No public address configured");
             } else {
                 primaryAddressStr = this.settings.getPublicUrlAddress();
-                httpsPortStr = Integer.toString(this.settings.getPublicUrlPort());
+                httpsPortStr = Integer.toString( this.settings.getPublicUrlPort() );
             }
         } else {
             logger.warn("Unknown public URL method: " + this.settings.getPublicUrlMethod() );
@@ -165,7 +165,7 @@ public class SystemManagerImpl implements SystemManager
         /* sync SnmpSettings to disk */
         syncSnmpSettings(this.settings.getSnmpSettings());
     
-        UvmContextImpl.context().networkManager().refreshNetworkConfig();
+        //UvmContextImpl.context().newNetworkManager().refreshNetworkConfig();
 
         if (this.autoUpgradeCronJob != null)
             this.autoUpgradeCronJob.reschedule(this.settings.getAutoUpgradeDays(),

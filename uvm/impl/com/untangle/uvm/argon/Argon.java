@@ -6,7 +6,6 @@ import org.apache.log4j.Logger;
 import com.untangle.jnetcap.Netcap;
 import com.untangle.jvector.Vector;
 import com.untangle.uvm.ArgonException;
-import com.untangle.uvm.engine.NetworkManagerImpl;
 import com.untangle.uvm.util.JsonClient;
 import com.untangle.uvm.util.XMLRPCUtil;
 

@@ -38,7 +38,7 @@ public class ExportList implements Serializable
         List<AddressRange> checkList = new LinkedList<AddressRange>();
 
         for ( SiteNetwork export : this.exportList ) {
-            checkList.add( AddressRange.makeNetwork( export.getNetwork().getAddr(), export.getNetmask().getAddr()));
+            checkList.add( AddressRange.makeNetwork( export.getNetwork(), export.getNetmask()) );
         }
 
         return checkList;

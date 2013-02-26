@@ -23,9 +23,9 @@ import com.untangle.uvm.node.Node;
 import com.untangle.uvm.node.NodeSettings;
 import com.untangle.uvm.node.PolicyManager;
 import com.untangle.uvm.node.Reporting;
-import com.untangle.uvm.networking.NetworkConfiguration;
+import com.untangle.uvm.network.NetworkSettings;
+import com.untangle.uvm.network.InterfaceSettings;
 import com.untangle.uvm.networking.ConnectionStatus;
-import com.untangle.uvm.networking.InterfaceConfiguration;
 
 /**
  * Implements AlertManager. This class runs a series of test and creates alerts
@@ -94,16 +94,17 @@ public class AlertManagerImpl implements AlertManager
      */
     private boolean testDNS(List<String> alertList)
     {
-        NetworkConfiguration networkConf = UvmContextFactory.context().networkManager().getNetworkConfiguration();
+        NetworkSettings networkSettings = UvmContextFactory.context().newNetworkManager().getNetworkSettings();
         ConnectivityTesterImpl connectivityTester = (ConnectivityTesterImpl)UvmContextFactory.context().getConnectivityTester();
         List<InetAddress> nonWorkingDns = new LinkedList<InetAddress>();
         
-        for (InterfaceConfiguration intf : networkConf.getInterfaceList()) {
-            if (!intf.isWAN())
+        for (InterfaceSettings intf : networkSettings.getInterfaces()) {
+            if (!intf.getIsWan())
                 continue;
             
-            InetAddress dnsPrimary   = intf.getDns1();
-            InetAddress dnsSecondary = intf.getDns2();
+            // FIXME need to support dhcp and pppoe
+            InetAddress dnsPrimary   = intf.getV4StaticDns1();
+            InetAddress dnsSecondary = intf.getV4StaticDns2();
 
             if (dnsPrimary != null)
                 if (!connectivityTester.isDnsWorking(dnsPrimary, null))
@@ -279,27 +280,27 @@ public class AlertManagerImpl implements AlertManager
      */
     private void testBridgeBackwards(List<String> alertList)
     {
-        NetworkConfiguration networkConf = UvmContextFactory.context().networkManager().getNetworkConfiguration();
+        NetworkSettings networkSettings = UvmContextFactory.context().newNetworkManager().getNetworkSettings();
         
-        for (InterfaceConfiguration intf : networkConf.getInterfaceList()) {
-            if (!InterfaceConfiguration.CONFIG_BRIDGE.equals(intf.getConfigType()))
+        for (InterfaceSettings intf : networkSettings.getInterfaces()) {
+            if (!InterfaceSettings.CONFIG_BRIDGED.equals(intf.getV4ConfigType()))
                 continue;
 
-            logger.debug("testBridgeBackwards: Checking Bridge: " + intf.getSystemName());
+            logger.debug("testBridgeBackwards: Checking Bridge: " + intf.getSystemDev());
             logger.debug("testBridgeBackwards: Checking Bridge bridgedTo: " + intf.getBridgedTo());
 
-            InterfaceConfiguration master = networkConf.findByName(intf.getBridgedTo());
+            InterfaceSettings master = networkSettings.findInterfaceId(intf.getBridgedTo());
             if (master == null) {
                 logger.warn("Unable to locate bridge master: " + intf.getBridgedTo());
                 continue;
             }
                 
-            logger.debug("testBridgeBackwards: Checking Bridge master: " + master.getSystemName());
-            if (master.getSystemName() == null) {
+            logger.debug("testBridgeBackwards: Checking Bridge master: " + master.getSystemDev());
+            if (master.getSystemDev() == null) {
                 logger.warn("Unable to locate bridge master systemName: " + master.getName());
                 continue;
             }
-            String bridgeName = "br." + master.getSystemName();
+            String bridgeName = "br." + master.getSystemDev();
             
             String result = UvmContextFactory.context().execManager().execOutput( "brctl showstp " + bridgeName + " | grep '^eth.*' | sed -e 's/(//g' -e 's/)//g'");
             if (result == null || "".equals(result)) {
@@ -327,7 +328,9 @@ public class AlertManagerImpl implements AlertManager
                 bridgeIdToSystemNameMap.put(key, systemName);
             }
 
-            String gatewayIp = master.getGatewayStr();
+            //FIXME - add support for DHCP and pppoe
+            //String gatewayIp = master.getGatewayStr();
+            String gatewayIp = master.getV4StaticGateway().getHostAddress();
             if (gatewayIp == null) {
                 logger.warn("Missing gateway on bridge master");
                 return;
@@ -378,17 +381,17 @@ public class AlertManagerImpl implements AlertManager
             /**
              * Get the interface configuration for the interface where the gateway lives
              */
-            InterfaceConfiguration gatewayIntf = networkConf.findBySystemName(gatewayInterfaceSystemName);
+            InterfaceSettings gatewayIntf = networkSettings.findInterfaceSystemDev(gatewayInterfaceSystemName);
             if (gatewayIntf == null) {
                 logger.warn("Unable to find gatewayIntf " + gatewayInterfaceSystemName);
                 return;
             }
-            logger.debug("testBridgeBackwards: Final Gateway Inteface: " + gatewayIntf.getName() + " is WAN: " + gatewayIntf.isWAN());
+            logger.debug("testBridgeBackwards: Final Gateway Inteface: " + gatewayIntf.getName() + " is WAN: " + gatewayIntf.getIsWan());
 
             /**
              * Ideally, this is the WAN, however if its actually an interface bridged to a WAN, then the interfaces are probably backwards
              */
-            if (!gatewayIntf.isWAN()) {
+            if (!gatewayIntf.getIsWan()) {
                 String alertText = i18nUtil.tr("Bridge");
                 alertText += " (";
                 alertText += master.getName();
@@ -418,12 +421,13 @@ public class AlertManagerImpl implements AlertManager
      */
     private void testInterfaceErrors(List<String> alertList)
     {
-        NetworkConfiguration networkConf = UvmContextFactory.context().networkManager().getNetworkConfiguration();
+        NetworkSettings networkSettings = UvmContextFactory.context().newNetworkManager().getNetworkSettings();
         
-        for (InterfaceConfiguration intf : networkConf.getInterfaceList()) {
-            if (intf.getSystemName() == null || "tun0".equals(intf.getSystemName()))
+        for (InterfaceSettings intf : networkSettings.getInterfaces()) {
+            if ( intf.getSystemDev() == null )
                 continue;
-            String lines = UvmContextFactory.context().execManager().execOutput( "ifconfig " + intf.getSystemName() + " | grep errors | awk '{print $3}'");
+            
+            String lines = UvmContextFactory.context().execManager().execOutput( "ifconfig " + intf.getPhysicalDev() + " | grep errors | awk '{print $3}'");
             String type = "RX";  //first line is RX erros
 
             for (String line : lines.split("\n")) {
@@ -479,14 +483,15 @@ public class AlertManagerImpl implements AlertManager
         if (commtouchasList.size() > 0)
             nodeName = "Spam Blocker";
         
-        NetworkConfiguration networkConf = UvmContextFactory.context().networkManager().getNetworkConfiguration();
+        NetworkSettings networkSettings = UvmContextFactory.context().newNetworkManager().getNetworkSettings();
         
-        for (InterfaceConfiguration intf : networkConf.getInterfaceList()) {
-            if (!intf.isWAN())
+        for (InterfaceSettings intf : networkSettings.getInterfaces()) {
+            if (!intf.getIsWan())
                 continue;
             
-            String dnsPrimary   = (intf.getDns1() != null ? intf.getDns1().getHostAddress() : null);
-            String dnsSecondary = (intf.getDns2() != null ? intf.getDns2().getHostAddress() : null);
+            // FIXME need to support dhcp and pppoe
+            String dnsPrimary   = (intf.getV4StaticDns1() != null ? intf.getV4StaticDns1().getHostAddress() : null);
+            String dnsSecondary = (intf.getV4StaticDns2() != null ? intf.getV4StaticDns2().getHostAddress() : null);
 
             List<String> dnsServers = new LinkedList<String>();
             if ( dnsPrimary != null ) dnsServers.add(dnsPrimary);

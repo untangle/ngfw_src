@@ -89,4 +89,53 @@ public class NetworkSettings implements Serializable, JSONString
         JSONObject jO = new JSONObject(this);
         return jO.toString();
     }
+
+    /**
+     * Convenience method to find the InterfaceSettings for the specified Id
+     */
+    public InterfaceSettings findInterfaceId( int interfaceId )
+    {
+        if ( getInterfaces() == null)
+            return null;
+        
+        for ( InterfaceSettings intf : getInterfaces() ) {
+            if ( intf.getInterfaceId() == interfaceId )
+                return intf;
+        }
+
+        return null;
+    }
+
+    /**
+     * Convenience method to find the InterfaceSettings for the specified systemDev
+     */
+    public InterfaceSettings findInterfaceSystemDev( String systemDev )
+    {
+        if ( getInterfaces() == null)
+            return null;
+        
+        for ( InterfaceSettings intf : getInterfaces() ) {
+            if ( intf.getSystemDev().equals( systemDev ) )
+                return intf;
+        }
+
+        return null;
+    }
+
+    /**
+     * Convenience method to find the InterfaceSettings for the first WAN
+     */
+    public InterfaceSettings findInterfaceFirstWan( )
+    {
+        if ( getInterfaces() == null)
+            return null;
+        
+        for ( InterfaceSettings intf : getInterfaces() ) {
+            if ( intf.getIsWan() )
+                return intf;
+        }
+
+        return null;
+    }
+    
 }

@@ -8,6 +8,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.InetAddress;
 import java.util.Date;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -20,7 +21,6 @@ import org.apache.log4j.Logger;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.UvmContext;
 import com.untangle.uvm.node.NodeSettings;
-import com.untangle.uvm.node.IPAddress;
 import com.untangle.node.openvpn.Constants;
 import com.untangle.node.openvpn.VpnNode;
 import com.untangle.uvm.util.ServletStreamer;
@@ -103,7 +103,7 @@ class Util
             String commonName = null;
 
             try {
-                IPAddress address = IPAddress.parse( request.getRemoteAddr());
+                InetAddress address = InetAddress.getByName( request.getRemoteAddr());
                 commonName = node.lookupClientDistributionKey( key, address );
             } catch ( Exception e ) {
                 logger.error( "Error connecting to the openvpn node", e );

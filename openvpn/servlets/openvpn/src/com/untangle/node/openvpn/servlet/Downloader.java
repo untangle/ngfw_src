@@ -26,8 +26,6 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.log4j.Logger;
 
-import com.untangle.uvm.node.IPAddress;
-
 @SuppressWarnings("serial")
 public class Downloader extends HttpServlet
 {

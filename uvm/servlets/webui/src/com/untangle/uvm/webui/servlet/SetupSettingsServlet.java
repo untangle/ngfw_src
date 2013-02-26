@@ -18,9 +18,6 @@ import org.jabsorb.serializer.MarshallException;
 import com.untangle.uvm.UvmContext;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.NetworkManager;
-import com.untangle.uvm.networking.NetworkConfiguration;
-import com.untangle.uvm.networking.InterfaceConfiguration;
-import com.untangle.uvm.networking.NetworkUtil;
 import com.untangle.uvm.servlet.ServletUtils;
 
 /**
@@ -39,18 +36,6 @@ public class SetupSettingsServlet extends HttpServlet
             ServletUtils.getInstance().registerSerializers(js);
         } catch ( Exception e ) {
             throw new ServletException( "Unable to load the default serializer", e );
-        }
-
-        NetworkManager nm = context.networkManager();
-
-        NetworkConfiguration networkConfiguration = nm.getNetworkConfiguration();
-        InterfaceConfiguration wanConfig = networkConfiguration.findFirstWAN();
-
-        try {
-            request.setAttribute( "interfaceArray", js.toJSON( networkConfiguration.getInterfaceList()));
-            request.setAttribute( "wanConfiguration", js.toJSON( wanConfig ));
-        } catch ( MarshallException e ) {
-            throw new ServletException( "Unable to serializer JSON", e );
         }
 
         String url="/WEB-INF/jsp/setupSettings.jsp";

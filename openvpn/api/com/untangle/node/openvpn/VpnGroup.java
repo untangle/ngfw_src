@@ -3,7 +3,7 @@
  */
 package com.untangle.node.openvpn;
 
-import com.untangle.uvm.node.IPAddress;
+import java.net.InetAddress;
 
 /**
  * A VPN group of address and clients.
@@ -18,8 +18,8 @@ public class VpnGroup implements java.io.Serializable
     /* The interface that clients from the client pool are associated with */
     private int intf;
 
-    private IPAddress address;
-    private IPAddress netmask;
+    private InetAddress address;
+    private InetAddress netmask;
     private boolean useDNS = false;
     private boolean fullTunnel = false;
     private String name = EMPTY_NAME;
@@ -44,16 +44,16 @@ public class VpnGroup implements java.io.Serializable
     /**
      * Get the pool of addresses for the clients.
      */
-    public IPAddress getAddress() { return this.address; }
-    public void setAddress( IPAddress address ) { this.address = address; }
+    public InetAddress getAddress() { return this.address; }
+    public void setAddress( InetAddress address ) { this.address = address; }
 
     /**
      * Get the pool of netmaskes for the clients, in bridging mode
      * this must come from the pool that the interface is bridged
      * with.
      */
-    public IPAddress getNetmask() { return this.netmask; }
-    public void setNetmask( IPAddress netmask ) { this.netmask = netmask; }
+    public InetAddress getNetmask() { return this.netmask; }
+    public void setNetmask( InetAddress netmask ) { this.netmask = netmask; }
 
     /**
      * @return Default interface to associate VPN traffic with.

@@ -66,7 +66,6 @@ public interface UvmContext
      *
      * @return the NetworkManager.
      */
-    NetworkManager networkManager();
     NewNetworkManager newNetworkManager();
     
     /**

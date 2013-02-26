@@ -26,7 +26,6 @@ import org.apache.log4j.Logger;
 
 import com.untangle.uvm.UvmContext;
 import com.untangle.uvm.UvmContextFactory;
-import com.untangle.uvm.node.IPAddress;
 import com.untangle.uvm.util.I18nUtil;
 
 
@@ -521,7 +520,7 @@ class Stats
         this.bytesTxDelta  = bytesTx;
         this.lastUpdate   = new Date();
         this.isActive     = true;
-        this.sessionEvent = new ClientStatusEvent( new Timestamp(key.start.getTime()), new IPAddress( this.key.address ), this.key.port, this.key.name );
+        this.sessionEvent = new ClientStatusEvent( new Timestamp(key.start.getTime()), this.key.address, this.key.port, this.key.name );
     }
 
     void fillEvent( Timestamp now )

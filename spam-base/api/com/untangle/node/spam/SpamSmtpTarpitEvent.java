@@ -6,7 +6,6 @@ package com.untangle.node.spam;
 import java.net.InetAddress;
 
 import com.untangle.uvm.logging.LogEvent;
-import com.untangle.uvm.node.IPAddress;
 import com.untangle.uvm.node.ParseException;
 import com.untangle.uvm.node.SessionEvent;
 
@@ -18,26 +17,18 @@ public class SpamSmtpTarpitEvent extends LogEvent
 {
     private SessionEvent sessionEvent;
     private String hostname;
-    private IPAddress ipAddr;
+    private InetAddress ipAddr;
     private String vendorName;
 
     // constructors -----------------------------------------------------------
 
     public SpamSmtpTarpitEvent() {}
 
-    public SpamSmtpTarpitEvent(SessionEvent sessionEvent, String hostname, IPAddress ipAddr, String vendorName)
+    public SpamSmtpTarpitEvent(SessionEvent sessionEvent, String hostname, InetAddress ipAddr, String vendorName)
     {
         this.sessionEvent = sessionEvent;
         this.hostname = hostname;
         this.ipAddr = ipAddr;
-        this.vendorName = vendorName;
-    }
-
-    public SpamSmtpTarpitEvent(SessionEvent sessionEvent, String hostname, InetAddress ipAddrIN, String vendorName)
-    {
-        this.sessionEvent = sessionEvent;
-        this.hostname = hostname;
-        this.ipAddr = new IPAddress(ipAddrIN);
         this.vendorName = vendorName;
     }
 
@@ -52,8 +43,8 @@ public class SpamSmtpTarpitEvent extends LogEvent
     /**
      * IP address of mail server listed on DNSBL service.
      */
-    public IPAddress getIPAddr() { return ipAddr; }
-    public void setIPAddr( IPAddress ipAddr ) { this.ipAddr = ipAddr; }
+    public InetAddress getIPAddr() { return ipAddr; }
+    public void setIPAddr( InetAddress ipAddr ) { this.ipAddr = ipAddr; }
 
     /**
      * Spam scanner vendor.
@@ -80,7 +71,7 @@ public class SpamSmtpTarpitEvent extends LogEvent
 
         int i=0;
         pstmt.setTimestamp(++i,getTimeStamp());
-        pstmt.setObject(++i, getIPAddr().getAddr().getHostAddress(), java.sql.Types.OTHER);
+        pstmt.setObject(++i, getIPAddr().getHostAddress(), java.sql.Types.OTHER);
         pstmt.setString(++i, getHostname());
         pstmt.setString(++i, getVendorName());
         pstmt.setLong(++i, sessionEvent.getPolicyId());

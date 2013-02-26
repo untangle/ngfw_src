@@ -17,9 +17,7 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 import com.untangle.uvm.UvmContextFactory;
-import com.untangle.uvm.node.IPAddress;
 import com.untangle.uvm.node.ParseException;
-import com.untangle.uvm.node.MACAddress;
 import org.apache.log4j.Logger;
 
 /**
@@ -210,8 +208,8 @@ class DhcpMonitor implements Runnable
         String tmp;
         String host;
         Date eol;
-        MACAddress mac;
-        IPAddress ip;
+        String mac;
+        InetAddress ip;
 
         if ( strArray.length != DHCP_LEASE_ENTRY_LENGTH ) {
             logger.error( "Invalid DHCP lease: " + str );
@@ -226,21 +224,12 @@ class DhcpMonitor implements Runnable
             return;
         }
 
-        tmp  = strArray[DHCP_LEASE_ENTRY_MAC];
-        try {
-            mac = MACAddress.parse( tmp );
-        } catch ( ParseException e ) {
-            logger.error( "Invalid MAC address: " + tmp );
-            return;
-        }
+        mac  = strArray[DHCP_LEASE_ENTRY_MAC];
 
         tmp  = strArray[DHCP_LEASE_ENTRY_IP];
         try {
-            ip = IPAddress.parse( tmp );
-        } catch ( ParseException e ) {
-            logger.error( "Invalid IP address: " + tmp, e );
-            return;
-        } catch ( UnknownHostException e ) {
+            ip = InetAddress.getByName( tmp );
+        } catch ( Exception e ) {
             logger.error( "Invalid IP address: " + tmp, e );
             return;
         }
@@ -255,25 +244,25 @@ class DhcpMonitor implements Runnable
         processDhcpLease( eol, mac, ip, host, now );
 
         /* Remove the item from the set of deleted items */
-        deletedSet.remove( ip.getAddr());
+        deletedSet.remove( ip );
     }
 
-    private void processDhcpLease( Date eol, MACAddress mac, IPAddress ip, String host, Date now )
+    private void processDhcpLease( Date eol, String mac, InetAddress ip, String host, Date now )
     {
         /* Determine if this lease is already being tracked */
-        DhcpLease lease = currentLeaseMap.get( ip.getAddr() );
+        DhcpLease lease = currentLeaseMap.get( ip );
 
         if ( lease == null ) {
             /* Add the lease to the map */
             lease = new DhcpLease( eol, mac, ip, host, now );
-            logger.info("Adding DHCP Lease: " + ip.getAddr().getHostAddress());
-            currentLeaseMap.put( ip.getAddr(), lease );
+            logger.info("Adding DHCP Lease: " + ip.getHostAddress());
+            currentLeaseMap.put( ip, lease );
         } else {
 
             if ( lease.hasChanged( eol, mac, ip, host, now )) {
                 /* must update the lease here because the previous values are determine
                  * whether this is a release or renew */
-                logger.info("Updating DHCP Lease: " + ip.getAddr().getHostAddress());
+                logger.info("Updating DHCP Lease: " + ip.getHostAddress());
                 lease.set( eol, mac, ip, host, now );
             } else {
                 logger.debug( "Lease hasn't changed: " + ip.toString());

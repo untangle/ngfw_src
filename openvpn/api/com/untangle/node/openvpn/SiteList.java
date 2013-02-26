@@ -41,8 +41,7 @@ public class SiteList implements Serializable
 
         for ( VpnSite site : this.siteList ) {
             for ( SiteNetwork siteNetwork : site.getExportedAddressList()) {
-                checkList.add( AddressRange.makeNetwork( siteNetwork.getNetwork().getAddr(),
-                                                         siteNetwork.getNetmask().getAddr()));
+                checkList.add( AddressRange.makeNetwork( siteNetwork.getNetwork(), siteNetwork.getNetmask()) );
             }
         }
 

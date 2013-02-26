@@ -1,21 +1,6 @@
-/*
- * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License, version 2,
- * as published by the Free Software Foundation.
- *
- * This program is distributed in the hope that it will be useful, but
- * AS-IS and WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE, TITLE, or
- * NONINFRINGEMENT.  See the GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
+/**
+ * $Id$
  */
-
 package com.untangle.uvm.engine;
 
 import java.io.IOException;
@@ -27,9 +12,9 @@ import org.apache.log4j.Logger;
 
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.ConnectivityTester;
-import com.untangle.uvm.networking.NetworkConfiguration;
+import com.untangle.uvm.network.NetworkSettings;
+import com.untangle.uvm.network.InterfaceSettings;
 import com.untangle.uvm.networking.ConnectionStatus;
-import com.untangle.uvm.networking.InterfaceConfiguration;
 
 class ConnectivityTesterImpl implements ConnectivityTester
 {
@@ -69,11 +54,12 @@ class ConnectivityTesterImpl implements ConnectivityTester
      */
     public Status getStatus()
     {
-        NetworkConfiguration networkSettings = UvmContextFactory.context().networkManager().getNetworkConfiguration();
-        InterfaceConfiguration wan = networkSettings.findFirstWAN();
+        NetworkSettings networkSettings = UvmContextFactory.context().newNetworkManager().getNetworkSettings();
+        InterfaceSettings wan = networkSettings.findInterfaceFirstWan();
         
-        InetAddress dnsPrimary   = wan.getDns1();
-        InetAddress dnsSecondary = wan.getDns2();
+        // FIXME get current DNS options, must support dhcp and pppoe
+        InetAddress dnsPrimary   = wan.getV4StaticDns1();
+        InetAddress dnsSecondary = wan.getV4StaticDns2();
 
         /* Wait for any bridge interfaces to come up */
         waitForBridges();

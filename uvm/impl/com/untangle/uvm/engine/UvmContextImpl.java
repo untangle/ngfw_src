@@ -34,7 +34,6 @@ import com.untangle.uvm.OemManager;
 import com.untangle.uvm.AlertManager;
 import com.untangle.uvm.CertificateManager;
 import com.untangle.uvm.NewNetworkManager;
-import com.untangle.uvm.NetworkManager;
 import com.untangle.uvm.ExecManager;
 import com.untangle.uvm.UvmException;
 import com.untangle.uvm.UvmState;
@@ -91,7 +90,6 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
     private ArgonManagerImpl argonManager;
     private LoggingManagerImpl loggingManager;
     private MailSenderImpl mailSender;
-    private NetworkManagerImpl networkManager;
     private NewNetworkManagerImpl newNetworkManager;
     private ConnectivityTesterImpl connectivityTester;
     private PipelineFoundryImpl pipelineFoundry;
@@ -202,11 +200,6 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
         return this.systemManager;
     }
     
-    public NetworkManager networkManager()
-    {
-        return this.networkManager;
-    }
-
     public NewNetworkManager newNetworkManager()
     {
         return this.newNetworkManager;
@@ -574,7 +567,6 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
             json.put( "hostTable", this.hostTable());
             json.put( "sessionMonitor", this.sessionMonitor());
             json.put( "newNetworkManager", this.newNetworkManager());
-            json.put( "networkManager", this.networkManager());
             json.put( "messageManager", this.messageManager());
             json.put( "brandingManager", this.brandingManager());
 
@@ -582,7 +574,7 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
             json.put( "version", this.version());
             json.put( "translations", this.languageManager().getTranslations("untangle-libuvm"));
             json.put( "skinSettings", this.skinManager().getSettings());
-            json.put( "hostname", this.networkManager().getNetworkConfiguration().getHostname());
+            json.put( "hostname", this.newNetworkManager().getNetworkSettings().getHostName());
             json.put( "messageManagerKey", this.messageManager().getMessageKey());
             json.put( "companyName", this.brandingManager().getCompanyName());
         } catch (Exception e) {
@@ -634,7 +626,6 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
 
         this.adminManager = new AdminManagerImpl();
 
-        this.networkManager = new NetworkManagerImpl();
         this.newNetworkManager = new NewNetworkManagerImpl();
 
         this.defaultLicenseManager = new DefaultLicenseManagerImpl();
@@ -704,7 +695,6 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
         hideUpgradeSplash();
 
         newNetworkManager.insertRules();
-        networkManager.refreshNetworkConfig();
     }
 
     @Override
@@ -732,7 +722,6 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
 
         // XXX destroy methods for:
         // - pipelineFoundry
-        // - networkingManager
         // - argonManager
         toolboxManager = null;
 

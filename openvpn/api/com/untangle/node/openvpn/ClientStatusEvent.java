@@ -5,9 +5,9 @@ package com.untangle.node.openvpn;
 
 import java.io.Serializable;
 import java.sql.Timestamp;
+import java.net.InetAddress;
 
 import com.untangle.uvm.logging.LogEvent;
-import com.untangle.uvm.node.IPAddress;
 
 /**
  * OpenVPN client status event
@@ -15,7 +15,7 @@ import com.untangle.uvm.node.IPAddress;
 @SuppressWarnings("serial")
 public class ClientStatusEvent extends LogEvent implements Serializable
 {
-    private IPAddress address;
+    private InetAddress address;
     private int port;
     private String clientName;
     private Timestamp start; /* Start of the session */
@@ -27,7 +27,7 @@ public class ClientStatusEvent extends LogEvent implements Serializable
 
     public ClientStatusEvent() {}
 
-    public ClientStatusEvent( Timestamp start, IPAddress address, int port, String clientName )
+    public ClientStatusEvent( Timestamp start, InetAddress address, int port, String clientName )
     {
         this.start      = start;
         this.address    = address;
@@ -51,8 +51,8 @@ public class ClientStatusEvent extends LogEvent implements Serializable
     /**
      * Address where the client connected from.
      */
-    public IPAddress getAddress() { return this.address; }
-    public void setAddress( IPAddress address ) { this.address = address; }
+    public InetAddress getAddress() { return this.address; }
+    public void setAddress( InetAddress address ) { this.address = address; }
 
     /**
      * Port used to connect
@@ -119,7 +119,7 @@ public class ClientStatusEvent extends LogEvent implements Serializable
         pstmt.setTimestamp(++i,getEnd());
         pstmt.setLong(++i, getBytesRxDelta());
         pstmt.setLong(++i, getBytesTxDelta());
-        pstmt.setObject(++i, getAddress().getAddr().getHostAddress(), java.sql.Types.OTHER);
+        pstmt.setObject(++i, getAddress().getHostAddress(), java.sql.Types.OTHER);
         pstmt.setInt(++i, getPort());
         pstmt.setString(++i, getClientName());
 

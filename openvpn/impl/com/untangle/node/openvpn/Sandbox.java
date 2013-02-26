@@ -19,13 +19,11 @@ import com.untangle.uvm.IntfConstants;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.NetworkManager;
 import com.untangle.uvm.ExecManagerResult;
-import com.untangle.uvm.networking.IPNetwork;
-import com.untangle.uvm.networking.NetworkConfiguration;
-import com.untangle.uvm.networking.InterfaceConfiguration;
-import com.untangle.uvm.node.HostAddress;
-import com.untangle.uvm.node.IPAddress;
+import com.untangle.uvm.network.NetworkSettings;
+import com.untangle.uvm.network.InterfaceSettings;
 import com.untangle.uvm.node.ParseException;
 import com.untangle.uvm.node.NodeSettings;
+import com.untangle.uvm.node.IPMaskedAddress;
 import com.untangle.uvm.util.I18nUtil;
 
 public class Sandbox
@@ -40,19 +38,7 @@ public class Sandbox
 
     private static final String OPENVPN_CLIENT_FILE = OpenVpnManager.OPENVPN_CONF_DIR + "/client.conf";
 
-    /* Trying a pretty strange collection, hopefully there is a match. */
-    private static final String[] AUTO_ADDRESS_POOLS_STRING = {
-        "172.16.0.0/24",   "172.16.1.0/24",   "172.16.2.0/24",   "172.16.3.0/24",
-        "172.16.4.0/24",   "172.16.5.0/24",   "172.16.6.0/24",   "172.16.7.0/24",
-        "192.168.16.0/24", "192.168.17.0/24", "192.168.18.0/24", "192.168.19.0/24",
-        "192.168.20.0/24", "192.168.21.0/24", "192.168.22.0/24", "192.168.23.0/24",
-        "10.254.16.0/24",  "10.254.17.0/24",  "10.254.18.0/24",  "10.254.19.0/24",
-        "10.254.20.0/24",  "10.254.21.0/24",  "10.254.22.0/24",  "10.254.23.0/24"
-    };
-
-    private static final Map<IPNetwork,AddressRange> AUTO_ADDRESS_POOLS;
-
-    private HostAddress vpnServerAddress;
+    private InetAddress vpnServerAddress;
 
     private CertificateParameters certificateParameters;
     private GroupList  groupList;
@@ -104,7 +90,7 @@ public class Sandbox
         }
 
         /* Parse out the client configuration address */
-        vpnServerAddress = new HostAddress( new IPAddress( null ));
+        vpnServerAddress = null;
         BufferedReader in = null;
         try {
             in = new BufferedReader( new FileReader( OPENVPN_CLIENT_FILE ));
@@ -119,13 +105,13 @@ public class Sandbox
                         break;
                     }
 
-                    vpnServerAddress = HostAddress.parse( valueArray[1] );
+                    vpnServerAddress = InetAddress.getByName( valueArray[1] );
                     break;
                 }
             }
         } catch ( Exception e ) {
             logger.warn( "Error reading client configuration file", e );
-            vpnServerAddress = new HostAddress( new IPAddress( null ));
+            vpnServerAddress = null;
         } finally {
             if ( in != null ) try { in.close(); } catch ( Exception e ) {};
         }
@@ -162,53 +148,39 @@ public class Sandbox
      * network settings. */
     void autoDetectAddressPool() throws Exception
     {
-        NetworkConfiguration networkSettings = UvmContextFactory.context().networkManager().getNetworkConfiguration();
+        NetworkSettings networkSettings = UvmContextFactory.context().newNetworkManager().getNetworkSettings();
 
         /* Load the list of networks. */
         List<AddressRange> currentNetwork = new LinkedList<AddressRange>();
-        for (InterfaceConfiguration intf : networkSettings.getInterfaceList()) {
-            IPNetwork net;
+        for (InterfaceSettings intf : networkSettings.getInterfaces()) {
+            IPMaskedAddress net;
             AddressRange range;
 
             /* add the primary */
-            net = intf.getPrimaryAddress();
-            if (net != null) {
-                range = AddressRange.makeNetwork( net.getNetwork().getAddr(), net.getNetmask().getAddr() );
+            InetAddress address = intf.getV4StaticAddress();
+            InetAddress netmask  = intf.getV4StaticAddress();
+            if ( address != null && netmask != null ) {
+                range = AddressRange.makeNetwork( address, netmask );
                 currentNetwork.add(range);
             }
 
-            if (intf.getAliases() != null) {
-                for ( IPNetwork alias : intf.getAliases() ) {
-                    range = AddressRange.makeNetwork( alias.getNetwork().getAddr(), alias.getNetmask().getAddr() );
-                    currentNetwork.add(range);
-                }
-            }
-        }
-
-        IPNetwork network = null;
-
-        for ( Map.Entry<IPNetwork,AddressRange> e : AUTO_ADDRESS_POOLS.entrySet()) {
-            network = e.getKey();
-            for ( AddressRange range : currentNetwork ) {
-                if ( range.overlaps( e.getValue())) {
-                    network = null;
-                    break;
-                }
-            }
-
-            if ( network != null ) break;
-        }
-
-        if ( network == null ) {
-            logger.warn( "Unable to auto detect a network for VPN." );
-            return;
+            // FIXME aliases
+            //             if (intf.getAliases() != null) {
+            //                 for ( IPMaskedAddress alias : intf.getAliases() ) {
+            //                     range = AddressRange.makeNetwork( alias.getNetwork().getAddr(), alias.getNetmask().getAddr() );
+            //                     currentNetwork.add(range);
+            //                 }
+            //             }
         }
 
         VpnGroup group = new VpnGroup();
         group.setLive( true );
         group.setUseDNS( false );
-        group.setAddress( network.getNetwork());
-        group.setNetmask( network.getNetmask());
+
+        //FIXME new better suggestion
+        group.setAddress( InetAddress.getByName("172.16.2.0") );
+        group.setNetmask( InetAddress.getByName("255.255.255.0") );
+        
         group.setName( i18nUtil.tr("default") );
         GroupList gl = new GroupList();
         List<VpnGroup> list = new LinkedList<VpnGroup>();
@@ -232,49 +204,23 @@ public class Sandbox
     void autoDetectExportList() throws Exception
     {
         /* Load the list of networks. */
-        NetworkConfiguration networkSettings = UvmContextFactory.context().networkManager().getNetworkConfiguration();
+        NetworkSettings networkSettings = UvmContextFactory.context().newNetworkManager().getNetworkSettings();
 
         List<SiteNetwork> networkList = new LinkedList<SiteNetwork>();
-        LinkedList<AddressRange> rangeList = new LinkedList<AddressRange>();
 
-        for (InterfaceConfiguration intf : networkSettings.getInterfaceList()) {
-            if (! intf.isWAN() ) {
-                IPNetwork network = intf.getPrimaryAddress();
+        for (InterfaceSettings intf : networkSettings.getInterfaces()) {
+            if (! intf.getIsWan() ) {
+                InetAddress address = intf.getV4StaticAddress();
+                InetAddress netmask = intf.getV4StaticNetmask();
 
-                if (network == null)
+                if (address == null || netmask == null)
                     continue;
-
-                rangeList.addFirst( AddressRange.makeNetwork( network.getNetwork().getAddr(), network.getNetmask().getAddr()));
 
                 SiteNetwork ssn = new SiteNetwork();
-                ssn.setNetwork( network.getNetwork());
-                ssn.setNetmask( network.getNetmask());
+                ssn.setNetwork( address );
+                ssn.setNetmask( netmask );
                 ssn.setLive( true );
-//                ssn.setName( i18nUtil.tr("internal network") );
-                ssn.setName(intf.getName());
-                networkList.add( ssn );
-            }
-        }
-
-        /* if list is empty just add the first wan interface */
-        if (networkList.size() == 0) {
-            for (InterfaceConfiguration intf : networkSettings.getInterfaceList()) {
-                if (! intf.isWAN() )
-                    continue;
-
-                IPNetwork network = intf.getPrimaryAddress();
-
-                if (network == null)
-                    continue;
-
-                rangeList.addFirst( AddressRange.makeNetwork( network.getNetwork().getAddr(), network.getNetmask().getAddr()));
-
-                SiteNetwork ssn = new SiteNetwork();
-                ssn.setNetwork( network.getNetwork());
-                ssn.setNetmask( network.getNetmask());
-                ssn.setLive( true );
-//                ssn.setName( i18nUtil.tr("internal network") );
-                ssn.setName(intf.getName());
+                ssn.setName( intf.getName() );
                 networkList.add( ssn );
             }
         }
@@ -357,23 +303,5 @@ public class Sandbox
         settings.setExposeClients( DEFAULT_EXPOSE_CLIENTS );
 
         return settings;
-    }
-
-    static
-    {
-        Map<IPNetwork,AddressRange> map = new LinkedHashMap<IPNetwork,AddressRange>();
-
-        for ( String s : AUTO_ADDRESS_POOLS_STRING ) {
-            try {
-                IPNetwork network = IPNetwork.parse( s );
-                AddressRange range = AddressRange.makeNetwork( network.getNetwork().getAddr(),
-                                                               network.getNetmask().getAddr());
-                map.put( network, range );
-            } catch ( ParseException e ) {
-                System.err.println( "Unable to parse: " + s );
-            }
-        }
-
-        AUTO_ADDRESS_POOLS = Collections.unmodifiableMap( map );
     }
 }

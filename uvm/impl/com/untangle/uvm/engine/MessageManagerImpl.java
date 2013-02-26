@@ -28,8 +28,8 @@ import com.untangle.uvm.logging.LogEvent;
 import com.untangle.uvm.message.MessageManager;
 import com.untangle.uvm.message.Message;
 import com.untangle.uvm.message.MessageQueue;
-import com.untangle.uvm.networking.NetworkConfiguration;
-import com.untangle.uvm.networking.InterfaceConfiguration;
+import com.untangle.uvm.network.NetworkSettings;
+import com.untangle.uvm.network.InterfaceSettings;
 import com.untangle.uvm.node.Node;
 import com.untangle.uvm.node.NodeManager;
 import com.untangle.uvm.node.SessionTuple;
@@ -527,14 +527,14 @@ public class MessageManagerImpl implements MessageManager
                     if (matcher.find()) {
                         String iface = matcher.group(1);
                         
-                        NetworkConfiguration netConf = UvmContextFactory.context().networkManager().getNetworkConfiguration();
-                        if (netConf == null) {
+                        NetworkSettings netSettings = UvmContextFactory.context().newNetworkManager().getNetworkSettings();
+                        if (netSettings == null) {
                             logger.warn("Failed to read network configuration");
                             continue;
                         } else {
-                            InterfaceConfiguration intfConf = netConf.findBySystemName(iface);
+                            InterfaceSettings intfSettings = netSettings.findInterfaceSystemDev( iface );
                             // Restrict to only the WAN interfaces (bug 5616)
-                            if ( intfConf == null || !intfConf.isWAN() )
+                            if ( intfSettings == null || !intfSettings.getIsWan() )
                                 continue;
                         }
 

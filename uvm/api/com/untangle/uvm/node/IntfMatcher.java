@@ -5,8 +5,8 @@ import java.util.LinkedList;
 
 import org.apache.log4j.Logger;
 
-import com.untangle.uvm.networking.InterfaceConfiguration;
-import com.untangle.uvm.networking.NetworkConfiguration;
+import com.untangle.uvm.network.InterfaceSettings;
+import com.untangle.uvm.network.NetworkSettings;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.UvmContext;
 
@@ -78,21 +78,21 @@ public class IntfMatcher
      */
     public boolean isMatch(int interfaceId)
     {
-        NetworkConfiguration netConf = UvmContextFactory.context().networkManager().getNetworkConfiguration();
+        NetworkSettings netSettings = UvmContextFactory.context().newNetworkManager().getNetworkSettings();
         
-        if (netConf == null) {
+        if (netSettings == null) {
             logger.warn("Failed to match interface: null network configuration");
             return false;
         }
 
-        InterfaceConfiguration intfConf = netConf.findById(interfaceId);
+        InterfaceSettings intfSettings = netSettings.findInterfaceId(interfaceId);
 
-        if (intfConf == null) {
+        if (intfSettings == null) {
             logger.warn("Failed to match interface: Cant find interface " + interfaceId);
             return false;
         }
 
-        return isMatch(intfConf);
+        return isMatch(intfSettings);
     }
 
     /**
@@ -101,7 +101,7 @@ public class IntfMatcher
      * @param intf The interface to test
      * @return True if the <param>intf</param> matches.
      */
-    public boolean isMatch(InterfaceConfiguration intfConf)
+    public boolean isMatch(InterfaceSettings intfSettings)
     {
         switch (this.type) {
 
@@ -112,19 +112,19 @@ public class IntfMatcher
             return false;
 
         case ANY_WAN:
-            return intfConf.isWAN();
+            return intfSettings.getIsWan();
 
         case ANY_NON_WAN:
-            return !intfConf.isWAN();
+            return !intfSettings.getIsWan();
             
         case SINGLE:
-            if (singleInt == intfConf.getInterfaceId())
+            if (singleInt == intfSettings.getInterfaceId())
                 return true;
             return false;
 
         case LIST:
             for (IntfMatcher child : this.children) {
-                if (child.isMatch(intfConf))
+                if (child.isMatch(intfSettings))
                     return true;
             }
             return false;

@@ -3,31 +3,20 @@
  */
 package com.untangle.node.openvpn;
 
+import java.net.InetAddress;
 import java.util.LinkedList;
 import java.util.List;
-import com.untangle.uvm.node.IPAddress;
 
 /**
  * A site network for a client.  Done this way so the client site
  * networks and the server site networks are in their own tables.
- *
- * @author <a href="mailto:rbscott@untangle.com">Robert Scott</a>
- * @version 1.0
  */
 @SuppressWarnings("serial")
 public class VpnSite extends VpnClient
 {
-    private static final IPAddress EMPTY_ADDR = new IPAddress( null );
-
-    // List of addresses at this site,
-    // initially, may not be supported, just use one address.
     private List<SiteNetwork>     exportedAddressList;
 
-    public VpnSite()
-    {
-        /* XXXXXXXXXXXXXXXXXXXXXXXXXXXXX This should have all of the stuff
-         * about exports in it, but for now just keep it in both places */
-    }
+    public VpnSite() {}
 
     /**
      * The list of exported networks for this site.
@@ -59,8 +48,8 @@ public class VpnSite extends VpnClient
         SiteNetwork site;
         if ( list.size() < 1 ) {
             site = new SiteNetwork();
-            site.setNetwork( EMPTY_ADDR );
-            site.setNetmask( EMPTY_ADDR );
+            site.setNetwork( null );
+            site.setNetmask( null );
             site.setLive( true );
             list.add( site );
         } else {
@@ -70,7 +59,7 @@ public class VpnSite extends VpnClient
         return site;
     }
 
-    public void trans_setSiteNetwork( IPAddress network, IPAddress netmask )
+    public void trans_setSiteNetwork( InetAddress network, InetAddress netmask )
     {
     	List<SiteNetwork>  list = getExportedAddressList();
 

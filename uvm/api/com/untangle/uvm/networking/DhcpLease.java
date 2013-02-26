@@ -1,36 +1,36 @@
-/* $HeadURL: svn://chef/branch/prod/release-8.0/work/src/uvm/api/com/untangle/uvm/networking/DhcpLeaseRule.java $ */
+/**
+ * $Id: DhcpLease.java,v 1.00 2013/02/25 16:00:48 dmorris Exp $
+ */
 package com.untangle.uvm.networking;
 
 import java.util.Date;
-
-import com.untangle.uvm.node.MACAddress;
-import com.untangle.uvm.node.IPAddress;
+import java.net.InetAddress;
 
 public class DhcpLease 
 {
     /* The MAC address associated with this lease */
-    private MACAddress macAddress;
+    private String macAddress;
 
     /* The address of this lease */
-    private IPAddress address;
+    private InetAddress address;
 
     
-    public MACAddress getMacAddress()
+    public String getMacAddress()
     {
         return macAddress;
     }
 
-    public void setMacAddress( MACAddress macAddress )
+    public void setMacAddress( String macAddress )
     {
         this.macAddress = macAddress;
     }
 
-    public IPAddress getAddress()
+    public InetAddress getAddress()
     {
         return this.address;
     }
 
-    public void setAddress( IPAddress address )
+    public void setAddress( InetAddress address )
     {
         this.address = address;
     }

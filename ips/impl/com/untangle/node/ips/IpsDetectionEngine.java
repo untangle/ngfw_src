@@ -18,7 +18,7 @@ import com.untangle.uvm.vnet.NodeIPSession;
 import com.untangle.uvm.vnet.Protocol;
 import com.untangle.uvm.vnet.NodeSessionStats;
 import com.untangle.uvm.vnet.event.IPDataEvent;
-import com.untangle.uvm.networking.InterfaceConfiguration;
+import com.untangle.uvm.network.InterfaceSettings;
 
 public class IpsDetectionEngine
 {
@@ -185,15 +185,15 @@ public class IpsDetectionEngine
         SessionEvent pe = request.sessionEvent();
         
         Integer clientIntf = pe.getClientIntf();
-        InterfaceConfiguration sourceIntf = null;
+        InterfaceSettings sourceIntf = null;
         if (clientIntf != null)
-            sourceIntf = UvmContextFactory.context().networkManager().getNetworkConfiguration().findById(clientIntf);
+            sourceIntf = UvmContextFactory.context().newNetworkManager().getNetworkSettings().findInterfaceId(clientIntf);
 
         boolean incoming = true;
         if (sourceIntf == null) {
             logger.warn("Unable to find source interface: " + clientIntf);
         } else {
-            incoming = sourceIntf.isWAN();
+            incoming = sourceIntf.getIsWan();
         }
         
         Set<IpsRuleSignature> c2sSignatures = manager.matchesHeader(request, incoming, IpsRuleManager.TO_SERVER, c2sList);

@@ -160,6 +160,88 @@ public class NewNetworkManagerImpl implements NewNetworkManager
         this.networkListeners.remove( networkListener );
     }
 
+    public InetAddress getFirstWanAddress()
+    {
+        if ( this.networkSettings == null || this.networkSettings.getInterfaces() == null ) {
+            return null;
+        }
+        
+        for ( InterfaceSettings intfSettings : this.networkSettings.getInterfaces() ) {
+            if ( intfSettings.getIsWan() ) {
+                //FIXME what if pppoe or dhcp ?
+                return intfSettings.getV4StaticAddress();
+            }
+                
+        }
+
+        return null;
+    }
+
+    /*
+     * This returns an address where the host should be able to access
+     * HTTP.  if HTTP is not reachable, this returns NULL
+     */
+    public InetAddress getInternalHttpAddress( int clientIntf )
+    {
+        /* Retrieve the network settings */
+        NetworkSettings netSettings = this.networkSettings;
+        if ( netSettings == null ) {
+            logger.warn("Failed to fetch network configuration");
+            return null;
+        }
+
+        InterfaceSettings intfSettings = netSettings.findInterfaceId( clientIntf );
+        if ( intfSettings == null ) {
+            logger.warn("Failed to fetch interface configuration");
+            return null;
+        }
+
+        /* WAN ports never have HTTP open */
+        boolean isWan = intfSettings.getIsWan();
+        if ( isWan ) {
+            //this is normal no error logged
+            return null;
+        }
+        
+        /**
+         * If this interface is bridged with another, use the addr from the other
+         */
+        if (InterfaceSettings.CONFIG_BRIDGED.equals(intfSettings.getV4ConfigType())) {
+            Integer bridgedTo = intfSettings.getBridgedTo();
+            intfSettings = netSettings.findInterfaceId( bridgedTo );
+
+            if ( intfSettings == null ) {
+                logger.warn("No Interface found for name: " + bridgedTo );
+                return null;
+            }
+        }
+
+        /**
+         * The primary IP of OpenVPN interface is not in the config
+         * Must query the openVPN node
+         */
+        if (intfSettings.getInterfaceId() == 250) {
+            // FIXME how to handle OpenVPN?
+            //             OpenVpn openvpn = (OpenVpn) UvmContextFactory.context().nodeManager().node("untangle-node-openvpn");
+//             if (openvpn == null) {
+//                 logger.warn("OpenVPN node not found");
+//                 return null;
+//             }
+            
+//             InetAddress addr = openvpn.getVpnServerAddress().getIp();
+//             if (addr == null) {
+//                 logger.warn("VPN Server address not found");
+//                 return null;
+//             }
+
+//             return addr;
+        }
+
+        //FIXME must support dhcp and pppoe
+        InetAddress address = intfSettings.getV4StaticAddress();
+        return address;
+    }
+    
     private synchronized void _setSettings( NetworkSettings newSettings )
     {
         /**

@@ -12,9 +12,5 @@ public interface SystemManager
 
     void setSettings(SystemSettings settings);
 
-    /**
-     * Returns a globally accessable URL to reach Untangle services.
-     * This is configured by the user in some cases where Untangle doesn't have a public IP.
-     */
     String getPublicUrl();
 }

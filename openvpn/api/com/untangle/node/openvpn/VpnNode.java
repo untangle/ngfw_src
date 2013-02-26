@@ -4,9 +4,8 @@
 package com.untangle.node.openvpn;
 
 import java.util.List;
+import java.net.InetAddress;
 
-import com.untangle.uvm.node.HostAddress;
-import com.untangle.uvm.node.IPAddress;
 import com.untangle.uvm.node.Node;
 import com.untangle.uvm.node.EventLogQuery;
 
@@ -29,7 +28,7 @@ public interface VpnNode extends Node
     public VpnClient revokeClientCertificate( VpnSettings settings, VpnClient client );
 
     /* Need the address to log where the request came from */
-    public String lookupClientDistributionKey( String key, IPAddress address );
+    public String lookupClientDistributionKey( String key, InetAddress address );
 
     /* Returns a URL to use to download the admin key. */
     public String getAdminDownloadLink( String clientName, ConfigFormat format )
@@ -44,7 +43,7 @@ public interface VpnNode extends Node
 
     public enum ConfigState { UNCONFIGURED, CLIENT, SERVER }
     public ConfigState getConfigState();
-    public HostAddress getVpnServerAddress();
+    public InetAddress getVpnServerAddress();
 
     public void startConfig(ConfigState state) throws Exception;
 

@@ -10,8 +10,8 @@ import java.util.Map;
 import org.apache.log4j.Logger;
 
 import com.untangle.uvm.UvmContextFactory;
-import com.untangle.uvm.networking.InterfaceConfiguration;
-import com.untangle.uvm.networking.NetworkConfiguration;
+import com.untangle.uvm.network.InterfaceSettings;
+import com.untangle.uvm.network.NetworkSettings;
 import com.untangle.uvm.networking.EthernetMedia;
 
 public class InterfaceTester
@@ -53,79 +53,80 @@ public class InterfaceTester
     /**
      * Test the status of the interfaces listed inside of the interface array.
      * The status for each interface is updated.
+     * FIXME: must return something else, interface state no longer stored in network settings.
      */
-    void updateLinkStatus( NetworkConfiguration settings )
+    void updateLinkStatus( NetworkSettings settings )
     {
-        logger.debug( "Updating link status" );
+//         logger.debug( "Updating link status" );
 
-        if (settings == null)
-            return;
+//         if (settings == null)
+//             return;
         
-        String[] args = getArgs( settings );
+//         String[] args = getArgs( settings );
 
-        Map<String,String> statusMap;
+//         Map<String,String> statusMap;
 
-        try {
-            statusMap = getStatus( args, settings );
-        } catch ( Exception e ) {
-            logger.warn( "Unable to update status, using unknown", e );
-            statusMap = new HashMap<String,String>();
-        }
+//         try {
+//             statusMap = getStatus( args, settings );
+//         } catch ( Exception e ) {
+//             logger.warn( "Unable to update status, using unknown", e );
+//             statusMap = new HashMap<String,String>();
+//         }
 
 
-        for ( InterfaceConfiguration intf : settings.getInterfaceList()) {
-            String intfName = intf.getSystemName();
-            String intfStatus = statusMap.get( intfName );
-            intf.setConnectionState( UNKNOWN );
-            intf.setCurrentMedia( UNKNOWN );
+//         for ( InterfaceSettings intf : settings.getInterfaces()) {
+//             String intfName = intf.getSystemName();
+//             String intfStatus = statusMap.get( intfName );
+//             intf.setConnectionState( UNKNOWN );
+//             intf.setCurrentMedia( UNKNOWN );
 
-            if ( null == intfStatus ) {
-                logger.warn( "Unable to update the status for interface: '" + intfName + "'" );
-                continue;
-            }
+//             if ( null == intfStatus ) {
+//                 logger.warn( "Unable to update the status for interface: '" + intfName + "'" );
+//                 continue;
+//             }
 
-            String data[] = intfStatus.split( " " );
-            if ( data.length != DATA_COUNT ) {
-                logger.warn( "Interface '"+ intfName + "' has invalid data '" + data + "'" );
-                continue;
-            }
+//             String data[] = intfStatus.split( " " );
+//             if ( data.length != DATA_COUNT ) {
+//                 logger.warn( "Interface '"+ intfName + "' has invalid data '" + data + "'" );
+//                 continue;
+//             }
 
-            if ( FLAG_CONNECTION_CONNECTED.equals( data[CONNECTION_INDEX] )) {
-                intf.setConnectionState( CONNECTION_CONNECTED  );
-            } else if ( FLAG_CONNECTION_DISCONNECTED.equals( data[CONNECTION_INDEX] )) {
-                intf.setConnectionState( CONNECTION_DISCONNECTED  );
-            }
+//             if ( FLAG_CONNECTION_CONNECTED.equals( data[CONNECTION_INDEX] )) {
+//                 intf.setConnectionState( CONNECTION_CONNECTED  );
+//             } else if ( FLAG_CONNECTION_DISCONNECTED.equals( data[CONNECTION_INDEX] )) {
+//                 intf.setConnectionState( CONNECTION_DISCONNECTED  );
+//             }
 
-            if ( FLAG_SPEED_100.equals( data[SPEED_INDEX] )) {
-                if ( FLAG_DUPLEX_FULL.equals( data[DUPLEX_INDEX] )) {
-                    intf.setCurrentMedia( EthernetMedia.FULL_DUPLEX_100.toString());
-                } else if ( FLAG_DUPLEX_HALF.equals( data[DUPLEX_INDEX] )) {
-                    intf.setCurrentMedia( EthernetMedia.HALF_DUPLEX_100.toString());
-                }
-            } else if ( FLAG_SPEED_10.equals( data[SPEED_INDEX] )) {
-                if ( FLAG_DUPLEX_FULL.equals( data[DUPLEX_INDEX] )) {
-                    intf.setCurrentMedia( EthernetMedia.FULL_DUPLEX_10.toString());
-                } else if ( FLAG_DUPLEX_HALF.equals( data[DUPLEX_INDEX] )) {
-                    intf.setCurrentMedia( EthernetMedia.HALF_DUPLEX_10.toString());
-                }
-            }
-        }
+//             if ( FLAG_SPEED_100.equals( data[SPEED_INDEX] )) {
+//                 if ( FLAG_DUPLEX_FULL.equals( data[DUPLEX_INDEX] )) {
+//                     intf.setCurrentMedia( EthernetMedia.FULL_DUPLEX_100.toString());
+//                 } else if ( FLAG_DUPLEX_HALF.equals( data[DUPLEX_INDEX] )) {
+//                     intf.setCurrentMedia( EthernetMedia.HALF_DUPLEX_100.toString());
+//                 }
+//             } else if ( FLAG_SPEED_10.equals( data[SPEED_INDEX] )) {
+//                 if ( FLAG_DUPLEX_FULL.equals( data[DUPLEX_INDEX] )) {
+//                     intf.setCurrentMedia( EthernetMedia.FULL_DUPLEX_10.toString());
+//                 } else if ( FLAG_DUPLEX_HALF.equals( data[DUPLEX_INDEX] )) {
+//                     intf.setCurrentMedia( EthernetMedia.HALF_DUPLEX_10.toString());
+//                 }
+//             }
+//         }
     }
 
-    private String[] getArgs( NetworkConfiguration settings )
-    {
-        List<InterfaceConfiguration> interfaceList = settings.getInterfaceList();
+//     private String[] getArgs( NetworkSettings settings )
+//     {
+//         List<InterfaceSettings> interfaceList = settings.getInterfaceList();
 
-        String args[] = new String[interfaceList.size()];
+//         String args[] = new String[interfaceList.size()];
 
-        int c = 0;
-        for ( InterfaceConfiguration intf : interfaceList )
-            args[c++] = intf.getSystemName();
+//         int c = 0;
+//         for ( InterfaceSettings intf : interfaceList )
+//             args[c++] = intf.getSystemDev();
 
-        return args;
-    }
+//         return args;
+//     }
 
-    private Map<String,String> getStatus( String[] args, NetworkConfiguration settings )
+    private Map<String,String> getStatus( String[] args, NetworkSettings settings )
     {
         Map<String,String> map = new HashMap<String,String>();
 

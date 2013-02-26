@@ -3,10 +3,9 @@
  */
 package com.untangle.node.openvpn;
 
+import java.net.InetAddress;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
-
-import com.untangle.uvm.node.IPAddress;
 
 /**
  * the configuration for a vpn client.
@@ -18,7 +17,7 @@ public class VpnClient
 
     private static final int MAX_NAME_LENGTH = 60;
 
-    private IPAddress address;            // may be null.
+    private InetAddress address;            // may be null.
 
     // The name of the address group to pull this client address
     private String groupName;
@@ -62,8 +61,8 @@ public class VpnClient
      *
      * @return static address of the machine.
      */
-    public IPAddress getAddress() { return this.address; }
-    public void setAddress( IPAddress address ) { this.address = address; }
+    public InetAddress getAddress() { return this.address; }
+    public void setAddress( InetAddress address ) { this.address = address; }
 
     /**
      * the key required to download the client.

@@ -34,7 +34,7 @@ import com.untangle.uvm.node.SessionStatsEvent;
 import com.untangle.uvm.node.PolicyManager;
 import com.untangle.uvm.vnet.NodeSession;
 import com.untangle.uvm.node.HostnameLookup;
-import com.untangle.uvm.networking.InterfaceConfiguration;
+import com.untangle.uvm.network.InterfaceSettings;
 
 /**
  * Helper class for the IP session hooks.
@@ -109,10 +109,10 @@ public abstract class ArgonHook implements Runnable
             if ( serverIntf == IntfConstants.UNKNOWN_INTF ) {
                 /* Update the server interface */
                 String serverIntfName = netcapSession.determineServerIntf();
-                InterfaceConfiguration intfConf = UvmContextFactory.context().networkManager().getNetworkConfiguration().findBySystemName(serverIntfName);
+                InterfaceSettings intfSettings = UvmContextFactory.context().newNetworkManager().getNetworkSettings().findInterfaceSystemDev( serverIntfName );
 
-                if ( intfConf != null ) {
-                    Integer i = intfConf.getInterfaceId();
+                if ( intfSettings != null ) {
+                    Integer i = intfSettings.getInterfaceId();
                     if (i != null) {
                         serverIntf = i.intValue();
                         netcapSession.setServerIntf(i.intValue());
@@ -167,7 +167,8 @@ public abstract class ArgonHook implements Runnable
                 sessionGlobalState.attach( NodeSession.KEY_PLATFORM_HOSTNAME, hostname );
                 /* If the hostname isn't known in the host table and its a local host (not from WAN) then set hostname */
                 if ( entry == null || !entry.isHostnameKnown()) {
-                    if ( !UvmContextFactory.context().networkManager().isWanInterface( netcapSession.clientSide().interfaceId() ) ) {
+                    InterfaceSettings intfSettings = UvmContextFactory.context().newNetworkManager().getNetworkSettings().findInterfaceId( netcapSession.clientSide().interfaceId() );
+                    if ( intfSettings != null && ! intfSettings.getIsWan() ) {
                         entry = UvmContextFactory.context().hostTable().getHostTableEntry( clientAddr, true ); /* create/get entry */
                         entry.setHostname( hostname );
                     }

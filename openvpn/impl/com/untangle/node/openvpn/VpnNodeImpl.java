@@ -1,4 +1,4 @@
-/*
+/**
  * $Id$
  */
 package com.untangle.node.openvpn;
@@ -6,6 +6,7 @@ package com.untangle.node.openvpn;
 import java.io.FileReader;
 import java.io.IOException;
 import java.net.URLEncoder;
+import java.net.InetAddress;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.HashMap;
@@ -20,8 +21,6 @@ import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.MailSender;
 import com.untangle.uvm.SettingsManager;
 import com.untangle.uvm.node.NodeSettings;
-import com.untangle.uvm.node.HostAddress;
-import com.untangle.uvm.node.IPAddress;
 import com.untangle.uvm.node.EventLogQuery;
 import com.untangle.uvm.node.NodeMetric;
 import com.untangle.uvm.util.I18nUtil;
@@ -50,7 +49,6 @@ public class VpnNodeImpl extends NodeBase implements VpnNode, com.untangle.uvm.n
 
     private static final String CLEANUP_SCRIPT = Constants.SCRIPT_DIR + "/cleanup";
 
-    private static final HostAddress EMPTY_HOST_ADDRESS = new HostAddress( "" );
 
     /* 5 minutes in nanoseconds */
     private static final long DISTRIBUTION_CACHE_NS = TimeUnit.SECONDS.toNanos( 60 * 5 );
@@ -385,7 +383,7 @@ public class VpnNodeImpl extends NodeBase implements VpnNode, com.untangle.uvm.n
     }
 
     /* Get the common name for the key, and clear it if it exists */
-    public synchronized String lookupClientDistributionKey( String key, IPAddress clientAddress )
+    public synchronized String lookupClientDistributionKey( String key, InetAddress clientAddress )
     {
         if (logger.isDebugEnabled()) {
             logger.debug( "Looking up client for key: " + key );
@@ -483,7 +481,7 @@ public class VpnNodeImpl extends NodeBase implements VpnNode, com.untangle.uvm.n
         return true;
     }
 
-    private boolean lookupClientDistributionKey( String key, IPAddress clientAddress, final VpnClient client )
+    private boolean lookupClientDistributionKey( String key, InetAddress clientAddress, final VpnClient client )
     {
         String clientKey = client.getDistributionKey();
 
@@ -516,7 +514,7 @@ public class VpnNodeImpl extends NodeBase implements VpnNode, com.untangle.uvm.n
         isWebAppDeployed = true;
 
         /* Make sure to leave this in because it reloads the iptables rules. */
-        UvmContextFactory.context().networkManager().refreshNetworkConfig();
+        // FIXME load iptables rules
     }
 
     private synchronized void unDeployWebApp()
@@ -621,7 +619,7 @@ public class VpnNodeImpl extends NodeBase implements VpnNode, com.untangle.uvm.n
             logger.warn( "Error stopping openvpn manager", e );
         }
 
-        UvmContextFactory.context().networkManager().refreshNetworkConfig();
+        // FIXME unload iptables rules
     }
 
     @Override protected void postDestroy()
@@ -667,22 +665,15 @@ public class VpnNodeImpl extends NodeBase implements VpnNode, com.untangle.uvm.n
         return ConfigState.SERVER;
     }
 
-    public HostAddress getVpnServerAddress()
+    public InetAddress getVpnServerAddress()
     {
         /* Return the empty address */
         if (( this.settings == null )) {
             logger.info( "non-client state, and request for server address" );
-            return EMPTY_HOST_ADDRESS;
+            return null;
         }
 
-        HostAddress address = this.settings.getServerAddress();
-
-        if ( address == null ) {
-            logger.info( "null, host address, returning empty address." );
-            return EMPTY_HOST_ADDRESS;
-        }
-
-        return address;
+        return this.settings.getServerAddress();
     }
 
     public void startConfig( ConfigState state ) throws Exception

@@ -5,25 +5,24 @@ package com.untangle.node.shield;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
-
 import java.util.Date;
 import java.util.List;
 import java.util.LinkedList;
 
+import org.apache.log4j.Logger;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.json.JSONException;
 
 import com.untangle.uvm.IntfConstants;
-import com.untangle.uvm.node.IPAddress;
-import com.untangle.uvm.node.ParseException;
-
 import com.untangle.uvm.ArgonException;
 import com.untangle.uvm.UvmContextFactory;
-import com.untangle.uvm.networking.InterfaceConfiguration;
+import com.untangle.uvm.network.InterfaceSettings;
 
 public class LogIteration
 {
+    static private final Logger logger = Logger.getLogger( LogIteration.class );
+
     private final JSONObject start;
     private final Date startTime;
     private final Date endTime;
@@ -31,8 +30,7 @@ public class LogIteration
     private final ShieldStatisticEvent statisticEvent;
     private final List<ShieldRejectionEvent> rejectionEvents;
 
-    private LogIteration( JSONObject start, Date startTime, Date endTime,
-                          ShieldStatisticEvent statisticEvent, List<ShieldRejectionEvent> rejectionEvents )
+    private LogIteration( JSONObject start, Date startTime, Date endTime, ShieldStatisticEvent statisticEvent, List<ShieldRejectionEvent> rejectionEvents )
     {
         this.start = start;
         this.startTime = startTime;
@@ -83,13 +81,10 @@ public class LogIteration
         if ( users == null ) users = new String[0];
         for ( String user : users ) {
             try {
-                InetAddress address = IPAddress.parse( user ).getAddr();
+                InetAddress address = InetAddress.getByName( user );
                 
                 parseUserData( rejectionEvents, address, user_js.getJSONArray( user ));
-            } catch ( ParseException e ) {
-                /* Ignore corrupted IP Addresses. */
-                continue;
-            } catch ( UnknownHostException e ) {
+            } catch ( Exception e ) {
                 /* Ignore corrupted IP Addresses. */
                 continue;
             }
@@ -144,12 +139,12 @@ public class LogIteration
             if ( temp_js.length() != 6 ) continue;
             
             /* Mark it as internal */
-            InterfaceConfiguration clientIntf = null;
+            InterfaceSettings clientIntf = null;
 
             try {
-                clientIntf = UvmContextFactory.context().networkManager().getNetworkConfiguration().findBySystemName( temp_js.optString( 0, "" ));
+                clientIntf = UvmContextFactory.context().newNetworkManager().getNetworkSettings().findInterfaceSystemDev( temp_js.optString( 0, "" ));
             } catch ( Exception e ) {
-                clientIntf = UvmContextFactory.context().networkManager().getNetworkConfiguration().findByName("Internal");
+                logger.warn("Error finding interface: " + temp_js.optString( 0, "" ), e);
             }
 
             int mode = 0;

@@ -1,19 +1,5 @@
-/*
- * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License, version 2,
- * as published by the Free Software Foundation.
- *
- * This program is distributed in the hope that it will be useful, but
- * AS-IS and WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE, TITLE, or
- * NONINFRINGEMENT.  See the GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
+/**
+ * $Id$
  */
 package com.untangle.node.openvpn;
 
@@ -28,9 +14,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import com.untangle.uvm.node.IPAddress;
-import com.untangle.uvm.node.HostAddress;
 import com.untangle.uvm.node.IPMatcher;
+import com.untangle.uvm.node.IPMaskedAddress;
 import org.apache.log4j.Logger;
 
 /* Class used to assign addresses to clients */
@@ -98,7 +83,7 @@ class AddressMapper
             IPMatcher matcher = IPMatcher.makeSubnetMatcher( group.getAddress(), group.getNetmask());
 
             /* Create enough addresses for all of the clients, and possible the server */
-            Set<IPAddress> addressSet = createAddressSet( clients.size() + ( isServerGroup ? 1 : 0 ), group, matcher );
+            Set<InetAddress> addressSet = createAddressSet( clients.size() + ( isServerGroup ? 1 : 0 ), group, matcher );
 
             /* Remove any duplicates in the current list */
             removeDuplicateAddresses( settings, matcher, clients, isServerGroup );
@@ -115,24 +100,25 @@ class AddressMapper
         }
     }
 
-    private Set<IPAddress> createAddressSet( int size, VpnGroup group, IPMatcher matcher )
+    private Set<InetAddress> createAddressSet( int size, VpnGroup group, IPMatcher matcher )
         throws Exception
     {
         /* Get the base address */
-        InetAddress base = IPAddress.and( group.getAddress(), group.getNetmask()).getAddr();
+        IPMaskedAddress maddr = new IPMaskedAddress( group.getAddress(), group.getNetmask() );
+        InetAddress base = maddr.getMaskedAddr();
 
         byte[] addressData = base.getAddress();
         addressData[3] &= 0xFC;
         addressData[3] |= 1;
 
-        Set<IPAddress> addressSet = new LinkedHashSet<IPAddress>();
+        Set<InetAddress> addressSet = new LinkedHashSet<InetAddress>();
 
         for (  ; size-- > 0 ; ) {
             /* Create the inet address */
-            IPAddress address = getByAddress( addressData );
+            InetAddress address = getByAddress( addressData );
 
             /* Check to see if it is in the range */
-            if ( !matcher.isMatch( address.getAddr())) {
+            if ( !matcher.isMatch( address ) ) {
                 /* This is a configuration problem */
                 logger.info( "Unable to configure clients, not enough client addresses for " +
                              group.getName());
@@ -152,15 +138,13 @@ class AddressMapper
     /** These are addresses that are already assigned upon starting */
     void removeDuplicateAddresses( VpnSettings settings, IPMatcher matcher, List<VpnClient> clientList, boolean assignServer )
     {
-        Set<IPAddress> addressSet = new HashSet<IPAddress>();
+        Set<InetAddress> addressSet = new HashSet<InetAddress>();
 
         /* If necessary add the server address */
         if ( assignServer ) {
-            IPAddress address = null;
-            HostAddress serverAddress = settings.getServerAddress();
-            if ( serverAddress != null ) address = serverAddress.getIp();
+            InetAddress address = settings.getServerAddress();
             
-            if (( null != address ) && matcher.isMatch( address.getAddr())) {
+            if (( null != address ) && matcher.isMatch( address )) {
                 addressSet.add( address );
             } else {
                 settings.setServerAddress( null );
@@ -169,34 +153,32 @@ class AddressMapper
 
         /* Check to see if each client has a unique address */
         for ( VpnClient client : clientList ) {
-            IPAddress address = client.getAddress();
+            InetAddress address = client.getAddress();
             /* If the address is already isn't set, it isn't in the current address group
              * or it is already taken, then clear the address */
-            if (( null == address ) || !matcher.isMatch( address.getAddr()) || !addressSet.add( address )) {
+            if (( null == address ) || !matcher.isMatch( address ) || !addressSet.add( address )) {
                 client.setAddress( null );
             }
         }
     }
 
     /* Remove the addresses that are taken in the address pool to be distributed to clients */
-    void removeTakenAddresses( VpnSettings settings, IPMatcher matcher, List<VpnClient> clientList, Set<IPAddress> addressSet, boolean assignServer )
+    void removeTakenAddresses( VpnSettings settings, IPMatcher matcher, List<VpnClient> clientList, Set<InetAddress> addressSet, boolean assignServer )
     {
         /* First check the server address */
         if ( assignServer ) {
-            IPAddress address = null;
-            HostAddress serverAddress = settings.getServerAddress();
-            if ( serverAddress != null ) address = serverAddress.getIp();
+            InetAddress address = settings.getServerAddress();
 
-            if (( null != address ) && matcher.isMatch( address.getAddr())) {
-                addressSet.remove( serverAddress.getIp());
+            if (( null != address ) && matcher.isMatch( address )) {
+                addressSet.remove( address );
             } else {
                 settings.setServerAddress( null );
             }
         }
 
         for ( VpnClient client : clientList ) {
-            IPAddress address = client.getAddress();
-            if (( null != address ) && matcher.isMatch( address.getAddr())) {
+            InetAddress address = client.getAddress();
+            if (( null != address ) && matcher.isMatch( address )) {
                 /* The return code doesn't really matter */
                 addressSet.remove( address );
             } else {
@@ -207,13 +189,13 @@ class AddressMapper
         }
     }
 
-    void assignRemainingClients( VpnSettings settings, List<VpnClient> clientList, Set<IPAddress> addressSet, boolean assignServer )
+    void assignRemainingClients( VpnSettings settings, List<VpnClient> clientList, Set<InetAddress> addressSet, boolean assignServer )
     {
-        Iterator<IPAddress> iter = addressSet.iterator();
+        Iterator<InetAddress> iter = addressSet.iterator();
 
         /* If necessary assign the server an address */
         if ( assignServer && ( null == settings.getServerAddress())) {
-            settings.setServerAddress( new HostAddress( iter.next()));
+            settings.setServerAddress( iter.next() );
             iter.remove();
         }
 
@@ -249,10 +231,10 @@ class AddressMapper
     }
 
     /* A safe function (exceptionless) for InetAddress.getByAddress  */
-    private IPAddress getByAddress( byte[] data )
+    private InetAddress getByAddress( byte[] data )
     {
         try {
-            return new IPAddress(InetAddress.getByAddress( data ));
+            return InetAddress.getByAddress( data );
         } catch ( UnknownHostException e ) {
             logger.error( "Something happened, array should be 4 actually " + data.length + " bytes", e );
         }

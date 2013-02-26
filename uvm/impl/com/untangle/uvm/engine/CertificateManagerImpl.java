@@ -11,13 +11,11 @@ import javax.servlet.ServletContext;
 
 import org.apache.log4j.Logger;
 
-import com.untangle.node.util.OpenSSLWrapper;
+import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.CertificateManager;
-import com.untangle.uvm.networking.NetworkUtil;
 import com.untangle.uvm.security.CertInfo;
 import com.untangle.uvm.security.RFC2253Name;
-import com.untangle.uvm.networking.NetworkConfiguration;
-import com.untangle.uvm.UvmContextFactory;
+import com.untangle.node.util.OpenSSLWrapper;
 
 /**
  * TODO A work in progress (currently a disorganized mess of crap taken
@@ -146,7 +144,7 @@ class CertificateManagerImpl implements CertificateManager
 
     private String getFQDN()
     {
-        String fqdn = uvmContext.networkManager().getHostname().toString();
+        String fqdn = uvmContext.newNetworkManager().getNetworkSettings().getHostName();
         if (fqdn == null || fqdn.equals("")) {
             return "example.com";
         }
