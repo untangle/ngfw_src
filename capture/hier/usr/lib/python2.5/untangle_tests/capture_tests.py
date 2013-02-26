@@ -62,8 +62,8 @@ def createADSettings():
             "domain": "adtesting.int",
             "enabled": True,
             "javaClass": "com.untangle.node.adconnector.ActiveDirectorySettings",
-            "superuser": "Administrator",
-            "superuserPass": "s90fly29"
+            "superuser": "ATSadmin",
+            "superuserPass": "passwd"
         },
         "radiusSettings": {
             "port": 1812, 
