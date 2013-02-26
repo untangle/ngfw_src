@@ -62,7 +62,6 @@ def global_auth_setup(appid=None):
 
     global uvmContext
     global captureList
-    counter = 0
 
     # create a list for all of the nodes we discover
     captureList = list()
@@ -70,26 +69,18 @@ def global_auth_setup(appid=None):
     # first we get the uvm context
     uvmContext = Uvm().getUvmContext()
 
-    # for some reason the uvm calls sometimes throw an error which we don't
-    # really understand so this counter loop will delay and retry multiple
-    # times before we finally give up and spew an exception
-    while (counter < 10) and (len(captureList) == 0):
-        try:
-            # if no appid provided we lookup capture nodes by name
-            if (appid == None):
-                nodelist = uvmContext.nodeManager().nodeInstancesIds()
-                for item in nodelist['list']:
-                    node = uvmContext.nodeManager().node(long(item))
-                    name = node.getNodeSettings()['nodeName']
-                    if (name == 'untangle-node-capture'):
-                        captureList.append(node)
-            # appid was passed so use it
-            else:
-                node = uvmContext.nodeManager().node(long(appid))
+    # if no appid provided we lookup capture nodes by name
+    if (appid == None):
+        nodelist = uvmContext.nodeManager().nodeInstancesIds()
+        for item in nodelist['list']:
+            node = uvmContext.nodeManager().node(long(item))
+            name = node.getNodeSettings()['nodeName']
+            if (name == 'untangle-node-capture'):
                 captureList.append(node)
-        except:
-            counter = (counter + 1)
-            time.sleep(1)
+    # appid was passed so use it
+    else:
+        node = uvmContext.nodeManager().node(long(appid))
+        captureList.append(node)
 
     # if we can't find the node then throw an exception
     if (len(captureList) == 0):
