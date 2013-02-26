@@ -11,6 +11,7 @@ import java.util.Timer;
 import java.util.List;
 import java.util.Map;
 import java.net.InetAddress;
+import java.net.URLDecoder;
 
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
@@ -459,6 +460,16 @@ public class CaptureNodeImpl extends NodeBase implements CaptureNode
     public int userAuthenticate(InetAddress address, String username, String password)
     {
         boolean isAuthenticated = false;
+
+        try
+        {
+            password = URLDecoder.decode(password,"UTF-8");
+        }
+
+        catch (Exception e)
+        {
+            logger.warn("Using raw password due to URLDecodeer exception",e);
+        }
 
         if (captureSettings.getConcurrentLoginsEnabled() == false)
         {
