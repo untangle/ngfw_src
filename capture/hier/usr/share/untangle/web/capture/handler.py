@@ -7,6 +7,7 @@ from mod_python import util
 from uvm import Uvm
 import os.path
 import zipfile
+import urllib
 import pprint
 import time
 
@@ -80,7 +81,7 @@ def authpost(req,username,password,method,nonce,appid,host,uri):
     global_auth_setup(appid)
 
     # call the node to authenticate the user
-    authResult = captureNode.userAuthenticate(address, username, password)
+    authResult = captureNode.userAuthenticate(address, username, urllib.quote(password))
 
     # on successful login redirect to the redirectUrl if not empty
     # otherwise send them to the page originally requested
