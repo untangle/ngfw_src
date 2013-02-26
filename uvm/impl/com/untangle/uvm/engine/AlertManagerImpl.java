@@ -25,7 +25,6 @@ import com.untangle.uvm.node.PolicyManager;
 import com.untangle.uvm.node.Reporting;
 import com.untangle.uvm.network.NetworkSettings;
 import com.untangle.uvm.network.InterfaceSettings;
-import com.untangle.uvm.networking.ConnectionStatus;
 
 /**
  * Implements AlertManager. This class runs a series of test and creates alerts

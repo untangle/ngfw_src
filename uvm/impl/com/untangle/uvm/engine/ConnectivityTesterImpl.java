@@ -8,13 +8,13 @@ import java.net.InetAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
 
+import org.json.JSONObject;
 import org.apache.log4j.Logger;
 
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.ConnectivityTester;
 import com.untangle.uvm.network.NetworkSettings;
 import com.untangle.uvm.network.InterfaceSettings;
-import com.untangle.uvm.networking.ConnectionStatus;
 
 class ConnectivityTesterImpl implements ConnectivityTester
 {
@@ -52,7 +52,7 @@ class ConnectivityTesterImpl implements ConnectivityTester
     /**
      * Retrieve the connectivity tester
      */
-    public Status getStatus()
+    public JSONObject getStatus()
     {
         NetworkSettings networkSettings = UvmContextFactory.context().newNetworkManager().getNetworkSettings();
         InterfaceSettings wan = networkSettings.findInterfaceFirstWan();
@@ -65,7 +65,7 @@ class ConnectivityTesterImpl implements ConnectivityTester
         waitForBridges();
 
         /* Returns the lookuped address if DNS is working, or null if it is not */
-        return ConnectionStatus.makeConnectionStatus( isDnsWorking( dnsPrimary, dnsSecondary ), isTcpWorking());
+        return makeJsonObject( isDnsWorking( dnsPrimary, dnsSecondary ), isTcpWorking());
     }
 
     /**
@@ -159,6 +159,19 @@ class ConnectivityTesterImpl implements ConnectivityTester
         return tcpTest.isWorking;
     }
 
+
+    private JSONObject makeJsonObject( boolean dnsWorking, boolean tcpWorking )
+    {
+        JSONObject result = new JSONObject();
+        try {
+            result.put( "dnsWorking", dnsWorking );
+            result.put( "tcpWorking", tcpWorking );
+        } catch (Exception e) {
+            logger.warn( "JSON exception: ", e );
+        }
+        return result;
+    }
+                                       
     static ConnectivityTesterImpl getInstance()
     {
         return INSTANCE;

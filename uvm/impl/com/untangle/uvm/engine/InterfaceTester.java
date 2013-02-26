@@ -12,7 +12,6 @@ import org.apache.log4j.Logger;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.network.InterfaceSettings;
 import com.untangle.uvm.network.NetworkSettings;
-import com.untangle.uvm.networking.EthernetMedia;
 
 public class InterfaceTester
 {

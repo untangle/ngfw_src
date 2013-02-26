@@ -3,40 +3,21 @@
  */
 package com.untangle.uvm;
 
+import org.json.JSONObject;
+
 /**
  * An interface for testing whether or not network connectivity is working.
- *
- * @author <a href="mailto:rbscott@untangle.com">Robert Scott</a>
- * @version 1.0
  */
 public interface ConnectivityTester
 {
     /**
      * Retrieve the connectivity status of the network.
      *
+     * Returns JSON, with two fields isTcpWorking and isDnsWorking
+     * { "isTcpWorking": "true/false", "isDnsWorking":"true/false" }
+     *
+     *
      * @return The current status of the network.
      */
-    Status getStatus();
-
-    /**
-     * Interface that describes the current state of the network.
-     */
-    interface Status
-    {
-        /**
-         * Whether or not DNS is working.
-         *
-         * @return True if DNS is working
-         */
-        boolean isDnsWorking();
-
-        /**
-         * Whether or not the Untangle is able to establish a TCP
-         * connection to a server on the internet.
-         *
-         * @return True if the untangle is able to establish a TCP
-         * connection to a sever on the internet.
-         */
-        boolean isTcpWorking();
-    }
+    JSONObject getStatus();
 }
