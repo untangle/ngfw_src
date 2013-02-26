@@ -552,38 +552,58 @@ if (!Ung.hasResource["Ung.Capture"]) {
                     xtype: "fieldset",
                     title: this.i18n._( "Session Settings" ),
                     items: [{
-                        xtype: "numberfield",
-                        allowNegative: false,
-                        allowBlank: false,
-                        name: "idleTimeout",
-                        minValue: 0,
-                        hideTrigger:true,
-                        invalidText: this.i18n._( "The Idle Timeout must be 0 or greater." ),
-                        fieldLabel: this.i18n._( "Idle Timeout (minutes)" ),
-                        boxLabel: this.i18n._( "Clients will be unauthenticated after this amount of idle time. They may re-authenticate immediately.  Use zero to disable." ),
-                        value: this.settings.idleTimeout / 60,
-                        listeners: {
-                            "change": Ext.bind(function( elem, newValue ) {
-                                this.settings.idleTimeout = newValue * 60;
-                            }, this)
-                        }
+                        xtype: 'container',
+                        layout: 'column',
+                        margin: '0 0 5 0',
+                        items: [{
+                            xtype: "numberfield",
+                            allowNegative: false,
+                            allowBlank: false,
+                            name: "idleTimeout",
+                            minValue: 0,
+                            hideTrigger:true,
+                            invalidText: this.i18n._( "The Idle Timeout must be 0 or greater." ),
+                            fieldLabel: this.i18n._( "Idle Timeout (minutes)" ),
+                            labelWidth: 150,
+                            width: 250,
+                            value: this.settings.idleTimeout / 60,
+                            listeners: {
+                                "change": Ext.bind(function( elem, newValue ) {
+                                    this.settings.idleTimeout = newValue * 60;
+                                }, this)
+                            }
+                        },{
+                            xtype: 'label',
+                            html: this.i18n._( "Clients will be unauthenticated after this amount of idle time. They may re-authenticate immediately.  Use zero to disable." ),
+                            cls: 'boxlabel'
+                        }]
                     },{
-                        xtype: "numberfield",
-                        allowNegative: false,
-                        allowBlank: false,
-                        name: "userTimeout",
-                        maxValue: 525600,
-                        minValue: 5,
-                        hideTrigger:true,
-                        fieldLabel: this.i18n._( "Timeout (minutes)" ),
-                        invalidText: this.i18n._( "The Timeout must be more than 5 minutes and less than 525600 minutes." ),
-                        boxLabel: this.i18n._( "Clients will be unauthenticated after this amount of time regardless of activity. They may re-authenticate immediately." ),
-                        value: this.settings.userTimeout / 60,
-                        listeners: {
-                            "change": Ext.bind(function( elem, newValue ) {
-                                this.settings.userTimeout = newValue * 60;
-                            }, this)
-                        }
+                        xtype: 'container',
+                        layout: 'column',
+                        margin: '0 0 5 0',
+                        items: [{
+                            xtype: "numberfield",
+                            allowNegative: false,
+                            allowBlank: false,
+                            name: "userTimeout",
+                            maxValue: 525600,
+                            minValue: 5,
+                            hideTrigger:true,
+                            fieldLabel: this.i18n._( "Timeout (minutes)" ),
+                            labelWidth: 150,
+                            width: 250,
+                            invalidText: this.i18n._( "The Timeout must be more than 5 minutes and less than 525600 minutes." ),
+                            value: this.settings.userTimeout / 60,
+                            listeners: {
+                                "change": Ext.bind(function( elem, newValue ) {
+                                    this.settings.userTimeout = newValue * 60;
+                                }, this)
+                            }
+                        },{
+                            xtype: 'label',
+                            html: this.i18n._( "Clients will be unauthenticated after this amount of time regardless of activity. They may re-authenticate immediately." ),
+                            cls: 'boxlabel'
+                        }]
                     },{
                         xtype: "checkbox",
                         boxLabel: this.i18n._("Allow Concurrent Logins"),
