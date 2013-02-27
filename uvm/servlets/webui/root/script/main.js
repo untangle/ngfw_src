@@ -774,47 +774,10 @@ Ext.define("Ung.Main", {
         }
         return this.iframeWin;
     },
-    getNetworkingWin: function() {
-        if(this.networkingWin==null) {
-            this.networkingWin=Ext.create("Ung.Window",{
-                id: 'networkingWin',
-                layout: 'fit',
-                defaults: {},
-                breadcrumbs: [{
-                    title: i18n._("Configuration"),
-                    action: function() {
-                        main.closeNetworking();
-                    }
-                }, {
-                    title: i18n._('Networking')
-                }],
-                items: {
-                    html: '<iframe id="networkingWin_iframe" name="networkingWin_iframe" width="100%" height="100%" frameborder="0"/>'
-                },
-                closeWindow: function() {
-                    this.setTitle('');
-                    this.hide();
-                    window.frames["networkingWin_iframe"].location.href="/webui/blank.html";
-                }
-            });
-        }
-        return this.networkingWin;
-    },
-    closeNetworking: function() {
-        if(this.networkingWin!=null && this.networkingWin.isVisible() ) {
-            this.networkingWin.closeWindow();
-        }
-    },
     // load Config
     loadConfig: function() {
         this.config =
             [{
-                "name":"networking",
-                "displayName":i18n._("Networking"),
-                "iconClass":"icon-config-network",
-                "helpSource":"networking_config",
-                handler: main.openNetworking
-            }, {
                 "name":"network",
                 "displayName":i18n._("Network"),
                 "iconClass":"icon-config-network",
@@ -962,11 +925,6 @@ Ext.define("Ung.Main", {
                 Ext.getCmp("configItem_upgrade").setIconCls("icon-config-upgrade-available");
             }
         }, this,[handler],true),true);
-    },
-    openNetworking: function() {
-        main.getNetworkingWin().show();
-        var alpacaUrl = "/alpaca/";
-        window.frames["networkingWin_iframe"].location.href=alpacaUrl;
     },
     openConfig: function(configItem) {
         Ext.MessageBox.wait(i18n._("Loading Config..."), i18n._("Please wait"));
@@ -1319,6 +1277,5 @@ Ext.define("Ung.Main", {
      */         
     hideWelcomeScreen: function() {
         main.closeStore();
-        main.closeNetworking();
     }
 });
