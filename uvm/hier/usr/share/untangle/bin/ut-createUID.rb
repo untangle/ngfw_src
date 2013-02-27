@@ -1,5 +1,7 @@
 #! /usr/bin/ruby1.8
 
+# FIXME - rewrite in python/shell
+
 require 'gpgme'
 require 'optparse'
 
@@ -177,7 +179,7 @@ def createUID(fingerprint, bits, existingKey)
   # insert meaningful bit in the left part
   if existingKey.nil? then
     uid = fingerprint.insert(LEFT_LENGTH-2, bits)
-  else # FIXME
+  else
     uid = existingKey + fingerprint[LEFT_LENGTH-2,fingerprint.length-LEFT_LENGTH+2]
   end
 

@@ -450,15 +450,13 @@ Ext.define('Ung.SetupWizard.Interfaces', {
     },
     
     autoRefreshInterfaces: function() {
-        //FIXME
-        //rpc.networkManager.updateLinkStatus();
+        //rpc.networkManager.updateLinkStatus(); //FIXME
         rpc.networkManager.getNetworkSettings( Ext.bind(this.autoRefreshInterfacesCallback, this ) );
     },
     
     refreshInterfaces: function() {
         Ext.MessageBox.wait( i18n._( "Refreshing Network Interfaces" ), i18n._( "Please Wait" ));
-        //FIXME
-        //rpc.networkManager.updateLinkStatus();
+        //rpc.networkManager.updateLinkStatus(); //FIXME
         rpc.networkManager.getNetworkSettings( Ext.bind(this.completeRefreshInterfaces,this ) );
     },
 
@@ -1174,16 +1172,10 @@ Ext.define('Ung.SetupWizard.InternalNetwork', {
                     this.panel.query('radio[name="bridgeOrRouter"]')[1].setValue(false);
                 }
 
-                /* set static suggestion values */
                 if ( intfs[c]['v4StaticAddress'] != null && intfs[c]['v4StaticNetmask'] != null ) {
                     this.panel.query('textfield[name="network"]')[0].setValue( intfs[c]['v4StaticAddress'] );
                     this.panel.query('combo[name="netmask"]')[0].setValue( intfs[c]['v4StaticNetmask'] );
-                } else {
-                    this.panel.query('textfield[name="network"]')[0].setValue( "192.168.2.1" );
-                    this.panel.query('combo[name="netmask"]')[0].setValue( "255.255.255.0" );
-                    // FIXME get status/current addr of WAN interface
-                    // FIXME pick something we are SURE doesnt conflict with WAN addr
-                }
+                } 
 
                 break;
             }

@@ -100,9 +100,8 @@ public class AlertManagerImpl implements AlertManager
             if (!intf.getIsWan())
                 continue;
             
-            // FIXME need to support dhcp and pppoe
-            InetAddress dnsPrimary   = intf.getV4StaticDns1();
-            InetAddress dnsSecondary = intf.getV4StaticDns2();
+            InetAddress dnsPrimary   = UvmContextFactory.context().networkManager().getInterfaceStatus( intf.getInterfaceId() ).getV4Dns1();
+            InetAddress dnsSecondary = UvmContextFactory.context().networkManager().getInterfaceStatus( intf.getInterfaceId() ).getV4Dns2();
 
             if (dnsPrimary != null)
                 if (!connectivityTester.isDnsWorking(dnsPrimary, null))
@@ -324,10 +323,8 @@ public class AlertManagerImpl implements AlertManager
                 bridgeIdToSystemNameMap.put(key, systemName);
             }
 
-            //FIXME - add support for DHCP and pppoe
-            //String gatewayIp = master.getGatewayStr();
-            String gatewayIp = master.getV4StaticGateway().getHostAddress();
-            if (gatewayIp == null) {
+            InetAddress gateway   = UvmContextFactory.context().networkManager().getInterfaceStatus( master.getInterfaceId() ).getV4Gateway();
+            if (gateway == null) {
                 logger.warn("Missing gateway on bridge master");
                 return;
             }
@@ -335,14 +332,14 @@ public class AlertManagerImpl implements AlertManager
             /**
              * Lookup gateway MAC using arp -a
              */
-            String gatewayMac = UvmContextFactory.context().execManager().execOutput( "arp -a " + gatewayIp + " | awk '{print $4}' ");
+            String gatewayMac = UvmContextFactory.context().execManager().execOutput( "arp -a " + gateway.getHostAddress() + " | awk '{print $4}' ");
             if ( gatewayMac == null ) {
-                logger.warn("Unable to determine MAC for " + gatewayIp);
+                logger.warn("Unable to determine MAC for " + gateway.getHostAddress());
                 return;
             }
             gatewayMac = gatewayMac.replaceAll("\\s+","");
             if ( "".equals(gatewayMac) || "entries".equals(gatewayMac)) {
-                logger.warn("Unable to determine MAC for " + gatewayIp);
+                logger.warn("Unable to determine MAC for " + gateway.getHostAddress());
                 return;
             }
             
@@ -398,7 +395,7 @@ public class AlertManagerImpl implements AlertManager
                 alertText += " ";
                 alertText += i18nUtil.tr("Gateway");
                 alertText += " (";
-                alertText += gatewayIp;
+                alertText += gateway.getHostAddress();
                 alertText += ") ";
                 alertText += i18nUtil.tr("is on ");
                 alertText += " ";
@@ -481,13 +478,12 @@ public class AlertManagerImpl implements AlertManager
             if (!intf.getIsWan())
                 continue;
             
-            // FIXME need to support dhcp and pppoe
-            String dnsPrimary   = (intf.getV4StaticDns1() != null ? intf.getV4StaticDns1().getHostAddress() : null);
-            String dnsSecondary = (intf.getV4StaticDns2() != null ? intf.getV4StaticDns2().getHostAddress() : null);
+            InetAddress dnsPrimary   = UvmContextFactory.context().networkManager().getInterfaceStatus( intf.getInterfaceId() ).getV4Dns1();
+            InetAddress dnsSecondary = UvmContextFactory.context().networkManager().getInterfaceStatus( intf.getInterfaceId() ).getV4Dns2();
 
             List<String> dnsServers = new LinkedList<String>();
-            if ( dnsPrimary != null ) dnsServers.add(dnsPrimary);
-            if ( dnsSecondary != null ) dnsServers.add(dnsSecondary);
+            if ( dnsPrimary != null ) dnsServers.add(dnsPrimary.getHostAddress());
+            if ( dnsSecondary != null ) dnsServers.add(dnsSecondary.getHostAddress());
 
             for (String dnsServer : dnsServers) {
                 /* hardcode common known bad DNS */

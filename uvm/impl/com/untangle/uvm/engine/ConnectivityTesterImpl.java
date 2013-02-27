@@ -61,9 +61,8 @@ class ConnectivityTesterImpl implements ConnectivityTester
             return makeJsonObject(false, false);
         }
         
-        // FIXME get current DNS options, must support dhcp and pppoe
-        InetAddress dnsPrimary   = wan.getV4StaticDns1();
-        InetAddress dnsSecondary = wan.getV4StaticDns2();
+        InetAddress dnsPrimary   = UvmContextFactory.context().networkManager().getInterfaceStatus( wan.getInterfaceId() ).getV4Dns1();
+        InetAddress dnsSecondary = UvmContextFactory.context().networkManager().getInterfaceStatus( wan.getInterfaceId() ).getV4Dns2();
 
         /* Wait for any bridge interfaces to come up */
         waitForBridges();
