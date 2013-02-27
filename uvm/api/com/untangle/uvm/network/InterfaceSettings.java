@@ -8,6 +8,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.net.InetAddress;
 
+import org.apache.log4j.Logger;
 import org.json.JSONObject;
 import org.json.JSONString;
 
@@ -19,56 +20,58 @@ import com.untangle.uvm.node.IPMaskedAddress;
 @SuppressWarnings("serial")
 public class InterfaceSettings implements Serializable, JSONString
 {
-    public int     interfaceId; /* the ID of the physical interface (1-254) */
-    public String  name; /* human name: ie External, Internal, Wireless */
+    private static final Logger logger = Logger.getLogger( InterfaceSettings.class );
 
-    public String  physicalDev; /* physical interface name: eth0, etc */
-    public String  systemDev; /* iptables interface name: eth0, eth0:0, eth0.1, etc */
-    public String  symbolicDev; /* symbolic interface name: eth0, eth0:0, eth0.1, etc */
+    private int     interfaceId; /* the ID of the physical interface (1-254) */
+    private String  name; /* human name: ie External, Internal, Wireless */
 
-    public boolean isWan = false; /* is a WAN interface? */
+    private String  physicalDev; /* physical interface name: eth0, etc */
+    private String  systemDev; /* iptables interface name: eth0, eth0:0, eth0.1, etc */
+    private String  symbolicDev; /* symbolic interface name: eth0, eth0:0, eth0.1, etc */
 
-    public final static String CONFIG_ADDRESSED = "addressed";
-    public final static String CONFIG_BRIDGED   = "bridged";
-    public final static String CONFIG_DISABLED  = "disabled";
-    public String  config; /* config type: addressed, bridged, disabled */
+    private boolean isWan = false; /* is a WAN interface? */
 
-    public Integer bridgedTo; /* device to bridge to in "bridged" case */
+    public  final static String CONFIG_ADDRESSED = "addressed";
+    public  final static String CONFIG_BRIDGED   = "bridged";
+    public  final static String CONFIG_DISABLED  = "disabled";
+    private String  config; /* config type: addressed, bridged, disabled */
+
+    private Integer bridgedTo; /* device to bridge to in "bridged" case */
     
-    public final static String V4CONFIGTYPE_STATIC = "static";
-    public final static String V4CONFIGTYPE_AUTO   = "auto";
-    public final static String V4CONFIGTYPE_PPPOE  = "pppoe";
-    public String v4ConfigType; /* config type: static, auto, pppoe */
+    public  final static String V4CONFIGTYPE_STATIC = "static";
+    public  final static String V4CONFIGTYPE_AUTO   = "auto";
+    public  final static String V4CONFIGTYPE_PPPOE  = "pppoe";
+    private String v4ConfigType; /* config type: static, auto, pppoe */
     
-    public InetAddress v4StaticAddress; /* the address  of this interface if configured static, or dhcp override */ 
-    public InetAddress v4StaticNetmask; /* the netmask  of this interface if configured static, or dhcp override */
-    public InetAddress v4StaticGateway; /* the gateway  of this interface if configured static, or dhcp override */
-    public InetAddress v4StaticDns1; /* the dns1  of this interface if configured static */
-    public InetAddress v4StaticDns2; /* the dns2  of this interface if configured static */
-    public InetAddress v4AutoAddressOverride; /* the dhcp override address (null means don't override) */ 
-    public InetAddress v4AutoNetmaskOverride; /* the dhcp override netmask (null means don't override) */ 
-    public InetAddress v4AutoGatewayOverride; /* the dhcp override gateway (null means don't override) */ 
-    public InetAddress v4AutoDns1Override; /* the dhcp override dns1 (null means don't override) */
-    public InetAddress v4AutoDns2Override; /* the dhcp override dns2 (null means don't override) */
+    private InetAddress v4StaticAddress; /* the address  of this interface if configured static, or dhcp override */ 
+    private InetAddress v4StaticNetmask; /* the netmask  of this interface if configured static, or dhcp override */
+    private InetAddress v4StaticGateway; /* the gateway  of this interface if configured static, or dhcp override */
+    private InetAddress v4StaticDns1; /* the dns1  of this interface if configured static */
+    private InetAddress v4StaticDns2; /* the dns2  of this interface if configured static */
+    private InetAddress v4AutoAddressOverride; /* the dhcp override address (null means don't override) */ 
+    private InetAddress v4AutoNetmaskOverride; /* the dhcp override netmask (null means don't override) */ 
+    private InetAddress v4AutoGatewayOverride; /* the dhcp override gateway (null means don't override) */ 
+    private InetAddress v4AutoDns1Override; /* the dhcp override dns1 (null means don't override) */
+    private InetAddress v4AutoDns2Override; /* the dhcp override dns2 (null means don't override) */
 
-    public String      v4PPPoEUsername; /* PPPoE Username */
-    public String      v4PPPoEPassword; /* PPPoE Password */
-    public Boolean     v4PPPoEUsePeerDns; /* If the DNS should be determined via PPP */
-    public InetAddress v4PPPoEDns1; /* the dns1  of this interface if configured static */
-    public InetAddress v4PPPoEDns2; /* the dns2  of this interface if configured static */
+    private String      v4PPPoEUsername; /* PPPoE Username */
+    private String      v4PPPoEPassword; /* PPPoE Password */
+    private Boolean     v4PPPoEUsePeerDns; /* If the DNS should be determined via PPP */
+    private InetAddress v4PPPoEDns1; /* the dns1  of this interface if configured static */
+    private InetAddress v4PPPoEDns2; /* the dns2  of this interface if configured static */
 
-    public Boolean     v4NatEgressTraffic;
-    public Boolean     v4NatIngressTraffic;
+    private Boolean     v4NatEgressTraffic;
+    private Boolean     v4NatIngressTraffic;
     
-    public final static String V6CONFIGTYPE_STATIC = "static";
-    public final static String V6CONFIGTYPE_AUTO   = "auto";
-    public String v6ConfigType; /* config type: static, auto */
+    public  final static String V6CONFIGTYPE_STATIC = "static";
+    public  final static String V6CONFIGTYPE_AUTO   = "auto";
+    private String v6ConfigType; /* config type: static, auto */
     
-    public InetAddress v6StaticAddress; /* the address  of this interface if configured static, or dhcp override */ 
-    public Integer     v6StaticPrefixLength; /* the netmask  of this interface if configured static, or dhcp override */
-    public InetAddress v6StaticGateway; /* the gateway  of this interface if configured static, or dhcp override */
-    public InetAddress v6StaticDns1; /* the dns1  of this interface if configured static, or dhcp override */
-    public InetAddress v6StaticDns2; /* the dns2  of this interface if configured static, or dhcp override */
+    private InetAddress v6StaticAddress; /* the address  of this interface if configured static, or dhcp override */ 
+    private Integer     v6StaticPrefixLength; /* the netmask  of this interface if configured static, or dhcp override */
+    private InetAddress v6StaticGateway; /* the gateway  of this interface if configured static, or dhcp override */
+    private InetAddress v6StaticDns1; /* the dns1  of this interface if configured static, or dhcp override */
+    private InetAddress v6StaticDns2; /* the dns2  of this interface if configured static, or dhcp override */
 
     private Boolean dhcpEnabled; /* is DHCP serving enabled on this interface? */
     private Boolean dhcpAuthoritative; /* is the DHCP server authoritative? */
@@ -110,7 +113,7 @@ public class InterfaceSettings implements Serializable, JSONString
 
     public String getConfig( ) { return this.config; }
     public void setConfig( String newValue ) { this.config = newValue; }
-
+    
     public Integer getBridgedTo( ) { return this.bridgedTo; }
     public void setBridgedTo( Integer newValue ) { this.bridgedTo = newValue; }
     
@@ -215,4 +218,46 @@ public class InterfaceSettings implements Serializable, JSONString
 
     public InetAddress getDhcpDnsOverride() { return this.dhcpDnsOverride; }
     public void setDhcpDnsOverride( InetAddress newValue ) { this.dhcpDnsOverride = newValue; }
+
+
+    /**
+     * Below is a collection of convenience methods
+     * These are getters without setters so they can be used and they will in the JSON equivalent of this object
+     * However, there are not actually settings
+     */
+    private InetAddress statusV4Address;
+    private InetAddress statusV4Netmask;
+
+    public boolean getDisabled()
+    {
+        return CONFIG_DISABLED.equals( getConfig() );
+    }
+
+    public boolean getBridged()
+    {
+        return CONFIG_BRIDGED.equals( getConfig() );
+    }
+    
+    /** 
+     * Return the current IPv4 address of this interface or null if it has none
+     * This works regardless of the the v4ConfigType (static, auto, pppoe, etc)
+     */
+    public InetAddress getStatusV4Address()
+    {
+        if ( getDisabled() | getBridged() )
+            return null;
+
+        if ( V4CONFIGTYPE_STATIC.equals( getV4ConfigType() ) )
+            return getV4StaticAddress();
+
+        logger.error("FIXME: DHCP, PPPOE getStatusV4Address");
+        return null;
+    }
+
+    public void trans_setStatusV4Address( InetAddress newValue )
+    {
+        this.statusV4Address = newValue;
+    }
+
+    
 }

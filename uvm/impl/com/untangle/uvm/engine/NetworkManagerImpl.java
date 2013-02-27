@@ -137,7 +137,7 @@ public class NetworkManagerImpl implements NetworkManager
     /**
      * Insert the iptables rules for capturing traffic
      */
-    public void insertRules( )
+    protected void insertRules( )
     {
         int retCode = UvmContextFactory.context().execManager().execResult( "ln -fs " + this.updateRulesScript + " /etc/untangle-netd/iptables-rules.d/800-uvm" );
         if ( retCode < 0 )
@@ -152,38 +152,46 @@ public class NetworkManagerImpl implements NetworkManager
         } catch (Exception e) {}
     }
     
+    /**
+     * Register a listener for network settings changes
+     */
     public void registerListener( NetworkSettingsListener networkListener )
     {
         this.networkListeners.add( networkListener );
     }
 
+    /**
+     * Unregister a listener for network settings changes
+     */
     public void unregisterListener( NetworkSettingsListener networkListener )
     {
         this.networkListeners.remove( networkListener );
     }
 
-   public InetAddress getFirstWanAddress()
+    /**
+     * Get the IP address of the first WAN interface
+     */
+    public InetAddress getFirstWanAddress()
     {
         if ( this.networkSettings == null || this.networkSettings.getInterfaces() == null ) {
             return null;
         }
         
         for ( InterfaceSettings intfSettings : this.networkSettings.getInterfaces() ) {
-            if ( intfSettings.getIsWan() ) {
-                //FIXME what if pppoe or dhcp ?
-                return intfSettings.getV4StaticAddress();
+            if ( !intfSettings.getDisabled() && intfSettings.getIsWan() ) {
+                return intfSettings.getStatusV4Address();
             }
-                
         }
 
         return null;
     }
 
-    /*
-     * This returns an address where the host should be able to access
-     * HTTP.  if HTTP is not reachable, this returns NULL
+    /**
+     * This method returns an address where the host should be able to access HTTP.
+     * If HTTP is not reachable on this interface (like all WANs), it returns null.
+     * If any error occurs it returns null.
      */
-    public InetAddress getInternalHttpAddress( int clientIntf )
+    public InetAddress getInterfaceHttpAddress( int clientIntf )
     {
         /* Retrieve the network settings */
         NetworkSettings netSettings = this.networkSettings;
@@ -225,18 +233,8 @@ public class NetworkManagerImpl implements NetworkManager
         if (intfSettings.getInterfaceId() == 250) {
             // FIXME how to handle OpenVPN?
             //             OpenVpn openvpn = (OpenVpn) UvmContextFactory.context().nodeManager().node("untangle-node-openvpn");
-//             if (openvpn == null) {
-//                 logger.warn("OpenVPN node not found");
-//                 return null;
-//             }
-            
-//             InetAddress addr = openvpn.getVpnServerAddress().getIp();
-//             if (addr == null) {
-//                 logger.warn("VPN Server address not found");
-//                 return null;
-//             }
-
-//             return addr;
+            //             InetAddress addr = openvpn.getVpnServerAddress().getIp();
+            //             return addr;
         }
 
         //FIXME must support dhcp and pppoe
@@ -310,14 +308,6 @@ public class NetworkManagerImpl implements NetworkManager
                 external.setSymbolicDev(devices[0]);
                 external.setConfig("addressed");
                 external.setV4ConfigType("auto");
-                //external.setV4StaticAddress(InetAddress.getByName("172.16.2.60"));
-                //external.setV4StaticNetmask(InetAddress.getByName("255.255.0.0"));
-                //external.setV4StaticGateway(InetAddress.getByName("172.16.2.1"));
-                //external.setV4StaticDns1(InetAddress.getByName("172.16.2.1"));
-                //external.setV4StaticAddress(InetAddress.getByName("10.0.0.60"));
-                //external.setV4StaticNetmask(InetAddress.getByName("255.0.0.0"));
-                //external.setV4StaticGateway(InetAddress.getByName("10.0.0.1"));
-                //external.setV4StaticDns1(InetAddress.getByName("10.0.0.1"));
                 external.setV6ConfigType("auto");
                 interfaces.add(external);
             }
@@ -379,7 +369,7 @@ public class NetworkManagerImpl implements NetworkManager
         return newSettings;
     }
 
-    private void reconfigure() 
+    private void reconfigure()
     {
         logger.info("reconfigure()");
     }
@@ -420,7 +410,7 @@ public class NetworkManagerImpl implements NetworkManager
          */
         int pppCount = 0;
         for ( InterfaceSettings intf : networkSettings.getInterfaces() ) {
-            if ( "pppoe".equals(intf.getV4ConfigType()) ) {
+            if ( InterfaceSettings.V4CONFIGTYPE_PPPOE.equals(intf.getV4ConfigType()) ) {
                 //String ethNum = intf.getPhysicalDev().replaceAll( "[^\\d]", "" ); /* remove all alpha characters */
                 //intf.setSystemDev( "ppp" + ethNum );
                 intf.setSystemDev("ppp" + pppCount);
@@ -433,7 +423,7 @@ public class NetworkManagerImpl implements NetworkManager
          */
         for ( InterfaceSettings intf : networkSettings.getInterfaces() ) {
             for ( InterfaceSettings intf2 : networkSettings.getInterfaces() ) {
-                if ( "bridged".equals(intf2.getConfig()) &&
+                if ( InterfaceSettings.CONFIG_BRIDGED.equals( intf2.getConfig() ) &&
                      intf2.getBridgedTo() != null &&
                      intf2.getBridgedTo().equals( intf.getInterfaceId() ) ) {
                         /* found an interface bridged to intf */
