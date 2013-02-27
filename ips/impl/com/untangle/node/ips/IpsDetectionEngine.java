@@ -187,7 +187,7 @@ public class IpsDetectionEngine
         Integer clientIntf = pe.getClientIntf();
         InterfaceSettings sourceIntf = null;
         if (clientIntf != null)
-            sourceIntf = UvmContextFactory.context().newNetworkManager().getNetworkSettings().findInterfaceId(clientIntf);
+            sourceIntf = UvmContextFactory.context().networkManager().getNetworkSettings().findInterfaceId(clientIntf);
 
         boolean incoming = true;
         if (sourceIntf == null) {

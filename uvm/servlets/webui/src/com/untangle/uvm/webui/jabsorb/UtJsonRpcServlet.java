@@ -95,7 +95,7 @@ public class UtJsonRpcServlet extends JSONRPCServlet
                 b.registerCallableReference(uvm.mailSender().getClass());
                 b.registerCallableReference(uvm.adminManager().getClass());
                 b.registerCallableReference(uvm.systemManager().getClass());
-                b.registerCallableReference(uvm.newNetworkManager().getClass());
+                b.registerCallableReference(uvm.networkManager().getClass());
                 b.registerCallableReference(uvm.getConnectivityTester().getClass());
                 b.registerCallableReference(uvm.argonManager().getClass());
                 b.registerCallableReference(uvm.licenseManager().getClass());

@@ -169,7 +169,7 @@ class MailSenderImpl implements MailSender
     // is up and runing
     void postInit()
     {
-        ((NewNetworkManagerImpl)UvmContextFactory.context().newNetworkManager()).
+        ((NetworkManagerImpl)UvmContextFactory.context().networkManager()).
             registerListener(new NetworkSettingsListener() {
                     public void event( NetworkSettings settings )
                     {
@@ -334,7 +334,7 @@ class MailSenderImpl implements MailSender
         File exim_dir = new File(EXIM_CONF_DIR);
         if (exim_dir.isDirectory()) {
 
-            NetworkSettings netSettings = UvmContextFactory.context().newNetworkManager().getNetworkSettings();
+            NetworkSettings netSettings = UvmContextFactory.context().networkManager().getNetworkSettings();
             String hostName = null;
             if (netSettings != null)
                 hostName = netSettings.getHostName();

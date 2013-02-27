@@ -88,7 +88,7 @@ Ext.define('Ung.SetupWizard.SettingsSaver', {
             // It is very wrong to do this all synchronously
             rpc.jsonrpc = new JSONRpcClient( "/webui/JSON-RPC" );
             rpc.adminManager = rpc.jsonrpc.UvmContext.adminManager();
-            rpc.newNetworkManager = rpc.jsonrpc.UvmContext.newNetworkManager();
+            rpc.networkManager = rpc.jsonrpc.UvmContext.networkManager();
             rpc.connectivityTester = rpc.jsonrpc.UvmContext.getConnectivityTester();
             rpc.toolboxManager = rpc.jsonrpc.UvmContext.toolboxManager();
             rpc.systemManager = rpc.jsonrpc.UvmContext.systemManager();
@@ -452,14 +452,14 @@ Ext.define('Ung.SetupWizard.Interfaces', {
     autoRefreshInterfaces: function() {
         //FIXME
         //rpc.networkManager.updateLinkStatus();
-        rpc.newNetworkManager.getNetworkSettings( Ext.bind(this.autoRefreshInterfacesCallback, this ) );
+        rpc.networkManager.getNetworkSettings( Ext.bind(this.autoRefreshInterfacesCallback, this ) );
     },
     
     refreshInterfaces: function() {
         Ext.MessageBox.wait( i18n._( "Refreshing Network Interfaces" ), i18n._( "Please Wait" ));
         //FIXME
         //rpc.networkManager.updateLinkStatus();
-        rpc.newNetworkManager.getNetworkSettings( Ext.bind(this.completeRefreshInterfaces,this ) );
+        rpc.networkManager.getNetworkSettings( Ext.bind(this.completeRefreshInterfaces,this ) );
     },
 
     completeRefreshInterfaces: function( result, exception ) {
@@ -793,7 +793,7 @@ Ext.define('Ung.SetupWizard.Internet', {
         this.setFirstWanSettings( Ung.SetupWizard.CurrentValues.networkSettings, wanSettings );
 
         var complete = Ext.bind(this.complete, this, [ handler, hideWindow ], Ung.SetupWizard.CurrentValues.networkSettings );
-        rpc.newNetworkManager.setNetworkSettings( complete, Ung.SetupWizard.CurrentValues.networkSettings );
+        rpc.networkManager.setNetworkSettings( complete, Ung.SetupWizard.CurrentValues.networkSettings );
     },
 
     saveStatic: function( handler, hideWindow ) {
@@ -816,7 +816,7 @@ Ext.define('Ung.SetupWizard.Internet', {
         this.setFirstWanSettings( Ung.SetupWizard.CurrentValues.networkSettings, wanSettings );
 
         var complete = Ext.bind(this.complete, this, [ handler, hideWindow ], true );
-        rpc.newNetworkManager.setNetworkSettings( complete, Ung.SetupWizard.CurrentValues.networkSettings ); 
+        rpc.networkManager.setNetworkSettings( complete, Ung.SetupWizard.CurrentValues.networkSettings ); 
     },
 
     savePPPoE: function( handler, hideWindow ) {
@@ -835,7 +835,7 @@ Ext.define('Ung.SetupWizard.Internet', {
         this.setFirstWanSettings( Ung.SetupWizard.CurrentValues.networkSettings, wanSettings );
         
         var complete = Ext.bind(this.complete, this, [ handler, hideWindow ], true );
-        rpc.newNetworkManager.setNetworkSettings( complete, Ung.SetupWizard.CurrentValues.networkSettings ); 
+        rpc.networkManager.setNetworkSettings( complete, Ung.SetupWizard.CurrentValues.networkSettings ); 
     },
 
     complete: function( result, exception, foo, handler, hideWindow ) {
@@ -988,7 +988,7 @@ Ext.define('Ung.SetupWizard.Internet', {
     refreshNetworkDisplay: function() {
         var c = 0;
 
-        Ung.SetupWizard.CurrentValues.networkSettings = rpc.newNetworkManager.getNetworkSettings();
+        Ung.SetupWizard.CurrentValues.networkSettings = rpc.networkManager.getNetworkSettings();
         var networkSettings = Ung.SetupWizard.CurrentValues.networkSettings;
         if ( networkSettings['interfaces'] == null && networkSettings['interfaces']['list'] == null ) {
             console.error("Missing interface information.");
@@ -1161,7 +1161,7 @@ Ext.define('Ung.SetupWizard.InternalNetwork', {
 
         // find the internal interface and see if its currently set to static.
         // if so change the default to router
-        Ung.SetupWizard.CurrentValues.networkSettings = rpc.newNetworkManager.getNetworkSettings();
+        Ung.SetupWizard.CurrentValues.networkSettings = rpc.networkManager.getNetworkSettings();
         var networkSettings = Ung.SetupWizard.CurrentValues.networkSettings;
 
         if ( networkSettings != null && networkSettings['interfaces'] != null && networkSettings['interfaces']['list'] != null ) {
@@ -1252,7 +1252,7 @@ Ext.define('Ung.SetupWizard.InternalNetwork', {
             firstNonWan['config'] = 'bridged';
             this.setFirstNonWanSettings( Ung.SetupWizard.CurrentValues.networkSettings, firstNonWan );
 
-            rpc.newNetworkManager.setNetworkSettings( delegate, Ung.SetupWizard.CurrentValues.networkSettings ); 
+            rpc.networkManager.setNetworkSettings( delegate, Ung.SetupWizard.CurrentValues.networkSettings ); 
         } else {
             var network = this.panel.query('textfield[name="network"]')[0].getValue();
             var netmask = this.panel.query('combo[name="netmask"]')[0].getRawValue();
@@ -1266,7 +1266,7 @@ Ext.define('Ung.SetupWizard.InternalNetwork', {
             delete firstNonWan.dhcpRangeEnd; // new ones will be chosen
 
             this.setFirstNonWanSettings( Ung.SetupWizard.CurrentValues.networkSettings, firstNonWan );
-            rpc.newNetworkManager.setNetworkSettings( delegate, Ung.SetupWizard.CurrentValues.networkSettings ); 
+            rpc.networkManager.setNetworkSettings( delegate, Ung.SetupWizard.CurrentValues.networkSettings ); 
         }
     },
 

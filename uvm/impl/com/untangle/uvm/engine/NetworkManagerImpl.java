@@ -1,5 +1,5 @@
 /**
- * $Id: NewNetworkManagerImpl.java,v 1.00 2013/01/07 12:15:03 dmorris Exp $
+ * $Id: NetworkManagerImpl.java,v 1.00 2013/01/07 12:15:03 dmorris Exp $
  */
 package com.untangle.uvm.engine;
 
@@ -12,7 +12,7 @@ import org.apache.log4j.Logger;
 
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.SettingsManager;
-import com.untangle.uvm.NewNetworkManager;
+import com.untangle.uvm.NetworkManager;
 import com.untangle.uvm.ExecManagerResult;
 import com.untangle.uvm.network.NetworkSettings;
 import com.untangle.uvm.network.NetworkSettingsListener;
@@ -26,7 +26,7 @@ import com.untangle.uvm.node.IPMaskedAddress;
 /**
  * The Network Manager handles all the network configuration
  */
-public class NewNetworkManagerImpl implements NewNetworkManager
+public class NetworkManagerImpl implements NetworkManager
 {
     private final Logger logger = Logger.getLogger(this.getClass());
 
@@ -40,7 +40,7 @@ public class NewNetworkManagerImpl implements NewNetworkManager
     /* networkListeners stores parties interested in being notified of network settings change */
     private LinkedList<NetworkSettingsListener> networkListeners = new LinkedList<NetworkSettingsListener>();
     
-    protected NewNetworkManagerImpl()
+    protected NetworkManagerImpl()
     {
         SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
         NetworkSettings readSettings = null;
@@ -83,7 +83,7 @@ public class NewNetworkManagerImpl implements NewNetworkManager
             logger.debug("Loading Settings: " + this.networkSettings.toJSONString());
         }
 
-        logger.info("Initialized NewNetworkManager");
+        logger.info("Initialized NetworkManager");
     }
     
     /**

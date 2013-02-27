@@ -54,7 +54,7 @@ class SessionMonitorImpl implements SessionMonitor
          * Find the the system interface name that matches this ID
          * XXX this should be in a utility somewhere
          */
-        List<InterfaceSettings> intfs = uvmContext.newNetworkManager().getNetworkSettings().getInterfaces();
+        List<InterfaceSettings> intfs = uvmContext.networkManager().getNetworkSettings().getInterfaces();
         try {
             int interfaceId = Integer.parseInt(interfaceIdStr);
         

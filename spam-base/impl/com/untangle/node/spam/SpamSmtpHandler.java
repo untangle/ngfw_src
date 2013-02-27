@@ -133,7 +133,7 @@ public class SpamSmtpHandler extends BufferingSessionHandler
         }
 
         try {
-            boolean isWan = UvmContextFactory.context().newNetworkManager().getNetworkSettings().findInterfaceId(session.getServerIntf()).getIsWan();
+            boolean isWan = UvmContextFactory.context().networkManager().getNetworkSettings().findInterfaceId(session.getServerIntf()).getIsWan();
             if (!config.getScanWanMail() && isWan) {
                 logger.debug("Ignoring WAN-bound SMTP mail");
                 postSpamEvent(msgInfo, cleanReport(), SpamMessageAction.OUTBOUND);
@@ -268,7 +268,7 @@ public class SpamSmtpHandler extends BufferingSessionHandler
         // Anything going out External MARK instead of QUARANTINE
         boolean isWan = false;
         try {
-            isWan = UvmContextFactory.context().newNetworkManager().getNetworkSettings().findInterfaceId(session.getServerIntf()).getIsWan();
+            isWan = UvmContextFactory.context().networkManager().getNetworkSettings().findInterfaceId(session.getServerIntf()).getIsWan();
         }
         catch (Exception e) {
             logger.warn("Unable to lookup destination interface", e);

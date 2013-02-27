@@ -3,52 +3,28 @@
  */
 package com.untangle.uvm;
 
-import java.util.List;
 import java.net.InetAddress;
-import org.json.JSONArray;
 
-import com.untangle.uvm.NetworkManager;
+import com.untangle.uvm.network.NetworkSettings;
+import com.untangle.uvm.network.NetworkSettingsListener;
 
 public interface NetworkManager
 {
+    /**
+     * Get the network settings
+     */
+    NetworkSettings getNetworkSettings();
 
     /**
-     * Remap the interfaces
-     * @param osArray Array of os names (eth0, eth1, etc)
-     * @param userArray Array of system names (External, Internal, etc);
+     * Set the network settings
      */
-    void remapInterfaces( String[] osArray, String[] userArray ) throws Exception;
+    void setNetworkSettings( NetworkSettings newSettings );
 
-    /** Update the internal representation of the address */
-    void refreshNetworkConfig();
+    void registerListener( NetworkSettingsListener networkListener );
+    void unregisterListener( NetworkSettingsListener networkListener );
 
-    /* Get the hostname of the box */
-    String getHostname();
+    InetAddress getFirstWanAddress();
 
-    /* Forces the link status to be re-examined, since it is likely to
-     * have changed */
-    void updateLinkStatus();
-
-    Boolean isQosEnabled();
-
-    JSONArray getWANSettings();
-
-    void setWANDownloadBandwidth(String name, int speed);
-
-    void setWANUploadBandwidth(String name, int speed);
-    
-    void enableQos();
-
-    /**
-     * This returns an address where the host on the given interface should be able to access HTTP.
-     # if HTTP is not reachable, this returns NULL
-     */
     InetAddress getInternalHttpAddress( int clientIntf );
-
-    String[] getPossibleInterfaces();
-
-    String[] getWanInterfaces();
-
-    boolean isWanInterface( int intfId );
     
 }

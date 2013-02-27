@@ -46,7 +46,7 @@ public class BackupServlet extends HttpServlet
     {
         String oemName = UvmContextFactory.context().oemManager().getOemName();
         String version = UvmContextFactory.context().version().replace(".","_");
-        String hostName = UvmContextFactory.context().newNetworkManager().getNetworkSettings().getHostName().replace(".","_");
+        String hostName = UvmContextFactory.context().networkManager().getNetworkSettings().getHostName().replace(".","_");
         String dateStr = (new SimpleDateFormat(DATE_FORMAT_NOW)).format((Calendar.getInstance()).getTime());
         String filename = oemName + "-" + version + "-" + "backup" + "-" + hostName + "-" + dateStr + ".backup";
 

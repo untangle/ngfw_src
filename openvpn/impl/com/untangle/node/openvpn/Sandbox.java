@@ -148,7 +148,7 @@ public class Sandbox
      * network settings. */
     void autoDetectAddressPool() throws Exception
     {
-        NetworkSettings networkSettings = UvmContextFactory.context().newNetworkManager().getNetworkSettings();
+        NetworkSettings networkSettings = UvmContextFactory.context().networkManager().getNetworkSettings();
 
         /* Load the list of networks. */
         List<AddressRange> currentNetwork = new LinkedList<AddressRange>();
@@ -204,7 +204,7 @@ public class Sandbox
     void autoDetectExportList() throws Exception
     {
         /* Load the list of networks. */
-        NetworkSettings networkSettings = UvmContextFactory.context().newNetworkManager().getNetworkSettings();
+        NetworkSettings networkSettings = UvmContextFactory.context().networkManager().getNetworkSettings();
 
         List<SiteNetwork> networkList = new LinkedList<SiteNetwork>();
 

@@ -54,7 +54,7 @@ class ConnectivityTesterImpl implements ConnectivityTester
      */
     public JSONObject getStatus()
     {
-        NetworkSettings networkSettings = UvmContextFactory.context().newNetworkManager().getNetworkSettings();
+        NetworkSettings networkSettings = UvmContextFactory.context().networkManager().getNetworkSettings();
         InterfaceSettings wan = networkSettings.findInterfaceFirstWan();
         
         // FIXME get current DNS options, must support dhcp and pppoe

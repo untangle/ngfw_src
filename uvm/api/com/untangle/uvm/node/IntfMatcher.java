@@ -78,7 +78,7 @@ public class IntfMatcher
      */
     public boolean isMatch(int interfaceId)
     {
-        NetworkSettings netSettings = UvmContextFactory.context().newNetworkManager().getNetworkSettings();
+        NetworkSettings netSettings = UvmContextFactory.context().networkManager().getNetworkSettings();
         
         if (netSettings == null) {
             logger.warn("Failed to match interface: null network configuration");

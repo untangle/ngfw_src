@@ -142,7 +142,7 @@ public class LogIteration
             InterfaceSettings clientIntf = null;
 
             try {
-                clientIntf = UvmContextFactory.context().newNetworkManager().getNetworkSettings().findInterfaceSystemDev( temp_js.optString( 0, "" ));
+                clientIntf = UvmContextFactory.context().networkManager().getNetworkSettings().findInterfaceSystemDev( temp_js.optString( 0, "" ));
             } catch ( Exception e ) {
                 logger.warn("Error finding interface: " + temp_js.optString( 0, "" ), e);
             }

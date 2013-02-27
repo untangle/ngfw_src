@@ -33,7 +33,7 @@ import com.untangle.uvm.BrandingManager;
 import com.untangle.uvm.OemManager;
 import com.untangle.uvm.AlertManager;
 import com.untangle.uvm.CertificateManager;
-import com.untangle.uvm.NewNetworkManager;
+import com.untangle.uvm.NetworkManager;
 import com.untangle.uvm.ExecManager;
 import com.untangle.uvm.UvmException;
 import com.untangle.uvm.UvmState;
@@ -90,7 +90,7 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
     private ArgonManagerImpl argonManager;
     private LoggingManagerImpl loggingManager;
     private MailSenderImpl mailSender;
-    private NewNetworkManagerImpl newNetworkManager;
+    private NetworkManagerImpl networkManager;
     private ConnectivityTesterImpl connectivityTester;
     private PipelineFoundryImpl pipelineFoundry;
     private ToolboxManagerImpl toolboxManager;
@@ -200,9 +200,9 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
         return this.systemManager;
     }
     
-    public NewNetworkManager newNetworkManager()
+    public NetworkManager networkManager()
     {
-        return this.newNetworkManager;
+        return this.networkManager;
     }
     
     public ConnectivityTesterImpl getConnectivityTester()
@@ -566,7 +566,7 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
             json.put( "systemManager", this.systemManager());
             json.put( "hostTable", this.hostTable());
             json.put( "sessionMonitor", this.sessionMonitor());
-            json.put( "newNetworkManager", this.newNetworkManager());
+            json.put( "networkManager", this.networkManager());
             json.put( "messageManager", this.messageManager());
             json.put( "brandingManager", this.brandingManager());
 
@@ -574,7 +574,7 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
             json.put( "version", this.version());
             json.put( "translations", this.languageManager().getTranslations("untangle-libuvm"));
             json.put( "skinSettings", this.skinManager().getSettings());
-            json.put( "hostname", this.newNetworkManager().getNetworkSettings().getHostName());
+            json.put( "hostname", this.networkManager().getNetworkSettings().getHostName());
             json.put( "messageManagerKey", this.messageManager().getMessageKey());
             json.put( "companyName", this.brandingManager().getCompanyName());
         } catch (Exception e) {
@@ -626,7 +626,7 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
 
         this.adminManager = new AdminManagerImpl();
 
-        this.newNetworkManager = new NewNetworkManagerImpl();
+        this.networkManager = new NetworkManagerImpl();
 
         this.defaultLicenseManager = new DefaultLicenseManagerImpl();
 
@@ -694,7 +694,7 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
 
         hideUpgradeSplash();
 
-        newNetworkManager.insertRules();
+        networkManager.insertRules();
     }
 
     @Override

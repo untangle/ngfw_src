@@ -1822,12 +1822,12 @@ if (!Ung.hasResource["Ung.Network"]) {
         save: function (isApply) {
             this.saveSemaphore = 1;
             // save language settings
-            rpc.newNetworkManager.setNetworkSettings(Ext.bind(function(result, exception) {
+            rpc.networkManager.setNetworkSettings(Ext.bind(function(result, exception) {
                 this.afterSave(exception, isApply);
             }, this), this.settings);
         },
         refreshSettings: function() {
-            this.settings = rpc.newNetworkManager.getNetworkSettings();
+            this.settings = rpc.networkManager.getNetworkSettings();
         },
         beforeSave: function(isApply, handler) {
             this.beforeSaveCount = 5;

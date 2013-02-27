@@ -109,17 +109,17 @@ public class SystemManagerImpl implements SystemManager
         String primaryAddressStr = "unconfigured.example.com";
         
         if ( SystemSettings.PUBLIC_URL_EXTERNAL_IP.equals( this.settings.getPublicUrlMethod() ) ) {
-            InetAddress primaryAddress = UvmContextFactory.context().newNetworkManager().getFirstWanAddress();
+            InetAddress primaryAddress = UvmContextFactory.context().networkManager().getFirstWanAddress();
             if ( primaryAddress == null ) {
                 logger.warn("No WAN IP found");
             } else {
                 primaryAddressStr = primaryAddress.getHostAddress();
             }
         } else if ( SystemSettings.PUBLIC_URL_HOSTNAME.equals( this.settings.getPublicUrlMethod() ) ) {
-            if ( UvmContextFactory.context().newNetworkManager().getNetworkSettings().getHostName() == null ) {
+            if ( UvmContextFactory.context().networkManager().getNetworkSettings().getHostName() == null ) {
                 logger.warn("No hostname is configured");
             } else {
-                primaryAddressStr = UvmContextFactory.context().newNetworkManager().getNetworkSettings().getHostName();
+                primaryAddressStr = UvmContextFactory.context().networkManager().getNetworkSettings().getHostName();
             }
         } else if ( SystemSettings.PUBLIC_URL_ADDRESS_AND_PORT.equals( this.settings.getPublicUrlMethod() ) ) {
             if ( this.settings.getPublicUrlAddress() == null ) {
@@ -165,7 +165,7 @@ public class SystemManagerImpl implements SystemManager
         /* sync SnmpSettings to disk */
         syncSnmpSettings(this.settings.getSnmpSettings());
     
-        //UvmContextImpl.context().newNetworkManager().refreshNetworkConfig();
+        //UvmContextImpl.context().networkManager().refreshNetworkConfig();
 
         if (this.autoUpgradeCronJob != null)
             this.autoUpgradeCronJob.reschedule(this.settings.getAutoUpgradeDays(),

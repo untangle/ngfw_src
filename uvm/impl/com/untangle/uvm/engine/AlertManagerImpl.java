@@ -93,7 +93,7 @@ public class AlertManagerImpl implements AlertManager
      */
     private boolean testDNS(List<String> alertList)
     {
-        NetworkSettings networkSettings = UvmContextFactory.context().newNetworkManager().getNetworkSettings();
+        NetworkSettings networkSettings = UvmContextFactory.context().networkManager().getNetworkSettings();
         ConnectivityTesterImpl connectivityTester = (ConnectivityTesterImpl)UvmContextFactory.context().getConnectivityTester();
         List<InetAddress> nonWorkingDns = new LinkedList<InetAddress>();
         
@@ -279,7 +279,7 @@ public class AlertManagerImpl implements AlertManager
      */
     private void testBridgeBackwards(List<String> alertList)
     {
-        NetworkSettings networkSettings = UvmContextFactory.context().newNetworkManager().getNetworkSettings();
+        NetworkSettings networkSettings = UvmContextFactory.context().networkManager().getNetworkSettings();
         
         for (InterfaceSettings intf : networkSettings.getInterfaces()) {
             if (!InterfaceSettings.CONFIG_BRIDGED.equals(intf.getV4ConfigType()))
@@ -420,7 +420,7 @@ public class AlertManagerImpl implements AlertManager
      */
     private void testInterfaceErrors(List<String> alertList)
     {
-        NetworkSettings networkSettings = UvmContextFactory.context().newNetworkManager().getNetworkSettings();
+        NetworkSettings networkSettings = UvmContextFactory.context().networkManager().getNetworkSettings();
         
         for (InterfaceSettings intf : networkSettings.getInterfaces()) {
             if ( intf.getSystemDev() == null )
@@ -482,7 +482,7 @@ public class AlertManagerImpl implements AlertManager
         if (commtouchasList.size() > 0)
             nodeName = "Spam Blocker";
         
-        NetworkSettings networkSettings = UvmContextFactory.context().newNetworkManager().getNetworkSettings();
+        NetworkSettings networkSettings = UvmContextFactory.context().networkManager().getNetworkSettings();
         
         for (InterfaceSettings intf : networkSettings.getInterfaces()) {
             if (!intf.getIsWan())

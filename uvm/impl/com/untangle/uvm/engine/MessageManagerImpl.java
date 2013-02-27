@@ -527,7 +527,7 @@ public class MessageManagerImpl implements MessageManager
                     if (matcher.find()) {
                         String iface = matcher.group(1);
                         
-                        NetworkSettings netSettings = UvmContextFactory.context().newNetworkManager().getNetworkSettings();
+                        NetworkSettings netSettings = UvmContextFactory.context().networkManager().getNetworkSettings();
                         if (netSettings == null) {
                             logger.warn("Failed to read network configuration");
                             continue;

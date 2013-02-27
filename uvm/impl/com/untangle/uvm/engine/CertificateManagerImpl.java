@@ -144,7 +144,7 @@ class CertificateManagerImpl implements CertificateManager
 
     private String getFQDN()
     {
-        String fqdn = uvmContext.newNetworkManager().getNetworkSettings().getHostName();
+        String fqdn = uvmContext.networkManager().getNetworkSettings().getHostName();
         if (fqdn == null || fqdn.equals("")) {
             return "example.com";
         }

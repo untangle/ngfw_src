@@ -372,7 +372,7 @@ public class OpenVpnManager
         } catch ( Exception e ) {
             logger.error( "Unable to delete the previous client configuration files." );
         }
-        NetworkSettings networkSettings = UvmContextFactory.context().newNetworkManager().getNetworkSettings();
+        NetworkSettings networkSettings = UvmContextFactory.context().networkManager().getNetworkSettings();
 
         Map<String,VpnGroup> groupMap = buildGroupMap(settings);
 

@@ -612,7 +612,7 @@ Ung.Util = {
         var data = [];
 
         if( Ung.Util.networkSettings == null ) {
-            Ung.Util.networkSettings = main.getNewNetworkManager().getNetworkSettings();
+            Ung.Util.networkSettings = main.getNetworkManager().getNetworkSettings();
         }
 
         for ( var c = 0 ; c < Ung.Util.networkSettings.interfaces.list.length ; c++ ) {
@@ -637,7 +637,7 @@ Ung.Util = {
         var data = [];
 
         if( Ung.Util.networkSettings == null ) {
-            Ung.Util.networkSettings = main.getNewNetworkManager().getNetworkSettings();
+            Ung.Util.networkSettings = main.getNetworkManager().getNetworkSettings();
         }
 
         for ( var c = 0 ; c < Ung.Util.networkSettings.interfaces.list.length ; c++ ) {
@@ -655,7 +655,7 @@ Ung.Util = {
         var data = [];
 
         if( Ung.Util.networkSettings == null ) {
-            Ung.Util.networkSettings = main.getNewNetworkManager().getNetworkSettings();
+            Ung.Util.networkSettings = main.getNetworkManager().getNetworkSettings();
         }
 
         for ( var c = 0 ; c < Ung.Util.networkSettings.interfaces.list.length ; c++ ) {
