@@ -54,8 +54,12 @@ class ConnectivityTesterImpl implements ConnectivityTester
      */
     public JSONObject getStatus()
     {
-        NetworkSettings networkSettings = UvmContextFactory.context().networkManager().getNetworkSettings();
-        InterfaceSettings wan = networkSettings.findInterfaceFirstWan();
+        InterfaceSettings wan = UvmContextFactory.context().networkManager().findInterfaceFirstWan();
+
+        if ( wan == null ) {
+            logger.warn("Failed to find WAN interface");
+            return makeJsonObject(false, false);
+        }
         
         // FIXME get current DNS options, must support dhcp and pppoe
         InetAddress dnsPrimary   = wan.getV4StaticDns1();

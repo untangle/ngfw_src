@@ -109,7 +109,7 @@ public abstract class ArgonHook implements Runnable
             if ( serverIntf == IntfConstants.UNKNOWN_INTF ) {
                 /* Update the server interface */
                 String serverIntfName = netcapSession.determineServerIntf();
-                InterfaceSettings intfSettings = UvmContextFactory.context().networkManager().getNetworkSettings().findInterfaceSystemDev( serverIntfName );
+                InterfaceSettings intfSettings = UvmContextFactory.context().networkManager().findInterfaceSystemDev( serverIntfName );
 
                 if ( intfSettings != null ) {
                     Integer i = intfSettings.getInterfaceId();
@@ -167,7 +167,7 @@ public abstract class ArgonHook implements Runnable
                 sessionGlobalState.attach( NodeSession.KEY_PLATFORM_HOSTNAME, hostname );
                 /* If the hostname isn't known in the host table and its a local host (not from WAN) then set hostname */
                 if ( entry == null || !entry.isHostnameKnown()) {
-                    InterfaceSettings intfSettings = UvmContextFactory.context().networkManager().getNetworkSettings().findInterfaceId( netcapSession.clientSide().interfaceId() );
+                    InterfaceSettings intfSettings = UvmContextFactory.context().networkManager().findInterfaceId( netcapSession.clientSide().interfaceId() );
                     if ( intfSettings != null && ! intfSettings.getIsWan() ) {
                         entry = UvmContextFactory.context().hostTable().getHostTableEntry( clientAddr, true ); /* create/get entry */
                         entry.setHostname( hostname );

@@ -6,7 +6,6 @@ import java.util.LinkedList;
 import org.apache.log4j.Logger;
 
 import com.untangle.uvm.network.InterfaceSettings;
-import com.untangle.uvm.network.NetworkSettings;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.UvmContext;
 
@@ -57,7 +56,7 @@ public class IntfMatcher
      */
     private int singleInt = -1;
         
-    public IntfMatcher(String matcher)
+    public IntfMatcher( String matcher )
     {
         initialize(matcher);
     }
@@ -76,16 +75,9 @@ public class IntfMatcher
      * @param intf The interface to test
      * @return True if the <param>interfaceId</param> matches.
      */
-    public boolean isMatch(int interfaceId)
+    public boolean isMatch( int interfaceId )
     {
-        NetworkSettings netSettings = UvmContextFactory.context().networkManager().getNetworkSettings();
-        
-        if (netSettings == null) {
-            logger.warn("Failed to match interface: null network configuration");
-            return false;
-        }
-
-        InterfaceSettings intfSettings = netSettings.findInterfaceId(interfaceId);
+        InterfaceSettings intfSettings = UvmContextFactory.context().networkManager().findInterfaceId(interfaceId);
 
         if (intfSettings == null) {
             logger.warn("Failed to match interface: Cant find interface " + interfaceId);

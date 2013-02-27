@@ -143,7 +143,7 @@ public class IpsDetectionEngine
             // bug1443 -- save memory by reusing value.
             synchronized(allPortMapLists) {
                 boolean found = false;
-                for (Iterator<List<IpsRuleHeader>> iter = allPortMapLists.iterator(); iter.hasNext();) {
+                for ( Iterator<List<IpsRuleHeader>> iter = allPortMapLists.iterator(); iter.hasNext(); ) {
                     List<IpsRuleHeader> savedList = iter.next();
                     if (savedList.equals(c2sList)) {
                         c2sList = savedList;
@@ -187,7 +187,7 @@ public class IpsDetectionEngine
         Integer clientIntf = pe.getClientIntf();
         InterfaceSettings sourceIntf = null;
         if (clientIntf != null)
-            sourceIntf = UvmContextFactory.context().networkManager().getNetworkSettings().findInterfaceId(clientIntf);
+            sourceIntf = UvmContextFactory.context().networkManager().findInterfaceId( clientIntf );
 
         boolean incoming = true;
         if (sourceIntf == null) {

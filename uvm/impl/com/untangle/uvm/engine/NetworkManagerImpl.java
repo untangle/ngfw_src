@@ -52,7 +52,9 @@ public class NetworkManagerImpl implements NetworkManager
         }
 
         /**
-         * If its the dev env, try loading from /etc
+         * If its the development environment, try loading settings from /etc
+         * We do this because we frequently nuke dist/ in the development environment
+         * and this assures we keep the networking settings by saving them outside dist/
          */
         if ( readSettings == null && UvmContextFactory.context().isDevel() ) {
             try {
@@ -188,22 +190,68 @@ public class NetworkManagerImpl implements NetworkManager
     }
 
     /**
+     * Convenience method to find the InterfaceSettings for the specified Id
+     */
+    public InterfaceSettings findInterfaceId( int interfaceId )
+    {
+        if ( this.networkSettings == null || this.networkSettings.getInterfaces() == null)
+            return null;
+        
+        for ( InterfaceSettings intf : this.networkSettings.getInterfaces() ) {
+            if ( intf.getInterfaceId() == interfaceId )
+                return intf;
+        }
+
+        return null;
+    }
+
+    /**
+     * Convenience method to find the InterfaceSettings for the specified systemDev
+     */
+    public InterfaceSettings findInterfaceSystemDev( String systemDev )
+    {
+        if ( this.networkSettings == null || this.networkSettings.getInterfaces() == null)
+            return null;
+        
+        for ( InterfaceSettings intf : this.networkSettings.getInterfaces() ) {
+            if ( intf.getSystemDev().equals( systemDev ) )
+                return intf;
+        }
+
+        return null;
+    }
+
+    /**
+     * Convenience method to find the InterfaceSettings for the first WAN
+     */
+    public InterfaceSettings findInterfaceFirstWan( )
+    {
+        if ( this.networkSettings == null || this.networkSettings.getInterfaces() == null)
+            return null;
+        
+        for ( InterfaceSettings intf : this.networkSettings.getInterfaces() ) {
+            if ( !intf.getDisabled() && intf.getIsWan() )
+                return intf;
+        }
+
+        return null;
+    }
+    
+    /**
      * This method returns an address where the host should be able to access HTTP.
      * If HTTP is not reachable on this interface (like all WANs), it returns null.
      * If any error occurs it returns null.
      */
     public InetAddress getInterfaceHttpAddress( int clientIntf )
     {
-        /* Retrieve the network settings */
-        NetworkSettings netSettings = this.networkSettings;
-        if ( netSettings == null ) {
-            logger.warn("Failed to fetch network configuration");
+        if ( this.networkSettings == null ) {
+            logger.warn("Missing network configuration");
             return null;
         }
 
-        InterfaceSettings intfSettings = netSettings.findInterfaceId( clientIntf );
+        InterfaceSettings intfSettings = findInterfaceId( clientIntf );
         if ( intfSettings == null ) {
-            logger.warn("Failed to fetch interface configuration");
+            logger.warn("Failed to find interface " + clientIntf);
             return null;
         }
 
@@ -219,7 +267,7 @@ public class NetworkManagerImpl implements NetworkManager
          */
         if ( InterfaceSettings.ConfigType.BRIDGED == intfSettings.getConfigType() ) {
             Integer bridgedTo = intfSettings.getBridgedTo();
-            intfSettings = netSettings.findInterfaceId( bridgedTo );
+            intfSettings = findInterfaceId( bridgedTo );
 
             if ( intfSettings == null ) {
                 logger.warn("No Interface found for name: " + bridgedTo );

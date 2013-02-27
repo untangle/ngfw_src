@@ -288,7 +288,7 @@ public class AlertManagerImpl implements AlertManager
             logger.debug("testBridgeBackwards: Checking Bridge: " + intf.getSystemDev());
             logger.debug("testBridgeBackwards: Checking Bridge bridgedTo: " + intf.getBridgedTo());
 
-            InterfaceSettings master = networkSettings.findInterfaceId(intf.getBridgedTo());
+            InterfaceSettings master = UvmContextFactory.context().networkManager().findInterfaceId(intf.getBridgedTo());
             if (master == null) {
                 logger.warn("Unable to locate bridge master: " + intf.getBridgedTo());
                 continue;
@@ -380,7 +380,7 @@ public class AlertManagerImpl implements AlertManager
             /**
              * Get the interface configuration for the interface where the gateway lives
              */
-            InterfaceSettings gatewayIntf = networkSettings.findInterfaceSystemDev(gatewayInterfaceSystemName);
+            InterfaceSettings gatewayIntf = UvmContextFactory.context().networkManager().findInterfaceSystemDev(gatewayInterfaceSystemName);
             if (gatewayIntf == null) {
                 logger.warn("Unable to find gatewayIntf " + gatewayInterfaceSystemName);
                 return;

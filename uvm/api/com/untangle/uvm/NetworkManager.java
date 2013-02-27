@@ -5,6 +5,7 @@ package com.untangle.uvm;
 
 import java.net.InetAddress;
 
+import com.untangle.uvm.network.InterfaceSettings;
 import com.untangle.uvm.network.NetworkSettings;
 import com.untangle.uvm.network.NetworkSettingsListener;
 
@@ -22,7 +23,15 @@ public interface NetworkManager
 
     void unregisterListener( NetworkSettingsListener networkListener );
 
+    /* convenience methods */
+
     InetAddress getFirstWanAddress();
 
     InetAddress getInterfaceHttpAddress( int clientIntf );
+
+    InterfaceSettings findInterfaceId( int interfaceId );
+
+    InterfaceSettings findInterfaceSystemDev( String systemDev );
+
+    InterfaceSettings findInterfaceFirstWan( );
 }

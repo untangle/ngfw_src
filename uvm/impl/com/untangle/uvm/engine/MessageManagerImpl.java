@@ -527,16 +527,10 @@ public class MessageManagerImpl implements MessageManager
                     if (matcher.find()) {
                         String iface = matcher.group(1);
                         
-                        NetworkSettings netSettings = UvmContextFactory.context().networkManager().getNetworkSettings();
-                        if (netSettings == null) {
-                            logger.warn("Failed to read network configuration");
+                        InterfaceSettings intfSettings = UvmContextFactory.context().networkManager().findInterfaceSystemDev( iface );
+                        // Restrict to only the WAN interfaces (bug 5616)
+                        if ( intfSettings == null || !intfSettings.getIsWan() )
                             continue;
-                        } else {
-                            InterfaceSettings intfSettings = netSettings.findInterfaceSystemDev( iface );
-                            // Restrict to only the WAN interfaces (bug 5616)
-                            if ( intfSettings == null || !intfSettings.getIsWan() )
-                                continue;
-                        }
 
                         // get stored previous values or initialize them to 0
                         Long rxbytes0 = rxtxBytes0.get("rx"+i);
