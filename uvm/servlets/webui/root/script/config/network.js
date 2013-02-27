@@ -48,7 +48,7 @@ if (!Ung.hasResource["Ung.Network"]) {
         sizeToComponent: null,
         title: i18n._('Edit Interface'),
         reRenderFields: Ext.bind( function() {
-            var configValue = Ext.getCmp('interface_config').getValue();
+            var configTypeValue = Ext.getCmp('interface_configType').getValue();
             var isWan = Ext.getCmp('interface_isWan').getValue();
 
             // hide everything
@@ -83,18 +83,18 @@ if (!Ung.hasResource["Ung.Network"]) {
             Ext.getCmp('interface_dhcp').setVisible(false);
 
             // if config disabled show nothing
-            if ( configValue == "disabled") {
+            if ( configTypeValue == "DISABLED") {
                 return;
             }
 
             // if config bridged just show the one field 
-            if ( configValue == "bridged") {
+            if ( configTypeValue == "BRIDGED") {
                 Ext.getCmp('interface_bridgedTo').setVisible(true);
                 return;
             }
 
             // if config addressed show necessary options
-            if ( configValue == "addressed") {
+            if ( configTypeValue == "ADDRESSED") {
                 Ext.getCmp('interface_isWan').setVisible(true);
                 Ext.getCmp('interface_v4Config').setVisible(true);
                 Ext.getCmp('interface_v6Config').setVisible(true);
@@ -106,8 +106,8 @@ if (!Ung.hasResource["Ung.Network"]) {
                     Ext.getCmp('interface_v6ConfigType').setVisible(true); //show full config options for WANs
                     Ext.getCmp('interface_v4NatEgressTraffic').setVisible(true); // show NAT egress option on WANs
                 } else {
-                    Ext.getCmp('interface_v4ConfigType').setValue("static"); //don't allow auto/pppoe for non-WAN
-                    Ext.getCmp('interface_v6ConfigType').setValue("static"); //don't allow auto/pppoe for non-WAN
+                    Ext.getCmp('interface_v4ConfigType').setValue("STATIC"); //don't allow auto/pppoe for non-WAN
+                    Ext.getCmp('interface_v6ConfigType').setValue("STATIC"); //don't allow auto/pppoe for non-WAN
                     Ext.getCmp('interface_v4StaticGateway').setVisible(false); // no gateways for non-WAN
                     Ext.getCmp('interface_v6StaticGateway').setVisible(false); // no gateways for non-WAN
                     Ext.getCmp('interface_v4NatIngressTraffic').setVisible(true); // show NAT ingress options on non-WANs
@@ -117,7 +117,7 @@ if (!Ung.hasResource["Ung.Network"]) {
                 // if static show static fields
                 // if auto show override fields (auto is only allowed on WANs)
                 // if pppoe show pppoe fields (pppoe is only allowed on WANs)
-                if ( Ext.getCmp('interface_v4ConfigType').getValue() == "static" ) {
+                if ( Ext.getCmp('interface_v4ConfigType').getValue() == "STATIC" ) {
                     Ext.getCmp('interface_v4StaticAddress').setVisible(true);
                     Ext.getCmp('interface_v4StaticNetmask').setVisible(true);
                     if (isWan) {
@@ -125,13 +125,13 @@ if (!Ung.hasResource["Ung.Network"]) {
                         Ext.getCmp('interface_v4StaticDns1').setVisible(true);
                         Ext.getCmp('interface_v4StaticDns2').setVisible(true);
                     }
-                } else if ( Ext.getCmp('interface_v4ConfigType').getValue() == "auto" ) {
+                } else if ( Ext.getCmp('interface_v4ConfigType').getValue() == "AUTO" ) {
                     Ext.getCmp('interface_v4AutoAddressOverride').setVisible(true);
                     Ext.getCmp('interface_v4AutoNetmaskOverride').setVisible(true);
                     Ext.getCmp('interface_v4AutoGatewayOverride').setVisible(true);
                     Ext.getCmp('interface_v4AutoDns1Override').setVisible(true);
                     Ext.getCmp('interface_v4AutoDns2Override').setVisible(true);
-                } else if ( Ext.getCmp('interface_v4ConfigType').getValue() == "pppoe" ) {
+                } else if ( Ext.getCmp('interface_v4ConfigType').getValue() == "PPPOE" ) {
                     Ext.getCmp('interface_v4PPPoEUsername').setVisible(true);
                     Ext.getCmp('interface_v4PPPoEPassword').setVisible(true);
                     Ext.getCmp('interface_v4PPPoEUsePeerDns').setVisible(true);
@@ -143,7 +143,7 @@ if (!Ung.hasResource["Ung.Network"]) {
 
                 // if static show static fields
                 // if auto show override fields
-                if ( Ext.getCmp('interface_v6ConfigType').getValue() == "static" ) {
+                if ( Ext.getCmp('interface_v6ConfigType').getValue() == "STATIC" ) {
                     Ext.getCmp('interface_v6StaticAddress').setVisible(true);
                     Ext.getCmp('interface_v6StaticPrefixLength').setVisible(true);
                     if (isWan) {
@@ -166,12 +166,12 @@ if (!Ung.hasResource["Ung.Network"]) {
                 width: 300
             }, {
                 xtype: "combo",
-                id: "interface_config",
+                id: "interface_configType",
                 allowBlank: false,
-                dataIndex: "config",
+                dataIndex: "configType",
                 fieldLabel: i18n._("Config Type"),
                 editable: false,
-                store: [["addressed",i18n._('Addressed')], ["bridged",i18n._('Bridged')], ["disabled",i18n._('Disabled')]],
+                store: [["ADDRESSED",i18n._('Addressed')], ["BRIDGED",i18n._('Bridged')], ["DISABLED",i18n._('Disabled')]],
                 valueField: "value",
                 displayField: "displayName",
                 queryMode: 'local',
@@ -211,7 +211,7 @@ if (!Ung.hasResource["Ung.Network"]) {
                     dataIndex: "v4ConfigType",
                     fieldLabel: i18n._("Config Type"),
                     editable: false,
-                    store: [ ["auto",i18n._('Auto (DHCP)')], ["static",i18n._('Static')],  ["pppoe",i18n._('PPPoE')]],
+                    store: [ ["AUTO",i18n._('Auto (DHCP)')], ["STATIC",i18n._('Static')],  ["PPPOE",i18n._('PPPoE')]],
                     valueField: "value",
                     displayField: "displayName",
                     queryMode: 'local',
@@ -375,7 +375,7 @@ if (!Ung.hasResource["Ung.Network"]) {
                     dataIndex: "v6ConfigType",
                     fieldLabel: i18n._("Config Type"),
                     editable: false,
-                    store: [ ["auto",i18n._('Auto (SLAAC/RA)')], ["static",i18n._('Static')] ],
+                    store: [ ["AUTO",i18n._('Auto (SLAAC/RA)')], ["STATIC",i18n._('Static')] ],
                     valueField: "value",
                     displayField: "displayName",
                     queryMode: 'local',
@@ -673,7 +673,7 @@ if (!Ung.hasResource["Ung.Network"]) {
                 }, {
                     name: 'symbolicDev'
                 }, {
-                    name: 'config'
+                    name: 'configType'
                 },{
                     name: 'isWan'
                 }, {
@@ -776,8 +776,8 @@ if (!Ung.hasResource["Ung.Network"]) {
                     width:75
                 }, {
                     header: this.i18n._("Config"),
-                    dataIndex: 'config',
-                    width:75
+                    dataIndex: 'configType',
+                    width:100
                 }, {
                     header: this.i18n._("is WAN"),
                     dataIndex: 'isWan',

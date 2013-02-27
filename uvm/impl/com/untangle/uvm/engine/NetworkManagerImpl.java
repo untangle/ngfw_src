@@ -216,7 +216,7 @@ public class NetworkManagerImpl implements NetworkManager
         /**
          * If this interface is bridged with another, use the addr from the other
          */
-        if (InterfaceSettings.CONFIG_BRIDGED.equals(intfSettings.getV4ConfigType())) {
+        if ( InterfaceSettings.ConfigType.BRIDGED == intfSettings.getConfigType() ) {
             Integer bridgedTo = intfSettings.getBridgedTo();
             intfSettings = netSettings.findInterfaceId( bridgedTo );
 
@@ -300,34 +300,35 @@ public class NetworkManagerImpl implements NetworkManager
 
             if (devices.length > 0) {
                 InterfaceSettings external = new InterfaceSettings();
-                external.setInterfaceId(1);
-                external.setName("Externál");
-                external.setIsWan(true);
-                external.setPhysicalDev(devices[0]);
-                external.setSystemDev(devices[0]);
-                external.setSymbolicDev(devices[0]);
-                external.setConfig("addressed");
-                external.setV4ConfigType("auto");
-                external.setV6ConfigType("auto");
-                interfaces.add(external);
+                external.setInterfaceId( 1 );
+                external.setName( "Externál" );
+                external.setIsWan( true );
+                external.setPhysicalDev( devices[0] );
+                external.setSystemDev( devices[0] );
+                external.setSymbolicDev( devices[0] );
+                external.setConfigType( InterfaceSettings.ConfigType.ADDRESSED );
+                external.setV4ConfigType( InterfaceSettings.V4ConfigType.AUTO );
+                external.setV6ConfigType( InterfaceSettings.V6ConfigType.AUTO );
+                interfaces.add( external );
             }
         
             if (devices.length > 1) {
                 InterfaceSettings internal = new InterfaceSettings();
-                internal.setInterfaceId(2);
-                internal.setName("Internál");
-                internal.setPhysicalDev(devices[1]);
-                internal.setSystemDev(devices[1]);
-                internal.setSymbolicDev(devices[1]);
-                internal.setConfig("addressed");
-                internal.setV4ConfigType("static");
-                internal.setV4StaticAddress(InetAddress.getByName("192.168.2.1"));
-                internal.setV4StaticNetmask(InetAddress.getByName("255.255.255.0"));
-                internal.setIsWan(false);
-                internal.setV6ConfigType("static");
-                internal.setV6StaticAddress(InetAddress.getByName("2001:db8:85a3:0:0:8a2e:370:7334"));
-                internal.setV6StaticPrefixLength(64);
-                internal.setBridgedTo(1);
+                internal.setInterfaceId( 2 );
+                internal.setName( "Internál" );
+                internal.setPhysicalDev( devices[1] );
+                internal.setSystemDev( devices[1] );
+                internal.setSymbolicDev( devices[1] );
+                internal.setConfigType( InterfaceSettings.ConfigType.ADDRESSED );
+                internal.setV4ConfigType( InterfaceSettings.V4ConfigType.STATIC );
+                internal.setV4StaticAddress( InetAddress.getByName("192.168.2.1") );
+                internal.setV4StaticNetmask( InetAddress.getByName("255.255.255.0") );
+                internal.setIsWan( false );
+                // FIXME whta to set IPv6 to?
+                internal.setV6ConfigType( InterfaceSettings.V6ConfigType.STATIC );
+                internal.setV6StaticAddress( InetAddress.getByName("2001:db8:85a3:0:0:8a2e:370:7334") );
+                internal.setV6StaticPrefixLength( 64 );
+                internal.setBridgedTo( 1 );
                 interfaces.add(internal);
             }
 
@@ -344,7 +345,7 @@ public class NetworkManagerImpl implements NetworkManager
                 intf.setPhysicalDev(devices[i]);
                 intf.setSystemDev(devices[i]);
                 intf.setSymbolicDev(devices[i]);
-                intf.setConfig("disabled");
+                intf.setConfigType( InterfaceSettings.ConfigType.DISABLED );
                 interfaces.add( intf );
             }
 
@@ -410,7 +411,7 @@ public class NetworkManagerImpl implements NetworkManager
          */
         int pppCount = 0;
         for ( InterfaceSettings intf : networkSettings.getInterfaces() ) {
-            if ( InterfaceSettings.V4CONFIGTYPE_PPPOE.equals(intf.getV4ConfigType()) ) {
+            if ( InterfaceSettings.V4ConfigType.PPPOE.equals( intf.getV4ConfigType() ) ) {
                 //String ethNum = intf.getPhysicalDev().replaceAll( "[^\\d]", "" ); /* remove all alpha characters */
                 //intf.setSystemDev( "ppp" + ethNum );
                 intf.setSystemDev("ppp" + pppCount);
@@ -423,7 +424,7 @@ public class NetworkManagerImpl implements NetworkManager
          */
         for ( InterfaceSettings intf : networkSettings.getInterfaces() ) {
             for ( InterfaceSettings intf2 : networkSettings.getInterfaces() ) {
-                if ( InterfaceSettings.CONFIG_BRIDGED.equals( intf2.getConfig() ) &&
+                if ( InterfaceSettings.ConfigType.BRIDGED.equals( intf2.getConfigType() ) &&
                      intf2.getBridgedTo() != null &&
                      intf2.getBridgedTo().equals( intf.getInterfaceId() ) ) {
                         /* found an interface bridged to intf */

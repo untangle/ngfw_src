@@ -31,17 +31,13 @@ public class InterfaceSettings implements Serializable, JSONString
 
     private boolean isWan = false; /* is a WAN interface? */
 
-    public  final static String CONFIG_ADDRESSED = "addressed";
-    public  final static String CONFIG_BRIDGED   = "bridged";
-    public  final static String CONFIG_DISABLED  = "disabled";
-    private String  config; /* config type: addressed, bridged, disabled */
+    public static enum ConfigType { ADDRESSED, BRIDGED, DISABLED };
+    private ConfigType configType = ConfigType.DISABLED; /* config type */
 
     private Integer bridgedTo; /* device to bridge to in "bridged" case */
     
-    public  final static String V4CONFIGTYPE_STATIC = "static";
-    public  final static String V4CONFIGTYPE_AUTO   = "auto";
-    public  final static String V4CONFIGTYPE_PPPOE  = "pppoe";
-    private String v4ConfigType; /* config type: static, auto, pppoe */
+    public static enum V4ConfigType { STATIC, AUTO, PPPOE };
+    private V4ConfigType v4ConfigType = V4ConfigType.AUTO; /* IPv4 config type */
     
     private InetAddress v4StaticAddress; /* the address  of this interface if configured static, or dhcp override */ 
     private InetAddress v4StaticNetmask; /* the netmask  of this interface if configured static, or dhcp override */
@@ -63,9 +59,8 @@ public class InterfaceSettings implements Serializable, JSONString
     private Boolean     v4NatEgressTraffic;
     private Boolean     v4NatIngressTraffic;
     
-    public  final static String V6CONFIGTYPE_STATIC = "static";
-    public  final static String V6CONFIGTYPE_AUTO   = "auto";
-    private String v6ConfigType; /* config type: static, auto */
+    public static enum V6ConfigType { STATIC, AUTO };
+    private V6ConfigType v6ConfigType = V6ConfigType.AUTO; /* IPv6 config type */
     
     private InetAddress v6StaticAddress; /* the address  of this interface if configured static, or dhcp override */ 
     private Integer     v6StaticPrefixLength; /* the netmask  of this interface if configured static, or dhcp override */
@@ -111,14 +106,14 @@ public class InterfaceSettings implements Serializable, JSONString
     public boolean getIsWan( ) { return this.isWan; }
     public void setIsWan( boolean newValue ) { this.isWan = newValue; }
 
-    public String getConfig( ) { return this.config; }
-    public void setConfig( String newValue ) { this.config = newValue; }
+    public ConfigType getConfigType( ) { return this.configType; }
+    public void setConfigType( ConfigType newValue ) { this.configType = newValue; }
     
     public Integer getBridgedTo( ) { return this.bridgedTo; }
     public void setBridgedTo( Integer newValue ) { this.bridgedTo = newValue; }
     
-    public String getV4ConfigType( ) { return this.v4ConfigType; }
-    public void setV4ConfigType( String newValue ) { this.v4ConfigType = newValue; }
+    public V4ConfigType getV4ConfigType( ) { return this.v4ConfigType; }
+    public void setV4ConfigType( V4ConfigType newValue ) { this.v4ConfigType = newValue; }
 
     public InetAddress getV4StaticAddress( ) { return this.v4StaticAddress; }
     public void setV4StaticAddress( InetAddress newValue ) { this.v4StaticAddress = newValue; }
@@ -171,8 +166,8 @@ public class InterfaceSettings implements Serializable, JSONString
     public Boolean getV4NatIngressTraffic( ) { return this.v4NatIngressTraffic; }
     public void setV4NatIngressTraffic( Boolean newValue ) { this.v4NatIngressTraffic = newValue; }
     
-    public String getV6ConfigType( ) { return this.v6ConfigType; }
-    public void setV6ConfigType( String newValue ) { this.v6ConfigType = newValue; }
+    public V6ConfigType getV6ConfigType( ) { return this.v6ConfigType; }
+    public void setV6ConfigType( V6ConfigType newValue ) { this.v6ConfigType = newValue; }
 
     public InetAddress getV6StaticAddress( ) { return this.v6StaticAddress; }
     public void setV6StaticAddress( InetAddress newValue ) { this.v6StaticAddress = newValue; }
@@ -230,12 +225,12 @@ public class InterfaceSettings implements Serializable, JSONString
 
     public boolean getDisabled()
     {
-        return CONFIG_DISABLED.equals( getConfig() );
+        return getConfigType() == ConfigType.DISABLED;
     }
 
     public boolean getBridged()
     {
-        return CONFIG_BRIDGED.equals( getConfig() );
+        return getConfigType() == ConfigType.BRIDGED;
     }
     
     /** 
@@ -247,7 +242,8 @@ public class InterfaceSettings implements Serializable, JSONString
         if ( getDisabled() | getBridged() )
             return null;
 
-        if ( V4CONFIGTYPE_STATIC.equals( getV4ConfigType() ) )
+        
+        if ( getV4ConfigType() == V4ConfigType.STATIC )
             return getV4StaticAddress();
 
         logger.error("FIXME: DHCP, PPPOE getStatusV4Address");

@@ -282,7 +282,7 @@ public class AlertManagerImpl implements AlertManager
         NetworkSettings networkSettings = UvmContextFactory.context().networkManager().getNetworkSettings();
         
         for (InterfaceSettings intf : networkSettings.getInterfaces()) {
-            if (!InterfaceSettings.CONFIG_BRIDGED.equals(intf.getV4ConfigType()))
+            if (!InterfaceSettings.ConfigType.BRIDGED.equals( intf.getConfigType() ))
                 continue;
 
             logger.debug("testBridgeBackwards: Checking Bridge: " + intf.getSystemDev());
