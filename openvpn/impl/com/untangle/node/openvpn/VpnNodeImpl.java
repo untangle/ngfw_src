@@ -31,7 +31,7 @@ import com.untangle.uvm.vnet.Fitting;
 import com.untangle.uvm.vnet.PipeSpec;
 import com.untangle.uvm.vnet.SoloPipeSpec;
 
-public class VpnNodeImpl extends NodeBase implements VpnNode, com.untangle.uvm.node.OpenVpn
+public class VpnNodeImpl extends NodeBase implements VpnNode
 {
     private static final String STAT_PASS = "pass";
     private static final String STAT_CONNECT = "connect";
