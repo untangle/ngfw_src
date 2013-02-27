@@ -305,6 +305,7 @@ Ung.Util = {
         if(depth==null) {
             depth=0;
         } else if(depth>30) {
+            console.log("Ung.Util.isDirty depth>30");
             return false;
         }
         if(item==null) {
@@ -314,17 +315,12 @@ Ung.Util = {
             return item.isDirty();
         }
         if(item.items!=null) {
-            var isDirty=false;
-            item.items.each(function(item) {
-                if(Ung.Util.isDirty(item, depth++)) {
-                    isDirty=true;
-                    return false;
-                } else {
-                    return true;
+            for (var i = 0; i < item.items.length; i++) {
+                var subItem = Ext.isFunction(item.items.get)?item.items.get(i):item.items[i];
+                if(Ung.Util.isDirty(subItem, depth+1)) {
+                    return true;   
                 }
-                
-            });
-            return isDirty;
+            }
         }
         return false;
     },
@@ -332,6 +328,7 @@ Ung.Util = {
         if(depth==null) {
             depth=0;
         } else if(depth>30) {
+            console.log("Ung.Util.clearDirty depth>30");
             return;
         }
         if(item==null) {
@@ -347,10 +344,10 @@ Ung.Util = {
             return;
         }
         if(item.items!=null) {
-            item.items.each(function(item) {
-                Ung.Util.clearDirty(item, depth++);
-                return true;
-            });
+            for (var i = 0; i < item.items.length; i++) {
+                var subItem = Ext.isFunction(item.items.get)?item.items.get(i):item.items[i];
+                Ung.Util.clearDirty(subItem, depth+1);
+            }
         }
     },
     goToStartPage: function () {
@@ -4014,7 +4011,6 @@ Ext.define('Ung.RowEditorWindow', {
             },
             items: this.inputLines
         });
-        this.inputLines=this.items.items.getRange(); 
         this.callParent(arguments);
     },
     show: function() {
@@ -4032,84 +4028,76 @@ Ext.define('Ung.RowEditorWindow', {
         }
         this.setPosition(objPosition);
     },
-    // populate is called whent a record is edited, tot populate the edit window
-    // This function should be deprecated for populateTree.
-    populate: function(record, addMode) {
+    populate: function(record,addMode) {
         this.addMode=addMode;
         this.record = record;
         this.initialRecordData = Ext.encode(record.data);
-        for (var i = 0; i < this.inputLines.length; i++) {
-            var inputLine = this.inputLines[i];
-            if(inputLine.dataIndex!=null) {
-                inputLine.suspendEvents();
-                inputLine.setValue(record.get(inputLine.dataIndex));
-                inputLine.resumeEvents();
-            }
-        }
+        this.populateRecursive(this.items, record, 0);
+        Ung.Util.clearDirty(this.items);
     },
-    populateTree: function(record,addMode) {
-        this.addMode=addMode;
-        this.record = record;
-        this.initialRecordData = Ext.encode(record.data);
-
-        this.populateChild(this, record);
-    },
-    populateChild: function(component,record) {
-        if ( component == null ) {
+    populateRecursive: function(component, record, depth) {
+        if (component == null) {
             return;
         }
-
-        if (component.dataIndex != null && component.setValue ) {
+        if(depth>30) {
+            console.log("Ung.RowEditorWindow.populateRecursive depth>30");
+            return;
+        }
+        if (component.dataIndex != null) {
             component.suspendEvents();
             component.setValue(record.get(component.dataIndex));
             component.resumeEvents();
+            return;
         }
-
-        var items = null;
-        if (component.inputLines) {
-            items = component.inputLines;
-        } else {
-            items = component.items;
+        if (component.items) {
+            for (var i = 0; i < component.items.length; i++) {
+                var item = Ext.isFunction(component.items.get)?component.items.get(i):component.items[i];
+                this.populateRecursive( item, record, depth+1);
+            }
         }
-
-        if ( items ) {
-            for (var i = 0; i < items.length; i++) {
-                var item = null;
-                if ( items.get != null ) {
-                    item = items.get(i);
+    },
+    updateAction: function() {
+        if (!this.isFormValid()) {
+            return;
+        }
+        if (this.record !== null) {
+            this.updateActionRecursive(this.items, this.record, 0);
+            if(this.addMode) {
+                if (this.grid.addAtTop) {
+                    this.grid.getStore().insert(0, [this.record]);
                 } else {
-                    item = items[i];
+                    this.grid.getStore().add([this.record]);
                 }
-                this.populateChild( item, record);
+                this.grid.updateChangedData(this.record, "added");
+            }
+        }
+        this.hide();        
+    },
+    updateActionRecursive: function(component, record, depth) {
+        if (component == null) {
+            return;
+        }
+        if(depth>30) {
+            console.log("Ung.RowEditorWindow.updateActionRecursive depth>30");
+            return;
+        }
+        if (component.dataIndex != null) {
+            this.record.set(component.dataIndex, component.getValue());
+            return;
+        }
+        if (component.items) {
+            for (var i = 0; i < component.items.length; i++) {
+                var item = Ext.isFunction(component.items.get)?component.items.get(i):component.items[i];
+                this.updateActionRecursive( item, record, depth+1);
             }
         }
     },
     // check if the form is valid;
     // this is the default functionality which can be overwritten
     isFormValid: function() {
-        var validResult = true;
-        for (var i = 0; i < this.inputLines.length; i++) {
-            var item = null;
-            if ( this.inputLines.get != null ) {
-                item = this.inputLines.get(i);
-            } else {
-                item = this.inputLines[i];
-            }
-            if ( item == null ) {
-                continue;
-            }
-
-            if ( item.isValid == null ) {
-                continue;
-            }
-            
-            if (!item.isValid()) {
-                validResult=false;
-                break;
-            }
-        }
+        var validResult = this.isFormValidRecursive(this, 0);
         if(validResult==true && this.validate!=null) {
-            validResult = this.validate(this.inputLines);
+            validResult = this.validate(this.items);
         }
         if(validResult!=true) {
             var errMsg = i18n._("The form is not valid!");
@@ -4120,93 +4108,31 @@ Ext.define('Ung.RowEditorWindow', {
         }
         return (validResult == true);
     },
-    // updateAction is called to update the record after the edit
-    updateAction: function() {
-        if (!this.isFormValid()) {
-            return;
+    isFormValidRecursive: function(component, depth) {
+        if (component == null) {
+            return true;
         }
-        
-        if (this.record !== null) {
-            if (this.inputLines) {
-                for (var i = 0; i < this.inputLines.length; i++) {
-                    var inputLine = this.inputLines[i];
-                    if(inputLine.dataIndex!=null) {
-                        this.record.set(inputLine.dataIndex, inputLine.getValue());
-                    }
+        if(depth>30) {
+            console.log("Ung.RowEditorWindow.isFormValidRecursive depth>30");
+            return true;
+        }
+        if (component.dataIndex != null) {
+            return Ext.isFunction(component.isValid)?component.isValid():true;
+        }
+        if (component.items) {
+            for (var i = 0; i < component.items.length; i++) {
+                var item = Ext.isFunction(component.items.get)?component.items.get(i):component.items[i];
+                if(!this.isFormValidRecursive( item, depth+1)) {
+                    return false;
                 }
             }
-            if(this.addMode) {
-                if (this.grid.addAtTop) {
-                    this.grid.getStore().insert(0, [this.record]);
-                } else {
-                    this.grid.getStore().add([this.record]);
-                }
-                this.grid.updateChangedData(this.record, "added");
-            }
         }
-        this.hide();
+        return true;
     },
-    updateActionTree: function() {
-        if (!this.isFormValid()) {
-            return;
-        }
-        if (this.record !== null) {
-            this.updateActionChild(this, this.record);
+    
 
-            if(this.addMode) {
-                if (this.grid.addAtTop) {
-                    this.grid.getStore().insert(0, [this.record]);
-                } else {
-                    this.grid.getStore().add([this.record]);
-                }
-                this.grid.updateChangedData(this.record, "added");
-            }
-        }
-
-        this.hide();        
-    },
-    updateActionChild: function( component, record ) {
-        if ( component == null ) {
-            return;
-        }
-        
-        if (component.dataIndex != null && component.getValue ) {
-            this.record.set(component.dataIndex, component.getValue());
-        }
-
-        var items = null;
-        if (component.inputLines) {
-            items = component.inputLines;
-        } else {
-            items = component.items;
-        }
-
-        if ( items ) {
-            for (var i = 0; i < items.length; i++) {
-                var item = null;
-                if ( items.get != null ) {
-                    item = items.get(i);
-                } else {
-                    item = items[i];
-                }
-                this.updateActionChild( item, record);
-            }
-        }
-    },
     isDirty: function() {
-        if (this.record !== null) {
-            if (this.inputLines) {
-                for (var i = 0; i < this.inputLines.length; i++) {
-                    var inputLine = this.inputLines[i];
-                    if(inputLine.dataIndex!=null) {
-                        if (this.record.get(inputLine.dataIndex) != inputLine.getValue()) {
-                                return true;
-                        }
-                    }
-                }
-            }
-        }
-        return false;
+        return Ung.Util.isDirty(this.items);
     },
     closeWindow: function() {
         this.record.data = Ext.decode(this.initialRecordData);
