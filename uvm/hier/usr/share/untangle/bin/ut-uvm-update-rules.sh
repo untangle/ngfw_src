@@ -31,7 +31,7 @@ iptables_debug_onerror()
 }
 
 if [ -z "${IPTABLES}" ] ; then
-    IPTABLES=iptables_debug
+    IPTABLES=iptables
 fi
 
 ## Function to determine the pid of the process that owns the queue

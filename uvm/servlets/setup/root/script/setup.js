@@ -513,9 +513,9 @@ Ext.define('Ung.SetupWizard.Interfaces', {
 Ext.define('Ung.SetupWizard.Internet', {
     constructor: function( config ) {
         this.v4ConfigTypes = [];
-        this.v4ConfigTypes.push( [ "auto",   i18n._( "Auto (DHCP)" ) ] );
-        this.v4ConfigTypes.push( [ "static", i18n._( "Static" ) ] );
-        this.v4ConfigTypes.push( [ "pppoe",  i18n._( "PPPoE" ) ] );
+        this.v4ConfigTypes.push( [ "AUTO",   i18n._( "Auto (DHCP)" ) ] );
+        this.v4ConfigTypes.push( [ "STATIC", i18n._( "Static" ) ] );
+        this.v4ConfigTypes.push( [ "PPPOE",  i18n._( "PPPoE" ) ] );
 
         this.cards = [];
 
@@ -535,19 +535,19 @@ Ext.define('Ung.SetupWizard.Internet', {
                 },
                 items: [{
                     name: "ip",
-                    fieldLabel: i18n._( "IP Address" )
+                    fieldLabel: i18n._( "Current IP Address" )
                 }, {
                     name: "netmask",
-                    fieldLabel: i18n._( "Netmask" )
+                    fieldLabel: i18n._( "Current Netmask" )
                 }, {
                     name: "gateway",
-                    fieldLabel: i18n._( "Gateway" )
+                    fieldLabel: i18n._( "Current Gateway" )
                 }, {
                     name: "dns1",
-                    fieldLabel: i18n._( "Primary DNS" )
+                    fieldLabel: i18n._( "Current Primary DNS" )
                 }, {
                     name: "dns2",
-                    fieldLabel: i18n._( "Secondary DNS" )
+                    fieldLabel: i18n._( "Current Secondary DNS" )
                 }]
             }],
             buttonAlign: 'center',
@@ -787,7 +787,7 @@ Ext.define('Ung.SetupWizard.Internet', {
         var wanSettings = this.getFirstWanSettings( Ung.SetupWizard.CurrentValues.networkSettings );
         this.clearInterfaceSettings( wanSettings );
 
-        wanSettings.v4ConfigType = "auto";
+        wanSettings.v4ConfigType = "AUTO";
         wanSettings.v4NatEgressTraffic = true;
         
         this.setFirstWanSettings( Ung.SetupWizard.CurrentValues.networkSettings, wanSettings );
@@ -804,7 +804,7 @@ Ext.define('Ung.SetupWizard.Internet', {
         var wanSettings = this.getFirstWanSettings( Ung.SetupWizard.CurrentValues.networkSettings );
         this.clearInterfaceSettings( wanSettings );
 
-        wanSettings.v4ConfigType = "static";
+        wanSettings.v4ConfigType = "STATIC";
         wanSettings.v4NatEgressTraffic = true;
         wanSettings.v4StaticAddress = this.staticPanel.query('textfield[name="ip"]')[0].getValue();
         wanSettings.v4StaticNetmask = this.staticPanel.query('textfield[name="netmask"]')[0].getValue();
@@ -970,12 +970,15 @@ Ext.define('Ung.SetupWizard.Internet', {
 
     getFirstWanSettings: function( networkSettings ) {
         for ( var c = 0 ; c < networkSettings['interfaces']['list'].length ; c++ ) {
+            if (networkSettings['interfaces']['list'][c]['configType'] == "DISABLED")
+                continue;
+            
             if ( networkSettings['interfaces']['list'][c]['isWan'] )
                 return networkSettings['interfaces']['list'][c];
         }
         return null;
     },
-
+    
     setFirstWanSettings: function( networkSettings, firstWanSettings ) {
         for ( var c = 0 ; c < networkSettings['interfaces']['list'].length ; c++ ) {
             if ( firstWanSettings['interfaceId'] == networkSettings['interfaces']['list'][c]['interfaceId'] )
@@ -988,49 +991,40 @@ Ext.define('Ung.SetupWizard.Internet', {
     refreshNetworkDisplay: function() {
         var c = 0;
 
-        Ung.SetupWizard.CurrentValues.networkSettings = rpc.networkManager.getNetworkSettings();
-        var networkSettings = Ung.SetupWizard.CurrentValues.networkSettings;
+        var networkSettings = rpc.networkManager.getNetworkSettings(); // XXX async?
+        Ung.SetupWizard.CurrentValues.networkSettings = networkSettings;
+
+        var firstWan = this.getFirstWanSettings( networkSettings );
+        var firstWanStatus = rpc.networkManager.getInterfaceStatus( firstWan.interfaceId ); // XXX async?
+
+        
         if ( networkSettings['interfaces'] == null && networkSettings['interfaces']['list'] == null ) {
             console.error("Missing interface information.");
             return;
         }
 
-        // Find first WAN
-        var firstWan = this.getFirstWanSettings( networkSettings );
-        if ( firstWan == null ) {
-            console.error("Missing first WAN.");
-            return;
-        }
-        
-        Ung.SetupWizard.CurrentValues.wanSettings = firstWan;
-        var wanSettings = Ung.SetupWizard.CurrentValues.wanSettings;
-        
-        var isConfigured = (wanSettings.config != null && wanSettings.v4ConfigType != null);
+        var isConfigured = (firstWan.configType != null && firstWan.v4ConfigType != null);
 
         if (isConfigured) {
             for ( c = 0; c < this.v4ConfigTypes.length ; c++ ) {
-                if (this.v4ConfigTypes[c][0] == wanSettings.v4ConfigType)
+                if (this.v4ConfigTypes[c][0] == firstWan.v4ConfigType)
                     this.cardPanel.layout.setActiveItem( c );
             }
-
-            this.updateValue( this.card.panel.query('combo[name="v4ConfigType"]')[0], wanSettings.v4ConfigType);
+            this.updateValue( this.card.panel.query('combo[name="v4ConfigType"]')[0], firstWan.v4ConfigType);
             
             for ( c = 0; c < this.cards.length ; c++ ) {
                 var card = this.cards[c];
-                if (wanSettings.v4ConfigType == "static") {
-                    this.updateValue( card.query('textfield[name="ip"]')[0] , wanSettings.v4StaticAddress );
-                    this.updateValue( card.query('textfield[name="netmask"]')[0] , wanSettings.v4StaticNetmask );
-                    this.updateValue( card.query('textfield[name="gateway"]')[0], wanSettings.v4StaticGateway );
-                    this.updateValue( card.query('textfield[name="dns1"]')[0], wanSettings.v4StaticDns1 );
-                    this.updateValue( card.query('textfield[name="dns2"]')[0], wanSettings.v4StaticDns2 );
-                }
+                this.updateValue( card.query('textfield[name="ip"]')[0], firstWanStatus.v4Address );
+                this.updateValue( card.query('textfield[name="netmask"]')[0], firstWanStatus.v4Netmask );
+                this.updateValue( card.query('textfield[name="gateway"]')[0], firstWanStatus.v4Gateway );
+                this.updateValue( card.query('textfield[name="dns1"]')[0], firstWanStatus.v4Dns1 );
+                this.updateValue( card.query('textfield[name="dns2"]')[0], firstWanStatus.v4Dns2 );
             }
-        } else {
-            // not configured
+        } else { // not configured
             for ( c = 0; c < this.cards.length ; c++ ) {
                 var card = this.cards[c];
-                this.updateValue( card.query('textfield[name="ip"]')[0] , "" );
-                this.updateValue( card.query('textfield[name="netmask"]')[0] , "" );
+                this.updateValue( card.query('textfield[name="ip"]')[0], "" );
+                this.updateValue( card.query('textfield[name="netmask"]')[0], "" );
                 this.updateValue( card.query('textfield[name="gateway"]')[0], "" );
                 this.updateValue( card.query('textfield[name="dns1"]')[0], "" );
                 this.updateValue( card.query('textfield[name="dns2"]')[0], "" );
@@ -1125,7 +1119,7 @@ Ext.define('Ung.SetupWizard.InternalNetwork', {
                 items: [{
                     xtype: 'radio',
                     name: 'bridgeOrRouter',
-                    inputValue: 'bridged',
+                    inputValue: 'BRIDGED',
                     boxLabel: i18n._('Transparent Bridge'),
                     cls: 'large-option',
                     hideLabel: 'true',
@@ -1171,11 +1165,11 @@ Ext.define('Ung.SetupWizard.InternalNetwork', {
                 if ( intfs[c]['isWan'] != null && intfs[c]['isWan'] )
                     continue;
                 
-                if ( intfs[c].config == "bridged" ) {
+                if ( intfs[c].configType == "BRIDGED" ) {
                     this.panel.query('radio[name="bridgeOrRouter"]')[0].setValue(false);
                     this.panel.query('radio[name="bridgeOrRouter"]')[1].setValue(true);
                 }
-                else { /* addressed or disabled */
+                else { /* ADDRESSED or DISABLED */
                     this.panel.query('radio[name="bridgeOrRouter"]')[0].setValue(true);
                     this.panel.query('radio[name="bridgeOrRouter"]')[1].setValue(false);
                 }
@@ -1248,8 +1242,8 @@ Ext.define('Ung.SetupWizard.InternalNetwork', {
         var delegate = Ext.bind(this.complete, this, [ handler ], true );
         var firstNonWan = this.getFirstNonWanSettings( Ung.SetupWizard.CurrentValues.networkSettings );
         
-        if ( value == 'bridged' ) {
-            firstNonWan['config'] = 'bridged';
+        if ( value == 'BRIDGED' ) {
+            firstNonWan['config'] = 'BRIDGED';
             this.setFirstNonWanSettings( Ung.SetupWizard.CurrentValues.networkSettings, firstNonWan );
 
             rpc.networkManager.setNetworkSettings( delegate, Ung.SetupWizard.CurrentValues.networkSettings ); 
@@ -1257,8 +1251,8 @@ Ext.define('Ung.SetupWizard.InternalNetwork', {
             var network = this.panel.query('textfield[name="network"]')[0].getValue();
             var netmask = this.panel.query('combo[name="netmask"]')[0].getRawValue();
             var enableDhcpServer = this.panel.query('checkbox[name="enableDhcpServer"]')[0].getValue();
-            firstNonWan['config'] = 'addressed';
-            firstNonWan['v4ConfigType'] = 'static';
+            firstNonWan['configType'] = 'ADDRESSED';
+            firstNonWan['v4ConfigType'] = 'STATIC';
             firstNonWan['v4StaticAddress'] = network;
             firstNonWan['v4StaticNetmask'] = netmask;
             firstNonWan['dhcpEnabled'] = enableDhcpServer;
@@ -1483,10 +1477,10 @@ Ung.Setup = {
             renderTo: "container"
         });
 
-        if ( false ) {
+        if ( true ) {
             // DEBUGGING CODE (Change to true to dynamically go to any page you want on load.)
             var debugHandler = Ext.bind(function() {
-                this.wizard.goToPage( 4 );
+                this.wizard.goToPage( 3 );
             }, this );
             var ss = Ext.create('Ung.SetupWizard.SettingsSaver', null, debugHandler );
 
