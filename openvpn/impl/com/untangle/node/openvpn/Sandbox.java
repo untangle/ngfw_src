@@ -148,29 +148,27 @@ public class Sandbox
      * network settings. */
     void autoDetectAddressPool() throws Exception
     {
-        NetworkSettings networkSettings = UvmContextFactory.context().networkManager().getNetworkSettings();
-
         /* Load the list of networks. */
         List<AddressRange> currentNetwork = new LinkedList<AddressRange>();
-        for (InterfaceSettings intf : networkSettings.getInterfaces()) {
+        for (InterfaceSettings intf : UvmContextFactory.context().networkManager().getEnabledInterfaces()) {
             IPMaskedAddress net;
             AddressRange range;
 
             /* add the primary */
-            InetAddress address = intf.getV4StaticAddress();
-            InetAddress netmask  = intf.getV4StaticAddress();
+            InetAddress address = UvmContextFactory.context().networkManager().getInterfaceStatus( intf.getInterfaceId() ).getV4Address();
+            InetAddress netmask = UvmContextFactory.context().networkManager().getInterfaceStatus( intf.getInterfaceId() ).getV4Netmask();
             if ( address != null && netmask != null ) {
                 range = AddressRange.makeNetwork( address, netmask );
                 currentNetwork.add(range);
             }
 
             // FIXME aliases
-            //             if (intf.getAliases() != null) {
-            //                 for ( IPMaskedAddress alias : intf.getAliases() ) {
-            //                     range = AddressRange.makeNetwork( alias.getNetwork().getAddr(), alias.getNetmask().getAddr() );
-            //                     currentNetwork.add(range);
-            //                 }
-            //             }
+            // if (intf.getAliases() != null) {
+            //     for ( IPMaskedAddress alias : intf.getAliases() ) {
+            //         range = AddressRange.makeNetwork( alias.getNetwork().getAddr(), alias.getNetmask().getAddr() );
+            //         currentNetwork.add(range);
+            //     }
+            // }
         }
 
         VpnGroup group = new VpnGroup();
@@ -204,11 +202,9 @@ public class Sandbox
     void autoDetectExportList() throws Exception
     {
         /* Load the list of networks. */
-        NetworkSettings networkSettings = UvmContextFactory.context().networkManager().getNetworkSettings();
-
         List<SiteNetwork> networkList = new LinkedList<SiteNetwork>();
 
-        for (InterfaceSettings intf : networkSettings.getInterfaces()) {
+        for ( InterfaceSettings intf : UvmContextFactory.context().networkManager().getEnabledInterfaces() ) {
             if (! intf.getIsWan() ) {
                 InetAddress address = intf.getV4StaticAddress();
                 InetAddress netmask = intf.getV4StaticNetmask();

@@ -4,6 +4,7 @@
 package com.untangle.uvm.engine;
 
 import java.util.LinkedList;
+import java.util.List;
 import java.net.InetAddress;
 
 import org.json.JSONArray;
@@ -17,6 +18,7 @@ import com.untangle.uvm.ExecManagerResult;
 import com.untangle.uvm.network.NetworkSettings;
 import com.untangle.uvm.network.NetworkSettingsListener;
 import com.untangle.uvm.network.InterfaceSettings;
+import com.untangle.uvm.network.InterfaceStatus;
 import com.untangle.uvm.network.BypassRule;
 import com.untangle.uvm.network.StaticRoute;
 import com.untangle.uvm.network.NatRule;
@@ -47,8 +49,8 @@ public class NetworkManagerImpl implements NetworkManager
 
         try {
             readSettings = settingsManager.load( NetworkSettings.class, this.settingsFilename );
-        } catch (SettingsManager.SettingsException e) {
-            logger.warn("Failed to load settings:",e);
+        } catch ( SettingsManager.SettingsException e ) {
+            logger.warn( "Failed to load settings:", e );
         }
 
         /**
@@ -66,10 +68,10 @@ public class NetworkManagerImpl implements NetworkManager
                     readSettings = settingsManager.load( NetworkSettings.class, "/usr/share/untangle/settings/untangle-vm/network" );
                     
                 if (readSettings != null)
-                    settingsManager.save(NetworkSettings.class, this.settingsFilename, readSettings);
+                    settingsManager.save( NetworkSettings.class, this.settingsFilename, readSettings );
                     
-            } catch (SettingsManager.SettingsException e) {
-                logger.warn("Failed to load settings:",e);
+            } catch ( SettingsManager.SettingsException e ) {
+                logger.warn( "Failed to load settings:", e );
             }
         }
         
@@ -77,15 +79,16 @@ public class NetworkManagerImpl implements NetworkManager
          * If there are still no settings, just initialize
          */
         if (readSettings == null) {
-            logger.warn("No settings found - Initializing new settings.");
-            this.setNetworkSettings(defaultSettings());
+            logger.warn( "No settings found - Initializing new settings." );
+            this.setNetworkSettings( defaultSettings() );
         }
         else {
             this.networkSettings = readSettings;
-            logger.debug("Loading Settings: " + this.networkSettings.toJSONString());
+            logger.debug( "Loading Settings: " + this.networkSettings.toJSONString() );
         }
 
-        logger.info("Initialized NetworkManager");
+        logger.info( "Initialized NetworkManager" );
+        this.getInterfaceStatus(1);
     }
     
     /**
@@ -170,6 +173,21 @@ public class NetworkManagerImpl implements NetworkManager
         this.networkListeners.remove( networkListener );
     }
 
+    public List<InterfaceSettings> getEnabledInterfaces()
+    {
+        LinkedList<InterfaceSettings> newList = new LinkedList<InterfaceSettings>();
+
+        if ( this.networkSettings == null || this.networkSettings.getInterfaces() == null )
+            return newList;
+        
+        for ( InterfaceSettings intf: this.networkSettings.getInterfaces() ) {
+            if ( ! intf.getDisabled() )
+                newList.add(intf);
+        }
+
+        return newList;
+    }
+
     /**
      * Get the IP address of the first WAN interface
      */
@@ -181,8 +199,7 @@ public class NetworkManagerImpl implements NetworkManager
         
         for ( InterfaceSettings intfSettings : this.networkSettings.getInterfaces() ) {
             if ( !intfSettings.getDisabled() && intfSettings.getIsWan() ) {
-                // FIXME handle DHCP and PPPoE
-                return intfSettings.getV4StaticAddress();
+                return getInterfaceStatus( intfSettings.getInterfaceId() ).getV4Address();
             }
         }
 
@@ -242,16 +259,29 @@ public class NetworkManagerImpl implements NetworkManager
      * If HTTP is not reachable on this interface (like all WANs), it returns null.
      * If any error occurs it returns null.
      */
-    public InetAddress getInterfaceHttpAddress( int clientIntf )
+    public InetAddress getInterfaceHttpAddress( int clientIntfId )
     {
+        int intfId = clientIntfId;
+        
         if ( this.networkSettings == null ) {
             logger.warn("Missing network configuration");
             return null;
         }
 
-        InterfaceSettings intfSettings = findInterfaceId( clientIntf );
+        /**
+         * FIXME: OpenVPN
+         */
+        // if ( intfId == 250) {
+            // FIXME how to handle OpenVPN?
+            //             OpenVpn openvpn = (OpenVpn) UvmContextFactory.context().nodeManager().node("untangle-node-openvpn");
+            //             InetAddress addr = openvpn.getVpnServerAddress().getIp();
+            //             return addr;
+        // }
+
+        
+        InterfaceSettings intfSettings = findInterfaceId( intfId );
         if ( intfSettings == null ) {
-            logger.warn("Failed to find interface " + clientIntf);
+            logger.warn("Failed to find interface " + intfId);
             return null;
         }
 
@@ -273,24 +303,38 @@ public class NetworkManagerImpl implements NetworkManager
                 logger.warn("No Interface found for name: " + bridgedTo );
                 return null;
             }
+
+            intfId = intfSettings.getInterfaceId();
         }
 
-        /**
-         * The primary IP of OpenVPN interface is not in the config
-         * Must query the openVPN node
-         */
-        if (intfSettings.getInterfaceId() == 250) {
-            // FIXME how to handle OpenVPN?
-            //             OpenVpn openvpn = (OpenVpn) UvmContextFactory.context().nodeManager().node("untangle-node-openvpn");
-            //             InetAddress addr = openvpn.getVpnServerAddress().getIp();
-            //             return addr;
-        }
-
-        //FIXME must support dhcp and pppoe
-        InetAddress address = intfSettings.getV4StaticAddress();
+        InetAddress address = getInterfaceStatus( intfId ).getV4Address();
         return address;
     }
     
+    /**
+     * Returns the InterfaceStatus of the specified interface.
+     * If there is an error or the status is unknown it returns an InterfaceStatus
+     * with all null attributes.
+     */
+    public InterfaceStatus getInterfaceStatus( int interfaceId )
+    {
+        InterfaceStatus status = null;
+        String filename = "/var/lib/untangle-netd/interface-" + interfaceId + "-status";
+
+        try {
+            status = UvmContextFactory.context().settingsManager().load( InterfaceStatus.class,  filename);
+        } catch (SettingsManager.SettingsException e) {
+            logger.warn("Failed to load settings:",e);
+            return null;
+        }
+
+        if (status == null)
+            return new InterfaceStatus(); // never return null
+        else
+            return status;
+    }
+        
+
     private synchronized void _setSettings( NetworkSettings newSettings )
     {
         /**
@@ -373,7 +417,7 @@ public class NetworkManagerImpl implements NetworkManager
                 internal.setV4StaticAddress( InetAddress.getByName("192.168.2.1") );
                 internal.setV4StaticNetmask( InetAddress.getByName("255.255.255.0") );
                 internal.setIsWan( false );
-                // FIXME whta to set IPv6 to?
+                // FIXME what to set IPv6 to?
                 internal.setV6ConfigType( InterfaceSettings.V6ConfigType.STATIC );
                 internal.setV6StaticAddress( InetAddress.getByName("2001:db8:85a3:0:0:8a2e:370:7334") );
                 internal.setV6StaticPrefixLength( 64 );

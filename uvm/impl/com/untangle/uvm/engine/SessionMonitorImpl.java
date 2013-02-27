@@ -52,27 +52,23 @@ class SessionMonitorImpl implements SessionMonitor
     {
         /**
          * Find the the system interface name that matches this ID
-         * XXX this should be in a utility somewhere
          */
-        List<InterfaceSettings> intfs = uvmContext.networkManager().getNetworkSettings().getInterfaces();
         try {
             int interfaceId = Integer.parseInt(interfaceIdStr);
-        
-            for (InterfaceSettings intf : intfs) {
-
-                if (intf.getInterfaceId() == interfaceId) {
-                    String systemName = intf.getSystemDev();
-
-                    return _getMergedBandwidthSessions(systemName);
-                }
+            InterfaceSettings intf = uvmContext.networkManager().findInterfaceId( interfaceId );
+            
+            if (intf == null) {
+                logger.warn( "Unabled to find interface " + interfaceId );
+                return null;
             }
+            
+            String systemName = intf.getSystemDev();
+            return _getMergedBandwidthSessions(systemName);
+
         } catch (Exception e) {
             logger.warn("Unable to retrieve sessions",e);
             return null;
         }
-
-        logger.warn("Unable to find match for interface " + interfaceIdStr);
-        return null;
     }
     
     /**

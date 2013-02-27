@@ -93,11 +93,10 @@ public class AlertManagerImpl implements AlertManager
      */
     private boolean testDNS(List<String> alertList)
     {
-        NetworkSettings networkSettings = UvmContextFactory.context().networkManager().getNetworkSettings();
         ConnectivityTesterImpl connectivityTester = (ConnectivityTesterImpl)UvmContextFactory.context().getConnectivityTester();
         List<InetAddress> nonWorkingDns = new LinkedList<InetAddress>();
         
-        for (InterfaceSettings intf : networkSettings.getInterfaces()) {
+        for ( InterfaceSettings intf : UvmContextFactory.context().networkManager().getEnabledInterfaces() ) {
             if (!intf.getIsWan())
                 continue;
             
@@ -279,9 +278,7 @@ public class AlertManagerImpl implements AlertManager
      */
     private void testBridgeBackwards(List<String> alertList)
     {
-        NetworkSettings networkSettings = UvmContextFactory.context().networkManager().getNetworkSettings();
-        
-        for (InterfaceSettings intf : networkSettings.getInterfaces()) {
+        for ( InterfaceSettings intf : UvmContextFactory.context().networkManager().getEnabledInterfaces() ) {
             if (!InterfaceSettings.ConfigType.BRIDGED.equals( intf.getConfigType() ))
                 continue;
 
@@ -420,9 +417,7 @@ public class AlertManagerImpl implements AlertManager
      */
     private void testInterfaceErrors(List<String> alertList)
     {
-        NetworkSettings networkSettings = UvmContextFactory.context().networkManager().getNetworkSettings();
-        
-        for (InterfaceSettings intf : networkSettings.getInterfaces()) {
+        for ( InterfaceSettings intf : UvmContextFactory.context().networkManager().getEnabledInterfaces() ) {
             if ( intf.getSystemDev() == null )
                 continue;
             
@@ -482,9 +477,7 @@ public class AlertManagerImpl implements AlertManager
         if (commtouchasList.size() > 0)
             nodeName = "Spam Blocker";
         
-        NetworkSettings networkSettings = UvmContextFactory.context().networkManager().getNetworkSettings();
-        
-        for (InterfaceSettings intf : networkSettings.getInterfaces()) {
+        for ( InterfaceSettings intf : UvmContextFactory.context().networkManager().getEnabledInterfaces() ) {
             if (!intf.getIsWan())
                 continue;
             

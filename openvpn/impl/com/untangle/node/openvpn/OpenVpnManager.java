@@ -405,15 +405,15 @@ public class OpenVpnManager
                     dnsServers = settings.trans_getDnsServerList();
                 } else {
                     dnsServers = new LinkedList<InetAddress>();
-                    for (InterfaceSettings intf : networkSettings.getInterfaces()) {
-                        continue;
-                        // FIXME
-                        //                         if (intf.getIsWan()) {
-//                             if (intf.getDns1() != null)
-//                                 dnsServers.add( intf.getDns1() );
-//                             if (intf.getDns2() != null)
-//                                 dnsServers.add( intf.getDns2() );
-//                         }
+                    for ( InterfaceSettings intf : UvmContextFactory.context().networkManager().getEnabledInterfaces() ) {
+                        
+                        if (! intf.getIsWan())
+                            continue;
+
+                        InetAddress dns1 = UvmContextFactory.context().networkManager().getInterfaceStatus( intf.getInterfaceId() ).getV4Dns1();
+                        InetAddress dns2 = UvmContextFactory.context().networkManager().getInterfaceStatus( intf.getInterfaceId() ).getV4Dns2();
+                        if ( dns1 != null) dnsServers.add( dns1 );
+                        if ( dns2 != null) dnsServers.add( dns2 );
                     }
                 }
 

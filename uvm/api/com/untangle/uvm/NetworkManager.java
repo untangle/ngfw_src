@@ -3,8 +3,10 @@
  */
 package com.untangle.uvm;
 
+import java.util.List;
 import java.net.InetAddress;
 
+import com.untangle.uvm.network.InterfaceStatus;
 import com.untangle.uvm.network.InterfaceSettings;
 import com.untangle.uvm.network.NetworkSettings;
 import com.untangle.uvm.network.NetworkSettingsListener;
@@ -25,6 +27,10 @@ public interface NetworkManager
 
     /* convenience methods */
 
+    List<InterfaceSettings> getEnabledInterfaces();
+    
+    InterfaceStatus getInterfaceStatus( int interfaceId );
+    
     InetAddress getFirstWanAddress();
 
     InetAddress getInterfaceHttpAddress( int clientIntf );
