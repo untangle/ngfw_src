@@ -1,15 +1,17 @@
 /**
  * $Id$
  */
-package com.untangle.uvm.security;
-import java.util.ArrayList;
-import java.util.List;
+package com.untangle.uvm;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import javax.naming.InvalidNameException;
 import javax.naming.ldap.LdapName;
 import javax.naming.ldap.Rdn;
 
-import com.untangle.node.util.Pair;
+import org.json.JSONObject;
+import org.apache.log4j.Logger;
 
 /**
  * Convience class for dealing with LDAP-style Distinguished names (RFC 2253).  For
@@ -25,26 +27,29 @@ import com.untangle.node.util.Pair;
  * this is ever used in a performance-critical
  * app it should be re-written
  *
- *  - wrs 1/12/05
+ *  - wrs 2005-01-12
  **/
 @SuppressWarnings("serial")
 public class DistinguishedName implements java.io.Serializable
 {
+    private static final Logger logger = Logger.getLogger( DistinguishedName.class );
 
-    private List<Pair<String, String>> m_members;
+    private JSONObject members;
 
-    private DistinguishedName(List<Pair<String, String>> members) {
-        m_members = members;
+    private DistinguishedName(JSONObject members)
+    {
+        this.members = members;
     }
 
     /**
      * Copy constructor
      */
-    public DistinguishedName(DistinguishedName copy)
+    public DistinguishedName( DistinguishedName copy )
     {
-        m_members = new ArrayList<Pair<String, String>>();
-        for(Pair<String, String> pair : copy.m_members) {
-            m_members.add(new Pair<String, String>(pair.a, pair.b));
+        try {
+            this.members = new JSONObject( copy.members, JSONObject.getNames( copy.members ) );
+        } catch (Exception e) {
+            logger.warn("Exception: ",e);
         }
     }
 
@@ -63,9 +68,9 @@ public class DistinguishedName implements java.io.Serializable
      * @exception InvalidNameException if the type or value
      *            are in an unparsable format.
      */
-    public DistinguishedName(String org, String orgUnit, String city, String state, String country) throws InvalidNameException
+    public DistinguishedName( String org, String orgUnit, String city, String state, String country ) 
     {
-        m_members = new ArrayList<Pair<String, String>>();
+        members = new JSONObject();
         add("O", org);
         add("OU", orgUnit);
         add("L", city);
@@ -81,11 +86,14 @@ public class DistinguishedName implements java.io.Serializable
      * @return the value, or null if there is no
      *         such type in this name
      */
-    public String getValue(String type) {
-        int index = indexOf(type);
-        return index==-1?
-            null:
-        m_members.get(index).b;
+    public String getValue(String type)
+    {
+        try {
+            return (String) members.get( type );
+        } catch (Exception e) {
+            logger.warn("Exception: ",e);
+            return null;
+        }
     }
 
     /**
@@ -98,57 +106,14 @@ public class DistinguishedName implements java.io.Serializable
      * @exception InvalidNameException if the type or value
      *            are in an unparsable format.
      */
-    public void add(String type, String value) throws InvalidNameException
+    public void add( String type, String value )
     {
-        new Rdn(type, value); //Will throw an exception
-        m_members.add(new Pair<String, String>(type, value));
-    }
-
-    /**
-     * Add the given RDN at the given index
-     *
-     * @param type the type (e.g. "CN")
-     * @param value the value (e.g. "www.yahoo.com").
-     * @param index the index
-     *
-     *
-     * @exception InvalidNameException if the type or value
-     *            are in an unparsable format.
-     */
-    public void add(String type, String value, int index) throws InvalidNameException
-    {
-        new Rdn(type, value);//Will throw an exception
-        m_members.add(index, new Pair<String, String>(type, value));
-    }
-
-    /**
-     * Get the index of the given type (case insensitive).
-     *
-     * @param type the type String (e.g. "CN").
-     *
-     * @return the index, or -1 if not found
-     */
-    public int indexOf(String type)
-    {
-        int index = 0;
-        for(Pair<String, String> entry : m_members) {
-            if(entry.a.equalsIgnoreCase(type)) {
-                return index;
-            }
-            index++;
+        try {
+            new Rdn(type, value); //Will throw an exception
+            members.put( type, value );
+        } catch (Exception e) {
+            logger.warn("Exception: ",e);
         }
-        return -1;
-    }
-
-    /**
-     * Remove the name/value pair at the given index.  You
-     * may also want to use {@link indexOf indexOf}.
-     *
-     * @param index the index
-     */
-    public void remove(int index)
-    {
-        m_members.remove(index);
     }
 
     /**
@@ -165,14 +130,14 @@ public class DistinguishedName implements java.io.Serializable
         try {
             List<Rdn> rdns = new ArrayList<Rdn>();
 
-            for(Pair<String, String> entry : m_members) {
-                rdns.add(new Rdn(entry.a, entry.b));
+            for( String key : JSONObject.getNames( members ) ) {
+                rdns.add( new Rdn( key, members.get(key) ) );
             }
             return new LdapName(rdns).toString();
         }
-        catch(InvalidNameException ex) {
-            //This shouldn't happen but...
-            throw new RuntimeException(ex);
+        catch( Exception e ) {
+            logger.warn("Exception: ", e);
+            throw new RuntimeException(e);
         }
     }
 
@@ -184,11 +149,8 @@ public class DistinguishedName implements java.io.Serializable
      */
     public List<String> listTypes()
     {
-        ArrayList<String> ret = new ArrayList<String>();
-        for(Pair<String, String> entry : m_members) {
-            ret.add(entry.a);
-        }
-        return ret;
+        String[] keys = JSONObject.getNames( this.members );
+        return Arrays.asList( keys );
     }
 
     @Override
@@ -209,15 +171,20 @@ public class DistinguishedName implements java.io.Serializable
     public static DistinguishedName parse(String str) throws InvalidNameException
     {
 
-        List<Pair<String, String>> ret = new ArrayList<Pair<String, String>>();
+        JSONObject ret = new JSONObject();
 
         LdapName ldapName = new LdapName(str.replaceAll(";","\\3B"));
 
         List<Rdn> rdns = ldapName.getRdns();
 
-        for(Rdn rdn : rdns) {
-            ret.add(new Pair<String, String>(rdn.getType().toString(), rdn.getValue().toString()));
+        try {
+            for(Rdn rdn : rdns) {
+                ret.put( rdn.getType().toString(), rdn.getValue().toString() );
+            }
+        } catch (Exception e) {
+            logger.warn("Exception: ",e);
         }
+        
         return new DistinguishedName(ret);
     }
 
@@ -229,19 +196,19 @@ public class DistinguishedName implements java.io.Serializable
      */
     public static DistinguishedName create()
     {
-        return new DistinguishedName(new ArrayList<Pair<String, String>>());
+        return new DistinguishedName( new JSONObject() );
     }
 
 
-    public static void main(String[] args) throws Exception {
-
+    public static void main(String[] args) throws Exception
+    {
         //Create
         DistinguishedName newName = DistinguishedName.create();
         newName.add("L", "San, Mateo");
-        newName.add("CN", "foo", 0);
-        newName.add("ST", "Cali", 0);
+        newName.add("CN", "foo");
+        newName.add("ST", "Cali");
         newName.add("OU", "Untangle");
-        newName.add("X", "blaaa", 0);
+        newName.add("X", "blaaa");
 
         System.out.println(newName.toDistinguishedString());
 

@@ -15,8 +15,8 @@ import java.util.regex.Pattern;
 
 import javax.naming.InvalidNameException;
 
-import com.untangle.uvm.security.CertInfo;
-import com.untangle.uvm.security.DistinguishedName;
+import com.untangle.uvm.CertInfo;
+import com.untangle.uvm.DistinguishedName;
 import com.untangle.uvm.ExecManagerResult;
 import com.untangle.uvm.UvmContextFactory;
 

@@ -6,8 +6,8 @@ package com.untangle.uvm;
 import javax.servlet.ServletContext;
 import org.apache.catalina.Valve;
 
-import com.untangle.uvm.security.CertInfo;
-import com.untangle.uvm.security.DistinguishedName;
+import com.untangle.uvm.CertInfo;
+import com.untangle.uvm.DistinguishedName;
 
 /**
  * Abstraction to the application server used for external web

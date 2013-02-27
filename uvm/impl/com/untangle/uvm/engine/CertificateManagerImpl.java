@@ -13,8 +13,8 @@ import org.apache.log4j.Logger;
 
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.CertificateManager;
-import com.untangle.uvm.security.CertInfo;
-import com.untangle.uvm.security.DistinguishedName;
+import com.untangle.uvm.CertInfo;
+import com.untangle.uvm.DistinguishedName;
 import com.untangle.node.util.OpenSSLWrapper;
 
 /**

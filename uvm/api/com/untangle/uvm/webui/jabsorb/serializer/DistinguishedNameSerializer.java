@@ -9,7 +9,7 @@ import org.jabsorb.serializer.ObjectMatch;
 import org.jabsorb.serializer.SerializerState;
 import org.jabsorb.serializer.UnmarshallException;
 
-import com.untangle.uvm.security.DistinguishedName;
+import com.untangle.uvm.DistinguishedName;
 
 @SuppressWarnings({"serial","unchecked"})
 public class DistinguishedNameSerializer extends AbstractSerializer {

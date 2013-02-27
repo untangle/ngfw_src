@@ -139,7 +139,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
         getHostname: function(forceReload) {
             if (forceReload || this.rpc.hostname === undefined) {
                 try {
-                    this.rpc.hostname = rpc.networkManager.getHostname();
+                    this.rpc.hostname = rpc.networkManager.getNetworkSettings()['hostName'];
                 } catch (e) {
                     Ung.Util.rpcExHandler(e);
                 }
