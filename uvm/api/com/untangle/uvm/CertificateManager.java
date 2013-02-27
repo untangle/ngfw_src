@@ -7,7 +7,7 @@ import javax.servlet.ServletContext;
 import org.apache.catalina.Valve;
 
 import com.untangle.uvm.security.CertInfo;
-import com.untangle.uvm.security.RFC2253Name;
+import com.untangle.uvm.security.DistinguishedName;
 
 /**
  * Abstraction to the application server used for external web
@@ -52,7 +52,7 @@ public interface CertificateManager
      * values) there is no explanation given to the caller. The error
      * will be in the logs and engineering will have to investigate.
      */
-    boolean regenCert(RFC2253Name dn, int durationInDays);
+    boolean regenCert(DistinguishedName dn, int durationInDays);
 
     /**
      * Import the signed certificate for this machine. The input to

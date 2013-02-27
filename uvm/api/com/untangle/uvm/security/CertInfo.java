@@ -56,11 +56,11 @@ public class CertInfo implements java.io.Serializable {
      * the most insteresting key is "CN" which will be
      * the DNS entry for a web server
      */
-    public final RFC2253Name subjectDN;
+    public final DistinguishedName subjectDN;
     /**
      * The Distinguished name broken into a Map.
      */
-    public final RFC2253Name issuerDN;
+    public final DistinguishedName issuerDN;
     /**
      * True if the cert is issued as a CA cert.
      */
@@ -79,8 +79,8 @@ public class CertInfo implements java.io.Serializable {
 
     public CertInfo(Date notBefore,
                     Date notAfter,
-                    RFC2253Name subjectDN,
-                    RFC2253Name issuerDN,
+                    DistinguishedName subjectDN,
+                    DistinguishedName issuerDN,
                     boolean isCA,
                     String ppString) {
         this.notBefore = notBefore;
@@ -149,8 +149,8 @@ public class CertInfo implements java.io.Serializable {
         sb.append("notBefore: ").append(notBefore).append(newLine);
         sb.append("notAfter: ").append(notAfter).append(newLine);
         sb.append("isCA: ").append(isCA?"true":"false").append(newLine);
-        sb.append("subjectDN").append(subjectDN.toRFC2253String()).append(newLine);
-        sb.append("issuerDN").append(issuerDN.toRFC2253String()).append(newLine);
+        sb.append("subjectDN").append(subjectDN.toDistinguishedString()).append(newLine);
+        sb.append("issuerDN").append(issuerDN.toDistinguishedString()).append(newLine);
         return sb.toString();
     }
 
@@ -162,11 +162,11 @@ public class CertInfo implements java.io.Serializable {
 		return notAfter;
 	}
 
-	public RFC2253Name getSubjectDN() {
+	public DistinguishedName getSubjectDN() {
 		return subjectDN;
 	}
 
-	public RFC2253Name getIssuerDN() {
+	public DistinguishedName getIssuerDN() {
 		return issuerDN;
 	}
 

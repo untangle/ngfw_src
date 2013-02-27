@@ -12,7 +12,7 @@ import javax.naming.ldap.Rdn;
 import com.untangle.node.util.Pair;
 
 /**
- * Convience class for dealing with LDAP-style (RFC2253) Distinguished names.  For
+ * Convience class for dealing with LDAP-style Distinguished names (RFC 2253).  For
  * now, just wraps the Java APIs (which are a bit cryptic, but take care of encoding
  * issues).  It also treats everything as Strings, ignoring some of the details
  * of naming.
@@ -28,19 +28,19 @@ import com.untangle.node.util.Pair;
  *  - wrs 1/12/05
  **/
 @SuppressWarnings("serial")
-public class RFC2253Name implements java.io.Serializable
+public class DistinguishedName implements java.io.Serializable
 {
 
     private List<Pair<String, String>> m_members;
 
-    private RFC2253Name(List<Pair<String, String>> members) {
+    private DistinguishedName(List<Pair<String, String>> members) {
         m_members = members;
     }
 
     /**
      * Copy constructor
      */
-    public RFC2253Name(RFC2253Name copy)
+    public DistinguishedName(DistinguishedName copy)
     {
         m_members = new ArrayList<Pair<String, String>>();
         for(Pair<String, String> pair : copy.m_members) {
@@ -58,12 +58,12 @@ public class RFC2253Name implements java.io.Serializable
      * @param state the state
      * @param coutry the country
      *
-     * @return the generated RFC2253Name
+     * @return the generated DistinguishedName
      *
      * @exception InvalidNameException if the type or value
      *            are in an unparsable format.
      */
-    public RFC2253Name(String org, String orgUnit, String city, String state, String country) throws InvalidNameException
+    public DistinguishedName(String org, String orgUnit, String city, String state, String country) throws InvalidNameException
     {
         m_members = new ArrayList<Pair<String, String>>();
         add("O", org);
@@ -160,7 +160,7 @@ public class RFC2253Name implements java.io.Serializable
      *
      * @return the String
      */
-    public String toRFC2253String() 
+    public String toDistinguishedString() 
     {
         try {
             List<Rdn> rdns = new ArrayList<Rdn>();
@@ -194,7 +194,7 @@ public class RFC2253Name implements java.io.Serializable
     @Override
     public String toString()
     {
-        return toRFC2253String();
+        return toDistinguishedString();
     }
 
     /**
@@ -202,11 +202,11 @@ public class RFC2253Name implements java.io.Serializable
      *
      * @param str the RFC 2253 string
      *
-     * @return the parsed RFC2253Name
+     * @return the parsed DistinguishedName
      *
      * @exception InvalidNameException if the string is an illegal Distinguished Name
      */
-    public static RFC2253Name parse(String str) throws InvalidNameException
+    public static DistinguishedName parse(String str) throws InvalidNameException
     {
 
         List<Pair<String, String>> ret = new ArrayList<Pair<String, String>>();
@@ -218,37 +218,37 @@ public class RFC2253Name implements java.io.Serializable
         for(Rdn rdn : rdns) {
             ret.add(new Pair<String, String>(rdn.getType().toString(), rdn.getValue().toString()));
         }
-        return new RFC2253Name(ret);
+        return new DistinguishedName(ret);
     }
 
 
     /**
-     * Create a new (empty) RFC2253 name)
+     * Create a new (empty) Distinguished name)
      *
      * @return the new name
      */
-    public static RFC2253Name create()
+    public static DistinguishedName create()
     {
-        return new RFC2253Name(new ArrayList<Pair<String, String>>());
+        return new DistinguishedName(new ArrayList<Pair<String, String>>());
     }
 
 
     public static void main(String[] args) throws Exception {
 
         //Create
-        RFC2253Name newName = RFC2253Name.create();
+        DistinguishedName newName = DistinguishedName.create();
         newName.add("L", "San, Mateo");
         newName.add("CN", "foo", 0);
         newName.add("ST", "Cali", 0);
         newName.add("OU", "Untangle");
         newName.add("X", "blaaa", 0);
 
-        System.out.println(newName.toRFC2253String());
+        System.out.println(newName.toDistinguishedString());
 
         //Parse
-        RFC2253Name parseName = RFC2253Name.parse("L=San\\, Mateo, OU=Untangle, CN=foo, ST=Cali, X=blaaa");
+        DistinguishedName parseName = DistinguishedName.parse("L=San\\, Mateo, OU=Untangle, CN=foo, ST=Cali, X=blaaa");
         System.out.println("Second one's L = " + parseName.getValue("L"));
-        System.out.println(parseName.toRFC2253String());
+        System.out.println(parseName.toDistinguishedString());
 
 
     }

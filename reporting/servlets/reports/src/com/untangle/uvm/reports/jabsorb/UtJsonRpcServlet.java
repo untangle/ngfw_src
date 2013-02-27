@@ -22,7 +22,7 @@ import com.untangle.uvm.webui.jabsorb.serializer.EnumSerializer;
 import com.untangle.uvm.webui.jabsorb.serializer.IPMaskedAddressSerializer;
 import com.untangle.uvm.webui.jabsorb.serializer.InetAddressSerializer;
 import com.untangle.uvm.webui.jabsorb.serializer.MimeTypeSerializer;
-import com.untangle.uvm.webui.jabsorb.serializer.RFC2253NameSerializer;
+import com.untangle.uvm.webui.jabsorb.serializer.DistinguishedNameSerializer;
 import com.untangle.uvm.webui.jabsorb.serializer.TimeSerializer;
 import com.untangle.uvm.webui.jabsorb.serializer.TimeZoneSerializer;
 import com.untangle.uvm.webui.jabsorb.serializer.URLSerializer;
@@ -122,7 +122,7 @@ public class UtJsonRpcServlet extends JSONRPCServlet
                 b.registerSerializer(new TimeZoneSerializer());
 
                 b.registerSerializer(new MimeTypeSerializer());
-                b.registerSerializer(new RFC2253NameSerializer());
+                b.registerSerializer(new DistinguishedNameSerializer());
 
                 // matchers
                 b.registerSerializer(new GenericStringSerializer(ProtocolMatcher.class));

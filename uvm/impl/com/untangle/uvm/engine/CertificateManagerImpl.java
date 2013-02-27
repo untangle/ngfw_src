@@ -14,7 +14,7 @@ import org.apache.log4j.Logger;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.CertificateManager;
 import com.untangle.uvm.security.CertInfo;
-import com.untangle.uvm.security.RFC2253Name;
+import com.untangle.uvm.security.DistinguishedName;
 import com.untangle.node.util.OpenSSLWrapper;
 
 /**
@@ -47,7 +47,7 @@ class CertificateManagerImpl implements CertificateManager
         }
     }
 
-    public boolean regenCert(RFC2253Name dn, int durationInDays)
+    public boolean regenCert(DistinguishedName dn, int durationInDays)
     {
         try {
             //The goal of this is to take the existing DN minus the hostname (leaving company, city, state, etc.)
@@ -114,7 +114,7 @@ class CertificateManagerImpl implements CertificateManager
         try {
             byte[] oldCert = getCurrentServerCert();
             CertInfo ci = OpenSSLWrapper.getCertInfo(oldCert);
-            RFC2253Name currentDN = ci.subjectDN;
+            DistinguishedName currentDN = ci.subjectDN;
             return OpenSSLWrapper.createCSR("/"+currentDN.toString().replace(",","/"), new File(APACHE_PEM_FILE));
         } catch (Exception ex) {
             logger.error("Exception generating a CSR", ex);

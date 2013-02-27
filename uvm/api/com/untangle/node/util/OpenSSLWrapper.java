@@ -16,7 +16,7 @@ import java.util.regex.Pattern;
 import javax.naming.InvalidNameException;
 
 import com.untangle.uvm.security.CertInfo;
-import com.untangle.uvm.security.RFC2253Name;
+import com.untangle.uvm.security.DistinguishedName;
 import com.untangle.uvm.ExecManagerResult;
 import com.untangle.uvm.UvmContextFactory;
 
@@ -102,7 +102,7 @@ public class OpenSSLWrapper
 
         //=================================================
         // Tested command as follows:
-        // prompt> openssl x509 -in gobbles.pem -dates -noout -subject -issuer -nameopt RFC2253
+        // prompt> openssl x509 -in gobbles.pem -dates -noout -subject -issuer -nameopt Distinguished
         // prompt> notBefore=Jan  4 22:53:52 2006 GMT
         // prompt> notAfter=Jan  4 22:53:52 2007 GMT
         // prompt> subject= CN=gobbles.untangle.com,L=San Mateo,ST=CA,C=US
@@ -115,13 +115,13 @@ public class OpenSSLWrapper
         // be in "/usr/bin".  It exits with "1" if it is not a CA (0 if it is).
         //=================================================
 
-        ExecManagerResult result = UvmContextFactory.context().execManager().exec("openssl x509 -in " + certFile.getAbsolutePath() + " -dates -noout -subject -issuer -nameopt RFC2253");
+        ExecManagerResult result = UvmContextFactory.context().execManager().exec("openssl x509 -in " + certFile.getAbsolutePath() + " -dates -noout -subject -issuer -nameopt Distinguished");
 
         if(result.getResult()==0) {
             Date notBefore = null;
             Date notAfter = null;
-            RFC2253Name subjectDN = null;
-            RFC2253Name issuerDN = null;
+            DistinguishedName subjectDN = null;
+            DistinguishedName issuerDN = null;
             //Time to parse the output (I hate this in Java)
             String[] theLines = result.getOutput().split("(?m)$");//The "(?m") crap is so Java's
             //Regex treats embedded new
@@ -135,10 +135,10 @@ public class OpenSSLWrapper
                     notAfter = parseCertDate(theLines[i].substring("notAfter=".length()));
                 }
                 if(theLines[i].startsWith("subject=")) {
-                    subjectDN = RFC2253Name.parse(theLines[i].substring("subject=".length()));
+                    subjectDN = DistinguishedName.parse(theLines[i].substring("subject=".length()));
                 }
                 if(theLines[i].startsWith("issuer=")) {
-                    issuerDN = RFC2253Name.parse(theLines[i].substring("issuer=".length()));
+                    issuerDN = DistinguishedName.parse(theLines[i].substring("issuer=".length()));
                 }
             }
 
