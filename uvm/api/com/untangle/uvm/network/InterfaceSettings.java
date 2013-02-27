@@ -220,40 +220,7 @@ public class InterfaceSettings implements Serializable, JSONString
      * These are getters without setters so they can be used and they will in the JSON equivalent of this object
      * However, there are not actually settings
      */
-    private InetAddress statusV4Address;
-    private InetAddress statusV4Netmask;
-
-    public boolean getDisabled()
-    {
-        return getConfigType() == ConfigType.DISABLED;
-    }
-
-    public boolean getBridged()
-    {
-        return getConfigType() == ConfigType.BRIDGED;
-    }
-    
-    /** 
-     * Return the current IPv4 address of this interface or null if it has none
-     * This works regardless of the the v4ConfigType (static, auto, pppoe, etc)
-     */
-    public InetAddress getStatusV4Address()
-    {
-        if ( getDisabled() | getBridged() )
-            return null;
-
-        
-        if ( getV4ConfigType() == V4ConfigType.STATIC )
-            return getV4StaticAddress();
-
-        logger.error("FIXME: DHCP, PPPOE getStatusV4Address");
-        return null;
-    }
-
-    public void trans_setStatusV4Address( InetAddress newValue )
-    {
-        this.statusV4Address = newValue;
-    }
-
-    
+    public boolean getDisabled() { return getConfigType() == ConfigType.DISABLED; }
+    public boolean getBridged() { return getConfigType() == ConfigType.BRIDGED; }
+    public boolean getAddressed() { return getConfigType() == ConfigType.ADDRESSED; }
 }

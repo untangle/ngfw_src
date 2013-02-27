@@ -179,7 +179,8 @@ public class NetworkManagerImpl implements NetworkManager
         
         for ( InterfaceSettings intfSettings : this.networkSettings.getInterfaces() ) {
             if ( !intfSettings.getDisabled() && intfSettings.getIsWan() ) {
-                return intfSettings.getStatusV4Address();
+                // FIXME handle DHCP and PPPoE
+                return intfSettings.getV4StaticAddress();
             }
         }
 
