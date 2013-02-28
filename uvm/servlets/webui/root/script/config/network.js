@@ -1576,6 +1576,16 @@ if (!Ung.hasResource["Ung.Network"]) {
         },
         // Routes Panel
         buildRoutes: function() {
+            var devList = [];
+            if( Ung.Util.networkSettings == null ) {
+                Ung.Util.networkSettings = main.getNetworkManager().getNetworkSettings();
+            }
+            for ( var c = 0 ; c < Ung.Util.networkSettings.interfaces.list.length ; c++ ) {
+                var intf = Ung.Util.networkSettings.interfaces.list[c];
+                var name = "Local on " + intf['systemDev'];
+                var key = intf['systemDev'];
+                devList.push( [ key, name ] );
+            }
             this.gridStaticRoutes = Ext.create('Ung.EditorGrid', {
                 anchor: "100% 48%",
                 name: 'Static Routes',
@@ -1583,7 +1593,7 @@ if (!Ung.hasResource["Ung.Network"]) {
                 emptyRow: {
                     "ruleId": -1,
                     "network": "1.2.3.0",
-                    "prefix": "24",
+                    "prefix": 24,
                     "nextHop": "4.3.2.1",
                     "description": this.i18n._("[no description]"),
                     "javaClass": "com.untangle.uvm.network.StaticRoute"
@@ -1659,7 +1669,7 @@ if (!Ung.hasResource["Ung.Network"]) {
                     dataIndex: "nextHop",
                     fieldLabel: i18n._("Next Hop"),
                     editable: true,
-                    store: [["eth0",i18n._('Local on eth0 FIXME')], ["eth1",i18n._('Local on eth1 FIXME')]],
+                    store: devList,
                     valueField: "value",
                     displayField: "displayName",
                     queryMode: 'local'
