@@ -330,7 +330,7 @@ if (!Ung.hasResource["Ung.Email"]) {
                             itemCls: 'left-indent-5',
                             name: 'Use Authentication',
                             id: 'email_smtpUseAuthentication',
-                            fieldLabel: this.i18n._('Use Authentication.'),
+                            fieldLabel: this.i18n._('Use Authentication'),
                             listeners: {
                                 "change": {
                                     fn: Ext.bind(function(elem, checked) {

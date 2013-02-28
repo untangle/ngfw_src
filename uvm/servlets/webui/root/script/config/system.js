@@ -169,8 +169,9 @@ if (!Ung.hasResource["Ung.System"]) {
                             xtype: 'textfield',
                             name: 'Hostname',
                             fieldLabel: this.i18n._("Hostname"),
+                            labelWidth: 150,
                             id: 'hostname',
-                            width: 300,
+                            width: 400,
                             value: this.getSystemSettings().hostname,
                             listeners: {
                                 "change": {
@@ -192,8 +193,9 @@ if (!Ung.hasResource["Ung.System"]) {
                             xtype: 'textfield',
                             name: 'Domain Name Suffix',
                             fieldLabel: this.i18n._("Domain Name Suffix"),
+                            labelWidth: 150,
                             id: 'domain_name',
-                            width: 300,
+                            width: 400,
                             value: this.getSystemSettings().domainNameSuffix,
                             listeners: {
                                 "change": {

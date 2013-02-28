@@ -209,139 +209,65 @@ if (!Ung.hasResource["Ung.Capture"]) {
                         name: 'javaClass'
                     }],
                     columns: [{
-                                header: this.i18n._("Rule Id"),
-                                width: 50,
-                                dataIndex: 'ruleId',
-                                renderer: function(value) {
-                                    if (value < 0) {
-                                        return i18n._("new");
-                                    } else {
-                                        return value;
-                                    }
-                                }
-                            },{
-                                xtype:'checkcolumn',
-                                header: this.i18n._("Enable"),
-                                dataIndex: 'enabled',
-                                fixed: true,
-                                width:55
-                            },{
-                                header: this.i18n._("Description"),
-                                width: 200,
-                                dataIndex: 'description',
-                                flex:1
-                            },{
-                                xtype:'checkcolumn',
-                                header: this.i18n._("Capture"),
-                                dataIndex: 'capture',
-                                fixed: true,
-                                width:55
-                            }],
-                    columnsDefaultSortable: false,
-
-                    initComponent: function() {
-                        this.rowEditor = Ext.create('Ung.RowEditorWindow',{
-                            grid: this,
-                            sizeToComponent: this.settingsCmp,
-                            inputLines: this.rowEditorInputLines,
-                            rowEditorLabelWidth: 100,
-                            populate: function(record, addMode) {
-                                return this.populateTree(record, addMode);
-                            },
-                            // updateAction is called to update the record after the edit
-                            updateAction: function() {
-                                return this.updateActionTree();
-                            },
-                            isDirty: function() {
-                                if (this.record !== null) {
-                                    if (this.inputLines) {
-                                        for (var i = 0; i < this.inputLines.length; i++) {
-                                            var inputLine = this.inputLines[i];
-                                            if(inputLine.dataIndex!=null) {
-                                                if (this.record.get(inputLine.dataIndex) != inputLine.getValue()) {
-                                                    return true;
-                                                }
-                                            }
-                                            /* for fieldsets */
-                                            if(inputLine.items !=null && inputLine.items.dataIndex != null) {
-                                                if (this.record.get(inputLine.items.dataIndex) != inputLine.items.getValue()) {
-                                                    return true;
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
-                                return Ext.getCmp('builder').isDirty();
-                            },
-                            isFormValid: function() {
-                                for (var i = 0; i < this.inputLines.length; i++) {
-                                    var item = null;
-                                    if ( this.inputLines.get != null ) {
-                                        item = this.inputLines.get(i);
-                                    } else {
-                                        item = this.inputLines[i];
-                                    }
-                                    if ( item == null ) {
-                                        continue;
-                                    }
-
-                                    if ( item.isValid != null) {
-                                        if(!item.isValid()) {
-                                            return false;
-                                        }
-                                    } else if(item.items !=null && item.items.getCount()>0) {
-                                        /* for fieldsets */
-                                        for (var j = 0; j < item.items.getCount(); j++) {
-                                            var subitem=item.items.get(j);
-                                            if ( subitem == null ) {
-                                                continue;
-                                            }
-
-                                            if ( subitem.isValid != null && !subitem.isValid()) {
-                                                return false;
-                                            }
-                                        }
-                                    }
-
-                                }
-                                return true;
+                        header: this.i18n._("Rule Id"),
+                        width: 50,
+                        dataIndex: 'ruleId',
+                        renderer: function(value) {
+                            if (value < 0) {
+                                return i18n._("new");
+                            } else {
+                                return value;
                             }
-                        });
-                        Ung.EditorGrid.prototype.initComponent.call(this);
-                    },
-
-                    rowEditorInputLines: [
-                        {
-                            xtype:'checkbox',
-                            name: "Enable Rule",
-                            dataIndex: "enabled",
-                            fieldLabel: this.i18n._("Enable Rule")
-                        },{
-                            xtype:'textfield',
-                            name: "Description",
-                            dataIndex: "description",
-                            fieldLabel: this.i18n._("Description"),
-                            width: 500
-                        },{
-                            xtype:'fieldset',
-                            title: this.i18n._("Rule") ,
-                            title: "If all of the following conditions are met:",
-                            items:[{
-                                xtype:'rulebuilder',
-                                settingsCmp: this,
-                                javaClass: "com.untangle.node.capture.CaptureRuleMatcher",
-                                anchor:"98%",
-                                width: 900,
-                                dataIndex: "matchers",
-                                matchers: Ung.CaptureUtil.getMatchers(this),
-                                id:'builder'
-                            }]
-                        },{
-                            xtype: 'fieldset',
-                            cls:'description',
-                            title: i18n._('Perform the following action(s):'),
-                            border: false
-                        },{
+                        }
+                    },{
+                        xtype:'checkcolumn',
+                        header: this.i18n._("Enable"),
+                        dataIndex: 'enabled',
+                        fixed: true,
+                        width:55
+                    },{
+                        header: this.i18n._("Description"),
+                        width: 200,
+                        dataIndex: 'description',
+                        flex:1
+                    },{
+                        xtype:'checkcolumn',
+                        header: this.i18n._("Capture"),
+                        dataIndex: 'capture',
+                        fixed: true,
+                        width:55
+                    }],
+                    columnsDefaultSortable: false,
+                    rowEditorInputLines: [{
+                        xtype:'checkbox',
+                        name: "Enable Rule",
+                        dataIndex: "enabled",
+                        fieldLabel: this.i18n._("Enable Rule")
+                    },{
+                        xtype:'textfield',
+                        name: "Description",
+                        dataIndex: "description",
+                        fieldLabel: this.i18n._("Description"),
+                        width: 500
+                    },{
+                        xtype:'fieldset',
+                        title: this.i18n._("Rule") ,
+                        title: "If all of the following conditions are met:",
+                        items:[{
+                            xtype:'rulebuilder',
+                            settingsCmp: this,
+                            javaClass: "com.untangle.node.capture.CaptureRuleMatcher",
+                            anchor:"98%",
+                            width: 900,
+                            dataIndex: "matchers",
+                            matchers: Ung.CaptureUtil.getMatchers(this)
+                        }]
+                    },{
+                        xtype: 'fieldset',
+                        cls:'description',
+                        title: i18n._('Perform the following action(s):'),
+                        border: false,
+                        items: [{
                             xtype: "combo",
                             name: "actionType",
                             allowBlank: false,
@@ -355,6 +281,7 @@ if (!Ung.hasResource["Ung.Capture"]) {
                             triggerAction: 'all',
                             listClass: 'x-combo-list-small'
                         }]
+                    }]
                 })]
             });
         },

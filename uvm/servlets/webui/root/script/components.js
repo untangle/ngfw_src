@@ -314,9 +314,10 @@ Ung.Util = {
         if(Ext.isFunction(item.isDirty)) {
             return item.isDirty();
         }
-        if(item.items!=null) {
+        if(item.items!=null && item.items.length>0) {
+            var hasGet=Ext.isFunction(item.items.get);
             for (var i = 0; i < item.items.length; i++) {
-                var subItem = Ext.isFunction(item.items.get)?item.items.get(i):item.items[i];
+                var subItem = hasGet?item.items.get(i):item.items[i];
                 if(Ung.Util.isDirty(subItem, depth+1)) {
                     return true;   
                 }
@@ -343,12 +344,37 @@ Ung.Util = {
             item.clearDirty();
             return;
         }
-        if(item.items!=null) {
+        if(item.items!=null && item.items.length>0) {
+            var hasGet=Ext.isFunction(item.items.get);
             for (var i = 0; i < item.items.length; i++) {
-                var subItem = Ext.isFunction(item.items.get)?item.items.get(i):item.items[i];
+                var subItem = hasGet?item.items.get(i):item.items[i];
                 Ung.Util.clearDirty(subItem, depth+1);
             }
         }
+    },
+    isValid: function (item, depth) {
+        if(depth==null) {
+            depth=0;
+        } else if(depth>30) {
+            console.log("Ung.Util.isValid depth>30");
+            return true;
+        }
+        if(item==null) {
+            return true;
+        }
+        if(Ext.isFunction(item.isValid)) {
+            return item.isValid();
+        }
+        if(item.items!=null && item.items.length>0) {
+            var hasGet=Ext.isFunction(item.items.get);
+            for (var i = 0; i < item.items.length; i++) {
+                var subItem = hasGet?item.items.get(i):item.items[i];
+                if(!Ung.Util.isValid(subItem, depth+1)) {
+                    return false;   
+                }
+            }
+        }
+        return true;
     },
     goToStartPage: function () {
         Ext.MessageBox.wait(i18n._("Redirecting to the start page..."), i18n._("Please wait"));
@@ -4117,7 +4143,7 @@ Ext.define('Ung.RowEditorWindow', {
             return true;
         }
         if (component.dataIndex != null) {
-            return Ext.isFunction(component.isValid)?component.isValid():true;
+            return Ext.isFunction(component.isValid)?component.isValid():Ung.Util.isValid(component);
         }
         if (component.items) {
             for (var i = 0; i < component.items.length; i++) {
