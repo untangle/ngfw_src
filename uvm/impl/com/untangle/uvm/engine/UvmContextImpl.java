@@ -67,7 +67,7 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
     private static final String UPGRADE_HTML_FILE = "/var/www/uvm-upgrade.html";
     private static final String UPGRADE_SPLASH_SCRIPT = System.getProperty("uvm.bin.dir") + "/ut-show-upgrade-splash";;
 
-    private static final String CREATE_UID_SCRIPT = System.getProperty("uvm.bin.dir") + "/ut-createUID";
+    private static final String CREATE_UID_SCRIPT = System.getProperty("uvm.bin.dir") + "/ut-createUID.py";
     private static final String UID_FILE = System.getProperty("uvm.conf.dir") + "/uid";
     private static final String WIZARD_COMPLETE_FLAG_FILE = System.getProperty("uvm.conf.dir") + "/wizard-complete-flag";
 
@@ -439,7 +439,20 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
 
     public boolean createUID()
     {
-        Integer exitValue = this.execManager().execResult(CREATE_UID_SCRIPT);
+        String extraOptions = "";
+
+        extraOptions += " -f \"" + System.getProperty("uvm.conf.dir") + "/uidtest" + "\" ";
+
+        if ( com.untangle.uvm.Version.getMajorVersion() != null )
+            extraOptions += " -d \"stable-" + com.untangle.uvm.Version.getMajorVersion() + "\" ";
+        if ( com.untangle.uvm.Version.getVersionName() != null )
+            extraOptions += " -n \"" + com.untangle.uvm.Version.getVersionName() + "\" ";
+        
+        // if its devel change sources.list to point to internal package server
+        if (isDevel())
+            extraOptions += " -u \"package-server.\" ";
+
+        Integer exitValue = this.execManager().execResult(CREATE_UID_SCRIPT + extraOptions);
         if (0 != exitValue) {
             logger.error("Unable to create UID (" + exitValue + ")");
             return false;
@@ -447,10 +460,12 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
             logger.info("UID Created.");
         }
 
-        // restart pyconnector now that the UID has been generated
-        this.execManager().execResult("/etc/init.d/untangle-pyconnector restart");
-        // give pyconnector some time to connect before returning
-        try { Thread.sleep(3000); } catch (InterruptedException exn) { }
+        if ( ! isDevel() ) {
+            // restart pyconnector now that the UID has been generated
+            this.execManager().execResult("/etc/init.d/untangle-pyconnector restart");
+            // give pyconnector some time to connect before returning
+            try { Thread.sleep(3000); } catch (InterruptedException exn) { }
+        }
 
         return true;
     }

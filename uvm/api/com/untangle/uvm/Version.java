@@ -10,35 +10,48 @@ import java.io.InputStreamReader;
 
 /**
  * Provides access to the UVM version.
- *
- * @author <a href="mailto:dmorris@untangle.com">Dirk Morris</a>
- * @version 1.0
  */
 public class Version
 {
     /**
      * Get the public version number.
-     *
-     * @return the version string.
+     * "A" (10)
      */
-    public static String getVersion()
+    public static String getMajorVersion()
     {
-        return getVersion("PUBVERSION");
+        return getResource("MAJORVERSION");
     }
 
     /**
      * Get the public version number.
-     *
-     * @return the version string.
+     * "A.B" (10.0)
+     */
+    public static String getVersion()
+    {
+        return getResource("PUBVERSION");
+    }
+
+    /**
+     * Get the public version number.
+     * "A.B.C" (10.0.1)
      */
     public static String getFullVersion()
     {
-        return getVersion("VERSION");
+        return getResource("VERSION");
     }
 
-    private static String getVersion(String type)
+    /**
+     * Get the public version as a name IE: "focus"
+     * "focus"
+     */
+    public static String getVersionName()
     {
-        String line = "unknown version";
+        return getResource("RELEASE_CODENAME");
+    }
+    
+    private static String getResource(String type)
+    {
+        String line = null;
 
         try {
             InputStream is = Version.class.getClassLoader().getResourceAsStream(type);
