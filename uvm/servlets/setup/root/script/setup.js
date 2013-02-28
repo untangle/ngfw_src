@@ -790,7 +790,7 @@ Ext.define('Ung.SetupWizard.Internet', {
         
         this.setFirstWanSettings( Ung.SetupWizard.CurrentValues.networkSettings, wanSettings );
 
-        var complete = Ext.bind(this.complete, this, [ handler, hideWindow ], Ung.SetupWizard.CurrentValues.networkSettings );
+        var complete = Ext.bind(this.complete, this, [ handler, hideWindow ], true );
         rpc.networkManager.setNetworkSettings( complete, Ung.SetupWizard.CurrentValues.networkSettings );
     },
 
@@ -1469,7 +1469,7 @@ Ung.Setup = {
             renderTo: "container"
         });
 
-        if ( true ) {
+        if ( false ) {
             // DEBUGGING CODE (Change to true to dynamically go to any page you want on load.)
             var debugHandler = Ext.bind(function() {
                 this.wizard.goToPage( 3 );
