@@ -3,16 +3,19 @@ import time
 import sys
 import pdb
 import os
+import re
 from jsonrpc import ServiceProxy
 from jsonrpc import JSONRPCException
 from uvm import Manager
 from uvm import Uvm
 from untangle_tests import ClientControl
 from untangle_tests import TestDict
+from untangle_tests import SystemProperties
 
 uvmContext = Uvm().getUvmContext()
 defaultRackId = 1
 clientControl = ClientControl()
+systemProperties = SystemProperties()
 nodeData = None
 node = None
 nodeDataAD = None
@@ -137,9 +140,20 @@ class CaptureTests(unittest.TestCase):
         nodeData['authenticationType']="ACTIVE_DIRECTORY"
         nodeData['pageType'] = "BASIC_LOGIN"
         node.setSettings(nodeData)
-        result = clientControl.runCommand("wget -4 -t 2 --timeout=5 -a /tmp/capture_test_021.log -O /tmp/capture_test_021.out http://www.google.com/")
+        # check that basic captive page is shown
+        result = clientControl.runCommand("wget -4 -t 2 --timeout=5 -a /tmp/capture_test_030.log -O /tmp/capture_test_030.out http://www.google.com/")
         assert (result == 0)
-        search = clientControl.runCommand("grep -q 'username and password' /tmp/capture_test_021.out")
+        search = clientControl.runCommand("grep -q 'username and password' /tmp/capture_test_030.out")
+        assert (search == 0)
+        # print 'Login page found'  # debug line
+        # check if AD login and password 
+        appid = str(node.getNodeSettings()["id"])
+        # print 'appid is %s' % appid  # debug line
+        # get the IP address of the capture page 
+        gatewayIPAddress = systemProperties.internalInterfaceIP()
+        # print 'gatewayIPAddress is %s' % gatewayIPAddress
+        result = clientControl.runCommand("wget -a /tmp/capture_test_030a.log -O /tmp/capture_test_030a.out  \'http://" + gatewayIPAddress + "/capture/handler.py/authpost?username=atsadmin&password=passwd&nonce=9abd7f2eb5ecd82b&method=GET&appid=" + appid + "&host=test.untangle.com&uri=/\'",True)
+        search = clientControl.runCommand("grep -q 'Hi!' /tmp/capture_test_030a.out")
         assert (search == 0)
 
     def test_999_finalTearDown(self):
