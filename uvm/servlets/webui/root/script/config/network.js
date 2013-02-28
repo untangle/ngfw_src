@@ -1011,78 +1011,6 @@ if (!Ung.hasResource["Ung.Network"]) {
                     width:55
                 }],
                 columnsDefaultSortable: false,
-
-                initComponent: function() {
-                    this.rowEditor = Ext.create('Ung.RowEditorWindow',{
-                        grid: this,
-                        sizeToComponent: this.settingsCmp,
-                        inputLines: this.rowEditorInputLines,
-                        rowEditorLabelWidth: 100,
-                        populate: function(record, addMode) {
-                            return this.populateTree(record, addMode);
-                        },
-                        // updateAction is called to update the record after the edit
-                        updateAction: function() {
-                            return this.updateActionTree();
-                        },
-                        isDirty: function() {
-                            if (this.record !== null) {
-                                if (this.inputLines) {
-                                    for (var i = 0; i < this.inputLines.length; i++) {
-                                        var inputLine = this.inputLines[i];
-                                        if(inputLine.dataIndex!=null) {
-                                            if (this.record.get(inputLine.dataIndex) != inputLine.getValue()) {
-                                                return true;
-                                            }
-                                        }
-                                        /* for fieldsets */
-                                        if(inputLine.items !=null && inputLine.items.dataIndex != null) {
-                                            if (this.record.get(inputLine.items.dataIndex) != inputLine.items.getValue()) {
-                                                return true;
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                            return Ext.getCmp('portForwardBuilder').isDirty();
-                        },
-                        isFormValid: function() {
-                            for (var i = 0; i < this.inputLines.length; i++) {
-                                var item = null;
-                                if ( this.inputLines.get != null ) {
-                                    item = this.inputLines.get(i);
-                                } else {
-                                    item = this.inputLines[i];
-                                }
-                                if ( item == null ) {
-                                    continue;
-                                }
-
-                                if ( item.isValid != null) {
-                                    if(!item.isValid()) {
-                                        return false;
-                                    }
-                                } else if(item.items !=null && item.items.getCount()>0) {
-                                    /* for fieldsets */
-                                    for (var j = 0; j < item.items.getCount(); j++) {
-                                        var subitem=item.items.get(j);
-                                        if ( subitem == null ) {
-                                            continue;
-                                        }
-
-                                        if ( subitem.isValid != null && !subitem.isValid()) {
-                                            return false;
-                                        }
-                                    }                                    
-                                }
-                                
-                            }
-                            return true;
-                        }
-                    });
-                    Ung.EditorGrid.prototype.initComponent.call(this);
-                },
-
                 rowEditorInputLines: [{
                     xtype:'checkbox',
                     name: "Enable Port Forward Rule",
@@ -1105,28 +1033,28 @@ if (!Ung.hasResource["Ung.Network"]) {
                         anchor:"98%",
                         width: 900,
                         dataIndex: "matchers",
-                        matchers: Ung.NetworkUtil.getPortForwardMatchers(this),
-                        id:'portForwardBuilder'
+                        matchers: Ung.NetworkUtil.getPortForwardMatchers(this)
                     }]
                 }, {
                     xtype: 'fieldset',
                     cls:'description',
                     title: i18n._('Perform the following action(s):'),
-                    border: false
-                }, {
-                    xtype:'textfield',
-                    name: "newDestination",
-                    allowBlank: false,
-                    dataIndex: "newDestination",
-                    fieldLabel: this.i18n._("New Destination"),
-                    vtype: 'ipAddress'
-                }, {
-                    xtype:'textfield',
-                    name: "newPort",
-                    allowBlank: false,
-                    dataIndex: "newPort",
-                    fieldLabel: this.i18n._("New Port (optional)"),
-                    vtype: 'port'
+                    border: false,
+                    items: [{
+                        xtype:'textfield',
+                        name: "newDestination",
+                        allowBlank: false,
+                        dataIndex: "newDestination",
+                        fieldLabel: this.i18n._("New Destination"),
+                        vtype: 'ipAddress'
+                    }, {
+                        xtype:'textfield',
+                        name: "newPort",
+                        allowBlank: false,
+                        dataIndex: "newPort",
+                        fieldLabel: this.i18n._("New Port (optional)"),
+                        vtype: 'port'
+                    }]
                 }]
             });
             
@@ -1203,84 +1131,6 @@ if (!Ung.hasResource["Ung.Network"]) {
                     flex:1
                 }],
                 columnsDefaultSortable: false,
-
-                initComponent: function() {
-                    this.rowEditor = Ext.create('Ung.RowEditorWindow',{
-                        grid: this,
-                        sizeToComponent: this.settingsCmp,
-                        inputLines: this.rowEditorInputLines,
-                        rowEditorLabelWidth: 100,
-                        populate: function(record, addMode) {
-                            return this.populateTree(record, addMode);
-                        },
-                        // updateAction is called to update the record after the edit
-                        updateAction: function() {
-                            return this.updateActionTree();
-                        },
-                        isDirty: function() {
-                            if (this.record !== null) {
-                                if (this.inputLines) {
-                                    for (var i = 0; i < this.inputLines.length; i++) {
-                                        var inputLine = this.inputLines[i];
-                                        if(inputLine.dataIndex!=null) {
-                                            if (this.record.get(inputLine.dataIndex) != inputLine.getValue()) {
-                                                return true;
-                                            }
-                                        }
-                                        /* for fieldsets */
-                                        if(inputLine.items !=null && inputLine.items.dataIndex != null) {
-                                            if (this.record.get(inputLine.items.dataIndex) != inputLine.items.getValue()) {
-                                                return true;
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                            return Ext.getCmp('natRuleBuilder').isDirty();
-                        },
-                        isFormValid: function() {
-                            if ( Ext.getCmp("newSourceType").getValue() == false ) {
-                                if ( Ext.getCmp("newSourceField").getValue() == null ||
-                                     Ext.getCmp("newSourceField").getValue() == "" )
-                                    return false;
-                            }
-
-                            for (var i = 0; i < this.inputLines.length; i++) {
-                                var item = null;
-                                if ( this.inputLines.get != null ) {
-                                    item = this.inputLines.get(i);
-                                } else {
-                                    item = this.inputLines[i];
-                                }
-                                if ( item == null ) {
-                                    continue;
-                                }
-
-                                if ( item.isValid != null) {
-                                    if(!item.isValid()) {
-                                        return false;
-                                    }
-                                } else if(item.items !=null && item.items.getCount()>0) {
-                                    /* for fieldsets */
-                                    for (var j = 0; j < item.items.getCount(); j++) {
-                                        var subitem=item.items.get(j);
-                                        if ( subitem == null ) {
-                                            continue;
-                                        }
-
-                                        if ( subitem.isValid != null && !subitem.isValid()) {
-                                            return false;
-                                        }
-                                    }                                    
-                                }
-                                
-                            }
-                            return true;
-                        }
-                    });
-                    Ung.EditorGrid.prototype.initComponent.call(this);
-                },
-
                 rowEditorInputLines: [{
                     xtype:'checkbox',
                     name: "Enable NAT Rule",
@@ -1303,48 +1153,48 @@ if (!Ung.hasResource["Ung.Network"]) {
                         anchor:"98%",
                         width: 900,
                         dataIndex: "matchers",
-                        matchers: Ung.NetworkUtil.getNatRuleMatchers(this),
-                        id:'natRuleBuilder'
+                        matchers: Ung.NetworkUtil.getNatRuleMatchers(this)
                     }]
                 }, {
                     xtype: 'fieldset',
                     cls:'description',
                     title: i18n._('Perform the following action(s):'),
-                    border: false
-                }, {
-                    id: "newSourceType",
-                    xtype: "combo",
-                    name: "auto",
-                    allowBlank: false,
-                    dataIndex: "auto",
-                    fieldLabel: this.i18n._("New Source"),
-                    editable: false,
-                    store: [[true,i18n._('Auto')], [false,i18n._('Custom')]],
-                    valueField: "value",
-                    displayField: "displayName",
-                    queryMode: 'local',
-                    triggerAction: 'all',
-                    listClass: 'x-combo-list-small',
-                    listeners: {
-                        select: Ext.bind(function(combo, ewVal, oldVal) {
-                            if (combo.value == true) /* Auto */ {
-                                Ext.getCmp('newSourceField').disable();
-                                Ext.getCmp('newSourceField').setVisible(false);
-                            } else {
-                                Ext.getCmp('newSourceField').enable();
-                                Ext.getCmp('newSourceField').setVisible(true);
-                            }
-                        }, this )
-                    }
-                }, {
-                    id: 'newSourceField',
-                    xtype:'textfield',
-                    name: "newSource",
-                    allowBlank: true,
-                    dataIndex: "newSource",
-                    fieldLabel: this.i18n._("New Source"),
-                    hidden: true,
-                    vtype: 'ipAddress'
+                    border: false,
+                    items: [{
+                        id: "newSourceType",
+                        xtype: "combo",
+                        name: "auto",
+                        allowBlank: false,
+                        dataIndex: "auto",
+                        fieldLabel: this.i18n._("New Source"),
+                        editable: false,
+                        store: [[true,i18n._('Auto')], [false,i18n._('Custom')]],
+                        valueField: "value",
+                        displayField: "displayName",
+                        queryMode: 'local',
+                        triggerAction: 'all',
+                        listClass: 'x-combo-list-small',
+                        listeners: {
+                            select: Ext.bind(function(combo, ewVal, oldVal) {
+                                if (combo.value == true) /* Auto */ {
+                                    Ext.getCmp('newSourceField').disable();
+                                    Ext.getCmp('newSourceField').setVisible(false);
+                                } else {
+                                    Ext.getCmp('newSourceField').enable();
+                                    Ext.getCmp('newSourceField').setVisible(true);
+                                }
+                            }, this )
+                        }
+                    }, {
+                        id: 'newSourceField',
+                        xtype:'textfield',
+                        name: "newSource",
+                        allowBlank: true,
+                        dataIndex: "newSource",
+                        fieldLabel: this.i18n._("New Source"),
+                        hidden: true,
+                        vtype: 'ipAddress'
+                    }]
                 }],
                 
                 syncRuleEditorComponents: function () {
@@ -1441,78 +1291,6 @@ if (!Ung.hasResource["Ung.Network"]) {
                     width:55
                 }],
                 columnsDefaultSortable: false,
-
-                initComponent: function() {
-                    this.rowEditor = Ext.create('Ung.RowEditorWindow',{
-                        grid: this,
-                        sizeToComponent: this.settingsCmp,
-                        inputLines: this.rowEditorInputLines,
-                        rowEditorLabelWidth: 100,
-                        populate: function(record, addMode) {
-                            return this.populateTree(record, addMode);
-                        },
-                        // updateAction is called to update the record after the edit
-                        updateAction: function() {
-                            return this.updateActionTree();
-                        },
-                        isDirty: function() {
-                            if (this.record !== null) {
-                                if (this.inputLines) {
-                                    for (var i = 0; i < this.inputLines.length; i++) {
-                                        var inputLine = this.inputLines[i];
-                                        if(inputLine.dataIndex!=null) {
-                                            if (this.record.get(inputLine.dataIndex) != inputLine.getValue()) {
-                                                return true;
-                                            }
-                                        }
-                                        /* for fieldsets */
-                                        if(inputLine.items !=null && inputLine.items.dataIndex != null) {
-                                            if (this.record.get(inputLine.items.dataIndex) != inputLine.items.getValue()) {
-                                                return true;
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                            return Ext.getCmp('bypassRuleBuilder').isDirty();
-                        },
-                        isFormValid: function() {
-                            for (var i = 0; i < this.inputLines.length; i++) {
-                                var item = null;
-                                if ( this.inputLines.get != null ) {
-                                    item = this.inputLines.get(i);
-                                } else {
-                                    item = this.inputLines[i];
-                                }
-                                if ( item == null ) {
-                                    continue;
-                                }
-
-                                if ( item.isValid != null) {
-                                    if(!item.isValid()) {
-                                        return false;
-                                    }
-                                } else if(item.items !=null && item.items.getCount()>0) {
-                                    /* for fieldsets */
-                                    for (var j = 0; j < item.items.getCount(); j++) {
-                                        var subitem=item.items.get(j);
-                                        if ( subitem == null ) {
-                                            continue;
-                                        }
-
-                                        if ( subitem.isValid != null && !subitem.isValid()) {
-                                            return false;
-                                        }
-                                    }                                    
-                                }
-                                
-                            }
-                            return true;
-                        }
-                    });
-                    Ung.EditorGrid.prototype.initComponent.call(this);
-                },
-
                 rowEditorInputLines: [{
                     xtype:'checkbox',
                     name: "Enable Bypass Rule",
@@ -1535,27 +1313,27 @@ if (!Ung.hasResource["Ung.Network"]) {
                         anchor:"98%",
                         width: 900,
                         dataIndex: "matchers",
-                        matchers: Ung.NetworkUtil.getBypassRuleMatchers(this),
-                        id:'bypassRuleBuilder'
+                        matchers: Ung.NetworkUtil.getBypassRuleMatchers(this)
                     }]
                 }, {
                     xtype: 'fieldset',
                     cls:'description',
                     title: i18n._('Perform the following action(s):'),
-                    border: false
-                }, {
-                    xtype: "combo",
-                    name: "bypass",
-                    allowBlank: false,
-                    dataIndex: "bypass",
-                    fieldLabel: this.i18n._("Bypass"),
-                    editable: false,
-                    store: [[true,i18n._('Bypass')], [false,i18n._('Capture')]],
-                    valueField: "value",
-                    displayField: "displayName",
-                    queryMode: 'local',
-                    triggerAction: 'all',
-                    listClass: 'x-combo-list-small'
+                    border: false,
+                    items: [{
+                        xtype: "combo",
+                        name: "bypass",
+                        allowBlank: false,
+                        dataIndex: "bypass",
+                        fieldLabel: this.i18n._("Bypass"),
+                        editable: false,
+                        store: [[true,i18n._('Bypass')], [false,i18n._('Capture')]],
+                        valueField: "value",
+                        displayField: "displayName",
+                        queryMode: 'local',
+                        triggerAction: 'all',
+                        listClass: 'x-combo-list-small'
+                    }]
                 }]
             });
             
