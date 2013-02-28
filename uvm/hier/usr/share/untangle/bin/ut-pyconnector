@@ -13,8 +13,9 @@ import random
 import signal
 import base64
 import re
+import traceback
+import ssl
 
-#import ssl # We must use stunnel to do the SSL until python 2.6 or greater
 from uvm import Manager
 from uvm import Uvm
 
@@ -22,7 +23,6 @@ UNTANGLE_CMD_PORTS   = [443,80,4443,587,993,995,8080,53,25]
 UNTANGLE_CMD_SERVERS = ["cmd.untangle.com", '74.123.28.85']
 RETRY_TIME_LONG = 60
 RETRY_TIME_SHORT = 10
-STUNNEL_LOCAL_PORT = 808
 CERTS_FILE = '/tmp/pyconnector/certs.pem'
 
 uvm = None
@@ -103,27 +103,19 @@ def connect():
 
      debug("Connecting to %s:%i..." % (UNTANGLE_CMD_SERVERS[0],UNTANGLE_CMD_PORTS[0]))
 
-     # start stunnel (python2.6 will not need this)
-     write_cert_file()
-     cmd_str = "sudo killall -9 stunnel4 >/dev/null 2>&1 ; sudo stunnel -c -O l:SO_KEEPALIVE=1 -O r:SO_KEEPALIVE=1 -d localhost:%i -r %s:%i -A %s -v 3 -D 6" % (STUNNEL_LOCAL_PORT, UNTANGLE_CMD_SERVERS[0], UNTANGLE_CMD_PORTS[0], CERTS_FILE)
-     #debug(cmd_str)
-     os.system(cmd_str)
-   
-     # rotate the port list so it tries a different port next time
-     UNTANGLE_CMD_SERVERS = UNTANGLE_CMD_SERVERS[1:] + UNTANGLE_CMD_SERVERS[:1]
-     UNTANGLE_CMD_PORTS   = UNTANGLE_CMD_PORTS[1:]   + UNTANGLE_CMD_PORTS[:1]
-
      try:
+          write_cert_file()
           command_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-          # in python 2.6 or later connect directly
-          # command_socket = ssl.wrap_socket( command_socket, keyfile="xxx", certfile="xxx", xxx)
-          # command_socket.connect( ( cmd_server, UNTANGLE_CMD_PORTS[0] ) )
-          # in python 2.5 connect to stunnel
-          command_socket.connect( ( "127.0.0.1", STUNNEL_LOCAL_PORT ) )
+          command_socket = ssl.wrap_socket( command_socket, ca_certs=CERTS_FILE, cert_reqs=ssl.CERT_REQUIRED )
+          command_socket.connect( ( UNTANGLE_CMD_SERVERS[0], UNTANGLE_CMD_PORTS[0] ) )
      except Exception,e:
           sys.stderr.write("Failed to connect: (%s)\n" % e )
           reset_command_socket()
           return
+     finally:
+          # rotate the port list to try a new port
+          UNTANGLE_CMD_SERVERS = UNTANGLE_CMD_SERVERS[1:] + UNTANGLE_CMD_SERVERS[:1]
+          UNTANGLE_CMD_PORTS   = UNTANGLE_CMD_PORTS[1:]   + UNTANGLE_CMD_PORTS[:1]
 
      command_socket_file = command_socket.makefile("rb")
 
@@ -151,7 +143,7 @@ def read_from_cmd():
      if command_socket == None:
           reset_command_socket()
           debug("Failed to connect. Retrying in %i seconds..." % RETRY_TIME_LONG)
-          time.sleep(RETRY_TIME_LONG); return;
+          time.sleep( RETRY_TIME_LONG ); return;
      else:
           write_status_file(True)
 
@@ -161,25 +153,25 @@ def read_from_cmd():
           if cmd == "":
                sys.stderr.write("Disconnected. Retrying in %i seconds...\n" % RETRY_TIME_SHORT)
                reset_command_socket()
-               time.sleep(RETRY_TIME_SHORT); return;
+               time.sleep( RETRY_TIME_SHORT ); return;
      except Exception,e:
           # this can happen frequently using stunnel 
           # because it connects to stunnel even when the server is unreachable
           # as such, sleep for LONG time
           sys.stderr.write("Failed to read: (%s)\n" % e )
           reset_command_socket()
-          time.sleep(RETRY_TIME_LONG); return;
+          time.sleep( RETRY_TIME_LONG ); return;
 
-   # run command
+     # run command
      output = run_cmd(cmd)
      debug("Result: %s" % output.strip())
      try:
           output_len = len(output)
-          command_socket.send(str(output_len) + "\n")
-          command_socket.send(str(output))
+          command_socket.send(str(output_len) + "\n" + str(output))
      except Exception,e:
           sys.stderr.write("Failed to write: (%s)\n" % e )
           reset_command_socket()
+          time.sleep( RETRY_TIME_SHORT ); return;
 
 def reset_command_socket():
      global command_socket
