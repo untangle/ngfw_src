@@ -1,21 +1,6 @@
-/*
- * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc.
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License, version 2,
- * as published by the Free Software Foundation.
- *
- * This program is distributed in the hope that it will be useful, but
- * AS-IS and WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE, TITLE, or
- * NONINFRINGEMENT.  See the GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
+/**
+ * $Id$
  */
-
 package com.untangle.uvm.engine;
 
 import java.io.File;
@@ -32,13 +17,10 @@ import com.untangle.uvm.vnet.Pipeline;
 
 /**
  * Implementation of <code>Pipeline</code>.
- *
- * @author <a href="mailto:amread@untangle.com">Aaron Read</a>
- * @version 1.0
  */
 class PipelineImpl implements Pipeline
 {
-    private static final File UVM_TMP = new File(System.getProperty("uvm.tmp.dir"));
+    private static final File TMP_DIR = new File("/tmp/");
 
     private final List<ArgonConnectorFitting> argonConnectorFittings;
     private final String sessionPrefix;
@@ -141,7 +123,7 @@ class PipelineImpl implements Pipeline
             sb.append(sessionPrefix);
             name = sb.toString();
         }
-        File f = File.createTempFile(name, null, UVM_TMP);
+        File f = File.createTempFile(name, null, TMP_DIR);
         synchronized (files) {
             files.add(f);
         }

@@ -195,8 +195,6 @@ public class Main
         System.setProperty("uvm.conf.dir", uvmConf);
         String uvmSettings = uvmHome + "/settings";
         System.setProperty("uvm.settings.dir", uvmSettings);
-        String uvmTmp = "/tmp";
-        System.setProperty("uvm.tmp.dir", uvmTmp);
         String uvmSkins = "/var/www/skins";
         System.setProperty("uvm.skins.dir", uvmSkins);
         String uvmLang = uvmHome + "/lang";
@@ -209,7 +207,6 @@ public class Main
         logger.info("uvm.web.dir      " + uvmWeb);
         logger.info("uvm.conf.dir     " + uvmConf);
         logger.info("uvm.settings.dir " + uvmSettings);
-        logger.info("uvm.tmp.dir      " + uvmTmp);
         logger.info("uvm.skins.dir    " + uvmSkins);
     }
 

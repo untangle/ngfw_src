@@ -61,11 +61,18 @@ public class NetworkManagerImpl implements NetworkManager
         if ( readSettings == null && UvmContextFactory.context().isDevel() ) {
             try {
                 // check for "backup" settings in /etc
+                logger.info("Reading Network Settings from " + this.settingsFilenameBackup);
                 readSettings = settingsManager.load( NetworkSettings.class, this.settingsFilenameBackup );
+                logger.info("Reading Network Settings from " + this.settingsFilenameBackup + " = " + readSettings);
                 
-                // check for "backup" settings in /usr/share/untangle/settings/
-                if (readSettings == null)
-                    readSettings = settingsManager.load( NetworkSettings.class, "/usr/share/untangle/settings/untangle-vm/network" );
+                if (readSettings == null) {
+                    // XXX this doesn't work because we re-link settings to our local settings
+                    // check for "backup" settings in /usr/share/untangle/settings/
+                    String rootLocation = "/usr/share/untangle/settings/untangle-vm/network";
+                    logger.info("Reading Network Settings from " + rootLocation);
+                    readSettings = settingsManager.load( NetworkSettings.class, rootLocation );
+                    logger.info("Reading Network Settings from " + rootLocation + " = " + readSettings);
+                }
                     
                 if (readSettings != null)
                     settingsManager.save( NetworkSettings.class, this.settingsFilename, readSettings );
