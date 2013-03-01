@@ -1235,7 +1235,7 @@ Ext.define('Ung.SetupWizard.InternalNetwork', {
         var firstNonWan = this.getFirstNonWanSettings( Ung.SetupWizard.CurrentValues.networkSettings );
         
         if ( value == 'BRIDGED' ) {
-            firstNonWan['config'] = 'BRIDGED';
+            firstNonWan['configType'] = 'BRIDGED';
             this.setFirstNonWanSettings( Ung.SetupWizard.CurrentValues.networkSettings, firstNonWan );
 
             rpc.networkManager.setNetworkSettings( delegate, Ung.SetupWizard.CurrentValues.networkSettings ); 
