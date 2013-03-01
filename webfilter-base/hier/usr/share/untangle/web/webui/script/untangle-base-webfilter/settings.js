@@ -328,12 +328,15 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                     header: this.i18n._("Block"),
                     dataIndex: 'blocked',
                     fixed: true,
-                    changeRecord: function(record) {
-                        Ext.ux.CheckColumn.prototype.changeRecord.call(this, record);
-                        var blocked = record.get(this.dataIndex);
-                        if (blocked) {
-                            record.set('flagged', true);
-                        }
+                    listeners: {
+                        "checkchange": {
+                            fn: Ext.bind(function(elem, rowIndex, checked) {
+                                    if (checked) {
+                                        var record = this.gridCategories.getStore().getAt(rowIndex);
+                                        record.set('flagged', true);
+                                    }
+                                }, this)
+                            }
                     }
                 },
                 {
@@ -377,7 +380,7 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                                 fn: Ext.bind(function(elem, checked) {
                                         var rowEditor = this.gridCategories.rowEditor;
                                         if (checked) {
-                                            rowEditor.inputLines[2].setValue(true);
+                                            rowEditor.query('checkbox[name="Flag"]')[0].setValue(true);
                                         }
                                     }, this)
                                 }
@@ -1172,4 +1175,4 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
         }
     });
 }
-//@ sourceURL=webfilter-settings.js
+//@ sourceURL=base-webfilter-settings.js

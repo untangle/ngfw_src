@@ -422,7 +422,7 @@ if (!Ung.hasResource["Ung.Reporting"]) {
                         fieldLabel: this.i18n._("Confirm Password"),
                         width: 300
                     }],
-                validate: Ext.bind(function(inputLines) {
+                validate: Ext.bind(function(items) {
                     //validate password match
                     var pwd = Ext.getCmp("edit_reporting_user_password_" + fieldID);
                     var confirmPwd = Ext.getCmp("edit_reporting_confirm_password_" + fieldID);

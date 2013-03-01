@@ -163,12 +163,6 @@ if (!Ung.hasResource["Ung.Administration"]) {
                 }
             });
 
-          
-            /* getID returns the same value, and this causes the password
-             * field to not be rendered the second time around since it has an
-             * existing ID. */
-            var fieldID = "" + Math.round( Math.random() * 1000000 );
-
             this.panelAdministration = Ext.create('Ext.panel.Panel',{
                 name: 'panelAdministration',
                 helpSource: 'administration',
@@ -264,9 +258,8 @@ if (!Ung.hasResource["Ung.Administration"]) {
                     },{
                         xtype: "textfield",
                         inputType: 'password',
-                        name: "Password",
+                        name: "password",
                         dataIndex: "password",
-                        id: 'administration_rowEditor_password_'+ fieldID,
                         fieldLabel: this.i18n._("Password"),
                         width: 400,
                         minLength: 3,
@@ -274,9 +267,8 @@ if (!Ung.hasResource["Ung.Administration"]) {
                     },{
                         xtype: "textfield",
                         inputType: 'password',
-                        name: "Confirm Password",
+                        name: "confirmPassword",
                         dataIndex: "password",
-                        id: 'administration_rowEditor_confirm_password_'+ fieldID,
                         fieldLabel: this.i18n._("Confirm Password"),
                         width: 400
                     }]
@@ -349,9 +341,8 @@ if (!Ung.hasResource["Ung.Administration"]) {
                 inputLines: [{
                     xtype: "textfield",
                     inputType: 'password',
-                    name: "Password",
+                    name: "password",
                     dataIndex: "password",
-                    id: 'administration_rowEditor1_password_'+ fieldID,
                     fieldLabel: this.i18n._("Password"),
                     width: 400,
                     minLength: 3,
@@ -359,16 +350,15 @@ if (!Ung.hasResource["Ung.Administration"]) {
                 }, {
                     xtype: "textfield",
                     inputType: 'password',
-                    name: "Confirm Password",
+                    name: "confirmPassword",
                     dataIndex: "password",
-                    id: 'administration_rowEditor1_confirm_password_'+ fieldID,
                     fieldLabel: this.i18n._("Confirm Password"),
                     width: 400
                 }],
-                validate: Ext.bind(function(inputLines) {
+                validate: Ext.bind(function(items) {
                     //validate password match
-                    var pwd = Ext.getCmp("administration_rowEditor1_password_" + fieldID);
-                    var confirmPwd = Ext.getCmp("administration_rowEditor1_confirm_password_" + fieldID);
+                    var pwd = this.gridAdminAccounts.rowEditorChangePass.query('textfield[name="password"]')[0];
+                    var confirmPwd = this.gridAdminAccounts.rowEditorChangePass.query('textfield[name="confirmPassword"]')[0];
                     if(pwd.getValue() != confirmPwd.getValue()) {
                         pwd.markInvalid();
                         return this.i18n._('Passwords do not match');
