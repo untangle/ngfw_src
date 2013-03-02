@@ -30,7 +30,6 @@
 #include <mvutil/uthread.h>
 
 #include "netcap_globals.h"
-#include "netcap_arp.h"
 #include "netcap_server.h"
 #include "netcap_queue.h"
 #include "netcap_hook.h"
@@ -131,8 +130,6 @@ static int _netcap_init()
         ip_firstnfmark = 25;
     }
     
-    if (netcap_arp_init()<0)
-        return errlog(ERR_CRITICAL,"netcap_arp_init\n");
     if (netcap_sesstable_init()<0)
         return perrlog("netcap_sesstable_init");
     if (netcap_sessions_init()<0)
@@ -198,8 +195,6 @@ int netcap_cleanup()
         perrlog("netcap_sessions_cleanup");
     if (netcap_sesstable_cleanup()<0)
         perrlog("netcap_sesstable_cleanup");
-    if (netcap_arp_cleanup()<0)
-        return errlog(ERR_CRITICAL,"netcap_arp_init\n");
     if (netcap_sched_cleanup_z ( NULL ) < 0 )
         perrlog("netcap_sched_cleanup");
     netcap_virtual_interface_destroy();

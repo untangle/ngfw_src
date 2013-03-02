@@ -26,6 +26,4 @@ int netcap_interface_mark_to_cli_intf( int nfmark, netcap_intf_t* intf );
 
 int netcap_interface_mark_to_srv_intf( int nfmark, netcap_intf_t* intf );
 
-int netcap_interface_dst_intf( netcap_session_t* session, char* intf_name );
-
 #endif // _NETCAP_INTERFACE_H_

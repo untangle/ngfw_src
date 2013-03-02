@@ -37,7 +37,6 @@
 
 #include "libnetcap.h"
 
-#include "netcap_arp.h"
 #include "netcap_globals.h"
 
 #define NETCAP_MARK_INTF_MAX    255
@@ -88,43 +87,3 @@ int  netcap_interface_mark_to_srv_intf(int nfmark, netcap_intf_t* intf)
     return 0;
 }
 
-/**
- * Detect the destination interface for a given session
- */
-int  netcap_interface_dst_intf       ( netcap_session_t* session, char* intf_name )
-{
-    if ( session == NULL ) return errlogargs();
-
-    netcap_intf_t server_intf_index;
-    
-    if ( session->srv.intf != NF_INTF_UNKNOWN ) {
-        debug( 10, "INTERFACE: (%10u) Destination interface is already known %d\n", 
-               session->session_id, session->srv.intf );
-        return 0;
-    }
-
-    /* Need to determine the redirected destination interface, not the
-     * original destination interface */
-    /* From the reply, the source is where this session is heading, and the destination is
-     * where it is coming from, the source is unused in this function, so it doesn't really
-     * matter. */
-    struct in_addr dst = { .s_addr = session->nat_info.reply.src_address };
-    struct in_addr src = { .s_addr = session->nat_info.reply.dst_address };
-
-    if ( netcap_arp_dst_intf( &server_intf_index, session->cli.intf, &src, &dst ) < 0 ) {
-        return errlog( ERR_CRITICAL, "netcap_arp_dst_intf (%s -> %s)\n", unet_next_inet_ntoa( src.s_addr ), unet_next_inet_ntoa( dst.s_addr ) );
-    }
-
-    if (server_intf_index == 0) {
-        return errlog(ERR_WARNING,"Unable to determine destination interface: (%s -> %s)\n", unet_next_inet_ntoa( src.s_addr ), unet_next_inet_ntoa( dst.s_addr ));
-    }
-    
-    debug( 10, "INTERFACE: (%10u) Session (%s -> %s) is going out %d\n", 
-           session->session_id, unet_next_inet_ntoa( src.s_addr ), unet_next_inet_ntoa( dst.s_addr ), server_intf_index );
-
-    if (if_indextoname(server_intf_index, intf_name) == NULL) {
-        return errlog(ERR_WARNING,"if_indextoname(%i) = \"%s\"\n", server_intf_index, strerror(errno));
-    }
-        
-    return 0;
-}

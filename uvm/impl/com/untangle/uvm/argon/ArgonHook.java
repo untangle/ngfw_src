@@ -107,23 +107,22 @@ public abstract class ArgonHook implements Runnable
              * Once that is complete we must find the interfaceID and set that on the netcap session
              */
             if ( serverIntf == IntfConstants.UNKNOWN_INTF ) {
-                /* Update the server interface */
-                String serverIntfName = netcapSession.determineServerIntf();
-                InterfaceSettings intfSettings = UvmContextFactory.context().networkManager().findInterfaceSystemDev( serverIntfName );
+                logger.warn( "" + netcapSession + " destined to unknown interface, raze." );
+                raze();
+                return;
 
-                if ( intfSettings != null ) {
-                    Integer i = intfSettings.getInterfaceId();
-                    if (i != null) {
-                        serverIntf = i.intValue();
-                        netcapSession.setServerIntf(i.intValue());
-                    }
-                }
+                // /* Update the server interface */
+                // String serverIntfName = netcapSession.determineServerIntf();
+                // InterfaceSettings intfSettings = UvmContextFactory.context().networkManager().findInterfaceSystemDev( serverIntfName );
 
-                if ( IntfConstants.UNKNOWN_INTF == serverIntf ) {
-                    logger.warn( "" + netcapSession + " destined to unknown interface, raze." );
-                    raze();
-                    return;
-                }
+                // if ( intfSettings != null ) {
+                //     Integer i = intfSettings.getInterfaceId();
+                //     if (i != null) {
+                //         serverIntf = i.intValue();
+                //         netcapSession.setServerIntf(i.intValue());
+                //     }
+                // }
+
 
                 //logger.warn("NEW SESSION: " + clientIntf + " -> " + serverIntf + " (determined by route/arp)");
             } else {

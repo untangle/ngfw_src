@@ -293,27 +293,6 @@ JNIEXPORT void JNICALL JF_Session( setServerIntf )
  * Method:    raze
  * Signature: (J)I
  */
-JNIEXPORT jstring JNICALL JF_Session( determineServerIntf )
-(JNIEnv* env, jclass _this, jlong session_ptr )
-{
-    netcap_session_t* session;
-    char buf[IF_NAMESIZE];
- 
-    JLONG_TO_SESSION_NULL( session, session_ptr );
-    
-    if (netcap_interface_dst_intf( session, buf ) < 0) {
-        jmvutil_error( JMVUTIL_ERROR_ARGS, ERR_CRITICAL, "netcap_interface_dst_intf\n" );
-        return NULL;
-    }
-
-    return (*env)->NewStringUTF( env, buf );
-}
-
-/*
- * Class:     com_untangle_jnetcap_NetcapSession
- * Method:    raze
- * Signature: (J)I
- */
 JNIEXPORT void JNICALL JF_Session( raze )
 (JNIEnv* env, jclass _this, jlong session_ptr )
 {

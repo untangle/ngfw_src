@@ -176,11 +176,6 @@ public abstract class NetcapSession
         setServerIntf( pointer.value(), intf );
     }
 
-    public String determineServerIntf( )
-    {
-        return determineServerIntf( pointer.value() );
-    }
-
     public void raze()
     {
         raze( pointer.value());
@@ -204,7 +199,6 @@ public abstract class NetcapSession
 
     private static native long getSession( long id, short protocol );
     private static native void raze( long session );
-    private static native String determineServerIntf( long session );
 
     private static native int  getClientMark( long session );
     private static native void setClientMark( long session, int mark );
