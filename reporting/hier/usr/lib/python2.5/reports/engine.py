@@ -26,31 +26,35 @@ USER_DRILLDOWN = 'user-drilldown'
 HOST_DRILLDOWN = 'host-drilldown'
 EMAIL_DRILLDOWN = 'email-drilldown'
 MAIL_REPORT_BLACKLIST = ('untangle-node-boxbackup',)
-NETCONFIG_JSON_OBJ = json.loads(open('/etc/untangle-net-alpaca/netConfig.js', 'r').read())
+NETCONFIG_JSON_OBJ = json.loads(open('@PREFIX@/usr/share/untangle/settings/untangle-vm/network.js', 'r').read())
 
 def get_number_wan_interfaces():
     return len(get_wan_clause().split(','))
 
 def get_wan_clause():
     wans = []
-    for intf in NETCONFIG_JSON_OBJ['interfaceList']['list']:
-        if intf['WAN'] is not None and intf['WAN'].lower() == 'true':
+    for intf in NETCONFIG_JSON_OBJ['interfaces']['list']:
+        if intf['configType'] == 'DISABLED':
+            continue
+        if intf['isWan'] is not None and intf['isWan'].lower() == 'true':
             wans.append(intf['interfaceId'])
 
     return "(" + ','.join(wans) + ")"
 
 def get_wan_names_map():
     map = {}
-    for intf in NETCONFIG_JSON_OBJ['interfaceList']['list']:
-        if intf['WAN'] is not None and intf['WAN'].lower() == 'true':
+    for intf in NETCONFIG_JSON_OBJ['interfaces']['list']:
+        if intf['isWan'] is not None and intf['isWan'].lower() == 'true':
             map[int(intf['interfaceId'])] = intf['name']
 
     return map
 
 def get_wan_ip():
+    # FIXME
+    return "1.2.3.4"
     wans = []
-    for intf in NETCONFIG_JSON_OBJ['interfaceList']['list']:
-        if intf['WAN'] is not None and intf['WAN'].lower() == 'true':
+    for intf in NETCONFIG_JSON_OBJ['interfaces']['list']:
+        if intf['isWan'] is not None and intf['isWan'].lower() == 'true':
             if not 'primaryAddressStr' in intf:
                 return "unknown.ip"
             addr = intf['primaryAddressStr']
