@@ -99,34 +99,11 @@ public abstract class ArgonHook implements Runnable
                 logger.debug( "New thread for session id: " + sessionId + " " + sessionGlobalState );
             }
 
-            /**
-             * If the interface is not known immediately (from the marks)
-             * We must calculate it the hard way.
-             * This is often true if its destined to one of the interfaces of a bridge
-             * We must use a bunch of ARP and custom kernel calls to figure out which device its going out.
-             * Once that is complete we must find the interfaceID and set that on the netcap session
-             */
             if ( serverIntf == IntfConstants.UNKNOWN_INTF ) {
-                logger.warn( "" + netcapSession + " destined to unknown interface, raze." );
+                logger.warn( "Unknown destination interface: " + netcapSession + ". Killing session." );
                 raze();
                 return;
-
-                // /* Update the server interface */
-                // String serverIntfName = netcapSession.determineServerIntf();
-                // InterfaceSettings intfSettings = UvmContextFactory.context().networkManager().findInterfaceSystemDev( serverIntfName );
-
-                // if ( intfSettings != null ) {
-                //     Integer i = intfSettings.getInterfaceId();
-                //     if (i != null) {
-                //         serverIntf = i.intValue();
-                //         netcapSession.setServerIntf(i.intValue());
-                //     }
-                // }
-
-
-                //logger.warn("NEW SESSION: " + clientIntf + " -> " + serverIntf + " (determined by route/arp)");
             } else {
-                //logger.warn("NEW SESSION: " + clientIntf + " -> " + serverIntf + " (determined by mark)");
                 netcapSession.setServerIntf(serverIntf);
             }
 
