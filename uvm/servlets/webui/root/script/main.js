@@ -419,7 +419,7 @@ Ext.define("Ung.Main", {
             port: function(val) {
                 var minValue = 1;
                 var maxValue = 65535;
-                return (minValue <= val && val <= maxValue) || (val == 'any' || val == 'all' || val == 'n/a' || val == 'none');
+                return (minValue <= val && val <= maxValue));
             },
             portText: Ext.String.format(i18n._("The port must be an integer number between {0} and {1} or one of the following values: any, all, n/a, none."), 1, 65535),
 

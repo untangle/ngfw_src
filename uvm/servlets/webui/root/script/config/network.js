@@ -1021,12 +1021,22 @@ if (!Ung.hasResource["Ung.Network"]) {
                         fieldLabel: this.i18n._("New Destination"),
                         vtype: 'ipAddress'
                     }, {
-                        xtype:'textfield',
-                        name: "newPort",
-                        allowBlank: false,
-                        dataIndex: "newPort",
-                        fieldLabel: this.i18n._("New Port (optional)"),
-                        vtype: 'port'
+                        xtype: 'container',
+                        layout: 'column',
+                        margin: '0 0 5 0',
+                        items: [{
+                            xtype:'textfield',
+                            name: "newPort",
+                            allowBlank: true,
+                            width: 200,
+                            dataIndex: "newPort",
+                            fieldLabel: this.i18n._("New Port"),
+                            vtype: 'port'
+                        }, {
+                            xtype: 'label',
+                            html: this.i18n._("(optional)"),
+                            cls: 'boxlabel'
+                        }]
                     }]
                 }]
             });
