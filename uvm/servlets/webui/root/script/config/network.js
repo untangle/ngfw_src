@@ -495,7 +495,18 @@ if (!Ung.hasResource["Ung.Network"]) {
                         fieldLabel: this.i18n._("Secondary DNS"),
                         vtype: "ipAddress",
                         width: 300
-                    },{
+                    }, {
+                        id:'interface_v4Aliases',
+                        style: "border:1px solid;", // UGLY FIXME
+                        xtype:'fieldset',
+                        title: this.i18n._("IPv4 Aliases"),
+                        collapsible: true,
+                        collapsed: false,
+                        //dataIndex: "v4Aliases",
+                        items: [{
+                            html: "FIXME: aliases grid<br/>"
+                        }]
+                    }, {
                         id: 'interface_v4ExtraOptions',
                         style: "border:1px solid;", // UGLY FIXME
                         xtype: 'fieldset',
@@ -672,8 +683,6 @@ if (!Ung.hasResource["Ung.Network"]) {
                     triggerAction: "all",
                     queryMode: 'local',
                     editable: false
-                }, {
-                    html: "FIXME: aliases grid<br/>"
                 }, {
                     html: "FIXME: MTU settings<br/>"
                 }],

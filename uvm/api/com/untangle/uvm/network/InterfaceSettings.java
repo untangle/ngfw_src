@@ -52,6 +52,8 @@ public class InterfaceSettings implements Serializable, JSONString
     private InetAddress v4AutoDns1Override; /* the dhcp override dns1 (null means don't override) */
     private InetAddress v4AutoDns2Override; /* the dhcp override dns2 (null means don't override) */
 
+    private List<InterfaceAlias> v4Aliases = new LinkedList<InterfaceAlias>();
+    
     private String      v4PPPoEUsername; /* PPPoE Username */
     private String      v4PPPoEPassword; /* PPPoE Password */
     private Boolean     v4PPPoEUsePeerDns; /* If the DNS should be determined via PPP */
@@ -165,6 +167,9 @@ public class InterfaceSettings implements Serializable, JSONString
 
     public Boolean getV4NatIngressTraffic( ) { return this.v4NatIngressTraffic; }
     public void setV4NatIngressTraffic( Boolean newValue ) { this.v4NatIngressTraffic = newValue; }
+
+    public List<InterfaceAlias> getV4Aliases( ) { return this.v4Aliases; }
+    public void setV4Aliases( List<InterfaceAlias> newValue ) { this.v4Aliases = newValue; }
     
     public V6ConfigType getV6ConfigType( ) { return this.v6ConfigType; }
     public void setV6ConfigType( V6ConfigType newValue ) { this.v6ConfigType = newValue; }
@@ -208,11 +213,22 @@ public class InterfaceSettings implements Serializable, JSONString
     public InetAddress getDhcpDnsOverride() { return this.dhcpDnsOverride; }
     public void setDhcpDnsOverride( InetAddress newValue ) { this.dhcpDnsOverride = newValue; }
 
+    public class InterfaceAlias
+    {
+        private InetAddress v4StaticAddress; /* the address  of this interface if configured static, or dhcp override */ 
+        private Integer     v4StaticPrefix; /* the netmask of this interface if configured static, or dhcp override */
+
+        public InetAddress getV4StaticAddress( ) { return this.v4StaticAddress; }
+        public void setV4StaticAddress( InetAddress newValue ) { this.v4StaticAddress = newValue; }
+
+        public Integer getV4StaticPrefix( ) { return this.v4StaticPrefix; }
+        public void setV4StaticPrefix( Integer newValue ) { this.v4StaticPrefix = newValue; }
+    }
 
     /**
      * Below is a collection of convenience methods
-     * These are getters without setters so they can be used and they will in the JSON equivalent of this object
-     * However, there are not actually settings
+     * These are getters without setters so they can be used, and they will be in the JSON equivalent of this object.
+     * However, there are not actually settings - they are derived from other settings.
      */
 
     public boolean getDisabled()
@@ -250,7 +266,6 @@ public class InterfaceSettings implements Serializable, JSONString
             return null;
         return this.V4_PREFIX_NETMASKS[this.dhcpPrefixOverride];
     }
-
 
     static
     {
