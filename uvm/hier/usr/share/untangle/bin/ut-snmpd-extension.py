@@ -6,7 +6,7 @@ as we need to run in unbuffered mode."""
 import os.path, signal, sys, time
 
 # in-house modules
-sys.path.append("@PREFIX@/usr/lib/python2.5")
+sys.path.append("@PREFIX@/usr/lib/python2.6")
 from untangle.log import *
 
 sys.path.append("@PREFIX@/usr/share/untangle/pycli")

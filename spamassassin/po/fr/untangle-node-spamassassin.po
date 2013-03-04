@@ -360,23 +360,23 @@ msgstr "Evènements de Spam"
 msgid "Identity Theft Events"
 msgstr "Evènements d'usurpation d'identité"
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_spamassassin.py:23
+#: ../hier/usr/lib/python2.6/reports/node/untangle_node_spamassassin.py:23
 msgid "Spam"
 msgstr "Spam"
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_spamassassin.py:23
+#: ../hier/usr/lib/python2.6/reports/node/untangle_node_spamassassin.py:23
 msgid "Clean"
 msgstr "Nettoyer"
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_spamassassin.py:23
+#: ../hier/usr/lib/python2.6/reports/node/untangle_node_spamassassin.py:23
 msgid "Hourly Spam Rate"
 msgstr "Vitesse de Spam horaire"
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_spamassassin.py:23
+#: ../hier/usr/lib/python2.6/reports/node/untangle_node_spamassassin.py:23
 msgid "Spam Rate"
 msgstr ""
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_spamassassin.py:23
+#: ../hier/usr/lib/python2.6/reports/node/untangle_node_spamassassin.py:23
 msgid "Top Ten Spammed"
 msgstr "Top Ten des spammé(es)"
 

@@ -152,7 +152,7 @@ msgid "Timestamp"
 msgstr ""
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-ips/settings.js:355
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_ips.py:262
+#: ../hier/usr/lib/python2.6/reports/node/untangle_node_ips.py:262
 msgid "Client"
 msgstr ""
 
@@ -161,7 +161,7 @@ msgid "Username"
 msgstr ""
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-ips/settings.js:365
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_ips.py:267
+#: ../hier/usr/lib/python2.6/reports/node/untangle_node_ips.py:267
 msgid "Blocked"
 msgstr ""
 
@@ -174,7 +174,7 @@ msgid "Rule Ddescription"
 msgstr ""
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-ips/settings.js:383
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_ips.py:268
+#: ../hier/usr/lib/python2.6/reports/node/untangle_node_ips.py:268
 msgid "Server"
 msgstr ""
 
@@ -198,74 +198,74 @@ msgstr ""
 msgid "Sessions blocked"
 msgstr ""
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_ips.py:55
+#: ../hier/usr/lib/python2.6/reports/node/untangle_node_ips.py:55
 msgid "Summary Report"
 msgstr ""
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_ips.py:75
+#: ../hier/usr/lib/python2.6/reports/node/untangle_node_ips.py:75
 msgid "scanned"
 msgstr ""
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_ips.py:76
+#: ../hier/usr/lib/python2.6/reports/node/untangle_node_ips.py:76
 msgid "sessions and detected"
 msgstr ""
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_ips.py:77
+#: ../hier/usr/lib/python2.6/reports/node/untangle_node_ips.py:77
 msgid "attacks of which"
 msgstr ""
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_ips.py:78
+#: ../hier/usr/lib/python2.6/reports/node/untangle_node_ips.py:78
 msgid "were blocked"
 msgstr ""
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_ips.py:122
+#: ../hier/usr/lib/python2.6/reports/node/untangle_node_ips.py:122
 msgid "Top Attacks (by Hits)"
 msgstr ""
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_ips.py:163
+#: ../hier/usr/lib/python2.6/reports/node/untangle_node_ips.py:163
 msgid "Hits"
 msgstr ""
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_ips.py:170
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_ips.py:179
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_ips.py:241
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_ips.py:245
+#: ../hier/usr/lib/python2.6/reports/node/untangle_node_ips.py:170
+#: ../hier/usr/lib/python2.6/reports/node/untangle_node_ips.py:179
+#: ../hier/usr/lib/python2.6/reports/node/untangle_node_ips.py:241
+#: ../hier/usr/lib/python2.6/reports/node/untangle_node_ips.py:245
 msgid "Attacks"
 msgstr ""
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_ips.py:171
+#: ../hier/usr/lib/python2.6/reports/node/untangle_node_ips.py:171
 msgid "Hits Per Day"
 msgstr ""
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_ips.py:231
+#: ../hier/usr/lib/python2.6/reports/node/untangle_node_ips.py:231
 msgid "Avg Attacks Blocked"
 msgstr ""
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_ips.py:233
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_ips.py:236
+#: ../hier/usr/lib/python2.6/reports/node/untangle_node_ips.py:233
+#: ../hier/usr/lib/python2.6/reports/node/untangle_node_ips.py:236
 msgid "Blocks"
 msgstr ""
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_ips.py:235
+#: ../hier/usr/lib/python2.6/reports/node/untangle_node_ips.py:235
 msgid "Max Attacks Blocked"
 msgstr ""
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_ips.py:253
+#: ../hier/usr/lib/python2.6/reports/node/untangle_node_ips.py:253
 msgid "Attack Events"
 msgstr ""
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_ips.py:259
+#: ../hier/usr/lib/python2.6/reports/node/untangle_node_ips.py:259
 msgid "Time"
 msgstr ""
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_ips.py:264
+#: ../hier/usr/lib/python2.6/reports/node/untangle_node_ips.py:264
 msgid "User"
 msgstr ""
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_ips.py:266
+#: ../hier/usr/lib/python2.6/reports/node/untangle_node_ips.py:266
 msgid "SID:description"
 msgstr ""
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_ips.py:269
+#: ../hier/usr/lib/python2.6/reports/node/untangle_node_ips.py:269
 msgid "Port"
 msgstr ""

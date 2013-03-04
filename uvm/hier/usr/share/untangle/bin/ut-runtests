@@ -3,14 +3,14 @@ import sys
 import getopt
 import signal
 import os
-sys.path.insert(0, '@PREFIX@/usr/lib/python2.5/')
+sys.path.insert(0, '@PREFIX@/usr/lib/python2.6/')
 
 import unittest
 import uvm
 import untangle_tests
 from   untangle_tests import *
 
-for f in os.listdir('@PREFIX@/usr/lib/python2.5/untangle_tests'):
+for f in os.listdir('@PREFIX@/usr/lib/python2.6/untangle_tests'):
     if f.endswith('py'):
         (m, e) = os.path.splitext(f)
         __import__('untangle_tests.%s' % m)

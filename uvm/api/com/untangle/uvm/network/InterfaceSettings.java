@@ -213,16 +213,25 @@ public class InterfaceSettings implements Serializable, JSONString
     public InetAddress getDhcpDnsOverride() { return this.dhcpDnsOverride; }
     public void setDhcpDnsOverride( InetAddress newValue ) { this.dhcpDnsOverride = newValue; }
 
-    public class InterfaceAlias
+    public static class InterfaceAlias
     {
         private InetAddress v4StaticAddress; /* the address  of this interface if configured static, or dhcp override */ 
         private Integer     v4StaticPrefix; /* the netmask of this interface if configured static, or dhcp override */
 
+        public InterfaceAlias() {}
+        
         public InetAddress getV4StaticAddress( ) { return this.v4StaticAddress; }
         public void setV4StaticAddress( InetAddress newValue ) { this.v4StaticAddress = newValue; }
 
         public Integer getV4StaticPrefix( ) { return this.v4StaticPrefix; }
         public void setV4StaticPrefix( Integer newValue ) { this.v4StaticPrefix = newValue; }
+
+        public InetAddress getV4StaticNetmask( )
+        {
+            if (this.v4StaticPrefix == null || this.v4StaticPrefix < 0 || this.v4StaticPrefix > 32 )
+                return null;
+            return V4_PREFIX_NETMASKS[this.v4StaticPrefix];
+        }
     }
 
     /**

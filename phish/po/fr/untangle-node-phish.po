@@ -302,23 +302,23 @@ msgstr "Trafic bloqué d'hameçonage HTTP"
 msgid "Passed Phish HTTP Traffic"
 msgstr "Trafic passé d'hameçonage HTTP"
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_phish.py:23
+#: ../hier/usr/lib/python2.6/reports/node/untangle_node_phish.py:23
 msgid "Phish"
 msgstr "Hameçonnage"
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_phish.py:23
+#: ../hier/usr/lib/python2.6/reports/node/untangle_node_phish.py:23
 msgid "Clean"
 msgstr "Clair"
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_phish.py:23
+#: ../hier/usr/lib/python2.6/reports/node/untangle_node_phish.py:23
 msgid "Hourly Phish Rate"
 msgstr "Vitesse d'hameçonage horaire"
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_phish.py:23
+#: ../hier/usr/lib/python2.6/reports/node/untangle_node_phish.py:23
 msgid "Daily Phish Rate"
 msgstr "Vitesse d'hameçonage quotidienne"
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_phish.py:23
+#: ../hier/usr/lib/python2.6/reports/node/untangle_node_phish.py:23
 msgid "Top Ten Phishing Victims"
 msgstr "Top Ten des victimes d'hameçonage"
 

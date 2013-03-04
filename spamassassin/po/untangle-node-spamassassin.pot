@@ -260,22 +260,22 @@ msgstr ""
 msgid "The value of Strength Value field is invalid."
 msgstr ""
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_spamassassin.py:7
+#: ../hier/usr/lib/python2.6/reports/node/untangle_node_spamassassin.py:7
 msgid "Spam"
 msgstr ""
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_spamassassin.py:7
+#: ../hier/usr/lib/python2.6/reports/node/untangle_node_spamassassin.py:7
 msgid "Clean"
 msgstr ""
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_spamassassin.py:7
+#: ../hier/usr/lib/python2.6/reports/node/untangle_node_spamassassin.py:7
 msgid "Hourly Spam Rate"
 msgstr ""
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_spamassassin.py:7
+#: ../hier/usr/lib/python2.6/reports/node/untangle_node_spamassassin.py:7
 msgid "Spam Rate"
 msgstr ""
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_spamassassin.py:7
+#: ../hier/usr/lib/python2.6/reports/node/untangle_node_spamassassin.py:7
 msgid "Top Ten Spammed"
 msgstr ""

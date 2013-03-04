@@ -7,7 +7,7 @@ class ClientControl:
     # global variables
     hostIP = "192.168.2.100"
     hostUsername = "testshell"
-    hostKeyFile = "@PREFIX@/usr/lib/python2.5/untangle_tests/testShell.key"
+    hostKeyFile = "@PREFIX@/usr/lib/python2.6/untangle_tests/testShell.key"
     logfile = None
     verbosity = 0
 

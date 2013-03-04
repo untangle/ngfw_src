@@ -2,7 +2,7 @@
 # $Id: mailer.py,v 1.00 2012/05/30 11:51:31 dmorris Exp $
 
 PREFIX = '@PREFIX@'
-REPORTS_PYTHON_DIR = '%s/usr/lib/python2.5' % PREFIX
+REPORTS_PYTHON_DIR = '%s/usr/lib/python2.6' % PREFIX
 REPORTS_OUTPUT_BASE = '%s/usr/share/untangle/web/reports' % PREFIX
 NODE_MODULE_DIR = '%s/reports/node' % REPORTS_PYTHON_DIR
 

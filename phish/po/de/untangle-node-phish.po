@@ -288,23 +288,23 @@ msgstr "Gesperrter Phish HTTP Datenverkehr"
 msgid "Passed Phish HTTP Traffic"
 msgstr "Zugelassener Phish HTTP Datenverkehr"
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_phish.py:23
+#: ../hier/usr/lib/python2.6/reports/node/untangle_node_phish.py:23
 msgid "Phish"
 msgstr ""
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_phish.py:23
+#: ../hier/usr/lib/python2.6/reports/node/untangle_node_phish.py:23
 msgid "Clean"
 msgstr ""
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_phish.py:23
+#: ../hier/usr/lib/python2.6/reports/node/untangle_node_phish.py:23
 msgid "Hourly Phish Rate"
 msgstr ""
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_phish.py:23
+#: ../hier/usr/lib/python2.6/reports/node/untangle_node_phish.py:23
 msgid "Daily Phish Rate"
 msgstr ""
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_phish.py:23
+#: ../hier/usr/lib/python2.6/reports/node/untangle_node_phish.py:23
 msgid "Top Ten Phishing Victims"
 msgstr ""
 

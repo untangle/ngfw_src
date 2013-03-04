@@ -791,66 +791,66 @@ msgstr ""
 "als VPN Client konfiguiert sein. Sie können OpenVPN durch den \"Setup Wizard\" "
 "konfigurieren."
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_openvpn.py:73
+#: ../hier/usr/lib/python2.6/reports/node/untangle_node_openvpn.py:73
 msgid "Summary Report"
 msgstr "zusammenfassender Bericht"
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_openvpn.py:117
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_openvpn.py:176
+#: ../hier/usr/lib/python2.6/reports/node/untangle_node_openvpn.py:117
+#: ../hier/usr/lib/python2.6/reports/node/untangle_node_openvpn.py:176
 msgid "Bandwidth Usage"
 msgstr "Bandbreiten Nutzung"
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_openvpn.py:146
+#: ../hier/usr/lib/python2.6/reports/node/untangle_node_openvpn.py:146
 msgid "Avg Data Rate"
 msgstr ""
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_openvpn.py:148
+#: ../hier/usr/lib/python2.6/reports/node/untangle_node_openvpn.py:148
 msgid "Max Data Rate"
 msgstr ""
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_openvpn.py:177
+#: ../hier/usr/lib/python2.6/reports/node/untangle_node_openvpn.py:177
 #, fuzzy
 msgid "Hour of Day"
 msgstr "Hour of Day"
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_openvpn.py:178
+#: ../hier/usr/lib/python2.6/reports/node/untangle_node_openvpn.py:178
 msgid "Throughput (Kb/sec)"
 msgstr "Durchsatz (Kb/sec)"
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_openvpn.py:181
+#: ../hier/usr/lib/python2.6/reports/node/untangle_node_openvpn.py:181
 msgid "Usage (KB/sec)"
 msgstr "Benutzung (KB/sec)"
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_openvpn.py:189
+#: ../hier/usr/lib/python2.6/reports/node/untangle_node_openvpn.py:189
 msgid "Top Users"
 msgstr "Top Benutzer"
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_openvpn.py:220
+#: ../hier/usr/lib/python2.6/reports/node/untangle_node_openvpn.py:220
 msgid "bytes"
 msgstr "bytes"
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_openvpn.py:225
+#: ../hier/usr/lib/python2.6/reports/node/untangle_node_openvpn.py:225
 msgid "OpenVPN Top Users"
 msgstr "OpenVPN Top Benutzer"
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_openvpn.py:233
+#: ../hier/usr/lib/python2.6/reports/node/untangle_node_openvpn.py:233
 msgid "Login Events"
 msgstr "Anmelde Ereignisse"
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_openvpn.py:239
+#: ../hier/usr/lib/python2.6/reports/node/untangle_node_openvpn.py:239
 msgid "Time"
 msgstr "Uhrzeit"
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_openvpn.py:241
+#: ../hier/usr/lib/python2.6/reports/node/untangle_node_openvpn.py:241
 #, fuzzy
 msgid "Client"
 msgstr "Clients"
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_openvpn.py:242
+#: ../hier/usr/lib/python2.6/reports/node/untangle_node_openvpn.py:242
 msgid "Address"
 msgstr "Adresse"
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_openvpn.py:243
+#: ../hier/usr/lib/python2.6/reports/node/untangle_node_openvpn.py:243
 msgid "Port"
 msgstr "Port"
 

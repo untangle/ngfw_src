@@ -2,7 +2,7 @@
 
 import sys
 import os
-sys.path.insert(0,'@PREFIX@/usr/lib/python2.5/')
+sys.path.insert(0,'@PREFIX@/usr/lib/python2.6/')
 
 def check_pyconnector_running():
      pid_filename = "/var/run/ut-pyconnector.pid"

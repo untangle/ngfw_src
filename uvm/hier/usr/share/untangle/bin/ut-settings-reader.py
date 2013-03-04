@@ -3,7 +3,7 @@
 import getopt
 import sys
 
-sys.path.insert(0, '@PREFIX@/usr/lib/python2.5/')
+sys.path.insert(0, '@PREFIX@/usr/lib/python2.6/')
 from uvm.settings_reader import get_uvm_settings_item
 from uvm.settings_reader import get_node_settings_item
 

@@ -288,25 +288,25 @@ msgstr "Phish HTTPトラフィックをブロックする"
 msgid "Passed Phish HTTP Traffic"
 msgstr "Phish HTTPトラフィックをパスする"
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_phish.py:23
+#: ../hier/usr/lib/python2.6/reports/node/untangle_node_phish.py:23
 #, fuzzy
 msgid "Phish"
 msgstr "フィッシング"
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_phish.py:23
+#: ../hier/usr/lib/python2.6/reports/node/untangle_node_phish.py:23
 #, fuzzy
 msgid "Clean"
 msgstr "クリーン"
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_phish.py:23
+#: ../hier/usr/lib/python2.6/reports/node/untangle_node_phish.py:23
 msgid "Hourly Phish Rate"
 msgstr "1時間ごとのフィッシュレート"
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_phish.py:23
+#: ../hier/usr/lib/python2.6/reports/node/untangle_node_phish.py:23
 msgid "Daily Phish Rate"
 msgstr "毎日のフィッシュレート"
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_phish.py:23
+#: ../hier/usr/lib/python2.6/reports/node/untangle_node_phish.py:23
 msgid "Top Ten Phishing Victims"
 msgstr "トップ10のフィッシング詐欺被害"
 

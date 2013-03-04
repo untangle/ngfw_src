@@ -183,6 +183,8 @@ if (!Ung.hasResource["Ung.Network"]) {
                 }, {
                     name: 'v4NatIngressTraffic'
                 }, {
+                    name: 'v4Aliases'
+                }, {
                     name: 'v6ConfigType'
                 }, {
                     name: 'v6StaticAddress'

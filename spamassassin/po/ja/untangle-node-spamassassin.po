@@ -351,24 +351,24 @@ msgstr "スパムイベント"
 msgid "Identity Theft Events"
 msgstr "なりすましイベント"
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_spamassassin.py:23
+#: ../hier/usr/lib/python2.6/reports/node/untangle_node_spamassassin.py:23
 #, fuzzy
 msgid "Spam"
 msgstr "スパム"
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_spamassassin.py:23
+#: ../hier/usr/lib/python2.6/reports/node/untangle_node_spamassassin.py:23
 msgid "Clean"
 msgstr "クリーン"
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_spamassassin.py:23
+#: ../hier/usr/lib/python2.6/reports/node/untangle_node_spamassassin.py:23
 msgid "Hourly Spam Rate"
 msgstr "1時間ごとにスパムレート"
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_spamassassin.py:23
+#: ../hier/usr/lib/python2.6/reports/node/untangle_node_spamassassin.py:23
 msgid "Daily Spam Rate"
 msgstr "毎日のスパムレート"
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_spamassassin.py:23
+#: ../hier/usr/lib/python2.6/reports/node/untangle_node_spamassassin.py:23
 msgid "Top Ten Spammed"
 msgstr "トップ10のスパム"
 

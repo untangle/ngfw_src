@@ -253,12 +253,12 @@ msgid "Refresh"
 msgstr ""
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:490
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_openvpn.py:264
+#: ../hier/usr/lib/python2.6/reports/node/untangle_node_openvpn.py:264
 msgid "Address"
 msgstr ""
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:494
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_openvpn.py:263
+#: ../hier/usr/lib/python2.6/reports/node/untangle_node_openvpn.py:263
 msgid "Client"
 msgstr ""
 
@@ -740,69 +740,69 @@ msgid ""
 "can turn it on.  You may do this through its Setup Wizard (in its settings)."
 msgstr ""
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_openvpn.py:60
+#: ../hier/usr/lib/python2.6/reports/node/untangle_node_openvpn.py:60
 msgid "Summary Report"
 msgstr ""
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_openvpn.py:109
+#: ../hier/usr/lib/python2.6/reports/node/untangle_node_openvpn.py:109
 msgid "securely passed"
 msgstr ""
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_openvpn.py:110
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_openvpn.py:242
+#: ../hier/usr/lib/python2.6/reports/node/untangle_node_openvpn.py:110
+#: ../hier/usr/lib/python2.6/reports/node/untangle_node_openvpn.py:242
 msgid "MB"
 msgstr ""
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_openvpn.py:110
+#: ../hier/usr/lib/python2.6/reports/node/untangle_node_openvpn.py:110
 msgid "of traffic and processed"
 msgstr ""
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_openvpn.py:111
+#: ../hier/usr/lib/python2.6/reports/node/untangle_node_openvpn.py:111
 msgid "remote logins"
 msgstr ""
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_openvpn.py:144
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_openvpn.py:198
+#: ../hier/usr/lib/python2.6/reports/node/untangle_node_openvpn.py:144
+#: ../hier/usr/lib/python2.6/reports/node/untangle_node_openvpn.py:198
 msgid "Bandwidth Usage"
 msgstr ""
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_openvpn.py:187
+#: ../hier/usr/lib/python2.6/reports/node/untangle_node_openvpn.py:187
 msgid "Avg Data Rate"
 msgstr ""
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_openvpn.py:191
+#: ../hier/usr/lib/python2.6/reports/node/untangle_node_openvpn.py:191
 msgid "Max Data Rate"
 msgstr ""
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_openvpn.py:194
+#: ../hier/usr/lib/python2.6/reports/node/untangle_node_openvpn.py:194
 msgid "Data Transferred"
 msgstr ""
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_openvpn.py:199
+#: ../hier/usr/lib/python2.6/reports/node/untangle_node_openvpn.py:199
 msgid "Date"
 msgstr ""
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_openvpn.py:200
+#: ../hier/usr/lib/python2.6/reports/node/untangle_node_openvpn.py:200
 msgid "Throughput (kB/s)"
 msgstr ""
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_openvpn.py:203
+#: ../hier/usr/lib/python2.6/reports/node/untangle_node_openvpn.py:203
 msgid "Usage (kB/sec)"
 msgstr ""
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_openvpn.py:211
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_openvpn.py:247
+#: ../hier/usr/lib/python2.6/reports/node/untangle_node_openvpn.py:211
+#: ../hier/usr/lib/python2.6/reports/node/untangle_node_openvpn.py:247
 msgid "Top Users"
 msgstr ""
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_openvpn.py:255
+#: ../hier/usr/lib/python2.6/reports/node/untangle_node_openvpn.py:255
 msgid "Login Events"
 msgstr ""
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_openvpn.py:261
+#: ../hier/usr/lib/python2.6/reports/node/untangle_node_openvpn.py:261
 msgid "Time"
 msgstr ""
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_openvpn.py:265
+#: ../hier/usr/lib/python2.6/reports/node/untangle_node_openvpn.py:265
 msgid "Port"
 msgstr ""

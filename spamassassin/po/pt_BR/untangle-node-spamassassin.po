@@ -354,23 +354,23 @@ msgstr "Eventos de Spam"
 msgid "Identity Theft Events"
 msgstr "Eventos de roubo de identidade"
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_spamassassin.py:23
+#: ../hier/usr/lib/python2.6/reports/node/untangle_node_spamassassin.py:23
 msgid "Spam"
 msgstr ""
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_spamassassin.py:23
+#: ../hier/usr/lib/python2.6/reports/node/untangle_node_spamassassin.py:23
 msgid "Clean"
 msgstr ""
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_spamassassin.py:23
+#: ../hier/usr/lib/python2.6/reports/node/untangle_node_spamassassin.py:23
 msgid "Hourly Spam Rate"
 msgstr ""
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_spamassassin.py:23
+#: ../hier/usr/lib/python2.6/reports/node/untangle_node_spamassassin.py:23
 msgid "Daily Spam Rate"
 msgstr ""
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_spamassassin.py:23
+#: ../hier/usr/lib/python2.6/reports/node/untangle_node_spamassassin.py:23
 msgid "Top Ten Spammed"
 msgstr ""
 
