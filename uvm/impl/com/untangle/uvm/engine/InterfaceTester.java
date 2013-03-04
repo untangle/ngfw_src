@@ -20,8 +20,7 @@ public class InterfaceTester
     private static final String UNKNOWN = "unknown";
 
     /* Script to run whenever the interfaces should be reconfigured */
-    private static final String ALPACA_SCRIPT = "/usr/share/untangle-net-alpaca/scripts/";
-    private static final String INTERFACE_STATUS_SCRIPT = ALPACA_SCRIPT + "/get-interface-status";
+    private static final String INTERFACE_STATUS_SCRIPT = System.getProperty("uvm.bin.dir") + "/ut-get-interface-status.sh";
 
     /* The Flag is the value returned by the script, they are separated so the script
      * doesn't have to change if the value displayed inside of the GUI is going to change

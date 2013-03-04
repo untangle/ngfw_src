@@ -97,7 +97,6 @@ public class TomcatManagerImpl implements TomcatManager
             emb.addEngine(baseEngine);
 
             loadServlet("/blockpage", "blockpage");
-            loadServlet("/alpaca", "alpaca", new AdministrationValve() );
             ServletContext ctx = loadServlet("/webui", "webui", new AdministrationValve() );
             ctx.setAttribute("threadRequest", threadRequest);
 

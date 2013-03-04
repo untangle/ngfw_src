@@ -373,9 +373,10 @@ if (!Ung.hasResource["Ung.Administration"]) {
 
             var currentHostnameMessage = Ext.String.format( this.i18n._( 'Current Hostname: {0}'), '<i>' + hostname + '</i>' );
             if ( hostname.indexOf( "." ) < 0 ) {
+                // FIXME - link to hostname settings in networking
                 currentHostnameMessage += Ext.String.format( this.i18n._( '{0}The current hostname is not a qualified hostname, click {1}here{2} to fix it{3}' ),
                                           '<br/><span class="warning">',
-                                          '<a href="/alpaca/hostname/index" target="_blank">',
+                                          '<a href="" target="_blank">',
                                           '</a>', '</span>');
             }
 

@@ -46,8 +46,6 @@ public class AdminManagerImpl implements AdminManager
     private static final String REBOOT_COUNT_SCRIPT = System.getProperty("uvm.bin.dir") + "/ut-reboot-count.sh";
     private static final String TIMEZONE_FILE = "/etc/timezone";
     
-    private static final String ALPACA_NONCE_FILE = "/etc/untangle-net-alpaca/nonce";
-
     private final Logger logger = Logger.getLogger(this.getClass());
 
     private AdminSettings settings;
@@ -129,34 +127,6 @@ public class AdminManagerImpl implements AdminManager
     public String getDate()
     {
         return (new Date(System.currentTimeMillis())).toString();
-    }
-
-    public String getAlpacaNonce()
-    {
-        BufferedReader stream = null;
-        try {
-            stream = new BufferedReader(new FileReader(ALPACA_NONCE_FILE));
-
-            String nonce = stream.readLine();
-            if (nonce.length() < 3) {
-                logger.warn("Invalid nonce in the file ["
-                            + ALPACA_NONCE_FILE + "]: ', " +
-                            nonce + "'");
-                return null;
-            }
-
-            return nonce;
-        } catch (IOException exn) {
-            logger.warn("could not get alpaca nonce", exn);
-            return null;
-        } finally {
-            try {
-                if (stream != null) stream.close();
-            } catch (IOException e) {
-                logger.warn("Unable to close the nonce file: "
-                            + ALPACA_NONCE_FILE, e);
-            }
-        }
     }
 
     public String getFullVersionAndRevision()

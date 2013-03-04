@@ -61,7 +61,8 @@ def flushConntrack():
     os.system('conntrack -D --proto udp >/dev/null 2>&1');
 
 #
-# Tells alpaca to rewrite the iptables rules
+# If the UVM is running this inserts the necessary iptables to capture traffic
+# If the UVM is not running this removes the iptables rules to capture traffic
 #
 def resetIptables():
     ## Remove UVM iptables rules
