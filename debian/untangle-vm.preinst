@@ -7,45 +7,4 @@ if [ -x /usr/bin/uvm-restart ]; then
     uvm-restart restart
 fi
 
-# need to run this after uvm-restart to avoid postgres deadlocks/conflicts with untangle-vm
-if [ -n "$oldVersion" ] && [ -f /usr/bin/psql ]; then
-    # remove obsolete events schema
-
-    # kill any running reports process
-    ps ax | grep reporting-generate-reports.py | grep -v grep | awk '{print $1}' | xargs kill 2>/dev/null
-
-    # restart postgres to make sure there are no active queries
-    if [ -f /etc/init.d/postgresql-8.3 ] ; then
-      /etc/init.d/postgresql-8.3 restart
-    else 
-      /etc/init.d/postgresql restart
-    fi
-        
-    sleep 5
-
-    # If upgrading from 9.3 or prior, drop events schema
-    if dpkg --compare-versions "$oldVersion" le 9.3.0 ; then
-      echo "Dropping events schema..."
-      psql -U postgres -c 'DROP SCHEMA events CASCADE' uvm >/dev/null 2>&1
-      echo "Dropping events schema...done"
-    fi
-
-    # If upgrading from 9.3.x or later, Then the DB->files conversion has already happened
-    # So we should drop settings schema as it is no longer needed.
-    # This is done because leaving the settings schema around can mess up restore and install of some apps
-    # There is a risk that they will see the settings in the DB and restore from those settings
-    if dpkg --compare-versions "$oldVersion" ge 9.3.0 ; then
-      echo "Dropping settings schema..."
-      psql -U postgres -c 'DROP SCHEMA settings CASCADE' uvm >/dev/null 2>&1
-      echo "Dropping settings schema...done"
-    fi
-fi
-
-# If upgrading from 9.3.2 or prior, drop events schema
-if dpkg --compare-versions "$oldVersion" le 9.3.2 ; then
-    if [ -x /etc/init.d/untangle-pyconnector ] ; then
-        /etc/init.d/untangle-pyconnector restart
-    fi
-fi
-
 exit 0
