@@ -30,8 +30,6 @@ public interface AdminManager
      */
     String getDate();
 
-    String getAlpacaNonce();
-
     String getModificationState();
 
     String getRebootCount();

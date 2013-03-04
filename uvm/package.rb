@@ -49,8 +49,6 @@ jts << JarTarget.build_target(uvm_lib, deps, 'impl', "./uvm/impl")
 taglib = JarTarget.build_target(uvm_lib, deps, 'taglib', "./uvm/taglib")
 BuildEnv::SRC.installTarget.install_jars(taglib, "#{uvm_lib.distDirectory}/usr/share/java/uvm" )
 
-ServletBuilder.new(uvm_lib, 'com.untangle.uvm.alpaca.jsp', "./uvm/servlets/alpaca")
-
 ServletBuilder.new(uvm_lib, "com.untangle.uvm.installer.servlet", "uvm/servlets/library", [])
 
 deps = %w(

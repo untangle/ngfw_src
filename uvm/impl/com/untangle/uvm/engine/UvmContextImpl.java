@@ -50,8 +50,6 @@ import com.untangle.uvm.node.NodeManager;
 import com.untangle.uvm.servlet.ServletUtils;
 import com.untangle.uvm.servlet.UploadHandler;
 import com.untangle.uvm.servlet.UploadManager;
-import com.untangle.uvm.util.XMLRPCUtil;
-import com.untangle.uvm.util.JsonClient;
 
 /**
  * This is the root API providing the Untangle VM functionality for applications and the user interface

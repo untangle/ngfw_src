@@ -271,7 +271,7 @@ class SessionRedirect
         redirectRuleIp = serverAddr.getHostAddress();
         redirectRulePort = serverPort;
         if (logger.isDebugEnabled()) {
-            logger.debug("Asking the Alpaca to CREATE redirect rule");
+            logger.debug("CREATE redirect rule");
             logger.debug("rule filter: "+redirectRuleFilter);
             logger.debug("rule clientIp: "+redirectRuleIp);
             logger.debug("rule clientPort: "+redirectRulePort);
@@ -281,8 +281,7 @@ class SessionRedirect
             jsonObject.put( "filter", redirectRuleFilter );
             jsonObject.put( "new_ip", redirectRuleIp );
             jsonObject.put( "new_port", redirectRulePort );
-            //JsonClient.getInstance().callAlpaca("uvm", "session_redirect_create", jsonObject );
-            //FIXME
+            //FIXME need to insert iptables rule
         } catch(Exception e){
             logger.error("Failure creating redirect rule:"+ e);
         }
@@ -292,7 +291,7 @@ class SessionRedirect
     private synchronized void removeRedirectRule()
     {
         if (logger.isDebugEnabled()) {
-            logger.debug("Asking the Alpaca to DESTROY redirect rule");
+            logger.debug("DESTROY redirect rule");
             logger.debug("rule filter: "+redirectRuleFilter);
             logger.debug("rule clientIp: "+redirectRuleIp);
             logger.debug("rule clientPort: "+redirectRulePort);
@@ -302,8 +301,7 @@ class SessionRedirect
             jsonObject.put( "filter", redirectRuleFilter );
             jsonObject.put( "new_ip", redirectRuleIp );
             jsonObject.put( "new_port", redirectRulePort );
-            //JsonClient.getInstance().callAlpaca("uvm","session_redirect_delete", jsonObject );
-            //FIXME
+            //FIXME need to destroy iptables rule
         } catch(Exception e){
             logger.error("Failure creating redirect rule:"+ e);
         }

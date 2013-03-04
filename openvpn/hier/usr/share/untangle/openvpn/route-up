@@ -2,12 +2,9 @@
 
 exec >> @UVM_LOG@/openvpn.log 2>&1
 
-## Sleep a little while
-sleep 1
-
-@PREFIX@/usr/bin/ucli refreshNetworkConfig
-
-/etc/init.d/untangle-net-alpaca-iptables restart openvpn-route-up
+# FIXME  
+# Dont need to reinsert all rules - this is dumb
+# /usr/share/untangle-netd/bin/generate-iptables-rules.sh
 
 true
 

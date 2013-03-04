@@ -15,7 +15,6 @@ import com.untangle.uvm.UvmContext;
 import com.untangle.uvm.AdminSettings;
 import com.untangle.uvm.AdminUserSettings;
 import com.untangle.uvm.util.JsonClient;
-import com.untangle.uvm.util.XMLRPCUtil;
 
 public class SetupContextImpl implements UtJsonRpcServlet.SetupContext
 {

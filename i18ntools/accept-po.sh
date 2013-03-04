@@ -117,9 +117,6 @@ for f in $(find $t -type f -name '*.po'); do
         untangle-node-webfilter)
             d=$work/src/webfilter
             ;;
-        untangle-net-alpaca)
-            d=$work/pkgs/untangle-net-alpaca
-            ;;
         untangle-system-stats*)
             d=$internal/isotools/installer-pkgs-additional/untangle-system-stats/debian
             ;;

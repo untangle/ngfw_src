@@ -7,7 +7,6 @@ import com.untangle.jnetcap.Netcap;
 import com.untangle.jvector.Vector;
 import com.untangle.uvm.ArgonException;
 import com.untangle.uvm.util.JsonClient;
-import com.untangle.uvm.util.XMLRPCUtil;
 
 public class Argon
 {

@@ -6,22 +6,25 @@ import simplejson as json
 class SystemProperties:
 
     def getInterface(self, name):
-        NETCONFIG_JSON_OBJ = json.loads(open('/etc/untangle-net-alpaca/netConfig.js', 'r').read())
-        for intf in NETCONFIG_JSON_OBJ['interfaceList']['list']:
+        NETCONFIG_JSON_OBJ = json.loads(open('/usr/share/untangle/settings/untangle-vm/network.js', 'r').read())
+        for intf in NETCONFIG_JSON_OBJ['interfaces']['list']:
             if intf['name'] == name:
                 return intf
         return None
 
     def internalInterfaceIP(self):
-        intf = self.getInterface("Internal")
+        # FIXME
+        return "UnknownIP"
+        
+        # intf = self.getInterface("Internal")
 
-        while intf['configType'] == 'bridge':
-            intf = self.getInterface(intf['bridgedTo'])
+        # while intf['configType'] == 'bridge':
+        #     intf = self.getInterface(intf['bridgedTo'])
 
-        if intf['primaryAddressStr'] != None:
-            return intf['primaryAddressStr'].split("/")[0]
-        else:
-            return "UnknownIP"
+        # if intf['primaryAddressStr'] != None:
+        #     return intf['primaryAddressStr'].split("/")[0]
+        # else:
+        #     return "UnknownIP"
 
 
         
