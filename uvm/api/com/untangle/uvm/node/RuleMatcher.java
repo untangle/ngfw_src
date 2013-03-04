@@ -64,6 +64,8 @@ public class RuleMatcher implements JSONString, Serializable
             DAY_OF_WEEK, /* "monday" "monday,tuesday" "any" */
             TIME_OF_DAY, /* "any" "10:00-11:00" */
 
+            DST_LOCAL, /* none - only available in iptables rules */
+            
             /* application specific matchers */
             HTTP_HOST, /* "playboy.com" "any" */
             HTTP_URI, /* "/foo.html" "any" */
