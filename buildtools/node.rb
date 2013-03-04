@@ -82,8 +82,9 @@ class NodeBuilder
       cf = CopyFiles.new(node, ms, 'hier', buildEnv.filterset)
       buildEnv.hierTarget.register_dependency(cf)
 
-      ms = MoveSpec.new("#{home}/#{dirName}/hier/usr/lib/python2.5", FileList["#{home}/#{dirName}/hier/usr/lib/python2.5/**/*"], "#{node.distDirectory}/usr/lib/python2.6/")
-      cf = CopyFiles.new(node, ms, 'python2.6', buildEnv.filterset)
+      # uncomment this to copy all python2.6 to python2.7 (for wheezy support)
+      # ms = MoveSpec.new("#{home}/#{dirName}/hier/usr/lib/python2.6", FileList["#{home}/#{dirName}/hier/usr/lib/python2.6/**/*"], "#{node.distDirectory}/usr/lib/python2.7/")
+      # cf = CopyFiles.new(node, ms, 'python2.7', buildEnv.filterset)
       buildEnv.hierTarget.register_dependency(cf)
     end
 
