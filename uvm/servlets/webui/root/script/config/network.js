@@ -188,13 +188,9 @@ if (!Ung.hasResource["Ung.Network"]) {
                 listeners: {
                     change: Ext.bind( function( f, val ) {
                         if ( val ) {
-                            Ext.getCmp('interface_v4NatEgressTraffic').setValue( true ); // default to NAT egress on WANs
-                            Ext.getCmp('interface_v4NatIngressTraffic').setValue( false ); // disable hidden option
-                        } else {
-                            Ext.getCmp('interface_v4NatIngressTraffic').setValue( true ); // default to NAT ingress on non-WANs
-                            Ext.getCmp('interface_v4NatEgressTraffic').setValue( false ); // disable hidden option
-                        }
-
+                            // auto-enable egress NAT when checking isWan
+                            Ext.getCmp('interface_v4NatEgressTraffic').setValue( true ); 
+                        } 
                         this.reRenderFields();
                     }, this)}
             }, {

@@ -305,7 +305,6 @@ static int _nf_callback( struct nfq_q_handle *qh, struct nfgenmsg *nfmsg, struct
 
     ip_header = (struct iphdr*)data;
     
-    /* XXX correct? can't be larger than 16 */
     if (( ip_header->ihl < 5 ) || ( ip_header->ihl > 16 )) {
         return errlog( ERR_WARNING, "Dropping illegal IP header length (%i).\n", ip_header->ihl );
     }
@@ -470,7 +469,6 @@ static int _nf_callback( struct nfq_q_handle *qh, struct nfgenmsg *nfmsg, struct
 
     return 0;
 }
-
 
 static int _nfq_get_conntrack( struct nfq_data *nfad, netcap_pkt_t* pkt )
 {
