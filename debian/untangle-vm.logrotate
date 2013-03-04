@@ -79,6 +79,24 @@ copytruncate
 missingok
 }
 
+/var/log/uvm/iptables.log {
+rotate 2
+size 500k
+compress
+notifempty
+copytruncate
+missingok
+}
+
+/var/log/uvm/dhcp.log {
+rotate 2
+size 500k
+compress
+notifempty
+copytruncate
+missingok
+}
+
 
 
 
