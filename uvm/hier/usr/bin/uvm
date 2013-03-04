@@ -65,7 +65,7 @@ def flushConntrack():
 #
 def resetIptables():
     ## Remove UVM iptables rules
-    # debug("resetIptables()")
+    # debug("Resetting iptables rules..."
     os.system('@PREFIX@/usr/share/untangle/bin/ut-uvm-update-rules.sh'); 
 
 #
@@ -411,8 +411,9 @@ while True:
     debug("untangle-vm launched (pid: %i)" % uvm_pid);
 
     # start the monitoring thread
-    thread = threading.Thread(target=monitor_uvm, args=(uvm_pid,))
-    thread.start()
+    monitor_thread = threading.Thread(target=monitor_uvm, args=(uvm_pid,))
+    monitor_thread.setDaemon(True)
+    monitor_thread.start()
 
     result = 0;
     while True:

@@ -46,7 +46,6 @@ unmonitorAll() {
         ## for a while.
         touch "${UVM_RUNDIR}/unmonitor"
 
-        sleep 1
         $MONIT unmonitor all
     }
 }
