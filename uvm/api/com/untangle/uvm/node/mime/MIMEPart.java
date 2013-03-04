@@ -1,36 +1,6 @@
-/*
- * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc.
- *
- * This library is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License, version 2,
- * as published by the Free Software Foundation.
- *
- * This library is distributed in the hope that it will be useful, but
- * AS-IS and WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE, TITLE, or
- * NONINFRINGEMENT.  See the GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this library; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
- *
- * Linking this library statically or dynamically with other modules is
- * making a combined work based on this library.  Thus, the terms and
- * conditions of the GNU General Public License cover the whole combination.
- *
- * As a special exception, the copyright holders of this library give you
- * permission to link this library with independent modules to produce an
- * executable, regardless of the license terms of these independent modules,
- * and to copy and distribute the resulting executable under terms of your
- * choice, provided that you also meet, for each linked independent module,
- * the terms and conditions of the license of that module.  An independent
- * module is a module which is not derived from or based on this library.
- * If you modify this library, you may extend this exception to your version
- * of the library, but you are not obligated to do so.  If you do not wish
- * to do so, delete this exception statement from your version.
+/**
+ * $Id$
  */
-
 package com.untangle.node.mime;
 
 import static com.untangle.node.util.Ascii.DASH;
@@ -57,8 +27,8 @@ import com.untangle.node.util.TruncatedInputStream;
 /**
  * <b>Work in progress</b>
  */
-public class MIMEPart {
-
+public class MIMEPart
+{
     private final Logger m_logger = Logger.getLogger(MIMEPart.class);
 
     private MIMEPartHeaders m_headers;
@@ -67,11 +37,9 @@ public class MIMEPart {
     /**
      * Made protected only for the "AttachedMIMEMessage" subclass
      */
-    protected MyMIMEPartObserver m_childObserver =
-        new MyMIMEPartObserver();//Only when Multipart
+    protected MyMIMEPartObserver m_childObserver = new MyMIMEPartObserver();//Only when Multipart
 
-    private MyHeadersObserver m_headersObserver =
-        new MyHeadersObserver();
+    private MyHeadersObserver m_headersObserver = new MyHeadersObserver();
 
     private MIMEPartObserver m_observer;
 
@@ -92,13 +60,15 @@ public class MIMEPart {
 
     private Object m_userObj;
 
-    public MIMEPart() {
+    public MIMEPart()
+    {
         this(new MIMEPartHeaders());
     }
-    public MIMEPart(MIMEPartHeaders headers) {
+
+    public MIMEPart(MIMEPartHeaders headers)
+    {
         m_headers = headers;
     }
-
 
     /**
      * Construct a MIME part, reading until the outerBoundary.
@@ -110,7 +80,8 @@ public class MIMEPart {
                     String outerBoundary) throws IOException,
                                                  InvalidHeaderDataException,
                                                  HeaderParseException,
-                                                 MIMEPartParseException {
+                                                 MIMEPartParseException
+    {
 
         parse(new MIMEPartHeaderFieldFactory(),
               stream,
@@ -142,7 +113,8 @@ public class MIMEPart {
                     MIMEPartHeaders headers) throws IOException,
                                                     InvalidHeaderDataException,
                                                     HeaderParseException,
-                                                    MIMEPartParseException {
+                                                    MIMEPartParseException
+    {
 
         m_headers = headers;
         m_headers.setObserver(m_headersObserver);
@@ -177,11 +149,13 @@ public class MIMEPart {
      * this may be null if this is a top-level (or unattached)
      * part.
      */
-    public MIMEPart getParent() {
+    public MIMEPart getParent()
+    {
         return m_parent;
     }
 
-    public void setParent(MIMEPart parent) {
+    public void setParent(MIMEPart parent)
+    {
         m_parent = parent;
     }
 
@@ -193,7 +167,8 @@ public class MIMEPart {
      * will throw IllegalStateException except
      * {@link #isDisposed isDisposed()}.
      */
-    public void dispose() {
+    public void dispose()
+    {
         if(m_disposed) {
             return;
         }
@@ -221,7 +196,8 @@ public class MIMEPart {
         m_disposed = true;
     }
 
-    private void closeSourceRecord(MIMESourceRecord record) {
+    private void closeSourceRecord(MIMESourceRecord record)
+    {
         if(record != null && !record.isShared()) {
             record.source.close();
         }
@@ -234,12 +210,13 @@ public class MIMEPart {
      *
      * @return true if disposed
      */
-    public boolean isDisposed() {
+    public boolean isDisposed()
+    {
         return m_disposed;
     }
 
-    protected void checkDisposed()
-        throws IllegalStateException {
+    protected void checkDisposed() throws IllegalStateException
+    {
         if(m_disposed) {
             throw new IllegalStateException("MIMEPart already disposed");
         }
@@ -249,18 +226,21 @@ public class MIMEPart {
      * <b>This has been made public for tests.  Do not call it.  It
      * is intended to subclasses</b>
      */
-    public void changed() {
+    public void changed()
+    {
         m_changed = true;
         if(m_observer != null) {
             m_observer.mIMEPartChanged(this);
         }
     }
 
-    protected MIMESourceRecord getSourceRecord() {
+    protected MIMESourceRecord getSourceRecord()
+    {
         return m_sourceRecord;
     }
 
-    public boolean isChanged() {
+    public boolean isChanged()
+    {
         return m_changed || (null != m_headers && m_headers.isChanged());
     }
 
@@ -275,7 +255,8 @@ public class MIMEPart {
      *
      * @param obj the user object (may be null).
      */
-    public void setUserObject(Object obj) {
+    public void setUserObject(Object obj)
+    {
         m_userObj = obj;
     }
 
@@ -286,39 +267,40 @@ public class MIMEPart {
      * @return the user object, or null if
      *         one was not {@link #setUserObject set}
      */
-    public Object getUserObject() {
+    public Object getUserObject()
+    {
         return m_userObj;
     }
-
-
-
-
 
     //==============================
     // "Property" (business) Methods
     //==============================
 
-    public void setObserver(MIMEPartObserver observer) {
+    public void setObserver(MIMEPartObserver observer)
+    {
         m_observer = observer;
     }
 
-    public MIMEPartObserver getObserver() {
+    public MIMEPartObserver getObserver()
+    {
         return m_observer;
     }
 
-
-    public MIMEPartHeaders getMPHeaders() {
+    public MIMEPartHeaders getMPHeaders()
+    {
         checkDisposed();
         return m_headers;
     }
 
-    public boolean isMultipart() {
+    public boolean isMultipart()
+    {
         checkDisposed();
         return m_headers.getContentTypeHF() != null &&
             m_headers.getContentTypeHF().isMultipart();
     }
 
-    public boolean isAttachment() {
+    public boolean isAttachment()
+    {
         checkDisposed();
         return m_headers.getContentDispositionHF() != null &&
             m_headers.getContentDispositionHF().isAttachment();
@@ -329,7 +311,8 @@ public class MIMEPart {
      *
      *
      */
-    public String getAttachmentName() {
+    public String getAttachmentName()
+    {
         checkDisposed();
         return !isAttachment()?
             null:
@@ -340,7 +323,8 @@ public class MIMEPart {
      * This method will always return something.  If the
      * encoding is not specified, "SEVEN_BIT" is assumed.
      */
-    public ContentXFerEncodingHeaderField.XFreEncoding getXFerEncoding() {
+    public ContentXFerEncodingHeaderField.XFreEncoding getXFerEncoding()
+    {
         checkDisposed();
         return m_headers.getContentXFerEncodingHF() != null?
             m_headers.getContentXFerEncodingHF().getEncodingType():
@@ -354,14 +338,16 @@ public class MIMEPart {
      * and may return true if a multipart Part happens
      * to have no children.
      */
-    public boolean hasChildren() {
+    public boolean hasChildren()
+    {
         return getNumChildren() > 0;
     }
 
     /**
      * Gets the number of children (only applies to multiparts)
      */
-    public int getNumChildren() {
+    public int getNumChildren()
+    {
         checkDisposed();
         return ( isMultipart() ? getChildList().size() : 0 );
     }
@@ -378,7 +364,8 @@ public class MIMEPart {
      * May return a zero-length array if there are no children.
      *
      */
-    public MIMEPart[] getChildParts() {
+    public MIMEPart[] getChildParts()
+    {
         checkDisposed();
         if(!isMultipart()) {
             return null;
@@ -393,15 +380,16 @@ public class MIMEPart {
      * flag will return any leaf parts of this part's children (i.e.
      * the whole tree).
      */
-    public MIMEPart[] getLeafParts(boolean recurse) {
+    public MIMEPart[] getLeafParts( boolean recurse )
+    {
         checkDisposed();
         ArrayList<MIMEPart> list = new ArrayList<MIMEPart>();
         getLeafPartsInto(list, recurse);
         return mpListToArray(list);
     }
 
-    private void getLeafPartsInto(List<MIMEPart> list,
-                                  boolean recurse) {
+    private void getLeafPartsInto( List<MIMEPart> list, boolean recurse )
+    {
         for(MIMEPart child : getChildList()) {
 
             if(child.isMultipart()) {
@@ -415,7 +403,8 @@ public class MIMEPart {
         }
     }
 
-    public MIMEPart[] getAttachments() {
+    public MIMEPart[] getAttachments()
+    {
         checkDisposed();
         ArrayList<MIMEPart> list = new ArrayList<MIMEPart>();
         addAttachmentsInto(this, list);
@@ -435,7 +424,8 @@ public class MIMEPart {
      * method is called.  If the part is to be re-used in
      * another message, it must be copied first</b>
      */
-    public void removeChild(MIMEPart doomed) {
+    public void removeChild( MIMEPart doomed )
+    {
         checkDisposed();
         if(!isMultipart()) {
             return;
@@ -452,7 +442,8 @@ public class MIMEPart {
         }
     }
 
-    public boolean containsChild(MIMEPart part) {
+    public boolean containsChild( MIMEPart part )
+    {
         if(!isMultipart()) {
             return false;
         }
@@ -462,7 +453,8 @@ public class MIMEPart {
      * This method throws an UnsupportedOperationException if the
      * part is not Multipart
      */
-    public void addChild(MIMEPart child) {
+    public void addChild( MIMEPart child )
+    {
         checkDisposed();
         if(!isMultipart()) {
             throw new UnsupportedOperationException("Cannot add children if not multipart");
@@ -481,7 +473,8 @@ public class MIMEPart {
      * <br><br>
      * This only applies to non-multiparts.
      */
-    public void setContent(MIMESourceRecord record) {
+    public void setContent( MIMESourceRecord record )
+    {
         m_logger.debug("[setContent()] Called");
         changed();
         if(m_decodedContentRecord != null && !m_decodedContentRecord.isShared()) {
@@ -501,8 +494,8 @@ public class MIMEPart {
         m_epilogueLen = 0;
     }
 
-    private static void addAttachmentsInto(MIMEPart source,
-                                           List<MIMEPart> target) {
+    private static void addAttachmentsInto( MIMEPart source, List<MIMEPart> target )
+    {
         if(source.isMultipart()) {
             for(MIMEPart part : source.getChildList()) {
                 addAttachmentsInto(part, target);
@@ -513,14 +506,16 @@ public class MIMEPart {
         }
     }
 
-    private MIMEPart[] mpListToArray(List<MIMEPart> list) {
+    private MIMEPart[] mpListToArray(List<MIMEPart> list)
+    {
         return list.toArray(new MIMEPart[list.size()]);
     }
 
     /**
      * Access to the internal List of children.
      */
-    protected List<MIMEPart> getChildList() {
+    protected List<MIMEPart> getChildList()
+    {
         if(m_children == null) {
             m_children = new ArrayList<MIMEPart>();
         }
@@ -546,9 +541,9 @@ public class MIMEPart {
      *        is not already in a file
      * @param decoded should the content be decoded in the returned File
      */
-    public File getContentAsFile(FileFactory factory,
-                                 boolean decoded)
-        throws IOException {
+    public File getContentAsFile( FileFactory factory, boolean decoded )
+        throws IOException
+    {
         checkDisposed();
 
         if(isMultipart()) {
@@ -588,8 +583,9 @@ public class MIMEPart {
         }
     }
 
-    private MIMESourceRecord getRawContentRecord(FileFactory factory)
-        throws IOException {
+    private MIMESourceRecord getRawContentRecord( FileFactory factory )
+        throws IOException
+    {
         if(!m_sourceRecord.isShared()) {
             return m_sourceRecord;
         }
@@ -607,10 +603,9 @@ public class MIMEPart {
         return m_rawContentRecord;
     }
 
-    private void decodedContentToFileSource(FileFactory factory,
-                                            String fileName,
-                                            DecoderFactory decoderFactory)
-        throws IOException {
+    private void decodedContentToFileSource( FileFactory factory, String fileName, DecoderFactory decoderFactory )
+        throws IOException
+    {
         File file = decodeToFile(factory, fileName, decoderFactory);
         m_decodedContentRecord = new MIMESourceRecord(
                                                       new FileMIMESource(file),
@@ -619,8 +614,9 @@ public class MIMEPart {
                                                       false);
     }
 
-    private void pipeToFile(InputStream in, File f)
-        throws IOException {
+    private void pipeToFile( InputStream in, File f )
+        throws IOException
+    {
         FileOutputStream fOut = null;
         try {
             fOut = new FileOutputStream(f);
@@ -640,11 +636,9 @@ public class MIMEPart {
         }
     }
 
-    private File decodeToFile(FileFactory factory,
-                              String fileName,
-                              DecoderFactory decoderFactory)
-        throws IOException {
-
+    private File decodeToFile( FileFactory factory, String fileName, DecoderFactory decoderFactory )
+        throws IOException
+    {
         MIMEParsingInputStream mpIS = null;
         File newFile = null;
 
@@ -675,39 +669,45 @@ public class MIMEPart {
      * methods while performing differrent (or no)
      * decoding
      */
-    private abstract class DecoderFactory {
+    private abstract class DecoderFactory
+    {
         abstract InputStream createDecoder(InputStream wrapMe);
     }
 
     //============== Inner Class =================
-    private class QPDecoderFactory
-        extends DecoderFactory {
-        InputStream createDecoder(InputStream wrapMe) {
+    private class QPDecoderFactory extends DecoderFactory
+    {
+        InputStream createDecoder(InputStream wrapMe)
+        {
             return new QPInputStream(wrapMe);
         }
     }
 
     //============== Inner Class =================
-    private class BASE64DecoderFactory
-        extends DecoderFactory {
-        InputStream createDecoder(InputStream wrapMe) {
+    private class BASE64DecoderFactory extends DecoderFactory
+    {
+        InputStream createDecoder(InputStream wrapMe)
+        {
             return new BASE64InputStream(wrapMe);
         }
     }
 
     //============== Inner Class =================
-    private class NOOPDecoderFactory
-        extends DecoderFactory {
-        InputStream createDecoder(InputStream wrapMe) {
+    private class NOOPDecoderFactory extends DecoderFactory
+    {
+        InputStream createDecoder(InputStream wrapMe)
+        {
             return wrapMe;
         }
     }
 
-
-    private void close(InputStream in) {
+    private void close(InputStream in)
+    {
         try {in.close();}catch(Exception ignore){}
     }
-    private void close(OutputStream out) {
+
+    private void close(OutputStream out)
+    {
         try {out.close();}catch(Exception ignore){}
     }
 
@@ -725,8 +725,8 @@ public class MIMEPart {
      *
      * @param out the output stream
      */
-    public void writeTo(MIMEOutputStream out) throws IOException {
-
+    public void writeTo( MIMEOutputStream out ) throws IOException
+    {
         checkDisposed();
 
         //===== Write Headers =======
@@ -960,7 +960,8 @@ public class MIMEPart {
         throws IOException,
                InvalidHeaderDataException,
                HeaderParseException,
-               MIMEPartParseException {
+               MIMEPartParseException
+    {
 
         m_logger.debug("BEGIN parse multipart part with inner boundary \"" +
                        innerBoundary +
@@ -1081,10 +1082,10 @@ public class MIMEPart {
      * Added to any children as an Observer, so we can tell
      * if things changed.
      */
-    private class MyMIMEPartObserver
-        implements MIMEPartObserver {
-
-        public void mIMEPartChanged(MIMEPart part) {
+    private class MyMIMEPartObserver implements MIMEPartObserver
+    {
+        public void mIMEPartChanged(MIMEPart part)
+        {
             changed();
         }
     }//ENDOF MyMIMEPartObserver
@@ -1095,21 +1096,23 @@ public class MIMEPart {
      * Added to headers so we can tell
      * if things changed.
      */
-    private class MyHeadersObserver
-        implements HeadersObserver {
-
+    private class MyHeadersObserver implements HeadersObserver
+    {
         //TODO bscott Add some intelegence for when the ConentType changes
         //or the ContentXFerEncoding
 
-        public void headerFieldsRemoved(LCString headerName) {
+        public void headerFieldsRemoved(LCString headerName)
+        {
             //      changed();
         }
 
-        public void headerFieldAdded(HeaderField field) {
+        public void headerFieldAdded(HeaderField field)
+        {
             //      changed();
         }
 
-        public void headerFieldChanged(HeaderField field) {
+        public void headerFieldChanged(HeaderField field)
+        {
             //      changed();
         }
     }//ENDOF MyHeadersObserver
@@ -1121,16 +1124,15 @@ public class MIMEPart {
      * Debugging method which describes a MIME message
      * in terms loosely found in the IMAP spec.
      */
-    public String describe() {
+    public String describe()
+    {
         StringBuilder sb = new StringBuilder();
         describeImpl(sb, null, 0);
         return sb.toString();
     }
 
-    protected void describeImpl(StringBuilder sb,
-                                String numSoFar,
-                                int thisIndex) {
-
+    protected void describeImpl( StringBuilder sb, String numSoFar, int thisIndex )
+    {
         String newLine = System.getProperty("line.separator", "\n");
 
         String prefix = numSoFar==null?"":(numSoFar + Integer.toString(thisIndex));
@@ -1175,8 +1177,8 @@ public class MIMEPart {
 
     }
 
-    public static void main(String[] args) throws Exception {
-
+    public static void main( String[] args ) throws Exception
+    {
         File f = new File(args[0]);
 
         File tempDir = new File(new File(System.getProperty("user.dir")),
@@ -1266,7 +1268,8 @@ public class MIMEPart {
 
     }
 
-    protected void dump(String indent) {
+    protected void dump(String indent)
+    {
         System.out.println(indent + "---BEGIN---");
         System.out.println(indent + m_headers.getNumHeaderFields() + " headers");
         String contentType = null;
@@ -1301,7 +1304,8 @@ public class MIMEPart {
      * Acts as a FileFactory, to create temp files
      * when a MIME part needs to be decoded to disk.
      */
-    private static class MyFileFactory implements FileFactory {
+    private static class MyFileFactory implements FileFactory
+    {
         private File m_dir;
         public MyFileFactory(File rootDir) {
             m_dir = rootDir;

@@ -195,7 +195,7 @@ public class Dispatcher implements com.untangle.uvm.argon.NewSessionEventListene
         }
     }
 
-    protected void registerPipelineListener(ArgonIPSession argonSession, NodeIPSessionImpl session)
+    protected void registerPipelineListener( ArgonIPSession argonSession, NodeIPSessionImpl session )
     {
         argonSession.registerListener(session);
     }
@@ -205,7 +205,7 @@ public class Dispatcher implements com.untangle.uvm.argon.NewSessionEventListene
         return argonConnector;
     }
 
-    protected void setSessionEventListener(SessionEventListener listener)
+    protected void setSessionEventListener( SessionEventListener listener )
     {
         sessionEventListener = listener;
     }
