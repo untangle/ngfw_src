@@ -142,9 +142,11 @@ class MailSenderImpl implements MailSender
         File file3 = new File(EXIM_TEMPLATE_FILE);
         if (settingsFile.lastModified() > file1.lastModified() ||
             settingsFile.lastModified() > file2.lastModified() ||
-            settingsFile.lastModified() > file3.lastModified())
-            syncConfigFiles();
+            settingsFile.lastModified() > file3.lastModified()) {
 
+            logger.warn("Settings file newer than exim files, Syncing...");
+            syncConfigFiles();
+        }
 
         logger.info("Initialized MailSender");
     }
@@ -178,7 +180,8 @@ class MailSenderImpl implements MailSender
                 });
     }
 
-    static MailSenderImpl mailSender() {
+    static MailSenderImpl mailSender()
+    {
         synchronized (LOCK) {
             if (null == MAIL_SENDER) {
                 MAIL_SENDER = new MailSenderImpl();
@@ -418,6 +421,14 @@ class MailSenderImpl implements MailSender
             
             this.writeFile( sb, EXIM_CONF_FILE );
 
+            /**
+             * touch all files so we know that a sync has occurred
+             */
+            new File( EXIM_AUTH_FILE ).setLastModified( System.currentTimeMillis() );
+            new File( EXIM_TEMPLATE_FILE ).setLastModified( System.currentTimeMillis() );
+            new File( EXIM_CONF_FILE ).setLastModified( System.currentTimeMillis() );
+                
+            
             UvmContextFactory.context().execManager().exec( EXIM_CMD_UPDATE_CONF + " >/dev/null 2>&1 & " );
 
             // change root@localhost to blackhole
