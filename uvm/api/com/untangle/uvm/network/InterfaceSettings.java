@@ -22,6 +22,8 @@ public class InterfaceSettings implements Serializable, JSONString
 {
     private static final Logger logger = Logger.getLogger( InterfaceSettings.class );
 
+    private static InetAddress V4_PREFIX_NETMASKS[];
+
     private int     interfaceId; /* the ID of the physical interface (1-254) */
     private String  name; /* human name: ie External, Internal, Wireless */
 
@@ -40,12 +42,12 @@ public class InterfaceSettings implements Serializable, JSONString
     private V4ConfigType v4ConfigType = V4ConfigType.AUTO; /* IPv4 config type */
     
     private InetAddress v4StaticAddress; /* the address  of this interface if configured static, or dhcp override */ 
-    private InetAddress v4StaticNetmask; /* the netmask  of this interface if configured static, or dhcp override */
+    private Integer     v4StaticPrefix; /* the netmask of this interface if configured static, or dhcp override */
     private InetAddress v4StaticGateway; /* the gateway  of this interface if configured static, or dhcp override */
     private InetAddress v4StaticDns1; /* the dns1  of this interface if configured static */
     private InetAddress v4StaticDns2; /* the dns2  of this interface if configured static */
     private InetAddress v4AutoAddressOverride; /* the dhcp override address (null means don't override) */ 
-    private InetAddress v4AutoNetmaskOverride; /* the dhcp override netmask (null means don't override) */ 
+    private Integer     v4AutoPrefixOverride; /* the dhcp override netmask (null means don't override) */ 
     private InetAddress v4AutoGatewayOverride; /* the dhcp override gateway (null means don't override) */ 
     private InetAddress v4AutoDns1Override; /* the dhcp override dns1 (null means don't override) */
     private InetAddress v4AutoDns2Override; /* the dhcp override dns2 (null means don't override) */
@@ -73,7 +75,7 @@ public class InterfaceSettings implements Serializable, JSONString
     private InetAddress dhcpRangeEnd; /* where do DHCP leases end? example: 192.168.2.200 */
     private Integer dhcpLeaseDuration; /* DHCP lease duration in seconds */
     private InetAddress dhcpGatewayOverride; /* DHCP gateway override, if null defaults to this interface's IP */
-    private InetAddress dhcpNetmaskOverride; /* DHCP netmask override, if null defaults to this interface's netmask */
+    private Integer     dhcpPrefixOverride; /* DHCP netmask override, if null defaults to this interface's netmask */
     private InetAddress dhcpDnsOverride; /* DHCP DNS override, if null defaults to this interface's IP */
     
     public List<IPMaskedAddress> aliases; /* alias addresses for static & dhcp */
@@ -116,8 +118,8 @@ public class InterfaceSettings implements Serializable, JSONString
     public InetAddress getV4StaticAddress( ) { return this.v4StaticAddress; }
     public void setV4StaticAddress( InetAddress newValue ) { this.v4StaticAddress = newValue; }
 
-    public InetAddress getV4StaticNetmask( ) { return this.v4StaticNetmask; }
-    public void setV4StaticNetmask( InetAddress newValue ) { this.v4StaticNetmask = newValue; }
+    public Integer getV4StaticPrefix( ) { return this.v4StaticPrefix; }
+    public void setV4StaticPrefix( Integer newValue ) { this.v4StaticPrefix = newValue; }
     
     public InetAddress getV4StaticGateway( ) { return this.v4StaticGateway; }
     public void setV4StaticGateway( InetAddress newValue ) { this.v4StaticGateway = newValue; }
@@ -131,8 +133,8 @@ public class InterfaceSettings implements Serializable, JSONString
     public InetAddress getV4AutoAddressOverride( ) { return this.v4AutoAddressOverride; }
     public void setV4AutoAddressOverride( InetAddress newValue ) { this.v4AutoAddressOverride = newValue; }
     
-    public InetAddress getV4AutoNetmaskOverride( ) { return this.v4AutoNetmaskOverride; }
-    public void setV4AutoNetmaskOverride( InetAddress newValue ) { this.v4AutoNetmaskOverride = newValue; }
+    public Integer getV4AutoPrefixOverride( ) { return this.v4AutoPrefixOverride; }
+    public void setV4AutoPrefixOverride( Integer newValue ) { this.v4AutoPrefixOverride = newValue; }
     
     public InetAddress getV4AutoGatewayOverride( ) { return this.v4AutoGatewayOverride; }
     public void setV4AutoGatewayOverride( InetAddress newValue ) { this.v4AutoGatewayOverride = newValue; }
@@ -200,8 +202,8 @@ public class InterfaceSettings implements Serializable, JSONString
     public InetAddress getDhcpGatewayOverride() { return this.dhcpGatewayOverride; }
     public void setDhcpGatewayOverride( InetAddress newValue ) { this.dhcpGatewayOverride = newValue; }
 
-    public InetAddress getDhcpNetmaskOverride() { return this.dhcpNetmaskOverride; }
-    public void setDhcpNetmaskOverride( InetAddress newValue ) { this.dhcpNetmaskOverride = newValue; }
+    public Integer getDhcpPrefixOverride() { return this.dhcpPrefixOverride; }
+    public void setDhcpPrefixOverride( Integer newValue ) { this.dhcpPrefixOverride = newValue; }
 
     public InetAddress getDhcpDnsOverride() { return this.dhcpDnsOverride; }
     public void setDhcpDnsOverride( InetAddress newValue ) { this.dhcpDnsOverride = newValue; }
@@ -212,7 +214,83 @@ public class InterfaceSettings implements Serializable, JSONString
      * These are getters without setters so they can be used and they will in the JSON equivalent of this object
      * However, there are not actually settings
      */
-    public boolean getDisabled() { return getConfigType() == ConfigType.DISABLED; }
-    public boolean getBridged() { return getConfigType() == ConfigType.BRIDGED; }
-    public boolean getAddressed() { return getConfigType() == ConfigType.ADDRESSED; }
+
+    public boolean getDisabled()
+    {
+        return getConfigType() == ConfigType.DISABLED;
+    }
+
+    public boolean getBridged()
+    {
+        return getConfigType() == ConfigType.BRIDGED;
+    }
+
+    public boolean getAddressed()
+    {
+        return getConfigType() == ConfigType.ADDRESSED;
+    }
+
+    public InetAddress getV4StaticNetmask( )
+    {
+        if (this.v4StaticPrefix == null || this.v4StaticPrefix < 0 || this.v4StaticPrefix > 32 )
+            return null;
+        return this.V4_PREFIX_NETMASKS[this.v4StaticPrefix];
+    }
+
+    public InetAddress getV4AutoNetmaskOverride( )
+    {
+        if (this.v4AutoPrefixOverride == null || this.v4AutoPrefixOverride < 0 || this.v4AutoPrefixOverride > 32 )
+            return null;
+        return this.V4_PREFIX_NETMASKS[this.v4AutoPrefixOverride];
+    }
+    
+    public InetAddress getDhcpNetmaskOverride()
+    {
+        if (this.dhcpPrefixOverride == null || this.dhcpPrefixOverride < 0 || this.dhcpPrefixOverride > 32 )
+            return null;
+        return this.V4_PREFIX_NETMASKS[this.dhcpPrefixOverride];
+    }
+
+
+    static
+    {
+        try {
+            V4_PREFIX_NETMASKS = new InetAddress[]{
+                InetAddress.getByName("0.0.0.0"),
+                InetAddress.getByName("128.0.0.0"),
+                InetAddress.getByName("192.0.0.0"),
+                InetAddress.getByName("224.0.0.0"),
+                InetAddress.getByName("240.0.0.0"),
+                InetAddress.getByName("248.0.0.0"),
+                InetAddress.getByName("252.0.0.0"),
+                InetAddress.getByName("254.0.0.0"),
+                InetAddress.getByName("255.0.0.0"),
+                InetAddress.getByName("255.128.0.0"),
+                InetAddress.getByName("255.192.0.0"),
+                InetAddress.getByName("255.224.0.0"),
+                InetAddress.getByName("255.240.0.0"),
+                InetAddress.getByName("255.248.0.0"),
+                InetAddress.getByName("255.252.0.0"),
+                InetAddress.getByName("255.254.0.0"),
+                InetAddress.getByName("255.255.0.0"),
+                InetAddress.getByName("255.255.128.0"),
+                InetAddress.getByName("255.255.192.0"),
+                InetAddress.getByName("255.255.224.0"),
+                InetAddress.getByName("255.255.240.0"),
+                InetAddress.getByName("255.255.248.0"),
+                InetAddress.getByName("255.255.252.0"),
+                InetAddress.getByName("255.255.254.0"),
+                InetAddress.getByName("255.255.255.0"),
+                InetAddress.getByName("255.255.255.128"),
+                InetAddress.getByName("255.255.255.192"),
+                InetAddress.getByName("255.255.255.224"),
+                InetAddress.getByName("255.255.255.240"),
+                InetAddress.getByName("255.255.255.248"),
+                InetAddress.getByName("255.255.255.252"),
+                InetAddress.getByName("255.255.255.254"),
+                InetAddress.getByName("255.255.255.255")
+            };
+        } catch (Exception e) {}
+
+    }
 }

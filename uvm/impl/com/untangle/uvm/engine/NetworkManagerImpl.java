@@ -423,7 +423,7 @@ public class NetworkManagerImpl implements NetworkManager
                 internal.setConfigType( InterfaceSettings.ConfigType.ADDRESSED );
                 internal.setV4ConfigType( InterfaceSettings.V4ConfigType.STATIC );
                 internal.setV4StaticAddress( InetAddress.getByName("192.168.2.1") );
-                internal.setV4StaticNetmask( InetAddress.getByName("255.255.255.0") );
+                internal.setV4StaticPrefix( 24 );
                 internal.setIsWan( false );
                 // FIXME what to set IPv6 to?
                 internal.setV6ConfigType( InterfaceSettings.V6ConfigType.STATIC );

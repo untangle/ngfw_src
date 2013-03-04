@@ -151,7 +151,7 @@ if (!Ung.hasResource["Ung.Network"]) {
                 }, {
                     name: 'v4StaticAddress'
                 }, {
-                    name: 'v4StaticNetmask'
+                    name: 'v4StaticPrefix'
                 }, {
                     name: 'v4StaticGateway'
                 }, {
@@ -161,7 +161,7 @@ if (!Ung.hasResource["Ung.Network"]) {
                 }, {
                     name: 'v4AutoAddressOverride'
                 }, {
-                    name: 'v4AutoNetmaskOverride'
+                    name: 'v4AutoPrefixOverride'
                 }, {
                     name: 'v4AutoGatewayOverride'
                 }, {
@@ -205,7 +205,7 @@ if (!Ung.hasResource["Ung.Network"]) {
                 }, {
                     name: 'dhcpGatewayOverride'
                 }, {
-                    name: 'dhcpNetmaskOverride'
+                    name: 'dhcpPrefixOverride'
                 }, {
                     name: 'dhcpDnsOverride'
                 }, {
@@ -281,7 +281,7 @@ if (!Ung.hasResource["Ung.Network"]) {
                 }, this.gridInterfaces]
             });
             this.interfaceRemap = Ext.create('Ung.InterfaceRemap',{
-                grid: this.gridInterfaces,
+                grid: this.gridInterfaces
             });
 
             this.gridInterfaces.rowEditor = Ext.create('Ung.RowEditorWindow',{
@@ -297,7 +297,7 @@ if (!Ung.hasResource["Ung.Network"]) {
                 }, {
                     xtype: "combo",
                     id: "interface_configType",
-                    allowBlank: false,
+                    //allowBlank: false,
                     dataIndex: "configType",
                     fieldLabel: this.i18n._("Config Type"),
                     editable: false,
@@ -341,7 +341,7 @@ if (!Ung.hasResource["Ung.Network"]) {
                     items: [{
                         xtype: "combo",
                         id: "interface_v4ConfigType",
-                        allowBlank: false,
+                        //allowBlank: false,
                         dataIndex: "v4ConfigType",
                         fieldLabel: this.i18n._("Config Type"),
                         editable: false,
@@ -363,23 +363,28 @@ if (!Ung.hasResource["Ung.Network"]) {
                         id: "interface_v4StaticAddress",
                         dataIndex: "v4StaticAddress",
                         fieldLabel: this.i18n._("Address"),
-                        allowBlank: false,
+                        //allowBlank: false,
                         vtype: "ipAddress",
                         width: 300
                     }, {
-                        xtype:'textfield',
-                        id: "interface_v4StaticNetmask",
-                        dataIndex: "v4StaticNetmask",
-                        fieldLabel: this.i18n._("Netmask"),
-                        allowBlank: false,
-                        vtype: "ipAddress",
-                        width: 300
+                        xtype: "combo",
+                        id: "interface_v4StaticPrefix",
+                        dataIndex: "v4StaticPrefix",
+                        fieldLabel: i18n._( "Netmask" ),
+                        store: Ung.Util.getV4NetmaskList( false ),
+                        valueField: "value",
+                        displayField: "displayName",
+                        width: 300,
+                        listWidth: 70,
+                        triggerAction: "all",
+                        queryMode: 'local',
+                        editable: false
                     }, {
                         xtype:'textfield',
                         id: "interface_v4StaticGateway",
                         dataIndex: "v4StaticGateway",
                         fieldLabel: this.i18n._("Gateway"),
-                        allowBlank: false,
+                        //allowBlank: false,
                         vtype: "ipAddress",
                         width: 300
                     }, {
@@ -387,7 +392,7 @@ if (!Ung.hasResource["Ung.Network"]) {
                         id: "interface_v4StaticDns1",
                         dataIndex: "v4StaticDns1",
                         fieldLabel: this.i18n._("Primary DNS"),
-                        allowBlank: false,
+                        //allowBlank: false,
                         vtype: "ipAddress",
                         width: 300
                     }, {
@@ -395,7 +400,7 @@ if (!Ung.hasResource["Ung.Network"]) {
                         id: "interface_v4StaticDns2",
                         dataIndex: "v4StaticDns2",
                         fieldLabel: this.i18n._("Secondary DNS"),
-                        allowBlank: false,
+                        //allowBlank: false,
                         vtype: "ipAddress",
                         width: 300
                     }, {
@@ -406,12 +411,18 @@ if (!Ung.hasResource["Ung.Network"]) {
                         vtype: "ipAddress",
                         width: 300
                     }, {
-                        xtype:'textfield',
-                        id: "interface_v4AutoNetmaskOverride",
-                        dataIndex: "v4AutoNetmaskOverride",
-                        fieldLabel: this.i18n._("Netmask Override"),
-                        vtype: "ipAddress",
-                        width: 300
+                        xtype: "combo",
+                        id: "interface_v4AutoPrefixOverride",
+                        dataIndex: "v4AutoPrefixOverride",
+                        fieldLabel: i18n._( "Netmask Override" ),
+                        store: Ung.Util.getV4NetmaskList( true ),
+                        valueField: "value",
+                        displayField: "displayName",
+                        width: 300,
+                        listWidth: 70,
+                        triggerAction: "all",
+                        queryMode: 'local',
+                        editable: false
                     }, {
                         xtype:'textfield',
                         id: "interface_v4AutoGatewayOverride",
@@ -420,12 +431,18 @@ if (!Ung.hasResource["Ung.Network"]) {
                         vtype: "ipAddress",
                         width: 300
                     }, {
-                        xtype:'textfield',
-                        id: "interface_v4AutoNetmaskOverride",
-                        dataIndex: "v4AutoNetmaskOverride",
+                        xtype: "combo",
+                        id: "interface_v4AutoPrefixOverride",
+                        dataIndex: "v4AutoPrefixOverride",
                         fieldLabel: this.i18n._("Netmask Override"),
-                        vtype: "ipAddress",
-                        width: 300
+                        store: Ung.Util.getV4NetmaskList( true ),
+                        valueField: "value",
+                        displayField: "displayName",
+                        width: 300,
+                        listWidth: 70,
+                        triggerAction: "all",
+                        queryMode: 'local',
+                        editable: false
                     }, {
                         xtype:'textfield',
                         id: "interface_v4AutoDns1Override",
@@ -513,7 +530,7 @@ if (!Ung.hasResource["Ung.Network"]) {
                         border:true,
                         xtype: "combo",
                         id: "interface_v6ConfigType",
-                        allowBlank: false,
+                        //allowBlank: false,
                         dataIndex: "v6ConfigType",
                         fieldLabel: this.i18n._("Config Type"),
                         editable: false,
@@ -535,7 +552,7 @@ if (!Ung.hasResource["Ung.Network"]) {
                         id: "interface_v6StaticAddress",
                         dataIndex: "v6StaticAddress",
                         fieldLabel: this.i18n._("Address"),
-                        allowBlank: false,
+                        //allowBlank: false,
                         //vtype: "ipAddress",
                         width: 500
                     }, {
@@ -543,14 +560,14 @@ if (!Ung.hasResource["Ung.Network"]) {
                         id: "interface_v6StaticPrefixLength",
                         dataIndex: "v6StaticPrefixLength",
                         fieldLabel: this.i18n._("Prefix Length"),
-                        allowBlank: false,
+                        //allowBlank: false,
                         width: 150
                     }, {
                         xtype:'textfield',
                         id: "interface_v6StaticGateway",
                         dataIndex: "v6StaticGateway",
                         fieldLabel: this.i18n._("Gateway"),
-                        allowBlank: false,
+                        //allowBlank: false,
                         //vtype: "ipAddress",
                         width: 500
                     }, {
@@ -620,21 +637,27 @@ if (!Ung.hasResource["Ung.Network"]) {
                             id: "interface_dhcpGatewayOverride",
                             dataIndex: "dhcpGatewayOverride",
                             fieldLabel: this.i18n._("Gateway Override"),
-                            labelStyle: 'width:120px',
+                            width: 300,
                             vtype: "ipAddress"
                         }, {
-                            xtype:'textfield',
-                            id: "interface_dhcpNetmaskOverride",
-                            dataIndex: "dhcpNetmaskOverride",
+                            xtype: "combo",
+                            id: "interface_dhcpPrefixOverride",
+                            dataIndex: "dhcpPrefixOverride",
                             fieldLabel: this.i18n._("Netmask Override"),
-                            labelStyle: 'width:120px',
-                            vtype: "ipAddress"
+                            store: Ung.Util.getV4NetmaskList( true ),
+                            valueField: "value",
+                            displayField: "displayName",
+                            width: 300,
+                            listWidth: 70,
+                            triggerAction: "all",
+                            queryMode: 'local',
+                            editable: false
                         }, {
                             xtype:'textfield',
                             id: "interface_dhcpDnsOverride",
                             dataIndex: "dhcpDnsOverride",
                             fieldLabel: this.i18n._("DNS Override"),
-                            labelStyle: 'width:120px',
+                            width: 300,
                             vtype: "ipAddress"
                         }]
                     }]
@@ -666,12 +689,12 @@ if (!Ung.hasResource["Ung.Network"]) {
                     Ext.getCmp('interface_v4Config').setVisible(false);
                     Ext.getCmp('interface_v4ConfigType').setVisible(false);
                     Ext.getCmp('interface_v4StaticAddress').setVisible(false);
-                    Ext.getCmp('interface_v4StaticNetmask').setVisible(false);
+                    Ext.getCmp('interface_v4StaticPrefix').setVisible(false);
                     Ext.getCmp('interface_v4StaticGateway').setVisible(false);
                     Ext.getCmp('interface_v4StaticDns1').setVisible(false);
                     Ext.getCmp('interface_v4StaticDns2').setVisible(false);
                     Ext.getCmp('interface_v4AutoAddressOverride').setVisible(false);
-                    Ext.getCmp('interface_v4AutoNetmaskOverride').setVisible(false);
+                    Ext.getCmp('interface_v4AutoPrefixOverride').setVisible(false);
                     Ext.getCmp('interface_v4AutoGatewayOverride').setVisible(false);
                     Ext.getCmp('interface_v4AutoDns1Override').setVisible(false);
                     Ext.getCmp('interface_v4AutoDns2Override').setVisible(false);
@@ -728,7 +751,7 @@ if (!Ung.hasResource["Ung.Network"]) {
                         // if pppoe show pppoe fields (pppoe is only allowed on WANs)
                         if ( Ext.getCmp('interface_v4ConfigType').getValue() == "STATIC" ) {
                             Ext.getCmp('interface_v4StaticAddress').setVisible(true);
-                            Ext.getCmp('interface_v4StaticNetmask').setVisible(true);
+                            Ext.getCmp('interface_v4StaticPrefix').setVisible(true);
                             if (isWan) {
                                 Ext.getCmp('interface_v4StaticGateway').setVisible(true);
                                 Ext.getCmp('interface_v4StaticDns1').setVisible(true);
@@ -736,7 +759,7 @@ if (!Ung.hasResource["Ung.Network"]) {
                             }
                         } else if ( Ext.getCmp('interface_v4ConfigType').getValue() == "AUTO" ) {
                             Ext.getCmp('interface_v4AutoAddressOverride').setVisible(true);
-                            Ext.getCmp('interface_v4AutoNetmaskOverride').setVisible(true);
+                            Ext.getCmp('interface_v4AutoPrefixOverride').setVisible(true);
                             Ext.getCmp('interface_v4AutoGatewayOverride').setVisible(true);
                             Ext.getCmp('interface_v4AutoDns1Override').setVisible(true);
                             Ext.getCmp('interface_v4AutoDns2Override').setVisible(true);
@@ -1383,7 +1406,7 @@ if (!Ung.hasResource["Ung.Network"]) {
                     xtype: "combo",
                     dataIndex: "prefix",
                     fieldLabel: i18n._( "Netmask/Prefix" ),
-                    store: Ung.Util.getV4NetmaskList(),
+                    store: Ung.Util.getV4NetmaskList( false ),
                     valueField: "value",
                     displayField: "displayName",
                     width: 300,

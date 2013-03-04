@@ -593,8 +593,9 @@ Ung.Util = {
         data[datacount++] = [7, i18n._("Saturday")];
         return data;
     },
-    getV4NetmaskList: function() {
+    getV4NetmaskList: function( includeNull ) {
         var data = [];
+        if (includeNull == true) data.push( [null,""] );
         data.push( [32,"/32 - 255.255.255.255"] );
         data.push( [31,"/31 - 255.255.255.254"] );
         data.push( [30,"/30 - 255.255.255.252"] );
