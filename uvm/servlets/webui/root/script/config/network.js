@@ -444,31 +444,49 @@ if (!Ung.hasResource["Ung.Network"]) {
                     fieldLabel: i18n._("Range End"),
                     vtype: "ipAddress"
                 }, {
-                    xtype:'textfield',
-                    id: "interface_dhcpLeaseDuration",
-                    dataIndex: "dhcpLeaseDuration",
-                    fieldLabel: i18n._("Lease Duration")
+                    xtype: 'container',
+                    layout: 'column',
+                    margin: '0 0 5 0',
+                    items: [{
+                        xtype:'textfield',
+                        id: "interface_dhcpLeaseDuration",
+                        dataIndex: "dhcpLeaseDuration",
+                        fieldLabel: i18n._("Lease Duration")
+                    }, {
+                        xtype: 'label',
+                        html: i18n._("(seconds)"),
+                        cls: 'boxlabel'
+                    }]
                 }, {
-                    xtype:'textfield',
-                    id: "interface_dhcpGatewayOverride",
-                    dataIndex: "dhcpGatewayOverride",
-                    fieldLabel: i18n._("Gateway Override"),
-                    labelStyle: 'width:120px',
-                    vtype: "ipAddress"
-                }, {
-                    xtype:'textfield',
-                    id: "interface_dhcpNetmaskOverride",
-                    dataIndex: "dhcpNetmaskOverride",
-                    fieldLabel: i18n._("Netmask Override"),
-                    labelStyle: 'width:120px',
-                    vtype: "ipAddress"
-                }, {
-                    xtype:'textfield',
-                    id: "interface_dhcpDnsOverride",
-                    dataIndex: "dhcpDnsOverride",
-                    fieldLabel: i18n._("DNS Override"),
-                    labelStyle: 'width:120px',
-                    vtype: "ipAddress"
+                    id:'interface_dhcp_advanced',
+                    style: "border:1px solid;", // UGLY FIXME
+                    xtype:'fieldset',
+                    border:true,
+                    title:i18n._("DHCP Advanced"),
+                    collapsible: true,
+                    collapsed: true,
+                    items: [{
+                        xtype:'textfield',
+                        id: "interface_dhcpGatewayOverride",
+                        dataIndex: "dhcpGatewayOverride",
+                        fieldLabel: i18n._("Gateway Override"),
+                        labelStyle: 'width:120px',
+                        vtype: "ipAddress"
+                    }, {
+                        xtype:'textfield',
+                        id: "interface_dhcpNetmaskOverride",
+                        dataIndex: "dhcpNetmaskOverride",
+                        fieldLabel: i18n._("Netmask Override"),
+                        labelStyle: 'width:120px',
+                        vtype: "ipAddress"
+                    }, {
+                        xtype:'textfield',
+                        id: "interface_dhcpDnsOverride",
+                        dataIndex: "dhcpDnsOverride",
+                        fieldLabel: i18n._("DNS Override"),
+                        labelStyle: 'width:120px',
+                        vtype: "ipAddress"
+                    }]
                 }]
             }, {
                 xtype: "combo",
@@ -484,9 +502,9 @@ if (!Ung.hasResource["Ung.Network"]) {
                 queryMode: 'local',
                 editable: false
             }, {
-                html: "TODO: aliases grid<br/>"
+                html: "FIXME: aliases grid<br/>"
             }, {
-                html: "TODO: MTU settings<br/>"
+                html: "FIXME: MTU settings<br/>"
             }];
 
             this.items = [Ext.create('Ext.panel.Panel',{
