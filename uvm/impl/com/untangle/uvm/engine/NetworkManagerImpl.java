@@ -603,9 +603,7 @@ public class NetworkManagerImpl implements NetworkManager
 
             interfaceSettings.setDhcpRangeStart( suggestedStart );
             interfaceSettings.setDhcpRangeEnd( suggestedEnd );
-            interfaceSettings.setDhcpAuthoritative( true );
-            interfaceSettings.setDhcpLeaseDuration( 24*60*60 ); // 24 hours
-            interfaceSettings.setDhcpLeaseLimit( 100 ); // 100
+            interfaceSettings.setDhcpLeaseDuration( 60*60 ); // 1 hours (dnsmasq doc suggested value)
         }
         catch (Exception e) {
             logger.warn("Exception initializing DHCP Address: ",e);

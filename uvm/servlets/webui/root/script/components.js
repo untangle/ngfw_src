@@ -668,7 +668,7 @@ Ung.Util = {
             var name = intf['name'];
             var key = intf['interfaceId'];
             
-            if ( intf['config'] == 'addressed' ) {
+            if ( intf['configType'] == 'ADDRESSED' ) {
                 data.push( [ key, name ] );
             }
         }

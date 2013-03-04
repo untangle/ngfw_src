@@ -450,16 +450,6 @@ if (!Ung.hasResource["Ung.Network"]) {
                     fieldLabel: i18n._("Lease Duration")
                 }, {
                     xtype:'textfield',
-                    id: "interface_dhcpLeaseLimit",
-                    dataIndex: "dhcpLeaseLimit",
-                    fieldLabel: i18n._("Lease Limit")
-                }, {
-                    xtype:'checkbox',
-                    id: "interface_dhcpAuthoritative",
-                    dataIndex: "dhcpAuthoritative",
-                    fieldLabel: i18n._("Authoritative")
-                }, {
-                    xtype:'textfield',
                     id: "interface_dhcpGatewayOverride",
                     dataIndex: "dhcpGatewayOverride",
                     fieldLabel: i18n._("Gateway Override"),
@@ -725,15 +715,11 @@ if (!Ung.hasResource["Ung.Network"]) {
                 }, {
                     name: 'dhcpEnabled'
                 }, {
-                    name: 'dhcpAuthoritative'
-                }, {
                     name: 'dhcpRangeStart'
                 }, {
                     name: 'dhcpRangeEnd'
                 }, {
                     name: 'dhcpLeaseDuration'
-                }, {
-                    name: 'dhcpLeaseLimit'
                 }, {
                     name: 'dhcpGatewayOverride'
                 }, {
@@ -1537,6 +1523,19 @@ if (!Ung.hasResource["Ung.Network"]) {
                         "change": {
                             fn: Ext.bind(function(elem, newValue) {
                                 this.settings.sendIcmpRedirects = newValue;
+                            }, this)
+                        }
+                    }
+                },{
+                    xtype: "checkbox",
+                    fieldLabel: this.i18n._("DHCP Authoritative"),
+                    labelStyle: 'width:150px',
+                    name: 'DomainName',
+                    checked: this.settings.dhcpAuthoritative,
+                    listeners: {
+                        "change": {
+                            fn: Ext.bind(function(elem, newValue) {
+                                this.settings.dhcpAuthoritative = newValue;
                             }, this)
                         }
                     }

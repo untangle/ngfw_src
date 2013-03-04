@@ -31,14 +31,15 @@ public class NetworkSettings implements Serializable, JSONString
     private String hostName;
     private String domainName;
 
-    private Boolean dynamicDnsServiceEnabled;
+    private boolean dynamicDnsServiceEnabled = false;
     private String  dynamicDnsServiceName = null;
     private String  dynamicDnsServiceUsername = null;
     private String  dynamicDnsServicePassword = null;
     private String  dynamicDnsServiceHostnames = null;
 
-    private Boolean enableSipNatHelper;
-    private Boolean sendIcmpRedirects;
+    private boolean enableSipNatHelper = false;
+    private boolean sendIcmpRedirects = true;
+    private boolean dhcpAuthoritative = true;
 
     public NetworkSettings() { }
 
@@ -63,8 +64,8 @@ public class NetworkSettings implements Serializable, JSONString
     public String getDomainName() { return this.domainName; }
     public void setDomainName( String newValue ) { this.domainName = newValue; }
 
-    public Boolean getDynamicDnsServiceEnabled() { return this.dynamicDnsServiceEnabled; }
-    public void setDynamicDnsServiceEnabled( Boolean newValue ) { this.dynamicDnsServiceEnabled = newValue; }
+    public boolean getDynamicDnsServiceEnabled() { return this.dynamicDnsServiceEnabled; }
+    public void setDynamicDnsServiceEnabled( boolean newValue ) { this.dynamicDnsServiceEnabled = newValue; }
 
     public String getDynamicDnsServiceName() { return this.dynamicDnsServiceName; }
     public void setDynamicDnsServiceName( String newValue ) { this.dynamicDnsServiceName = newValue; }
@@ -78,11 +79,14 @@ public class NetworkSettings implements Serializable, JSONString
     public String getDynamicDnsServiceHostnames() { return this.dynamicDnsServiceHostnames; }
     public void setDynamicDnsServiceHostnames( String newValue ) { this.dynamicDnsServiceHostnames = newValue; }
     
-    public Boolean getEnableSipNatHelper() { return this.enableSipNatHelper; }
-    public void setEnableSipNatHelper( Boolean newValue ) { this.enableSipNatHelper = newValue; }
+    public boolean getEnableSipNatHelper() { return this.enableSipNatHelper; }
+    public void setEnableSipNatHelper( boolean newValue ) { this.enableSipNatHelper = newValue; }
 
-    public Boolean getSendIcmpRedirects() { return this.sendIcmpRedirects; }
-    public void setSendIcmpRedirects( Boolean newValue ) { this.sendIcmpRedirects = newValue; }
+    public boolean getSendIcmpRedirects() { return this.sendIcmpRedirects; }
+    public void setSendIcmpRedirects( boolean newValue ) { this.sendIcmpRedirects = newValue; }
+
+    public boolean getDhcpAuthoritative() { return this.dhcpAuthoritative; }
+    public void setDhcpAuthoritative( boolean newValue ) { this.dhcpAuthoritative = newValue; }
 
     public String toJSONString()
     {

@@ -69,11 +69,9 @@ public class InterfaceSettings implements Serializable, JSONString
     private InetAddress v6StaticDns2; /* the dns2  of this interface if configured static, or dhcp override */
 
     private Boolean dhcpEnabled; /* is DHCP serving enabled on this interface? */
-    private Boolean dhcpAuthoritative; /* is the DHCP server authoritative? */
     private InetAddress dhcpRangeStart; /* where do DHCP leases start? example: 192.168.2.100*/
     private InetAddress dhcpRangeEnd; /* where do DHCP leases end? example: 192.168.2.200 */
     private Integer dhcpLeaseDuration; /* DHCP lease duration in seconds */
-    private Integer dhcpLeaseLimit; /* simultaneous DHCP lease limit */
     private InetAddress dhcpGatewayOverride; /* DHCP gateway override, if null defaults to this interface's IP */
     private InetAddress dhcpNetmaskOverride; /* DHCP netmask override, if null defaults to this interface's netmask */
     private InetAddress dhcpDnsOverride; /* DHCP DNS override, if null defaults to this interface's IP */
@@ -190,9 +188,6 @@ public class InterfaceSettings implements Serializable, JSONString
     public Boolean getDhcpEnabled() { return this.dhcpEnabled; }
     public void setDhcpEnabled( Boolean newValue ) { this.dhcpEnabled = newValue; }
 
-    public Boolean getDhcpAuthoritative() { return this.dhcpAuthoritative; }
-    public void setDhcpAuthoritative( Boolean newValue ) { this.dhcpAuthoritative = newValue; }
-    
     public InetAddress getDhcpRangeStart() { return this.dhcpRangeStart; }
     public void setDhcpRangeStart( InetAddress newValue ) { this.dhcpRangeStart = newValue; }
 
@@ -202,9 +197,6 @@ public class InterfaceSettings implements Serializable, JSONString
     public Integer getDhcpLeaseDuration() { return this.dhcpLeaseDuration; }
     public void setDhcpLeaseDuration( Integer newValue ) { this.dhcpLeaseDuration = newValue; }
 
-    public Integer getDhcpLeaseLimit() { return this.dhcpLeaseLimit; }
-    public void setDhcpLeaseLimit( Integer newValue ) { this.dhcpLeaseLimit = newValue; }
-    
     public InetAddress getDhcpGatewayOverride() { return this.dhcpGatewayOverride; }
     public void setDhcpGatewayOverride( InetAddress newValue ) { this.dhcpGatewayOverride = newValue; }
 
