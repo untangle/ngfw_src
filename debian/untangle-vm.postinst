@@ -10,39 +10,6 @@ fi
 
 UVM_LOGDIR="/var/log/uvm"
 
-USER=root
-GROUP=adm
-
-# modify limit to support many file descriptors
-LIMITS_FILE=/etc/security/limits.conf
-LIMITS_LINE="${USER}    soft    nofile  128000"
-LIMITS_LINE2="${USER}   hard    nofile  128000"
-
-if [ -z "`grep ${USER} ${LIMITS_FILE}`" ] ; then
-    echo ${LIMITS_LINE} >> ${LIMITS_FILE}
-    echo ${LIMITS_LINE2} >> ${LIMITS_FILE}
-else
-    sed -i -e "s|^${USER}.*soft.*|${LIMITS_LINE}|g" ${LIMITS_FILE}
-    sed -i -e "s|^${USER}.*hard.*|${LIMITS_LINE2}|g" ${LIMITS_FILE}
-fi
-
-# tell PAM (login and su) to read the limits file
-LOGIN_LINE="session    required   pam_limits.so"
-
-LOGIN_FILE=/etc/pam.d/login
-if [ -z "`grep pam_limits.so ${LOGIN_FILE}`" ] ; then
-    echo ${LOGIN_LINE} >> ${LOGIN_FILE}
-else
-    sed -i -e "s|^.*pam_limits.so.*|${LOGIN_LINE}|g" ${LOGIN_FILE}
-fi
-
-LOGIN_FILE=/etc/pam.d/su
-if [ -z "`grep pam_limits.so ${LOGIN_FILE}`" ] ; then
-    echo ${LOGIN_LINE} >> ${LOGIN_FILE}
-else
-    sed -i -e "s|^.*pam_limits.so.*|${LOGIN_LINE}|g" ${LOGIN_FILE}
-fi
-
 # right permissions for log dir
 /bin/chown -R $USER:$GROUP ${UVM_LOGDIR}
 /bin/chmod 775 ${UVM_LOGDIR}
@@ -50,12 +17,6 @@ fi
 # enable en_US locale (used by java)
 sed -i -e "s/.*en_US.UTF-8 UTF-8.*/en_US.UTF-8 UTF-8/" /etc/locale.gen
 locale-gen
-
-# 9.4 change sources.list to point to stable-94
-if [ -f /etc/apt/sources.list.d/untangle.list ] ; then
-    sed -i 's/\sstable\s/ stable-94 /' /etc/apt/sources.list.d/untangle.list
-    sed -i 's/\sstable-9\s/ stable-94 /' /etc/apt/sources.list.d/untangle.list
-fi
 
 # set up uvm to start at boot
 if [ -x "/etc/init.d/untangle-vm" ]; then
@@ -87,10 +48,5 @@ fi
 /etc/init.d/apache2 reload
 
 touch /etc/untangle/monit-to-restart
-
-## Restart untangle-hardware-config just in case.
-if [ -x "/etc/init.d/untangle-hardware-config" ]; then
-    ourInit untangle-hardware-config restart
-fi
 
 exit 0
