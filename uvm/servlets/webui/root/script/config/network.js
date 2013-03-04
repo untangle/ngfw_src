@@ -297,7 +297,7 @@ if (!Ung.hasResource["Ung.Network"]) {
                 }, {
                     xtype: "combo",
                     id: "interface_configType",
-                    //allowBlank: false,
+                    allowBlank: false,
                     dataIndex: "configType",
                     fieldLabel: this.i18n._("Config Type"),
                     editable: false,
@@ -341,7 +341,6 @@ if (!Ung.hasResource["Ung.Network"]) {
                     items: [{
                         xtype: "combo",
                         id: "interface_v4ConfigType",
-                        //allowBlank: false,
                         dataIndex: "v4ConfigType",
                         fieldLabel: this.i18n._("Config Type"),
                         editable: false,
@@ -363,7 +362,7 @@ if (!Ung.hasResource["Ung.Network"]) {
                         id: "interface_v4StaticAddress",
                         dataIndex: "v4StaticAddress",
                         fieldLabel: this.i18n._("Address"),
-                        //allowBlank: false,
+                        //allowBlank: false, // new to disallow blank, but only if visible
                         vtype: "ipAddress",
                         width: 300
                     }, {
@@ -384,7 +383,7 @@ if (!Ung.hasResource["Ung.Network"]) {
                         id: "interface_v4StaticGateway",
                         dataIndex: "v4StaticGateway",
                         fieldLabel: this.i18n._("Gateway"),
-                        //allowBlank: false,
+                        //allowBlank: false, // new to disallow blank, but only if visible
                         vtype: "ipAddress",
                         width: 300
                     }, {
@@ -392,7 +391,7 @@ if (!Ung.hasResource["Ung.Network"]) {
                         id: "interface_v4StaticDns1",
                         dataIndex: "v4StaticDns1",
                         fieldLabel: this.i18n._("Primary DNS"),
-                        //allowBlank: false,
+                        //allowBlank: false, // new to disallow blank, but only if visible
                         vtype: "ipAddress",
                         width: 300
                     }, {
@@ -400,7 +399,6 @@ if (!Ung.hasResource["Ung.Network"]) {
                         id: "interface_v4StaticDns2",
                         dataIndex: "v4StaticDns2",
                         fieldLabel: this.i18n._("Secondary DNS"),
-                        //allowBlank: false,
                         vtype: "ipAddress",
                         width: 300
                     }, {
@@ -530,7 +528,7 @@ if (!Ung.hasResource["Ung.Network"]) {
                         border:true,
                         xtype: "combo",
                         id: "interface_v6ConfigType",
-                        //allowBlank: false,
+                        //allowBlank: false, // new to disallow blank, but only if visible
                         dataIndex: "v6ConfigType",
                         fieldLabel: this.i18n._("Config Type"),
                         editable: false,
@@ -552,22 +550,22 @@ if (!Ung.hasResource["Ung.Network"]) {
                         id: "interface_v6StaticAddress",
                         dataIndex: "v6StaticAddress",
                         fieldLabel: this.i18n._("Address"),
-                        //allowBlank: false,
-                        //vtype: "ipAddress",
+                        //allowBlank: false, // new to disallow blank, but only if visible
+                        //vtype: "ipAddress", // FIXME new IPv6 validator
                         width: 500
                     }, {
                         xtype:'textfield',
                         id: "interface_v6StaticPrefixLength",
                         dataIndex: "v6StaticPrefixLength",
                         fieldLabel: this.i18n._("Prefix Length"),
-                        //allowBlank: false,
+                        //allowBlank: false, // new to disallow blank, but only if visible
                         width: 150
                     }, {
                         xtype:'textfield',
                         id: "interface_v6StaticGateway",
                         dataIndex: "v6StaticGateway",
                         fieldLabel: this.i18n._("Gateway"),
-                        //allowBlank: false,
+                        //allowBlank: false, // new to disallow blank, but only if visible
                         //vtype: "ipAddress",
                         width: 500
                     }, {
