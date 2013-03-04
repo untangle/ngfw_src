@@ -414,12 +414,6 @@ public class NetworkManagerImpl implements NetworkManager
             }
         
             if (devices.length > 1) {
-                InterfaceSettings.InterfaceAlias alias = new InterfaceSettings.InterfaceAlias();
-                alias.setV4StaticAddress( InetAddress.getByName("192.168.3.1") );
-                alias.setV4StaticPrefix( 24 );
-                List<InterfaceSettings.InterfaceAlias> aliases = new LinkedList<InterfaceSettings.InterfaceAlias>();
-                aliases.add(alias);
-
                 InterfaceSettings internal = new InterfaceSettings();
                 internal.setInterfaceId( 2 );
                 internal.setName( "Internál" );
@@ -431,13 +425,20 @@ public class NetworkManagerImpl implements NetworkManager
                 internal.setV4ConfigType( InterfaceSettings.V4ConfigType.STATIC );
                 internal.setV4StaticAddress( InetAddress.getByName("192.168.2.1") );
                 internal.setV4StaticPrefix( 24 );
-                internal.setV4Aliases( aliases );
                 internal.setDhcpEnabled( true );
                 // FIXME what to set IPv6 to?
                 internal.setV6ConfigType( InterfaceSettings.V6ConfigType.STATIC );
                 internal.setV6StaticAddress( InetAddress.getByName("2001:db8:85a3:0:0:8a2e:370:7334") );
                 internal.setV6StaticPrefixLength( 64 );
                 internal.setBridgedTo( 1 );
+
+                // InterfaceSettings.InterfaceAlias alias = new InterfaceSettings.InterfaceAlias();
+                // alias.setV4StaticAddress( InetAddress.getByName("192.168.3.1") );
+                // alias.setV4StaticPrefix( 24 );
+                // List<InterfaceSettings.InterfaceAlias> aliases = new LinkedList<InterfaceSettings.InterfaceAlias>();
+                // aliases.add(alias);
+                // internal.setV4Aliases( aliases );
+
                 interfaces.add(internal);
             }
 
