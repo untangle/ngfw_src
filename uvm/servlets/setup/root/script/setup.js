@@ -221,12 +221,12 @@ Ext.define('Ung.SetupWizard.ServerSettings', {
 Ext.define('Ung.SetupWizard.Interfaces', {
     constructor: function() {
         this.interfaceStore = Ext.create('Ext.data.ArrayStore', {
-            fields:[{ name: "name" }, { name: "status" }],
+            fields:[{name: "interfaceId"}, { name: "name" }, { name: "physicalDev" }],
             data: []
         });
 
         this.enableAutoRefresh = true;
-
+        this.networkSettings = null;
         this.interfaceGrid = Ext.create('Ext.grid.Panel', {
             store: this.interfaceStore,
             loadMask: true,
@@ -261,10 +261,10 @@ Ext.define('Ung.SetupWizard.Interfaces', {
                     return i18n._( value );
                 }
             }, {
-                header: i18n._( "Status" ),
-                dataIndex: 'status',
+                header: i18n._( "Device" ),
+                dataIndex: 'physicalDev',
                 sortable: false,
-                flex:1,
+                flex:1/*,
                 renderer: function( value ) {
                     var divClass = "draggable-disabled-interface";
                     var status = i18n._( "unknown" );
@@ -283,7 +283,7 @@ Ext.define('Ung.SetupWizard.Interfaces', {
                     }
                     
                     return "<div class='" + divClass + "'>" + status + "</div>";
-                }
+                }*/
             }]
         });
 
@@ -342,7 +342,7 @@ Ext.define('Ung.SetupWizard.Interfaces', {
                 if ( this.isDragAndDropInitialized == false ) {
                     this.initializeDragAndDrop();
                 }
-                this.isDragAndDropInitialized = true;
+                
 
                 this.enableAutoRefresh = true;
                 this.autoRefreshInterfaces();
@@ -355,8 +355,15 @@ Ext.define('Ung.SetupWizard.Interfaces', {
 
     initializeDragAndDrop: function() {
         //var data = this.fixInterfaceList( Ung.SetupWizard.CurrentValues.interfaceArray );
-        var data = [];
-        this.interfaceStore.loadData( data );
+        rpc.networkManager.getNetworkSettings( Ext.bind(function( result, exception ) {
+            if(exception != null) {
+                Ext.MessageBox.alert(exception);
+                return;
+            }
+            this.networkSettings=result;
+            this.interfaceStore.loadData( result.interfaces.list );
+            this.isDragAndDropInitialized = true;
+        }, this ) );
     },
 
     onDrop: function(node,data,overModel,dropPosition,dropFunction, options) {
@@ -366,21 +373,21 @@ Ext.define('Ung.SetupWizard.Interfaces', {
         if ( rows.length != 1 ) {
             return false;
         }
-        var status = rows[0].get("status");
-        var origStatus = overModel.get("status");
+        var dev = rows[0].get("physicalDev");
+        var origDev = overModel.get("physicalDev");
 
         this.interfaceStore.each( function( currentRow ) {
             if ( currentRow == overModel) {
-                currentRow.set("status", status);
+                currentRow.set("physicalDev", dev);
             }
             if ( currentRow == rows[0]) {
-                currentRow.set("status", origStatus);
+                currentRow.set("physicalDev", origDev);
             }
         });
         sm.clearSelections();
         return true;
     },
-
+/*
     // Given a list of interfaces, this takes out the ones that are not used
     fixInterfaceList: function( interfaceArray ) {
         var cleanArray = [];
@@ -414,17 +421,30 @@ Ext.define('Ung.SetupWizard.Interfaces', {
 
         return interfaceList;
     },
-
+*/
     saveInterfaceList: function( handler ) {
 
         // disable auto refresh
         this.enableAutoRefresh = false;
 
         Ext.MessageBox.wait( i18n._( "Saving Settings" ), i18n._( "Please Wait" ));
-        // FIXME save settings
-        
-        Ext.MessageBox.hide();
-        handler();
+        this.interfaceStore.sync();
+        var interfacesMap = {};
+        this.interfaceStore.each( function( currentRow ) {
+            interfacesMap[currentRow.get( "interfaceId" )] = currentRow.get( "physicalDev" );
+        });
+        var interfaceList=this.networkSettings.interfaces.list;
+        for(var i=0; i<interfaceList.length; i++) {
+            interfaceList[i]["physicalDev"]=interfacesMap[interfaceList[i]["interfaceId"]];
+        }
+        rpc.networkManager.setNetworkSettings(Ext.bind(function( result, exception ) {
+            if(exception != null) {
+                Ext.MessageBox.alert(exception);
+                return;
+            }
+            Ext.MessageBox.hide();
+            handler();
+        }, this ), this.networkSettings);
     },
 
     errorHandler: function( result, exception, foo, handler ) {
@@ -471,23 +491,15 @@ Ext.define('Ung.SetupWizard.Interfaces', {
             });
             return;
         }
+        this.networkSettings=result;
 
-        // FIXME
         // result is now a NetworkSettings
-        // var interfaceList = this.fixInterfaceList( result.interfaceList );
-        var interfaceList = [];
-        
-        if ( interfaceList.length != this.interfaceStore.getCount()) {
-            Ext.MessageBox.alert( i18n._( "New interfaces" ), i18n._ ( "There are new interfaces, please restart the wizard." ), "" );
+        var interfaceList = result.interfaces;
+        if ( interfaceList.length < 2) {
+            Ext.MessageBox.alert( i18n._( "Missing interfaces" ), i18n._ ( "Untangle requires two or more network cards. Please reinstall with at least two network cards." ), "" );
             return;
         }
-
-        // FIXME
-        //if ( interfaceList.length < 2) {
-        //    Ext.MessageBox.alert( i18n._( "Missing interfaces" ), i18n._ ( "Untangle requires two or more network cards. Please reinstall with at least two network cards." ), "" );
-        //    return;
-        //}
-        
+/*        
         var statusHash = {};
         //TODO: This status array is brittle and should be refactored.
         for ( var c = 0 ;c < interfaceList.length ; c++ ) {
@@ -500,7 +512,7 @@ Ext.define('Ung.SetupWizard.Interfaces', {
             var status = currentRow.get( "status" );
             currentRow.set( "status", statusHash[status[0]]);
         });
-
+*/
         if (Ext.MessageBox.rendered) {
             Ext.MessageBox.hide();
         }
