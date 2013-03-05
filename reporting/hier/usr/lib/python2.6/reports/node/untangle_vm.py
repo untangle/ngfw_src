@@ -169,55 +169,16 @@ CREATE TABLE reports.sessions (
         sql_helper.add_column('reports', 'sessions', 's_server_port', 'int4')
         sql_helper.add_column('reports', 'sessions', 's_client_port', 'int4')
 
-        # drop obsolete column
-        sql_helper.drop_column('reports', 'sessions', 'ips_name')
-        sql_helper.drop_column('reports', 'sessions', 'firewall_rule_description')
-
-        # we used to create event_id as serial instead of bigserial - convert if necessary
-        sql_helper.convert_column("reports","sessions","event_id","integer","bigint");
-
-        # rename pl_endp_id to session_id
-        sql_helper.rename_column("reports","sessions","pl_endp_id","session_id");
-        sql_helper.rename_index("reports","sessions_pl_endp_id_idx","sessions_session_id_idx");
-
-        # If the new index does not exist, create it
+        # If session_id index does not exist, create it
         if not sql_helper.index_exists("reports","sessions","session_id", unique=True):
-            sql_helper.run_sql("""delete from reports.sessions where session_id in (select session_id from (select session_id,count(*) as cnt from reports.sessions group by session_id order by cnt desc) as foo where cnt > 1);""");
             sql_helper.create_index("reports","sessions","session_id", unique=True);
-        # If the new index does exist, delete the old one
-        if sql_helper.index_exists("reports","sessions","session_id", unique=True):
-            sql_helper.drop_index("reports","sessions","session_id", unique=False);
 
-        # If the new index does not exist, create it
+        # If event_id index does not exist, create it
         if not sql_helper.index_exists("reports","sessions","event_id", unique=True):
             sql_helper.create_index("reports","sessions","event_id", unique=True);
-        # If the new index does exist, delete the old one
-        if sql_helper.index_exists("reports","sessions","event_id", unique=True):
-            sql_helper.drop_index("reports","sessions","event_id", unique=False);
 
         sql_helper.create_index("reports","sessions","policy_id");
         sql_helper.create_index("reports","sessions","time_stamp");
-
-        # 9.4 conversion
-        sql_helper.rename_column("reports","sessions","firewall_was_blocked","firewall_blocked");
-
-        # firewall event log query indexes
-        # sql_helper.create_index("reports","sessions","firewall_rule_index");
-        # sql_helper.create_index("reports","sessions","firewall_blocked");
-
-        # spyware event log query indexes
-        # sql_helper.create_index("reports","sessions","sw_access_ident");
-
-        # ips event log query indexes
-        # sql_helper.create_index("reports","sessions","ips_name");
-        # sql_helper.create_index("reports","sessions","ips_blocked");
-
-        # protofilter event log query indexes
-        # sql_helper.create_index("reports","sessions","pf_protocol");
-        # sql_helper.create_index("reports","sessions","pf_blocked");
-
-        # bandwidth event log query indexes
-        # sql_helper.create_index("reports","sessions","bandwidth_priority");
 
     @print_timing
     def __make_session_counts_table(self, start_date, end_date):
