@@ -1,5 +1,5 @@
 /**
- * $Id: QoSPrioritySettings.java,v 1.00 2013/03/06 13:38:43 dmorris Exp $
+ * $Id: QoSPriority.java,v 1.00 2013/03/06 13:38:43 dmorris Exp $
  */
 package com.untangle.uvm.network;
 
@@ -15,7 +15,7 @@ import org.json.JSONString;
  * QoS settings.
  */
 @SuppressWarnings("serial")
-public class QosPrioritySettings implements Serializable, JSONString
+public class QosPriority implements Serializable, JSONString
 {
     int priorityId;
     String priorityName;
@@ -25,7 +25,17 @@ public class QosPrioritySettings implements Serializable, JSONString
     int downloadReservation;
     int downloadLimit;
     
-    public QosPrioritySettings() {}
+    public QosPriority( int priorityId, String priorityName, int uploadReservation, int uploadLimit, int downloadReservation, int downloadLimit)
+    {
+        setPriorityId( priorityId );
+        setPriorityName( priorityName );
+        setUploadReservation( uploadReservation );
+        setUploadLimit( uploadLimit );
+        setDownloadReservation( downloadReservation );
+        setDownloadLimit( downloadLimit );
+    }
+
+    public QosPriority() {}
 
     public int getPriorityId() { return this.priorityId; }
     public void setPriorityId( int newValue ) { this.priorityId = newValue; }

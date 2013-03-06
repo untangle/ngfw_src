@@ -19,16 +19,23 @@ public class QosSettings implements Serializable, JSONString
 {
     private boolean qosEnabled = false;
 
+    private int defaultPriority = 3;
+
     private int pingPriority = 1;
     private int dnsPriority = 1;
     private int sshPriority = 1;
     private int openvpnPriority = 1;
     private int gamingPriority = 1;
     
+    private List<QosPriority> qosPriorities = new LinkedList<QosPriority>();
+
     private List<QosRule> qosRules = new LinkedList<QosRule>();
 
     public boolean getQosEnabled() { return this.qosEnabled; }
     public void setQosEnabled( boolean newValue ) { this.qosEnabled = newValue; }
+
+    public int getDefaultPriority() { return this.defaultPriority; }
+    public void setDefaultPriority( int newValue ) { this.defaultPriority = newValue; }
 
     public int getPingPriority() { return this.pingPriority; }
     public void setPingPriority( int newValue ) { this.pingPriority = newValue; }
@@ -45,6 +52,9 @@ public class QosSettings implements Serializable, JSONString
     public int getGamingPriority() { return this.gamingPriority; }
     public void setGamingPriority( int newValue ) { this.gamingPriority = newValue; }
     
+    public List<QosPriority> getQosPriorities() { return this.qosPriorities; }
+    public void setQosPriorities( List<QosPriority> newValue ) { this.qosPriorities = newValue; }
+
     public List<QosRule> getQosRules() { return this.qosRules; }
     public void setQosRules( List<QosRule> newValue ) { this.qosRules = newValue; }
     

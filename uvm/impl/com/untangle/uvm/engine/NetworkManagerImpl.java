@@ -26,6 +26,7 @@ import com.untangle.uvm.network.PortForwardRule;
 import com.untangle.uvm.network.QosSettings;
 import com.untangle.uvm.network.QosRule;
 import com.untangle.uvm.network.QosRuleMatcher;
+import com.untangle.uvm.network.QosPriority;
 import com.untangle.uvm.node.IPMaskedAddress;
 
 /**
@@ -93,6 +94,9 @@ public class NetworkManagerImpl implements NetworkManager
             this.setNetworkSettings( defaultSettings() );
         }
         else {
+            if (readSettings.getQosSettings() == null)
+                readSettings.setQosSettings( defaultQosSettings() );
+            
             this.networkSettings = readSettings;
             logger.debug( "Loading Settings: " + this.networkSettings.toJSONString() );
         }
@@ -700,8 +704,23 @@ public class NetworkManagerImpl implements NetworkManager
          */
         qosRules.add( qosRule1 );
         qosRules.add( qosRule2 );
-
         qosSettings.setQosRules( qosRules );
+
+        /**
+         * Create priorities
+         */
+        List<QosPriority> qosPriorities = new LinkedList<QosPriority>();
+
+        qosPriorities.add( new QosPriority( 1, "Very High",      50, 100, 50, 100) );
+        qosPriorities.add( new QosPriority( 2, "High",           25, 100, 25, 100) );
+        qosPriorities.add( new QosPriority( 3, "Medium",         12, 100, 12, 100) );
+        qosPriorities.add( new QosPriority( 4, "Low",             6, 100,  6, 100) );
+        qosPriorities.add( new QosPriority( 5, "Limited",         3,  75,  3, 75) );
+        qosPriorities.add( new QosPriority( 5, "Limited More",    2,  50,  2, 50) );
+        qosPriorities.add( new QosPriority( 5, "Limited Severly", 2,  10,  2, 10) );
+
+        qosSettings.setQosPriorities( qosPriorities );
+        
         
         return qosSettings;
     }
