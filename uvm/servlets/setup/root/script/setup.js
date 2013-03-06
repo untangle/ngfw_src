@@ -218,10 +218,15 @@ Ext.define('Ung.SetupWizard.ServerSettings', {
 });
 
 // Setup Wizard - Step 2 (Remap Interfaces)
+
 Ext.define('Ung.SetupWizard.Interfaces', {
     constructor: function() {
         this.interfaceStore = Ext.create('Ext.data.ArrayStore', {
             fields:[{name: "interfaceId"}, { name: "name" }, { name: "physicalDev" }],
+            data: []
+        });
+        this.deviceStore = Ext.create('Ext.data.ArrayStore', {
+            fields:[{ name: "physicalDev" }],
             data: []
         });
         this.enableAutoRefresh = true;
@@ -265,12 +270,18 @@ Ext.define('Ung.SetupWizard.Interfaces', {
                     return i18n._( value );
                 }
             }, {
+                xtype: 'templatecolumn',
+                menuDisabled: true,
+                fixed: true,
+                width: 40,
+                tpl: '<img src="'+Ext.BLANK_IMAGE_URL+'" class="icon-drag"/>' 
+            }, {
                 header: i18n._( "Device" ),
                 dataIndex: 'physicalDev',
-                sortable: false,/*
+                sortable: false,
                 editor:{
                     xtype: 'combo',
-                    store: this.interfaceStore,
+                    store: this.deviceStore,
                     valueField: 'physicalDev',
                     displayField: 'physicalDev',
                     queryMode: 'local',
@@ -279,16 +290,22 @@ Ext.define('Ung.SetupWizard.Interfaces', {
                     editable: false,
                     listeners: {
                         "change": {
-                            fn: Ext.bind(function(elem, newValue) {
-                                //TODO: switch rows physicalDev
+                            fn: Ext.bind(function(elem, newValue, oldValue) {
                                 this.interfaceStore.each( function( currentRow ) {
-                                    interfacesMap[currentRow.get( "interfaceId" )] = currentRow.get( "physicalDev" );
+                                    if(newValue == currentRow.get( "physicalDev" )) {
+                                        currentRow.set( "physicalDev", oldValue )
+                                    }
                                 });
                             }, this)
                         }
                     }
-                },*/
-                flex:1/*,
+                },
+                flex:1,
+                renderer: Ext.bind(function(value, metadata, record,rowIndex,colIndex,store,view) {
+                    return value;
+                }, this)
+            }
+                /*
                 renderer: function( value ) {
                     var divClass = "draggable-disabled-interface";
                     var status = i18n._( "unknown" );
@@ -307,8 +324,8 @@ Ext.define('Ung.SetupWizard.Interfaces', {
                     }
                     
                     return "<div class='" + divClass + "'>" + status + "</div>";
-                }*/
-            }]
+                }
+            } */]
         });
 
         
@@ -386,6 +403,7 @@ Ext.define('Ung.SetupWizard.Interfaces', {
             }
             this.networkSettings=result;
             this.interfaceStore.loadData( result.interfaces.list );
+            this.deviceStore.loadData( result.interfaces.list );
             this.isDragAndDropInitialized = true;
         }, this ) );
     },
@@ -408,7 +426,7 @@ Ext.define('Ung.SetupWizard.Interfaces', {
                 currentRow.set("name", intfName);
             }
             if ( currentRow == rows[0]) {
-                currentRow.set("origIntfName", origIntfId);
+                currentRow.set("interfaceId", origIntfId);
                 currentRow.set("name", origIntfName);
             }
         });
@@ -463,7 +481,9 @@ Ext.define('Ung.SetupWizard.Interfaces', {
         });
         var interfaceList=this.networkSettings.interfaces.list;
         for(var i=0; i<interfaceList.length; i++) {
-            interfaceList[i]["physicalDev"]=interfacesMap[interfaceList[i]["interfaceId"]];
+            var intf=interfaceList[i];
+            intf["physicalDev"]=interfacesMap[intf["interfaceId"]];
+            console.log("Interface ("+ intf["interfaceId"]+ ") "+intf["name"] +" is mapped with phisical device "+intf["physicalDev"]);
         }
         rpc.networkManager.setNetworkSettings(Ext.bind(function( result, exception ) {
             if(exception != null) {
@@ -1512,7 +1532,7 @@ Ung.Setup = {
         if ( false ) {
             // DEBUGGING CODE (Change to true to dynamically go to any page you want on load.)
             var debugHandler = Ext.bind(function() {
-                this.wizard.goToPage( 3 );
+                this.wizard.goToPage( 2 );
             }, this );
             var ss = Ext.create('Ung.SetupWizard.SettingsSaver', null, debugHandler );
 
