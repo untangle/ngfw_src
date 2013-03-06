@@ -41,6 +41,8 @@ public class NetworkSettings implements Serializable, JSONString
     private boolean sendIcmpRedirects = true;
     private boolean dhcpAuthoritative = true;
 
+    private QosSettings qosSettings;
+    
     public NetworkSettings() { }
 
     public List<InterfaceSettings> getInterfaces() { return this.interfaces; }
@@ -87,6 +89,9 @@ public class NetworkSettings implements Serializable, JSONString
 
     public boolean getDhcpAuthoritative() { return this.dhcpAuthoritative; }
     public void setDhcpAuthoritative( boolean newValue ) { this.dhcpAuthoritative = newValue; }
+
+    public QosSettings getQosSettings() { return this.qosSettings; }
+    public void setQosSettings( QosSettings newValue ) { this.qosSettings = newValue; }
 
     public String toJSONString()
     {

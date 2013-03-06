@@ -23,6 +23,9 @@ import com.untangle.uvm.network.BypassRule;
 import com.untangle.uvm.network.StaticRoute;
 import com.untangle.uvm.network.NatRule;
 import com.untangle.uvm.network.PortForwardRule;
+import com.untangle.uvm.network.QosSettings;
+import com.untangle.uvm.network.QosRule;
+import com.untangle.uvm.network.QosRuleMatcher;
 import com.untangle.uvm.node.IPMaskedAddress;
 
 /**
@@ -472,6 +475,8 @@ public class NetworkManagerImpl implements NetworkManager
 
             LinkedList<StaticRoute> staticRoutes = new LinkedList<StaticRoute>();
             newSettings.setStaticRoutes( staticRoutes );
+
+            newSettings.setQosSettings( defaultQosSettings() );
         }
         catch (Exception e) {
             logger.error("Error creating Network Settings",e);
@@ -634,6 +639,71 @@ public class NetworkManagerImpl implements NetworkManager
             }
         }
         logger.debug( "Done calling network listeners." );
+    }
+
+    private QosSettings defaultQosSettings()
+    {
+        QosSettings qosSettings = new QosSettings();
+
+        qosSettings.setQosEnabled( false );
+        qosSettings.setPingPriority( 1 );
+        qosSettings.setDnsPriority( 1 );
+        qosSettings.setSshPriority( 0 );
+        qosSettings.setOpenvpnPriority( 0 );
+        qosSettings.setGamingPriority( 0 );
+
+        List<QosRule> qosRules = new LinkedList<QosRule>();
+
+        /**
+         * Add SIP rule
+         */
+        QosRule qosRule1 = new QosRule();
+        qosRule1.setEnabled( true );
+        qosRule1.setDescription( "VoIP (SIP) Traffic" );
+        qosRule1.setPriority( 1 );
+        
+        List<QosRuleMatcher> rule1Matchers = new LinkedList<QosRuleMatcher>();
+        QosRuleMatcher rule1Matcher1 = new QosRuleMatcher();
+        rule1Matcher1.setMatcherType(QosRuleMatcher.MatcherType.DST_PORT);
+        rule1Matcher1.setValue("5060");
+        QosRuleMatcher rule1Matcher2 = new QosRuleMatcher();
+        rule1Matcher2.setMatcherType(QosRuleMatcher.MatcherType.PROTOCOL);
+        rule1Matcher2.setValue("tcp,udp");
+        rule1Matchers.add(rule1Matcher1);
+        rule1Matchers.add(rule1Matcher2);
+
+        qosRule1.setMatchers( rule1Matchers );
+
+
+        /**
+         * Add IAX rule
+         */
+        QosRule qosRule2 = new QosRule();
+        qosRule2.setEnabled( true );
+        qosRule2.setDescription( "VoIP (IAX) Traffic" );
+        qosRule2.setPriority( 1 );
+        
+        List<QosRuleMatcher> rule2Matchers = new LinkedList<QosRuleMatcher>();
+        QosRuleMatcher rule2Matcher1 = new QosRuleMatcher();
+        rule2Matcher1.setMatcherType(QosRuleMatcher.MatcherType.DST_PORT);
+        rule2Matcher1.setValue("4569");
+        QosRuleMatcher rule2Matcher2 = new QosRuleMatcher();
+        rule2Matcher2.setMatcherType(QosRuleMatcher.MatcherType.PROTOCOL);
+        rule2Matcher2.setValue("tcp,udp");
+        rule2Matchers.add(rule2Matcher1);
+        rule2Matchers.add(rule2Matcher2);
+
+        qosRule2.setMatchers( rule2Matchers );
+
+        /**
+         * Add Rules
+         */
+        qosRules.add( qosRule1 );
+        qosRules.add( qosRule2 );
+
+        qosSettings.setQosRules( qosRules );
+        
+        return qosSettings;
     }
     
 }

@@ -80,7 +80,10 @@ public class InterfaceSettings implements Serializable, JSONString
     private Integer     dhcpPrefixOverride; /* DHCP netmask override, if null defaults to this interface's netmask */
     private InetAddress dhcpDnsOverride; /* DHCP DNS override, if null defaults to this interface's IP */
     
-    public List<IPMaskedAddress> aliases; /* alias addresses for static & dhcp */
+    private List<IPMaskedAddress> aliases; /* alias addresses for static & dhcp */
+
+    private Integer downloadBandwidthKbps;
+    private Integer uploadBandwidthKbps;
     
     public InterfaceSettings() { }
 
@@ -213,6 +216,12 @@ public class InterfaceSettings implements Serializable, JSONString
     public InetAddress getDhcpDnsOverride() { return this.dhcpDnsOverride; }
     public void setDhcpDnsOverride( InetAddress newValue ) { this.dhcpDnsOverride = newValue; }
 
+    public Integer getDownloadBandwidthKbps() { return this.downloadBandwidthKbps; }
+    public void setDownloadBandwidthKbps( Integer newValue ) { this.downloadBandwidthKbps = newValue; }
+
+    public Integer getUploadBandwidthKbps() { return this.uploadBandwidthKbps; }
+    public void setUploadBandwidthKbps( Integer newValue ) { this.uploadBandwidthKbps = newValue; }
+    
     public static class InterfaceAlias
     {
         private InetAddress v4StaticAddress; /* the address  of this interface if configured static, or dhcp override */ 

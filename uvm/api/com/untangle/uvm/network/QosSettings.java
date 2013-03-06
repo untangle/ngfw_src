@@ -1,0 +1,56 @@
+/**
+ * $Id: QosSettings.java,v 1.00 2013/03/06 13:38:35 dmorris Exp $
+ */
+package com.untangle.uvm.network;
+
+import java.io.Serializable;
+import java.util.LinkedList;
+import java.util.List;
+import java.net.InetAddress;
+
+import org.json.JSONObject;
+import org.json.JSONString;
+
+/**
+ * QoS settings.
+ */
+@SuppressWarnings("serial")
+public class QosSettings implements Serializable, JSONString
+{
+    private boolean qosEnabled = false;
+
+    private int pingPriority = 1;
+    private int dnsPriority = 1;
+    private int sshPriority = 1;
+    private int openvpnPriority = 1;
+    private int gamingPriority = 1;
+    
+    private List<QosRule> qosRules = new LinkedList<QosRule>();
+
+    public boolean getQosEnabled() { return this.qosEnabled; }
+    public void setQosEnabled( boolean newValue ) { this.qosEnabled = newValue; }
+
+    public int getPingPriority() { return this.pingPriority; }
+    public void setPingPriority( int newValue ) { this.pingPriority = newValue; }
+
+    public int getDnsPriority() { return this.dnsPriority; }
+    public void setDnsPriority( int newValue ) { this.dnsPriority = newValue; }
+
+    public int getSshPriority() { return this.sshPriority; }
+    public void setSshPriority( int newValue ) { this.sshPriority = newValue; }
+
+    public int getOpenvpnPriority() { return this.openvpnPriority; }
+    public void setOpenvpnPriority( int newValue ) { this.openvpnPriority = newValue; }
+
+    public int getGamingPriority() { return this.gamingPriority; }
+    public void setGamingPriority( int newValue ) { this.gamingPriority = newValue; }
+    
+    public List<QosRule> getQosRules() { return this.qosRules; }
+    public void setQosRules( List<QosRule> newValue ) { this.qosRules = newValue; }
+    
+    public String toJSONString()
+    {
+        JSONObject jO = new JSONObject(this);
+        return jO.toString();
+    }
+}
