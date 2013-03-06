@@ -94,6 +94,7 @@ public class NetworkManagerImpl implements NetworkManager
             this.setNetworkSettings( defaultSettings() );
         }
         else {
+            //FIXME can remove me later
             if (readSettings.getQosSettings() == null)
                 readSettings.setQosSettings( defaultQosSettings() );
             

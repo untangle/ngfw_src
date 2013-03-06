@@ -346,7 +346,6 @@ Ext.define('Ung.SetupWizard.Interfaces', {
         panelText += "<b>" + i18n._("Step 3: ") + "</b>";
         panelText += i18n._( "Repeat steps 1 and 2 for each network card and then click <i>Next</i>.");
         panelText += "<br/>";
-        panelText += "<br/><font color=\"red\">FIXME, this step is broken, just continue for now.</font><br/>";
         
         var panel = Ext.create('Ext.panel.Panel', {
             defaults: { cls: 'noborder' },
