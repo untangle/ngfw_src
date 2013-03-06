@@ -224,7 +224,6 @@ Ext.define('Ung.SetupWizard.Interfaces', {
             fields:[{name: "interfaceId"}, { name: "name" }, { name: "physicalDev" }],
             data: []
         });
-
         this.enableAutoRefresh = true;
         this.networkSettings = null;
         this.interfaceGrid = Ext.create('Ext.grid.Panel', {
@@ -236,6 +235,11 @@ Ext.define('Ung.SetupWizard.Interfaces', {
             enableColumnHide: false,
             enableColumnMove: false,
             selModel: Ext.create('Ext.selection.RowModel', {singleSelect: true}),
+            plugins: [
+                Ext.create('Ext.grid.plugin.CellEditing', {
+                    clicksToEdit: 1
+                })
+            ],
             viewConfig:{
                forceFit: true,
                disableSelection: false,
@@ -263,7 +267,27 @@ Ext.define('Ung.SetupWizard.Interfaces', {
             }, {
                 header: i18n._( "Device" ),
                 dataIndex: 'physicalDev',
-                sortable: false,
+                sortable: false,/*
+                editor:{
+                    xtype: 'combo',
+                    store: this.interfaceStore,
+                    valueField: 'physicalDev',
+                    displayField: 'physicalDev',
+                    queryMode: 'local',
+                    triggerAction: "all",
+                    listCls: "x-combo-list-small",
+                    editable: false,
+                    listeners: {
+                        "change": {
+                            fn: Ext.bind(function(elem, newValue) {
+                                //TODO: switch rows physicalDev
+                                this.interfaceStore.each( function( currentRow ) {
+                                    interfacesMap[currentRow.get( "interfaceId" )] = currentRow.get( "physicalDev" );
+                                });
+                            }, this)
+                        }
+                    }
+                },*/
                 flex:1/*,
                 renderer: function( value ) {
                     var divClass = "draggable-disabled-interface";
@@ -373,15 +397,19 @@ Ext.define('Ung.SetupWizard.Interfaces', {
         if ( rows.length != 1 ) {
             return false;
         }
-        var dev = rows[0].get("physicalDev");
-        var origDev = overModel.get("physicalDev");
+        var intfId = rows[0].get("interfaceId");
+        var intfName = rows[0].get("name");
+        var origIntfId = overModel.get("interfaceId");
+        var origIntfName = overModel.get("name");
 
         this.interfaceStore.each( function( currentRow ) {
             if ( currentRow == overModel) {
-                currentRow.set("physicalDev", dev);
+                currentRow.set("interfaceId", intfId);
+                currentRow.set("name", intfName);
             }
             if ( currentRow == rows[0]) {
-                currentRow.set("physicalDev", origDev);
+                currentRow.set("origIntfName", origIntfId);
+                currentRow.set("name", origIntfName);
             }
         });
         sm.clearSelections();
