@@ -67,7 +67,7 @@ class MailSenderImpl implements MailSender
     private static final String MAIL_FROM_PROP = "mail.from";
     private static final String MAIL_TRANSPORT_PROTO_PROP = "mail.transport.protocol";
 
-    private static final String EXIM_CMD_UPDATE_CONF  = System.getProperty( "uvm.bin.dir" ) + "/ut-restart-exim.sh";
+    private static final String EXIM_CMD_RESTART_EXIM  = System.getProperty( "uvm.bin.dir" ) + "/ut-restart-exim.sh";
     private static final String EXIM_CONF_DIR     = "/etc/exim4";
     private static final String EXIM_CONF_FILE    = "/etc/exim4/update-exim4.conf.conf";
     private static final String EXIM_TEMPLATE_FILE    = "/etc/exim4/exim4.conf.template";
@@ -85,8 +85,8 @@ class MailSenderImpl implements MailSender
         "CFILEMODE='644'\n" + 
         "dc_use_split_config='false'\n" + 
         "dc_hide_mailname='true'\n" + 
-        "dc_mailname_in_oh='true'\n" +
-        "AUTH_CLIENT_ALLOW_NOTLS_PASSWORDS='1'\n";
+        //"AUTH_CLIENT_ALLOW_NOTLS_PASSWORDS='1'\n" +
+        "dc_mailname_in_oh='true'\n";
 
     private static final Object LOCK = new Object();
 
@@ -294,8 +294,9 @@ class MailSenderImpl implements MailSender
         }
     }
 
-
-    // Here's where we actually do the sending
+    /**
+     * Send a test message
+     */
     public boolean sendTestMessage(String recipient)
     {
         UvmContext context = UvmContextFactory.context();
@@ -311,7 +312,6 @@ class MailSenderImpl implements MailSender
         
         return sendSimple(mailSession, new String[] { recipient }, testMessageSubject, testMessageBody, null);
     }
-
 
     /**
      * Returns null if message could not be created, and logs any errors
@@ -428,12 +428,14 @@ class MailSenderImpl implements MailSender
             new File( EXIM_TEMPLATE_FILE ).setLastModified( System.currentTimeMillis() );
             new File( EXIM_CONF_FILE ).setLastModified( System.currentTimeMillis() );
                 
-            
-            UvmContextFactory.context().execManager().exec( EXIM_CMD_UPDATE_CONF + " >/dev/null 2>&1 & " );
+            // remove any paniclog from previous configs
+            UvmContextFactory.context().execManager().exec("rm -rf /var/log/exim4/paniclog");
 
             // change root@localhost to blackhole
             UvmContextFactory.context().execManager().exec( "/bin/sed -e \"s/^root:.*/root: :blackhole:/\" -i /etc/aliases" );
-            
+
+            // restart exim
+            UvmContextFactory.context().execManager().exec( EXIM_CMD_RESTART_EXIM + " >/dev/null 2>&1 & " );
         }
     }
 
