@@ -1,4 +1,4 @@
-import unittest
+import unittest2
 import time
 import sys
 import traceback
@@ -87,7 +87,7 @@ def appendRule(newRule):
     rules["list"].append(newRule);
     node.setRules(rules);
 
-class FirewallTests(unittest.TestCase):
+class FirewallTests(unittest2.TestCase):
 
     @staticmethod
     def nodeName():
