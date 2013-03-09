@@ -1,4 +1,4 @@
-import unittest
+import unittest2
 import time
 import sys
 from jsonrpc import ServiceProxy
@@ -44,7 +44,7 @@ def flushEvents():
 # eventlog (events are logged properly)
 # passed client IP (overrides other blocks)
 #
-class SpywareTests(unittest.TestCase):
+class SpywareTests(unittest2.TestCase):
 
     @staticmethod
     def nodeName():
