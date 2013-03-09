@@ -1,4 +1,4 @@
-import unittest
+import unittest2
 import time
 import sys
 import datetime
@@ -62,7 +62,7 @@ def flushEvents():
     if (reports != None):
         reports.flushEvents()
 
-class WebFilterBaseTests(unittest.TestCase):
+class WebFilterBaseTests(unittest2.TestCase):
 
     @staticmethod
     def nodeName():
