@@ -76,13 +76,8 @@ public class StaticRoute implements JSONString, Serializable
             return;
         
         try {
-            logger.warn( "ADJUSTING NETWORK: " + this.network );
-            
             IPMaskedAddress maskedAddr = new IPMaskedAddress( this.network, this.prefix );
-            this.network = maskedAddr.getMaskedAddr();
-
-            logger.warn( "ADJUSTED  NETWORK: " + this.network );
-
+            this.network = maskedAddr.getMaskedAddress();
         } catch (Exception e) {
             logger.warn("Exception: ",e);
         }

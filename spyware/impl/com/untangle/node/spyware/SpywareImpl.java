@@ -632,14 +632,17 @@ public class SpywareImpl extends NodeBase implements Spyware
         String description = tok.nextToken();
         String name = tok.hasMoreTokens() ? tok.nextToken() : "[no name]";
 
-        IPMaskedAddress maddr = new IPMaskedAddress(addr);
+        
+        IPMaskedAddress maddr;
+        try {
+            maddr = IPMaskedAddress.parse( addr );
 
-        if (maddr == null) {
-            logger.warn("Invalid Masked Address: " + addr);
-            return null;
-        }
-        if (!maddr.isValid()) {
-            logger.warn("Invalid Masked Address: " + addr);
+            if (maddr == null) {
+                logger.warn("Invalid Masked Address: " + addr);
+                return null;
+            }
+        } catch (Exception e) {
+            logger.warn("Invalid Masked Address: " + addr, e);
             return null;
         }
         

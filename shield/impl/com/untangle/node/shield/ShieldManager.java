@@ -66,11 +66,11 @@ public class ShieldManager
             if ( !rule.getEnabled()) continue;
 
             JSONObject rule_json = new JSONObject();
-            String temp = rule.getIpMaskedAddress().getAddr();
+            String temp = rule.getIpMaskedAddress().getAddressString();
             if ( temp.length() == 0 ) continue;
 
             rule_json.put( "ip", temp );
-            temp = rule.getIpMaskedAddress().getMask();
+            temp = rule.getIpMaskedAddress().getNetmaskString();
             if ( temp.length() == 0 ) temp = "255.255.255.255";
             rule_json.put( "netmask", temp );
             rule_json.put( "divider", rule.getDivider());

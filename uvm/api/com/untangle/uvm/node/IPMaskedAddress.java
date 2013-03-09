@@ -1,10 +1,12 @@
-/*
+/**
  * $Id$
  */
 package com.untangle.uvm.node;
 
 import java.io.Serializable;
 import java.net.InetAddress;
+import java.net.Inet4Address;
+import java.net.Inet6Address;
 import java.net.UnknownHostException;
 import java.util.LinkedList;
 
@@ -12,113 +14,117 @@ import org.apache.log4j.Logger;
 
 /**
  * The class <code>IPMaskedAddress</code> represents a masked IP address.
- * TODO: change mask to prefixLength
  */
 @SuppressWarnings("serial")
-public class IPMaskedAddress implements Serializable, Comparable<IPMaskedAddress>
+public class IPMaskedAddress implements Serializable
 {
     private static final Logger logger = Logger.getLogger(IPMaskedAddress.class);
 
-    public static final String ANY = "any";
-    public static final String SPECIFIC_NODE_MASK = "255.255.255.255";
-    public static final String ANY_ADDRESS = "0.0.0.0";
+    private static final int V4_FULL_PREFIXLENGTH = 32;
+    private static final int V6_FULL_PREFIXLENGTH = 128;
+    
+    private final InetAddress address;
+    private final int prefixLength;
 
-    public static IPMaskedAddress anyAddr = new IPMaskedAddress(ANY_ADDRESS,ANY_ADDRESS);
-
-    private final String addr;
-    private final String mask;
-
+    public static final IPMaskedAddress anyAddr = new IPMaskedAddress( "0.0.0.0/0" );
+    
     /**
      * Creates a new <code>IPMaskedAddress</code> for a specific host and/or mask.
      * Assumes values are legal.  Use parse() if unsure.
-     *
-     * addr     = host-num "." host-num [ "." host-num [ "." host-num ] ]
-     * host-num = digit [ digit [ digit ] ]
-     *
-     * @param addr a <code>String</code> of the form addr
+     * 
+     * @param address a <code>String</code> of the address
      */
-    public IPMaskedAddress( String addr )
+    public IPMaskedAddress( String addrString )
     {
-        if  (addr.contains("/")) {
-            String[] strs = addr.split("/");
-            String mask = strs[1];
+        if  (addrString.contains("/")) {
+            String[] strs = addrString.split("/");
+            String addrStr = strs[0];
+            String maskStr = strs[1];
 
-            /* check if the mask is an int */
             try {
-                int numbits = Integer.parseInt(mask);
-                mask = longToMask(numbits == 0 ? 0 : 0xffffffff << (32 - numbits));;
-            } catch (NumberFormatException x) {
-                // guess it wasn't an INT, so just assume it wask an IP mask
+                this.address = InetAddress.getByName( addrStr );
+            } catch (UnknownHostException e) {
+                throw new RuntimeException( "Invalid Address: " + addrStr );
             }
-
-            this.addr = strs[0];
-            this.mask = mask;
+            this.prefixLength = maskStringToPrefixLength( maskStr );
         } else {
-            this.addr = addr;
-            this.mask = SPECIFIC_NODE_MASK;
+            try {
+                this.address = InetAddress.getByName( addrString );
+            } catch (UnknownHostException e) {
+                throw new RuntimeException( "Invalid Address: " + addrString );
+            }
+            this.prefixLength = getFullPrefixLength( this.address );
         }
     }
 
     /**
      * Creates a new <code>IPMaskedAddress</code> which is a copy of the input IPMaskedAddress.
      *
-     * @param originalIPMaskedAddress an <code>IPMAddr</code> to be replicated
+     * @param originalIPMaskedAddress an <code>IPMaskedAddress</code> to be replicated
      */
     public IPMaskedAddress( IPMaskedAddress originalIPMaskedAddress )
     {
         if(originalIPMaskedAddress == null) {
-            this.addr = null;
-            this.mask = null;
+            throw new RuntimeException("Invalid IPMaskedAddress: " + originalIPMaskedAddress);
         } else {
-            this.addr = originalIPMaskedAddress.getAddr();
-            this.mask = originalIPMaskedAddress.getMask();
+            this.address = originalIPMaskedAddress.getAddress();
+            this.prefixLength  = originalIPMaskedAddress.getPrefixLength();
         }
     }
-
 
     /**
      * Creates a new <code>IPMaskedAddress</code> given an address & number of network bits
      * Assumes values are legal.  Use parse() if unsure.
      *
-     * addr     = host-num "." host-num [ "." host-num [ "." host-num ] ]
-     * host-num = digit [ digit [ digit ] ]
-     * maskbits  = 0 | 1 | ... | 32
-     *
-     * @param addr a <code>String</code> of the form addr
-     * @param numbits an <code>int</code> of the form maskbits
+     * @param addr a <code>String</code> representation of the address
+     * @param prefixLength an <code>int</code> of the netmask/prefixLength
      */
-    public IPMaskedAddress( String addr, int numbits )
+    public IPMaskedAddress( String addr, int prefixLength )
     {
-        this.addr = addr;
-        this.mask = longToMask(numbits == 0 ? 0 : 0xffffffff << (32 - numbits));;
+        try {
+            this.address = InetAddress.getByName( addr );
+        } catch ( Exception e ) {
+            logger.warn("Invalid Address: " + addr, e);
+            throw new RuntimeException( "Invalid Address: " + addr );
+        }
+        this.prefixLength = prefixLength;
     }
 
     /**
-     * Creates a new <code>IPMaskedAddress</code> given the canonical representations for
+     * Creates a new <code>IPMaskedAddress</code> given the representations for
      * address and mask (3 dot addresses).
      * Assumes values are legal.  Use parse() if unsure.
-     *
-     * addr = mask = host-num "." host-num [ "." host-num [ "." host-num ] ]
-     * host-num    = digit [ digit [ digit ] ]
      *
      * @param addr a <code>String</code> of the form addr
      * @param mask a <code>String</code> of the form mask
      */
     public IPMaskedAddress( String addr, String mask )
     {
-        this.addr = addr;
-        this.mask = mask;
+        try {
+            this.address = InetAddress.getByName( addr );
+        } catch ( Exception e ) {
+            logger.warn("Invalid Address: " + addr, e);
+            throw new RuntimeException( "Invalid Address: " + addr );
+        }
+
+        try {
+            this.prefixLength = maskStringToPrefixLength( mask );
+        } catch ( Exception e ) {
+            logger.warn("Invalid Mask: " + mask, e);
+            throw new RuntimeException( "Invalid Mask: " + mask );
+        }
     }
 
     /**
      * Creates a new <code>IPMaskedAddress</code> given the the address and netmask
      *
      * @param addr a <code>String</code> of the form addr
-     * @param numbits an <code>int</code> of the form maskbits
+     * @param prefixLength an <code>int</code> of the form maskbits
      */
-    public IPMaskedAddress( InetAddress addr, int numbits )
+    public IPMaskedAddress( InetAddress addr, int prefixLength )
     {
-        this(addr.getHostAddress(),numbits);
+        this.address = addr;
+        this.prefixLength = prefixLength;
     }
 
     /**
@@ -144,26 +150,41 @@ public class IPMaskedAddress implements Serializable, Comparable<IPMaskedAddress
         this(addr.getHostAddress());
     }
 
-    public String getAddr()
+    public InetAddress getAddress()
     {
-        return addr;
+        return address;
     }
 
-    public String getMask()
+    public String getAddressString()
     {
-        return mask;
+        return address.getHostAddress();
+    }
+    
+    public int getPrefixLength()
+    {
+        return this.prefixLength;
     }
 
+    public String getNetmaskString()
+    {
+        if ( ! (this.address instanceof Inet4Address) ) {
+            logger.warn("Can not get netmask of non-IPv4 Address: " + this.address.getClass());
+            throw new RuntimeException("Can not get netmask of non-IPv4 Address: " + this.address.getClass());
+        }
+        return v4PrefixLengthToNetmaskString( this.prefixLength );
+    }
+    
     /**
      * This bitwise ANDs the mask with addr and returns the result:
-     * Example getMaskedAddr of 192.168.1.1 and 255.255.0.0 returns 192.168.0.0
+     * Example getMaskedAddress of 192.168.1.1 and 255.255.0.0 returns 192.168.0.0
      */
-    public InetAddress getMaskedAddr()
+    public InetAddress getMaskedAddress()
     {
-        byte[] addr = textToNumericFormat( this.addr );
-        byte[] mask = textToNumericFormat( this.mask );
+        byte[] addr = this.getAddress().getAddress();
+        byte[] mask = prefixLengthToByteMask( this.getPrefixLength(), addr.length );
+        
         if (addr.length != mask.length) {
-            logger.warn("Invalid addr/mask: " + this.addr + "/" + this.mask);
+            logger.warn("Invalid addr/mask: " + this.address + "/" + this.prefixLength);
             return null;
         }
 
@@ -182,34 +203,19 @@ public class IPMaskedAddress implements Serializable, Comparable<IPMaskedAddress
         }
     }
     
-    public int maskNumBits()
-    {
-        return maskToNumbits(mask);
-    }
-
-    public boolean isAny()
-    {
-        return (addr.equals(ANY_ADDRESS) && mask.equals(ANY_ADDRESS));
-    }
-
     public boolean isNode()
     {
-        return (mask.equals(SPECIFIC_NODE_MASK));
-    }
-
-    public InetAddress inetAddress()
-    {
-        try {
-            return InetAddress.getByAddress( textToNumericFormat(addr) );
-        } catch ( Exception e ) {
-            logger.warn( "Exception: ", e );
-            return null;
-        }
+        if ( this.address instanceof Inet4Address)
+            return (this.prefixLength == V4_FULL_PREFIXLENGTH);
+        else if ( this.address instanceof Inet6Address)
+            return (this.prefixLength == V6_FULL_PREFIXLENGTH);
+        else
+            return false;
     }
 
     public LinkedList<Boolean> bitString()
     {
-        byte[] addrb = textToNumericFormat(addr);
+        byte[] addrb = address.getAddress();
         LinkedList<Boolean> result = new LinkedList<Boolean>();
         int i,j, numbits;
         int sum;
@@ -228,25 +234,12 @@ public class IPMaskedAddress implements Serializable, Comparable<IPMaskedAddress
         }
 
         /* truncate to appropriate length according to mask */
-        numbits = maskToNumbits(mask);
-        while (result.size() > numbits)
+        while (result.size() > prefixLength)
             result.removeLast();
 
         return result;
     }
 
-    public boolean isValid()
-    {
-        try {
-            LinkedList<Boolean> test = this.bitString();
-        }
-        catch (Exception e) {
-            return false;
-        }
-
-        return true;
-    }
-    
     /**
      * <code>isIntersecting</code> returns true if the current IPMaskedAddress has at least one address
      * that is also present in the provided otherMaddr argument.
@@ -254,15 +247,12 @@ public class IPMaskedAddress implements Serializable, Comparable<IPMaskedAddress
      * @param otherMaddr an <code>IPMaskedAddress</code> to see if the current IPMaskedAddress has address(es) in common with
      * @return a <code>boolean</code> value
      */
-    public boolean isIntersecting(IPMaskedAddress otherMaddr)
+    public boolean isIntersecting( IPMaskedAddress other )
     {
-        // shortcuts
-        if (addr.equals(otherMaddr.addr) && mask.equals(otherMaddr.mask) ||
-            isAny() ||
-            otherMaddr.isAny())
-            return true;
+        // shortcut (test equals)
+        if ( address.equals( other.address ) && prefixLength == other.prefixLength ) return true;
 
-        return intersects(textToNumericFormat(addr), maskNumBits(), textToNumericFormat(otherMaddr.addr), otherMaddr.maskNumBits());
+        return intersects( this.address.getAddress(), this.prefixLength, other.getAddress().getAddress(), other.getPrefixLength() );
     }
 
     /**
@@ -272,176 +262,77 @@ public class IPMaskedAddress implements Serializable, Comparable<IPMaskedAddress
      * @param testAddr an <code>InetAddress</code> giving the address to test for membership in this IPMaskedAddress
      * @return a <code>boolean</code> true if the given testAddr falls inside us
      */
-    public boolean contains(InetAddress testAddr)
+    public boolean contains( InetAddress testAddr )
     {
-        String saddr = testAddr.getHostAddress();
-        if (addr.equals(saddr) || isAny())
-            return true;
-        if (isNode())
-            return false;
-        return intersects(textToNumericFormat(addr), maskNumBits(), testAddr.getAddress(), 32);
+        // shortcut (test equals)
+        if ( address.equals( testAddr ) ) return true;
+        
+        return intersects( this.address.getAddress(), this.prefixLength, testAddr.getAddress(), getFullPrefixLength( testAddr ) );
     }
-
-    private static boolean intersects(byte[] addr1, int maskBits1, byte[] addr2, int maskBits2)
-    {
-        // Choose the shortest way
-        int minBits = (maskBits1 < maskBits2 ? maskBits1 : maskBits2);
-
-        int wholeBytes = minBits / 8;
-        int rebits = minBits % 8;
-        int curByte;
-        for (curByte = 0; curByte < wholeBytes; curByte++) {
-            if (addr1[curByte] != addr2[curByte])
-                return false;
-        }
-
-        switch (rebits) {
-        case 0:
-            // Next line keeps the compiler happy but has no other effect.
-        default:
-            return true;
-        case 1:
-            return ((addr1[curByte] & 0x80) == (addr2[curByte] & 0x80));
-        case 2:
-            return ((addr1[curByte] & 0xc0) == (addr2[curByte] & 0xc0));
-        case 3:
-            return ((addr1[curByte] & 0xe0) == (addr2[curByte] & 0xe0));
-        case 4:
-            return ((addr1[curByte] & 0xf0) == (addr2[curByte] & 0xf0));
-        case 5:
-            return ((addr1[curByte] & 0xf8) == (addr2[curByte] & 0xf8));
-        case 6:
-            return ((addr1[curByte] & 0xfc) == (addr2[curByte] & 0xfc));
-        case 7:
-            return ((addr1[curByte] & 0xfe) == (addr2[curByte] & 0xfe));
-        }
-    }
-
 
     /**
-     * <code>toString</code> emits the display version of the Maddr.  This is the
-     * form "1.2.3.4/12", or "2.3.4.5" if the netmask is SPECIFIC_NODE_MASK or "any"?
+     * Returns a string representation of this masked address
+     * If the prefixLength is "full" it is excluded
+     *
+     * Example: 1.2.3.4/32 will return "1.2.3.4"
+     * Example: 1.2.3.4/24 will return "1.2.3.4/24"
      *
      * @return a <code>String</code> value
      */
     public String toString()
     {
-        if (isAny())
-            return ANY;
-        else if (isNode()) {
-            return addr;
+        if (isNode()) {
+            return this.address.getHostAddress();
         } else {
-            // Is a network
-            StringBuffer result = new StringBuffer(addr);
-            result.append("/");
-            result.append(maskToNumbits(mask));
-            return result.toString();
+            return this.address.getHostAddress() + "/" + this.prefixLength;
         }
     }
 
     /**
+     * Creates an IPMaskedAddress from the String representation
+     *
      * The <code>parse</code> method takes an addrString, with BNF of: <p><code>
-     * addr      = "any" | nummask | ipaddr [ " mask " ipaddr | " mask " hexnumber ]
-     * nummask   = ipaddr [ "/" maskbits ]
-     * ipaddr    = host-num "." host-num [ "." host-num [ "." host-num ] ]
-     * host-num  = digit [ digit [ digit ] ]
-     * maskbits  = 0 | 1 | ... | 32
-     * hexnumber = "0" "x" hexstring
-     * </code>
-     *
-     * and returns an IPMaskedAddress having a numeric address in dotted form and a numeric
-     * netmask in dotted form, both as Strings.
-     *
-     * No IPV6 handling here.  XX
+     * IPv4 "1.2.3.4"
+     * IPv4/prefixLength -  "1.2.3.4/24"
+     * IPv6 -  "fe00::0"
+     * IPv6/prefixLength -  "fe00::0/64"
      *
      * @param addrString a <code>String</code> giving an host, address, host/mask, or address/mask
      * @return an <code>IPMaskedAddress</code> value
      * @exception IllegalArgumentException if the addrString is illegal in any way
      */
-    public static IPMaskedAddress parse(String addrString)
-        throws IllegalArgumentException
+    public static IPMaskedAddress parse( String addrString ) throws IllegalArgumentException
     {
-        String addr;
+        InetAddress address;
+        int prefixLength;
 
         if (addrString == null)
             throw new IllegalArgumentException("IPMaskedAddress.parse(null)");
-        if (addrString.equalsIgnoreCase("any"))
-            return new IPMaskedAddress(ANY_ADDRESS, ANY_ADDRESS);
 
-        addrString = addrString.trim();
+        if  (addrString.contains("/")) {
+            String[] strs = addrString.split("/");
+            String addrStr = strs[0];
+            String maskStr = strs[1];
 
-        logger.debug("got addr '" + addrString + "'");
-
-        int sl = addrString.indexOf('/');
-        if (sl > 0) {
-            // Looks like ipaddr/maskbits
-            if (sl == (addrString.length() - 1))
-                throw new IllegalArgumentException("IPMaskedAddress.parse(): empty maskbits");
-            String maskbits = addrString.substring(sl + 1).trim();
             try {
-                int numbits = Integer.parseInt(maskbits);
-                if (numbits < 0 || numbits > 32)
-                    throw new IllegalArgumentException("IPMaskedAddress.parse(): out of range maskbits: " + maskbits);
-                long lmask = 0xffffffff << (32 - numbits);
-
-                String ipaddr = addrString.substring(0, sl).trim();
-                addr = canonicalizeHostAddress(ipaddr);
-
-                return new IPMaskedAddress(addr, longToMask(lmask));
-            } catch (NumberFormatException x) {
-                throw new IllegalArgumentException("IPMaskedAddress.parse(): non-decimal maskbits: " + maskbits);
+                address = InetAddress.getByName( addrStr );
+            } catch (UnknownHostException e) {
+                throw new RuntimeException( "Invalid Address: " + addrStr );
             }
-        }
-
-        int ma = addrString.indexOf(" mask ");
-        if (ma > 0) {
-            String maskstr = addrString.substring(ma + 6).trim();
-            if (maskstr.startsWith("0x") || maskstr.startsWith("0X")) {
-                // Hex mask
-                try {
-                    /* Parse long doesn't want the 0x */
-                    long lmask = Long.parseLong(maskstr.substring( 2 ), 16);
-                    if (lmask > 0xffffffffl)
-                        throw new IllegalArgumentException("IPMaskedAddress.parse(): out of range mask: " + maskstr);
-                    String ipaddr = addrString.substring(0, ma).trim();
-                    addr = canonicalizeHostAddress(ipaddr);
-                    return new IPMaskedAddress(addr, longToMask(lmask));
-                } catch (NumberFormatException x) {
-                    throw new IllegalArgumentException("IPMaskedAddress.parse(): non-hex mask: " + maskstr);
-                }
-            } else {
-                // Dotted mask.  Currently must have three dots. XXX
-                String mask = canonicalizeHostAddress(maskstr);
-                String ipaddr = addrString.substring(0, ma).trim();
-                addr = canonicalizeHostAddress(ipaddr);
-                return new IPMaskedAddress(addr, mask);
-            }
-        }
-
-        int ra = addrString.indexOf("-");
-        if (ra > 0) {
-            String ipArray[] = addrString.split("\\s*-\\s*");
-            if ( ipArray.length != 2 )
-                throw new IllegalArgumentException( "IPMaskedAddress.parse(): illegal range does not contain two components: " + addrString );
-
-            IPMaskedAddress ip1 = new IPMaskedAddress(canonicalizeHostAddress(ipArray[0]));
-            IPMaskedAddress ip2 = new IPMaskedAddress(canonicalizeHostAddress(ipArray[1]));
-            long hosts = ip2.toLong() - ip1.toLong();
-            int mask = 32 - (int)(Math.floor(Math.log(hosts) / Math.log(2)));
-            logger.debug(ip1 + " -> " + ip2 + " (" + hosts + " hosts -> mask=" + mask + ")");
-            return parse(ipArray[0] + "/" + mask); // re-use code above handling '/' notation
+            prefixLength = maskStringToPrefixLength( maskStr );
         } else {
-            // Just an address, no netmask.
-            addr = canonicalizeHostAddress(addrString);
-            return new IPMaskedAddress(addr, SPECIFIC_NODE_MASK);
+            try {
+                address = InetAddress.getByName( addrString );
+            } catch (UnknownHostException e) {
+                throw new RuntimeException( "Invalid Address: " + addrString );
+            }
+            prefixLength = getFullPrefixLength( address );
         }
-    }
 
-    public int hashCode()
-    {
-        return (37 * mask.hashCode() + addr.hashCode());
+        return new IPMaskedAddress( address, prefixLength );
     }
-
+    
+    @Override
     public boolean equals(Object o)
     {
         if (!(o instanceof IPMaskedAddress)) {
@@ -449,155 +340,63 @@ public class IPMaskedAddress implements Serializable, Comparable<IPMaskedAddress
         }
         IPMaskedAddress m = (IPMaskedAddress)o;
 
-        if (!(null != m.addr && null != addr && m.addr.equals(addr))) {
+        if (! (null != m.address && address != null && m.address.equals(address)) ) {
             return false;
         }
-
-        if (!(null != m.mask && null != mask && m.mask.equals(mask))) {
+        if ( m.prefixLength != this.prefixLength ) {
             return false;
         }
 
         return true;
     }
 
-    public int compareTo(IPMaskedAddress other)
-    {
-        long oper1 = toLong();
-        long oper2 = other.toLong();
-
-        if (oper1 < oper2)
-            return -1;
-        else if (oper1 > oper2)
-            return 1;
-        else{
-            if( maskToNumbits(mask) > maskToNumbits(other.mask) )
-                return 1;
-            else if( maskToNumbits(mask) < maskToNumbits(other.mask) )
-                return -1;
-            else
-                return 0;
-        }
-    }
-
-    /** Convert an IPMaskedAddress to a long */
-    private long toLong( )
-    {
-        long val = 0;
-        byte valArray[] = textToNumericFormat(addr);
-
-        for ( int c = 0 ; c < INADDRSZ ; c++ ) {
-            val += ((long)byteToInt(valArray[c])) << ( 8 * ( INADDRSZ - c - 1 ));
-        }
-
-        return val;
-    }
-
-    static int byteToInt ( byte val )
-    {
-        int num = val;
-        if ( num < 0 ) num = num & 0x7F + 0x80;
-        return num;
-    }
-
-    static final int INADDRSZ = 4;
-
     /**
-     * FIXME IPv6 support
+     * Returns the prefixLength for a specific host based on the type of address
+     * If IPv4, return 32, if IPv6 return 128, otherwise return 32
      */
-    static byte[] textToNumericFormat(String src)
+    private static int getFullPrefixLength( InetAddress addr )
     {
-        try {
-            InetAddress addr = InetAddress.getByName(src);
-            return addr.getAddress();
-        } catch (Exception e) {
-            logger.warn("textToNumericFormat Exception: ", e);
-            return null;
+        if ( addr instanceof Inet4Address)
+            return V4_FULL_PREFIXLENGTH;
+        else if ( addr instanceof Inet6Address)
+            return V6_FULL_PREFIXLENGTH;
+        else {
+            logger.warn("Unknown InetAddress Type: " + addr.getClass());
+            return V4_FULL_PREFIXLENGTH;
         }
-
-//         if (src.length() == 0) {
-//             return null;
-//         }
-
-//         int octets;
-//         char ch;
-//         byte[] dst = new byte[INADDRSZ];
-//         char[] srcb = src.toCharArray();
-//         boolean saw_digit = false;
-
-//         octets = 0;
-//         int i = 0;
-//         int cur = 0;
-//         while (i < srcb.length) {
-//             ch = srcb[i++];
-//             if (Character.isDigit(ch)) {
-//                 // note that Java byte is signed, so need to convert to int
-//                 int sum = (dst[cur] & 0xff)*10 + (Character.digit(ch, 10) & 0xff);
-
-//                 if (sum > 255) {
-//                     return null;
-//                 }
-
-//                 dst[cur] = (byte)(sum & 0xff);
-//                 if (! saw_digit) {
-//                     if (++octets > INADDRSZ) {
-//                         return null;
-//                     }
-//                     saw_digit = true;
-//                 }
-//             } else if (ch == '.' && saw_digit) {
-//                 if (octets == INADDRSZ) {
-//                     return null;
-//                 }
-//                 cur++;
-//                 dst[cur] = 0;
-//                 saw_digit = false;
-//             } else
-//                 return null;
-//         }
-//         if (octets < INADDRSZ) {
-//             return null;
-//         }
-//         return dst;
-    }
-
-    static String numericToTextFormat(byte[] src)
-    {
-        return (src[0] & 0xff) + "." + (src[1] & 0xff) + "." + (src[2] & 0xff) + "." + (src[3] & 0xff);
     }
 
     /**
-     * <code>canonicalizeHostAddress</code> takes a dotted address (0-3 dots)
-     * and canonicalizes it into a three dot dotted address.
+     * Takes a string reperesting the netmask/prefixLength
+     * and returns the prefixLength
      *
-     * @param ipaddr a <code>String</code> address in dotted form
-     * @return a <code>String</code> value
+     * Example: "255.255.255.0" = 24
+     * Example: "64" = 64
+     * Example: "24" = 24
      */
-    private static String canonicalizeHostAddress(String ipaddr)
-        throws IllegalArgumentException
+    private static int maskStringToPrefixLength( String maskString )
     {
-        byte[] result = textToNumericFormat(ipaddr);
-        if (result == null)
-            throw new IllegalArgumentException("IPMaskedAddress.parse(): ipaddr not legal: " +
-                                               ipaddr);
-        else
-            return numericToTextFormat(result);
-    }
+        /* check if the mask is an int */
+        try {
+            int numbits = Integer.parseInt( maskString );
+            return numbits;
+        } catch (Exception x) {
+            // not an int
+        }
 
-    // Utility function
-    private static String longToMask(long lmask)
+        try {
+            int numbits = v4MaskToPrefixLength( maskString );
+            return numbits;
+        } catch (Exception x) {
+            // not a v4mask
+        }
+
+        logger.warn("Invalid netmask/prefixLength: " + maskString);
+        return 32; //XXX
+    }
+    
+    private static int v4MaskToPrefixLength( String mask )
     {
-        StringBuffer m = new StringBuffer(16);
-        m.append((lmask >> 24) & 0xff);
-        m.append('.');
-        m.append((lmask >> 16) & 0xff);
-        m.append('.');
-        m.append((lmask >> 8) & 0xff);
-        m.append('.');
-        m.append(lmask & 0xff);
-        return m.toString();
-    }
-
-    private static int maskToNumbits(String mask) {
         // Assumes mask is already legal
         if (mask.equals("255.255.255.255"))
             return 32;
@@ -667,5 +466,199 @@ public class IPMaskedAddress implements Serializable, Comparable<IPMaskedAddress
             return 1;
         else
             throw new IllegalArgumentException("bad mask " + mask);
+    }
+
+    private static String v4PrefixLengthToNetmaskString( int prefixLength )
+    {
+        // Assumes mask is already legal
+        if (prefixLength == 32)
+            return "255.255.255.255";
+        else if (prefixLength == 0)
+            return "0.0.0.0";
+        else if (prefixLength == 24)
+            return "255.255.255.0";
+        else if (prefixLength == 16)
+            return "255.255.0.0";
+        else if (prefixLength == 8)
+            return "255.0.0.0";
+        else if (prefixLength == 31)
+            return "255.255.255.254";
+        else if (prefixLength == 30)
+            return "255.255.255.252";
+        else if (prefixLength == 29)
+            return "255.255.255.248";
+        else if (prefixLength == 28)
+            return "255.255.255.240";
+        else if (prefixLength == 27)
+            return "255.255.255.224";
+        else if (prefixLength == 26)
+            return "255.255.255.192";
+        else if (prefixLength == 25)
+            return "255.255.255.128";
+        else if (prefixLength == 23)
+            return "255.255.254.0";
+        else if (prefixLength == 22)
+            return "255.255.252.0";
+        else if (prefixLength == 21)
+            return "255.255.248.0";
+        else if (prefixLength == 20)
+            return "255.255.240.0";
+        else if (prefixLength == 19)
+            return "255.255.224.0";
+        else if (prefixLength == 18)
+            return "255.255.192.0";
+        else if (prefixLength == 17)
+            return "255.255.128.0";
+        else if (prefixLength == 15)
+            return "255.254.0.0";
+        else if (prefixLength == 14)
+            return "255.252.0.0";
+        else if (prefixLength == 13)
+            return "255.248.0.0";
+        else if (prefixLength == 12)
+            return "255.240.0.0";
+        else if (prefixLength == 11)
+            return "255.224.0.0";
+        else if (prefixLength == 10)
+            return "255.192.0.0";
+        else if (prefixLength == 9)
+            return "255.128.0.0";
+        else if (prefixLength == 7)
+            return "254.0.0.0";
+        else if (prefixLength == 6)
+            return "252.0.0.0";
+        else if (prefixLength == 5)
+            return "248.0.0.0";
+        else if (prefixLength == 4)
+            return "240.0.0.0";
+        else if (prefixLength == 3)
+            return "224.0.0.0";
+        else if (prefixLength == 2)
+            return "192.0.0.0";
+        else if (prefixLength == 1)
+            return "128.0.0.0";
+        else
+            throw new IllegalArgumentException("bad prefixLength " + prefixLength);
+    }
+
+    /**
+     * Return true if the two masked addresses intersect
+     */
+    private static boolean intersects( byte[] addr1, int prefixLength1, byte[] addr2, int prefixLength2 )
+    {
+        // Choose the shortest way
+        int minBits = (prefixLength1 < prefixLength2 ? prefixLength1 : prefixLength2);
+
+        int wholeBytes = minBits / 8;
+        int rebits = minBits % 8;
+        int curByte;
+        for (curByte = 0; curByte < wholeBytes; curByte++) {
+            if (addr1[curByte] != addr2[curByte])
+                return false;
+        }
+
+        switch (rebits) {
+        case 0:
+            // Next line keeps the compiler happy but has no other effect.
+        default:
+            return true;
+        case 1:
+            return ((addr1[curByte] & 0x80) == (addr2[curByte] & 0x80));
+        case 2:
+            return ((addr1[curByte] & 0xc0) == (addr2[curByte] & 0xc0));
+        case 3:
+            return ((addr1[curByte] & 0xe0) == (addr2[curByte] & 0xe0));
+        case 4:
+            return ((addr1[curByte] & 0xf0) == (addr2[curByte] & 0xf0));
+        case 5:
+            return ((addr1[curByte] & 0xf8) == (addr2[curByte] & 0xf8));
+        case 6:
+            return ((addr1[curByte] & 0xfc) == (addr2[curByte] & 0xfc));
+        case 7:
+            return ((addr1[curByte] & 0xfe) == (addr2[curByte] & 0xfe));
+        }
+    }
+
+    /**
+     * Return the prefix length as a bitmask
+     * Example: 24, 4 returns 0xffffff00
+     */
+    private static byte[] prefixLengthToByteMask( int prefixLength, int maskLengthBytes )
+    {
+        byte[] mask = new byte[ maskLengthBytes ];
+
+        int wholeBytes = prefixLength / 8;
+        int rebits = prefixLength % 8;
+        int curByte = 0;
+
+        // zero out mask
+        for (curByte = 0; curByte < mask.length ; curByte++ )
+            mask[curByte] = (byte)0x00;
+        
+        for (curByte = 0; curByte < wholeBytes && curByte < maskLengthBytes ; curByte++) {
+            mask[curByte] = (byte)0xff;
+        }
+
+        if ( curByte == maskLengthBytes ) {
+            logger.warn("Byte Mask too short: " + curByte + " == " + maskLengthBytes);
+            return mask;
+        }
+        
+        switch (rebits) {
+        case 1:
+            mask[curByte] = (byte)0x80; break;
+        case 2:
+            mask[curByte] = (byte)0xc0; break;
+        case 3:
+            mask[curByte] = (byte)0xe0; break;
+        case 4:
+            mask[curByte] = (byte)0xf0; break;
+        case 5:
+            mask[curByte] = (byte)0xf8; break;
+        case 6:
+            mask[curByte] = (byte)0xfc; break;
+        case 7:
+            mask[curByte] = (byte)0xfe; break;
+        case 0:
+            mask[curByte] = (byte)0x00; break;
+        default:
+            // Nothing
+        }
+
+        return mask;
+    }
+
+    public static void runTests( )
+    {
+        try {
+            InetAddress addr = InetAddress.getByName("1.2.3.4");
+        
+            IPMaskedAddress addr1 = new IPMaskedAddress("1.2.3.4");
+            logger.warn("TEST: " + addr1.toString().equals("1.2.3.4"));
+
+            IPMaskedAddress addr2 = new IPMaskedAddress("1.2.3.0/24");
+            logger.warn("TEST: " + addr2.toString().equals("1.2.3.0/24"));
+
+            IPMaskedAddress addr3 = new IPMaskedAddress("1.2.4.0/24");
+            logger.warn("TEST: " + addr3.toString().equals("1.2.4.0/24"));
+            
+            IPMaskedAddress addr4 = new IPMaskedAddress("1.2.3.4/24");
+            logger.warn("TEST: " + addr4.getMaskedAddress().getHostAddress().equals("1.2.3.0"));
+        
+            logger.warn("TEST: " + addr2.contains(addr));
+            logger.warn("TEST: " + !addr3.contains(addr));
+
+            logger.warn("TEST: " + !addr2.isIntersecting(addr3));
+            logger.warn("TEST: " + addr2.isIntersecting(addr1));
+            logger.warn("TEST: " + !addr3.isIntersecting(addr1));
+
+            logger.warn("TEST: " + addr1.isNode());
+            logger.warn("TEST: " + !addr2.isNode());
+        }
+        catch (Exception e) {
+            logger.warn("TEST FAILED:", e);
+        }
+        
+
     }
 }

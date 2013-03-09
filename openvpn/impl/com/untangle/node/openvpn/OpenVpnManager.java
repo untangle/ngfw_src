@@ -469,7 +469,7 @@ public class OpenVpnManager
         String value = "\"route ";
         if ( netmask != null ) {
             IPMaskedAddress maddr = new IPMaskedAddress( address, netmask );
-            value += maddr.getMaskedAddr().getHostAddress() + "/" + maddr.maskNumBits();
+            value += maddr.getMaskedAddress().getHostAddress() + "/" + maddr.getPrefixLength();
             value += " " + netmask.getHostAddress();
         } else {
             value += address.getHostAddress();
@@ -501,7 +501,7 @@ public class OpenVpnManager
 
         if ( netmask != null ) {
             IPMaskedAddress maddr = new IPMaskedAddress( address, netmask );
-            value += maddr.getMaskedAddr().getHostAddress();
+            value += maddr.getMaskedAddress().getHostAddress();
             value += " " + netmask;
         } else {
             value += address;

@@ -105,7 +105,7 @@ class AddressMapper
     {
         /* Get the base address */
         IPMaskedAddress maddr = new IPMaskedAddress( group.getAddress(), group.getNetmask() );
-        InetAddress base = maddr.getMaskedAddr();
+        InetAddress base = maddr.getMaskedAddress();
 
         byte[] addressData = base.getAddress();
         addressData[3] &= 0xFC;

@@ -628,7 +628,7 @@ public class NetworkManagerImpl implements NetworkManager
 
             // This will only configure /24 or larger network, the logic for
             // smaller networks is complicated and isn't really worth it.
-            if (maddr.maskNumBits() <= 24) {
+            if (maddr.getPrefixLength() <= 24) {
                 start = InetAddress.getByName("0.0.0.100");
                 end   = InetAddress.getByName("0.0.0.200");
             } else {
@@ -637,7 +637,7 @@ public class NetworkManagerImpl implements NetworkManager
             }
 
             // bitwise OR the selected start and end with the base address
-            InetAddress baseAddr = maddr.getMaskedAddr();
+            InetAddress baseAddr = maddr.getMaskedAddress();
             byte[] maskBytes = mask.getAddress();
             byte[] baseAddrStartBytes = baseAddr.getAddress();
             byte[] baseAddrEndBytes   = baseAddr.getAddress();
