@@ -1,5 +1,5 @@
 
-import unittest
+import unittest2
 from jsonrpc import ServiceProxy
 from jsonrpc import JSONRPCException
 from uvm import Manager
@@ -9,7 +9,7 @@ from untangle_tests import ClientControl
 uvmContext = Uvm().getUvmContext()
 clientControl = ClientControl()
 
-class TestEnvironmentTests(unittest.TestCase):
+class TestEnvironmentTests(unittest2.TestCase):
 
     # verify connectivity to untangle-vm
     def test_01_uvmConnectivity(self):
