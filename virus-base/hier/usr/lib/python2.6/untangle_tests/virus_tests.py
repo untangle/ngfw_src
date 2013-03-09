@@ -1,4 +1,4 @@
-import unittest
+import unittest2
 import time
 from datetime import datetime
 import sys
@@ -19,7 +19,7 @@ def flushEvents():
     if (reports != None):
         reports.flushEvents()
 
-class VirusTests(unittest.TestCase):
+class VirusTests(unittest2.TestCase):
 
     @staticmethod
     def nodeName():
