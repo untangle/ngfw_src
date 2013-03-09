@@ -5,7 +5,7 @@ import signal
 import os
 sys.path.insert(0, '@PREFIX@/usr/lib/python2.6/')
 
-import unittest
+import unittest2
 import uvm
 import untangle_tests
 from   untangle_tests import *
@@ -112,8 +112,9 @@ def runTestSuite(suite):
     global parser
     global logfile
     print "== Testing %s ==" % suite.nodeName()
-    tests = unittest.TestLoader().loadTestsFromTestCase(suite)
+    tests = unittest2.TestLoader().loadTestsFromTestCase(suite)
     rc = 0
+    skipc = 0  # number of skipped tests.
     total = len([t for t in tests])
     for test in tests:
 
@@ -122,7 +123,7 @@ def runTestSuite(suite):
         sys.stdout = logfile
         sys.stderr = logfile
 
-        results = unittest.TextTestRunner( stream=logfile, verbosity=parser.verbosity ).run( test )
+        results = unittest2.TextTestRunner( stream=logfile, verbosity=parser.verbosity ).run( test )
 
         sys.stdout = orig_stdout
         sys.stderr = orig_stderr
@@ -133,20 +134,23 @@ def runTestSuite(suite):
                 exit(1)
             else:
                 rc += 1
+        elif (len(results.skipped) > 0):
+            print "Test skipped  : %s " % test._testMethodName
+            skipc += 1
         else:
             print "Test success : %s " % test._testMethodName
     print "== Testing %s ==" % suite.nodeName()
-    return rc, total
+    return rc, skipc, total
 
 # Verify the test enviroment is setup correctly
 def runTestEnvironmentTests():
     global parser
     global logfile
-    suite = unittest.TestLoader().loadTestsFromTestCase(TestEnvironmentTests)
-    # results = unittest.TextTestRunner( stream=logfile, verbosity=parser.verbosity ).run( suite )
+    suite = unittest2.TestLoader().loadTestsFromTestCase(TestEnvironmentTests)
+    # results = unittest2.TextTestRunner( stream=logfile, verbosity=parser.verbosity ).run( suite )
     print "== Testing Test Environment =="
     for test in suite:
-        results = unittest.TextTestRunner( stream=logfile, verbosity=parser.verbosity ).run( test )
+        results = unittest2.TextTestRunner( stream=logfile, verbosity=parser.verbosity ).run( test )
         if (len(results.failures) > 0 or len(results.errors) > 0):
             print "Test FAILED  : %s " % test._testMethodName
             print "The test enviroment is not configured correctly. Aborting..."
@@ -186,6 +190,7 @@ if "all" in parser.nodesToTest:
 while True:
     rc = 0
     total = 0
+    skipc = 0
 
     for node in parser.nodesToTest:
         if node == "environment":
@@ -194,7 +199,7 @@ while True:
         if testClz == None:
            print "Unable to find tests for \"%s\" - skipping." % node
            continue
-        errors, subTotal = runTestSuite(testClz)
+        errors, skipc, subTotal = runTestSuite(testClz)
         rc += errors
         total += subTotal
 
@@ -207,7 +212,7 @@ if reportsNode != None:
     uvm.Uvm().getUvmContext().nodeManager().destroy( reportsNode.getNodeSettings()['id'] );
 
 print ""
-print "%s passed, %s failed" % (total-rc, rc)
+print "%s passed, %s skipped, %s failed" % (total-rc-skipc, skipc, rc)
 print "More details found in %s" % parser.logfile
 
 exit(rc)
