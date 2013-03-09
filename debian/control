@@ -793,7 +793,7 @@ Description: Spam Blocker Lite
 
 Package: untangle-node-phish
 Architecture: all
-Depends: untangle-vm, untangle-base-spam, untangle-clamav-config, untangle-casing-mail, untangle-casing-http
+Depends: untangle-vm, untangle-base-spam, untangle-clamav-config, untangle-casing-mail
 XB-Display-Name: Phish Blocker
 XB-View-Position: 70
 XB-Untangle-Type: node

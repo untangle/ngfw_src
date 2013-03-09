@@ -825,7 +825,7 @@ if (!Ung.hasResource["Ung.Network"]) {
                         items: [{
                             xtype: "textfield",
                             fieldLabel: this.i18n._("Hostname"),
-                            emptyText: "hostname.example.com",
+                            emptyText: "untangle",
                             name: 'HostName',
                             value: this.settings.hostName,
                             listeners: {
@@ -837,7 +837,7 @@ if (!Ung.hasResource["Ung.Network"]) {
                             }
                         },{
                             xtype: 'label',
-                            html: this.i18n._("(eg: hostname.example.com)"),
+                            html: this.i18n._("(eg: gateway)"),
                             cls: 'boxlabel'
                         }]
                     },{

@@ -397,8 +397,8 @@ public class NetworkManagerImpl implements NetworkManager
     {
         NetworkSettings newSettings = new NetworkSettings();
 
-        newSettings.setHostName("hostname.example.com");
-        newSettings.setDomainName("example.com");
+        newSettings.setHostName( UvmContextFactory.context().oemManager().getOemName().toLowerCase() );
+        newSettings.setDomainName( "example.com" );
                                 
         ExecManagerResult result = UvmContextFactory.context().execManager().exec( "find /sys/class/net -type l -name 'eth*' | sed -e 's|/sys/class/net/||' | sort " );
         String devices[] = result.getOutput().split("\\r?\\n");
@@ -526,6 +526,14 @@ public class NetworkManagerImpl implements NetworkManager
         }
 
 
+        /**
+         * If hostname is null, set it to the default
+         * Make sure hostname is not fully qualified
+         */
+        if (networkSettings.getHostName() == null)
+            networkSettings.setHostName( UvmContextFactory.context().oemManager().getOemName().toLowerCase() );
+        networkSettings.setHostName( networkSettings.getHostName().replaceAll("\\..*","") );
+        
         /**
          * Set system names
          */
