@@ -1,4 +1,4 @@
-import unittest
+import unittest2
 import time
 import sys
 import pdb
@@ -37,7 +37,7 @@ def createCaptureRule():
         "ruleId": 1
     };
 
-class CaptureTests(unittest.TestCase):
+class CaptureTests(unittest2.TestCase):
 
     @staticmethod
     def nodeName():
