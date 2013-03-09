@@ -11,7 +11,6 @@ if (!Ung.hasResource["Ung.Phish"]) {
         spamData: null,
         emailPanel: null,
         webPanel: null,
-        gridWebEventLog: null,
         gridEmailEventLog: null,
 
         initComponent: function() {
@@ -20,11 +19,9 @@ if (!Ung.hasResource["Ung.Phish"]) {
             this.signatureVer = this.getRpcNode().getSignatureVersion();
             // build tabs
             this.buildEmail();
-            this.buildWeb();
             this.buildEmailEventLog();
-            this.buildWebEventLog();
             // builds the tab panel with the tabs
-            this.buildTabPanel([this.emailPanel, this.webPanel, this.gridEmailEventLog, this.gridWebEventLog]);
+            this.buildTabPanel([this.emailPanel, this.gridEmailEventLog]);
             this.callParent(arguments);
         },
         lookup: function(needle, haystack1, haystack2) {
@@ -165,111 +162,6 @@ if (!Ung.hasResource["Ung.Phish"]) {
                     cls: 'description',
                     html: this.i18n._('Phish Blocker email signatures were last updated') + ":&nbsp;&nbsp;&nbsp;&nbsp;"
                           + (this.lastUpdate != null ? i18n.timestampFormat(this.lastUpdate): i18n._("unknown"))
-                }]
-            });
-        },
-        // Web Config Panel
-        buildWeb: function() {
-            this.webPanel = Ext.create('Ext.panel.Panel',{
-                title: this.i18n._('Web'),
-                helpSource: 'web',
-                autoScroll: true,
-                cls: 'ung-panel',
-                items: [{
-                    xtype: 'fieldset',
-                    items: [{
-                        xtype: 'checkbox',
-                        boxLabel: this.i18n._('Enable Phish web filtering'),
-                        name: 'Enable Phish web filtering',
-                        hideLabel: true,
-                        checked: this.settings.enableGooglePhishList,
-                        handler:Ext.bind(function(elem, checked) {
-                                    this.settings.enableGooglePhishList = checked;
-                                }, this)
-                        }]
-                    }
-                  , {
-                    xtype: 'fieldset',
-                    title: this.i18n._('Note'),
-                    cls: 'description',
-                    html: this.i18n._('Phish Blocker web signatures were last updated ')
-                            + ":&nbsp;&nbsp;&nbsp;&nbsp;"
-                            + (this.lastUpdate != null ? i18n.timestampFormat(this.lastUpdate): i18n
-                                    ._("unknown"))
-                }]
-            });
-        },
-        // Web Event Log
-        buildWebEventLog: function() {
-            this.gridWebEventLog = Ext.create('Ung.GridEventLog',{
-                name: 'Web Event Log',
-                helpSource: 'web_event_log',
-                settingsCmp: this,
-                title: this.i18n._("Web Event Log"),
-                eventQueriesFn: this.getRpcNode().getHttpEventQueries,
-                // the list of fields
-                fields: [{
-                    name: 'time_stamp',
-                    sortType: Ung.SortTypes.asTimestamp
-                }, {
-                    name: 'displayAction',
-                    mapping: 'phish_action',
-                    type: 'string',
-                    convert: Ext.bind(function(value) {
-                        switch (value) {
-                            case 0: // PASSED
-                                return this.i18n._("pass");
-                            case 1: // BLOCKED
-                            default:
-                                return this.i18n._("block");
-                        }
-                    }, this)
-                }, {
-                    name: 'client',
-                    mapping: 'c_client_addr'
-                }, {
-                    name: 'uid'
-                }, {
-                    name: 'server',
-                    mapping: 'c_server_addr'
-                }, {
-                    name: 'host',
-                    mapping: 'host'
-                }, {
-                    name: 'uri',
-                    mapping: 'uri'
-                }],
-                // the list of columns
-                columns: [{
-                    header: this.i18n._("Timestamp"),
-                    width: Ung.Util.timestampFieldWidth,
-                    sortable: true,
-                    dataIndex: 'time_stamp',
-                    renderer: function(value) {
-                        return i18n.timestampFormat(value);
-                    }
-                }, {
-                    header: this.i18n._("Client"),
-                    width: Ung.Util.ipFieldWidth,
-                    dataIndex: 'client'
-                }, {
-                    header: this.i18n._("Username"),
-                    width: Ung.Util.usernameFieldWidth,
-                    dataIndex: 'uid'
-                }, {
-                    header: this.i18n._("Uost"),
-                    width: Ung.Util.hostnameFieldWidth,
-                    dataIndex: 'host'
-                }, {
-                    header: this.i18n._("Uri"),
-                    flex:1,
-                    width: Ung.Util.uriFieldWidth,
-                    dataIndex: 'uri'
-                }, {
-                    header: this.i18n._("Action"),
-                    width: 120,
-                    sortable: true,
-                    dataIndex: 'displayAction'
                 }]
             });
         },

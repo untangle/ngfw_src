@@ -53,28 +53,17 @@ if (!Ung.hasResource["Ung.Spyware"]) {
                         name: 'Block Malware URLs (Community List)',
                         checked: this.settings.scanUrls,
                         handler:Ext.bind(function(elem, checked) {
-                                    this.settings.scanUrls = checked;
-                                }, this)
-                       }
-                    ,  {
-                        xtype: 'checkbox',
-                        boxLabel: this.i18n._('Block Malware URLs (Google List)'),
-                        hideLabel: true,
-                        name: 'Block Malware URLs (Google List)',
-                        checked: this.settings.scanGoogleSafeBrowsing,
-                        handler: Ext.bind(function(elem, checked) {
-                                    this.settings.scanGoogleSafeBrowsing = checked;
-                                }, this)
-                        }
-                     ,  {
+                            this.settings.scanUrls = checked;
+                        }, this)
+                    }, {
                         xtype: 'combo',
                         editable: false,
                         queryMode: 'local',
                         fieldLabel: this.i18n._('User Bypass'),
                         name: "User Bypass",
                         store: [["None", this.i18n._("None")],
-                                 ["Host", this.i18n._("Temporary")],
-                                 ["Global", this.i18n._("Permanent and Global")]],
+                                ["Host", this.i18n._("Temporary")],
+                                ["Global", this.i18n._("Permanent and Global")]],
                         displayField: 'unblockModeName',
                         valueField: 'unblockModeValue',
                         value: this.settings.unblockMode,

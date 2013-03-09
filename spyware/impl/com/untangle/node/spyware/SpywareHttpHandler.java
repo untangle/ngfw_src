@@ -24,12 +24,10 @@ import com.untangle.node.token.Token;
 import com.untangle.node.util.AsciiCharBuffer;
 import com.untangle.uvm.vnet.NodeTCPSession;
 import com.untangle.node.util.UrlHashSet;
-import com.untangle.node.util.GoogleSafeBrowsingHashSet;
 
 public class SpywareHttpHandler extends HttpStateMachine
 {
     private static final String MALWARE_SITE_DB_FILE  = "/usr/share/untangle-webfilter-init/spyware-url";
-    private static final String GOOGLE_HASH_DB_FILE  = "/usr/share/untangle-google-safebrowsing/lib/goog-malware-hash";
 
     private final NodeTCPSession session;
 
@@ -38,7 +36,6 @@ public class SpywareHttpHandler extends HttpStateMachine
     private final Logger logger = Logger.getLogger(getClass());
 
     private static UrlHashSet urlDatabase = null;
-    private static GoogleSafeBrowsingHashSet googleMalwareHashList = null;
 
     private final SpywareImpl node;
 
@@ -363,30 +360,6 @@ public class SpywareHttpHandler extends HttpStateMachine
             }
 
             if (urlDatabase.contains(domain, uri.toString())) {
-                return true;
-            }
-        }
-        
-        /**
-         * Check the google DB
-         */
-        if (node.getSettings().getScanGoogleSafeBrowsing()) {
-            
-            /**
-             * The list is initialized here so that if this settings is not enabled
-             * the list is never loaded into memory
-             */
-            if (this.googleMalwareHashList == null) {
-                synchronized(this) {
-                    if (this.googleMalwareHashList == null) {
-                        logger.info("Loading Google SafeBrowsing malware DB...");
-                        this.googleMalwareHashList = new GoogleSafeBrowsingHashSet(GOOGLE_HASH_DB_FILE);
-                        logger.info("Loading Google SafeBrowsing malware DB... done");
-                    }
-                }
-            }
-
-            if (googleMalwareHashList.contains(domain, uri.toString())) {
                 return true;
             }
         }
