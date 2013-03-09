@@ -1,4 +1,4 @@
-import unittest
+import unittest2
 import time
 import sys
 import pdb
@@ -23,7 +23,7 @@ def flushEvents():
     if (reports != None):
         reports.flushEvents()
 
-class ShieldTests(unittest.TestCase):
+class ShieldTests(unittest2.TestCase):
 
     @staticmethod
     def nodeName():
