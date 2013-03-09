@@ -644,6 +644,16 @@ public class IPMaskedAddress implements Serializable
             
             IPMaskedAddress addr4 = new IPMaskedAddress("1.2.3.4/24");
             logger.warn("TEST: " + addr4.getMaskedAddress().getHostAddress().equals("1.2.3.0"));
+
+            IPMaskedAddress addr5 = new IPMaskedAddress("1.2.3.4", "255.255.255.0");
+            IPMaskedAddress addr6 = new IPMaskedAddress("1.2.3.4", 24);
+            IPMaskedAddress addr7 = new IPMaskedAddress("1.2.3.4", 25);
+            logger.warn("TEST: " + addr4.equals(addr5));
+            logger.warn("TEST: " + addr4.equals(addr6));
+            logger.warn("TEST: " + !addr4.equals(addr7));
+            
+            logger.warn("TEST: " + addr4.getNetmaskString().equals("255.255.255.0"));
+            logger.warn("TEST: " + addr1.getNetmaskString().equals("255.255.255.255"));
         
             logger.warn("TEST: " + addr2.contains(addr));
             logger.warn("TEST: " + !addr3.contains(addr));
