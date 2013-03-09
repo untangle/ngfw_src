@@ -248,14 +248,6 @@ if (!Ung.hasResource["Ung.Network"]) {
                     header: this.i18n._("is WAN"),
                     dataIndex: 'isWan',
                     width:55
-                }, {
-                    header: this.i18n._("v4 Config"),
-                    dataIndex: 'v4ConfigType',
-                    width:75
-                }, {
-                    header: this.i18n._("v6 Config"),
-                    dataIndex: 'v6ConfigType',
-                    width:75
                 }],
                 bbar: [{
                     xtype: "button",
@@ -1475,7 +1467,6 @@ if (!Ung.hasResource["Ung.Network"]) {
             this.buildQoS();
             this.buildPacketFilter();
             this.buildDnsServer();
-            this.buildDnsAdvanced();
             this.buildNetworkCards();
 
             this.advancedTabPanel = Ext.create('Ext.tab.Panel',{
@@ -1484,7 +1475,7 @@ if (!Ung.hasResource["Ung.Network"]) {
                 parentId: this.getId(),
                 autoHeight: true,
                 flex: 1,
-                items: [ this.panelGeneral, this.panelQoS, this.panelPacketFilter, this.panelDnsServer, this.panelDnsAdvanced, this.panelNetworkCards ]
+                items: [ this.panelGeneral, this.panelQoS, this.panelPacketFilter, this.panelDnsServer, this.panelNetworkCards ]
             });
             
             this.panelAdvanced = Ext.create('Ext.panel.Panel',{
@@ -1587,19 +1578,11 @@ if (!Ung.hasResource["Ung.Network"]) {
                 title: this.i18n._('DNS Server'),
                 layout: 'anchor',
                 cls: 'ung-panel',
-                items: []
-            });
-        },        
-        // DnsAdvanced Panel
-        buildDnsAdvanced: function() {
-            this.panelDnsAdvanced = Ext.create('Ext.panel.Panel',{
-                name: 'panelDnsAdvanced',
-                helpSource: 'network_dns_server',
-                parentId: this.getId(),
-                title: this.i18n._('DNS Advanced'),
-                layout: 'anchor',
-                cls: 'ung-panel',
-                items: []
+                items: [{
+                    html: "FIXME: Static DNS Entries grid (networkSettings.dnsSettings.staticEntries)<br/>"
+                }, {
+                    html: "FIXME: Other Local DNS Servers grid (networkSettings.dnsSettings.localServers)<br/>"
+                }]
             });
         },        
         // NetworkCards Panel

@@ -27,6 +27,9 @@ import com.untangle.uvm.network.QosSettings;
 import com.untangle.uvm.network.QosRule;
 import com.untangle.uvm.network.QosRuleMatcher;
 import com.untangle.uvm.network.QosPriority;
+import com.untangle.uvm.network.DnsSettings;
+import com.untangle.uvm.network.DnsStaticEntry;
+import com.untangle.uvm.network.DnsLocalServer;
 import com.untangle.uvm.node.IPMaskedAddress;
 
 /**
@@ -94,9 +97,27 @@ public class NetworkManagerImpl implements NetworkManager
             this.setNetworkSettings( defaultSettings() );
         }
         else {
-            //FIXME can remove me later
+            //FIXME can remove me later - for testing
             if (readSettings.getQosSettings() == null)
                 readSettings.setQosSettings( defaultQosSettings() );
+            //FIXME can remove me later - for testing
+            if ( false ) {
+                DnsSettings dnsSettings = new DnsSettings();
+                LinkedList<DnsStaticEntry> staticEntries = new LinkedList<DnsStaticEntry>();
+                LinkedList<DnsLocalServer> localServers = new LinkedList<DnsLocalServer>();
+                try {
+                    staticEntries.add( new DnsStaticEntry( "chef" , InetAddress.getByName("10.0.0.10")) ); // XXX for testing
+                    staticEntries.add( new DnsStaticEntry( "chef.metaloft.com" , InetAddress.getByName("10.0.0.10")) ); // XXX for testing
+                    localServers.add( new DnsLocalServer( "metaloft.com", InetAddress.getByName("10.0.0.1")
+
+                                                          ) );
+                } catch (Exception e) {}
+                dnsSettings.setStaticEntries( staticEntries );
+                dnsSettings.setLocalServers( localServers );
+                
+                readSettings.setDnsSettings( dnsSettings );
+            }
+
             
             this.networkSettings = readSettings;
             logger.debug( "Loading Settings: " + this.networkSettings.toJSONString() );
@@ -409,7 +430,7 @@ public class NetworkManagerImpl implements NetworkManager
             if (devices.length > 0) {
                 InterfaceSettings external = new InterfaceSettings();
                 external.setInterfaceId( 1 );
-                external.setName( "Externál" );
+                external.setName( "Extern\u00e1l" );
                 external.setIsWan( true );
                 external.setPhysicalDev( devices[0] );
                 external.setSystemDev( devices[0] );
@@ -424,7 +445,7 @@ public class NetworkManagerImpl implements NetworkManager
             if (devices.length > 1) {
                 InterfaceSettings internal = new InterfaceSettings();
                 internal.setInterfaceId( 2 );
-                internal.setName( "Internál" );
+                internal.setName( "Intern\u00e1l" );
                 internal.setIsWan( false );
                 internal.setPhysicalDev( devices[1] );
                 internal.setSystemDev( devices[1] );
@@ -482,6 +503,8 @@ public class NetworkManagerImpl implements NetworkManager
             newSettings.setStaticRoutes( staticRoutes );
 
             newSettings.setQosSettings( defaultQosSettings() );
+
+            newSettings.setDnsSettings( new DnsSettings() );
         }
         catch (Exception e) {
             logger.error("Error creating Network Settings",e);
@@ -733,5 +756,5 @@ public class NetworkManagerImpl implements NetworkManager
         
         return qosSettings;
     }
-    
+
 }

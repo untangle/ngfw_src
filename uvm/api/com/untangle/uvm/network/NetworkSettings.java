@@ -42,6 +42,7 @@ public class NetworkSettings implements Serializable, JSONString
     private boolean dhcpAuthoritative = true;
 
     private QosSettings qosSettings;
+    private DnsSettings dnsSettings;
     
     public NetworkSettings() { }
 
@@ -93,6 +94,9 @@ public class NetworkSettings implements Serializable, JSONString
     public QosSettings getQosSettings() { return this.qosSettings; }
     public void setQosSettings( QosSettings newValue ) { this.qosSettings = newValue; }
 
+    public DnsSettings getDnsSettings() { return this.dnsSettings; }
+    public void setDnsSettings( DnsSettings newValue ) { this.dnsSettings = newValue; }
+    
     public String toJSONString()
     {
         JSONObject jO = new JSONObject(this);
