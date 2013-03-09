@@ -1,4 +1,4 @@
-import unittest
+import unittest2
 import time
 import sys
 import pdb
@@ -18,7 +18,7 @@ node = None
 
 #pdb.set_trace()
 
-class OpenVpnTests(unittest.TestCase):
+class OpenVpnTests(unittest2.TestCase):
 
     @staticmethod
     def nodeName():
