@@ -1,4 +1,4 @@
-import unittest
+import unittest2
 import time
 import sys
 import datetime
@@ -46,7 +46,7 @@ def addRule(name, sig, sid=12345, blocked=True, log=True, description="descripti
     settings["rules"] = rules
     node.setSettings(settings)
 
-class IpsTests(unittest.TestCase):
+class IpsTests(unittest2.TestCase):
 
     @staticmethod
     def nodeName():
