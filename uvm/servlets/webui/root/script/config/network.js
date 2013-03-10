@@ -40,11 +40,12 @@ if (!Ung.hasResource["Ung.Network"]) {
             return [
                 {name:"DST_ADDR",displayName: settingsCmp.i18n._("Destination Address"), type: "text", visible: true, vtype:"ipMatcher"},
                 {name:"DST_PORT",displayName: settingsCmp.i18n._("Destination Port"), type: "text",vtype:"portMatcher", visible: true},
-                {name:"DST_INTF",displayName: settingsCmp.i18n._("Destination Interface"), type: "checkgroup", values: Ung.Util.getInterfaceList(true, true), visible: true, allowInvert: false},
+                {name:"DST_LOCAL",displayName: settingsCmp.i18n._("Destined Local"), type: "boolean", visible: true, allowInvert: false},
+                {name:"PROTOCOL",displayName: settingsCmp.i18n._("Protocol"), type: "checkgroup", values: [["TCP","TCP"],["UDP","UDP"]], visible: true, allowInvert: false},
+                {name:"SRC_INTF",displayName: settingsCmp.i18n._("Source Interface"), type: "checkgroup", values: Ung.Util.getInterfaceList(false, false), visible: true, allowInvert: false},
                 {name:"SRC_ADDR",displayName: settingsCmp.i18n._("Source Address"), type: "text", visible: true, vtype:"ipMatcher"},
                 {name:"SRC_PORT",displayName: settingsCmp.i18n._("Source Port"), type: "text",vtype:"portMatcher", visible: false},
-                {name:"SRC_INTF",displayName: settingsCmp.i18n._("Source Interface"), type: "checkgroup", values: Ung.Util.getInterfaceList(false, false), visible: true, allowInvert: false},
-                {name:"PROTOCOL",displayName: settingsCmp.i18n._("Protocol"), type: "checkgroup", values: [["TCP","TCP"],["UDP","UDP"]], visible: true, allowInvert: false}
+                {name:"SRC_MAC_ADDR", displayName: settingsCmp.i18n._("Source Mac Address"), type: "text", visible: true, allowInvert: false}
             ];
         }
     };
@@ -1578,10 +1579,96 @@ if (!Ung.hasResource["Ung.Network"]) {
             ];
             this.qosPriorityNoDefaultMap = Ung.Util.createStoreMap(this.qosPriorityNoDefaultStore);
             
-            this.gridQosCustomRules = Ext.create( 'Ung.EditorGrid', {
+            var updateTotalBandwidth = Ext.bind(function(bandwidthData) {
+                var u = 0;
+                var d = 0;
+
+                for ( var i = 0 ; i < bandwidthData.length ; i++ ) {
+                    if(bandwidthData[i].uploadBandwidthKbps !=null) {
+                        u += bandwidthData[i].uploadBandwidthKbps;    
+                    }
+                    if(bandwidthData[i].downloadBandwidthKbps !=null ) {
+                        d += bandwidthData[i].downloadBandwidthKbps;    
+                    }
+                }
+
+                var d_Mbit = d/1000;
+                var u_Mbit = u/1000;
+
+                var message = Ext.String.format( this.i18n._( "<i>Total: {0} kbps ({1} Mbit) download, {2} kbps ({3} Mbit) upload</i>" ), d, d_Mbit, u, u_Mbit );
+                var bandwidthLabel = this.panelQoS.query('label[name="bandwidthLabel"]')[0];
+                bandwidthLabel.html = this.i18n._("<font color=\"red\">Note</font>: When enabling QoS valid Download Bandwidth and Upload Bandwidth values must be set for all interfaces.")+"</br>"+message;
+            }, this);
+
+            this.gridQosWanBandwidth = Ext.create( 'Ung.EditorGrid', {
+                name: 'QoS Priorities',
+                margin: '5 0 0 0',
+                height: 200,
+                settingsCmp: this,
+                paginated: false,
+                hasAdd: false,
+                hasDelete: false,
+                hasEdit: false,
+                recordJavaClass: "com.untangle.uvm.network.InterfaceSettings",
+                dataProperty:'interfaces',
+                fields: [{
+                    name: 'interfaceId'
+                }, {
+                    name: 'name'
+                }, {
+                    name: 'configType'
+                }, {
+                    name: 'downloadBandwidthKbps'
+                }, {
+                    name: 'uploadBandwidthKbps'
+                }],                
+                columns: [{
+                    header: this.i18n._("WAN"),
+                    width: 150,
+                    dataIndex: 'name'
+                }, {
+                    header: this.i18n._("Config Type"),
+                    dataIndex: 'configType',
+                    width: 150
+                }, {
+                    header: this.i18n._("Download Bandwidth"),
+                    dataIndex: 'downloadBandwidthKbps',
+                    width: 150,
+                    editor : {
+                        xtype: 'numberfield',
+                        allowBlank : false
+                    },
+                    renderer: Ext.bind(function( value, metadata, record ) { 
+                        if (value == null) {
+                            return this.i18n._("Not set"); 
+                        } else {
+                            return value + this.i18n._( " kbps" );
+                        }
+                    }, this )
+                }, {
+                    header: this.i18n._("Upload Bandwidth"),
+                    dataIndex: 'uploadBandwidthKbps',
+                    width: 150,
+                    editor : {
+                        xtype: 'numberfield',
+                        allowBlank : false
+                    },
+                    renderer: Ext.bind(function( value, metadata, record ) { 
+                        if (value == null) {
+                            return this.i18n._("Not set"); 
+                        } else {
+                            return value + this.i18n._( " kbps" );
+                        }
+                    }, this )
+                }],
+                
+                columnsDefaultSortable: false
+            });
+            
+            this.gridQosRules = Ext.create( 'Ung.EditorGrid', {
                 name: 'QoS Custom Rules',
                 margin: '5 0 0 0',
-                height: 400,
+                height: 450,
                 settingsCmp: this,
                 paginated: false,
                 hasReorder: true,
@@ -1594,7 +1681,7 @@ if (!Ung.hasResource["Ung.Network"]) {
                     "javaClass": "com.untangle.uvm.network.QosRule"
                 },
                 recordJavaClass: "com.untangle.uvm.network.QosRule",
-                dataExpression:'settings.qosSettings.qosRules',
+                dataExpression:'settings.qosSettings.qosRules.list',
                 fields: [{
                     name: 'ruleId'
                 }, {
@@ -1634,7 +1721,7 @@ if (!Ung.hasResource["Ung.Network"]) {
                     }, this ),
                     editor: {
                         xtype: 'combo',
-                        store: this.priorityNoDefaultStore,
+                        store: this.qosPriorityNoDefaultStore,
                         queryMode: 'local',
                         editable: false
                     }
@@ -1681,12 +1768,113 @@ if (!Ung.hasResource["Ung.Network"]) {
                         dataIndex: "priority",
                         fieldLabel: this.i18n._("Priority"),
                         editable: false,
-                        store: this.priorityNoDefaultStore,
+                        store: this.qosPriorityNoDefaultStore,
                         valueField: "value",
                         displayField: "displayName",
                         queryMode: 'local'
                     }]
                 }]
+            });
+            
+            this.gridQosPriorities = Ext.create( 'Ung.EditorGrid', {
+                name: 'QoS Priorities',
+                margin: '5 0 0 0',
+                height: 190,
+                settingsCmp: this,
+                paginated: false,
+                hasAdd: false,
+                hasDelete: false,
+                hasEdit: false,
+                recordJavaClass: "com.untangle.uvm.network.QosPriority",
+                dataExpression:'settings.qosSettings.qosPriorities.list',
+                fields: [{
+                    name: 'priorityId'
+                }, {
+                    name: 'priorityName'
+                }, {
+                    name: 'uploadReservation'
+                }, {
+                    name: 'uploadLimit'
+                },{
+                    name: 'downloadReservation'
+                },{
+                    name: 'downloadLimit'
+                }, {
+                    name: 'javaClass'
+                }],                
+                columns: [{
+                    header: this.i18n._("Priority"),
+                    width: 150,
+                    dataIndex: 'priorityName',
+                    renderer: Ext.bind(function( value, metadata, record ) {
+                        return this.i18n._(value);
+                    }, this )
+                }, {
+                    header: this.i18n._("Upload Reservation"),
+                    dataIndex: 'uploadReservation',
+                    width: 150,
+                    editor : {
+                        xtype: 'numberfield',
+                        allowBlank : false,
+                        minValue : 1,
+                        maxValue : 100
+                    },
+                    renderer: Ext.bind(function( value, metadata, record ) { 
+                        if (value == 0) 
+                            return this.i18n._("No reservation"); 
+                        else 
+                            return value + "%";
+                    }, this )
+                }, {
+                    header: this.i18n._("Upload Limit"),
+                    dataIndex: 'uploadLimit',
+                    width: 150,
+                    editor : {
+                        xtype: 'numberfield',
+                        allowBlank : false,
+                        minValue : 1,
+                        maxValue : 100
+                    },
+                    renderer: Ext.bind(function( value, metadata, record ) { 
+                        if (value == 0) 
+                            return this.i18n._("No limit"); 
+                        else 
+                            return value + "%";
+                    }, this )
+                }, {
+                    header: this.i18n._("Download Reservation"),
+                    dataIndex: 'downloadReservation',
+                    width: 150,
+                    editor : {
+                        xtype: 'numberfield',
+                        allowBlank : false,
+                        minValue : 1,
+                        maxValue : 100
+                    },
+                    renderer: Ext.bind(function( value, metadata, record ) { 
+                        if (value == 0) 
+                            return this.i18n._("No reservation"); 
+                        else 
+                            return value + "%";
+                    }, this )
+                }, {
+                    header: this.i18n._("Download Limit"),
+                    dataIndex: 'downloadLimit',
+                    width: 150,
+                    editor : {
+                        xtype: 'numberfield',
+                        allowBlank : false,
+                        minValue : 1,
+                        maxValue : 100
+                    },
+                    renderer: Ext.bind(function( value, metadata, record ) { 
+                        if (value == 0) 
+                            return this.i18n._("No limit"); 
+                        else 
+                            return value + "%";
+                    }, this )
+                }],
+                columnsDefaultSortable: false
             });
             
             this.panelQoS = Ext.create('Ext.panel.Panel',{
@@ -1732,7 +1920,11 @@ if (!Ung.hasResource["Ung.Network"]) {
                     cls: 'description',
                     name: 'bandwidth_fieldset',
                     title: this.i18n._('WAN Bandwidth'),
-                    items: []
+                    items: [{
+                        xtype: 'label',
+                        name: 'bandwidthLabel',
+                        html: "&nbsp;"
+                    }, this.gridQosWanBandwidth]
                 }, {
                     xtype: 'fieldset',
                     cls: 'description',
@@ -1823,21 +2015,24 @@ if (!Ung.hasResource["Ung.Network"]) {
                     title: this.i18n._('QoS Custom Rules'),
                     items: [{
                         xtype: 'label',
-
                         html: this.i18n._("<font color=\"red\">Note</font>: Custom Rules only match <b>Bypassed</b> traffic.")
-                    }, this.gridQosCustomRules]
+                    }, this.gridQosRules]
                 }, {
                     xtype: 'fieldset',
                     cls: 'description',
                     title: this.i18n._('QoS Priorities'),
-                    items: []
+                    items: [this.gridQosPriorities]
                 }, {
                     xtype: 'fieldset',
                     cls: 'description',
                     title: this.i18n._('QoS Statistics'),
-                    items: []
+                    items: [{
+                        border: false,
+                        html: "TODO: implement this"
+                    }]
                 }]
             });
+            updateTotalBandwidth(this.settings.interfaces.list);
         },
         // PacketFilter Panel
         buildPacketFilter: function() {
