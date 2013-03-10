@@ -262,9 +262,10 @@ class RouterFtpHandler extends FtpStateMachine
             /* nothing to do */
         }
 
-        /* Reply doesn't have to be modified, but the redirect.
-         * XXX If we ever support source redirects besides NAT.
-         * this will have to be updated */
+        /**
+         * Reply doesn't have to be modified, but the redirect.
+         * If we ever support source redirects besides NAT. this will have to be updated
+         */
         return new TokenResult( new Token[] { reply }, null );
     }
 
@@ -286,15 +287,18 @@ class RouterFtpHandler extends FtpStateMachine
             throw new TokenException( "Error getting socket address" );
         }
 
-        /* Create a new socket address with the original server address.
+        /**
+         * Create a new socket address with the original server address.
          * extended passive mode doesn't specify the address, so in order to catch
          * the data session, NAT creates a new extended passive reply which keeps a
          * separate copy of the InetSocketAddress.
          */
         addr = new InetSocketAddress( sessionData.originalServerAddr(), addr.getPort());
 
-        /* Nothing has to be done here, the server address isn't sent with extended
-         * passive replies, so redirects don't really matter */
+        /**
+         * Nothing has to be done here, the server address isn't sent with extended
+         * passive replies, so redirects don't really matter
+         */
         return new TokenResult( new Token[] { FtpEpsvReply.makeEpsvReply( addr ) }, null );
     }
 
