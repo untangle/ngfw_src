@@ -898,6 +898,13 @@ Ung.Util = {
             return dataProperty;
         }
     },
+    createStoreMap : function(pairArray) {
+        var map = {};
+        for(var i=0; i<pairArray.length; i++) {
+            map[pairArray[i][0]] = pairArray[i][1];
+        }
+        return map;
+    },
     maxRowCount: 2147483647,
     timestampFieldWidth: 135,
     ipFieldWidth: 100,

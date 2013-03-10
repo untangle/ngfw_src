@@ -35,6 +35,17 @@ if (!Ung.hasResource["Ung.Network"]) {
                 {name:"SRC_INTF",displayName: settingsCmp.i18n._("Source Interface"), type: "checkgroup", values: Ung.Util.getInterfaceList(false, false), visible: true, allowInvert: false},
                 {name:"PROTOCOL",displayName: settingsCmp.i18n._("Protocol"), type: "checkgroup", values: [["TCP","TCP"],["UDP","UDP"]], visible: true, allowInvert: false}
             ];
+        },
+        getQosRuleMatchers: function (settingsCmp) {
+            return [
+                {name:"DST_ADDR",displayName: settingsCmp.i18n._("Destination Address"), type: "text", visible: true, vtype:"ipMatcher"},
+                {name:"DST_PORT",displayName: settingsCmp.i18n._("Destination Port"), type: "text",vtype:"portMatcher", visible: true},
+                {name:"DST_INTF",displayName: settingsCmp.i18n._("Destination Interface"), type: "checkgroup", values: Ung.Util.getInterfaceList(true, true), visible: true, allowInvert: false},
+                {name:"SRC_ADDR",displayName: settingsCmp.i18n._("Source Address"), type: "text", visible: true, vtype:"ipMatcher"},
+                {name:"SRC_PORT",displayName: settingsCmp.i18n._("Source Port"), type: "text",vtype:"portMatcher", visible: false},
+                {name:"SRC_INTF",displayName: settingsCmp.i18n._("Source Interface"), type: "checkgroup", values: Ung.Util.getInterfaceList(false, false), visible: true, allowInvert: false},
+                {name:"PROTOCOL",displayName: settingsCmp.i18n._("Protocol"), type: "checkgroup", values: [["TCP","TCP"],["UDP","UDP"]], visible: true, allowInvert: false}
+            ];
         }
     };
     
@@ -90,6 +101,7 @@ if (!Ung.hasResource["Ung.Network"]) {
         panelPortForwardRules: null,
         panelNatRules: null,
         panelRoutes: null,
+        panelAdvanced: null,
         initComponent: function() {
             this.breadcrumbs = [{
                 title: i18n._("Configuration"),
@@ -299,8 +311,6 @@ if (!Ung.hasResource["Ung.Network"]) {
                     valueField: "value",
                     displayField: "displayName",
                     queryMode: 'local',
-                    triggerAction: 'all',
-                    listClass: 'x-combo-list-small',
                     listeners: {
                         "select": {
                             fn: Ext.bind(function(combo, ewVal, oldVal) {
@@ -342,8 +352,6 @@ if (!Ung.hasResource["Ung.Network"]) {
                         valueField: "value",
                         displayField: "displayName",
                         queryMode: 'local',
-                        triggerAction: 'all',
-                        listClass: 'x-combo-list-small',
                         listeners: {
                             "select": {
                                 fn: Ext.bind(function(combo, ewVal, oldVal) {
@@ -369,7 +377,6 @@ if (!Ung.hasResource["Ung.Network"]) {
                         displayField: "displayName",
                         width: 300,
                         listWidth: 70,
-                        triggerAction: "all",
                         queryMode: 'local',
                         editable: false
                     }, {
@@ -412,7 +419,6 @@ if (!Ung.hasResource["Ung.Network"]) {
                         displayField: "displayName",
                         width: 300,
                         listWidth: 70,
-                        triggerAction: "all",
                         queryMode: 'local',
                         editable: false
                     }, {
@@ -432,7 +438,6 @@ if (!Ung.hasResource["Ung.Network"]) {
                         displayField: "displayName",
                         width: 300,
                         listWidth: 70,
-                        triggerAction: "all",
                         queryMode: 'local',
                         editable: false
                     }, {
@@ -541,8 +546,6 @@ if (!Ung.hasResource["Ung.Network"]) {
                         valueField: "value",
                         displayField: "displayName",
                         queryMode: 'local',
-                        triggerAction: 'all',
-                        listClass: 'x-combo-list-small',
                         listeners: {
                             "change": {
                                 fn: Ext.bind(function(elem, newValue) {
@@ -652,7 +655,6 @@ if (!Ung.hasResource["Ung.Network"]) {
                             displayField: "displayName",
                             width: 300,
                             listWidth: 70,
-                            triggerAction: "all",
                             queryMode: 'local',
                             editable: false
                         }, {
@@ -674,7 +676,6 @@ if (!Ung.hasResource["Ung.Network"]) {
                     displayField: "displayName",
                     width: 180,
                     listWidth: 70,
-                    triggerAction: "all",
                     queryMode: 'local',
                     editable: false
                 }, {
@@ -974,7 +975,11 @@ if (!Ung.hasResource["Ung.Network"]) {
                     header: this.i18n._("Description"),
                     width: 200,
                     dataIndex: 'description',
-                    flex:1
+                    flex:1,
+                    editor: {
+                        xtype:'textfield',
+                        allowBlank:false
+                    }
                 }, {
                     header: this.i18n._("New Destination"),
                     dataIndex: 'newDestination',
@@ -1000,8 +1005,7 @@ if (!Ung.hasResource["Ung.Network"]) {
                     width: 500
                 }, {
                     xtype:'fieldset',
-                    title: this.i18n._("Rule"),
-                    title: "If all of the following conditions are met:",
+                    title: this.i18n._("If all of the following conditions are met:"),
                     items:[{
                         xtype:'rulebuilder',
                         settingsCmp: this,
@@ -1114,7 +1118,11 @@ if (!Ung.hasResource["Ung.Network"]) {
                     header: this.i18n._("Description"),
                     width: 200,
                     dataIndex: 'description',
-                    flex:1
+                    flex:1,
+                    editor: {
+                        xtype:'textfield',
+                        allowBlank:false
+                    }
                 }],
                 columnsDefaultSortable: false,
                 rowEditorInputLines: [{
@@ -1130,8 +1138,7 @@ if (!Ung.hasResource["Ung.Network"]) {
                     width: 500
                 }, {
                     xtype:'fieldset',
-                    title: this.i18n._("Rule"),
-                    title: "If all of the following conditions are met:",
+                    title: this.i18n._("If all of the following conditions are met:"),
                     items:[{
                         xtype:'rulebuilder',
                         settingsCmp: this,
@@ -1158,8 +1165,6 @@ if (!Ung.hasResource["Ung.Network"]) {
                         valueField: "value",
                         displayField: "displayName",
                         queryMode: 'local',
-                        triggerAction: 'all',
-                        listClass: 'x-combo-list-small',
                         listeners: {
                             select: Ext.bind(function(combo, ewVal, oldVal) {
                                 if (combo.value == true) /* Auto */ {
@@ -1268,7 +1273,11 @@ if (!Ung.hasResource["Ung.Network"]) {
                     header: this.i18n._("Description"),
                     width: 200,
                     dataIndex: 'description',
-                    flex:1
+                    flex:1,
+                    editor: {
+                        xtype:'textfield',
+                        allowBlank:false
+                    }
                 }, {
                     xtype:'checkcolumn',
                     header: this.i18n._("Bypass"),
@@ -1290,8 +1299,7 @@ if (!Ung.hasResource["Ung.Network"]) {
                     width: 500
                 }, {
                     xtype:'fieldset',
-                    title: this.i18n._("Rule"),
-                    title: "If all of the following conditions are met:",
+                    title: this.i18n._("If all of the following conditions are met:"),
                     items:[{
                         xtype:'rulebuilder',
                         settingsCmp: this,
@@ -1316,9 +1324,7 @@ if (!Ung.hasResource["Ung.Network"]) {
                         store: [[true,i18n._('Bypass')], [false,i18n._('Capture')]],
                         valueField: "value",
                         displayField: "displayName",
-                        queryMode: 'local',
-                        triggerAction: 'all',
-                        listClass: 'x-combo-list-small'
+                        queryMode: 'local'
                     }]
                 }]
             });
@@ -1394,7 +1400,11 @@ if (!Ung.hasResource["Ung.Network"]) {
                     header: this.i18n._("Description"),
                     width: 300,
                     dataIndex: 'description',
-                    flex:1
+                    flex:1,
+                    editor: {
+                        xtype:'textfield',
+                        allowBlank:false
+                    }
                 }],
                 sortField: 'network',
                 columnsDefaultSortable: true,
@@ -1422,12 +1432,10 @@ if (!Ung.hasResource["Ung.Network"]) {
                     displayField: "displayName",
                     width: 300,
                     listWidth: 70,
-                    triggerAction: "all",
                     queryMode: 'local',
                     editable: false
                 }, {
-                    xtype: "combobox",
-                    name: "next_hop",
+                    xtype: "combo",
                     editable : true,
                     allowBlank: false,
                     dataIndex: "nextHop",
@@ -1547,14 +1555,288 @@ if (!Ung.hasResource["Ung.Network"]) {
         },
         // QoS Panel
         buildQoS: function() {
+            this.qosPriorityStore = [
+                [0, this.i18n._( "Default" )], 
+                [1, this.i18n._( "Very High" )], 
+                [2, this.i18n._( "High" )], 
+                [3, this.i18n._( "Medium" )], 
+                [4, this.i18n._( "Low" )], 
+                [5, this.i18n._( "Limited" )],
+                [6, this.i18n._( "Limited More" )],
+                [7, this.i18n._( "Limited Severely" )]
+            ];
+            this.qosPriorityMap = Ung.Util.createStoreMap(this.qosPriorityStore);
+
+            this.qosPriorityNoDefaultStore = [
+                [1, this.i18n._( "Very High" )], 
+                [2, this.i18n._( "High" )], 
+                [3, this.i18n._( "Medium" )], 
+                [4, this.i18n._( "Low" )], 
+                [5, this.i18n._( "Limited" )],
+                [6, this.i18n._( "Limited More" )],
+                [7, this.i18n._( "Limited Severely" )]
+            ];
+            this.qosPriorityNoDefaultMap = Ung.Util.createStoreMap(this.qosPriorityNoDefaultStore);
+            
+            this.gridQosCustomRules = Ext.create( 'Ung.EditorGrid', {
+                name: 'QoS Custom Rules',
+                margin: '5 0 0 0',
+                height: 400,
+                settingsCmp: this,
+                paginated: false,
+                hasReorder: true,
+                addAtTop: false,
+                emptyRow: {
+                    "ruleId": -1,
+                    "enabled": true,
+                    "description": this.i18n._("[no description]"),
+                    "priority": 1,
+                    "javaClass": "com.untangle.uvm.network.QosRule"
+                },
+                recordJavaClass: "com.untangle.uvm.network.QosRule",
+                dataExpression:'settings.qosSettings.qosRules',
+                fields: [{
+                    name: 'ruleId'
+                }, {
+                    name: 'enabled'
+                }, {
+                    name: 'priority'
+                }, {
+                    name: 'matchers'
+                },{
+                    name: 'description'
+                }, {
+                    name: 'javaClass'
+                }],
+                columns: [{
+                    header: this.i18n._("Rule Id"),
+                    width: 50,
+                    dataIndex: 'ruleId',
+                    renderer: function(value) {
+                        if (value < 0) {
+                            return i18n._("new");
+                        } else {
+                            return value;
+                        }
+                    }
+                }, {
+                    xtype:'checkcolumn',
+                    header: this.i18n._("Enable"),
+                    dataIndex: 'enabled',
+                    fixed: true,
+                    width:55
+                }, {
+                    header: this.i18n._( "Priority" ),
+                    width: 100,
+                    dataIndex: "priority",
+                    renderer: Ext.bind(function( value, metadata, record ) {
+                        return this.qosPriorityNoDefaultMap[value];
+                    }, this ),
+                    editor: {
+                        xtype: 'combo',
+                        store: this.priorityNoDefaultStore,
+                        queryMode: 'local',
+                        editable: false
+                    }
+                }, {
+                    header: this.i18n._("Description"),
+                    width: 200,
+                    dataIndex: 'description',
+                    flex:1,
+                    editor: {
+                        xtype:'textfield',
+                        allowBlank:false
+                    }
+                }],
+                columnsDefaultSortable: false,
+                rowEditorInputLines: [{
+                    xtype:'checkbox',
+                    dataIndex: "enabled",
+                    fieldLabel: this.i18n._("Enable")
+                }, {
+                    xtype:'textfield',
+                    dataIndex: "description",
+                    fieldLabel: this.i18n._("Description"),
+                    width: 500
+                }, {
+                    xtype:'fieldset',
+                    title: this.i18n._("If all of the following conditions are met:"),
+                    items:[{
+                        xtype:'rulebuilder',
+                        settingsCmp: this,
+                        javaClass: "com.untangle.uvm.network.QosRuleMatcher",
+                        anchor:"98%",
+                        width: 900,
+                        dataIndex: "matchers",
+                        matchers: Ung.NetworkUtil.getQosRuleMatchers(this)
+                    }]
+                }, {
+                    xtype: 'fieldset',
+                    cls:'description',
+                    title: i18n._('Perform the following action(s):'),
+                    border: false,
+                    items: [{
+                        xtype: "combo",
+                        allowBlank: false,
+                        dataIndex: "priority",
+                        fieldLabel: this.i18n._("Priority"),
+                        editable: false,
+                        store: this.priorityNoDefaultStore,
+                        valueField: "value",
+                        displayField: "displayName",
+                        queryMode: 'local'
+                    }]
+                }]
+            });
+            
             this.panelQoS = Ext.create('Ext.panel.Panel',{
                 name: 'panelQoS',
                 helpSource: 'network_qos',
                 parentId: this.getId(),
                 title: this.i18n._('QoS'),
+                autoScroll: true,
                 layout: 'anchor',
                 cls: 'ung-panel',
-                items: []
+                items: [{
+                    xtype: 'fieldset',
+                    cls: 'description',
+                    title: this.i18n._('QoS'),
+                    items: [{
+                        xtype: "checkbox",
+                        fieldLabel: this.i18n._("Enabled"),
+                        checked: this.settings.qosSettings.qosEnabled,
+                        listeners: {
+                            "change": {
+                                fn: Ext.bind(function(elem, newValue) {
+                                    this.settings.qosSettings.qosEnabled = newValue;
+                                }, this)
+                            }
+                        }
+                    }, {
+                        xtype: "combo",
+                        fieldLabel: this.i18n._("Default Priority"),
+                        value: this.settings.qosSettings.defaultPriority,
+                        store : this.qosPriorityNoDefaultStore,
+                        editable: false,
+                        queryMode: 'local',
+                        listeners: {
+                            "change": {
+                                fn: Ext.bind(function(elem, newValue) {
+                                    this.settings.qosSettings.defaultPriority = newValue;
+                                }, this)
+                            }
+                        }
+                    }]
+                }, {
+                    xtype: 'fieldset',
+                    cls: 'description',
+                    name: 'bandwidth_fieldset',
+                    title: this.i18n._('WAN Bandwidth'),
+                    items: []
+                }, {
+                    xtype: 'fieldset',
+                    cls: 'description',
+                    title: this.i18n._('QoS Rules'),
+                    items: [{
+                        xtype: "combo",
+                        fieldLabel: this.i18n._("Ping Priority"),
+                        value: this.settings.qosSettings.pingPriority,
+                        store : this.qosPriorityStore,
+                        editable: false,
+                        queryMode: 'local',
+                        listeners: {
+                            "change": {
+                                fn: Ext.bind(function(elem, newValue) {
+                                    this.settings.qosSettings.pingPriority = newValue;
+                                }, this)
+                            }
+                        }
+                    }, {
+                        xtype: "combo",
+                        fieldLabel: this.i18n._("DNS Priority"),
+                        value: this.settings.qosSettings.dnsPriority,
+                        store : this.qosPriorityStore,
+                        editable: false,
+                        queryMode: 'local',
+                        listeners: {
+                            "change": {
+                                fn: Ext.bind(function(elem, newValue) {
+                                    this.settings.qosSettings.dnsPriority = newValue;
+                                }, this)
+                            }
+                        }
+                    }, {
+                        xtype: "combo",
+                        fieldLabel: this.i18n._("SSH Priority"),
+                        value: this.settings.qosSettings.sshPriority,
+                        store : this.qosPriorityStore,
+                        editable: false,
+                        queryMode: 'local',
+                        listeners: {
+                            "change": {
+                                fn: Ext.bind(function(elem, newValue) {
+                                    this.settings.qosSettings.sshPriority = newValue;
+                                }, this)
+                            }
+                        }
+                    }, {
+                        xtype: "combo",
+                        fieldLabel: this.i18n._("OpenVPN Priority"),
+                        value: this.settings.qosSettings.openvpnPriority,
+                        store : this.qosPriorityStore,
+                        editable: false,
+                        queryMode: 'local',
+                        listeners: {
+                            "change": {
+                                fn: Ext.bind(function(elem, newValue) {
+                                    this.settings.qosSettings.openvpnPriority = newValue;
+                                }, this)
+                            }
+                        }
+                    }, {
+                        xtype: 'container',
+                        layout: 'column',
+                        margin: '0 0 5 0',
+                        items: [{
+                            xtype: "combo",
+                            fieldLabel: this.i18n._("Gaming Priority"),
+                            value: this.settings.qosSettings.gamingPriority,
+                            store : this.qosPriorityStore,
+                            editable: false,
+                            queryMode: 'local',
+                            listeners: {
+                                "change": {
+                                    fn: Ext.bind(function(elem, newValue) {
+                                        this.settings.qosSettings.gamingPriority = newValue;
+                                    }, this)
+                                }
+                            }
+                        }, {
+                            xtype: 'label',
+                            html: this.i18n._("Priority for Wii, Xbox, Playstation, and Others"),
+                            cls: 'boxlabel'
+                        }]
+                    }]
+                }, {
+                    xtype: 'fieldset',
+                    cls: 'description',
+                    title: this.i18n._('QoS Custom Rules'),
+                    items: [{
+                        xtype: 'label',
+
+                        html: this.i18n._("<font color=\"red\">Note</font>: Custom Rules only match <b>Bypassed</b> traffic.")
+                    }, this.gridQosCustomRules]
+                }, {
+                    xtype: 'fieldset',
+                    cls: 'description',
+                    title: this.i18n._('QoS Priorities'),
+                    items: []
+                }, {
+                    xtype: 'fieldset',
+                    cls: 'description',
+                    title: this.i18n._('QoS Statistics'),
+                    items: []
+                }]
             });
         },
         // PacketFilter Panel
