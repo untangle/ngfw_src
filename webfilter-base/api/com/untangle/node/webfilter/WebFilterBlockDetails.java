@@ -17,21 +17,19 @@ public class WebFilterBlockDetails extends BlockDetails
     private final String reason;
     private final InetAddress clientAddr;
     private final String nodeTitle;
-    private final String uid;
 
     // constructor ------------------------------------------------------------
 
     public WebFilterBlockDetails(WebFilterSettings settings, String host,
                                  String uri, String reason,
                                  InetAddress clientAddr,
-                                 String nodeTitle, String uid)
+                                 String nodeTitle)
     {
         super(host, uri);
         this.settings = settings;
         this.reason = reason;
         this.clientAddr = clientAddr;
         this.nodeTitle = nodeTitle;
-        this.uid = uid;
     }
 
     // public methods ---------------------------------------------------------
@@ -59,10 +57,5 @@ public class WebFilterBlockDetails extends BlockDetails
     public WebFilterSettings getSettings()
     {
         return settings;
-    }
-
-    public String getUid()
-    {
-        return uid;
     }
 }

@@ -59,7 +59,7 @@ public class SpamSmtpTarpitEvent extends LogEvent
     public SessionEvent getSessionEvent() { return sessionEvent; }
     public void setSessionEvent( SessionEvent sessionEvent ) { this.sessionEvent = sessionEvent; }
 
-    private static String sql = "INSERT INTO reports.n_spam_smtp_tarpit_events " +
+    private static String sql = "INSERT INTO reports.spam_smtp_tarpit_events " +
         "(time_stamp, ipaddr, hostname, vendor_name, policy_id) " +
         "values " +
         "( ?, ?, ?, ?, ? ) ";

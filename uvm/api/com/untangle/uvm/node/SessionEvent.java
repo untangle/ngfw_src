@@ -138,7 +138,7 @@ public class SessionEvent extends LogEvent
     }
     
     private static String sql = "INSERT INTO reports.sessions " +
-        "(event_id, session_id, time_stamp, end_time, hname, uid, policy_id, c_client_addr, c_client_port, c_server_addr, c_server_port, s_client_addr, s_client_port, s_server_addr, s_server_port, client_intf, server_intf) " +
+        "(event_id, session_id, time_stamp, end_time, hostname, username, policy_id, c_client_addr, c_client_port, c_server_addr, c_server_port, s_client_addr, s_client_port, s_server_addr, s_server_port, client_intf, server_intf) " +
         "values " +
         "(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?); ";
 
@@ -151,8 +151,7 @@ public class SessionEvent extends LogEvent
         pstmt.setLong(++i,getSessionId());
         pstmt.setLong(++i,getSessionId());
         pstmt.setTimestamp(++i,getTimeStamp());
-        //pstmt.setTimestamp(++i,timeStampPlusHours(24));
-        pstmt.setTimestamp(++i,timeStampPlusMinutes(1));
+        pstmt.setTimestamp(++i,timeStampPlusMinutes(1)); // default end_time
         pstmt.setString(++i, getHostname());
         pstmt.setString(++i, getUsername());
         pstmt.setLong(++i, (getPolicyId() == null ? 0 : getPolicyId() ));

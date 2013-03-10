@@ -95,7 +95,7 @@ public class ShieldStatisticEvent extends LogEvent implements Serializable
     public int getClosed() { return closed; }
     public void setClosed(  int closed  ) { this.closed = closed; }
 
-    private static String sql = "INSERT INTO reports.n_shield_totals " +
+    private static String sql = "INSERT INTO reports.shield_totals " +
         "(time_stamp, accepted, limited, dropped, rejected) " + 
         "values " +
         "( ?, ?, ?, ?, ? ) ";

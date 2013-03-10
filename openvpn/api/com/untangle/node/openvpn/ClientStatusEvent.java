@@ -103,7 +103,7 @@ public class ClientStatusEvent extends LogEvent implements Serializable
     public long getBytesTxDelta() { return this.bytesTxDelta; }
     public void setBytesTxDelta( long bytesTxDelta ) { this.bytesTxDelta = bytesTxDelta; }
     
-    private static String sql = "INSERT INTO reports.n_openvpn_stats " +
+    private static String sql = "INSERT INTO reports.openvpn_stats " +
         "(time_stamp, start_time, end_time, rx_bytes, tx_bytes, remote_address, remote_port, client_name) " +
         "values " +
         "( ?, ?, ?, ?, ?, ?, ?, ? ) ";

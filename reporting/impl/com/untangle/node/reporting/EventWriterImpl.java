@@ -336,7 +336,7 @@ public class EventWriterImpl implements Runnable
                         try {
                             pstmt.execute();
                         } catch (SQLException e) {
-                            logger.warn("Failed SQL query: \"" + pstmt + "\"", e);
+                            logger.warn("Failed SQL query for " + event.getClass() + ": \"" + pstmt + "\"", e);
                         }
                     }
                     long write_t1 = System.currentTimeMillis();

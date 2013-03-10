@@ -52,7 +52,7 @@ class SpamBaseNode(Node):
 
     @print_timing
     def setup(self):
-        self.__create_n_spam_smtp_tarpit_events(  )
+        self.__create_spam_smtp_tarpit_events(  )
 
         column = Column('%s_spam_msgs' % self.__short_name, 'integer',
                         "count(CASE WHEN %s_is_spam THEN 1 ELSE null END)" \
@@ -98,12 +98,12 @@ class SpamBaseNode(Node):
         return Report(self, sections)
 
     def reports_cleanup(self, cutoff):
-        sql_helper.drop_fact_table('n_spam_smtp_tarpit_events', cutoff)
+        sql_helper.drop_fact_table('spam_smtp_tarpit_events', cutoff)
 
     @print_timing
-    def __create_n_spam_smtp_tarpit_events(self):
+    def __create_spam_smtp_tarpit_events(self):
         sql_helper.create_fact_table("""\
-CREATE TABLE reports.n_spam_smtp_tarpit_events (
+CREATE TABLE reports.spam_smtp_tarpit_events (
     time_stamp timestamp without time zone,
     ipaddr inet,
     hostname text,
@@ -111,8 +111,8 @@ CREATE TABLE reports.n_spam_smtp_tarpit_events (
     vendor_name varchar(255),
     event_id bigserial)""")
 
-        sql_helper.create_index("reports","n_spam_smtp_tarpit_events","event_id");
-        sql_helper.create_index("reports","n_spam_smtp_tarpit_events","time_stamp");
+        sql_helper.create_index("reports","spam_smtp_tarpit_events","event_id");
+        sql_helper.create_index("reports","spam_smtp_tarpit_events","time_stamp");
 
 class SpamHighlight(Highlight):
     def __init__(self, name, short_name, spam_label):
@@ -138,7 +138,7 @@ class SpamHighlight(Highlight):
 SELECT coalesce(sum(msgs), 0)::int AS messages,
        coalesce(sum(%s_spam_msgs), 0)::int AS spam
 FROM reports.n_mail_addr_totals
-WHERE trunc_time >= %%s AND trunc_time < %%s
+WHERE time_stamp >= %%s AND time_stamp < %%s
 AND addr_kind = 'T'""" % (self.__short_name,)
 
         if email:
@@ -185,7 +185,7 @@ class TotalEmail(Graph):
 SELECT coalesce(sum(msgs), 0)::int,
        coalesce(sum(%s_spam_msgs), 0)::int
 FROM reports.n_mail_addr_totals
-WHERE trunc_time >= %%s AND trunc_time < %%s
+WHERE time_stamp >= %%s AND time_stamp < %%s
 AND addr_kind = 'T'""" % (self.__short_name,)
 
         if email:
@@ -256,7 +256,7 @@ class HourlySpamRate(Graph):
 SELECT COALESCE(sum(msgs), 0)::float / (%%s * 24) AS email_rate,
        COALESCE(sum(%s_spam_msgs), 0)::float / (%%s * 24) AS spam_rate
 FROM reports.n_mail_addr_totals
-WHERE trunc_time >= %%s AND trunc_time < %%s
+WHERE time_stamp >= %%s AND time_stamp < %%s
 AND addr_kind = 'T'""" % (self.__short_name,)
 
             if email:
@@ -455,7 +455,7 @@ FROM (SELECT addr, sum(%s_spam_msgs)::int AS spam_msgs
       FROM reports.n_mail_addr_totals
       WHERE addr_kind = 'T'
       AND addr_pos = '1'
-      AND trunc_time >= %%s AND trunc_time < %%s
+      AND time_stamp >= %%s AND time_stamp < %%s
       GROUP BY addr) AS foo
 WHERE foo.spam_msgs > 0
 ORDER BY spam_msgs desc""" % (self.__short_name,)
@@ -499,7 +499,7 @@ class SpamDetail(DetailSection):
 
         rv = [ColumnDesc('time_stamp', _('Time'), 'Date')]
 
-        rv.append(ColumnDesc('hname', _('Client'), 'String'))
+        rv.append(ColumnDesc('hostname', _('Client'), 'String'))
 
         rv += [ColumnDesc('%s_score' % (self.__short_name,), _('Score')),
                ColumnDesc('m2.addr', _('Msg Sender')),
@@ -515,7 +515,7 @@ class SpamDetail(DetailSection):
             return None
 
         sql = """\
-SELECT m1.time_stamp, m1.hname, m1.%s_score, m2.addr, m1.subject, host(m1.s_server_addr),
+SELECT m1.time_stamp, m1.hostname, m1.%s_score, m2.addr, m1.subject, host(m1.s_server_addr),
        CASE m1.%s_action WHEN 'P' THEN '%s'
                       WHEN 'B' THEN '%s'
                       WHEN 'M' THEN '%s'
@@ -524,7 +524,7 @@ SELECT m1.time_stamp, m1.hname, m1.%s_score, m2.addr, m1.subject, host(m1.s_serv
                       WHEN 'Z' THEN '%s'
                       END,
        m1.addr
-FROM reports.n_mail_addrs AS m1, reports.n_mail_addrs AS m2
+FROM reports.mail_addrs AS m1, reports.mail_addrs AS m2
 WHERE m1.time_stamp >= %s AND m1.time_stamp < %s
 AND m2.time_stamp >= %s AND m2.time_stamp < %s
 AND m1.%s_is_spam AND m1.addr_kind = 'T'
@@ -560,7 +560,7 @@ class SpamDetailAll(DetailSection):
 
         rv = [ColumnDesc('time_stamp', _('Time'), 'Date')]
 
-        rv.append(ColumnDesc('hname', _('Client'), 'String'))
+        rv.append(ColumnDesc('hostname', _('Client'), 'String'))
 
         rv += [ColumnDesc('%s_score' % (self.__short_name,), _('Score')),
                ColumnDesc('m2.addr', _('Msg Sender')),
@@ -576,7 +576,7 @@ class SpamDetailAll(DetailSection):
             return None
 
         sql = """\
-SELECT m1.time_stamp, m1.hname, m1.%s_score, m2.addr, m1.subject, host(m1.s_server_addr),
+SELECT m1.time_stamp, m1.hostname, m1.%s_score, m2.addr, m1.subject, host(m1.s_server_addr),
        CASE m1.%s_action WHEN 'P' THEN '%s'
                       WHEN 'B' THEN '%s'
                       WHEN 'M' THEN '%s'
@@ -585,7 +585,7 @@ SELECT m1.time_stamp, m1.hname, m1.%s_score, m2.addr, m1.subject, host(m1.s_serv
                       WHEN 'Z' THEN '%s'
                       END,
        m1.addr
-FROM reports.n_mail_addrs AS m1, reports.n_mail_addrs AS m2
+FROM reports.mail_addrs AS m1, reports.mail_addrs AS m2
 WHERE m1.time_stamp >= %s AND m1.time_stamp < %s
 AND m2.time_stamp >= %s AND m2.time_stamp < %s
 AND m1.addr_kind = 'T'

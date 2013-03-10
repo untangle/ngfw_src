@@ -79,7 +79,7 @@ public class ShieldRejectionEvent extends LogEvent implements Serializable
     public int getDropped() { return dropped; }
     public void setDropped(  int dropped  ) { this.dropped = dropped; }
 
-    private static String sql = "INSERT INTO reports.n_shield_rejection_totals " +
+    private static String sql = "INSERT INTO reports.shield_rejection_totals " +
         "(time_stamp, client_addr, client_intf, mode, reputation, limited, dropped, rejected) " +
         "values " +
         "( ?, ?, ?, ?, ?, ?, ?, ? )" ;

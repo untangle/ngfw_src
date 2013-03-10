@@ -68,7 +68,7 @@ public class SystemStatEvent extends LogEvent
     public void setSwapTotal(final long newSwapTotal) { this.swapTotal = newSwapTotal; }
 
     private static String sql =
-        "INSERT INTO reports.n_server_events " +
+        "INSERT INTO reports.server_events " +
         "(time_stamp, mem_free, mem_cache, mem_buffers, load_1, load_5, load_15, cpu_user, cpu_system, disk_total, disk_free, swap_total, swap_free) " +
         " values " +
         "( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? )";

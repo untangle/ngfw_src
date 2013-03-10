@@ -54,10 +54,10 @@ class Capture(Node):
         Node.__init__(self, 'untangle-node-capture')
 
     def setup(self):
-        self.__make_n_capture_user_events_table()
+        self.__make_capture_user_events_table()
 
-        ft = FactTable('reports.n_capture_user_totals',
-                       'reports.n_capture_user_events',
+        ft = FactTable('reports.capture_user_totals',
+                       'reports.capture_user_events',
                        'time_stamp', [], [])
         reports.engine.register_fact_table(ft)
 
@@ -106,13 +106,13 @@ class Capture(Node):
         return Report(self, sections)
 
     def reports_cleanup(self, cutoff):
-        sql_helper.drop_fact_table("n_capture_user_events", cutoff)
-        sql_helper.drop_fact_table("n_capture_user_totals", cutoff)
+        sql_helper.drop_fact_table("capture_user_events", cutoff)
+        sql_helper.drop_fact_table("capture_user_totals", cutoff)
 
     @print_timing
-    def __make_n_capture_user_events_table(self):
+    def __make_capture_user_events_table(self):
         sql_helper.create_fact_table("""\
-CREATE TABLE reports.n_capture_user_events (
+CREATE TABLE reports.capture_user_events (
     time_stamp timestamp without time zone,
     policy_id bigint,
     login_name text,
@@ -121,13 +121,13 @@ CREATE TABLE reports.n_capture_user_events (
     client_addr text,
     event_id bigserial)""")
 
-        sql_helper.add_column('reports', 'n_capture_user_events', 'event_id', 'bigserial')
+        sql_helper.add_column('reports', 'capture_user_events', 'event_id', 'bigserial')
 
         # we used to create event_id as serial instead of bigserial - convert if necessary
-        sql_helper.convert_column("reports","n_capture_user_events","event_id","integer","bigint");
+        sql_helper.convert_column("reports","capture_user_events","event_id","integer","bigint");
 
-        sql_helper.create_index("reports","n_capture_user_events","event_id");
-        sql_helper.create_index("reports","n_capture_user_events","time_stamp");
+        sql_helper.create_index("reports","capture_user_events","event_id");
+        sql_helper.create_index("reports","capture_user_events","time_stamp");
 
 class CaptureHighlight(Highlight):
     def __init__(self, name):
@@ -147,8 +147,8 @@ class CaptureHighlight(Highlight):
 
         query = """\
 SELECT COALESCE(sum(success), 0) as logins
-FROM reports.n_capture_user_totals
-WHERE trunc_time >= %s::timestamp without time zone AND trunc_time < %s::timestamp without time zone"""
+FROM reports.capture_user_totals
+WHERE time_stamp >= %s::timestamp without time zone AND time_stamp < %s::timestamp without time zone"""
 
         conn = sql_helper.get_connection()
         curs = conn.cursor()
@@ -193,9 +193,9 @@ SELECT COALESCE(SUM(dt.success_pd)/%s,0), COALESCE(MAX(dt.success_pd),0),
                   SUM(inactive) AS inactive_pd,
                   SUM(user_logout) AS user_logout_pd,
                   SUM(admin_logout) AS admin_logout_pd,
-                  DATE_TRUNC('day',trunc_time) AS day
-           FROM reports.n_capture_user_totals
-           WHERE trunc_time >= %s::timestamp without time zone AND trunc_time < %s::timestamp without time zone
+                  DATE_TRUNC('day',time_stamp) AS day
+           FROM reports.capture_user_totals
+           WHERE time_stamp >= %s::timestamp without time zone AND time_stamp < %s::timestamp without time zone
            GROUP BY day
        ) AS dt
 """
@@ -220,7 +220,7 @@ SELECT COALESCE(SUM(dt.success_pd)/%s,0), COALESCE(MAX(dt.success_pd),0),
                 unit = "Day"
                 formatter = DATE_FORMATTER
 
-            q, h = sql_helper.get_averaged_query(sums, "reports.n_capture_user_totals",
+            q, h = sql_helper.get_averaged_query(sums, "reports.capture_user_totals",
                                                  start_date,
                                                  end_date,
                                                  extra_where = extra_where,
@@ -327,7 +327,7 @@ class TopUsers(Graph):
 
         query = """
 SELECT login_name,count(*)::int as logins
-FROM reports.n_capture_user_events
+FROM reports.capture_user_events
 WHERE NOT login_name IS NULL
 AND event_info = 'LOGIN'
 AND time_stamp >= %s::timestamp without time zone AND time_stamp < %s::timestamp without time zone
@@ -343,13 +343,13 @@ GROUP BY login_name"""
             pie_data = {}
 
             for r in curs.fetchall():
-                uid = r[0]
+                username = r[0]
                 logins = r[1]
 
-                ks = KeyStatistic(uid, logins, N_('Logins'))
+                ks = KeyStatistic(username, logins, N_('Logins'))
                 lks.append(ks)
 
-                pie_data[uid] = logins
+                pie_data[username] = logins
         finally:
             conn.commit()
 
@@ -431,7 +431,7 @@ CASE WHEN event_info = 'LOGIN' THEN '%s'
      WHEN event_info = 'INACTIVE' THEN '%s'
      WHEN event_info = 'USER_LOGOUT' THEN '%s'
      WHEN event_info = 'ADMIN_LOGOUT' THEN '%s' END
-FROM reports.n_capture_user_events
+FROM reports.capture_user_events
 WHERE time_stamp >= %s::timestamp without time zone AND time_stamp < %s::timestamp without time zone
 ORDER BY time_stamp DESC
 """ % (LOGIN, FAILED, TIMEOUT, INACTIVE, USER_LOGOUT, ADMIN_LOGOUT,

@@ -87,12 +87,12 @@ class FirewallHighlight(Highlight):
 SELECT COALESCE(SUM(new_sessions),0)::int AS sessions,
        COALESCE(sum(firewall_blocks), 0) AS blocks
 FROM reports.session_totals
-WHERE trunc_time >= %s::timestamp without time zone AND trunc_time < %s::timestamp without time zone"""
+WHERE time_stamp >= %s::timestamp without time zone AND time_stamp < %s::timestamp without time zone"""
 
         if host:
-            query = query + " AND hname = %s"
+            query = query + " AND hostname = %s"
         elif user:
-            query = query + " AND uid = %s"
+            query = query + " AND username = %s"
 
         conn = sql_helper.get_connection()
         curs = conn.cursor()
@@ -143,9 +143,9 @@ class DailyRules(reports.Graph):
 
             extra_where = []
             if host:
-                extra_where.append(("hname = %(host)s", { 'host' : host }))
+                extra_where.append(("hostname = %(host)s", { 'host' : host }))
             elif user:
-                extra_where.append(("uid = %(user)s" , { 'user' : user }))
+                extra_where.append(("username = %(user)s" , { 'user' : user }))
 
             q, h = sql_helper.get_averaged_query(sums, "reports.sessions",
                                                  start_date,
@@ -213,18 +213,18 @@ class TopTenBlockedHostsByHits(Graph):
         one_week = DateFromMx(end_date - mx.DateTime.DateTimeDelta(report_days))
 
         query = """\
-SELECT hname, count(*) as hits_sum
+SELECT hostname, count(*) as hits_sum
 FROM reports.session_totals
-WHERE trunc_time >= %s::timestamp without time zone AND trunc_time < %s::timestamp without time zone
+WHERE time_stamp >= %s::timestamp without time zone AND time_stamp < %s::timestamp without time zone
 AND firewall_blocks > 0
 AND firewall_rule_index IS NOT NULL"""
 
         if host:
-            query += " AND hname = %s"
+            query += " AND hostname = %s"
         elif user:
-            query += " AND uid = %s"
+            query += " AND username = %s"
 
-        query = query + " GROUP BY hname ORDER BY hits_sum DESC"
+        query = query + " GROUP BY hostname ORDER BY hits_sum DESC"
 
         conn = sql_helper.get_connection()
         try:
@@ -272,14 +272,14 @@ class TopTenBlockingRulesByHits(Graph):
 SELECT firewall_rule_index,
        count(*) as hits_sum
 FROM reports.session_totals
-WHERE trunc_time >= %s::timestamp without time zone AND trunc_time < %s::timestamp without time zone
+WHERE time_stamp >= %s::timestamp without time zone AND time_stamp < %s::timestamp without time zone
 AND firewall_blocks > 0
 AND firewall_rule_index IS NOT NULL"""
 
         if host:
-            query += " AND hname = %s"
+            query += " AND hostname = %s"
         elif user:
-            query += " AND uid = %s"
+            query += " AND username = %s"
 
         query = query + " GROUP BY firewall_rule_index ORDER BY hits_sum DESC"
 
@@ -327,19 +327,19 @@ class TopTenBlockedUsersByHits(Graph):
         one_week = DateFromMx(end_date - mx.DateTime.DateTimeDelta(report_days))
 
         query = """\
-SELECT uid, count(*) as hits_sum
+SELECT username, count(*) as hits_sum
 FROM reports.session_totals
-WHERE trunc_time >= %s::timestamp without time zone AND trunc_time < %s::timestamp without time zone
-AND uid != ''
+WHERE time_stamp >= %s::timestamp without time zone AND time_stamp < %s::timestamp without time zone
+AND username != ''
 AND firewall_blocks > 0
 AND firewall_rule_index IS NOT NULL"""
 
         if host:
-            query += " AND hname = %s"
+            query += " AND hostname = %s"
         elif user:
-            query += " AND uid = %s"
+            query += " AND username = %s"
 
-        query += " GROUP BY uid ORDER BY hits_sum DESC"
+        query += " GROUP BY username ORDER BY hits_sum DESC"
 
         conn = sql_helper.get_connection()
         try:
@@ -382,9 +382,9 @@ class FirewallDetail(DetailSection):
         rv = [ColumnDesc('time_stamp', _('Time'), 'Date')]
 
         if not host:
-            rv.append(ColumnDesc('hname', _('Client'), 'HostLink'))
+            rv.append(ColumnDesc('hostname', _('Client'), 'HostLink'))
         if not user:
-            rv.append(ColumnDesc('uid', _('User'), 'UserLink'))
+            rv.append(ColumnDesc('username', _('User'), 'UserLink'))
 
         rv = rv + [ColumnDesc('firewall_rule_index', _('Rule Applied')),
                    ColumnDesc('firewall_blocked', _('Blocked')),
@@ -402,9 +402,9 @@ class FirewallDetail(DetailSection):
         sql = "SELECT time_stamp,"
 
         if not host:
-            sql = sql + "hname, "
+            sql = sql + "hostname, "
         if not user:
-            sql = sql + "uid, "
+            sql = sql + "username, "
 
         sql = sql + ("""firewall_rule_index, firewall_blocked::text, host(c_server_addr), c_server_port, host(c_client_addr), c_client_port
 FROM reports.sessions
@@ -413,9 +413,9 @@ AND NOT firewall_rule_index IS NULL""" % (DateFromMx(start_date),
                                          DateFromMx(end_date)))
 
         if host:
-            sql = sql + (" AND hname = %s" % QuotedString(host))
+            sql = sql + (" AND hostname = %s" % QuotedString(host))
         if user:
-            sql = sql + (" AND uid = %s" % QuotedString(user))
+            sql = sql + (" AND username = %s" % QuotedString(user))
 
         return sql + " ORDER BY time_stamp DESC"
 

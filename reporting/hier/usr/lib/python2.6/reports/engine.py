@@ -4,7 +4,6 @@ import logging
 import mx
 import os
 import re
-import sets
 import simplejson as json
 import shutil
 import reports.sql_helper as sql_helper
@@ -163,7 +162,7 @@ class FactTable:
             raise e
 
     def __ddl(self):
-        ddl = 'CREATE TABLE %s (trunc_time timestamp without time zone' \
+        ddl = 'CREATE TABLE %s (time_stamp timestamp without time zone' \
             % self.__name
         for c in (self.__dimensions + self.__measures):
             ddl += ", %s %s" % (c.name, c.type)
@@ -171,7 +170,7 @@ class FactTable:
         return ddl
 
     def __insert_stmt(self):
-        insert_strs = ['trunc_time']
+        insert_strs = ['time_stamp']
         select_strs = ["date_trunc('minute', %s)" % self.__time_column]
         group_strs = ["date_trunc('minute', %s)" % self.__time_column]
 
@@ -510,7 +509,7 @@ def __get_users(start_date, end_date):
     try:
         curs = conn.cursor()
         # select all distinct UIDs from that time period
-        curs.execute("SELECT DISTINCT uid from reports.session_totals WHERE trunc_time >= %s and trunc_time < %s",
+        curs.execute("SELECT DISTINCT username from reports.session_totals WHERE time_stamp >= %s and time_stamp < %s",
                      (start_date, end_date))
         rows = curs.fetchall()
         rv = [row[0] for row in rows if row[0]]
@@ -529,9 +528,9 @@ def __get_hosts(start_date, end_date):
 
     try:
         curs = conn.cursor()
-        # select all distinct hname where the client was on a non-WAN interface from that time period
-        curs.execute("""SELECT DISTINCT hname from reports.session_totals 
-                        WHERE trunc_time >= %s and trunc_time < %s
+        # select all distinct hostname where the client was on a non-WAN interface from that time period
+        curs.execute("""SELECT DISTINCT hostname from reports.session_totals 
+                        WHERE time_stamp >= %s and time_stamp < %s
                         AND client_intf NOT IN """ + get_wan_clause() + 
                      " AND server_intf IN " + get_wan_clause(),
                      (start_date, end_date))
@@ -556,7 +555,7 @@ def __get_emails(start_date, end_date):
         curs = conn.cursor()
         # select all distinct email addresses from that time period
         curs.execute("""SELECT DISTINCT addr FROM reports.n_mail_addr_totals
-                      WHERE trunc_time >=%s AND trunc_time < %s
+                      WHERE time_stamp >=%s AND time_stamp < %s
                       AND addr_kind IN ('T','C')""",
                      (start_date, end_date))
         rows = curs.fetchall()
@@ -573,7 +572,7 @@ def __get_emails(start_date, end_date):
 
 def __get_available_nodes():
     global __nodes
-    available = sets.Set(__nodes.keys());
+    available = set(__nodes.keys());
     list = []
 
     while len(available):
@@ -588,7 +587,7 @@ def __get_node_partial_order(exclude_uninstalled=True):
 
     installed = __get_installed_nodes()
 
-    available = sets.Set(__nodes.keys());
+    available = set(__nodes.keys());
     list = []
 
     while len(available):

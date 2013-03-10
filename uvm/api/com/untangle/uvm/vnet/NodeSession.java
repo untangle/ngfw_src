@@ -110,25 +110,25 @@ public interface NodeSession extends SessionTuple
 
     public final String KEY_HTTP_HOSTNAME = "http-hostname";  /* String */
     public final String KEY_HTTP_URI = "http-uri";  /* String */
-    public final String KEY_HTTP_CONTENT_TYPE = "esoft-content-type"; /* String */
-    public final String KEY_HTTP_CONTENT_LENGTH = "esoft-content-length"; /* Long */
+    public final String KEY_HTTP_CONTENT_TYPE = "http-content-type"; /* String */
+    public final String KEY_HTTP_CONTENT_LENGTH = "http-content-length"; /* Long */
     
-    public final String KEY_SITEFILTER_BEST_CATEGORY_ID = "esoft-best-category-id"; /* String */
-    public final String KEY_SITEFILTER_BEST_CATEGORY_NAME = "esoft-best-category-name"; /* String */
-    public final String KEY_SITEFILTER_BEST_CATEGORY_DESCRIPTION = "esoft-best-category-description"; /* String */
-    public final String KEY_SITEFILTER_BEST_CATEGORY_FLAGGED = "esoft-best-category-flagged"; /* Boolean */
-    public final String KEY_SITEFILTER_BEST_CATEGORY_BLOCKED = "esoft-best-category-blocked"; /* String */
-    public final String KEY_SITEFILTER_FLAGGED = "esoft-flagged"; /* Boolean */
-    public final String KEY_SITEFILTER_CATEGORIES = "esoft-categories"; /* List<String> */
+    public final String KEY_SITEFILTER_BEST_CATEGORY_ID = "sitefilter-best-category-id"; /* String */
+    public final String KEY_SITEFILTER_BEST_CATEGORY_NAME = "sitefilter-best-category-name"; /* String */
+    public final String KEY_SITEFILTER_BEST_CATEGORY_DESCRIPTION = "sitefilter-best-category-description"; /* String */
+    public final String KEY_SITEFILTER_BEST_CATEGORY_FLAGGED = "sitefilter-best-category-flagged"; /* Boolean */
+    public final String KEY_SITEFILTER_BEST_CATEGORY_BLOCKED = "sitefilter-best-category-blocked"; /* String */
+    public final String KEY_SITEFILTER_FLAGGED = "sitefilter-flagged"; /* Boolean */
+    public final String KEY_SITEFILTER_CATEGORIES = "sitefilter-categories"; /* List<String> */
 
-    //public final String KEY_WEBFILTER_BEST_CATEGORY_ID = "untangle-best-category-id"; /* String */
-    //public final String KEY_WEBFILTER_BEST_CATEGORY_NAME = "untangle-best-category-name"; /* String */
-    //public final String KEY_WEBFILTER_BEST_CATEGORY_DESCRIPTION = "untangle-best-category-description"; /* String */
-    //public final String KEY_WEBFILTER_BEST_CATEGORY_FLAGGED = "untangle-best-category-flagged"; /* Boolean */
-    //public final String KEY_WEBFILTER_BEST_CATEGORY_BLOCKED = "untangle-best-category-blocked"; /* String */
-    //public final String KEY_WEBFILTER_FLAGGED = "untangle-flagged"; /* Boolean */
-    //public final String KEY_WEBFILTER_FLAGGED = "untangle-content-type"; /* String */
-    //public final String KEY_WEBFILTER_CATEGORIES = "untangle-categories"; /* List<String> */
+    //public final String KEY_WEBFILTER_BEST_CATEGORY_ID = "webfilter-best-category-id"; /* String */
+    //public final String KEY_WEBFILTER_BEST_CATEGORY_NAME = "webfilter-best-category-name"; /* String */
+    //public final String KEY_WEBFILTER_BEST_CATEGORY_DESCRIPTION = "webfilter-best-category-description"; /* String */
+    //public final String KEY_WEBFILTER_BEST_CATEGORY_FLAGGED = "webfilter-best-category-flagged"; /* Boolean */
+    //public final String KEY_WEBFILTER_BEST_CATEGORY_BLOCKED = "webfilter-best-category-blocked"; /* String */
+    //public final String KEY_WEBFILTER_FLAGGED = "webfilter-flagged"; /* Boolean */
+    //public final String KEY_WEBFILTER_FLAGGED = "webfilter-content-type"; /* String */
+    //public final String KEY_WEBFILTER_CATEGORIES = "webfilter-categories"; /* List<String> */
 
     public final String KEY_CLASSD_APPLICATION = "classd-application"; /* String */
     public final String KEY_CLASSD_CATEGORY = "classd-category"; /* String */

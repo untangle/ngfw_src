@@ -107,7 +107,7 @@ public class VirusSmtpEvent extends LogEvent
         int i=0;
         java.sql.PreparedStatement pstmt;
         
-        sql = "UPDATE reports.n_mail_msgs " +
+        sql = "UPDATE reports.mail_msgs " +
             "SET " +
             "virus_" + getVendorName().toLowerCase() + "_clean = ?, " + 
             "virus_" + getVendorName().toLowerCase() + "_name = ? " + 
@@ -120,7 +120,7 @@ public class VirusSmtpEvent extends LogEvent
         pstmt.setLong(++i, getMessageId());
         sqlList.add(pstmt);
         
-        sql = "UPDATE reports.n_mail_addrs " +
+        sql = "UPDATE reports.mail_addrs " +
             "SET " +
             "virus_" + getVendorName().toLowerCase() + "_clean = ?, " + 
             "virus_" + getVendorName().toLowerCase() + "_name = ? " + 

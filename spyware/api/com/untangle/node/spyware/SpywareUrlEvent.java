@@ -17,8 +17,6 @@ public class SpywareUrlEvent extends LogEvent
     private Long requestId;
     private RequestLine requestLine; // pipeline endpoints & location
 
-    // constructors -----------------------------------------------------------
-
     public SpywareUrlEvent() { }
 
     public SpywareUrlEvent(RequestLine requestLine)
@@ -26,8 +24,6 @@ public class SpywareUrlEvent extends LogEvent
         this.requestId = requestLine.getRequestId();
         this.requestLine = requestLine;
     }
-
-    // SpywareEvent methods ---------------------------------------------------
 
     public String getIdentification()
     {
@@ -46,20 +42,11 @@ public class SpywareUrlEvent extends LogEvent
         return requestLine.getSessionEvent();
     }
 
-    // accessors --------------------------------------------------------------
-
-    public Long getRequestId()
-    {
-        return requestId;
-    }
-
-    public void setRequestId(Long requestId)
-    {
-        this.requestId = requestId;
-    }
+    public Long getRequestId() { return requestId; }
+    public void setRequestId( Long requestId ) { this.requestId = requestId; }
 
     private static String sql =
-        "UPDATE reports.n_http_events " +
+        "UPDATE reports.http_events " +
         "SET " +
         "sw_blacklisted = ? " +
         "WHERE " +

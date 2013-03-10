@@ -36,10 +36,10 @@ class OpenVpn(Node):
         Node.__init__(self, 'untangle-node-openvpn')
 
     def setup(self):
-        self.__create_n_openvpn_stats( )
+        self.__create_openvpn_stats( )
 
-        ft = FactTable('reports.n_openvpn_connect_totals',
-                       'reports.n_openvpn_stats',
+        ft = FactTable('reports.openvpn_connect_totals',
+                       'reports.openvpn_stats',
                        'time_stamp',
                        [Column('client_name', 'text'),
                         Column('remote_address', 'inet'),
@@ -68,13 +68,13 @@ class OpenVpn(Node):
 
     @print_timing
     def reports_cleanup(self, cutoff):
-        sql_helper.drop_fact_table("n_openvpn_stats", cutoff)
-        sql_helper.drop_fact_table("n_openvpn_connect_totals", cutoff)
+        sql_helper.drop_fact_table("openvpn_stats", cutoff)
+        sql_helper.drop_fact_table("openvpn_connect_totals", cutoff)
 
     @print_timing
-    def __create_n_openvpn_stats( self ):
+    def __create_openvpn_stats( self ):
         sql_helper.create_fact_table("""\
-CREATE TABLE reports.n_openvpn_stats (
+CREATE TABLE reports.openvpn_stats (
     time_stamp timestamp without time zone,
     start_time timestamp without time zone,
     end_time timestamp without time zone,
@@ -86,21 +86,21 @@ CREATE TABLE reports.n_openvpn_stats (
     event_id bigserial
 )""")
 
-        sql_helper.add_column('reports', 'n_openvpn_stats', 'event_id', 'bigserial')
-        sql_helper.add_column('reports', 'n_openvpn_stats', 'start_time', 'timestamp without time zone')
-        sql_helper.add_column('reports', 'n_openvpn_stats', 'end_time', 'timestamp without time zone')
-        sql_helper.add_column('reports', 'n_openvpn_stats', 'remote_address', 'inet')
-        sql_helper.add_column('reports', 'n_openvpn_stats', 'remote_port', 'integer')
-        sql_helper.add_column('reports', 'n_openvpn_stats', 'client_name', 'text')
+        sql_helper.add_column('reports', 'openvpn_stats', 'event_id', 'bigserial')
+        sql_helper.add_column('reports', 'openvpn_stats', 'start_time', 'timestamp without time zone')
+        sql_helper.add_column('reports', 'openvpn_stats', 'end_time', 'timestamp without time zone')
+        sql_helper.add_column('reports', 'openvpn_stats', 'remote_address', 'inet')
+        sql_helper.add_column('reports', 'openvpn_stats', 'remote_port', 'integer')
+        sql_helper.add_column('reports', 'openvpn_stats', 'client_name', 'text')
         
         # we used to create event_id as serial instead of bigserial - convert if necessary
-        sql_helper.convert_column("reports","n_openvpn_stats","event_id","integer","bigint");
+        sql_helper.convert_column("reports","openvpn_stats","event_id","integer","bigint");
 
         # drop obsolete column
-        sql_helper.drop_column("reports","n_openvpn_stats","seconds")
+        sql_helper.drop_column("reports","openvpn_stats","seconds")
 
-        sql_helper.create_index("reports","n_openvpn_stats","event_id");
-        sql_helper.create_index("reports","n_openvpn_stats","time_stamp");
+        sql_helper.create_index("reports","openvpn_stats","event_id");
+        sql_helper.create_index("reports","openvpn_stats","time_stamp");
 
 class OpenvpnHighlight(Highlight):
     def __init__(self, name):
@@ -122,8 +122,8 @@ class OpenvpnHighlight(Highlight):
         query = """
 SELECT (COALESCE(sum(rx_bytes + tx_bytes), 0) / 1000000)::int AS traffic,
        count(*) AS logins
-FROM reports.n_openvpn_connect_totals
-WHERE trunc_time >= %s::timestamp without time zone AND trunc_time < %s::timestamp without time zone"""
+FROM reports.openvpn_connect_totals
+WHERE time_stamp >= %s::timestamp without time zone AND time_stamp < %s::timestamp without time zone"""
 
         conn = sql_helper.get_connection()
         curs = conn.cursor()
@@ -161,12 +161,12 @@ class BandwidthUsage(Graph):
 
             extra_where = []
             if host:
-                extra_where.append(("hname = %(host)s", { 'host' : host }))
+                extra_where.append(("hostname = %(host)s", { 'host' : host }))
             elif user:
-                extra_where.append(("uid = %(user)s" , { 'user' : user }))
+                extra_where.append(("username = %(user)s" , { 'user' : user }))
 
             time_interval = 60
-            q, h = sql_helper.get_averaged_query(sums, "reports.n_openvpn_stats",
+            q, h = sql_helper.get_averaged_query(sums, "reports.openvpn_stats",
                                                  start_date,
                                                  end_date,
                                                  extra_where = extra_where,
@@ -221,8 +221,8 @@ class TopUsers(Graph):
 
         query = """\
 SELECT client_name, (sum(rx_bytes + tx_bytes)/1000000)::int AS throughput
-FROM reports.n_openvpn_connect_totals
-WHERE trunc_time >= %s::timestamp without time zone AND trunc_time < %s::timestamp without time zone
+FROM reports.openvpn_connect_totals
+WHERE time_stamp >= %s::timestamp without time zone AND time_stamp < %s::timestamp without time zone
 GROUP BY client_name
 ORDER BY throughput desc"""
 
@@ -258,7 +258,7 @@ class OpenVpnDetail(DetailSection):
         if host or user or email:
             return None
 
-        rv = [ColumnDesc('trunc_time', _('Time'), 'Date')]
+        rv = [ColumnDesc('time_stamp', _('Time'), 'Date')]
 
         rv = rv + [ColumnDesc('client_name', _('Client'))]
         rv = rv + [ColumnDesc('remote_address', _('Address'))]
@@ -270,13 +270,13 @@ class OpenVpnDetail(DetailSection):
         if host or user or email:
             return None
 
-        sql = "SELECT distinct(trunc_time), client_name, host(remote_address), remote_port"
+        sql = "SELECT distinct(time_stamp), client_name, host(remote_address), remote_port"
 
         sql = sql + ("""
-FROM reports.n_openvpn_connect_totals
-WHERE trunc_time >= %s::timestamp without time zone AND trunc_time < %s::timestamp without time zone""" % (DateFromMx(start_date), DateFromMx(end_date)))
+FROM reports.openvpn_connect_totals
+WHERE time_stamp >= %s::timestamp without time zone AND time_stamp < %s::timestamp without time zone""" % (DateFromMx(start_date), DateFromMx(end_date)))
 
-        return sql + " ORDER BY trunc_time DESC"
+        return sql + " ORDER BY time_stamp DESC"
 
 reports.engine.register_node(OpenVpn())
 

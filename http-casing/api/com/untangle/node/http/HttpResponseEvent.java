@@ -73,7 +73,7 @@ public class HttpResponseEvent extends LogEvent
     }
 
     private static String sql =
-        "UPDATE reports.n_http_events " +
+        "UPDATE reports.http_events " +
         "SET " +
         "s2c_content_length = ?, " +
         "s2c_content_type = ? " +

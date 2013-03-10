@@ -36,8 +36,8 @@ class ServerNode(Node):
 
     @print_timing
     def setup(self):
-        self.__create_n_server_events()
-        ft = FactTable('reports.n_server_totals', 'reports.n_server_events', 'time_stamp', [], [])
+        self.__create_server_events()
+        ft = FactTable('reports.n_server_totals', 'reports.server_events', 'time_stamp', [], [])
         ft.measures.append(Column('mem_free', 'int8', "avg(mem_free)"))
         ft.measures.append(Column('mem_cache', 'int8', "avg(mem_cache)"))
         ft.measures.append(Column('mem_buffers', 'int8', "avg(mem_buffers)"))
@@ -53,7 +53,7 @@ class ServerNode(Node):
         reports.engine.register_fact_table(ft)
 
     def reports_cleanup(self, cutoff):
-        sql_helper.drop_fact_table("n_server_events", cutoff)
+        sql_helper.drop_fact_table("server_events", cutoff)
         sql_helper.drop_fact_table("n_server_totals", cutoff)        
 
     def get_report(self):
@@ -66,9 +66,9 @@ class ServerNode(Node):
         return Report(self, sections)
 
     @print_timing
-    def __create_n_server_events(self):
+    def __create_server_events(self):
         sql_helper.create_fact_table("""\
-CREATE TABLE reports.n_server_events (
+CREATE TABLE reports.server_events (
     time_stamp  TIMESTAMP,
     mem_free 	INT8,
     mem_cache 	INT8,

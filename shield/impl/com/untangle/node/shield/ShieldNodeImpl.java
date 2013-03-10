@@ -52,7 +52,7 @@ public class ShieldNodeImpl extends NodeBase  implements ShieldNode
     {
         super( nodeSettings, nodeProperties );
 
-        this.eventQuery = new EventLogQuery(I18nUtil.marktr("Events"),"SELECT * FROM reports.n_shield_rejection_totals ORDER BY time_stamp DESC");                                                 
+        this.eventQuery = new EventLogQuery(I18nUtil.marktr("Events"),"SELECT * FROM reports.shield_rejection_totals ORDER BY time_stamp DESC");                                                 
 
         this.addMetric(new NodeMetric(STAT_ACCEPT, I18nUtil.marktr("Sessions accepted")));
         this.addMetric(new NodeMetric(STAT_LIMIT, I18nUtil.marktr("Sessions limited")));

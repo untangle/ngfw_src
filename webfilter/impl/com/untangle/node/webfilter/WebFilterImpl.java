@@ -32,12 +32,6 @@ public class WebFilterImpl extends WebFilterBase
     }
 
     @Override
-    public String getVendor()
-    {
-        return "untangle";
-    }
-
-    @Override
     public String getNodeTitle()
     {
         return "Web Filter Lite";

@@ -36,17 +36,17 @@ class Shield(Node):
 
     @print_timing
     def setup(self):
-        self.__create_n_shield_rejection_totals()
-        self.__create_n_shield_totals()
+        self.__create_shield_rejection_totals()
+        self.__create_shield_totals()
 
     def reports_cleanup(self, cutoff):
-        sql_helper.drop_fact_table("n_shield_rejection_totals", cutoff)
-        sql_helper.drop_fact_table("n_shield_totals", cutoff)        
+        sql_helper.drop_fact_table("shield_rejection_totals", cutoff)
+        sql_helper.drop_fact_table("shield_totals", cutoff)        
 
     @print_timing
-    def __create_n_shield_rejection_totals(self):
+    def __create_shield_rejection_totals(self):
         sql_helper.create_fact_table("""\
-CREATE TABLE reports.n_shield_rejection_totals (
+CREATE TABLE reports.shield_rejection_totals (
     time_stamp timestamp without time zone,
     client_addr inet,
     client_intf integer,
@@ -57,28 +57,17 @@ CREATE TABLE reports.n_shield_rejection_totals (
     rejected    integer,
     event_id bigserial)""")
 
-        # old tables did not have event_id
-        sql_helper.add_column('reports', 'n_shield_rejection_totals', 'event_id', 'bigserial')
-        # old tables did not have reputation
-        sql_helper.add_column('reports', 'n_shield_rejection_totals', 'reputation', 'float8')
+        sql_helper.create_index("reports","shield_rejection_totals","event_id");
+        sql_helper.create_index("reports","shield_rejection_totals","time_stamp");
 
-        # convert from old name
-        sql_helper.rename_column("reports","n_shield_rejection_totals","trunc_time","time_stamp");
-
-        sql_helper.create_index("reports","n_shield_rejection_totals","event_id");
-        sql_helper.create_index("reports","n_shield_rejection_totals","time_stamp");
-
-    def __create_n_shield_totals(self):
+    def __create_shield_totals(self):
         sql_helper.create_fact_table("""\
-CREATE TABLE reports.n_shield_totals (
+CREATE TABLE reports.shield_totals (
     time_stamp timestamp without time zone,
     accepted   integer,
     limited    integer,
     dropped    integer,
     rejected   integer)""")
-
-        # convert from old name
-        sql_helper.rename_column("reports","n_shield_totals","trunc_time","time_stamp");
 
     def get_toc_membership(self):
         return [TOP_LEVEL]
@@ -119,7 +108,7 @@ class ShieldHighlight(Highlight):
 SELECT COALESCE(sum(accepted+limited+dropped+rejected), 0) AS sessions,
        COALESCE(sum(limited), 0) AS limited,
        COALESCE(sum(dropped), 0) AS dropped
-FROM reports.n_shield_totals"""
+FROM reports.shield_totals"""
 
         conn = sql_helper.get_connection()
         curs = conn.cursor()
@@ -158,11 +147,11 @@ class DailyRequest(Graph):
 
             extra_where = []
             if host:
-                extra_where.append(("hname = %(host)s", { 'host' : host }))
+                extra_where.append(("hostname = %(host)s", { 'host' : host }))
             elif user:
-                extra_where.append(("uid = %(user)s" , { 'user' : user }))
+                extra_where.append(("username = %(user)s" , { 'user' : user }))
 
-            q, h = sql_helper.get_averaged_query(sums, "reports.n_shield_totals",
+            q, h = sql_helper.get_averaged_query(sums, "reports.shield_totals",
                                                  start_date,
                                                  end_date,
                                                  extra_where = extra_where,
@@ -236,7 +225,7 @@ class BlockedHosts(Graph):
 
         query = """\
 SELECT client_addr, sum(dropped + rejected) AS blocked
-FROM reports.n_shield_rejection_totals
+FROM reports.shield_rejection_totals
 WHERE time_stamp >= %s::timestamp without time zone AND time_stamp < %s::timestamp without time zone
 AND ((dropped > 0) OR (rejected > 0))
 GROUP BY client_addr
@@ -284,7 +273,7 @@ class LimitedHosts(Graph):
 
         query = """\
 SELECT client_addr, sum(limited) AS limited
-FROM reports.n_shield_rejection_totals
+FROM reports.shield_rejection_totals
 WHERE time_stamp >= %s::timestamp without time zone AND time_stamp < %s::timestamp without time zone
 AND limited > 0
 GROUP BY client_addr
@@ -340,7 +329,7 @@ class ShieldDetail(DetailSection):
         sql = "SELECT time_stamp, "
 
         sql = sql + ("""host(client_addr), limited, dropped, rejected
-FROM reports.n_shield_rejection_totals
+FROM reports.shield_rejection_totals
 WHERE time_stamp >= %s::timestamp without time zone AND time_stamp < %s::timestamp without time zone
       AND (limited + dropped + rejected) > 0""" % (DateFromMx(start_date),
                                                    DateFromMx(end_date)))

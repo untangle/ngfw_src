@@ -44,7 +44,5 @@ public interface WebFilter extends Node
 
     String getUnblockMode();
 
-    String getVendor();
-
     EventLogQuery[] getEventQueries();
 }

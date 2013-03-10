@@ -5,10 +5,8 @@ import mx
 import psycopg2
 import re
 import string
-import md5
 import sys
 import time
-from sets import Set
 from psycopg2.extensions import DateFromMx
 
 from reports.log import *
@@ -17,7 +15,7 @@ logger = getLogger(__name__)
 REQUIRED_TIME_POINTS = [float(s) for s in range(0, 24 * 60 * 60, 30 * 60)]
 HOURLY_REQUIRED_TIME_POINTS = [float(s) for s in range(0, 24 * 60 * 60, 60 * 60)]
 
-DEFAULT_TIME_FIELD = 'trunc_time'
+DEFAULT_TIME_FIELD = 'time_stamp'
 DEFAULT_SLICES = 150
 
 DEFAULT_SCHEMA = 'reports'
@@ -256,8 +254,8 @@ def drop_fact_table(tablename, cutoff_date):
   tablename = re.sub(r'(\-[a-z]+|reports\.|\[.+\])', '', tablename)
   if column_exists("reports",tablename,"time_stamp"):
       run_sql("DELETE FROM reports.%s WHERE time_stamp < %%s" % tablename, (cutoff_date,), force_propagate=True)
-  if column_exists("reports",tablename,"trunc_time"):
-      run_sql("DELETE FROM reports.%s WHERE trunc_time < %%s" % tablename, (cutoff_date,), force_propagate=True)
+  if column_exists("reports",tablename,"time_stamp"):
+      run_sql("DELETE FROM reports.%s WHERE time_stamp < %%s" % tablename, (cutoff_date,), force_propagate=True)
   if column_exists("reports",tablename,"date"):
       run_sql("DELETE FROM reports.%s WHERE date < %%s" % tablename, (cutoff_date,), force_propagate=True)
 
@@ -344,7 +342,7 @@ def set_update_info(tablename, last_update, connection=None,
             if e.pgerror.find('column "time_stamp" does not exist') > 0:
                 try:
                     curs = connection.cursor()
-                    curs.execute("SELECT max(trunc_time) FROM %s" % (origin_tablename,))
+                    curs.execute("SELECT max(time_stamp) FROM %s" % (origin_tablename,))
                 except:
                     connection.rollback()
 

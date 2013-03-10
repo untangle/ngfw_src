@@ -103,42 +103,42 @@ public class CaptureNodeImpl extends NodeBase implements CaptureNode
         replacementGenerator = new CaptureReplacementGenerator(getNodeSettings());
 
         this.userEventQuery = new EventLogQuery(I18nUtil.marktr("All Events"),
-                "SELECT * FROM reports.n_capture_user_events " +
+                "SELECT * FROM reports.capture_user_events " +
                 "WHERE policy_id = :policyId " +
                 "ORDER BY time_stamp DESC");
 
         this.userSuccessQuery = new EventLogQuery(I18nUtil.marktr("Login Success"),
-                "SELECT * FROM reports.n_capture_user_events " +
+                "SELECT * FROM reports.capture_user_events " +
                 "WHERE policy_id = :policyId " +
                 "AND event_info = 'LOGIN' " +
                 "ORDER BY time_stamp DESC");
 
         this.userFailureQuery = new EventLogQuery(I18nUtil.marktr("Login Failure"),
-                "SELECT * FROM reports.n_capture_user_events " +
+                "SELECT * FROM reports.capture_user_events " +
                 "WHERE policy_id = :policyId " +
                 "AND event_info = 'FAILED' " +
                 "ORDER BY time_stamp DESC");
 
         this.userTimeoutQuery = new EventLogQuery(I18nUtil.marktr("Session Timeout"),
-                "SELECT * FROM reports.n_capture_user_events " +
+                "SELECT * FROM reports.capture_user_events " +
                 "WHERE policy_id = :policyId " +
                 "AND event_info = 'TIMEOUT' " +
                 "ORDER BY time_stamp DESC");
 
         this.userInactiveQuery = new EventLogQuery(I18nUtil.marktr("Idle Timeout"),
-                "SELECT * FROM reports.n_capture_user_events " +
+                "SELECT * FROM reports.capture_user_events " +
                 "WHERE policy_id = :policyId " +
                 "AND event_info = 'INACTIVE' " +
                 "ORDER BY time_stamp DESC");
 
         this.userLogoutQuery = new EventLogQuery(I18nUtil.marktr("User Logout"),
-                "SELECT * FROM reports.n_capture_user_events " +
+                "SELECT * FROM reports.capture_user_events " +
                 "WHERE policy_id = :policyId " +
                 "AND event_info = 'USER_LOGOUT' " +
                 "ORDER BY time_stamp DESC");
 
         this.adminLogoutQuery = new EventLogQuery(I18nUtil.marktr("Admin Logout"),
-                "SELECT * FROM reports.n_capture_user_events " +
+                "SELECT * FROM reports.capture_user_events " +
                 "WHERE policy_id = :policyId " +
                 "AND event_info = 'ADMIN_LOGOUT' " +
                 "ORDER BY time_stamp DESC");

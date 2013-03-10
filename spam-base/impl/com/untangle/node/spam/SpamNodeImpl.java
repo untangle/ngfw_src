@@ -80,25 +80,25 @@ public class SpamNodeImpl extends NodeBase implements SpamNode
         }
         
         this.allEventQuery = new EventLogQuery(I18nUtil.marktr("All Email Events"),
-                                               "SELECT * FROM reports.n_mail_addrs " +
+                                               "SELECT * FROM reports.mail_addrs " +
                                                " WHERE addr_kind IN ('T', 'C')" +
                                                " AND " + vendorTag + "_action IS NOT NULL" +
                                                " AND policy_id = :policyId" + 
                                                " ORDER BY time_stamp DESC");
         this.spamEventQuery = new EventLogQuery(I18nUtil.marktr("All") + " " + I18nUtil.marktr(badEmailName) + " " + I18nUtil.marktr("Events"),
-                                                "SELECT * FROM reports.n_mail_addrs " +
+                                                "SELECT * FROM reports.mail_addrs " +
                                                 " WHERE " + vendorTag + "_is_spam IS TRUE" + 
                                                 " AND addr_kind IN ('T', 'C')" +
                                                 " AND policy_id = :policyId" + 
                                                 " ORDER BY time_stamp DESC");
         this.quarantinedEventQuery = new EventLogQuery(I18nUtil.marktr("Quarantined Events"),
-                                                       "SELECT * FROM reports.n_mail_addrs " +
+                                                       "SELECT * FROM reports.mail_addrs " +
                                                        " WHERE " + vendorTag + "_action = 'Q'" + 
                                                        " AND addr_kind IN ('T', 'C')" +
                                                        " AND policy_id = :policyId" + 
                                                        " ORDER BY time_stamp DESC");
         this.tarpitEventQuery = new EventLogQuery(I18nUtil.marktr("Tarpit Events"),
-                                                  "SELECT * FROM reports.n_spam_smtp_tarpit_events " +
+                                                  "SELECT * FROM reports.spam_smtp_tarpit_events " +
                                                   "WHERE vendor_name = '" + vendorTag + "' " +
                                                   "AND policy_id = :policyId " +
                                                   "ORDER BY time_stamp DESC");

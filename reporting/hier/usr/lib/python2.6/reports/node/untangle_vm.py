@@ -46,7 +46,7 @@ class UvmNode(Node):
 
         self.__do_housekeeping()
 
-        self.__build_n_admin_logins_table()
+        self.__build_admin_logins_table()
         self.__build_sessions_table()
         self.__build_penaltybox_table()
         self.__build_quotas_table()
@@ -55,8 +55,8 @@ class UvmNode(Node):
         ft = FactTable('reports.session_totals',
                        'reports.sessions',
                        'time_stamp',
-                       [Column('hname', 'text'),
-                        Column('uid', 'text'),
+                       [Column('hostname', 'text'),
+                        Column('username', 'text'),
                         Column('policy_id', 'bigint'),
                         Column('client_intf', 'smallint'),
                         Column('server_intf', 'smallint'),
@@ -78,9 +78,9 @@ class UvmNode(Node):
         return None
 
     @print_timing
-    def __build_n_admin_logins_table(self):
+    def __build_admin_logins_table(self):
         sql_helper.create_fact_table("""\
-CREATE TABLE reports.n_admin_logins (
+CREATE TABLE reports.admin_logins (
     time_stamp timestamp without time zone,
     login text,
     local boolean,
@@ -92,7 +92,7 @@ CREATE TABLE reports.n_admin_logins (
         self.__make_session_counts_table(start_date, end_date)
 
     def reports_cleanup(self, cutoff):
-        sql_helper.drop_fact_table("n_admin_logins", cutoff)
+        sql_helper.drop_fact_table("admin_logins", cutoff)
         sql_helper.drop_fact_table("sessions", cutoff)
         sql_helper.drop_fact_table("session_totals", cutoff)
         sql_helper.drop_fact_table("session_counts", cutoff)
@@ -123,8 +123,8 @@ CREATE TABLE reports.sessions (
         event_id bigserial,
         time_stamp timestamp NOT NULL,
         end_time timestamp NOT NULL,
-        hname text,
-        uid text,
+        hostname text,
+        username text,
         policy_id bigint,
         c_client_addr inet,
         c_server_addr inet,
@@ -141,16 +141,13 @@ CREATE TABLE reports.sessions (
         s2p_bytes int8,
         p2s_bytes int8)""")
 
-        sql_helper.add_column('reports', 'sessions', 'event_id', 'bigserial')
-        sql_helper.add_column('reports', 'sessions', 'policy_id', 'bigint')
-        sql_helper.add_column('reports', 'sessions', 'server_intf', 'int2')
         sql_helper.add_column('reports', 'sessions', 'bandwidth_priority', 'bigint')
         sql_helper.add_column('reports', 'sessions', 'bandwidth_rule', 'bigint')
         sql_helper.add_column('reports', 'sessions', 'firewall_blocked', 'boolean')
         sql_helper.add_column('reports', 'sessions', 'firewall_flagged', 'boolean')
         sql_helper.add_column('reports', 'sessions', 'firewall_rule_index', 'integer')
-        sql_helper.add_column('reports', 'sessions', 'pf_protocol', 'text')
-        sql_helper.add_column('reports', 'sessions', 'pf_blocked', 'boolean')
+        sql_helper.add_column('reports', 'sessions', 'protofilter_protocol', 'text')
+        sql_helper.add_column('reports', 'sessions', 'protofilter_blocked', 'boolean')
         sql_helper.add_column('reports', 'sessions', 'capture_blocked', 'boolean')
         sql_helper.add_column('reports', 'sessions', 'capture_rule_index', 'integer')
         sql_helper.add_column('reports', 'sessions', 'classd_application', 'text')
@@ -163,11 +160,7 @@ CREATE TABLE reports.sessions (
         sql_helper.add_column('reports', 'sessions', 'ips_blocked', 'boolean')
         sql_helper.add_column('reports', 'sessions', 'ips_ruleid', 'integer')
         sql_helper.add_column('reports', 'sessions', 'ips_description', 'text')
-        sql_helper.add_column('reports', 'sessions', 'sw_access_ident', 'text')
-        sql_helper.add_column('reports', 'sessions', 's_client_addr', 'inet')
-        sql_helper.add_column('reports', 'sessions', 's_server_addr', 'inet')
-        sql_helper.add_column('reports', 'sessions', 's_server_port', 'int4')
-        sql_helper.add_column('reports', 'sessions', 's_client_port', 'int4')
+        sql_helper.add_column('reports', 'sessions', 'spyware_access_ident', 'text')
 
         # If session_id index does not exist, create it
         if not sql_helper.index_exists("reports","sessions","session_id", unique=True):
@@ -184,17 +177,14 @@ CREATE TABLE reports.sessions (
     def __make_session_counts_table(self, start_date, end_date):
         sql_helper.create_fact_table("""\
 CREATE TABLE reports.session_counts (
-        trunc_time timestamp,
-        uid text,
-        hname text,
+        time_stamp timestamp,
+        username text,
+        hostname text,
         client_intf smallint,
         server_intf smallint,
         num_sessions int8)""")
 
-        sql_helper.add_column('reports', 'session_counts', 'client_intf', 'smallint')
-        sql_helper.add_column('reports', 'session_counts', 'server_intf', 'smallint')
-
-        sql_helper.create_index("reports","session_counts","trunc_time");
+        sql_helper.create_index("reports","session_counts","time_stamp");
 
         sd = TimestampFromMx(sql_helper.get_update_info('reports.session_counts',
                                                         start_date))
@@ -203,14 +193,14 @@ CREATE TABLE reports.session_counts (
         try:
             sql_helper.run_sql("""\
 INSERT INTO reports.session_counts
-    (trunc_time, uid, hname, client_intf, server_intf, num_sessions)
+    (time_stamp, username, hostname, client_intf, server_intf, num_sessions)
 SELECT (date_trunc('minute', time_stamp)
         + (generate_series(0, (extract('epoch' from (end_time - time_stamp))
-        / 60)::int) || ' minutes')::interval) AS time, uid, hname,
+        / 60)::int) || ' minutes')::interval) AS time, username, hostname,
         client_intf, server_intf, count(*)
 FROM reports.sessions
 WHERE time_stamp >= %s::timestamp without time zone
-GROUP BY time, uid, hname, client_intf, server_intf
+GROUP BY time, username, hostname, client_intf, server_intf
 """, (sd,), connection=conn, auto_commit=False)
 
             sql_helper.set_update_info('reports.session_counts',
@@ -295,10 +285,10 @@ class VmHighlight(Highlight):
         query = """
 SELECT (SELECT round((COALESCE(sum(s2c_bytes + c2s_bytes), 0) / 1000000000)::numeric, 2)
         FROM reports.session_totals
-        WHERE trunc_time >= %s::timestamp without time zone AND trunc_time < %s::timestamp without time zone) AS traffic,
+        WHERE time_stamp >= %s::timestamp without time zone AND time_stamp < %s::timestamp without time zone) AS traffic,
        (SELECT COALESCE(sum(num_sessions), 0)::int
         FROM reports.session_counts
-        WHERE trunc_time >= %s::timestamp without time zone AND trunc_time < %s::timestamp without time zone) AS sessions"""
+        WHERE time_stamp >= %s::timestamp without time zone AND time_stamp < %s::timestamp without time zone) AS sessions"""
 
         conn = sql_helper.get_connection()
         curs = conn.cursor()
@@ -337,9 +327,9 @@ class BandwidthUsage(Graph):
 
             extra_where = []
             if host:
-                extra_where.append(("hname = %(host)s", { 'host' : host }))
+                extra_where.append(("hostname = %(host)s", { 'host' : host }))
             elif user:
-                extra_where.append(("uid = %(user)s" , { 'user' : user }))
+                extra_where.append(("username = %(user)s" , { 'user' : user }))
 
             time_interval = 60
             q, h = sql_helper.get_averaged_query(sums, "reports.session_totals",
@@ -401,9 +391,9 @@ class SessionsPerMinute(Graph):
 
             extra_where = []
             if host:
-                extra_where.append(("hname = %(host)s", { 'host' : host }))
+                extra_where.append(("hostname = %(host)s", { 'host' : host }))
             elif user:
-                extra_where.append(("uid = %(user)s" , { 'user' : user }))
+                extra_where.append(("username = %(user)s" , { 'user' : user }))
 
             q, h = sql_helper.get_averaged_query(sums, "reports.session_counts",
                                                  end_date - mx.DateTime.DateTimeDelta(report_days),
@@ -460,12 +450,12 @@ class DestinationPorts(Graph):
         query = """\
 SELECT c_server_port, sum(new_sessions)::int as sessions
 FROM reports.session_totals
-WHERE trunc_time >= %s::timestamp without time zone AND trunc_time < %s::timestamp without time zone"""
+WHERE time_stamp >= %s::timestamp without time zone AND time_stamp < %s::timestamp without time zone"""
 
         if host:
-            query += " AND hname = %s"
+            query += " AND hostname = %s"
         elif user:
-            query += " AND uid = %s"
+            query += " AND username = %s"
 
         query += """
 GROUP BY c_server_port
@@ -537,7 +527,7 @@ WHERE start_time >= %s AND start_time < %s"""
             for r in curs.fetchall():
                 address = r[0]
                 time = r[1]
-                ks = KeyStatistic(address, time, _('seconds'), link_type=reports.HNAME_LINK)
+                ks = KeyStatistic(address, time, _('seconds'), link_type=reports.HOSTNAME_LINK)
                 lks.append(ks)
                 pds[address] = time
         finally:
@@ -610,7 +600,7 @@ class AdministrativeLoginsDetail(DetailSection):
 
         sql = """\
 SELECT time_stamp, host(client_addr), succeeded::text
-FROM reports.n_admin_logins
+FROM reports.admin_logins
 WHERE time_stamp >= %s::timestamp without time zone AND time_stamp < %s::timestamp without time zone AND not local
 """ % (DateFromMx(start_date), DateFromMx(end_date))
 

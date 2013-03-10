@@ -58,7 +58,7 @@ public class SpywareCookieEvent extends LogEvent
     public void setIdentification( String identification ) { this.identification = identification; }
 
     private static String sql =
-        "UPDATE reports.n_http_events " +
+        "UPDATE reports.http_events " +
         "SET " +
         "sw_cookie_ident = ? " +
         "WHERE " +

@@ -49,14 +49,14 @@ if (!Ung.hasResource["Ung.SessionMonitor"]) {
                             "preNatServer": "184.27.239."+((i+3)%10),
                             "attachments": {
                                 "map": {
-                                    "esoft-best-category-name": "Social Networking",
+                                    "sitefilter-best-category-name": "Social Networking",
                                     "protofilter-matched": (ii%3==0),
-                                    "esoft-best-category-description": "Social Networking",
-                                    "esoft-best-category-blocked": false,
-                                    "esoft-flagged": false,
+                                    "sitefilter-best-category-description": "Social Networking",
+                                    "sitefilter-best-category-blocked": false,
+                                    "sitefilter-flagged": false,
                                     "platform-hostname": "acct07-wxp"+i,
-                                    "esoft-best-category-flagged": (ii%2==1),
-                                    "esoft-best-category-id": null,
+                                    "sitefilter-best-category-flagged": (ii%2==1),
+                                    "sitefilter-best-category-id": null,
                                     "http-uri": "/t.gif",
                                     "platform-username": "rbooroojian"+i,
                                     "http-hostname": "p.twitter.com"+i
@@ -322,7 +322,7 @@ if (!Ung.hasResource["Ung.SessionMonitor"]) {
             },{
                 hidden: true,
                 header: this.i18n._("Category Name") +  this.i18n._(" (Web Filter)"),
-                dataIndex: "esoft-best-category-name",
+                dataIndex: "sitefilter-best-category-name",
                 width: 100,
                 filter: {
                     type: 'string'
@@ -330,7 +330,7 @@ if (!Ung.hasResource["Ung.SessionMonitor"]) {
             },{
                 hidden: true,
                 header: this.i18n._("Category Description") +  this.i18n._(" (Web Filter)"),
-                dataIndex: "esoft-best-category-description",
+                dataIndex: "sitefilter-best-category-description",
                 width: 100,
                 filter: {
                     type: 'string'
@@ -338,7 +338,7 @@ if (!Ung.hasResource["Ung.SessionMonitor"]) {
             },{
                 hidden: true,
                 header: this.i18n._("Category Flagged") +  this.i18n._(" (Web Filter)"),
-                dataIndex: "esoft-best-category-flagged",
+                dataIndex: "sitefilter-best-category-flagged",
                 width: 50,
                 filter: {
                     type: 'boolean',
@@ -348,7 +348,7 @@ if (!Ung.hasResource["Ung.SessionMonitor"]) {
             },{
                 hidden: true,
                 header: this.i18n._("Category Blocked") +  this.i18n._(" (Web Filter)"),
-                dataIndex: "esoft-best-category-blocked",
+                dataIndex: "sitefilter-best-category-blocked",
                 width: 50,
                 filter: {
                     type: 'boolean',
@@ -358,7 +358,7 @@ if (!Ung.hasResource["Ung.SessionMonitor"]) {
             },{
                 hidden: true,
                 header: this.i18n._("Content Type") +  this.i18n._(" (Web Filter)"),
-                dataIndex: "esoft-content-type",
+                dataIndex: "sitefilter-content-type",
                 width: 50,
                 filter: {
                     type: 'string'
@@ -366,7 +366,7 @@ if (!Ung.hasResource["Ung.SessionMonitor"]) {
             },{
                 hidden: true,
                 header: this.i18n._("Flagged") +  this.i18n._(" (Web Filter)"),
-                dataIndex: "esoft-flagged",
+                dataIndex: "sitefilter-flagged",
                 width: 50,
                 filter: {
                     type: 'boolean',
@@ -550,15 +550,15 @@ if (!Ung.hasResource["Ung.SessionMonitor"]) {
                 },{
                     name: "http-uri"
                 },{
-                    name: "esoft-best-category-name"
+                    name: "sitefilter-best-category-name"
                 },{
-                    name: "esoft-best-category-description"
+                    name: "sitefilter-best-category-description"
                 },{
-                    name: "esoft-best-category-flagged"
+                    name: "sitefilter-best-category-flagged"
                 },{
-                    name: "esoft-best-category-blocked"
+                    name: "sitefilter-best-category-blocked"
                 },{
-                    name: "esoft-flagged"
+                    name: "sitefilter-flagged"
                 },{
                     name: "classd-application"
                 },{

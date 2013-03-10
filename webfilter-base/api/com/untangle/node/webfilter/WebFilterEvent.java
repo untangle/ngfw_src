@@ -17,114 +17,48 @@ public class WebFilterEvent extends LogEvent
     private Boolean flagged;
     private Reason  reason;
     private String  category;
-    private String  vendorName;
+    private String  nodeName;
 
     public WebFilterEvent() { }
 
-    public WebFilterEvent(RequestLine requestLine, Boolean blocked, Boolean flagged, Reason reason, String category, String vendorName)
+    public WebFilterEvent(RequestLine requestLine, Boolean blocked, Boolean flagged, Reason reason, String category, String nodeName)
     {
         this.requestId = requestLine.getRequestId();
         this.blocked = blocked;
         this.flagged = flagged;
         this.reason = reason;
         this.category = category;
-        this.vendorName = vendorName;
+        this.nodeName = nodeName;
     }
 
-    /**
-     * Request line for this HTTP response pair.
-     *
-     * @return the request line.
-     */
-    public Long getRequestId()
-    {
-        return requestId;
-    }
+    public Long getRequestId() { return requestId; }
+    public void setRequestId( Long requestId ) { this.requestId = requestId; }
 
-    public void setRequestId(Long requestId)
-    {
-        this.requestId = requestId;
-    }
+    public Boolean getBlocked() { return blocked; }
+    public void setBlocked( Boolean blocked ) { this.blocked = blocked; }
 
-    /**
-     * True if this event was blocked
-     */
-    public Boolean getBlocked()
-    {
-        return blocked;
-    }
+    public Boolean getFlagged() { return flagged; }
+    public void setFlagged( Boolean flagged ) { this.flagged = flagged; }
 
-    public void setBlocked(Boolean blocked)
-    {
-        this.blocked = blocked;
-    }
+    public Reason getReason() { return reason; }
+    public void setReason( Reason reason ) { this.reason = reason; }
 
-    /**
-     * True if this event flagged as a violation
-     */
-    public Boolean getFlagged()
-    {
-        return flagged;
-    }
+    public String getCategory() { return category; }
+    public void setCategory( String category ) { this.category = category; }
 
-    public void setFlagged(Boolean flagged)
-    {
-        this.flagged = flagged;
-    }
-
-    /**
-     * Reason for blocking.
-     *
-     * @return the reason.
-     */
-    public Reason getReason()
-    {
-        return reason;
-    }
-
-    public void setReason(Reason reason)
-    {
-        this.reason = reason;
-    }
-
-    /**
-     * A string associated with the block reason.
-     */
-    public String getCategory()
-    {
-        return category;
-    }
-
-    public void setCategory(String category)
-    {
-        this.category = category;
-    }
-
-    /**
-     * Spam scanner vendor.
-     *
-     * @return the vendor
-     */
-    public String getVendorName()
-    {
-        return vendorName;
-    }
-
-    public void setVendorName(String vendorName)
-    {
-        this.vendorName = vendorName;
-    }
+    public String getNodeName() { return nodeName; }
+    public void setNodeName(String nodeName) { this.nodeName = nodeName; }
 
     @Override
     public java.sql.PreparedStatement getDirectEventSql( java.sql.Connection conn ) throws Exception
     {
         String sql =
-            "UPDATE reports.n_http_events " +
+            "UPDATE reports.http_events " +
             "SET " +
-            "wf_" + getVendorName().toLowerCase() + "_blocked  = ?, " + 
-            "wf_" + getVendorName().toLowerCase() + "_flagged  = ?, " +
-            "wf_" + getVendorName().toLowerCase() + "_reason   = ?, " +
-            "wf_" + getVendorName().toLowerCase() + "_category = ? " +
+            getNodeName().toLowerCase() + "_blocked  = ?, " + 
+            getNodeName().toLowerCase() + "_flagged  = ?, " +
+            getNodeName().toLowerCase() + "_reason   = ?, " +
+            getNodeName().toLowerCase() + "_category = ? " +
             "WHERE " +
             "request_id = ? ";
         java.sql.PreparedStatement pstmt = conn.prepareStatement( sql );

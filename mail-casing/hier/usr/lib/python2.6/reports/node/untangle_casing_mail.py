@@ -20,21 +20,21 @@ class MailCasing(Node):
 
     @print_timing
     def setup(self):
-        self.__create_n_mail_msgs()
-        self.__create_n_mail_addrs()
+        self.__create_mail_msgs()
+        self.__create_mail_addrs()
 
-        ft = FactTable('reports.n_mail_msg_totals', 'reports.n_mail_msgs',
+        ft = FactTable('reports.n_mail_msg_totals', 'reports.mail_msgs',
                        'time_stamp',
-                       [Column('hname', 'text'), Column('uid', 'text'),
+                       [Column('hostname', 'text'), Column('username', 'text'),
                         Column('client_intf', 'smallint'),
                         Column('server_type', 'char(1)')],
                        [Column('msgs', 'bigint', 'count(*)'),
                         Column('msg_bytes', 'bigint', 'sum(msg_bytes)')])
         reports.engine.register_fact_table(ft)
 
-        ft = FactTable('reports.n_mail_addr_totals', 'reports.n_mail_addrs',
+        ft = FactTable('reports.n_mail_addr_totals', 'reports.mail_addrs',
                        'time_stamp',
-                       [Column('hname', 'text'), Column('uid', 'text'),
+                       [Column('hostname', 'text'), Column('username', 'text'),
                         Column('client_intf', 'smallint'),
                         Column('server_type', 'char(1)'),
                         Column('addr_pos', 'text'), Column('addr', 'text'),
@@ -47,16 +47,16 @@ class MailCasing(Node):
         self.__make_email_table(start_date, end_date)
 
     def reports_cleanup(self, cutoff):
-        sql_helper.drop_fact_table("n_mail_addrs", cutoff)
+        sql_helper.drop_fact_table("mail_addrs", cutoff)
         sql_helper.drop_fact_table("n_mail_addr_totals", cutoff)        
-        sql_helper.drop_fact_table("n_mail_msgs", cutoff)
+        sql_helper.drop_fact_table("mail_msgs", cutoff)
         sql_helper.drop_fact_table("n_mail_msg_totals", cutoff)        
         sql_helper.drop_fact_table("email", cutoff)        
 
     @print_timing
-    def __create_n_mail_addrs(self):
+    def __create_mail_addrs(self):
         sql_helper.create_fact_table("""\
-CREATE TABLE reports.n_mail_addrs (
+CREATE TABLE reports.mail_addrs (
     time_stamp timestamp without time zone,
     session_id bigint, client_intf smallint,
     server_intf smallint,
@@ -65,7 +65,7 @@ CREATE TABLE reports.n_mail_addrs (
     c_client_port integer, s_client_port integer, c_server_port integer,
     s_server_port integer,
     policy_id bigint, 
-    uid text,
+    username text,
     msg_id bigint,
     subject text,
     server_type char(1),
@@ -75,7 +75,7 @@ CREATE TABLE reports.n_mail_addrs (
     addr_kind char(1),
     msg_bytes bigint,
     msg_attachments integer,
-    hname text,
+    hostname text,
     event_id bigserial,
     sender text,
     virus_clam_clean boolean,
@@ -96,62 +96,62 @@ CREATE TABLE reports.n_mail_addrs (
     virus_commtouch_name text)""")
 
         # remove obsolete columns
-        sql_helper.drop_column('reports', 'n_mail_addrs', 'policy_inbound')
-        sql_helper.drop_column('reports', 'n_mail_addrs', 'c2p_chunks')
-        sql_helper.drop_column('reports', 'n_mail_addrs', 's2p_chunks')
-        sql_helper.drop_column('reports', 'n_mail_addrs', 'p2c_chunks')
-        sql_helper.drop_column('reports', 'n_mail_addrs', 'p2s_chunks')
-        sql_helper.drop_column('reports', 'n_mail_addrs', 'c2p_bytes')
-        sql_helper.drop_column('reports', 'n_mail_addrs', 's2p_bytes')
-        sql_helper.drop_column('reports', 'n_mail_addrs', 'p2c_bytes')
-        sql_helper.drop_column('reports', 'n_mail_addrs', 'p2s_bytes')
+        sql_helper.drop_column('reports', 'mail_addrs', 'policy_inbound')
+        sql_helper.drop_column('reports', 'mail_addrs', 'c2p_chunks')
+        sql_helper.drop_column('reports', 'mail_addrs', 's2p_chunks')
+        sql_helper.drop_column('reports', 'mail_addrs', 'p2c_chunks')
+        sql_helper.drop_column('reports', 'mail_addrs', 'p2s_chunks')
+        sql_helper.drop_column('reports', 'mail_addrs', 'c2p_bytes')
+        sql_helper.drop_column('reports', 'mail_addrs', 's2p_bytes')
+        sql_helper.drop_column('reports', 'mail_addrs', 'p2c_bytes')
+        sql_helper.drop_column('reports', 'mail_addrs', 'p2s_bytes')
 
-        sql_helper.add_column('reports', 'n_mail_addrs', 'event_id', 'bigserial')
-        sql_helper.add_column('reports', 'n_mail_addrs', 'sender', 'text')
-        sql_helper.add_column('reports', 'n_mail_addrs', 'virus_clam_clean', 'boolean')
-        sql_helper.add_column('reports', 'n_mail_addrs', 'virus_clam_name', 'text')
-        sql_helper.add_column('reports', 'n_mail_addrs', 'sa_score', 'real')
-        sql_helper.add_column('reports', 'n_mail_addrs', 'sa_is_spam', 'boolean')
-        sql_helper.add_column('reports', 'n_mail_addrs', 'sa_action', 'character')
-        sql_helper.add_column('reports', 'n_mail_addrs', 'ct_score', 'real')
-        sql_helper.add_column('reports', 'n_mail_addrs', 'ct_is_spam', 'boolean')
-        sql_helper.add_column('reports', 'n_mail_addrs', 'ct_action', 'character')
-        sql_helper.add_column('reports', 'n_mail_addrs', 'virus_kaspersky_clean', 'boolean')
-        sql_helper.add_column('reports', 'n_mail_addrs', 'virus_kaspersky_name', 'text')
-        sql_helper.add_column('reports', 'n_mail_addrs', 'phish_score', 'real')
-        sql_helper.add_column('reports', 'n_mail_addrs', 'phish_is_spam', 'boolean')
-        sql_helper.add_column('reports', 'n_mail_addrs', 'phish_action', 'character')
-        sql_helper.add_column('reports', 'n_mail_addrs', 'vendor', 'text')
-        sql_helper.add_column('reports', 'n_mail_addrs', 'virus_commtouch_clean', 'boolean')
-        sql_helper.add_column('reports', 'n_mail_addrs', 'virus_commtouch_name', 'text')
+        sql_helper.add_column('reports', 'mail_addrs', 'event_id', 'bigserial')
+        sql_helper.add_column('reports', 'mail_addrs', 'sender', 'text')
+        sql_helper.add_column('reports', 'mail_addrs', 'virus_clam_clean', 'boolean')
+        sql_helper.add_column('reports', 'mail_addrs', 'virus_clam_name', 'text')
+        sql_helper.add_column('reports', 'mail_addrs', 'sa_score', 'real')
+        sql_helper.add_column('reports', 'mail_addrs', 'sa_is_spam', 'boolean')
+        sql_helper.add_column('reports', 'mail_addrs', 'sa_action', 'character')
+        sql_helper.add_column('reports', 'mail_addrs', 'ct_score', 'real')
+        sql_helper.add_column('reports', 'mail_addrs', 'ct_is_spam', 'boolean')
+        sql_helper.add_column('reports', 'mail_addrs', 'ct_action', 'character')
+        sql_helper.add_column('reports', 'mail_addrs', 'virus_kaspersky_clean', 'boolean')
+        sql_helper.add_column('reports', 'mail_addrs', 'virus_kaspersky_name', 'text')
+        sql_helper.add_column('reports', 'mail_addrs', 'phish_score', 'real')
+        sql_helper.add_column('reports', 'mail_addrs', 'phish_is_spam', 'boolean')
+        sql_helper.add_column('reports', 'mail_addrs', 'phish_action', 'character')
+        sql_helper.add_column('reports', 'mail_addrs', 'vendor', 'text')
+        sql_helper.add_column('reports', 'mail_addrs', 'virus_commtouch_clean', 'boolean')
+        sql_helper.add_column('reports', 'mail_addrs', 'virus_commtouch_name', 'text')
 
         # we used to create event_id as serial instead of bigserial - convert if necessary
-        sql_helper.convert_column("reports","n_mail_addrs","event_id","integer","bigint");
-        sql_helper.convert_column("reports","n_mail_addrs","session_id","integer","bigint");
-        sql_helper.convert_column("reports","n_mail_addrs","msg_id","integer","bigint");
+        sql_helper.convert_column("reports","mail_addrs","event_id","integer","bigint");
+        sql_helper.convert_column("reports","mail_addrs","session_id","integer","bigint");
+        sql_helper.convert_column("reports","mail_addrs","msg_id","integer","bigint");
 
         # If the new index does not exist, create it
-        if not sql_helper.index_exists("reports","n_mail_addrs","event_id", unique=True):
-            sql_helper.create_index("reports","n_mail_addrs","event_id", unique=True);
+        if not sql_helper.index_exists("reports","mail_addrs","event_id", unique=True):
+            sql_helper.create_index("reports","mail_addrs","event_id", unique=True);
         # If the new index does exist, delete the old one
-        if sql_helper.index_exists("reports","n_mail_addrs","event_id", unique=True):
-            sql_helper.drop_index("reports","n_mail_addrs","event_id", unique=False);
+        if sql_helper.index_exists("reports","mail_addrs","event_id", unique=True):
+            sql_helper.drop_index("reports","mail_addrs","event_id", unique=False);
 
-        sql_helper.create_index("reports","n_mail_addrs","policy_id");
-        sql_helper.create_index("reports","n_mail_addrs","time_stamp");
-        sql_helper.create_index("reports","n_mail_addrs","addr_kind");
-        sql_helper.create_index("reports","n_mail_addrs","msg_id", unique=False);
+        sql_helper.create_index("reports","mail_addrs","policy_id");
+        sql_helper.create_index("reports","mail_addrs","time_stamp");
+        sql_helper.create_index("reports","mail_addrs","addr_kind");
+        sql_helper.create_index("reports","mail_addrs","msg_id", unique=False);
 
         # virus blocker event log query indexes
-        # sql_helper.create_index("reports","n_mail_addrs","virus_commtouch_clean");
-        # sql_helper.create_index("reports","n_mail_addrs","virus_clam_clean");
-        # sql_helper.create_index("reports","n_mail_addrs","virus_kaspersky_clean");
+        # sql_helper.create_index("reports","mail_addrs","virus_commtouch_clean");
+        # sql_helper.create_index("reports","mail_addrs","virus_clam_clean");
+        # sql_helper.create_index("reports","mail_addrs","virus_kaspersky_clean");
 
         # spam blocker event log query indexes
-        # sql_helper.create_index("reports","n_mail_addrs","addr_kind");
-        # sql_helper.create_index("reports","n_mail_addrs","sa_action");
-        # sql_helper.create_index("reports","n_mail_addrs","ct_action");
-        # sql_helper.create_index("reports","n_mail_addrs","phish_action");
+        # sql_helper.create_index("reports","mail_addrs","addr_kind");
+        # sql_helper.create_index("reports","mail_addrs","sa_action");
+        # sql_helper.create_index("reports","mail_addrs","ct_action");
+        # sql_helper.create_index("reports","mail_addrs","phish_action");
 
     @print_timing
     def __make_email_table(self, start_date, end_date):
@@ -168,9 +168,9 @@ CREATE TABLE reports.email (
         try:
             sql_helper.run_sql("""\
 INSERT INTO reports.email (date, email)
-    SELECT DISTINCT date_trunc('day', trunc_time)::date, addr
+    SELECT DISTINCT date_trunc('day', time_stamp)::date, addr
     FROM reports.n_mail_addr_totals
-    WHERE trunc_time >= %s::timestamp without time zone
+    WHERE time_stamp >= %s::timestamp without time zone
     AND client_intf = 0 AND addr_kind = 'T'
     AND NOT addr ISNULL""", (sd,), connection=conn, auto_commit=False)
             conn.commit()
@@ -180,10 +180,10 @@ INSERT INTO reports.email (date, email)
             raise e
 
     @print_timing
-    def __create_n_mail_msgs(self):
+    def __create_mail_msgs(self):
 
         sql_helper.create_fact_table("""\
-CREATE TABLE reports.n_mail_msgs (
+CREATE TABLE reports.mail_msgs (
     time_stamp timestamp without time zone,
     session_id bigint, client_intf smallint,
     server_intf smallint,
@@ -192,13 +192,13 @@ CREATE TABLE reports.n_mail_msgs (
     c_client_port integer, s_client_port integer, c_server_port integer,
     s_server_port integer,
     policy_id bigint, 
-    uid text,
+    username text,
     msg_id bigint,
     subject text,
     server_type char(1),
     msg_bytes bigint,
     msg_attachments integer,
-    hname text,
+    hostname text,
     event_id bigserial,
     sender text,
     virus_clam_clean boolean,
@@ -219,54 +219,54 @@ CREATE TABLE reports.n_mail_msgs (
     virus_commtouch_name text)""")
 
         # remove obsolete columns
-        sql_helper.drop_column('reports', 'n_mail_msgs', 'policy_inbound')
-        sql_helper.drop_column('reports', 'n_mail_msgs', 'c2p_chunks')
-        sql_helper.drop_column('reports', 'n_mail_msgs', 's2p_chunks')
-        sql_helper.drop_column('reports', 'n_mail_msgs', 'p2c_chunks')
-        sql_helper.drop_column('reports', 'n_mail_msgs', 'p2s_chunks')
-        sql_helper.drop_column('reports', 'n_mail_msgs', 'c2p_bytes')
-        sql_helper.drop_column('reports', 'n_mail_msgs', 's2p_bytes')
-        sql_helper.drop_column('reports', 'n_mail_msgs', 'p2c_bytes')
-        sql_helper.drop_column('reports', 'n_mail_msgs', 'p2s_bytes')
+        sql_helper.drop_column('reports', 'mail_msgs', 'policy_inbound')
+        sql_helper.drop_column('reports', 'mail_msgs', 'c2p_chunks')
+        sql_helper.drop_column('reports', 'mail_msgs', 's2p_chunks')
+        sql_helper.drop_column('reports', 'mail_msgs', 'p2c_chunks')
+        sql_helper.drop_column('reports', 'mail_msgs', 'p2s_chunks')
+        sql_helper.drop_column('reports', 'mail_msgs', 'c2p_bytes')
+        sql_helper.drop_column('reports', 'mail_msgs', 's2p_bytes')
+        sql_helper.drop_column('reports', 'mail_msgs', 'p2c_bytes')
+        sql_helper.drop_column('reports', 'mail_msgs', 'p2s_bytes')
 
-        sql_helper.add_column('reports', 'n_mail_msgs', 'event_id', 'bigserial')
-        sql_helper.add_column('reports', 'n_mail_msgs', 'sender', 'text')
-        sql_helper.add_column('reports', 'n_mail_msgs', 'virus_clam_clean', 'boolean')
-        sql_helper.add_column('reports', 'n_mail_msgs', 'virus_clam_name', 'text')
-        sql_helper.add_column('reports', 'n_mail_msgs', 'sa_score', 'real')
-        sql_helper.add_column('reports', 'n_mail_msgs', 'sa_is_spam', 'boolean')
-        sql_helper.add_column('reports', 'n_mail_msgs', 'sa_action', 'character')
-        sql_helper.add_column('reports', 'n_mail_msgs', 'ct_score', 'real')
-        sql_helper.add_column('reports', 'n_mail_msgs', 'ct_is_spam', 'boolean')
-        sql_helper.add_column('reports', 'n_mail_msgs', 'ct_action', 'character')
-        sql_helper.add_column('reports', 'n_mail_msgs', 'virus_kaspersky_clean', 'boolean')
-        sql_helper.add_column('reports', 'n_mail_msgs', 'virus_kaspersky_name', 'text')
-        sql_helper.add_column('reports', 'n_mail_msgs', 'phish_score', 'real')
-        sql_helper.add_column('reports', 'n_mail_msgs', 'phish_is_spam', 'boolean')
-        sql_helper.add_column('reports', 'n_mail_msgs', 'phish_action', 'character')
-        sql_helper.add_column('reports', 'n_mail_msgs', 'vendor', 'text')
-        sql_helper.add_column('reports', 'n_mail_msgs', 'virus_commtouch_clean', 'boolean')
-        sql_helper.add_column('reports', 'n_mail_msgs', 'virus_commtouch_name', 'text')
+        sql_helper.add_column('reports', 'mail_msgs', 'event_id', 'bigserial')
+        sql_helper.add_column('reports', 'mail_msgs', 'sender', 'text')
+        sql_helper.add_column('reports', 'mail_msgs', 'virus_clam_clean', 'boolean')
+        sql_helper.add_column('reports', 'mail_msgs', 'virus_clam_name', 'text')
+        sql_helper.add_column('reports', 'mail_msgs', 'sa_score', 'real')
+        sql_helper.add_column('reports', 'mail_msgs', 'sa_is_spam', 'boolean')
+        sql_helper.add_column('reports', 'mail_msgs', 'sa_action', 'character')
+        sql_helper.add_column('reports', 'mail_msgs', 'ct_score', 'real')
+        sql_helper.add_column('reports', 'mail_msgs', 'ct_is_spam', 'boolean')
+        sql_helper.add_column('reports', 'mail_msgs', 'ct_action', 'character')
+        sql_helper.add_column('reports', 'mail_msgs', 'virus_kaspersky_clean', 'boolean')
+        sql_helper.add_column('reports', 'mail_msgs', 'virus_kaspersky_name', 'text')
+        sql_helper.add_column('reports', 'mail_msgs', 'phish_score', 'real')
+        sql_helper.add_column('reports', 'mail_msgs', 'phish_is_spam', 'boolean')
+        sql_helper.add_column('reports', 'mail_msgs', 'phish_action', 'character')
+        sql_helper.add_column('reports', 'mail_msgs', 'vendor', 'text')
+        sql_helper.add_column('reports', 'mail_msgs', 'virus_commtouch_clean', 'boolean')
+        sql_helper.add_column('reports', 'mail_msgs', 'virus_commtouch_name', 'text')
 
         # we used to create event_id as serial instead of bigserial - convert if necessary
-        sql_helper.convert_column("reports","n_mail_msgs","event_id","integer","bigint");
-        sql_helper.convert_column("reports","n_mail_msgs","session_id","integer","bigint");
+        sql_helper.convert_column("reports","mail_msgs","event_id","integer","bigint");
+        sql_helper.convert_column("reports","mail_msgs","session_id","integer","bigint");
 
         # If the new index does not exist, create it
-        if not sql_helper.index_exists("reports","n_mail_msgs","msg_id", unique=True):
-            sql_helper.create_index("reports","n_mail_msgs","msg_id", unique=True);
+        if not sql_helper.index_exists("reports","mail_msgs","msg_id", unique=True):
+            sql_helper.create_index("reports","mail_msgs","msg_id", unique=True);
         # If the new index does exist, delete the old one
-        if sql_helper.index_exists("reports","n_mail_msgs","msg_id", unique=True):
-            sql_helper.drop_index("reports","n_mail_msgs","msg_id", unique=False);
+        if sql_helper.index_exists("reports","mail_msgs","msg_id", unique=True):
+            sql_helper.drop_index("reports","mail_msgs","msg_id", unique=False);
 
         # If the new index does not exist, create it
-        if not sql_helper.index_exists("reports","n_mail_msgs","event_id", unique=True):
-            sql_helper.create_index("reports","n_mail_msgs","event_id", unique=True);
+        if not sql_helper.index_exists("reports","mail_msgs","event_id", unique=True):
+            sql_helper.create_index("reports","mail_msgs","event_id", unique=True);
         # If the new index does exist, delete the old one
-        if sql_helper.index_exists("reports","n_mail_msgs","event_id", unique=True):
-            sql_helper.drop_index("reports","n_mail_msgs","event_id", unique=False);
+        if sql_helper.index_exists("reports","mail_msgs","event_id", unique=True):
+            sql_helper.drop_index("reports","mail_msgs","event_id", unique=False);
 
-        sql_helper.create_index("reports","n_mail_msgs","policy_id");
-        sql_helper.create_index("reports","n_mail_msgs","time_stamp");
+        sql_helper.create_index("reports","mail_msgs","policy_id");
+        sql_helper.create_index("reports","mail_msgs","time_stamp");
 
 reports.engine.register_node(MailCasing())

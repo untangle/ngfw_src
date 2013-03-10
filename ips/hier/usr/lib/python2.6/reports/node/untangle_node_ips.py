@@ -91,12 +91,12 @@ SELECT COALESCE(SUM(new_sessions),0)::int AS sessions,
        COALESCE(sum(CASE WHEN NULLIF(ips_description,'') IS NULL THEN 0 ELSE 1 END), 0) AS attacks,
        COALESCE(sum(ips_blocks), 0) AS blocks
 FROM reports.session_totals
-WHERE trunc_time >= %s::timestamp without time zone AND trunc_time < %s::timestamp without time zone"""
+WHERE time_stamp >= %s::timestamp without time zone AND time_stamp < %s::timestamp without time zone"""
 
         if host:
-            query = query + " AND hname = %s"
+            query = query + " AND hostname = %s"
         elif user:
-            query = query + " AND uid = %s"
+            query = query + " AND username = %s"
 
         conn = sql_helper.get_connection()
         curs = conn.cursor()
@@ -135,13 +135,13 @@ class TopTenAttacksByHits(Graph):
         query = """\
 SELECT ips_description, count(*) as hits_sum
 FROM reports.session_totals
-WHERE trunc_time >= %s::timestamp without time zone AND trunc_time < %s::timestamp without time zone
+WHERE time_stamp >= %s::timestamp without time zone AND time_stamp < %s::timestamp without time zone
 AND ips_description != ''"""
 
         if host:
-            query += " AND hname = %s"
+            query += " AND hostname = %s"
         elif user:
-            query += " AND uid = %s"
+            query += " AND username = %s"
 
         query += " GROUP BY ips_description ORDER BY hits_sum DESC"
 
@@ -204,9 +204,9 @@ class DailyUsage(Graph):
 
             extra_where = [("ips_description != ''", {})]
             if host:
-                extra_where.append(("hname = %(host)s", { 'host' : host }))
+                extra_where.append(("hostname = %(host)s", { 'host' : host }))
             elif user:
-                extra_where.append(("uid = %(user)s" , { 'user' : user }))
+                extra_where.append(("username = %(user)s" , { 'user' : user }))
 
             q, h = sql_helper.get_averaged_query(sums, "reports.session_totals",
                                                  start_date,
@@ -259,9 +259,9 @@ class IpsDetail(DetailSection):
         rv = [ColumnDesc('time_stamp', _('Time'), 'Date')]
 
         if not host:
-            rv.append(ColumnDesc('hname', _('Client'), 'HostLink'))
+            rv.append(ColumnDesc('hostname', _('Client'), 'HostLink'))
         if not user:
-            rv.append(ColumnDesc('uid', _('User'), 'UserLink'))
+            rv.append(ColumnDesc('username', _('User'), 'UserLink'))
 
         rv = rv + [ColumnDesc('ips_description', _('SID:description')),
                    ColumnDesc('ips_blocked', _('Blocked')),
@@ -277,9 +277,9 @@ class IpsDetail(DetailSection):
         sql = "SELECT time_stamp, "
 
         if not host:
-            sql = sql + "hname, "
+            sql = sql + "hostname, "
         if not user:
-            sql = sql + "uid, "
+            sql = sql + "username, "
 
         sql = sql + ("""ips_description, ips_blocked::text, host(c_server_addr), c_server_port
 FROM reports.sessions
@@ -289,9 +289,9 @@ AND ips_description != '' """ % (DateFromMx(start_date),
                                  DateFromMx(end_date)))
 
         if host:
-            sql = sql + (" AND hname = %s" % QuotedString(host))
+            sql = sql + (" AND hostname = %s" % QuotedString(host))
         if user:
-            sql = sql + (" AND uid = %s" % QuotedString(user))
+            sql = sql + (" AND username = %s" % QuotedString(user))
 
         return sql + " ORDER BY time_stamp DESC"
 

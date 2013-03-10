@@ -109,17 +109,17 @@ public class MessageInfoAddr extends LogEvent implements Serializable
         this.kind = kind;
     }
 
-    private static String sql = "INSERT INTO reports.n_mail_addrs " +
+    private static String sql = "INSERT INTO reports.mail_addrs " +
         "(time_stamp, " + 
         "session_id, client_intf, server_intf, " + 
         "c_client_addr, c_client_port, c_server_addr, c_server_port, " + 
         "s_client_addr, s_client_port, s_server_addr, s_server_port, " + 
         "policy_id,  " + 
-        "uid,  " + 
+        "username,  " + 
         "msg_id, subject, server_type,  " + 
         "addr_pos, addr, addr_name, addr_kind,  " + 
         "sender,  " + 
-        "hname) " + 
+        "hostname) " + 
         " VALUES " +
         "( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? )";
     

@@ -56,7 +56,7 @@ public class CaptureUserEvent extends LogEvent
     public AuthenticationType getAuthenticationType() { return AuthenticationType.valueOf(this.authenticationTypeValue); }
     public void setAuthenticationType( AuthenticationType newValue ) { this.authenticationTypeValue = newValue.toString(); }
 
-    private static String sql = "INSERT INTO reports.n_capture_user_events " +
+    private static String sql = "INSERT INTO reports.capture_user_events " +
         "(time_stamp, policy_id, login_name, event_info, auth_type, client_addr) " +
         "values ( ?, ?, ?, ?, ?, ? )";
 

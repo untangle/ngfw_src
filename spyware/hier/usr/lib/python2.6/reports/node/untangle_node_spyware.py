@@ -41,7 +41,7 @@ class Spyware(Node):
         ft.measures.append(Column('sw_accesses', 'integer', 'count(sw_access_ident)'))
         ft.dimensions.append(Column('sw_access_ident', 'text'))
 
-        ft = reports.engine.get_fact_table('reports.n_http_totals')
+        ft = reports.engine.get_fact_table('reports.http_totals')
         ft.measures.append(Column('sw_blacklisted', 'integer', 'count(sw_blacklisted)'))
 
         ft.measures.append(Column('sw_cookies', 'integer', 'count(sw_cookie_ident)'))
@@ -97,13 +97,13 @@ class SpywareHighlight(Highlight):
         query = """\
 SELECT COALESCE(sum(hits), 0)::int AS hits,
        COALESCE(sum(sw_blacklisted+sw_cookies), 0) AS blocks
-FROM reports.n_http_totals
-WHERE trunc_time >= %s::timestamp without time zone AND trunc_time < %s::timestamp without time zone"""
+FROM reports.http_totals
+WHERE time_stamp >= %s::timestamp without time zone AND time_stamp < %s::timestamp without time zone"""
 
         if host:
-            query = query + " AND hname = %s"
+            query = query + " AND hostname = %s"
         elif user:
-            query = query + " AND uid = %s"
+            query = query + " AND username = %s"
 
         conn = sql_helper.get_connection()
         curs = conn.cursor()
@@ -156,11 +156,11 @@ class HourlyRates(Graph):
 
             extra_where = []
             if host:
-                extra_where.append(("hname = %(host)s", { 'host' : host }))
+                extra_where.append(("hostname = %(host)s", { 'host' : host }))
             elif user:
-                extra_where.append(("uid = %(user)s" , { 'user' : user }))
+                extra_where.append(("username = %(user)s" , { 'user' : user }))
 
-            q, h = sql_helper.get_averaged_query(sums, "reports.n_http_totals",
+            q, h = sql_helper.get_averaged_query(sums, "reports.http_totals",
                                                  start_date,
                                                  end_date,
                                                  extra_where = extra_where,
@@ -213,9 +213,9 @@ class HourlyRates(Graph):
 
             extra_where = []
             if host:
-                extra_where.append(("hname = %(host)s", { 'host' : host }))
+                extra_where.append(("hostname = %(host)s", { 'host' : host }))
             elif user:
-                extra_where.append(("uid = %(user)s" , { 'user' : user }))
+                extra_where.append(("username = %(user)s" , { 'user' : user }))
 
             q, h = sql_helper.get_averaged_query(sums, "reports.session_totals",
                                                  end_date - mx.DateTime.DateTimeDelta(report_days),
@@ -281,11 +281,11 @@ class SpywareUrlsBlocked(Graph):
 
             extra_where = []
             if host:
-                extra_where.append(("hname = %(host)s", { 'host' : host }))
+                extra_where.append(("hostname = %(host)s", { 'host' : host }))
             elif user:
-                extra_where.append(("uid = %(user)s" , { 'user' : user }))
+                extra_where.append(("username = %(user)s" , { 'user' : user }))
 
-            q, h = sql_helper.get_averaged_query(sums, "reports.n_http_totals",
+            q, h = sql_helper.get_averaged_query(sums, "reports.http_totals",
                                                  start_date,
                                                  end_date,
                                                  extra_where = extra_where,
@@ -342,14 +342,14 @@ class TopTenBlockedSpywareSitesByHits(Graph):
 
         query = """\
 SELECT host, sum(sw_blacklisted + sw_cookies) as hits_sum
-FROM reports.n_http_totals
-WHERE trunc_time >= %s::timestamp without time zone AND trunc_time < %s::timestamp without time zone
+FROM reports.http_totals
+WHERE time_stamp >= %s::timestamp without time zone AND time_stamp < %s::timestamp without time zone
 AND (sw_blacklisted + sw_cookies) > 0"""
 
         if host:
-            query += " AND hname = %s"
+            query += " AND hostname = %s"
         elif user:
-            query += " AND uid = %s"
+            query += " AND username = %s"
 
         query = query + " GROUP BY host ORDER BY hits_sum DESC"
 
@@ -397,17 +397,17 @@ class TopTenBlockedHostsByHits(Graph):
         one_week = DateFromMx(end_date - mx.DateTime.DateTimeDelta(report_days))
 
         query = """\
-SELECT hname, sum(sw_blacklisted + sw_cookies) as hits_sum
-FROM reports.n_http_totals
-WHERE trunc_time >= %s::timestamp without time zone AND trunc_time < %s::timestamp without time zone
+SELECT hostname, sum(sw_blacklisted + sw_cookies) as hits_sum
+FROM reports.http_totals
+WHERE time_stamp >= %s::timestamp without time zone AND time_stamp < %s::timestamp without time zone
 AND (sw_blacklisted + sw_cookies) > 0"""
 
         if host:
-            query += " AND hname = %s"
+            query += " AND hostname = %s"
         elif user:
-            query += " AND uid = %s"
+            query += " AND username = %s"
 
-        query = query + " GROUP BY hname ORDER BY hits_sum DESC"
+        query = query + " GROUP BY hostname ORDER BY hits_sum DESC"
 
         conn = sql_helper.get_connection()
         try:
@@ -455,15 +455,15 @@ class TopTenBlockedCookies(Graph):
 
         query = """\
 SELECT sw_cookie_ident, count(*) as hits_sum
-FROM reports.n_http_totals
-WHERE trunc_time >= %s::timestamp without time zone AND trunc_time < %s::timestamp without time zone
+FROM reports.http_totals
+WHERE time_stamp >= %s::timestamp without time zone AND time_stamp < %s::timestamp without time zone
 AND sw_cookie_ident != ''
 AND sw_cookies > 0"""
 
         if host:
-            query += " AND hname = %s"
+            query += " AND hostname = %s"
         elif user:
-            query += " AND uid = %s"
+            query += " AND username = %s"
 
         query = query + " GROUP BY sw_cookie_ident ORDER BY hits_sum DESC"
 
@@ -527,11 +527,11 @@ class SpywareCookiesBlocked(Graph):
 
             extra_where = []
             if host:
-                extra_where.append(("hname = %(host)s", { 'host' : host }))
+                extra_where.append(("hostname = %(host)s", { 'host' : host }))
             elif user:
-                extra_where.append(("uid = %(user)s" , { 'user' : user }))
+                extra_where.append(("username = %(user)s" , { 'user' : user }))
 
-            q, h = sql_helper.get_averaged_query(sums, "reports.n_http_totals",
+            q, h = sql_helper.get_averaged_query(sums, "reports.http_totals",
                                                  start_date,
                                                  end_date,
                                                  extra_where = extra_where,
@@ -590,14 +590,14 @@ class TopTenSuspiciousTrafficSubnetsByHits(Graph):
         query = """\
 SELECT sw_access_ident, sum(sw_accesses) as hits_sum
 FROM reports.session_totals
-WHERE trunc_time >= %s::timestamp without time zone AND trunc_time < %s::timestamp without time zone
+WHERE time_stamp >= %s::timestamp without time zone AND time_stamp < %s::timestamp without time zone
 AND sw_access_ident != ''
 AND sw_accesses > 0"""
 
         if host:
-            query += " AND hname = %s"
+            query += " AND hostname = %s"
         elif user:
-            query += " AND uid = %s"
+            query += " AND username = %s"
 
         query += """
 GROUP BY sw_access_ident
@@ -647,18 +647,18 @@ class TopTenSuspiciousTrafficHostsByHits(Graph):
         one_week = DateFromMx(end_date - mx.DateTime.DateTimeDelta(report_days))
 
         query = """\
-SELECT hname, sum(sw_accesses) as hits_sum
+SELECT hostname, sum(sw_accesses) as hits_sum
 FROM reports.session_totals
-WHERE trunc_time >= %s::timestamp without time zone AND trunc_time < %s::timestamp without time zone
+WHERE time_stamp >= %s::timestamp without time zone AND time_stamp < %s::timestamp without time zone
 AND sw_access_ident != ''
 AND sw_accesses > 0"""
 
         if host:
-            query += " AND hname = %s"
+            query += " AND hostname = %s"
         elif user:
-            query += " AND uid = %s"
+            query += " AND username = %s"
 
-        query = query + " GROUP BY hname ORDER BY hits_sum DESC"
+        query = query + " GROUP BY hostname ORDER BY hits_sum DESC"
 
         conn = sql_helper.get_connection()
         try:
@@ -724,9 +724,9 @@ class SpywareSubnetsDetected(Graph):
             extra_where = [ ("NOT sw_accesses IS NULL",{}),
                             ("sw_access_ident != ''",{}) ]
             if host:
-                extra_where.append(("hname = %(host)s", { 'host' : host }))
+                extra_where.append(("hostname = %(host)s", { 'host' : host }))
             elif user:
-                extra_where.append(("uid = %(user)s" , { 'user' : user }))
+                extra_where.append(("username = %(user)s" , { 'user' : user }))
 
             q, h = sql_helper.get_averaged_query(sums, "reports.session_totals",
                                                  start_date,
@@ -781,14 +781,14 @@ class CookieDetail(DetailSection):
         rv = [ColumnDesc('time_stamp', _('Time'), 'Date')]
 
         if host:
-            rv.append(ColumnDesc('hname', _('Client')))
+            rv.append(ColumnDesc('hostname', _('Client')))
         else:
-            rv.append(ColumnDesc('hname', _('Client'), 'HostLink'))
+            rv.append(ColumnDesc('hostname', _('Client'), 'HostLink'))
 
         if user:
-            rv.append(ColumnDesc('uid', _('User')))
+            rv.append(ColumnDesc('username', _('User')))
         else:
-            rv.append(ColumnDesc('uid', _('User'), 'UserLink'))
+            rv.append(ColumnDesc('username', _('User'), 'UserLink'))
 
         rv += [ColumnDesc('sw_cookie_ident', _('Cookie')),
                ColumnDesc('s_server_addr', _('Server Ip')),
@@ -801,16 +801,16 @@ class CookieDetail(DetailSection):
             return None
 
         sql = """\
-SELECT time_stamp, hname, uid, sw_cookie_ident, host(s_server_addr), s_server_port
-FROM reports.n_http_events
+SELECT time_stamp, hostname, username, sw_cookie_ident, host(s_server_addr), s_server_port
+FROM reports.http_events
 WHERE time_stamp >= %s::timestamp without time zone AND time_stamp < %s::timestamp without time zone
       AND NOT sw_cookie_ident IS NULL AND sw_cookie_ident != ''
 """ % (DateFromMx(start_date), DateFromMx(end_date))
 
         if host:
-            sql += " AND hname = %s" % QuotedString(host)
+            sql += " AND hostname = %s" % QuotedString(host)
         if user:
-            sql += " AND uid = %s" % QuotedString(user)
+            sql += " AND username = %s" % QuotedString(user)
 
         return sql + " ORDER BY time_stamp DESC"
 
@@ -825,14 +825,14 @@ class UrlBlockDetail(DetailSection):
         rv = [ColumnDesc('time_stamp', _('Time'), 'Date')]
 
         if host:
-            rv.append(ColumnDesc('hname', _('Client')))
+            rv.append(ColumnDesc('hostname', _('Client')))
         else:
-            rv.append(ColumnDesc('hname', _('Client'), 'HostLink'))
+            rv.append(ColumnDesc('hostname', _('Client'), 'HostLink'))
 
         if user:
-            rv.append(ColumnDesc('uid', _('User')))
+            rv.append(ColumnDesc('username', _('User')))
         else:
-            rv.append(ColumnDesc('uid', _('User'), 'UserLink'))
+            rv.append(ColumnDesc('username', _('User'), 'UserLink'))
 
         rv += [ColumnDesc('s_server', _('Server')),
                ColumnDesc('uri', _('Uri')),
@@ -846,16 +846,16 @@ class UrlBlockDetail(DetailSection):
             return None
 
         sql = """\
-SELECT time_stamp, hname, uid, 'http://' || host as s_server, uri, host(s_server_addr),
+SELECT time_stamp, hostname, username, 'http://' || host as s_server, uri, host(s_server_addr),
        s_server_port
-FROM reports.n_http_events
+FROM reports.http_events
 WHERE time_stamp >= %s::timestamp without time zone AND time_stamp < %s::timestamp without time zone AND sw_blacklisted
 """ % (DateFromMx(start_date), DateFromMx(end_date))
 
         if host:
-            sql += " AND hname = %s" % QuotedString(host)
+            sql += " AND hostname = %s" % QuotedString(host)
         if user:
-            sql += " AND uid = %s" % QuotedString(user)
+            sql += " AND username = %s" % QuotedString(user)
 
         return sql
 
@@ -870,14 +870,14 @@ class SubnetDetail(DetailSection):
         rv = [ColumnDesc('time_stamp', _('Time'), 'Date')]
 
         if host:
-            rv.append(ColumnDesc('hname', _('Client')))
+            rv.append(ColumnDesc('hostname', _('Client')))
         else:
-            rv.append(ColumnDesc('hname', _('Client'), 'HostLink'))
+            rv.append(ColumnDesc('hostname', _('Client'), 'HostLink'))
 
         if user:
-            rv.append(ColumnDesc('uid', _('User')))
+            rv.append(ColumnDesc('username', _('User')))
         else:
-            rv.append(ColumnDesc('uid', _('User'), 'UserLink'))
+            rv.append(ColumnDesc('username', _('User'), 'UserLink'))
 
         rv += [ColumnDesc('sw_blacklisted', _('Subnet')),
                ColumnDesc('c_server_addr', _('Server Ip')),
@@ -890,16 +890,16 @@ class SubnetDetail(DetailSection):
             return None
 
         sql = """\
-SELECT time_stamp, hname, uid, sw_access_ident, host(c_server_addr), c_server_port
+SELECT time_stamp, hostname, username, sw_access_ident, host(c_server_addr), c_server_port
 FROM reports.sessions
 WHERE time_stamp >= %s::timestamp without time zone AND time_stamp < %s::timestamp without time zone AND NOT sw_access_ident IS NULL
       AND sw_access_ident != ''
 """ % (DateFromMx(start_date), DateFromMx(end_date))
 
         if host:
-            sql += " AND hname = %s" % QuotedString(host)
+            sql += " AND hostname = %s" % QuotedString(host)
         if user:
-            sql += " AND uid = %s" % QuotedString(user)
+            sql += " AND username = %s" % QuotedString(user)
 
         return sql + " ORDER BY time_stamp DESC"
 
