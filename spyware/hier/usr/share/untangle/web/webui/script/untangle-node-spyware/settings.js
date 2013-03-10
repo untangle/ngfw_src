@@ -451,7 +451,7 @@ if (!Ung.hasResource["Ung.Spyware"]) {
                 }, {
                     name: 'swCookie'
                 }, {
-                    name: 'sw_access_ident'
+                    name: 'spyware_access_ident'
                 }, {
                     name: 'uri'
                 }, {
@@ -521,7 +521,7 @@ if (!Ung.hasResource["Ung.Spyware"]) {
                 }, {
                     name: 'swCookie'
                 }, {
-                    name: 'sw_access_ident'
+                    name: 'spyware_access_ident'
                 }, {
                     name: 'uri'
                 }, {
@@ -588,7 +588,7 @@ if (!Ung.hasResource["Ung.Spyware"]) {
                 }, {
                     name: 'swCookie'
                 }, {
-                    name: 'sw_access_ident'
+                    name: 'spyware_access_ident'
                 }, {
                     name: 'client',
                     mapping: 'c_client_addr'
@@ -618,7 +618,7 @@ if (!Ung.hasResource["Ung.Spyware"]) {
                     header: this.i18n._("subnet"),
                     width: 120,
                     sortable: true,
-                    dataIndex: 'sw_access_ident'
+                    dataIndex: 'spyware_access_ident'
                 }, {
                     header: this.i18n._("server"),
                     width: Ung.Util.ipFieldWidth,

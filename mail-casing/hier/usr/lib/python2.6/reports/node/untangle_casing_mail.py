@@ -92,8 +92,8 @@ CREATE TABLE reports.mail_addrs (
     phish_is_spam boolean,
     phish_action character,
     vendor text,
-    virus_commtouch_clean boolean,
-    virus_commtouch_name text)""")
+    commtouchav_clean boolean,
+    commtouchav_name text)""")
 
         # remove obsolete columns
         sql_helper.drop_column('reports', 'mail_addrs', 'policy_inbound')
@@ -122,8 +122,8 @@ CREATE TABLE reports.mail_addrs (
         sql_helper.add_column('reports', 'mail_addrs', 'phish_is_spam', 'boolean')
         sql_helper.add_column('reports', 'mail_addrs', 'phish_action', 'character')
         sql_helper.add_column('reports', 'mail_addrs', 'vendor', 'text')
-        sql_helper.add_column('reports', 'mail_addrs', 'virus_commtouch_clean', 'boolean')
-        sql_helper.add_column('reports', 'mail_addrs', 'virus_commtouch_name', 'text')
+        sql_helper.add_column('reports', 'mail_addrs', 'commtouchav_clean', 'boolean')
+        sql_helper.add_column('reports', 'mail_addrs', 'commtouchav_name', 'text')
 
         # we used to create event_id as serial instead of bigserial - convert if necessary
         sql_helper.convert_column("reports","mail_addrs","event_id","integer","bigint");
@@ -143,7 +143,7 @@ CREATE TABLE reports.mail_addrs (
         sql_helper.create_index("reports","mail_addrs","msg_id", unique=False);
 
         # virus blocker event log query indexes
-        # sql_helper.create_index("reports","mail_addrs","virus_commtouch_clean");
+        # sql_helper.create_index("reports","mail_addrs","commtouchav_clean");
         # sql_helper.create_index("reports","mail_addrs","virus_clam_clean");
         # sql_helper.create_index("reports","mail_addrs","virus_kaspersky_clean");
 
@@ -215,8 +215,8 @@ CREATE TABLE reports.mail_msgs (
     phish_is_spam boolean,
     phish_action character,
     vendor text,
-    virus_commtouch_clean boolean,
-    virus_commtouch_name text)""")
+    commtouchav_clean boolean,
+    commtouchav_name text)""")
 
         # remove obsolete columns
         sql_helper.drop_column('reports', 'mail_msgs', 'policy_inbound')
@@ -245,8 +245,8 @@ CREATE TABLE reports.mail_msgs (
         sql_helper.add_column('reports', 'mail_msgs', 'phish_is_spam', 'boolean')
         sql_helper.add_column('reports', 'mail_msgs', 'phish_action', 'character')
         sql_helper.add_column('reports', 'mail_msgs', 'vendor', 'text')
-        sql_helper.add_column('reports', 'mail_msgs', 'virus_commtouch_clean', 'boolean')
-        sql_helper.add_column('reports', 'mail_msgs', 'virus_commtouch_name', 'text')
+        sql_helper.add_column('reports', 'mail_msgs', 'commtouchav_clean', 'boolean')
+        sql_helper.add_column('reports', 'mail_msgs', 'commtouchav_name', 'text')
 
         # we used to create event_id as serial instead of bigserial - convert if necessary
         sql_helper.convert_column("reports","mail_msgs","event_id","integer","bigint");

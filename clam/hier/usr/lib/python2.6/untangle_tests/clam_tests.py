@@ -20,7 +20,7 @@ class ClamTests(VirusTests):
         return "untangle-node-clam"
 
     @staticmethod
-    def vendorName():
+    def shortName():
         return "clam"
 
     # verify daemon is running

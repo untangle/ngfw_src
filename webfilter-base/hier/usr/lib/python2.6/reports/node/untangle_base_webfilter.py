@@ -35,11 +35,11 @@ _ = reports.i18n_helper.get_translation('untangle-base-webfilter').lgettext
 def N_(message): return message
 
 class WebFilterBaseNode(Node):
-    def __init__(self, node_name, title):
+    def __init__(self, node_name, title, short_name):
         Node.__init__(self, node_name)
 
         self.__title = title
-        self.__node_name = node_name
+        self.__short_name = short_name
 
     def parents(self):
         return ['untangle-casing-http']
@@ -48,17 +48,17 @@ class WebFilterBaseNode(Node):
     def setup(self):
         ft = reports.engine.get_fact_table('reports.http_totals')
 
-        ft.measures.append(Column('%s_blocks' % self.__node_name,
+        ft.measures.append(Column('%s_blocks' % self.__short_name,
                                   'integer',
                                   "count(CASE WHEN %s_blocked THEN 1 ELSE null END)"
-                                  % self.__node_name))
-        ft.measures.append(Column('%s_violations' % self.__node_name,
+                                  % self.__short_name))
+        ft.measures.append(Column('%s_violations' % self.__short_name,
                                   'integer',
                                   "count(CASE WHEN %s_flagged THEN 1 ELSE null END)"
-                                  % self.__node_name))
-        ft.dimensions.append(Column('%s_category' % self.__node_name,
+                                  % self.__short_name))
+        ft.dimensions.append(Column('%s_category' % self.__short_name,
                                     'text'))
-        ft.dimensions.append(Column('%s_reason' % self.__node_name,
+        ft.dimensions.append(Column('%s_reason' % self.__short_name,
                                     'text'))
 
     def get_toc_membership(self):
@@ -68,29 +68,29 @@ class WebFilterBaseNode(Node):
         sections = []
 
         s = SummarySection('summary', _('Summary Report'),
-                           [WebHighlight(self.name, self.__node_name),
-                            DailyWebUsage(self.__node_name),
-                            TotalWebUsage(self.__node_name),
-                            TopTenWebBrowsingHostsByHits(self.__node_name),
-                            TopTenWebBrowsingHostsBySize(self.__node_name),
-                            TopTenWebBrowsingUsersByHits(self.__node_name),
-                            TopTenWebBrowsingUsersBySize(self.__node_name),
-                            TopTenWebPolicyViolationsByHits(self.__node_name),
-                            TopTenWebBlockedPolicyViolationsByHits(self.__node_name),
-                            TopTenWebsitesByHits(self.__node_name),
-                            TopTenWebsitesBySize(self.__node_name),
-                            TopTenWebPolicyViolatorsByHits(self.__node_name),
-                            TopTenWebPolicyViolatorsADByHits(self.__node_name),
-                            TopTenPolicyViolations(self.__node_name),
-                            TopTenBlockedPolicyViolations(self.__node_name)])
+                           [WebHighlight(self.name, self.__short_name),
+                            DailyWebUsage(self.__short_name),
+                            TotalWebUsage(self.__short_name),
+                            TopTenWebBrowsingHostsByHits(self.__short_name),
+                            TopTenWebBrowsingHostsBySize(self.__short_name),
+                            TopTenWebBrowsingUsersByHits(self.__short_name),
+                            TopTenWebBrowsingUsersBySize(self.__short_name),
+                            TopTenWebPolicyViolationsByHits(self.__short_name),
+                            TopTenWebBlockedPolicyViolationsByHits(self.__short_name),
+                            TopTenWebsitesByHits(self.__short_name),
+                            TopTenWebsitesBySize(self.__short_name),
+                            TopTenWebPolicyViolatorsByHits(self.__short_name),
+                            TopTenWebPolicyViolatorsADByHits(self.__short_name),
+                            TopTenPolicyViolations(self.__short_name),
+                            TopTenBlockedPolicyViolations(self.__short_name)])
         sections.append(s)
 
-        sections.append(WebFilterDetail(self.__node_name))
-        sections.append(WebFilterDetailAll(self.__node_name))
-        sections.append(WebFilterDetailDomains(self.__node_name))
+        sections.append(WebFilterDetail(self.__short_name))
+        sections.append(WebFilterDetailAll(self.__short_name))
+        sections.append(WebFilterDetailDomains(self.__short_name))
 
-        if self.__node_name == 'sitefilter':
-            sections.append(WebFilterDetailUnblock(self.__node_name))
+        if self.__short_name == 'sitefilter':
+            sections.append(WebFilterDetailUnblock(self.__short_name))
 
         return Report(self, sections)
 
@@ -105,7 +105,7 @@ class WebHighlight(Highlight):
                            _("web hits and detected") + " " +
                            "%(violations)s" + " " + _("violations of which") +
                            " " + "%(blocks)s" + " " + _("were blocked"))
-        self.__node_name = node_name
+        self.__short_name = node_name
 
     @print_timing
     def get_highlights(self, end_date, report_days,
@@ -122,7 +122,7 @@ SELECT COALESCE(sum(hits), 0)::int AS hits,
        COALESCE(sum(%s_blocks), 0)::int AS blocks
 FROM reports.http_totals
 WHERE time_stamp >= %%s AND time_stamp < %%s
-""" % (self.__node_name, self.__node_name)
+""" % (self.__short_name, self.__short_name)
 
         if host:
             query = query + " AND hostname = %s"
@@ -152,7 +152,7 @@ class DailyWebUsage(Graph):
     def __init__(self, node_name):
         Graph.__init__(self, 'web-usage', _('Web Usage'))
 
-        self.__node_name = node_name
+        self.__short_name = node_name
 
     @print_timing
     def get_graph(self, end_date, report_days, host=None, user=None, email=None):
@@ -168,8 +168,8 @@ class DailyWebUsage(Graph):
 
         try:
             sums = ["COALESCE(SUM(hits), 0)::float",
-                    "COALESCE(SUM(%s_blocks), 0)::float" % (self.__node_name,),
-                    "COALESCE(SUM(%s_violations), 0)::float" % (self.__node_name,)]
+                    "COALESCE(SUM(%s_blocks), 0)::float" % (self.__short_name,),
+                    "COALESCE(SUM(%s_violations), 0)::float" % (self.__short_name,)]
 
             extra_where = []
             if host:
@@ -250,7 +250,7 @@ class TotalWebUsage(Graph):
     def __init__(self, node_name):
         Graph.__init__(self, 'total-web-usage', _('Total Web Usage'))
 
-        self.__node_name = node_name
+        self.__short_name = node_name
 
     @print_timing
     def get_graph(self, end_date, report_days, host=None, user=None,
@@ -266,8 +266,8 @@ SELECT COALESCE(sum(hits)::int, 0),
        COALESCE(sum(%s_violations), 0)::int AS violations,
        COALESCE(sum(%s_blocks), 0)::int AS blocks
 FROM reports.http_totals
-WHERE time_stamp >= %%s AND time_stamp < %%s""" % (self.__node_name,
-                                                   self.__node_name)
+WHERE time_stamp >= %%s AND time_stamp < %%s""" % (self.__short_name,
+                                                   self.__short_name)
         if host:
             query = query + " AND hostname = %s"
         elif user:
@@ -317,7 +317,7 @@ class TopTenWebPolicyViolationsByHits(Graph):
         Graph.__init__(self, 'top-categories-of-violations-by-hits',
                        _('Top Categories Of Violations (by Hits)'))
 
-        self.__node_name = node_name
+        self.__short_name = node_name
 
     @print_timing
     def get_graph(self, end_date, report_days, host=None, user=None,
@@ -333,14 +333,14 @@ SELECT %s_category, count(*)::int AS blocks_sum
 FROM reports.http_totals
 WHERE time_stamp >= %%s AND time_stamp < %%s
 AND %s_violations > 0
-""" % (2 * (self.__node_name,))
+""" % (2 * (self.__short_name,))
         if host:
             query = query + " AND hostname = %s"
         elif user:
             query = query + " AND username = %s"
         query += """
 GROUP BY %s_category ORDER BY blocks_sum DESC
-""" % (self.__node_name,)
+""" % (self.__short_name,)
 
         conn = sql_helper.get_connection()
         try:
@@ -380,7 +380,7 @@ class TopTenWebBlockedPolicyViolationsByHits(Graph):
         Graph.__init__(self, 'top-web-categories-of-blocked-violations-by-hits',
                        _('Top Categories Of Blocked Violations (by Hits)'))
 
-        self.__node_name = node_name
+        self.__short_name = node_name
 
     @print_timing
     def get_graph(self, end_date, report_days, host=None, user=None,
@@ -396,14 +396,14 @@ SELECT %s_category, sum(%s_blocks)::int AS blocks_sum
 FROM reports.http_totals
 WHERE time_stamp >= %%s AND time_stamp < %%s
 AND %s_blocks > 0
-""" % (3 * (self.__node_name,))
+""" % (3 * (self.__short_name,))
         if host:
             query = query + " AND hostname = %s"
         elif user:
             query = query + " AND username = %s"
         query += """
 GROUP BY %s_category ORDER BY blocks_sum DESC""" \
-            % self.__node_name
+            % self.__short_name
 
         conn = sql_helper.get_connection()
         try:
@@ -442,7 +442,7 @@ class TopTenWebBrowsingHostsByHits(Graph):
         Graph.__init__(self, 'top-web-browsing-hosts-by-hits',
                        _('Top Web Browsing Hosts (by Hits)'))
 
-        self.__node_name = node_name
+        self.__short_name = node_name
 
     @print_timing
     def get_graph(self, end_date, report_days, host=None, user=None,
@@ -490,7 +490,7 @@ class TopTenWebBrowsingUsersByHits(Graph):
         Graph.__init__(self, 'top-web-browsing-users-by-hits',
                        _('Top Web Browsing Users (by Hits)'))
 
-        self.__node_name = node_name
+        self.__short_name = node_name
 
     @print_timing
     def get_graph(self, end_date, report_days, host=None, user=None,
@@ -538,7 +538,7 @@ class TopTenWebBrowsingUsersBySize(Graph):
         Graph.__init__(self, 'top-web-browsing-users-by-size',
                        _('Top Web Browsing Users (by Size)'))
 
-        self.__node_name = node_name
+        self.__short_name = node_name
 
     @print_timing
     def get_graph(self, end_date, report_days, host=None, user=None,
@@ -586,7 +586,7 @@ class TopTenWebPolicyViolatorsByHits(Graph):
         Graph.__init__(self, 'top-host-violators-by-hits',
                        _('Top Host Violators (by Hits)'))
 
-        self.__node_name = node_name
+        self.__short_name = node_name
 
     @print_timing
     def get_graph(self, end_date, report_days, host=None, user=None,
@@ -603,7 +603,7 @@ FROM reports.http_totals
 WHERE time_stamp >= %%s AND time_stamp < %%s
 AND %s_blocks > 0
 GROUP BY hostname
-ORDER BY blocks_sum DESC""" % ((self.__node_name,)*2)
+ORDER BY blocks_sum DESC""" % ((self.__short_name,)*2)
 
         conn = sql_helper.get_connection()
         try:
@@ -636,7 +636,7 @@ class TopTenWebPolicyViolatorsADByHits(Graph):
         Graph.__init__(self, 'top-violators-by-hits',
                        _('Top User Violators (by Hits)'))
 
-        self.__node_name = node_name
+        self.__short_name = node_name
 
     @print_timing
     def get_graph(self, end_date, report_days, host=None, user=None,
@@ -654,7 +654,7 @@ WHERE time_stamp >= %%s AND time_stamp < %%s
 AND %s_blocks > 0
 AND username != ''
 GROUP BY username ORDER BY blocks_sum DESC""" \
-            % (2 * (self.__node_name,))
+            % (2 * (self.__short_name,))
 
         conn = sql_helper.get_connection()
         try:
@@ -686,7 +686,7 @@ class TopTenWebBrowsingHostsBySize(Graph):
         Graph.__init__(self, 'top-web-browsing-hosts-by-size',
                        _('Top Web Browsing Hosts (by Size)'))
 
-        self.__node_name = node_name
+        self.__short_name = node_name
 
     @print_timing
     def get_graph(self, end_date, report_days, host=None, user=None,
@@ -734,7 +734,7 @@ class TopTenWebsitesByHits(Graph):
         Graph.__init__(self, 'top-websites-by-hits',
                        _('Top Websites (by Hits)'))
 
-        self.__node_name = node_name
+        self.__short_name = node_name
 
     @print_timing
     def get_graph(self, end_date, report_days, host=None, user=None,
@@ -791,7 +791,7 @@ class TopTenWebsitesBySize(Graph):
         Graph.__init__(self, 'top-websites-by-size',
                        _('Top Websites (by Size)'))
 
-        self.__node_name = node_name
+        self.__short_name = node_name
 
     @print_timing
     def get_graph(self, end_date, report_days, host=None, user=None,
@@ -850,7 +850,7 @@ class TopTenPolicyViolations(Graph):
         Graph.__init__(self, 'top-violations',
                        _('Top Violations'))
 
-        self.__node_name = node_name
+        self.__short_name = node_name
 
     @print_timing
     def get_graph(self, end_date, report_days, host=None, user=None,
@@ -866,7 +866,7 @@ SELECT host, sum(hits)::int as hits_sum
 FROM reports.http_totals
 WHERE time_stamp >= %%s AND time_stamp < %%s
 AND %s_violations > 0
-""" % (self.__node_name,)
+""" % (self.__short_name,)
         if host:
             query += " AND hostname = %s"
         elif user:
@@ -911,7 +911,7 @@ class TopTenBlockedPolicyViolations(Graph):
         Graph.__init__(self, 'top-blocked-violations',
                        _('Top Blocked Violations'))
 
-        self.__node_name = node_name
+        self.__short_name = node_name
 
     @print_timing
     def get_graph(self, end_date, report_days, host=None, user=None,
@@ -927,7 +927,7 @@ SELECT host, COALESCE(sum(hits), 0)::int as hits_sum
 FROM reports.http_totals
 WHERE time_stamp >= %%s AND time_stamp < %%s
 AND %s_blocks > 0
-""" % (self.__node_name,)
+""" % (self.__short_name,)
         if host:
             query += " AND hostname = %s"
         elif user:
@@ -968,7 +968,7 @@ class WebFilterDetail(DetailSection):
     def __init__(self, node_name):
         DetailSection.__init__(self, 'violations', _('Violation Events'))
 
-        self.__node_name = node_name
+        self.__short_name = node_name
 
     def get_columns(self, host=None, user=None, email=None):
         if email:
@@ -986,9 +986,9 @@ class WebFilterDetail(DetailSection):
         else:
             rv.append(ColumnDesc('username', _('User'), 'UserLink'))
 
-        rv += [ColumnDesc('%s_category' % self.__node_name, _('Category')),
-               ColumnDesc('%s_flagged' % self.__node_name, _('Flagged')),
-               ColumnDesc('%s_blocked' % self.__node_name, _('Blocked')),
+        rv += [ColumnDesc('%s_category' % self.__short_name, _('Category')),
+               ColumnDesc('%s_flagged' % self.__short_name, _('Flagged')),
+               ColumnDesc('%s_blocked' % self.__short_name, _('Blocked')),
                ColumnDesc('url', _('Url'), 'URL'),
                ColumnDesc('s_server_addr', _('Server Ip')),
                ColumnDesc('c_client_addr', _('Client Ip'))]
@@ -1007,9 +1007,9 @@ SELECT time_stamp, hostname, username, %s_category,
 FROM reports.http_events
 WHERE time_stamp >= %s::timestamp without time zone AND time_stamp < %s::timestamp without time zone
 AND (%s_flagged OR %s_blocked)
-""" % (self.__node_name, self.__node_name, self.__node_name,
+""" % (self.__short_name, self.__short_name, self.__short_name,
        DateFromMx(start_date), DateFromMx(end_date),
-       self.__node_name, self.__node_name)
+       self.__short_name, self.__short_name)
 
         if host:
             sql += " AND hostname = %s" % QuotedString(host)
@@ -1022,7 +1022,7 @@ class WebFilterDetailUnblock(DetailSection):
     def __init__(self, node_name):
         DetailSection.__init__(self, 'unblocks', _('Unblock Events'))
 
-        self.__node_name = node_name
+        self.__short_name = node_name
 
     def get_columns(self, host=None, user=None, email=None):
         if email:
@@ -1058,7 +1058,7 @@ FROM reports.http_events
 WHERE time_stamp >= %s::timestamp without time zone AND time_stamp < %s::timestamp without time zone
 AND %s_category = 'unblocked'
 """ % (DateFromMx(start_date), DateFromMx(end_date),
-       self.__node_name)
+       self.__short_name)
 
         if host:
             sql += " AND hostname = %s" % QuotedString(host)
@@ -1071,7 +1071,7 @@ class WebFilterDetailAll(DetailSection):
     def __init__(self, node_name):
         DetailSection.__init__(self, 'events', _('All Events'))
 
-        self.__node_name = node_name
+        self.__short_name = node_name
 
     def get_columns(self, host=None, user=None, email=None):
         if email:
@@ -1089,9 +1089,9 @@ class WebFilterDetailAll(DetailSection):
         else:
             rv.append(ColumnDesc('username', _('User'), 'UserLink'))
 
-        rv += [ColumnDesc('%s_category' % self.__node_name, _('Category')),
-               ColumnDesc('%s_flagged' % self.__node_name, _('Flagged')),
-               ColumnDesc('%s_blocked' % self.__node_name, _('Blocked')),
+        rv += [ColumnDesc('%s_category' % self.__short_name, _('Category')),
+               ColumnDesc('%s_flagged' % self.__short_name, _('Flagged')),
+               ColumnDesc('%s_blocked' % self.__short_name, _('Blocked')),
                ColumnDesc('url', _('Url'), 'URL'),
                ColumnDesc('s_server_addr', _('Server Ip')),
                ColumnDesc('c_client_addr', _('Client Ip'))]
@@ -1108,9 +1108,9 @@ SELECT time_stamp, hostname, username, %s_category,
        CASE s_server_port WHEN 443 THEN 'https://' ELSE 'http://' END || host || uri,
        host(s_server_addr), c_client_addr::text
 FROM reports.http_events
-WHERE time_stamp >= %s::timestamp without time zone AND time_stamp < %s::timestamp without time zone""" % (self.__node_name,
-                                                 self.__node_name,
-                                                 self.__node_name,
+WHERE time_stamp >= %s::timestamp without time zone AND time_stamp < %s::timestamp without time zone""" % (self.__short_name,
+                                                 self.__short_name,
+                                                 self.__short_name,
                                                  DateFromMx(start_date),
                                                  DateFromMx(end_date))
 
@@ -1125,7 +1125,7 @@ class WebFilterDetailDomains(DetailSection):
     def __init__(self, node_name):
         DetailSection.__init__(self, 'domains', _('Site Events'))
 
-        self.__node_name = node_name
+        self.__short_name = node_name
 
     def get_columns(self, host=None, user=None, email=None):
         if email:
@@ -1166,7 +1166,7 @@ class WebUsageByCategory(Graph):
         Graph.__init__(self, 'web-usage-by-category',
                        _('Web Usage By Category'))
 
-        self.__node_name = node_name
+        self.__short_name = node_name
 
     @print_timing
     def get_graph(self, end_date, report_days, host=None, user=None,
@@ -1180,14 +1180,14 @@ class WebUsageByCategory(Graph):
         query = """\
 SELECT %s_category, count(*) AS count_events
 FROM reports.http_events
-WHERE time_stamp >= %%s AND time_stamp < %%s""" % self.__node_name
+WHERE time_stamp >= %%s AND time_stamp < %%s""" % self.__short_name
         if host:
             query += " AND hostname = %s"
         elif user:
             query += " AND username = %s"
         query += """\
 GROUP BY %s_category
-ORDER BY count_events DESC""" % self.__node_name
+ORDER BY count_events DESC""" % self.__short_name
 
         conn = sql_helper.get_connection()
         try:
@@ -1226,7 +1226,7 @@ class ViolationsByCategory(Graph):
         Graph.__init__(self, 'violations-by-category',
                        _('Violations By Category'))
 
-        self.__node_name = node_name
+        self.__short_name = node_name
 
     @print_timing
     def get_graph(self, end_date, report_days, host=None, user=None,
@@ -1241,14 +1241,14 @@ class ViolationsByCategory(Graph):
 SELECT %s_category, count(*) as blocks_sum
 FROM reports.http_events
 WHERE time_stamp >= %%s AND time_stamp < %%s
-AND %s_flagged """ % (2 * (self.__node_name,))
+AND %s_flagged """ % (2 * (self.__short_name,))
         if host:
             query += " AND hostname = %s"
         elif user:
             query += " AND username = %s"
         query += """\
 GROUP BY %s_category
-ORDER BY blocks_sum DESC""" % self.__node_name
+ORDER BY blocks_sum DESC""" % self.__short_name
 
         conn = sql_helper.get_connection()
         try:

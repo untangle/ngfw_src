@@ -221,7 +221,7 @@ if (!Ung.hasResource["Ung.Protofilter"]) {
                     sortType: Ung.SortTypes.asTimestamp
                 }, {
                     name: 'blocked',
-                    mapping: 'pf_blocked'
+                    mapping: 'protofilter_blocked'
                 }, {
                     name: 'client',
                     mapping: 'c_client_addr'
@@ -233,7 +233,7 @@ if (!Ung.hasResource["Ung.Protofilter"]) {
                 }, {
                     name: 'protocol',
                     type: 'string',
-                    mapping: 'pf_protocol'
+                    mapping: 'protofilter_protocol'
                 }],
                 columns: [{
                     header: this.i18n._("Timestamp"),

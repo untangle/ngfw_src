@@ -38,14 +38,14 @@ class Spyware(Node):
 
     def setup(self):
         ft = reports.engine.get_fact_table('reports.session_totals')
-        ft.measures.append(Column('sw_accesses', 'integer', 'count(sw_access_ident)'))
-        ft.dimensions.append(Column('sw_access_ident', 'text'))
+        ft.measures.append(Column('sw_accesses', 'integer', 'count(spyware_access_ident)'))
+        ft.dimensions.append(Column('spyware_access_ident', 'text'))
 
         ft = reports.engine.get_fact_table('reports.http_totals')
-        ft.measures.append(Column('sw_blacklisted', 'integer', 'count(sw_blacklisted)'))
+        ft.measures.append(Column('spyware_blocked', 'integer', 'count(spyware_blocked)'))
 
-        ft.measures.append(Column('sw_cookies', 'integer', 'count(sw_cookie_ident)'))
-        ft.dimensions.append(Column('sw_cookie_ident', 'text'))
+        ft.measures.append(Column('sw_cookies', 'integer', 'count(spyware_cookie_ident)'))
+        ft.dimensions.append(Column('spyware_cookie_ident', 'text'))
 
     def get_toc_membership(self):
         return [TOP_LEVEL, HOST_DRILLDOWN, USER_DRILLDOWN]
@@ -96,7 +96,7 @@ class SpywareHighlight(Highlight):
 
         query = """\
 SELECT COALESCE(sum(hits), 0)::int AS hits,
-       COALESCE(sum(sw_blacklisted+sw_cookies), 0) AS blocks
+       COALESCE(sum(spyware_blocked+sw_cookies), 0) AS blocks
 FROM reports.http_totals
 WHERE time_stamp >= %s::timestamp without time zone AND time_stamp < %s::timestamp without time zone"""
 
@@ -151,7 +151,7 @@ class HourlyRates(Graph):
                 unit = "Day"
                 formatter = DATE_FORMATTER
 
-            sums = ["coalesce(sum(sw_blacklisted), 0)",
+            sums = ["coalesce(sum(spyware_blocked), 0)",
                     "coalesce(sum(sw_cookies), 0)"]
 
             extra_where = []
@@ -168,16 +168,16 @@ class HourlyRates(Graph):
             curs.execute(q, h)
 
             dates = []
-            sw_blacklisted = []
+            spyware_blocked = []
             sw_cookies = []
             
             for r in curs.fetchall():
                 dates.append(r[0])
-                sw_blacklisted.append(r[1])
+                spyware_blocked.append(r[1])
                 sw_cookies.append(r[2])
 
-            if not sw_blacklisted:
-                sw_blacklisted = [0,]
+            if not spyware_blocked:
+                spyware_blocked = [0,]
             if not sw_cookies:
                 sw_cookies = [0,]
 
@@ -185,10 +185,10 @@ class HourlyRates(Graph):
                                             mx.DateTime.DateTimeDeltaFromSeconds(time_interval))
 
             ks = KeyStatistic(_('Avg Urls Blocked'),
-                              sum(sw_blacklisted) / len(rp),
+                              sum(spyware_blocked) / len(rp),
                               _('Blocks')+'/'+_(unit))
             lks.append(ks)
-            ks = KeyStatistic(_('Max Urls Blocked'), max(sw_blacklisted),
+            ks = KeyStatistic(_('Max Urls Blocked'), max(spyware_blocked),
                               _('Blocks')+'/'+_(unit))
             lks.append(ks)
             ks = KeyStatistic(_('Avg Cookies Blocked'),
@@ -206,7 +206,7 @@ class HourlyRates(Graph):
                          major_formatter=formatter,
                          required_points=rp)
 
-            plot.add_dataset(dates, sw_blacklisted, label=_('Urls'))
+            plot.add_dataset(dates, spyware_blocked, label=_('Urls'))
             plot.add_dataset(dates, sw_cookies, label=_('Cookies'))
 
             sums = ["coalesce(sum(sw_accesses), 0)"]
@@ -277,7 +277,7 @@ class SpywareUrlsBlocked(Graph):
                 unit = "Day"
                 formatter = DATE_FORMATTER
 
-            sums = ["coalesce(sum(sw_blacklisted), 0)",]
+            sums = ["coalesce(sum(spyware_blocked), 0)",]
 
             extra_where = []
             if host:
@@ -293,23 +293,23 @@ class SpywareUrlsBlocked(Graph):
             curs.execute(q, h)
 
             dates = []
-            sw_blacklisted = []
+            spyware_blocked = []
             
             for r in curs.fetchall():
                 dates.append(r[0])
-                sw_blacklisted.append(r[1])
+                spyware_blocked.append(r[1])
 
-            if not sw_blacklisted:
-                sw_blacklisted = [0,]
+            if not spyware_blocked:
+                spyware_blocked = [0,]
 
             rp = sql_helper.get_required_points(start_date, end_date,
                                             mx.DateTime.DateTimeDeltaFromSeconds(time_interval))
 
             ks = KeyStatistic(_('Avg Urls Blocked'),
-                              sum(sw_blacklisted) / len(rp),
+                              sum(spyware_blocked) / len(rp),
                               _('Blocks')+'/'+_(unit))
             lks.append(ks)
-            ks = KeyStatistic(_('Max Urls Blocked'), max(sw_blacklisted),
+            ks = KeyStatistic(_('Max Urls Blocked'), max(spyware_blocked),
                               _('Blocks')+'/'+_(unit))
             lks.append(ks)
 
@@ -320,7 +320,7 @@ class SpywareUrlsBlocked(Graph):
                          major_formatter=formatter,
                          required_points=rp)
 
-            plot.add_dataset(dates, sw_blacklisted, label=_('Urls'))
+            plot.add_dataset(dates, spyware_blocked, label=_('Urls'))
 
         finally:
             conn.commit()
@@ -341,10 +341,10 @@ class TopTenBlockedSpywareSitesByHits(Graph):
         one_week = DateFromMx(end_date - mx.DateTime.DateTimeDelta(report_days))
 
         query = """\
-SELECT host, sum(sw_blacklisted + sw_cookies) as hits_sum
+SELECT host, sum(spyware_blocked + sw_cookies) as hits_sum
 FROM reports.http_totals
 WHERE time_stamp >= %s::timestamp without time zone AND time_stamp < %s::timestamp without time zone
-AND (sw_blacklisted + sw_cookies) > 0"""
+AND (spyware_blocked + sw_cookies) > 0"""
 
         if host:
             query += " AND hostname = %s"
@@ -397,10 +397,10 @@ class TopTenBlockedHostsByHits(Graph):
         one_week = DateFromMx(end_date - mx.DateTime.DateTimeDelta(report_days))
 
         query = """\
-SELECT hostname, sum(sw_blacklisted + sw_cookies) as hits_sum
+SELECT hostname, sum(spyware_blocked + sw_cookies) as hits_sum
 FROM reports.http_totals
 WHERE time_stamp >= %s::timestamp without time zone AND time_stamp < %s::timestamp without time zone
-AND (sw_blacklisted + sw_cookies) > 0"""
+AND (spyware_blocked + sw_cookies) > 0"""
 
         if host:
             query += " AND hostname = %s"
@@ -454,10 +454,10 @@ class TopTenBlockedCookies(Graph):
         one_week = DateFromMx(end_date - mx.DateTime.DateTimeDelta(report_days))
 
         query = """\
-SELECT sw_cookie_ident, count(*) as hits_sum
+SELECT spyware_cookie_ident, count(*) as hits_sum
 FROM reports.http_totals
 WHERE time_stamp >= %s::timestamp without time zone AND time_stamp < %s::timestamp without time zone
-AND sw_cookie_ident != ''
+AND spyware_cookie_ident != ''
 AND sw_cookies > 0"""
 
         if host:
@@ -465,7 +465,7 @@ AND sw_cookies > 0"""
         elif user:
             query += " AND username = %s"
 
-        query = query + " GROUP BY sw_cookie_ident ORDER BY hits_sum DESC"
+        query = query + " GROUP BY spyware_cookie_ident ORDER BY hits_sum DESC"
 
         conn = sql_helper.get_connection()
         try:
@@ -588,10 +588,10 @@ class TopTenSuspiciousTrafficSubnetsByHits(Graph):
         one_week = DateFromMx(end_date - mx.DateTime.DateTimeDelta(report_days))
 
         query = """\
-SELECT sw_access_ident, sum(sw_accesses) as hits_sum
+SELECT spyware_access_ident, sum(sw_accesses) as hits_sum
 FROM reports.session_totals
 WHERE time_stamp >= %s::timestamp without time zone AND time_stamp < %s::timestamp without time zone
-AND sw_access_ident != ''
+AND spyware_access_ident != ''
 AND sw_accesses > 0"""
 
         if host:
@@ -600,7 +600,7 @@ AND sw_accesses > 0"""
             query += " AND username = %s"
 
         query += """
-GROUP BY sw_access_ident
+GROUP BY spyware_access_ident
 ORDER BY hits_sum DESC"""
 
         conn = sql_helper.get_connection()
@@ -650,7 +650,7 @@ class TopTenSuspiciousTrafficHostsByHits(Graph):
 SELECT hostname, sum(sw_accesses) as hits_sum
 FROM reports.session_totals
 WHERE time_stamp >= %s::timestamp without time zone AND time_stamp < %s::timestamp without time zone
-AND sw_access_ident != ''
+AND spyware_access_ident != ''
 AND sw_accesses > 0"""
 
         if host:
@@ -722,7 +722,7 @@ class SpywareSubnetsDetected(Graph):
             sums = ["COALESCE(SUM(new_sessions), 0)",]
 
             extra_where = [ ("NOT sw_accesses IS NULL",{}),
-                            ("sw_access_ident != ''",{}) ]
+                            ("spyware_access_ident != ''",{}) ]
             if host:
                 extra_where.append(("hostname = %(host)s", { 'host' : host }))
             elif user:
@@ -790,7 +790,7 @@ class CookieDetail(DetailSection):
         else:
             rv.append(ColumnDesc('username', _('User'), 'UserLink'))
 
-        rv += [ColumnDesc('sw_cookie_ident', _('Cookie')),
+        rv += [ColumnDesc('spyware_cookie_ident', _('Cookie')),
                ColumnDesc('s_server_addr', _('Server Ip')),
                ColumnDesc('s_server_port', _('Server Port'))]
 
@@ -801,10 +801,10 @@ class CookieDetail(DetailSection):
             return None
 
         sql = """\
-SELECT time_stamp, hostname, username, sw_cookie_ident, host(s_server_addr), s_server_port
+SELECT time_stamp, hostname, username, spyware_cookie_ident, host(s_server_addr), s_server_port
 FROM reports.http_events
 WHERE time_stamp >= %s::timestamp without time zone AND time_stamp < %s::timestamp without time zone
-      AND NOT sw_cookie_ident IS NULL AND sw_cookie_ident != ''
+      AND NOT spyware_cookie_ident IS NULL AND spyware_cookie_ident != ''
 """ % (DateFromMx(start_date), DateFromMx(end_date))
 
         if host:
@@ -849,7 +849,7 @@ class UrlBlockDetail(DetailSection):
 SELECT time_stamp, hostname, username, 'http://' || host as s_server, uri, host(s_server_addr),
        s_server_port
 FROM reports.http_events
-WHERE time_stamp >= %s::timestamp without time zone AND time_stamp < %s::timestamp without time zone AND sw_blacklisted
+WHERE time_stamp >= %s::timestamp without time zone AND time_stamp < %s::timestamp without time zone AND spyware_blocked
 """ % (DateFromMx(start_date), DateFromMx(end_date))
 
         if host:
@@ -879,7 +879,7 @@ class SubnetDetail(DetailSection):
         else:
             rv.append(ColumnDesc('username', _('User'), 'UserLink'))
 
-        rv += [ColumnDesc('sw_blacklisted', _('Subnet')),
+        rv += [ColumnDesc('spyware_blocked', _('Subnet')),
                ColumnDesc('c_server_addr', _('Server Ip')),
                ColumnDesc('c_server_port', _('Server Port'))]
 
@@ -890,10 +890,10 @@ class SubnetDetail(DetailSection):
             return None
 
         sql = """\
-SELECT time_stamp, hostname, username, sw_access_ident, host(c_server_addr), c_server_port
+SELECT time_stamp, hostname, username, spyware_access_ident, host(c_server_addr), c_server_port
 FROM reports.sessions
-WHERE time_stamp >= %s::timestamp without time zone AND time_stamp < %s::timestamp without time zone AND NOT sw_access_ident IS NULL
-      AND sw_access_ident != ''
+WHERE time_stamp >= %s::timestamp without time zone AND time_stamp < %s::timestamp without time zone AND NOT spyware_access_ident IS NULL
+      AND spyware_access_ident != ''
 """ % (DateFromMx(start_date), DateFromMx(end_date))
 
         if host:

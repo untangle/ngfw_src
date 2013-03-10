@@ -62,7 +62,7 @@ public class SpywareAccessEvent extends LogEvent
 
     private static String sql =
         "UPDATE reports.sessions " + 
-        "SET sw_access_ident = ? " +
+        "SET spyware_access_ident = ? " +
         "WHERE session_id = ? ";
 
     @Override

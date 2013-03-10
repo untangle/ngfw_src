@@ -48,7 +48,7 @@ public class SpywareUrlEvent extends LogEvent
     private static String sql =
         "UPDATE reports.http_events " +
         "SET " +
-        "sw_blacklisted = ? " +
+        "spyware_blocked = ? " +
         "WHERE " +
         "request_id = ? ";
 

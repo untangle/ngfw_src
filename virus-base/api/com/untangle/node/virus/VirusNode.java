@@ -18,7 +18,7 @@ public interface VirusNode extends Node
     void setSettings(VirusSettings virusSettings);
     VirusSettings getSettings();
 
-    String getVendor();
+    String getName();
     
     EventLogQuery[] getWebEventQueries();
     EventLogQuery[] getMailEventQueries();

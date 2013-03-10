@@ -54,14 +54,14 @@ class VirusBaseNode(Node):
         ft.measures.append(Column('viruses_%s_blocked' % self.__vendor_name,
                                   'integer',
                                   """\
-count(CASE WHEN virus_%s_clean IS NULL OR virus_%s_clean THEN null ELSE 1 END)
+count(CASE WHEN %s_clean IS NULL OR %s_clean THEN null ELSE 1 END)
 """ % (2 * (self.__vendor_name,))))
 
         ft = reports.engine.get_fact_table('reports.n_mail_msg_totals')
 
         ft.measures.append(Column('viruses_%s_blocked' % self.__vendor_name,
                                   'integer', """\
-count(CASE WHEN virus_%s_clean IS NULL OR virus_%s_clean THEN null ELSE 1 END)
+count(CASE WHEN %s_clean IS NULL OR %s_clean THEN null ELSE 1 END)
 """ % (2 * (self.__vendor_name,))))
 
         ft = reports.engine.get_fact_table('reports.virus_http_totals')
@@ -72,12 +72,12 @@ count(CASE WHEN virus_%s_clean IS NULL OR virus_%s_clean THEN null ELSE 1 END)
                                           Column('username', 'text')], [])
             reports.engine.register_fact_table(ft)
 
-        ft.dimensions.append(Column('virus_%s_name' % self.__vendor_name,
+        ft.dimensions.append(Column('%s_name' % self.__vendor_name,
                                     'text'))
-        ft.measures.append(Column('virus_%s_detected' % self.__vendor_name,
+        ft.measures.append(Column('%s_detected' % self.__vendor_name,
                                   'integer',
                                   """\
-count(CASE WHEN virus_%s_clean IS NULL OR virus_%s_clean THEN null ELSE 1 END)
+count(CASE WHEN %s_clean IS NULL OR %s_clean THEN null ELSE 1 END)
 """ % (2 * (self.__vendor_name,))))
 
         ft = reports.engine.get_fact_table('reports.virus_mail_totals')
@@ -87,12 +87,12 @@ count(CASE WHEN virus_%s_clean IS NULL OR virus_%s_clean THEN null ELSE 1 END)
                            'time_stamp', [Column('username', 'text')], [])
             reports.engine.register_fact_table(ft)
 
-        ft.dimensions.append(Column('virus_%s_name' % self.__vendor_name,
+        ft.dimensions.append(Column('%s_name' % self.__vendor_name,
                                     'text'))
-        ft.measures.append(Column('virus_%s_detected' % self.__vendor_name,
+        ft.measures.append(Column('%s_detected' % self.__vendor_name,
                                   'integer',
                                   """\
-count(CASE WHEN virus_%s_clean IS NULL OR virus_%s_clean THEN null ELSE 1 END)
+count(CASE WHEN %s_clean IS NULL OR %s_clean THEN null ELSE 1 END)
 """ % (2 * (self.__vendor_name,))))
 
     def get_toc_membership(self):
@@ -300,8 +300,8 @@ class TopWebVirusesDetected(Graph):
         conn = sql_helper.get_connection()
         try:
             q = """\
-SELECT virus_%s_name,
-       COALESCE(sum(virus_%s_detected), 0)::int as virus_%s_detected
+SELECT %s_name,
+       COALESCE(sum(%s_detected), 0)::int as %s_detected
 FROM reports.virus_http_totals
 WHERE time_stamp >= %%s AND time_stamp < %%s""" % (3 * (self.__vendor_name,))
             if host:
@@ -309,8 +309,8 @@ WHERE time_stamp >= %%s AND time_stamp < %%s""" % (3 * (self.__vendor_name,))
             elif user:
                 q += " AND username = %s"
             q += """
-GROUP BY virus_%s_name
-ORDER BY virus_%s_detected DESC
+GROUP BY %s_name
+ORDER BY %s_detected DESC
 """ % (self.__vendor_name, self.__vendor_name)
 
             curs = conn.cursor()
@@ -364,16 +364,16 @@ class TopEmailVirusesDetected(Graph):
         one_week = DateFromMx(end_date - mx.DateTime.DateTimeDelta(report_days))
 
         avg_max_query = """\
-SELECT virus_%s_name,
-       COALESCE(sum(virus_%s_detected), 0)::int as virus_%s_detected
+SELECT %s_name,
+       COALESCE(sum(%s_detected), 0)::int as %s_detected
 FROM reports.virus_mail_totals
-WHERE NOT virus_%s_name IS NULL AND virus_%s_name != ''
+WHERE NOT %s_name IS NULL AND %s_name != ''
       AND time_stamp >= %%s AND time_stamp < %%s""" \
             % (5 * (self.__vendor_name,))
 
         avg_max_query += """
-GROUP BY virus_%s_name
-ORDER BY virus_%s_detected DESC
+GROUP BY %s_name
+ORDER BY %s_detected DESC
 """ % (2 * (self.__vendor_name,))
 
         conn = sql_helper.get_connection()
@@ -423,21 +423,21 @@ class TopVirusesDetected(Graph):
 
         avg_max_query = """\
 SELECT name, sum(sum)
-FROM (SELECT virus_%s_name AS name,
-             COALESCE(sum(virus_%s_detected), 0)::int AS sum
+FROM (SELECT %s_name AS name,
+             COALESCE(sum(%s_detected), 0)::int AS sum
       FROM reports.virus_mail_totals
-      WHERE  time_stamp >= %%s AND time_stamp < %%s AND virus_%s_detected > 0
+      WHERE  time_stamp >= %%s AND time_stamp < %%s AND %s_detected > 0
 """ % (3 * (self.__vendor_name,))
 
         avg_max_query += """
-      GROUP BY virus_%s_name
+      GROUP BY %s_name
 
       UNION
 
-      SELECT virus_%s_name AS name,
-             COALESCE(sum(virus_%s_detected), 0)::int AS sum
+      SELECT %s_name AS name,
+             COALESCE(sum(%s_detected), 0)::int AS sum
       FROM reports.virus_http_totals
-      WHERE time_stamp >= %%s AND time_stamp < %%s AND virus_%s_detected > 0
+      WHERE time_stamp >= %%s AND time_stamp < %%s AND %s_detected > 0
 """ % (4 * (self.__vendor_name,))
 
         if host:
@@ -446,7 +446,7 @@ FROM (SELECT virus_%s_name AS name,
             avg_max_query = avg_max_query + " AND username = %s"
 
         avg_max_query += """
-      GROUP BY virus_%s_name) AS foo
+      GROUP BY %s_name) AS foo
 GROUP BY name
 ORDER BY sum DESC""" % self.__vendor_name
 
@@ -505,7 +505,7 @@ class VirusWebDetail(DetailSection):
         else:
             rv.append(ColumnDesc('username', _('User'), 'UserLink'))
 
-        rv += [ColumnDesc('virus_%s_name' % (self.__vendor_name), _('Virus Name')),
+        rv += [ColumnDesc('%s_name' % (self.__vendor_name), _('Virus Name')),
                ColumnDesc('url', _('Url'), 'URL'),
                ColumnDesc('s_server_addr', _('Server Ip')),
                ColumnDesc('s_server_port', _('Server Port'))]
@@ -514,11 +514,11 @@ class VirusWebDetail(DetailSection):
 
     def get_sql(self, start_date, end_date, host=None, user=None, email=None):
         sql = """\
-SELECT time_stamp, hostname, username, virus_%s_name as virus_ident, 'http://' || host || uri as url,
+SELECT time_stamp, hostname, username, %s_name as virus_ident, 'http://' || host || uri as url,
        host(s_server_addr), s_server_port
 FROM reports.http_events
 WHERE time_stamp >= %s::timestamp without time zone AND time_stamp < %s::timestamp without time zone
-AND NOT virus_%s_clean
+AND NOT %s_clean
 """ % (self.__vendor_name, DateFromMx(start_date), DateFromMx(end_date),
        self.__vendor_name)
 
@@ -548,7 +548,7 @@ class VirusMailDetail(DetailSection):
         else:
             rv.append(ColumnDesc('username', _('User'), 'UserLink'))
 
-        rv += [ColumnDesc('virus_%s_name' % (self.__vendor_name,), _('Virus Name')),
+        rv += [ColumnDesc('%s_name' % (self.__vendor_name,), _('Virus Name')),
                ColumnDesc('subject', _('Subject')),
                ColumnDesc('addr', _('Recipient'), 'EmailLink'), # FIXME: or is it sender ?
                ColumnDesc('c_client_addr', _('Client Ip')),
@@ -558,11 +558,11 @@ class VirusMailDetail(DetailSection):
 
     def get_sql(self, start_date, end_date, host=None, user=None, email=None):
         sql = """\
-SELECT time_stamp, hostname, username, virus_%s_name, subject, addr,
+SELECT time_stamp, hostname, username, %s_name, subject, addr,
        host(c_client_addr), c_client_port
 FROM reports.mail_addrs
 WHERE time_stamp >= %s::timestamp without time zone AND time_stamp < %s::timestamp without time zone AND addr_kind = 'T'
-AND NOT virus_%s_clean
+AND NOT %s_clean
 """ % (self.__vendor_name, DateFromMx(start_date), DateFromMx(end_date),
        self.__vendor_name)
 

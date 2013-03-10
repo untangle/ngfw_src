@@ -16,18 +16,18 @@ public class VirusHttpEvent extends LogEvent
     private Long requestId;
     private RequestLine requestLine;
     private VirusScannerResult result;
-    private String vendorName;
+    private String nodeName;
 
     // constructors -------------------------------------------------------
 
     public VirusHttpEvent() { }
 
-    public VirusHttpEvent(RequestLine requestLine, VirusScannerResult result, String vendorName)
+    public VirusHttpEvent(RequestLine requestLine, VirusScannerResult result, String nodeName)
     {
         this.requestId = requestLine.getRequestId();
         this.requestLine = requestLine;
         this.result = result;
-        this.vendorName = vendorName;
+        this.nodeName = nodeName;
     }
 
     // accessors ----------------------------------------------------------
@@ -47,19 +47,18 @@ public class VirusHttpEvent extends LogEvent
     public void setResult( VirusScannerResult result ) { this.result = result; }
 
     /**
-     * Virus vendor.
+     * Virus node.
      */
-    public String getVendorName() { return vendorName; }
-    public void setVendorName( String vendorName ) { this.vendorName = vendorName; }
+    public String getNodeName() { return nodeName; }
+    public void setNodeName( String nodeName ) { this.nodeName = nodeName; }
 
     @Override
     public java.sql.PreparedStatement getDirectEventSql( java.sql.Connection conn ) throws Exception
     {
         String sql =
             "UPDATE reports.http_events " +
-            "SET " +
-            "virus_" + getVendorName().toLowerCase() + "_clean = ?, " + 
-            "virus_" + getVendorName().toLowerCase() + "_name = ? "  + 
+            getNodeName().toLowerCase() + "_clean = ?, " + 
+            getNodeName().toLowerCase() + "_name = ? "  + 
             "WHERE " +
             "request_id = ? ";
         java.sql.PreparedStatement pstmt = conn.prepareStatement( sql );

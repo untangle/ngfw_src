@@ -11,7 +11,7 @@ if (!Ung.hasResource["Ung.Virus"]) {
         gridMailEventLog: null,
         // called when the component is rendered
         initComponent: function() {
-            this.vendor=this.getRpcNode().getVendor();
+            this.nodeName=this.getRpcNode().getName();
             this.buildWeb();
             this.buildEmail();
             this.buildFtp();
@@ -533,7 +533,7 @@ if (!Ung.hasResource["Ung.Virus"]) {
                     name: 'location'
                 }, {
                     name: 'reason',
-                    mapping: 'virus_' + this.vendor + '_name'
+                    mapping: this.nodeName + '_name'
                 }],
                 // the list of columns
                 columns: [{
@@ -608,7 +608,7 @@ if (!Ung.hasResource["Ung.Virus"]) {
                     type: 'string'
                 }, {
                     name: 'reason',
-                    mapping: 'virus_' + this.vendor + '_name'
+                    mapping: this.nodeName + '_name'
                 }],
                 // the list of columns
                 columns: [{

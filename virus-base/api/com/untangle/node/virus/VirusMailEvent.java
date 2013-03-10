@@ -23,17 +23,17 @@ public class VirusMailEvent extends LogEvent
     private MessageInfo messageInfo;
     private VirusScannerResult result;
     private String action;
-    private String vendorName;
+    private String nodeName;
 
     public VirusMailEvent() { }
 
-    public VirusMailEvent(MessageInfo messageInfo, VirusScannerResult result, String action, String vendorName)
+    public VirusMailEvent(MessageInfo messageInfo, VirusScannerResult result, String action, String nodeName)
     {
         this.messageId = messageInfo.getMessageId();
         this.messageInfo = messageInfo;
         this.result = result;
         this.action = action;
-        this.vendorName = vendorName;
+        this.nodeName = nodeName;
     }
 
     /**
@@ -55,10 +55,10 @@ public class VirusMailEvent extends LogEvent
     public void setAction( String action ) { this.action = action; }
 
     /**
-     * Spam scanner vendor.
+     * Spam scanner node.
      */
-    public String getVendorName() { return vendorName; }
-    public void setVendorName( String vendorName ) { this.vendorName = vendorName; }
+    public String getNodeName() { return nodeName; }
+    public void setNodeName( String nodeName ) { this.nodeName = nodeName; }
 
     @Override
     public java.sql.PreparedStatement getDirectEventSql( java.sql.Connection conn ) throws Exception
@@ -76,8 +76,8 @@ public class VirusMailEvent extends LogEvent
         
         sql = "UPDATE reports.mail_msgs " +
             "SET " +
-            "virus_" + getVendorName().toLowerCase() + "_clean = ?, " + 
-            "virus_" + getVendorName().toLowerCase() + "_name = ? " + 
+            getNodeName().toLowerCase() + "_clean = ?, " + 
+            getNodeName().toLowerCase() + "_name = ? " + 
             "WHERE " +
             "msg_id = ? " ;
         pstmt = conn.prepareStatement( sql );
@@ -89,8 +89,8 @@ public class VirusMailEvent extends LogEvent
         
         sql = "UPDATE reports.mail_addrs " +
             "SET " +
-            "virus_" + getVendorName().toLowerCase() + "_clean = ?, " + 
-            "virus_" + getVendorName().toLowerCase() + "_name = ? " + 
+            getNodeName().toLowerCase() + "_clean = ?, " + 
+            getNodeName().toLowerCase() + "_name = ? " + 
             "WHERE " +
             "msg_id = ? " ;
         pstmt = conn.prepareStatement( sql );

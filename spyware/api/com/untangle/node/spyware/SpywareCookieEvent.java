@@ -60,7 +60,7 @@ public class SpywareCookieEvent extends LogEvent
     private static String sql =
         "UPDATE reports.http_events " +
         "SET " +
-        "sw_cookie_ident = ? " +
+        "spyware_cookie_ident = ? " +
         "WHERE " +
         "request_id = ? ";
 

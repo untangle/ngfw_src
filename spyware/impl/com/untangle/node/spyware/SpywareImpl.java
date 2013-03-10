@@ -96,18 +96,18 @@ public class SpywareImpl extends NodeBase implements Spyware
         this.suspiciousQuery = new EventLogQuery(I18nUtil.marktr("Suspicious Events"),
                                                  "SELECT * FROM reports.sessions " + 
                                                  "WHERE policy_id = :policyId " +
-                                                 "AND sw_access_ident != '' " +
+                                                 "AND spyware_access_ident != '' " +
                                                  "ORDER BY time_stamp DESC");
         
         this.blacklistQuery = new EventLogQuery(I18nUtil.marktr("Blacklisted Events"),
                                                 "SELECT * from reports.http_events " +
-                                                " WHERE sw_blacklisted IS TRUE" + 
+                                                " WHERE spyware_blocked IS TRUE" + 
                                                 " AND policy_id = :policyId" + 
                                                 " ORDER BY time_stamp DESC");
 
         this.cookieQuery = new EventLogQuery(I18nUtil.marktr("Cookie Events"),
                                              "SELECT * from reports.http_events " +
-                                             " WHERE sw_cookie_ident IS NOT NULL" + 
+                                             " WHERE spyware_cookie_ident IS NOT NULL" + 
                                              " AND policy_id = :policyId" + 
                                              " ORDER BY time_stamp DESC");
 

@@ -41,8 +41,8 @@ class Protofilter(Node):
     def setup(self):
         ft = reports.engine.get_fact_table('reports.session_totals')
 
-        ft.measures.append(Column('pf_blocks', 'integer', "count(CASE WHEN pf_blocked THEN 1 ELSE null END)"))
-        ft.dimensions.append(Column('pf_protocol', 'text'))
+        ft.measures.append(Column('pf_blocks', 'integer', "count(CASE WHEN protofilter_blocked THEN 1 ELSE null END)"))
+        ft.dimensions.append(Column('protofilter_protocol', 'text'))
 
     def parents(self):
         return ['untangle-vm',]
@@ -91,7 +91,7 @@ class ProtocolsHighlight(Highlight):
 
         query = """\
 SELECT COALESCE(SUM(new_sessions),0)::int AS sessions,
-       COALESCE(sum(CASE WHEN NULLIF(pf_protocol,'') IS NULL THEN 0 ELSE 1 END), 0)::int AS protocols,
+       COALESCE(sum(CASE WHEN NULLIF(protofilter_protocol,'') IS NULL THEN 0 ELSE 1 END), 0)::int AS protocols,
        COALESCE(sum(pf_blocks), 0)::int AS blocks
 FROM reports.session_totals
 WHERE time_stamp >= %s::timestamp without time zone AND time_stamp < %s::timestamp without time zone"""
@@ -147,7 +147,7 @@ class DailyUsage(Graph):
 
             sums = ["COUNT(*)"]
 
-            extra_where = [("pf_protocol != ''", {})]
+            extra_where = [("protofilter_protocol != ''", {})]
             if host:
                 extra_where.append(("hostname = %(host)s", { 'host' : host }))
             elif user:
@@ -208,7 +208,7 @@ class TopTenBlockedProtocolsByHits(Graph):
         one_week = DateFromMx(end_date - mx.DateTime.DateTimeDelta(report_days))
 
         query = """\
-SELECT pf_protocol, COALESCE(sum(pf_blocks), 0)::int as hits_sum
+SELECT protofilter_protocol, COALESCE(sum(pf_blocks), 0)::int as hits_sum
 FROM reports.session_totals
 WHERE time_stamp >= %s::timestamp without time zone AND time_stamp < %s::timestamp without time zone"""
 
@@ -217,7 +217,7 @@ WHERE time_stamp >= %s::timestamp without time zone AND time_stamp < %s::timesta
         elif user:
             query += " AND username = %s"
 
-        query += " GROUP BY pf_protocol ORDER BY hits_sum DESC"
+        query += " GROUP BY protofilter_protocol ORDER BY hits_sum DESC"
 
         conn = sql_helper.get_connection()
         try:
@@ -265,10 +265,10 @@ class TopTenDetectedProtocolsByHits(Graph):
         one_week = DateFromMx(end_date - mx.DateTime.DateTimeDelta(report_days))
 
         query = """\
-SELECT pf_protocol, count(*) as hits_sum
+SELECT protofilter_protocol, count(*) as hits_sum
 FROM reports.session_totals
 WHERE time_stamp >= %s::timestamp without time zone AND time_stamp < %s::timestamp without time zone
-      AND pf_protocol != ''
+      AND protofilter_protocol != ''
 """
 
         if host:
@@ -276,7 +276,7 @@ WHERE time_stamp >= %s::timestamp without time zone AND time_stamp < %s::timesta
         elif user:
             query += " AND username = %s"
 
-        query = query + " GROUP BY pf_protocol ORDER BY hits_sum DESC"
+        query = query + " GROUP BY protofilter_protocol ORDER BY hits_sum DESC"
 
         conn = sql_helper.get_connection()
         try:
@@ -327,8 +327,8 @@ class TopTenBlockedHostsByHits(Graph):
 SELECT hostname, COALESCE(sum(pf_blocks), 0)::int as hits_sum
 FROM reports.session_totals
 WHERE time_stamp >= %s::timestamp without time zone AND time_stamp < %s::timestamp without time zone
-AND NOT pf_protocol IS NULL
-AND pf_protocol != ''
+AND NOT protofilter_protocol IS NULL
+AND protofilter_protocol != ''
 """
 
         if host:
@@ -388,7 +388,7 @@ class TopTenLoggedHostsByHits(Graph):
 SELECT hostname, count(*) as hits_sum
 FROM reports.session_totals
 WHERE time_stamp >= %s::timestamp without time zone AND time_stamp < %s::timestamp without time zone
-AND pf_protocol != ''
+AND protofilter_protocol != ''
 """
 
         if host:
@@ -447,8 +447,8 @@ SELECT username, sum(pf_blocks) as hits_sum
 FROM reports.session_totals
 WHERE time_stamp >= %s::timestamp without time zone AND time_stamp < %s::timestamp without time zone
 AND username != ''
-AND NOT pf_protocol IS NULL
-AND pf_protocol != ''
+AND NOT protofilter_protocol IS NULL
+AND protofilter_protocol != ''
 """
 
         if host:
@@ -507,7 +507,7 @@ SELECT username, count(*) as hits_sum
 FROM reports.session_totals
 WHERE time_stamp >= %s::timestamp without time zone AND time_stamp < %s::timestamp without time zone
 AND username != ''
-AND pf_protocol != ''
+AND protofilter_protocol != ''
 """
 
         if host:
@@ -563,8 +563,8 @@ class ProtofilterDetail(DetailSection):
         if not user:
             rv.append(ColumnDesc('username', _('User'), 'UserLink'))
 
-        rv = rv + [ColumnDesc('pf_protocol', _('Protocol')),
-                   ColumnDesc('pf_blocked', _('Blocked')),
+        rv = rv + [ColumnDesc('protofilter_protocol', _('Protocol')),
+                   ColumnDesc('protofilter_blocked', _('Blocked')),
                    ColumnDesc('c_server_addr', _('Server')),
                    ColumnDesc('c_server_port', _('Port'))]
 
@@ -581,11 +581,11 @@ class ProtofilterDetail(DetailSection):
         if not user:
             sql = sql + "username, "
 
-        sql = sql + ("""pf_protocol, pf_blocked::text, host(c_server_addr), c_server_port
+        sql = sql + ("""protofilter_protocol, protofilter_blocked::text, host(c_server_addr), c_server_port
 FROM reports.sessions
 WHERE time_stamp >= %s::timestamp without time zone AND time_stamp < %s::timestamp without time zone
-AND NOT pf_protocol ISNULL
-AND pf_protocol != ''""" % (DateFromMx(start_date),
+AND NOT protofilter_protocol ISNULL
+AND protofilter_protocol != ''""" % (DateFromMx(start_date),
                             DateFromMx(end_date)))
 
         if host:

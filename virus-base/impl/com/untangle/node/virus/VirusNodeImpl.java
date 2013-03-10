@@ -137,39 +137,39 @@ public abstract class VirusNodeImpl extends NodeBase implements VirusNode
         this.pipeSpecs = initialPipeSpecs();
         this.replacementGenerator = new VirusReplacementGenerator(getNodeSettings());
 
-        String vendor = scanner.getVendorName();
+        String nodeName = getName();
 
         this.httpScannedEventQuery = new EventLogQuery(I18nUtil.marktr("Scanned Web Events"),
                                                         " SELECT * FROM reports.http_events " + 
-                                                        " WHERE virus_" + vendor + "_clean IS NOT NULL" + 
+                                                        " WHERE " + nodeName + "_clean IS NOT NULL" + 
                                                         " AND policy_id = :policyId" + 
                                                         " ORDER BY time_stamp DESC");
         this.httpInfectedEventQuery = new EventLogQuery(I18nUtil.marktr("Infected Web Events"),
                                                         " SELECT * FROM reports.http_events " + 
-                                                        " WHERE virus_" + vendor + "_clean IS FALSE" + 
+                                                        " WHERE " + nodeName + "_clean IS FALSE" + 
                                                         " AND policy_id = :policyId" + 
                                                         " ORDER BY time_stamp DESC");
         this.httpCleanEventQuery = new EventLogQuery(I18nUtil.marktr("Clean Web Events"),
                                                      " SELECT * FROM reports.http_events " + 
-                                                     " WHERE virus_" + vendor + "_clean IS TRUE" + 
+                                                     " WHERE " + nodeName + "_clean IS TRUE" + 
                                                      " AND policy_id = :policyId" + 
                                                      " ORDER BY time_stamp DESC");
         this.mailScannedEventQuery = new EventLogQuery(I18nUtil.marktr("Scanned Email Events"),
                                                      " SELECT * FROM reports.mail_addrs " + 
                                                         " WHERE addr_kind IN ('T', 'C')" +
-                                                        " AND virus_" + vendor + "_clean IS NOT NULL " + 
+                                                        " AND " + nodeName + "_clean IS NOT NULL " + 
                                                         " AND policy_id = :policyId" + 
                                                         " ORDER BY time_stamp DESC");
         this.mailInfectedEventQuery = new EventLogQuery(I18nUtil.marktr("Infected Email Events"),
                                                      " SELECT * FROM reports.mail_addrs " + 
                                                         " WHERE addr_kind IN ('T', 'C')" +
-                                                        " AND virus_" + vendor + "_clean IS FALSE" + 
+                                                        " AND " + nodeName + "_clean IS FALSE" + 
                                                         " AND policy_id = :policyId" + 
                                                         " ORDER BY time_stamp DESC");
         this.mailCleanEventQuery = new EventLogQuery(I18nUtil.marktr("Clean Email Events"),
                                                      " SELECT * FROM reports.mail_addrs " + 
                                                      " WHERE addr_kind IN ('T', 'C')" +
-                                                     " AND virus_" + vendor + "_clean IS TRUE" + 
+                                                     " AND " + nodeName + "_clean IS TRUE" + 
                                                      " AND policy_id = :policyId" + 
                                                      " ORDER BY time_stamp DESC");
 
@@ -285,11 +285,6 @@ public abstract class VirusNodeImpl extends NodeBase implements VirusNode
             subscriptions.add(subscription);
         }
         pipeSpecs[POP].setSubscriptions(subscriptions);
-    }
-
-    public String getVendor()
-    {
-        return scanner.getVendorName();
     }
 
     // NodeBase methods ----------------------------------------------

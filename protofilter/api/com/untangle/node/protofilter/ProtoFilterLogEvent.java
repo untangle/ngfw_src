@@ -71,8 +71,8 @@ public class ProtoFilterLogEvent extends LogEvent
 
     private static String sql =
         "UPDATE reports.sessions " + 
-        "SET pf_protocol = ?, " + 
-        "    pf_blocked = ? " +
+        "SET protofilter_protocol = ?, " + 
+        "    protofilter_blocked = ? " +
         "WHERE session_id = ? ";
 
     @Override
