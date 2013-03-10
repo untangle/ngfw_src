@@ -1,19 +1,5 @@
-/*
- * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License, version 2,
- * as published by the Free Software Foundation.
- *
- * This program is distributed in the hope that it will be useful, but
- * AS-IS and WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE, TITLE, or
- * NONINFRINGEMENT.  See the GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
+/**
+ * $Id$
  */
 package com.untangle.node.router;
 
@@ -32,7 +18,9 @@ import com.untangle.node.token.Token;
 import com.untangle.node.token.TokenException;
 import com.untangle.node.token.TokenResult;
 
-
+/**
+ * This handles FTP and inserts the necessary port forwards and rewrites the PORT/PASV commands so that the necessary connection can be made
+ */
 class RouterFtpHandler extends FtpStateMachine
 {
     private final Logger logger = Logger.getLogger( this.getClass());
@@ -44,8 +32,6 @@ class RouterFtpHandler extends FtpStateMachine
     private SessionRedirect portCommandSessionRedirect = null;
     private SessionRedirectKey portCommandKey          = null;
 
-    /* RFC 959: Syntax error */
-    //unused// private static final TokenResult ERROR_REPLY = new TokenResult( new Token[] { FtpReply.makeReply( 500, "Syntax error, command unrecognized") }, null );
     private static final TokenResult SYNTAX_REPLY = new TokenResult( new Token[] { FtpReply.makeReply( 501, "Syntax error in parameters or arguments") }, null );
 
     RouterFtpHandler( NodeTCPSession session, RouterImpl node )
@@ -81,12 +67,11 @@ class RouterFtpHandler extends FtpStateMachine
         portCommandSessionRedirect = null;
         portCommandKey             = null;
 
-        /* XXX Should have a setting to disable port commands */
         if ( function == FtpFunction.PASV ) {
             return pasvCommand( command );
         } else if ( function == FtpFunction.PORT ) {
             return portCommand( command );
-        } else if ( function == FtpFunction.EPSV ) { /* Extended commands */
+        } else if ( function == FtpFunction.EPSV ) { 
             return epsvCommand( command );
         } else if ( function == FtpFunction.EPRT ) {
             return eprtCommand( command );
@@ -118,7 +103,6 @@ class RouterFtpHandler extends FtpStateMachine
             sessionManager.registerSessionRedirect( sessionData, portCommandKey,
                                                     portCommandSessionRedirect );
         } else {
-            /* XXX Should have a setting to disable port commands */
             switch ( replyCode ) {
             case FtpReply.PASV:
                 return pasvReply( reply );
@@ -152,7 +136,6 @@ class RouterFtpHandler extends FtpStateMachine
         getSession().shutdownClient();
     }
 
-    /* XXX May need to block all connections from port 20 */
     private TokenResult portCommand( FtpCommand command ) throws TokenException
     {
         return handlePortCommand( command );
@@ -185,19 +168,10 @@ class RouterFtpHandler extends FtpStateMachine
             return SYNTAX_REPLY;
         }
 
-        /* XXXX Not longer verifying, client can be dirty, need to add a checkbox to NAT casing */
-        /*
-         * logger.debug( "Verifying port is from the correct host: " + ip + "==" +
-         *            sessionData.originalClientAddr());
-         *
-         * if ( !ip.equals( sessionData.originalClientAddr())) {
-         * logger.warn( "Dropping command from modified client address" );
-         * return new TokenResult();
-         }
-        */
-
-        /* Indicate that a port command has been received, don't create the session redirect until
-         * the server accepts the port command */
+        /**
+         * Indicate that a port command has been received, don't create the session redirect until
+         * the server accepts the port command
+         */
         receivedPortCommand        = true;
         portCommandSessionRedirect = null;
         portCommandKey             = null;
@@ -206,17 +180,14 @@ class RouterFtpHandler extends FtpStateMachine
             int port = node.getHandler().getNextPort( Protocol.TCP );
             /* 1. Tell the event handler to redirect the session from the server. *
              * 2. Mangle the command.                                             */
-            portCommandKey = new SessionRedirectKey( Protocol.TCP,
-                                                     sessionData.modifiedClientAddr(), port );
-
+            portCommandKey = new SessionRedirectKey( Protocol.TCP, sessionData.modifiedClientAddr(), port );
 
             /* Queue the message for when the port command reply comes back, and make sure to free
              * the necessary port */
-            portCommandSessionRedirect =
-                new SessionRedirect( sessionData.originalServerAddr(), 0,
-				     sessionData.originalClientAddr(), addr.getPort(),
-				     port, sessionData.modifiedClientAddr(),
-                                     portCommandKey );
+            portCommandSessionRedirect = new SessionRedirect( sessionData.originalServerAddr(), 0,
+                                                              sessionData.originalClientAddr(), addr.getPort(),
+                                                              port, sessionData.modifiedClientAddr(),
+                                                              portCommandKey );
 
             addr = new InetSocketAddress( sessionData.modifiedClientAddr(), port );
             if (logger.isDebugEnabled()) {
@@ -241,24 +212,12 @@ class RouterFtpHandler extends FtpStateMachine
         return new TokenResult( null, new Token[] { command } );
     }
 
-    @SuppressWarnings("unused")
-	private TokenResult portReply( FtpReply reply ) throws TokenException
-    {
-        return new TokenResult( new Token[] { reply }, null );
-    }
-
     private TokenResult eprtCommand( FtpCommand command ) throws TokenException
     {
         logger.debug( "Handling extended port command" );
         return handlePortCommand( command );
     }
     
-    @SuppressWarnings("unused")
-    private TokenResult eprtReply( FtpReply reply ) throws TokenException
-    {
-        return new TokenResult( new Token[] { reply }, null );
-    }
-
     private TokenResult pasvCommand( FtpCommand command ) throws TokenException
     {
         return new TokenResult( null, new Token[] { command } );
@@ -349,3 +308,4 @@ class RouterFtpHandler extends FtpStateMachine
         return ( sessionData != null );
     }
 }
+

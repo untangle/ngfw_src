@@ -27,24 +27,8 @@ class CertificateManagerImpl implements CertificateManager
 
     private final Logger logger = Logger.getLogger(getClass());
 
-    private final UvmContextImpl uvmContext;
-    private final TomcatManagerImpl tomcatManager;
-
-    CertificateManagerImpl(UvmContextImpl uvmContext)
+    protected CertificateManagerImpl()
     {
-        this.uvmContext = uvmContext;
-        this.tomcatManager = (TomcatManagerImpl) uvmContext.tomcatManager();
-    }
-
-    public void postInit()
-    {
-        UvmRepositorySelector.instance().setLoggingUvm();
-
-        try {
-            tomcatManager.startTomcat();
-        } catch (Exception exn) {
-            logger.warn("could not start Tomcat", exn);
-        }
     }
 
     public boolean regenCert(DistinguishedName dn, int durationInDays)
@@ -138,13 +122,14 @@ class CertificateManagerImpl implements CertificateManager
         }
     }
 
-    public CertInfo getCurrentServerCertInfo() {
+    public CertInfo getCurrentServerCertInfo()
+    {
         return getCertInfo(getCurrentServerCert());
     }
 
     private String getFQDN()
     {
-        String fqdn = uvmContext.networkManager().getNetworkSettings().getHostName();
+        String fqdn = UvmContextFactory.context().networkManager().getNetworkSettings().getHostName();
         if (fqdn == null || fqdn.equals("")) {
             return "example.com";
         }

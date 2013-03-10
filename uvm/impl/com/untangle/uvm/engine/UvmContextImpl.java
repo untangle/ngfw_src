@@ -669,7 +669,7 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
         // Retrieve the argon manager
         this.argonManager = ArgonManagerImpl.getInstance();
 
-        this.certificateManager = new CertificateManagerImpl(this);
+        this.certificateManager = new CertificateManagerImpl();
 
         this.alertManager = new AlertManagerImpl();
         
@@ -695,10 +695,8 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
         /* Reload Apache */
         tomcatManager.writeWelcomeFile();
 
-        //Inform the Certificate manager that everything
-        //else is started.
-        certificateManager.postInit();
-
+        tomcatManager.startTomcat();
+        
         logger.debug("postInit complete");
         synchronized (startupWaitLock) {
             state = UvmState.RUNNING;
@@ -715,31 +713,25 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
     {
         state = UvmState.DESTROYED;
 
-        if (messageManager != null)
+        try {
             messageManager.stop();
-
-        // stop vectoring:
+        } catch (Exception exn) {
+            logger.error("could not stop MessageManager", exn);
+        }
+        
+        // stop vectoring
         try {
             Argon.getInstance().destroy();
         } catch (Exception exn) {
             logger.warn("could not destroy Argon", exn);
         }
 
-        // stop nodes:
+        // stop nodes
         try {
             nodeManager.destroy();
         } catch (Exception exn) {
             logger.warn("could not destroy NodeManager", exn);
         }
-        nodeManager = null;
-
-        // XXX destroy methods for:
-        // - pipelineFoundry
-        // - argonManager
-        toolboxManager = null;
-
-        // XXX destroy methods for:
-        // - mailSender
 
         try {
             tomcatManager.stopTomcat();
@@ -748,16 +740,7 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
         }
 
         try {
-            if (loggingManager != null)
-                loggingManager = null;
-        } catch (Exception exn) {
-            logger.error("could not stop LoggingManager", exn);
-        }
-
-        try {
-            if (cronManager != null)
-                cronManager.destroy();
-            cronManager = null;
+            cronManager.destroy();
         } catch (Exception exn) {
             logger.warn("could not stop CronManager", exn);
         }
@@ -787,14 +770,15 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
 
     private class RestoreUploadHandler implements UploadHandler
     {
-
         @Override
-        public String getName() {
+        public String getName()
+        {
             return "restore";
         }
 
         @Override
-        public String handleFile(FileItem fileItem) throws Exception {
+        public String handleFile(FileItem fileItem) throws Exception
+        {
             byte[] backupFileBytes=fileItem.get();
             restoreBackup(backupFileBytes);
             return "restored backup file.";

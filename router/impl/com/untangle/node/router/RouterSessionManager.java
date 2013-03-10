@@ -8,6 +8,7 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.vnet.IPNewSessionRequest;
 import com.untangle.uvm.vnet.NodeIPSession;
 import com.untangle.uvm.vnet.Protocol;
@@ -220,18 +221,12 @@ class SessionRedirect
 
     SessionRedirect( InetAddress clientAddr, int clientPort, InetAddress serverAddr, int serverPort, int reservedPort, InetAddress myAddr, SessionRedirectKey key )
     {
-        createRedirectRule(clientAddr, clientPort,
-                           serverAddr, serverPort,
-                           reservedPort, myAddr);
-
+        createRedirectRule(clientAddr, clientPort, serverAddr, serverPort, reservedPort, myAddr);
         this.clientAddr   = clientAddr;
         this.clientPort   = clientPort;
-
         this.serverAddr   = serverAddr;
         this.serverPort   = serverPort;
-
         this.reservedPort = reservedPort;
-
         this.key          = key;
     }
 
@@ -276,15 +271,14 @@ class SessionRedirect
             logger.debug("rule clientIp: "+redirectRuleIp);
             logger.debug("rule clientPort: "+redirectRulePort);
         }
-        try {
-            JSONObject jsonObject = new JSONObject();
-            jsonObject.put( "filter", redirectRuleFilter );
-            jsonObject.put( "new_ip", redirectRuleIp );
-            jsonObject.put( "new_port", redirectRulePort );
-            //FIXME need to insert iptables rule
-        } catch(Exception e){
-            logger.error("Failure creating redirect rule:"+ e);
+
+        String cmd = "iptables -t nat -I PREROUTING " + redirectRuleFilter + " -m comment --comment \"FTP redirect\"  -j DNAT --to-destination " + redirectRuleIp + ":" + redirectRulePort;
+        logger.warn( "FTP iptables cmd: " + cmd );
+        int result = UvmContextFactory.context().execManager().execResult( cmd );
+        if (result != 0) {
+            logger.warn( "Command failed: " + cmd );
         }
+
         return;
     }
 
@@ -296,14 +290,14 @@ class SessionRedirect
             logger.debug("rule clientIp: "+redirectRuleIp);
             logger.debug("rule clientPort: "+redirectRulePort);
         }
-        try{
-            JSONObject jsonObject = new JSONObject();
-            jsonObject.put( "filter", redirectRuleFilter );
-            jsonObject.put( "new_ip", redirectRuleIp );
-            jsonObject.put( "new_port", redirectRulePort );
-            //FIXME need to destroy iptables rule
-        } catch(Exception e){
-            logger.error("Failure creating redirect rule:"+ e);
+
+        String cmd = "iptables -t nat -D PREROUTING " + redirectRuleFilter + " -m comment --comment \"FTP redirect\"  -j DNAT --to-destination " + redirectRuleIp + ":" + redirectRulePort;
+        logger.warn( "FTP iptables cmd: " + cmd );
+        int result = UvmContextFactory.context().execManager().execResult( cmd );
+        if (result != 0) {
+            logger.warn( "Command failed: " + cmd );
         }
+        
+        //FIXME need to destroy iptables rule
     }
 }

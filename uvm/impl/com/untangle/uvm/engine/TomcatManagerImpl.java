@@ -218,9 +218,15 @@ public class TomcatManagerImpl implements TomcatManager
         apacheReload();
     }
 
-    synchronized void startTomcat() throws Exception
+    synchronized void startTomcat()
     {
-        Connector jkConnector = new Connector("org.apache.jk.server.JkCoyoteHandler");
+        Connector jkConnector;
+        try {
+            jkConnector = new Connector("org.apache.jk.server.JkCoyoteHandler");
+        } catch (Exception e) {
+            logger.error("Failed to create tomcat Connector",e);
+            return;
+        }
         jkConnector.setProperty("port", "8009");
         jkConnector.setProperty("address", "127.0.0.1");
         jkConnector.setProperty("tomcatAuthentication", "false");
@@ -247,18 +253,18 @@ public class TomcatManagerImpl implements TomcatManager
                             int i;
                             for (i = 0; i < TOMCAT_NUM_RETRIES; i++) {
                                 try {
-                                    logger.warn("could not start Tomcat (address in use), sleeping 20 and trying again");
+                                    logger.error("could not start Tomcat (address in use), sleeping 20 and trying again");
                                     Thread.sleep(TOMCAT_SLEEP_TIME);
                                     try {
                                         emb.stop();
                                     } catch (LifecycleException exn) {
-                                        logger.warn(exn, exn);
+                                        logger.error("Lifecycle Exception: ", exn);
                                     }
                                     emb.start();
                                     logger.info("Tomcat successfully started");
                                     break;
                                 } catch (InterruptedException x) {
-                                    logger.warn( "Interrupted while trying to start tomcat, returning.", x);
+                                    logger.error( "Interrupted while trying to start tomcat, returning.", x);
                                     return;
                                 } catch (LifecycleException x) {
                                     boolean isAddressInUse = isAIUExn(x);
@@ -277,9 +283,7 @@ public class TomcatManagerImpl implements TomcatManager
                     };
                 new Thread(tryAgain, "Tomcat starter").start();
             } else {
-                // Something else, just die die die.
-                logger.warn("Exception starting Tomcat",exn);
-                throw exn;
+                logger.error("Exception starting Tomcat",exn);
             }
         }
 
