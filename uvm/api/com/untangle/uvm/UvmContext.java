@@ -233,11 +233,6 @@ public interface UvmContext
     int forceTimeSync();
     
     /**
-     * Force a Full Garbage Collection.
-     */   
-    void doFullGC();
-
-    /**
      * Return the Version
      */
     String version();

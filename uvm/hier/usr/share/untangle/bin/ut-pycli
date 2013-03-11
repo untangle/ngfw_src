@@ -95,7 +95,6 @@ def printUsage():
     ucli stop <node_id> - stops a node
     ucli destroy <node_id> - destroys a node
     ucli resetLogs - refresh & reconfigure log4j 
-    ucli gc - force a garbage collection
     ucli logError - log an error to uvm.log
     ucli register <package-name - register a new package 
     ucli unregister <package-name> - unregister a package

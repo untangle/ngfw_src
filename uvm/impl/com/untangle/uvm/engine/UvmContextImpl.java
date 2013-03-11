@@ -467,14 +467,9 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
         return true;
     }
     
-    public void doFullGC()
-    {
-        System.gc();
-    }
-
     public CronJob makeCronJob(DayOfWeekMatcher days, int hour, int minute, Runnable r)
     {
-        return cronManager.makeCronJob(days, hour, minute, r);
+        return cronManager.makeCronJob( days, hour, minute, r );
     }
 
     public void loadLibrary(String libname)
