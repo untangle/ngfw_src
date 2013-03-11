@@ -439,6 +439,10 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
     {
         String extraOptions = "";
 
+        // if its devel change sources.list to point to internal package server
+        if (isDevel())
+            return true;
+
         extraOptions += " -f \"" + System.getProperty("uvm.conf.dir") + "/uidtest" + "\" ";
 
         if ( com.untangle.uvm.Version.getMajorVersion() != null )
@@ -446,9 +450,8 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
         if ( com.untangle.uvm.Version.getVersionName() != null )
             extraOptions += " -n \"" + com.untangle.uvm.Version.getVersionName() + "\" ";
         
-        // if its devel change sources.list to point to internal package server
-        if (isDevel())
-            extraOptions += " -u \"package-server.\" ";
+        //if (isNetBoot())
+        //    extraOptions += " -u \"package-server.\" ";
 
         Integer exitValue = this.execManager().execResult(CREATE_UID_SCRIPT + extraOptions);
         if (0 != exitValue) {
@@ -458,12 +461,8 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
             logger.info("UID Created.");
         }
 
-        if ( ! isDevel() ) {
-            // restart pyconnector now that the UID has been generated
-            this.execManager().execResult("/etc/init.d/untangle-pyconnector restart");
-            // give pyconnector some time to connect before returning
-            try { Thread.sleep(3000); } catch (InterruptedException exn) { }
-        }
+        // restart pyconnector now that the UID has been generated
+        this.execManager().execResult("/etc/init.d/untangle-pyconnector restart");
 
         return true;
     }
