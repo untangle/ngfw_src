@@ -578,68 +578,6 @@ if (!Ung.hasResource["Ung.System"]) {
                         }
                     }]
                 });
-                protocolSettingsItems.push({
-                    title: this.i18n._("POP3"),
-                    labelWidth: 200,
-                    items: [{
-                        xtype: "radio",
-                        boxLabel: this.i18n._("Enable processing of POP3 traffic.  (This is the default setting)"),
-                        hideLabel: true,
-                        name: "POP3",
-                        checked: this.getMailNodeSettings().popEnabled,
-                        listeners: {
-                            "change": {
-                                fn: Ext.bind(function(elem, checked) {
-                                    this.getMailNodeSettings().popEnabled = checked;
-                                }, this)
-                            }
-                        }
-                    },{
-                        xtype: "radio",
-                        boxLabel: this.i18n._("Disable processing of POP3 traffic."),
-                        hideLabel: true,
-                        name: "POP3",
-                        checked: !this.getMailNodeSettings().popEnabled,
-                        listeners: {
-                            "change": {
-                                fn: Ext.bind(function(elem, checked) {
-                                    this.getMailNodeSettings().popEnabled = !checked;
-                                }, this)
-                            }
-                        }
-                    }]
-                });
-                protocolSettingsItems.push({
-                    title: this.i18n._("IMAP"),
-                    labelWidth: 200,
-                    items: [{
-                        xtype: "radio",
-                        boxLabel: this.i18n._("Enable processing of IMAP traffic.  (This is the default setting)"),
-                        hideLabel: true,
-                        name: "IMAP",
-                        checked: this.getMailNodeSettings().imapEnabled,
-                        listeners: {
-                            "change": {
-                                fn: Ext.bind(function(elem, checked) {
-                                    this.getMailNodeSettings().imapEnabled = checked;
-                                }, this)
-                            }
-                        }
-                    },{
-                        xtype: "radio",
-                        boxLabel: this.i18n._("Disable processing of IMAP traffic."),
-                        hideLabel: true,
-                        name: "IMAP",
-                        checked: !this.getMailNodeSettings().imapEnabled,
-                        listeners: {
-                            "change": {
-                                fn: Ext.bind(function(elem, checked) {
-                                    this.getMailNodeSettings().imapEnabled = !checked;
-                                }, this)
-                            }
-                        }
-                    }]
-                });
             }
 
             this.panelProtocolSettings = Ext.create('Ext.panel.Panel',{

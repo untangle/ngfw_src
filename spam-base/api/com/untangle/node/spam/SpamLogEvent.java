@@ -16,7 +16,7 @@ import com.untangle.node.mail.papi.MessageInfo;
 import com.untangle.node.mail.papi.MessageInfoAddr;
 
 /**
- * Log for POP3/IMAP Spam events.
+ * Event for Spam events.
  */
 @SuppressWarnings("serial")
 public class SpamLogEvent extends LogEvent

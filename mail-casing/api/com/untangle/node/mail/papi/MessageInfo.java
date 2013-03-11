@@ -24,8 +24,6 @@ public class MessageInfo extends LogEvent implements Serializable
 
     /* constants */
     public static final int SMTP_PORT = 25;
-    public static final int POP3_PORT = 110;
-    public static final int IMAP4_PORT = 143;
 
     // How big a varchar() do we get for default String fields. 
     public static final int MAX_STRING_SIZE = 255;
@@ -63,12 +61,6 @@ public class MessageInfo extends LogEvent implements Serializable
         switch (serverPort) {
         case SMTP_PORT:
             serverType = 'S';
-            break;
-        case POP3_PORT:
-            serverType = 'P';
-            break;
-        case IMAP4_PORT:
-            serverType = 'I';
             break;
         default:
             serverType = 'U';

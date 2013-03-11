@@ -16,15 +16,12 @@ import com.untangle.node.mail.papi.safelist.SafelistSettings;
 public class MailNodeSettings implements Serializable
 {
     private boolean smtpEnabled = true;
-    private boolean popEnabled = true;
-    private boolean imapEnabled = true;
 
     public static final long TIMEOUT_MAX = 86400000l;
     public static final long TIMEOUT_MIN = 0l;
 
     private long smtpTimeout;
-    private long popTimeout;
-    private long imapTimeout;
+
     private QuarantineSettings quarantineSettings;
     private LinkedList<SafelistSettings> safelistSettings;
     private boolean smtpAllowTLS;
@@ -48,36 +45,6 @@ public class MailNodeSettings implements Serializable
     public void setSmtpEnabled(boolean smtpEnabled)
     {
         this.smtpEnabled = smtpEnabled;
-    }
-
-    /**
-     * Enabled status of POP casing.
-     *
-     * @return true of POP casing is enabled, false otherwise.
-     */
-    public boolean isPopEnabled()
-    {
-        return popEnabled;
-    }
-
-    public void setPopEnabled(boolean popEnabled)
-    {
-        this.popEnabled = popEnabled;
-    }
-
-    /**
-     * Enabled status of IMAP casing.
-     *
-     * @return true of IMAP casing is enabled, false otherwise.
-     */
-    public boolean isImapEnabled()
-    {
-        return imapEnabled;
-    }
-
-    public void setImapEnabled(boolean imapEnabled)
-    {
-        this.imapEnabled = imapEnabled;
     }
 
     /**
@@ -109,36 +76,6 @@ public class MailNodeSettings implements Serializable
     public void setSmtpAllowTLS(boolean smtpAllowTLS)
     {
          this.smtpAllowTLS = smtpAllowTLS;
-    }
-
-    /**
-     * Timeout for POP traffic.
-     *
-     * @return timeout for POP in millis.
-     */
-    public long getPopTimeout()
-    {
-        return popTimeout;
-    }
-
-    public void setPopTimeout(long popTimeout)
-    {
-        this.popTimeout = popTimeout;
-    }
-
-    /**
-     * Timeout for IMAP traffic.
-     *
-     * @return timeout for IMAP in millis.
-     */
-    public long getImapTimeout()
-    {
-        return imapTimeout;
-    }
-
-    public void setImapTimeout(long imapTimeout)
-    {
-        this.imapTimeout = imapTimeout;
     }
 
     /**

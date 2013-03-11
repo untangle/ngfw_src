@@ -15,8 +15,6 @@ public interface SpamNode extends Node
     void setSettings(final SpamSettings newSpamSettings);
 
     void enableSmtpSpamHeaders(boolean enableHeaders);
-    void enablePopSpamHeaders(boolean enableHeaders);
-    void enableImapSpamHeaders(boolean enableHeaders);
 
     void enableSmtpFailClosed(boolean failClosed);
 

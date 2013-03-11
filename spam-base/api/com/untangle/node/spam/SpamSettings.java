@@ -20,8 +20,6 @@ public class SpamSettings implements Serializable
 
     private List<SpamDnsbl> spamDnsblList;
     private SpamSmtpConfig smtpConfig;
-    private SpamPopConfig popConfig;
-    private SpamImapConfig imapConfig;
 
     // constructors -----------------------------------------------------------
 
@@ -62,31 +60,9 @@ public class SpamSettings implements Serializable
         this.smtpConfig = smtpConfig;
     }
 
-    public SpamPopConfig getPopConfig()
-    {
-        return popConfig;
-    }
-
-    public void setPopConfig(SpamPopConfig popConfig)
-    {
-        this.popConfig = popConfig;
-    }
-
-    public SpamImapConfig getImapConfig()
-    {
-        return imapConfig;
-    }
-
-    public void setImapConfig(SpamImapConfig imapConfig)
-    {
-        this.imapConfig = imapConfig;
-    }
-
     public void copy(SpamSettings argSettings)
     {
         argSettings.setSpamDnsblList(this.spamDnsblList);
         argSettings.setSmtpConfig(this.smtpConfig);
-        argSettings.setPopConfig(this.popConfig);
-        argSettings.setImapConfig(this.imapConfig);
     }    
 }

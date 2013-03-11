@@ -91,14 +91,6 @@ public class PipelineFoundryImpl implements PipelineFoundry
                     start = Fitting.HTTP_STREAM;
                     break;
 
-                case 110:
-                    start = Fitting.POP_STREAM;
-                    break;
-
-                case 143:
-                    start = Fitting.IMAP_STREAM;
-                    break;
-
                 default:
                     start = Fitting.OCTET_STREAM;
                     break;

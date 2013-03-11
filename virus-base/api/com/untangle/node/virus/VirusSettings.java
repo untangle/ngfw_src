@@ -23,12 +23,8 @@ public class VirusSettings implements Serializable
     private boolean scanHttp = true;
     private boolean scanFtp = true;
     private boolean scanSmtp = true;
-    private boolean scanPop = true;
-    private boolean scanImap = true;
 
     private String smtpAction= "remove" ; /* "pass" "remove" or "block" */
-    private String popAction = "remove" ;  /* "pass" "remove" */
-    private String imapAction = "remove" ; /* "pass" "remove" */
     
     private List<GenericRule> httpMimeTypes = new LinkedList<GenericRule>();
     private List<GenericRule> httpFileExtensions = new LinkedList<GenericRule>();
@@ -48,21 +44,9 @@ public class VirusSettings implements Serializable
     public boolean getScanSmtp() { return scanSmtp; }
     public void setScanSmtp(boolean scanSmtp) { this.scanSmtp = scanSmtp; }
 
-    public boolean getScanPop() { return scanPop; }
-    public void setScanPop(boolean scanPop) { this.scanPop = scanPop; }
-
-    public boolean getScanImap() { return scanImap; }
-    public void setScanImap(boolean scanImap) { this.scanImap = scanImap; }
-
     public String getSmtpAction() { return smtpAction; }
     public void setSmtpAction(String smtpAction) { this.smtpAction = smtpAction; }
 
-    public String getPopAction() { return popAction; }
-    public void setPopAction(String popAction) { this.popAction = popAction; }
-
-    public String getImapAction() { return imapAction; }
-    public void setImapAction(String imapAction) { this.imapAction = imapAction; }
-    
     public List<GenericRule> getHttpMimeTypes() { return httpMimeTypes; }
     public void setHttpMimeTypes(List<GenericRule> httpMimeTypes) { this.httpMimeTypes = httpMimeTypes; }
 

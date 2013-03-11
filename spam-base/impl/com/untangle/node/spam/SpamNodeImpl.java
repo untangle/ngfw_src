@@ -39,9 +39,7 @@ public class SpamNodeImpl extends NodeBase implements SpamNode
     // the casing doesn't have to be initialized.
     private final PipeSpec[] pipeSpecs = new PipeSpec[] {
         new SoloPipeSpec("spam-smtp", this, new TokenAdaptor(this, new SpamSmtpFactory(this)), Fitting.SMTP_TOKENS, Affinity.CLIENT, 10),
-        new SoloPipeSpec("spam-smtp-tarpit", this, this.tarpitHandler, Fitting.SMTP_STREAM, Affinity.CLIENT, 11),
-        new SoloPipeSpec("spam-pop", this, new TokenAdaptor(this, new SpamPopFactory(this)), Fitting.POP_TOKENS, Affinity.SERVER, 10),
-        new SoloPipeSpec("spam-imap", this, new TokenAdaptor(this, new SpamImapFactory(this)), Fitting.IMAP_TOKENS, Affinity.SERVER, 10)
+        new SoloPipeSpec("spam-smtp-tarpit", this, this.tarpitHandler, Fitting.SMTP_STREAM, Affinity.CLIENT, 11)
     };
 
     private final SpamScanner scanner;
@@ -200,18 +198,6 @@ public class SpamNodeImpl extends NodeBase implements SpamNode
                 SpamSmtpConfig.DEFAULT_LIMIT_LOAD,
                 SpamSmtpConfig.DEFAULT_LIMIT_SCANS,
                 SpamSmtpConfig.DEFAULT_SCAN_WAN_MAIL ));
-
-        tmpSpamSettings.setPopConfig(new SpamPopConfig(true,
-                SpamMessageAction.MARK,
-                SpamProtoConfig.DEFAULT_STRENGTH,
-                SpamProtoConfig.DEFAULT_ADD_SPAM_HEADERS,
-                SpamProtoConfig.DEFAULT_HEADER_NAME ));
-
-        tmpSpamSettings.setImapConfig(new SpamImapConfig(true,
-                SpamMessageAction.MARK,
-                SpamProtoConfig.DEFAULT_STRENGTH,
-                SpamProtoConfig.DEFAULT_ADD_SPAM_HEADERS,
-                SpamProtoConfig.DEFAULT_HEADER_NAME ));
     }
 
     public SpamSettings getSettings()
@@ -234,20 +220,6 @@ public class SpamNodeImpl extends NodeBase implements SpamNode
     {
         SpamSettings ss = getSettings();
         ss.getSmtpConfig().setAddSpamHeaders(enableHeaders);
-        setSettings(ss);
-    }
-
-    public void enablePopSpamHeaders(boolean enableHeaders)
-    {
-        SpamSettings ss = getSettings();
-        ss.getPopConfig().setAddSpamHeaders(enableHeaders);
-        setSettings(ss);
-    }
-
-    public void enableImapSpamHeaders(boolean enableHeaders)
-    {
-        SpamSettings ss = getSettings();
-        ss.getImapConfig().setAddSpamHeaders(enableHeaders);
         setSettings(ss);
     }
 

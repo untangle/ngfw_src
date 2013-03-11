@@ -79,7 +79,6 @@ public abstract class VirusNodeImpl extends NodeBase implements VirusNode
     private static final int FTP = 0;
     private static final int HTTP = 1;
     private static final int SMTP = 2;
-    private static final int POP = 3;
 
     private static int deployCount = 0;
     
@@ -105,7 +104,7 @@ public abstract class VirusNodeImpl extends NodeBase implements VirusNode
     
     /* This can't be static because it uses policy which is per node */
     private final SessionMatcher VIRUS_SESSION_MATCHER = new SessionMatcher() {
-            /* Kill all FTP, HTTP, SMTP, POP3, IMAP sessions */
+            /* Kill all FTP, HTTP, SMTP, sessions */
             public boolean isMatch( Long policyId, short protocol, int clientIntf, int serverIntf, InetAddress clientAddr, InetAddress serverAddr, int clientPort, int serverPort, Map<String,Object> attachments )
             {
                 /* Don't kill any UDP NodeSession s */
@@ -118,8 +117,8 @@ public abstract class VirusNodeImpl extends NodeBase implements VirusNode
                     return true;
                 }
 
-                /* email SMTP (25) / POP3 (110) / IMAP (143) */
-                if (serverPort == 25 || serverPort == 110 || serverPort == 143) {
+                /* email SMTP (25) */
+                if (serverPort == 25) {
                     return true;
                 }
 
@@ -246,8 +245,6 @@ public abstract class VirusNodeImpl extends NodeBase implements VirusNode
             new SoloPipeSpec("virus-ftp", this, new TokenAdaptor(this, new VirusFtpFactory(this)), Fitting.FTP_TOKENS, Affinity.SERVER, strength),
             new SoloPipeSpec("virus-http", this, new TokenAdaptor(this, new VirusHttpFactory(this)), Fitting.HTTP_TOKENS, Affinity.SERVER, strength),
             new SoloPipeSpec("virus-smtp", this, new TokenAdaptor(this, new VirusSmtpFactory(this)), Fitting.SMTP_TOKENS, Affinity.CLIENT, strength),
-            new SoloPipeSpec("virus-pop", this, new TokenAdaptor(this, new VirusPopFactory(this)), Fitting.POP_TOKENS, Affinity.SERVER, strength),
-            new SoloPipeSpec("virus-imap", this, new TokenAdaptor(this, new VirusImapFactory(this)), Fitting.IMAP_TOKENS, Affinity.SERVER, strength)
         };
         return result;
     }
@@ -277,14 +274,6 @@ public abstract class VirusNodeImpl extends NodeBase implements VirusNode
             subscriptions.add(subscription);
         }
         pipeSpecs[SMTP].setSubscriptions(subscriptions);
-
-        // POP
-        subscriptions = new HashSet<Subscription>();
-        {
-            Subscription subscription = new Subscription(Protocol.TCP);
-            subscriptions.add(subscription);
-        }
-        pipeSpecs[POP].setSubscriptions(subscriptions);
     }
 
     // NodeBase methods ----------------------------------------------

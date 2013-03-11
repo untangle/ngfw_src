@@ -7,7 +7,6 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import org.apache.log4j.Logger;
-import com.untangle.node.mail.impl.imap.ImapCasingFactory;
 import com.untangle.node.mail.impl.quarantine.Quarantine;
 import com.untangle.node.mail.impl.safelist.SafelistManager;
 import com.untangle.node.mail.impl.smtp.SmtpCasingFactory;
@@ -54,10 +53,8 @@ public class MailNodeImpl extends NodeBase implements MailNode, MailExport
     private final Logger logger = Logger.getLogger(MailNodeImpl.class);
 
     private final CasingPipeSpec SMTP_PIPE_SPEC = new CasingPipeSpec("smtp", this, SmtpCasingFactory.factory(),Fitting.SMTP_STREAM, Fitting.SMTP_TOKENS);
-    private final CasingPipeSpec POP_PIPE_SPEC = new CasingPipeSpec("pop", this, PopCasingFactory.factory(),Fitting.POP_STREAM, Fitting.POP_TOKENS);
-    private final CasingPipeSpec IMAP_PIPE_SPEC = new CasingPipeSpec("imap", this, ImapCasingFactory.factory(),Fitting.IMAP_STREAM, Fitting.IMAP_TOKENS);
 
-    private final PipeSpec[] pipeSpecs = new PipeSpec[] { SMTP_PIPE_SPEC, POP_PIPE_SPEC, IMAP_PIPE_SPEC };
+    private final PipeSpec[] pipeSpecs = new PipeSpec[] { SMTP_PIPE_SPEC };
 
     private MailNodeSettings settings;
     private static Quarantine s_quarantine;//This will never be null for *instances* of MailNodeImpl
@@ -125,11 +122,7 @@ public class MailNodeImpl extends NodeBase implements MailNode, MailExport
     {
         MailNodeSettings ns = new MailNodeSettings();
         ns.setSmtpEnabled(true);
-        ns.setPopEnabled(true);
-        ns.setImapEnabled(true);
         ns.setSmtpTimeout(1000*60*4);
-        ns.setPopTimeout(1000*30);
-        ns.setImapTimeout(1000*30);
         ns.setSmtpAllowTLS(false);
 
         QuarantineSettings qs = new QuarantineSettings();
@@ -251,14 +244,6 @@ public class MailNodeImpl extends NodeBase implements MailNode, MailExport
     private void reconfigure()
     {
         SMTP_PIPE_SPEC.setEnabled(settings.isSmtpEnabled());
-        POP_PIPE_SPEC.setEnabled(settings.isPopEnabled());
-        IMAP_PIPE_SPEC.setEnabled(settings.isImapEnabled());
-
-        /* release session if parser doesn't catch or
-         * explicitly throws its own parse exception
-         * (parser will catch certain parse exceptions)
-         */
-        POP_PIPE_SPEC.setReleaseParseExceptions(true);
     }
 
     // Node methods -----------------------------------------------------------
@@ -311,8 +296,7 @@ public class MailNodeImpl extends NodeBase implements MailNode, MailExport
         // At this point the settings have either been loaded from disk
         // or initialized to defaults so now we do all the other setup
         try {
-            // create GLOBAL safelist for admin to manage POP/IMAP accounts
-            // (GLOBAL safelist is created only if it doesn't exist yet)
+            // XXX what is this?
             s_safelistMngr.createSafelist("GLOBAL");
         } catch (Exception exn) {
             logger.error("Could not create global safelist",exn);
@@ -329,8 +313,6 @@ public class MailNodeImpl extends NodeBase implements MailNode, MailExport
     {
         return pipeSpecs;
     }
-
-    // XXX soon to be deprecated ----------------------------------------------
 
     public Object getSettings()
     {

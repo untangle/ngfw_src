@@ -401,32 +401,6 @@ if (!Ung.hasResource["Ung.Virus"]) {
                                     }, this)
                                 }
                             }
-                        }, {
-                            xtype: 'checkbox',
-                            boxLabel: this.i18n._('Scan POP3'),
-                            hideLabel: true,
-                            name: 'Scan POP3',
-                            checked: this.settings.scanPop,
-                            listeners: {
-                                "change": {
-                                    fn: Ext.bind(function(elem, checked) {
-                                        this.settings.scanPop = checked;
-                                    }, this)
-                                }
-                            }
-                        }, {
-                            xtype: 'checkbox',
-                            boxLabel: this.i18n._('Scan IMAP'),
-                            hideLabel: true,
-                            name: 'Scan IMAP',
-                            checked: this.settings.scanImap,
-                            listeners: {
-                                "change": {
-                                    fn: Ext.bind(function(elem, checked) {
-                                        this.settings.scanImap = checked;
-                                    }, this)
-                                }
-                            }
                         }]
                     },{
                         columnWidth:.7,
@@ -449,46 +423,6 @@ if (!Ung.hasResource["Ung.Virus"]) {
                                 "change": {
                                     fn: Ext.bind(function(elem, newValue) {
                                         this.settings.smtpAction = newValue;
-                                    }, this)
-                                }
-                            }
-                        },{
-                            xtype: 'combo',
-                            name: 'POP3 Action',
-                            editable: false,
-                            fieldLabel: this.i18n._('Action'),
-                            queryMode: 'local',
-                            triggerAction: 'all',
-                            listClass: 'x-combo-list-small',
-                            store: [["pass", this.i18n._("pass message")], 
-                                    ["remove", this.i18n._("remove infection")]],
-                            displayField: 'name',
-                            valueField: 'key',
-                            value: this.settings.popAction,
-                            listeners: {
-                                "change": {
-                                    fn: Ext.bind(function(elem, newValue) {
-                                        this.settings.popAction = newValue;
-                                    }, this)
-                                }
-                            }
-                        },{
-                            xtype: 'combo',
-                            name: 'IMAP Action',
-                            editable: false,
-                            fieldLabel: this.i18n._('Action'),
-                            queryMode: 'local',
-                            triggerAction: 'all',
-                            listClass: 'x-combo-list-small',
-                            store: [["pass", this.i18n._("pass message")], 
-                                    ["remove", this.i18n._("remove infection")]],
-                            displayField: 'name',
-                            valueField: 'key',
-                            value: this.settings.imapAction,
-                            listeners: {
-                                "change": {
-                                    fn: Ext.bind(function(elem, newValue) {
-                                        this.settings.imapAction = newValue;
                                     }, this)
                                 }
                             }
