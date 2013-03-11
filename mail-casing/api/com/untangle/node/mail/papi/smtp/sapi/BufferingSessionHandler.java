@@ -1,36 +1,6 @@
-/*
- * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc.
- *
- * This library is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License, version 2,
- * as published by the Free Software Foundation.
- *
- * This library is distributed in the hope that it will be useful, but
- * AS-IS and WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE, TITLE, or
- * NONINFRINGEMENT.  See the GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this library; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
- *
- * Linking this library statically or dynamically with other modules is
- * making a combined work based on this library.  Thus, the terms and
- * conditions of the GNU General Public License cover the whole combination.
- *
- * As a special exception, the copyright holders of this library give you
- * permission to link this library with independent modules to produce an
- * executable, regardless of the license terms of these independent modules,
- * and to copy and distribute the resulting executable under terms of your
- * choice, provided that you also meet, for each linked independent module,
- * the terms and conditions of the license of that module.  An independent
- * module is a module which is not derived from or based on this library.
- * If you modify this library, you may extend this exception to your version
- * of the library, but you are not obligated to do so.  If you do not wish
- * to do so, delete this exception statement from your version.
+/**
+ * $Id$
  */
-
 package com.untangle.node.mail.papi.smtp.sapi;
 
 import java.util.ArrayList;
@@ -44,7 +14,6 @@ import com.untangle.node.mail.papi.CompleteMIMEToken;
 import com.untangle.node.mail.papi.ContinuedMIMEToken;
 import com.untangle.node.mail.papi.MIMEAccumulator;
 import com.untangle.node.mail.papi.MessageInfo;
-import com.untangle.node.mail.papi.MessageTransmissionTimeoutStrategy;
 import com.untangle.node.mail.papi.smtp.Command;
 import com.untangle.node.mail.papi.smtp.MAILCommand;
 import com.untangle.node.mail.papi.smtp.RCPTCommand;
@@ -97,9 +66,8 @@ import com.untangle.node.token.Token;
  * late to modify the message.
  */
 @SuppressWarnings("serial")
-public abstract class BufferingSessionHandler
-    extends SessionHandler {
-
+public abstract class BufferingSessionHandler extends SessionHandler
+{
     private static final String RESP_TXT_354 = "Start mail input; end with <CRLF>.<CRLF>";
 
 
@@ -123,7 +91,8 @@ public abstract class BufferingSessionHandler
     /**
      * <b>B</b>lock, <b>P</b>ass, or <b>M</b>odify Evaluation result.
      */
-    public static final class BPMEvaluationResult {
+    public static final class BPMEvaluationResult
+    {
         private MIMEMessage m_newMsg;
         private final BlockOrPassResult action;
 
@@ -139,12 +108,14 @@ public abstract class BufferingSessionHandler
          * modified.  This implicitly is not
          * a block.
          */
-        public BPMEvaluationResult(MIMEMessage newMsg) {
+        public BPMEvaluationResult(MIMEMessage newMsg)
+        {
             action = BlockOrPassResult.PASS;
             m_newMsg = newMsg;
         }
 
-        public boolean isBlock() {
+        public boolean isBlock()
+        {
             return action == BlockOrPassResult.BLOCK;
         }
 
@@ -153,11 +124,13 @@ public abstract class BufferingSessionHandler
             return action;
         }
 
-        public boolean messageModified() {
+        public boolean messageModified()
+        {
             return m_newMsg != null;
         }
 
-        public MIMEMessage getMessage() {
+        public MIMEMessage getMessage()
+        {
             return m_newMsg;
         }
     }
@@ -180,11 +153,8 @@ public abstract class BufferingSessionHandler
     private final boolean m_isBufferAndTrickle;
     private String m_heloName = null;
 
-
-    protected BufferingSessionHandler(int giveUpSz,
-                                      long maxClientWait,
-                                      long maxServerWait,
-                                      boolean isBufferAndTrickle) {
+    protected BufferingSessionHandler( int giveUpSz, long maxClientWait, long maxServerWait, boolean isBufferAndTrickle )
+    {
         m_giveupSz = giveUpSz;
         m_maxClientWait = maxClientWait<=0?Integer.MAX_VALUE:maxClientWait;
         m_maxServerWait = maxServerWait<=0?Integer.MAX_VALUE:maxServerWait;
@@ -201,7 +171,8 @@ public abstract class BufferingSessionHandler
      * Buffering is abandoned and the
      * <i>giveup-then-trickle</i> state is entered.
      */
-    protected final int getGiveupSz() {
+    protected final int getGiveupSz()
+    {
         return m_giveupSz;
     }
 
@@ -210,7 +181,8 @@ public abstract class BufferingSessionHandler
      * that the client can wait for a response
      * to DATA transmission.
      */
-    protected final long getMaxClientWait() {
+    protected final long getMaxClientWait()
+    {
         return m_maxClientWait;
     }
 
@@ -218,7 +190,8 @@ public abstract class BufferingSessionHandler
      * The maximum time that the server can wait
      * for a subsequent ("DATA") command.
      */
-    protected final long getMaxServerWait() {
+    protected final long getMaxServerWait()
+    {
         return m_maxServerWait;
     }
 
@@ -230,7 +203,8 @@ public abstract class BufferingSessionHandler
      * {@link #blockOrPass blockOrPass()} will still be called
      * once the complete message has been seen.
      */
-    protected final boolean isBufferAndTrickle() {
+    protected final boolean isBufferAndTrickle()
+    {
         return m_isBufferAndTrickle;
     }
 
@@ -263,14 +237,10 @@ public abstract class BufferingSessionHandler
      * @param tx the transaction
      * @param msgInfo the MessageInfo (for creating reporting events).
      */
-    public abstract BlockOrPassResult blockOrPass(MIMEMessage msg,
-                                                  SmtpTransaction tx,
-                                                  MessageInfo msgInfo);
+    public abstract BlockOrPassResult blockOrPass(MIMEMessage msg, SmtpTransaction tx, MessageInfo msgInfo);
 
-
-    private BPMEvaluationResult callBlockPassOrModify(MIMEMessage msg,
-                                                      SmtpTransaction tx,
-                                                      MessageInfo msgInfo) {
+    private BPMEvaluationResult callBlockPassOrModify(MIMEMessage msg, SmtpTransaction tx, MessageInfo msgInfo)
+    {
 
         try {
             return blockPassOrModify(msg, tx, msgInfo);
@@ -282,9 +252,8 @@ public abstract class BufferingSessionHandler
     }
 
 
-    private BlockOrPassResult callBlockOrPass(MIMEMessage msg,
-                                              SmtpTransaction tx,
-                                              MessageInfo msgInfo) {
+    private BlockOrPassResult callBlockOrPass(MIMEMessage msg, SmtpTransaction tx, MessageInfo msgInfo)
+    {
 
         try {
             return blockOrPass(msg, tx, msgInfo);
@@ -302,7 +271,8 @@ public abstract class BufferingSessionHandler
      *
      * @return the name String
      */
-    protected String getHELOEHLOName() {
+    protected String getHELOEHLOName()
+    {
         return m_heloName;
     }
 
@@ -312,8 +282,8 @@ public abstract class BufferingSessionHandler
     //================================
 
     @Override
-    public final void handleCommand(Command command,
-                                    Session.SmtpCommandActions actions) {
+    public final void handleCommand(Command command, Session.SmtpCommandActions actions)
+    {
 
         m_logger.debug("[handleCommand] with command of type \"" +
                        command.getType() + "\"");
@@ -322,27 +292,32 @@ public abstract class BufferingSessionHandler
     }
 
     @Override
-    public void observeEHLOCommand(Command cmd) {
+    public void observeEHLOCommand(Command cmd)
+    {
         m_heloName = cmd.getArgString();
     }
 
     @Override
-    public final TransactionHandler createTxHandler(SmtpTransaction tx) {
+    public final TransactionHandler createTxHandler(SmtpTransaction tx)
+    {
         return new BufferingTransactionHandler(tx);
     }
 
     @Override
-    public boolean handleServerFIN(TransactionHandler currentTX) {
+    public boolean handleServerFIN(TransactionHandler currentTX)
+    {
         return true;
     }
 
     @Override
-    public boolean handleClientFIN(TransactionHandler currentTX) {
+    public boolean handleClientFIN(TransactionHandler currentTX)
+    {
         return true;
     }
 
     @Override
-    public void handleFinalized() {
+    public void handleFinalized()
+    {
         //
     }
 
@@ -355,13 +330,11 @@ public abstract class BufferingSessionHandler
      * Determines, based on timestamps, if
      * trickling should begin
      */
-    private boolean shouldBeginTrickle() {
-
-        return MessageTransmissionTimeoutStrategy.inTimeoutDanger(
-                                                                  Math.min(getMaxClientWait(), getMaxServerWait()),
-                                                                  Math.min(
-                                                                           getSession().getLastClientTimestamp(),
-                                                                           getSession().getLastServerTimestamp()));
+    private boolean shouldBeginTrickle()
+    {
+        return inTimeoutDanger(Math.min(getMaxClientWait(), getMaxServerWait()),
+                               Math.min(getSession().getLastClientTimestamp(),
+                                        getSession().getLastServerTimestamp()));
     }
 
 
@@ -395,16 +368,20 @@ public abstract class BufferingSessionHandler
      */
     private class TxLog extends ArrayList<String> {
 
-        void receivedToken(Token token) {
+        void receivedToken(Token token)
+        {
             add("----Received Token " + token + "--------");
         }
-        void receivedResponse(Response resp) {
+        void receivedResponse(Response resp)
+        {
             add("----Received Response " + resp.getCode() + "--------");
         }
-        void recordStateChange(BufTxState old, BufTxState newState) {
+        void recordStateChange(BufTxState old, BufTxState newState)
+        {
             add("----Change State " + old + "->" + newState + "-----------");
         }
-        void dumpToLogger(Logger logger,Level level) {
+        void dumpToLogger(Logger logger,Level level)
+        {
             logger.log(level,"=======BEGIN Transaction Log=============");
             for(String s : this) {
                 logger.log(level,s);
@@ -415,7 +392,8 @@ public abstract class BufferingSessionHandler
 
         //TODO bscott this is temp, just for debugging
         @Override
-        public boolean add(String s) {
+        public boolean add(String s)
+        {
             m_logger.debug("[TX-LOG] " + s);
             return super.add(s);
         }
@@ -452,7 +430,8 @@ public abstract class BufferingSessionHandler
         //to the DATA command and instead send it
         //as a result of the client's <CRLF>.<CRLF>
 
-        BufferingTransactionHandler(SmtpTransaction tx) {
+        BufferingTransactionHandler(SmtpTransaction tx)
+        {
             super(tx);
             m_txLog.add("---- Initial state " + m_state + " (" +
                         new Date() + ") -------");
@@ -464,8 +443,8 @@ public abstract class BufferingSessionHandler
         //     we need to handle the "client" and "server" close stuff
 
         @Override
-        public void handleRSETCommand(Command command,
-                                      Session.SmtpCommandActions actions) {
+        public void handleRSETCommand(Command command, Session.SmtpCommandActions actions)
+        {
 
             m_txLog.receivedToken(command);
 
@@ -491,12 +470,11 @@ public abstract class BufferingSessionHandler
         }
 
         @Override
-        public void handleCommand(Command command,
-                                  Session.SmtpCommandActions actions) {
+        public void handleCommand(Command command, Session.SmtpCommandActions actions)
+        {
             m_txLog.receivedToken(command);
 
-            if(m_state == BufTxState.GATHER_ENVELOPE ||
-               m_state == BufTxState.INIT) {
+            if(m_state == BufTxState.GATHER_ENVELOPE || m_state == BufTxState.INIT) {
                 if(command.getType() == Command.CommandType.DATA) {
                     //Don't passthru
                     m_txLog.add("Enqueue synthetic 354 for client");
@@ -517,9 +495,8 @@ public abstract class BufferingSessionHandler
             }
         }
 
-        private void handleMAILOrRCPTCommand(Command command,
-                                             Session.SmtpCommandActions actions,
-                                             ResponseCompletion compl) {
+        private void handleMAILOrRCPTCommand(Command command, Session.SmtpCommandActions actions, ResponseCompletion compl)
+        {
 
             m_txLog.receivedToken(command);
 
@@ -542,15 +519,15 @@ public abstract class BufferingSessionHandler
         }
 
         @Override
-        public void handleMAILCommand(MAILCommand command,
-                                      Session.SmtpCommandActions actions) {
+        public void handleMAILCommand(MAILCommand command, Session.SmtpCommandActions actions)
+        {
             getTransaction().fromRequest(command.getAddress());
             handleMAILOrRCPTCommand(command, actions, new MAILContinuation(command.getAddress()));
         }
 
         @Override
-        public void handleRCPTCommand(RCPTCommand command,
-                                      Session.SmtpCommandActions actions) {
+        public void handleRCPTCommand(RCPTCommand command, Session.SmtpCommandActions actions)
+        {
             getTransaction().toRequest(command.getAddress());
             handleMAILOrRCPTCommand(command, actions, new RCPTContinuation(command.getAddress()));
         }
@@ -558,8 +535,8 @@ public abstract class BufferingSessionHandler
 
 
         @Override
-        public void handleBeginMIME(BeginMIMEToken token,
-                                    Session.SmtpCommandActions actions) {
+        public void handleBeginMIME(BeginMIMEToken token, Session.SmtpCommandActions actions)
+        {
 
             m_txLog.receivedToken(token);
 
@@ -574,8 +551,8 @@ public abstract class BufferingSessionHandler
         }
 
         @Override
-            public void handleContinuedMIME(ContinuedMIMEToken token,
-                                            Session.SmtpCommandActions actions) {
+            public void handleContinuedMIME(ContinuedMIMEToken token, Session.SmtpCommandActions actions)
+        {
             m_txLog.receivedToken(token);
 
             handleMIMEChunk(false,
@@ -585,8 +562,8 @@ public abstract class BufferingSessionHandler
         }
 
         @Override
-        public void handleCompleteMIME(CompleteMIMEToken token,
-                                       Session.SmtpCommandActions actions) {
+        public void handleCompleteMIME(CompleteMIMEToken token, Session.SmtpCommandActions actions)
+        {
 
             m_txLog.receivedToken(token);
 
@@ -602,17 +579,13 @@ public abstract class BufferingSessionHandler
             //      m_messageInfo = null;
         }
         @Override
-        public void handleFinalized() {
+        public void handleFinalized()
+        {
             closeMessageResources(true);
         }
 
-
-        private void handleMIMEChunk(boolean isFirst,
-                                     boolean isLast,
-                                     ContinuedMIMEToken continuedToken,/*Odd semantics - may be null*/
-                                     Session.SmtpCommandActions actions) {
-
-
+        private void handleMIMEChunk(boolean isFirst, boolean isLast, ContinuedMIMEToken continuedToken, Session.SmtpCommandActions actions)
+        {
             switch(m_state) {
             case INIT:
             case GATHER_ENVELOPE:
@@ -852,7 +825,8 @@ public abstract class BufferingSessionHandler
 
 
         //If null, just ignore
-        private void appendChunk(ContinuedMIMEToken continuedToken) {
+        private void appendChunk(ContinuedMIMEToken continuedToken)
+        {
             if(continuedToken == null) {
                 return;
             }
@@ -874,12 +848,14 @@ public abstract class BufferingSessionHandler
         }
 
 
-        private void changeState(BufTxState newState) {
+        private void changeState(BufTxState newState)
+        {
             m_txLog.recordStateChange(m_state, newState);
             m_state = newState;
         }
 
-        private void closeMessageResources(boolean force) {
+        private void closeMessageResources(boolean force)
+        {
             if(m_isMessageMaster || force) {
                 if(m_accumulator != null) {
                     m_accumulator.dispose();
@@ -896,7 +872,8 @@ public abstract class BufferingSessionHandler
          * Helper which prints the tx log to debug
          * as a final report of what took place
          */
-        private void finalReport() {
+        private void finalReport()
+        {
             //TODO Send TxLog to debug and add final state
             //      m_txLog.add("Final transaction state: " + getTransaction().getState());
             //      m_txLog.dumpToDebug(m_logger);
@@ -907,7 +884,8 @@ public abstract class BufferingSessionHandler
          * error, this also returns PASS.  If the message
          * was changed, it'll just be picked-up implicitly.
          */
-        private BlockOrPassResult evaluateMessage(boolean canModify) {
+        private BlockOrPassResult evaluateMessage(boolean canModify)
+        {
             if (m_msg == null) {
                 m_msg = m_accumulator.parseBody();
                 m_accumulator.closeInput();
@@ -944,8 +922,8 @@ public abstract class BufferingSessionHandler
         private class BufferedDATARequestContinuation
             extends PassthruResponseCompletion {
 
-            public void handleResponse(Response resp,
-                                       Session.SmtpResponseActions actions) {
+            public void handleResponse(Response resp, Session.SmtpResponseActions actions)
+            {
 
                 m_txLog.receivedResponse(resp);
                 m_txLog.add("Response to DATA command was " + resp.getCode());
@@ -1062,8 +1040,8 @@ public abstract class BufferingSessionHandler
         private class MailTransmissionContinuation
             extends PassthruResponseCompletion {
 
-            public void handleResponse(Response resp,
-                                       Session.SmtpResponseActions actions) {
+            public void handleResponse(Response resp, Session.SmtpResponseActions actions)
+            {
 
                 m_txLog.receivedResponse(resp);
                 m_txLog.add("Response to mail transmission command was " + resp.getCode());
@@ -1090,16 +1068,18 @@ public abstract class BufferingSessionHandler
 
             private final EmailAddress m_addr;
 
-            ContinuationWithAddress(EmailAddress addr) {
+            ContinuationWithAddress(EmailAddress addr)
+            {
                 m_addr = addr;
             }
 
-            protected EmailAddress getAddress() {
+            protected EmailAddress getAddress()
+            {
                 return m_addr;
             }
 
-            public void handleResponse(Response resp,
-                                       Session.SmtpResponseActions actions) {
+            public void handleResponse(Response resp, Session.SmtpResponseActions actions)
+            {
 
                 super.handleResponse(resp, actions);
             }
@@ -1111,12 +1091,13 @@ public abstract class BufferingSessionHandler
         private class MAILContinuation
             extends ContinuationWithAddress {
 
-            MAILContinuation(EmailAddress addr) {
+            MAILContinuation(EmailAddress addr)
+            {
                 super(addr);
             }
 
-            public void handleResponse(Response resp,
-                                       Session.SmtpResponseActions actions) {
+            public void handleResponse(Response resp, Session.SmtpResponseActions actions)
+            {
                 m_txLog.receivedResponse(resp);
                 m_txLog.add("Response to MAIL for address \"" +
                             getAddress() + "\" was " + resp.getCode());
@@ -1131,12 +1112,13 @@ public abstract class BufferingSessionHandler
         private class RCPTContinuation
             extends ContinuationWithAddress {
 
-            RCPTContinuation(EmailAddress addr) {
+            RCPTContinuation(EmailAddress addr)
+            {
                 super(addr);
             }
 
-            public void handleResponse(Response resp,
-                                       Session.SmtpResponseActions actions) {
+            public void handleResponse(Response resp, Session.SmtpResponseActions actions)
+            {
                 m_txLog.receivedResponse(resp);
                 m_txLog.add("Response to RCPT for address \"" +
                             getAddress() + "\" was " + resp.getCode());
@@ -1147,4 +1129,15 @@ public abstract class BufferingSessionHandler
 
     }//ENDOF BufferingTransactionHandler Class Definition
 
+    private static boolean inTimeoutDanger( long maxWaitPeriod, long lastTimestamp)
+    {
+        if(maxWaitPeriod <= 0) {
+            //Time equal-to or below zero means give-up
+            return false;
+        }
+        maxWaitPeriod = (long) (maxWaitPeriod * 0.95);//TODO bscott a real "slop" factor - not a guess
+
+        return (System.currentTimeMillis() - lastTimestamp) < maxWaitPeriod ? false : true;
+    }
+    
 }//ENDOF BufferingSessionHandler Class Definition
