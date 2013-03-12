@@ -303,7 +303,57 @@ if (!Ung.hasResource["Ung.Network"]) {
             this.interfaceRemap = Ext.create('Ung.InterfaceRemap',{
                 grid: this.gridInterfaces
             });
-
+            this.gridInterfacesAliasesEditor = Ext.create( 'Ung.EditorGrid', {
+                name: 'QoS Priorities',
+                height: 200,
+                settingsCmp: this,
+                paginated: false,
+                hasEdit: false,
+                dataIndex: 'v4Aliases',
+                recordJavaClass: "com.untangle.uvm.network.InterfaceSettings.InterfaceAlias",
+                emptyRow: {
+                    "v4StaticAddress": "1.2.3.4",
+                    "v4StaticPrefix": "24",
+                    "javaClass": "com.untangle.uvm.network.InterfaceSettings.InterfaceAlias"
+                },
+                data: [],
+                fields: [{
+                    name: 'v4StaticAddress',
+                }, {
+                    name: 'v4StaticPrefix'
+                }],                
+                columns: [{
+                    header: this.i18n._("Address"),
+                    dataIndex: 'v4StaticAddress',
+                    width: '250',
+                    editor : {
+                        xtype: 'textfield',
+                        allowBlank : false
+                    }
+                }, {
+                    header: this.i18n._("Prefix"),
+                    dataIndex: 'v4StaticPrefix',
+                    width: '200',
+                    editor : {
+                        xtype: 'textfield',
+                        allowBlank : false
+                    }
+                }],
+                columnsDefaultSortable: false,
+                setValue: function (value) {
+                    var data = [];
+                    if(value!=null && value.list!=null) {
+                        data=value.list;
+                    }
+                    this.reload({data:data});
+                },
+                getValue: function () {
+                    return {
+                        javaClass: "java.util.LinkedList",
+                        list: this.getPageList()
+                    };
+                }
+            });
             this.gridInterfaces.rowEditor = Ext.create('Ung.RowEditorWindow',{
                 grid: this.gridInterfaces,
                 sizeToComponent: this.panelInterfaces,
@@ -516,9 +566,7 @@ if (!Ung.hasResource["Ung.Network"]) {
                         collapsible: true,
                         collapsed: false,
                         //dataIndex: "v4Aliases",
-                        items: [{
-                            html: "FIXME: aliases grid<br/>"
-                        }]
+                        items: [this.gridInterfacesAliasesEditor]
                     }, {
                         id: 'interface_v4ExtraOptions',
                         style: "border:1px solid;", // UGLY FIXME
