@@ -1610,7 +1610,7 @@ if (!Ung.hasResource["Ung.Network"]) {
 
                 var message = Ext.String.format( this.i18n._( "<i>Total: {0} kbps ({1} Mbit) download, {2} kbps ({3} Mbit) upload</i>" ), d, d_Mbit, u, u_Mbit );
                 var bandwidthLabel = this.panelQoS.query('label[name="bandwidthLabel"]')[0];
-                bandwidthLabel.html = this.i18n._("<font color=\"red\">Note</font>: When enabling QoS valid Download Bandwidth and Upload Bandwidth limits must be set for all WAN interfaces.")+"</br>"+message;
+                bandwidthLabel.setText(this.i18n._("<font color=\"red\">Note</font>: When enabling QoS valid Download Bandwidth and Upload Bandwidth limits must be set for all WAN interfaces.")+"</br>"+message, false);
             }, this);
             
             this.gridQosWanBandwidth = Ext.create( 'Ung.EditorGrid', {
@@ -1688,7 +1688,10 @@ if (!Ung.hasResource["Ung.Network"]) {
                 
                 columnsDefaultSortable: false
             });
-            
+            this.gridQosWanBandwidth.getStore().on("update", Ext.bind(function() {
+                var qosBandwidthList = this.gridQosWanBandwidth.getPageList();
+                updateTotalBandwidth(qosBandwidthList);
+            }, this));
             this.gridQosRules = Ext.create( 'Ung.EditorGrid', {
                 name: 'QoS Custom Rules',
                 margin: '5 0 0 0',
