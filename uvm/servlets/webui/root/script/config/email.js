@@ -400,7 +400,7 @@ if (!Ung.hasResource["Ung.Email"]) {
                                    buttons: Ext.Msg.YESNOCANCEL,
                                    fn: Ext.bind(function(btnId) {
                                            if (btnId == 'yes') {
-                                               if (this.validateOutgoingServer()) {
+                                               if (this.validate()) {
                                                 Ext.MessageBox.wait(this.i18n._('Saving...'), this.i18n._('Please wait'));
                                                 // save mail settings
                                                 main.getMailSender().setSettings(Ext.bind(function(result, exception) {
@@ -1160,7 +1160,7 @@ if (!Ung.hasResource["Ung.Email"]) {
             if (!portCmp.isValid()) {
                 Ext.MessageBox.alert(this.i18n._('Warning'), Ext.String.format(this.i18n._("The port must be an integer number between {0} and {1}."), 1, 65535),
                     Ext.bind(function () {
-                        this.tabs.setActiveTab(this.panelActiveDirectoryConnector);
+                        this.tabs.setActiveTab(this.panelOutgoingServer);
                         portCmp.focus(true);
                     }, this) 
                 );
@@ -1171,7 +1171,7 @@ if (!Ung.hasResource["Ung.Email"]) {
             if (loginCmp.getValue().length > 0 && passwordCmp.getValue().length == 0) {
                 Ext.MessageBox.alert(this.i18n._('Warning'), this.i18n._('A "Password" must be specified if a "Login" is specified.'),
                     Ext.bind(function () {
-                        this.tabs.setActiveTab(this.panelActiveDirectoryConnector);
+                        this.tabs.setActiveTab(this.panelOutgoingServer);
                         passwordCmp.focus(true);
                     }, this) 
                 );
@@ -1180,7 +1180,7 @@ if (!Ung.hasResource["Ung.Email"]) {
             else if(loginCmp.getValue().length == 0 && passwordCmp.getValue().length > 0) {
                 Ext.MessageBox.alert(this.i18n._('Warning'), this.i18n._('A "Login" must be specified if a "Password" is specified.'),
                     Ext.bind(function () {
-                        this.tabs.setActiveTab(this.panelActiveDirectoryConnector);
+                        this.tabs.setActiveTab(this.panelOutgoingServer);
                         loginCmp.focus(true);
                     }, this) 
                 );
@@ -1191,7 +1191,7 @@ if (!Ung.hasResource["Ung.Email"]) {
             if (!this.getMailSettings().useMxRecords && hostCmp.getValue().length == 0) {
                 Ext.MessageBox.alert(this.i18n._('Warning'), this.i18n._('A Server Address or Hostname must be specified for an SMTP server.'),
                     Ext.bind(function () {
-                        this.tabs.setActiveTab(this.panelActiveDirectoryConnector);
+                        this.tabs.setActiveTab(this.panelOutgoingServer);
                         hostCmp.focus(true);
                     }, this) 
                 );
@@ -1202,7 +1202,7 @@ if (!Ung.hasResource["Ung.Email"]) {
             if (fromAddressCmp.getValue().length == 0) {
                 Ext.MessageBox.alert(this.i18n._('Warning'), this.i18n._('A "From Address" must be specified.'),
                     Ext.bind(function () {
-                        this.tabs.setActiveTab(this.panelActiveDirectoryConnector);
+                        this.tabs.setActiveTab(this.panelOutgoingServer);
                         fromAddressCmp.focus(true);
                     }, this) 
                 );
