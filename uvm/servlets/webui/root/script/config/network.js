@@ -127,6 +127,19 @@ if (!Ung.hasResource["Ung.Network"]) {
             // builds the tab panel with the tabs
             var pageTabs = [ this.panelInterfaces, this.panelHostName, this.panelPortForwardRules, this.panelNatRules, this.panelBypassRules, this.panelRoutes, this.panelAdvanced ];
             this.buildTabPanel(pageTabs);
+
+            //Check if QoS is enabled and there are some initial WANs without downloadBandwidthKbps or uploadBandwidthKbps limits set and mark dirty if true,
+            // in order to make the user save the valid settings when new WANs are added
+            if(this.settings.qosSettings.qosEnabled) {
+                for(var i=0; i<this.settings.interfaces.list.length; i++) {
+                    var intf =this.settings.interfaces.list[i];
+                    if(intf.isWan && (intf.downloadBandwidthKbps == null || intf.uploadBandwidthKbps == null)) {
+                        this.markDirty();
+                        break;
+                    }
+                }
+            }
+
             this.callParent(arguments);
         },
         // Interfaces Panel
@@ -1597,9 +1610,9 @@ if (!Ung.hasResource["Ung.Network"]) {
 
                 var message = Ext.String.format( this.i18n._( "<i>Total: {0} kbps ({1} Mbit) download, {2} kbps ({3} Mbit) upload</i>" ), d, d_Mbit, u, u_Mbit );
                 var bandwidthLabel = this.panelQoS.query('label[name="bandwidthLabel"]')[0];
-                bandwidthLabel.html = this.i18n._("<font color=\"red\">Note</font>: When enabling QoS valid Download Bandwidth and Upload Bandwidth limits must be set for all interfaces.")+"</br>"+message;
+                bandwidthLabel.html = this.i18n._("<font color=\"red\">Note</font>: When enabling QoS valid Download Bandwidth and Upload Bandwidth limits must be set for all WAN interfaces.")+"</br>"+message;
             }, this);
-
+            
             this.gridQosWanBandwidth = Ext.create( 'Ung.EditorGrid', {
                 name: 'QoS Priorities',
                 margin: '5 0 0 0',
@@ -1610,7 +1623,18 @@ if (!Ung.hasResource["Ung.Network"]) {
                 hasDelete: false,
                 hasEdit: false,
                 recordJavaClass: "com.untangle.uvm.network.InterfaceSettings",
-                dataProperty:'interfaces',
+                dataFn: Ext.bind( function() {
+                    var result = {
+                        list:[]
+                    };
+                    for(var i=0; i<this.settings.interfaces.list.length; i++) {
+                        var intf =this.settings.interfaces.list[i];
+                        if(intf.isWan) {
+                            result.list.push(intf);
+                        }
+                    }
+                    return result;
+                }, this),
                 fields: [{
                     name: 'interfaceId'
                 }, {
@@ -2078,11 +2102,11 @@ if (!Ung.hasResource["Ung.Network"]) {
             if(this.settings.qosSettings.qosEnabled) {
                 var qosBandwidthList = this.gridQosWanBandwidth.getPageList();
                 for(var i=0; i<qosBandwidthList.length; i++) {
-                    if(qosBandwidthList[i].downloadBandwidthKbps == null || qosBandwidthList[i].downloadBandwidthKbps == null) {
+                    if(qosBandwidthList[i].downloadBandwidthKbps == null || qosBandwidthList[i].uploadBandwidthKbps == null) {
                         this.tabs.setActiveTab(this.panelAdvanced);
                         this.advancedTabPanel.setActiveTab(this.panelQoS);
                         this.gridQosWanBandwidth.focus();
-                        Ext.MessageBox.alert(this.i18n._("Failed"), this.i18n._("QoS is Enabled. Please set valid Download Bandwidth and Upload Bandwidth limits in WAN Bandwidth for all interfaces."));
+                        Ext.MessageBox.alert(this.i18n._("Failed"), this.i18n._("QoS is Enabled. Please set valid Download Bandwidth and Upload Bandwidth limits in WAN Bandwidth for all WAN interfaces."));
                         return false;
                     }
                 }
@@ -2113,8 +2137,11 @@ if (!Ung.hasResource["Ung.Network"]) {
                 }
                 for(var i=0; i<this.settings.interfaces.list.length; i++) {
                     var intf=this.settings.interfaces.list[i];
-                    intf.downloadBandwidthKbps=qosBandwidthMap[intf.interfaceId].downloadBandwidthKbps;
-                    intf.uploadBandwidthKbps=qosBandwidthMap[intf.interfaceId].uploadBandwidthKbps;
+                    var intfBandwidth = qosBandwidthMap[intf.interfaceId];
+                    if(intfBandwidth != null) {
+                        intf.downloadBandwidthKbps=intfBandwidth.downloadBandwidthKbps;
+                        intf.uploadBandwidthKbps=intfBandwidth.uploadBandwidthKbps;
+                    }
                 }
 
                 this.beforeSaveCount--;
