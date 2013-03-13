@@ -310,11 +310,11 @@ if (!Ung.hasResource["Ung.Network"]) {
                 paginated: false,
                 hasEdit: false,
                 dataIndex: 'v4Aliases',
-                recordJavaClass: "com.untangle.uvm.network.InterfaceSettings.InterfaceAlias",
+                recordJavaClass: "com.untangle.uvm.network.InterfaceSettings$InterfaceAlias",
                 emptyRow: {
                     "v4StaticAddress": "1.2.3.4",
                     "v4StaticPrefix": "24",
-                    "javaClass": "com.untangle.uvm.network.InterfaceSettings.InterfaceAlias"
+                    "javaClass": "com.untangle.uvm.network.InterfaceSettings$InterfaceAlias"
                 },
                 data: [],
                 fields: [{
