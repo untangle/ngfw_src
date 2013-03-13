@@ -1496,7 +1496,7 @@ if (!Ung.hasResource["Ung.Network"]) {
 
             this.buildGeneral();
             this.buildQoS();
-            this.buildPacketFilter();
+            this.buildFilter();
             this.buildDnsServer();
             this.buildNetworkCards();
 
@@ -1506,7 +1506,7 @@ if (!Ung.hasResource["Ung.Network"]) {
                 parentId: this.getId(),
                 autoHeight: true,
                 flex: 1,
-                items: [ this.panelGeneral, this.panelQoS, this.panelPacketFilter, this.panelDnsServer, this.panelNetworkCards ]
+                items: [ this.panelGeneral, this.panelQoS, this.panelFilter, this.panelDnsServer, this.panelNetworkCards ]
             });
             
             this.panelAdvanced = Ext.create('Ext.panel.Panel',{
@@ -2070,16 +2070,20 @@ if (!Ung.hasResource["Ung.Network"]) {
             });
             updateTotalBandwidth(this.settings.interfaces.list);
         },
-        // PacketFilter Panel
-        buildPacketFilter: function() {
-            this.panelPacketFilter = Ext.create('Ext.panel.Panel',{
-                name: 'panelPacketFilter',
-                helpSource: 'network_packet_filter',
+        // Filter Panel
+        buildFilter: function() {
+            this.panelFilter = Ext.create('Ext.panel.Panel',{
+                name: 'panelFilter',
+                helpSource: 'network_filter',
                 parentId: this.getId(),
-                title: this.i18n._('Packet Filter'),
+                title: this.i18n._('Filter Rules'),
                 layout: 'anchor',
                 cls: 'ung-panel',
-                items: []
+                items: [{
+                    html: "FIXME: Forward Filter Rules (networkSettings.forwardFilterRules)<br/>"
+                }, {
+                    html: "FIXME: Input Filter Rules (networkSettings.inputFilterRules)<br/>"
+                }]
             });
         },
         // DnsServer Panel

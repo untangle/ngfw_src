@@ -23,6 +23,8 @@ import com.untangle.uvm.network.BypassRule;
 import com.untangle.uvm.network.StaticRoute;
 import com.untangle.uvm.network.NatRule;
 import com.untangle.uvm.network.PortForwardRule;
+import com.untangle.uvm.network.FilterRule;
+import com.untangle.uvm.network.FilterRuleMatcher;
 import com.untangle.uvm.network.QosSettings;
 import com.untangle.uvm.network.QosRule;
 import com.untangle.uvm.network.QosRuleMatcher;
@@ -73,9 +75,8 @@ public class NetworkManagerImpl implements NetworkManager
                 logger.info("Reading Network Settings from " + this.settingsFilenameBackup + " = " + readSettings);
                 
                 if (readSettings == null) {
-                    // XXX this doesn't work because we re-link settings to our local settings
-                    // check for "backup" settings in /usr/share/untangle/settings/
-                    String rootLocation = "/usr/share/untangle/settings/untangle-vm/network";
+                    // check for "backup" settings in /usr/share/untangle/settings.backup/
+                    String rootLocation = "/usr/share/untangle/settings.backup/untangle-vm/network";
                     logger.info("Reading Network Settings from " + rootLocation);
                     readSettings = settingsManager.load( NetworkSettings.class, rootLocation );
                     logger.info("Reading Network Settings from " + rootLocation + " = " + readSettings);
@@ -100,6 +101,12 @@ public class NetworkManagerImpl implements NetworkManager
             //FIXME can remove me later - for testing
             if (readSettings.getQosSettings() == null)
                 readSettings.setQosSettings( defaultQosSettings() );
+            //FIXME can remove me later - for testing
+            if (readSettings.getForwardFilterRules() == null)
+                readSettings.setForwardFilterRules( defaultForwardFilterRules() );
+            if (readSettings.getInputFilterRules() == null)
+                readSettings.setInputFilterRules( defaultInputFilterRules() );
+
             //FIXME can remove me later - for testing
             if ( false ) {
                 DnsSettings dnsSettings = new DnsSettings();
@@ -505,6 +512,9 @@ public class NetworkManagerImpl implements NetworkManager
             newSettings.setQosSettings( defaultQosSettings() );
 
             newSettings.setDnsSettings( new DnsSettings() );
+
+            newSettings.setForwardFilterRules( defaultForwardFilterRules() );
+            newSettings.setInputFilterRules( defaultInputFilterRules() );
         }
         catch (Exception e) {
             logger.error("Error creating Network Settings",e);
@@ -757,4 +767,77 @@ public class NetworkManagerImpl implements NetworkManager
         return qosSettings;
     }
 
+    private List<FilterRule> defaultInputFilterRules()
+    {
+        List<FilterRule> rules = new LinkedList<FilterRule>();
+
+        FilterRule filterRule1 = new FilterRule();
+        filterRule1.setEnabled( false );
+        filterRule1.setDescription( "Allow SSH" );
+        filterRule1.setBlocked( false );
+        List<FilterRuleMatcher> rule1Matchers = new LinkedList<FilterRuleMatcher>();
+        FilterRuleMatcher rule1Matcher1 = new FilterRuleMatcher();
+        rule1Matcher1.setMatcherType(FilterRuleMatcher.MatcherType.DST_PORT);
+        rule1Matcher1.setValue("22");
+        FilterRuleMatcher rule1Matcher2 = new FilterRuleMatcher();
+        rule1Matcher2.setMatcherType(FilterRuleMatcher.MatcherType.PROTOCOL);
+        rule1Matcher2.setValue("tcp");
+        rule1Matchers.add(rule1Matcher1);
+        rule1Matchers.add(rule1Matcher2);
+        filterRule1.setMatchers( rule1Matchers );
+
+        FilterRule filterRule2 = new FilterRule();
+        filterRule2.setEnabled( true );
+        filterRule2.setDescription( "Allow HTTP on non-WANs" );
+        filterRule2.setBlocked( false );
+        List<FilterRuleMatcher> rule2Matchers = new LinkedList<FilterRuleMatcher>();
+        FilterRuleMatcher rule2Matcher1 = new FilterRuleMatcher();
+        rule2Matcher1.setMatcherType(FilterRuleMatcher.MatcherType.DST_PORT);
+        rule2Matcher1.setValue("80");
+        FilterRuleMatcher rule2Matcher2 = new FilterRuleMatcher();
+        rule2Matcher2.setMatcherType(FilterRuleMatcher.MatcherType.PROTOCOL);
+        rule2Matcher2.setValue("tcp");
+        FilterRuleMatcher rule2Matcher3 = new FilterRuleMatcher();
+        rule2Matcher3.setMatcherType(FilterRuleMatcher.MatcherType.SRC_INTF);
+        rule2Matcher3.setValue("non_wan");
+        rule2Matchers.add(rule2Matcher1);
+        rule2Matchers.add(rule2Matcher2);
+        rule2Matchers.add(rule2Matcher3);
+        filterRule2.setMatchers( rule2Matchers );
+
+        FilterRule filterRule3 = new FilterRule();
+        filterRule3.setEnabled( true );
+        filterRule3.setDescription( "Allow HTTPS" );
+        filterRule3.setBlocked( false );
+        List<FilterRuleMatcher> rule3Matchers = new LinkedList<FilterRuleMatcher>();
+        FilterRuleMatcher rule3Matcher1 = new FilterRuleMatcher();
+        rule3Matcher1.setMatcherType(FilterRuleMatcher.MatcherType.DST_PORT);
+        rule3Matcher1.setValue("443");
+        FilterRuleMatcher rule3Matcher2 = new FilterRuleMatcher();
+        rule3Matcher2.setMatcherType(FilterRuleMatcher.MatcherType.PROTOCOL);
+        rule3Matcher2.setValue("tcp");
+        rule3Matchers.add(rule3Matcher1);
+        rule3Matchers.add(rule3Matcher2);
+        filterRule3.setMatchers( rule3Matchers );
+
+        FilterRule filterRule4 = new FilterRule();
+        filterRule4.setEnabled( true );
+        filterRule4.setDescription( "Block All" );
+        filterRule4.setBlocked( true );
+        List<FilterRuleMatcher> rule4Matchers = new LinkedList<FilterRuleMatcher>();
+        filterRule4.setMatchers( rule4Matchers );
+        
+        rules.add( filterRule1 );
+        rules.add( filterRule2 );
+        rules.add( filterRule3 );
+        rules.add( filterRule4 );
+
+        return rules;
+    }
+
+    private List<FilterRule> defaultForwardFilterRules()
+    {
+        List<FilterRule> rules = new LinkedList<FilterRule>();
+        return rules;
+    }
 }

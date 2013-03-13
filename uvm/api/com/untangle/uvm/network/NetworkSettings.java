@@ -26,6 +26,8 @@ public class NetworkSettings implements Serializable, JSONString
     private List<PortForwardRule> portForwardRules = null;
     private List<NatRule> natRules = null;
     private List<BypassRule> bypassRules = null;
+    private List<FilterRule> inputFilterRules = null;
+    private List<FilterRule> forwardFilterRules = null;
     private List<StaticRoute> staticRoutes = null;
 
     private String hostName;
@@ -58,6 +60,12 @@ public class NetworkSettings implements Serializable, JSONString
     public List<BypassRule> getBypassRules() { return this.bypassRules; }
     public void setBypassRules( List<BypassRule> bypassRules ) { this.bypassRules = bypassRules; }
 
+    public List<FilterRule> getInputFilterRules() { return this.inputFilterRules; }
+    public void setInputFilterRules( List<FilterRule> bypassRules ) { this.inputFilterRules = bypassRules; }
+
+    public List<FilterRule> getForwardFilterRules() { return this.forwardFilterRules; }
+    public void setForwardFilterRules( List<FilterRule> bypassRules ) { this.forwardFilterRules = bypassRules; }
+    
     public List<StaticRoute> getStaticRoutes() { return this.staticRoutes; }
     public void setStaticRoutes( List<StaticRoute> staticRoutes ) { this.staticRoutes = staticRoutes; }
 

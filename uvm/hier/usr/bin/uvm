@@ -79,7 +79,7 @@ def prepareSystem():
     # if development environment change /usr/share/untangle/settings to point to dev env settings
     if developmentEnv:
         # if its not a symlink, move it to a backup just in case
-        os.system('if [ ! -L /usr/share/untangle/settings ] ; then mv /usr/share/untangle/settings /usr/share/untangle/settings-`date +"%Y-%m-%d"`.backup ; fi');
+        os.system('if [ ! -L /usr/share/untangle/settings ] ; then mv /usr/share/untangle/settings /usr/share/untangle/settings.backup ; fi');
         # remove old symlink if still there, and add new symlink
         os.system('rm -rf /usr/share/untangle/settings');
         os.system('ln -s @PREFIX@/usr/share/untangle/settings /usr/share/untangle/settings');
