@@ -303,44 +303,46 @@ if (!Ung.hasResource["Ung.Network"]) {
             this.interfaceRemap = Ext.create('Ung.InterfaceRemap',{
                 grid: this.gridInterfaces
             });
-            this.gridInterfacesAliasesEditor = Ext.create( 'Ung.EditorGrid', {
-                name: 'QoS Priorities',
-                height: 200,
+            this.gridInterfacesAliasesEditor = Ext.create('Ung.EditorGrid',{
+                name: 'IPv4 Aliases',
+                height: 180,
+                width: 450,
                 settingsCmp: this,
                 paginated: false,
                 hasEdit: false,
                 dataIndex: 'v4Aliases',
                 recordJavaClass: "com.untangle.uvm.network.InterfaceSettings$InterfaceAlias",
+                columnsDefaultSortable: false,
+                data: [],
                 emptyRow: {
                     "v4StaticAddress": "1.2.3.4",
                     "v4StaticPrefix": "24",
                     "javaClass": "com.untangle.uvm.network.InterfaceSettings$InterfaceAlias"
                 },
-                data: [],
                 fields: [{
-                    name: 'v4StaticAddress',
+                    name: 'v4StaticAddress'
                 }, {
                     name: 'v4StaticPrefix'
-                }],                
+                }],
                 columns: [{
                     header: this.i18n._("Address"),
                     dataIndex: 'v4StaticAddress',
-                    width: '250',
+                    width:200,
                     editor : {
                         xtype: 'textfield',
+                        vtype: "ipAddress",
                         allowBlank : false
                     }
                 }, {
-                    header: this.i18n._("Prefix"),
+                    header: this.i18n._("Netmask / Prefix"),
                     dataIndex: 'v4StaticPrefix',
-                    width: '200',
+                    flex: 1,
                     editor : {
                         xtype: 'textfield',
                         allowBlank : false
                     }
                 }],
-                columnsDefaultSortable: false,
-                setValue: function (value) {
+                columnsDefaultSortable: false,                setValue: function (value) {
                     var data = [];
                     if(value!=null && value.list!=null) {
                         data=value.list;
@@ -403,6 +405,7 @@ if (!Ung.hasResource["Ung.Network"]) {
                     id:'interface_v4Config',
                     style: "border:1px solid;", // UGLY FIXME
                     xtype:'fieldset',
+                    border: true,
                     title: this.i18n._("IPv4 Configuration"),
                     collapsible: true,
                     collapsed: false,
@@ -413,8 +416,6 @@ if (!Ung.hasResource["Ung.Network"]) {
                         fieldLabel: this.i18n._("Config Type"),
                         editable: false,
                         store: [ ["AUTO", this.i18n._('Auto (DHCP)')], ["STATIC", this.i18n._('Static')],  ["PPPOE", this.i18n._('PPPoE')]],
-                        valueField: "value",
-                        displayField: "displayName",
                         queryMode: 'local',
                         listeners: {
                             "select": {
@@ -559,21 +560,12 @@ if (!Ung.hasResource["Ung.Network"]) {
                         vtype: "ipAddress",
                         width: 300
                     }, {
-                        id:'interface_v4Aliases',
-                        style: "border:1px solid;", // UGLY FIXME
-                        xtype:'fieldset',
+                        xtype: 'fieldset',
                         title: this.i18n._("IPv4 Aliases"),
-                        collapsible: true,
-                        collapsed: false,
-                        //dataIndex: "v4Aliases",
                         items: [this.gridInterfacesAliasesEditor]
                     }, {
-                        id: 'interface_v4ExtraOptions',
-                        style: "border:1px solid;", // UGLY FIXME
                         xtype: 'fieldset',
                         title: this.i18n._("IPv4 Options"),
-                        collapsible: true,
-                        collapsed: false,
                         items: [{
                             xtype:'checkbox',
                             id: "interface_v4NatEgressTraffic",

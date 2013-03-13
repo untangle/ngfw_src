@@ -172,7 +172,9 @@ Ext.override( Ext.form.TextField, {
         }
     }
 });
-
+Ext.override( Ext.form.FieldSet, {
+   border: 0 
+});
 Ext.define("Ung.form.DayOfWeekMatcherField", {
     extend: "Ext.form.CheckboxGroup",
     alias: "widget.udayfield",
