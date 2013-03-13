@@ -132,7 +132,6 @@ Ext.define('Ung.SetupWizard.Welcome', {
 Ext.define('Ung.SetupWizard.ServerSettings', {
     constructor: function( config ) {
         this.panel = Ext.create('Ext.form.Panel', {
-            defaultType: 'fieldset',
             border: false,
             defaults: {
                 cls: 'noborder'
@@ -141,6 +140,8 @@ Ext.define('Ung.SetupWizard.ServerSettings', {
                 xtype: 'container',
                 html: '<h2 class="wizard-title">'+i18n._( "Configure the Server" )+'</h2>'
             }, {
+                xtype: 'fieldset',
+                border: false,
                 defaultType: 'textfield',
                 defaults: {
                     msgTarget: 'side',
@@ -179,6 +180,8 @@ Ext.define('Ung.SetupWizard.ServerSettings', {
                     vtype: 'passwordConfirmCheck'
                 }]
             }, {
+                xtype: 'fieldset',
+                border: false,
                 items: [{
                     xtype: 'container',
                     html: '<b>'+i18n._( 'Select a timezone.')+'</b>',
@@ -583,6 +586,7 @@ Ext.define('Ung.SetupWizard.Internet', {
             cls: 'network-card-form-margin',
             items: [{
                 xtype: 'fieldset',
+                border: false,
                 title: i18n._( "DHCP Status" ),
                 defaultType: 'textfield',
                 defaults: {
@@ -626,6 +630,7 @@ Ext.define('Ung.SetupWizard.Internet', {
             cls: 'network-card-form-margin',
             items: [{
                 xtype: 'fieldset',
+                border: false,
                 title: i18n._( "Static Settings" ),
                 defaultType: 'textfield',
                 defaults: {
@@ -687,6 +692,7 @@ Ext.define('Ung.SetupWizard.Internet', {
                     "&nbsp;<br/>"
             }, {
                 xtype: 'fieldset',
+                border: false,
                 title: i18n._( "PPPoE Settings" ),
                 defaultType: 'textfield',
                 defaults: {
@@ -708,6 +714,7 @@ Ext.define('Ung.SetupWizard.Internet', {
                 }]
             }, {
                 xtype: 'fieldset',
+                border: false,
                 title: i18n._( "PPPoE Status" ),
                 defaultType: 'textfield',
                 defaults: {
@@ -1107,12 +1114,13 @@ Ext.define('Ung.SetupWizard.Internet', {
 Ext.define('Ung.SetupWizard.InternalNetwork', {
     constructor: function( config ) {
         this.panel = Ext.create('Ext.form.Panel', {
-            defaultType: 'fieldset',
             border: false,
             items: [{
                 xtype: 'container',
                 html: '<h2 class="wizard-title">'+i18n._( "Configure the Internal Network Interface" )+'</h2>'
             }, {
+                xtype: 'fieldset',
+                border: false,
                 cls: 'noborder wizard-internal-network',
                 items: [{
                     xtype: 'radio',
@@ -1172,6 +1180,8 @@ Ext.define('Ung.SetupWizard.InternalNetwork', {
                     html: '<img src="/skins/' + Ung.SetupWizard.currentSkin + '/images/admin/wizard/router.png"/>'
                 }]
             }, {
+                xtype: 'fieldset',
+                border: false,
                 cls: 'noborder wizard-internal-network',
                 items: [{
                     xtype: 'radio',
@@ -1330,12 +1340,13 @@ Ext.define('Ung.SetupWizard.InternalNetwork', {
 Ext.define('Ung.SetupWizard.AutoUpgrades', {
     constructor: function( config ) {
         this.panel = Ext.create('Ext.form.Panel', {
-            defaultType: 'fieldset',
             border: false,
             items: [{
                 xtype: 'container',
                 html: '<h2 class="wizard-title">'+i18n._( "Configure Automatic Upgrade Settings" )+'</h2>'
             }, {
+                xtype: 'fieldset',
+                border: false,
                 cls: 'noborder  wizard-auto-upgrades',
                 items: [{
                     xtype: 'radio',
@@ -1352,6 +1363,8 @@ Ext.define('Ung.SetupWizard.AutoUpgrades', {
                          i18n._('This is the recommended for most sites.')
                 }]
             }, {
+                xtype: 'fieldset',
+                border: false,
                 cls: 'noborder wizard-auto-upgrades',
                 items: [{
                     xtype: 'radio',

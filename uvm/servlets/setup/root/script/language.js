@@ -23,7 +23,6 @@ Ext.define('Ung.SetupWizard.Language', {
         }
 
         this.panel = Ext.create('Ext.form.Panel', {
-            defaultType: 'fieldset',
             border: false,
             defaults: {
                 cls: 'noborder'
@@ -32,14 +31,16 @@ Ext.define('Ung.SetupWizard.Language', {
                 xtype: 'container',
                 html: '<h2 class="wizard-title">'+i18n._( "Language Selection" )+'</h2>'
             },{
+                xtype: 'fieldset',
+                border: false,
                 defaults: {
                     validationEvent: 'blur',
                     msgTarget: 'side'
                 },
                 items: [{
+                    xtype: 'combo',
                     fieldLabel: i18n._('Please select your language'),
                     name: "language",
-                    xtype: 'combo',
                     editable: false,
                     labelWidth: Ung.SetupWizard.LabelWidth,
                     store: this.languageStore,
