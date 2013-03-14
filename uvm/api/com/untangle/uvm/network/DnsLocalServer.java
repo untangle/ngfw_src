@@ -10,7 +10,7 @@ import org.json.JSONObject;
 import org.json.JSONString;
 
 /**
- * Dns static entry.
+ * Dns local server.
  */
 @SuppressWarnings("serial")
 public class DnsLocalServer implements Serializable, JSONString

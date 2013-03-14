@@ -40,12 +40,22 @@ if (!Ung.hasResource["Ung.Network"]) {
             return [
                 {name:"DST_ADDR",displayName: settingsCmp.i18n._("Destination Address"), type: "text", visible: true, vtype:"ipMatcher"},
                 {name:"DST_PORT",displayName: settingsCmp.i18n._("Destination Port"), type: "text",vtype:"portMatcher", visible: true},
-                {name:"DST_LOCAL",displayName: settingsCmp.i18n._("Destined Local"), type: "boolean", visible: true, allowInvert: false},
+                {name:"DST_LOCAL",displayName: settingsCmp.i18n._("Destined Local"), type: "boolean", visible: true},
                 {name:"PROTOCOL",displayName: settingsCmp.i18n._("Protocol"), type: "checkgroup", values: [["TCP","TCP"],["UDP","UDP"]], visible: true, allowInvert: false},
                 {name:"SRC_INTF",displayName: settingsCmp.i18n._("Source Interface"), type: "checkgroup", values: Ung.Util.getInterfaceList(false, false), visible: true, allowInvert: false},
                 {name:"SRC_ADDR",displayName: settingsCmp.i18n._("Source Address"), type: "text", visible: true, vtype:"ipMatcher"},
+                {name:"SRC_PORT",displayName: settingsCmp.i18n._("Source Port"), type: "text",vtype:"portMatcher", visible: false}
+            ];
+        },
+        getFilterRuleMatchers: function (settingsCmp) {
+            return [
+                {name:"DST_ADDR",displayName: settingsCmp.i18n._("Destination Address"), type: "text", visible: true, vtype:"ipMatcher"},
+                {name:"DST_PORT",displayName: settingsCmp.i18n._("Destination Port"), type: "text",vtype:"portMatcher", visible: true},
+                {name:"DST_INTF",displayName: settingsCmp.i18n._("Destination Interface"), type: "checkgroup", values: Ung.Util.getInterfaceList(true, true), visible: true, allowInvert: false},
+                {name:"SRC_ADDR",displayName: settingsCmp.i18n._("Source Address"), type: "text", visible: true, vtype:"ipMatcher"},
                 {name:"SRC_PORT",displayName: settingsCmp.i18n._("Source Port"), type: "text",vtype:"portMatcher", visible: false},
-                {name:"SRC_MAC_ADDR", displayName: settingsCmp.i18n._("Source Mac Address"), type: "text", visible: true, allowInvert: false}
+                {name:"SRC_INTF",displayName: settingsCmp.i18n._("Source Interface"), type: "checkgroup", values: Ung.Util.getInterfaceList(false, false), visible: true, allowInvert: false},
+                {name:"PROTOCOL",displayName: settingsCmp.i18n._("Protocol"), type: "checkgroup", values: [["TCP","TCP"],["UDP","UDP"]], visible: true, allowInvert: false}
             ];
         }
     };
@@ -2072,6 +2082,207 @@ if (!Ung.hasResource["Ung.Network"]) {
         },
         // Filter Panel
         buildFilter: function() {
+            this.gridForwardFilterRules = Ext.create( 'Ung.EditorGrid', {
+                anchor: '100% 48%',
+                name: 'Forward Filter Rules',
+                settingsCmp: this,
+                paginated: false,
+                hasReorder: true,
+                addAtTop: false,
+                emptyRow: {
+                    "ruleId": -1,
+                    "enabled": true,
+                    "blocked": false,
+                    "description": this.i18n._("[no description]"),
+                    "javaClass": "com.untangle.uvm.network.FilterRule"
+                },
+                title: this.i18n._("Forward Filter Rules"),
+                recordJavaClass: "com.untangle.uvm.network.FilterRule",
+                dataProperty:'forwardFilterRules',
+                fields: [{
+                    name: 'ruleId'
+                }, {
+                    name: 'enabled'
+                }, {
+                    name: 'blocked'
+                }, {
+                    name: 'matchers'
+                },{
+                    name: 'description'
+                }, {
+                    name: 'javaClass'
+                }],
+                columns: [{
+                    header: this.i18n._("Rule Id"),
+                    width: 50,
+                    dataIndex: 'ruleId',
+                    renderer: function(value) {
+                        if (value < 0) {
+                            return i18n._("new");
+                        } else {
+                            return value;
+                        }
+                    }
+                }, {
+                    xtype:'checkcolumn',
+                    header: this.i18n._("Enable"),
+                    dataIndex: 'enabled',
+                    fixed: true,
+                    width:55
+                }, {
+                    header: this.i18n._("Description"),
+                    width: 200,
+                    dataIndex: 'description',
+                    flex:1,
+                    editor: {
+                        xtype:'textfield',
+                        allowBlank:false
+                    }
+                }, {
+                    xtype:'checkcolumn',
+                    header: this.i18n._("Block"),
+                    dataIndex: 'blocked',
+                    fixed: true,
+                    width:55
+                }],
+                columnsDefaultSortable: false,
+                rowEditorInputLines: [{
+                    xtype:'checkbox',
+                    name: "Enable Forward Filter Rule",
+                    dataIndex: "enabled",
+                    fieldLabel: this.i18n._("Enable Forward Filter Rule")
+                }, {
+                    xtype:'textfield',
+                    name: "Description",
+                    dataIndex: "description",
+                    fieldLabel: this.i18n._("Description"),
+                    width: 500
+                }, {
+                    xtype:'fieldset',
+                    title: this.i18n._("If all of the following conditions are met:"),
+                    items:[{
+                        xtype:'rulebuilder',
+                        settingsCmp: this,
+                        javaClass: "com.untangle.uvm.network.FilterRuleMatcher",
+                        anchor:"98%",
+                        width: 900,
+                        dataIndex: "matchers",
+                        matchers: Ung.NetworkUtil.getFilterRuleMatchers(this)
+                    }]
+                }, {
+                    xtype: 'fieldset',
+                    cls:'description',
+                    title: i18n._('Perform the following action(s):'),
+                    border: false,
+                    items: [{
+                        xtype: "checkbox",
+                        name: "Block",
+                        dataIndex: "bypass",
+                        fieldLabel: this.i18n._("Block")
+                    }]
+                }]
+            });
+            this.gridInputFilterRules = Ext.create( 'Ung.EditorGrid', {
+                anchor: '100% 48%',
+                name: 'Input Filter Rules',
+                settingsCmp: this,
+                paginated: false,
+                hasReorder: true,
+                addAtTop: false,
+                emptyRow: {
+                    "ruleId": -1,
+                    "enabled": true,
+                    "blocked": false,
+                    "description": this.i18n._("[no description]"),
+                    "javaClass": "com.untangle.uvm.network.FilterRule"
+                },
+                title: this.i18n._("Input Filter Rules"),
+                recordJavaClass: "com.untangle.uvm.network.FilterRule",
+                dataProperty:'inputFilterRules',
+                fields: [{
+                    name: 'ruleId'
+                }, {
+                    name: 'enabled'
+                }, {
+                    name: 'blocked'
+                }, {
+                    name: 'matchers'
+                },{
+                    name: 'description'
+                }, {
+                    name: 'javaClass'
+                }],
+                columns: [{
+                    header: this.i18n._("Rule Id"),
+                    width: 50,
+                    dataIndex: 'ruleId',
+                    renderer: function(value) {
+                        if (value < 0) {
+                            return i18n._("new");
+                        } else {
+                            return value;
+                        }
+                    }
+                }, {
+                    xtype:'checkcolumn',
+                    header: this.i18n._("Enable"),
+                    dataIndex: 'enabled',
+                    fixed: true,
+                    width:55
+                }, {
+                    header: this.i18n._("Description"),
+                    width: 200,
+                    dataIndex: 'description',
+                    flex:1,
+                    editor: {
+                        xtype:'textfield',
+                        allowBlank:false
+                    }
+                }, {
+                    xtype:'checkcolumn',
+                    header: this.i18n._("Block"),
+                    dataIndex: 'blocked',
+                    fixed: true,
+                    width:55
+                }],
+                columnsDefaultSortable: false,
+                rowEditorInputLines: [{
+                    xtype:'checkbox',
+                    name: "Enable Forward Filter Rule",
+                    dataIndex: "enabled",
+                    fieldLabel: this.i18n._("Enable Input Filter Rule")
+                }, {
+                    xtype:'textfield',
+                    name: "Description",
+                    dataIndex: "description",
+                    fieldLabel: this.i18n._("Description"),
+                    width: 500
+                }, {
+                    xtype:'fieldset',
+                    title: this.i18n._("If all of the following conditions are met:"),
+                    items:[{
+                        xtype:'rulebuilder',
+                        settingsCmp: this,
+                        javaClass: "com.untangle.uvm.network.FilterRuleMatcher",
+                        anchor:"98%",
+                        width: 900,
+                        dataIndex: "matchers",
+                        matchers: Ung.NetworkUtil.getFilterRuleMatchers(this)
+                    }]
+                }, {
+                    xtype: 'fieldset',
+                    cls:'description',
+                    title: i18n._('Perform the following action(s):'),
+                    border: false,
+                    items: [{
+                        xtype: "checkbox",
+                        name: "Block",
+                        dataIndex: "bypass",
+                        fieldLabel: this.i18n._("Block")
+                    }]
+                }]
+            });
+            
             this.panelFilter = Ext.create('Ext.panel.Panel',{
                 name: 'panelFilter',
                 helpSource: 'network_filter',
@@ -2079,15 +2290,87 @@ if (!Ung.hasResource["Ung.Network"]) {
                 title: this.i18n._('Filter Rules'),
                 layout: 'anchor',
                 cls: 'ung-panel',
-                items: [{
-                    html: "FIXME: Forward Filter Rules (networkSettings.forwardFilterRules)<br/>"
-                }, {
-                    html: "FIXME: Input Filter Rules (networkSettings.inputFilterRules)<br/>"
-                }]
+                items: [this.gridForwardFilterRules, this.gridInputFilterRules]
             });
         },
         // DnsServer Panel
         buildDnsServer: function() {
+            this.gridDnsStaticEntries = Ext.create( 'Ung.EditorGrid', {
+                anchor: '100% 48%',
+                name: 'Static DNS Entries',
+                settingsCmp: this,
+                paginated: false,
+                hasEdit: false,
+                emptyRow: {
+                    "name": this.i18n._("[no name]"),
+                    "address": "1.2.3.4",
+                    "javaClass": "com.untangle.uvm.network.DnsStaticEntry"
+                },
+                title: this.i18n._("Static DNS Entries"),
+                recordJavaClass: "com.untangle.uvm.network.FilterRule",
+                dataExpression:'settings.dnsSettings.staticEntries.list',
+                fields: [{
+                    name: 'name'
+                }, {
+                    name: 'address'
+                }],
+                columns: [{
+                    header: this.i18n._("Name"),
+                    width: 200,
+                    dataIndex: 'name',
+                    editor: {
+                        xtype:'textfield',
+                        allowBlank:false
+                    }
+                },{
+                    header: this.i18n._("Address"),
+                    dataIndex: 'address',
+                    flex:1,
+                    editor: {
+                        xtype:'textfield',
+                        allowBlank: false,
+                        vtype:"ipAddress"
+                    }
+                }]
+            });
+            this.gridDnsLocalServers = Ext.create( 'Ung.EditorGrid', {
+                anchor: '100% 48%',
+                name: 'Other Local DNS Servers',
+                settingsCmp: this,
+                paginated: false,
+                hasEdit: false,
+                emptyRow: {
+                    "domain": this.i18n._("[no domain]"),
+                    "localServer": "1.2.3.4",
+                    "javaClass": "com.untangle.uvm.network.DnsLocalServer"
+                },
+                title: this.i18n._("Other Local DNS Servers"),
+                recordJavaClass: "com.untangle.uvm.network.FilterRule",
+                dataExpression:'settings.dnsSettings.localServers.list',
+                fields: [{
+                    name: 'domain'
+                }, {
+                    name: 'localServer'
+                }],
+                columns: [{
+                    header: this.i18n._("Domain"),
+                    width: 200,
+                    dataIndex: 'domain',
+                    editor: {
+                        xtype:'textfield',
+                        allowBlank:false
+                    }
+                },{
+                    header: this.i18n._("Local Server"),
+                    dataIndex: 'localServer',
+                    flex:1,
+                    editor: {
+                        xtype:'textfield',
+                        allowBlank: false,
+                        vtype:"ipAddress"
+                    }
+                }]
+            });
             this.panelDnsServer = Ext.create('Ext.panel.Panel',{
                 name: 'panelDnsServer',
                 helpSource: 'network_dns_server',
@@ -2095,11 +2378,7 @@ if (!Ung.hasResource["Ung.Network"]) {
                 title: this.i18n._('DNS Server'),
                 layout: 'anchor',
                 cls: 'ung-panel',
-                items: [{
-                    html: "FIXME: Static DNS Entries grid (networkSettings.dnsSettings.staticEntries)<br/>"
-                }, {
-                    html: "FIXME: Other Local DNS Servers grid (networkSettings.dnsSettings.localServers)<br/>"
-                }]
+                items: [ this.gridDnsStaticEntries, this.gridDnsLocalServers ]
             });
         },        
         // NetworkCards Panel
@@ -2140,7 +2419,7 @@ if (!Ung.hasResource["Ung.Network"]) {
             this.settings = rpc.networkManager.getNetworkSettings();
         },
         beforeSave: function(isApply, handler) {
-            this.beforeSaveCount = 7;
+            this.beforeSaveCount = 11;
 
             Ext.MessageBox.wait(i18n._("Applying Network Settings..."), i18n._("Please wait"));
 
@@ -2207,6 +2486,33 @@ if (!Ung.hasResource["Ung.Network"]) {
                     handler.call(this, isApply);
             }, this));
             
+            this.gridForwardFilterRules.getList(Ext.bind(function(saveList) {
+                this.settings.forwardFilterRules = saveList;
+                this.beforeSaveCount--;
+                if (this.beforeSaveCount <= 0)
+                    handler.call(this, isApply);
+            }, this));
+
+            this.gridInputFilterRules.getList(Ext.bind(function(saveList) {
+                this.settings.inputFilterRules = saveList;
+                this.beforeSaveCount--;
+                if (this.beforeSaveCount <= 0)
+                    handler.call(this, isApply);
+            }, this));
+            
+            this.gridDnsStaticEntries.getList(Ext.bind(function(saveList) {
+                this.settings.dnsSettings.staticEntries = saveList;
+                this.beforeSaveCount--;
+                if (this.beforeSaveCount <= 0)
+                    handler.call(this, isApply);
+            }, this));
+
+            this.gridDnsLocalServers.getList(Ext.bind(function(saveList) {
+                this.settings.dnsSettings.localServers = saveList;
+                this.beforeSaveCount--;
+                if (this.beforeSaveCount <= 0)
+                    handler.call(this, isApply);
+            }, this));
         },
         afterSave: function(exception, isApply) {
             if(Ung.Util.handleException(exception)) return;
