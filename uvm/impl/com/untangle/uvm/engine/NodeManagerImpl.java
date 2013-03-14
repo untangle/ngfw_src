@@ -212,6 +212,11 @@ public class NodeManagerImpl implements NodeManager
         ToolboxManagerImpl tbm = uvmContext.toolboxManager();
         PackageDesc packageDesc = tbm.packageDesc(nodeName);
 
+        if ( packageDesc == null ) {
+            logger.error("Failed to locate package description for : " + nodeName);
+            return null;
+        }
+
         if (PackageDesc.Type.SERVICE == packageDesc.getType()) {
             policyId = null;
         }
@@ -248,7 +253,7 @@ public class NodeManagerImpl implements NodeManager
                 loadedNodesMap.put(nodeSettings.getId(), node);
                 saveNewNodeSettings( nodeSettings );
             } else {
-                logger.warn("Failed to initialize node: " + packageDesc.getName());
+                logger.error("Failed to initialize node: " + packageDesc.getName());
             }
             
         }

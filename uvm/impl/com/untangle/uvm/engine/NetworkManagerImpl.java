@@ -98,30 +98,27 @@ public class NetworkManagerImpl implements NetworkManager
             this.setNetworkSettings( defaultSettings() );
         }
         else {
-            //FIXME can remove me later - for testing
-            if (readSettings.getQosSettings() == null)
+            //FIXME can remove me later - for dev box
+            if ( readSettings.getQosSettings() == null )
                 readSettings.setQosSettings( defaultQosSettings() );
-            //FIXME can remove me later - for testing
-            if (readSettings.getForwardFilterRules() == null)
+            //FIXME can remove me later - for dev box
+            if ( readSettings.getForwardFilterRules() == null )
                 readSettings.setForwardFilterRules( defaultForwardFilterRules() );
-            if (readSettings.getInputFilterRules() == null)
+            //FIXME can remove me later - for dev box
+            if ( readSettings.getInputFilterRules() == null )
                 readSettings.setInputFilterRules( defaultInputFilterRules() );
-
-            //FIXME can remove me later - for testing
-            if ( false ) {
+            //FIXME can remove me later - for dev box
+            if ( readSettings.getDnsSettings() == null ) {
                 DnsSettings dnsSettings = new DnsSettings();
                 LinkedList<DnsStaticEntry> staticEntries = new LinkedList<DnsStaticEntry>();
                 LinkedList<DnsLocalServer> localServers = new LinkedList<DnsLocalServer>();
                 try {
                     staticEntries.add( new DnsStaticEntry( "chef" , InetAddress.getByName("10.0.0.10")) ); // XXX for testing
                     staticEntries.add( new DnsStaticEntry( "chef.metaloft.com" , InetAddress.getByName("10.0.0.10")) ); // XXX for testing
-                    localServers.add( new DnsLocalServer( "metaloft.com", InetAddress.getByName("10.0.0.1")
-
-                                                          ) );
+                    localServers.add( new DnsLocalServer( "metaloft.com", InetAddress.getByName("10.0.0.1")) ); // XXX for testing
                 } catch (Exception e) {}
                 dnsSettings.setStaticEntries( staticEntries );
                 dnsSettings.setLocalServers( localServers );
-                
                 readSettings.setDnsSettings( dnsSettings );
             }
 
