@@ -573,6 +573,7 @@ public class NetworkManagerImpl implements NetworkManager
                 //String ethNum = intf.getPhysicalDev().replaceAll( "[^\\d]", "" ); /* remove all alpha characters */
                 //intf.setSystemDev( "ppp" + ethNum );
                 intf.setSystemDev("ppp" + pppCount);
+                intf.setSymbolicDev("ppp" + pppCount);
                 pppCount++;
             }
         }

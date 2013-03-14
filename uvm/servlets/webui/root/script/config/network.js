@@ -340,8 +340,8 @@ if (!Ung.hasResource["Ung.Network"]) {
                     width:200,
                     editor : {
                         xtype: 'textfield',
-                        vtype: "ipAddress",
-                        allowBlank : false
+                        vtype: "ipAddress", // need ip4Address FIXME
+                        allowBlank: false
                     }
                 }, {
                     header: this.i18n._("Netmask / Prefix"),
@@ -349,7 +349,7 @@ if (!Ung.hasResource["Ung.Network"]) {
                     flex: 1,
                     editor : {
                         xtype: 'textfield',
-                        allowBlank : false
+                        allowBlank: false
                     }
                 }],
                 columnsDefaultSortable: false,
@@ -439,8 +439,8 @@ if (!Ung.hasResource["Ung.Network"]) {
                             xtype:'textfield',
                             dataIndex: "v4StaticAddress",
                             fieldLabel: this.i18n._("Address"),
-                            allowBlank: false, // new to disallow blank, but only if visible
-                            vtype: "ipAddress"
+                            //allowBlank: false, // need to disallow blank, but only if visible
+                            vtype: "ipAddress" // need ip4Address FIXME
                         }, {
                             xtype: "combo",
                             dataIndex: "v4StaticPrefix",
@@ -452,36 +452,24 @@ if (!Ung.hasResource["Ung.Network"]) {
                             xtype:'textfield',
                             dataIndex: "v4StaticGateway",
                             fieldLabel: this.i18n._("Gateway"),
-                            allowBlank: false, // new to disallow blank, but only if visible
-                            vtype: "ipAddress"
+                            //allowBlank: false, // need to disallow blank, but only if visible
+                            vtype: "ipAddress" // need ip4Address FIXME
                         }, {
                             xtype:'textfield',
                             dataIndex: "v4StaticDns1",
                             fieldLabel: this.i18n._("Primary DNS"),
-                            allowBlank: false, // new to disallow blank, but only if visible
-                            vtype: "ipAddress"
+                            //allowBlank: false, // need to disallow blank, but only if visible
+                            vtype: "ipAddress" // need ip4Address FIXME
                         }, {
                             xtype:'textfield',
                             dataIndex: "v4StaticDns2",
                             fieldLabel: this.i18n._("Secondary DNS"),
-                            vtype: "ipAddress"
+                            vtype: "ipAddress" // need ip4Address FIXME
                         }, {
                             xtype:'textfield',
                             dataIndex: "v4AutoAddressOverride",
                             fieldLabel: this.i18n._("Address Override"),
-                            vtype: "ipAddress"
-                        }, {
-                            xtype: "combo",
-                            dataIndex: "v4AutoPrefixOverride",
-                            fieldLabel: i18n._( "Netmask Override" ),
-                            store: Ung.Util.getV4NetmaskList( true ),
-                            queryMode: 'local',
-                            editable: false
-                        }, {
-                            xtype:'textfield',
-                            dataIndex: "v4AutoGatewayOverride",
-                            fieldLabel: this.i18n._("Gateway Override"),
-                            vtype: "ipAddress"
+                            vtype: "ipAddress" // need ip4Address FIXME
                         }, {
                             xtype: "combo",
                             dataIndex: "v4AutoPrefixOverride",
@@ -493,14 +481,19 @@ if (!Ung.hasResource["Ung.Network"]) {
                             editable: false
                         }, {
                             xtype:'textfield',
+                            dataIndex: "v4AutoGatewayOverride",
+                            fieldLabel: this.i18n._("Gateway Override"),
+                            vtype: "ipAddress" // need ip4Address FIXME
+                        }, {
+                            xtype:'textfield',
                             dataIndex: "v4AutoDns1Override",
                             fieldLabel: this.i18n._("Primary DNS Override"),
-                            vtype: "ipAddress"
+                            vtype: "ipAddress" // need ip4Address FIXME
                         }, {
                             xtype:'textfield',
                             dataIndex: "v4AutoDns2Override",
                             fieldLabel: this.i18n._("Secondary DNS Override"),
-                            vtype: "ipAddress"
+                            vtype: "ipAddress" // need ip4Address FIXME
                         }, {
                             xtype:'textfield',
                             dataIndex: "v4PPPoEUsername",
@@ -525,12 +518,12 @@ if (!Ung.hasResource["Ung.Network"]) {
                             xtype:'textfield',
                             dataIndex: "v4PPPoEDns1",
                             fieldLabel: this.i18n._("Primary DNS"),
-                            vtype: "ipAddress"
+                            vtype: "ipAddress" // need ip4Address FIXME
                         }, {
                             xtype:'textfield',
                             dataIndex: "v4PPPoEDns2",
                             fieldLabel: this.i18n._("Secondary DNS"),
-                            vtype: "ipAddress"
+                            vtype: "ipAddress" // need ip4Address FIXME
                         }]
                     }, {
                         xtype: 'fieldset',
@@ -577,33 +570,33 @@ if (!Ung.hasResource["Ung.Network"]) {
                         xtype:'textfield',
                         dataIndex: "v6StaticAddress",
                         fieldLabel: this.i18n._("Address"),
-                        allowBlank: false, // new to disallow blank, but only if visible
-                        //vtype: "ipAddress", // FIXME new IPv6 validator
+                        //allowBlank: false, // need to disallow blank, but only if visible
+                        //vtype: "ip6Address", // FIXME new IPv6 validator
                         width: 350
                     }, {
                         xtype:'textfield',
                         dataIndex: "v6StaticPrefixLength",
                         fieldLabel: this.i18n._("Prefix Length"),
-                        allowBlank: false, // new to disallow blank, but only if visible
+                        //allowBlank: false, // need to disallow blank, but only if visible
                         width: 150
                     }, {
                         xtype:'textfield',
                         dataIndex: "v6StaticGateway",
                         fieldLabel: this.i18n._("Gateway"),
-                        allowBlank: false, // new to disallow blank, but only if visible
-                        //vtype: "ipAddress",
+                        //allowBlank: false, // need to disallow blank, but only if visible
+                        //vtype: "ip6Address", // FIXME
                         width: 350
                     }, {
                         xtype:'textfield',
                         dataIndex: "v6StaticDns1",
                         fieldLabel: this.i18n._("Primary DNS"),
-                        //vtype: "ipAddress",
+                        //vtype: "ip6Address", // FIXME
                         width: 350
                     }, {
                         xtype:'textfield',
                         dataIndex: "v6StaticDns2",
                         fieldLabel: this.i18n._("Secondary DNS"),
-                        //vtype: "ipAddress",
+                        //vtype: "ip6Address", // FIXME
                         width: 350
                     }]
                 }, {
@@ -621,12 +614,12 @@ if (!Ung.hasResource["Ung.Network"]) {
                         xtype: 'textfield',
                         dataIndex: "dhcpRangeStart",
                         fieldLabel: this.i18n._("Range Start"),
-                        vtype: "ipAddress"
+                        vtype: "ipAddress" // need ip4Address //FIXME
                     }, {
                         xtype:'textfield',
                         dataIndex: "dhcpRangeEnd",
                         fieldLabel: this.i18n._("Range End"),
-                        vtype: "ipAddress"
+                        vtype: "ipAddress" // need ip4Address //FIXME
                     }, {
                         xtype: 'container',
                         layout: 'column',
@@ -653,7 +646,7 @@ if (!Ung.hasResource["Ung.Network"]) {
                             xtype:'textfield',
                             dataIndex: "dhcpGatewayOverride",
                             fieldLabel: this.i18n._("Gateway Override"),
-                            vtype: "ipAddress"
+                            vtype: "ipAddress" // need ip4Address //FIXME
                         }, {
                             xtype: "combo",
                             dataIndex: "dhcpPrefixOverride",
@@ -667,7 +660,7 @@ if (!Ung.hasResource["Ung.Network"]) {
                             xtype:'textfield',
                             dataIndex: "dhcpDnsOverride",
                             fieldLabel: this.i18n._("DNS Override"),
-                            vtype: "ipAddress"
+                            vtype: "ipAddress" // need ip4Address //FIXME
                         }]
                     }]
                 }, {
@@ -734,6 +727,7 @@ if (!Ung.hasResource["Ung.Network"]) {
                     v4StaticGateway.hide(); v4StaticGateway.disable();
                     v4StaticDns1.hide(); v4StaticDns1.disable();
                     v4StaticDns2.hide();
+                    v4AutoAddressOverride.hide();
                     v4AutoPrefixOverride.hide();
                     v4AutoGatewayOverride.hide();
                     v4AutoDns1Override.hide();
