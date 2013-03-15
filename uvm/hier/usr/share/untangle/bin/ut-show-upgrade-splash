@@ -18,7 +18,7 @@ APACHE_UPGRADEDONE_CONFIG="RedirectMatch 302 ^/$(basename $APACHE_HTML_PAGE).* /
 #APACHE_UPGRADEDONE_CONFIG="RewriteEngine On\nRewriteRule ^/$(basename $APACHE_HTML_PAGE).* /webui [R=302]\n"
 
 CONSOLIDATED_UPGRADE_LOG="/var/www/${BASENAME}.log"
-UPGRADE_LOGS=$(ls @PREFIX@/var/log/uvm/{wrapper,uvm,console,apt}.log)
+UPGRADE_LOGS=$(ls /var/log/uvm/{wrapper,uvm,console,apt}.log)
 
 # The PID file stores the pid of the tail process dumping to the log
 # It is also the indicator the untangle-vm checks to see if the upgrade screen is being displayed
