@@ -114,15 +114,6 @@ def prepareSystem():
     procset('/proc/sys/net/ipv4/neigh/default/gc_thresh2','8192',True); # adjust max arp entry (bug #10327)
     procset('/proc/sys/net/ipv4/neigh/default/gc_thresh3','8192',True); # adjust max arp entry (bug #10327)
 
-    # remove tomcat sessions XXX is this needed?
-    os.system("[ -d @UVM_HOME@/work ] && find @UVM_HOME@/work -name SESSIONS.ser -exec rm -f '{}' ';'");
-
-    # create a keystore if one doesnt exists
-    if not os.path.exists("@UVM_CONF@/keystore"): 
-        debug( "Generating keystore...")
-        os.system('/usr/bin/keytool -genkey -keyalg RSA -keystore @UVM_CONF@/keystore -alias tomcat -keypass changeit -storepass changeit -dname "cn=$(hostname), ou=devices"')
-        debug("Generating keystore... done")
-
     # setup environment variables
 
     # must set lang to ensure proper handling of i18n characters in JSON serialization (bug #10609)

@@ -35,7 +35,6 @@ function tar_files()
         etc/openvpn \
         etc/resolv.conf \
         etc/apache2/ssl \
-        usr/share/untangle/conf/keystore \
         usr/share/untangle/conf/openvpn/misc \
         usr/share/untangle/conf/openvpn/pki \
         usr/share/untangle/conf/dirbackup.ldif \

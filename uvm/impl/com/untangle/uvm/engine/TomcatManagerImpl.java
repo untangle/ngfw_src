@@ -49,11 +49,6 @@ public class TomcatManagerImpl implements TomcatManager
     private final StandardHost baseHost;
     private final String webAppRoot;
 
-    private String keystoreFile = "conf/keystore";
-    private String keystorePass = "changeit";
-    private String keyAlias     = "tomcat";
-
-
     // constructors -----------------------------------------------------------
 
     protected TomcatManagerImpl(UvmContextImpl uvmContext, InheritableThreadLocal<HttpServletRequest> threadRequest, String catalinaHome, String webAppRoot, String logDir)
@@ -112,37 +107,6 @@ public class TomcatManagerImpl implements TomcatManager
     }
 
     // package protected methods ----------------------------------------------
-
-    String getKeystoreFileName()
-    {
-        return this.keystoreFile;
-    }
-
-    String getKeystorePassword()
-    {
-        return this.keystorePass;
-    }
-
-    String getKeyAlias()
-    {
-        return this.keyAlias;
-    }
-
-    /**
-     * Method sets the security info (cert) for this Tomcat.  If the
-     * server is already started, this triggers a reset of the HTTPS
-     * sockets.
-     *
-     * @param ksFile the KeyStore file
-     * @param ksPass the password for the keystore file
-     * @param ksAlias the alias within the KeyStore file
-     */
-    void setSecurityInfo(String ksFile, String ksPass, String ksAlias) throws Exception
-    {
-        this.keystoreFile = ksFile;
-        this.keystorePass = ksPass;
-        this.keyAlias = ksAlias;
-    }
 
     public ServletContext loadServlet(String urlBase, String rootDir)
     {
