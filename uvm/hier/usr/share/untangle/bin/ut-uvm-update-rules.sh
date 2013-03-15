@@ -4,14 +4,10 @@
 # If it detects the untangle-vm is running it inserts the rules necessary to "redirect" traffic to the UVM
 # If it detects the untangle-vm is not running it removes the rules (if they exist)
 
-UVM_PID="invalid"
-
 TUN_DEV=utun
 TUN_ADDR="192.0.2.42"
 
 MASK_BYPASS=$((0x01000000))
-
-UVM_REDIRECT_TABLE="uvm-tcp-redirect"
 TCP_REDIRECT_PORTS="9500-9627"
 
 iptables_debug()
@@ -37,8 +33,6 @@ fi
 ## Function to determine the pid of the process that owns the queue
 queue_owner()
 {
-    if [ "${UVM_PID}x" != "invalidx" ]; then return ; fi
-    
     UVM_PID="invalid"
     
     if [ ! -f /proc/net/netfilter/nfnetlink_queue ] ; then return ; fi
@@ -53,6 +47,7 @@ queue_owner()
 is_uvm_running()
 {
     queue_owner
+
     if [ "${UVM_PID}x" = "invalidx" ]; then return ; fi
 
     if [ ! -f "/proc/${UVM_PID}/cmdline" ]; then return ; fi
@@ -72,14 +67,14 @@ insert_iptables_rules()
 
     # Redirect any re-injected packets from the TUN interface to us
     ## Add a redirect rule for each address,
-    ${IPTABLES} -t nat -N "${UVM_REDIRECT_TABLE}" >/dev/null 2>&1
-    ${IPTABLES} -t nat -F "${UVM_REDIRECT_TABLE}" >/dev/null 2>&1
+    ${IPTABLES} -t nat -N uvm-tcp-redirect >/dev/null 2>&1
+    ${IPTABLES} -t nat -F uvm-tcp-redirect >/dev/null 2>&1
 
     ${IPTABLES} -t tune -N queue-to-uvm >/dev/null 2>&1
     ${IPTABLES} -t tune -F queue-to-uvm >/dev/null 2>&1
 
     # Insert redirect table in beginning of PREROUTING
-    ${IPTABLES} -I PREROUTING -t nat -i ${TUN_DEV} -p tcp -g "${UVM_REDIRECT_TABLE}" -m comment --comment 'Redirect utun traffic to untangle-vm'
+    ${IPTABLES} -I PREROUTING -t nat -i ${TUN_DEV} -p tcp -g uvm-tcp-redirect -m comment --comment 'Redirect utun traffic to untangle-vm'
 
     ${IPTABLES} -I POSTROUTING -t tune -j queue-to-uvm -m comment --comment 'Queue packets to the Untangle-VM'
 
@@ -90,11 +85,11 @@ insert_iptables_rules()
         if [ "${t_address}" = "127.0.0.1" ]; then continue ; fi
         if [ "${t_address}" = "192.0.2.42" ]; then continue ; fi
         if [ "${t_address}" = "192.0.2.43" ]; then continue ; fi
-        ${IPTABLES} -A "${UVM_REDIRECT_TABLE}"  -t nat -i ${TUN_DEV} -t nat -p tcp --destination ${t_address}  -j DNAT --to-destination ${t_address}:${TCP_REDIRECT_PORTS} -m comment --comment "Redirect reinjected packets to ${t_address} to the untangle-vm"
+        ${IPTABLES} -A uvm-tcp-redirect -t nat -i ${TUN_DEV} -t nat -p tcp --destination ${t_address}  -j DNAT --to-destination ${t_address}:${TCP_REDIRECT_PORTS} -m comment --comment "Redirect reinjected packets to ${t_address} to the untangle-vm"
     done
     
     # Redirect TCP traffic to the local ports (where the untangle-vm is listening)
-    ${IPTABLES} -A "${UVM_REDIRECT_TABLE}"  -t nat -i ${TUN_DEV} -t nat -p tcp -j REDIRECT --to-ports ${TCP_REDIRECT_PORTS} -m comment --comment 'Redirect reinjected packets to the untangle-vm'
+    ${IPTABLES} -A uvm-tcp-redirect -t nat -i ${TUN_DEV} -t nat -p tcp -j REDIRECT --to-ports ${TCP_REDIRECT_PORTS} -m comment --comment 'Redirect reinjected packets to the untangle-vm'
 
     ## Guard the ports (this part uses : not -)
     ## FIXME move this to packet filter
@@ -121,7 +116,8 @@ insert_iptables_rules()
     # Queue all of the UDP packets.
     ${IPTABLES} -A queue-to-uvm -t tune -m addrtype --dst-type unicast -p udp -j NFQUEUE -m comment --comment 'Queue Unicast UDP packets to the untange-vm'
 
-    ## Just in case these settings were lost.
+    # Unfortunately we have to give utun an address or the reinjection does not work
+    # Use a bogus address
     ifconfig ${TUN_DEV} ${TUN_ADDR} netmask 255.255.255.0 
     ifconfig ${TUN_DEV} up
 
@@ -139,11 +135,11 @@ insert_iptables_rules()
 
 remove_iptables_rules()
 {
-    ${IPTABLES} -t nat -F "${UVM_REDIRECT_TABLE}" >/dev/null 2>&1
+    ${IPTABLES} -t nat -F uvm-tcp-redirect >/dev/null 2>&1
     ${IPTABLES} -t tune -F queue-to-uvm >/dev/null 2>&1
 
-    ${IPTABLES} -D OUTPUT -t raw -m mark --mark ${MASK_BYPASS}/${MASK_BYPASS} -j NOTRACK -m comment --comment 'NOTRACK packets with no-track bit mark set' >/dev/null 2>&1
-    ${IPTABLES} -D PREROUTING -t nat -i ${TUN_DEV} -p tcp -g "${UVM_REDIRECT_TABLE}" -m comment --comment 'Redirect utun traffic to untangle-vm' >/dev/null 2>&1
+    ${IPTABLES} -D OUTPUT -t raw -m mark --mark ${MASK_BYPASS}/${MASK_BYPASS} -j NOTRACK -m comment --comment 'NOTRACK packets with bypass mark set' >/dev/null 2>&1
+    ${IPTABLES} -D PREROUTING -t nat -i ${TUN_DEV} -p tcp -g uvm-tcp-redirect -m comment --comment 'Redirect utun traffic to untangle-vm' >/dev/null 2>&1
     ${IPTABLES} -D POSTROUTING -t tune -j queue-to-uvm -m comment --comment 'Queue packets to the Untangle-VM' >/dev/null 2>&1
 }
 

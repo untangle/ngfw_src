@@ -276,15 +276,16 @@ public abstract class NodeBase implements Node
 
     public static final Node loadClass( NodeProperties nodeProperties, NodeSettings nodeSettings, PackageDesc packageDesc, boolean isNew ) throws DeployException
     {
-        Set<Node> parentNodes = new HashSet<Node>();
-        if (nodeProperties.getParents() != null) {
-            for (String parent : nodeProperties.getParents()) {
-                parentNodes.add(startParent(parent, nodeSettings.getPolicyId()));
-            }
-        }
-
-        NodeBase node;
         try {
+            NodeBase node;
+
+            Set<Node> parentNodes = new HashSet<Node>();
+            if (nodeProperties.getParents() != null) {
+                for (String parent : nodeProperties.getParents()) {
+                    parentNodes.add(startParent(parent, nodeSettings.getPolicyId()));
+                }
+            }
+
             UvmContextFactory.context().loggingManager().setLoggingNode(nodeSettings.getId());
 
             String nodeSettingsName = nodeSettings.getNodeName();
@@ -314,14 +315,15 @@ public abstract class NodeBase implements Node
                     // still return the initialized node
                 }
             }
+            
+            return node;
+
         } catch (Exception exn) {
             staticLogger.error("Exception during node initialization", exn);
             throw new DeployException(exn);
         } finally {
             UvmContextFactory.context().loggingManager().setLoggingUvm();
         }
-
-        return node;
     }
 
     public final void destroyClass() throws Exception
