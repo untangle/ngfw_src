@@ -741,7 +741,6 @@ if (!Ung.hasResource["Ung.Administration"]) {
                                 id: 'administration_country',
                                 store: Ung.Country.getCountryStore(i18n),
                                 queryMode: 'local',
-                                triggerAction: 'all',
                                 editable: false,
                                 allowBlank: false,
                                 blankText: this.i18n._("You must specify a country.")
@@ -1227,8 +1226,6 @@ if (!Ung.hasResource["Ung.Administration"]) {
                         forceSelection: true,
                         editable: false,
                         queryMode: 'local',
-                        triggerAction: 'all',
-                        listClass: 'x-combo-list-small',
                         selectOnFocus: true,
                         hideLabel: true,
                         width: 300,

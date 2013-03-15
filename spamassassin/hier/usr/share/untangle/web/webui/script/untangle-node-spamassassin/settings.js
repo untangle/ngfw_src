@@ -159,8 +159,6 @@ if (!Ung.hasResource["Ung.SpamAssassin"]) {
                                 itemCls: 'left-indent-1',
                                 width: 300,
                                 queryMode: 'local',
-                                triggerAction: 'all',
-                                listClass: 'x-combo-list-small',
                                 value: this.getStrengthSelectionValue(this.settings.smtpConfig.strength),
                                 listeners: {
                                     select: Ext.bind(function(elem, record,index) {
@@ -213,8 +211,6 @@ if (!Ung.hasResource["Ung.SpamAssassin"]) {
                         itemCls: 'left-indent-1',
                         width: 300,
                         queryMode: 'local',
-                        triggerAction: 'all',
-                        listClass: 'x-combo-list-small',
                         value: this.settings.smtpConfig.msgAction,
                         listeners: {
                             "change": {

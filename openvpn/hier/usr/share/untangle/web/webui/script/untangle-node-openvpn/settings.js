@@ -732,9 +732,7 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                     displayField: 'name',
                     valueField: 'name',
                     editable: false,
-                    queryMode: 'local',
-                    triggerAction: 'all',
-                    listClass: 'x-combo-list-small'
+                    queryMode: 'local'
                 })
             };
         },
@@ -828,8 +826,6 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                     valueField: 'name',
                     editable: false,
                     queryMode: 'local',
-                    triggerAction: 'all',
-                    listClass: 'x-combo-list-small',
                     width: 300
                 }]
             });
@@ -984,7 +980,6 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                     store: this.getGroupsStore(),
                     editable: false,
                     queryMode: 'local',
-                    triggerAction: 'all',
                     width: 300
                 }, {
                     cls: "description",
@@ -1759,8 +1754,6 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                             listWidth: 205,
                             store: Ung.Country.getCountryStore(this.i18n),
                             queryMode: 'local',
-                            triggerAction: 'all',
-                            listClass: 'x-combo-list-small',
                             value: country
                         }, {
                             xtype: "textfield",

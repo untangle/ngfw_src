@@ -649,8 +649,6 @@ if (!Ung.hasResource["Ung.System"]) {
                         width: 350,
                         hideLabel: true,
                         queryMode: 'local',
-                        triggerAction: "all",
-                        listClass: "x-combo-list-small",
                         value: this.getTimeZone(),
                         listeners: {
                             "change": {
@@ -672,8 +670,6 @@ if (!Ung.hasResource["Ung.System"]) {
                         valueField: "code",
                         editable: false,
                         queryMode: 'local',
-                        triggerAction: 'all',
-                        listClass: "x-combo-list-small",
                         selectOnFocus: true,
                         hideLabel: true,
                         listeners: {

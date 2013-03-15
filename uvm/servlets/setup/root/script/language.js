@@ -15,11 +15,9 @@ Ext.define('Ung.SetupWizard.Language', {
         this.languageStore = [];
         var c = 0;
         var languageList = Ung.SetupWizard.CurrentValues.languageList.list;
-        var length = languageList.length;
-
-        for ( c = 0 ; c < length ; c++ ) {
+        for ( c = 0 ; c < languageList.length ; c++ ) {
             var language = languageList[c];
-            this.languageStore[c] = [ language.code, language.name ];
+            this.languageStore.push([ language.code, language.name ]);
         }
 
         this.panel = Ext.create('Ext.form.Panel', {
@@ -46,9 +44,7 @@ Ext.define('Ung.SetupWizard.Language', {
                     store: this.languageStore,
                     value: Ung.SetupWizard.CurrentValues.language,
                     queryMode: 'local',
-                    triggerAction: 'all',
-                    listClass: 'x-combo-list-small',
-                    ctCls: 'small-top-margin'
+                    cls: 'small-top-margin'
                 }]
             }]
         });

@@ -67,8 +67,6 @@ if (!Ung.hasResource["Ung.Spyware"]) {
                         displayField: 'unblockModeName',
                         valueField: 'unblockModeValue',
                         value: this.settings.unblockMode,
-                        triggerAction: 'all',
-                        listClass: 'x-combo-list-small',
                         listeners: {
                             "change": {
                                 fn: Ext.bind(function(elem, newValue) {

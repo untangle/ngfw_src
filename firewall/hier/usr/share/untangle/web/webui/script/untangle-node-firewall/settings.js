@@ -163,12 +163,8 @@ if (!Ung.hasResource["Ung.Firewall"]) {
                             dataIndex: "block",
                             fieldLabel: this.i18n._("Action Type"),
                             editable: false,
-                            store: [[true,i18n._('Block')], [false,i18n._('Pass')]],
-                            valueField: "value",
-                            displayField: "displayName",
-                            queryMode: 'local',
-                            triggerAction: 'all',
-                            listClass: 'x-combo-list-small'
+                            store: [[true, i18n._('Block')], [false, i18n._('Pass')]],
+                            queryMode: 'local'
                         }, {
                             xtype:'checkbox',
                             name: "Flag",

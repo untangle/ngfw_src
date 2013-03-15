@@ -411,13 +411,9 @@ if (!Ung.hasResource["Ung.Virus"]) {
                             editable: false,
                             fieldLabel: this.i18n._('Action'),
                             queryMode: 'local',
-                            triggerAction: 'all',
-                            listClass: 'x-combo-list-small',
                             store: [["pass", this.i18n._("pass message")], 
                                     ["remove", this.i18n._("remove infection")],
                                     ["block", this.i18n._("block message")]],
-                            displayField: 'name',
-                            valueField: 'key',
                             value: this.settings.smtpAction,
                             listeners: {
                                 "change": {

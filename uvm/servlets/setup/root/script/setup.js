@@ -195,8 +195,6 @@ Ext.define('Ung.SetupWizard.ServerSettings', {
                     hideLabel: true,
                     queryMode: 'local',
                     value: Ung.SetupWizard.CurrentValues.timezone,
-                    triggerAction: 'all',
-                    listClass: 'x-combo-list-small',
                     cls: 'small-top-margin'
                 }]
             }]
@@ -789,9 +787,7 @@ Ext.define('Ung.SetupWizard.Internet', {
                         fn: Ext.bind(this.onSelectConfig,this )
                     }
                 },
-                value: this.v4ConfigTypes[0][0],
-                triggerAction: 'all',
-                listClass: 'x-combo-list-small'
+                value: this.v4ConfigTypes[0][0]
             }]
         });
 

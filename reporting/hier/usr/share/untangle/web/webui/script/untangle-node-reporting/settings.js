@@ -534,17 +534,8 @@ if (!Ung.hasResource["Ung.Reporting"]) {
                             editable: false,
                             fieldLabel: this.i18n._('Protocol'),
                             queryMode: 'local',
-                            triggerAction: 'all',
-                            listClass: 'x-combo-list-small',
-                            store: new Ext.data.SimpleStore({
-                                fields: ['key', 'name'],
-                                data:[
-                                    ["UDP", this.i18n._("UDP")],
-                                    ["TCP", this.i18n._("TCP")]
-                                ]
-                            }),
-                            displayField: 'name',
-                            valueField: 'key',
+                            store: [["UDP", this.i18n._("UDP")],
+                                    ["TCP", this.i18n._("TCP")]],
                             value: this.getSettings().syslogProtocol,
                             disabled: !this.getSettings().syslogEnabled
                         }]

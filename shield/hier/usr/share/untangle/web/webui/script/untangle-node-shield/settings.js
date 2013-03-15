@@ -110,8 +110,6 @@ if (!Ung.hasResource["Ung.Shield"]) {
                         valueField: 'dividerValue',
                         typeAhead: true,
                         queryMode: 'local',
-                        triggerAction: 'all',
-                        listClass: 'x-combo-list-small',
                         selectOnFocus: true
                     }),
                     renderer: function(value) {
@@ -161,8 +159,6 @@ if (!Ung.hasResource["Ung.Shield"]) {
                     valueField: 'dividerValue',
                     typeAhead: true,
                     queryMode: 'local',
-                    triggerAction: 'all',
-                    listClass: 'x-combo-list-small',
                     selectOnFocus: true
                 }, {
                     xtype:'textarea',

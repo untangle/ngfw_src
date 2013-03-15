@@ -73,8 +73,6 @@ if (!Ung.hasResource["Ung.Phish"]) {
                         displayField: 'name',
                         fieldLabel: this.i18n._('Action'),
                         queryMode: 'local',
-                        triggerAction: 'all',
-                        listClass: 'x-combo-list-small',
                         value: this.settings.smtpConfig.msgAction,
                         listeners: {
                             "change": {

@@ -94,13 +94,9 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                         fieldLabel: this.i18n._("Unblock"),
                         name: "user_bypass",
                         store: [["None", this.i18n._("None")],
-                                    ["Host", this.i18n._("Temporary")],
-                                    ["Global", this.i18n._("Permanent and Global")]],
-                        displayField: "unblockModeName",
-                        valueField: "unblockModeValue",
+                                ["Host", this.i18n._("Temporary")],
+                                ["Global", this.i18n._("Permanent and Global")]],
                         value: this.settings.unblockMode,
-                        triggerAction: "all",
-                        listClass: 'x-combo-list-small',
                         listeners: {
                             "change": {
                                 fn: Ext.bind(function(elem, newValue) {

@@ -275,11 +275,7 @@ if (!Ung.hasResource["Ung.Capture"]) {
                             fieldLabel: this.i18n._("Action Type"),
                             editable: false,
                             store: [[true,i18n._('Capture')], [false,i18n._('Pass')]],
-                            valueField: "value",
-                            displayField: "displayName",
-                            queryMode: 'local',
-                            triggerAction: 'all',
-                            listClass: 'x-combo-list-small'
+                            queryMode: 'local'
                         }]
                     }]
                 })]
