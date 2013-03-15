@@ -113,6 +113,7 @@ def prepareSystem():
     procset('/proc/sys/net/ipv4/neigh/default/gc_thresh1','4096',True); # adjust max arp entry (bug #10327)
     procset('/proc/sys/net/ipv4/neigh/default/gc_thresh2','8192',True); # adjust max arp entry (bug #10327)
     procset('/proc/sys/net/ipv4/neigh/default/gc_thresh3','8192',True); # adjust max arp entry (bug #10327)
+    procset('/proc/sys/net/core/xfrm_larval_drop','1',True); # make sure nonblock-sockets do not block on IPsec  (bug #10890)
 
     # setup environment variables
 
