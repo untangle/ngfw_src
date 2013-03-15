@@ -2301,7 +2301,7 @@ if (!Ung.hasResource["Ung.Network"]) {
                     "javaClass": "com.untangle.uvm.network.DnsStaticEntry"
                 },
                 title: this.i18n._("Static DNS Entries"),
-                recordJavaClass: "com.untangle.uvm.network.FilterRule",
+                recordJavaClass: "com.untangle.uvm.network.DnsStaticEntry",
                 dataExpression:'settings.dnsSettings.staticEntries.list',
                 fields: [{
                     name: 'name'
@@ -2339,7 +2339,7 @@ if (!Ung.hasResource["Ung.Network"]) {
                     "javaClass": "com.untangle.uvm.network.DnsLocalServer"
                 },
                 title: this.i18n._("Other Local DNS Servers"),
-                recordJavaClass: "com.untangle.uvm.network.FilterRule",
+                recordJavaClass: "com.untangle.uvm.network.DnsLocalServer",
                 dataExpression:'settings.dnsSettings.localServers.list',
                 fields: [{
                     name: 'domain'
