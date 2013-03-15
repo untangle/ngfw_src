@@ -41,7 +41,6 @@ if (!Ung.hasResource["Ung.SessionMonitor"]) {
                             "state": null,
                             "natted": true,
                             "totalKBps": null,
-                            "localTraffic": false,
                             "priority": (ii%7)+1,
                             "postNatClient": "50.193.63."+((ii+1)%10),
                             "postNatClientPort": (ii+1000),
@@ -231,16 +230,6 @@ if (!Ung.hasResource["Ung.SessionMonitor"]) {
                 width: 70,
                 filter: {
                     type: 'numeric'
-                }
-            },{
-                hidden: true,
-                header: this.i18n._("Local"),
-                dataIndex: "localTraffic",
-                width: 50,
-                filter: {
-                    type: 'boolean',
-                    yesText: 'true',
-                    noText: 'false'
                 }
             },{
                 hidden: true,
@@ -505,8 +494,6 @@ if (!Ung.hasResource["Ung.SessionMonitor"]) {
                     name: "protocol"
                 },{
                     name: "bypassed"
-                },{
-                    name: "localTraffic"
                 },{
                     name: "policy"
                 },{

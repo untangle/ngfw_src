@@ -25,7 +25,6 @@ public class SessionMonitorEntry
 
     private Integer qosPriority;
     private Boolean bypassed;
-    private Boolean localTraffic;
 
     public String getProtocol() {return protocol;}
     public void   setProtocol( String protocol ) {this.protocol = protocol;}
@@ -59,9 +58,6 @@ public class SessionMonitorEntry
     public Boolean getBypassed() {return bypassed;}
     public void    setBypassed( Boolean bypassed ) {this.bypassed = bypassed;}
 
-    public Boolean getLocalTraffic() {return localTraffic;}
-    public void    setLocalTraffic( Boolean localTraffic ) {this.localTraffic = localTraffic;}
-    
     /**
      * The following properties are UVM properties and are only set if you call MergedSessionMonitorEntrys
      */
