@@ -135,7 +135,6 @@ class SessionMonitorImpl implements SessionMonitor
 
                         session.setSessionId(argonSession.id());
                         session.setBypassed(Boolean.FALSE);
-                        session.setLocalTraffic(Boolean.FALSE);
                         session.setClientIntf(new Integer(clientSide.getClientIntf()));
                         session.setServerIntf(new Integer(serverSide.getServerIntf()));
 
