@@ -19,22 +19,17 @@ import org.apache.log4j.Logger;
 
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.argon.ArgonAgent;
-import com.untangle.uvm.logging.LogEvent;
 import com.untangle.uvm.node.SessionTuple;
 import com.untangle.uvm.node.Node;
-import com.untangle.uvm.node.NodeManager;
 import com.untangle.uvm.node.NodeSettings;
-import com.untangle.uvm.node.SessionEvent;
-import com.untangle.uvm.node.SessionStatsEvent;
 import com.untangle.uvm.node.PolicyManager;
-import com.untangle.uvm.argon.ArgonSession;
-import com.untangle.uvm.vnet.CasingPipeSpec;
 import com.untangle.uvm.vnet.Fitting;
 import com.untangle.uvm.vnet.ArgonConnector;
 import com.untangle.uvm.vnet.PipeSpec;
 import com.untangle.uvm.vnet.Pipeline;
 import com.untangle.uvm.vnet.PipelineFoundry;
 import com.untangle.uvm.vnet.SoloPipeSpec;
+import com.untangle.uvm.vnet.CasingPipeSpec;
 import com.untangle.uvm.vnet.event.SessionEventListener;
 
 /**
@@ -104,6 +99,9 @@ public class PipelineFoundryImpl implements PipelineFoundry
         Long t0 = System.nanoTime();
         List<ArgonConnector> argonConnectorList = new LinkedList<ArgonConnector>();
         List<Fitting> fittings = new LinkedList<Fitting>();
+
+        printArgonConnectorList( this.argonConnectors );
+        printArgonConnectorList( this.casings.keySet() );
         
         /**
          * Check fittingHints for hints
@@ -139,7 +137,7 @@ public class PipelineFoundryImpl implements PipelineFoundry
         }
 
         /**
-         * all sessions have octect_stream fitting
+         * All sessions have octect_stream fitting
          */
         fittings.add( Fitting.OCTET_STREAM );
 
@@ -212,7 +210,7 @@ public class PipelineFoundryImpl implements PipelineFoundry
      */
     public ArgonConnector createArgonConnector(PipeSpec spec, SessionEventListener listener, Fitting input, Fitting output)
     {
-        return new ArgonConnectorImpl( spec,listener, input, output );
+        return new ArgonConnectorImpl( spec, listener, input, output );
     }
 
     /**
@@ -287,8 +285,6 @@ public class PipelineFoundryImpl implements PipelineFoundry
         logger.debug("Clearing Pipeline Foundry cache...");
         pipelineFoundryCache.clear();
     }
-
-    // private methods --------------------------------------------------------
 
     /**
      * This creates a full pipeline for the given policyId and fitting.
@@ -396,8 +392,6 @@ public class PipelineFoundryImpl implements PipelineFoundry
             ArgonConnector insideArgonConnector = i.next();
             ArgonConnector outsideArgonConnector = casings.get( insideArgonConnector );
             
-            Fitting inputFitting = insideArgonConnector.getInputFitting();
-                
             /**
              * If this insideArgonConnector is the wrong fitting type, skip it
              */
@@ -639,7 +633,7 @@ public class PipelineFoundryImpl implements PipelineFoundry
     /**
      * Utility function to print any list of argonConnectors
      */
-    private void printArgonConnectorList( List<ArgonConnector> argonConnectors )
+    private void printArgonConnectorList( java.util.Collection<ArgonConnector> argonConnectors )
     {
         if (logger.isDebugEnabled()) {
             String strList = "argonConnectors: [";

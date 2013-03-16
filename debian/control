@@ -47,7 +47,7 @@ Description: Untangle Core Library
 Package: untangle-casing-ftp
 Architecture: all
 Depends: untangle-libuvm
-XB-Display-Name: File Transfer Casing
+XB-Display-Name: FTP Casing
 XB-Untangle-Type: casing
 XB-Untangle-Pkg-Type: casing
 XB-Desc-Icon: iVBORw0KGgoAAAANSUhEUgAAACoAAAAqCAIAAABKoV4MAAAABGdBTUEAANbY1E9Y
@@ -79,13 +79,13 @@ XB-Desc-Icon: iVBORw0KGgoAAAANSUhEUgAAACoAAAAqCAIAAABKoV4MAAAABGdBTUEAANbY1E9Y
  5rnD3YvTGFJGFIie2kybsf7rTv7Gs/NrHv4jv4mJCcoq9ceyNmt2bXSr+sK1/2fC
  8fFxQUGBTa+YTKarqyt2YDQa1b8XvsYI+rvZxM+Vb07/kf0SvX2q/d/bXwIMAJ+e
  3tKQEpgPAAAAAElFTkSuQmCC
-Description: The Untangle File Transfer/FTP Decoder
- The Untangle File Transfer/FTP Decoder casing.
+Description: The FTP Casing
+ The FTP Casing Application
 
 Package: untangle-casing-http
 Architecture: all
 Depends: untangle-libuvm
-XB-Display-Name: Web Casing
+XB-Display-Name: HTTP Casing
 XB-Untangle-Type: casing
 XB-Untangle-Pkg-Type: casing
 XB-Desc-Icon: iVBORw0KGgoAAAANSUhEUgAAACoAAAAqCAIAAABKoV4MAAAABGdBTUEAANbY1E9Y
@@ -117,13 +117,13 @@ XB-Desc-Icon: iVBORw0KGgoAAAANSUhEUgAAACoAAAAqCAIAAABKoV4MAAAABGdBTUEAANbY1E9Y
  5rnD3YvTGFJGFIie2kybsf7rTv7Gs/NrHv4jv4mJCcoq9ceyNmt2bXSr+sK1/2fC
  8fFxQUGBTa+YTKarqyt2YDQa1b8XvsYI+rvZxM+Vb07/kf0SvX2q/d/bXwIMAJ+e
  3tKQEpgPAAAAAElFTkSuQmCC
-Description: The Untangle Web Decoder
- The Untangle Web Decoder casing.
+Description: The HTTP Casing
+ The HTTP Casing Application
 
 Package: untangle-casing-mail
 Architecture: all
 Depends: untangle-libuvm
-XB-Display-Name: Email Casing
+XB-Display-Name: SMTP Casing
 XB-Untangle-Type: casing
 XB-Untangle-Pkg-Type: casing
 XB-Desc-Icon: iVBORw0KGgoAAAANSUhEUgAAACoAAAAqCAIAAABKoV4MAAAABGdBTUEAANbY1E9Y
@@ -155,8 +155,8 @@ XB-Desc-Icon: iVBORw0KGgoAAAANSUhEUgAAACoAAAAqCAIAAABKoV4MAAAABGdBTUEAANbY1E9Y
  5rnD3YvTGFJGFIie2kybsf7rTv7Gs/NrHv4jv4mJCcoq9ceyNmt2bXSr+sK1/2fC
  8fFxQUGBTa+YTKarqyt2YDQa1b8XvsYI+rvZxM+Vb07/kf0SvX2q/d/bXwIMAJ+e
  3tKQEpgPAAAAAElFTkSuQmCC
-Description: The Untangle Email Decoder
- The Untangle Email Decoder casing.
+Description: The SMTP Casing
+ The SMTP Casing Application.
 
 Package: untangle-node-shield
 Architecture: all

@@ -198,13 +198,13 @@ public class NodeManagerImpl implements NodeManager
         return null;
     }
 
-    public Node instantiate(String nodeName) throws DeployException
+    public Node instantiate( String nodeName ) throws DeployException
     {
         Long policyId = getDefaultPolicyForNode( nodeName );
         return instantiate( nodeName, policyId );
     }
 
-    public Node instantiate(String nodeName, Long policyId) throws DeployException
+    public Node instantiate( String nodeName, Long policyId ) throws DeployException
     {
         logger.info("instantiate( name:" + nodeName + " , policy:" + policyId + " )");
 
@@ -323,7 +323,7 @@ public class NodeManagerImpl implements NodeManager
         return result;
     }
 
-    public boolean isInstantiated(String nodeName)
+    public boolean isInstantiated( String nodeName )
     {
         return (this.node(nodeName) != null);
     }

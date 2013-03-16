@@ -5,11 +5,11 @@ class NodeManager(Manager):
         self.__uvmContext = uvmContext
         self.__nodeManager = self.__uvmContext.nodeManager()
 
-    def api_instantiate(self,packageName,*args):
+    def api_instantiate(self,packageName):
         nodeProperties = None
-        if ( Manager.policyId == None ): nodeProperties = self.__nodeManager.instantiate( packageName,args )
-        else: nodeProperties = self.__nodeManager.instantiate( packageName, Manager.policyId, args )
-        nodeSettings = nodeProperties["nodeSettings"]
+        if ( Manager.policyId == None ): node = self.__nodeManager.instantiate( packageName )
+        else: node = self.__nodeManager.instantiate( packageName, Manager.policyId )
+        nodeSettings = node.getNodeSettings()
         print nodeSettings["id"]
         return nodeSettings
 
