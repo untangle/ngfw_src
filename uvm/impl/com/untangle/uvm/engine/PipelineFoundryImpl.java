@@ -102,51 +102,52 @@ public class PipelineFoundryImpl implements PipelineFoundry
     public List<ArgonAgent> weld( Long sessionId, SessionTuple sessionTuple, Long policyId )
     {
         Long t0 = System.nanoTime();
-
-        Fitting start = null;
+        List<ArgonConnector> argonConnectorList = new LinkedList<ArgonConnector>();
+        List<Fitting> fittings = new LinkedList<Fitting>();
         
         /**
          * Check fittingHints for hints
          */
         InetSocketAddress socketAddress = new InetSocketAddress( sessionTuple.getServerAddr(), sessionTuple.getServerPort() );
         if ( fittingHints.containsKey( socketAddress )) {
-            start = fittingHints.remove( socketAddress );
+            Fitting hint = fittingHints.remove( socketAddress );
+            if ( hint != null )
+                fittings.add( hint );
         }
 
         /**
          * Check for known ports and set fitting type accordingly
          */
-        if ( start == null ) {
-            if ( sessionTuple.getProtocol() == SessionTuple.PROTO_TCP ) {
-                switch ( sessionTuple.getServerPort() ) {
-                case 21:
-                    start = Fitting.FTP_CTL_STREAM;
-                    break;
-                case 25:
-                    start = Fitting.SMTP_STREAM;
-                    break;
-                case 80:
-                    start = Fitting.HTTP_STREAM;
-                    break;
-                case 443:
-                    start = Fitting.HTTPS_STREAM;
-                    break;
-                default:
-                    start = Fitting.OCTET_STREAM;
-                    break;
-                }
+        if ( sessionTuple.getProtocol() == SessionTuple.PROTO_TCP ) {
+            switch ( sessionTuple.getServerPort() ) {
+            case 21:
+                fittings.add( Fitting.FTP_CTL_STREAM );
+                break;
+            case 25:
+                fittings.add( Fitting.SMTP_STREAM );
+                break;
+            case 80:
+                fittings.add( Fitting.HTTP_STREAM );
+                break;
+            case 443:
+                fittings.add( Fitting.HTTPS_STREAM );
+                break;
+            default:
+                fittings.add( Fitting.OCTET_STREAM );
+                break;
             }
         }
 
         /**
-         * If the fitting type still isn't known its just an octet stream
+         * all sessions have octect_stream fitting
          */
-        if ( start == null ) {
-            start = Fitting.OCTET_STREAM; 
-        }
+        fittings.add( Fitting.OCTET_STREAM );
 
         long ct0 = System.nanoTime();
-        List<ArgonConnector> acList = weldPipeline( sessionTuple, policyId, start );
+        for ( Fitting fitting : fittings ) {
+            List<ArgonConnector> acList = weldPipeline( sessionTuple, policyId, fitting );
+            argonConnectorList.addAll( acList );
+        }
         long ct1 = System.nanoTime();
 
         /**
@@ -155,18 +156,18 @@ public class PipelineFoundryImpl implements PipelineFoundry
          * We now iterate through each and remove ones that are not interested
          */
         long ft0 = System.nanoTime();
-        List<ArgonAgent> argonAgentList = new ArrayList<ArgonAgent>(acList.size());
-        List<ArgonConnector> argonConnectorList = new ArrayList<ArgonConnector>(acList.size());
+        List<ArgonAgent> argonAgentList = new ArrayList<ArgonAgent>(argonConnectorList.size());
         String nodeList = "nodes: [";
-        for (Iterator<ArgonConnector> i = acList.iterator(); i.hasNext();) {
+        for (Iterator<ArgonConnector> i = argonConnectorList.iterator(); i.hasNext();) {
             ArgonConnector argonConnector = i.next();
             PipeSpec pipeSpec = argonConnector.getPipeSpec();
 
             /**
              * Check that this argon connector actually is interested in this session
              */
-            if ( pipeSpec.matches(sessionTuple) ) {
-                argonConnectorList.add( argonConnector );
+            if ( ! pipeSpec.matches(sessionTuple) ) {
+                argonConnectorList.remove( argonConnector );
+            } else {
                 argonAgentList.add( ((ArgonConnectorImpl) argonConnector).getArgonAgent() );
                 nodeList += pipeSpec.getName() + " ";
             }
@@ -290,10 +291,10 @@ public class PipelineFoundryImpl implements PipelineFoundry
     // private methods --------------------------------------------------------
 
     /**
-     * This creates a full pipeline for the given policyId and start fitting.
+     * This creates a full pipeline for the given policyId and fitting.
      * It also maintains a cache to memoize results
      */
-    private List<ArgonConnector> weldPipeline( SessionTuple sessionTuple, Long policyId, Fitting start )
+    private List<ArgonConnector> weldPipeline( SessionTuple sessionTuple, Long policyId, Fitting fitting )
     {
         List<ArgonConnector> argonConnectorList = null;
 
@@ -306,7 +307,7 @@ public class PipelineFoundryImpl implements PipelineFoundry
          * If there is a cache, check if the acList exists for this fitting
          */
         if ( fittingCache != null ) {
-            argonConnectorList = fittingCache.get(start);
+            argonConnectorList = fittingCache.get( fitting );
         }
 
         if ( argonConnectorList == null ) {
@@ -320,7 +321,7 @@ public class PipelineFoundryImpl implements PipelineFoundry
                     pipelineFoundryCache.put( policyId, fittingCache );
                 } else {
                     /* Cache exists, get the acList for this fitting */
-                    argonConnectorList = fittingCache.get( start );
+                    argonConnectorList = fittingCache.get( fitting );
                 }
 
                 /**
@@ -330,11 +331,11 @@ public class PipelineFoundryImpl implements PipelineFoundry
                 if ( argonConnectorList == null ) {
                     argonConnectorList = new LinkedList<ArgonConnector>();
 
-                    addAll( argonConnectorList, start, policyId );
+                    addArgonConnectors( argonConnectorList, fitting, policyId );
 
                     removeDuplicates( policyId, argonConnectorList );
 
-                    fittingCache.put( start, argonConnectorList );
+                    fittingCache.put( fitting, argonConnectorList );
                 }
             }
         }
@@ -342,17 +343,10 @@ public class PipelineFoundryImpl implements PipelineFoundry
         return argonConnectorList;
     }
 
-    private void addAll( List<ArgonConnector> argonConnectorList, Fitting start, Long policyId )
-    {
-        //printArgonConnectorList(argonConnectorList);
-        addArgonConnectors(argonConnectorList, start, policyId );
-        //printArgonConnectorList(argonConnectorList);
-    }
-
     /**
      * Add all argon connectors to the list that match this policy and fitting type
      */
-    private boolean addArgonConnectors( List<ArgonConnector> argonConnectorList, Fitting start, Long policyId )
+    private boolean addArgonConnectors( List<ArgonConnector> argonConnectorList, Fitting fitting, Long policyId )
     {
         boolean added = false;
 
@@ -365,7 +359,7 @@ public class PipelineFoundryImpl implements PipelineFoundry
             /**
              * If this argonConnector is the wrong fitting type, skip it
              */
-            if ( ! start.equals( argonConnector.getInputFitting() ) )
+            if ( ! fitting.equals( argonConnector.getInputFitting() ) )
                 continue;
 
             /**
@@ -381,7 +375,7 @@ public class PipelineFoundryImpl implements PipelineFoundry
         /**
          * Now we should add in any casings
          */
-        boolean addedCasings = addCasings( argonConnectorList, start, policyId );
+        boolean addedCasings = addCasings( argonConnectorList, fitting, policyId );
         if ( addedCasings ) {
             added = true;
         }
@@ -394,7 +388,7 @@ public class PipelineFoundryImpl implements PipelineFoundry
      * Also calls addArgonConnectors recursively to add argon connectors
      * for the "inner" fitting type
      */
-    private boolean addCasings( List<ArgonConnector> argonConnectorList, Fitting start, Long policyId )
+    private boolean addCasings( List<ArgonConnector> argonConnectorList, Fitting fitting, Long policyId )
     {
         boolean addedCasing = false;
 
@@ -407,7 +401,7 @@ public class PipelineFoundryImpl implements PipelineFoundry
             /**
              * If this insideArgonConnector is the wrong fitting type, skip it
              */
-            if ( ! start.equals( insideArgonConnector.getInputFitting() ) )
+            if ( ! fitting.equals( insideArgonConnector.getInputFitting() ) )
                 continue;
 
             /**
