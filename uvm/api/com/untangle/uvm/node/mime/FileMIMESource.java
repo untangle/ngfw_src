@@ -1,36 +1,6 @@
-/*
- * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
- *
- * This library is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License, version 2,
- * as published by the Free Software Foundation.
- *
- * This library is distributed in the hope that it will be useful, but
- * AS-IS and WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE, TITLE, or
- * NONINFRINGEMENT.  See the GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this library; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
- *
- * Linking this library statically or dynamically with other modules is
- * making a combined work based on this library.  Thus, the terms and
- * conditions of the GNU General Public License cover the whole combination.
- *
- * As a special exception, the copyright holders of this library give you
- * permission to link this library with independent modules to produce an
- * executable, regardless of the license terms of these independent modules,
- * and to copy and distribute the resulting executable under terms of your
- * choice, provided that you also meet, for each linked independent module,
- * the terms and conditions of the license of that module.  An independent
- * module is a module which is not derived from or based on this library.
- * If you modify this library, you may extend this exception to your version
- * of the library, but you are not obligated to do so.  If you do not wish
- * to do so, delete this exception statement from your version.
+/**
+ * $Id$
  */
-
 package com.untangle.node.mime;
 
 import java.io.BufferedInputStream;
@@ -41,13 +11,11 @@ import java.io.InputStream;
 import java.util.HashSet;
 import java.util.Set;
 
-import com.untangle.node.util.FileFactory;
-
 /**
  * MIMESource implementation which wrapps a file.
  */
-public class FileMIMESource
-    implements MIMESource {
+public class FileMIMESource implements MIMESource
+{
 
     private File file;
     private final boolean deleteFileOnClose;
@@ -62,7 +30,8 @@ public class FileMIMESource
      *
      * @param file the file
      */
-    public FileMIMESource(File file) {
+    public FileMIMESource(File file)
+    {
         this(file, true);
     }
 
@@ -75,7 +44,8 @@ public class FileMIMESource
      *        will be implicitly deleted when this
      *        {@link #close source is closed}
      */
-    public FileMIMESource(File file, boolean deleteFileOnClose) {
+    public FileMIMESource(File file, boolean deleteFileOnClose)
+    {
         this.file = file;
         this.deleteFileOnClose = deleteFileOnClose;
         this.openStreams = new HashSet<MIMEParsingInputStream>();
@@ -98,7 +68,8 @@ public class FileMIMESource
 
         MIMEParsingInputStream ret = null;
 
-        if(cachedStream != null) {
+        if(cachedStream != null)
+            {
             if(cachedStream.position() <= offset) {
                 ret = cachedStream;
             }
@@ -132,7 +103,8 @@ public class FileMIMESource
     //-------------------------
     // See doc on MIMESource
     //-------------------------
-    public void close() {
+    public void close()
+    {
         //Bug 779 - Copy contents of open streams before
         //          attempting to iterate, as iteration
         //          removes from the list
@@ -156,14 +128,15 @@ public class FileMIMESource
      * so if you want the file to exist for longer
      * you should copy the file.
      */
-    public File getFile() {
+    public File getFile()
+    {
         return file;
     }
 
     //-------------------------
     // See doc on MIMESource
     //-------------------------
-    public File toFile(FileFactory factory) throws IOException
+    public File toFile() throws IOException
     {
         return getFile();
     }
@@ -171,7 +144,7 @@ public class FileMIMESource
     //-------------------------
     // See doc on MIMESource
     //-------------------------
-    public File toFile(FileFactory factory, String name) throws IOException
+    public File toFile( String name ) throws IOException
     {
         return getFile();
     }
@@ -185,7 +158,8 @@ public class FileMIMESource
 
     private void destroyStream(MIMEParsingInputStream stream)
     {
-        if(stream == null) {return;}
+        if(stream == null)
+            {return;}
         try {stream.close();}catch(Exception ignore){}
         try {openStreams.remove(stream);}catch(Exception ignore){}
     }
@@ -223,19 +197,20 @@ public class FileMIMESource
      * Wrapper which lets us keep track of
      * underlying open streams.
      */
-    private class WrappedMIMEParsingInputStream
-        extends MIMEParsingInputStream {
-
+    private class WrappedMIMEParsingInputStream extends MIMEParsingInputStream
+    {
         private final MIMEParsingInputStream wrap;
         private boolean closed = false;
 
-        public WrappedMIMEParsingInputStream(MIMEParsingInputStream wrap) {
+        public WrappedMIMEParsingInputStream(MIMEParsingInputStream wrap)
+        {
             super(new NOOPInputStream());
             this.wrap = wrap;
         }
 
         @Override
-        public long position() {
+        public long position()
+        {
             checkClosedRE();
             return wrap.position();
         }
@@ -342,7 +317,8 @@ public class FileMIMESource
         @Override
         public void close()
             throws IOException {
-            if(closed) {
+            if(closed)
+                {
                 return;
             }
             closed = true;
@@ -350,7 +326,8 @@ public class FileMIMESource
         }
 
         @Override
-        public void mark(int readlimit) {
+        public void mark(int readlimit)
+        {
             checkClosedRE();
             wrap.mark(readlimit);
         }
@@ -363,17 +340,21 @@ public class FileMIMESource
         }
 
         @Override
-        public boolean markSupported() {
+        public boolean markSupported()
+        {
             checkClosedRE();
             return wrap.markSupported();
         }
 
-        private void checkClosed() throws IOException {
-            if(closed) {
-                throw new IOException("Stream already closed");
+        private void checkClosed() throws IOException
+        {
+            if(closed)
+                {throw new IOException("Stream already closed");
             }
         }
-        private void checkClosedRE() throws RuntimeException {
+        
+        private void checkClosedRE() throws RuntimeException
+        {
             if(closed) {
                 throw new RuntimeException("Stream already closed");
             }

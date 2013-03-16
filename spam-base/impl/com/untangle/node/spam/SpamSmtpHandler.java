@@ -28,7 +28,6 @@ import com.untangle.node.mime.LCString;
 import com.untangle.node.mime.MIMEMessage;
 import com.untangle.node.mime.MIMEOutputStream;
 import com.untangle.node.mime.MIMEUtil;
-import com.untangle.node.util.TempFileFactory;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.vnet.NodeTCPSession;
 
@@ -39,7 +38,6 @@ public class SpamSmtpHandler extends BufferingSessionHandler
 {
 
     private final Logger logger = Logger.getLogger(SpamSmtpHandler.class);
-    private final TempFileFactory fileFactory;
 
     private static final String MOD_SUB_TEMPLATE = "[SPAM] $MIMEMessage:SUBJECT$";
     private static final String MOD_BODY_TEMPLATE =
@@ -66,7 +64,6 @@ public class SpamSmtpHandler extends BufferingSessionHandler
         this.safelist = safelist;
         this.config = config;
         this.session = session;
-        this.fileFactory = new TempFileFactory(UvmContextFactory.context().pipelineFoundry().getPipeline(session.id()));
     }
 
     /**
@@ -396,8 +393,8 @@ public class SpamSmtpHandler extends BufferingSessionHandler
      * Wrapper that handles exceptions, and returns
      * null if there is a problem
      */
-    private File messageToFile(MIMEMessage msg, SmtpTransaction tx) {
-
+    private File messageToFile(MIMEMessage msg, SmtpTransaction tx)
+    {
         // Build the "fake" received header for SpamAssassin
         InetAddress clientAddr = getSession().getClientAddress();
         StringBuilder sb = new StringBuilder();
@@ -416,7 +413,7 @@ public class SpamSmtpHandler extends BufferingSessionHandler
         File ret = null;
         FileOutputStream fOut = null;
         try {
-            ret = fileFactory.createFile("spamc_ut");
+            ret = File.createTempFile( "SpamSmptHandler-", null );
             fOut = new FileOutputStream(ret);
             BufferedOutputStream bOut = new BufferedOutputStream(fOut);
             MIMEOutputStream mimeOut = new MIMEOutputStream(bOut);

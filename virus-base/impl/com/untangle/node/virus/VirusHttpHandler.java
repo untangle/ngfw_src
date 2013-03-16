@@ -1,4 +1,4 @@
-/*
+/**
  * $Id$
  */
 package com.untangle.node.virus;
@@ -25,7 +25,6 @@ import com.untangle.node.token.FileChunkStreamer;
 import com.untangle.node.token.Header;
 import com.untangle.node.token.Token;
 import com.untangle.node.token.TokenException;
-import com.untangle.node.util.TempFileFactory;
 import com.untangle.node.util.GlobUtil;
 import com.untangle.uvm.node.GenericRule;
 import com.untangle.uvm.vnet.NodeTCPSession;
@@ -318,8 +317,7 @@ class VirusHttpHandler extends HttpStateMachine
     {
         logger.debug("VIRUS: Scanning because of: " + reason);
         try {
-            TempFileFactory tff = new TempFileFactory(getPipeline());
-            File fileBuf = tff.createFile("http-virus");
+            File fileBuf = File.createTempFile("VirusHttpHandler-", null);
 
             this.scanfile = fileBuf;
 

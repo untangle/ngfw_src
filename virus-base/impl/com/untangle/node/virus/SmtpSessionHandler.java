@@ -15,7 +15,6 @@ import com.untangle.node.mail.papi.WrappedMessageGenerator;
 import com.untangle.node.mime.MIMEMessage;
 import com.untangle.node.mime.MIMEPart;
 import com.untangle.node.mime.MIMEUtil;
-import com.untangle.node.util.TempFileFactory;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.vnet.Pipeline;
 import com.untangle.uvm.vnet.NodeTCPSession;
@@ -37,7 +36,6 @@ public class SmtpSessionHandler extends BufferingSessionHandler
 
     private final Logger logger = Logger.getLogger(SmtpSessionHandler.class);
     private final Pipeline pipeline;
-    private final TempFileFactory fileFactory;
 
     private final VirusNodeImpl virusImpl;
 
@@ -49,7 +47,6 @@ public class SmtpSessionHandler extends BufferingSessionHandler
 
         this.virusImpl = impl;
         this.pipeline = UvmContextFactory.context().pipelineFoundry().getPipeline(session.id());
-        this.fileFactory = new TempFileFactory(this.pipeline);
         this.generator = new WrappedMessageGenerator(MOD_SUB_TEMPLATE, MOD_BODY_TEMPLATE);
     }
 
@@ -234,7 +231,7 @@ public class SmtpSessionHandler extends BufferingSessionHandler
         //Get the part as a file
         File f = null;
         try {
-            f = part.getContentAsFile(this.fileFactory, true);
+            f = part.getContentAsFile( true );
         }
         catch(Exception ex) {
             this.logger.error("Exception writing MIME part to file", ex);

@@ -1,36 +1,6 @@
-/*
- * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
- *
- * This library is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License, version 2,
- * as published by the Free Software Foundation.
- *
- * This library is distributed in the hope that it will be useful, but
- * AS-IS and WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE, TITLE, or
- * NONINFRINGEMENT.  See the GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this library; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
- *
- * Linking this library statically or dynamically with other modules is
- * making a combined work based on this library.  Thus, the terms and
- * conditions of the GNU General Public License cover the whole combination.
- *
- * As a special exception, the copyright holders of this library give you
- * permission to link this library with independent modules to produce an
- * executable, regardless of the license terms of these independent modules,
- * and to copy and distribute the resulting executable under terms of your
- * choice, provided that you also meet, for each linked independent module,
- * the terms and conditions of the license of that module.  An independent
- * module is a module which is not derived from or based on this library.
- * If you modify this library, you may extend this exception to your version
- * of the library, but you are not obligated to do so.  If you do not wish
- * to do so, delete this exception statement from your version.
+/**
+ * $Id$
  */
-
 package com.untangle.node.mail.papi;
 
 import static com.untangle.node.util.Ascii.CRLF_BA;
@@ -134,7 +104,8 @@ public class MIMEAccumulator {
      * method, which will catch the case of a MIMEChunk
      * passed <b>and</b> written to file.
      */
-    public class MIMEChunk {
+    public class MIMEChunk
+    {
         private boolean m_isLast = false;
         private int m_index;
         private ByteBuffer m_buf;
@@ -230,12 +201,11 @@ public class MIMEAccumulator {
      *
      * @param pipeline the pipeline (for creating a temp file).
      */
-    public MIMEAccumulator(Pipeline pipeline)
-        throws IOException {
+    public MIMEAccumulator(Pipeline pipeline) throws IOException
+    {
         m_logger.debug("Opening temp file to buffer MIME");
         try {
-            //new File("SMTP" + System.currentTimeMillis() + ".tmp");
-            m_file = pipeline.mktemp("mime");
+            m_file = File.createTempFile( "MIMEAccumulator-", null );
             m_fileOut = new FileOutputStream(m_file);
             m_fileChannel = m_fileOut.getChannel();
         }
@@ -256,8 +226,8 @@ public class MIMEAccumulator {
      * @param buf the buffer (may be null)
      * @param isLast true if this is the last chunk in the MIME message
      */
-    public MIMEAccumulator.MIMEChunk createChunk(ByteBuffer buf,
-                                                 boolean isLast) {
+    public MIMEAccumulator.MIMEChunk createChunk( ByteBuffer buf, boolean isLast )
+    {
         int next = nextIndex();
         m_logger.debug("[createChunk()] Creating MIMEChunk " +
                        next + " with " + (buf==null?"0":Integer.toString(buf.remaining())) + " bytes");
@@ -279,7 +249,8 @@ public class MIMEAccumulator {
      * @param chunk the chunk
      * @return true if successful.
      */
-    public boolean appendChunkToFile(MIMEAccumulator.MIMEChunk chunk) {
+    public boolean appendChunkToFile( MIMEAccumulator.MIMEChunk chunk )
+    {
         //An assert, of sorts
         if(!chunk.isSameAccumulator(this)) {
             throw new RuntimeException("Chunk not for this MIME file");
@@ -325,7 +296,8 @@ public class MIMEAccumulator {
      *
      * @return true if success.
      */
-    public boolean addHeaderBytes(ByteBuffer buf, boolean isLast) {
+    public boolean addHeaderBytes( ByteBuffer buf, boolean isLast )
+    {
         if(buf != null && buf.hasRemaining()) {
             if(!appendToFile(buf)) {
                 return false;
@@ -353,7 +325,8 @@ public class MIMEAccumulator {
      *
      * @return null if there was an error
      */
-    public MIMEMessageHeaders parseHeaders() {
+    public MIMEMessageHeaders parseHeaders()
+    {
         if(m_headers != null) {
             return m_headers;
         }
@@ -397,7 +370,8 @@ public class MIMEAccumulator {
      * Get the length of the headers (in bytes) including
      * any terminator (CRLF).
      */
-    public int getHeadersLength() {
+    public int getHeadersLength()
+    {
         return m_headersLen;
     }
 
@@ -417,7 +391,8 @@ public class MIMEAccumulator {
      *
      * @return any bytes from the header trapped in the file.
      */
-    public ByteBuffer drainFileToByteBuffer() {
+    public ByteBuffer drainFileToByteBuffer()
+    {
         if(m_file.length() == 0) {
             return ByteBuffer.allocate(0);
         }
@@ -445,7 +420,8 @@ public class MIMEAccumulator {
      * of bytes accumulated thus-far).  This includes
      * the header bytes
      */
-    public int fileSize() {
+    public int fileSize()
+    {
         return (int) m_file.length();
     }
 
@@ -466,7 +442,8 @@ public class MIMEAccumulator {
      * @return a parsed MIMEMEssage, or null if an error
      *         occured.  If there is an error, it has been logged.
      */
-    public MIMEMessage parseBody() {
+    public MIMEMessage parseBody()
+    {
         if(m_mimeMessage != null) {
             return m_mimeMessage;
         }
@@ -515,7 +492,8 @@ public class MIMEAccumulator {
      *
      * @return the TokenStreamer
      */
-    public TCPStreamer toTCPStreamer() {
+    public TCPStreamer toTCPStreamer()
+    {
         if((m_file.length() == m_headersLen) && m_headers != null) {
             m_logger.debug("[toTCPStreamer()] Returning headers-only streamer");
             return new HeadersOnlyTCPStreamer();
@@ -529,7 +507,8 @@ public class MIMEAccumulator {
      * written to the file, or when a partial
      * accumulator has been unparsed.
      */
-    public void closeInput() {
+    public void closeInput()
+    {
         m_logger.debug("Closing input");
         try {m_fileOut.close();}catch(Exception ignore){}
         m_fileOut = null;
@@ -540,7 +519,8 @@ public class MIMEAccumulator {
      * Closes the accumulator, along with the
      * file and any MIME message
      */
-    public void dispose() {
+    public void dispose()
+    {
         m_logger.debug("Disposing of accumulator file");
         closeInput();
         try {m_mimeMessage.dispose();}catch(Exception ignore){}
@@ -552,27 +532,13 @@ public class MIMEAccumulator {
         m_fileMIMESource = null;
     }
 
-    //  public void setHeaders(MIMEMessageHeaders headers) {
-    //    m_headers = headers;
-    //  }
-    //  public MIMEMessageHeaders getHeaders() {
-    //    return m_headers;
-    //  }
-    //  public FileMIMESource getFileMIMESource() {
-    //    return m_fileMIMESource;
-    //  }
-
-
-    //-----------------------
-    // Helper methods
-    //-----------------------
-
     /**
      * Appends the bytes to the file
      *
      * @return false if there was an error
      */
-    private boolean appendToFile(ByteBuffer buf) {
+    private boolean appendToFile(ByteBuffer buf)
+    {
         try {
             while(buf.hasRemaining()) {
                 m_fileChannel.write(buf);
@@ -589,7 +555,8 @@ public class MIMEAccumulator {
      * Callback from a chunk to see if it should
      * be unparsed.
      */
-    private boolean shouldUnparseImpl(MIMEChunk chunk) {
+    private boolean shouldUnparseImpl(MIMEChunk chunk)
+    {
         if(m_unparsed) {
             //The starting bytes have been unparsed.  We
             //skip writing this out if this was within the
@@ -606,7 +573,8 @@ public class MIMEAccumulator {
     /**
      * Method returns the bytes of the header.
      */
-    private ByteBuffer getHeaderBytes() {
+    private ByteBuffer getHeaderBytes()
+    {
         try {
             return m_headers == null?
                 EMPTY_BUFFER:
@@ -618,7 +586,8 @@ public class MIMEAccumulator {
         }
     }
 
-    private void setUnparsed() {
+    private void setUnparsed()
+    {
         m_logger.debug("Unparsed at chunk " + m_greatestChunkAppendedAndUnparsed);
         m_unparsed = true;
     }
@@ -627,21 +596,24 @@ public class MIMEAccumulator {
      * Method which returns a new index for
      * chunks.
      */
-    private synchronized int nextIndex() {
+    private synchronized int nextIndex()
+    {
         return m_chunkIndex++;
     }
 
     //----------------- Inner Class -----------------------
 
-    private class HeadersOnlyTCPStreamer
-        implements TCPStreamer {
+    private class HeadersOnlyTCPStreamer implements TCPStreamer
+    {
         private boolean m_sentChunk = false;
 
-        public boolean closeWhenDone() {
+        public boolean closeWhenDone()
+        {
             return false;
         }
 
-        public ByteBuffer nextChunk() {
+        public ByteBuffer nextChunk()
+        {
             if(m_sentChunk) {
                 return null;
             }
@@ -653,8 +625,8 @@ public class MIMEAccumulator {
 
     //----------------- Inner Class -----------------------
 
-    private class PartialTCPStreamer
-        implements TCPStreamer {
+    private class PartialTCPStreamer implements TCPStreamer
+    {
 
         private FileInputStream m_fis;
         private FileChannel m_fileInChannel;
@@ -662,7 +634,8 @@ public class MIMEAccumulator {
         private boolean m_wroteHeaders = false;
         private Logger m_logger = Logger.getLogger(MIMEAccumulator.PartialTCPStreamer.class);
 
-        PartialTCPStreamer() {
+        PartialTCPStreamer()
+        {
             m_logger.debug("Created Partial MIME message streamer");
 
             try {
@@ -687,17 +660,20 @@ public class MIMEAccumulator {
             }
         }
 
-        private void close() {
+        private void close()
+        {
             try {m_fis.close();}catch(Exception ignore){}
             m_fis = null;
             m_fileInChannel = null;
         }
 
-        public boolean closeWhenDone() {
+        public boolean closeWhenDone()
+        {
             return false;
         }
 
-        public ByteBuffer nextChunk() {
+        public ByteBuffer nextChunk()
+        {
             m_logger.debug("Next Chunk called");
             if(m_fileInChannel == null) {
                 m_logger.error("Cannot return anything.  Channel never opened");

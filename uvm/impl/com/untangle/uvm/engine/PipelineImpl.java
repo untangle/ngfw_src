@@ -20,23 +20,16 @@ import com.untangle.uvm.vnet.Pipeline;
  */
 class PipelineImpl implements Pipeline
 {
-    private static final File TMP_DIR = new File("/tmp/");
-
-    //private final List<ArgonConnector> argonConnectors;
-    private final String sessionPrefix;
-
     // This does not need to be concurrent since there is only one thread per pipeline.
     private final Map<Long,Object> attachments = new HashMap<Long,Object>();
-    private final List<File> files = new LinkedList<File>();
 
+    // next unused attachment Id
     private int attachId = 0;
         
     // constructors -----------------------------------------------------------
 
     PipelineImpl(long sessionId, List<ArgonConnector> argonConnectors)
     {
-        //this.argonConnectors = argonConnectors;
-        this.sessionPrefix = "sess-" + sessionId + "-";
     }
 
     // object registry methods ------------------------------------------------
@@ -89,37 +82,4 @@ class PipelineImpl implements Pipeline
     {
         return argonConnector.getOutputFitting();
     }
-
-    public File mktemp() throws IOException
-    {
-        return mktemp(null);
-    }
-
-    public File mktemp(String prefix) throws IOException
-    {
-        String name;
-        if (prefix == null) {
-            name = sessionPrefix;
-        } else {
-            StringBuilder sb = new StringBuilder(prefix);
-            sb.append("-");
-            sb.append(sessionPrefix);
-            name = sb.toString();
-        }
-        File f = File.createTempFile(name, null, TMP_DIR);
-        synchronized (files) {
-            files.add(f);
-        }
-        return f;
-    }
-
-    // package protected methods ----------------------------------------------
-
-    protected void destroy()
-    {
-        for (File f : files) {
-            f.delete();
-        }
-    }
-
 }

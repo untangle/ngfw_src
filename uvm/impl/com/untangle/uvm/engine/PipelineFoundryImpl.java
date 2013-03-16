@@ -1,3 +1,4 @@
+
 /**
  * $Id$
  */
@@ -200,8 +201,6 @@ public class PipelineFoundryImpl implements PipelineFoundry
         if (logger.isDebugEnabled()) {
             logger.debug("removed: " + pipeline + " for: " + sessionId);
         }
-
-        pipeline.destroy();
     }
 
     /**

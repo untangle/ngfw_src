@@ -19,13 +19,11 @@ import java.util.ListIterator;
 import org.apache.log4j.Logger;
 
 import com.untangle.node.util.BASE64InputStream;
-import com.untangle.node.util.FileFactory;
 import com.untangle.node.util.QPInputStream;
 import com.untangle.node.util.TruncatedInputStream;
 
-
 /**
- * <b>Work in progress</b>
+ * 
  */
 public class MIMEPart
 {
@@ -537,11 +535,9 @@ public class MIMEPart
      * This method is intended only for leaf parts (i.e.
      * parts which are {@link #isMultipart not multipart}.
      *
-     * @param factory a FileFactory, which may be needed if the content
-     *        is not already in a file
      * @param decoded should the content be decoded in the returned File
      */
-    public File getContentAsFile( FileFactory factory, boolean decoded )
+    public File getContentAsFile( boolean decoded )
         throws IOException
     {
         checkDisposed();
@@ -554,11 +550,11 @@ public class MIMEPart
         String fileNamePrefix = "mimepart";
 
         if(!decoded) {
-            return getRawContentRecord(factory).source.toFile(factory, fileNamePrefix);
+            return getRawContentRecord().source.toFile( fileNamePrefix );
         }
         else {
             if(m_decodedContentRecord != null) {
-                return m_decodedContentRecord.source.toFile(factory, fileNamePrefix);
+                return m_decodedContentRecord.source.toFile( fileNamePrefix );
             }
             else {
                 if(m_sourceEncoding == null) {
@@ -566,10 +562,10 @@ public class MIMEPart
                 }
                 switch(m_sourceEncoding) {
                 case QP:
-                    decodedContentToFileSource(factory, fileNamePrefix, new QPDecoderFactory());
+                    decodedContentToFileSource( fileNamePrefix, new QPDecoderFactory() );
                     return ((FileMIMESource) m_decodedContentRecord.source).getFile();
                 case BASE64:
-                    decodedContentToFileSource(factory, fileNamePrefix, new BASE64DecoderFactory());
+                    decodedContentToFileSource( fileNamePrefix, new BASE64DecoderFactory() );
                     return ((FileMIMESource) m_decodedContentRecord.source).getFile();
                 case SEVEN_BIT:
                 case EIGHT_BIT:
@@ -577,22 +573,20 @@ public class MIMEPart
                 case UUENCODE://For now, don't attempt uudecode
                 case UNKNOWN:
                 default:
-                    return getRawContentRecord(factory).source.toFile(factory, fileNamePrefix);
+                    return getRawContentRecord().source.toFile( fileNamePrefix );
                 }
             }
         }
     }
 
-    private MIMESourceRecord getRawContentRecord( FileFactory factory )
+    private MIMESourceRecord getRawContentRecord()
         throws IOException
     {
         if(!m_sourceRecord.isShared()) {
             return m_sourceRecord;
         }
         if(m_rawContentRecord == null) {
-            File file = decodeToFile(factory,
-                                     "RAWMIMEPART" + System.identityHashCode(this),
-                                     new NOOPDecoderFactory());
+            File file = decodeToFile( "RAWMIMEPART" + System.identityHashCode(this), new NOOPDecoderFactory());
 
             m_rawContentRecord = new MIMESourceRecord(
                                                       new FileMIMESource(file),
@@ -603,10 +597,10 @@ public class MIMEPart
         return m_rawContentRecord;
     }
 
-    private void decodedContentToFileSource( FileFactory factory, String fileName, DecoderFactory decoderFactory )
+    private void decodedContentToFileSource( String fileName, DecoderFactory decoderFactory )
         throws IOException
     {
-        File file = decodeToFile(factory, fileName, decoderFactory);
+        File file = decodeToFile( fileName, decoderFactory);
         m_decodedContentRecord = new MIMESourceRecord(
                                                       new FileMIMESource(file),
                                                       0,
@@ -636,7 +630,7 @@ public class MIMEPart
         }
     }
 
-    private File decodeToFile( FileFactory factory, String fileName, DecoderFactory decoderFactory )
+    private File decodeToFile( String fileName, DecoderFactory decoderFactory )
         throws IOException
     {
         MIMEParsingInputStream mpIS = null;
@@ -644,10 +638,9 @@ public class MIMEPart
 
         try {
             mpIS = m_sourceRecord.source.getInputStream(m_sourceRecord.start);
-            TruncatedInputStream tis =
-                new TruncatedInputStream(mpIS, m_sourceRecord.len);
+            TruncatedInputStream tis = new TruncatedInputStream(mpIS, m_sourceRecord.len);
             InputStream decodeStream = decoderFactory.createDecoder(tis);
-            newFile = factory.createFile(fileName);
+            newFile = File.createTempFile(fileName, null);
             pipeToFile(decodeStream, newFile);
             mpIS.close();
             return newFile;
@@ -1181,8 +1174,8 @@ public class MIMEPart
     {
         File f = new File(args[0]);
 
-        File tempDir = new File(new File(System.getProperty("user.dir")),
-                                "mimeFiles");
+        File tempDir = new File("/tmp/mimeFiles");
+
         if(!tempDir.exists()) {
             tempDir.mkdirs();
         }
@@ -1221,8 +1214,6 @@ public class MIMEPart
         System.out.println("");
         mp.dump("");
 
-        MyFileFactory factory = new MyFileFactory(tempDir);
-
         File file = null;
         if(mp.isMultipart()) {
 
@@ -1231,9 +1222,9 @@ public class MIMEPart
             System.out.println("Now, decode the " + children.length + " leaf children");
             for(MIMEPart part : children) {
                 if(!part.isMultipart()) {
-                    file = part.getContentAsFile(factory, false);
+                    file = part.getContentAsFile( false );
                     System.out.println("Raw part to: " + file.getName());
-                    file = part.getContentAsFile(factory, true);
+                    file = part.getContentAsFile( true );
                     System.out.println("Decoded part to: " + file.getName());
                 }
             }
@@ -1251,9 +1242,9 @@ public class MIMEPart
             fOut.close();
         }
         else {
-            file = mp.getContentAsFile(factory, false);
+            file = mp.getContentAsFile( false );
             System.out.println("Raw part to: " + file.getName());
-            file = mp.getContentAsFile(factory, true);
+            file = mp.getContentAsFile( true );
             System.out.println("Decoded part to: " + file.getName());
             System.out.println("Try writing it out (after declaring changed)");
             mp.m_changed = true;
@@ -1295,36 +1286,4 @@ public class MIMEPart
         }
         System.out.println(indent + "---ENDOF---");
     }
-
-    //------------- Debug/Test ---------------
-
-    //================= Inner Class =================
-
-    /**
-     * Acts as a FileFactory, to create temp files
-     * when a MIME part needs to be decoded to disk.
-     */
-    private static class MyFileFactory implements FileFactory
-    {
-        private File m_dir;
-        public MyFileFactory(File rootDir) {
-            m_dir = rootDir;
-        }
-
-        public File createFile(String name)
-            throws IOException {
-            if(name == null) {
-                name = "meta";
-            }
-            //Javasoft requires 3 characters in prefix !?!
-            while(name.length() < 3) {
-                name = name+"X";
-            }
-            return File.createTempFile(name, null, m_dir);
-        }
-        public File createFile() throws IOException {
-            return createFile(null);
-        }
-    }
-
 }

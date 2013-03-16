@@ -24,7 +24,6 @@ import com.untangle.node.token.TokenException;
 import com.untangle.node.token.TokenResult;
 import com.untangle.node.token.TokenStreamer;
 import com.untangle.node.token.TokenStreamerAdaptor;
-import com.untangle.node.util.TempFileFactory;
 import com.untangle.uvm.vnet.Pipeline;
 import com.untangle.uvm.vnet.NodeTCPSession;
 import com.untangle.uvm.vnet.event.TCPStreamer;
@@ -43,7 +42,6 @@ class VirusFtpHandler extends FtpStateMachine
     private FileChannel inChannel;
     private FileChannel outChannel;
     private boolean c2s;
-    private final TempFileFactory m_fileFactory;
 
     // constructors -----------------------------------------------------------
 
@@ -53,8 +51,6 @@ class VirusFtpHandler extends FtpStateMachine
 
         this.node = node;
         this.scan = node.getSettings().getScanFtp();
-
-        m_fileFactory = new TempFileFactory(getPipeline());
     }
 
     // FtpStateMachine methods ------------------------------------------------
@@ -222,7 +218,7 @@ class VirusFtpHandler extends FtpStateMachine
     private void createFile() throws TokenException
     {
         try {
-            file = m_fileFactory.createFile("ftp-virus");
+            file = File.createTempFile("VirusFtpHandler-", null);
 
             FileInputStream fis = new FileInputStream(file);
             inChannel = fis.getChannel();

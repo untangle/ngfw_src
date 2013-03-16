@@ -18,25 +18,25 @@ public interface Pipeline
     Fitting getClientFitting(ArgonConnector argonConnector);
     Fitting getServerFitting(ArgonConnector argonConnector);
 
-    /**
-     * Makes a temporary file that will be destroyed on Session
-     * finalization.
-     *
-     * @return the temp file.
-     * @exception IOException the temp file cannot be created.
-     */
-    File mktemp() throws IOException;
+    // /**
+    //  * Makes a temporary file that will be destroyed on Session
+    //  * finalization.
+    //  *
+    //  * @return the temp file.
+    //  * @exception IOException the temp file cannot be created.
+    //  */
+    // File mktemp() throws IOException;
 
-    /**
-     * Makes a temporary file that will be destroyed on Session
-     * finalization.  The file name will start with the given prefix
-     * (for debugging purposes).
-     *
-     * NOTE: the prefix <b>must not</b> come from user data, it should
-     * be a constant like 'ftp-virus'.
-     *
-     * @return the temp file.
-     * @exception IOException the temp file cannot be created.
-     */
-    File mktemp(String prefix) throws IOException;
+    // /**
+    //  * Makes a temporary file that will be destroyed on Session
+    //  * finalization.  The file name will start with the given prefix
+    //  * (for debugging purposes).
+    //  *
+    //  * NOTE: the prefix <b>must not</b> come from user data, it should
+    //  * be a constant like 'ftp-virus'.
+    //  *
+    //  * @return the temp file.
+    //  * @exception IOException the temp file cannot be created.
+    //  */
+    // File mktemp(String prefix) throws IOException;
 }
