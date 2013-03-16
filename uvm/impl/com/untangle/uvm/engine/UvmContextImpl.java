@@ -333,7 +333,7 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
                     try {
                         Thread.sleep(200);
                     } catch (InterruptedException exn) { }
-                    logger.info("thank you for choosing uvm");
+                    logger.info("Exiting");
                     System.exit(0);
                 }
             });
@@ -679,14 +679,11 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
     @Override
     protected void postInit()
     {
-        // Mailsender can now query the hostname
         mailSender.postInit();
 
         logger.debug("restarting nodes");
         nodeManager.init();
-        pipelineFoundry.clearChains();
 
-        /* Reload Apache */
         tomcatManager.writeWelcomeFile();
 
         tomcatManager.startTomcat();

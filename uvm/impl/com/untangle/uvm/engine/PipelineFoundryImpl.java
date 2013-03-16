@@ -39,15 +39,30 @@ import com.untangle.uvm.vnet.event.SessionEventListener;
 
 /**
  * Implements PipelineFoundry.
+ * PipelineFoundry is responsible for building a list of processing nodes for each session
+ *
+ * When new sessions are created weld() is called to create the list of <code>ArgonConnectors</code>
+ * weld() first finds a list of all ArgonConnectors for the given policyId and fitting type (stream, http, etc)
+ * From there it removes the uninterested ArgonConnectors.
+ * What is left is a list of all the ArgonConnectors that participate in a given session.
  */
 public class PipelineFoundryImpl implements PipelineFoundry
 {
-    private static final PipelineFoundryImpl PIPELINE_FOUNDRY_IMPL = new PipelineFoundryImpl();
-
     private final Logger logger = Logger.getLogger(getClass());
 
-    private final Map<Fitting, List<ArgonConnector>> argonConnectors = new HashMap<Fitting, List<ArgonConnector>>();
+    /**
+     * Global PipelineFoundryImpl instance
+     */
+    private static final PipelineFoundryImpl PIPELINE_FOUNDRY_IMPL = new PipelineFoundryImpl();
 
+    /**
+     * A global list of all current argon connectors
+     */
+    private final List<ArgonConnector> argonConnectors = new LinkedList<ArgonConnector>();
+
+    /**
+     * A global list of all current casings
+     */
     private final Map<ArgonConnector, ArgonConnector> casings = new HashMap<ArgonConnector, ArgonConnector>();
 
     /**
@@ -57,15 +72,24 @@ public class PipelineFoundryImpl implements PipelineFoundry
      */
     private final Map<InetSocketAddress, Fitting> fittingHints = new ConcurrentHashMap<InetSocketAddress, Fitting>();
 
+    /**
+     * This is a list of all current existing pipelines/sessions
+     */
     private final Map<Long, PipelineImpl> pipelines = new ConcurrentHashMap<Long, PipelineImpl>();
 
     /**
-     * This stores a map from policyId to something XXX
+     * This stores a map from policyId to a cache for that policy storing the list of argon connectors for various fitting types
      */
-    private static final Map<Long, Map<Fitting, List<ArgonConnector>>> chains = new HashMap<Long, Map<Fitting, List<ArgonConnector>>>();
+    private static final Map<Long, Map<Fitting, List<ArgonConnector>>> pipelineFoundryCache = new HashMap<Long, Map<Fitting, List<ArgonConnector>>>();
     
+    /**
+     * Private constructor to ensure singleton
+     */
     private PipelineFoundryImpl() {}
 
+    /**
+     * Return the singleton instance of the PipelineFoundry
+     */
     public static PipelineFoundryImpl foundry()
     {
         return PIPELINE_FOUNDRY_IMPL;
@@ -122,31 +146,32 @@ public class PipelineFoundryImpl implements PipelineFoundry
         }
 
         long ct0 = System.nanoTime();
-        List<ArgonConnector> chain = weldForFitting( sessionTuple, policyId, start );
+        List<ArgonConnector> acList = weldPipeline( sessionTuple, policyId, start );
         long ct1 = System.nanoTime();
 
-        // filter list
+        /**
+         * We now have a list of given argonConnectors for that policyId & fitting,
+         * However, not all argonConnectors are interested in this traffic
+         * We now iterate through each and remove ones that are not interested
+         */
         long ft0 = System.nanoTime();
-
-        List<ArgonAgent> argonAgentList = new ArrayList<ArgonAgent>(chain.size());
-        List<ArgonConnector> argonConnectorList = new ArrayList<ArgonConnector>(chain.size());
-
+        List<ArgonAgent> argonAgentList = new ArrayList<ArgonAgent>(acList.size());
+        List<ArgonConnector> argonConnectorList = new ArrayList<ArgonConnector>(acList.size());
         String nodeList = "nodes: [";
-        for (Iterator<ArgonConnector> i = chain.iterator(); i.hasNext();) {
+        for (Iterator<ArgonConnector> i = acList.iterator(); i.hasNext();) {
             ArgonConnector argonConnector = i.next();
             PipeSpec pipeSpec = argonConnector.getPipeSpec();
 
-            // We want the node if its policy matches (this policy or one of
-            // is parents), or the node has no
-            // policy (is a service).
-            if (pipeSpec.matches(sessionTuple)) {
+            /**
+             * Check that this argon connector actually is interested in this session
+             */
+            if ( pipeSpec.matches(sessionTuple) ) {
                 argonConnectorList.add( argonConnector );
                 argonAgentList.add( ((ArgonConnectorImpl) argonConnector).getArgonAgent() );
                 nodeList += pipeSpec.getName() + " ";
             }
         }
         nodeList += "]";
-
         long ft1 = System.nanoTime();
 
         PipelineImpl pipeline = new PipelineImpl(sessionId, argonConnectorList);
@@ -158,16 +183,18 @@ public class PipelineFoundryImpl implements PipelineFoundry
                          " policyId: " + policyId + " " +
                          nodeList );
             logger.debug("session_id: " + sessionId +
-                         " pipe in " + (t1 - t0) +
-                         " made: " + (ct1 - ct0) +
-                         " filtered: " + (ft1 - ft0) +
-                         " chain: " + argonConnectorList);
+                         " total time: " + (t1 - t0) +
+                         " weld time: " + (ct1 - ct0) +
+                         " filter time: " + (ft1 - ft0));
         }
 
         return argonAgentList;
     }
 
-    public void destroy( long sessionId )
+    /**
+     * Remove the given session/pipeline from the current global list
+     */
+    public void removePipeline( long sessionId )
     {
         PipelineImpl pipeline = pipelines.remove( sessionId );
 
@@ -178,47 +205,37 @@ public class PipelineFoundryImpl implements PipelineFoundry
         pipeline.destroy();
     }
 
+    /**
+     * Create an ArgonConnector.
+     * This is here because ArgonConnectorImpl is in Impl and things in API need to create them. Should fix this
+     */
     public ArgonConnector createArgonConnector(PipeSpec spec, SessionEventListener listener, Fitting input, Fitting output)
     {
         return new ArgonConnectorImpl( spec,listener, input, output );
     }
 
+    /**
+     * Register an Argon Connector
+     */
     public synchronized void registerArgonConnector(ArgonConnector argonConnector)
     {
-        SoloPipeSpec sps = (SoloPipeSpec) argonConnector.getPipeSpec();
-        Fitting fitting = sps.getFitting();
-
-        List<ArgonConnector> argonConnectorList = argonConnectors.get(fitting);
-
-        if (argonConnectorList == null) {
-            argonConnectorList = new ArrayList<ArgonConnector>();
-            argonConnectorList.add(null);
-            argonConnectors.put(fitting, argonConnectorList);
-        }
-
-        int i = Collections.binarySearch(argonConnectorList, argonConnector, ArgonConnectorComparator.COMPARATOR);
-        argonConnectorList.add(0 > i ? -i - 1 : i, argonConnector);
-
+        this.argonConnectors.add( argonConnector);
+        Collections.sort( this.argonConnectors, ArgonConnectorComparator.COMPARATOR );
         clearCache();
     }
 
+    /**
+     * Unregister an Argon Connector
+     */
     public void deregisterArgonConnector(ArgonConnector argonConnector)
     {
-        SoloPipeSpec sps = (SoloPipeSpec) argonConnector.getPipeSpec();
-        Fitting fitting = sps.getFitting();
-
-        List<ArgonConnector> argonConnectorList = argonConnectors.get(fitting);
-
-        int i = Collections.binarySearch(argonConnectorList, argonConnector, ArgonConnectorComparator.COMPARATOR);
-        if ( i < 0 ) {
-            logger.warn("Deregistering non-registered pipe: " + argonConnector, new Exception());
-        } else {
-            argonConnectorList.remove(i);
-        }
-
+        this.argonConnectors.remove( argonConnector );
         clearCache();
     }
 
+    /**
+     * Register a Casing
+     */
     public void registerCasing(ArgonConnector insideArgonConnector, ArgonConnector outsideArgonConnector)
     {
         if (insideArgonConnector.getPipeSpec() != outsideArgonConnector.getPipeSpec()) {
@@ -231,6 +248,9 @@ public class PipelineFoundryImpl implements PipelineFoundry
         }
     }
 
+    /**
+     * Unregister a Casing
+     */
     public void deregisterCasing(ArgonConnector insideArgonConnector)
     {
         synchronized (this) {
@@ -249,81 +269,72 @@ public class PipelineFoundryImpl implements PipelineFoundry
         fittingHints.put(socketAddress, fitting);
     }
 
+    /**
+     * Get a pipeline by sessionId
+     * Returns null if not found
+     */
     public Pipeline getPipeline(long sessionId)
     {
         return pipelines.get(sessionId);
     }
     
-    /* Remove all of the cached chains */
-    public void clearChains()
+    /**
+     * Remove all of the cached results
+     */
+    public synchronized void clearCache()
     {
-        synchronized( this ) {
-            clearCache();
-        }
+        logger.debug("Clearing Pipeline Foundry cache...");
+        pipelineFoundryCache.clear();
     }
 
-
-    // package protected methods ----------------------------------------------
-
-    protected List<PipelineImpl> getCurrentPipelines()
-    {
-        return new LinkedList<PipelineImpl>(this.pipelines.values());
-    }
-    
     // private methods --------------------------------------------------------
 
-    private List<ArgonConnector> weldForFitting(SessionTuple sessionTuple, Long policyId, Fitting start)
+    /**
+     * This creates a full pipeline for the given policyId and start fitting.
+     * It also maintains a cache to memoize results
+     */
+    private List<ArgonConnector> weldPipeline( SessionTuple sessionTuple, Long policyId, Fitting start )
     {
         List<ArgonConnector> argonConnectorList = null;
 
-        /*
-         * Check if there is a cache for this policy. First time is without the
-         * lock
+        /**
+         * Check if there is a cache for this policy. First time is without the lock
          */
-        Map<Fitting, List<ArgonConnector>> fcs = chains.get(policyId);
+        Map<Fitting, List<ArgonConnector>> fittingCache = pipelineFoundryCache.get(policyId);
 
-        /* If there is a cache, check if the chain exists for this fitting */
-        if (null != fcs) {
-            argonConnectorList = fcs.get(start);
+        /**
+         * If there is a cache, check if the acList exists for this fitting
+         */
+        if ( fittingCache != null ) {
+            argonConnectorList = fittingCache.get(start);
         }
 
         if ( argonConnectorList == null ) {
             synchronized (this) {
                 /* Check if there is a cache again, after grabbing the lock */
-                fcs = chains.get(policyId);
+                fittingCache = pipelineFoundryCache.get( policyId );
 
-                if ( fcs == null ) {
-                    /* Cache doesn't exist, create a new one */
-                    fcs = new HashMap<Fitting, List<ArgonConnector>>();
-                    chains.put(policyId, fcs);
+                if ( fittingCache == null ) {
+                    /* Cache doesn't exist, create a new empty cache for this policy */
+                    fittingCache = new HashMap<Fitting, List<ArgonConnector>>();
+                    pipelineFoundryCache.put( policyId, fittingCache );
                 } else {
-                    /* Cache exists, get the chain for this fitting */
-                    argonConnectorList = fcs.get(start);
+                    /* Cache exists, get the acList for this fitting */
+                    argonConnectorList = fittingCache.get( start );
                 }
 
+                /**
+                 * No previously stored result was found in the cache
+                 * We now need to calculate the correct result from scratch
+                 */
                 if ( argonConnectorList == null ) {
-                    /*
-                     * Chain hasn't been created, create a list of available
-                     * casings
-                     */
-                    Map<ArgonConnector, ArgonConnector> availCasings = new HashMap<ArgonConnector, ArgonConnector>(casings);
+                    argonConnectorList = new LinkedList<ArgonConnector>();
 
-                    /*
-                     * Chain hasn't been created, create a list of available
-                     * nodes argonConnectors is ordered so iterating the list of argonConnectors
-                     * will insert them in the correct order
-                     */
-                    Map<Fitting, List<ArgonConnector>> availArgonConnectors = new HashMap<Fitting, List<ArgonConnector>>( argonConnectors );
-
-                    int s = availCasings.size() + availArgonConnectors.size();
-                    argonConnectorList = new ArrayList<ArgonConnector>(s);
-
-                    /* Weld together the nodes and the casings */
-                    weld( argonConnectorList, start, policyId, availArgonConnectors, availCasings );
+                    addAll( argonConnectorList, start, policyId );
 
                     removeDuplicates( policyId, argonConnectorList );
 
-                    fcs.put( start, argonConnectorList );
+                    fittingCache.put( start, argonConnectorList );
                 }
             }
         }
@@ -331,117 +342,110 @@ public class PipelineFoundryImpl implements PipelineFoundry
         return argonConnectorList;
     }
 
-    private void weld( List<ArgonConnector> argonConnectorList, Fitting start,
-                       Long policyId, Map<Fitting, List<ArgonConnector>> availArgonConnectors,
-                       Map<ArgonConnector, ArgonConnector> availCasings)
+    private void addAll( List<ArgonConnector> argonConnectorList, Fitting start, Long policyId )
     {
-        weldArgonConnectors(argonConnectorList, start, policyId, availArgonConnectors, availCasings);
-        weldCasings(argonConnectorList, start, policyId, availArgonConnectors, availCasings);
+        //printArgonConnectorList(argonConnectorList);
+        addArgonConnectors(argonConnectorList, start, policyId );
+        //printArgonConnectorList(argonConnectorList);
     }
 
-    private boolean weldArgonConnectors( List<ArgonConnector> argonConnectorList,
-                                         Fitting start,
-                                         Long policyId,
-                                         Map<Fitting, List<ArgonConnector>> availArgonConnectors,
-                                         Map<ArgonConnector, ArgonConnector> availCasings )
+    /**
+     * Add all argon connectors to the list that match this policy and fitting type
+     */
+    private boolean addArgonConnectors( List<ArgonConnector> argonConnectorList, Fitting start, Long policyId )
     {
-        boolean welded = false;
+        boolean added = false;
 
-        boolean tryAgain;
-        do {
-            tryAgain = false;
+        /**
+         * Iterate through all the argonConnections and look for ones that fit the current fitting type
+         */
+        for ( Iterator<ArgonConnector> i = argonConnectors.iterator(); i.hasNext() ; ) {
+            ArgonConnector argonConnector = i.next();
 
             /**
-             * Iterate through all the argonConnections and look for ones that fit the current fitting type
+             * If this argonConnector is the wrong fitting type, skip it
              */
-            for (Iterator<Fitting> i = availArgonConnectors.keySet().iterator(); i.hasNext();) {
-                Fitting f = i.next();
-                if (start.instanceOf(f)) {
-                    /*
-                     * If this fitting is an instance of the start, get the list
-                     * of nodes
-                     */
-                    List<ArgonConnector> l = availArgonConnectors.get(f);
+            if ( ! start.equals( argonConnector.getInputFitting() ) )
+                continue;
 
-                    /* Remove this list of nodes from the available nodes */
-                    i.remove();
+            /**
+             * If this argonConnector is not on this policy, skip it
+             */
+            if ( ! policyMatch( argonConnector.getPipeSpec().getNode().getNodeSettings().getPolicyId(), policyId) )
+                continue;
+            
+            argonConnectorList.add( argonConnector );
+            added = true;
+        }
 
-                    for (Iterator<ArgonConnector> j = l.iterator(); j.hasNext();) {
-                        ArgonConnector argonConnector = j.next();
-                        if ( argonConnector == null ) {
-                            boolean w = weldCasings(argonConnectorList, start, policyId, availArgonConnectors, availCasings);
-                            if (w) {
-                                welded = true;
-                            }
-                        } else if (policyMatch(argonConnector.getPipeSpec().getNode().getNodeSettings().getPolicyId(), policyId)) {
-                            boolean w = argonConnectorList.add( argonConnector );
-                            if (w) {
-                                welded = true;
-                            }
-                        }
-                    }
-                    tryAgain = true;
-                    break;
-                }
-            }
-        } while (tryAgain);
+        /**
+         * Now we should add in any casings
+         */
+        boolean addedCasings = addCasings( argonConnectorList, start, policyId );
+        if ( addedCasings ) {
+            added = true;
+        }
 
-        return welded;
+        return added;
     }
 
-    private boolean weldCasings(List<ArgonConnector> argonConnectorList, Fitting start,
-                                Long policyId, Map<Fitting, List<ArgonConnector>> availArgonConnectors,
-                                Map<ArgonConnector, ArgonConnector> availCasings)
+    /**
+     * Add all casings to the list that match this policy and fitting type
+     * Also calls addArgonConnectors recursively to add argon connectors
+     * for the "inner" fitting type
+     */
+    private boolean addCasings( List<ArgonConnector> argonConnectorList, Fitting start, Long policyId )
     {
-        boolean welded = false;
+        boolean addedCasing = false;
 
-        boolean tryAgain;
-        do {
-            tryAgain = false;
-            for (Iterator<ArgonConnector> i = availCasings.keySet().iterator(); i.hasNext();) {
-                ArgonConnector insideArgonConnector = i.next();
-                CasingPipeSpec ps = (CasingPipeSpec) insideArgonConnector.getPipeSpec();
-                Fitting f = ps.getInput();
+        for (Iterator<ArgonConnector> i = casings.keySet().iterator(); i.hasNext();) {
+            ArgonConnector insideArgonConnector = i.next();
+            ArgonConnector outsideArgonConnector = casings.get( insideArgonConnector );
+            
+            Fitting inputFitting = insideArgonConnector.getInputFitting();
+                
+            /**
+             * If this insideArgonConnector is the wrong fitting type, skip it
+             */
+            if ( ! start.equals( insideArgonConnector.getInputFitting() ) )
+                continue;
 
-                if (!policyMatch(ps.getNode().getNodeSettings().getPolicyId(), policyId)) {
-                    i.remove();
-                } else if (start.instanceOf(f)) {
-                    ArgonConnector outsideArgonConnector = availCasings.get(insideArgonConnector);
-                    i.remove();
-                    int s = argonConnectorList.size();
+            /**
+             * If this insideArgonConnector is not on this policy, skip it
+             */
+            if ( ! policyMatch( insideArgonConnector.getPipeSpec().getNode().getNodeSettings().getPolicyId(), policyId) ) 
+                continue;
 
-                    argonConnectorList.add( insideArgonConnector );
-                    
-                    CasingPipeSpec cps = (CasingPipeSpec) insideArgonConnector.getPipeSpec();
-                    Fitting insideFitting = cps.getOutput();
+            /**
+             * Add this casing
+             */
+            argonConnectorList.add( insideArgonConnector );
 
-                    boolean w = weldArgonConnectors(argonConnectorList, insideFitting, policyId, availArgonConnectors, availCasings);
+            /**
+             * add in any argonConnectors that should be inside the casing
+             */
+            boolean addedSubArgonConnectors = addArgonConnectors( argonConnectorList, insideArgonConnector.getOutputFitting(), policyId );
 
-                    if (w) {
-                        welded = true;
-                        argonConnectorList.add( outsideArgonConnector );
-                    } else {
-                        while (argonConnectorList.size() > s) {
-                            argonConnectorList.remove(argonConnectorList.size() - 1);
-                        }
-                    }
-
-                    tryAgain = true;
-                    break;
-                }
+            /**
+             * If no nodes were interested in this casing's traffic, just remove it
+             * Otherwise, add the other casing
+             */
+            if ( ! addedSubArgonConnectors ) {
+                argonConnectorList.remove( insideArgonConnector );
+            } else {
+                argonConnectorList.add( outsideArgonConnector );
+                addedCasing = true;
             }
-        } while (tryAgain);
+        }
 
-        return welded;
+        return addedCasing;
     }
 
-    private void clearCache()
-    {
-        logger.debug("Clearing chains cache...");
-        chains.clear();
-    }
-    
-    private void removeDuplicates( Long policyId, List<ArgonConnector> chain )
+    /**
+     * Remove "duplicate" nodes from a given pipeline of argonConnectors
+     * For example, if there are two Web Filters in a given list, it will remove the one from the parent rack.
+     */
+    private void removeDuplicates( Long policyId, List<ArgonConnector> acList )
     {
         Map<String, Integer> numParents = new HashMap<String, Integer>();
         Map<ArgonConnector, Integer> fittingDistance = new HashMap<ArgonConnector, Integer>();
@@ -453,7 +457,7 @@ public class PipelineFoundryImpl implements PipelineFoundry
                 enabledNodesInPolicy.add(node.getNodeProperties().getName());
         }
         
-        for (Iterator<ArgonConnector> i = chain.iterator(); i.hasNext();) {
+        for (Iterator<ArgonConnector> i = acList.iterator(); i.hasNext();) {
             ArgonConnector argonConnector = i.next();
 
             Long nodePolicyId = argonConnector.node().getNodeSettings().getPolicyId();
@@ -466,7 +470,7 @@ public class PipelineFoundryImpl implements PipelineFoundry
 
             /**
              * Remove the items that are not enabled in this policy
-             * This is to ensure that if an app is in the child and not enable, it is not inherited from the parent
+             * This is to ensure that if an app is in the child and not enabled, it is not inherited from the parent
              */
             if (!enabledNodesInPolicy.contains(nodeName)) {
                 i.remove();
@@ -488,7 +492,7 @@ public class PipelineFoundryImpl implements PipelineFoundry
 
             /* If an existing node is closer then this node, remove this node. */
             if (n == null) {
-                /*
+                /**
                  * If we haven't seen another node at any distance, add it to
                  * the hash
                  */
@@ -498,7 +502,7 @@ public class PipelineFoundryImpl implements PipelineFoundry
                 /* Keep nodes at the same distance */
                 continue;
             } else if (distance < n) {
-                /*
+                /**
                  * Current node is closer then the other one, have to remove the
                  * other node done on another iteration
                  */
@@ -506,7 +510,7 @@ public class PipelineFoundryImpl implements PipelineFoundry
             }
         }
 
-        for (Iterator<ArgonConnector> i = chain.iterator(); i.hasNext();) {
+        for (Iterator<ArgonConnector> i = acList.iterator(); i.hasNext();) {
             ArgonConnector argonConnector = i.next();
 
             Long nodePolicyId = argonConnector.node().getNodeSettings().getPolicyId();
@@ -541,6 +545,14 @@ public class PipelineFoundryImpl implements PipelineFoundry
 
     }
 
+    /**
+     * Returns the difference in # generatinos of two policies.
+     * -1 if childId is not a decendent of parentId
+     * 0 if childId = parentId
+     * 1 if childId is the direct child of parentId
+     * 2 if childId is the grandchild of parentId
+     * etc
+     */
     public int getPolicyGenerationDiff(Long childId, Long parentId)
     {
         PolicyManager policyManager = (PolicyManager) UvmContextFactory.context().nodeManager().node("untangle-node-policy");
@@ -559,15 +571,14 @@ public class PipelineFoundryImpl implements PipelineFoundry
         return -1;
     }
 
+    /**
+     * This returns true if the nodePolicy would process the session on policyId
+     * This is true if nodePolicy == null (its a service app and thus processes all sessions)
+     * This is true if policyId == nodePolicy (its a filtering app and lives in the policyId rack)
+     * or if one of policyId's parents' policyId == nodePolicy. (its a filtering app and lives one of policyId rack's parents, grandparents, etc)
+     */
     private boolean policyMatch( Long nodePolicy, Long policyId )
     {
-        /**
-         * This returns true if the nodePolicy would process the session on policyId
-         * This is true if nodePolicy == null (its a service app and thus processes all sessions)
-         * This is true if policyId == nodePolicy (its a filtering app and lives in the policyId rack)
-         * or if one of policyId's parents' policyId == nodePolicy. (its a filtering app and lives one of policyId rack's parents, grandparents, etc)
-         */
-
         PolicyManager policyManager = (PolicyManager) UvmContextFactory.context().nodeManager().node("untangle-node-policy");
 
         /**
@@ -610,5 +621,46 @@ public class PipelineFoundryImpl implements PipelineFoundry
         }
 
         return false;
+    }
+
+    /**
+     * Lookup a list of argon connector for the given fittings & policyId
+     */
+    private List<ArgonConnector> cacheLookup( Long policyId, Fitting fitting )
+    {
+        /**
+         * Check if there is a cache for this policy. First time is without the lock
+         */
+        Map<Fitting, List<ArgonConnector>> fittingCache = pipelineFoundryCache.get(policyId);
+
+        if ( fittingCache == null )
+            return null;
+        
+        /**
+         * If there is a cache, return the result that exists for this fitting (or null)
+         */
+        return fittingCache.get( fitting );
+    }
+    
+    /**
+     * Utility function to print any list of argonConnectors
+     */
+    private void printArgonConnectorList( List<ArgonConnector> argonConnectors )
+    {
+        if (logger.isDebugEnabled()) {
+            String strList = "argonConnectors: [";
+
+            if ( argonConnectors == null )
+                strList += " null";
+            else {
+                for (ArgonConnector ac : argonConnectors) {
+                    strList += " " + ac;
+                }
+            }
+            
+            strList += " ]";
+            
+            logger.debug( strList );
+        }
     }
 }

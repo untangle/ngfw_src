@@ -9,57 +9,30 @@ package com.untangle.uvm.vnet;
 public class Fitting
 {
     public static final Fitting OCTET_STREAM = new Fitting("octet-stream");
-    public static final Fitting HTTP_STREAM = new Fitting("http-stream", OCTET_STREAM);
-    public static final Fitting HTTPS_STREAM = new Fitting("https-stream", OCTET_STREAM);
-    public static final Fitting FTP_STREAM = new Fitting("ftp-stream", OCTET_STREAM);
-    public static final Fitting FTP_CTL_STREAM = new Fitting("ftp-ctl-stream", FTP_STREAM);
-    public static final Fitting FTP_DATA_STREAM = new Fitting("ftp-data-stream", FTP_STREAM);
-    public static final Fitting SMTP_STREAM = new Fitting("smtp-stream", OCTET_STREAM);
+    public static final Fitting HTTP_STREAM = new Fitting("http-stream");
+    public static final Fitting HTTPS_STREAM = new Fitting("https-stream");
+    public static final Fitting FTP_STREAM = new Fitting("ftp-stream");
+    public static final Fitting FTP_CTL_STREAM = new Fitting("ftp-ctl-stream");
+    public static final Fitting FTP_DATA_STREAM = new Fitting("ftp-data-stream");
+    public static final Fitting SMTP_STREAM = new Fitting("smtp-stream");
 
     public static final Fitting TOKEN_STREAM = new Fitting("token-stream");
-    public static final Fitting HTTP_TOKENS = new Fitting("http-tokens", TOKEN_STREAM);
-    public static final Fitting FTP_TOKENS = new Fitting("ftp-tokens", TOKEN_STREAM);
-    public static final Fitting FTP_CTL_TOKENS = new Fitting("ftp-ctl-tokens", FTP_TOKENS);
-    public static final Fitting FTP_DATA_TOKENS = new Fitting("ftp-data-tokens", FTP_TOKENS);
-    public static final Fitting SMTP_TOKENS = new Fitting("smtp-tokens", TOKEN_STREAM);
+    public static final Fitting HTTP_TOKENS = new Fitting("http-tokens");
+    public static final Fitting FTP_TOKENS = new Fitting("ftp-tokens");
+    public static final Fitting FTP_CTL_TOKENS = new Fitting("ftp-ctl-tokens");
+    public static final Fitting FTP_DATA_TOKENS = new Fitting("ftp-data-tokens");
+    public static final Fitting SMTP_TOKENS = new Fitting("smtp-tokens");
 
     private String type;
-    private Fitting parent;
-
-    private Fitting(String type, Fitting parent)
-    {
-        this.type = type;
-        this.parent = parent;
-    }
 
     private Fitting(String type)
     {
         this.type = type;
-        this.parent = null;
-    }
-
-    // public Fitting getParent()
-    // {
-    //     return parent;
-    // }
-
-    public boolean instanceOf(Fitting o)
-    {
-        Fitting t = this;
-        while (null != t) {
-            if (t == o) {
-                return true;
-            }
-
-            t = t.parent;
-        }
-
-        return false;
     }
 
     @Override
     public String toString()
     {
-        return "(fitting " + type + " " + parent + ")";
+        return "(fitting " + type + ")";
     }
 }

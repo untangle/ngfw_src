@@ -25,7 +25,7 @@ public interface PipelineFoundry
     void deregisterCasing( ArgonConnector insideArgonConnector);
 
     /* Remove all of the cached chains */
-    void clearChains();
+    void clearCache();
 
     void addConnectionFittingHint( InetSocketAddress socketAddress, Fitting fitting );
 

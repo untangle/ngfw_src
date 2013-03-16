@@ -577,7 +577,7 @@ public abstract class NodeBase implements Node
             NodeStateChangeMessage nsc = new NodeStateChangeMessage(nodeProperties, nodeSettings, nodeState);
             mm.submitMessage(nsc);
             
-            UvmContextFactory.context().pipelineFoundry().clearChains();
+            UvmContextFactory.context().pipelineFoundry().clearCache();
         }
 
         this.currentState = nodeState;

@@ -313,7 +313,7 @@ public abstract class ArgonHook implements Runnable
                 UvmContextFactory.context().logEvent( statEvent );
 
                 /* log and destroy the session */
-                pipelineFoundry.destroy( sessionGlobalState.id() );
+                pipelineFoundry.removePipeline( sessionGlobalState.id() );
             }
 
             /* Remove the vector from the vectron table */
