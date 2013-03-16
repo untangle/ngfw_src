@@ -278,6 +278,10 @@
     <priority value="INFO"/>
   </category>
 
+  <category name="com.untangle.node.https">
+    <priority value="DEBUG"/>
+  </category>
+
   <category name="com.untangle.node">
     <priority value="INFO"/>
   </category>
