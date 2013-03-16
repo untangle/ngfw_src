@@ -10,6 +10,7 @@ public class Fitting
 {
     public static final Fitting OCTET_STREAM = new Fitting("octet-stream");
     public static final Fitting HTTP_STREAM = new Fitting("http-stream", OCTET_STREAM);
+    public static final Fitting HTTPS_STREAM = new Fitting("https-stream", OCTET_STREAM);
     public static final Fitting FTP_STREAM = new Fitting("ftp-stream", OCTET_STREAM);
     public static final Fitting FTP_CTL_STREAM = new Fitting("ftp-ctl-stream", FTP_STREAM);
     public static final Fitting FTP_DATA_STREAM = new Fitting("ftp-data-stream", FTP_STREAM);
@@ -37,10 +38,10 @@ public class Fitting
         this.parent = null;
     }
 
-    public Fitting getParent()
-    {
-        return parent;
-    }
+    // public Fitting getParent()
+    // {
+    //     return parent;
+    // }
 
     public boolean instanceOf(Fitting o)
     {
@@ -50,7 +51,7 @@ public class Fitting
                 return true;
             }
 
-            t = t.getParent();
+            t = t.parent;
         }
 
         return false;

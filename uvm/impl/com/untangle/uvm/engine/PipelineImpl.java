@@ -22,7 +22,7 @@ class PipelineImpl implements Pipeline
 {
     private static final File TMP_DIR = new File("/tmp/");
 
-    private final List<ArgonConnectorFitting> argonConnectorFittings;
+    //private final List<ArgonConnector> argonConnectors;
     private final String sessionPrefix;
 
     // This does not need to be concurrent since there is only one thread per pipeline.
@@ -33,9 +33,9 @@ class PipelineImpl implements Pipeline
         
     // constructors -----------------------------------------------------------
 
-    PipelineImpl(long sessionId, List<ArgonConnectorFitting> argonConnectorFittings)
+    PipelineImpl(long sessionId, List<ArgonConnector> argonConnectors)
     {
-        this.argonConnectorFittings = argonConnectorFittings;
+        //this.argonConnectors = argonConnectors;
         this.sessionPrefix = "sess-" + sessionId + "-";
     }
 
@@ -82,29 +82,12 @@ class PipelineImpl implements Pipeline
 
     public Fitting getClientFitting(ArgonConnector argonConnector)
     {
-        for (ArgonConnectorFitting mpf : argonConnectorFittings) {
-            if (mpf.argonConnector == argonConnector) {
-                return mpf.fitting;
-            }
-        }
-        throw new IllegalArgumentException("argonConnector not in pipeline: " + argonConnector);
+        return argonConnector.getInputFitting();
     }
 
     public Fitting getServerFitting(ArgonConnector argonConnector)
     {
-        for (Iterator<ArgonConnectorFitting> i = argonConnectorFittings.iterator(); i.hasNext(); ) {
-            ArgonConnectorFitting mpf = i.next();
-            if (mpf.argonConnector == argonConnector) {
-                if (i.hasNext()) {
-                    mpf = i.next();
-                    return mpf.fitting;
-                } else {
-                    /* pipelines end as they begin */
-                    return argonConnectorFittings.get(0).fitting;
-                }
-            }
-        }
-        throw new IllegalArgumentException("argonConnector not in pipeline: " + argonConnector);
+        return argonConnector.getOutputFitting();
     }
 
     public File mktemp() throws IOException

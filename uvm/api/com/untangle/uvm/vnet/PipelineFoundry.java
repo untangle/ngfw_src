@@ -5,6 +5,7 @@ package com.untangle.uvm.vnet;
 
 import java.net.InetSocketAddress;
 
+import com.untangle.uvm.vnet.Fitting;
 import com.untangle.uvm.node.SessionEvent;
 import com.untangle.uvm.vnet.event.SessionEventListener;
 
@@ -13,7 +14,7 @@ import com.untangle.uvm.vnet.event.SessionEventListener;
  */
 public interface PipelineFoundry
 {
-    ArgonConnector createArgonConnector( PipeSpec spec, SessionEventListener listener );
+    ArgonConnector createArgonConnector( PipeSpec spec, SessionEventListener listener, Fitting inputFitting, Fitting outputFitting );
 
     void registerArgonConnector( ArgonConnector argonConnector );
 
@@ -26,7 +27,7 @@ public interface PipelineFoundry
     /* Remove all of the cached chains */
     void clearChains();
 
-    void registerConnection( InetSocketAddress socketAddress, Fitting fitting );
+    void addConnectionFittingHint( InetSocketAddress socketAddress, Fitting fitting );
 
     Pipeline getPipeline( long sessionId );
 }

@@ -96,9 +96,13 @@ class FtpUnparser extends AbstractUnparser
             }
         }
 
-        if (null != socketAddress) {
-            UvmContextFactory.context().pipelineFoundry()
-                .registerConnection(socketAddress, Fitting.FTP_DATA_STREAM);
+        if ( socketAddress != null ) {
+            /**
+             * Tell the PipelineFoundry that connections from this
+             * address/port is an FTP_DATA_STREAM.
+             * This is so we will get the access to the stream.
+             */
+            UvmContextFactory.context().pipelineFoundry().addConnectionFittingHint(socketAddress, Fitting.FTP_DATA_STREAM);
         }
 
         return new UnparseResult(new ByteBuffer[] { token.getBytes() });

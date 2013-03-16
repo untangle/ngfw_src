@@ -5,6 +5,7 @@ package com.untangle.uvm.vnet;
 
 import java.util.List;
 
+import com.untangle.uvm.vnet.Fitting;
 import com.untangle.uvm.node.Node;
 
 /**
@@ -35,6 +36,10 @@ public interface ArgonConnector
     List<NodeIPSession> liveSessions();
     
     Node node();
+
+    Fitting getInputFitting();
+
+    Fitting getOutputFitting();
 }
 
 

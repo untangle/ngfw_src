@@ -30,11 +30,7 @@ import com.untangle.uvm.vnet.event.UDPPacketEvent;
 import com.untangle.uvm.vnet.event.UDPSessionEvent;
 
 /**
- * Adapts a Token session's underlying byte-stream a
- * <code>TokenHandler</code>.
- *
- * @author <a href="mailto:amread@untangle.com">Aaron Read</a>
- * @version 1.0
+ * Adapts a Token session's underlying byte-stream a <code>TokenHandler</code>.
  */
 public class TokenAdaptor extends AbstractEventHandler
 {
@@ -55,14 +51,12 @@ public class TokenAdaptor extends AbstractEventHandler
 
     @Override
     public void handleTCPNewSessionRequest(TCPNewSessionRequestEvent e)
-        
     {
         handlerFactory.handleNewSessionRequest(e.sessionRequest());
     }
 
     @Override
     public void handleTCPNewSession(TCPSessionEvent e)
-        
     {
         NodeTCPSession s = e.session();
         TokenHandler h = handlerFactory.tokenHandler(s);
@@ -79,7 +73,6 @@ public class TokenAdaptor extends AbstractEventHandler
 
     @Override
     public IPDataResult handleTCPServerChunk(TCPChunkEvent e)
-        
     {
         HandlerDesc handlerDesc = getHandlerDesc(e.session());
         return handleToken(handlerDesc, e, true);
@@ -87,7 +80,6 @@ public class TokenAdaptor extends AbstractEventHandler
 
     @Override
     public IPDataResult handleTCPClientChunk(TCPChunkEvent e)
-        
     {
         HandlerDesc handlerDesc = getHandlerDesc(e.session());
         return handleToken(handlerDesc, e, false);
@@ -95,7 +87,6 @@ public class TokenAdaptor extends AbstractEventHandler
 
     @Override
     public void handleTCPClientFIN(TCPSessionEvent e)
-        
     {
         NodeTCPSession session = e.session();
         HandlerDesc handlerDesc = getHandlerDesc(session);
@@ -111,7 +102,6 @@ public class TokenAdaptor extends AbstractEventHandler
 
     @Override
     public void handleTCPServerFIN(TCPSessionEvent e)
-        
     {
         NodeTCPSession session = e.session();
         HandlerDesc handlerDesc = getHandlerDesc(session);
@@ -147,7 +137,6 @@ public class TokenAdaptor extends AbstractEventHandler
 
     @Override
     public void handleUDPNewSessionRequest(UDPNewSessionRequestEvent e)
-        
     {
         throw new UnsupportedOperationException("UDP not supported");
     }
@@ -160,14 +149,12 @@ public class TokenAdaptor extends AbstractEventHandler
 
     @Override
     public void handleUDPClientPacket(UDPPacketEvent e)
-        
     {
         throw new UnsupportedOperationException("UDP not supported");
     }
 
     @Override
     public void handleUDPServerPacket(UDPPacketEvent e)
-        
     {
         throw new UnsupportedOperationException("UDP not supported");
     }

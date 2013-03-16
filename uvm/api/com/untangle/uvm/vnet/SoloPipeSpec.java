@@ -9,6 +9,7 @@ import java.util.ArrayList;
 
 import org.apache.log4j.Logger;
 
+import com.untangle.uvm.vnet.Fitting;
 import com.untangle.uvm.UvmContext;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.node.Node;
@@ -109,7 +110,7 @@ public class SoloPipeSpec extends PipeSpec
     public void connectArgonConnector()
     {
         if (null == argonConnector) {
-            argonConnector = UvmContextFactory.context().pipelineFoundry().createArgonConnector(this, listener);
+            this.argonConnector = UvmContextFactory.context().pipelineFoundry().createArgonConnector( this, listener, fitting, fitting );
             UvmContextFactory.context().pipelineFoundry().registerArgonConnector(argonConnector);
         } else {
             logger.warn("argonConnectors already connected");

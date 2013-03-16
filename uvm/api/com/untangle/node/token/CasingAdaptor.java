@@ -25,11 +25,7 @@ import com.untangle.uvm.vnet.event.TCPSessionEvent;
 import com.untangle.uvm.vnet.event.TCPStreamer;
 
 /**
- * Adapts a Token session's underlying byte-stream a
- * <code>Casing</code>.
- *
- * @author <a href="mailto:amread@untangle.com">Aaron Read</a>
- * @version 1.0
+ * Adapts a Token session's underlying byte-stream a <code>Casing</code>.
  */
 public class CasingAdaptor extends AbstractEventHandler
 {
@@ -73,20 +69,19 @@ public class CasingAdaptor extends AbstractEventHandler
     {
         NodeTCPSession session = e.session();
 
-        Casing casing = casingFactory.casing(session, clientSide);
-        Pipeline pipeline = pipeFoundry.getPipeline(session.id());
+        Casing casing = casingFactory.casing( session, clientSide );
+        Pipeline pipeline = pipeFoundry.getPipeline( session.id() );
 
         if (logger.isDebugEnabled()) {
-            logger.debug("new session setting: " + pipeline
-                         + " for: " + session.id());
+            logger.debug("new session setting: " + pipeline + " for: " + session.id());
         }
 
-        addCasing(session, casing, pipeline);
+        addCasing( session, casing, pipeline );
 
         if (clientSide) {
-            session.serverReadLimit(TOKEN_SIZE);
+            session.serverReadLimit( TOKEN_SIZE );
         } else {
-            session.clientReadLimit(TOKEN_SIZE);
+            session.clientReadLimit( TOKEN_SIZE );
         }
     }
 

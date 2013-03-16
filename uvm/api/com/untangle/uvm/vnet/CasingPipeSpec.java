@@ -9,6 +9,7 @@ import java.util.Set;
 
 import org.apache.log4j.Logger;
 
+import com.untangle.uvm.vnet.Fitting;
 import com.untangle.node.token.CasingAdaptor;
 import com.untangle.node.token.CasingFactory;
 import com.untangle.uvm.UvmContext;
@@ -102,8 +103,8 @@ public class CasingPipeSpec extends PipeSpec
     public void connectArgonConnector()
     {
         if (null == insideArgonConnector && null == outsideArgonConnector) {
-            insideArgonConnector = FOUNDRY.createArgonConnector(this, insideAdaptor);
-            outsideArgonConnector = FOUNDRY.createArgonConnector(this, outsideAdaptor);
+            insideArgonConnector = FOUNDRY.createArgonConnector(this, insideAdaptor, input, output);
+            outsideArgonConnector = FOUNDRY.createArgonConnector(this, outsideAdaptor, input, output);
             FOUNDRY.registerCasing(insideArgonConnector, outsideArgonConnector);
         } else {
             logger.warn("casing ArgonConnectors already connected");

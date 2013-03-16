@@ -11,12 +11,12 @@ import com.untangle.uvm.argon.ArgonAgent;
 import com.untangle.uvm.argon.ArgonAgentImpl;
 import com.untangle.uvm.node.Node;
 import com.untangle.uvm.node.NodeProperties;
-import com.untangle.uvm.util.MetaEnv;
 import com.untangle.uvm.vnet.ArgonConnector;
 import com.untangle.uvm.vnet.PipeSpec;
 import com.untangle.uvm.vnet.NodeSession;
 import com.untangle.uvm.vnet.NodeTCPSession;
 import com.untangle.uvm.vnet.NodeUDPSession;
+import com.untangle.uvm.vnet.Fitting;
 import com.untangle.uvm.vnet.NodeIPSession;
 import com.untangle.uvm.vnet.event.SessionEventListener;
 
@@ -42,9 +42,12 @@ public class ArgonConnectorImpl implements ArgonConnector
     private final Logger sessionLoggerTCP;
     private final Logger sessionLoggerUDP;
 
+    private final Fitting inputFitting;
+    private final Fitting outputFitting;
+    
     // public construction is the easiest solution to access from
     // ArgonConnectorManager for now.
-    public ArgonConnectorImpl(PipeSpec pipeSpec, SessionEventListener listener)
+    public ArgonConnectorImpl(PipeSpec pipeSpec, SessionEventListener listener, Fitting inputFitting, Fitting outputFitting )
     {
         this.node = pipeSpec.getNode();
 
@@ -56,7 +59,9 @@ public class ArgonConnectorImpl implements ArgonConnector
         sessionEventLogger = Logger.getLogger(NodeSession.class);
         sessionLoggerTCP = Logger.getLogger(NodeTCPSession.class);
         sessionLoggerUDP = Logger.getLogger(NodeUDPSession.class);
-
+        this.inputFitting = inputFitting;
+        this.outputFitting = outputFitting;
+        
         try {
             start();
         } catch (Exception x) {
@@ -80,6 +85,16 @@ public class ArgonConnectorImpl implements ArgonConnector
         return argon;
     }
 
+    public Fitting getInputFitting()
+    {
+        return inputFitting;
+    }
+
+    public Fitting getOutputFitting()
+    {
+        return outputFitting;
+    }
+    
     public Logger logger()
     {
         return logger;
@@ -178,10 +193,4 @@ public class ArgonConnectorImpl implements ArgonConnector
     {
         return null == listener ? "no listener" : listener.toString();
     }
-
-    public static ArgonConnector create(PipeSpec pipeSpec, SessionEventListener listener)
-    {
-        return new ArgonConnectorImpl(pipeSpec, listener);
-    }
-
 }
