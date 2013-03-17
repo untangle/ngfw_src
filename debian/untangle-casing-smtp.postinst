@@ -1,7 +1,7 @@
 #! /bin/bash
 # This file automatically created - do not modify
 
-/usr/bin/ucli -q -t 30 register untangle-casing-mail 2>/dev/null || true
+/usr/bin/ucli -q -t 30 register untangle-casing-smtp 2>/dev/null || true
 
 [ -x /etc/init.d/apache2 ] && /etc/init.d/apache2 reload
 

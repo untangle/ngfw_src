@@ -1,21 +1,6 @@
-/*
- * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License, version 2,
- * as published by the Free Software Foundation.
- *
- * This program is distributed in the hope that it will be useful, but
- * AS-IS and WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE, TITLE, or
- * NONINFRINGEMENT.  See the GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
+/**
+ * $Id$
  */
-
 package com.untangle.node.smtp.quarantine.store;
 
 import java.io.BufferedInputStream;
@@ -40,9 +25,8 @@ import com.untangle.node.util.Pair;
  * Holds methods to maipulate the on-disk
  * representation of a StoreSummary
  */
-public /*temp*/ class StoreSummaryDriver
-    extends AbstractDriver {
-
+public class StoreSummaryDriver extends AbstractDriver
+{
     private static final String CLOSED_FILE_NAME = "summary.closed";
     private static final String OPEN_FILE_NAME = "summary.open";
 
@@ -61,7 +45,6 @@ public /*temp*/ class StoreSummaryDriver
     private static final String RECORD_SEP = "--";
     private static final int VERSION = 1;
 
-
     private static final Logger s_logger = Logger.getLogger(StoreSummaryDriver.class);
 
     /**
@@ -69,7 +52,8 @@ public /*temp*/ class StoreSummaryDriver
      * the file will be assumed to be out-of-date upon
      * the next startup.
      */
-    static boolean openSummary(File dir) {
+    static boolean openSummary(File dir)
+    {
         File f = new File(dir, CLOSED_FILE_NAME);
         if(f.exists()) {
             return f.renameTo(new File(dir, OPEN_FILE_NAME));
@@ -86,7 +70,8 @@ public /*temp*/ class StoreSummaryDriver
      * @return the "result".  The "StoreSummary" will be null
      *         unless the result was "OK".
      */
-    static Pair<FileReadOutcome, StoreSummary> readSummary(File inboxDir) {
+    static Pair<FileReadOutcome, StoreSummary> readSummary(File inboxDir)
+    {
 
         FileInputStream fIn = null;
 
@@ -132,12 +117,8 @@ public /*temp*/ class StoreSummaryDriver
         }
     }
 
-
-
-
-
-    static boolean writeSummary(File dir,
-                                StoreSummary summary) {
+    static boolean writeSummary(File dir, StoreSummary summary)
+    {
 
         if(!dir.exists()) {
             dir.mkdir();
@@ -181,9 +162,8 @@ public /*temp*/ class StoreSummaryDriver
         }
     }
 
-
-    private static void writeInboxSummary(Map.Entry<String,InboxSummary> entry,
-                                          PrintWriter pw) throws IOException {
+    private static void writeInboxSummary(Map.Entry<String,InboxSummary> entry, PrintWriter pw) throws IOException
+    {
         pw.println(RECORD_SEP);
         pw.println(entry.getKey());
         pw.println(entry.getValue().getDir().relativePath);
@@ -194,8 +174,8 @@ public /*temp*/ class StoreSummaryDriver
     /**
      * Method returns null of EOF is encountered
      */
-    private static Pair<String, InboxSummary> readInboxSummary(BufferedReader reader)
-        throws BadFileEntry, IOException {
+    private static Pair<String, InboxSummary> readInboxSummary(BufferedReader reader) throws BadFileEntry, IOException
+    {
 
         try {
             readUntil(reader, RECORD_SEP);
@@ -211,53 +191,4 @@ public /*temp*/ class StoreSummaryDriver
         }
 
     }
-
-
-
-    //====================================
-    // TEST CODE
-
-    /*
-      public static void main(String[] args) throws Exception {
-      File targetDir = new File(new File(System.getProperty("user.dir")), "test");
-
-      if(!targetDir.exists()) {
-      targetDir.mkdirs();
-      }
-
-      String[] names = new String[] {
-      "a@foo.com",
-      "b@foo.com",
-      "c@foo.com"
-      };
-
-      QuarantineMetadata map = new QuarantineMetadata();
-      for(String s : names) {
-      map.addInbox(s, new RelativeFileName(s.substring(0, 1) + "XX/123"));
-      }
-
-
-      System.out.println("1 (write): " + writeMetadata(new File(targetDir, "test1"), map));
-
-
-      File dir2 = new File(targetDir, "test2");
-      System.out.println("2 (write): " + writeMetadata(dir2, map));
-      Pair<FileReadOutcome, QuarantineMetadata> read = readMetadata(dir2);
-      System.out.println("2 (read): " + read.a);
-
-      for(String s : names) {
-      RelativeFileName dirName = read.b.getInboxDir(s);
-      System.out.println("2 Dir for: " + s + ": \"" +
-      (dirName==null?"<null return>":dirName.relativePath) + "\"");
-
-      }
-
-
-
-      }
-
-    */
-
-
-
 }

@@ -1,21 +1,6 @@
-/*
- * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License, version 2,
- * as published by the Free Software Foundation.
- *
- * This program is distributed in the hope that it will be useful, but
- * AS-IS and WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE, TITLE, or
- * NONINFRINGEMENT.  See the GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
+/**
+ * $Id$
  */
-
 package com.untangle.node.smtp.quarantine.store;
 
 import java.io.BufferedReader;
@@ -27,7 +12,6 @@ import org.apache.log4j.Logger;
 
 import com.untangle.node.util.CharSequenceUtil;
 
-
 /**
  * Base class for drivers (things that read/write a given
  * file format).  Someday, we may switch to XML as the baseline
@@ -36,31 +20,31 @@ import com.untangle.node.util.CharSequenceUtil;
  * to an XML file (and still make it parsable) without
  * having to read the entire file first.
  */
-class AbstractDriver {
-
+class AbstractDriver
+{
     private static final String VERSION_TAG = "Ver:";
 
     //New line.  I know we're always on Unix, but old
     //habits die hard...
-    private static final String NEW_LINE =
-        System.getProperty("line.separator", "\n");
+    private static final String NEW_LINE = System.getProperty("line.separator", "\n");
 
     /**
      * Enum of outcomes for reading files.
      */
-    static enum FileReadOutcome {
+    static enum FileReadOutcome
+    {
         OK,
         NO_SUCH_FILE,
         EXCEPTION,
         FILE_CORRUPT
     };
 
-
     /**
      * This method implicitly trims the line
      */
     static String readLine(BufferedReader reader)
-        throws EOFException, IOException {
+        throws EOFException, IOException
+    {
         return readLine(reader, true, true);
     }
 
@@ -81,7 +65,8 @@ class AbstractDriver {
      *            could not be converted into a long.
      */
     static long readLong(BufferedReader reader)
-        throws EOFException, IOException, BadFileEntry {
+        throws EOFException, IOException, BadFileEntry
+    {
         return aToL(readLine(reader, true, true));
     }
 
@@ -98,9 +83,9 @@ class AbstractDriver {
      *
      * @exception EOFExcetpion if end of file is encountered
      */
-    static String readLine(BufferedReader reader,
-                           boolean skipBlanks, boolean skipComments)
-        throws EOFException, IOException {
+    static String readLine(BufferedReader reader, boolean skipBlanks, boolean skipComments)
+        throws EOFException, IOException
+    {
 
         while(true) {
             String line = reader.readLine();
@@ -134,9 +119,9 @@ class AbstractDriver {
      * @exception BadFileEntry if the line was read, but
      *            did not match <code>expect</code>
      */
-    static void readLineExact(BufferedReader reader,
-                              String expect) throws EOFException,
-                                                    BadFileEntry, IOException{
+    static void readLineExact(BufferedReader reader, String expect)
+        throws EOFException, BadFileEntry, IOException
+    {
         String read = readLine(reader, true, true);
         if(!read.equals(expect)) {
             throw new BadFileEntry("Read \"" +
@@ -163,9 +148,9 @@ class AbstractDriver {
      * @exception BadFileEntry if the line was read, but
      *            did not start with <code>tag</code>
      */
-    static String readTaggedEntry(BufferedReader reader,
-                                  String tag) throws EOFException,
-                                                     BadFileEntry, IOException{
+    static String readTaggedEntry(BufferedReader reader, String tag)
+        throws EOFException, BadFileEntry, IOException
+    {
 
         String read = readLine(reader, true, true);
 
@@ -186,9 +171,9 @@ class AbstractDriver {
      *
      * @exception IOException from the underlying IO system
      */
-    static void writeTaggedEntry(PrintWriter pw,
-                                 String tag,
-                                 String entry) throws IOException {
+    static void writeTaggedEntry(PrintWriter pw, String tag, String entry)
+        throws IOException
+    {
         pw.print(tag);
         pw.println(nullToQQ(entry));
     }
@@ -214,7 +199,8 @@ class AbstractDriver {
      *            did not conform to the correct multiline format
      */
     static String readMultilineEntry(BufferedReader reader)
-        throws EOFException, BadFileEntry, IOException{
+        throws EOFException, BadFileEntry, IOException
+    {
 
         String read = readLine(reader, true, true);
 
@@ -258,8 +244,9 @@ class AbstractDriver {
      *
      * @exception IOException from the underlying IO system
      */
-    static void writeMultilineEntry(PrintWriter writer,
-                                    String value) throws IOException {
+    static void writeMultilineEntry(PrintWriter writer, String value)
+        throws IOException
+    {
         writer.print(Integer.toString(
                                       value==null?0:CharSequenceUtil.countLines(value)));
         writer.print(":");
@@ -280,7 +267,8 @@ class AbstractDriver {
      *            was not in the correct format.
      */
     static int readVersion(BufferedReader reader)
-        throws EOFException, BadFileEntry, IOException {
+        throws EOFException, BadFileEntry, IOException
+    {
         String verString = readTaggedEntry(reader, VERSION_TAG);
         return aToI(verString);
     }
@@ -294,8 +282,9 @@ class AbstractDriver {
      *
      * @exception IOException from the underlying IO system
      */
-    static void writeVersion(PrintWriter pw,
-                             int version) throws IOException {
+    static void writeVersion(PrintWriter pw, int version)
+        throws IOException
+    {
         writeTaggedEntry(pw, VERSION_TAG, Integer.toString(version));
     }
 
@@ -313,7 +302,8 @@ class AbstractDriver {
      * @exception BadFileEntry if the conversion fails
      */
     static long aToL(String str)
-        throws BadFileEntry {
+        throws BadFileEntry
+    {
         try {
             return Long.parseLong(str);
         }
@@ -337,18 +327,18 @@ class AbstractDriver {
      * @exception BadFileEntry if the conversion fails
      */
     static int aToI(String str)
-        throws BadFileEntry {
+        throws BadFileEntry
+    {
         return (int) aToL(str);
     }
 
     /**
      * Converts null to ""
      */
-    static String nullToQQ(String s) {
+    static String nullToQQ(String s)
+    {
         return s==null?"":s;
     }
-
-
 
     /**
      * Read until an exact match for the String
@@ -361,8 +351,8 @@ class AbstractDriver {
      *         target or an exception is encountered.
      *
      */
-    static boolean readUntil(BufferedReader reader,
-                             String match) {
+    static boolean readUntil(BufferedReader reader, String match)
+    {
         Logger logger = Logger.getLogger(AbstractDriver.class);
 
         try {
@@ -387,5 +377,4 @@ class AbstractDriver {
             return false;
         }
     }
-
 }

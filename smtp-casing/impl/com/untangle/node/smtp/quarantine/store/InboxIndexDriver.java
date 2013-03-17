@@ -1,21 +1,6 @@
-/*
- * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License, version 2,
- * as published by the Free Software Foundation.
- *
- * This program is distributed in the hope that it will be useful, but
- * AS-IS and WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE, TITLE, or
- * NONINFRINGEMENT.  See the GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
+/**
+ * $Id$
  */
-
 package com.untangle.node.smtp.quarantine.store;
 
 import java.io.BufferedInputStream;
@@ -41,9 +26,8 @@ import com.untangle.node.util.Pair;
  * Driver for reading/writing Inbox Indecies
  * on disk
  */
-class InboxIndexDriver
-    extends AbstractDriver {
-
+class InboxIndexDriver extends AbstractDriver
+{
     private static final Logger s_logger = Logger.getLogger(InboxIndexDriver.class);
 
     //Blurb added to top of file
@@ -72,7 +56,8 @@ class InboxIndexDriver
      * @return the "result".  The "InboxIndexImpl" will be null
      *         unless the result was "OK".
      */
-    static Pair<FileReadOutcome, InboxIndexImpl> readIndex(File inboxDir) {
+    static Pair<FileReadOutcome, InboxIndexImpl> readIndex(File inboxDir)
+    {
 
         FileInputStream fIn = null;
 
@@ -130,8 +115,8 @@ class InboxIndexDriver
      *
      * @return true if successful, false otherwise.
      */
-    static boolean createBlankIndex(String address,
-                                    File dir) {
+    static boolean createBlankIndex(String address, File dir)
+    {
 
         InboxIndexImpl impl = new InboxIndexImpl();
         impl.setOwnerAddress(address);
@@ -150,9 +135,8 @@ class InboxIndexDriver
      * @return false if the append failed.  The state
      * of the file after the failure is undefined.
      */
-    static boolean appendIndex(String address,
-                               File inboxDir,
-                               InboxRecord newRecord) {
+    static boolean appendIndex(String address, File inboxDir, InboxRecord newRecord)
+    {
 
         File f = new File(inboxDir, INDEX_FILE_NAME);
 
@@ -194,8 +178,8 @@ class InboxIndexDriver
      *         failed, the existing (if there was one)
      *         inbox data file remains.
      */
-    static boolean replaceIndex(InboxIndex index,
-                                File inboxDir) {
+    static boolean replaceIndex(InboxIndex index, File inboxDir)
+    {
 
         if (false == inboxDir.exists()) {
             if (false == inboxDir.mkdirs()) {
@@ -255,10 +239,8 @@ class InboxIndexDriver
         }
     }
 
-
-
-    private static void writeRecord(InboxRecord record,
-                                    PrintWriter pw) throws IOException {
+    private static void writeRecord(InboxRecord record, PrintWriter pw) throws IOException
+    {
 
         MailSummary summary = record.getMailSummary();
 
@@ -284,13 +266,12 @@ class InboxIndexDriver
         pw.println();
     }
 
-
     /**
      * Method returns null of EOF is encountered
      */
-    private static InboxRecordImpl readRecord(BufferedReader reader,
-                                              String inboxOwnerAddress)
-        throws BadFileEntry, IOException {
+    private static InboxRecordImpl readRecord(BufferedReader reader, String inboxOwnerAddress)
+        throws BadFileEntry, IOException
+    {
 
         try {
             //Read up-to the next record separator
@@ -316,7 +297,8 @@ class InboxIndexDriver
     }
 
     private static InboxRecordImpl readV3Record(BufferedReader reader)
-        throws BadFileEntry, IOException {
+        throws BadFileEntry, IOException
+    {
 
         try {
             InboxRecordImpl ret = new InboxRecordImpl();
@@ -345,10 +327,9 @@ class InboxIndexDriver
         }
     }
 
-
-    private static InboxRecordImpl readV2Record(BufferedReader reader,
-                                                String inboxOwnerAddress)
-        throws BadFileEntry, IOException {
+    private static InboxRecordImpl readV2Record(BufferedReader reader, String inboxOwnerAddress)
+        throws BadFileEntry, IOException
+    {
 
         try {
             InboxRecordImpl ret = new InboxRecordImpl();
@@ -373,10 +354,9 @@ class InboxIndexDriver
         }
     }
 
-
-    private static InboxRecordImpl readV1Record(BufferedReader reader,
-                                                String inboxOwnerAddress)
-        throws BadFileEntry, IOException {
+    private static InboxRecordImpl readV1Record(BufferedReader reader, String inboxOwnerAddress)
+        throws BadFileEntry, IOException
+    {
 
         try {
             InboxRecordImpl ret = new InboxRecordImpl();
@@ -401,50 +381,4 @@ class InboxIndexDriver
             return null;
         }
     }
-
-
-    /*
-      public static void main(String[] args) throws Exception {
-      File root = new File(System.getProperty("user.dir"));
-
-      System.out.println("\n\n\n--------- 1 -----------");
-      File dir = new File(root, "test1");
-      createBlankIndex("1@foo.com", dir);
-
-      System.out.println("\n\n\n--------- 2 -----------");
-      dir = new File(root, "test2");
-      InboxIndexImpl index = new InboxIndexImpl();
-      index.setOwnerAddress("2@foo.com");
-      System.out.println("\n(2) PRE");
-      index.debugPrint();
-      replaceIndex(index, dir);
-      System.out.println("\n(2) POST");
-      readIndex(dir).b.debugPrint();
-
-      System.out.println("\n\n\n--------- 3 -----------");
-      dir = new File(root, "test3");
-      createBlankIndex("3@foo.com", dir);
-      appendIndex("3@foo.com", dir, new InboxRecordImpl(
-      "3a",
-      System.currentTimeMillis(),
-      300,
-      new MailSummary("sender3a@foo.com", "subject 3a", "5.0", "this\nhas\nlines")));
-      appendIndex("3@foo.com", dir, new InboxRecordImpl(
-      "3b",
-      System.currentTimeMillis(),
-      300,
-      new MailSummary("sender3b@foo.com", "subject 3b", "5.0", "this has no lines")));
-      System.out.println("\n(3) Read (a)");
-      readIndex(dir).b.debugPrint();
-      Thread.currentThread().sleep(2000);
-      appendIndex("3@foo.com", dir, new InboxRecordImpl(
-      "3c",
-      System.currentTimeMillis(),
-      300,
-      new MailSummary("sender3c@foo.com", "subject 3c", "5.0", "this has no lines")));
-      System.out.println("\n(3) Read (b)");
-      readIndex(dir).b.debugPrint();
-      }
-    */
-
 }

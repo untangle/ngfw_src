@@ -1,21 +1,6 @@
-/*
- * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc.
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License, version 2,
- * as published by the Free Software Foundation.
- *
- * This program is distributed in the hope that it will be useful, but
- * AS-IS and WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE, TITLE, or
- * NONINFRINGEMENT.  See the GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
+/**
+ * $Id$
  */
-
 package com.untangle.node.smtp.quarantine.store;
 
 import java.io.File;
@@ -33,13 +18,12 @@ import com.untangle.node.util.IOUtil;
 import com.untangle.node.util.Pair;
 import com.untangle.node.util.UtLogger;
 
-
 /**
  * Always add a file *then* update the index
  * Always update the index *then* delete the file
  */
-public class QuarantineStore {
-
+public class QuarantineStore
+{
     private static final String DATA_FILE_PREFIX = "meta";
     private static final String DATA_FILE_SUFFIX = ".mime";
 
@@ -62,7 +46,6 @@ public class QuarantineStore {
          */
         FAILURE
     };
-
 
     /**
      * Generic enum describing the
@@ -123,18 +106,21 @@ public class QuarantineStore {
      * may still be made (thread timing), but will likely be
      * slower.
      */
-    public void close() {
+    public void close()
+    {
         m_masterTable.close();
     }
 
     /**
      * Total size of the entire store (in bytes)
      */
-    public long getTotalSize() {
+    public long getTotalSize()
+    {
         return m_masterTable.getTotalQuarantineSize();
     }
 
-    public final String getFormattedTotalSize(boolean inMB) {
+    public final String getFormattedTotalSize(boolean inMB)
+    {
         try {
             double unitDivisor;
 
@@ -151,7 +137,8 @@ public class QuarantineStore {
     /**
      * Provides a summary of all Inboxes.
      */
-    public List<Inbox> listInboxes() {
+    public List<Inbox> listInboxes()
+    {
         Set<Map.Entry<String,InboxSummary>> allAccounts =
             m_masterTable.entries();
         ArrayList<Inbox> ret = new ArrayList<Inbox>(allAccounts.size());
@@ -170,7 +157,8 @@ public class QuarantineStore {
      *
      * @return true or false (duh)
      */
-    public boolean inboxExists(String address) {
+    public boolean inboxExists(String address)
+    {
         return m_masterTable.inboxExists(address.toLowerCase());
     }
 
@@ -191,11 +179,8 @@ public class QuarantineStore {
      *
      * @return the result
      */
-    public Pair<AdditionStatus, String> quarantineMail(File file,
-                                                       String inboxAddr,
-                                                       String[] recipients,
-                                                       MailSummary summary,
-                                                       boolean attemptRename) {
+    public Pair<AdditionStatus, String> quarantineMail(File file, String inboxAddr, String[] recipients, MailSummary summary, boolean attemptRename)
+    {
 
         inboxAddr = inboxAddr.toLowerCase();
 
@@ -268,7 +253,6 @@ public class QuarantineStore {
                                                 newFileName);
     }
 
-
     /**
      * Prune the store, removing old (expired) messages
      * as well as empty, inactive accounts.  Although I
@@ -285,9 +269,8 @@ public class QuarantineStore {
      * @param observer the observer, to receive informative
      *        progress callbacks.
      */
-    public void prune(long relativeOldestMail,
-                      long relativeInactiveInboxTime,
-                      QuarantinePruningObserver observer) {
+    public void prune(long relativeOldestMail, long relativeInactiveInboxTime, QuarantinePruningObserver observer)
+    {
 
         long oldestValidInboxTimestamp =
             System.currentTimeMillis() - relativeInactiveInboxTime;
@@ -370,7 +353,8 @@ public class QuarantineStore {
      *
      * @return the outcome.
      */
-    public GenericStatus deleteInbox(String address) {
+    public GenericStatus deleteInbox(String address)
+    {
         String account = address.toLowerCase();
         m_addressLock.lock(account);
 
@@ -390,7 +374,6 @@ public class QuarantineStore {
         return ret;
     }
 
-
     /**
      * Gets the inbox for the given address.  Return "codes"
      * are part of the generic result.
@@ -399,7 +382,8 @@ public class QuarantineStore {
      *
      * @return the result
      */
-    public Pair<GenericStatus, InboxIndexImpl> getIndex(String address) {
+    public Pair<GenericStatus, InboxIndexImpl> getIndex(String address)
+    {
         address = address.toLowerCase();
 
         //Get/create the inbox directory
@@ -429,7 +413,6 @@ public class QuarantineStore {
         return new Pair<GenericStatus, InboxIndexImpl>(GenericStatus.SUCCESS, read.b);
     }
 
-
     /**
      * Note that if one or more of the mails no longer exist,
      * this is not considered an error.
@@ -438,9 +421,8 @@ public class QuarantineStore {
      *         the index just after the modification is
      *         returned attached to the result
      */
-    public Pair<GenericStatus, InboxIndexImpl> rescue(String address,
-                                                      QuarantineEjectionHandler handler,
-                                                      String...mailIDs) {
+    public Pair<GenericStatus, InboxIndexImpl> rescue(String address, QuarantineEjectionHandler handler, String...mailIDs)
+    {
         m_logger.debug("Rescue requested for ",
                        mailIDs.length,
                        " mails for account \"",
@@ -457,8 +439,8 @@ public class QuarantineStore {
      *         the index just after the modification is
      *         returned attached to the result
      */
-    public Pair<GenericStatus, InboxIndexImpl> purge(String address,
-                                                     String...mailIDs) {
+    public Pair<GenericStatus, InboxIndexImpl> purge(String address, String...mailIDs)
+    {
         m_logger.debug("Purge requested for ",
                        mailIDs.length,
                        " mails for account \"",
@@ -478,9 +460,8 @@ public class QuarantineStore {
     //         the index just after the modification is
     //         returned attached to the result
     //
-    private Pair<GenericStatus, InboxIndexImpl> eject(String address,
-                                                      QuarantineEjectionHandler handler,
-                                                      EjectionSelector selector) {
+    private Pair<GenericStatus, InboxIndexImpl> eject(String address, QuarantineEjectionHandler handler, EjectionSelector selector)
+    {
 
         address = address.toLowerCase();
 
@@ -555,16 +536,12 @@ public class QuarantineStore {
         return new Pair<GenericStatus, InboxIndexImpl>(GenericStatus.SUCCESS, read.b);
     }
 
-
     //
     // This method performs <b>no locking</b> (assumes the caller
     // has done this).
     //
-    private boolean appendSummaryToIndex(File inboxDir,
-                                         String inboxAddr,
-                                         String[] recipients,
-                                         String fileNameInInbox,
-                                         MailSummary summary) {
+    private boolean appendSummaryToIndex(File inboxDir, String inboxAddr, String[] recipients, String fileNameInInbox, MailSummary summary)
+    {
 
         //Update (append) to the index
         return InboxIndexDriver.appendIndex(inboxAddr,
@@ -583,8 +560,8 @@ public class QuarantineStore {
     //         newly added mail, or null if there
     //         was an error.
     //
-    private String moveFileToInbox(File source,
-                                   File targetDir) {
+    private String moveFileToInbox(File source, File targetDir)
+    {
 
         File targetFile = createDataFile(targetDir);
         if(targetFile == null) {
@@ -605,8 +582,8 @@ public class QuarantineStore {
     //         newly added mail, or null if there
     //         was an error.
     //
-    private String copyFileToInbox(File source,
-                                   File targetDir) {
+    private String copyFileToInbox(File source, File targetDir)
+    {
 
         File targetFile = createDataFile(targetDir);
         if(targetFile == null) {
@@ -629,7 +606,8 @@ public class QuarantineStore {
     // Guaranteed to be unique ('cause I'm using Java's
     // stuff to do it).
     //
-    private File createDataFile(File targetDir) {
+    private File createDataFile(File targetDir)
+    {
         try {
             //Be lazy, and use Java's temp file
             //stuff which ensures no duplicates
@@ -643,15 +621,14 @@ public class QuarantineStore {
         }
     }
 
-
     //
     // This method may lock the address if
     // the account does not already exist (so
     // do not call with the address locked or
     // the system will be hosed).
     //
-    private RelativeFile getInboxDir(String lcAddress,
-                                     boolean autoCreate) {
+    private RelativeFile getInboxDir(String lcAddress, boolean autoCreate)
+    {
 
         RelativeFileName subDirName = m_masterTable.getInboxDir(lcAddress);
 
@@ -675,7 +652,8 @@ public class QuarantineStore {
 
     //"WL" = "With Lock"
     //Assumes lock is already obtained
-    private RelativeFile getOrCreateInboxDirWL(String lcAddress) {
+    private RelativeFile getOrCreateInboxDirWL(String lcAddress)
+    {
 
         RelativeFileName subDirName = null;
         File subDir = null;
@@ -707,10 +685,8 @@ public class QuarantineStore {
         }
     }
 
-
-    //-------------------- Inner Class ----------------------
-
-    private abstract class EjectionSelector {
+    private abstract class EjectionSelector
+    {
         //
         // Any in the returned list <b>must</b>
         // be removed from index
@@ -719,21 +695,8 @@ public class QuarantineStore {
                                                    RelativeFile rf);
     }
 
-
-    //-------------------- Inner Class ----------------------
-
-    //
-    // Selects any records interned before the
-    // given date.  Also produces a list of candidate
-    // "inactive" Inboxes.  For those candidates,
-    // it still prunes mails in case we have the
-    // (very) unlikely boundary case where a mail
-    // is being entered as we're pruning.  The index
-    // timestamp, however, will not be updated if
-    // the account is empty.
-    //
-    private class PruningSelector
-        extends EjectionSelector {
+    private class PruningSelector extends EjectionSelector
+    {
 
         private long m_mailCutoff;
         private long m_inboxCutoff;
@@ -774,15 +737,8 @@ public class QuarantineStore {
         }
     }
 
-
-    //-------------------- Inner Class ----------------------
-
-    //
-    // Selects mails to eject based on
-    // a list
-    //
-    private class ListEjectionSelector
-        extends EjectionSelector {
+    private class ListEjectionSelector extends EjectionSelector
+    {
 
         private final String[] m_list;
 
@@ -803,11 +759,8 @@ public class QuarantineStore {
         }
     }
 
-
-    //-------------------- Inner Class ----------------------
-
-    private class DeletingEjectionHandler
-        implements QuarantineEjectionHandler {
+    private class DeletingEjectionHandler implements QuarantineEjectionHandler
+    {
 
         public void ejectMail(InboxRecord record,
                               String inboxAddress,
@@ -824,11 +777,8 @@ public class QuarantineStore {
         }
     }
 
-
-    //-------------------- Inner Class ----------------------
-
-    private class PruningDeleter
-        implements QuarantineEjectionHandler {
+    private class PruningDeleter implements QuarantineEjectionHandler
+    {
 
         private final QuarantinePruningObserver m_observer;
 

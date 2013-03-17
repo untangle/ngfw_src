@@ -153,7 +153,7 @@ public class SmtpNodeImpl extends NodeBase implements SmtpNode, MailExport
     public void setSmtpNodeSettings(final SmtpNodeSettings newSettings)
     {
         String nodeID = this.getNodeSettings().getId().toString();
-        String settingsName = System.getProperty("uvm.settings.dir") + "/untangle-casing-mail/settings_" + nodeID;
+        String settingsName = System.getProperty("uvm.settings.dir") + "/untangle-casing-smtp/settings_" + nodeID;
         String settingsFile = settingsName + ".js";
 
         try {
@@ -260,7 +260,7 @@ public class SmtpNodeImpl extends NodeBase implements SmtpNode, MailExport
     protected void postInit()
     {
         String nodeID = this.getNodeSettings().getId().toString();
-        String settingsName = System.getProperty("uvm.settings.dir") + "/untangle-casing-mail/settings_" + nodeID;
+        String settingsName = System.getProperty("uvm.settings.dir") + "/untangle-casing-smtp/settings_" + nodeID;
         String settingsFile = settingsName + ".js";
 
         SmtpNodeSettings readSettings = null;

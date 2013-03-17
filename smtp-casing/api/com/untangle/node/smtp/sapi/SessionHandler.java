@@ -1,42 +1,11 @@
-/*
- * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
- *
- * This library is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License, version 2,
- * as published by the Free Software Foundation.
- *
- * This library is distributed in the hope that it will be useful, but
- * AS-IS and WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE, TITLE, or
- * NONINFRINGEMENT.  See the GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this library; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
- *
- * Linking this library statically or dynamically with other modules is
- * making a combined work based on this library.  Thus, the terms and
- * conditions of the GNU General Public License cover the whole combination.
- *
- * As a special exception, the copyright holders of this library give you
- * permission to link this library with independent modules to produce an
- * executable, regardless of the license terms of these independent modules,
- * and to copy and distribute the resulting executable under terms of your
- * choice, provided that you also meet, for each linked independent module,
- * the terms and conditions of the license of that module.  An independent
- * module is a module which is not derived from or based on this library.
- * If you modify this library, you may extend this exception to your version
- * of the library, but you are not obligated to do so.  If you do not wish
- * to do so, delete this exception statement from your version.
+/**
+ * $Id$
  */
-
 package com.untangle.node.smtp.sapi;
 
 import com.untangle.node.smtp.Command;
 import com.untangle.node.smtp.Response;
 import com.untangle.node.smtp.SmtpTransaction;
-
 
 /**
  * Root callback abstract class for Object wishing to
@@ -90,15 +59,16 @@ import com.untangle.node.smtp.SmtpTransaction;
  * </ul>
  *
  */
-public abstract class SessionHandler {
-
+public abstract class SessionHandler
+{
     private Session m_session;
 
     /**
      * <b>Only to be called by the Session passing
      * itself</b>
      */
-    protected final void setSession(Session stream) {
+    protected final void setSession(Session stream)
+    {
         m_session = stream;
     }
 
@@ -108,10 +78,10 @@ public abstract class SessionHandler {
      * with any Session, this method
      * returns null.
      */
-    public final Session getSession() {
+    public final Session getSession()
+    {
         return m_session;
     }
-
 
     /**
      * Handle a "normal" Command from the client.  This
@@ -134,8 +104,7 @@ public abstract class SessionHandler {
      * @param command the client command
      * @param actions the available actions
      */
-    public abstract void handleCommand(Command command,
-                                       Session.SmtpCommandActions actions);
+    public abstract void handleCommand(Command command, Session.SmtpCommandActions actions);
 
     /**
      * Edge-case handler.  When an SMTP Session is created,
@@ -150,11 +119,10 @@ public abstract class SessionHandler {
      * @param resp the response
      * @param actions the available actions.
      */
-    public void handleOpeningResponse(Response resp,
-				      Session.SmtpResponseActions actions) {
+    public void handleOpeningResponse(Response resp, Session.SmtpResponseActions actions)
+    {
         actions.sendResponseToClient(resp);
     }
-
 
     /**
      * The calling {@link #getSession Session} handles
@@ -169,7 +137,8 @@ public abstract class SessionHandler {
      *
      * @param cmd the EHLO command
      */
-    public void observeEHLOCommand(Command cmd) {
+    public void observeEHLOCommand(Command cmd)
+    {
         //Do nothing
     }
 
@@ -187,7 +156,8 @@ public abstract class SessionHandler {
      * @return the manipualted response, or <code>resp</code>
      *         if no manipulation is to take place.
      */
-    public Response manipulateEHLOResponse(Response resp) {
+    public Response manipulateEHLOResponse(Response resp)
+    {
         return resp;
     }
 
@@ -202,7 +172,6 @@ public abstract class SessionHandler {
      * @return a new TransactionHandler
      */
     public abstract TransactionHandler createTxHandler(SmtpTransaction tx);
-
 
     /**
      * Handle a FIN from the server.
@@ -230,5 +199,4 @@ public abstract class SessionHandler {
      * made.
      */
     public abstract void handleFinalized();
-
 }

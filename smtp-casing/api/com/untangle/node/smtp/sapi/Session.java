@@ -1,36 +1,6 @@
-/*
- * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
- *
- * This library is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License, version 2,
- * as published by the Free Software Foundation.
- *
- * This library is distributed in the hope that it will be useful, but
- * AS-IS and WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE, TITLE, or
- * NONINFRINGEMENT.  See the GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this library; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
- *
- * Linking this library statically or dynamically with other modules is
- * making a combined work based on this library.  Thus, the terms and
- * conditions of the GNU General Public License cover the whole combination.
- *
- * As a special exception, the copyright holders of this library give you
- * permission to link this library with independent modules to produce an
- * executable, regardless of the license terms of these independent modules,
- * and to copy and distribute the resulting executable under terms of your
- * choice, provided that you also meet, for each linked independent module,
- * the terms and conditions of the license of that module.  An independent
- * module is a module which is not derived from or based on this library.
- * If you modify this library, you may extend this exception to your version
- * of the library, but you are not obligated to do so.  If you do not wish
- * to do so, delete this exception statement from your version.
+/**
+ * $Id$
  */
-
 package com.untangle.node.smtp.sapi;
 
 import java.util.ArrayList;
@@ -56,7 +26,6 @@ import com.untangle.node.token.Chunk;
 import com.untangle.node.token.TokenResultBuilder;
 import com.untangle.uvm.vnet.NodeTCPSession;
 
-
 /**
  * Class which acts to listen on an SMTP Token Stream
  * and convert to a more managable
@@ -70,21 +39,16 @@ import com.untangle.uvm.vnet.NodeTCPSession;
  *
  * @see com.untangle.node.smtp.sapi.Session
  */
-public final class Session
-    extends SmtpTokenStream {
-
-
-    //==========================
-    // Inner-Interfaces
-    //===========================
-
+public final class Session extends SmtpTokenStream
+{
     /**
      * Base class of available Actions to take
      * during various SMTP events.  Instances
      * of SmtpActions are passed to callbacks
      * on {@link com.untangle.node.smtp.sapi.SyntheticAction SyntheticAction}s
      */
-    public interface SmtpActions {
+    public interface SmtpActions
+    {
 
         /**
          * Cause client tokens to be queued before this
@@ -186,8 +150,8 @@ public final class Session
      * or {@link com.untangle.node.smtp.sapi.TransactionHandler Transactions}
      * to take action when an SMTP command arrives.
      */
-    public interface SmtpCommandActions
-        extends SmtpActions {
+    public interface SmtpCommandActions extends SmtpActions
+    {
 
         /**
          * Append a synthetic response.  This is used when the
@@ -223,8 +187,8 @@ public final class Session
      * {@link com.untangle.node.smtp.sapi.ResponseCompletion ResponseCompletion}
      * instances while they are called-back.
      */
-    public interface SmtpResponseActions
-        extends SmtpActions {
+    public interface SmtpResponseActions extends SmtpActions
+    {
 
         /**
          * Send a Response to the client.
@@ -234,11 +198,6 @@ public final class Session
         public void sendResponseToClient(Response resp);
 
     }
-
-
-    //==========================
-    // Data Members
-    //===========================
 
     private static final long LIKELY_TIMEOUT_LENGTH = 1000*60;//1 minute
 
@@ -282,8 +241,7 @@ public final class Session
 
     private final Logger m_logger = Logger.getLogger(Session.class);
 
-    private MySmtpTokenStreamHandler m_streamHandler =
-        new MySmtpTokenStreamHandler();
+    private MySmtpTokenStreamHandler m_streamHandler = new MySmtpTokenStreamHandler();
 
     private SessionHandler m_sessionHandler;//Sink
     private TransactionHandler m_currentTxHandler;//Sink
@@ -295,23 +253,14 @@ public final class Session
     private String[] m_allowedExtensionsLC;
     private String[] m_allowedExtensions;
 
-
-
-
-
-    //==========================
-    // Construction
-    //===========================
-
     /**
      * Construct a new Session
      *
      * @param session the NodeTCPSession to listen-on
      * @param handler the Session handler
      */
-    public Session(NodeTCPSession session,
-                   SessionHandler handler,
-		   boolean allowTLS) {
+    public Session(NodeTCPSession session, SessionHandler handler, boolean allowTLS)
+    {
         super(session);
 
         //Set out fixed StreamHandler as
@@ -373,18 +322,14 @@ public final class Session
         return new Session(session, new SimpleSessionHandler(), true);
     }
 
-
-    //==========================
-    // Properties
-    //===========================
-
     /**
      * Set the instance which will receive callbacks
      * around interesting portions of an SMTP session
      *
      * @param handler the handler (not tolerant of null).
      */
-    public void setSessionHandler(SessionHandler handler) {
+    public void setSessionHandler(SessionHandler handler)
+    {
         m_sessionHandler = handler;
         m_sessionHandler.setSession(this);
     }
@@ -396,7 +341,8 @@ public final class Session
      *
      * @param commands the permitted commands
      */
-    public void setAllowedCommands(String[] commands) {
+    public void setAllowedCommands(String[] commands)
+    {
         Set<String> newAllowedCommandsSet = new HashSet<String>();
         for(String command : commands) {
             newAllowedCommandsSet.add(command.toLowerCase());
@@ -408,7 +354,8 @@ public final class Session
     /**
      * Get the list of {@link setAllowedCommands Allowed COmmands}
      */
-    public String[] getAllowedCommands() {
+    public String[] getAllowedCommands()
+    {
         return m_allowedCommands;
     }
 
@@ -424,7 +371,8 @@ public final class Session
      *
      * @param commands the permitted extensions
      */
-    public void setAllowedExtensions(String[] extensions) {
+    public void setAllowedExtensions(String[] extensions)
+    {
         String[] newAllowedExtensionsLC = new String[extensions.length];
 
         for(int i = 0; i<extensions.length; i++) {
@@ -437,21 +385,16 @@ public final class Session
     /**
      * Get the list of {@link #setAllowedExtensions Allowed Extensions}
      */
-    public String[] getAllowedExtensions() {
+    public String[] getAllowedExtensions()
+    {
         return m_allowedExtensions;
     }
-
-
-
-    //==========================
-    // Helpers
-    //===========================
 
     /**
      * Process any Synthetic actions
      */
-    private void processSynths(HoldsSyntheticActions synths,
-                               TokenResultBuilder trb) {
+    private void processSynths(HoldsSyntheticActions synths, TokenResultBuilder trb)
+    {
 
         SmtpResponseActionsImpl actions = new SmtpResponseActionsImpl(trb);
         SyntheticResponse action = synths.popAction();
@@ -464,7 +407,8 @@ public final class Session
     /**
      * Helper
      */
-    private TransactionHandler getOrCreateTxHandler() {
+    private TransactionHandler getOrCreateTxHandler()
+    {
         if(m_currentTxHandler == null) {
             m_logger.debug("Creating new Transaction Handler");
             m_currentTxHandler = m_sessionHandler.createTxHandler(new SmtpTransaction());
@@ -475,7 +419,8 @@ public final class Session
     /**
      * Method which removes any unknown ESMTP extensions
      */
-    private Response fixupEHLOResponse(Response resp) {
+    private Response fixupEHLOResponse(Response resp)
+    {
 
         String[] respLines = resp.getArgs();
         if(respLines == null || respLines.length < 2) {
@@ -508,7 +453,8 @@ public final class Session
      * Scans the allowed extension list for the
      * presence of "extensionName"
      */
-    private boolean isAllowedExtension(String extensionName) {
+    private boolean isAllowedExtension(String extensionName)
+    {
         //Thread safety
         String[] allowedExtensionsLC = m_allowedExtensionsLC;
         extensionName = extensionName.toLowerCase();
@@ -524,7 +470,8 @@ public final class Session
      * Picks the verb out-of an ESMTP response
      * line (i.e. "SIZE" out of "SIZE 13546654").
      */
-    private String getCapabilitiesLineVerb(String str) {
+    private String getCapabilitiesLineVerb(String str)
+    {
         //TODO bscott.  Are all commands separated
         //     by a space from any arguments?
         str = str.trim();
@@ -535,18 +482,8 @@ public final class Session
         return str.substring(0, index);
     }
 
-
-
-    //==========================
-    // Inner-Classes
-    //===========================
-
-
-    //=============== Inner Class Separator ====================
-
-    private class SmtpActionsImpl
-        implements SmtpActions {
-
+    private class SmtpActionsImpl implements SmtpActions
+    {
         private final TokenResultBuilder m_ts;
 
         SmtpActionsImpl(TokenResultBuilder ts) {
@@ -611,14 +548,8 @@ public final class Session
 
     }
 
-
-
-    //=============== Inner Class Separator ====================
-
-    private class SmtpResponseActionsImpl
-        extends SmtpActionsImpl
-        implements SmtpResponseActions {
-
+    private class SmtpResponseActionsImpl extends SmtpActionsImpl implements SmtpResponseActions
+    {
         SmtpResponseActionsImpl(TokenResultBuilder ts) {
             super(ts);
         }
@@ -629,14 +560,8 @@ public final class Session
 
     }
 
-
-
-    //=============== Inner Class Separator ====================
-
-    private class SmtpCommandActionsImpl
-        extends SmtpActionsImpl
-        implements SmtpCommandActions {
-
+    private class SmtpCommandActionsImpl extends SmtpActionsImpl implements SmtpCommandActions
+    {
         private HoldsSyntheticActions m_immediateActions = null;
 
         SmtpCommandActionsImpl(TokenResultBuilder ts) {
@@ -666,10 +591,8 @@ public final class Session
         }
     }
 
-
-    //=============== Inner Class Separator ====================
-
-    private class HoldsSyntheticActions {
+    private class HoldsSyntheticActions
+    {
         private List<SyntheticResponse> m_additionalActions;
 
         void pushAction(SyntheticResponse synth) {
@@ -688,13 +611,8 @@ public final class Session
         }
     }
 
-
-
-    //=============== Inner Class Separator ====================
-
-    private class OutstandingRequest
-        extends HoldsSyntheticActions {
-
+    private class OutstandingRequest extends HoldsSyntheticActions
+    {
         final ResponseCompletion cont;
 
         OutstandingRequest(ResponseCompletion cont) {
@@ -703,12 +621,8 @@ public final class Session
 
     }
 
-
-    //=============== Inner Class Separator ====================
-
-    private class MySmtpTokenStreamHandler
-        extends SmtpTokenStreamHandler {
-
+    private class MySmtpTokenStreamHandler extends SmtpTokenStreamHandler
+    {
         @Override
         public void passthru(TokenResultBuilder resultBuilder) {
             //Nothing to do
@@ -911,6 +825,6 @@ public final class Session
             }
         }
 
-    }//ENDOF MySmtpTokenStreamHandler Class Definition
+    }
 
-}//ENDOF Session Class Definition
+}
