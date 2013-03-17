@@ -230,13 +230,17 @@ class JavaCompiler
     ensureDirectory(dest)
     src = File.expand_path(jt.jar_file)
 
-    info "[unjar   ] #{src} => #{dest}"
-    wd = Dir.pwd
-    Dir.chdir(dest)
-    raise "unjar failed" unless
-      Kernel.system(JarCommand, "xf", src)
-    Dir.chdir(wd)
-    dest
+    if File.exist?(src):
+      info "[unjar   ] #{src} => #{dest}"
+      wd = Dir.pwd
+      Dir.chdir(dest)
+      raise "unjar failed" unless
+        Kernel.system(JarCommand, "xf", src)
+      Dir.chdir(wd)
+      dest
+    else
+      info "[unjar   ] #{src} doesnt exist. skipping"
+    end
   end
 
   def JavaCompiler.javah(jar, destination, classes)
