@@ -3,7 +3,7 @@
 implDeps = []
 guiDeps = []
 
-%w(untangle-casing-mail untangle-casing-ftp untangle-casing-http).each do |c|
+%w(untangle-casing-smtp untangle-casing-ftp untangle-casing-http).each do |c|
   implDeps << BuildEnv::SRC[c]['api']
 end
 

@@ -1,0 +1,45 @@
+<!--
+ * $Id: request.jspx,v 1.00 2013/03/16 16:21:52 dmorris Exp $
+-->
+
+<jsp:root version="2.0" 
+          xmlns:jsp="http://java.sun.com/JSP/Page"
+          xmlns:c="http://java.sun.com/jsp/jstl/core"
+          xmlns:uvm="http://java.untangle.com/jsp/uvm"
+          xmlns:q="urn:jsptld:/WEB-INF/taglibs/quarantine_euv.tld">
+
+  <jsp:output omit-xml-declaration="true"/>
+
+  <jsp:scriptlet>
+    <![CDATA[
+      request.setAttribute( "companyName", com.untangle.uvm.UvmContextFactory.context().brandingManager().getCompanyName());
+      request.setAttribute( "skinSettings", com.untangle.uvm.UvmContextFactory.context().skinManager().getSettings()); 
+      request.setAttribute( "i18n_map", com.untangle.uvm.UvmContextFactory.context().languageManager().getTranslations("untangle-casing-smtp")); 
+    ]]>
+  </jsp:scriptlet>  
+
+  <c:set var="title" scope="request">
+    <uvm:i18n>Request Quarantine Digest Emails</uvm:i18n>
+  </c:set>
+
+  <c:set var="pageTitle" scope="request">
+    <uvm:i18n p0="${companyName}" p1="${currentAddress}">{0} | Request Quarantine Digest Email</uvm:i18n>
+  </c:set>
+
+  <c:set var="javascript" scope="request">
+    <uvm:script src="request.js"/>
+    <uvm:script src="/script/i18n.js"/>
+
+    <uvm:inlineScript>
+      <![CDATA[
+        var requestMessageCode = '${requestMessageCode}';
+      ]]>
+    </uvm:inlineScript>
+  </c:set>
+  
+  <c:set var="content" scope="request">
+    <div id="quarantine-request-digest"><!-- jspx --></div>
+  </c:set>
+  
+  <jsp:forward page="/template.jspx"/>
+</jsp:root>

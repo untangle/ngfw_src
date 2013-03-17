@@ -1,4 +1,4 @@
-if (!Ung.hasResource["Ung.System"]) {
+rif (!Ung.hasResource["Ung.System"]) {
     Ung.hasResource["Ung.System"] = true;
 
     Ext.define("Ung.System", {
@@ -111,14 +111,14 @@ if (!Ung.hasResource["Ung.System"]) {
             return this.rpc.ftpSettings;
         },
         getMailNode: function(forceReload) {
-            if (forceReload || this.rpc.mailNode === undefined) {
+            if (forceReload || this.rpc.smtpNode === undefined) {
                 try {
-                    this.rpc.mailNode = rpc.nodeManager.node("untangle-casing-mail");
+                    this.rpc.smtpNode = rpc.nodeManager.node("untangle-casing-smtp");
                 } catch (e) {
                     Ung.Util.rpcExHandler(e);
                 }
             }
-            return this.rpc.mailNode;
+            return this.rpc.smtpNode;
         },
         isMailLoaded: function(forceReload) {
             return this.getMailNode(forceReload) != null;

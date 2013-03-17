@@ -11,7 +11,7 @@
             "list": [
                 "untangle-casing-http",
                 "untangle-casing-ftp",
-                "untangle-casing-mail"
+                "untangle-casing-smtp"
             ]
         }
 }

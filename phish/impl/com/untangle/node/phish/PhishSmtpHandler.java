@@ -19,9 +19,9 @@
 package com.untangle.node.phish;
 
 import com.untangle.uvm.vnet.NodeTCPSession;
-import com.untangle.node.mail.papi.quarantine.QuarantineNodeView;
-import com.untangle.node.mail.papi.safelist.SafelistNodeView;
-import com.untangle.node.mail.papi.WrappedMessageGenerator;
+import com.untangle.node.smtp.quarantine.QuarantineNodeView;
+import com.untangle.node.smtp.safelist.SafelistNodeView;
+import com.untangle.node.smtp.WrappedMessageGenerator;
 import com.untangle.node.spam.SpamReport;
 import com.untangle.node.spam.SpamSmtpConfig;
 

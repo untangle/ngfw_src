@@ -5,10 +5,10 @@ package com.untangle.node.virus;
 
 import org.apache.log4j.Logger;
 
-import com.untangle.node.mail.papi.MailExport;
-import com.untangle.node.mail.papi.MailExportFactory;
-import com.untangle.node.mail.papi.MailNodeSettings;
-import com.untangle.node.mail.papi.smtp.sapi.Session;
+import com.untangle.node.smtp.MailExport;
+import com.untangle.node.smtp.MailExportFactory;
+import com.untangle.node.smtp.SmtpNodeSettings;
+import com.untangle.node.smtp.sapi.Session;
 import com.untangle.node.token.TokenHandler;
 import com.untangle.node.token.TokenHandlerFactory;
 import com.untangle.uvm.vnet.TCPNewSessionRequest;
@@ -34,7 +34,7 @@ public class VirusSmtpFactory implements TokenHandlerFactory
             return Session.createPassthruSession(session);
         }
 
-        MailNodeSettings casingSettings = m_mailExport.getExportSettings();
+        SmtpNodeSettings casingSettings = m_mailExport.getExportSettings();
         return new Session(session,
                            new SmtpSessionHandler(session,
                                                   casingSettings.getSmtpTimeout(),

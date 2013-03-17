@@ -9,7 +9,7 @@
         "parents" : {
             "javaClass": "java.util.LinkedList",
             "list": [
-                "untangle-casing-mail"
+                "untangle-casing-smtp"
             ]
         }
 }

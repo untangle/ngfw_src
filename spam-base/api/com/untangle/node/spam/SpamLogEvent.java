@@ -11,9 +11,9 @@ import java.net.InetAddress;
 import com.untangle.uvm.node.SessionEvent;
 import com.untangle.uvm.logging.LogEvent;
 import com.untangle.uvm.logging.LogEvent;
-import com.untangle.node.mail.papi.AddressKind;
-import com.untangle.node.mail.papi.MessageInfo;
-import com.untangle.node.mail.papi.MessageInfoAddr;
+import com.untangle.node.smtp.AddressKind;
+import com.untangle.node.smtp.MessageInfo;
+import com.untangle.node.smtp.MessageInfoAddr;
 
 /**
  * Event for Spam events.

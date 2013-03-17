@@ -14,14 +14,14 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 
-import com.untangle.node.mail.papi.MessageInfo;
-import com.untangle.node.mail.papi.WrappedMessageGenerator;
-import com.untangle.node.mail.papi.quarantine.MailSummary;
-import com.untangle.node.mail.papi.quarantine.QuarantineNodeView;
-import com.untangle.node.mail.papi.safelist.SafelistNodeView;
-import com.untangle.node.mail.papi.smtp.Response;
-import com.untangle.node.mail.papi.smtp.SmtpTransaction;
-import com.untangle.node.mail.papi.smtp.sapi.BufferingSessionHandler;
+import com.untangle.node.smtp.MessageInfo;
+import com.untangle.node.smtp.WrappedMessageGenerator;
+import com.untangle.node.smtp.quarantine.MailSummary;
+import com.untangle.node.smtp.quarantine.QuarantineNodeView;
+import com.untangle.node.smtp.safelist.SafelistNodeView;
+import com.untangle.node.smtp.Response;
+import com.untangle.node.smtp.SmtpTransaction;
+import com.untangle.node.smtp.sapi.BufferingSessionHandler;
 import com.untangle.node.mime.EmailAddress;
 import com.untangle.node.mime.HeaderParseException;
 import com.untangle.node.mime.LCString;
@@ -69,7 +69,7 @@ public class SpamSmtpHandler extends BufferingSessionHandler
     /**
      * Method for subclasses (i.e. clamphish) to
      * set the
-     * {@link com.untangle.node.mail.papi.quarantine.MailSummary#getQuarantineCategory category}
+     * {@link com.untangle.node.smtp.quarantine.MailSummary#getQuarantineCategory category}
      * for a Quarantine submission.
      */
     protected String getQuarantineCategory()
@@ -80,7 +80,7 @@ public class SpamSmtpHandler extends BufferingSessionHandler
     /**
      * Method for subclasses (i.e. clamphish) to
      * set the
-     * {@link com.untangle.node.mail.papi.quarantine.MailSummary#getQuarantineDetail detail}
+     * {@link com.untangle.node.smtp.quarantine.MailSummary#getQuarantineDetail detail}
      * for a Quarantine submission.
      */
     protected String getQuarantineDetail(SpamReport report)
@@ -219,7 +219,7 @@ public class SpamSmtpHandler extends BufferingSessionHandler
     }
 
     @Override
-    public void handleOpeningResponse(Response resp, com.untangle.node.mail.papi.smtp.sapi.Session.SmtpResponseActions actions)
+    public void handleOpeningResponse(Response resp, com.untangle.node.smtp.sapi.Session.SmtpResponseActions actions)
     {
         // Note the receivedBy
         String[] rargs = resp.getArgs();

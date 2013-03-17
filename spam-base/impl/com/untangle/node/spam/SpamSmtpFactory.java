@@ -5,12 +5,12 @@ package com.untangle.node.spam;
 
 import org.apache.log4j.Logger;
 
-import com.untangle.node.mail.papi.MailExport;
-import com.untangle.node.mail.papi.MailExportFactory;
-import com.untangle.node.mail.papi.MailNodeSettings;
-import com.untangle.node.mail.papi.quarantine.QuarantineNodeView;
-import com.untangle.node.mail.papi.safelist.SafelistNodeView;
-import com.untangle.node.mail.papi.smtp.sapi.Session;
+import com.untangle.node.smtp.MailExport;
+import com.untangle.node.smtp.MailExportFactory;
+import com.untangle.node.smtp.SmtpNodeSettings;
+import com.untangle.node.smtp.quarantine.QuarantineNodeView;
+import com.untangle.node.smtp.safelist.SafelistNodeView;
+import com.untangle.node.smtp.sapi.Session;
 import com.untangle.node.token.TokenHandler;
 import com.untangle.node.token.TokenHandlerFactory;
 import com.untangle.uvm.vnet.TCPNewSessionRequest;
@@ -42,7 +42,7 @@ public class SpamSmtpFactory implements TokenHandlerFactory
             return Session.createPassthruSession(session);
         }
 
-        MailNodeSettings casingSettings = m_mailExport.getExportSettings();
+        SmtpNodeSettings casingSettings = m_mailExport.getExportSettings();
         long timeout = casingSettings.getSmtpTimeout();
         boolean allowTLS = casingSettings.getSmtpAllowTLS();
         return new Session(session,

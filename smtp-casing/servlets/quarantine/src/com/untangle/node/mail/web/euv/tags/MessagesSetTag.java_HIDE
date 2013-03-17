@@ -1,0 +1,102 @@
+package com.untangle.node.smtp.web.euv.tags;
+
+import javax.servlet.jsp.*;
+import javax.servlet.jsp.tagext.*;
+import javax.servlet.http.*;
+import javax.servlet.*;
+
+import java.util.*;
+
+
+/**
+ * Tag which is used to iterate over a series
+ * of messages.  The "type" property is currently
+ * "info" or "error".
+ */
+public class MessagesSetTag
+  extends BodyTagSupport {
+
+  private static final String MESSAGES_KEY_PREFIX = "untangle.messages.";
+  static final String ERROR_MSG_SUFFIX = "error";
+  static final String INFO_MSG_SUFFIX = "info";
+
+  private String m_type = null;
+  private Iterator<String> m_it;
+
+  public void setType(String type){
+    m_type = type;
+  }
+
+  public String getType(){
+    return m_type;
+  }
+
+  public int doStartTag() throws JspException {
+    String[] messages = getMessages(pageContext.getRequest(), getType());
+
+    if(messages == null || messages.length == 0) {
+      return SKIP_BODY;
+    }
+    m_it = Arrays.asList(messages).iterator();
+    //Piece of crap API also evaluates once after this call,
+    //so we have to set the first message here.  Really
+    //bad design, IMHO
+    MessageTag.setCurrent(pageContext, m_it.next());
+    return EVAL_BODY_TAG;
+  }
+
+  public int doAfterBody() throws JspException {
+    //Check if we're "done"
+    if(!m_it.hasNext()) {
+      return SKIP_BODY;
+    }
+    MessageTag.setCurrent(pageContext, m_it.next());
+    return EVAL_BODY_TAG;
+  }
+
+  public int doEndTag() throws JspException{
+    try {
+      BodyContent body = getBodyContent();
+      JspWriter writer = body.getEnclosingWriter();
+      String bodyString = body.getString();
+      writer.println(bodyString);
+      return EVAL_PAGE;
+    }
+    catch (Exception ioe){
+      throw new JspException(ioe.getMessage());
+    }
+  }
+
+
+  public static final void setErrorMessages(ServletRequest request,
+    String...messages) {
+    setMessages(request, ERROR_MSG_SUFFIX, messages);
+  }
+  public static final void setInfoMessages(ServletRequest request,
+    String...messages) {
+    setMessages(request, INFO_MSG_SUFFIX, messages);
+  }
+  public static final void setMessages(ServletRequest request,
+    String msgType,
+    String...messages) {
+    request.setAttribute(MESSAGES_KEY_PREFIX + msgType, messages);
+  }
+  public static final void clearMessages(ServletRequest request,
+    String msgType) {
+    request.removeAttribute(MESSAGES_KEY_PREFIX + msgType);
+  }
+
+  /**
+   * Returns null if there are no such messages
+   */
+  static String[] getMessages(ServletRequest request,
+    String msgType) {
+    return (String[]) request.getAttribute(MESSAGES_KEY_PREFIX + msgType);
+  }
+
+  static boolean hasMessages(ServletRequest request,
+    String msgType) {
+    String[] msgs = getMessages(request, msgType);
+    return msgs != null && msgs.length > 0;
+  }
+}

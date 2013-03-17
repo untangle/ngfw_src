@@ -10,7 +10,7 @@
             "javaClass": "java.util.LinkedList",
             "list": [
                 "untangle-casing-http",
-                "untangle-casing-mail"
+                "untangle-casing-smtp"
             ]
         }
 }

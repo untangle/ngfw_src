@@ -120,7 +120,7 @@ XB-Desc-Icon: iVBORw0KGgoAAAANSUhEUgAAACoAAAAqCAIAAABKoV4MAAAABGdBTUEAANbY1E9Y
 Description: The HTTP Casing
  The HTTP Casing Application
 
-Package: untangle-casing-mail
+Package: untangle-casing-smtp
 Architecture: all
 Depends: untangle-libuvm
 XB-Display-Name: SMTP Casing
@@ -391,7 +391,7 @@ Description: Web Filter Lite
 
 Package: untangle-node-clam
 Architecture: all
-Depends: untangle-vm, untangle-base-virus, untangle-clamav-config, untangle-casing-http, untangle-casing-ftp, untangle-casing-mail
+Depends: untangle-vm, untangle-base-virus, untangle-clamav-config, untangle-casing-http, untangle-casing-ftp, untangle-casing-smtp
 XB-Display-Name: Virus Blocker Lite
 XB-View-Position: 40
 XB-Untangle-Type: node
@@ -704,7 +704,7 @@ Description: Firewall
 
 Package: untangle-node-spamassassin
 Architecture: all
-Depends: untangle-vm, untangle-base-spam, untangle-casing-mail, untangle-spamassassin-update
+Depends: untangle-vm, untangle-base-spam, untangle-casing-smtp, untangle-spamassassin-update
 XB-Display-Name: Spam Blocker Lite
 XB-View-Position: 61
 XB-Untangle-Type: node
@@ -793,7 +793,7 @@ Description: Spam Blocker Lite
 
 Package: untangle-node-phish
 Architecture: all
-Depends: untangle-vm, untangle-base-spam, untangle-clamav-config, untangle-casing-mail
+Depends: untangle-vm, untangle-base-spam, untangle-clamav-config, untangle-casing-smtp
 XB-Display-Name: Phish Blocker
 XB-View-Position: 70
 XB-Untangle-Type: node
@@ -1237,7 +1237,7 @@ Description: Captive Portal
 
 Package: untangle-base-virus
 Architecture: all
-Depends: untangle-libuvm, untangle-casing-http, untangle-casing-mail
+Depends: untangle-libuvm, untangle-casing-http, untangle-casing-smtp
 XB-Display-Name: Virus Blocker Base
 XB-Untangle-Type: base
 XB-Untangle-Pkg-Type: base
@@ -1275,7 +1275,7 @@ Description: Virus Blocker Base
 
 Package: untangle-base-spam
 Architecture: all
-Depends: untangle-libuvm, untangle-casing-mail
+Depends: untangle-libuvm, untangle-casing-smtp
 XB-Display-Name: Spam Blocker Base
 XB-Untangle-Type: base
 XB-Untangle-Pkg-Type: base

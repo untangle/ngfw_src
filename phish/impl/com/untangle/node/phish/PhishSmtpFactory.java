@@ -18,12 +18,12 @@
 
 package com.untangle.node.phish;
 
-import com.untangle.node.mail.papi.MailExport;
-import com.untangle.node.mail.papi.MailExportFactory;
-import com.untangle.node.mail.papi.MailNodeSettings;
-import com.untangle.node.mail.papi.quarantine.QuarantineNodeView;
-import com.untangle.node.mail.papi.safelist.SafelistNodeView;
-import com.untangle.node.mail.papi.smtp.sapi.Session;
+import com.untangle.node.smtp.MailExport;
+import com.untangle.node.smtp.MailExportFactory;
+import com.untangle.node.smtp.SmtpNodeSettings;
+import com.untangle.node.smtp.quarantine.QuarantineNodeView;
+import com.untangle.node.smtp.safelist.SafelistNodeView;
+import com.untangle.node.smtp.sapi.Session;
 import com.untangle.node.spam.SpamSmtpConfig;
 import com.untangle.node.spam.SpamLoadChecker;
 import com.untangle.node.token.TokenHandler;
@@ -56,7 +56,7 @@ public class PhishSmtpFactory implements TokenHandlerFactory
             return Session.createPassthruSession(session);
         }
 
-        MailNodeSettings casingSettings = m_mailExport.getExportSettings();
+        SmtpNodeSettings casingSettings = m_mailExport.getExportSettings();
         return new Session(session,
                            new PhishSmtpHandler(session,
                                                 casingSettings.getSmtpTimeout(),

@@ -17,7 +17,7 @@ import org.apache.log4j.Logger;
 import org.json.JSONString;
 
 import com.untangle.uvm.SettingsManager;
-import com.untangle.node.mail.papi.smtp.SMTPNotifyAction;
+import com.untangle.node.smtp.SMTPNotifyAction;
 import com.untangle.node.token.Token;
 import com.untangle.node.token.TokenAdaptor;
 import com.untangle.uvm.UvmContext;

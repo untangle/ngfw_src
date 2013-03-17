@@ -1,6 +1,6 @@
 #!/bin/sh
 # untangle-node-webfiter and untangle-node-commtouchav are not needed since they rely on base-webfilter and base-virus
-ALL_MODULES='untangle-vm untangle-libuvm untangle-apache2-config untangle-casing-mail 
+ALL_MODULES='untangle-vm untangle-libuvm untangle-apache2-config untangle-casing-smtp 
     untangle-base-virus untangle-base-webfilter untangle-node-adblocker 
     untangle-node-firewall 
     untangle-node-ips untangle-node-openvpn untangle-node-phish 
@@ -157,7 +157,7 @@ case "$1" in
     rm tmp_keys.pot
     update_po $1
     ;;
-"untangle-casing-mail")
+"untangle-casing-smtp")
     cd ../mail-casing/po/
     xgettext --copyright-holder='Untangle, Inc.' -L Python -ki18n._ -o tmp_keys.pot ../servlets/quarantine/root/quarantine.js
     xgettext -j --copyright-holder='Untangle, Inc.' -L Python -ki18n._ -o tmp_keys.pot ../servlets/quarantine/root/remaps.js

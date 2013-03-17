@@ -29,8 +29,8 @@ for f in $(find $t -type f -name '*.po'); do
         untangle-base-webfilter)
             d=$work/src/webfilter-base
             ;;
-        untangle-casing-mail)
-            d=$work/src/mail-casing
+        untangle-casing-smtp)
+            d=$work/src/smtp-casing
             ;;
         untangle-install-wizard)
             d=$work/src/gui

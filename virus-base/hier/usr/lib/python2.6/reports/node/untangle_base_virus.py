@@ -44,7 +44,7 @@ class VirusBaseNode(Node):
         self.__vendor_name = vendor_name
 
     def parents(self):
-        return ['untangle-casing-http', 'untangle-casing-mail']
+        return ['untangle-casing-http', 'untangle-casing-smtp']
 
     @sql_helper.print_timing
     def setup(self):

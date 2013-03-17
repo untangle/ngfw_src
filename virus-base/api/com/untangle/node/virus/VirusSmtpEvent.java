@@ -8,7 +8,7 @@ import java.util.LinkedList;
 
 import com.untangle.uvm.logging.LogEvent;
 import com.untangle.uvm.node.SessionEvent;
-import com.untangle.node.mail.papi.MessageInfo;
+import com.untangle.node.smtp.MessageInfo;
 
 /**
  * Log for SMTP Virus events.

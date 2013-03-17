@@ -48,7 +48,7 @@ class SpamBaseNode(Node):
         self.__top_spammed_title = top_spammed_title
 
     def parents(self):
-        return ['untangle-casing-mail']
+        return ['untangle-casing-smtp']
 
     @print_timing
     def setup(self):

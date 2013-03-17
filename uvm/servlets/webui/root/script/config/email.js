@@ -78,14 +78,14 @@ if (!Ung.hasResource["Ung.Email"]) {
         },
         
         getMailNode: function(forceReload) {
-            if (forceReload || this.rpc.mailNode === undefined) {
+            if (forceReload || this.rpc.smtpNode === undefined) {
                 try {
-                    this.rpc.mailNode = rpc.nodeManager.node("untangle-casing-mail");
+                    this.rpc.smtpNode = rpc.nodeManager.node("untangle-casing-smtp");
                 } catch (e) {
                     Ung.Util.rpcExHandler(e);
                 }
             }
-            return this.rpc.mailNode;
+            return this.rpc.smtpNode;
         },
         isMailLoaded: function(forceReload) {
             return this.getMailNode(forceReload) != null;
@@ -102,15 +102,15 @@ if (!Ung.hasResource["Ung.Email"]) {
             return this.rpc.mailSettings;
         },
         getMailNodeSettings: function(forceReload) {
-            if (forceReload || this.rpc.mailNodeSettings === undefined) {
+            if (forceReload || this.rpc.smtpNodeSettings === undefined) {
                 try {
-                    this.rpc.mailNodeSettings = this.getMailNode().getMailNodeSettings();
+                    this.rpc.smtpNodeSettings = this.getMailNode().getMailNodeSettings();
                 } catch (e) {
                     Ung.Util.rpcExHandler(e);
                 }
                 
             }
-            return this.rpc.mailNodeSettings;
+            return this.rpc.smtpNodeSettings;
         },
         getSafelistAdminView: function(forceReload) {
             if (forceReload || this.rpc.safelistAdminView === undefined) {
