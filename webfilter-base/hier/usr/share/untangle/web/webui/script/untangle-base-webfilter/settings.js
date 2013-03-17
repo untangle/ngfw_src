@@ -1030,15 +1030,15 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                     sortType: Ung.SortTypes.asTimestamp
                 }, {
                     name: 'blocked',
-                    mapping: 'wf_' + this.getRpcNode().getVendor() + '_blocked',
+                    mapping: this.getRpcNode().getName() + '_blocked',
                     type: 'boolean'
                 }, {
                     name: 'flagged',
-                    mapping: 'wf_' + this.getRpcNode().getVendor() + '_flagged',
+                    mapping: this.getRpcNode().getName() + '_flagged',
                     type: 'boolean'
                 }, {
                     name: 'category',
-                    mapping: 'wf_' + this.getRpcNode().getVendor() + '_category',
+                    mapping: this.getRpcNode().getName() + '_category',
                     type: 'string'
                 }, {
                     name: 'client',
@@ -1059,7 +1059,7 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                     mapping: 'uri'
                 }, {
                     name: 'reason',
-                    mapping: 'wf_' + this.getRpcNode().getVendor() + '_reason',
+                    mapping: this.getRpcNode().getName() + '_reason',
                     type: 'string',
                     convert: Ext.bind(function(value) {
                         switch (value) {

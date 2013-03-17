@@ -2,25 +2,21 @@
 
 class NodeBuilder
 
-  def NodeBuilder.makeNode(buildEnv, name, location, depsImpl = [],
-                           depsApi = [], baseHash = {})
+  def NodeBuilder.makeNode(buildEnv, name, location, depsImpl = [], depsApi = [], baseHash = {})
     makePackage(buildEnv, name, location, depsImpl, depsApi, baseHash)
   end
 
-  def NodeBuilder.makeCasing(buildEnv, name, location, depsImpl = [],
-                             depsApi = [], baseHash = {})
+  def NodeBuilder.makeCasing(buildEnv, name, location, depsImpl = [], depsApi = [], baseHash = {})
     makePackage(buildEnv, name, location, depsImpl, depsApi, baseHash)
   end
 
-  def NodeBuilder.makeBase(buildEnv, name, location, depsImpl = [],
-                           depsApi = [], baseHash = {})
+  def NodeBuilder.makeBase(buildEnv, name, location, depsImpl = [], depsApi = [], baseHash = {})
     makePackage(buildEnv, name, location, depsImpl, depsApi, baseHash)
   end
 
   private
   ## Create the necessary packages and targets to build a node
-  def NodeBuilder.makePackage(buildEnv, name, location, depsImpl = [],
-                              depsApi = [], baseHash = {})
+  def NodeBuilder.makePackage(buildEnv, name, location, depsImpl = [], depsApi = [], baseHash = {})
     home = buildEnv.home
 
     uvm_lib = BuildEnv::SRC['untangle-libuvm']
@@ -31,7 +27,7 @@ class NodeBuilder
 
     apiJar = nil
 
-    ## If there is a local API, build it first
+    ## If there is an API, build it first
     api = FileList["#{home}/#{dirName}/api/**/*.java"]
     baseHash.each_pair do |bd, bn|
       api += FileList["#{bn.buildEnv.home}/#{bd}/api/**/*.java"]
@@ -40,11 +36,9 @@ class NodeBuilder
     if (api.length > 0)
       deps  = baseJarsApi + depsApi
 
-      paths = baseHash.map { |bd, bn| ["#{bn.buildEnv.home}/#{bd}/api",
-          "#{bn.buildEnv.home}/#{bd}/api"] }.flatten
+      paths = baseHash.map { |bd, bn| ["#{bn.buildEnv.home}/#{bd}/api", "#{bn.buildEnv.home}/#{bd}/api"] }.flatten
 
-      apiJar = JarTarget.build_target(node, deps, 'api',
-                                          ["#{home}/#{dirName}/api"] + paths)
+      apiJar = JarTarget.build_target(node, deps, 'api', ["#{home}/#{dirName}/api"] + paths)
       buildEnv.installTarget.install_jars(apiJar, "#{node.distDirectory}/usr/share/untangle/toolbox")
     end
 
@@ -67,9 +61,7 @@ class NodeBuilder
 
     po_dir = "#{home}/#{dirName}/po"
     if File.exist? po_dir
-      JavaMsgFmtTarget.make_po_targets(node, po_dir,
-                                       "#{node.distDirectory}/usr/share/untangle/lang/",
-                                       name).each do |t|
+      JavaMsgFmtTarget.make_po_targets(node, po_dir, "#{node.distDirectory}/usr/share/untangle/lang/", name).each do |t|
         buildEnv.i18nTarget.register_dependency(t)
       end
     end

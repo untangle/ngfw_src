@@ -5,9 +5,8 @@ spam = BuildEnv::SRC['untangle-base-spam']
 clam = BuildEnv::SRC['untangle-base-clam']
 phish = BuildEnv::SRC['untangle-node-phish']
 
-NodeBuilder.makeNode(BuildEnv::SRC, 'untangle-node-phish', 'phish',
-                     [smtp['api']],
-                     [smtp['api']], { 'spam-base' => spam, 'clam-base' => clam })
+deps = [spam['api'], smtp['api']]
 
-deps = [phish['impl'], phish['api'], spam['impl']]
+NodeBuilder.makeNode(BuildEnv::SRC, 'untangle-node-phish', 'phish', deps, deps, { 'spam-base' => spam, 'clam-base' => clam })
+
 
