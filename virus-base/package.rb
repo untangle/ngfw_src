@@ -8,7 +8,7 @@ end
 
 virus = BuildEnv::SRC['untangle-base-virus']
 
-NodeBuilder.makeBase(BuildEnv::SRC, 'untangle-base-virus', 'virus-base', implDeps, implDeps)
+NodeBuilder.makeBase(BuildEnv::SRC, 'untangle-base-virus', 'virus-base', implDeps)
 
 http = BuildEnv::SRC['untangle-casing-http']
 

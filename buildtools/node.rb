@@ -2,21 +2,21 @@
 
 class NodeBuilder
 
-  def NodeBuilder.makeNode(buildEnv, name, location, depsImpl = [], depsApi = [], baseHash = {})
-    makePackage(buildEnv, name, location, depsImpl, depsApi, baseHash)
+  def NodeBuilder.makeNode(buildEnv, name, location, depsApi = [], baseHash = {})
+    makePackage(buildEnv, name, location, depsApi, baseHash)
   end
 
-  def NodeBuilder.makeCasing(buildEnv, name, location, depsImpl = [], depsApi = [], baseHash = {})
-    makePackage(buildEnv, name, location, depsImpl, depsApi, baseHash)
+  def NodeBuilder.makeCasing(buildEnv, name, location, depsApi = [], baseHash = {})
+    makePackage(buildEnv, name, location, depsApi, baseHash)
   end
 
-  def NodeBuilder.makeBase(buildEnv, name, location, depsImpl = [], depsApi = [], baseHash = {})
-    makePackage(buildEnv, name, location, depsImpl, depsApi, baseHash)
+  def NodeBuilder.makeBase(buildEnv, name, location, depsApi = [], baseHash = {})
+    makePackage(buildEnv, name, location, depsApi, baseHash)
   end
 
   private
   ## Create the necessary packages and targets to build a node
-  def NodeBuilder.makePackage(buildEnv, name, location, depsImpl = [], depsApi = [], baseHash = {})
+  def NodeBuilder.makePackage(buildEnv, name, location, depsApi = [], baseHash = {})
     home = buildEnv.home
 
     uvm_lib = BuildEnv::SRC['untangle-libuvm']
@@ -43,7 +43,7 @@ class NodeBuilder
     end
 
     ## Build the impl jar.
-    deps = baseJarsImpl + depsImpl
+    deps = baseJarsImpl
 
     ## Make the impl dependent on the api if a jar exists.
     directories= ["#{home}/#{dirName}/impl"]

@@ -294,8 +294,7 @@ class ServletBuilder < Target
     "#{BuildEnv::downloads}/#{n}"
   } + ["#{BuildEnv::JAVA_HOME}/lib/tools.jar"];
 
-  def initialize(package, pkgname, path, libdeps = [], nodedeps = [], ms = [],
-                 common = [BuildEnv::SERVLET_COMMON], jsp_list = nil)
+  def initialize(package, pkgname, path, libdeps = [], nodedeps = [], ms = [], common = [BuildEnv::SERVLET_COMMON], jsp_list = nil)
     @pkgname = pkgname
     @path = path
     @nodedeps = nodedeps
