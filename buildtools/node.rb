@@ -2,21 +2,21 @@
 
 class NodeBuilder
 
-  def NodeBuilder.makeNode(buildEnv, name, location, depsApi = [], baseHash = {})
-    makePackage(buildEnv, name, location, depsApi, baseHash)
+  def NodeBuilder.makeNode(buildEnv, name, location, deps = [], baseHash = {})
+    makePackage(buildEnv, name, location, deps, baseHash)
   end
 
-  def NodeBuilder.makeCasing(buildEnv, name, location, depsApi = [], baseHash = {})
-    makePackage(buildEnv, name, location, depsApi, baseHash)
+  def NodeBuilder.makeCasing(buildEnv, name, location, deps = [], baseHash = {})
+    makePackage(buildEnv, name, location, deps, baseHash)
   end
 
-  def NodeBuilder.makeBase(buildEnv, name, location, depsApi = [], baseHash = {})
-    makePackage(buildEnv, name, location, depsApi, baseHash)
+  def NodeBuilder.makeBase(buildEnv, name, location, deps = [], baseHash = {})
+    makePackage(buildEnv, name, location, deps, baseHash)
   end
 
   private
   ## Create the necessary packages and targets to build a node
-  def NodeBuilder.makePackage(buildEnv, name, location, depsApi = [], baseHash = {})
+  def NodeBuilder.makePackage(buildEnv, name, location, deps = [], baseHash = {})
     home = buildEnv.home
 
     dirName = location
@@ -24,19 +24,19 @@ class NodeBuilder
     buildEnv.installTarget.register_dependency(node)
     buildEnv['node'].registerTarget("#{name}", node)
 
-    ## If there is an API, build it first
-    api = FileList["#{home}/#{dirName}/api/**/*.java"]
+    ## If there is an SRC, build it first
+    src = FileList["#{home}/#{dirName}/src/**/*.java"]
     baseHash.each_pair do |bd, bn|
-      api += FileList["#{bn.buildEnv.home}/#{bd}/api/**/*.java"]
+      src += FileList["#{bn.buildEnv.home}/#{bd}/src/**/*.java"]
     end
 
-    if (api.length > 0)
-      deps  = baseJars + depsApi
+    if (src.length > 0)
+      deps  = baseJars + deps
 
-      paths = baseHash.map { |bd, bn| ["#{bn.buildEnv.home}/#{bd}/api", "#{bn.buildEnv.home}/#{bd}/api"] }.flatten
+      paths = baseHash.map { |bd, bn| ["#{bn.buildEnv.home}/#{bd}/src", "#{bn.buildEnv.home}/#{bd}/src"] }.flatten
 
-      apiJar = JarTarget.build_target(node, deps, 'src', ["#{home}/#{dirName}/api"] + paths)
-      buildEnv.installTarget.install_jars(apiJar, "#{node.distDirectory}/usr/share/untangle/toolbox", nil, true)
+      srcJar = JarTarget.build_target(node, deps, 'src', ["#{home}/#{dirName}/src"] + paths)
+      buildEnv.installTarget.install_jars(srcJar, "#{node.distDirectory}/usr/share/untangle/toolbox", nil, true)
     end
 
     po_dir = "#{home}/#{dirName}/po"
