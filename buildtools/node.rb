@@ -34,30 +34,13 @@ class NodeBuilder
     end
 
     if (api.length > 0)
-      deps  = baseJarsApi + depsApi
+      deps  = baseJars + depsApi
 
       paths = baseHash.map { |bd, bn| ["#{bn.buildEnv.home}/#{bd}/api", "#{bn.buildEnv.home}/#{bd}/api"] }.flatten
 
       apiJar = JarTarget.build_target(node, deps, 'api', ["#{home}/#{dirName}/api"] + paths)
-      buildEnv.installTarget.install_jars(apiJar, "#{node.distDirectory}/usr/share/untangle/toolbox")
+      buildEnv.installTarget.install_jars(apiJar, "#{node.distDirectory}/usr/share/untangle/toolbox", nil, true)
     end
-
-    ## Build the impl jar.
-    deps = baseJarsImpl
-
-    ## Make the impl dependent on the api if a jar exists.
-    directories= ["#{home}/#{dirName}/impl"]
-    if (apiJar.nil?)
-      ## Only include the API if the localJarApi doesn't exist
-      directories << "#{home}/#{dirName}/api"
-      baseHash.each_pair { |bd, bn| directories << "#{bn.buildEnv.home}/#{bd}/api" }
-    else
-      deps << apiJar
-    end
-
-    baseHash.each_pair { |bd, bn| directories << "#{bn.buildEnv.home}/#{bd}/impl" }
-
-    jt = JarTarget.build_target(node, deps, "impl", directories)
 
     po_dir = "#{home}/#{dirName}/po"
     if File.exist? po_dir
@@ -65,8 +48,6 @@ class NodeBuilder
         buildEnv.i18nTarget.register_dependency(t)
       end
     end
-
-    buildEnv.installTarget.install_jars(jt, "#{node.distDirectory}/usr/share/untangle/toolbox", nil, true)
 
     hierFiles = FileList["#{home}/#{dirName}/hier/**/*"]
     if (0 < hierFiles.length)
@@ -87,14 +68,8 @@ class NodeBuilder
   end
 
   ## Helper to retrieve the standard dependencies for an impl
-  def NodeBuilder.baseJarsImpl
+  def NodeBuilder.baseJars
     uvm_lib = BuildEnv::SRC['untangle-libuvm']
     Jars::Base + [Jars::JFreeChart, uvm_lib['api']]
-  end
-
-  ## Helper to retrieve the standard dependencies for local API
-  def NodeBuilder.baseJarsApi
-    ## See no reason to use a different set of jars
-    baseJarsImpl
   end
 end

@@ -1,14 +1,14 @@
 # -*-ruby-*-
 
-implDeps = []
+deps = []
 
 %w(untangle-casing-smtp untangle-casing-ftp untangle-casing-http).each do |c|
-  implDeps << BuildEnv::SRC[c]['api']
+  deps << BuildEnv::SRC[c]['api']
 end
 
 virus = BuildEnv::SRC['untangle-base-virus']
 
-NodeBuilder.makeBase(BuildEnv::SRC, 'untangle-base-virus', 'virus-base', implDeps)
+NodeBuilder.makeBase(BuildEnv::SRC, 'untangle-base-virus', 'virus-base', deps)
 
 http = BuildEnv::SRC['untangle-casing-http']
 
