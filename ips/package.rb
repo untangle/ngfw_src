@@ -1,5 +1,5 @@
 # -*-ruby-*-
 
-deps = [BuildEnv::SRC['untangle-casing-http']['api']] 
+deps = [BuildEnv::SRC['untangle-casing-http']['src']] 
 
 NodeBuilder.makeNode(BuildEnv::SRC, 'untangle-node-ips', 'ips', deps)

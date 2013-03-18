@@ -10,7 +10,7 @@ commons-httpclient: ??
 commons-codec: ??
 xmlrpc: used by UI/uvm
 slf4j: ??
-python-jsonrpc: used by ucl
+python-jsonrpc: used by ucli
 dnsjava: used in the untangle-vm
 jradius: used by directory connector
 postgres-jdbc: used to connect to postgres

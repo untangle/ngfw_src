@@ -4,7 +4,7 @@ NodeBuilder.makeCasing(BuildEnv::SRC, 'untangle-casing-smtp', 'smtp-casing')
 
 smtp = BuildEnv::SRC['untangle-casing-smtp']
 
-jt = [smtp['api']]
+jt = [smtp['src']]
 
 deps = %w(
            slf4j-1.4.3/slf4j-log4j12-1.4.3.jar

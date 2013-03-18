@@ -35,7 +35,7 @@ class NodeBuilder
 
       paths = baseHash.map { |bd, bn| ["#{bn.buildEnv.home}/#{bd}/api", "#{bn.buildEnv.home}/#{bd}/api"] }.flatten
 
-      apiJar = JarTarget.build_target(node, deps, 'api', ["#{home}/#{dirName}/api"] + paths)
+      apiJar = JarTarget.build_target(node, deps, 'src', ["#{home}/#{dirName}/api"] + paths)
       buildEnv.installTarget.install_jars(apiJar, "#{node.distDirectory}/usr/share/untangle/toolbox", nil, true)
     end
 

@@ -344,7 +344,7 @@ class ServletBuilder < Target
     jardeps = libdeps + @nodedeps + Jars::Base + FileList["#{@destRoot}/WEB-INF/lib/*.jar"]
     jardeps << uvm_lib["api"] 
 
-    @srcJar = JarTarget.build_target(package, jardeps, name, "#{path}/src", false)
+    @srcJar = JarTarget.build_target(package, jardeps, suffix, "#{path}/src", false)
     deps << @srcJar
 
     po_dir = "#{path}/po"
@@ -586,12 +586,18 @@ end
 class JarTarget < Target
   def initialize(package, deps, suffix, build_dir, registerTarget=true)
     @package = package
-    @suffix = suffix
-    @targetName = "jar:#{package.name}-#{@suffix}"
+    if suffix == nil then
+      @suffix = ""
+      name = "#{package.name}"
+    else
+      @suffix = "-#{suffix}"
+      name = suffix
+    end
+    @targetName = "jar:#{package.name}#{@suffix}"
     @build_dir = build_dir
 
-    suffix = nil unless registerTarget
-    super(package, deps, suffix)
+    name = nil unless registerTarget
+    super(package, deps, name)
 
     file jar_file => self
   end
@@ -601,7 +607,7 @@ class JarTarget < Target
   end
 
   def jar_file
-    "#{package.buildEnv.grabbag}/#{@package.name}-#{@suffix}.jar"
+    "#{package.buildEnv.grabbag}/#{@package.name}#{@suffix}.jar"
   end
 
   def make_dependencies
@@ -623,14 +629,12 @@ class JarTarget < Target
     @targetName
   end
 
-  def JarTarget.build_target(package, jars, suffix, basepaths,
-                             registerTarget = true)
+  def JarTarget.build_target(package, jars, suffix, basepaths, registerTarget = true)
     build_dir = "#{package.buildEnv.staging}/#{package.name}-#{suffix}"
 
     deps = []
 
-    jc = buildJavaCompilerTarget(package, jars, build_dir,
-                                 suffix, basepaths)
+    jc = buildJavaCompilerTarget(package, jars, build_dir, suffix, basepaths)
 
     #return EmptyTarget.instance if javaCompiler.isEmpty
 
