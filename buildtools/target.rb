@@ -586,16 +586,11 @@ end
 class JarTarget < Target
   def initialize(package, deps, suffix, build_dir, registerTarget=true)
     @package = package
-    if suffix == nil then
-      @suffix = ""
-      name = "#{package.name}"
-    else
-      @suffix = "-#{suffix}"
-      name = suffix
-    end
-    @targetName = "jar:#{package.name}#{@suffix}"
+    @suffix = "#{suffix}"
+    @targetName = "jar:#{package.name}-#{@suffix}"
     @build_dir = build_dir
 
+    name = suffix
     name = nil unless registerTarget
     super(package, deps, name)
 
@@ -607,7 +602,11 @@ class JarTarget < Target
   end
 
   def jar_file
-    "#{package.buildEnv.grabbag}/#{@package.name}#{@suffix}.jar"
+    if "#{@suffix}" == "src" then
+      return "#{package.buildEnv.grabbag}/#{@package.name}.jar"
+    else
+      return "#{package.buildEnv.grabbag}/#{@package.name}-#{@suffix}.jar"
+    end
   end
 
   def make_dependencies
@@ -636,29 +635,7 @@ class JarTarget < Target
 
     jc = buildJavaCompilerTarget(package, jars, build_dir, suffix, basepaths)
 
-    #return EmptyTarget.instance if javaCompiler.isEmpty
-
-    ap = basepaths.map do |bp|
-      ac = "#{bp}/resources/META-INF/annotated-classes"
-      ac if File.exist?(ac)
-    end.reject { |e| !e }
-    if 0 < ap.length then
-      tgt = "#{build_dir}/META-INF/annotated-classes"
-      file tgt => ap do
-        ensureDirectory(File.dirname(tgt))
-        File.open(tgt, "w") do |o|
-          ap.each do |f|
-            File.open(f) do |i|
-              i.each_line { |l| o.puts(l) }
-            end
-          end
-        end
-      end
-      deps += [ file(tgt) ]
-    end
-
-    deps += [jc, buildCopyFilesTargets(package, basepaths, suffix,
-                                       build_dir)]
+    deps += [jc, buildCopyFilesTargets(package, basepaths, suffix, build_dir)]
 
     JarTarget.new(package, deps.flatten, suffix, build_dir, registerTarget)
   end
@@ -669,20 +646,18 @@ class JarTarget < Target
     JavaCompilerTarget.new(package, jars, destination, suffix, basepaths)
   end
 
-  def JarTarget.buildCopyFilesTargets(package, basepaths, suffix,
-                                      build_dir)
+  def JarTarget.buildCopyFilesTargets(package, basepaths, suffix, build_dir)
     moveSpecs = basepaths.map do |path|
       ms = []
 
       f = FileList.new("#{path}/com/**/*") { |fl| fl.exclude(/.*\.java/) }
       ms << MoveSpec.new("#{path}", f, "")
 
-      f = FileList.new("#{path}/resources/**/*") { |fl| fl.exclude(/(.*\.java)|(META-INF\/annotated-classes)/) }
+      f = FileList.new("#{path}/resources/**/*") { |fl| fl.exclude(/(.*\.java)/) }
       ms << MoveSpec.new("#{path}/resources", f, "")
     end
 
     ## Copy any files in before building the JAR
-    CopyFiles.new(package, moveSpecs.flatten, "jar-#{suffix}", nil,
-                  build_dir)
+    CopyFiles.new(package, moveSpecs.flatten, "jar-#{suffix}", nil, build_dir)
   end
 end
