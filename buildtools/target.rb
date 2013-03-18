@@ -344,8 +344,7 @@ class ServletBuilder < Target
     jardeps = libdeps + @nodedeps + Jars::Base + FileList["#{@destRoot}/WEB-INF/lib/*.jar"]
     jardeps << uvm_lib["api"] 
 
-    @srcJar = JarTarget.build_target(package, jardeps, name, "#{path}/src",
-                                     false)
+    @srcJar = JarTarget.build_target(package, jardeps, name, "#{path}/src", false)
     deps << @srcJar
 
     po_dir = "#{path}/po"

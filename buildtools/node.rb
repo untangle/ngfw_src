@@ -19,13 +19,10 @@ class NodeBuilder
   def NodeBuilder.makePackage(buildEnv, name, location, depsApi = [], baseHash = {})
     home = buildEnv.home
 
-    uvm_lib = BuildEnv::SRC['untangle-libuvm']
     dirName = location
     node = buildEnv["#{name}"]
     buildEnv.installTarget.register_dependency(node)
     buildEnv['node'].registerTarget("#{name}", node)
-
-    apiJar = nil
 
     ## If there is an API, build it first
     api = FileList["#{home}/#{dirName}/api/**/*.java"]
@@ -56,9 +53,9 @@ class NodeBuilder
       buildEnv.hierTarget.register_dependency(cf)
 
       # uncomment this to copy all python2.6 to python2.7 (for wheezy support)
-      # ms = MoveSpec.new("#{home}/#{dirName}/hier/usr/lib/python2.6", FileList["#{home}/#{dirName}/hier/usr/lib/python2.6/**/*"], "#{node.distDirectory}/usr/lib/python2.7/")
-      # cf = CopyFiles.new(node, ms, 'python2.7', buildEnv.filterset)
-      buildEnv.hierTarget.register_dependency(cf)
+      # ms_python = MoveSpec.new("#{home}/#{dirName}/hier/usr/lib/python2.6", FileList["#{home}/#{dirName}/hier/usr/lib/python2.6/**/*"], "#{node.distDirectory}/usr/lib/python2.7/")
+      # cf_python = CopyFiles.new(node, ms_python, 'python2.7', buildEnv.filterset)
+      # buildEnv.hierTarget.register_dependency(cf_python)
     end
 
     FileList["#{home}/#{dirName}/**/*.js"].each do |f|
@@ -67,7 +64,7 @@ class NodeBuilder
     end
   end
 
-  ## Helper to retrieve the standard dependencies for an impl
+  ## Helper to retrieve the standard dependencies
   def NodeBuilder.baseJars
     uvm_lib = BuildEnv::SRC['untangle-libuvm']
     Jars::Base + [Jars::JFreeChart, uvm_lib['api']]
