@@ -340,7 +340,7 @@ if (!Ung.hasResource["Ung.Network"]) {
                     width:200,
                     editor : {
                         xtype: 'textfield',
-                        vtype: "ipAddress", // need ip4Address FIXME
+                        vtype: "ip4Address",
                         allowBlank: false
                     }
                 }, {
@@ -439,8 +439,8 @@ if (!Ung.hasResource["Ung.Network"]) {
                             xtype:'textfield',
                             dataIndex: "v4StaticAddress",
                             fieldLabel: this.i18n._("Address"),
-                            //allowBlank: false, // need to disallow blank, but only if visible
-                            vtype: "ipAddress" // need ip4Address FIXME
+                            allowBlank: false,
+                            vtype: "ip4Address"
                         }, {
                             xtype: "combo",
                             dataIndex: "v4StaticPrefix",
@@ -452,24 +452,24 @@ if (!Ung.hasResource["Ung.Network"]) {
                             xtype:'textfield',
                             dataIndex: "v4StaticGateway",
                             fieldLabel: this.i18n._("Gateway"),
-                            //allowBlank: false, // need to disallow blank, but only if visible
-                            vtype: "ipAddress" // need ip4Address FIXME
+                            allowBlank: false,
+                            vtype: "ip4Address"
                         }, {
                             xtype:'textfield',
                             dataIndex: "v4StaticDns1",
                             fieldLabel: this.i18n._("Primary DNS"),
-                            //allowBlank: false, // need to disallow blank, but only if visible
-                            vtype: "ipAddress" // need ip4Address FIXME
+                            allowBlank: false,
+                            vtype: "ip4Address"
                         }, {
                             xtype:'textfield',
                             dataIndex: "v4StaticDns2",
                             fieldLabel: this.i18n._("Secondary DNS"),
-                            vtype: "ipAddress" // need ip4Address FIXME
+                            vtype: "ip4Address"
                         }, {
                             xtype:'textfield',
                             dataIndex: "v4AutoAddressOverride",
                             fieldLabel: this.i18n._("Address Override"),
-                            vtype: "ipAddress" // need ip4Address FIXME
+                            vtype: "ip4Address"
                         }, {
                             xtype: "combo",
                             dataIndex: "v4AutoPrefixOverride",
@@ -483,17 +483,17 @@ if (!Ung.hasResource["Ung.Network"]) {
                             xtype:'textfield',
                             dataIndex: "v4AutoGatewayOverride",
                             fieldLabel: this.i18n._("Gateway Override"),
-                            vtype: "ipAddress" // need ip4Address FIXME
+                            vtype: "ip4Address"
                         }, {
                             xtype:'textfield',
                             dataIndex: "v4AutoDns1Override",
                             fieldLabel: this.i18n._("Primary DNS Override"),
-                            vtype: "ipAddress" // need ip4Address FIXME
+                            vtype: "ip4Address"
                         }, {
                             xtype:'textfield',
                             dataIndex: "v4AutoDns2Override",
                             fieldLabel: this.i18n._("Secondary DNS Override"),
-                            vtype: "ipAddress" // need ip4Address FIXME
+                            vtype: "ip4Address"
                         }, {
                             xtype:'textfield',
                             dataIndex: "v4PPPoEUsername",
@@ -518,12 +518,12 @@ if (!Ung.hasResource["Ung.Network"]) {
                             xtype:'textfield',
                             dataIndex: "v4PPPoEDns1",
                             fieldLabel: this.i18n._("Primary DNS"),
-                            vtype: "ipAddress" // need ip4Address FIXME
+                            vtype: "ip4Address"
                         }, {
                             xtype:'textfield',
                             dataIndex: "v4PPPoEDns2",
                             fieldLabel: this.i18n._("Secondary DNS"),
-                            vtype: "ipAddress" // need ip4Address FIXME
+                            vtype: "ip4Address"
                         }]
                     }, {
                         xtype: 'fieldset',
@@ -570,33 +570,33 @@ if (!Ung.hasResource["Ung.Network"]) {
                         xtype:'textfield',
                         dataIndex: "v6StaticAddress",
                         fieldLabel: this.i18n._("Address"),
-                        //allowBlank: false, // need to disallow blank, but only if visible
-                        //vtype: "ip6Address", // FIXME new IPv6 validator
+                        allowBlank: false,
+                        vtype: "ip6Address",
                         width: 350
                     }, {
                         xtype:'textfield',
                         dataIndex: "v6StaticPrefixLength",
                         fieldLabel: this.i18n._("Prefix Length"),
-                        //allowBlank: false, // need to disallow blank, but only if visible
+                        allowBlank: false,
                         width: 150
                     }, {
                         xtype:'textfield',
                         dataIndex: "v6StaticGateway",
                         fieldLabel: this.i18n._("Gateway"),
-                        //allowBlank: false, // need to disallow blank, but only if visible
-                        //vtype: "ip6Address", // FIXME
+                        allowBlank: false,
+                        vtype: "ip6Address",
                         width: 350
                     }, {
                         xtype:'textfield',
                         dataIndex: "v6StaticDns1",
                         fieldLabel: this.i18n._("Primary DNS"),
-                        //vtype: "ip6Address", // FIXME
+                        vtype: "ip6Address",
                         width: 350
                     }, {
                         xtype:'textfield',
                         dataIndex: "v6StaticDns2",
                         fieldLabel: this.i18n._("Secondary DNS"),
-                        //vtype: "ip6Address", // FIXME
+                        vtype: "ip6Address",
                         width: 350
                     }]
                 }, {
@@ -614,12 +614,12 @@ if (!Ung.hasResource["Ung.Network"]) {
                         xtype: 'textfield',
                         dataIndex: "dhcpRangeStart",
                         fieldLabel: this.i18n._("Range Start"),
-                        vtype: "ipAddress" // need ip4Address //FIXME
+                        vtype: "ip4Address"
                     }, {
                         xtype:'textfield',
                         dataIndex: "dhcpRangeEnd",
                         fieldLabel: this.i18n._("Range End"),
-                        vtype: "ipAddress" // need ip4Address //FIXME
+                        vtype: "ip4Address"
                     }, {
                         xtype: 'container',
                         layout: 'column',
@@ -646,7 +646,7 @@ if (!Ung.hasResource["Ung.Network"]) {
                             xtype:'textfield',
                             dataIndex: "dhcpGatewayOverride",
                             fieldLabel: this.i18n._("Gateway Override"),
-                            vtype: "ipAddress" // need ip4Address //FIXME
+                            vtype: "ip4Address"
                         }, {
                             xtype: "combo",
                             dataIndex: "dhcpPrefixOverride",
@@ -660,7 +660,7 @@ if (!Ung.hasResource["Ung.Network"]) {
                             xtype:'textfield',
                             dataIndex: "dhcpDnsOverride",
                             fieldLabel: this.i18n._("DNS Override"),
-                            vtype: "ipAddress" // need ip4Address //FIXME
+                            vtype: "ip4Address"
                         }]
                     }]
                 }, {
