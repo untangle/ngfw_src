@@ -129,11 +129,6 @@ def prepareSystem():
         #debug("Adding jarfile: %s"%jarfile)
         os.environ['CLASSPATH'] += jarfile + ":"
 
-    # build the classpath
-    for jarfile in glob.glob( os.path.join('@THIRDPARTY_REPORTS_LIB@', '*.jar') ):
-        #debug("Adding jarfile: %s"%jarfile)
-        os.environ['CLASSPATH'] += jarfile + ":"
-
     os.unsetenv('DISPLAY');
 
     fdlimit=1024

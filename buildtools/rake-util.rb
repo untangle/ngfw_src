@@ -75,7 +75,6 @@ end
 
 include Debug
 
-# XXX make this class immutable
 class BuildEnv
   JAVA_HOME = '/usr/lib/jvm/java-6-sun'
   THIRD_PARTY_JAR = 'usr/share/java/uvm'
@@ -139,33 +138,20 @@ class BuildEnv
   end
 
   def filterset
-    jvm6 = '/usr/lib/jvm/java-6-sun'
-
     {
       /@PREFIX@/ => @prefix,
-      /@DEFAULT_JAVA6_HOME@/ => jvm6,
-      /@USR_BIN@/ => "#{@prefix}/usr/bin",
       /@UVM_HOME@/ => "#{@prefix}/usr/share/untangle",
-      /@UVM_DUMP@/ => "#{@prefix}/usr/share/untangle/dump",
       /@UVM_CONF@/ => "#{@prefix}/usr/share/untangle/conf",
-      /@UVM_LIB@/ => "#{@prefix}/usr/share/untangle/lib",
       /@UVM_LOG@/ => "/var/log/uvm",
       /@UVM_TOOLBOX@/ => "#{@prefix}/usr/share/untangle/toolbox",
-      /@UVM_SCHEMA@/ => "#{@prefix}/usr/share/untangle/schema",
       /@UVM_WEB@/ => "#{@prefix}/usr/share/untangle/web",
-      /@UVM_REPORTS@/ => "#{@prefix}/usr/share/untangle/web/reports",
-      /@THIRDPARTY_LIB_BASE@/ => "#{@prefix}/usr/share/java",
       /@THIRDPARTY_UVM_LIB@/ => "#{@prefix}/usr/share/java/uvm",
-      /@THIRDPARTY_TOMCAT_LIB@/ => "#{@prefix}/usr/share/java/tomcat",
-      /@THIRDPARTY_REPORTS_LIB@/ => "#{@prefix}/usr/share/java/reports",
       /@SRC_LIB@/ => "#{@prefix}/usr/lib/uvm",
       /@IS_DEVEL@/ => "#{@isDevel}"
     }
   end
 end
 
-## XXX This should be initialized lazily so that BuildEnv doesn't have
-## to be defined
 class JavaCompiler
   JavacCommand = "#{BuildEnv::JAVA_HOME}/bin/javac"
   JarCommand   = "#{BuildEnv::JAVA_HOME}/bin/jar"

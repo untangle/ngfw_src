@@ -39,7 +39,7 @@ lastError=`tail -n 100 @UVM_LOG@/console.log | grep 'netcap_intf_db.c:[0-9]*:CRI
 
 if [ "${lastError}x" != "x" ] && (( `date -d "${lastError}" +%s` > ( `date +%s` - 60 ))) ; then
    echo -e "\n[DEBUG:`date`] Running ucli refreshNetworkConfig to renew interfaces ${lastError}"
-   @USR_BIN@/ucli refreshNetworkConfig
+   /usr/bin/ucli refreshNetworkConfig
 fi
 
 true
