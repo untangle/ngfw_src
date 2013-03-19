@@ -15,6 +15,13 @@ puts "SRC_HOME = #{SRC_HOME}"
 $DevelBuild = ARGV.grep(/install/).empty?
 puts "DevelBuild = #{$DevelBuild}"
 
+## This is how you define where the stamp file will go
+module Rake
+  # StampFile = "./taskstamps.txt"
+  # StampFile = "../../work/src/taskstamps.txt"
+  StampFile = "#{SRC_HOME}/taskstamps.txt"
+end
+
 require "./buildtools/stamp-task.rb"
 require "./buildtools/rake-util.rb"
 require "./buildtools/target.rb"
@@ -22,11 +29,4 @@ require "./buildtools/jars.rb"
 require "./buildtools/c-compiler.rb"
 require "./buildtools/node.rb"
 
-
-## This is how you define where the stamp file will go
-module Rake
-  # StampFile = "./taskstamps.txt"
-  # StampFile = "../../work/src/taskstamps.txt"
-  StampFile = "#{SRC_HOME}/taskstamps.txt"
-end
 

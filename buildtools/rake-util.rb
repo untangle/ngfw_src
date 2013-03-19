@@ -274,6 +274,14 @@ class MoveSpec
     end
   end
 
+  def source_str()
+    if @pattern.kind_of?(FileList) 
+      return "#{@dir}"
+    else
+      return "#{@dir}/#{@pattern}"
+    end
+  end
+
   def each_move(destBase = nil)
     moveDest = move_dest(destBase)
 

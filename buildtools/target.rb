@@ -231,7 +231,9 @@ class CopyFiles < Target
     @taskName = taskName
     @targetName = "copyfiles:#{package.name}-#{taskName}"
     @logged = false
-    
+    @moveSpecs = moveSpecs
+    @destBase = destBase
+
     deps = [];
 
     [moveSpecs].flatten.each do |moveSpec|
@@ -275,7 +277,9 @@ class CopyFiles < Target
   private
   def log
     if not @logged then
-      info "[copy    ] #{@package.name} #{@taskName}"
+      [@moveSpecs].flatten.each do |moveSpec|
+        info "[copy    ] #{moveSpec.source_str} -> #{moveSpec.move_dest(@destBase)}"
+      end
       @logged = true
     end
   end
@@ -331,8 +335,7 @@ class ServletBuilder < Target
 
     libMoveSpecs = libdeps.compact.map do |d|
       file = d.filename
-      MoveSpec.new(File.dirname(file), File.basename(file),
-                   "#{@destRoot}/WEB-INF/lib")
+      MoveSpec.new(File.dirname(file), File.basename(file), "#{@destRoot}/WEB-INF/lib")
     end
 
     unless 0 == libMoveSpecs.length
