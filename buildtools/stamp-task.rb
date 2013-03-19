@@ -52,7 +52,7 @@ module Rake
     def print_needed
       prereq = @prerequisites.find { |n| Rake::Task[n].timestamp > timestamp()}
       return if prereq == nil
-      print "needed:"
+      print "needed: "
       puts prereq
       prereq.each { |n| if Rake::Task[n].class.name == "Rake::StampTask" then Rake::Task[n].print_needed end }
     end      

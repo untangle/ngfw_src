@@ -367,6 +367,9 @@ class ServletBuilder < Target
   end
 
   def build
+    # puts "needed #{@srcJar}:"
+    # self.print_needed
+
     ensureDirectory("#{@destRoot}/WEB-INF/lib")
 
     if (@srcJar.file?)
