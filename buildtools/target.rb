@@ -372,7 +372,7 @@ class ServletBuilder < Target
     if (@srcJar.file?)
       srcJarName = @srcJar.filename()
       if File.exist? srcJarName
-        FileUtils.cp(srcJarName, "#{@destRoot}/WEB-INF/lib")
+        FileUtils.cp(srcJarName, "#{@destRoot}/WEB-INF/lib", :preserve => true)
       end
     end
   end
