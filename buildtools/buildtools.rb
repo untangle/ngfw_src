@@ -1,13 +1,7 @@
-# Robert Scott <rbscott@untangle.com>
-# Aaron Read <amread@untangle.com>
 # Sebastien Delafond <seb@untangle.com>
+# Dirk Morris <dmorris@untangle.com>
 
-## This is how you define where the stamp file will go
-module Rake
-  StampFile = "./taskstamps.txt"
-end
 
-# Certified Filthy2008
 ENV["JAVA_HOME"] = "/usr/lib/jvm/java-6-sun"
 
 POTENTIAL_SRC_HOMES = [ ENV['SRC_HOME'], '../../work/src', '../../src' ]
@@ -27,3 +21,12 @@ require "./buildtools/target.rb"
 require "./buildtools/jars.rb"
 require "./buildtools/c-compiler.rb"
 require "./buildtools/node.rb"
+
+
+## This is how you define where the stamp file will go
+module Rake
+  # StampFile = "./taskstamps.txt"
+  # StampFile = "../../work/src/taskstamps.txt"
+  StampFile = "#{SRC_HOME}/taskstamps.txt"
+end
+
