@@ -311,8 +311,7 @@ class ServletBuilder < Target
 
     deps = []
 
-    deps << CopyFiles.new(package, MoveSpec.new("#{path}/root/", "**/*",
-                                                @destRoot), "#{suffix}-root")
+    deps << CopyFiles.new(package, MoveSpec.new("#{path}/root", "**/*", @destRoot), "#{suffix}-root", BuildEnv::SRC.filterset)
 
     if File.exist? "#{path}/apache.conf"
       deps << CopyFiles.new(package,
