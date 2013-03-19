@@ -147,6 +147,7 @@ class BuildEnv
       /@UVM_WEB@/ => "#{@prefix}/usr/share/untangle/web",
       /@THIRDPARTY_UVM_LIB@/ => "#{@prefix}/usr/share/java/uvm",
       /@SRC_LIB@/ => "#{@prefix}/usr/lib/uvm",
+      /@BUILD_STAMP@/ => Time.now.to_i.to_s,
       /@IS_DEVEL@/ => "#{@isDevel}"
     }
   end

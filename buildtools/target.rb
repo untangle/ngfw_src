@@ -21,9 +21,13 @@ class Target
     make_dependencies
 
     ## Define the task
-    stamptask self do
+    @task = stamptask self do
       build
     end
+  end
+
+  def print_needed
+    @task.print_needed
   end
 
   ## Return true if this target generates a file This is useful for
@@ -318,6 +322,10 @@ class ServletBuilder < Target
                             "#{suffix}-apache")
     end
 
+    if File.exist? "#{path}/web.xml"
+      deps << "#{path}/web.xml"
+    end
+
     unless 0 == ms.length
       deps << CopyFiles.new(package, ms, "#{suffix}-ms", nil, @destRoot)
     end
@@ -369,60 +377,46 @@ class ServletBuilder < Target
       end
     end
 
+    # No longer bother pre-compiling jsps, let tomcat handle
     classroot = File.join(@destRoot, "WEB-INF", "classes")
 
-    webfrag = Tempfile.new("file-list")
-    webfrag.close
+    # webfrag = Tempfile.new("file-list")
+    # webfrag.close
 
-    uvm_lib = BuildEnv::SRC['untangle-libuvm']
-    cp = @nodedeps.map { |j| j.filename }
-    cp += JspcClassPath
-    cp += Jars::Base.map { |j| j.filename }
-    cp += [uvm_lib["api"]].map { |t| t.filename }
-    cp += Jars::Base.map {|f| f.filename }
-    cp += [SRC_HOME+"/buildtools"] unless SRC_HOME.nil?
+    # uvm_lib = BuildEnv::SRC['untangle-libuvm']
+    # cp = @nodedeps.map { |j| j.filename }
+    # cp += JspcClassPath
+    # cp += Jars::Base.map { |j| j.filename }
+    # cp += [uvm_lib["api"]].map { |t| t.filename }
+    # cp += Jars::Base.map {|f| f.filename }
+    # cp += [SRC_HOME+"/buildtools"] unless SRC_HOME.nil?
 
-    args = ["-s", "-die", "-l", "-v", "-compile", "-d", classroot,
-            "-p", @pkgname, "-webinc", webfrag.path, "-source", "1.5",
-            "-target", "1.5", "-uriroot", @destRoot]
+    # args = ["-s", "-die", "-l", "-v", "-compile", "-d", classroot,
+    #         "-p", @pkgname, "-webinc", webfrag.path, "-source", "1.5",
+    #         "-target", "1.5", "-uriroot", @destRoot]
 
-    Dir.chdir(@destRoot) do |d|
-      Find.find('.') do |f|
-        if /\.jsp$/ =~ f
-          @jsp_list << f
-        end
-      end
-    end
+    # Dir.chdir(@destRoot) do |d|
+    #   Find.find('.') do |f|
+    #     if /\.jsp$/ =~ f
+    #       @jsp_list << f
+    #     end
+    #   end
+    # end
 
-    @jsp_list.map! do |e|
-      if /^\.\// =~ e then $' else e end
-    end
+    # @jsp_list.map! do |e|
+    #   if /^\.\// =~ e then $' else e end
+    # end
 
-    args += @jsp_list.to_a
+    # args += @jsp_list.to_a
 
-    if @jsp_list.empty?
-      debug( "Empty JSP file list." )
-      return
-    end
+    # if @jsp_list.empty?
+    #   debug( "Empty JSP file list." )
+    #   return
+    # end
 
-    JavaCompiler.run(cp, "org.apache.jasper.JspC", true, *args)
+    # JavaCompiler.run(cp, "org.apache.jasper.JspC", true, *args)
 
     FileList["#{@destRoot}/**/*.java"].each { |f| FileUtils.rm(f) }
-
-    tmp = Tempfile.new("web")
-    tmp.close
-    webXmlFilename = "#{@destRoot}/WEB-INF/web.xml"
-    FileUtils.cp(webXmlFilename, tmp.path)
-
-    repl = File.open(webfrag.path) { |f| f.read }
-
-    File.open(tmp.path) do |tmp|
-      File.open(webXmlFilename, 'w') do |webXml|
-        tmp.each_line do |l|
-          webXml.puts(l.sub(/@JSP_PRE_COMPILED_SERVLETS@/, repl).sub(/@BUILD_STAMP@/, Time.now.to_i.to_s))
-        end
-      end
-    end
   end
 
   def to_s

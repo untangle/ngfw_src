@@ -34,9 +34,6 @@
     <servlet-class>com.untangle.node.smtp.web.euv.I18NServlet</servlet-class>
   </servlet>
   
-
-  @JSP_PRE_COMPILED_SERVLETS@
-
   <servlet-mapping>
     <servlet-name>InboxMaintenenceControler</servlet-name>
     <url-pattern>/manageuser</url-pattern>

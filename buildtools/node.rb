@@ -47,7 +47,7 @@ class NodeBuilder
     end
 
     hierFiles = FileList["#{home}/#{dirName}/hier/**/*"]
-    if (0 < hierFiles.length)
+    if ( hierFiles.length > 0 )
       ms = MoveSpec.new("#{home}/#{dirName}/hier", hierFiles, node.distDirectory)
       cf = CopyFiles.new(node, ms, 'hier', buildEnv.filterset)
       buildEnv.hierTarget.register_dependency(cf)
