@@ -135,7 +135,7 @@ class InstalledJar < Target
 
   ## Retrieve a third party jar, returning the cached value if it else
   ## or a new one otherwise
-  def InstalledJar.get(package, path, name)
+  def InstalledJar.get(package, path, name = nil)
     return package[path] if (package.hasTarget?(path))
 
     ## Otherwise return a new instances(This will automatically get
