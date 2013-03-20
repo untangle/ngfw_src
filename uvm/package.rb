@@ -101,10 +101,13 @@ if BuildEnv::SRC.isDevel
   BuildEnv::SRC.installTarget.register_dependency(wizardCompleteFile)
 end
 
-deps  = Jars::Base + Jars::TomcatEmb + Jars::JavaMail +   
-  [ uvm_lib['bootstrap'], uvm_lib['api'], uvm_lib['impl'], jnetcap['impl'], jvector['impl']]
-
-JarTarget.build_target(BuildEnv::SRC["unittest"], deps, 'untangle-libuvm', "./uvm/unittest")
+jsFiles = FileList["./uvm/**/*.js"]
+if ( jsFiles.length > 0 ) 
+  jsFiles.each do |f|
+    jsl = JsLintTarget.new(uvm_lib, [f], 'jslint', f)
+    BuildEnv::SRC.jsLintTarget.register_dependency(jsl)
+  end
+end
 
 JavaMsgFmtTarget.make_po_targets(uvm_lib, "#{BuildEnv::SRC.home}/uvm/po",
                                  "#{uvm_lib.distDirectory}/usr/share/untangle/lang/",

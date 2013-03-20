@@ -58,9 +58,12 @@ class NodeBuilder
       # buildEnv.hierTarget.register_dependency(cf_python)
     end
 
-    FileList["#{home}/#{dirName}/**/*.js"].each do |f|
-      jsl = JsLintTarget.new(f)
-      buildEnv.jsLintTarget.register_dependency(jsl)
+    jsFiles = FileList["#{home}/#{dirName}/hier/usr/share/untangle/web/webui/**/*.js"]
+    if ( jsFiles.length > 0 ) 
+      jsFiles.each do |f|
+        jsl = JsLintTarget.new(node, [f], 'jslint', f)
+        buildEnv.jsLintTarget.register_dependency(jsl)
+      end
     end
   end
 

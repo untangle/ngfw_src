@@ -388,27 +388,26 @@ class ServletBuilder < Target
   end
 end
 
-class JsLintTarget
+class JsLintTarget < Target
   JS_LINT_COMMAND = "/usr/bin/jslint"
   
   attr_reader :filename
-  
-  def initialize(filename)
+
+  def initialize(package, deps, taskName, filename)
+    @targetName = "jslint:#{package.name}-#{taskName}-#{filename}"
+    super(package, deps, @targetName)
     @filename = filename
-    task self do
-      build
-    end
   end
 
   def to_s
-    "jslint:#{@filename}"
+    @targetName
   end
 
   protected
 
   def build()
     info "[jslint  ] #{@filename}"
-    Kernel.system(JS_LINT_COMMAND, @filename)
+    # Kernel.system(JS_LINT_COMMAND, @filename)
   end
 end
 
