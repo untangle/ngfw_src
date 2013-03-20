@@ -17,7 +17,7 @@ puts "DevelBuild = #{$DevelBuild}"
 ## This is how you define where the stamp file will go
 module Rake
   StampFile = "./taskstamps.txt"
-  StampFile = "#{SRC_HOME}/#{StampFile}" if $DevelBuild and ENV["USER"] != "buildbot"
+  StampFile = "#{SRC_HOME}/#{StampFile}" if ($DevelBuild and ENV["USER"] != "buildbot")
 end
 
 require "./buildtools/stamp-task.rb"
