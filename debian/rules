@@ -70,7 +70,7 @@ install: build
 	@dh_installdirs -a
 	rake install
 	rm -f debian/untangle-vm/usr/share/untangle/log
-	ln -sf /var/log/uvm debian/untangle-vm/usr/share/untangle/log
+	#ln -sf /var/log/uvm debian/untangle-vm/usr/share/untangle/log
 	find debian/untangle-libuvm/usr/share/untangle -type f -print0 | xargs -0 chmod 644
 
 binary-arch: install
