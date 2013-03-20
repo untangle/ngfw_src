@@ -1,3 +1,9 @@
+untangle-vm (10.0.0~svn20130320r34349trunk-1squeeze) dmorris; urgency=low
+
+  * 10.0
+
+ -- Dirk Morris <dmorris@untangle.com>  Tue, 20 Mar 2013 13:24:00 -0700
+
 untangle-vm (5.4.0~svn20080722r17704trunk+seb20080722T151546-1etch) seb; urgency=low
 
   * auto build
