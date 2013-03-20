@@ -11,13 +11,13 @@ SRC_HOME = POTENTIAL_SRC_HOMES.compact.find do |d|
 end
 puts "SRC_HOME = #{SRC_HOME}"
 
-$DevelBuild = ! SRC_HOME.empty?
+$DevelBuild = ARGV.grep(/install/).empty?
 puts "DevelBuild = #{$DevelBuild}"
 
 ## This is how you define where the stamp file will go
 module Rake
   StampFile = "./taskstamps.txt"
-  StampFile = "#{SRC_HOME}/#{StampFile}" if $DevelBuild
+  StampFile = "#{SRC_HOME}/#{StampFile}" if $DevelBuild and ENV["USER"] != "buildbot"
 end
 
 require "./buildtools/stamp-task.rb"
