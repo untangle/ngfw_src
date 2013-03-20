@@ -61,7 +61,7 @@ file libuvmcore_so do
   archivesFiles = archives.map { |n| BuildEnv::SRC[n]['archive'].filename }
 
   CBuilder.new(BuildEnv::SRC, compilerEnv).makeSharedLibrary(archivesFiles, libuvmcore_so, [],
-                                                             ['xml2', 'sysfs', 'netfilter_queue','netfilter_conntrack'], wlibs)
+                                                             ['netfilter_queue','netfilter_conntrack'], wlibs)
 end
 
 BuildEnv::SRC['untangle-libuvm']['impl'].register_dependency(libuvmcore_so)
