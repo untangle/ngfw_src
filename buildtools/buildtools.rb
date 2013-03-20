@@ -18,7 +18,7 @@ puts "DevelBuild = #{$DevelBuild}"
 module Rake
   SF = "./taskstamps.txt"
   
-  if $DevelBuild and ENV["USER"] != "buildbot" then
+  if $DevelBuild and ARGV != ['clean'] then
     StampFile = "#{SRC_HOME}/#{SF}"
   else
     StampFile = SF
