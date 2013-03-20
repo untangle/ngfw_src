@@ -12,7 +12,6 @@
         @import "/ext4/examples/ux/css/CheckHeader.css?s=${buildStamp}";
     </style>
     
-    <!--   <uvm:skin src="ext-skin.css"  name="${skinSettings.skinName}"/> -->
     <uvm:skin src="admin.css?s=${buildStamp}" name="${skinSettings.skinName}"/>
 
     <script type="text/javascript" src="/ext4/ext-all-debug.js?s=${buildStamp}"></script>

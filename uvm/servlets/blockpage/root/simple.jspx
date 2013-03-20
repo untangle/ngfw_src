@@ -1,5 +1,6 @@
 <html xmlns:jsp="http://java.sun.com/JSP/Page"
       xmlns:c="http://java.sun.com/jsp/jstl/core"
+      xmlns:uvm="http://java.untangle.com/jsp/uvm"
       xmlns="http://www.w3.org/1999/xhtml">
 
   <jsp:output omit-xml-declaration="true"
@@ -10,13 +11,9 @@
   <jsp:directive.page contentType="text/html"/>
 
   <head>
-    <title><c:out value="${pageTitle}"/></title>
     <META content="IE=7.0000" http-equiv="X-UA-Compatible"/>
-    <style type="text/css">
-      @import "skins/second/css/ext-skin.css";
-      @import "skins/second/css/skin.css";
-    </style>
-    
+    <title><c:out value="${pageTitle}"/></title>
+    <uvm:skin src="user.css" name="${skinSettings.skinName}"/>
     <c:out escapeXml="false" value="${requestScope.javascript}"/>
   </head>
 
@@ -40,10 +37,5 @@
     <!-- This is used in the CSS Zen Garden -->
     <!-- These extra divs/spans may be used as catch-alls to add extra imagery. -->
     <div id="extra-div-1"><span></span></div>
-    <div id="extra-div-2"><span></span></div>
-    <div id="extra-div-3"><span></span></div>
-    <div id="extra-div-4"><span></span></div>
-    <div id="extra-div-5"><span></span></div>
-    <div id="extra-div-6"><span></span></div>
   </body>  
 </html>
