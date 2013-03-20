@@ -22,6 +22,7 @@ module Rake
     StampFile = "#{SRC_HOME}/#{SF}"
   else
     StampFile = SF
+  end
 end
 
 require "./buildtools/stamp-task.rb"
