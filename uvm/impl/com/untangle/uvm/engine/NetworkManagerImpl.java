@@ -19,6 +19,7 @@ import com.untangle.uvm.network.NetworkSettings;
 import com.untangle.uvm.network.NetworkSettingsListener;
 import com.untangle.uvm.network.InterfaceSettings;
 import com.untangle.uvm.network.InterfaceStatus;
+import com.untangle.uvm.network.DeviceSettings;
 import com.untangle.uvm.network.BypassRule;
 import com.untangle.uvm.network.StaticRoute;
 import com.untangle.uvm.network.NatRule;
@@ -122,6 +123,7 @@ public class NetworkManagerImpl implements NetworkManager
                 readSettings.setDnsSettings( dnsSettings );
             }
 
+            checkForNewDevices( readSettings );
             
             this.networkSettings = readSettings;
             logger.debug( "Loading Settings: " + this.networkSettings.toJSONString() );
@@ -417,6 +419,69 @@ public class NetworkManagerImpl implements NetworkManager
 
         this.reconfigure();
     }
+
+    private void checkForNewDevices( NetworkSettings netSettings )
+    {
+        ExecManagerResult result = UvmContextFactory.context().execManager().exec( "find /sys/class/net -type l -name 'eth*' | sed -e 's|/sys/class/net/||' | sort " );
+        String deviceNames[] = result.getOutput().split("\\r?\\n");
+
+        /**
+         * For each physical device look for the settings in interfaces
+         * If not found, create some reasonable defaults
+         */
+        for ( String deviceName : deviceNames ) {
+            boolean foundMatchingInterface = false;
+            if ( netSettings.getInterfaces() != null ) {
+                for ( InterfaceSettings interfaceSettings : netSettings.getInterfaces() ) {
+                    if ( deviceName.equals( interfaceSettings.getPhysicalDev() ) )
+                        foundMatchingInterface = true;
+                }
+            }
+            if ( ! foundMatchingInterface ) {
+                logger.warn("Found unmapped new physical device: " + deviceName);
+                logger.warn("Creating new InterfaceSettings for " + deviceName + ".");
+
+                InterfaceSettings interfaceSettings = new InterfaceSettings();
+                interfaceSettings.setInterfaceId( nextFreeInterfaceId( netSettings ));
+                interfaceSettings.setPhysicalDev( deviceName );
+                interfaceSettings.setSystemDev( deviceName );
+                interfaceSettings.setSymbolicDev( deviceName );
+                interfaceSettings.setIsWan( false );
+                interfaceSettings.setConfigType( InterfaceSettings.ConfigType.DISABLED );
+
+                List<InterfaceSettings> currentList = netSettings.getInterfaces();
+                if (currentList == null) currentList = new LinkedList<InterfaceSettings>();
+                currentList.add( interfaceSettings );
+                netSettings.setInterfaces( currentList );
+            }
+        }
+
+        /**
+         * For each physical device look for the settings in devices
+         * If not found, create some reasonable defaults
+         */
+        for ( String deviceName : deviceNames ) {
+            boolean foundMatchingDevice = false;
+            if ( netSettings.getDevices() != null ) {
+                for ( DeviceSettings deviceSettings : netSettings.getDevices() ) {
+                    if ( deviceName.equals( deviceSettings.getDeviceName() ) )
+                        foundMatchingDevice = true;
+                }
+            }
+            if ( ! foundMatchingDevice ) {
+                logger.warn("Found unmapped new physical device: " + deviceName);
+                logger.warn("Creating new DeviceSettings for " + deviceName + ".");
+
+                DeviceSettings deviceSettings = new DeviceSettings();
+                deviceSettings.setDeviceName( deviceName );
+
+                List<DeviceSettings> currentList = netSettings.getDevices();
+                if (currentList == null) currentList = new LinkedList<DeviceSettings>();
+                currentList.add( deviceSettings );
+                netSettings.setDevices( currentList );
+            }
+        }
+    }
     
     private NetworkSettings defaultSettings()
     {
@@ -426,19 +491,27 @@ public class NetworkManagerImpl implements NetworkManager
         newSettings.setDomainName( "example.com" );
                                 
         ExecManagerResult result = UvmContextFactory.context().execManager().exec( "find /sys/class/net -type l -name 'eth*' | sed -e 's|/sys/class/net/||' | sort " );
-        String devices[] = result.getOutput().split("\\r?\\n");
+        String deviceNames[] = result.getOutput().split("\\r?\\n");
         
         try {
+            LinkedList<DeviceSettings> devices = new LinkedList<DeviceSettings>();
+            for (String deviceName : deviceNames) {
+                DeviceSettings deviceSettings = new DeviceSettings();
+                deviceSettings.setDeviceName( deviceName );
+                devices.add( deviceSettings );
+            }
+            newSettings.setDevices( devices );
+            
             LinkedList<InterfaceSettings> interfaces = new LinkedList<InterfaceSettings>();
 
-            if (devices.length > 0) {
+            if (deviceNames.length > 0) {
                 InterfaceSettings external = new InterfaceSettings();
                 external.setInterfaceId( 1 );
                 external.setName( "Extern\u00e1l" );
                 external.setIsWan( true );
-                external.setPhysicalDev( devices[0] );
-                external.setSystemDev( devices[0] );
-                external.setSymbolicDev( devices[0] );
+                external.setPhysicalDev( deviceNames[0] );
+                external.setSystemDev( deviceNames[0] );
+                external.setSymbolicDev( deviceNames[0] );
                 external.setConfigType( InterfaceSettings.ConfigType.ADDRESSED );
                 external.setV4ConfigType( InterfaceSettings.V4ConfigType.AUTO );
                 external.setV6ConfigType( InterfaceSettings.V6ConfigType.AUTO );
@@ -446,36 +519,27 @@ public class NetworkManagerImpl implements NetworkManager
                 interfaces.add( external );
             }
         
-            if (devices.length > 1) {
+            if (deviceNames.length > 1) {
                 InterfaceSettings internal = new InterfaceSettings();
                 internal.setInterfaceId( 2 );
                 internal.setName( "Intern\u00e1l" );
                 internal.setIsWan( false );
-                internal.setPhysicalDev( devices[1] );
-                internal.setSystemDev( devices[1] );
-                internal.setSymbolicDev( devices[1] );
+                internal.setPhysicalDev( deviceNames[1] );
+                internal.setSystemDev( deviceNames[1] );
+                internal.setSymbolicDev( deviceNames[1] );
                 internal.setConfigType( InterfaceSettings.ConfigType.ADDRESSED );
                 internal.setV4ConfigType( InterfaceSettings.V4ConfigType.STATIC );
                 internal.setV4StaticAddress( InetAddress.getByName("192.168.2.1") );
                 internal.setV4StaticPrefix( 24 );
                 internal.setDhcpEnabled( true );
-                // FIXME what to set IPv6 to?
-                internal.setV6ConfigType( InterfaceSettings.V6ConfigType.STATIC );
-                internal.setV6StaticAddress( InetAddress.getByName("2001:db8:85a3:0:0:8a2e:370:7334") );
+                internal.setV6ConfigType( InterfaceSettings.V6ConfigType.STATIC ); 
+                internal.setV6StaticAddress( InetAddress.getByName("2001:db8:85a3:0:0:8a2e:370:7334") ); // FIXME what to set IPv6 to?
                 internal.setV6StaticPrefixLength( 64 );
                 internal.setBridgedTo( 1 );
-
-                // InterfaceSettings.InterfaceAlias alias = new InterfaceSettings.InterfaceAlias();
-                // alias.setV4StaticAddress( InetAddress.getByName("192.168.3.1") );
-                // alias.setV4StaticPrefix( 24 );
-                // List<InterfaceSettings.InterfaceAlias> aliases = new LinkedList<InterfaceSettings.InterfaceAlias>();
-                // aliases.add(alias);
-                // internal.setV4Aliases( aliases );
-
                 interfaces.add(internal);
             }
 
-            for (int i = 2 ; i < devices.length ; i++ ) {
+            for (int i = 2 ; i < deviceNames.length ; i++ ) {
                 String[] greekNames = new String[]{"Alpha","Beta","Gamma","Delta","Epsilon","Zeta","Eta","Theta","Iota","Kappa","Lambda","Mu"};
                 
                 InterfaceSettings intf = new InterfaceSettings();
@@ -485,9 +549,9 @@ public class NetworkManagerImpl implements NetworkManager
                 } catch (Exception e) {
                     intf.setName("Interface " + (i + 1));
                 }
-                intf.setPhysicalDev(devices[i]);
-                intf.setSystemDev(devices[i]);
-                intf.setSymbolicDev(devices[i]);
+                intf.setPhysicalDev(deviceNames[i]);
+                intf.setSystemDev(deviceNames[i]);
+                intf.setSymbolicDev(deviceNames[i]);
                 intf.setConfigType( InterfaceSettings.ConfigType.DISABLED );
                 interfaces.add( intf );
             }
@@ -837,5 +901,17 @@ public class NetworkManagerImpl implements NetworkManager
     {
         List<FilterRule> rules = new LinkedList<FilterRule>();
         return rules;
+    }
+
+    private int nextFreeInterfaceId( NetworkSettings netSettings)
+    {
+        if (netSettings == null)
+            return 1;
+        int free = 1;
+        for ( InterfaceSettings intfSettings : netSettings.getInterfaces() ) {
+            if ( free <= intfSettings.getInterfaceId() )
+                free = intfSettings.getInterfaceId() + 1;
+        }
+        return free;
     }
 }
