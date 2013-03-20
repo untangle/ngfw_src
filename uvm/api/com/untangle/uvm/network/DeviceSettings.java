@@ -22,7 +22,7 @@ public class DeviceSettings implements Serializable, JSONString
 {
     private String deviceName;
 
-    public static enum Duplex { AUTO, M1000_FULL_DUPLEX, M100_FULL_DUPLEX, M100_HALF_DUPLEX, M10_FULL_DUPLEX, M10_HALF_DUPLEX };
+    public static enum Duplex { AUTO, M1000_FULL_DUPLEX, M1000_HALF_DUPLEX, M100_FULL_DUPLEX, M100_HALF_DUPLEX, M10_FULL_DUPLEX, M10_HALF_DUPLEX };
     private Duplex duplex = Duplex.AUTO; 
 
     private Integer mtu; /* null means auto */
