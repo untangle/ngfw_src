@@ -205,7 +205,7 @@ class JavaCompiler
       Dir.chdir(dest)
       raise "unjar failed" unless
         Kernel.system(JarCommand, "xf", src)
-      Kernel.system("touch", dest)
+      Kernel.system("touch", ".")
       Dir.chdir(wd)
       dest
     else
