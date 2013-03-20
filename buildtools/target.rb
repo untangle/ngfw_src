@@ -127,20 +127,20 @@ end
 
 ## This is a precompiled third-party JAR
 class InstalledJar < Target
-  def initialize(package, path)
+  def initialize(package, path, name = nil)
     @fullpath = "#{path}"
-    name = File.basename(@fullpath, '.jar').split('-').last
+    name = File.basename(@fullpath, '.jar').split('-').last if name == nil
     super(package, [], name)
   end
 
   ## Retrieve a third party jar, returning the cached value if it else
   ## or a new one otherwise
-  def InstalledJar.get(package, path)
+  def InstalledJar.get(package, path, name)
     return package[path] if (package.hasTarget?(path))
 
     ## Otherwise return a new instances(This will automatically get
     ## registered in package)
-    InstalledJar.new(package, path)
+    InstalledJar.new(package, path, name)
   end
 
   def make_dependencies()
