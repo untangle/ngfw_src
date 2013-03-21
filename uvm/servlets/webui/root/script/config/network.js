@@ -1510,7 +1510,7 @@ if (!Ung.hasResource["Ung.Network"]) {
                 parentId: this.getId(),
                 autoHeight: true,
                 flex: 1,
-                items: [ this.panelGeneral, this.panelQoS, this.panelFilter, this.panelDnsServer, this.panelNetworkCards ]
+                items: [ this.panelGeneral, this.panelQoS, this.panelFilter, this.panelDnsServer, this.gridNetworkCards ]
             });
             
             this.panelAdvanced = Ext.create('Ext.panel.Panel',{
@@ -2377,6 +2377,63 @@ if (!Ung.hasResource["Ung.Network"]) {
         },        
         // NetworkCards Panel
         buildNetworkCards: function() {
+            this.duplexStore = [
+              ["AUTO", this.i18n._( "Auto" )], 
+              ["M1000_FULL_DUPLEX", this.i18n._( "1000 Mbps, Full Duplex" )],
+              ["M1000_HALF_DUPLEX", this.i18n._( "1000 Mbps, Half Duplex" )],
+              ["M100_FULL_DUPLEX", this.i18n._( "100 Mbps, Full Duplex" )],
+              ["M100_HALF_DUPLEX", this.i18n._( "100 Mbps, Half Duplex" )],
+              ["M10_FULL_DUPLEX", this.i18n._( "10 Mbps, Full Duplex" )],
+              ["M10_HALF_DUPLEX", this.i18n._( "10 Mbps, Half Duplex" )]
+            ];
+            this.duplexMap = Ung.Util.createStoreMap(this.duplexStore);
+
+            this.gridNetworkCards = Ext.create( 'Ung.EditorGrid', {
+                name: 'Network Cards',
+                helpSource: 'network_cards',
+                parentId: this.getId(),
+                title: this.i18n._('Network Cards'),
+                settingsCmp: this,
+                paginated: false,
+                hasAdd: false,
+                hasDelete: false,
+                hasEdit: false,
+                recordJavaClass: "com.untangle.uvm.network.DeviceSettings",
+                dataProperty: 'devices',
+                fields: [{
+                    name: 'deviceName'
+                }, {
+                    name: 'duplex'
+                }, {
+                    name: 'mtu'
+                }],
+                columns: [{
+                    header: this.i18n._("Device Name"),
+                    width: 250,
+                    dataIndex: 'deviceName'
+                }, {
+                    header: this.i18n._("MTU"),
+                    dataIndex: 'mtu',
+                    width: 100,
+                    editor: {
+                        xtype:'numberfield'
+                    }
+                }, {
+                    header: this.i18n._("Ethernet Media"),
+                    dataIndex: 'duplex',
+                    width: 250,
+                    renderer: Ext.bind(function( value, metadata, record ) {
+                        return this.duplexMap[value];
+                    }, this ),
+                    editor: {
+                        xtype: 'combo',
+                        store: this.duplexStore,
+                        queryMode: 'local',
+                        editable: false
+                    }
+                }]
+            });
+            /*
             this.panelNetworkCards = Ext.create('Ext.panel.Panel',{
                 name: 'panelNetworkCards',
                 helpSource: 'network_dns_server',
@@ -2384,8 +2441,9 @@ if (!Ung.hasResource["Ung.Network"]) {
                 title: this.i18n._('Network Cards'),
                 layout: 'anchor',
                 cls: 'ung-panel',
-                items: []
+                items: [this.gridNetworkCards]
             });
+            */
         },
         validate: function() {
             if(this.settings.qosSettings.qosEnabled) {
@@ -2413,7 +2471,7 @@ if (!Ung.hasResource["Ung.Network"]) {
             this.settings = rpc.networkManager.getNetworkSettings();
         },
         beforeSave: function(isApply, handler) {
-            this.beforeSaveCount = 11;
+            this.beforeSaveCount = 12;
 
             Ext.MessageBox.wait(i18n._("Applying Network Settings..."), i18n._("Please wait"));
 
@@ -2503,6 +2561,12 @@ if (!Ung.hasResource["Ung.Network"]) {
 
             this.gridDnsLocalServers.getList(Ext.bind(function(saveList) {
                 this.settings.dnsSettings.localServers = saveList;
+                this.beforeSaveCount--;
+                if (this.beforeSaveCount <= 0)
+                    handler.call(this, isApply);
+            }, this));
+            this.gridNetworkCards.getList(Ext.bind(function(saveList) {
+                this.settings.devices = saveList;
                 this.beforeSaveCount--;
                 if (this.beforeSaveCount <= 0)
                     handler.call(this, isApply);
