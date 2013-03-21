@@ -340,7 +340,7 @@ if (!Ung.hasResource["Ung.Network"]) {
                     width:200,
                     editor : {
                         xtype: 'textfield',
-                        vtype: "ip4Address",
+                        vtype: 'ip4Address',
                         allowBlank: false
                     }
                 }, {
@@ -439,7 +439,7 @@ if (!Ung.hasResource["Ung.Network"]) {
                             xtype:'textfield',
                             dataIndex: "v4StaticAddress",
                             fieldLabel: this.i18n._("Address"),
-                            allowBlank: false,
+                            allowBlank: false, 
                             vtype: "ip4Address"
                         }, {
                             xtype: "combo",
@@ -452,13 +452,13 @@ if (!Ung.hasResource["Ung.Network"]) {
                             xtype:'textfield',
                             dataIndex: "v4StaticGateway",
                             fieldLabel: this.i18n._("Gateway"),
-                            allowBlank: false,
+                            allowBlank: false, 
                             vtype: "ip4Address"
                         }, {
                             xtype:'textfield',
                             dataIndex: "v4StaticDns1",
                             fieldLabel: this.i18n._("Primary DNS"),
-                            allowBlank: false,
+                            allowBlank: false, 
                             vtype: "ip4Address"
                         }, {
                             xtype:'textfield',
@@ -552,7 +552,7 @@ if (!Ung.hasResource["Ung.Network"]) {
                     items: [{
                         xtype: "combo",
                         dataIndex: "v6ConfigType",
-                        allowBlank: false,
+                        allowBlank: false, 
                         fieldLabel: this.i18n._("Config Type"),
                         editable: false,
                         store: [ ["AUTO", this.i18n._('Auto (SLAAC/RA)')], ["STATIC", this.i18n._('Static')] ],
@@ -570,20 +570,17 @@ if (!Ung.hasResource["Ung.Network"]) {
                         xtype:'textfield',
                         dataIndex: "v6StaticAddress",
                         fieldLabel: this.i18n._("Address"),
-                        allowBlank: false,
                         vtype: "ip6Address",
                         width: 350
                     }, {
                         xtype:'textfield',
                         dataIndex: "v6StaticPrefixLength",
                         fieldLabel: this.i18n._("Prefix Length"),
-                        allowBlank: false,
                         width: 150
                     }, {
                         xtype:'textfield',
                         dataIndex: "v6StaticGateway",
                         fieldLabel: this.i18n._("Gateway"),
-                        allowBlank: false,
                         vtype: "ip6Address",
                         width: 350
                     }, {
@@ -671,9 +668,6 @@ if (!Ung.hasResource["Ung.Network"]) {
                     width: 300,
                     queryMode: 'local',
                     editable: false
-                }, {
-                    border: false,
-                    html: "FIXME: MTU settings<br/>"
                 }],
                 syncRuleEditorComponents: function() {
                     var configTypeValue = this.query('combo[dataIndex="configType"]')[0].getValue();
