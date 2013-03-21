@@ -34,6 +34,7 @@ function getInterfaceStatus()
         
             if [ "${t_status/Speed: }" != "${t_status}" ]; then
                 t_speed=`echo ${t_status} | cut -d " " -f 2 | sed 's/[^0-9]//g'`
+                if [ -z "$t_speed" ] ; then t_speed="0" ; fi
             fi
             
             if [ "${t_status/Duplex: Full}" != "${t_status}" ]; then
