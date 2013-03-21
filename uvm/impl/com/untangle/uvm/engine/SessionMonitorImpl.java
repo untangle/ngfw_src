@@ -12,7 +12,6 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.BufferedReader;
 import org.apache.log4j.Logger;
-import org.jabsorb.JSONSerializer;
 
 import com.untangle.uvm.SessionMonitor;
 import com.untangle.uvm.UvmState;
@@ -38,8 +37,6 @@ import com.untangle.uvm.network.InterfaceSettings;
 class SessionMonitorImpl implements SessionMonitor
 {
     private final Logger logger = Logger.getLogger(getClass());
-
-    private static JSONSerializer serializer = null;
 
     UvmContext uvmContext;
     
@@ -214,23 +211,6 @@ class SessionMonitorImpl implements SessionMonitor
     }
     
     /**
-     * @param serializer
-     *            the serializer to set
-     */
-    protected void setSerializer(JSONSerializer serializer)
-    {
-        this.serializer = serializer;
-    }
-
-    /**
-     * @return the serializer
-     */
-    protected JSONSerializer getSerializer()
-    {
-        return serializer;
-    }
-
-    /**
      * Returns a fully merged list for the given interface
      * systemIntfName is the system interface (example: "eth0")
      * This takes 5 seconds to gather data before it returns
@@ -308,7 +288,7 @@ class SessionMonitorImpl implements SessionMonitor
 
         try {
             String output = uvmContext.execManager().execOutput(execStr);
-            List<SessionMonitorEntry> entryList = (List<SessionMonitorEntry>) serializer.fromJSON(output);
+            List<SessionMonitorEntry> entryList = (List<SessionMonitorEntry>) ((UvmContextImpl)UvmContextFactory.context()).getSerializer().fromJSON(output);
             return entryList;
             
         } catch (org.jabsorb.serializer.UnmarshallException exc) {
@@ -327,7 +307,7 @@ class SessionMonitorImpl implements SessionMonitor
 
         try {
             String output = uvmContext.execManager().execOutput(execStr);
-            List<SessionMonitorEntry> entryList = (List<SessionMonitorEntry>) serializer.fromJSON(output);
+            List<SessionMonitorEntry> entryList = (List<SessionMonitorEntry>) ((UvmContextImpl)UvmContextFactory.context()).getSerializer().fromJSON(output);
             return entryList;
             
         } catch (org.jabsorb.serializer.UnmarshallException exc) {

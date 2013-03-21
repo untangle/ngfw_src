@@ -19,6 +19,7 @@ import com.untangle.uvm.network.NetworkSettings;
 import com.untangle.uvm.network.NetworkSettingsListener;
 import com.untangle.uvm.network.InterfaceSettings;
 import com.untangle.uvm.network.InterfaceStatus;
+import com.untangle.uvm.network.DeviceStatus;
 import com.untangle.uvm.network.DeviceSettings;
 import com.untangle.uvm.network.BypassRule;
 import com.untangle.uvm.network.StaticRoute;
@@ -43,6 +44,7 @@ public class NetworkManagerImpl implements NetworkManager
     private final Logger logger = Logger.getLogger(this.getClass());
 
     private final String updateRulesScript = System.getProperty("uvm.bin.dir") + "/ut-uvm-update-rules.sh";
+    private final String deviceStatusScript = System.getProperty("uvm.bin.dir") + "/ut-uvm-interface-status.sh";
 
     private final String settingsFilename = System.getProperty("uvm.settings.dir") + "/untangle-vm/" + "network";
     private final String settingsFilenameBackup = "/etc/untangle-netd/network";
@@ -375,8 +377,30 @@ public class NetworkManagerImpl implements NetworkManager
         else
             return status;
     }
-        
 
+    /**
+     * Returns a list of all the current device status'
+     */
+    @SuppressWarnings("unchecked") //JSON
+    public List<DeviceStatus> getDeviceStatus( )
+    {
+        String argStr = "";
+        for (InterfaceSettings intfSettings : this.networkSettings.getInterfaces()) {
+            argStr = argStr + " " + intfSettings.getPhysicalDev() + " ";
+        }
+
+        String output = UvmContextFactory.context().execManager().execOutput(deviceStatusScript + argStr);
+        List<DeviceStatus> entryList = null;
+        try {
+            entryList = (List<DeviceStatus>) ((UvmContextImpl)UvmContextFactory.context()).getSerializer().fromJSON(output);
+        } catch (Exception e) {
+            logger.warn("Unable to parse device status: ", e);
+            logger.warn("Unable to parse device status: " + output);
+            return null;
+        }
+        return entryList;
+    }
+    
     private synchronized void _setSettings( NetworkSettings newSettings )
     {
         /**
@@ -733,7 +757,9 @@ public class NetworkManagerImpl implements NetworkManager
         }
     }
 
-    /* Listener functions */
+    /**
+     * Call all the networkListeners
+     */
     private void callNetworkListeners()
     {
         logger.debug( "Calling network listeners." );

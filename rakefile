@@ -46,7 +46,13 @@ task :i18n => BuildEnv::SRC.i18nTarget
 
 task :devel => [:build, :hier, BuildEnv::SRC['install'], BuildEnv::SRC.installTarget, :jslint]
 
-task :install => [:devel, :i18n, :jslint]
+task :debian_init_files do
+  FileList["./debian/**/etc/init.d/*"].each do |f|
+    FileUtils.cp(f, "./debian/#{File.basename(f)}.init")
+  end
+end
+
+task :install => [:devel, :i18n, :jslint, :debian_init_files]
 
 task :javadoc do
   dirs = 'uvm/api'

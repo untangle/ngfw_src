@@ -288,6 +288,11 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
         }
     }
 
+    public JSONSerializer getSerializer()
+    {
+        return this.serializer;
+    }
+
     // service methods --------------------------------------------------------
 
     /* For autonumbering anonymous threads. */
@@ -610,7 +615,6 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
         try {
             ServletUtils.getInstance().registerSerializers(serializer);
             settingsManager.setSerializer(serializer);
-            sessionMonitor.setSerializer(serializer);
             execManager.setSerializer(serializer);
         } catch (Exception e) {
             throw new IllegalStateException("register serializers should never fail!", e);

@@ -7,6 +7,7 @@ import java.util.List;
 import java.net.InetAddress;
 
 import com.untangle.uvm.network.InterfaceStatus;
+import com.untangle.uvm.network.DeviceStatus;
 import com.untangle.uvm.network.InterfaceSettings;
 import com.untangle.uvm.network.NetworkSettings;
 import com.untangle.uvm.network.NetworkSettingsListener;
@@ -29,8 +30,6 @@ public interface NetworkManager
 
     List<InterfaceSettings> getEnabledInterfaces();
     
-    InterfaceStatus getInterfaceStatus( int interfaceId );
-    
     InetAddress getFirstWanAddress();
 
     InetAddress getInterfaceHttpAddress( int clientIntf );
@@ -40,4 +39,8 @@ public interface NetworkManager
     InterfaceSettings findInterfaceSystemDev( String systemDev );
 
     InterfaceSettings findInterfaceFirstWan( );
+
+    InterfaceStatus getInterfaceStatus( int interfaceId );
+    
+    List<DeviceStatus> getDeviceStatus( );
 }
