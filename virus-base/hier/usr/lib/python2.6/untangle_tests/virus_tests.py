@@ -1,5 +1,6 @@
 import unittest2
 import time
+import subprocess
 from datetime import datetime
 import sys
 import os
@@ -40,6 +41,7 @@ class VirusTests(unittest2.TestCase):
                 print "ERROR: Node %s already installed" % self.nodeName();
                 raise Exception('node %s already instantiated' % self.nodeName())
             node = uvmContext.nodeManager().instantiateAndStart(self.nodeName(), defaultRackId)
+            self.alreadyInstalled = False
             flushEvents()
 
     # verify client is online
@@ -94,6 +96,8 @@ class VirusTests(unittest2.TestCase):
         assert(events['list'][0]['uri'] == ("/test/test.zip?arg=%s" % fname))
         assert(events['list'][0][self.shortName() + '_clean'] == True)
 
+    port25Test = subprocess.call(["netcat","-w","1","test.untangle.com","25"],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
+    @unittest2.skipIf(port25Test != 0,  "Port 25 blocked")
     def test_102_eventlog_smtpVirus(self):
         startTime = datetime.now()
         fname = sys._getframe().f_code.co_name
@@ -121,6 +125,8 @@ class VirusTests(unittest2.TestCase):
         assert(events['list'][0][self.shortName() + '_clean'] == False)
         assert(datetime.fromtimestamp((events['list'][0]['time_stamp']['time'])/1000) > startTime)
 
+    port25Test = subprocess.call(["netcat","-w","1","test.untangle.com","25"],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
+    @unittest2.skipIf(port25Test != 0,  "Port 25 blocked")
     def test_103_eventlog_smtpNonVirus(self):
         startTime = datetime.now()
         fname = sys._getframe().f_code.co_name

@@ -148,7 +148,6 @@ class CaptureTests(unittest2.TestCase):
 
     adResult = subprocess.call(["ping","-c","1",adHost],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
     @unittest2.skipIf(adResult != 0,  "No AD server available")
-
     def test_030_captureADLogin(self):
         global nodeData, node, nodeDataAD, nodeAD
         # Configure AD settings
@@ -184,7 +183,6 @@ class CaptureTests(unittest2.TestCase):
 
     RadiusResult = subprocess.call(["ping","-c","1",radiusHost],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
     @unittest2.skipIf(RadiusResult != 0,  "No RADIUS server available")
-
     def test_040_captureRadiusLogin(self):
         global nodeData, node, nodeDataRD, nodeDataAD, nodeAD
         # Configure RADIUS settings
