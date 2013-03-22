@@ -81,9 +81,8 @@ BuildEnv::SRC.installTarget.install_jars(Jars::Ant, "#{thirdparty.distDirectory}
 BuildEnv::SRC.installTarget.install_dirs("#{uvm_lib.distDirectory}/usr/share/untangle/toolbox")
 
 if BuildEnv::SRC.isDevel
-  BuildEnv::SRC.installTarget.install_files("./debian/control",
-                                           "#{uvm_lib.distDirectory}/tmp",
-                                           'pkg-list-main')
+  # create the package list for fake ut-apt
+  BuildEnv::SRC.installTarget.install_files("./debian/control", "/tmp/", 'pkg-list-main')
 
   uidFile = "#{uvm_lib.distDirectory}/usr/share/untangle/conf/uid"
   ## Create all-zeros UID file to signal non-production install.
