@@ -57,6 +57,7 @@ public class VirusHttpEvent extends LogEvent
     {
         String sql =
             "UPDATE reports.http_events " +
+            "SET " +
             getNodeName().toLowerCase() + "_clean = ?, " + 
             getNodeName().toLowerCase() + "_name = ? "  + 
             "WHERE " +

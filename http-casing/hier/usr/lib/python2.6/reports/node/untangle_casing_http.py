@@ -75,10 +75,10 @@ CREATE TABLE reports.http_events (
     sitefilter_category text,
     sitefilter_blocked boolean,
     sitefilter_flagged boolean,
-    virus_clam_clean boolean,
-    virus_clam_name text,
-    virus_commtouchav_clean boolean,
-    virus_commtouchav_name text)""")
+    clam_clean boolean,
+    clam_name text,
+    commtouchav_clean boolean,
+    commtouchav_name text)""")
 
         # If the new index does not exist, create it
         if not sql_helper.index_exists("reports","http_events","request_id", unique=True):
