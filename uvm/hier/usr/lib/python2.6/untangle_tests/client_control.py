@@ -28,7 +28,7 @@ class ClientControl:
     # returns 0 if the process returned 0, 1 otherwise
     def runCommand(self, command, stdout=False):
 
-        if (ClientControl.verbosity <= 0):
+        if (ClientControl.verbosity <= 0) and not stdout:
             shellRedirect = " >/dev/null 2>&1 "
         else:
             shellRedirect = ""
@@ -45,21 +45,17 @@ class ClientControl:
                 print "\nRunning command on client: %s" % command
             if (not stdout):
                 result = os.system(sshCommand)
-                #print child_stdout.read()
-                #print child_stdout.read()
-                #print child_stderr.read()
-                #result = os.wait()
+                if result == 0:
+                    return 0
+                else:
+                    return 1
             else:
                 # send command and read stdout
                 rtn_cmd = subprocess.Popen(sshCommand, shell=True, stdout=subprocess.PIPE)
-                rtn_stdout = rtn_cmd.communicate()[0]
+                rtn_stdout = rtn_cmd.communicate()[0].strip()
                 return rtn_stdout 
         finally:
             if (ClientControl.logfile != None):
                 self.restoreOutput()
 
-        if result == 0:
-            return 0
-        else:
-            return 1
         

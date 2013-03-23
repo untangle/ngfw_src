@@ -42,8 +42,13 @@ class TestEnvironmentTests(unittest2.TestCase):
         result = clientControl.runCommand("/bin/false")
         assert (result == 1)
 
+    # verify client can exec commands and return code
+    def test_12_clientShellOutput(self):
+        result = clientControl.runCommand("echo yay", stdout=True)
+        assert (result == "yay")
+
     # verify client has necessary tools
-    def test_12_clientHasNecessaryTools(self):
+    def test_13_clientHasNecessaryTools(self):
         result = clientControl.runCommand("which wget >/dev/null")
         assert (result == 0)
         result = clientControl.runCommand("which curl >/dev/null")
@@ -58,7 +63,7 @@ class TestEnvironmentTests(unittest2.TestCase):
         assert (result == 0)
 
     # verify client is online
-    def test_13_clientIsOnline(self):
+    def test_14_clientIsOnline(self):
         result = clientControl.runCommand("wget -o /dev/null http://google.com/")
         assert (result == 0)
 
