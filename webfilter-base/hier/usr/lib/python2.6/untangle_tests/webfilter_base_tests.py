@@ -69,15 +69,15 @@ class WebFilterBaseTests(unittest2.TestCase):
         return "untangle-base-webfilter"
 
     @staticmethod
-    def vendorName():
-        return "untangle"
+    def shortNodeName():
+        return "webfilter"
 
     def setUp(self):
         global node
         if node == None:
             if (uvmContext.nodeManager().isInstantiated(self.nodeName())):
                 print "ERROR: Node %s already installed" % self.nodeName();
-                raise Exception('node %s already instantiated' % self.nodeName())
+                raise unittest2.SkipTest('node %s already instantiated' % self.nodeName())
             node = uvmContext.nodeManager().instantiateAndStart(self.nodeName(), defaultRackId)
             flushEvents()
 
@@ -350,13 +350,13 @@ class WebFilterBaseTests(unittest2.TestCase):
                " time_stamp: " + str(time.strftime("%Y-%m-%d %H:%M:%S",time.localtime((events['list'][0]['time_stamp']['time'])/1000))) + 
                " host: " + str(events['list'][0]['host']) + 
                " uri: " + str(events['list'][0]['uri']) + 
-               " blocked: " + str(events['list'][0]['wf_' + self.vendorName() + '_blocked']) + 
-               " flagged: " + str(events['list'][0]['wf_' + self.vendorName() + '_flagged']) +
+               " blocked: " + str(events['list'][0][self.shortNodeName() + '_blocked']) + 
+               " flagged: " + str(events['list'][0][self.shortNodeName() + '_flagged']) +
                " now: " + str(datetime.datetime.now())) 
         assert(events['list'][0]['host'] == "test.untangle.com")
         assert(events['list'][0]['uri'] == ("/test/testPage1.html?arg=%s" % fname))
-        assert(events['list'][0]['wf_' + self.vendorName() + '_blocked'] == True)
-        assert(events['list'][0]['wf_' + self.vendorName() + '_flagged'] == True)
+        assert(events['list'][0][self.shortNodeName() + '_blocked'] == True)
+        assert(events['list'][0][self.shortNodeName() + '_flagged'] == True)
 
     def test_101_eventlog_flaggedUrl(self):
         fname = sys._getframe().f_code.co_name
@@ -376,8 +376,8 @@ class WebFilterBaseTests(unittest2.TestCase):
         assert(len(events['list']) > 0)
         assert(events['list'][0]['host'] == "test.untangle.com")
         assert(events['list'][0]['uri'] == ("/test/testPage1.html?arg=%s" % fname))
-        assert(events['list'][0]['wf_' + self.vendorName() + '_blocked'] == False)
-        assert(events['list'][0]['wf_' + self.vendorName() + '_flagged'] == True)
+        assert(events['list'][0][self.shortNodeName() + '_blocked'] == False)
+        assert(events['list'][0][self.shortNodeName() + '_flagged'] == True)
 
     def test_102_eventlog_allUrls(self):
         fname = sys._getframe().f_code.co_name
@@ -395,8 +395,8 @@ class WebFilterBaseTests(unittest2.TestCase):
         assert(len(events['list']) > 0)
         assert(events['list'][0]['host'] == "test.untangle.com")
         assert(events['list'][0]['uri'] == ("/test/testPage1.html?arg=%s" % fname))
-        assert(events['list'][0]['wf_' + self.vendorName() + '_blocked'] == False)
-        assert(events['list'][0]['wf_' + self.vendorName() + '_flagged'] == False)
+        assert(events['list'][0][self.shortNodeName() + '_blocked'] == False)
+        assert(events['list'][0][self.shortNodeName() + '_flagged'] == False)
 
     def test_999_finalTearDown(self):
         global node
