@@ -14,15 +14,15 @@ public class VirusFtpEvent extends LogEvent
 {
     private SessionEvent sessionEvent;
     private VirusScannerResult result;
-    private String vendorName;
+    private String nodeName;
 
     public VirusFtpEvent() { }
 
-    public VirusFtpEvent(SessionEvent pe, VirusScannerResult result, String vendorName)
+    public VirusFtpEvent(SessionEvent pe, VirusScannerResult result, String nodeName)
     {
         this.sessionEvent = pe;
         this.result = result;
-        this.vendorName = vendorName;
+        this.nodeName = nodeName;
     }
 
     /**
@@ -66,18 +66,18 @@ public class VirusFtpEvent extends LogEvent
     }
 
     /**
-     * Spam scanner vendor.
+     * Spam scanner node.
      *
-     * @return the vendor
+     * @return the node
      */
-    public String getVendorName()
+    public String getNodeName()
     {
-        return vendorName;
+        return nodeName;
     }
 
-    public void setVendorName(String vendorName)
+    public void setNodeName(String nodeName)
     {
-        this.vendorName = vendorName;
+        this.nodeName = nodeName;
     }
 
     @Override

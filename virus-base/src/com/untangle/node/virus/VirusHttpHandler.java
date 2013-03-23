@@ -41,7 +41,6 @@ class VirusHttpHandler extends HttpStateMachine
 
     private final Logger logger = Logger.getLogger(getClass());
 
-    private final String vendor;
     private final VirusNodeImpl node;
 
     private boolean scan;
@@ -62,7 +61,6 @@ class VirusHttpHandler extends HttpStateMachine
         super(session);
 
         this.node = node;
-        this.vendor = node.getScanner().getVendorName();
     }
 
     // HttpStateMachine methods -----------------------------------------------
@@ -210,7 +208,7 @@ class VirusHttpHandler extends HttpStateMachine
         }
 
         RequestLine requestLine = getResponseRequest().getRequestLine();
-        node.logEvent(new VirusHttpEvent(requestLine, result,  vendor));
+        node.logEvent( new VirusHttpEvent(requestLine, result, node.getName()) );
 
         if (result.isClean()) {
             node.incrementPassCount();
@@ -235,7 +233,7 @@ class VirusHttpHandler extends HttpStateMachine
                 String uri = null != rl ? rl.getRequestUri().toString() : "";
                 String host = getResponseHost();
                 logger.info("Virus found: " + host + uri + " = " + result.getVirusName());
-                VirusBlockDetails bd = new VirusBlockDetails(host,uri,null,this.vendor);
+                VirusBlockDetails bd = new VirusBlockDetails( host, uri, null, node.getName() );
                                                              
                 String nonce = node.generateNonce(bd);
                 NodeTCPSession sess = getSession();

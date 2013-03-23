@@ -87,7 +87,7 @@ public class SmtpSessionHandler extends BufferingSessionHandler
                 actionTaken = virusImpl.getSettings().getSmtpAction();
             
             //Make log report
-            VirusSmtpEvent event = new VirusSmtpEvent(msgInfo, scanResult, actionTaken, this.virusImpl.getScanner().getVendorName());
+            VirusSmtpEvent event = new VirusSmtpEvent(msgInfo, scanResult, actionTaken, this.virusImpl.getName());
             this.virusImpl.logEvent(event);
 
             if(scanResult.isClean()) {
@@ -200,7 +200,7 @@ public class SmtpSessionHandler extends BufferingSessionHandler
                                                           msgInfo,
                                                           scanResult,
                                                           scanResult.isClean()?"pass":action,
-                                                          this.virusImpl.getScanner().getVendorName());
+                                                          this.virusImpl.getName());
                 this.virusImpl.logEvent(event);
 
                 if("pass".equals(action)) {
