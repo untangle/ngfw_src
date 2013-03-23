@@ -165,8 +165,12 @@ public class PipelineFoundryImpl implements PipelineFoundry
              * Check that this argon connector actually is interested in this session
              */
             if ( ! pipeSpec.matches(sessionTuple) ) {
-                argonConnectorList.remove( argonConnector );
+                // remove from argonConnectorList
+                // dont add to argonAgentList
+                i.remove(); 
             } else {
+                // keep in argonConnectorList
+                // add to argonAgentList
                 argonAgentList.add( ((ArgonConnectorImpl) argonConnector).getArgonAgent() );
                 nodeList += pipeSpec.getName() + " ";
             }
