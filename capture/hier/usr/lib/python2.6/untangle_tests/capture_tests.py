@@ -118,13 +118,13 @@ class CaptureTests(unittest2.TestCase):
         if node == None:
             if (uvmContext.nodeManager().isInstantiated(self.nodeName())):
                 print "ERROR: Node %s already installed" % self.nodeName()
-                raise Exception('node %s already instantiated' % self.nodeName())
+                raise unittest2.SkipTest('node %s already instantiated' % self.nodeName())
             node = uvmContext.nodeManager().instantiateAndStart(self.nodeName(), defaultRackId)
             nodeData = node.getCaptureSettings()
         if nodeAD == None:
             if (uvmContext.nodeManager().isInstantiated(self.nodeNameAD())):
                 print "ERROR: Node %s already installed" % self.nodeNameAD()
-                raise Exception('node %s already instantiated' % self.nodeNameAD())
+                raise unittest2.SkipTest('node %s already instantiated' % self.nodeName())
             nodeAD = uvmContext.nodeManager().instantiateAndStart(self.nodeNameAD(), defaultRackId)
             nodeDataAD = nodeAD.getSettings().get('activeDirectorySettings')
             nodeDataRD = nodeAD.getSettings().get('radiusSettings')
