@@ -1,368 +1,324 @@
-#!/usr/bin/ruby
-# $Id: ut-apt,v 1.00 2013/03/22 16:28:40 dmorris Exp $
+#!/usr/bin/python
 
-require 'fileutils'
-require 'getoptlong'
-require 'tempfile'
-require 'gettext'
-require 'syslog'
+import getopt
+import sys
+import os
+import signal
+import re
+import subprocess
+import tempfile
+import time
+import logging
+from logging.handlers import SysLogHandler
 
-include GetText
-bindtextdomain('untangle-vm')
+# set noninteractive mode for all apt-get calls
+os.environ['DEBIAN_FRONTEND'] = 'noninteractive'
 
-ENV['DEBIAN_FRONTEND'] = 'noninteractive'
+# apt-get options for various commands
+INSTALL_OPTS = " -o DPkg::Options::=--force-confnew --yes --force-yes --fix-broken --purge "
+UPGRADE_OPTS = " -o DPkg::Options::=--force-confnew --yes --force-yes --fix-broken --purge "
+UPDATE_OPTS = " --yes --force-yes --purge "
+REMOVE_OPTS = " --yes --force-yes --fix-broken --purge "
 
-INST_OPTS = " -o DPkg::Options::=--force-confnew --yes --force-yes --fix-broken --purge "
-UPGD_OPTS = " -o DPkg::Options::=--force-confnew --yes --force-yes --fix-broken --purge "
-UPDT_OPTS = " --yes --force-yes --purge "
-REMO_OPTS = " --yes --force-yes --fix-broken --purge "
-
+# The prefix, substituted by the build. If non-blank its development environment
 PREFIX = "@PREFIX@"
-$ERROR = ""
 
-Signal.trap('HUP', 'IGNORE')
-Syslog.open('ut-apt', Syslog::LOG_PID | Syslog::LOG_NDELAY, Syslog::LOG_LOCAL2)
+# The command specified
+COMMAND = None
+COMMAND_ARG = None
+# The stamp, if specified
+STAMP = "XXX"
+ERROR = None
 
-def printusage()
-  puts _('usage:')
-puts <<STR
-  ut-apt installed
-  ut-apt available
-  ut-apt install <mackage>
-  ut-apt remove
-  ut-apt predictInstall
-  ut-apt update
-  ut-apt upgrade
-STR
-  return 1
-end
+# Ignore SIGHUP from children
+signal.signal( signal.SIGHUP, signal.SIG_IGN )
 
-def log(str)
-  Syslog.info(str.gsub(/\%/, ''))
-end
+# Syslog
+syslog_handler = SysLogHandler(facility = SysLogHandler.LOG_LOCAL2)
+logger = logging.getLogger( 'ut-apt' )
+logger.setLevel( logging.DEBUG )
+logger.addHandler( syslog_handler )
 
-class DevApt
-  def initialize(stamp)
-    @pkg_list_dir = "/tmp/"
-    @stamp = stamp
-  end
+# Syslog.open('ut-apt', Syslog::LOG_PID | Syslog::LOG_NDELAY, Syslog::LOG_LOCAL2)
 
-  def installed()
-    devs = []
-    each_pkg_list_line { |l|
-      if /^Package: / =~ l
-        pack = l.split[1]
-        devs << pack
-        puts "#{pack} 10.0"
-      end
-    }
-    STDOUT.flush
-    IO.popen("dpkg --get-selections 'untangle*'", 'r') do |input|
-      IO.popen("xargs dpkg-query -W", 'w') do |output|
-        input.each_line do |l|
-          s = l.split
-          output.puts(s[0]) if 'install' == s[1] and !devs.include?(s[0])
-        end
-      end
-    end
-    0
-  end
+def log(str):
+    logger.debug(str)
+    print str
 
-  def available()
-    each_pkg_list_line do |l|
-      puts l.gsub(/^XB-/, '')
-      puts "Version: 10.0" if /^Package: / =~ l
-    end
-    0
-  end
+def usage():
+    print """\
+usage: %s command [options]
+Commands:
+    installed
+    available
+    install <mackage>
+    predictInstall
+    update
+    upgrade
+Options:
+    -k stamp  : specify stamp written to log file
+""" % sys.argv[0]
+    sys.exit(0)
 
-  def install(name)
-    log "start $stamp"
-    log "END PACKAGE LIST"
-    log "done $stamp"
-    0
-  end
+def parse_args():
+    try:
+        opts, args = getopt.getopt(sys.argv[1:], 'k:', ['key'])
+    except getopt.GetoptError, err:
+        print str(err)
+        usage()
+        sys.exit(2)
 
-  def update()
-    0
-  end
+    for opt in opts:
+        k, v = opt
+        if k == '-k' or k == '--key':
+            global STAMP
+            STAMP = str(v)
+        else:
+            usage()
 
-  def upgrade()
-    log "start $stamp"
-    log "END PACKAGE LIST"
-    log "done $stamp"
-    0
-  end
+    if len(args) > 2:
+        usage()
+    if args[0] not in ['installed', 'available', 'install', 'predictInstall', 'update', 'upgrade']:
+        usage()
+    else:
+        global COMMAND_ARG, COMMAND
+        COMMAND = args[0]
+        if len(args) > 1:
+            COMMAND_ARG = args[1]
 
-  def remove(pkg)
-    0
-  end
+parse_args()
 
-  def predictInstall(pkg)
-    0
-  end
+class DevApt:
+    @staticmethod
+    def each_pkg_list_line():
+        lines = []
+        for filename in os.listdir('/tmp/'):
+            if "pkg-list" in filename:
+                f = open('/tmp/' + filename)
+                for line in f:
+                    lines.append(line)
+        return lines
 
-  private
+    @staticmethod
+    def installed():
+        packages = []
+        for line in DevApt.each_pkg_list_line():
+            if re.search("^Package: ", line):
+                package = line.split()[1]
+                packages.append( package )
+                print "%s 20.0" % package
+        p = subprocess.Popen(["sh","-c","dpkg --get-selections 'untangle*' | xargs dpkg-query -W"],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
+        for line in iter(p.stdout.readline, ''):
+            if line.split()[0] not in packages:
+                print line.strip()
+        return 0
+    
+    @staticmethod
+    def available():
+        for line in DevApt.each_pkg_list_line():
+            line = re.sub( '^XB-', '', line)
+            print line.strip()
+            if re.search("^Package: ", line):
+                print "Version: 20.0" 
+        return 0
+   
+    @staticmethod
+    def install(name):
+        log("start %s" % STAMP )
+        log("END PACKAGE LIST")
+        log("done %s" % STAMP )
+        return 0
+        
+    @staticmethod
+    def update():
+        log("start %s" % STAMP)
+        log("apt-get update %s" % UPDATE_OPTS)
+        log("done %s" % STAMP)
+        return 0
 
-  def each_pkg_list_line()
-    Dir.new(@pkg_list_dir).select { |d| /^pkg-list/ =~ d }.each do |p|
-      File.open("#{@pkg_list_dir}/#{p}", 'r') do |io|
-        io.each_line { |l| yield l }
-      end
-    end
-  end
-end
+    @staticmethod
+    def upgrade():
+        log("start %s" % STAMP )
+        log("END PACKAGE LIST")
+        log("done %s" % STAMP )
+        return 0
 
-class RealApt
-  def initialize(stamp)
-    @stamp = stamp
-  end
+    @staticmethod
+    def predictInstall(pkg):
+        return 0
 
-  def installed()
-    IO.popen("dpkg --get-selections 'untangle*'", 'r') do |input|
-      IO.popen("xargs dpkg-query -W", 'w') do |output|
-        input.each_line do |l|
-          s = l.split
-          output.puts(s[0]) if 'install' == s[1]
-        end
-      end
-    end
-    0
-  end
+class RealApt:
+    @staticmethod
+    def installed():
+        p = subprocess.Popen(["sh","-c","dpkg --get-selections 'untangle*' | awk '{ if ($2 == \"install\") print $1}' | xargs dpkg-query -W"], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        for line in iter(p.stdout.readline, ''):
+            print line.strip()
+    
+    @staticmethod
+    def available():
+        p = subprocess.Popen(["sh","-c","apt-cache search '^untangle-' | awk '{ print $1 }' | xargs apt-cache show --no-all-versions"], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        for line in iter(p.stdout.readline, ''):
+            print line.strip()
+   
+    @staticmethod
+    def install(pkg):
+        log("start %s" % STAMP)
+        log("downloading: \"%s\"" % pkg)
 
-  def available()
-    IO.popen("apt-cache search '^untangle-'") do |input|
-      IO.popen("xargs apt-cache show --no-all-versions", 'w') do |output|
-        input.each_line do |l|
-          output.puts(l.split[0])
-        end
-      end
-    end
-    0
-  end
+        recs = RealApt.get_recommends(pkg)
+        log("RECS: %s" % recs)
 
-  def install(pkg)
-    log "start #{@stamp}"
-    log "downloading: \"#{pkg}\""
+        pkg_list = RealApt.get_pkg_list("apt-get install %s --print-uris %s %s" % (INSTALL_OPTS, pkg, recs))
+        r = RealApt.download(pkg_list)
+        if (r != 0):
+            return r
+        log("installing: \"%s\"" % pkg)
+        
+        p = subprocess.Popen(["sh","-c","apt-get install %s %s %s 2>&1" % (INSTALL_OPTS, pkg, recs)], stdout=subprocess.PIPE)
+        stdout = p.communicate()[0]
+        for line in stdout.splitlines():
+            log(line.strip())
+        p.wait()
+        log("done %s" % STAMP)
 
-    recs = get_recommends(pkg).join(' ')
-    log "RECS: #{recs}"
+        if p.returncode == 0:
+            return 0
+        else:
+            return 1
+        
+    @staticmethod
+    def update():
+        log("start %s" % STAMP)
+        log("apt-get update %s" % UPDATE_OPTS)
 
-    pkg_list = get_pkg_list("apt-get install #{INST_OPTS} --print-uris #{pkg} #{recs}")
-    r = download(pkg_list)
-    if (r != 0)
-      return r
-    end
+        p = subprocess.Popen(["sh","-c","apt-get update %s 2>&1" % UPDATE_OPTS], stdout=subprocess.PIPE)
+        stdout = p.communicate()[0]
+        for line in stdout.splitlines():
+            if not re.search('^W: (Conflicting distribution|You may want to run apt-get update to correct these problems)', line):
+                log(line.strip())
+        p.wait()
+        log("done %s" % STAMP)
+        return 0
 
-    log "installing: \"#{pkg}\""
+    @staticmethod
+    def upgrade():
+        log("start %s" % STAMP)
+        log("apt-get dist-upgrade %s" % UPGRADE_OPTS)
 
-    IO.popen("apt-get install #{INST_OPTS} #{pkg} #{recs}", 'r') do |input|
-      input.each_line { |l| log l }
-      input.close
-      r = $?
-    end
+        pkg_list = RealApt.get_pkg_list("apt-get dist-upgrade %s --print-uris" % UPGRADE_OPTS)
+        r = RealApt.download(pkg_list)
+        if (r != 0):
+            return r
 
-    log "done #{@stamp}"
+        RealApt.cmd_to_stderr("monit -c /etc/untangle/monit.conf unmonitor all")
+        r = RealApt.cmd_to_stderr("apt-get dist-upgrade %s" % UPGRADE_OPTS)
+        RealApt.cmd_to_stderr("monit -c /etc/untangle/monit.conf monitor all")
 
-    (r == 0) ? 0 : 1
-  end
+        log("done %s" % STAMP)
+        return 0
 
-  def update()
-    log "start #{@stamp}"
-    log "apt-get update #{UPDT_OPTS}"
-    IO.popen("apt-get update #{UPDT_OPTS}") do |io|
-      io.each_line { |l|
-        log l unless l =~ /W: (Conflicting distribution|You may want to run apt-get update to correct these problems)/ }
-      io.close
-      r = $?
-    end
+    @staticmethod
+    def predictInstall(pkg):
+        ret = 0
 
-    log "done #{@stamp}"
+        p = subprocess.Popen(["sh","-c","apt-get install -s %s 2>&1" % pkg], stdout=subprocess.PIPE)
+        stdout = p.communicate()[0]
+        for line in stdout.splitlines():
+            matcher = re.search('^Inst ([^ ]+)', line)
+            if matcher:
+                log(matcher.group(1))
+        
+        p.wait
+        if p.returncode == 0:
+            return 0
+        else:
+            return 1
+    
+    @staticmethod
+    def get_recommends(pkg):
+        p = subprocess.Popen(["sh","-c","apt-cache show %s" % pkg], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        for line in iter(p.stdout.readline, ''):
+            matcher = re.search(r'^Recommends:(.*)$', line)
+            if matcher:
+                recs = matcher.group(1)
+                pkgs = []
+                for pkg_name in recs.split(","):
+                    if "|" in pkg_name:
+                        pkg_name = pkg_name.split("|")[0]
+                    pkgs.append( pkg_name.strip() )
+                return ' '.join(pkgs)
+        return ""
 
-    # Update doesn't need to show errors.
-    #(r == 0) ? 0 : 1
-    0
-  end
+    @staticmethod
+    def get_pkg_list(apt_cmd):
+        pkg_list = []
 
-  def upgrade()
-    log "start #{@stamp}"
-    log "apt-get upgrade #{UPGD_OPTS}"
+        p = subprocess.Popen(["sh","-c",apt_cmd], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        for line in iter(p.stdout.readline, ''):
+            matcher = re.search(r'^\'(http://.*)\' ', line)
+            if matcher:
+                print line
+                pkg_list.append( matcher.group(1) )
+            matcher = re.search(r'.*ERROR.*', line)
+            if matcher:
+                global ERROR
+                ERROR = line
+        return pkg_list
 
-    pkg_list = get_pkg_list("apt-get dist-upgrade #{UPGD_OPTS} --print-uris")
-    r = download(pkg_list)
-    if (r != 0)
-      return r
-    end
-    cmd_to_stderr("monit -c /etc/untangle/monit.conf unmonitor all")
-    sleep 5 # sleep so that the untangle-vm has time to send messages to UI before shutting down
-    r = cmd_to_stderr("apt-get dist-upgrade #{UPGD_OPTS}")
-    log "done #{@stamp}"
-    cmd_to_stderr("monit -c /etc/untangle/monit.conf monitor all")
+    @staticmethod
+    def cmd_to_stderr(cmd):
+        p = subprocess.Popen(["sh","-c","%s 2>&1" % (cmd)], stdout=subprocess.PIPE )
+        for line in iter(p.stdout.readline, ''):
+            log( line.strip() )
+        p.wait()
+        if p.returncode == 0:
+            return 0
+        else:
+            return 1
+            
+    @staticmethod
+    def download(pkg_list):
+        log("END PACKAGE LIST")
+        retcode = 0
 
-    r
-  end
+        tmpdir = tempfile.mkdtemp()
+        for pkg in pkg_list:
+            log("downloading: %s" % pkg)
 
-  def remove(pkg)
-    log "start #{@stamp}"
-    log "apt-get remove #{REMO_OPTS} #{pkg}"
-    r = cmd_to_stderr("apt-get remove #{REMO_OPTS} #{pkg}")
-#   cmd_to_stderr("apt-get clean")
-    log "done #{@stamp}"
+            print "wget --progress=dot -P %s %s" % (tmpdir, pkg)
+            exitcode = RealApt.cmd_to_stderr("wget --progress=dot -P %s %s" % (tmpdir, pkg))
+            if exitcode == 0:
+                log("DOWNLOAD SUCCEEDED: %s" % pkg)
+            else:
+                log("DOWNLOAD FAILED: %s" % str(ERROR))
+                retcode = 1
 
-    0
-  end
+            p = subprocess.Popen(["sh", "-c", "mv -f %s/*.deb /var/cache/apt/archives" % tmpdir])
+            p.wait()
 
-  def predictInstall(pkg)
-    ret = 0
+        p = subprocess.Popen(["rm","-rf","%s" % tmpdir])
+        p.wait()
+        return retcode
 
-    IO.popen("apt-get install -s #{pkg}") do |io|
-      io.each_line do |l|
-        if /^Inst ([^ ]+) / =~ l
-          puts $1
-        end
-      end
-      io.close
-      ret = $?
-    end
+if PREFIX != "":
+    apt = DevApt()
+else:
+    apt = RealApt()
 
-    (ret == 0) ? 0 : 1
-  end
+if COMMAND == "installed":
+    rc = apt.installed()
+elif COMMAND == "available":
+    rc = apt.available()
+elif COMMAND == "install":
+    rc = apt.install(COMMAND_ARG)
+elif COMMAND == "predictInstall":
+    rc = apt.predictInstall(COMMAND_ARG)
+elif COMMAND == "update":
+    rc = apt.update()
+elif COMMAND == "upgrade":
+    rc = apt.upgrade()
+else:
+    usage()
 
-  private
-
-  def get_recommends(pkg)
-    in_recommends = false
-
-    recs = ''
-
-    IO.popen("apt-cache show #{pkg}") do |io|
-      io.each_line do |l|
-        if in_recommends
-          if /^\s+(.*)$/ =~ l
-            l += $1
-          else
-            in_recommends = false
-          end
-        elsif /^Recommends:(.*)$/ =~ l
-          in_recommends = true
-          recs += $1
-        end
-      end
-    end
-
-    recs.split(',').map do |e|
-      r = e.split('|').first
-      r.nil? ? nil : r.strip
-    end.compact
-  end
-
-  def cmd_to_stderr(cmd)
-    IO.popen(cmd) do |io|
-      io.each_line { |l| log l }
-      io.close
-    end
-    ($? == 0) ? 0 : 1
-  end
-
-  def get_tempdir()
-    tmp = Tempfile.new('ut-apt')
-    path = tmp.path
-    tmp.delete
-    Dir.mkdir(path)
-    path
-  end
-
-  def get_pkg_list(apt_cmd)
-    pkg_list = []
-
-    IO.popen(apt_cmd, 'r') do |io|
-      io.each_line do |l|
-        if /^'(http:\/\/.*)' / =~ l
-          log l
-          pkg_list << $1
-        end
-        if /^'(.*ERROR.*)' / =~ l
-          $ERROR = l
-        end
-      end
-    end
-
-    pkg_list
-  end
-
-  def download(pkg_list)
-    log "END PACKAGE LIST"
-
-    tmp = get_tempdir()
-    begin
-      pkg_list.each do |p|
-        log "downloading: #{p}"
-
-        if cmd_to_stderr("wget --progress=dot -P #{tmp} #{p} 2>&1")
-          Dir.new(tmp).select { |f| /\.deb$/ =~ f }.each do |f|
-            FileUtils.mv("#{tmp}/#{f}", "/var/cache/apt/archives")
-          end
-          log "DOWNLOAD SUCCEEDED: #{p}"
-        else
-          log "DOWNLOAD FAILED: #{$ERROR}"
-          return -1
-        end
-
-      end
-    ensure
-      FileUtils.rm_rf(tmp)
-    end
-
-    0
-  end
-
-end
-
-stamp = nil
-
-opts = GetoptLong.new([ '-k', GetoptLong::REQUIRED_ARGUMENT ])
-opts.each do |opt, arg|
-  if '-k' == opt
-    stamp = arg
-  end
-end
-
-if ARGV.length < 1
-  printusage()
-  exit(1)
-end
-
-ret = 0
-
-apt = PREFIX.empty? ? RealApt.new(stamp) : DevApt.new(stamp)
-
-rc = case ARGV.shift
-     when 'installed'
-       apt.installed()
-     when 'available'
-       apt.available()
-     when 'install'
-       if ARGV.empty?
-         printusage()
-       else
-         apt.install(ARGV.shift)
-       end
-     when 'update'
-       apt.update()
-     when 'upgrade'
-       apt.upgrade()
-     when 'remove'
-       if ARGV.empty?
-         printusage()
-       else
-         apt.remove(ARGV.shift)
-       end
-     when 'predictInstall'
-       apt.predictInstall(ARGV.shift)
-     else
-         printusage()
-     end
-
-Syslog.close
-
-exit(rc)
+sys.exit(rc)
+    
