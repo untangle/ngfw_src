@@ -27,7 +27,7 @@ PREFIX = "@PREFIX@"
 COMMAND = None
 COMMAND_ARG = None
 # The stamp, if specified
-STAMP = "XXX"
+STAMP = "---"
 ERROR = None
 
 # Ignore SIGHUP from children
