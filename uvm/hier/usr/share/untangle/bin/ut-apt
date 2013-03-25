@@ -30,7 +30,7 @@ COMMAND_ARG = None
 STAMP = "---"
 ERROR = None
 
-# Ignore SIGHUP from children
+# Ignore SIGHUP from parent (this is in case we get launched by the UVM, and then it exits)
 signal.signal( signal.SIGHUP, signal.SIG_IGN )
 
 # Syslog
@@ -38,8 +38,6 @@ syslog_handler = SysLogHandler(facility = SysLogHandler.LOG_LOCAL2)
 logger = logging.getLogger( 'ut-apt' )
 logger.setLevel( logging.DEBUG )
 logger.addHandler( syslog_handler )
-
-# Syslog.open('ut-apt', Syslog::LOG_PID | Syslog::LOG_NDELAY, Syslog::LOG_LOCAL2)
 
 def log(str):
     logger.debug(str)
