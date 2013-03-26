@@ -60,47 +60,6 @@ if (!Ung.hasResource["Ung.Network"]) {
         }
     };
     
-    // Interface Remap
-    Ext.define('Ung.InterfaceRemap', {
-        extend:'Ung.EditWindow',
-        sizeToRack: true,
-        initComponent: function() {
-            if (this.title == null) {
-                this.title = i18n._('Remap Interfaces');
-            }
-            this.items = Ext.create('Ext.panel.Panel',{
-                anchor: "100% 100%",
-                labelWidth: 100,
-                buttonAlign: 'right',
-                border: false,
-                bodyStyle: 'padding:10px 10px 0px 10px;',
-                autoScroll: true,
-                defaults: {
-                    selectOnFocus: true,
-                    msgTarget: 'side'
-                },
-                items: [{html:"TODO"}]
-            });
-            this.callParent(arguments);
-        },
-        populate: function() {
-        },
-        updateAction: function() {
-            this.hide();
-        },
-        cancelAction: function() {
-            this.hide();
-        },
-        // set the value of fields (override me)
-        setValue: function(value) {
-            Ung.Util.todo();
-        },
-        // set the record based on the value of the fields (override me)
-        getValue: function() {
-            Ung.Util.todo();
-        }
-    });
-    
     Ext.define("Ung.Network", {
         extend: "Ung.ConfigWin",
         gridPortForwardRules: null,
@@ -291,10 +250,215 @@ if (!Ung.hasResource["Ung.Network"]) {
                     iconCls: 'icon-refresh',
                     text: this.i18n._("Remap Interfaces"),
                     handler: Ext.bind(function() {
-                        //FIXME launch interface remapper
-                        this.interfaceRemap.show();
+                        this.gridInterfaces.onMapDevices();
                     }, this)
-                }]
+                }],
+                onMapDevices: Ext.bind(function() {
+                    Ext.MessageBox.wait(i18n._("Loading device mapper..."), i18n._("Please wait"));
+                    if (!this.winMapDevices) {
+                        this.mapDevicesStore = Ext.create('Ext.data.ArrayStore', {
+                            fields:[{name: "interfaceId"}, { name: "name" }, { name: "physicalDev" }, { name: "deviceName" }, { name: "macAddress" }, { name: "connected" }, { name: "duplex" }, { name: "vendor" }, { name: "mbit" }],
+                            data: []
+                        });
+                        this.availableDevicesStore = Ext.create('Ext.data.ArrayStore', {
+                            fields:[{ name: "deviceName" }],
+                            data: []
+                        });
+
+                        this.gridMapDevices = Ext.create('Ext.grid.Panel', {
+                            store: this.mapDevicesStore,
+                            loadMask: true,
+                            stripeRows: true,
+                            enableColumnResize: false,
+                            enableColumnHide: false,
+                            enableColumnMove: false,
+                            selModel: Ext.create('Ext.selection.RowModel', {singleSelect: true}),
+                            plugins: [
+                                Ext.create('Ext.grid.plugin.CellEditing', {
+                                    clicksToEdit: 1
+                                })
+                            ],
+                            viewConfig:{
+                               forceFit: true,
+                               disableSelection: false,
+                               plugins:{
+                                    ptype: 'gridviewdragdrop',
+                                    dragText: i18n._('Drag and drop to reorganize')
+                                },
+                                listeners: {
+                                    "drop": {
+                                        fn:  Ext.bind(function(node, data, overModel, dropPosition, eOpts) {
+                                            var sm = this.gridMapDevices.getSelectionModel();
+                                            var rows=sm.getSelection();
+
+                                            if ( rows.length != 1 ) {
+                                                return false;
+                                            }
+                                            var intfId = rows[0].get("interfaceId");
+                                            var intfName = rows[0].get("name");
+                                            var origIntfId = overModel.get("interfaceId");
+                                            var origIntfName = overModel.get("name");
+
+                                            this.mapDevicesStore.each( function( currentRow ) {
+                                                if ( currentRow == overModel) {
+                                                    currentRow.set("interfaceId", intfId);
+                                                    currentRow.set("name", intfName);
+                                                }
+                                                if ( currentRow == rows[0]) {
+                                                    currentRow.set("interfaceId", origIntfId);
+                                                    currentRow.set("name", origIntfName);
+                                                }
+                                            });
+                                            sm.clearSelections();
+                                            return true;
+                                        },this )
+                                    }
+                                }
+                            },
+                            columns: [{
+                                header: i18n._( "Name" ),
+                                dataIndex: 'name',
+                                sortable: false,
+                                fixed: true,
+                                width: 80,
+                                renderer: function( value ) {
+                                    return i18n._( value );
+                                }
+                            }, {
+                                xtype: 'templatecolumn',
+                                menuDisabled: true,
+                                fixed: true,
+                                width: 40,
+                                tpl: '<img src="'+Ext.BLANK_IMAGE_URL+'" class="icon-drag"/>' 
+                            }, {
+                                header: i18n._( "Device" ),
+                                dataIndex: 'deviceName',
+                                sortable: false,
+                                editor:{
+                                    xtype: 'combo',
+                                    store: this.availableDevicesStore,
+                                    valueField: 'deviceName',
+                                    displayField: 'deviceName',
+                                    queryMode: 'local',
+                                    editable: false,
+                                    listeners: {
+                                        "change": {
+                                            fn: Ext.bind(function(elem, newValue, oldValue) {
+                                                this.mapDevicesStore.each( function( currentRow ) {
+                                                    if(newValue == currentRow.get( "deviceName" )) {
+                                                        currentRow.set( "deviceName", oldValue );
+                                                    }
+                                                });
+                                            }, this)
+                                        }
+                                    }
+                                },
+                                width:200
+                            }, {
+                                header: this.i18n._( "Connected" ),
+                                dataIndex: 'connected',
+                                sortable: false,
+                                fixed: true,
+                                width: 120,
+                                renderer: Ext.bind(function(value, metadata, record, rowIndex, colIndex, store, view) {
+                                    var divClass = "ua-cell-disabled-interface";
+                                    var connectedStr = this.i18n._("unknown");
+                                    if ( value == "CONNECTED" ) {
+                                        connectedStr = this.i18n._("connected");
+                                        divClass = "ua-cell-enabled-interface";
+                                    } else if ( value == "DISCONNECTED" ) {
+                                        connectedStr = this.i18n._("disconnected");
+                                    }
+                                    return "<div class='" + divClass + "'>" + connectedStr + "</div>";
+                                }, this)
+                            }, {
+                                header: this.i18n._( "Speed" ),
+                                dataIndex: 'mbit',
+                                sortable: false,
+                                fixed: true,
+                                width: 100
+                            }, {
+                                header: this.i18n._( "Duplex" ),
+                                dataIndex: 'duplex',
+                                sortable: false,
+                                fixed: true,
+                                width: 100,
+                                renderer: Ext.bind(function(value, metadata, record, rowIndex, colIndex, store, view) {
+                                    return (value=="FULL_DUPLEX")?this.i18n._("full-duplex") : (value=="HALF_DUPLEX") ? this.i18n._("half-duplex") : this.i18n._("unknown");;
+                                }, this)
+                            }, {
+                                header: this.i18n._( "Vendor" ),
+                                dataIndex: 'vendor',
+                                sortable: false,
+                                fixed: true,
+                                width: 150
+                            }, {
+                                header: this.i18n._( "MAC Address" ),
+                                dataIndex: 'macAddress',
+                                sortable: false,
+                                fixed: true,
+                                width: 150,
+                                renderer: function(value, metadata, record, rowIndex, colIndex, store, view) {
+                                    /* Emacs was not happy when this was inline. */
+                                    var matcher = /:/g;
+                                    var text = ""
+                                    if ( value && value.length > 0 ) {
+                                        /* Build the link for the mac address */
+                                        text = '<a target="_blank" href="http://standards.ieee.org/cgi-bin/ouisearch?' + 
+                                        value.substring( 0, 8 ).replace( matcher, "" ) + '">' + value + '</a>';
+                                     } else {
+                                        text = "&nbsp;";
+                                    }
+                                    return text; 
+                                }
+                            }]
+                        });
+                        
+                        this.winMapDevices = Ext.create('Ung.EditWindow', {
+                            breadcrumbs: [{
+                                title: this.i18n._("Interfaces"),
+                                action: Ext.bind(function() {
+                                    this.panelInterfaces.winMapDevices.cancelAction();
+                                }, this)
+                            }, {
+                                title: this.i18n._("Remap Interfaces")
+                            }],
+                            items: this.gridMapDevices,
+                            updateAction: Ext.bind(function() {
+                                var interfacesMap = {};
+                                this.mapDevicesStore.each( function( currentRow ) {
+                                    interfacesMap[currentRow.get( "interfaceId" )] = currentRow.get( "physicalDev" );
+                                });
+                                //TODO: update interfaces grid with remapped devices
+                                console.log(interfacesMap);
+                            }, this)
+                        });
+                    }
+                    var mapDeviceData = [];
+                    var deviceStatusList=main.getNetworkManager().getDeviceStatus(Ext.bind(function(result, exception) {
+                        if(Ung.Util.handleException(exception)) return;
+                        Ext.MessageBox.hide();
+                        var deviceStatusMap = {};
+                        var deviceStatusList = result.list;
+                        for(var i=0; i<deviceStatusList.length; i++) {
+                            var deviceStatus=deviceStatusList[i];
+                            deviceStatusMap[deviceStatus["deviceName"]] = deviceStatus;
+                        }
+                        for(var i=0; i<this.settings.interfaces.list.length; i++) {
+                            var deviceData={};
+                            
+                            var intf = this.settings.interfaces.list[i];
+                            var deviceStatus= deviceStatusMap[intf.physicalDev];
+                            Ext.applyIf(deviceData, intf);
+                            Ext.applyIf(deviceData, deviceStatus);
+                            mapDeviceData.push(deviceData);
+                        }
+                        console.log(mapDeviceData);
+                        this.mapDevicesStore.loadData( mapDeviceData );
+                        this.availableDevicesStore.loadData( mapDeviceData );
+                        this.winMapDevices.show();
+                    }, this));
+                }, this)
             });
             this.panelInterfaces = Ext.create('Ext.panel.Panel',{
                 name: 'panelInterfaces',
@@ -307,11 +471,8 @@ if (!Ung.hasResource["Ung.Network"]) {
                     xtype: 'fieldset',
                     cls: 'description',
                     title: this.i18n._('Note'),
-                    html: this.i18n._(" <b>Interfaces</b> are legit. Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.")
+                    html: this.i18n._("<b>Interfaces</b> are legit. Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.")
                 }, this.gridInterfaces]
-            });
-            this.interfaceRemap = Ext.create('Ung.InterfaceRemap',{
-                grid: this.gridInterfaces
             });
             this.gridInterfacesAliasesEditor = Ext.create('Ung.EditorGrid',{
                 name: 'IPv4 Aliases',
@@ -569,6 +730,7 @@ if (!Ung.hasResource["Ung.Network"]) {
                     }, {
                         xtype:'textfield',
                         dataIndex: "v6StaticAddress",
+                        
                         fieldLabel: this.i18n._("Address"),
                         vtype: "ip6Address",
                         width: 350
