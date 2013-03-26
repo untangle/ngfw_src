@@ -634,6 +634,14 @@ public class NetworkManagerImpl implements NetworkManager
         for (StaticRoute rule : networkSettings.getStaticRoutes()) {
             rule.setRuleId(++idx);
         }
+        idx = 0;
+        for (FilterRule rule : networkSettings.getInputFilterRules()) {
+            rule.setRuleId(++idx);
+        }
+        idx = 0;
+        for (FilterRule rule : networkSettings.getForwardFilterRules()) {
+            rule.setRuleId(++idx);
+        }
 
         /**
          * Reset all symbolic devs to system devs
@@ -859,66 +867,120 @@ public class NetworkManagerImpl implements NetworkManager
     {
         List<FilterRule> rules = new LinkedList<FilterRule>();
 
-        FilterRule filterRule1 = new FilterRule();
-        filterRule1.setEnabled( false );
-        filterRule1.setDescription( "Allow SSH" );
-        filterRule1.setBlocked( false );
-        List<FilterRuleMatcher> rule1Matchers = new LinkedList<FilterRuleMatcher>();
-        FilterRuleMatcher rule1Matcher1 = new FilterRuleMatcher();
-        rule1Matcher1.setMatcherType(FilterRuleMatcher.MatcherType.DST_PORT);
-        rule1Matcher1.setValue("22");
-        FilterRuleMatcher rule1Matcher2 = new FilterRuleMatcher();
-        rule1Matcher2.setMatcherType(FilterRuleMatcher.MatcherType.PROTOCOL);
-        rule1Matcher2.setValue("tcp");
-        rule1Matchers.add(rule1Matcher1);
-        rule1Matchers.add(rule1Matcher2);
-        filterRule1.setMatchers( rule1Matchers );
+        // enabled in dev env
+        // disabled but there in normal env
+        FilterRule filterRuleSsh = new FilterRule();
+        filterRuleSsh.setEnabled( UvmContextFactory.context().isDevel() );
+        filterRuleSsh.setDescription( "Allow SSH" );
+        filterRuleSsh.setBlocked( false );
+        List<FilterRuleMatcher> ruleSshMatchers = new LinkedList<FilterRuleMatcher>();
+        FilterRuleMatcher ruleSshMatcher1 = new FilterRuleMatcher();
+        ruleSshMatcher1.setMatcherType(FilterRuleMatcher.MatcherType.DST_PORT);
+        ruleSshMatcher1.setValue("22");
+        FilterRuleMatcher ruleSshMatcher2 = new FilterRuleMatcher();
+        ruleSshMatcher2.setMatcherType(FilterRuleMatcher.MatcherType.PROTOCOL);
+        ruleSshMatcher2.setValue("tcp");
+        ruleSshMatchers.add(ruleSshMatcher1);
+        ruleSshMatchers.add(ruleSshMatcher2);
+        filterRuleSsh.setMatchers( ruleSshMatchers );
 
-        FilterRule filterRule2 = new FilterRule();
-        filterRule2.setEnabled( true );
-        filterRule2.setDescription( "Allow HTTP on non-WANs" );
-        filterRule2.setBlocked( false );
-        List<FilterRuleMatcher> rule2Matchers = new LinkedList<FilterRuleMatcher>();
-        FilterRuleMatcher rule2Matcher1 = new FilterRuleMatcher();
-        rule2Matcher1.setMatcherType(FilterRuleMatcher.MatcherType.DST_PORT);
-        rule2Matcher1.setValue("80");
-        FilterRuleMatcher rule2Matcher2 = new FilterRuleMatcher();
-        rule2Matcher2.setMatcherType(FilterRuleMatcher.MatcherType.PROTOCOL);
-        rule2Matcher2.setValue("tcp");
-        FilterRuleMatcher rule2Matcher3 = new FilterRuleMatcher();
-        rule2Matcher3.setMatcherType(FilterRuleMatcher.MatcherType.SRC_INTF);
-        rule2Matcher3.setValue("non_wan");
-        rule2Matchers.add(rule2Matcher1);
-        rule2Matchers.add(rule2Matcher2);
-        rule2Matchers.add(rule2Matcher3);
-        filterRule2.setMatchers( rule2Matchers );
-
-        FilterRule filterRule3 = new FilterRule();
-        filterRule3.setEnabled( true );
-        filterRule3.setDescription( "Allow HTTPS" );
-        filterRule3.setBlocked( false );
-        List<FilterRuleMatcher> rule3Matchers = new LinkedList<FilterRuleMatcher>();
-        FilterRuleMatcher rule3Matcher1 = new FilterRuleMatcher();
-        rule3Matcher1.setMatcherType(FilterRuleMatcher.MatcherType.DST_PORT);
-        rule3Matcher1.setValue("443");
-        FilterRuleMatcher rule3Matcher2 = new FilterRuleMatcher();
-        rule3Matcher2.setMatcherType(FilterRuleMatcher.MatcherType.PROTOCOL);
-        rule3Matcher2.setValue("tcp");
-        rule3Matchers.add(rule3Matcher1);
-        rule3Matchers.add(rule3Matcher2);
-        filterRule3.setMatchers( rule3Matchers );
-
-        FilterRule filterRule4 = new FilterRule();
-        filterRule4.setEnabled( true );
-        filterRule4.setDescription( "Block All" );
-        filterRule4.setBlocked( true );
-        List<FilterRuleMatcher> rule4Matchers = new LinkedList<FilterRuleMatcher>();
-        filterRule4.setMatchers( rule4Matchers );
+        FilterRule filterRulePing = new FilterRule();
+        filterRulePing.setEnabled( UvmContextFactory.context().isDevel() );
+        filterRulePing.setDescription( "Allow PING" );
+        filterRulePing.setBlocked( false );
+        List<FilterRuleMatcher> rulePingMatchers = new LinkedList<FilterRuleMatcher>();
+        FilterRuleMatcher rulePingMatcher1 = new FilterRuleMatcher();
+        rulePingMatcher1.setMatcherType(FilterRuleMatcher.MatcherType.PROTOCOL);
+        rulePingMatcher1.setValue("icmp");
+        rulePingMatchers.add(rulePingMatcher1);
+        filterRulePing.setMatchers( rulePingMatchers );
         
-        rules.add( filterRule1 );
-        rules.add( filterRule2 );
-        rules.add( filterRule3 );
-        rules.add( filterRule4 );
+        FilterRule filterRuleHttp = new FilterRule();
+        filterRuleHttp.setEnabled( true );
+        filterRuleHttp.setDescription( "Allow HTTP on non-WANs" );
+        filterRuleHttp.setBlocked( false );
+        List<FilterRuleMatcher> ruleHttpMatchers = new LinkedList<FilterRuleMatcher>();
+        FilterRuleMatcher ruleHttpMatcher1 = new FilterRuleMatcher();
+        ruleHttpMatcher1.setMatcherType(FilterRuleMatcher.MatcherType.DST_PORT);
+        ruleHttpMatcher1.setValue("80");
+        FilterRuleMatcher ruleHttpMatcher2 = new FilterRuleMatcher();
+        ruleHttpMatcher2.setMatcherType(FilterRuleMatcher.MatcherType.PROTOCOL);
+        ruleHttpMatcher2.setValue("tcp");
+        FilterRuleMatcher ruleHttpMatcher3 = new FilterRuleMatcher();
+        ruleHttpMatcher3.setMatcherType(FilterRuleMatcher.MatcherType.SRC_INTF);
+        ruleHttpMatcher3.setValue("non_wan");
+        ruleHttpMatchers.add(ruleHttpMatcher1);
+        ruleHttpMatchers.add(ruleHttpMatcher2);
+        ruleHttpMatchers.add(ruleHttpMatcher3);
+        filterRuleHttp.setMatchers( ruleHttpMatchers );
+
+        FilterRule filterRuleDns = new FilterRule();
+        filterRuleDns.setEnabled( true );
+        filterRuleDns.setDescription( "Allow DNS on non-WANs" );
+        filterRuleDns.setBlocked( false );
+        List<FilterRuleMatcher> ruleDnsMatchers = new LinkedList<FilterRuleMatcher>();
+        FilterRuleMatcher ruleDnsMatcher1 = new FilterRuleMatcher();
+        ruleDnsMatcher1.setMatcherType(FilterRuleMatcher.MatcherType.DST_PORT);
+        ruleDnsMatcher1.setValue("53");
+        FilterRuleMatcher ruleDnsMatcher2 = new FilterRuleMatcher();
+        ruleDnsMatcher2.setMatcherType(FilterRuleMatcher.MatcherType.PROTOCOL);
+        ruleDnsMatcher2.setValue("tcp,udp");
+        FilterRuleMatcher ruleDnsMatcher3 = new FilterRuleMatcher();
+        ruleDnsMatcher3.setMatcherType(FilterRuleMatcher.MatcherType.SRC_INTF);
+        ruleDnsMatcher3.setValue("non_wan");
+        ruleDnsMatchers.add(ruleDnsMatcher1);
+        ruleDnsMatchers.add(ruleDnsMatcher2);
+        ruleDnsMatchers.add(ruleDnsMatcher3);
+        filterRuleDns.setMatchers( ruleDnsMatchers );
+
+        FilterRule filterRuleDhcp = new FilterRule();
+        filterRuleDhcp.setEnabled( true );
+        filterRuleDhcp.setDescription( "Allow DHCP on non-WANs" );
+        filterRuleDhcp.setBlocked( false );
+        List<FilterRuleMatcher> ruleDhcpMatchers = new LinkedList<FilterRuleMatcher>();
+        FilterRuleMatcher ruleDhcpMatcher1 = new FilterRuleMatcher();
+        ruleDhcpMatcher1.setMatcherType(FilterRuleMatcher.MatcherType.DST_PORT);
+        ruleDhcpMatcher1.setValue("67");
+        FilterRuleMatcher ruleDhcpMatcher2 = new FilterRuleMatcher();
+        ruleDhcpMatcher2.setMatcherType(FilterRuleMatcher.MatcherType.PROTOCOL);
+        ruleDhcpMatcher2.setValue("udp");
+        FilterRuleMatcher ruleDhcpMatcher3 = new FilterRuleMatcher();
+        ruleDhcpMatcher3.setMatcherType(FilterRuleMatcher.MatcherType.SRC_INTF);
+        ruleDhcpMatcher3.setValue("non_wan");
+        ruleDhcpMatchers.add(ruleDhcpMatcher1);
+        ruleDhcpMatchers.add(ruleDhcpMatcher2);
+        ruleDhcpMatchers.add(ruleDhcpMatcher3);
+        filterRuleDhcp.setMatchers( ruleDhcpMatchers );
+        
+        FilterRule filterRuleHttps = new FilterRule();
+        filterRuleHttps.setEnabled( true );
+        filterRuleHttps.setDescription( "Allow HTTPS" );
+        filterRuleHttps.setBlocked( false );
+        List<FilterRuleMatcher> ruleHttpsMatchers = new LinkedList<FilterRuleMatcher>();
+        FilterRuleMatcher ruleHttpsMatcher1 = new FilterRuleMatcher();
+        ruleHttpsMatcher1.setMatcherType(FilterRuleMatcher.MatcherType.DST_PORT);
+        ruleHttpsMatcher1.setValue("443");
+        FilterRuleMatcher ruleHttpsMatcher2 = new FilterRuleMatcher();
+        ruleHttpsMatcher2.setMatcherType(FilterRuleMatcher.MatcherType.PROTOCOL);
+        ruleHttpsMatcher2.setValue("tcp");
+        ruleHttpsMatchers.add(ruleHttpsMatcher1);
+        ruleHttpsMatchers.add(ruleHttpsMatcher2);
+        filterRuleHttps.setMatchers( ruleHttpsMatchers );
+
+        FilterRule filterRuleBlock = new FilterRule();
+        filterRuleBlock.setEnabled( true );
+        filterRuleBlock.setDescription( "Block All" );
+        filterRuleBlock.setBlocked( true );
+        List<FilterRuleMatcher> rule4Matchers = new LinkedList<FilterRuleMatcher>();
+        filterRuleBlock.setMatchers( rule4Matchers );
+        
+        rules.add( filterRuleSsh );
+        rules.add( filterRulePing );
+        rules.add( filterRuleDns );
+        rules.add( filterRuleDhcp );
+        rules.add( filterRuleHttp );
+        rules.add( filterRuleHttps );
+        rules.add( filterRuleBlock );
 
         return rules;
     }
