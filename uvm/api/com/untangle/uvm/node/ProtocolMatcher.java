@@ -1,4 +1,6 @@
-/* $HeadURL$ */
+/**
+ * $Id$
+ */
 package com.untangle.uvm.node;
 
 import java.util.LinkedList;
@@ -22,12 +24,18 @@ import com.untangle.uvm.vnet.Protocol;
 public class ProtocolMatcher
 {
     private static final String MARKER_ANY = "any";
-    private static final String MARKER_ALL = "all";
     private static final String MARKER_NONE = "none";
     private static final String MARKER_SEPERATOR = ",";
     private static final String MARKER_TCP = "tcp";
     private static final String MARKER_UDP = "udp";
 
+    /**
+     * These are other protocols that are supported as far as syntax goes,
+     * but will never matching inside the JVM because they are not processed by the UVM
+     * As such they are allowed (for iptables based rules) but will never match
+     */
+    private static final String[] OTHER_MARKERS = { "icmp", "gre", "esp", "ah", "sctp" };
+    
     private static ProtocolMatcher ANY_MATCHER = new ProtocolMatcher(MARKER_ANY);
     private static ProtocolMatcher TCP_MATCHER = new ProtocolMatcher(MARKER_TCP);
     private static ProtocolMatcher UDP_MATCHER = new ProtocolMatcher(MARKER_UDP);
@@ -115,21 +123,6 @@ public class ProtocolMatcher
         return this.matcher;
     }
 
-    public static ProtocolMatcher getTCPAndUDPMatcher()
-    {
-        return ANY_MATCHER;
-    }
-    
-    public static ProtocolMatcher getTCPMatcher()
-    {
-        return TCP_MATCHER;
-    }
-
-    public static ProtocolMatcher getUDPMatcher()
-    {
-        return UDP_MATCHER;
-    }
-    
     private void initialize( String matcher )
     {
         matcher = matcher.toLowerCase().trim().replaceAll("\\s","");
@@ -171,10 +164,6 @@ public class ProtocolMatcher
             this.type = ProtocolMatcherType.ANY;
             return;
         }
-        if (MARKER_ALL.equals(matcher)) {
-            this.type = ProtocolMatcherType.ANY;
-            return;
-        }
         if (MARKER_NONE.equals(matcher)) {
             this.type = ProtocolMatcherType.NONE;
             return;
@@ -190,6 +179,16 @@ public class ProtocolMatcher
             return;
         }
 
+        /**
+         * Check for the other matchers that never match in java
+         */
+        for ( String str : this.OTHER_MARKERS ) {
+            if ( str.equals( matcher ) ) {
+                this.type = ProtocolMatcherType.NONE;
+                return;
+            }
+        }
+        
         logger.error("Invalid Protocol matcher: \"" + matcher + "\"");
         throw new IllegalArgumentException("Invalid Protocol matcher: \"" + matcher + "\"");
     }
