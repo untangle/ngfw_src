@@ -20,12 +20,12 @@ public class QosPriority implements Serializable, JSONString
     int priorityId;
     String priorityName;
 
-    int uploadReservation;
-    int uploadLimit;
-    int downloadReservation;
-    int downloadLimit;
+    float uploadReservation;
+    float uploadLimit;
+    float downloadReservation;
+    float downloadLimit;
     
-    public QosPriority( int priorityId, String priorityName, int uploadReservation, int uploadLimit, int downloadReservation, int downloadLimit)
+    public QosPriority( int priorityId, String priorityName, float uploadReservation, float uploadLimit, float downloadReservation, float downloadLimit)
     {
         setPriorityId( priorityId );
         setPriorityName( priorityName );
@@ -43,17 +43,17 @@ public class QosPriority implements Serializable, JSONString
     public String getPriorityName() { return this.priorityName; }
     public void setPriorityName( String newValue ) { this.priorityName = newValue; }
 
-    public int getUploadReservation() { return this.uploadReservation; }
-    public void setUploadReservation( int newValue ) { this.uploadReservation = newValue; }
+    public float getUploadReservation() { return this.uploadReservation; }
+    public void setUploadReservation( float newValue ) { this.uploadReservation = newValue; }
 
-    public int getUploadLimit() { return this.uploadLimit; }
-    public void setUploadLimit( int newValue ) { this.uploadLimit = newValue; }
+    public float getUploadLimit() { return this.uploadLimit; }
+    public void setUploadLimit( float newValue ) { this.uploadLimit = newValue; }
 
-    public int getDownloadReservation() { return this.downloadReservation; }
-    public void setDownloadReservation( int newValue ) { this.downloadReservation = newValue; }
+    public float getDownloadReservation() { return this.downloadReservation; }
+    public void setDownloadReservation( float newValue ) { this.downloadReservation = newValue; }
 
-    public int getDownloadLimit() { return this.downloadLimit; }
-    public void setDownloadLimit( int newValue ) { this.downloadLimit = newValue; }
+    public float getDownloadLimit() { return this.downloadLimit; }
+    public void setDownloadLimit( float newValue ) { this.downloadLimit = newValue; }
     
     public String toJSONString()
     {

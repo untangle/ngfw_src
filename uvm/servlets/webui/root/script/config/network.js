@@ -1868,7 +1868,7 @@ if (!Ung.hasResource["Ung.Network"]) {
                 }],
                 columnsDefaultSortable: false,
                 updateTotalBandwidth: Ext.bind(function() {
-                    var interfaceList=this.gridQosWanBandwidth.getPageList()
+                    var interfaceList=this.gridQosWanBandwidth.getPageList();
                     var u = 0;
                     var d = 0;
 
@@ -1894,6 +1894,7 @@ if (!Ung.hasResource["Ung.Network"]) {
             this.gridQosWanBandwidth.getStore().on("update", Ext.bind(function() {
                 this.gridQosWanBandwidth.updateTotalBandwidth();
             }, this));
+            this.gridQosWanBandwidth.getStore().filter("configType", "ADDRESSED");
             this.gridQosWanBandwidth.getStore().filter("isWan", true);
             
             this.gridQosRules = Ext.create( 'Ung.EditorGrid', {
@@ -2047,7 +2048,7 @@ if (!Ung.hasResource["Ung.Network"]) {
                     editor : {
                         xtype: 'numberfield',
                         allowBlank : false,
-                        minValue : 1,
+                        minValue : .1,
                         maxValue : 100
                     },
                     renderer: Ext.bind(function( value, metadata, record ) { 
@@ -2063,7 +2064,7 @@ if (!Ung.hasResource["Ung.Network"]) {
                     editor : {
                         xtype: 'numberfield',
                         allowBlank : false,
-                        minValue : 1,
+                        minValue : .1,
                         maxValue : 100
                     },
                     renderer: Ext.bind(function( value, metadata, record ) { 
@@ -2079,7 +2080,7 @@ if (!Ung.hasResource["Ung.Network"]) {
                     editor : {
                         xtype: 'numberfield',
                         allowBlank : false,
-                        minValue : 1,
+                        minValue : .1,
                         maxValue : 100
                     },
                     renderer: Ext.bind(function( value, metadata, record ) { 
@@ -2095,7 +2096,7 @@ if (!Ung.hasResource["Ung.Network"]) {
                     editor : {
                         xtype: 'numberfield',
                         allowBlank : false,
-                        minValue : 1,
+                        minValue : .1,
                         maxValue : 100
                     },
                     renderer: Ext.bind(function( value, metadata, record ) { 
@@ -2641,7 +2642,9 @@ if (!Ung.hasResource["Ung.Network"]) {
                 var qosBandwidthList = this.gridQosWanBandwidth.getPageList();
                 for(var i=0; i<qosBandwidthList.length; i++) {
                     var qosBandwidth = qosBandwidthList[i]; 
-                    if(qosBandwidth.isWan && ( Ext.isEmpty(qosBandwidth.downloadBandwidthKbps) || Ext.isEmpty(qosBandwidth.uploadBandwidthKbps) )) {
+                    if(qosBandwidth.configType == "ADDRESSED" &&
+                       qosBandwidth.isWan &&
+                       ( Ext.isEmpty(qosBandwidth.downloadBandwidthKbps) || Ext.isEmpty(qosBandwidth.uploadBandwidthKbps) )) {
                         this.tabs.setActiveTab(this.panelAdvanced);
                         this.advancedTabPanel.setActiveTab(this.panelQoS);
                         this.gridQosWanBandwidth.focus();

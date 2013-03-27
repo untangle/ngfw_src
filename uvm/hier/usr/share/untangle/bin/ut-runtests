@@ -15,6 +15,7 @@ for f in os.listdir('@PREFIX@/usr/lib/python2.6/untangle_tests'):
         (m, e) = os.path.splitext(f)
         __import__('untangle_tests.%s' % m)
 
+
 class ArgumentParser(object):
     def __init__(self):
         self.hostIP = None

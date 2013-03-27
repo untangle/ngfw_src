@@ -95,7 +95,7 @@ class VirusTests(unittest2.TestCase):
         assert(events['list'][0]['uri'] == ("/test/test.zip?arg=%s" % fname))
         assert(events['list'][0][self.shortName() + '_clean'] == True)
 
-    port25Test = subprocess.call(["netcat","-w","1","test.untangle.com","25"],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
+    port25Test = subprocess.call(["netcat","-z","-w","1","test.untangle.com","25"],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
     @unittest2.skipIf(port25Test != 0,  "Port 25 blocked")
     def test_102_eventlog_smtpVirus(self):
         startTime = datetime.now()
@@ -124,7 +124,7 @@ class VirusTests(unittest2.TestCase):
         assert(events['list'][0][self.shortName() + '_clean'] == False)
         assert(datetime.fromtimestamp((events['list'][0]['time_stamp']['time'])/1000) > startTime)
 
-    port25Test = subprocess.call(["netcat","-w","1","test.untangle.com","25"],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
+    port25Test = subprocess.call(["netcat","-z","-w","1","test.untangle.com","25"],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
     @unittest2.skipIf(port25Test != 0,  "Port 25 blocked")
     def test_103_eventlog_smtpNonVirus(self):
         startTime = datetime.now()
