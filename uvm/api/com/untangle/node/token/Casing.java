@@ -42,19 +42,19 @@ package com.untangle.node.token;
  * @author <a href="mailto:amread@untangle.com">Aaron Read</a>
  * @version 1.0
  */
-public interface Casing
+public abstract class Casing
 {
     /**
      * Get the Parser for this casing.
      *
      * @return the Parser.
      */
-    Parser parser();
+    public abstract Parser parser();
 
     /**
      * Get the Unparser for this casing.
      *
      * @return the Unparser.
      */
-    Unparser unparser();
+    public abstract Unparser unparser();
 }

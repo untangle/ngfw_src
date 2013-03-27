@@ -29,7 +29,7 @@ import com.untangle.uvm.vnet.NodeTCPSession;
  * @author <a href="mailto:amread@untangle.com">Aaron Read</a>
  * @version 1.0
  */
-class FtpCasing implements Casing
+class FtpCasing extends Casing
 {
     private final Parser parser;
     private final FtpUnparser unparser;

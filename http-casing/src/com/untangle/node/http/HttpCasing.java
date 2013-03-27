@@ -16,7 +16,7 @@ import com.untangle.uvm.vnet.NodeTCPSession;
 /**
  * An HTTP <code>Casing</code>.
  */
-class HttpCasing implements Casing
+class HttpCasing extends Casing
 {
     private final HttpNodeImpl node;
     private final HttpParser parser;

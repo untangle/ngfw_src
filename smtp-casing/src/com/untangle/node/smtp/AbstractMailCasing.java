@@ -29,7 +29,7 @@ import com.untangle.uvm.vnet.NodeTCPSession;
 import com.untangle.uvm.vnet.event.TCPStreamer;
 
 
-public abstract class AbstractMailCasing implements Casing
+public abstract class AbstractMailCasing extends Casing
 {
     private final boolean m_trace;
     private final CasingTracer m_tracer;
