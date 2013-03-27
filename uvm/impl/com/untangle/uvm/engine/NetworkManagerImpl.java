@@ -330,8 +330,9 @@ public class NetworkManagerImpl implements NetworkManager
         }
 
         /* WAN ports never have HTTP open */
+        InterfaceSettings.ConfigType configType = intfSettings.getConfigType();
         boolean isWan = intfSettings.getIsWan();
-        if ( isWan ) {
+        if ( configType == InterfaceSettings.ConfigType.ADDRESSED && isWan ) {
             //this is normal no error logged
             return null;
         }
@@ -339,14 +340,14 @@ public class NetworkManagerImpl implements NetworkManager
         /**
          * If this interface is bridged with another, use the addr from the other
          */
-        if ( InterfaceSettings.ConfigType.BRIDGED == intfSettings.getConfigType() ) {
+        if ( configType == InterfaceSettings.ConfigType.BRIDGED ) {
             Integer bridgedTo = intfSettings.getBridgedTo();
             intfSettings = findInterfaceId( bridgedTo );
 
             if ( intfSettings == null ) {
                 logger.warn("No Interface found for name: " + bridgedTo );
                 return null;
-            }
+            } 
 
             intfId = intfSettings.getInterfaceId();
         }
