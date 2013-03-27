@@ -114,8 +114,8 @@ if (!Ung.hasResource["Ung.Network"]) {
         // Interfaces Panel
         buildInterfaces: function() {
             this.gridInterfaces = Ext.create('Ung.EditorGrid',{
+                anchor: '100% -80',
                 name: 'Interfaces',
-                height: 400,
                 settingsCmp: this,
                 paginated: false,
                 hasReorder: false,
@@ -210,15 +210,8 @@ if (!Ung.hasResource["Ung.Network"]) {
                 }],
                 columns: [{
                     header: this.i18n._("Interface Id"),
-                    width: 75,
-                    dataIndex: 'interfaceId',
-                    renderer: function(value) {
-                        if (value < 0) {
-                            return i18n._("new");
-                        } else {
-                            return value;
-                        }
-                    }
+                    width: 80,
+                    dataIndex: 'interfaceId'
                 }, {
                     header: this.i18n._("Name"),
                     dataIndex: 'name',
@@ -257,7 +250,7 @@ if (!Ung.hasResource["Ung.Network"]) {
                     Ext.MessageBox.wait(i18n._("Loading device mapper..."), i18n._("Please wait"));
                     if (!this.winMapDevices) {
                         this.mapDevicesStore = Ext.create('Ext.data.ArrayStore', {
-                            fields:[{name: "interfaceId"}, { name: "name" }, { name: "physicalDev" }, { name: "deviceName" }, { name: "macAddress" }, { name: "connected" }, { name: "duplex" }, { name: "vendor" }, { name: "mbit" }],
+                            fields:[{name: "interfaceId"}, { name: "name" }, { name: "physicalDev" }, { name: "systemDev" },{ name: "symbolicDev" }, { name: "deviceName" }, { name: "macAddress" }, { name: "connected" }, { name: "duplex" }, { name: "vendor" }, { name: "mbit" }],
                             data: []
                         });
                         this.availableDevicesStore = Ext.create('Ext.data.ArrayStore', {
@@ -269,7 +262,7 @@ if (!Ung.hasResource["Ung.Network"]) {
                             store: this.mapDevicesStore,
                             loadMask: true,
                             stripeRows: true,
-                            enableColumnResize: false,
+                            enableColumnResize: true,
                             enableColumnHide: false,
                             enableColumnMove: false,
                             selModel: Ext.create('Ext.selection.RowModel', {singleSelect: true}),
@@ -344,11 +337,45 @@ if (!Ung.hasResource["Ung.Network"]) {
                                     listeners: {
                                         "change": {
                                             fn: Ext.bind(function(elem, newValue, oldValue) {
+                                                var sourceRecord = null;
+                                                var targetRecord = null;
                                                 this.mapDevicesStore.each( function( currentRow ) {
-                                                    if(newValue == currentRow.get( "deviceName" )) {
-                                                        currentRow.set( "deviceName", oldValue );
+                                                    if(oldValue==currentRow.get( "deviceName" )) {
+                                                        sourceRecord=currentRow;
+                                                    } else if(newValue==currentRow.get( "deviceName" )) {
+                                                        targetRecord=currentRow;
+                                                    }
+                                                    if(sourceRecord!=null && targetRecord!=null) {
+                                                        return false;
                                                     }
                                                 });
+                                                if(sourceRecord==null || targetRecord==null || sourceRecord==targetRecord) {
+                                                    console.log(sourceRecord, targetRecord);
+                                                    return false;
+                                                }
+                                                var soruceData = Ext.decode(Ext.encode(sourceRecord.data));
+                                                var targetData = Ext.decode(Ext.encode(targetRecord.data));
+                                                
+                                                //sourceRecord.set("deviceName", targetData.deviceName);
+                                                sourceRecord.set("macAddress",targetData.macAddress);
+                                                sourceRecord.set("physicalDev", targetData.physicalDev);
+                                                sourceRecord.set("systemDev", targetData.systemDev);
+                                                sourceRecord.set("symbolicDev", targetData.symbolicDev);
+                                                sourceRecord.set("connected",targetData.connected);
+                                                sourceRecord.set("duplex",targetData.duplex);
+                                                sourceRecord.set("vendor",targetData.vendor);
+                                                sourceRecord.set("mbit",targetData.mbit);
+
+                                                
+                                                targetRecord.set("deviceName", soruceData.deviceName);
+                                                targetRecord.set("physicalDev", soruceData.physicalDev);
+                                                targetRecord.set("systemDev", soruceData.systemDev);
+                                                targetRecord.set("symbolicDev", soruceData.symbolicDev);
+                                                targetRecord.set("macAddress",soruceData.macAddress);
+                                                targetRecord.set("connected",soruceData.connected);
+                                                targetRecord.set("duplex",soruceData.duplex);
+                                                targetRecord.set("vendor",soruceData.vendor);
+                                                targetRecord.set("mbit",soruceData.mbit);
                                             }, this)
                                         }
                                     }
@@ -399,15 +426,11 @@ if (!Ung.hasResource["Ung.Network"]) {
                                 fixed: true,
                                 width: 150,
                                 renderer: function(value, metadata, record, rowIndex, colIndex, store, view) {
-                                    /* Emacs was not happy when this was inline. */
-                                    var matcher = /:/g;
                                     var text = ""
                                     if ( value && value.length > 0 ) {
-                                        /* Build the link for the mac address */
+                                        // Build the link for the mac address
                                         text = '<a target="_blank" href="http://standards.ieee.org/cgi-bin/ouisearch?' + 
-                                        value.substring( 0, 8 ).replace( matcher, "" ) + '">' + value + '</a>';
-                                     } else {
-                                        text = "&nbsp;";
+                                        value.substring( 0, 8 ).replace( /:/g, "" ) + '">' + value + '</a>';
                                     }
                                     return text; 
                                 }
@@ -418,19 +441,24 @@ if (!Ung.hasResource["Ung.Network"]) {
                             breadcrumbs: [{
                                 title: this.i18n._("Interfaces"),
                                 action: Ext.bind(function() {
-                                    this.panelInterfaces.winMapDevices.cancelAction();
+                                    this.winMapDevices.cancelAction();
                                 }, this)
                             }, {
                                 title: this.i18n._("Remap Interfaces")
                             }],
                             items: this.gridMapDevices,
                             updateAction: Ext.bind(function() {
-                                var interfacesMap = {};
+                                var interfaceDataMap = {};
                                 this.mapDevicesStore.each( function( currentRow ) {
-                                    interfacesMap[currentRow.get( "interfaceId" )] = currentRow.get( "physicalDev" );
+                                    interfaceDataMap[currentRow.get( "interfaceId" )] = currentRow.getData();
                                 });
-                                //TODO: update interfaces grid with remapped devices
-                                console.log(interfacesMap);
+                                this.gridInterfaces.getStore().each(function( currentRow ) {
+                                    var interfaceData = interfaceDataMap[currentRow.get("interfaceId")];
+                                    currentRow.set("physicalDev",interfaceData.physicalDev);
+                                    currentRow.set("systemDev",interfaceData.systemDev);
+                                    currentRow.set("symbolicDev",interfaceData.symbolicDev);
+                                });
+                                this.winMapDevices.cancelAction();
                             }, this)
                         });
                     }
@@ -438,28 +466,38 @@ if (!Ung.hasResource["Ung.Network"]) {
                     var deviceStatusList=main.getNetworkManager().getDeviceStatus(Ext.bind(function(result, exception) {
                         if(Ung.Util.handleException(exception)) return;
                         Ext.MessageBox.hide();
-                        var deviceStatusMap = {};
-                        var deviceStatusList = result.list;
-                        for(var i=0; i<deviceStatusList.length; i++) {
-                            var deviceStatus=deviceStatusList[i];
-                            deviceStatusMap[deviceStatus["deviceName"]] = deviceStatus;
-                        }
-                        for(var i=0; i<this.settings.interfaces.list.length; i++) {
-                            var deviceData={};
-                            
-                            var intf = this.settings.interfaces.list[i];
-                            var deviceStatus= deviceStatusMap[intf.physicalDev];
-                            Ext.applyIf(deviceData, intf);
+                        var deviceStatusMap=Ung.Util.createRecordsMap(result.list, "deviceName");
+                        var interfaces = this.gridInterfaces.getPageList();
+                        for(var i=0; i<interfaces.length; i++) {
+                            var deviceData = interfaces[i];
+                            var deviceStatus= deviceStatusMap[interfaces[i].physicalDev];
                             Ext.applyIf(deviceData, deviceStatus);
                             mapDeviceData.push(deviceData);
                         }
-                        console.log(mapDeviceData);
                         this.mapDevicesStore.loadData( mapDeviceData );
                         this.availableDevicesStore.loadData( mapDeviceData );
                         this.winMapDevices.show();
                     }, this));
                 }, this)
             });
+            this.gridInterfaces.getStore().on("update", Ext.bind(function( store, record, operation, modifiedFieldNames, eOpts) {
+                //Sync QoS Bandwith Grid data
+                var interfaces = this.gridInterfaces.getPageList();
+                var interfacesMap=Ung.Util.createRecordsMap(interfaces, "interfaceId");
+                var qosBandwidthStore=this.gridQosWanBandwidth.getStore();
+                qosBandwidthStore.clearFilter();
+                qosBandwidthStore.each( function( currentRow ) {
+                    var interfaceData = interfacesMap[currentRow.get("interfaceId")];
+                    currentRow.suspendEvents();
+                    currentRow.set("isWan", interfaceData.isWan);
+                    currentRow.set("name", interfaceData.name);
+                    currentRow.set("configType", interfaceData.configType);
+                    currentRow.resumeEvents();
+                });
+                qosBandwidthStore.filter("isWan", true);
+                this.gridQosWanBandwidth.updateTotalBandwidth();
+            }, this));
+            
             this.panelInterfaces = Ext.create('Ext.panel.Panel',{
                 name: 'panelInterfaces',
                 helpSource: 'network_interfaces',
@@ -1540,7 +1578,7 @@ if (!Ung.hasResource["Ung.Network"]) {
                 devList.push( [ key, name ] );
             }
             this.gridStaticRoutes = Ext.create('Ung.EditorGrid', {
-                anchor: "100% 48%",
+                anchor: "100% -80",
                 name: 'Static Routes',
                 settingsCmp: this,
                 emptyRow: {
@@ -1761,27 +1799,6 @@ if (!Ung.hasResource["Ung.Network"]) {
             ];
             this.qosPriorityNoDefaultMap = Ung.Util.createStoreMap(this.qosPriorityNoDefaultStore);
             
-            var updateTotalBandwidth = Ext.bind(function(bandwidthData) {
-                var u = 0;
-                var d = 0;
-
-                for ( var i = 0 ; i < bandwidthData.length ; i++ ) {
-                    if(bandwidthData[i].uploadBandwidthKbps !=null) {
-                        u += bandwidthData[i].uploadBandwidthKbps;    
-                    }
-                    if(bandwidthData[i].downloadBandwidthKbps !=null ) {
-                        d += bandwidthData[i].downloadBandwidthKbps;    
-                    }
-                }
-
-                var d_Mbit = d/1000;
-                var u_Mbit = u/1000;
-
-                var message = Ext.String.format( this.i18n._( "<i>Total: {0} kbps ({1} Mbit) download, {2} kbps ({3} Mbit) upload</i>" ), d, d_Mbit, u, u_Mbit );
-                var bandwidthLabel = this.panelQoS.query('label[name="bandwidthLabel"]')[0];
-                bandwidthLabel.setText(this.i18n._("<font color=\"red\">Note</font>: When enabling QoS valid Download Bandwidth and Upload Bandwidth limits must be set for all WAN interfaces.")+"</br>"+message, false);
-            }, this);
-            
             this.gridQosWanBandwidth = Ext.create( 'Ung.EditorGrid', {
                 name: 'QoS Priorities',
                 margin: '5 0 0 0',
@@ -1792,18 +1809,7 @@ if (!Ung.hasResource["Ung.Network"]) {
                 hasDelete: false,
                 hasEdit: false,
                 recordJavaClass: "com.untangle.uvm.network.InterfaceSettings",
-                dataFn: Ext.bind( function() {
-                    var result = {
-                        list:[]
-                    };
-                    for(var i=0; i<this.settings.interfaces.list.length; i++) {
-                        var intf =this.settings.interfaces.list[i];
-                        if(intf.isWan) {
-                            result.list.push(intf);
-                        }
-                    }
-                    return result;
-                }, this),
+                dataProperty: "interfaces",
                 fields: [{
                     name: 'interfaceId'
                 }, {
@@ -1814,8 +1820,14 @@ if (!Ung.hasResource["Ung.Network"]) {
                     name: 'downloadBandwidthKbps'
                 }, {
                     name: 'uploadBandwidthKbps'
+                },{
+                    name: 'isWan'
                 }],                
                 columns: [{
+                    header: this.i18n._("Interface Id"),
+                    width: 80,
+                    dataIndex: 'interfaceId'
+                }, {
                     header: this.i18n._("WAN"),
                     width: 150,
                     dataIndex: 'name'
@@ -1830,7 +1842,7 @@ if (!Ung.hasResource["Ung.Network"]) {
                     editor : {
                         xtype: 'numberfield',
                         allowBlank : false
-                    },
+                  },
                     renderer: Ext.bind(function( value, metadata, record ) { 
                         if (value == null) {
                             return this.i18n._("Not set"); 
@@ -1854,13 +1866,36 @@ if (!Ung.hasResource["Ung.Network"]) {
                         }
                     }, this )
                 }],
-                
-                columnsDefaultSortable: false
+                columnsDefaultSortable: false,
+                updateTotalBandwidth: Ext.bind(function() {
+                    var interfaceList=this.gridQosWanBandwidth.getPageList()
+                    var u = 0;
+                    var d = 0;
+
+                    for ( var i = 0 ; i < interfaceList.length ; i++ ) {
+                        if(interfaceList[i].isWan) {
+                            if(interfaceList[i].uploadBandwidthKbps !=null) {
+                                u += interfaceList[i].uploadBandwidthKbps;    
+                            }
+                            if(interfaceList[i].downloadBandwidthKbps !=null ) {
+                                d += interfaceList[i].downloadBandwidthKbps;    
+                            }
+                        }
+                    }
+
+                    var d_Mbit = d/1000;
+                    var u_Mbit = u/1000;
+
+                    var message = Ext.String.format( this.i18n._( "<i>Total: {0} kbps ({1} Mbit) download, {2} kbps ({3} Mbit) upload</i>" ), d, d_Mbit, u, u_Mbit );
+                    var bandwidthLabel = this.panelQoS.query('label[name="bandwidthLabel"]')[0];
+                    bandwidthLabel.setText(this.i18n._("<font color=\"red\">Note</font>: When enabling QoS valid Download Bandwidth and Upload Bandwidth limits must be set for all WAN interfaces.")+"</br>"+message, false);
+                }, this)
             });
             this.gridQosWanBandwidth.getStore().on("update", Ext.bind(function() {
-                var qosBandwidthList = this.gridQosWanBandwidth.getPageList();
-                updateTotalBandwidth(qosBandwidthList);
+                this.gridQosWanBandwidth.updateTotalBandwidth();
             }, this));
+            this.gridQosWanBandwidth.getStore().filter("isWan", true);
+            
             this.gridQosRules = Ext.create( 'Ung.EditorGrid', {
                 name: 'QoS Custom Rules',
                 margin: '5 0 0 0',
@@ -2228,7 +2263,7 @@ if (!Ung.hasResource["Ung.Network"]) {
                     }]
                 }]
             });
-            updateTotalBandwidth(this.settings.interfaces.list);
+            this.gridQosWanBandwidth.updateTotalBandwidth();
         },
         // Filter Panel
         buildFilter: function() {
@@ -2605,7 +2640,8 @@ if (!Ung.hasResource["Ung.Network"]) {
             if(this.settings.qosSettings.qosEnabled) {
                 var qosBandwidthList = this.gridQosWanBandwidth.getPageList();
                 for(var i=0; i<qosBandwidthList.length; i++) {
-                    if(qosBandwidthList[i].downloadBandwidthKbps == null || qosBandwidthList[i].uploadBandwidthKbps == null) {
+                    var qosBandwidth = qosBandwidthList[i]; 
+                    if(qosBandwidth.isWan && ( Ext.isEmpty(qosBandwidth.downloadBandwidthKbps) || Ext.isEmpty(qosBandwidth.uploadBandwidthKbps) )) {
                         this.tabs.setActiveTab(this.panelAdvanced);
                         this.advancedTabPanel.setActiveTab(this.panelQoS);
                         this.gridQosWanBandwidth.focus();

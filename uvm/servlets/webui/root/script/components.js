@@ -722,7 +722,7 @@ Ung.Util = {
     protocolStore: null,
     getProtocolStore: function() {
         if(this.protocolStore==null) {
-        this.protocolStore=Ext.create('Ext.data.ArrayStore',{
+            this.protocolStore=Ext.create('Ext.data.ArrayStore', {
                 idIndex: 0,
                 fields: ['key', 'name'],
                 data: [
@@ -904,6 +904,13 @@ Ung.Util = {
         var map = {};
         for(var i=0; i<pairArray.length; i++) {
             map[pairArray[i][0]] = pairArray[i][1];
+        }
+        return map;
+    },
+    createRecordsMap : function(recList, property) {
+        var map = {};
+        for(var i=0; i<recList.length; i++) {
+            map[recList[i][property]] = recList[i];
         }
         return map;
     },
