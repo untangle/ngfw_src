@@ -46,20 +46,8 @@ package com.untangle.node.token;
  * traffic as a raw byte stream.  
  */
 
-public abstract class Casing
+public interface Casing
 {
-    private boolean localStream = false;
-
     public abstract Parser parser();
     public abstract Unparser unparser();
-
-    public boolean isLocalStream()
-    {
-        return localStream;
-    }
-
-    public void setLocalStream(boolean localStream)
-    {
-        this.localStream = localStream;
-    }
 }

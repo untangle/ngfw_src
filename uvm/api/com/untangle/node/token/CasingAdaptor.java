@@ -27,39 +27,13 @@ import com.untangle.uvm.vnet.event.TCPStreamer;
 /**
  * Adapts a Token session's underlying byte-stream a <code>Casing</code>.
  */
-public class CasingAdaptor extends AbstractEventHandler
+public class CasingAdaptor extends CasingBase
 {
     static final int TOKEN_SIZE = 8;
 
-    private final CasingFactory casingFactory;
-    private final boolean clientSide;
-
-    private final Map<NodeSession,CasingDesc> casings = new ConcurrentHashMap<NodeSession,CasingDesc>();
-
-    private final PipelineFoundry pipeFoundry = UvmContextFactory.context().pipelineFoundry();
-
-    private final Logger logger = Logger.getLogger(CasingAdaptor.class);
-
-    private volatile boolean releaseParseExceptions;
-
     public CasingAdaptor(Node node, CasingFactory casingFactory, boolean clientSide, boolean releaseParseExceptions)
     {
-        super(node);
-        this.casingFactory = casingFactory;
-        this.clientSide = clientSide;
-        this.releaseParseExceptions = releaseParseExceptions;
-    }
-
-    // accessors --------------------------------------------------------------
-
-    public boolean getReleaseParseExceptions()
-    {
-        return releaseParseExceptions;
-    }
-
-    public void setReleaseParseExceptions(boolean releaseParseExceptions)
-    {
-        this.releaseParseExceptions = releaseParseExceptions;
+        super(node,casingFactory,clientSide,releaseParseExceptions);
     }
 
     // SessionEventListener methods -------------------------------------------
@@ -215,48 +189,6 @@ public class CasingAdaptor extends AbstractEventHandler
         Parser p = getCasing(s).parser();
         p.handleTimer();
         // XXX unparser doesnt get one, does it need it?
-    }
-
-    // CasingDesc utils -------------------------------------------------------
-
-    private static class CasingDesc
-    {
-        final Casing casing;
-        final Pipeline pipeline;
-
-        CasingDesc(Casing casing, Pipeline pipeline)
-        {
-            this.casing = casing;
-            this.pipeline = pipeline;
-        }
-    }
-
-    private void addCasing(NodeSession session, Casing casing, Pipeline pipeline)
-    {
-        casings.put(session, new CasingDesc(casing, pipeline));
-    }
-
-    private CasingDesc getCasingDesc(NodeSession session)
-    {
-        CasingDesc casingDesc = casings.get(session);
-        return casingDesc;
-    }
-
-    private Casing getCasing(NodeSession session)
-    {
-        CasingDesc casingDesc = casings.get(session);
-        return casingDesc.casing;
-    }
-
-    private Pipeline getPipeline(NodeSession session)
-    {
-        CasingDesc casingDesc = casings.get(session);
-        return casingDesc.pipeline;
-    }
-
-    private void removeCasingDesc(NodeSession session)
-    {
-        casings.remove(session);
     }
 
     // private methods --------------------------------------------------------

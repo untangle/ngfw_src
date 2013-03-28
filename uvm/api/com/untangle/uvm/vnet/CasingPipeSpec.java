@@ -10,6 +10,8 @@ import java.util.Set;
 import org.apache.log4j.Logger;
 
 import com.untangle.uvm.vnet.Fitting;
+import com.untangle.node.token.CasingBase;
+import com.untangle.node.token.CasingCoupler;
 import com.untangle.node.token.CasingAdaptor;
 import com.untangle.node.token.CasingFactory;
 import com.untangle.uvm.UvmContext;
@@ -29,8 +31,8 @@ public class CasingPipeSpec extends PipeSpec
     private final Fitting input;
     private final Fitting output;
 
-    private final CasingAdaptor insideAdaptor;
-    private final CasingAdaptor outsideAdaptor;
+    private final CasingBase insideAdaptor;
+    private final CasingBase outsideAdaptor;
 
     private final Logger logger = Logger.getLogger(getClass());
 
@@ -45,8 +47,17 @@ public class CasingPipeSpec extends PipeSpec
     {
         super(name, node, subscriptions);
 
-        insideAdaptor = new CasingAdaptor(node, casingFactory, true, true);
-        outsideAdaptor = new CasingAdaptor(node, casingFactory, false, true);
+        switch(output)
+        {
+        case HTTP_STREAM:
+            insideAdaptor = new CasingCoupler(node, casingFactory, true, true);
+            outsideAdaptor = new CasingCoupler(node, casingFactory, false, true);
+            break;
+
+        default:
+            insideAdaptor = new CasingAdaptor(node, casingFactory, true, true);
+            outsideAdaptor = new CasingAdaptor(node, casingFactory, false, true);
+        }
 
         this.input = input;
         this.output = output;
@@ -56,8 +67,17 @@ public class CasingPipeSpec extends PipeSpec
     {
         super(name, node);
 
-        insideAdaptor = new CasingAdaptor(node, casingFactory, true, true);
-        outsideAdaptor = new CasingAdaptor(node, casingFactory, false, true);
+        switch(output)
+        {
+        case HTTP_STREAM:
+            insideAdaptor = new CasingCoupler(node, casingFactory, true, true);
+            outsideAdaptor = new CasingCoupler(node, casingFactory, false, true);
+            break;
+
+        default:
+            insideAdaptor = new CasingAdaptor(node, casingFactory, true, true);
+            outsideAdaptor = new CasingAdaptor(node, casingFactory, false, true);
+        }
 
         this.input = input;
         this.output = output;
@@ -75,12 +95,12 @@ public class CasingPipeSpec extends PipeSpec
         return output;
     }
 
-    public CasingAdaptor getInsideAdaptor()
+    public CasingBase getInsideAdaptor()
     {
         return insideAdaptor;
     }
 
-    public CasingAdaptor getOutsideAdaptor()
+    public CasingBase getOutsideAdaptor()
     {
         return outsideAdaptor;
     }
@@ -132,7 +152,7 @@ public class CasingPipeSpec extends PipeSpec
         connectors.add(outsideArgonConnector);
         return connectors;
     }
-    
+
     @Override
     public List<NodeIPSession> liveSessions()
     {
@@ -142,7 +162,7 @@ public class CasingPipeSpec extends PipeSpec
             return null;
         }
     }
-    
+
     // static initialization --------------------------------------------------
 
     static {
