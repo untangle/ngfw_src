@@ -793,7 +793,6 @@ public class NetworkManagerImpl implements NetworkManager
         qosSettings.setDnsPriority( 1 );
         qosSettings.setSshPriority( 0 );
         qosSettings.setOpenvpnPriority( 0 );
-        qosSettings.setGamingPriority( 0 );
 
         List<QosRule> qosRules = new LinkedList<QosRule>();
 
@@ -855,8 +854,8 @@ public class NetworkManagerImpl implements NetworkManager
         qosPriorities.add( new QosPriority( 3, "Medium",         12, 100, 12, 100) );
         qosPriorities.add( new QosPriority( 4, "Low",             6, 100,  6, 100) );
         qosPriorities.add( new QosPriority( 5, "Limited",         3,  75,  3, 75) );
-        qosPriorities.add( new QosPriority( 5, "Limited More",    2,  50,  2, 50) );
-        qosPriorities.add( new QosPriority( 5, "Limited Severly", 2,  10,  2, 10) );
+        qosPriorities.add( new QosPriority( 6, "Limited More",    2,  50,  2, 50) );
+        qosPriorities.add( new QosPriority( 7, "Limited Severly", 2,  10,  2, 10) );
 
         qosSettings.setQosPriorities( qosPriorities );
         

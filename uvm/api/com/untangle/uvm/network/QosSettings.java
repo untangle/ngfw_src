@@ -25,7 +25,6 @@ public class QosSettings implements Serializable, JSONString
     private int dnsPriority = 1;
     private int sshPriority = 1;
     private int openvpnPriority = 1;
-    private int gamingPriority = 1;
     
     private List<QosPriority> qosPriorities = new LinkedList<QosPriority>();
 
@@ -49,9 +48,6 @@ public class QosSettings implements Serializable, JSONString
     public int getOpenvpnPriority() { return this.openvpnPriority; }
     public void setOpenvpnPriority( int newValue ) { this.openvpnPriority = newValue; }
 
-    public int getGamingPriority() { return this.gamingPriority; }
-    public void setGamingPriority( int newValue ) { this.gamingPriority = newValue; }
-    
     public List<QosPriority> getQosPriorities() { return this.qosPriorities; }
     public void setQosPriorities( List<QosPriority> newValue ) { this.qosPriorities = newValue; }
 

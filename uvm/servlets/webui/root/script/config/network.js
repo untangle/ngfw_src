@@ -2217,29 +2217,6 @@ if (!Ung.hasResource["Ung.Network"]) {
                                 }, this)
                             }
                         }
-                    }, {
-                        xtype: 'container',
-                        layout: 'column',
-                        margin: '0 0 5 0',
-                        items: [{
-                            xtype: "combo",
-                            fieldLabel: this.i18n._("Gaming Priority"),
-                            value: this.settings.qosSettings.gamingPriority,
-                            store : this.qosPriorityStore,
-                            editable: false,
-                            queryMode: 'local',
-                            listeners: {
-                                "change": {
-                                    fn: Ext.bind(function(elem, newValue) {
-                                        this.settings.qosSettings.gamingPriority = newValue;
-                                    }, this)
-                                }
-                            }
-                        }, {
-                            xtype: 'label',
-                            html: this.i18n._("Priority for Wii, Xbox, Playstation, and Others"),
-                            cls: 'boxlabel'
-                        }]
                     }]
                 }, {
                     xtype: 'fieldset',
