@@ -34,6 +34,7 @@
 package com.untangle.node.token;
 
 import com.untangle.uvm.vnet.event.TCPStreamer;
+import java.nio.ByteBuffer;
 
 /**
  * An Unparser nodes tokens into bytes.
@@ -51,6 +52,15 @@ public interface Unparser
      * @exception UnparseException on unparse error.
      */
     UnparseResult unparse(Token token) throws UnparseException;
+    
+    /**
+     * Used for casings that expect byte stream on both sides 
+     *
+     * @param chunk next of data
+     * @return UnparseResult containing unparsed content of the chunk
+     * @exception UnparseException on unparse error.
+     */
+    UnparseResult unparse(ByteBuffer chunk) throws UnparseException;
 
     /**
      * Called when a session is being released. The unparser should

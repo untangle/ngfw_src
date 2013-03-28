@@ -99,6 +99,4 @@ public abstract class AbstractParser implements Parser
     {
         return idStr;
     }
-
-
 }
