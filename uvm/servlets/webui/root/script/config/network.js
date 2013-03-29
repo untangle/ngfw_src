@@ -259,6 +259,7 @@ if (!Ung.hasResource["Ung.Network"]) {
                         });
 
                         this.gridMapDevices = Ext.create('Ext.grid.Panel', {
+                            anchor: '100% -80',
                             store: this.mapDevicesStore,
                             loadMask: true,
                             stripeRows: true,
@@ -440,7 +441,17 @@ if (!Ung.hasResource["Ung.Network"]) {
                             }, {
                                 title: this.i18n._("Remap Interfaces")
                             }],
-                            items: this.gridMapDevices,
+                            items: [{
+                                xtype: 'panel',
+                                layout: 'anchor',
+                                items: [{
+                                    xtype: 'fieldset',
+                                    margin: '10 0 0 0',
+                                    cls: 'description',
+                                    title: this.i18n._("How to map Devices with Interfaces"),
+                                    html: this.i18n._("<b>Method 1:</b> <b>Drag and Drop</b> the Device to the desired Interface<br/><b>Method 2:</b> <b>Click on a Device</b> to open a combo and choose the desired Device from a list. When anoter Device is selected the 2 Devices are swithced.")
+                                }, this.gridMapDevices]
+                            }],
                             updateAction: Ext.bind(function() {
                                 var interfaceDataMap = {};
                                 this.mapDevicesStore.each( function( currentRow ) {
