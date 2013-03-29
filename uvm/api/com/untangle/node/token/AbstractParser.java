@@ -3,7 +3,10 @@
  */
 package com.untangle.node.token;
 
+import java.nio.ByteBuffer;
 import com.untangle.uvm.vnet.NodeTCPSession;
+import com.untangle.uvm.vnet.event.TCPChunkEvent;
+import com.untangle.uvm.vnet.event.TCPChunkResult;
 
 /**
  * Abstract base class for parsers.
@@ -14,8 +17,6 @@ public abstract class AbstractParser implements Parser
 
     protected final NodeTCPSession session;
     protected final boolean clientSide;
-
-    // constructors -----------------------------------------------------------
 
     protected AbstractParser(NodeTCPSession session, boolean clientSide)
     {
@@ -28,20 +29,36 @@ public abstract class AbstractParser implements Parser
             + session.id() + ">";
     }
 
-    /**
-     * Get the underlying Session associated with this parser
-     *
-     * @return the session.
+    // Parser methods ---------------------------------------------------------
+
+    /*
+     * CasingAdaptor will call the ParseResult/ByteBuffer version
+     * CasingCoupler will call the ByteBuffer/TCPChunkEvent version
+     * If you forget to override one or the other in your casing
+     * then you will see one of the helpful exception messages
      */
-    protected NodeTCPSession getSession()
+
+    public ParseResult parse(ByteBuffer chunk) throws ParseException
     {
-        return session;
+        throw new ParseException("Unexpected call to base class parse(ByteBuffer)");
+    }
+
+    public ByteBuffer parse(TCPChunkEvent event) throws ParseException
+    {
+        throw new ParseException("Unexpected call to base class parse(TCPChunkEvent)");
     }
 
     // Parser noops -----------------------------------------------------------
 
     public TokenStreamer endSession()
-    { return null; }
+    {
+        return null;
+    }
+
+    public ParseResult parseEnd(ByteBuffer chunk) throws ParseException
+    {
+        return null;
+    }
 
     // session manipulation ---------------------------------------------------
 
@@ -86,6 +103,11 @@ public abstract class AbstractParser implements Parser
     protected boolean isClientSide()
     {
         return clientSide;
+    }
+
+    protected NodeTCPSession getSession()
+    {
+        return session;
     }
 
     // no-ops methods ---------------------------------------------------------

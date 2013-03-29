@@ -1,12 +1,9 @@
 /**
- * $Id: CasingCoupler.java 34281 2013-03-16 00:16:13Z dmorris $
+ * $Id: CasingCoupler.java 34281 2013-03-28 00:00:00Z mahotz $
  */
 package com.untangle.node.token;
 
 import java.nio.ByteBuffer;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.log4j.Logger;
 
@@ -24,9 +21,6 @@ import com.untangle.uvm.vnet.event.TCPChunkResult;
 import com.untangle.uvm.vnet.event.TCPSessionEvent;
 import com.untangle.uvm.vnet.event.TCPStreamer;
 
-/**
- * Adapts a Token session's underlying byte-stream a <code>Casing</code>.
- */
 public class CasingCoupler extends CasingBase
 {
     public CasingCoupler(Node node, CasingFactory casingFactory, boolean clientSide, boolean releaseParseExceptions)
@@ -104,54 +98,6 @@ public class CasingCoupler extends CasingBase
     }
 
     @Override
-    public void handleTCPClientFIN(TCPSessionEvent e)
-    {
-        TCPStreamer tcpStream = null;
-
-        NodeTCPSession s = (NodeTCPSession)e.ipsession();
-        Casing c = getCasing(s);
-
-        if (clientSide) {
-            TokenStreamer tokSt = c.parser().endSession();
-            if (null != tokSt) {
-                tcpStream = new TokenStreamerAdaptor(getPipeline(s), tokSt);
-            }
-        } else {
-            tcpStream = c.unparser().endSession();
-        }
-
-        if (null != tcpStream) {
-            s.beginServerStream(tcpStream);
-        } else {
-            s.shutdownServer();
-        }
-    }
-
-    @Override
-    public void handleTCPServerFIN(TCPSessionEvent e)
-    {
-        TCPStreamer ts = null;
-
-        NodeTCPSession s = (NodeTCPSession)e.ipsession();
-        Casing c = getCasing(s);
-
-        if (clientSide) {
-            ts = c.unparser().endSession();
-        } else {
-            TokenStreamer tokSt = c.parser().endSession();
-            if (null != tokSt) {
-                ts = new TokenStreamerAdaptor(getPipeline(s), tokSt);
-            }
-        }
-
-        if (null != ts) {
-            s.beginClientStream(ts);
-        } else {
-            s.shutdownClient();
-        }
-    }
-
-    @Override
     public void handleTCPFinalized(TCPSessionEvent e)
     {
         if (logger.isDebugEnabled()) {
@@ -179,11 +125,10 @@ public class CasingCoupler extends CasingBase
     {
         Parser parser = casing.parser();
         ByteBuffer[] buffer = new ByteBuffer[1];
-        ParseResult result = null;
 
         try
         {
-            result = parser.parse(e.chunk());
+            buffer[0] = parser.parse(e);
         }
 
         catch (Exception exn)
@@ -192,7 +137,6 @@ public class CasingCoupler extends CasingBase
             return null;
         }
 
-        buffer[0] = result.getReadBuffer();
         if (s2c) return new TCPChunkResult(buffer,null,null);
         else return new TCPChunkResult(null,buffer,null);
     }
@@ -200,11 +144,11 @@ public class CasingCoupler extends CasingBase
     private IPDataResult streamUnparse(Casing casing, TCPChunkEvent e, boolean s2c)
     {
         Unparser unparser = casing.unparser();
-        UnparseResult result = null;
+        ByteBuffer[] buffer = new ByteBuffer[1];
 
         try
         {
-            result = unparser.unparse(e.chunk());
+            buffer[0] = unparser.unparse(e);
         }
 
         catch (Exception exn)
@@ -213,7 +157,7 @@ public class CasingCoupler extends CasingBase
             return null;
         }
 
-        if (s2c) return new TCPChunkResult(result.result(),null,null);
-        else return new TCPChunkResult(null,result.result(),null);
+        if (s2c) return new TCPChunkResult(buffer,null,null);
+        else return new TCPChunkResult(null,buffer,null);
     }
 }

@@ -1,6 +1,6 @@
 /*
  * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
+ * Copyright (c) 2003-2007 Untangle, Inc.
  *
  * This library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2,
@@ -34,6 +34,8 @@
 package com.untangle.node.token;
 
 import com.untangle.uvm.vnet.event.TCPStreamer;
+import com.untangle.uvm.vnet.event.TCPChunkEvent;
+import com.untangle.uvm.vnet.event.TCPChunkResult;
 import java.nio.ByteBuffer;
 
 /**
@@ -52,15 +54,15 @@ public interface Unparser
      * @exception UnparseException on unparse error.
      */
     UnparseResult unparse(Token token) throws UnparseException;
-    
+
     /**
-     * Used for casings that expect byte stream on both sides 
+     * Used for casings that expect byte stream on both sides
      *
      * @param chunk next of data
      * @return UnparseResult containing unparsed content of the chunk
      * @exception UnparseException on unparse error.
      */
-    UnparseResult unparse(ByteBuffer chunk) throws UnparseException;
+    ByteBuffer unparse(TCPChunkEvent event) throws UnparseException;
 
     /**
      * Called when a session is being released. The unparser should
@@ -80,8 +82,8 @@ public interface Unparser
     TCPStreamer endSession();
 
     /**
-     * Called when both client and server sides 
+     * Called when both client and server sides
      * {@link com.untangle.uvm.vnet.event.SessionEventListener#handleTCPFinalized are shutdown}
      */
-    void handleFinalized();    
+    void handleFinalized();
 }

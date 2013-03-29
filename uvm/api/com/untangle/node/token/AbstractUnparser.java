@@ -6,6 +6,8 @@ package com.untangle.node.token;
 import java.nio.ByteBuffer;
 import com.untangle.uvm.vnet.NodeTCPSession;
 import com.untangle.uvm.vnet.event.TCPStreamer;
+import com.untangle.uvm.vnet.event.TCPChunkEvent;
+import com.untangle.uvm.vnet.event.TCPChunkResult;
 
 /**
  * Abstract base class for <code>Unparser</code>s.
@@ -30,12 +32,19 @@ public abstract class AbstractUnparser implements Unparser
 
     // Unparser methods -------------------------------------------------------
 
-    public UnparseResult unparse(ByteBuffer chunk) throws UnparseException
+    /*
+     * CasingAdaptor will call the UnparseResult/Token version
+     * CasingCoupler will call the ByteBuffer/TCPChunkEvent version
+     * If you forget to override one or the other in your casing
+     * then you will see one of the helpful exception messages
+     */
+
+    public UnparseResult unparse(Token token) throws UnparseException
     {
         throw new UnparseException("Unexpected call to base class unparse(ByteBuffer)");
     }
 
-    public UnparseResult unparse(Token token) throws UnparseException
+    public ByteBuffer unparse(TCPChunkEvent event) throws UnparseException
     {
         throw new UnparseException("Unexpected call to base class unparse(Token)");
     }
