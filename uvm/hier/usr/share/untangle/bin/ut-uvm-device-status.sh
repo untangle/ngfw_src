@@ -94,6 +94,9 @@ function getInterfaceStatus()
         # strip whitespace
         VENDOR="`echo $VENDOR | sed -e 's/^ *//g;s/ *$//g'`"
     fi
+    if [ -f /sys/class/net/${t_intf}/address ] ; then
+        MAC_ADDR="`cat /sys/class/net/${t_intf}/address`"
+    fi
     
     echo "    {"
     echo "        \"javaClass\" : \"com.untangle.uvm.network.DeviceStatus\","
@@ -101,7 +104,8 @@ function getInterfaceStatus()
     echo "        \"connected\" : \"${t_isConnected}\","
     echo "        \"mbit\" : ${t_speed},"
     echo "        \"duplex\" : \"${t_duplex}\","
-    echo "        \"vendor\" : \"${VENDOR}\""
+    echo "        \"vendor\" : \"${VENDOR}\","
+    echo "        \"macAddress\" : \"${MAC_ADDR}\""
     echo "    }"
 }
 

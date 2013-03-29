@@ -44,7 +44,7 @@ public class NetworkManagerImpl implements NetworkManager
     private final Logger logger = Logger.getLogger(this.getClass());
 
     private final String updateRulesScript = System.getProperty("uvm.bin.dir") + "/ut-uvm-update-rules.sh";
-    private final String deviceStatusScript = System.getProperty("uvm.bin.dir") + "/ut-uvm-interface-status.sh";
+    private final String deviceStatusScript = System.getProperty("uvm.bin.dir") + "/ut-uvm-device-status.sh";
 
     private final String settingsFilename = System.getProperty("uvm.settings.dir") + "/untangle-vm/" + "network";
     private final String settingsFilenameBackup = "/etc/untangle-netd/network";
