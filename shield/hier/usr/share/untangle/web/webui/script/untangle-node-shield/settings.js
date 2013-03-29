@@ -86,7 +86,7 @@ if (!Ung.hasResource["Ung.Shield"]) {
                     header: this.i18n._("Enable"),
                     dataIndex: 'enabled',
                     width: 55,
-                    fixed: true
+                    resizable: false
                 }, {
                     header: this.i18n._("Address"),
                     width: 200,

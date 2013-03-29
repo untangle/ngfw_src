@@ -134,44 +134,6 @@ Ext.override(Ext.PagingToolbar, {
     }
 });
 
-Ext.override(Ext.TabPanel, {
-    addNamesToPanels: function () {
-        return; //TODO:  fix this for extjs4
-        if (this.items) {
-            var items=this.items.getRange();
-            for(var i=0;i<items.length;i++) {
-                var tabEl=Ext.get(this.getTabEl(items[i]));
-                if(items[i].name && tabEl) {
-                    tabEl.set({
-                        'name': items[i].name
-                    });
-                }
-            }
-        }
-    }
-});
-
-Ext.override( Ext.form.TextField, {
-//There is now way to hack again the extjs framework to display fine the box label on the right side for all browsers
-//So for now the solution was to display it as a tooltip
-//Consider including it in fieldLabel property when it's short
-    afterRender: function() {
-        this.callParent(arguments);
-        if( this.boxLabel) {
-            this.tooltipCmp = Ext.create('Ext.tip.ToolTip', {
-                showDelay: 0,
-                autoHide: false,
-                target: this.getEl(),
-                anchor: 'left',
-                anchorOffset: 0,
-                html: this.boxLabel
-            });
-            this.addListener("beforedestroy", Ext.bind(function() {
-                this.tooltipCmp.destroy();
-            }, this));
-        }
-    }
-});
 Ext.override( Ext.form.FieldSet, {
    border: 0 
 });
@@ -498,7 +460,6 @@ Ung.Util = {
         }
         return false;
     },
-
     encode: function (obj) {
         if(obj == null || typeof(obj) != 'object') {
             return obj;
@@ -3569,7 +3530,6 @@ Ext.define("Ung.SettingsWin", {
         this.items=this.tabs;
         this.tabs.on('afterrender', function() {
             Ext.get("racks").show();
-            this.addNamesToPanels();
         }, this.tabs);
     },
     helpAction: function() {
@@ -4187,7 +4147,7 @@ Ext.define('Ung.RowEditorWindow', {
 Ext.define('Ung.grid.EditColumn', {
     extend:'Ext.grid.column.Action',
     menuDisabled: true,
-    fixed: true,
+    resizable: false,
     iconCls: 'icon-edit-row',
     constructor: function(config) {
         if (!config.header) {
@@ -4211,7 +4171,7 @@ Ext.define('Ung.grid.EditColumn', {
 Ext.define('Ung.grid.DeleteColumn', {
     extend:'Ext.grid.column.Action',
     menuDisabled: true,
-    fixed: true,
+    resizable: false,
     iconCls: 'icon-delete-row',
     constructor: function(config) {
         if (!config.header) {
@@ -4235,7 +4195,7 @@ Ext.define('Ung.grid.DeleteColumn', {
 Ext.define('Ung.grid.ReorderColumn', {
     extend:'Ext.grid.column.Template',
     menuDisabled:true,
-    fixed:true,
+    resizable: false,
     header:i18n._("Reorder"),
     width: 55,
     tpl:'<img src="'+Ext.BLANK_IMAGE_URL+'" class="icon-drag"/>'
@@ -4276,8 +4236,6 @@ Ext.define('Ung.EditorGrid', {
     emptyRow: null,
     // input lines used by the row editor
     rowEditorInputLines: null,
-    // extra validate function for row editor
-    rowEditorValidate: null,
     // label width for row editor input lines
     rowEditorLabelWidth: null,
     // the default sort field
@@ -4484,14 +4442,12 @@ Ext.define('Ung.EditorGrid', {
         };
 
         if (this.rowEditor==null && this.rowEditorInputLines != null) {
-            this.rowEditor = Ext.create('Ung.RowEditorWindow',{
+            this.rowEditor = Ext.create('Ung.RowEditorWindow', {
                 grid: this,
                 inputLines: this.rowEditorInputLines,
-                validate: this.rowEditorValidate,
                 rowEditorLabelWidth: this.rowEditorLabelWidth
             });
         }
-
         if(this.rowEditor!=null) {
             this.subCmps.push(this.rowEditor);
         }
@@ -4940,6 +4896,11 @@ Ext.define('Ung.EditorGrid', {
             }
         }
     },
+    setRowEditor: function(rowEditor) {
+        this.rowEditor = rowEditor;
+        this.rowEditor.grid=this;
+        this.subCmps.push(this.rowEditor);
+    },
     findFirstChangedDataByFieldValue: function(field, value) {
         for (id in this.changedData) {
             var cd = this.changedData[id];
@@ -5201,8 +5162,8 @@ Ung.grid.ButtonColumn = function(config) {
     if (!this.width) {
         this.width = 80;
     }
-    if (this.fixed == null) {
-        this.fixed = true;
+    if (this.resizable == null) {
+        this.resizable = false;
     }
     if (this.sortable == null) {
         this.sortable = false;
@@ -6005,7 +5966,7 @@ Ext.define('Ung.RuleBuilder', {
             align: "center", 
             header: "",
             width: 45,
-            fixed: true,
+            resizable: false,
             menuDisabled: true,
             dataIndex: null,
             renderer: Ext.bind(function(value, metadata, record, rowIndex) {
@@ -6015,7 +5976,7 @@ Ext.define('Ung.RuleBuilder', {
         },{
             header: this.settingsCmp.i18n._("Type"),
             width: 320,
-            fixed: true,
+            resizable: false,
             menuDisabled: true,
             dataIndex: "name",
             renderer: Ext.bind(function(value, metadata, record, rowIndex, colIndex, store) {
@@ -6038,7 +5999,7 @@ Ext.define('Ung.RuleBuilder', {
         },{
             header: "",
             width: 100,
-            fixed: true,
+            resizable: false,
             menuDisabled: true,
             dataIndex: "invert",
             renderer: Ext.bind(function(value, metadata, record, rowIndex, colIndex, store) {
@@ -6062,7 +6023,7 @@ Ext.define('Ung.RuleBuilder', {
             header: this.settingsCmp.i18n._("Value"),
             width: 315,
             flex: 1,
-            fixed: true,
+            resizable: false,
             menuDisabled: true,
             dataIndex: "value",
             renderer: Ext.bind(function(value, metadata, record, rowIndex, colIndex, store) {

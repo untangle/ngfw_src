@@ -103,7 +103,7 @@ if (!Ung.hasResource["Ung.Firewall"]) {
                         xtype:'checkcolumn',
                         header: this.i18n._("Enable"),
                         dataIndex: 'enabled',
-                        fixed: true,
+                        resizable: false,
                         width:55
                     }, {
                         header: this.i18n._("Description"),
@@ -114,13 +114,13 @@ if (!Ung.hasResource["Ung.Firewall"]) {
                         xtype:'checkcolumn',
                         header: this.i18n._("Block"),
                         dataIndex: 'block',
-                        fixed: true,
+                        resizable: false,
                         width:55
                     }, {
                         xtype:'checkcolumn',
                         header: this.i18n._("Flag"),
                         dataIndex: 'flag',
-                        fixed: true,
+                        resizable: false,
                         width:55
                     }],
                     columnsDefaultSortable: false,

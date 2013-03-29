@@ -143,14 +143,14 @@ if (!Ung.hasResource["Ung.Protofilter"]) {
                     xtype:'checkcolumn',
                     header: "<b>" + this.i18n._("Block") + "</b>",
                     dataIndex: 'blocked',
-                    fixed: true,
+                    resizable: false,
                     width:55
                 },
                 {
                     xtype:'checkcolumn',
                     header: "<b>" + this.i18n._("Log") + "</b>",
                     dataIndex: 'log',
-                    fixed: true,
+                    resizable: false,
                     width:55
                 },
                 {

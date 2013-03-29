@@ -258,7 +258,7 @@ if (!Ung.hasResource["Ung.Spyware"]) {
                     xtype: 'checkcolumn',
                     header: "<b>" + this.i18n._("block") + "</b>",
                     dataIndex: 'enabled',
-                    fixed: true,
+                    resizable: false,
                     width:55
                 }],
                 sortField: 'string',
@@ -318,7 +318,7 @@ if (!Ung.hasResource["Ung.Spyware"]) {
                      xtype:'checkcolumn',
                      header: "<b>" + this.i18n._("log") + "</b>",
                      dataIndex: 'flagged',
-                     fixed: true,
+                     resizable: false,
                      width:55
                     }],
                 sortField: 'name',
@@ -393,7 +393,7 @@ if (!Ung.hasResource["Ung.Spyware"]) {
                     header: "<b>" + this.i18n._("pass") + "</b>",
                     dataIndex: 'enabled',
                     width: 65,
-                    fixed: true
+                    resizable: false
                 },
                 {
                     header: this.i18n._("description"),

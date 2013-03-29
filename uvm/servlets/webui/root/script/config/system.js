@@ -858,7 +858,7 @@ rif (!Ung.hasResource["Ung.System"]) {
 
             // save mail settings
             if (this.isMailLoaded()) {
-                this.getMailNode().setMailNodeSettings(Ext.bind(function(result, exception) {
+                this.getMailNode().setSmtpNodeSettings(Ext.bind(function(result, exception) {
                     this.afterSave(exception, isApply);
                 }, this), this.getMailNodeSettings());
             } else {

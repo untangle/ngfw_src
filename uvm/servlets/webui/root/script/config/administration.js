@@ -274,7 +274,6 @@ if (!Ung.hasResource["Ung.Administration"]) {
                     }]
                 }), {
                     xtype: 'fieldset',
-                    id:'external_administration_fieldset',
                     cls: 'description',
                     title: this.i18n._('Services Access'),
                     defaults: {
@@ -284,7 +283,6 @@ if (!Ung.hasResource["Ung.Administration"]) {
                         xtype: 'numberfield',
                         fieldLabel: this.i18n._('HTTPS port'),
                         name: 'httpsPort',
-                        id: 'administration_httpsPort',
                         value: this.getSystemSettings().httpsPort,
                         allowDecimals: false,
                         allowNegative: false,
@@ -301,7 +299,6 @@ if (!Ung.hasResource["Ung.Administration"]) {
                     }, {
                         xtype: 'checkbox',
                         name: 'Enable Outside HTTPS',
-                        id: 'enable-wan-https',
                         boxLabel: this.i18n._('Enable Outside HTTPS'),
                         hideLabel: true,
                         checked: this.getSystemSettings().outsideHttpsEnabled,
@@ -314,7 +311,6 @@ if (!Ung.hasResource["Ung.Administration"]) {
                         }
                     },{
                         xtype: 'checkbox',
-                        id: 'administration_insideHttpEnabled',
                         name: 'insideHttpEnabled',
                         boxLabel: this.i18n._('Enable Inside HTTP'),
                         hideLabel: true,
@@ -367,6 +363,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
                     }
                 }, this)
             });
+            this.gridAdminAccounts.subCmps.push(this.gridAdminAccounts.rowEditorChangePass);
         },
         buildPublicAddress: function() {
             var hostname = this.getHostname(true);
@@ -406,8 +403,8 @@ if (!Ung.hasResource["Ung.Administration"]) {
                                 fn: Ext.bind(function(elem, checked) {
                                     if (checked) {
                                         this.getSystemSettings().publicUrlMethod = "external";
-                                        Ext.getCmp('administration_publicUrlAddress').disable();
-                                        Ext.getCmp('administration_publicUrlPort').disable();
+                                        this.panelPublicAddress.query('textfield[name="publicUrlAddress"]')[0].disable();
+                                        this.panelPublicAddress.query('numberfield[name="publicUrlPort"]')[0].disable();
                                     }
                                 }, this)
                             }
@@ -428,8 +425,8 @@ if (!Ung.hasResource["Ung.Administration"]) {
                                 fn: Ext.bind(function(elem, checked) {
                                     if (checked) {
                                         this.getSystemSettings().publicUrlMethod = "hostname";
-                                        Ext.getCmp('administration_publicUrlAddress').disable();
-                                        Ext.getCmp('administration_publicUrlPort').disable();
+                                        this.panelPublicAddress.query('textfield[name="publicUrlAddress"]')[0].disable();
+                                        this.panelPublicAddress.query('numberfield[name="publicUrlPort"]')[0].disable();
                                     }
                                 }, this)
                             }
@@ -455,11 +452,11 @@ if (!Ung.hasResource["Ung.Administration"]) {
                             "afterrender": {
                                 fn: Ext.bind(function(elem) {
                                     if(elem.getValue()) {
-                                        Ext.getCmp('administration_publicUrlAddress').enable();
-                                        Ext.getCmp('administration_publicUrlPort').enable();
+                                        this.panelPublicAddress.query('textfield[name="publicUrlAddress"]')[0].enable();
+                                        this.panelPublicAddress.query('numberfield[name="publicUrlPort"]')[0].enable();
                                     } else {
-                                        Ext.getCmp('administration_publicUrlAddress').disable();
-                                        Ext.getCmp('administration_publicUrlPort').disable();
+                                        this.panelPublicAddress.query('textfield[name="publicUrlAddress"]')[0].disable();
+                                        this.panelPublicAddress.query('numberfield[name="publicUrlPort"]')[0].disable();
                                     }
                                 }, this)
                             },
@@ -467,8 +464,8 @@ if (!Ung.hasResource["Ung.Administration"]) {
                                 fn: Ext.bind(function(elem, checked) {
                                     if (checked) {
                                         this.getSystemSettings().publicUrlMethod = "address_and_port";
-                                        Ext.getCmp('administration_publicUrlAddress').enable();
-                                        Ext.getCmp('administration_publicUrlPort').enable();
+                                        this.panelPublicAddress.query('textfield[name="publicUrlAddress"]')[0].enable();
+                                        this.panelPublicAddress.query('numberfield[name="publicUrlPort"]')[0].enable();
                                     }
                                 }, this)
                             }
@@ -487,20 +484,20 @@ if (!Ung.hasResource["Ung.Administration"]) {
                             xtype: 'textfield',
                             fieldLabel: this.i18n._('IP/Hostname'),
                             name: 'publicUrlAddress',
-                            id: 'administration_publicUrlAddress',
                             value: this.getSystemSettings().publicUrlAddress,
                             allowBlank: false,
+                            width: 400,
                             blankText: this.i18n._("You must provide a valid IP Address or hostname."),
                             disabled: !this.getSystemSettings().publicUrlMethod == "address_and_port"
                         },{
                             xtype: 'numberfield',
                             fieldLabel: this.i18n._('Port'),
                             name: 'publicUrlPort',
-                            id: 'administration_publicUrlPort',
                             value: this.getSystemSettings().publicUrlPort,
                             allowDecimals: false,
                             allowNegative: false,
                             allowBlank: false,
+                            width: 210,
                             blankText: this.i18n._("You must provide a valid port."),
                             vtype: 'port',
                             disabled: !this.getSystemSettings().publicUrlMethod == "address_and_port"
@@ -1352,7 +1349,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
 
         //validate External Administration
         validateExternalAdministration: function() {
-            var httpsPortCmp = Ext.getCmp('administration_httpsPort');
+            var httpsPortCmp = this.panelAdministration.query('numberfield[name="httpsPort"]')[0];
             if (!httpsPortCmp.isValid()) {
                 Ext.MessageBox.alert(this.i18n._('Warning'), Ext.String.format(this.i18n._("The port must be an integer number between {0} and {1}."), 1, 65535),
                     Ext.bind(function () {
@@ -1396,7 +1393,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
         //validate Public Address
         validatePublicAddress: function() {
             if (this.getSystemSettings().publicUrlMethod == "address_and_port") {
-                var publicUrlAddressCmp = Ext.getCmp('administration_publicUrlAddress');
+                var publicUrlAddressCmp = this.panelPublicAddress.query('textfield[name="publicUrlAddress"]')[0];
                 if (!publicUrlAddressCmp.isValid()) {
                     Ext.MessageBox.alert(this.i18n._('Warning'), this.i18n._("You must provide a valid IP Address or hostname."),
                         Ext.bind(function () {
@@ -1406,7 +1403,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
                     );
                     return false;
                 }
-                var publicUrlPortCmp = Ext.getCmp('administration_publicUrlPort');
+                var publicUrlPortCmp = this.panelPublicAddress.query('numberfield[name="publicUrlPort"]')[0];
                 if (!publicUrlPortCmp.isValid()) {
                     Ext.MessageBox.alert(this.i18n._('Warning'), Ext.String.format(this.i18n._("The port must be an integer number between {0} and {1}."), 1, 65535),
                         Ext.bind(function () {

@@ -323,7 +323,7 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                     width:55,
                     header: this.i18n._("Block"),
                     dataIndex: 'blocked',
-                    fixed: true,
+                    resizable: false,
                     listeners: {
                         "checkchange": {
                             fn: Ext.bind(function(elem, rowIndex, checked) {
@@ -340,7 +340,7 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                     width:55,
                     header: this.i18n._("Flag"),
                     dataIndex: 'flagged',
-                    fixed: true,
+                    resizable: false,
                     tooltip: this.i18n._("Flag as Violation")
                 },
                 {
@@ -363,8 +363,7 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                         fieldLabel: this.i18n._("Category"),
                         allowBlank: false,
                         width: 400,
-                        disabled: true,
-                        //ctCls: "fixed-pos"
+                        disabled: true
                     },
                     {
                         xtype:'checkbox',
@@ -456,14 +455,14 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                     width:55,
                     header: this.i18n._("Block"),
                     dataIndex: 'blocked',
-                    fixed: true
+                    resizable: false
                 },
                 { 
                     xtype:'checkcolumn',
                     width:55,
                     header: this.i18n._("Flag"),
                     dataIndex: 'flagged',
-                    fixed: true,
+                    resizable: false,
                     tooltip: this.i18n._("Flag as Violation")
                 },
                 {
@@ -514,7 +513,6 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
         },
         // Block File Types
         buildBlockedExtensions: function() {
-
             this.gridBlockedExtensions = Ext.create('Ung.EditorGrid',{
                 name: 'File Types',
                 settingsCmp: this,
@@ -534,8 +532,8 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                     width: 200,
                     dataIndex: 'string',
                     editor: {
-                        xtype:'textfield',
-                        allowBlank:false
+                        xtype: 'textfield',
+                        allowBlank: false
                     }
                 }, 
                 {
@@ -543,14 +541,14 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                     width:55,
                     header: this.i18n._("Block"),
                     dataIndex: 'blocked',
-                    fixed: true
+                    resizable: false
                 },
                 { 
                     xtype:'checkcolumn',
                     width:55,
                     header: this.i18n._("Flag"),
                     dataIndex: 'flagged',
-                    fixed: true,
+                    resizable: false,
                     tooltip: this.i18n._("Flag as Violation")
                 },
                 {
@@ -615,7 +613,6 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
         },
         // Block MIME Types
         buildBlockedMimeTypes: function() {
-
             this.gridBlockedMimeTypes = Ext.create('Ung.EditorGrid',{
                 name: 'MIME Types',
                 settingsCmp: this,
@@ -644,14 +641,14 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                     width:55,
                     header: this.i18n._("Block"),
                     dataIndex: 'blocked',
-                    fixed: true
+                    resizable: false
                 },
                 { 
                     xtype:'checkcolumn',
                     width:55,
                     header: this.i18n._("Flag"),
                     dataIndex: 'flagged',
-                    fixed: true,
+                    resizable: false,
                     tooltip: this.i18n._("Flag as Violation")
                 }, 
                 {
@@ -912,7 +909,7 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                     width:55,
                     header: this.i18n._("Pass"),
                     dataIndex: 'enabled',
-                    fixed: true
+                    resizable: false
                 },
                 {
                     header: this.i18n._("Description"),
@@ -982,7 +979,7 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                     width:55,
                     header: this.i18n._("Pass"),
                     dataIndex: 'enabled',
-                    fixed: true
+                    resizable: false
                 },
                 {
                     header: this.i18n._("Description"),

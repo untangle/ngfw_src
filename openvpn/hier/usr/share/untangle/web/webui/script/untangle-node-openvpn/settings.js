@@ -778,7 +778,7 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                         header: this.i18n._("Enabled"),
                         dataIndex: 'live',
                         width: 80,
-                        fixed: true
+                        resizable: false
                     }, {
                         header: this.i18n._("Client Name"),
                         width: 130,
@@ -912,7 +912,7 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                     header: this.i18n._("Enabled"),
                     dataIndex: 'live',
                     width: 80,
-                    fixed: true
+                    resizable: false
                 }, {
                     header: this.i18n._("Site Name"),
                     width: 130,
@@ -987,23 +987,39 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                     html: this.i18n._("Traffic to the below network will be routed over the VPN to the remote site.") + "<br/>" +
                         this.i18n._("The remote site network IP/netmask must be separate from the local network IP/netmask.") + "<br/>"
                 }, {
-                    xtype: "textfield",
-                    name: "Network address",
-                    dataIndex: "network",
-                    fieldLabel: this.i18n._("Network address"),
-                    boxLabel: this.i18n._("Internal address of remote site (eg: 192.168.1.1)"),
-                    allowBlank: false,
-                    width: 300,
-                    vtype: 'ipAddress'
-                }, {
-                    xtype: "textfield",
-                    name: "Network mask",
-                    dataIndex: "netmask",
-                    fieldLabel: this.i18n._("Network mask"),
-                    boxLabel: this.i18n._("Internal netmask of remote site (eg: 255.255.255.0)"),
-                    allowBlank: false,
-                    width: 300,
-                    vtype: 'ipAddress'
+                    xtype: 'container',
+                    layout: 'column',
+                    margin: '0 0 5 0',
+                    items: [{
+                        xtype: "textfield",
+                        name: "Network address",
+                        dataIndex: "network",
+                        fieldLabel: this.i18n._("Network address"),
+                        allowBlank: false,
+                        width: 300,
+                        vtype: 'ipAddress'
+                    },{
+                        xtype: 'label',
+                        html: this.i18n._("Internal address of remote site (eg: 192.168.1.1)"),
+                        cls: 'boxlabel'
+                    }]
+                },{
+                    xtype: 'container',
+                    layout: 'column',
+                    margin: '0 0 5 0',
+                    items: [{
+                        xtype: "textfield",
+                        name: "Network mask",
+                        dataIndex: "netmask",
+                        fieldLabel: this.i18n._("Network mask"),
+                        allowBlank: false,
+                        width: 300,
+                        vtype: 'ipAddress'
+                    },{
+                        xtype: 'label',
+                        html: this.i18n._("Internal netmask of remote site (eg: 255.255.255.0)"),
+                        cls: 'boxlabel'
+                    }]
                 }]
             });
         },
@@ -1060,42 +1076,37 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                 }],
                 autoExpandMin: 250,
                 // the list of columns for the column model
-                columns: [
-                    {
-                        xtype:'checkcolumn',
-                        header: this.i18n._("Enabled"),
-                        dataIndex: 'live',
-                        width: 80,
-                        fixed: true
-                    },
-                    {
-                        header: this.i18n._("Host/Network Name"),
-                        width: 250,
-                        dataIndex: 'name',
-                        flex:1,
-                        editor: { xtype:'textfield'}
-                    },
-                    {
-                        header: this.i18n._("IP Address"),
-                        width: inWizard?100:130,
-                        dataIndex: 'network',
-                        editor: {
-                            xtype:'textfield',
-                            allowBlank: false,
-                            vtype: 'ipAddress'
-                            }
-                    },
-                    {
-                        header: this.i18n._("Netmask"),
-                        width: 130,
-                        dataIndex: 'netmask',
-                        editor: {
-                            xtype:'textfield',
-                            allowBlank: false,
-                            vtype: 'ipAddress'
+                columns: [{
+                    xtype:'checkcolumn',
+                    header: this.i18n._("Enabled"),
+                    dataIndex: 'live',
+                    width: 80,
+                    resizable: false
+                }, {
+                    header: this.i18n._("Host/Network Name"),
+                    width: 250,
+                    dataIndex: 'name',
+                    flex:1,
+                    editor: { xtype:'textfield'}
+                }, {
+                    header: this.i18n._("IP Address"),
+                    width: inWizard?100:130,
+                    dataIndex: 'network',
+                    editor: {
+                        xtype:'textfield',
+                        allowBlank: false,
+                        vtype: 'ipAddress'
                         }
-                    }],
-                // sortField: 'name',
+                }, {
+                    header: this.i18n._("Netmask"),
+                    width: 130,
+                    dataIndex: 'netmask',
+                    editor: {
+                        xtype:'textfield',
+                        allowBlank: false,
+                        vtype: 'ipAddress'
+                    }
+                }],
                 columnsDefaultSortable: true,
                 // the row input lines used by the row editor window
                 rowEditorInputLines: [{
@@ -1175,7 +1186,7 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                     header: this.i18n._("Enabled"),
                     dataIndex: 'live',
                     width: 80,
-                    fixed: true
+                    resizable: false
                 },
                 {
                     header: this.i18n._("Pool Name"),
@@ -1212,14 +1223,14 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                     header: this.i18n._("Export DNS"),
                     dataIndex: 'useDNS',
                     width: 90,
-                    fixed: true
+                    resizable: false
                 },
                 {
                     id: "fullTunnel",
                     header: this.i18n._("Full Tunnel"),
                     dataIndex: 'fullTunnel',
                     width: 90,
-                    fixed: true
+                    resizable: false
                 }],
                 // sortField: 'name',
                 columnsDefaultSortable: true,

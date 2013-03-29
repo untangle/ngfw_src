@@ -312,7 +312,6 @@ if (!Ung.hasResource["Ung.Network"]) {
                                 header: i18n._( "Name" ),
                                 dataIndex: 'name',
                                 sortable: false,
-                                fixed: true,
                                 width: 80,
                                 renderer: function( value ) {
                                     return i18n._( value );
@@ -320,7 +319,7 @@ if (!Ung.hasResource["Ung.Network"]) {
                             }, {
                                 xtype: 'templatecolumn',
                                 menuDisabled: true,
-                                fixed: true,
+                                resizable: false,
                                 width: 40,
                                 tpl: '<img src="'+Ext.BLANK_IMAGE_URL+'" class="icon-drag"/>' 
                             }, {
@@ -385,7 +384,6 @@ if (!Ung.hasResource["Ung.Network"]) {
                                 header: this.i18n._( "Connected" ),
                                 dataIndex: 'connected',
                                 sortable: false,
-                                fixed: true,
                                 width: 120,
                                 renderer: Ext.bind(function(value, metadata, record, rowIndex, colIndex, store, view) {
                                     var divClass = "ua-cell-disabled-interface";
@@ -402,13 +400,11 @@ if (!Ung.hasResource["Ung.Network"]) {
                                 header: this.i18n._( "Speed" ),
                                 dataIndex: 'mbit',
                                 sortable: false,
-                                fixed: true,
                                 width: 100
                             }, {
                                 header: this.i18n._( "Duplex" ),
                                 dataIndex: 'duplex',
                                 sortable: false,
-                                fixed: true,
                                 width: 100,
                                 renderer: Ext.bind(function(value, metadata, record, rowIndex, colIndex, store, view) {
                                     return (value=="FULL_DUPLEX")?this.i18n._("full-duplex") : (value=="HALF_DUPLEX") ? this.i18n._("half-duplex") : this.i18n._("unknown");;
@@ -417,13 +413,11 @@ if (!Ung.hasResource["Ung.Network"]) {
                                 header: this.i18n._( "Vendor" ),
                                 dataIndex: 'vendor',
                                 sortable: false,
-                                fixed: true,
-                                width: 150
+                                width: 180
                             }, {
                                 header: this.i18n._( "MAC Address" ),
                                 dataIndex: 'macAddress',
                                 sortable: false,
-                                fixed: true,
                                 width: 150,
                                 renderer: function(value, metadata, record, rowIndex, colIndex, store, view) {
                                     var text = ""
@@ -494,7 +488,7 @@ if (!Ung.hasResource["Ung.Network"]) {
                     currentRow.set("configType", interfaceData.configType);
                     currentRow.resumeEvents();
                 });
-                qosBandwidthStore.filter("isWan", true);
+                qosBandwidthStore.filter([{property: "configType", value: "ADDRESSED"}, {property:"isWan", value: true}]);
                 this.gridQosWanBandwidth.updateTotalBandwidth();
             }, this));
             
@@ -566,8 +560,7 @@ if (!Ung.hasResource["Ung.Network"]) {
                     };
                 }
             });
-            this.gridInterfaces.rowEditor = Ext.create('Ung.RowEditorWindow',{
-                grid: this.gridInterfaces,
+            this.gridInterfaces.setRowEditor( Ext.create('Ung.RowEditorWindow',{
                 sizeToComponent: this.panelInterfaces,
                 title: this.i18n._('Edit Interface'),
                 inputLines: [{
@@ -1021,7 +1014,7 @@ if (!Ung.hasResource["Ung.Network"]) {
                     Ung.RowEditorWindow.prototype.populate.call(this, record);
                     this.syncRuleEditorComponents();
                 }
-            });
+            }) );
         },
         // HostName Panel
         buildHostName: function() {
@@ -1194,7 +1187,7 @@ if (!Ung.hasResource["Ung.Network"]) {
                     xtype:'checkcolumn',
                     header: this.i18n._("Enable"),
                     dataIndex: 'enabled',
-                    fixed: true,
+                    resizable: false,
                     width:55
                 }, {
                     header: this.i18n._("Description"),
@@ -1208,12 +1201,12 @@ if (!Ung.hasResource["Ung.Network"]) {
                 }, {
                     header: this.i18n._("New Destination"),
                     dataIndex: 'newDestination',
-                    fixed: true,
+                    resizable: false,
                     width:150
                 }, {
                     header: this.i18n._("New Port"),
                     dataIndex: 'newPort',
-                    fixed: true,
+                    resizable: false,
                     width:55
                 }],
                 columnsDefaultSortable: false,
@@ -1337,7 +1330,7 @@ if (!Ung.hasResource["Ung.Network"]) {
                     xtype:'checkcolumn',
                     header: this.i18n._("Enable"),
                     dataIndex: 'enabled',
-                    fixed: true,
+                    resizable: false,
                     width:55
                 }, {
                     header: this.i18n._("Description"),
@@ -1488,7 +1481,7 @@ if (!Ung.hasResource["Ung.Network"]) {
                     xtype:'checkcolumn',
                     header: this.i18n._("Enable"),
                     dataIndex: 'enabled',
-                    fixed: true,
+                    resizable: false,
                     width:55
                 }, {
                     header: this.i18n._("Description"),
@@ -1503,7 +1496,7 @@ if (!Ung.hasResource["Ung.Network"]) {
                     xtype:'checkcolumn',
                     header: this.i18n._("Bypass"),
                     dataIndex: 'bypass',
-                    fixed: true,
+                    resizable: false,
                     width:55
                 }],
                 columnsDefaultSortable: false,
@@ -1894,8 +1887,7 @@ if (!Ung.hasResource["Ung.Network"]) {
             this.gridQosWanBandwidth.getStore().on("update", Ext.bind(function() {
                 this.gridQosWanBandwidth.updateTotalBandwidth();
             }, this));
-            this.gridQosWanBandwidth.getStore().filter("configType", "ADDRESSED");
-            this.gridQosWanBandwidth.getStore().filter("isWan", true);
+            this.gridQosWanBandwidth.getStore().filter([{property: "configType", value: "ADDRESSED"}, {property:"isWan", value: true}]);
             
             this.gridQosRules = Ext.create( 'Ung.EditorGrid', {
                 name: 'QoS Custom Rules',
@@ -1942,7 +1934,7 @@ if (!Ung.hasResource["Ung.Network"]) {
                     xtype:'checkcolumn',
                     header: this.i18n._("Enable"),
                     dataIndex: 'enabled',
-                    fixed: true,
+                    resizable: false,
                     width:55
                 }, {
                     header: this.i18n._( "Priority" ),
@@ -2290,7 +2282,7 @@ if (!Ung.hasResource["Ung.Network"]) {
                     xtype:'checkcolumn',
                     header: this.i18n._("Enable"),
                     dataIndex: 'enabled',
-                    fixed: true,
+                    resizable: false,
                     width:55
                 }, {
                     header: this.i18n._("Description"),
@@ -2305,7 +2297,7 @@ if (!Ung.hasResource["Ung.Network"]) {
                     xtype:'checkcolumn',
                     header: this.i18n._("Block"),
                     dataIndex: 'blocked',
-                    fixed: true,
+                    resizable: false,
                     width:55
                 }],
                 columnsDefaultSortable: false,
@@ -2390,7 +2382,7 @@ if (!Ung.hasResource["Ung.Network"]) {
                     xtype:'checkcolumn',
                     header: this.i18n._("Enable"),
                     dataIndex: 'enabled',
-                    fixed: true,
+                    resizable: false,
                     width:55
                 }, {
                     header: this.i18n._("Description"),
@@ -2405,7 +2397,7 @@ if (!Ung.hasResource["Ung.Network"]) {
                     xtype:'checkcolumn',
                     header: this.i18n._("Block"),
                     dataIndex: 'blocked',
-                    fixed: true,
+                    resizable: false,
                     width:55
                 }],
                 columnsDefaultSortable: false,

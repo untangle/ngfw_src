@@ -232,7 +232,7 @@ if (!Ung.hasResource["Ung.Reporting"]) {
             var changePasswordColumn = Ext.create('Ung.grid.EditColumn',{
                 header: this.i18n._("change password"),
                 width: 130,
-                fixed: true,
+                resizable: false,
                 iconClass: 'icon-edit-row',
                 handler: function(view,rowIndex,colIndex)
                 {
@@ -306,13 +306,13 @@ if (!Ung.hasResource["Ung.Reporting"]) {
                             header: this.i18n._("Email Summaries"),
                             dataIndex: "emailSummaries",
                             width: 100,
-                            fixed: true
+                            resizable: false
                         }, { 
                             xtype:'checkcolumn',
                             header: this.i18n._("Online Access"),
                             dataIndex: "onlineAccess",
                             width: 100,
-                            fixed: true
+                            resizable: false
                         }, changePasswordColumn ],
                         rowEditorInputLines: [
                             {
@@ -335,21 +335,27 @@ if (!Ung.hasResource["Ung.Reporting"]) {
                                 id: "add_reporting_online_reports_" + fieldID,
                                 fieldLabel: this.i18n._("Online Access"),
                                 width: 300
-                            },
-                            {
-                                xtype:'textfield',
-                                inputType: "password",
-                                name: "Password",
-                                dataIndex: "password",
-                                id: "add_reporting_user_password_" + fieldID,
-                                msgTarget: "title",
-                                fieldLabel: this.i18n._("Password"),
-                                boxLabel: this.i18n._("(required for 'Online Access')"),
-                                width: 300,
-                                minLength: 3,
-                                minLengthText: Ext.String.format(this.i18n._("The password is shorter than the minimum {0} characters."), 3)
-                            },
-                            {
+                            }, {
+                                xtype: 'container',
+                                layout: 'column',
+                                margin: '0 0 5 0',
+                                items: [{
+                                    xtype:'textfield',
+                                    inputType: "password",
+                                    name: "Password",
+                                    dataIndex: "password",
+                                    id: "add_reporting_user_password_" + fieldID,
+                                    msgTarget: "title",
+                                    fieldLabel: this.i18n._("Password"),
+                                    width: 300,
+                                    minLength: 3,
+                                    minLengthText: Ext.String.format(this.i18n._("The password is shorter than the minimum {0} characters."), 3)
+                                },{
+                                    xtype: 'label',
+                                    html: this.i18n._("(required for 'Online Access')"),
+                                    cls: 'boxlabel'
+                                }]
+                            }, {
                                 xtype:'textfield',
                                 inputType: "password",
                                 name: "Confirm Password",
@@ -439,6 +445,7 @@ if (!Ung.hasResource["Ung.Reporting"]) {
                     }
                 }, this)
             });
+            this.gridReportingUsers.subCmps.push(this.gridReportingUsers.rowEditorChangePass);
         },
         // syslog panel
         buildSyslog: function() {

@@ -104,7 +104,7 @@ if (!Ung.hasResource["Ung.Email"]) {
         getMailNodeSettings: function(forceReload) {
             if (forceReload || this.rpc.smtpNodeSettings === undefined) {
                 try {
-                    this.rpc.smtpNodeSettings = this.getMailNode().getMailNodeSettings();
+                    this.rpc.smtpNodeSettings = this.getMailNode().getSmtpNodeSettings();
                 } catch (e) {
                     Ung.Util.rpcExHandler(e);
                 }
@@ -1237,7 +1237,7 @@ if (!Ung.hasResource["Ung.Email"]) {
                 quarantineSettings.allowedAddressPatterns.list = this.quarantinableAddressesGrid.getPageList();
                 quarantineSettings.addressRemaps.list = this.quarantineForwardsGrid.getPageList();
                 
-                this.getMailNode().setMailNodeSettingsWithoutSafelists(Ext.bind(function(result, exception) {
+                this.getMailNode().setSmtpNodeSettingsWithoutSafelists(Ext.bind(function(result, exception) {
                     this.afterSave(exception, isApply);
                 }, this), this.getMailNodeSettings());
                 

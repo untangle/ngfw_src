@@ -206,14 +206,7 @@ Ext.define("Ung.Main", {
                             html: '<div id="configItems"></div>',
                             helpSource: 'config',
                             name: 'Config'
-                        }],
-                        listeners: {
-                            "afterrender": {
-                                fn: function() {
-                                    this.addNamesToPanels();
-                                }
-                            }
-                        }
+                        }]
                     })
                 }],
                 bbar: Ext.create('Ext.toolbar.Toolbar',{columns:3,style:'text-align:left',items:[{

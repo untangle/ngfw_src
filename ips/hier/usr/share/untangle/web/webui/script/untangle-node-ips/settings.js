@@ -134,14 +134,14 @@ if (!Ung.hasResource["Ung.Ips"]) {
                         xtype:'checkcolumn',
                         header: this.i18n._("block"),
                         dataIndex: 'live',
-                        fixed: true,
+                        resizable: false,
                         width:55
                     },
                     {
                         xtype:'checkcolumn',
                         header: this.i18n._("log"),
                         dataIndex: 'log',
-                        fixed: true,
+                        resizable: false,
                         width:55
                     },
                     {

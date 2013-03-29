@@ -224,7 +224,7 @@ if (!Ung.hasResource["Ung.Virus"]) {
                     xtype:'checkcolumn',
                     header: this.i18n._("Scan"),
                     dataIndex: 'enabled',
-                    fixed: true,
+                    resizable: false,
                     width:55
                 }, {
                     header: this.i18n._("Description"),
@@ -289,7 +289,7 @@ if (!Ung.hasResource["Ung.Virus"]) {
                     xtype:'checkcolumn',
                     header: this.i18n._("Scan"),
                     dataIndex: 'enabled',
-                    fixed: true,
+                    resizable: false,
                     width:55
                 }, {
                     header: this.i18n._("Description"),

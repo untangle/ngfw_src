@@ -223,7 +223,7 @@ if (!Ung.hasResource["Ung.Capture"]) {
                         xtype:'checkcolumn',
                         header: this.i18n._("Enable"),
                         dataIndex: 'enabled',
-                        fixed: true,
+                        resizable: false,
                         width:55
                     },{
                         header: this.i18n._("Description"),
@@ -234,7 +234,7 @@ if (!Ung.hasResource["Ung.Capture"]) {
                         xtype:'checkcolumn',
                         header: this.i18n._("Capture"),
                         dataIndex: 'capture',
-                        fixed: true,
+                        resizable: false,
                         width:55
                     }],
                     columnsDefaultSortable: false,
@@ -349,14 +349,14 @@ if (!Ung.hasResource["Ung.Capture"]) {
                         xtype:'checkcolumn',
                         header: this.i18n._("Enable"),
                         dataIndex: "live",
-                        fixed: true,
+                        resizable: false,
                         width:55
                     },
                     {
                         xtype:'checkcolumn',
                         header: this.i18n._("Log"),
                         dataIndex: "log",
-                        fixed: true,
+                        resizable: false,
                         width:55
                     },
                     {
@@ -454,8 +454,7 @@ if (!Ung.hasResource["Ung.Capture"]) {
                         handler: Ext.bind(this.configureRadius, this )
                     },{
                         xtype: "radio",
-                        boxLabel: Ext.String.format( this.i18n._("Active Directory {0}(requires Directory Connector) {1}"),
-                                                  "<i>", "</i>" ),
+                        boxLabel: Ext.String.format( this.i18n._("Active Directory {0}(requires Directory Connector) {1}"),"<i>", "</i>" ),
                         hideLabel: true,
                         disabled: !main.getLicenseManager().getLicense("untangle-node-adconnector"),
                         name: "authenticationType",

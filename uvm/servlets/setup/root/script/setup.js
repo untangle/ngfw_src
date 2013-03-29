@@ -265,7 +265,7 @@ Ext.define('Ung.SetupWizard.Interfaces', {
                 header: i18n._( "Name" ),
                 dataIndex: 'name',
                 sortable: false,
-                fixed: true,
+                resizable: false,
                 width: 80,
                 renderer: function( value ) {
                     return i18n._( value );
@@ -273,7 +273,7 @@ Ext.define('Ung.SetupWizard.Interfaces', {
             }, {
                 xtype: 'templatecolumn',
                 menuDisabled: true,
-                fixed: true,
+                resizable: false,
                 width: 40,
                 tpl: '<img src="'+Ext.BLANK_IMAGE_URL+'" class="icon-drag"/>' 
             }, {
