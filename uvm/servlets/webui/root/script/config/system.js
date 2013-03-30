@@ -1,9 +1,8 @@
-rif (!Ung.hasResource["Ung.System"]) {
+if (!Ung.hasResource["Ung.System"]) {
     Ung.hasResource["Ung.System"] = true;
 
     Ext.define("Ung.System", {
         extend: "Ung.ConfigWin",
-        panelHostname: null,
         panelSupport: null,
         panelBackup: null,
         panelRestore: null,
@@ -25,14 +24,13 @@ rif (!Ung.hasResource["Ung.System"]) {
             } else {
                 this.downloadLanguageHTML='';
             }
-            this.buildHostname();
             this.buildSupport();
             this.buildBackup();
             this.buildRestore();
             this.buildProtocolSettings();
             this.buildRegionalSettings();
             // builds the tab panel with the tabs
-            this.buildTabPanel([this.panelHostname, this.panelSupport, this.panelBackup, this.panelRestore, this.panelProtocolSettings, this.panelRegionalSettings]);
+            this.buildTabPanel([this.panelSupport, this.panelBackup, this.panelRestore, this.panelProtocolSettings, this.panelRegionalSettings]);
             if (!this.isHttpLoaded() && !this.isFtpLoaded() && !this.isMailLoaded() ) {
                 this.panelProtocolSettings.disable();
             }
@@ -110,7 +108,7 @@ rif (!Ung.hasResource["Ung.System"]) {
             }
             return this.rpc.ftpSettings;
         },
-        getMailNode: function(forceReload) {
+        getSmtpNode: function(forceReload) {
             if (forceReload || this.rpc.smtpNode === undefined) {
                 try {
                     this.rpc.smtpNode = rpc.nodeManager.node("untangle-casing-smtp");
@@ -121,12 +119,12 @@ rif (!Ung.hasResource["Ung.System"]) {
             return this.rpc.smtpNode;
         },
         isMailLoaded: function(forceReload) {
-            return this.getMailNode(forceReload) != null;
+            return this.getSmtpNode(forceReload) != null;
         },
-        getMailNodeSettings: function(forceReload) {
+        getSmtpNodeSettings: function(forceReload) {
             if (forceReload || this.rpc.mailSettings === undefined) {
                 try {
-                    this.rpc.mailSettings = this.getMailNode(forceReload).getMailNodeSettings();
+                    this.rpc.mailSettings = this.getSmtpNode(forceReload).getSmtpNodeSettings();
                 } catch (e) {
                     Ung.Util.rpcExHandler(e);
                 }
@@ -148,71 +146,6 @@ rif (!Ung.hasResource["Ung.System"]) {
                 }
             }
             return this.rpc.timeZone;
-        },
-        buildHostname: function() {
-            this.panelHostname = Ext.create('Ext.panel.Panel',{
-                // private fields
-                name: "Hostname",
-                helpSource: "hostname",
-                parentId: this.getId(),
-                title: this.i18n._("Hostname"),
-                cls: "ung-panel",
-                autoScroll: true,
-                items: [{
-                    xtype: "fieldset",
-                    title: this.i18n._("Hostname"),
-                    items: [{
-                        xtype: 'container',
-                        layout: 'column',
-                        margin: '0 0 5 0',
-                        items: [{
-                            xtype: 'textfield',
-                            name: 'Hostname',
-                            fieldLabel: this.i18n._("Hostname"),
-                            labelWidth: 150,
-                            id: 'hostname',
-                            width: 400,
-                            value: this.getSystemSettings().hostname,
-                            listeners: {
-                                "change": {
-                                    fn: Ext.bind(function(elem, newValue) {
-                                        this.getSystemSettings().hostname = newValue;
-                                    }, this)
-                                }
-                            }
-                        },{
-                            xtype: 'label',
-                            html: '(' + this.i18n._('example') + ':' + 'hostname.example.com' + ')',
-                            cls: 'boxlabel'
-                        }]
-                    },{
-                        xtype: 'container',
-                        layout: 'column',
-                        margin: '0 0 5 0',
-                        items: [{
-                            xtype: 'textfield',
-                            name: 'Domain Name Suffix',
-                            fieldLabel: this.i18n._("Domain Name Suffix"),
-                            labelWidth: 150,
-                            id: 'domain_name',
-                            width: 400,
-                            value: this.getSystemSettings().domainNameSuffix,
-                            listeners: {
-                                "change": {
-                                    fn: Ext.bind(function(elem, newValue) {
-                                        this.getSystemSettings().domainNameSuffix = newValue;
-                                    }, this)
-                                }
-                            }
-                        },{
-                            xtype: 'label',
-                            html: '(' + this.i18n._('example') + ':' + 'example.com' + ')',                            
-                            cls: 'boxlabel'
-                        }]
-                    }]
-                }]
-            });
-
         },
         buildSupport: function() {
             this.panelSupport = Ext.create('Ext.panel.Panel',{
@@ -367,7 +300,7 @@ rif (!Ung.hasResource["Ung.System"]) {
                         cls: "description",
                         html: this.i18n._("You can backup your current system configuration to a file on your local computer for later restoration, in the event that you would like to replace new settings with your current settings.  The file name will end with \".backup\"") +
                                 "<br> <br> " +
-                                this.i18n._("After backing up your current system configuration to a file, you can then restore that configuration through this dialog by going to \"Restore\" -> \"From Local File\".")
+                                this.i18n._("After backing up your current system configuration to a file, you can then restore that configuration through this dialog by going to \"Restore\" -> \"From File\".")
                     },{
                         xtype:"button",
                         text: this.i18n._("Backup to File"),
@@ -410,7 +343,7 @@ rif (!Ung.hasResource["Ung.System"]) {
                             },
                         failure: function(form, action) {
                             var cmp = Ext.getCmp(action.parentId);
-                            var errorMsg = cmp.i18n._("The Local File restore procedure failed.");
+                            var errorMsg = cmp.i18n._("The File restore procedure failed.");
                             if (action.result && action.result.msg) {
                                 switch (action.result.msg) {
                                     case "File does not seem to be valid backup":
@@ -426,7 +359,7 @@ rif (!Ung.hasResource["Ung.System"]) {
                                         errorMsg = cmp.i18n._("Unknown error in local processing");
                                     break;
                                     default:
-                                        errorMsg = cmp.i18n._("The Local File restore procedure failed.");
+                                        errorMsg = cmp.i18n._("The File restore procedure failed.");
                                 }
                             }
                             Ext.MessageBox.alert(cmp.i18n._("Failed"), errorMsg);
@@ -555,11 +488,11 @@ rif (!Ung.hasResource["Ung.System"]) {
                         boxLabel: this.i18n._("Enable processing of SMTP traffic.  (This is the default setting)"),
                         hideLabel: true,
                         name: "SMTP",
-                        checked: this.getMailNodeSettings().smtpEnabled,
+                        checked: this.getSmtpNodeSettings().smtpEnabled,
                         listeners: {
                             "change": {
                                 fn: Ext.bind(function(elem, checked) {
-                                    this.getMailNodeSettings().smtpEnabled = checked;
+                                    this.getSmtpNodeSettings().smtpEnabled = checked;
                                 }, this)
                             }
                         }
@@ -568,11 +501,11 @@ rif (!Ung.hasResource["Ung.System"]) {
                         boxLabel: this.i18n._("Disable processing of SMTP traffic."),
                         hideLabel: true,
                         name: "SMTP",
-                        checked: !this.getMailNodeSettings().smtpEnabled,
+                        checked: !this.getSmtpNodeSettings().smtpEnabled,
                         listeners: {
                             "change": {
                                 fn: Ext.bind(function(elem, checked) {
-                                    this.getMailNodeSettings().smtpEnabled = !checked;
+                                    this.getSmtpNodeSettings().smtpEnabled = !checked;
                                 }, this)
                             }
                         }
@@ -858,9 +791,9 @@ rif (!Ung.hasResource["Ung.System"]) {
 
             // save mail settings
             if (this.isMailLoaded()) {
-                this.getMailNode().setSmtpNodeSettings(Ext.bind(function(result, exception) {
+                this.getSmtpNode().setSmtpNodeSettings(Ext.bind(function(result, exception) {
                     this.afterSave(exception, isApply);
-                }, this), this.getMailNodeSettings());
+                }, this), this.getSmtpNodeSettings());
             } else {
                 this.saveSemaphore--;
             }

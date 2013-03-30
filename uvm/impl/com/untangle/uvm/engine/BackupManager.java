@@ -1,4 +1,4 @@
-/*
+/**
  * $Id$
  */
 package com.untangle.uvm.engine;
@@ -8,33 +8,34 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 
+import org.apache.commons.fileupload.FileItem;
 import org.apache.log4j.Logger;
 
 import com.untangle.uvm.UvmContextFactory;
+import com.untangle.uvm.ExecManagerResult;
 import com.untangle.node.util.IOUtil;
+import com.untangle.uvm.servlet.UploadHandler;
+import com.untangle.uvm.servlet.UploadManager;
 
 /**
  * Helper class to do backup/restore
  */
-class BackupManager
+public class BackupManager
 {
     private static final String BACKUP_SCRIPT = System.getProperty("uvm.home") + "/bin/ut-backup.sh";;
     private static final String RESTORE_SCRIPT = System.getProperty("uvm.home") + "/bin/ut-restore.sh";
 
-    private final Logger logger = Logger.getLogger(BackupManager.class);
+    private static final Logger logger = Logger.getLogger(BackupManager.class);
 
+    protected BackupManager()
+    {
+        UvmContextFactory.context().uploadManager().registerHandler(new RestoreUploadHandler());
+    }
+    
     /**
-     * Restore from a previous {@link #createBackup backup}.
-     *
-     *
-     * @exception IOException something went wrong to prevent the
-     *            restore (not the user's fault).
-     *
-     * @exception IllegalArgumentException if the provided bytes do not seem
-     *            to have come from a valid backup (is the user's fault).
+     * Restore system state from a backup file
      */
-    void restoreBackup(String fileName) 
-        throws IOException, IllegalArgumentException
+    protected static ExecManagerResult restoreBackup( String fileName )
     {
 
         try {
@@ -45,13 +46,13 @@ class BackupManager
             byte[] bytes = new byte[length];
             fileData.read(bytes);
             restoreBackup(bytes);
-        } catch (FileNotFoundException ex) {
+        } catch ( Exception ex ) {
             logger.error("Exception performing restore from file", ex);
         }
+        return null; //FIXME
     }
 
-    void restoreBackup(byte[] backupFileBytes)
-        throws IOException, IllegalArgumentException
+    protected static void restoreBackup(byte[] backupFileBytes) throws IOException, IllegalArgumentException
     {
 
         File tempFile = File.createTempFile("restore_", ".tar.gz");
@@ -88,9 +89,8 @@ class BackupManager
         }
     }
 
-    byte[] createBackup() throws IOException
+    protected static byte[] createBackup() throws IOException
     {
-
         //Create the temp file which will be the tar
         File tempFile = File.createTempFile("localdump", ".tar.gz.tmp");
 
@@ -114,5 +114,23 @@ class BackupManager
             logger.error("Exception creating backup for transfer to client", ex);
             throw new IOException("Unable to create backup file - can't transfer to client.");//Generic, in case it ever gets shown in the UI
         }
+    }
+
+    private class RestoreUploadHandler implements UploadHandler
+    {
+        @Override
+        public String getName()
+        {
+            return "restore";
+        }
+
+        @Override
+        public String handleFile(FileItem fileItem) throws Exception
+        {
+            byte[] backupFileBytes=fileItem.get();
+            BackupManager.restoreBackup(backupFileBytes);
+            return "restored backup file.";
+        }
+        
     }
 }

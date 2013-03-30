@@ -19,7 +19,6 @@ import java.util.Properties;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.commons.fileupload.FileItem;
 import org.apache.log4j.Logger;
 
 import org.jabsorb.JSONSerializer;
@@ -402,18 +401,6 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
         return backupManager.createBackup();
     }
 
-    public void restoreBackup(byte[] backupBytes)
-        throws IOException, IllegalArgumentException
-    {
-        backupManager.restoreBackup(backupBytes);
-    }
-
-    public void restoreBackup(String fileName)
-        throws IOException, IllegalArgumentException
-    {
-        backupManager.restoreBackup(fileName);
-    }
-
     public boolean isWizardComplete()
     {
         File keyFile = new File(WIZARD_COMPLETE_FLAG_FILE);
@@ -448,7 +435,7 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
         if (isDevel())
             return true;
 
-        extraOptions += " -f \"" + System.getProperty("uvm.conf.dir") + "/uidtest" + "\" ";
+        extraOptions += " -f \"" + System.getProperty("uvm.conf.dir") + "/uid" + "\" ";
 
         if ( com.untangle.uvm.Version.getMajorVersion() != null )
             extraOptions += " -d \"stable-" + com.untangle.uvm.Version.getMajorVersion() + "\" ";
@@ -620,10 +607,9 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
             throw new IllegalStateException("register serializers should never fail!", e);
         }
         
-        this.backupManager = new BackupManager();
-        
         this.uploadManager = new UploadManagerImpl();
-        uploadManager.registerHandler(new RestoreUploadHandler());
+
+        this.backupManager = new BackupManager();
         
         this.oemManager = new OemManagerImpl();
 
@@ -763,24 +749,6 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
 
     // private methods --------------------------------------------------------
 
-    private class RestoreUploadHandler implements UploadHandler
-    {
-        @Override
-        public String getName()
-        {
-            return "restore";
-        }
-
-        @Override
-        public String handleFile(FileItem fileItem) throws Exception
-        {
-            byte[] backupFileBytes=fileItem.get();
-            restoreBackup(backupFileBytes);
-            return "restored backup file.";
-        }
-        
-    }
-
     private void hideUpgradeSplash()
     {
         /**
@@ -832,4 +800,6 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
             }
         }
     }
+
+
 }
