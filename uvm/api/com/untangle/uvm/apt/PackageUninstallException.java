@@ -31,33 +31,33 @@
  * to do so, delete this exception statement from your version.
  */
 
-package com.untangle.uvm.toolbox;
+package com.untangle.uvm.apt;
 
 /**
- * Signals that a problem has occured installing a Debian package.
+ * Signals that a problem has occured uninstalling a Debian package.
  *
  * @author <a href="mailto:amread@untangle.com">Aaron Read</a>
  * @version 1.0
  */
 @SuppressWarnings("serial")
-public class PackageInstallException extends PackageException
+public class PackageUninstallException extends PackageException
 {
-    public PackageInstallException()
+    public PackageUninstallException()
     {
         super();
     }
 
-    public PackageInstallException(String message)
+    public PackageUninstallException(String message)
     {
         super(message);
     }
 
-    public PackageInstallException(String message, Throwable cause)
+    public PackageUninstallException(String message, Throwable cause)
     {
         super(message, cause);
     }
 
-    public PackageInstallException(Throwable cause)
+    public PackageUninstallException(Throwable cause)
     {
         super(cause);
     }

@@ -1,7 +1,7 @@
 /**
  * $Id$
  */
-package com.untangle.uvm.toolbox;
+package com.untangle.uvm.apt;
 
 import java.io.Serializable;
 import java.util.Map;
@@ -70,7 +70,7 @@ public class PackageDesc implements Serializable, JSONString
         // versions
         availableVersion = m.get("version");
 
-        // view position (used for store and toolbox)
+        // view position 
         String v = m.get("view-position");
         viewPosition = null == v ? UNKNOWN_POSITION : Integer.parseInt(v);
 

@@ -1,4 +1,4 @@
-from uvm.toolbox_manager import ToolboxManager
+from uvm.apt_manager import AptManager
 from uvm.node_manager import NodeManager
 from uvm.logging_manager import LoggingManager
 from uvm.network_manager import NetworkManager

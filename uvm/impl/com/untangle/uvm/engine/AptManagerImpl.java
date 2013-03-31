@@ -1,5 +1,5 @@
 /**
- * $Id: ToolboxManagerImpl.java,v 1.00 2011/08/02 15:01:17 dmorris Exp $
+ * $Id: AptManagerImpl.java,v 1.00 2011/08/02 15:01:17 dmorris Exp $
  */
 package com.untangle.uvm.engine;
 
@@ -44,43 +44,31 @@ import com.untangle.uvm.node.NodeManager;
 import com.untangle.uvm.node.NodeSettings;
 import com.untangle.uvm.node.NodeMetric;
 import com.untangle.uvm.node.Reporting;
-import com.untangle.uvm.toolbox.Application;
-import com.untangle.uvm.toolbox.InstallAndInstantiateComplete;
-import com.untangle.uvm.toolbox.PackageDesc;
-import com.untangle.uvm.toolbox.PackageException;
-import com.untangle.uvm.toolbox.PackageInstallException;
-import com.untangle.uvm.toolbox.PackageInstallRequest;
-import com.untangle.uvm.toolbox.PackageUninstallException;
-import com.untangle.uvm.toolbox.PackageUninstallRequest;
-import com.untangle.uvm.toolbox.RackView;
-import com.untangle.uvm.toolbox.ToolboxManager;
-import com.untangle.uvm.toolbox.UpgradeStatus;
+import com.untangle.uvm.apt.Application;
+import com.untangle.uvm.apt.InstallAndInstantiateComplete;
+import com.untangle.uvm.apt.PackageDesc;
+import com.untangle.uvm.apt.PackageException;
+import com.untangle.uvm.apt.PackageInstallException;
+import com.untangle.uvm.apt.PackageInstallRequest;
+import com.untangle.uvm.apt.PackageUninstallException;
+import com.untangle.uvm.apt.PackageUninstallRequest;
+import com.untangle.uvm.apt.RackView;
+import com.untangle.uvm.apt.AptManager;
+import com.untangle.uvm.apt.UpgradeStatus;
 
 /**
- * Implements ToolboxManager.
+ * Implements AptManager.
  */
-class ToolboxManagerImpl implements ToolboxManager
+class AptManagerImpl implements AptManager
 {
-    static final URL TOOLBOX_URL;
-
     private static final Object LOCK = new Object();
 
     private final Logger logger = Logger.getLogger(getClass());
 
-    private static ToolboxManagerImpl TOOLBOX_MANAGER;
+    private static AptManagerImpl APT_MANAGER;
 
     /* Prints out true if the upgrade server is available */
     private static final String UPGRADE_SERVER_AVAILABLE = System.getProperty("uvm.bin.dir") + "/ut-upgrade-avail";
-
-    static {
-        try {
-            String s = "file://" + System.getProperty("uvm.toolbox.dir") + "/";
-            TOOLBOX_URL = new URL(s);
-        } catch (MalformedURLException exn) { 
-            /* should never happen */
-            throw new RuntimeException("bad toolbox URL", exn);
-        }
-    }
 
     private final Map<Long, AptLogTail> tails = new HashMap<Long, AptLogTail>();
 
@@ -100,7 +88,7 @@ class ToolboxManagerImpl implements ToolboxManager
     
     private long lastTailKey = System.currentTimeMillis();
 
-    private ToolboxManagerImpl()
+    private AptManagerImpl()
     {
         if (this.execManager == null)
             this.execManager = UvmContextFactory.context().createExecManager();
@@ -108,17 +96,17 @@ class ToolboxManagerImpl implements ToolboxManager
         refreshLists();
     }
 
-    static ToolboxManagerImpl toolboxManager()
+    static AptManagerImpl aptManager()
     {
         synchronized (LOCK) {
-            if (null == TOOLBOX_MANAGER) {
-                TOOLBOX_MANAGER = new ToolboxManagerImpl();
+            if (null == APT_MANAGER) {
+                APT_MANAGER = new AptManagerImpl();
             }
         }
-        return TOOLBOX_MANAGER;
+        return APT_MANAGER;
     }
 
-    // ToolboxManager implementation ------------------------------------
+    // AptManager implementation ------------------------------------
 
     public RackView getRackView(Long policyId)
     {
@@ -565,31 +553,6 @@ class ToolboxManagerImpl implements ToolboxManager
         logger.info("installAndInstantiate( " + name + ") return");
     }
 
-    public void uninstall( String name ) throws PackageUninstallException
-    {
-        // stop intances
-        NodeManagerImpl nm = (NodeManagerImpl)UvmContextFactory.context().nodeManager();
-        if (nm == null)
-            return;
-        
-        List<Node> nodeList = nm.nodeInstances(name);
-        logger.debug("unloading " + nodeList.size() + " nodes");
-
-        for (Node node : nodeList) {
-            nm.unload( node ); 
-        }
-
-        try {
-            removing = true;
-            execApt("remove " + name);
-        } catch (PackageException exn) {
-            throw new PackageUninstallException(exn);
-        } finally {
-            removing = false;
-        }
-
-    }
-
     public void update() throws PackageException
     {
         int maxtries = 4;
@@ -697,7 +660,7 @@ class ToolboxManagerImpl implements ToolboxManager
         logger.info("registering package: " + pkgName);
 
         UvmContextImpl uvmContext = UvmContextImpl.getInstance();
-        uvmContext.refreshToolbox();
+        uvmContext.refreshLibs();
         Reporting reporting = (Reporting) UvmContextFactory.context().nodeManager().node("untangle-node-reporting");
         if ( reporting != null ) {
             reporting.createSchemas();

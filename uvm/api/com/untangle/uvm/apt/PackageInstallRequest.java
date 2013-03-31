@@ -31,74 +31,35 @@
  * to do so, delete this exception statement from your version.
  */
 
-package com.untangle.uvm.toolbox;
+package com.untangle.uvm.apt;
 
 import com.untangle.uvm.message.Message;
 
 /**
- * Update on the status of a download.
+ * Signals a request from the GUI to initiate installation of a Debian package.
  *
  * @author <a href="mailto:amread@untangle.com">Aaron Read</a>
  * @version 1.0
  */
 @SuppressWarnings("serial")
-public class DownloadProgress extends Message
+public class PackageInstallRequest extends Message
 {
+    private final PackageDesc packageDesc;
+    private final boolean installed;
 
-    private final String name;
-    private final int bytesDownloaded;
-    private final int size;
-    private final String speed;
-    private final PackageDesc requestingPackage;
-
-    public DownloadProgress(String name, int bytesDownloaded, int size,
-                            String speed, PackageDesc requestingPackage)
+    public PackageInstallRequest(PackageDesc packageDesc, boolean installed)
     {
-        this.name = name;
-        this.bytesDownloaded = bytesDownloaded;
-        this.size = size;
-        this.speed = speed;
-        this.requestingPackage = requestingPackage;
+        this.packageDesc = packageDesc;
+        this.installed = installed;
     }
 
-    // accessors --------------------------------------------------------------
-
-    public String getName()
+    public PackageDesc getPackageDesc()
     {
-        return name;
+        return packageDesc;
     }
 
-    public int getBytesDownloaded()
+    public boolean isInstalled()
     {
-        return bytesDownloaded;
-    }
-
-    public int getSize()
-    {
-        return size;
-    }
-
-    public String getSpeed()
-    {
-        return speed;
-    }
-
-    public PackageDesc getRequestingPackage()
-    {
-        return requestingPackage;
-    }
-
-    public boolean isUpgrade()
-    {
-        return null == requestingPackage;
-    }
-
-    // Object methods ---------------------------------------------------------
-
-    public String toString()
-    {
-        return "DownloadProgress name: " + name
-            + " bytesDownloaded: " + bytesDownloaded + " size: " + size
-            + " speed: " + speed;
+        return installed;
     }
 }

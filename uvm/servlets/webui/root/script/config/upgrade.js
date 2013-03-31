@@ -37,15 +37,15 @@ if (!Ung.hasResource["Ung.Upgrade"]) {
         },
         loadGridUpgrade: function() {
             Ext.MessageBox.wait(i18n._("Checking for available upgrades..."), i18n._("Please wait"));
-            rpc.toolboxManager.getUpgradeStatus(Ext.bind(function(result, exception) {
+            rpc.aptManager.getUpgradeStatus(Ext.bind(function(result, exception) {
                 if(Ung.Util.handleException(exception)) return;
                 var upgradeStatus=result;
                 if(upgradeStatus.upgrading) {
                     Ext.MessageBox.alert(i18n._("Failed"), this.i18n._("Upgrade in progress."));
                 } else {
-                    rpc.toolboxManager.getUpgradeStatus(Ext.bind(function(result, exception) {
+                    rpc.aptManager.getUpgradeStatus(Ext.bind(function(result, exception) {
                         if(Ung.Util.handleException(exception)) return;
-                        rpc.toolboxManager.upgradable(Ext.bind(function(result, exception) {
+                        rpc.aptManager.upgradable(Ext.bind(function(result, exception) {
                             if(Ung.Util.handleException(exception)) return;
                             Ext.MessageBox.hide();
                             if(!this.isVisible()) return;

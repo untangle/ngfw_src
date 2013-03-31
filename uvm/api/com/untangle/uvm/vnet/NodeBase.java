@@ -31,7 +31,7 @@ import com.untangle.uvm.node.SessionTuple;
 import com.untangle.uvm.node.SessionTupleImpl;
 import com.untangle.uvm.util.I18nUtil;
 import com.untangle.uvm.logging.LogEvent;
-import com.untangle.uvm.toolbox.PackageDesc;
+import com.untangle.uvm.apt.PackageDesc;
 
 /**
  * A base class for node instances, both normal and casing.
@@ -168,7 +168,7 @@ public abstract class NodeBase implements Node
 
     public PackageDesc getPackageDesc()
     {
-        //return UvmContextFactory.context().toolboxManager().packageDesc(packageName);
+        //return UvmContextFactory.context().aptManager().packageDesc(packageName);
         return packageDesc;
     }
 
@@ -734,7 +734,7 @@ public abstract class NodeBase implements Node
             return null;
         }
 
-        PackageDesc md = UvmContextFactory.context().toolboxManager().packageDesc(parent);
+        PackageDesc md = UvmContextFactory.context().aptManager().packageDesc(parent);
 
         if (null == md) {
             staticLogger.warn("parent does not exist: " + parent);

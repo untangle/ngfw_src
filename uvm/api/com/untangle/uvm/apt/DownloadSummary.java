@@ -31,35 +31,48 @@
  * to do so, delete this exception statement from your version.
  */
 
-package com.untangle.uvm.toolbox;
+package com.untangle.uvm.apt;
 
 import com.untangle.uvm.message.Message;
 
 /**
- * Signals a request from the GUI to initiate installation of a Debian package.
+ * Summary of pending downloads.
  *
  * @author <a href="mailto:amread@untangle.com">Aaron Read</a>
  * @version 1.0
  */
 @SuppressWarnings("serial")
-public class PackageInstallRequest extends Message
+public class DownloadSummary extends Message
 {
-    private final PackageDesc packageDesc;
-    private final boolean installed;
 
-    public PackageInstallRequest(PackageDesc packageDesc, boolean installed)
+    private final int count;
+    private final int size;
+    private final PackageDesc requestingPackage;
+
+    public DownloadSummary(int count, int size, PackageDesc requestingPackage)
     {
-        this.packageDesc = packageDesc;
-        this.installed = installed;
+        this.count = count;
+        this.size = size;
+        this.requestingPackage = requestingPackage;
     }
 
-    public PackageDesc getPackageDesc()
+    public int getCount()
     {
-        return packageDesc;
+        return count;
     }
 
-    public boolean isInstalled()
+    public int getSize()
     {
-        return installed;
+        return size;
+    }
+
+    public PackageDesc getRequestingPackage()
+    {
+        return requestingPackage;
+    }
+
+    public boolean isUpgrade()
+    {
+        return null == requestingPackage;
     }
 }

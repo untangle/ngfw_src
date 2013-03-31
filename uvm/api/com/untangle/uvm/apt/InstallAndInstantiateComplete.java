@@ -1,5 +1,5 @@
 /*
- * $HeadURL$
+ * $HeadURL: svn://chef/work/src/uvm/api/com.untangle.uvm.apt/DownloadAllComplete.java $
  * Copyright (c) 2003-2007 Untangle, Inc.
  *
  * This library is free software; you can redistribute it and/or modify
@@ -31,36 +31,31 @@
  * to do so, delete this exception statement from your version.
  */
 
-package com.untangle.uvm.toolbox;
+package com.untangle.uvm.apt;
 
-import com.untangle.uvm.UvmException;
+import com.untangle.uvm.message.Message;
 
 /**
- * Signals that a problem has occured with a Debian package.
+ * Signals that install is complete.
  *
  * @author <a href="mailto:amread@untangle.com">Aaron Read</a>
  * @version 1.0
  */
 @SuppressWarnings("serial")
-public class PackageException extends UvmException
+public class InstallAndInstantiateComplete extends Message
 {
-    public PackageException()
+
+    private final PackageDesc requestingPackage;
+
+    public InstallAndInstantiateComplete(PackageDesc requestingPackage)
     {
-        super();
+        this.requestingPackage = requestingPackage;
     }
 
-    public PackageException(String message)
-    {
-        super(message);
-    }
+    // accessors --------------------------------------------------------------
 
-    public PackageException(String message, Throwable cause)
+    public PackageDesc getRequestingPackage()
     {
-        super(message, cause);
-    }
-
-    public PackageException(Throwable cause)
-    {
-        super(cause);
+        return requestingPackage;
     }
 }

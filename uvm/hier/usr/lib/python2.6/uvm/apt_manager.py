@@ -1,50 +1,47 @@
 from uvm.manager import Manager
 
-class ToolboxManager(Manager):
+class AptManager(Manager):
     def __init__(self, uvmContext):
         self.__uvmContext = uvmContext
-        self.__toolbox = self.__uvmContext.toolboxManager()
+        self.__apt = self.__uvmContext.aptManager()
 
     def api_install(self, packageName):
-        key = self.__toolbox.install( packageName )
+        key = self.__apt.install( packageName )
         self.doAptTailLog( key )
 
     def api_installandinstantiate(self,packageName):
-        key = self.__toolbox.installAndInstantiate(packageName, 1L)
+        key = self.__apt.installAndInstantiate(packageName, 1L)
         self.doAptTailLog( key )
 
-    def api_uninstall(self, packageName):
-        self.__toolbox.uninstall( packageName )
-
     def api_update(self):
-        self.__toolbox.update()
+        self.__apt.update()
 
     def api_upgrade(self):
-        key = self.__toolbox.upgrade()
+        key = self.__apt.upgrade()
         self.doAptTailLog( key )
 
     def api_requestinstall(self, packageName):
-        self.__toolbox.requestInstall( package )
+        self.__apt.requestInstall( package )
 
     def api_available(self):
-        self.__print_packages( self.__toolbox.available())
+        self.__print_packages( self.__apt.available())
 
     def api_installed(self):
-        self.__print_packages( self.__toolbox.installed())
+        self.__print_packages( self.__apt.installed())
 
     def api_uninstalled(self):
-        self.__print_packages( self.__toolbox.uninstalled())
+        self.__print_packages( self.__apt.uninstalled())
 
     def api_register(self, packageName):
         print "Registering the package: ", packageName
-        self.__toolbox.register(packageName)
+        self.__apt.register(packageName)
 
     def api_unregister(self, packageName):
         print "Unregistering the package: ", packageName
-        self.__toolbox.unregister(packageName)
+        self.__apt.unregister(packageName)
 
     def __print_packages(self,packages):
         for package in packages:
             print "%-30s installed: %-40savailable: %s" % ( package["name"], package["installedVersion"], package["availableVersion"])
 
-Manager.managers.append( ToolboxManager )
+Manager.managers.append( AptManager )

@@ -18,7 +18,7 @@ import com.untangle.uvm.node.LicenseManager;
 import com.untangle.uvm.node.PolicyManager;
 import com.untangle.uvm.node.DayOfWeekMatcher;
 import com.untangle.uvm.servlet.UploadManager;
-import com.untangle.uvm.toolbox.ToolboxManager;
+import com.untangle.uvm.apt.AptManager;
 import com.untangle.uvm.vnet.PipelineFoundry;
 
 /**
@@ -27,11 +27,11 @@ import com.untangle.uvm.vnet.PipelineFoundry;
 public interface UvmContext
 {
     /**
-     * Get the <code>ToolboxManager</code> singleton.
+     * Get the <code>AptManager</code> singleton.
      *
-     * @return the ToolboxManager.
+     * @return the AptManager.
      */
-    ToolboxManager toolboxManager();
+    AptManager aptManager();
 
     /**
      * Get the <code>NodeManager</code> singleton.

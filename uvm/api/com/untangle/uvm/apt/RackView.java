@@ -1,7 +1,7 @@
 /**
  * $Id: RackView.java,v 1.00 2012/04/06 11:29:48 dmorris Exp $
  */
-package com.untangle.uvm.toolbox;
+package com.untangle.uvm.apt;
 
 import java.io.Serializable;
 import java.util.Collections;

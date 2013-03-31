@@ -1,4 +1,4 @@
-/*
+/**
  * $Id$
  */
 package com.untangle.uvm.engine;
@@ -17,47 +17,44 @@ import org.apache.log4j.Logger;
  * are installed. The bulk of the UVM and all nodes are loaded
  * from this ClassLoader. Tomcat and its ClassLoaders are a child of
  * this ClassLoader.
- *
- * @author <a href="mailto:amread@untangle.com">Aaron Read</a>
- * @version 1.0
  */
 class UvmClassLoader extends URLClassLoader
 {
     private final Set<URL> resources = new HashSet<URL>();
-    private final File toolboxDir;
+    private final File libsDir;
     private final Logger logger = Logger.getLogger(getClass());
 
     /**
      * Creates new UvmClassLoader.
      *
-     * @param urls non-toolbox urls that are resources for this ClassLoader.
+     * @param urls non-libs urls that are resources for this ClassLoader.
      * @param parent the parent ClassLoader.
-     * @param toolboxDir location of the toolbox packages, this
+     * @param libsDir location of the libs packages, this
      * directory will be scanned for additional resources to add to
      * the classpath.
      *
-     * @see #refreshToolbox()
+     * @see #refreshLibs()
      */
-    UvmClassLoader(URL[] urls, ClassLoader parent, File toolboxDir)
+    UvmClassLoader(URL[] urls, ClassLoader parent, File libsDir)
     {
         super(urls, parent);
 
-        this.toolboxDir = toolboxDir;
-        refreshToolbox();
+        this.libsDir = libsDir;
+        refreshLibs();
     }
 
     /**
-     * Check for new applications. Scans <code>toolboxDir</code>
+     * Check for new applications. Scans <code>libsDir</code>
      * adding all directories and jar files not already in the
      * classpath.
      *
      * @return true if the classpath changed.
      */
-    boolean refreshToolbox()
+    boolean refreshLibs()
     {
         boolean changed = false;
 
-        for (File f : toolboxDir.listFiles()) {
+        for (File f : libsDir.listFiles()) {
             changed |= addFile(f);
         }
 

@@ -1,7 +1,7 @@
 /**
  * $Id: Application.java,v 1.00 2012/04/16 12:25:02 dmorris Exp $
  */
-package com.untangle.uvm.toolbox;
+package com.untangle.uvm.apt;
 
 import java.io.Serializable;
 

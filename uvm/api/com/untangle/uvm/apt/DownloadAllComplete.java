@@ -1,7 +1,7 @@
 /*
  * $Id$
  */
-package com.untangle.uvm.toolbox;
+package com.untangle.uvm.apt;
 
 import com.untangle.uvm.message.Message;
 

@@ -90,7 +90,7 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
     private NetworkManagerImpl networkManager;
     private ConnectivityTesterImpl connectivityTester;
     private PipelineFoundryImpl pipelineFoundry;
-    private ToolboxManagerImpl toolboxManager;
+    private AptManagerImpl aptManager;
     private NodeManagerImpl nodeManager;
     private CronManager cronManager;
     private CertificateManagerImpl certificateManager;
@@ -167,9 +167,9 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
         return this.certificateManager;
     }
     
-    public ToolboxManagerImpl toolboxManager()
+    public AptManagerImpl aptManager()
     {
-        return this.toolboxManager;
+        return this.aptManager;
     }
 
     public NodeManager nodeManager()
@@ -554,7 +554,7 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
             json.put( "skinManager", this.skinManager());
             json.put( "nodeManager", this.nodeManager());
             json.put( "policyManager", this.nodeManager().node("untangle-node-policy"));
-            json.put( "toolboxManager", this.toolboxManager());
+            json.put( "aptManager", this.aptManager());
             json.put( "alertManager", this.alertManager());
             json.put( "adminManager", this.adminManager());
             json.put( "systemManager", this.systemManager());
@@ -626,7 +626,7 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
 
         this.mailSender = MailSenderImpl.mailSender();
 
-        this.toolboxManager = ToolboxManagerImpl.toolboxManager();
+        this.aptManager = AptManagerImpl.aptManager();
 
         this.pipelineFoundry = PipelineFoundryImpl.foundry();
 
@@ -726,10 +726,9 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
 
     // package protected methods ----------------------------------------------
 
-    protected boolean refreshToolbox()
+    protected boolean refreshLibs()
     {
-        boolean result = main.refreshToolbox();
-        return result;
+        return main.refreshLibs();
     }
 
     protected void fatalError(String throwingLocation, Throwable x)

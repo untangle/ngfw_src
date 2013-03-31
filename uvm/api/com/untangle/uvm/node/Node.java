@@ -7,7 +7,7 @@ import java.util.List;
 
 import com.untangle.uvm.vnet.NodeIPSession;
 import com.untangle.uvm.logging.LogEvent;
-import com.untangle.uvm.toolbox.PackageDesc;
+import com.untangle.uvm.apt.PackageDesc;
 
 /**
  * Interface for a node instance, provides public runtime control

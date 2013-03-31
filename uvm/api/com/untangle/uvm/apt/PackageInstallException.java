@@ -31,48 +31,34 @@
  * to do so, delete this exception statement from your version.
  */
 
-package com.untangle.uvm.toolbox;
-
-import com.untangle.uvm.message.Message;
+package com.untangle.uvm.apt;
 
 /**
- * Summary of pending downloads.
+ * Signals that a problem has occured installing a Debian package.
  *
  * @author <a href="mailto:amread@untangle.com">Aaron Read</a>
  * @version 1.0
  */
 @SuppressWarnings("serial")
-public class DownloadSummary extends Message
+public class PackageInstallException extends PackageException
 {
-
-    private final int count;
-    private final int size;
-    private final PackageDesc requestingPackage;
-
-    public DownloadSummary(int count, int size, PackageDesc requestingPackage)
+    public PackageInstallException()
     {
-        this.count = count;
-        this.size = size;
-        this.requestingPackage = requestingPackage;
+        super();
     }
 
-    public int getCount()
+    public PackageInstallException(String message)
     {
-        return count;
+        super(message);
     }
 
-    public int getSize()
+    public PackageInstallException(String message, Throwable cause)
     {
-        return size;
+        super(message, cause);
     }
 
-    public PackageDesc getRequestingPackage()
+    public PackageInstallException(Throwable cause)
     {
-        return requestingPackage;
-    }
-
-    public boolean isUpgrade()
-    {
-        return null == requestingPackage;
+        super(cause);
     }
 }

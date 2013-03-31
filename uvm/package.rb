@@ -78,7 +78,7 @@ BuildEnv::SRC.installTarget.install_jars(Jars::Bcel, "#{thirdparty.distDirectory
 BuildEnv::SRC.installTarget.install_jars(Jars::JRadius, "#{thirdparty.distDirectory}/usr/share/java/uvm")
 BuildEnv::SRC.installTarget.install_jars(Jars::Ant, "#{thirdparty.distDirectory}/usr/share/java/uvm")
 
-BuildEnv::SRC.installTarget.install_dirs("#{uvm_lib.distDirectory}/usr/share/untangle/toolbox")
+BuildEnv::SRC.installTarget.install_dirs("#{uvm_lib.distDirectory}/usr/share/untangle/lib")
 
 if BuildEnv::SRC.isDevel
   # create the package list for fake ut-apt

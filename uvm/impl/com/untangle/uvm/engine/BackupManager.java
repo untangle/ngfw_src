@@ -96,7 +96,7 @@ public class BackupManager
         }
 
         try {
-            if ( UvmContextFactory.context().toolboxManager().getUpgradeStatus(true).getUpgradesAvailable() ) {
+            if ( UvmContextFactory.context().aptManager().getUpgradeStatus(true).getUpgradesAvailable() ) {
                 return new ExecManagerResult( 0, i18nUtil.tr("Upgrades are available. Please upgrade before restoring."));
             }
         } catch (Exception e) {
@@ -117,10 +117,10 @@ public class BackupManager
         boolean installingPackages = false;
         if (packages != null) {
             for ( String pkg : packages ) {
-                if (! UvmContextFactory.context().toolboxManager().isInstalled( pkg )) {
+                if (! UvmContextFactory.context().aptManager().isInstalled( pkg )) {
                     logger.info("Restore Backup: need package: " + pkg);
                     installingPackages = true;
-                    UvmContextFactory.context().toolboxManager().requestInstall( pkg );
+                    UvmContextFactory.context().aptManager().requestInstall( pkg );
                 }
             }
         }

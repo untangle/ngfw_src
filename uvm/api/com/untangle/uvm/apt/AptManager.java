@@ -1,7 +1,7 @@
 /*
- * $Id: ToolboxManager.java,v 1.00 2011/09/24 20:53:51 dmorris Exp $
+ * $Id: AptManager.java,v 1.00 2011/09/24 20:53:51 dmorris Exp $
  */
-package com.untangle.uvm.toolbox;
+package com.untangle.uvm.apt;
 
 import com.untangle.uvm.node.DeployException;
 
@@ -13,7 +13,7 @@ import com.untangle.uvm.node.DeployException;
  * @author <a href="mailto:amread@untangle.com">Aaron Read</a>
  * @version 1.0
  */
-public interface ToolboxManager
+public interface AptManager
 {
     /**
      * Get the view of the rack for a policy.
@@ -112,15 +112,6 @@ public interface ToolboxManager
      *     be installed.
      */
     void installAndInstantiate(String name, Long policyId) throws PackageInstallException, DeployException;
-
-    /**
-     * Remove a Package from the toolbox.
-     *
-     * @param name the name of the Package.
-     * @exception PackageUninstallException when <code>name</code> cannot
-     *    be uninstalled.
-     */
-    void uninstall(String name) throws PackageUninstallException;
 
     /**
      * Updated the system package cache (default timeout)

@@ -1,5 +1,5 @@
 /*
- * $HeadURL: svn://chef/work/src/uvm/api/com/untangle/uvm/toolbox/PackageUninstallRequest.java $
+ * $HeadURL$
  * Copyright (c) 2003-2007 Untangle, Inc.
  *
  * This library is free software; you can redistribute it and/or modify
@@ -31,35 +31,58 @@
  * to do so, delete this exception statement from your version.
  */
 
-package com.untangle.uvm.toolbox;
+package com.untangle.uvm.apt;
 
 import com.untangle.uvm.message.Message;
 
 /**
- * Signals a request from  GUI to initiate uninstallation of a Debian package.
+ * Signals that download is complete.
  *
- * @author <a href="mailto:dmorris@untangle.com">Dirk Morris</a>
+ * @author <a href="mailto:amread@untangle.com">Aaron Read</a>
  * @version 1.0
  */
 @SuppressWarnings("serial")
-public class PackageUninstallRequest extends Message
+public class DownloadComplete extends Message
 {
-    private final PackageDesc packageDesc;
-    private final boolean installed;
 
-    public PackageUninstallRequest(PackageDesc packageDesc, boolean installed)
+    private final boolean success;
+    private final PackageDesc requestingPackage;
+    private final String errorMessage;
+    
+    public DownloadComplete(boolean success, PackageDesc requestingPackage)
     {
-        this.packageDesc = packageDesc;
-        this.installed = installed;
+        this.success = success;
+        this.requestingPackage = requestingPackage;
+        this.errorMessage = null;
     }
 
-    public PackageDesc getPackageDesc()
+    public DownloadComplete(boolean success, PackageDesc requestingPackage, String errorMessage)
     {
-        return packageDesc;
+        this.success = success;
+        this.requestingPackage = requestingPackage;
+        this.errorMessage = errorMessage;
+    }
+    
+    // accessors --------------------------------------------------------------
+
+    public boolean getSuccess()
+    {
+        return success;
     }
 
-    public boolean isInstalled()
+    public PackageDesc getRequestingPackage()
     {
-        return installed;
+        return requestingPackage;
     }
+
+    public boolean isUpgrade()
+    {
+        return null == requestingPackage;
+    }
+
+    public String getErrorMessage()
+    {
+        return errorMessage;
+    }
+
 }

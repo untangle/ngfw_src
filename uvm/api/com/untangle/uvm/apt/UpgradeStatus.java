@@ -1,7 +1,7 @@
 /**
  * $Id: UpgradeStatus.java,v 1.00 2012/03/16 15:20:59 dmorris Exp $
  */
-package com.untangle.uvm.toolbox;
+package com.untangle.uvm.apt;
 
 import java.io.Serializable;
 

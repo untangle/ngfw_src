@@ -351,7 +351,7 @@ public class SystemManagerImpl implements SystemManager
         {
             logger.debug("doing automatic update");
             try {
-                UvmContextImpl.context().toolboxManager().update();
+                UvmContextImpl.context().aptManager().update();
             } catch (Exception exn) {
                 logger.warn("could not update", exn);
             }
@@ -359,7 +359,7 @@ public class SystemManagerImpl implements SystemManager
             if (getSettings().getAutoUpgrade()) {
                 logger.debug("doing automatic upgrade");
                 try {
-                    UvmContextImpl.context().toolboxManager().upgrade();
+                    UvmContextImpl.context().aptManager().upgrade();
                 } catch (Exception exn) {
                     logger.warn("could not upgrade", exn);
                 }

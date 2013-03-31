@@ -22,7 +22,6 @@ import org.apache.log4j.Logger;
  * <li>uvm.home - home of uvm, usually
  * <code>/usr/share/uvm</code>.</li>
  * <li>uvm.lib.dir - uvm libraries.</li>
- * <li>uvm.toolbox.dir - node jars.</li>
  * <li>uvm.log.dir - log files.</li>
  * <li>uvm.web.dir - servlet directories.</li>
  * <li>uvm.conf.dir - configuration files.</li>
@@ -76,11 +75,11 @@ public class Main
     // public methods ----------------------------------------------------------
 
     /**
-     * @see UvmClassLoader.refreshToolbox()
+     * @see UvmClassLoader.refreshLibs()
      */
-    public boolean refreshToolbox()
+    public boolean refreshLibs()
     {
-        return uvmCl.refreshToolbox();
+        return uvmCl.refreshLibs();
     }
 
     /**
@@ -166,7 +165,7 @@ public class Main
         }
 
         urls.add(new URL("file://" + System.getProperty("uvm.lang.dir") + "/"));
-        uvmCl = new UvmClassLoader(urls.toArray(new URL[urls.size()]), getClass().getClassLoader(), new File(System.getProperty("uvm.toolbox.dir")));
+        uvmCl = new UvmClassLoader(urls.toArray(new URL[urls.size()]), getClass().getClassLoader(), new File(System.getProperty("uvm.lib.dir")));
         Thread.currentThread().setContextClassLoader(uvmCl);
     }
     
@@ -185,8 +184,6 @@ public class Main
         System.setProperty("uvm.lib.dir", uvmLib);
         String uvmBin = uvmHome + "/bin";
         System.setProperty("uvm.bin.dir", uvmBin);
-        String uvmToolbox = uvmHome + "/toolbox";
-        System.setProperty("uvm.toolbox.dir", uvmToolbox);
         String uvmLog = "/var/log/uvm";
         System.setProperty("uvm.log.dir", uvmLog);
         String uvmWeb = uvmHome + "/web";
@@ -202,7 +199,6 @@ public class Main
 
         logger.info("uvm.home         " + uvmHome);
         logger.info("uvm.lib.dir      " + uvmLib);
-        logger.info("uvm.toolbox.dir  " + uvmToolbox);
         logger.info("uvm.log.dir      " + uvmLog);
         logger.info("uvm.web.dir      " + uvmWeb);
         logger.info("uvm.conf.dir     " + uvmConf);

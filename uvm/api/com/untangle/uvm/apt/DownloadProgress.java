@@ -31,43 +31,56 @@
  * to do so, delete this exception statement from your version.
  */
 
-package com.untangle.uvm.toolbox;
+package com.untangle.uvm.apt;
 
 import com.untangle.uvm.message.Message;
 
 /**
- * Signals that download is complete.
+ * Update on the status of a download.
  *
  * @author <a href="mailto:amread@untangle.com">Aaron Read</a>
  * @version 1.0
  */
 @SuppressWarnings("serial")
-public class DownloadComplete extends Message
+public class DownloadProgress extends Message
 {
 
-    private final boolean success;
+    private final String name;
+    private final int bytesDownloaded;
+    private final int size;
+    private final String speed;
     private final PackageDesc requestingPackage;
-    private final String errorMessage;
-    
-    public DownloadComplete(boolean success, PackageDesc requestingPackage)
+
+    public DownloadProgress(String name, int bytesDownloaded, int size,
+                            String speed, PackageDesc requestingPackage)
     {
-        this.success = success;
+        this.name = name;
+        this.bytesDownloaded = bytesDownloaded;
+        this.size = size;
+        this.speed = speed;
         this.requestingPackage = requestingPackage;
-        this.errorMessage = null;
     }
 
-    public DownloadComplete(boolean success, PackageDesc requestingPackage, String errorMessage)
-    {
-        this.success = success;
-        this.requestingPackage = requestingPackage;
-        this.errorMessage = errorMessage;
-    }
-    
     // accessors --------------------------------------------------------------
 
-    public boolean getSuccess()
+    public String getName()
     {
-        return success;
+        return name;
+    }
+
+    public int getBytesDownloaded()
+    {
+        return bytesDownloaded;
+    }
+
+    public int getSize()
+    {
+        return size;
+    }
+
+    public String getSpeed()
+    {
+        return speed;
     }
 
     public PackageDesc getRequestingPackage()
@@ -80,9 +93,12 @@ public class DownloadComplete extends Message
         return null == requestingPackage;
     }
 
-    public String getErrorMessage()
-    {
-        return errorMessage;
-    }
+    // Object methods ---------------------------------------------------------
 
+    public String toString()
+    {
+        return "DownloadProgress name: " + name
+            + " bytesDownloaded: " + bytesDownloaded + " size: " + size
+            + " speed: " + speed;
+    }
 }

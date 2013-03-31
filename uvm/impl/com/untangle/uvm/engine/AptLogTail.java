@@ -17,11 +17,11 @@ import org.apache.log4j.Logger;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.message.MessageManager;
 import com.untangle.uvm.message.AptMessage;
-import com.untangle.uvm.toolbox.DownloadComplete;
-import com.untangle.uvm.toolbox.DownloadProgress;
-import com.untangle.uvm.toolbox.DownloadSummary;
-import com.untangle.uvm.toolbox.DownloadAllComplete;
-import com.untangle.uvm.toolbox.PackageDesc;
+import com.untangle.uvm.apt.DownloadComplete;
+import com.untangle.uvm.apt.DownloadProgress;
+import com.untangle.uvm.apt.DownloadSummary;
+import com.untangle.uvm.apt.DownloadAllComplete;
+import com.untangle.uvm.apt.PackageDesc;
 
 /**
  * Tails apt output to produce progress messages for the Swing GUI.

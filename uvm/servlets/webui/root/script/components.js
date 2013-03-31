@@ -378,7 +378,7 @@ Ung.Util = {
             var message=null;
             var gotoStartPage=false;
             /* special text for apt error */
-            if (exception.name == "com.untangle.uvm.toolbox.PackageInstallException" && (exception.message.indexOf("exited with") >= 0)) {
+            if (exception.name == "com.untangle.uvm.apt.PackageInstallException" && (exception.message.indexOf("exited with") >= 0)) {
                 message  = i18n._("The server is unable to properly communicate with the app store.") + "<br/>";
                 message += i18n._("Check internet connectivity and the network/DNS settings.") + "<br/>";
                 message += i18n._("Check that the server is fully up to date.") + "<br/>";
@@ -387,7 +387,7 @@ Ung.Util = {
                 message += i18n._("An error has occured: ") + exception.message + "<br/>";
             }
             /* special text for apt error */
-            if (exception.name == "com.untangle.uvm.toolbox.PackageException" && (exception.message.indexOf("timed out") >= 0)) {
+            if (exception.name == "com.untangle.uvm.apt.PackageException" && (exception.message.indexOf("timed out") >= 0)) {
                 message  = i18n._("Unable to contact the app store") + ":<br/>";
                 message += i18n._("Connection timed out") + "<br/>";
                 message += i18n._("<br/>");
@@ -1909,13 +1909,13 @@ Ung.MessageManager = {
                     if(this.testPackageInstallRequest && !this.testInstallAndInstantiateComplete) {
                         this.testInstallAndInstantiateComplete=true;
                         messageQueue.messages.list.push({
-                            installed: false, javaClass: "com.untangle.uvm.toolbox.InstallAndInstantiateComplete", messageType: "com.untangle.uvm.toolbox.InstallAndInstantiateComplete",
+                            installed: false, javaClass: "com.untangle.uvm.apt.InstallAndInstantiateComplete", messageType: "com.untangle.uvm.apt.InstallAndInstantiateComplete",
                             requestingPackage: {
                                 type: "LIB_ITEM"  
                             },
                             packageDesc: {
                                 autoStart: false, availableVersion: "9.3.0~svn20120706r32399main-1lenny", displayName: "Web Filter",fullVersion: null, hide: null, installedSize: 36, installedVersion: null,invisible: false,
-                                javaClass: "com.untangle.uvm.toolbox.PackageDesc",longDescription: " The Web Filter Library Item.",
+                                javaClass: "com.untangle.uvm.apt.PackageDesc",longDescription: " The Web Filter Library Item.",
                                 name: "untangle-libitem-sitefilter",shortDescription: "Web Filter",size: 4668,type: "LIB_ITEM",viewPosition: 10
                             },
                             time: { javaClass: "java.util.Date",time: 1343046146132}
@@ -1925,10 +1925,10 @@ Ung.MessageManager = {
                     if(!this.testPackageInstallRequest) {
                         this.testPackageInstallRequest=true;
                         messageQueue.messages.list.push({
-                            installed: false, javaClass: "com.untangle.uvm.toolbox.PackageInstallRequest", messageType: "com.untangle.uvm.toolbox.PackageInstallRequest",
+                            installed: false, javaClass: "com.untangle.uvm.apt.PackageInstallRequest", messageType: "com.untangle.uvm.apt.PackageInstallRequest",
                             packageDesc: {
                                 autoStart: false, availableVersion: "9.3.0~svn20120706r32399main-1lenny", displayName: "Web Filter",fullVersion: null, hide: null, installedSize: 36, installedVersion: null,invisible: false,
-                                javaClass: "com.untangle.uvm.toolbox.PackageDesc",longDescription: " The Web Filter Library Item.",
+                                javaClass: "com.untangle.uvm.apt.PackageDesc",longDescription: " The Web Filter Library Item.",
                                 name: "untangle-libitem-sitefilter",shortDescription: "Web Filter",size: 4668,type: "LIB_ITEM",viewPosition: 10
                             },
                             time: { javaClass: "java.util.Date",time: 1343046146132}
@@ -1938,7 +1938,7 @@ Ung.MessageManager = {
                     if(this.testRebootMessage) {
                         this.testRebootMessage=false;
                         messageQueue.messages.list.push({
-                            upgrade: true, javaClass: "com.untangle.uvm.toolbox.DownloadAllComplete",time: { javaClass: "java.util.Date",time: 1343046146132}
+                            upgrade: true, javaClass: "com.untangle.uvm.apt.DownloadAllComplete",time: { javaClass: "java.util.Date",time: 1343046146132}
                         })
                     }
                     */
@@ -1965,7 +1965,7 @@ Ung.MessageManager = {
                                 var appItemDisplayName = msg.packageDesc.displayName;
                                 Ung.AppItem.updateState(appItemDisplayName, "download");
                                 main.closeStore();
-                                rpc.toolboxManager.installAndInstantiate(Ext.bind(function(result, exception) {
+                                rpc.aptManager.installAndInstantiate(Ext.bind(function(result, exception) {
                                     if (exception)
                                         Ung.AppItem.updateState(appItemDisplayName, null);
                                     if(Ung.Util.handleException(exception)) return;
@@ -1975,10 +1975,10 @@ Ung.MessageManager = {
                             if(!msg.installed) {
                                 var appItemDisplayName = msg.packageDesc.displayName;
                                 Ung.AppItem.updateState(appItemDisplayName, "uninstall");
-                                rpc.toolboxManager.unregister(Ext.bind(function(result, exception) {
+                                rpc.aptManager.unregister(Ext.bind(function(result, exception) {
                                     if(Ung.Util.handleException(exception)) return;
                                 }, this),msg.packageDesc.name);
-                                rpc.toolboxManager.uninstall(Ext.bind(function(result, exception) {
+                                rpc.aptManager.uninstall(Ext.bind(function(result, exception) {
                                     if(Ung.Util.handleException(exception)) return;
                                     main.closeStore();
                                 }, this),msg.packageDesc.name);

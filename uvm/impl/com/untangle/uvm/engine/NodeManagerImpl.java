@@ -42,8 +42,8 @@ import com.untangle.uvm.node.Node;
 import com.untangle.uvm.node.NodeProperties;
 import com.untangle.uvm.node.NodeSettings;
 import com.untangle.uvm.vnet.NodeBase;
-import com.untangle.uvm.toolbox.PackageDesc;
-import com.untangle.uvm.toolbox.ToolboxManager;
+import com.untangle.uvm.apt.PackageDesc;
+import com.untangle.uvm.apt.AptManager;
 import com.untangle.uvm.util.Pulse;
 
 /**
@@ -209,7 +209,7 @@ public class NodeManagerImpl implements NodeManager
         logger.info("instantiate( name:" + nodeName + " , policy:" + policyId + " )");
 
         UvmContextImpl uvmContext = UvmContextImpl.getInstance();
-        ToolboxManagerImpl tbm = uvmContext.toolboxManager();
+        AptManagerImpl tbm = uvmContext.aptManager();
         PackageDesc packageDesc = tbm.packageDesc(nodeName);
 
         if ( packageDesc == null ) {
@@ -387,7 +387,7 @@ public class NodeManagerImpl implements NodeManager
 
     protected void startAutoStart( PackageDesc extraPkg )
     {
-        ToolboxManagerImpl tbm = (ToolboxManagerImpl)UvmContextFactory.context().toolboxManager();
+        AptManagerImpl tbm = (AptManagerImpl)UvmContextFactory.context().aptManager();
 
         List<PackageDesc> mds = new ArrayList<PackageDesc>();
 
@@ -486,7 +486,7 @@ public class NodeManagerImpl implements NodeManager
 
     private void startUnloaded(List<NodeSettings> startQueue, Map<NodeSettings, NodeProperties> nodePropertiess, Set<String> loadedParents)
     {
-        ToolboxManager tbm = UvmContextFactory.context().toolboxManager();
+        AptManager tbm = UvmContextFactory.context().aptManager();
 
         List<Runnable> restarters = new ArrayList<Runnable>(startQueue.size());
 
@@ -601,7 +601,7 @@ public class NodeManagerImpl implements NodeManager
 
     private Map<NodeSettings, NodeProperties> loadNodePropertiess(List<NodeSettings> unloaded)
     {
-        ToolboxManagerImpl tbm = (ToolboxManagerImpl)UvmContextFactory.context().toolboxManager();
+        AptManagerImpl tbm = (AptManagerImpl)UvmContextFactory.context().aptManager();
 
         Map<NodeSettings, NodeProperties> nodePropertiess = new HashMap<NodeSettings, NodeProperties>(unloaded.size());
 
@@ -708,7 +708,7 @@ public class NodeManagerImpl implements NodeManager
 
     private Long getDefaultPolicyForNode(String nodeName) throws DeployException
     {
-        ToolboxManager tbm = UvmContextFactory.context().toolboxManager();
+        AptManager tbm = UvmContextFactory.context().aptManager();
         PackageDesc packageDesc = tbm.packageDesc(nodeName);
         if (packageDesc == null)
             throw new DeployException("Node named " + nodeName + " not found");

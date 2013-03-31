@@ -1,5 +1,5 @@
 /*
- * $HeadURL$
+ * $HeadURL: svn://chef/work/src/uvm/api/com.untangle.uvm.apt/PackageUninstallRequest.java $
  * Copyright (c) 2003-2007 Untangle, Inc.
  *
  * This library is free software; you can redistribute it and/or modify
@@ -31,34 +31,35 @@
  * to do so, delete this exception statement from your version.
  */
 
-package com.untangle.uvm.toolbox;
+package com.untangle.uvm.apt;
+
+import com.untangle.uvm.message.Message;
 
 /**
- * Signals that a problem has occured uninstalling a Debian package.
+ * Signals a request from  GUI to initiate uninstallation of a Debian package.
  *
- * @author <a href="mailto:amread@untangle.com">Aaron Read</a>
+ * @author <a href="mailto:dmorris@untangle.com">Dirk Morris</a>
  * @version 1.0
  */
 @SuppressWarnings("serial")
-public class PackageUninstallException extends PackageException
+public class PackageUninstallRequest extends Message
 {
-    public PackageUninstallException()
+    private final PackageDesc packageDesc;
+    private final boolean installed;
+
+    public PackageUninstallRequest(PackageDesc packageDesc, boolean installed)
     {
-        super();
+        this.packageDesc = packageDesc;
+        this.installed = installed;
     }
 
-    public PackageUninstallException(String message)
+    public PackageDesc getPackageDesc()
     {
-        super(message);
+        return packageDesc;
     }
 
-    public PackageUninstallException(String message, Throwable cause)
+    public boolean isInstalled()
     {
-        super(message, cause);
-    }
-
-    public PackageUninstallException(Throwable cause)
-    {
-        super(cause);
+        return installed;
     }
 }

@@ -143,7 +143,6 @@ class BuildEnv
       /@UVM_HOME@/ => "#{@prefix}/usr/share/untangle",
       /@UVM_CONF@/ => "#{@prefix}/usr/share/untangle/conf",
       /@UVM_LOG@/ => "/var/log/uvm",
-      /@UVM_TOOLBOX@/ => "#{@prefix}/usr/share/untangle/toolbox",
       /@UVM_WEB@/ => "#{@prefix}/usr/share/untangle/web",
       /@THIRDPARTY_UVM_LIB@/ => "#{@prefix}/usr/share/java/uvm",
       /@SRC_LIB@/ => "#{@prefix}/usr/lib/uvm",

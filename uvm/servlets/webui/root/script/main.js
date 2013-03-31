@@ -93,7 +93,7 @@ Ext.define("Ung.Main", {
                 main.warnOnUpgradesCallback(main.upgradeStatus,handler);
             } else {
                 Ext.MessageBox.wait(i18n._("Checking for available upgrades..."), i18n._("Please wait"));
-                rpc.toolboxManager.getUpgradeStatus(Ext.bind(function(result, exception,opt,handler) {
+                rpc.aptManager.getUpgradeStatus(Ext.bind(function(result, exception,opt,handler) {
                     main.upgradeLastCheckTime=(new Date()).getTime();
                     Ext.MessageBox.hide();
                     if(Ung.Util.handleException(exception, Ext.bind(function() {
@@ -440,7 +440,7 @@ Ext.define("Ung.Main", {
     upgrade: function () {
         Ext.MessageBox.wait(i18n._("Downloading updates..."), i18n._("Please wait"));
         Ung.MessageManager.startUpgradeMode();
-        rpc.toolboxManager.upgrade(Ext.bind(function(result, exception) {
+        rpc.aptManager.upgrade(Ext.bind(function(result, exception) {
             if(Ung.Util.handleException(exception)) return;
         }, this));
     },
@@ -553,7 +553,7 @@ Ext.define("Ung.Main", {
                     Ext.String.format(i18n._("{0} cannot be removed because it is being used by the following rack:{1}You must remove the product from all racks first."), this.displayName,"<br><b>"+tids[0].policy.name+"</b><br><br>"));
                     return;
                 } else {
-                    rpc.toolboxManager.uninstall(Ext.bind(function (result, exception) {
+                    rpc.aptManager.uninstall(Ext.bind(function (result, exception) {
                        if(Ung.Util.handleException(exception)) return;
                        main.setAppLastState(this.displayName);
                        main.loadApps();
@@ -687,7 +687,7 @@ Ext.define("Ung.Main", {
             main.buildNodes();
         }, this);
 
-        Ung.Util.RetryHandler.retry( rpc.toolboxManager.getRackView, rpc.toolboxManager, [ rpc.currentPolicy.policyId ], callback, 1500, 10 );
+        Ung.Util.RetryHandler.retry( rpc.aptManager.getRackView, rpc.aptManager, [ rpc.currentPolicy.policyId ], callback, 1500, 10 );
     },
     loadApps: function() {
         if(Ung.MessageManager.installInProgress>0) {
@@ -699,7 +699,7 @@ Ext.define("Ung.Main", {
             main.buildApps();
         }, this);
 
-        Ung.Util.RetryHandler.retry( rpc.toolboxManager.getRackView, rpc.toolboxManager, [ rpc.currentPolicy.policyId ], callback, 1500, 10 );
+        Ung.Util.RetryHandler.retry( rpc.aptManager.getRackView, rpc.aptManager, [ rpc.currentPolicy.policyId ], callback, 1500, 10 );
     },
     loadLicenses: function() {
         //force re-sync with server
@@ -716,7 +716,7 @@ Ext.define("Ung.Main", {
             }
         }, this);
 
-        Ung.Util.RetryHandler.retry( rpc.toolboxManager.getRackView, rpc.toolboxManager, [ rpc.currentPolicy.policyId ], callback, 1500, 10 );
+        Ung.Util.RetryHandler.retry( rpc.aptManager.getRackView, rpc.aptManager, [ rpc.currentPolicy.policyId ], callback, 1500, 10 );
     },
     reloadLicenses: function() {
         main.getLicenseManager().reloadLicenses(Ext.bind(function(result,exception) {
@@ -735,7 +735,7 @@ Ext.define("Ung.Main", {
                 }
             }, this);
 
-            Ung.Util.RetryHandler.retry( rpc.toolboxManager.getRackView, rpc.toolboxManager, [ rpc.currentPolicy.policyId ], callback, 1500, 10 );
+            Ung.Util.RetryHandler.retry( rpc.aptManager.getRackView, rpc.aptManager, [ rpc.currentPolicy.policyId ], callback, 1500, 10 );
         }, this));
     },
 
@@ -916,7 +916,7 @@ Ext.define("Ung.Main", {
     },
     checkForUpgrades: function (handler) {
         //check for upgrades
-        rpc.toolboxManager.getUpgradeStatus(Ext.bind(function(result, exception,opt,handler) {
+        rpc.aptManager.getUpgradeStatus(Ext.bind(function(result, exception,opt,handler) {
             main.upgradeLastCheckTime=(new Date()).getTime();
             main.upgradeStatus=result;            
                         
@@ -1211,7 +1211,7 @@ Ext.define("Ung.Main", {
     showInitialScreen: function () {
         try {
             Ext.Function.defer(Ext.MessageBox.wait,40,Ext.MessageBox,[i18n._("Determining Connectivity..."), i18n._("Please wait")]);        
-            rpc.toolboxManager.isUpgradeServerAvailable(Ext.bind(function (result, exception) {
+            rpc.aptManager.isUpgradeServerAvailable(Ext.bind(function (result, exception) {
                 if(Ung.Util.handleException(exception)) throw Exception("failure");
                     this.updateInitialScreen(result);
             }, this));

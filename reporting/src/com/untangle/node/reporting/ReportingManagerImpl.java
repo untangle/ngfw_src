@@ -42,7 +42,7 @@ import com.untangle.uvm.node.Node;
 import com.untangle.uvm.node.NodeManager;
 import com.untangle.uvm.node.NodeSettings;
 import com.untangle.node.reporting.ReportingNode;
-import com.untangle.uvm.toolbox.PackageDesc;
+import com.untangle.uvm.apt.PackageDesc;
 import com.untangle.node.reporting.items.ApplicationData;
 import com.untangle.node.reporting.items.Application;
 import com.untangle.node.reporting.items.Chart;
@@ -443,7 +443,7 @@ class ReportingManagerImpl implements ReportingManager
         Map<Integer, Application> m = new TreeMap<Integer, Application>();
 
         for (String s : appNames) {
-            PackageDesc md = UvmContextFactory.context().toolboxManager().packageDesc(s);
+            PackageDesc md = UvmContextFactory.context().aptManager().packageDesc(s);
 
             int pos;
 

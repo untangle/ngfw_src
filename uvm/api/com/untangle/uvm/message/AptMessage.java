@@ -3,7 +3,7 @@
  */
 package com.untangle.uvm.message;
 
-import com.untangle.uvm.toolbox.PackageDesc;
+import com.untangle.uvm.apt.PackageDesc;
 
 /**
  * Sends some apt action message to the UI

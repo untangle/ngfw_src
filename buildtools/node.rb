@@ -36,7 +36,7 @@ class NodeBuilder
       paths = baseHash.map { |bd, bn| ["#{bn.buildEnv.home}/#{bd}/src", "#{bn.buildEnv.home}/#{bd}/src"] }.flatten
 
       srcJar = JarTarget.build_target(node, deps, 'src', ["#{home}/#{dirName}/src"] + paths)
-      buildEnv.installTarget.install_jars(srcJar, "#{node.distDirectory}/usr/share/untangle/toolbox", nil, true)
+      buildEnv.installTarget.install_jars(srcJar, "#{node.distDirectory}/usr/share/untangle/lib", nil, true)
     end
 
     po_dir = "#{home}/#{dirName}/po"
