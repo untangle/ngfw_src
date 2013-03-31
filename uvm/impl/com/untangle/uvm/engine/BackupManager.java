@@ -100,17 +100,19 @@ public class BackupManager
         // install all the needed packages
         String[] packages = result.getOutput().split("[\\r\\n]+");
         boolean installingPackages = false;
+        String msg = "Files required for the restore are missing. Please retry again after the download is complete.<br/>";
         if (packages != null) {
             for ( String pkg : packages ) {
                 if (! UvmContextFactory.context().toolboxManager().isInstalled( pkg )) {
                     logger.info("Restore Backup: need package: " + pkg);
                     installingPackages = true;
+                    msg = msg + pkg + "<br/>";
                     UvmContextFactory.context().toolboxManager().requestInstall( pkg );
                 }
             }
         }
         if (installingPackages) {
-            return new ExecManagerResult( 0, "Files required for the restore are being downloaded. Please retry again after the download is complete." );
+            return new ExecManagerResult( 0, msg);
         }
             
         // run same command with nohup and without -c check-only flag

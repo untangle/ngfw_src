@@ -212,7 +212,6 @@ if [ "$SHOW_NEEDED" == "true" ] ; then
     exit 0
 fi
 
-exit 0 # for testing
 doRestore
 
 rm -rf ${WORKING_DIR}
