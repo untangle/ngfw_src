@@ -7,12 +7,14 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.Map;
 
 import org.apache.commons.fileupload.FileItem;
 import org.apache.log4j.Logger;
 
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.ExecManagerResult;
+import com.untangle.uvm.util.I18nUtil;
 import com.untangle.node.util.IOUtil;
 import com.untangle.uvm.servlet.UploadHandler;
 import com.untangle.uvm.servlet.UploadManager;
@@ -25,14 +27,19 @@ public class BackupManager
     private static final String BACKUP_SCRIPT = System.getProperty("uvm.home") + "/bin/ut-backup.sh";;
     private static final String RESTORE_SCRIPT = System.getProperty("uvm.home") + "/bin/ut-restore.sh";
 
-    private static final Logger logger = Logger.getLogger(BackupManager.class);
+    private final Logger logger = Logger.getLogger(BackupManager.class);
+
+    private I18nUtil i18nUtil;
 
     protected BackupManager()
     {
         UvmContextFactory.context().uploadManager().registerHandler(new RestoreUploadHandler());
+
+        Map<String,String> i18nMap = UvmContextFactory.context().languageManager().getTranslations("untangle-libuvm");
+        this.i18nUtil = new I18nUtil(i18nMap);
     }
     
-    protected static byte[] createBackup() throws IOException
+    protected byte[] createBackup() throws IOException
     {
         //Create the temp file which will be the tar
         File tempFile = File.createTempFile("localdump", ".tar.gz.tmp");
@@ -59,7 +66,7 @@ public class BackupManager
         }
     }
 
-    private static ExecManagerResult restoreBackup(byte[] backupFileBytes) throws IOException, IllegalArgumentException
+    private ExecManagerResult restoreBackup(byte[] backupFileBytes) throws IOException, IllegalArgumentException
     {
 
         File tempFile = File.createTempFile("restore_", ".tar.gz");
@@ -88,6 +95,14 @@ public class BackupManager
             return checkResult;
         }
 
+        try {
+            if ( UvmContextFactory.context().toolboxManager().getUpgradeStatus(true).getUpgradesAvailable() ) {
+                return new ExecManagerResult( 0, i18nUtil.tr("Upgrades are available. Please upgrade before restoring."));
+            }
+        } catch (Exception e) {
+            logger.warn("Unable to check upgrade status",e);
+        }
+        
         // get the list of required files
         logger.info("Restore Backup: check packages " + tempFile);
         result = UvmContextFactory.context().execManager().exec(RESTORE_SCRIPT + " -i " + tempFile.getAbsolutePath() + " -f");
@@ -100,19 +115,17 @@ public class BackupManager
         // install all the needed packages
         String[] packages = result.getOutput().split("[\\r\\n]+");
         boolean installingPackages = false;
-        String msg = "Files required for the restore are missing. Please retry again after the download is complete.<br/>";
         if (packages != null) {
             for ( String pkg : packages ) {
                 if (! UvmContextFactory.context().toolboxManager().isInstalled( pkg )) {
                     logger.info("Restore Backup: need package: " + pkg);
                     installingPackages = true;
-                    msg = msg + pkg + "<br/>";
                     UvmContextFactory.context().toolboxManager().requestInstall( pkg );
                 }
             }
         }
         if (installingPackages) {
-            return new ExecManagerResult( 0, msg);
+            return new ExecManagerResult( 0, i18nUtil.tr("Files required for the restore are missing. Please retry again after the download is complete."));
         }
             
         // run same command with nohup and without -c check-only flag
@@ -120,7 +133,7 @@ public class BackupManager
         UvmContextFactory.context().execManager().exec("nohup " + RESTORE_SCRIPT + " -i " + tempFile.getAbsolutePath() + " -v >/var/log/uvm/restore.log 2>&1 &");
 
         logger.info("Restore Backup: returning");
-        return new ExecManagerResult( 0, "The restore procedure is running. This may take several minutes. The server may be unavailable during this time. Once the process is complete you will be able to log in again.");
+        return new ExecManagerResult( 0, i18nUtil.tr("The restore procedure is running. This may take several minutes. The server may be unavailable during this time. Once the process is complete you will be able to log in again."));
     }
 
     private class RestoreUploadHandler implements UploadHandler
@@ -134,7 +147,7 @@ public class BackupManager
         @Override
         public ExecManagerResult handleFile(FileItem fileItem) throws Exception
         {
-            return BackupManager.restoreBackup( fileItem.get() );
+            return restoreBackup( fileItem.get() );
         }
         
     }

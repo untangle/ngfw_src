@@ -88,7 +88,7 @@ function doRestore()
 
     # start the UVM, depending on circumstances (menu driven restore) may need to be restopped
     if [ -x /etc/init.d/untangle-vm ] ; then
-        /etc/init.d/untangle-vm start > /dev/null 2>&1
+        /etc/init.d/untangle-vm restart
     fi
 
     debug "Completed.  Success"

@@ -604,6 +604,8 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
         
         this.uploadManager = new UploadManagerImpl();
 
+        this.languageManager = new LanguageManagerImpl();
+        
         this.backupManager = new BackupManager();
         
         this.oemManager = new OemManagerImpl();
@@ -631,8 +633,6 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
         this.localDirectory = new LocalDirectoryImpl();
         
         this.brandingManager = new BrandingManagerImpl();
-
-        this.languageManager = new LanguageManagerImpl();
 
         this.skinManager = new SkinManagerImpl();
 
