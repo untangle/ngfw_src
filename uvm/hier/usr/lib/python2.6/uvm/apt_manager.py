@@ -29,9 +29,6 @@ class AptManager(Manager):
     def api_installed(self):
         self.__print_packages( self.__apt.installed())
 
-    def api_uninstalled(self):
-        self.__print_packages( self.__apt.uninstalled())
-
     def api_register(self, packageName):
         print "Registering the package: ", packageName
         self.__apt.register(packageName)

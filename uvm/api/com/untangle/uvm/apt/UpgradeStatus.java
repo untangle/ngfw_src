@@ -12,14 +12,12 @@ public class UpgradeStatus implements Serializable
     private volatile boolean updating = false;
     private volatile boolean upgrading = false;
     private volatile boolean installing = false;
-    private volatile boolean removing = false;
 
-    public UpgradeStatus(boolean updating, boolean upgrading, boolean installing, boolean removing, boolean upgradesAvailable)
+    public UpgradeStatus(boolean updating, boolean upgrading, boolean installing, boolean upgradesAvailable)
     {
         this.updating = updating;
         this.upgrading = upgrading;
         this.installing = installing;
-        this.removing = removing;
         this.upgradesAvailable = upgradesAvailable;
     }
 
@@ -36,11 +34,6 @@ public class UpgradeStatus implements Serializable
     public boolean isInstalling()
     {
         return installing;
-    }
-
-    public boolean isRemoving()
-    {
-        return removing;
     }
 
     public boolean getUpgradesAvailable()

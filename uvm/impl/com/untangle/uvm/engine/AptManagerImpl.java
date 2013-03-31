@@ -56,32 +56,68 @@ import com.untangle.uvm.apt.UpgradeStatus;
 
 /**
  * Implements AptManager.
+ * 
+ * The public methods are documented in AptManager.java
  */
 class AptManagerImpl implements AptManager
 {
     private final Logger logger = Logger.getLogger(getClass());
 
+    /**
+     * The global aptManager instance
+     */
     private static AptManagerImpl APT_MANAGER;
 
-    private final Map<Long, AptLogTail> tails = new HashMap<Long, AptLogTail>();
-
+    /**
+     * The current Package Map.
+     * This maps stores a list of all Untangle packages and their package descriptions
+     */
     private volatile Map<String, PackageDesc> packageMap;
+
+    /**
+     * A list of all available package descs (packages that can be downloaded)
+     */
     private volatile PackageDesc[] available;
+
+    /**
+     * A list of all installed package descs (packages that are installed on the server)
+     */
     private volatile PackageDesc[] installed;
-    private volatile PackageDesc[] uninstalled;
+
+    /**
+     * A list of all upgradable package descs (packages with newer versions available)
+     */
     private volatile PackageDesc[] upgradable;
-    private volatile PackageDesc[] upToDate;
 
+    /**
+     * True if apt-get update is being run, false otherwise
+     */
     private volatile boolean updating = false;
-    private volatile boolean upgrading = false;
-    private volatile boolean installing = false;
-    private volatile boolean removing = false;
 
+    /**
+     * True if apt-get dist-upgrade is being run, false otherwise
+     */
+    private volatile boolean upgrading = false;
+
+    /**
+     * True if any apt-get install is running, false otherwise
+     */
+    private volatile boolean installing = false;
+
+    /**
+     * The dedicate execManager for apt
+     */
     protected static ExecManager execManager = null;
 
+    /**
+     * The key to use for apt-get tracking
+     */
     private long lastTailKey = System.currentTimeMillis();
 
-    private final Object installAndInstantiateLock = new Object();
+    /**
+     * A Map from key to the Apt Tail thread for each thread running
+     */
+    private final Map<Long, AptLogTail> tails = new HashMap<Long, AptLogTail>();
     
     /**
      * Private constructor to ensure singleton. use aptManager() to get singleton reference
@@ -327,7 +363,7 @@ class AptManagerImpl implements AptManager
 
         boolean canupgrade = upgradable.length > 0;
         
-        return new UpgradeStatus(updating, upgrading, installing, removing, canupgrade);
+        return new UpgradeStatus(updating, upgrading, installing, canupgrade);
     }
 
     public boolean isUpgradeServerAvailable()
@@ -378,27 +414,11 @@ class AptManagerImpl implements AptManager
         return false;
     }
 
-    public PackageDesc[] uninstalled()
-    {
-        PackageDesc[] uninstalled = this.uninstalled;
-        PackageDesc[] retVal = new PackageDesc[uninstalled.length];
-        System.arraycopy(uninstalled, 0, retVal, 0, retVal.length);
-        return retVal;
-    }
-
     public PackageDesc[] upgradable()
     {
         PackageDesc[] upgradable = this.upgradable;
         PackageDesc[] retVal = new PackageDesc[upgradable.length];
         System.arraycopy(upgradable, 0, retVal, 0, retVal.length);
-        return retVal;
-    }
-
-    public PackageDesc[] upToDate()
-    {
-        PackageDesc[] upToDate = this.upToDate;
-        PackageDesc[] retVal = new PackageDesc[upToDate.length];
-        System.arraycopy(upToDate, 0, retVal, 0, retVal.length);
         return retVal;
     }
 
@@ -483,7 +503,7 @@ class AptManagerImpl implements AptManager
     {
         logger.info("installAndInstantiate( " + name + ")");
         
-        synchronized (installAndInstantiateLock) {
+        synchronized (this) {
             UvmContextImpl uvmContext = UvmContextImpl.getInstance();
             NodeManager nm = uvmContext.nodeManager();
             List<String> subnodes = null;
@@ -611,7 +631,6 @@ class AptManagerImpl implements AptManager
         mm.submitMessage(mir);
     }
 
-    // registers a new package that has been added to the system
     public void register(String pkgName) throws Exception
     {
         logger.info("registering package: " + pkgName);
@@ -627,7 +646,6 @@ class AptManagerImpl implements AptManager
         nm.startAutoStart(packageDesc(pkgName));
     }
 
-    // unregisters a package and unloads all instances
     public void unregister(String pkgName)
     {
         logger.debug("unregistering package: " + pkgName);
@@ -641,23 +659,9 @@ class AptManagerImpl implements AptManager
         }
     }
 
-    protected List<PackageDesc> getInstalledAndAutoStart()
-    {
-        List<PackageDesc> mds = new ArrayList<PackageDesc>();
-
-        for (PackageDesc md : installed()) {
-            if (md.isAutoStart()) {
-                mds.add(md);
-            }
-        }
-
-        return mds;
-    }
-
-    // private classes --------------------------------------------------------
-
-    // package list functions -------------------------------------------------
-
+    /**
+     * cat apt-get update with the given timeout (millis)
+     */
     private void update(long millis) throws Exception
     {
         FutureTask<Object> f = new FutureTask<Object>(new Callable<Object>()
@@ -691,57 +695,42 @@ class AptManagerImpl implements AptManager
         } while (tryAgain);
     }
 
+    /**
+     * Refreshes all the list of packages (available, installed, upgradable)
+     */
     private void refreshLists()
     {
-        packageMap = parsePkgs();
+        packageMap = buildPackageMap();
 
         List<PackageDesc> availList = new ArrayList<PackageDesc>(packageMap.size());
         List<PackageDesc> instList = new ArrayList<PackageDesc>(packageMap.size());
-        List<PackageDesc> uninstList = new ArrayList<PackageDesc>(packageMap.size());
-        List<PackageDesc> curList = new ArrayList<PackageDesc>(packageMap.size());
-        List<PackageDesc> upList = new ArrayList<PackageDesc>(packageMap.size());
+        List<PackageDesc> upgradeableList = new ArrayList<PackageDesc>(packageMap.size());
 
         for (PackageDesc md : packageMap.values()) {
             availList.add(md);
 
-            if (null == md.getInstalledVersion()) {
-                uninstList.add(md);
-            } else {
+            if ( md.getInstalledVersion() != null ) {
                 instList.add(md);
 
-
-                if (PackageDesc.Type.LIB_ITEM == md.getType()) {
-                    // lib items always up to date
-                    curList.add(md);
-                } else {
-                    String instVer = md.getInstalledVersion();
-                    String availVer = md.getAvailableVersion();
-                    if (instVer.equals(availVer)) {
-                        curList.add(md);
-                    } else {
-                        upList.add(md);
-                    }
+                String instVer = md.getInstalledVersion();
+                String availVer = md.getAvailableVersion();
+                if ( ! instVer.equals(availVer) ) {
+                    upgradeableList.add(md);
                 }
             }
         }
 
         available = availList.toArray(new PackageDesc[availList.size()]);
         installed = instList.toArray(new PackageDesc[instList.size()]);
-        uninstalled = uninstList.toArray(new PackageDesc[uninstList.size()]);
-        upgradable = upList.toArray(new PackageDesc[upList.size()]);
-        upToDate = curList.toArray(new PackageDesc[curList.size()]);
+        upgradable = upgradeableList.toArray(new PackageDesc[upgradeableList.size()]);
     }
 
-    private Map<String, PackageDesc> parsePkgs()
+    /**
+     * Build the packageMap
+     */
+    private Map<String, PackageDesc> buildPackageMap()
     {
-        Map<String, String> instList = parseInstalled();
-        Map<String, PackageDesc> pkgs = parseAvailable(instList);
-
-        return pkgs;
-    }
-
-    private Map<String, PackageDesc> parseAvailable(Map<String, String> instList)
-    {
+        Map<String, String> instList = buildInstalledMap();
         Map<String, PackageDesc> pkgs;
 
         synchronized(this) {
@@ -758,6 +747,9 @@ class AptManagerImpl implements AptManager
         return pkgs;
     }
 
+    /**
+     * Builds a map of packages based on availableList
+     */
     private Map<String, PackageDesc> readPkgList(String availableList, Map<String, String> instList) throws IOException
     {
         Map<String, PackageDesc> pkgs = new HashMap<String, PackageDesc>();
@@ -839,7 +831,10 @@ class AptManagerImpl implements AptManager
         return pkgs;
     }
 
-    private Map<String, String> parseInstalled()
+    /**
+     * Build a map of installed packages to their version string
+     */
+    private Map<String, String> buildInstalledMap()
     {
         Map<String, String> instList;
 
@@ -856,6 +851,9 @@ class AptManagerImpl implements AptManager
         return instList;
     }
 
+    /**
+     * Build a map of installed packages to their version string based on list
+     */
     private Map<String, String> readInstalledList(String list) throws IOException
     {
         Map<String, String> m = new HashMap<String,String>();
@@ -882,6 +880,10 @@ class AptManagerImpl implements AptManager
         return m;
     }
 
+    /**
+     * Exec the apt wrapper with the specified command and key.
+     * The key is used to log to apt.log so progress can be tracked
+     */
     private synchronized void execApt(String command, long key) throws Exception
     {
         String cmdStr = System.getProperty("uvm.bin.dir") + "/ut-apt " + (0 > key ? "" : "-k " + key + " ") + command;
@@ -896,6 +898,9 @@ class AptManagerImpl implements AptManager
         refreshLists();
     }
 
+    /**
+     * exec Apt with the specified command (with no key)
+     */
     private void execApt(String command) throws Exception
     {
         execApt(command, -1);

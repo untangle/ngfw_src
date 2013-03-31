@@ -54,25 +54,11 @@ public interface AptManager
     boolean isInstalled(String name);
 
     /**
-     * Packages available but not installed.
-     *
-     * @return a <code>PackageDesc[]</code> value
-     */
-    PackageDesc[] uninstalled();
-
-    /**
      * Packages installed but not up to date.
      *
      * @return a <code>PackageDesc[]</code> value
      */
     PackageDesc[] upgradable();
-
-    /**
-     * Packages installed with latest version.
-     *
-     * @return a <code>PackageDesc[]</code> value
-     */
-    PackageDesc[] upToDate();
 
     /**
      * Get the PackageDesc for a node.
