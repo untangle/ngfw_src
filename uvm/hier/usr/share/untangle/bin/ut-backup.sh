@@ -50,13 +50,11 @@ function backupToDir()
         usr/share/untangle/settings 
 
     # save the list of important packages
-    /usr/share/untangle/bin/ut-apt installed > $outdir/installed-$datestamp
+    /usr/share/untangle/bin/ut-apt installed | grep 'libitem-' > $outdir/packages-$datestamp
 
     # save the version of this backup
     cp /usr/share/untangle/lib/untangle-libuvm-api/PUBVERSION $outdir/
 }
-
-
 
 
 while getopts "ho:v" opt; do

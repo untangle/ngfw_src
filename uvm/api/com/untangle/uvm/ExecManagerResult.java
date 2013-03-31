@@ -3,9 +3,10 @@
  */
 package com.untangle.uvm;
 
-import org.apache.commons.codec.binary.Base64;
+import java.io.Serializable;
 
-public class ExecManagerResult
+@SuppressWarnings("serial")
+public class ExecManagerResult implements Serializable
 {
     Integer result;
     String output;

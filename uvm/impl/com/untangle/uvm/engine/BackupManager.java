@@ -32,63 +32,6 @@ public class BackupManager
         UvmContextFactory.context().uploadManager().registerHandler(new RestoreUploadHandler());
     }
     
-    /**
-     * Restore system state from a backup file
-     */
-    protected static ExecManagerResult restoreBackup( String fileName )
-    {
-
-        try {
-            // Read bytes from file and pass to restoreBackup(byte[]) if successful.
-            File file = new File(fileName);
-            FileInputStream fileData  = new FileInputStream(file);
-            int length = (int) file.length();
-            byte[] bytes = new byte[length];
-            fileData.read(bytes);
-            restoreBackup(bytes);
-        } catch ( Exception ex ) {
-            logger.error("Exception performing restore from file", ex);
-        }
-        return null; //FIXME
-    }
-
-    protected static void restoreBackup(byte[] backupFileBytes) throws IOException, IllegalArgumentException
-    {
-
-        File tempFile = File.createTempFile("restore_", ".tar.gz");
-        Integer result = null;
-
-        try {
-            //Copy the bytes to a temp file
-            IOUtil.bytesToFile(backupFileBytes, tempFile);
-
-            //restore the file
-            result = UvmContextFactory.context().execManager().execResult(RESTORE_SCRIPT + " -i " + tempFile.getAbsolutePath() + " -v ");
-        }
-        catch(IOException ex) {
-            //Delete our temp file
-            IOUtil.delete(tempFile);
-            logger.error("Exception performing restore", ex);
-            throw ex;
-        }
-
-        // We don't usually ever get here since the uvm is stopped by restore script
-        if(result != 0) {
-            switch(result) {
-            case 1:
-            case 2:
-            case 3:
-                throw new IllegalArgumentException("File does not seem to be valid backup");
-            case 4:
-                throw new IOException("Error in processing restore itself (yet file seems valid)");
-            case 5:
-                throw new IOException("File is from an older version and cannot be used");
-            default:
-                throw new IOException("Unknown error in local processing");
-            }
-        }
-    }
-
     protected static byte[] createBackup() throws IOException
     {
         //Create the temp file which will be the tar
@@ -116,6 +59,68 @@ public class BackupManager
         }
     }
 
+    private static ExecManagerResult restoreBackup(byte[] backupFileBytes) throws IOException, IllegalArgumentException
+    {
+
+        File tempFile = File.createTempFile("restore_", ".tar.gz");
+        ExecManagerResult checkResult = null;
+        ExecManagerResult result = null;
+
+        try {
+            //Copy the bytes to a temp file
+            IOUtil.bytesToFile(backupFileBytes, tempFile);
+        }
+        catch(IOException ex) {
+            //Delete our temp file
+            IOUtil.delete(tempFile);
+            logger.error("Exception performing restore", ex);
+            throw ex;
+        }
+
+        logger.info("Restore Backup: " + tempFile);
+        
+        // just check the backup file
+        logger.info("Restore Backup: check file " + tempFile);
+        checkResult = UvmContextFactory.context().execManager().exec(RESTORE_SCRIPT + " -i " + tempFile.getAbsolutePath() + " -v -c");
+
+        // if the backup file is not legitimate then just return the results
+        if (checkResult.getResult() != 0) {
+            return checkResult;
+        }
+
+        // get the list of required files
+        logger.info("Restore Backup: check packages " + tempFile);
+        result = UvmContextFactory.context().execManager().exec(RESTORE_SCRIPT + " -i " + tempFile.getAbsolutePath() + " -f");
+
+        // if the backup file is not legitimate then just return the results
+        if (result.getResult() != 0) {
+            return result;
+        }
+
+        // install all the needed packages
+        String[] packages = result.getOutput().split("[\\r\\n]+");
+        boolean installingPackages = false;
+        if (packages != null) {
+            for ( String pkg : packages ) {
+                if (! UvmContextFactory.context().toolboxManager().isInstalled( pkg )) {
+                    logger.info("Restore Backup: need package: " + pkg);
+                    installingPackages = true;
+                    UvmContextFactory.context().toolboxManager().requestInstall( pkg );
+                }
+            }
+        }
+        if (installingPackages) {
+            return new ExecManagerResult( 0, "Files required for the restore are being downloaded. Please retry again after the download is complete." );
+        }
+            
+        // run same command with nohup and without -c check-only flag
+        logger.info("Restore Backup: launching restore " + tempFile);
+        UvmContextFactory.context().execManager().exec("nohup " + RESTORE_SCRIPT + " -i " + tempFile.getAbsolutePath() + " -v >/var/log/uvm/restore.log 2>&1 &");
+
+        logger.info("Restore Backup: returning");
+        return new ExecManagerResult( 0, "The restore procedure is running. This may take several minutes. The server may be unavailable during this time. Once the process is complete you will be able to log in again.");
+    }
+
     private class RestoreUploadHandler implements UploadHandler
     {
         @Override
@@ -125,11 +130,9 @@ public class BackupManager
         }
 
         @Override
-        public String handleFile(FileItem fileItem) throws Exception
+        public ExecManagerResult handleFile(FileItem fileItem) throws Exception
         {
-            byte[] backupFileBytes=fileItem.get();
-            BackupManager.restoreBackup(backupFileBytes);
-            return "restored backup file.";
+            return BackupManager.restoreBackup( fileItem.get() );
         }
         
     }

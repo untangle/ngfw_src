@@ -322,7 +322,7 @@ if (!Ung.hasResource["Ung.System"]) {
                 title: this.i18n._("Restore"),
                 cls: "ung-panel",
                 autoScroll: true,
-                onRestoreFromFileFile: function() {
+                onRestoreFromFile: function() {
                     var prova = Ext.getCmp("upload_restore_file_form");
                     var cmp = Ext.getCmp(this.parentId);
                     var fileText = prova.items.get(0);
@@ -337,30 +337,13 @@ if (!Ung.hasResource["Ung.System"]) {
                         success: function(form, action) {
                             var cmp = Ext.getCmp(action.parentId);
                             Ung.MessageManager.stop();
-                            Ext.MessageBox.alert(cmp.i18n._("Restore In Progress"),
-                                                 cmp.i18n._("The restore procedure is running. This may take several minutes. The server may be unavailable during this time. Once the process is complete you will be able to log in again."),
-                                                 Ung.Util.goToStartPage);
-                            },
+                            Ext.MessageBox.alert(cmp.i18n._("Restore"), action.result.msg, Ung.Util.goToStartPage);
+                        },
                         failure: function(form, action) {
                             var cmp = Ext.getCmp(action.parentId);
                             var errorMsg = cmp.i18n._("The File restore procedure failed.");
                             if (action.result && action.result.msg) {
-                                switch (action.result.msg) {
-                                    case "File does not seem to be valid backup":
-                                        errorMsg = Ext.String.format(cmp.i18n._("File does not seem to be valid {0} backup"), main.getBrandingManager().getCompanyName());
-                                    break;
-                                    case "Error in processing restore itself (yet file seems valid)":
-                                        errorMsg = cmp.i18n._("Error in processing restore itself (yet file seems valid)");
-                                    break;
-                                    case "File is from an older version and cannot be used":
-                                        errorMsg = Ext.String.format(cmp.i18n._("File is from an older version of {0} and cannot be used"), main.getBrandingManager().getCompanyName());
-                                    break;
-                                    case "Unknown error in local processing":
-                                        errorMsg = cmp.i18n._("Unknown error in local processing");
-                                    break;
-                                    default:
-                                        errorMsg = cmp.i18n._("The File restore procedure failed.");
-                                }
+                                errorMsg = action.result.msg;
                             }
                             Ext.MessageBox.alert(cmp.i18n._("Failed"), errorMsg);
                         }
@@ -393,7 +376,7 @@ if (!Ung.hasResource["Ung.System"]) {
                             text: this.i18n._("Restore from File"),
                             name: "Restore from File",
                             handler: Ext.bind(function() {
-                                this.panelRestore.onRestoreFromFileFile();
+                                this.panelRestore.onRestoreFromFile();
                             }, this)
                         }, {
                             xtype: "hidden",

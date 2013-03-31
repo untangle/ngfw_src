@@ -3,18 +3,16 @@
 #=============================================================
 # Script which takes the output of "ut-backup" and
 # restores it to a system.  
-#
-# 1 - Not a valid gzip file
-# 2 - Not a tar file
-# 3 - Missing content from file
-# 4 - Error from restore file
-# 5 - Restore file too old
-#
 #==============================================================
 
-IN_FILE=INVALID
-VERBOSE=false
-NOHUPPED=false
+VERBOSE="false"
+CHECK_ONLY="false"
+SHOW_NEEDED="false"
+WORKING_DIR=""
+PACKAGES_FILE=""
+TARBALL_FILE=""
+VERSION_FILE=""
+ACCEPTED_PREVIOUS_VERSION=""
 
 function debug() {
   if [ "true" == $VERBOSE ]; then
@@ -27,81 +25,46 @@ function err() {
 }
 
 function doHelp() {
-  echo "$0 -i (input bundle file) -h (help) -v (verbose)"
+  echo "$0 [options]"
+  echo "required options: "
+  echo " -i input_file   (restore file)"
+  echo "optional options: "
+  echo " -h              (help)"
+  echo " -c              (check only)"
+  echo " -f              (list required packages)"
+  echo " -v              (verbose)"
 }
 
 INST_OPTS=" -o DPkg::Options::=--force-confnew --yes --force-yes --fix-broken "
 UPGD_OPTS=" -o DPkg::Options::=--force-confnew --yes --force-yes --fix-broken "
 
-function restore_db()
-{
-    echo "restore_db()"
-    infile=$1
-
-    dropdb -U postgres uvm >/dev/null 2>&1
-    createuser -U postgres -dSR untangle 2>/dev/null
-    createdb -O postgres -U postgres uvm >/dev/null 2>&1
-
-    ## If the database is open, just drop all of the schemas inside of it.
-    psql -U postgres uvm -c "DROP SCHEMA settings CASCADE" >/dev/null 2>&1
-    psql -U postgres uvm -c "DROP SCHEMA events CASCADE" >/dev/null 2>&1
-    psql -U postgres uvm -c "DROP SCHEMA reports CASCADE" >/dev/null 2>&1
-
-    # if confirm "Restore settings?"; then
-    zcat $infile | psql -X -U postgres uvm
-    
-    ## Reset the events schema, it is no longer valid.
-    psql -U postgres -c "UPDATE settings.split_schema_ver SET events_version = NULL;" uvm  >/dev/null 2>&1
-    psql -U postgres -c "DROP SCHEMA IF EXISTS events CASCADE" uvm >/dev/null 2>&1 
-    true
-    
-    # fi
-}
-
 function clean_dirs()
 {
     rm -rf /usr/share/untangle/settings/*
-    rm -rf /usr/share/untangle/conf/openvpn
-    rm -rf /etc/openvpn
-    rm -f  /usr/share/untangle/conf/dirbackup.ldif
+    # XXX
+    #    rm -rf /usr/share/untangle/conf/openvpn
+    #    rm -rf /etc/openvpn
 }
 
 function restore_packages()
 {
-    echo "restore_packages()"
-    instfile=$1
+    packages_file=$1
 
-    apt-get update 2>&1 
-    apt-get dist-upgrade $UPGD_OPTS 2>&1 
+    debug "apt-get update"
+    apt-get update
 
-    /etc/init.d/untangle-vm stop
-    if [ -x /etc/init.d/untangle-reports ]; then
-        /etc/init.d/untangle-reports stop
-    fi
+    debug "apt-get dist-upgrade"
+    apt-get dist-upgrade $UPGD_OPTS
 
-    # ignore kaspersky files *-kav*
-    cat $instfile | grep -v "\-kav" | awk '{print $1}' | xargs apt-get install $INST_OPTS 2>&1 
+    debug "apt-get install"
+    cat $packages_file | awk '{print $1}' | xargs apt-get install $INST_OPTS
+
+    return $?
 }
 
-function restore_files() {
-    echo "restore_files()"
-
-    dumpfile=$1
-    tarfile=$2
-    instfile=$3
-
-    # stop the UVM, depending on circumstances may already be stopped
-    /etc/init.d/untangle-vm stop
-    if [ -x /etc/init.d/untangle-reports ]; then
-        /etc/init.d/untangle-reports stop
-    fi
-
-    if [ -x /etc/init.d/apache2 ]; then
-        /etc/init.d/apache2 stop
-    fi
-
-    # restore the database
-    restore_db $dumpfile
+function restore_files() 
+{
+    tarfile=$1
 
     # clean out stuff that restore would otherwise append to
     clean_dirs
@@ -109,147 +72,150 @@ function restore_files() {
     # restore the files, both system and the /usr/share/untangle important stuf
     tar zxf $tarfile -C /
 
-    # update the things also kept in kernel (bug 5533)
-    hostname `cat /etc/hostname`
-
-    # try to download needed files, this may fail because the network settings may not be correct
-    restore_packages $instfile
-
-    ## Qualified and unqualified hostname (hostname may not be set yet)
-    host_string=`awk '{ hostname = $0 ; sub ( /\..*/, "", hostname ) ; print $0 " " hostname }' /etc/hostname`
-
-    # try again just in case these network settings are "better" than the previous
-    restore_packages $instfile
-
-    # Restart apache
-    /etc/init.d/apache2 restart
-
-    # start the UVM, depending on circumstances (menu driven restore) may need to be restopped
-    /etc/init.d/untangle-vm start > /dev/null 2>&1
-
-    if [ -x /etc/init.d/untangle-reports ]; then
-        /etc/init.d/untangle-reports start
-    fi
-
-    # Inform the UVM that the DB settings have changed, give it a chance to write out config files.
-    /usr/share/untangle/bin/ut-pycli -c "uvmContext.syncConfigFiles()"
-
     return 0
 }
 
-function doRestore() {
-    if [ "INVALID" == $IN_FILE ]; then
-        err "Please provide an input file";
-        return 1;
+function doRestore() 
+{
+    restore_files $WORKING_DIR/$TARBALL_FILE 
+    
+    restore_packages $WORKING_DIR/$PACKAGES_FILE
+
+    # Restart apache
+    if [ -x /etc/init.d/apache2 ] ; then
+        /etc/init.d/apache2 restart
     fi
 
-    debug "Restoring from file -" $IN_FILE
-
-    # Create a working directory
-    WORKING_DIR=`mktemp -d -t ut-restore.XXXXXXXXXX`
-    debug "Working in directory $WORKING_DIR"
-
-    # Copy our file to the working directory
-    cp $IN_FILE $WORKING_DIR/x.tar.gz
-
-    # Unzip
-    gzip -t $WORKING_DIR/x.tar.gz
-    EXIT_VAL=$?
-
-    if [ $EXIT_VAL != 0 ]; then
-        err "$IN_FILE Does not seem to be a valid gzip file"
-        rm -rf $WORKING_DIR
-        return 1
-    fi
-
-    debug "Gunzip"
-    gunzip $WORKING_DIR/x.tar.gz
-
-    # Now, untar
-    pushd $WORKING_DIR > /dev/null 2>&1
-    debug "Untar"
-    tar -xvf x.tar  > /dev/null 2>&1
-    EXIT_VAL=$?
-    popd  > /dev/null 2>&1
-
-    if [ $EXIT_VAL != 0 ]; then
-        err "$IN_FILE Does not seem to be a valid gzip tar file"
-        rm -rf $WORKING_DIR
-        return 2
-    fi
-
-    # Find the specfic files
-    pushd $WORKING_DIR > /dev/null 2>&1
-
-    DB_FILE=`ls | grep uvmdb*.gz`
-    FILES_FILE=`ls | grep files*.tar.gz`
-    INSTALLED_FILE=`ls | grep installed*`
-    OLD_DB_FILE=`ls | grep mvvmdb*.gz`
-
-    debug "DB file $DB_FILE"
-    debug "Files file $FILES_FILE"
-    debug "Installed file $INSTALLED_FILE"
-
-    popd  > /dev/null 2>&1
-
-    # Check version
-    if [ -n "$OLD_DB_FILE" ]; then
-        err "Restore file too old"
-        return 5
-    fi
-
-    # Verify files
-    if [ -z "$INSTALLED_FILE" ]; then
-        err "Unable to find installed packages file"
-        rm -rf $WORKING_DIR
-        return 3
-    fi
-
-    if [ -z "$FILES_FILE" ]; then
-        err "Unable to find system files file"
-        rm -rf $WORKING_DIR
-        return 3
-    fi
-
-    if [ -z "$DB_FILE" ]; then
-        err "Unable to find database file"
-        rm -rf $WORKING_DIR
-        return 3
-    fi
-
-    # Invoke restore_files ("Usage: $0 dumpfile tarfile instfile")
-    restore_files $WORKING_DIR/$DB_FILE $WORKING_DIR/$FILES_FILE $WORKING_DIR/$INSTALLED_FILE
-
-    EXIT_VAL=$?
-
-    rm -rf $WORKING_DIR
-
-    if [ $EXIT_VAL != 0 ]; then
-        err "Error $EXIT_VAL returned from untangle-restore"
-        return 4
+    # start the UVM, depending on circumstances (menu driven restore) may need to be restopped
+    if [ -x /etc/init.d/untangle-vm ] ; then
+        /etc/init.d/untangle-vm start > /dev/null 2>&1
     fi
 
     debug "Completed.  Success"
 }
 
+function expandFile() 
+{
+    restore_file=$1
+
+    if [ ! -f $restore_file ] ; then
+        err "File does not seem to be a valid backup file. (does not exist)"
+        return 1;
+    fi
+    if [ ! -s $restore_file ] ; then
+        err "File does not seem to be a valid backup file. (zero size)"
+        return 1;
+    fi
+
+    cp $restore_file $WORKING_DIR/restore_file.tar.gz
+    EXIT_VAL=$?
+    if [ $EXIT_VAL != 0 ]; then
+        err "File does not seem to be a valid backup file. (file copy failed)"
+        return 1
+    fi
+
+    gzip -t $WORKING_DIR/restore_file.tar.gz
+    EXIT_VAL=$?
+    if [ $EXIT_VAL != 0 ]; then
+        err "File does not seem to be a valid backup file. (gzip failed)"
+        return 1
+    fi
+
+    gunzip $WORKING_DIR/restore_file.tar.gz
+    EXIT_VAL=$?
+    if [ $EXIT_VAL != 0 ]; then
+        err "File does not seem to be a valid backup file. (gunzip failed)"
+        return 1
+    fi
+
+    pushd $WORKING_DIR > /dev/null 2>&1
+    tar -xvf restore_file.tar  > /dev/null 2>&1
+    EXIT_VAL=$?
+    popd  > /dev/null 2>&1
+    if [ $EXIT_VAL != 0 ]; then
+        err "File does not seem to be a valid backup file. (tar failed)"
+        return 1
+    fi
+
+    # Find the specfic files
+    pushd $WORKING_DIR > /dev/null 2>&1
+    TARBALL_FILE=`ls | grep files*.tar.gz`
+    PACKAGES_FILE=`ls | grep packages*`
+    VERSION_FILE=`ls | grep PUBVERSION`
+    popd  > /dev/null 2>&1
+
+    # Verify files
+    if [ -z "$PACKAGES_FILE" ]; then
+        err "File does not seem to be a valid backup file. (missing packages list)"
+        return 1
+    fi
+    if [ -z "$TARBALL_FILE" ]; then
+        err "File does not seem to be a valid backup file. (missing files tarball)"
+        return 1
+    fi
+    if [ -z "$VERSION_FILE" ]; then
+        err "File does not seem to be a valid backup file. (missing version file)"
+        return 1
+    fi
+
+    # Check that the version of the backup file is supported
+    CURRENT_VERSION="`cat /usr/share/untangle/lib/untangle-libuvm-api/PUBVERSION`"
+    BACKUP_VERSION="`cat $WORKING_DIR/$VERSION_FILE`"
+    if [ "$BACKUP_VERSION" != "$CURRENT_VERSION" ] && [ "$BACKUP_VERSION" != "$ACCEPTED_PREVIOUS_VERSION" ] ; then
+        err "Backup file version not supported. ($BACKUP_VERSION)"
+        return 1
+    fi
+
+    # check that all the needed packages are installed
+    # restore_packages $WORKING_DIR/$PACKAGES_FILE 1>/dev/null
+    # EXIT_VAL=$?
+    # if [ $EXIT_VAL != 0 ]; then
+    #    err "Failed to download the required packegs. (check internet connection)"
+    #    return 1
+    # fi
+
+    return 0
+}
+
 ####################################
 # "Main" logic starts here
 
-while getopts "hi:vQ" opt; do
+while getopts "i:hvcf" opt; do
   case $opt in
     h) doHelp;exit 0;;
-    i) IN_FILE=$OPTARG;;
-    v) VERBOSE=true;;
-    Q) NOHUPPED=true;;
+    i) RESTORE_FILE=$OPTARG;;
+    c) CHECK_ONLY="true";;
+    f) SHOW_NEEDED="true";;
+    v) VERBOSE="true";;
   esac
 done
 
-## Execute these functions in a separate detached process, this way
-## when uvm gets killed this process doesn't exit.
-if [ $NOHUPPED != "true" ]; then
-    ## Just append any arguments, they don't matter
-    nohup bash @UVM_HOME@/bin/ut-restore.sh "$@" -Q > @PREFIX@/var/log/uvm/restore.log 2>&1 &
-else
-    doRestore
+if [ -z "$RESTORE_FILE" ] ; then
+    doHelp; 
+    exit 1;
 fi
+
+# Create a working directory
+WORKING_DIR=`mktemp -d -t ut-restore.XXXXXXXXXX`
+
+expandFile $RESTORE_FILE
+RETURN_CODE=$?
+
+if [ "$CHECK_ONLY" == "true" ] ; then
+    rm -rf ${WORKING_DIR}
+    exit $RETURN_CODE
+fi
+
+if [ "$SHOW_NEEDED" == "true" ] ; then
+    cat $WORKING_DIR/$PACKAGES_FILE | awk '{print $1}'
+    rm -rf ${WORKING_DIR}
+    exit 0
+fi
+
+exit 0 # for testing
+doRestore
+
+rm -rf ${WORKING_DIR}
+
+
 

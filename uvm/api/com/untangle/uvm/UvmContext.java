@@ -202,14 +202,6 @@ public interface UvmContext
     HostTable hostTable();
     
     /**
-     * Once settings have been restored, and the UVM has been booted, call
-     * into here to get the corresponding OS files rewritten.  This calls through
-     * into callbacks in each manager, as appropriate.  All managers that write
-     * OS config files must implement this.
-     */
-    void syncConfigFiles();
-
-    /**
      * Shut down the untangle-vm
      *
      */

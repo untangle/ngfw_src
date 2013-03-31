@@ -20,13 +20,12 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import com.untangle.uvm.UvmContextFactory;
+import com.untangle.uvm.ExecManagerResult;
 import com.untangle.uvm.servlet.UploadHandler;
 import com.untangle.uvm.servlet.UploadManager;
 
 /**
- * A servlet for uploading a skin
- *
- * @author Catalin Matei <cmatei@untangle.com>
+ * A servlet for uploading a file
  */
 @SuppressWarnings({"serial","unchecked"})
 public class UploadServlet extends HttpServlet
@@ -45,7 +44,7 @@ public class UploadServlet extends HttpServlet
 
         // Parse the request
         List<FileItem> items = null;
-        String msg=null;
+        Object result=null;
         try {
             items = upload.parseRequest(req);
 
@@ -58,10 +57,10 @@ public class UploadServlet extends HttpServlet
                 if (!item.isFormField()) {
                     UploadHandler handler = uploadManager.getUploadHandler(uploadType);
                     if ( handler == null ) {
-                        msg = "Do not know how to handler the type '" + uploadType + "'";
+                        result = "Do not know how to handler the type '" + uploadType + "'";
                         logger.info("Unable to handle an upload of type: " + uploadType );
                     } else {
-                        msg = handler.handleFile(item);
+                        result = handler.handleFile(item);
                     }                    
                 }
             }
@@ -70,7 +69,7 @@ public class UploadServlet extends HttpServlet
             createResponse(resp, false, exn.getMessage());
             return;
         }
-        createResponse(resp, true, msg);
+        createResponse(resp, true, result);
     }
 
     private String getUploadType(List<FileItem> items)
@@ -83,22 +82,28 @@ public class UploadServlet extends HttpServlet
         return null;
     }
 
-    private void createResponse(HttpServletResponse resp, boolean success,
-                               String msg)
+    private void createResponse(HttpServletResponse resp, boolean success, Object result)
         throws IOException
     {
         resp.setContentType("text/html");
         PrintWriter out = resp.getWriter();
         try {
             JSONObject obj=new JSONObject();
-            obj.put("success",new Boolean(success));
-            if (msg != null){
-                obj.put("msg",msg);
+
+            if ( result != null && result instanceof ExecManagerResult ) {
+                obj.put("success",new Boolean(((ExecManagerResult)result).getResult() == 0));
+                obj.put("msg",((ExecManagerResult)result).getOutput());
             }
+            else {
+                obj.put("result",new Boolean(success));
+                if (result != null){
+                    obj.put("msg",result);
+                }
+            }
+            
             out.print(obj);
         } catch (JSONException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            logger.warn("Error generating response: ", e);
         }
         out.flush();
         out.close();

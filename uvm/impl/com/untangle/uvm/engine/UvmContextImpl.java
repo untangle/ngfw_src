@@ -391,11 +391,6 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
         return com.untangle.uvm.Version.getFullVersion();
     }
 
-    public void syncConfigFiles()
-    {
-        mailSender.syncConfigFiles();
-    }
-
     public byte[] createBackup() throws IOException
     {
         return backupManager.createBackup();
