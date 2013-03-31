@@ -35,7 +35,6 @@ import com.untangle.uvm.message.NodeInstantiatedMessage;
 import com.untangle.uvm.node.NodeManagerSettings;
 import com.untangle.uvm.node.LicenseManager;
 import com.untangle.uvm.node.PolicyManager;
-import com.untangle.uvm.node.DeployException;
 import com.untangle.uvm.node.SessionTuple;
 import com.untangle.uvm.node.NodeManager;
 import com.untangle.uvm.node.Node;
@@ -198,13 +197,13 @@ public class NodeManagerImpl implements NodeManager
         return null;
     }
 
-    public Node instantiate( String nodeName ) throws DeployException
+    public Node instantiate( String nodeName ) throws Exception
     {
         Long policyId = getDefaultPolicyForNode( nodeName );
         return instantiate( nodeName, policyId );
     }
 
-    public Node instantiate( String nodeName, Long policyId ) throws DeployException
+    public Node instantiate( String nodeName, Long policyId ) throws Exception
     {
         logger.info("instantiate( name:" + nodeName + " , policy:" + policyId + " )");
 
@@ -229,23 +228,23 @@ public class NodeManagerImpl implements NodeManager
             logger.info("initializing node: " + nodeName);
 
             if ( nodeInstances( nodeName, policyId, false ).size() >= 1 ) 
-                throw new DeployException("too many instances: " + nodeName);
+                throw new Exception("too many instances: " + nodeName);
 
             nodeProperties = initNodeProperties( packageDesc );
             nodeSettings = createNewNodeSettings( policyId, nodeName );
 
             if (!live) 
-                throw new DeployException("NodeManager is shut down");
+                throw new Exception("NodeManager is shut down");
 
             /**
              * Check all the basics
              */
             if (nodeSettings == null) 
-                throw new DeployException("Null nodeSettings: " + nodeName);
+                throw new Exception("Null nodeSettings: " + nodeName);
             if (nodeProperties == null) 
-                throw new DeployException("Null nodeProperties: " + nodeName);
+                throw new Exception("Null nodeProperties: " + nodeName);
             if (packageDesc == null) 
-                throw new DeployException("Null packageDesc: " + nodeName);
+                throw new Exception("Null packageDesc: " + nodeName);
 
             node = NodeBase.loadClass(nodeProperties, nodeSettings, packageDesc, true);
 
@@ -268,7 +267,7 @@ public class NodeManagerImpl implements NodeManager
         return node;
     }
 
-    public Node instantiateAndStart( String nodeName, Long policyId ) throws DeployException
+    public Node instantiateAndStart( String nodeName, Long policyId ) throws Exception
     {
         Node node = instantiate( nodeName, policyId );
         NodeProperties nd = node.getNodeProperties();
@@ -276,7 +275,7 @@ public class NodeManagerImpl implements NodeManager
             try {
                 node.start();
             } catch (Exception e) {
-                throw new DeployException(e);
+                throw new Exception(e);
             }
                 
         }
@@ -409,7 +408,7 @@ public class NodeManagerImpl implements NodeManager
                 try {
                     logger.info("Auto-starting new node: " + md.getName());
                     node = instantiate(md.getName());
-                } catch (DeployException exn) {
+                } catch (Exception exn) {
                     logger.warn("could not deploy: " + md.getName(), exn);
                     continue;
                 }
@@ -454,12 +453,12 @@ public class NodeManagerImpl implements NodeManager
         logger.info("Restarting unloaded nodes...");
 
         List<NodeSettings> unloaded = getUnloaded();
-        Map<NodeSettings, NodeProperties> nodePropertiess = loadNodePropertiess(unloaded);
+        Map<NodeSettings, NodeProperties> nodePropertiesMap = loadNodePropertiess(unloaded);
         Set<String> loadedParents = new HashSet<String>(unloaded.size());
 
         while ( unloaded.size() > 0 ) {
 
-            List<NodeSettings> startQueue = getLoadable(unloaded, nodePropertiess, loadedParents);
+            List<NodeSettings> startQueue = getLoadable(unloaded, nodePropertiesMap, loadedParents);
 
             for (NodeSettings ns : startQueue) 
                 logger.info("Loading in this pass: " + ns.getNodeName() + " (" + ns.getId() + ")");
@@ -468,12 +467,12 @@ public class NodeManagerImpl implements NodeManager
                 logger.info("not all parents loaded, proceeding");
                 for (NodeSettings n : unloaded) {
                     List<NodeSettings> l = Collections.singletonList(n);
-                    startUnloaded(l, nodePropertiess, loadedParents);
+                    startUnloaded(l, nodePropertiesMap, loadedParents);
                 }
                 break;
             }
 
-            startUnloaded(startQueue, nodePropertiess, loadedParents);
+            startUnloaded(startQueue, nodePropertiesMap, loadedParents);
         }
 
         long t1 = System.currentTimeMillis();
@@ -484,19 +483,25 @@ public class NodeManagerImpl implements NodeManager
 
     private static int startThreadNum = 0;
 
-    private void startUnloaded(List<NodeSettings> startQueue, Map<NodeSettings, NodeProperties> nodePropertiess, Set<String> loadedParents)
+    private void startUnloaded(List<NodeSettings> startQueue, Map<NodeSettings, NodeProperties> nodePropertiesMap, Set<String> loadedParents)
     {
         AptManager tbm = UvmContextFactory.context().aptManager();
 
         List<Runnable> restarters = new ArrayList<Runnable>(startQueue.size());
 
         for (final NodeSettings nodeSettings : startQueue) {
-            final NodeProperties nodeProperties = nodePropertiess.get(nodeSettings);
             final String name = nodeSettings.getNodeName();
+            final NodeProperties nodeProps = nodePropertiesMap.get(nodeSettings);
             final PackageDesc packageDesc = tbm.packageDesc(name);
-            loadedParents.add(name);
 
-            if (packageDesc != null) {
+            if ( name == null ) {
+                logger.error("Unable to load node \"" + name + "\": NULL name.");
+            } else if ( nodeProps == null ) {
+                logger.error("Unable to load node \"" + name + "\": NULL node properties.");
+            } else if ( packageDesc == null ) {
+                logger.error("Unable to load node \"" + name + "\": NULL package desc.");
+            } else {
+                logger.warn("WTF: " + nodeProps);
                 Runnable r = new Runnable()
                     {
                         public void run()
@@ -504,7 +509,7 @@ public class NodeManagerImpl implements NodeManager
                             logger.info("Restarting: " + name + " (" + nodeSettings.getId() + ")");
                             NodeBase node = null;
                                 try {
-                                node = (NodeBase)NodeBase.loadClass(nodeProperties, nodeSettings, packageDesc, false);
+                                node = (NodeBase)NodeBase.loadClass(nodeProps, nodeSettings, packageDesc, false);
                                 loadedNodesMap.put( nodeSettings.getId(), node );
                                 logger.info("Restarted : " + name + " (" + nodeSettings.getId() + ")");
                             } catch (Exception exn) {
@@ -519,9 +524,8 @@ public class NodeManagerImpl implements NodeManager
                         }
                     };
                 restarters.add(r);
-            } else {
-                logger.error("Unable to find node \"" + name + "\" - Skipping");
-            }
+                loadedParents.add(name);
+            } 
         }
 
         Set<Thread> threads = new HashSet<Thread>(restarters.size());
@@ -561,20 +565,20 @@ public class NodeManagerImpl implements NodeManager
         return result;
     }
 
-    private List<NodeSettings> getLoadable(List<NodeSettings> unloaded, Map<NodeSettings, NodeProperties> nodePropertiess, Set<String> loadedParents)
+    private List<NodeSettings> getLoadable(List<NodeSettings> unloaded, Map<NodeSettings, NodeProperties> nodePropertiesMap, Set<String> loadedParents)
     {
         List<NodeSettings> l = new ArrayList<NodeSettings>(unloaded.size());
         Set<String> thisPass = new HashSet<String>(unloaded.size());
 
         for (Iterator<NodeSettings> i = unloaded.iterator(); i.hasNext(); ) {
             NodeSettings nodeSettings = i.next();
-            NodeProperties nodeProperties = nodePropertiess.get(nodeSettings);
-            if (null == nodeProperties) {
+            NodeProperties nodeProps = nodePropertiesMap.get(nodeSettings);
+            if ( nodeProps == null ) {
                 logger.warn("Missing NodeProperties for: " + nodeSettings);
                 continue;
             }
 
-            List<String> parents = nodeProperties.getParents();
+            List<String> parents = nodeProps.getParents();
 
             boolean parentsLoaded = true;
             for (String parent : parents) {
@@ -584,7 +588,7 @@ public class NodeManagerImpl implements NodeManager
                 if (false == parentsLoaded) { break; }
             }
 
-            String name = nodeProperties.getName();
+            String name = nodeProps.getName();
 
             // all parents loaded and another instance of this
             // node not loading this pass or already loaded in
@@ -603,7 +607,7 @@ public class NodeManagerImpl implements NodeManager
     {
         AptManagerImpl tbm = (AptManagerImpl)UvmContextFactory.context().aptManager();
 
-        Map<NodeSettings, NodeProperties> nodePropertiess = new HashMap<NodeSettings, NodeProperties>(unloaded.size());
+        Map<NodeSettings, NodeProperties> nodePropertiesMap = new HashMap<NodeSettings, NodeProperties>(unloaded.size());
 
         for (NodeSettings nodeSettings : unloaded) {
             String name = nodeSettings.getNodeName();
@@ -619,13 +623,13 @@ public class NodeManagerImpl implements NodeManager
             try {
                 logger.debug("Initializing node properties for: " + name);
                 NodeProperties nodeProperties = initNodeProperties( md );
-                nodePropertiess.put(nodeSettings, nodeProperties);
-            } catch (DeployException exn) {
+                nodePropertiesMap.put(nodeSettings, nodeProperties);
+            } catch (Exception exn) {
                 logger.warn("NodeProperties could not be parsed", exn);
             }
         }
 
-        return nodePropertiess;
+        return nodePropertiesMap;
     }
 
     private NodeManagerSettings loadSettings()
@@ -689,10 +693,10 @@ public class NodeManagerImpl implements NodeManager
      * Initialize NodeProperties
      *
      * @param urls urls to find node descriptor.
-     * @exception DeployException the descriptor does not parse or
+     * @exception Exception the descriptor does not parse or
      * parent cannot be loaded.
      */
-    private NodeProperties initNodeProperties( PackageDesc packageDesc ) throws DeployException
+    private NodeProperties initNodeProperties( PackageDesc packageDesc ) throws Exception
     {
         SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
         NodeProperties nodeProperties = null;
@@ -706,12 +710,12 @@ public class NodeManagerImpl implements NodeManager
         return nodeProperties;
     }
 
-    private Long getDefaultPolicyForNode(String nodeName) throws DeployException
+    private Long getDefaultPolicyForNode(String nodeName) throws Exception
     {
         AptManager tbm = UvmContextFactory.context().aptManager();
         PackageDesc packageDesc = tbm.packageDesc(nodeName);
         if (packageDesc == null)
-            throw new DeployException("Node named " + nodeName + " not found");
+            throw new Exception("Node named " + nodeName + " not found");
         if (PackageDesc.Type.SERVICE == packageDesc.getType()) {
             return null;
         } else {

@@ -90,9 +90,9 @@ public interface NodeManager
      * @param name of the node.
      * @param policy the policy this instance is applied to.
      * @return the Node of the instance
-     * @exception DeployException if the instance cannot be created.
+     * @exception Exception if the instance cannot be created.
      */
-    Node instantiate( String name, Long policyId ) throws DeployException;
+    Node instantiate( String name, Long policyId ) throws Exception;
 
     /**
      * Create a new node instance under the default policy, or in
@@ -100,9 +100,9 @@ public interface NodeManager
      *
      * @param name of the node.
      * @return the Node of the instance
-     * @exception DeployException if the instance cannot be created.
+     * @exception Exception if the instance cannot be created.
      */
-    Node instantiate( String name ) throws DeployException;
+    Node instantiate( String name ) throws Exception;
 
     /**
      * Create a new node instance under the given policy and then start it.
@@ -112,10 +112,10 @@ public interface NodeManager
      * @param name of the node.
      * @param policy the policy this instance is applied to.
      * @return the Node of the instance
-     * @exception DeployException if the instance cannot be created.
+     * @exception Exception if the instance cannot be created.
      * @exception NodeStartException if the instance cannot be started.
      */
-    Node instantiateAndStart( String nodeName, Long policyId ) throws DeployException;
+    Node instantiateAndStart( String nodeName, Long policyId ) throws Exception;
 
     /**
      * Destroy a node instance.

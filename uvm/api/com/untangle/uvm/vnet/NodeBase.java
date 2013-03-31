@@ -25,7 +25,6 @@ import com.untangle.uvm.node.NodeManager;
 import com.untangle.uvm.node.Node;
 import com.untangle.uvm.node.NodeProperties;
 import com.untangle.uvm.node.NodeSettings;
-import com.untangle.uvm.node.DeployException;
 import com.untangle.uvm.node.NodeMetric;
 import com.untangle.uvm.node.SessionTuple;
 import com.untangle.uvm.node.SessionTupleImpl;
@@ -274,8 +273,11 @@ public abstract class NodeBase implements Node
         UvmContextFactory.context().logEvent(evt);
     }
 
-    public static final Node loadClass( NodeProperties nodeProperties, NodeSettings nodeSettings, PackageDesc packageDesc, boolean isNew ) throws DeployException
+    public static final Node loadClass( NodeProperties nodeProperties, NodeSettings nodeSettings, PackageDesc packageDesc, boolean isNew ) throws Exception
     {
+        if ( nodeProperties == null || nodeSettings == null || packageDesc == null )
+            throw new Exception("Invalid Arguments: null");
+
         try {
             NodeBase node;
 
@@ -320,7 +322,7 @@ public abstract class NodeBase implements Node
 
         } catch (Exception exn) {
             staticLogger.error("Exception during node initialization", exn);
-            throw new DeployException(exn);
+            throw exn;
         } finally {
             UvmContextFactory.context().loggingManager().setLoggingUvm();
         }
@@ -727,8 +729,7 @@ public abstract class NodeBase implements Node
         stop( false );
     }
     
-    private final static Node startParent( String parent, Long policyId )
-        throws DeployException
+    private final static Node startParent( String parent, Long policyId ) throws Exception
     {
         if (null == parent) {
             return null;
@@ -738,7 +739,7 @@ public abstract class NodeBase implements Node
 
         if (null == md) {
             staticLogger.warn("parent does not exist: " + parent);
-            throw new DeployException("could not create parent: " + parent);
+            throw new Exception("could not create parent: " + parent);
         }
 
         if (PackageDesc.Type.CASING == md.getType()) {
@@ -756,7 +757,7 @@ public abstract class NodeBase implements Node
         }
 
         if ( parentNode == null ) {
-            throw new DeployException("could not create parent: " + parent);
+            throw new Exception("could not create parent: " + parent);
         } else {
             return parentNode;
         }

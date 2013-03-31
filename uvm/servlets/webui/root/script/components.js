@@ -378,7 +378,7 @@ Ung.Util = {
             var message=null;
             var gotoStartPage=false;
             /* special text for apt error */
-            if (exception.name == "com.untangle.uvm.apt.PackageInstallException" && (exception.message.indexOf("exited with") >= 0)) {
+            if (exception.name == "java.lang.Exception" && (exception.message.indexOf("exited with") >= 0)) {
                 message  = i18n._("The server is unable to properly communicate with the app store.") + "<br/>";
                 message += i18n._("Check internet connectivity and the network/DNS settings.") + "<br/>";
                 message += i18n._("Check that the server is fully up to date.") + "<br/>";
@@ -387,7 +387,7 @@ Ung.Util = {
                 message += i18n._("An error has occured: ") + exception.message + "<br/>";
             }
             /* special text for apt error */
-            if (exception.name == "com.untangle.uvm.apt.PackageException" && (exception.message.indexOf("timed out") >= 0)) {
+            if (exception.name == "java.lang.Exception" && (exception.message.indexOf("timed out") >= 0)) {
                 message  = i18n._("Unable to contact the app store") + ":<br/>";
                 message += i18n._("Connection timed out") + "<br/>";
                 message += i18n._("<br/>");
@@ -395,7 +395,7 @@ Ung.Util = {
                 message += i18n._("An error has occured: ") + exception.message + "<br/>";
             }
             /* special text for rack error */
-            if (exception.name == "com.untangle.uvm.node.DeployException" && (exception.message.indexOf("already exists in Policy") >= 0)) {
+            if (exception.name == "java.lang.Exception" && (exception.message.indexOf("already exists in Policy") >= 0)) {
                 message  = i18n._("This application already exists in this policy/rack.") + ":<br/>";
                 message += i18n._("Each application can only be installed once in each policy/rack.");
             }

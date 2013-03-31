@@ -3,25 +3,20 @@
  */
 package com.untangle.uvm.apt;
 
-import com.untangle.uvm.node.DeployException;
-
 /**
  * Manager for the Toolbox, which holds Packages. A Package is all
  * data concerning a Node that is not related to any particular
  * node instance.
- *
- * @author <a href="mailto:amread@untangle.com">Aaron Read</a>
- * @version 1.0
  */
 public interface AptManager
 {
     /**
-     * Get the view of the rack for a policy.
+     * Get the view of the rack when the specified rack is the current rack
      *
      * @param p policy.
      * @return visible nodes for this policy.
      */
-    RackView getRackView(Long policyId);
+    RackView getRackView( Long policyId );
 
     /**
      * Returns the current apt state of the system
@@ -29,10 +24,10 @@ public interface AptManager
      * @param doUpdate will force an apt-get update before returning the state
      * @return UgradeStatus the current state
      */
-    UpgradeStatus getUpgradeStatus(boolean doUpdate) throws PackageException, InterruptedException;
+    UpgradeStatus getUpgradeStatus( boolean doUpdate ) throws Exception, InterruptedException;
 
     /**
-     * Returns true if the box can reach updates.untangle.com
+     * Returns true if the server can resolve and reach updates.untangle.com
      */
     boolean isUpgradeServerAvailable();
 
@@ -57,13 +52,6 @@ public interface AptManager
      * @return true if the package is installed.
      */
     boolean isInstalled(String name);
-
-    /**
-     * All installed packages, which are visible within the GUI
-     *
-     * @return a <code>PackageDesc[]</code> value
-     */
-    PackageDesc[] installedVisible();
 
     /**
      * Packages available but not installed.
@@ -92,40 +80,40 @@ public interface AptManager
      * @param name the name of the node.
      * @return the PackageDesc.
      */
-    PackageDesc packageDesc(String name);
+    PackageDesc packageDesc( String name );
 
     /**
      * Install a Package in the Toolbox.
      *
      * @param name the name of the Package.
-     * @exception PackageInstallException when <code>name</code> cannot
+     * @exception Exception when <code>name</code> cannot
      *     be installed.
      */
-    void install(String name) throws PackageInstallException;
+    void install( String name ) throws Exception;
 
     /**
      * Install a Package in the Toolbox and instantiate in the Rack.
      *
      * @param name the name of the Package.
      * @param p the policy to install
-     * @exception PackageInstallException when <code>name</code> cannot
+     * @exception Exception when <code>name</code> cannot
      *     be installed.
      */
-    void installAndInstantiate(String name, Long policyId) throws PackageInstallException, DeployException;
+    void installAndInstantiate(String name, Long policyId) throws Exception;
 
     /**
      * Updated the system package cache (default timeout)
      *
-     * @exception PackageException when timeout exceeded or an error occurs
+     * @exception Exception when timeout exceeded or an error occurs
      */
-    void update() throws PackageException;
+    void update() throws Exception;
 
     /**
      * Upgrade the system
      *
-     * @exception PackageException when an error occurs
+     * @exception Exception when an error occurs
      */
-    void upgrade() throws PackageException;
+    void upgrade() throws Exception;
 
     /**
      * This function sends message to UI to initiate a install
@@ -134,24 +122,18 @@ public interface AptManager
     void requestInstall(String packageName);
 
     /**
-     * This function sends message to UI to initiate a uninstall
-     * The UI is responsible for actually initiating the uninstall
+     * Register the deployment of a Package at a particular URL.
+     *
+     * @param url location of the Package.
+     * @throws Exception if deployment fails.
      */
-    void requestUninstall(String packageName);
+    void register(String name) throws Exception;
 
     /**
      * Register the deployment of a Package at a particular URL.
      *
      * @param url location of the Package.
-     * @throws DeployException if deployment fails.
+     * @throws Exception if deployment fails.
      */
-    void register(String name) throws PackageInstallException;
-
-    /**
-     * Register the deployment of a Package at a particular URL.
-     *
-     * @param url location of the Package.
-     * @throws DeployException if deployment fails.
-     */
-    void unregister(String packageName) throws PackageInstallException;
+    void unregister(String packageName) throws Exception;
 }

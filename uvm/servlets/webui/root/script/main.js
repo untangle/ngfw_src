@@ -1205,9 +1205,10 @@ Ext.define("Ung.Main", {
         
         return i18n._("None");
     },
+
     /**
      *  Prepares the uvm to display the welcome screen
-     **/      
+     */      
     showInitialScreen: function () {
         try {
             Ext.Function.defer(Ext.MessageBox.wait,40,Ext.MessageBox,[i18n._("Determining Connectivity..."), i18n._("Please wait")]);        

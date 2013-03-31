@@ -1,6 +1,0 @@
-#!/bin/dash
-
-dig +time=3 +tries=3 updates.untangle.com > /dev/null 2>&1 && \
-    echo "GET /" | nc -q 0 -w 6 updates.untangle.com 80 > /dev/null 2>&1 && \
-    echo "true"
-

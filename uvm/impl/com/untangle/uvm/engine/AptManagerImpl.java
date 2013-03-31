@@ -9,6 +9,9 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.Socket;
+import java.net.InetAddress;
+import java.net.InetSocketAddress;
 import java.util.Arrays;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -38,7 +41,6 @@ import com.untangle.uvm.message.Message;
 import com.untangle.uvm.node.License;
 import com.untangle.uvm.node.LicenseManager;
 import com.untangle.uvm.node.Node;
-import com.untangle.uvm.node.DeployException;
 import com.untangle.uvm.node.NodeProperties;
 import com.untangle.uvm.node.NodeManager;
 import com.untangle.uvm.node.NodeSettings;
@@ -47,11 +49,7 @@ import com.untangle.uvm.node.Reporting;
 import com.untangle.uvm.apt.Application;
 import com.untangle.uvm.apt.InstallAndInstantiateComplete;
 import com.untangle.uvm.apt.PackageDesc;
-import com.untangle.uvm.apt.PackageException;
-import com.untangle.uvm.apt.PackageInstallException;
 import com.untangle.uvm.apt.PackageInstallRequest;
-import com.untangle.uvm.apt.PackageUninstallException;
-import com.untangle.uvm.apt.PackageUninstallRequest;
 import com.untangle.uvm.apt.RackView;
 import com.untangle.uvm.apt.AptManager;
 import com.untangle.uvm.apt.UpgradeStatus;
@@ -61,14 +59,9 @@ import com.untangle.uvm.apt.UpgradeStatus;
  */
 class AptManagerImpl implements AptManager
 {
-    private static final Object LOCK = new Object();
-
     private final Logger logger = Logger.getLogger(getClass());
 
     private static AptManagerImpl APT_MANAGER;
-
-    /* Prints out true if the upgrade server is available */
-    private static final String UPGRADE_SERVER_AVAILABLE = System.getProperty("uvm.bin.dir") + "/ut-upgrade-avail";
 
     private final Map<Long, AptLogTail> tails = new HashMap<Long, AptLogTail>();
 
@@ -85,9 +78,14 @@ class AptManagerImpl implements AptManager
     private volatile boolean removing = false;
 
     protected static ExecManager execManager = null;
-    
+
     private long lastTailKey = System.currentTimeMillis();
 
+    private final Object installAndInstantiateLock = new Object();
+    
+    /**
+     * Private constructor to ensure singleton. use aptManager() to get singleton reference
+     */
     private AptManagerImpl()
     {
         if (this.execManager == null)
@@ -96,17 +94,16 @@ class AptManagerImpl implements AptManager
         refreshLists();
     }
 
-    static AptManagerImpl aptManager()
+    /**
+     * get the singleton aptManager
+     */
+    protected static synchronized AptManagerImpl aptManager()
     {
-        synchronized (LOCK) {
-            if (null == APT_MANAGER) {
-                APT_MANAGER = new AptManagerImpl();
-            }
+        if ( APT_MANAGER == null ) {
+            APT_MANAGER = new AptManagerImpl();
         }
         return APT_MANAGER;
     }
-
-    // AptManager implementation ------------------------------------
 
     public RackView getRackView(Long policyId)
     {
@@ -323,7 +320,7 @@ class AptManagerImpl implements AptManager
         return new RackView(apps, nodeSettings, nodeProperties, nodeMetrics, licenseMap, runStates);
     }
 
-    public UpgradeStatus getUpgradeStatus(boolean doUpdate) throws PackageException, InterruptedException
+    public UpgradeStatus getUpgradeStatus(boolean doUpdate) throws Exception, InterruptedException
     {
         if(doUpdate && !upgrading && !installing) 
             update();
@@ -333,22 +330,25 @@ class AptManagerImpl implements AptManager
         return new UpgradeStatus(updating, upgrading, installing, removing, canupgrade);
     }
 
-    /**
-     * Returns true if the box can reach updates.untangle.com
-     */
     public boolean isUpgradeServerAvailable()
     {
-        try {
-            String result = UvmContextFactory.context().execManager().execOutput( UPGRADE_SERVER_AVAILABLE );
-            result = result.trim();
-            return result.equalsIgnoreCase( "true");
-        } catch ( Exception e ) {
-            logger.warn( "Unable to run the script '" + UPGRADE_SERVER_AVAILABLE + "'", e );
-            return false;
+        for ( int tries = 0 ; tries < 3 ; tries++ ) {
+            try {
+                String host = "updates.untangle.com";
+                InetAddress addr = InetAddress.getByName( host );
+                InetSocketAddress remoteAddress = new InetSocketAddress(addr, 80);
+                Socket sock = new Socket();
+                sock.connect( remoteAddress, 5000 );
+                sock.close();
+                return true;
+            }
+            catch ( Exception e) {
+                logger.warn("Failed to connect to updates.untangle.com: " + e);
+            }
         }
+        return false;
     }
     
-    // all known packages
     public PackageDesc[] available()
     {
         PackageDesc[] available = this.available;
@@ -365,7 +365,7 @@ class AptManagerImpl implements AptManager
         return retVal;
     }
 
-    public boolean isInstalled(String name)
+    public boolean isInstalled( String name )
     {
         String pkgName = name.trim();
         
@@ -376,17 +376,6 @@ class AptManagerImpl implements AptManager
         }
 
         return false;
-    }
-
-    public PackageDesc[] installedVisible()
-    {
-        PackageDesc[] installed = installed();
-        Vector<PackageDesc> visibleVector = new Vector<PackageDesc>();
-        for( PackageDesc packageDesc : installed ){
-            if( packageDesc.getViewPosition() >= 0 )
-                visibleVector.add(packageDesc);
-        }
-        return visibleVector.toArray(new PackageDesc[0]);
     }
 
     public PackageDesc[] uninstalled()
@@ -418,7 +407,7 @@ class AptManagerImpl implements AptManager
         return packageMap.get(name);
     }
 
-    public void install(String name) throws PackageInstallException
+    public void install(String name) throws Exception
     {
         logger.info("install(" + name + ")");
 
@@ -434,8 +423,8 @@ class AptManagerImpl implements AptManager
         try {
             subnodes = predictNodeInstall(name);
         }
-        catch (PackageException e) {
-            throw new PackageInstallException(e);
+        catch (Exception e) {
+            throw e;
         }
         for (String node : subnodes) {
             PackageDesc pkgDesc = packageDesc(node);
@@ -463,7 +452,7 @@ class AptManagerImpl implements AptManager
 
             if (!pkgVer.equals(uvmVer)) {
                 logger.warn("Unable to install: " + node + " version mismatch (" + pkgVer + " != " + uvmVer + ")");
-                throw new PackageInstallException("Unable to install: " + node + " version mismatch (" + pkgVer + " != " + uvmVer + ")");
+                throw new Exception("Unable to install: " + node + " version mismatch (" + pkgVer + " != " + uvmVer + ")");
             }
         }
 
@@ -480,9 +469,9 @@ class AptManagerImpl implements AptManager
         try {
             installing = true;
             execApt("install " + name, alt.getKey());
-        } catch (PackageException exn) {
+        } catch (Exception exn) {
             logger.warn("install failed", exn);
-            throw new PackageInstallException(exn);
+            throw exn;
         } finally {
             installing = false;
         }
@@ -490,9 +479,7 @@ class AptManagerImpl implements AptManager
         logger.info("install(" + name + ") return"); 
     }
 
-    private final Object installAndInstantiateLock = new Object();
-
-    public void installAndInstantiate(final String name, final Long policyId) throws PackageInstallException
+    public void installAndInstantiate(final String name, final Long policyId) throws Exception
     {
         logger.info("installAndInstantiate( " + name + ")");
         
@@ -504,7 +491,7 @@ class AptManagerImpl implements AptManager
             if (isInstalled(name)) {
                 logger.warn("package " + name + " already installed, ignoring");
                 //fix for bug #7675
-                //throw new PackageInstallException("package " + name + " already installed");
+                //throw new Exception("package " + name + " already installed");
                 return;
             }
 
@@ -514,8 +501,8 @@ class AptManagerImpl implements AptManager
             try {
                 subnodes = predictNodeInstall(name);
             }
-            catch (PackageException e) {
-                throw new PackageInstallException(e);
+            catch (Exception e) {
+                throw e;
             }
             
             /**
@@ -535,10 +522,6 @@ class AptManagerImpl implements AptManager
                     if (thisNode != null && nd != null && nd.getAutoStart()) {
                         thisNode.start();
                     }
-                } catch (DeployException exn) {
-                    logger.warn("could not deploy", exn);
-                } catch (PackageInstallException e) {
-                    logger.warn("could not register", e);
                 } catch (Exception exn) {
                     logger.warn("could not instantiate", exn);
                 } 
@@ -553,7 +536,7 @@ class AptManagerImpl implements AptManager
         logger.info("installAndInstantiate( " + name + ") return");
     }
 
-    public void update() throws PackageException
+    public void update() throws Exception
     {
         int maxtries = 4;
         for (int i=0; i<maxtries; i++) {
@@ -562,14 +545,14 @@ class AptManagerImpl implements AptManager
                 update(15000*(i+1));
                 return;
             }
-            catch (PackageException e) {
+            catch (Exception e) {
                 // try again with no timeout
                 logger.warn("ut-apt update exception: " + e + " - trying again...");
             }
         }
     }
 
-    public void upgrade() throws PackageException
+    public void upgrade() throws Exception
     {
         final AptLogTail alt;
 
@@ -587,7 +570,7 @@ class AptManagerImpl implements AptManager
                     try {
                         upgrading = true;
                         execApt("upgrade", alt.getKey());
-                    } catch (PackageException exn) {
+                    } catch (Exception exn) {
                         logger.warn("could not upgrade", exn);
                         throw exn;
                     } finally {
@@ -628,34 +611,8 @@ class AptManagerImpl implements AptManager
         mm.submitMessage(mir);
     }
 
-    public void requestUninstall(String packageName)
-    {
-        PackageDesc md = packageMap.get(packageName);
-        if (null == md) {
-            logger.warn("Could not find package for: " + packageName);
-            return;
-        }
-
-        PackageUninstallRequest mir = new PackageUninstallRequest(md,isInstalled(packageName));
-        MessageManager mm = UvmContextFactory.context().messageManager();
-
-        // Make sure there isn't an existing outstanding uninstall request for this package.
-        for (Message msg : mm.getMessages()) {
-            if (msg instanceof PackageUninstallRequest) {
-                PackageUninstallRequest existingMir = (PackageUninstallRequest)msg;
-                if (existingMir.getPackageDesc() == md) {
-                    logger.warn("requestUninstall(" + packageName + "): ignoring request; install request already pending");
-                    return;
-                }
-            }
-        }
-
-        logger.info("requestUninstall: " + packageName);
-        mm.submitMessage(mir);
-    }
-    
     // registers a new package that has been added to the system
-    public void register(String pkgName) throws PackageInstallException
+    public void register(String pkgName) throws Exception
     {
         logger.info("registering package: " + pkgName);
 
@@ -701,7 +658,7 @@ class AptManagerImpl implements AptManager
 
     // package list functions -------------------------------------------------
 
-    private void update(long millis) throws PackageException
+    private void update(long millis) throws Exception
     {
         FutureTask<Object> f = new FutureTask<Object>(new Callable<Object>()
             {
@@ -725,16 +682,11 @@ class AptManagerImpl implements AptManager
             } catch (InterruptedException exn) {
                 tryAgain = true;
             } catch (ExecutionException exn) {
-                Throwable t = exn.getCause();
-                if (t instanceof PackageException) {
-                    throw (PackageException)t;
-                } else {
-                    throw new RuntimeException(t);
-                }
+                throw exn;
             } catch (TimeoutException exn) {
                 f.cancel(true);
                 logger.warn("ut-apt timeout: ", exn);
-                throw new PackageException("ut-apt timed out");
+                throw new Exception("ut-apt timed out");
             }
         } while (tryAgain);
     }
@@ -930,21 +882,21 @@ class AptManagerImpl implements AptManager
         return m;
     }
 
-    private synchronized void execApt(String command, long key) throws PackageException
+    private synchronized void execApt(String command, long key) throws Exception
     {
         String cmdStr = System.getProperty("uvm.bin.dir") + "/ut-apt " + (0 > key ? "" : "-k " + key + " ") + command;
 
         synchronized(this) {
             ExecManagerResult result = this.execManager.exec(cmdStr);
             if (result.getResult() != 0) {
-                throw new PackageException("ut-apt " + command + " error (" + result.getResult() + ") :" + result.getOutput());
+                throw new Exception("ut-apt " + command + " error (" + result.getResult() + ") :" + result.getOutput());
             }
         }
 
         refreshLists();
     }
 
-    private void execApt(String command) throws PackageException
+    private void execApt(String command) throws Exception
     {
         execApt(command, -1);
     }
@@ -952,7 +904,7 @@ class AptManagerImpl implements AptManager
     /**
      * Returns a list of packages that will be installed as a result of installing this node
      */
-    private List<String> predictNodeInstall(String pkg) throws PackageException
+    private List<String> predictNodeInstall(String pkg) throws Exception
     {
         logger.info("predictNodeInstall(" + pkg + ")");
         
@@ -980,7 +932,7 @@ class AptManagerImpl implements AptManager
              * If returns non-zero throw an exception
              */
             if (result.getResult() != 0) {
-                throw new PackageException("ut-apt predictInstall error (" + result.getResult() + ") :" + result.getOutput());
+                throw new Exception("ut-apt predictInstall error (" + result.getResult() + ") :" + result.getOutput());
             }
         }
 
