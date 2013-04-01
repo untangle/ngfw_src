@@ -11,7 +11,7 @@ import java.util.regex.Pattern;
 import com.untangle.node.util.AsciiCharBuffer;
 import com.untangle.uvm.vnet.AbstractEventHandler;
 import com.untangle.uvm.vnet.NodeSession;
-import com.untangle.uvm.vnet.NodeIPSession;
+import com.untangle.uvm.vnet.NodeSession;
 import com.untangle.uvm.vnet.NodeTCPSession;
 import com.untangle.uvm.vnet.NodeUDPSession;
 import com.untangle.uvm.vnet.event.IPDataEvent;
@@ -124,7 +124,7 @@ public class EventHandler extends AbstractEventHandler
         _stripZeros = stripZeros;
     }
 
-    private void _handleChunk (IPDataEvent event, NodeIPSession sess, boolean server)
+    private void _handleChunk (IPDataEvent event, NodeSession sess, boolean server)
     {
         ByteBuffer chunk = event.data();
         SessionInfo sessInfo = (SessionInfo)sess.attachment();
@@ -256,7 +256,7 @@ public class EventHandler extends AbstractEventHandler
         }
     }
 
-    private ProtoFilterPattern _findMatch (SessionInfo sessInfo, NodeIPSession sess, boolean server)
+    private ProtoFilterPattern _findMatch (SessionInfo sessInfo, NodeSession sess, boolean server)
     {
         AsciiCharBuffer buffer = server ? sessInfo.serverBuffer : sessInfo.clientBuffer;
         AsciiCharBuffer toScan = buffer.asReadOnlyBuffer();

@@ -214,7 +214,7 @@ public abstract class AbstractEventHandler implements SessionEventListener
         NodeUDPSession session = event.session();
         byte serverState = session.serverState();
         // Default just sends the bytes onwards if the output is open.
-        if (serverState == NodeIPSession.OPEN)
+        if (serverState == NodeSession.OPEN)
             session.sendServerPacket(event.packet(), event.header());
     }
 
@@ -224,7 +224,7 @@ public abstract class AbstractEventHandler implements SessionEventListener
         NodeUDPSession session = event.session();
         byte clientState = session.clientState();
         // Default just sends the bytes onwards if the output is open.
-        if (clientState == NodeIPSession.OPEN)
+        if (clientState == NodeSession.OPEN)
             session.sendClientPacket(event.packet(), event.header());
     }
 

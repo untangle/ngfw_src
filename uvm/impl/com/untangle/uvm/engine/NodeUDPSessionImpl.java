@@ -18,7 +18,7 @@ import com.untangle.uvm.argon.ArgonUDPNewSessionRequest;
 import com.untangle.uvm.util.MetaEnv;
 import com.untangle.uvm.vnet.IPPacketHeader;
 import com.untangle.uvm.vnet.NodeSessionStats;
-import com.untangle.uvm.vnet.NodeIPSession;
+import com.untangle.uvm.vnet.NodeSession;
 import com.untangle.uvm.vnet.NodeUDPSession;
 import com.untangle.uvm.node.SessionTuple;
 import com.untangle.uvm.vnet.event.IPStreamer;
@@ -29,7 +29,7 @@ import com.untangle.uvm.vnet.event.UDPSessionEvent;
 /**
  * This is the primary implementation class for UDP live sessions.
  */
-public class NodeUDPSessionImpl extends NodeIPSessionImpl implements NodeUDPSession
+public class NodeUDPSessionImpl extends NodeSessionImpl implements NodeUDPSession
 {
     protected int[] maxPacketSize;
 
@@ -39,9 +39,9 @@ public class NodeUDPSessionImpl extends NodeIPSessionImpl implements NodeUDPSess
     
     private final String logPrefix;
     
-    protected NodeUDPSessionImpl(Dispatcher disp, SessionEvent pe, int clientMaxPacketSize, int serverMaxPacketSize, ArgonUDPNewSessionRequest request )
+    protected NodeUDPSessionImpl(Dispatcher disp, SessionEvent sessionEvent, int clientMaxPacketSize, int serverMaxPacketSize, ArgonUDPNewSessionRequest request )
     {
-        super(disp, pe, request );
+        super(disp, sessionEvent, request );
 
         logPrefix = "UDP" + id();
         
@@ -87,10 +87,10 @@ public class NodeUDPSessionImpl extends NodeIPSessionImpl implements NodeUDPSess
     {
         if (clientIncomingSocketQueue() == null) {
             assert clientOutgoingSocketQueue() == null;
-            return NodeIPSession.EXPIRED;
+            return NodeSession.EXPIRED;
         } else {
             assert clientOutgoingSocketQueue() != null;
-            return NodeIPSession.OPEN;
+            return NodeSession.OPEN;
         }
     }
 
@@ -98,10 +98,10 @@ public class NodeUDPSessionImpl extends NodeIPSessionImpl implements NodeUDPSess
     {
         if (serverIncomingSocketQueue() == null) {
             assert serverOutgoingSocketQueue() == null;
-            return NodeIPSession.EXPIRED;
+            return NodeSession.EXPIRED;
         } else {
             assert serverOutgoingSocketQueue() != null;
-            return NodeIPSession.OPEN;
+            return NodeSession.OPEN;
         }
     }
 

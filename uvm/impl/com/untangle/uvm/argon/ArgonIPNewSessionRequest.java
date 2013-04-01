@@ -8,8 +8,8 @@ import java.net.InetAddress;
 import com.untangle.jnetcap.Endpoint;
 import com.untangle.jnetcap.Endpoints;
 import com.untangle.uvm.node.SessionEvent;
-import com.untangle.uvm.vnet.NodeIPSession;
-import com.untangle.uvm.engine.NodeIPSessionImpl;
+import com.untangle.uvm.vnet.NodeSession;
+import com.untangle.uvm.engine.NodeSessionImpl;
 
 public abstract class ArgonIPNewSessionRequest extends ArgonNewSessionRequest
 {
@@ -85,9 +85,9 @@ public abstract class ArgonIPNewSessionRequest extends ArgonNewSessionRequest
     /* Two ways to create an IPNewSessionRequest:
      * B. Pass in the previous request and get the parameters from there
      */
-    public ArgonIPNewSessionRequest( NodeIPSession session, ArgonAgent agent, SessionEvent pe, SessionGlobalState sessionGlobalState)
+    public ArgonIPNewSessionRequest( NodeSession session, ArgonAgent agent, SessionEvent pe, SessionGlobalState sessionGlobalState)
     {
-        super( ((NodeIPSessionImpl)session).sessionGlobalState(), agent);
+        super( ((NodeSessionImpl)session).sessionGlobalState(), agent);
 
         /* Get the server and client from the previous request */
         clientAddr = session.getClientAddr();

@@ -10,7 +10,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.vnet.IPNewSessionRequest;
-import com.untangle.uvm.vnet.NodeIPSession;
+import com.untangle.uvm.vnet.NodeSession;
 import com.untangle.uvm.vnet.Protocol;
 import com.untangle.uvm.vnet.NodeTCPSession;
 import org.apache.log4j.Logger;
@@ -51,7 +51,7 @@ class RouterSessionManager
 
     }
 
-    void releaseSession( NodeIPSession session, Protocol protocol )
+    void releaseSession( NodeSession session, Protocol protocol )
     {
         RouterSessionData sessionData;
         if (logger.isDebugEnabled()) {
@@ -159,7 +159,7 @@ class SessionRedirectKey
         this( Protocol.TCP, session.getServerAddr(), session.getServerPort());
     }
 
-    SessionRedirectKey( NodeIPSession session, Protocol protocol )
+    SessionRedirectKey( NodeSession session, Protocol protocol )
     {
         this( protocol, session.getServerAddr(), session.getServerPort());
     }

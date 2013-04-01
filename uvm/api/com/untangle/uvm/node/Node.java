@@ -5,7 +5,7 @@ package com.untangle.uvm.node;
 
 import java.util.List;
 
-import com.untangle.uvm.vnet.NodeIPSession;
+import com.untangle.uvm.vnet.NodeSession;
 import com.untangle.uvm.logging.LogEvent;
 import com.untangle.uvm.apt.PackageDesc;
 
@@ -69,7 +69,7 @@ public interface Node
     /**
      * Retrieve a list of node sessions currently being processed by this node
      */
-    List<NodeIPSession> liveNodeSessions();
+    List<NodeSession> liveNodeSessions();
     
     /**
      * Log an event

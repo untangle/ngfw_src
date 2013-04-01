@@ -365,13 +365,13 @@ public abstract class NodeBase implements Node
         return sessions;
     }
 
-    public List<NodeIPSession> liveNodeSessions()
+    public List<NodeSession> liveNodeSessions()
     {
-        List<NodeIPSession> sessions = new LinkedList<NodeIPSession>();
+        List<NodeSession> sessions = new LinkedList<NodeSession>();
 
         if (null != pipeSpecs) {
             for (PipeSpec ps : pipeSpecs) {
-                for (NodeIPSession sess : ps.liveSessions()) {
+                for (NodeSession sess : ps.liveSessions()) {
                     /* create a new sessiontupleimpl so the list will be serialized properly */
                     sessions.add( sess );
                 }

@@ -5,14 +5,14 @@ package com.untangle.node.ips;
 
 import java.util.Set;
 
-import com.untangle.uvm.vnet.NodeIPSession;
+import com.untangle.uvm.vnet.NodeSession;
 import com.untangle.uvm.vnet.NodeTCPSession;
 import com.untangle.uvm.vnet.NodeUDPSession;
 import com.untangle.uvm.vnet.event.IPDataEvent;
 
 public class IpsSessionInfo
 {
-    private final NodeIPSession session;
+    private final NodeSession session;
     private final IpsNodeImpl ips;
 
     private Set<IpsRuleSignature> c2sSignatures;
@@ -26,7 +26,7 @@ public class IpsSessionInfo
     public int end;
     public int indexOfLastMatch;
 
-    public IpsSessionInfo(IpsNodeImpl ips, NodeIPSession session,
+    public IpsSessionInfo(IpsNodeImpl ips, NodeSession session,
                           Set<IpsRuleSignature> c2sSignatures,
                           Set<IpsRuleSignature> s2cSignatures)
     {
@@ -48,7 +48,7 @@ public class IpsSessionInfo
 
     // Do i need to set sessionion data? I dont think so.. Check
     // later.
-    public NodeIPSession getSession()
+    public NodeSession getSession()
     {
         return session;
     }

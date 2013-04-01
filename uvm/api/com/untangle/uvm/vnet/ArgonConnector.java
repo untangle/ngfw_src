@@ -33,7 +33,7 @@ public interface ArgonConnector
 
     long[] liveSessionIds();
 
-    List<NodeIPSession> liveSessions();
+    List<NodeSession> liveSessions();
     
     Node node();
 

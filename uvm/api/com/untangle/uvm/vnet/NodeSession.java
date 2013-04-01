@@ -4,6 +4,7 @@
 package com.untangle.uvm.vnet;
 
 import com.untangle.uvm.node.SessionTuple;
+import com.untangle.uvm.node.SessionEvent;
 
 import java.util.Map;
 import java.net.InetAddress;
@@ -19,6 +20,12 @@ public interface NodeSession extends SessionTuple
     public static final short PROTO_TCP = 6;
     public static final short PROTO_UDP = 17;
 
+    static final byte CLOSED = 0;
+    static final byte EXPIRED = 0;
+    static final byte OPEN = 4;
+    static final byte HALF_OPEN_INPUT = 5; /* for TCP */
+    static final byte HALF_OPEN_OUTPUT = 6; /* for TCP */
+    
     /**
      * <code>argonConnector</code> returns the Meta Pipe <code>ArgonConnector</code>
      * that this session lives on.
@@ -144,7 +151,6 @@ public interface NodeSession extends SessionTuple
      */
     short getProtocol();
 
-
     /**
      * Return the policy Id for this session
      */
@@ -199,5 +205,93 @@ public interface NodeSession extends SessionTuple
      * Kill/Reset this session
      */
     void killSession();
+
+    /**
+     * <code>release</code> releases all interest in all non-final events for this session.  Only
+     * the finalization event will be delievered, when the resulting session ends.
+     *
+     * This call is only valid while in NORMAL_MODE.
+     * Note: Just calls release(true);
+     *
+     */
+    void release();
+
+    /**
+     * <code>release</code> notifies the TAPI that this session may continue,
+     * but no data events will be delivered for
+     * the session.  If needsFinalization is false, no further events will be delivered for the session
+     * at all.  IF needsFinalization is true, then the only event that will be delivered is a Finalization
+     * event when the resulting session ends.
+     *
+     * @param needsFinalization a <code>boolean</code> true if the node needs a finalization event when the released session ends.
+     */
+    void release(boolean needsFinalization);
+
+    /**
+     * <code>scheduleTimer</code> sets the timer for this session to fire in
+     * the given number of milliseconds. If the timer is already scheduled, it
+     * the existing delay is discarded and the timer is rescheduled for the new
+     * <code>delay</code>.
+     *
+     * @param delay a <code>long</code> giving milliseconds until the timer is to fire
+     * @exception IllegalArgumentException if the delay is negative
+     */
+    void scheduleTimer(long delay) throws IllegalArgumentException;
+
+    /**
+     * <code>cancelTimer</code> cancels any scheduled timer expiration for this session.
+     *
+     */
+    void cancelTimer();
+
+    /**
+     * <code>clientMark</code> returns the server-side socket mark for this session
+     */
+    int  clientMark();
+
+    /**
+     * <code>clientMark</code> sets the server-side socket mark for this session
+     */
+    void clientMark(int newmark);
+
+    /**
+     * <code>orClientMark</code> bitwise ORs the provided bitmask with the current client-side conn-mark
+     */
+    void orClientMark(int bitmask);
+
+    /**
+     * <code>setClientQosMark</code> sets the connmark so this session' client-side packets get the provided QoS priority
+     */
+    void setClientQosMark(int priority);
+    
+    /**
+     * <code>serverMark</code> returns the server-side socket mark for this session
+     */
+    int  serverMark();
+
+    /**
+     * <code>serverMark</code> sets the server-side socket mark for this session
+     */
+    void serverMark(int newmark);
+
+    /**
+     * <code>orServerMark</code> bitwise ORs the provided bitmask with the current server-side conn-mark
+     */
+    void orServerMark(int bitmask);
+
+    /**
+     * <code>setServerQosMark</code> sets the connmark so this session' server-side packets get the provided QoS priority
+     */
+    void setServerQosMark(int priority);
+    
+    /**
+     * Get the pipeline endpoints for this session
+     */
+    SessionEvent sessionEvent();
+
+    byte clientState();
+    byte serverState();
+
+    NodeSessionStats stats();
 }
 

@@ -13,7 +13,7 @@ import org.json.JSONString;
 import org.apache.log4j.Logger;
 
 import com.untangle.uvm.vnet.NodeSession;
-import com.untangle.uvm.vnet.NodeIPSession;
+import com.untangle.uvm.vnet.NodeSession;
 
 /**
  * This in the implementation of a Capture Rule

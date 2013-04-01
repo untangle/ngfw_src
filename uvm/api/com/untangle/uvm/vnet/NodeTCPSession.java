@@ -8,7 +8,7 @@ import com.untangle.uvm.vnet.event.TCPStreamer;
 /**
  * A TCPSession is the most specific interface for VNet TCP sessions
  */
-public interface NodeTCPSession extends NodeIPSession
+public interface NodeTCPSession extends NodeSession
 {
     static final byte CLOSED = 0;
     static final byte EXPIRED = 0;

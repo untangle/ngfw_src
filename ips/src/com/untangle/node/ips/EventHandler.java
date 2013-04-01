@@ -5,7 +5,7 @@ package com.untangle.node.ips;
 
 import com.untangle.uvm.vnet.AbstractEventHandler;
 import com.untangle.uvm.vnet.IPNewSessionRequest;
-import com.untangle.uvm.vnet.NodeIPSession;
+import com.untangle.uvm.vnet.NodeSession;
 import com.untangle.uvm.vnet.Protocol;
 import com.untangle.uvm.vnet.event.IPDataResult;
 import com.untangle.uvm.vnet.event.TCPChunkEvent;
@@ -49,7 +49,7 @@ public class EventHandler extends AbstractEventHandler
         handleNewSession(event.session(), Protocol.UDP);
     }
 
-    private void handleNewSession(NodeIPSession session, Protocol protocol)
+    private void handleNewSession(NodeSession session, Protocol protocol)
     {
         ipsEngine.processNewSession(session, protocol);
     }
@@ -64,7 +64,7 @@ public class EventHandler extends AbstractEventHandler
         handleFinalized(event.session(), Protocol.UDP);
     }
 
-    private void handleFinalized(NodeIPSession session, Protocol protocol)
+    private void handleFinalized(NodeSession session, Protocol protocol)
     {
         ipsEngine.processFinalized(session, protocol);
     }

@@ -3,7 +3,7 @@
  */
 package com.untangle.uvm.vnet.event;
 
-import com.untangle.uvm.vnet.NodeIPSession;
+import com.untangle.uvm.vnet.NodeSession;
 import com.untangle.uvm.vnet.ArgonConnector;
 
 /**
@@ -13,13 +13,13 @@ import com.untangle.uvm.vnet.ArgonConnector;
 public class IPSessionEvent extends SessionEvent
 {
 
-    public IPSessionEvent(ArgonConnector argonConnector, NodeIPSession session)
+    public IPSessionEvent(ArgonConnector argonConnector, NodeSession session)
     {
         super(argonConnector, session);
     }
 
-    public NodeIPSession ipsession()
+    public NodeSession ipsession()
     {
-        return (NodeIPSession)getSource();
+        return (NodeSession)getSource();
     }
 }

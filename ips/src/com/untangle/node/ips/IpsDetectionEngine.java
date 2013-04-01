@@ -14,7 +14,7 @@ import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.node.ParseException;
 import com.untangle.uvm.node.SessionEvent;
 import com.untangle.uvm.vnet.IPNewSessionRequest;
-import com.untangle.uvm.vnet.NodeIPSession;
+import com.untangle.uvm.vnet.NodeSession;
 import com.untangle.uvm.vnet.Protocol;
 import com.untangle.uvm.vnet.NodeSessionStats;
 import com.untangle.uvm.vnet.event.IPDataEvent;
@@ -208,13 +208,13 @@ public class IpsDetectionEngine
         }
     }
 
-    public IpsSessionInfo getSessionInfo(NodeIPSession session) 
+    public IpsSessionInfo getSessionInfo(NodeSession session) 
     {
         return sessionInfoMap.get(session.id());
     }
 
     @SuppressWarnings("unchecked") //attachment
-    public void processNewSession(NodeIPSession session, Protocol protocol) 
+    public void processNewSession(NodeSession session, Protocol protocol) 
     {
         Object[] sigs = (Object[]) session.attachment();
         Set<IpsRuleSignature> c2sSignatures = (Set<IpsRuleSignature>) sigs[0];
@@ -226,7 +226,7 @@ public class IpsDetectionEngine
         session.attach(null);
     }
 
-    public void processFinalized(NodeIPSession session, Protocol protocol) 
+    public void processFinalized(NodeSession session, Protocol protocol) 
     {
         logger.debug("unregistering IpsSessionInfo");
         sessionInfoMap.remove(session.id());
@@ -243,7 +243,7 @@ public class IpsDetectionEngine
     }
 
     //In process of fixing this
-    public void handleChunk(IPDataEvent event, NodeIPSession session, boolean isFromServer)
+    public void handleChunk(IPDataEvent event, NodeSession session, boolean isFromServer)
     {
         try {
             long startTime = System.currentTimeMillis();

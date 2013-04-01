@@ -13,7 +13,7 @@ import com.untangle.uvm.vnet.Fitting;
 import com.untangle.uvm.UvmContext;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.node.Node;
-import com.untangle.uvm.vnet.NodeIPSession;
+import com.untangle.uvm.vnet.NodeSession;
 import com.untangle.uvm.vnet.event.SessionEventListener;
 
 /**
@@ -138,7 +138,7 @@ public class SoloPipeSpec extends PipeSpec
     }
     
     @Override
-    public List<NodeIPSession> liveSessions()
+    public List<NodeSession> liveSessions()
     {
         if (null != argonConnector) {
             return argonConnector.liveSessions();

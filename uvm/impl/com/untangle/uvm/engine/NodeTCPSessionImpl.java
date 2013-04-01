@@ -16,7 +16,7 @@ import com.untangle.uvm.argon.ArgonIPNewSessionRequest;
 import com.untangle.uvm.node.SessionEvent;
 import com.untangle.uvm.util.MetaEnv;
 import com.untangle.uvm.vnet.NodeSessionStats;
-import com.untangle.uvm.vnet.NodeIPSession;
+import com.untangle.uvm.vnet.NodeSession;
 import com.untangle.uvm.vnet.NodeTCPSession;
 import com.untangle.uvm.vnet.event.IPDataResult;
 import com.untangle.uvm.vnet.event.IPStreamer;
@@ -29,7 +29,7 @@ import com.untangle.uvm.node.SessionTuple;
 /**
  * This is the primary implementation class for TCP live sessions.
  */
-public class NodeTCPSessionImpl extends NodeIPSessionImpl implements NodeTCPSession
+public class NodeTCPSessionImpl extends NodeSessionImpl implements NodeTCPSession
 {
     protected static final ByteBuffer SHUTDOWN_COOKIE_BUF = ByteBuffer.allocate(1);
 
@@ -142,28 +142,28 @@ public class NodeTCPSessionImpl extends NodeIPSessionImpl implements NodeTCPSess
     {
         if (clientIncomingSocketQueue() == null)
             if (clientOutgoingSocketQueue() == null)
-                return NodeIPSession.CLOSED;
+                return NodeSession.CLOSED;
             else
-                return NodeIPSession.HALF_OPEN_OUTPUT;
+                return NodeSession.HALF_OPEN_OUTPUT;
         else
             if (clientOutgoingSocketQueue() == null)
-                return NodeIPSession.HALF_OPEN_INPUT;
+                return NodeSession.HALF_OPEN_INPUT;
             else
-                return NodeIPSession.OPEN;
+                return NodeSession.OPEN;
     }
 
     public byte serverState()
     {
         if (serverIncomingSocketQueue() == null)
             if (serverOutgoingSocketQueue() == null)
-                return NodeIPSession.CLOSED;
+                return NodeSession.CLOSED;
             else
-                return NodeIPSession.HALF_OPEN_OUTPUT;
+                return NodeSession.HALF_OPEN_OUTPUT;
         else
             if (serverOutgoingSocketQueue() == null)
-                return NodeIPSession.HALF_OPEN_INPUT;
+                return NodeSession.HALF_OPEN_INPUT;
             else
-                return NodeIPSession.OPEN;
+                return NodeSession.OPEN;
     }
 
     public void shutdownServer()

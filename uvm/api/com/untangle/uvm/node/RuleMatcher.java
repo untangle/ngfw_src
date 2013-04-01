@@ -17,7 +17,7 @@ import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.HostTable;
 import com.untangle.uvm.HostTableEntry;
 import com.untangle.uvm.vnet.NodeSession;
-import com.untangle.uvm.vnet.NodeIPSession;
+import com.untangle.uvm.vnet.NodeSession;
 import com.untangle.uvm.node.IPMatcher;
 import com.untangle.uvm.node.PortMatcher;
 import com.untangle.uvm.node.IntfMatcher;
@@ -188,7 +188,7 @@ public class RuleMatcher implements JSONString, Serializable
     /**
      * Returns true if this matcher matches the specified session
      */
-    public boolean matches( NodeIPSession sess )
+    public boolean matches( NodeSession sess )
     {
         if (this.getInvert()) 
             return !_matches(sess);
@@ -364,7 +364,7 @@ public class RuleMatcher implements JSONString, Serializable
         }
     }
 
-    private boolean _matches( NodeIPSession sess )
+    private boolean _matches( NodeSession sess )
     {
         String  attachment = null;
         Integer attachmentInt = null;

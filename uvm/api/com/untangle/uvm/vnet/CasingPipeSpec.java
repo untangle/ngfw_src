@@ -154,7 +154,7 @@ public class CasingPipeSpec extends PipeSpec
     }
 
     @Override
-    public List<NodeIPSession> liveSessions()
+    public List<NodeSession> liveSessions()
     {
         if (null != insideArgonConnector) {
             return insideArgonConnector.liveSessions();

@@ -16,7 +16,7 @@ import com.untangle.uvm.vnet.NodeSession;
 import com.untangle.uvm.vnet.NodeTCPSession;
 import com.untangle.uvm.vnet.NodeUDPSession;
 import com.untangle.uvm.vnet.Fitting;
-import com.untangle.uvm.vnet.NodeIPSession;
+import com.untangle.uvm.vnet.NodeSession;
 import com.untangle.uvm.vnet.event.SessionEventListener;
 
 /**
@@ -131,7 +131,7 @@ public class ArgonConnectorImpl implements ArgonConnector
         return disp.liveSessionIds();
     }
 
-    public List<NodeIPSession> liveSessions()
+    public List<NodeSession> liveSessions()
     {
         if (disp != null)
             return disp.liveSessions();
