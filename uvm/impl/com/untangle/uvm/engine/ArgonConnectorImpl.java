@@ -27,7 +27,7 @@ import com.untangle.uvm.vnet.event.SessionEventListener;
  */
 public class ArgonConnectorImpl implements ArgonConnector
 {
-    protected ArgonAgent argon;
+    protected ArgonAgent argonAgent = null;
 
     private final PipeSpec pipeSpec;
 
@@ -82,7 +82,7 @@ public class ArgonConnectorImpl implements ArgonConnector
 
     public ArgonAgent getArgonAgent()
     {
-        return argon;
+        return argonAgent;
     }
 
     public Fitting getInputFitting()
@@ -125,11 +125,6 @@ public class ArgonConnectorImpl implements ArgonConnector
         return node().getNodeProperties();
     }
 
-    public int state()
-    {
-        return argon.state();
-    }
-
     public long[] liveSessionIds()
     {
         if (disp == null)
@@ -145,9 +140,9 @@ public class ArgonConnectorImpl implements ArgonConnector
             return null;
     }
     
-    private void start() 
+    private synchronized  void start() 
     {
-        if (isRunning()) {
+        if ( argonAgent != null ) {
             logger.warn("Already running... ignoring start command");
             return;
         }
@@ -156,12 +151,7 @@ public class ArgonConnectorImpl implements ArgonConnector
         if (listener != null)
             disp.setSessionEventListener(listener);
 
-        argon = new ArgonAgentImpl(pipeSpec.getName(), disp); // Also sets new session listener to dispatcher
-    }
-
-    public boolean isRunning()
-    {
-        return (argon != null && argon.state() == ArgonAgent.LIVE_ARGON);
+        argonAgent = new ArgonAgentImpl(pipeSpec.getName(), disp); // Also sets new session listener to dispatcher
     }
 
     /**
@@ -170,9 +160,9 @@ public class ArgonConnectorImpl implements ArgonConnector
      * Dispatcher nicely (in comparison to shutdown, below).
      *
      */
-    public void destroy()
+    public synchronized void destroy()
     {
-        if ( isRunning() ) {
+        if ( argonAgent != null ) {
             try {
                 disp.destroy();
             } catch (Exception x) {
@@ -181,11 +171,11 @@ public class ArgonConnectorImpl implements ArgonConnector
             disp = null;
 
             try {
-                argon.destroy();
+                argonAgent.destroy();
             } catch (Exception x) {
                 logger.info("Exception destroying ArgonConnector", x);
             }
-            argon = null;
+            argonAgent = null;
         }
     }
 

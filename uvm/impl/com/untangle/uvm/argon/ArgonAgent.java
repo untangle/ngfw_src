@@ -17,18 +17,6 @@ package com.untangle.uvm.argon;
  */
 public interface ArgonAgent
 {
-    // States.  Easy for now, just live and destroyed/disconnected/dead.
-    public static final int LIVE_ARGON = 1;
-    public static final int DEAD_ARGON = 0;
-
-    /**
-     * Returns the pipeline <code>state</code> for this ArgonConnector.  Either LIVE or DEAD.
-     * Death may come from <code>destroy</code> or from below.
-     *
-     * @return an <code>int</code> either LIVE_ARGON or DEAD_ARGON.
-     */
-    int state();
-
     /**
      * Deactivates an active ArgonConnector and disconnects it from argon.  This kills
      * all sessions and threads, and keeps any new sessions or further commands
