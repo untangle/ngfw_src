@@ -14,7 +14,7 @@ import org.apache.log4j.Logger;
 import org.apache.log4j.MDC;
 
 import com.untangle.uvm.UvmContextFactory;
-import com.untangle.uvm.argon.ArgonAgent;
+import com.untangle.uvm.argon.PipelineAgent;
 import com.untangle.uvm.argon.ArgonTCPNewSessionRequest;
 import com.untangle.uvm.argon.ArgonUDPNewSessionRequest;
 import com.untangle.uvm.argon.ArgonIPNewSessionRequest;
@@ -41,7 +41,7 @@ import com.untangle.uvm.vnet.event.UDPPacketEvent;
 import com.untangle.uvm.vnet.event.UDPSessionEvent;
 
 /**
- * One dispatcher per ArgonConnector.  This where all the new session logic
+ * One dispatcher per PipelineConnector.  This where all the new session logic
  * lives, and the event dispatching.
  */
 public class Dispatcher implements com.untangle.uvm.argon.NewSessionEventListener
@@ -53,7 +53,7 @@ public class Dispatcher implements com.untangle.uvm.argon.NewSessionEventListene
     
     private Logger logger;
 
-    private final ArgonConnectorImpl argonConnector;
+    private final PipelineConnectorImpl pipelineConnector;
     private final NodeBase node;
 
     private static final String STAT_LIVE_SESSIONS = "live-sessions";
@@ -88,19 +88,19 @@ public class Dispatcher implements com.untangle.uvm.argon.NewSessionEventListene
     private ConcurrentHashMap<NodeSession,NodeSession> liveSessions;
 
     /**
-     * dispatcher is created ArgonConnector.start() when user decides this
-     * dispatcher should begin handling a newly connected ArgonConnector.
+     * dispatcher is created PipelineConnector.start() when user decides this
+     * dispatcher should begin handling a newly connected PipelineConnector.
      *
      * Note that order of initialization is important in here, since
      * the "inner" classes access stuff from us.
      */
-    public Dispatcher(ArgonConnectorImpl argonConnector) 
+    public Dispatcher(PipelineConnectorImpl pipelineConnector) 
     {
         this.logger = Logger.getLogger(Dispatcher.class.getName());
-        this.argonConnector = argonConnector;
-        this.node = (NodeBase)argonConnector.node();
+        this.pipelineConnector = pipelineConnector;
+        this.node = (NodeBase)pipelineConnector.node();
         this.sessionEventListener = null;
-        this.sessionEventLogger = argonConnector.sessionEventLogger();
+        this.sessionEventLogger = pipelineConnector.sessionEventLogger();
         this.releasedHandler = new ReleasedEventHandler(node);
         this.liveSessions = new ConcurrentHashMap<NodeSession,NodeSession>();
 
@@ -182,7 +182,7 @@ public class Dispatcher implements com.untangle.uvm.argon.NewSessionEventListene
 
         liveSessions.remove(sess);
 
-        ArgonAgent agent = argonConnector.getArgonAgent();
+        PipelineAgent agent = pipelineConnector.getPipelineAgent();
         if (agent == null) {
             logger.warn("attempt to remove session " + sess.id() + " when already destroyed");
         } else {
@@ -190,9 +190,9 @@ public class Dispatcher implements com.untangle.uvm.argon.NewSessionEventListene
         }
     }
 
-    protected ArgonConnectorImpl argonConnector()
+    protected PipelineConnectorImpl pipelineConnector()
     {
-        return argonConnector;
+        return pipelineConnector;
     }
 
     protected void setSessionEventListener( SessionEventListener listener )
@@ -506,7 +506,7 @@ public class Dispatcher implements com.untangle.uvm.argon.NewSessionEventListene
             // Give the request event to the user, to give them a
             // chance to reject the session.
             logger.debug("sending TCP new session request event");
-            TCPNewSessionRequestEvent revent = new TCPNewSessionRequestEvent(argonConnector, treq);
+            TCPNewSessionRequestEvent revent = new TCPNewSessionRequestEvent(pipelineConnector, treq);
             dispatchTCPNewSessionRequest(revent);
 
             // Check the session only if it was not rejected.
@@ -539,7 +539,7 @@ public class Dispatcher implements com.untangle.uvm.argon.NewSessionEventListene
             if (treq.state() == ArgonIPNewSessionRequest.RELEASED) {
                 session.release();
             } else {
-                TCPSessionEvent tevent = new TCPSessionEvent(argonConnector, session);
+                TCPSessionEvent tevent = new TCPSessionEvent(pipelineConnector, session);
                 dispatchTCPNewSession(tevent);
             }
 
@@ -569,7 +569,7 @@ public class Dispatcher implements com.untangle.uvm.argon.NewSessionEventListene
 
             // Give the request event to the user, to give them a chance to reject the session.
             logger.debug("sending UDP new session request event");
-            UDPNewSessionRequestEvent revent = new UDPNewSessionRequestEvent(argonConnector, ureq);
+            UDPNewSessionRequestEvent revent = new UDPNewSessionRequestEvent(pipelineConnector, ureq);
             dispatchUDPNewSessionRequest(revent);
 
             // Check the session only if it was not rejected.
@@ -603,7 +603,7 @@ public class Dispatcher implements com.untangle.uvm.argon.NewSessionEventListene
             if (ureq.state() == ArgonIPNewSessionRequest.RELEASED) {
                 session.release();
             } else {
-                UDPSessionEvent tevent = new UDPSessionEvent(argonConnector, session);
+                UDPSessionEvent tevent = new UDPSessionEvent(pipelineConnector, session);
                 dispatchUDPNewSession(tevent);
             }
 

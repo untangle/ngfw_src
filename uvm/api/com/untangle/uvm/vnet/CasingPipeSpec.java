@@ -36,8 +36,8 @@ public class CasingPipeSpec extends PipeSpec
 
     private final Logger logger = Logger.getLogger(getClass());
 
-    private ArgonConnector insideArgonConnector;
-    private ArgonConnector outsideArgonConnector;
+    private PipelineConnector insidePipelineConnector;
+    private PipelineConnector outsidePipelineConnector;
 
     private boolean releaseParseExceptions = true;
 
@@ -120,44 +120,44 @@ public class CasingPipeSpec extends PipeSpec
     // PipeSpec methods -------------------------------------------------------
 
     @Override
-    public void connectArgonConnector()
+    public void connectPipelineConnector()
     {
-        if (null == insideArgonConnector && null == outsideArgonConnector) {
-            insideArgonConnector = FOUNDRY.createArgonConnector(this, insideAdaptor, input, output);
-            outsideArgonConnector = FOUNDRY.createArgonConnector(this, outsideAdaptor, output, input);
-            FOUNDRY.registerCasing(insideArgonConnector, outsideArgonConnector);
+        if (null == insidePipelineConnector && null == outsidePipelineConnector) {
+            insidePipelineConnector = FOUNDRY.createPipelineConnector(this, insideAdaptor, input, output);
+            outsidePipelineConnector = FOUNDRY.createPipelineConnector(this, outsideAdaptor, output, input);
+            FOUNDRY.registerCasing(insidePipelineConnector, outsidePipelineConnector);
         } else {
-            logger.warn("casing ArgonConnectors already connected");
+            logger.warn("casing PipelineConnectors already connected");
         }
     }
 
     @Override
-    public void disconnectArgonConnector()
+    public void disconnectPipelineConnector()
     {
-        if (null != insideArgonConnector && null != outsideArgonConnector) {
-            FOUNDRY.deregisterCasing(insideArgonConnector);
-            insideArgonConnector.destroy();
-            outsideArgonConnector.destroy();
-            insideArgonConnector = outsideArgonConnector = null;
+        if (null != insidePipelineConnector && null != outsidePipelineConnector) {
+            FOUNDRY.deregisterCasing(insidePipelineConnector);
+            insidePipelineConnector.destroy();
+            outsidePipelineConnector.destroy();
+            insidePipelineConnector = outsidePipelineConnector = null;
         } else {
-            logger.warn("casing ArgonConnectors not connected");
+            logger.warn("casing PipelineConnectors not connected");
         }
     }
 
     @Override
-    public List<ArgonConnector> getArgonConnectors()
+    public List<PipelineConnector> getPipelineConnectors()
     {
-        ArrayList<ArgonConnector> connectors = new ArrayList<ArgonConnector>();
-        connectors.add(insideArgonConnector);
-        connectors.add(outsideArgonConnector);
+        ArrayList<PipelineConnector> connectors = new ArrayList<PipelineConnector>();
+        connectors.add(insidePipelineConnector);
+        connectors.add(outsidePipelineConnector);
         return connectors;
     }
 
     @Override
     public List<NodeSession> liveSessions()
     {
-        if (null != insideArgonConnector) {
-            return insideArgonConnector.liveSessions();
+        if (null != insidePipelineConnector) {
+            return insidePipelineConnector.liveSessions();
         } else {
             return null;
         }

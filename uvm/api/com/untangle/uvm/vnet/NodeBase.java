@@ -100,28 +100,28 @@ public abstract class NodeBase implements Node
 
     protected abstract PipeSpec[] getPipeSpecs();
 
-    protected void connectArgonConnector()
+    protected void connectPipelineConnector()
     {
         if (null == pipeSpecs) {
             PipeSpec[] pss = getPipeSpecs();
             pipeSpecs = null == pss ? new PipeSpec[0] : pss;
             for (PipeSpec ps : pipeSpecs) {
-                ps.connectArgonConnector();
+                ps.connectPipelineConnector();
             }
         } else {
-            logger.warn("ArgonConnectors already connected");
+            logger.warn("PipelineConnectors already connected");
         }
     }
 
-    protected void disconnectArgonConnector()
+    protected void disconnectPipelineConnector()
     {
         if (null != pipeSpecs) {
             for (PipeSpec ps : pipeSpecs) {
-                ps.disconnectArgonConnector();
+                ps.disconnectPipelineConnector();
             }
             pipeSpecs = null;
         } else {
-            logger.warn("ArgonConnectors not connected");
+            logger.warn("PipelineConnectors not connected");
         }
     }
     
@@ -486,25 +486,25 @@ public abstract class NodeBase implements Node
     protected void postInit() { } 
 
     /**
-     * Called just after connecting to ArgonConnector, but before starting.
+     * Called just after connecting to PipelineConnector, but before starting.
      *
      */
     protected void preStart() { } 
 
     /**
-     * Called just after starting ArgonConnector and making subscriptions.
+     * Called just after starting PipelineConnector and making subscriptions.
      *
      */
     protected void postStart() { } 
 
     /**
-     * Called just before stopping ArgonConnector and disconnecting.
+     * Called just before stopping PipelineConnector and disconnecting.
      *
      */
     protected void preStop() { } 
 
     /**
-     * Called after stopping ArgonConnector and disconnecting.
+     * Called after stopping PipelineConnector and disconnecting.
      *
      */
     protected void postStop() { }
@@ -636,7 +636,7 @@ public abstract class NodeBase implements Node
             logger.info("Starting   node " + this.getNodeProperties().getName() + "(" + this.getNodeProperties().getName() + ")" + " ...");
 
             preStart();
-            connectArgonConnector();
+            connectPipelineConnector();
             postStart(); 
 
             logger.info("Started    node " + this.getNodeProperties().getName() + "(" + this.getNodeProperties().getName() + ")" + " ...");
@@ -664,7 +664,7 @@ public abstract class NodeBase implements Node
             UvmContextFactory.context().loggingManager().setLoggingNode( this.nodeSettings.getId() );
             logger.info("Stopping   node " + this.getNodeProperties().getName() + "(" + this.getNodeProperties().getName() + ")" + " ...");
             preStop();
-            disconnectArgonConnector();
+            disconnectPipelineConnector();
         } finally {
             UvmContextFactory.context().loggingManager().setLoggingUvm();
         }

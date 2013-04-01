@@ -16,17 +16,17 @@ import com.untangle.uvm.vnet.NodeSession;
 import com.untangle.uvm.UvmContextFactory;
 
 /**
- * The <code>ArgonAgent</code> represents an active Node as seen by
+ * The <code>PipelineAgent</code> represents an active Node as seen by
  * the node API and the pipeline implementation (Argon).  Most nodes
- * only have one active <code>ArgonAgent</code> at a time. Casings have two.
+ * only have one active <code>PipelineAgent</code> at a time. Casings have two.
  *
  * This class's instances represent and contain the subscription state, pipeline state,
  * and accessors to get the live sessions for the pipe.
  *
  * This class is wrapped inside the view as seen
- * by the node and node API, which is now ArgonConnector.
+ * by the node and node API, which is now PipelineConnector.
  */
-public class ArgonAgent
+public class PipelineAgent
 {
     protected boolean live = true;
     protected NewSessionEventListener listener = NULL_NEW_SESSION_LISTENER;
@@ -52,19 +52,19 @@ public class ArgonAgent
             }
         };
 
-    public ArgonAgent(String name)
+    public PipelineAgent(String name)
     {
         this.name = name;
     }
 
-    public ArgonAgent(String name, NewSessionEventListener listener )
+    public PipelineAgent(String name, NewSessionEventListener listener )
     {
         this.listener = listener;
         this.name = name;
     }
 
     /**
-     * Deactivates an active ArgonConnector and disconnects it from argon.  This kills
+     * Deactivates an active PipelineConnector and disconnects it from argon.  This kills
      * all sessions and threads, and keeps any new sessions or further commands
      * from being issued.
      *
@@ -123,6 +123,6 @@ public class ArgonAgent
 
     public String toString()
     {
-        return "ArgonAgent[" + name + "]";
+        return "PipelineAgent[" + name + "]";
     }
 }

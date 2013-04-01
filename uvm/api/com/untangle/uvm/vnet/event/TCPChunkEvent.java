@@ -5,7 +5,7 @@ package com.untangle.uvm.vnet.event;
 
 import java.nio.ByteBuffer;
 
-import com.untangle.uvm.vnet.ArgonConnector;
+import com.untangle.uvm.vnet.PipelineConnector;
 import com.untangle.uvm.vnet.NodeTCPSession;
 
 /**
@@ -16,9 +16,9 @@ public class TCPChunkEvent extends TCPSessionEvent implements IPDataEvent
 {
     private ByteBuffer readBuffer;
 
-    public TCPChunkEvent( ArgonConnector argonConnector, NodeTCPSession session, ByteBuffer readBuffer )
+    public TCPChunkEvent( PipelineConnector pipelineConnector, NodeTCPSession session, ByteBuffer readBuffer )
     {
-        super(argonConnector, session);
+        super(pipelineConnector, session);
         this.readBuffer = readBuffer;
     }
 

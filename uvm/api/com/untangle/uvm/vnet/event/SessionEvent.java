@@ -3,7 +3,7 @@
  */
 package com.untangle.uvm.vnet.event;
 
-import com.untangle.uvm.vnet.ArgonConnector;
+import com.untangle.uvm.vnet.PipelineConnector;
 import com.untangle.uvm.vnet.NodeSession;
 
 /**
@@ -12,10 +12,10 @@ import com.untangle.uvm.vnet.NodeSession;
  * For all session events, the source is the session.
  */
 @SuppressWarnings("serial")
-public abstract class SessionEvent extends ArgonConnectorEvent
+public abstract class SessionEvent extends PipelineConnectorEvent
 {
-    protected SessionEvent(ArgonConnector argonConnector, NodeSession session)
+    protected SessionEvent(PipelineConnector pipelineConnector, NodeSession session)
     {
-        super(argonConnector, session);
+        super(pipelineConnector, session);
     }
 }

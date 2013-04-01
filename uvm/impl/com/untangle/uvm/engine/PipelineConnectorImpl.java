@@ -7,10 +7,10 @@ import org.apache.log4j.Logger;
 import java.util.List;
 import java.util.LinkedList;
 
-import com.untangle.uvm.argon.ArgonAgent;
+import com.untangle.uvm.argon.PipelineAgent;
 import com.untangle.uvm.node.Node;
 import com.untangle.uvm.node.NodeProperties;
-import com.untangle.uvm.vnet.ArgonConnector;
+import com.untangle.uvm.vnet.PipelineConnector;
 import com.untangle.uvm.vnet.PipeSpec;
 import com.untangle.uvm.vnet.NodeSession;
 import com.untangle.uvm.vnet.NodeTCPSession;
@@ -20,13 +20,13 @@ import com.untangle.uvm.vnet.NodeSession;
 import com.untangle.uvm.vnet.event.SessionEventListener;
 
 /**
- * ArgonConnectorImpl is the implementation of a single ArgonConnector.
+ * PipelineConnectorImpl is the implementation of a single PipelineConnector.
  * Status and control of a pipe happen here.
  * Events are handled in Dispatcher instead.
  */
-public class ArgonConnectorImpl implements ArgonConnector
+public class PipelineConnectorImpl implements PipelineConnector
 {
-    protected ArgonAgent argonAgent = null;
+    protected PipelineAgent pipelineAgent = null;
 
     private final PipeSpec pipeSpec;
 
@@ -45,15 +45,15 @@ public class ArgonConnectorImpl implements ArgonConnector
     private final Fitting outputFitting;
     
     // public construction is the easiest solution to access from
-    // ArgonConnectorManager for now.
-    public ArgonConnectorImpl(PipeSpec pipeSpec, SessionEventListener listener, Fitting inputFitting, Fitting outputFitting )
+    // PipelineConnectorManager for now.
+    public PipelineConnectorImpl(PipeSpec pipeSpec, SessionEventListener listener, Fitting inputFitting, Fitting outputFitting )
     {
         this.node = pipeSpec.getNode();
 
         this.listener = listener;
         this.pipeSpec = pipeSpec;
 
-        logger = Logger.getLogger(ArgonConnector.class);
+        logger = Logger.getLogger(PipelineConnector.class);
         sessionLogger = Logger.getLogger(NodeSession.class);
         sessionEventLogger = Logger.getLogger(NodeSession.class);
         sessionLoggerTCP = Logger.getLogger(NodeTCPSession.class);
@@ -64,7 +64,7 @@ public class ArgonConnectorImpl implements ArgonConnector
         try {
             start();
         } catch (Exception x) {
-            logger.error("Exception plumbing ArgonConnector", x);
+            logger.error("Exception plumbing PipelineConnector", x);
             destroy();
         }
     }
@@ -79,9 +79,9 @@ public class ArgonConnectorImpl implements ArgonConnector
         return node;
     }
 
-    public ArgonAgent getArgonAgent()
+    public PipelineAgent getPipelineAgent()
     {
-        return argonAgent;
+        return pipelineAgent;
     }
 
     public Fitting getInputFitting()
@@ -141,7 +141,7 @@ public class ArgonConnectorImpl implements ArgonConnector
     
     private synchronized  void start() 
     {
-        if ( argonAgent != null ) {
+        if ( pipelineAgent != null ) {
             logger.warn("Already running... ignoring start command");
             return;
         }
@@ -150,31 +150,31 @@ public class ArgonConnectorImpl implements ArgonConnector
         if (listener != null)
             disp.setSessionEventListener(listener);
 
-        argonAgent = new ArgonAgent(pipeSpec.getName(), disp); // Also sets new session listener to dispatcher
+        pipelineAgent = new PipelineAgent(pipeSpec.getName(), disp); // Also sets new session listener to dispatcher
     }
 
     /**
      * This is called by the Node (or NodeManager?) to disconnect
-     * from a live ArgonConnector. Since it is live we must be sure to shut down the
+     * from a live PipelineConnector. Since it is live we must be sure to shut down the
      * Dispatcher nicely (in comparison to shutdown, below).
      *
      */
     public synchronized void destroy()
     {
-        if ( argonAgent != null ) {
+        if ( pipelineAgent != null ) {
             try {
                 disp.destroy();
             } catch (Exception x) {
-                logger.info("Exception destroying ArgonConnector", x);
+                logger.info("Exception destroying PipelineConnector", x);
             }
             disp = null;
 
             try {
-                argonAgent.destroy();
+                pipelineAgent.destroy();
             } catch (Exception x) {
-                logger.info("Exception destroying ArgonConnector", x);
+                logger.info("Exception destroying PipelineConnector", x);
             }
-            argonAgent = null;
+            pipelineAgent = null;
         }
     }
 

@@ -8,15 +8,15 @@ import java.io.IOException;
 
 
 /**
- * A Pipeline is a chain of <code>ArgonConnector</code>s for one <code>Session</code>.
+ * A Pipeline is a chain of <code>PipelineConnector</code>s for one <code>Session</code>.
  */
 public interface Pipeline
 {
     Long attach(Object o);
     Object getAttachment(Long key);
     Object detach(Long key);
-    Fitting getClientFitting(ArgonConnector argonConnector);
-    Fitting getServerFitting(ArgonConnector argonConnector);
+    Fitting getClientFitting(PipelineConnector pipelineConnector);
+    Fitting getServerFitting(PipelineConnector pipelineConnector);
 
     // /**
     //  * Makes a temporary file that will be destroyed on Session

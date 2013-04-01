@@ -28,7 +28,7 @@ public abstract class PipeSpec
     /**
      * Creates a new PipeSpec, with a subscription for all traffic.
      *
-     * @param name display name for this ArgonConnector.
+     * @param name display name for this PipelineConnector.
      */
     protected PipeSpec(String name, Node node)
     {
@@ -75,9 +75,9 @@ public abstract class PipeSpec
 
     // public abstract methods ------------------------------------------------
 
-    public abstract void connectArgonConnector();
-    public abstract void disconnectArgonConnector();
-    public abstract List<ArgonConnector> getArgonConnectors();
+    public abstract void connectPipelineConnector();
+    public abstract void disconnectPipelineConnector();
+    public abstract List<PipelineConnector> getPipelineConnectors();
     public abstract List<NodeSession> liveSessions();
 
     // accessors --------------------------------------------------------------

@@ -10,7 +10,7 @@ public class ArgonTCPNewSessionRequest extends ArgonIPNewSessionRequest
 {
     final boolean acked;
 
-    public ArgonTCPNewSessionRequest( SessionGlobalState sessionGlobalState, ArgonAgent agent, SessionEvent pe )
+    public ArgonTCPNewSessionRequest( SessionGlobalState sessionGlobalState, PipelineAgent agent, SessionEvent pe )
     {
         super( sessionGlobalState, agent, pe );
 
@@ -18,7 +18,7 @@ public class ArgonTCPNewSessionRequest extends ArgonIPNewSessionRequest
         acked = sessionGlobalState.netcapTCPSession().acked();
     }
 
-    public ArgonTCPNewSessionRequest( NodeTCPSession session, ArgonAgent agent, SessionEvent pe, SessionGlobalState sessionGlobalState)
+    public ArgonTCPNewSessionRequest( NodeTCPSession session, PipelineAgent agent, SessionEvent pe, SessionGlobalState sessionGlobalState)
     {
         super( session, agent, pe, sessionGlobalState);
 

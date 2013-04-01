@@ -38,7 +38,7 @@ public interface Node
     NodeSettings.NodeState getRunState();
 
     /**
-     * Connects to ArgonConnector and starts. The node instance reads its
+     * Connects to PipelineConnector and starts. The node instance reads its
      * configuration each time this method is called. A call to this method
      * is only valid when the instance is in the
      * {@link NodeState#INITIALIZED} state. After successful return,
@@ -50,7 +50,7 @@ public interface Node
     void start() throws Exception;
 
     /**
-     * Stops node and disconnects from the ArgonConnector. A call to
+     * Stops node and disconnects from the PipelineConnector. A call to
      * this method is only valid when the instance is in the {@link
      * NodeState#RUNNING} state. After successful return, the
      * instance will be in the {@link NodeState#INITIALIZED}

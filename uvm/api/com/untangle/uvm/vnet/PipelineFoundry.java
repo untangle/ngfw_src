@@ -14,15 +14,15 @@ import com.untangle.uvm.vnet.event.SessionEventListener;
  */
 public interface PipelineFoundry
 {
-    ArgonConnector createArgonConnector( PipeSpec spec, SessionEventListener listener, Fitting inputFitting, Fitting outputFitting );
+    PipelineConnector createPipelineConnector( PipeSpec spec, SessionEventListener listener, Fitting inputFitting, Fitting outputFitting );
 
-    void registerArgonConnector( ArgonConnector argonConnector );
+    void registerPipelineConnector( PipelineConnector pipelineConnector );
 
-    void deregisterArgonConnector( ArgonConnector argonConnector );
+    void deregisterPipelineConnector( PipelineConnector pipelineConnector );
 
-    void registerCasing( ArgonConnector insideArgonConnector, ArgonConnector outsideArgonConnector );
+    void registerCasing( PipelineConnector insidePipelineConnector, PipelineConnector outsidePipelineConnector );
 
-    void deregisterCasing( ArgonConnector insideArgonConnector);
+    void deregisterCasing( PipelineConnector insidePipelineConnector);
 
     /* Remove all of the cached chains */
     void clearCache();

@@ -195,7 +195,7 @@ public class ArgonUDPHook implements NetcapHook
             return new UDPSource( netcapUDPSession.serverMailbox(), serverSideListener );
         }
 
-        protected void newSessionRequest( ArgonAgent agent, Iterator<?> iter, SessionEvent pe )
+        protected void newSessionRequest( PipelineAgent agent, Iterator<?> iter, SessionEvent pe )
         {
             ArgonUDPNewSessionRequest request;
 

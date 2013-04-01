@@ -61,8 +61,8 @@ public abstract class FtpStateMachine extends AbstractTokenHandler
         super(session);
 
         Pipeline p = getPipeline();
-        clientFitting = p.getClientFitting(session.argonConnector());
-        serverFitting = p.getServerFitting(session.argonConnector());
+        clientFitting = p.getClientFitting(session.pipelineConnector());
+        serverFitting = p.getServerFitting(session.pipelineConnector());
     }
 
     // protected methods ------------------------------------------------------

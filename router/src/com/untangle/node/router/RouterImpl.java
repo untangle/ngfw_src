@@ -14,7 +14,7 @@ import com.untangle.uvm.node.SessionTuple;
 import com.untangle.uvm.vnet.NodeBase;
 import com.untangle.uvm.vnet.Affinity;
 import com.untangle.uvm.vnet.Fitting;
-import com.untangle.uvm.vnet.ArgonConnector;
+import com.untangle.uvm.vnet.PipelineConnector;
 import com.untangle.uvm.vnet.PipeSpec;
 import com.untangle.uvm.vnet.SoloPipeSpec;
 import org.apache.log4j.Logger;
@@ -60,14 +60,14 @@ public class RouterImpl extends NodeBase implements Router
         return handler;
     }
 
-    ArgonConnector getRouterArgonConnector()
+    PipelineConnector getRouterPipelineConnector()
     {
-        return routerPipeSpec.getArgonConnector();
+        return routerPipeSpec.getPipelineConnector();
     }
 
-    ArgonConnector getRouterFtpPipeSpec()
+    PipelineConnector getRouterFtpPipeSpec()
     {
-        return routerFtpPipeSpec.getArgonConnector();
+        return routerFtpPipeSpec.getPipelineConnector();
     }
 
     // NodeBase methods ----------------------------------------------

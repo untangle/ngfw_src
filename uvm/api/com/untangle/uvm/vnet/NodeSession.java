@@ -27,12 +27,12 @@ public interface NodeSession extends SessionTuple
     static final byte HALF_OPEN_OUTPUT = 6; /* for TCP */
     
     /**
-     * <code>argonConnector</code> returns the Meta Pipe <code>ArgonConnector</code>
+     * <code>pipelineConnector</code> returns the Meta Pipe <code>PipelineConnector</code>
      * that this session lives on.
      *
-     * @return the <code>ArgonConnector</code> that this session is for
+     * @return the <code>PipelineConnector</code> that this session is for
      */
-    ArgonConnector argonConnector();
+    PipelineConnector pipelineConnector();
 
     /**
      * Attaches the given object to this session.

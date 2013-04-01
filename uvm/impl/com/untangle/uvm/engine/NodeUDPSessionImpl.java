@@ -51,9 +51,9 @@ public class NodeUDPSessionImpl extends NodeSessionImpl implements NodeUDPSessio
             throw new IllegalArgumentException("Illegal maximum server packet bufferSize: " + serverMaxPacketSize);
         this.maxPacketSize = new int[] { clientMaxPacketSize, serverMaxPacketSize };
 
-        ArgonConnectorImpl argonConnector = disp.argonConnector();
+        PipelineConnectorImpl pipelineConnector = disp.pipelineConnector();
 
-        this.logger = argonConnector.sessionLoggerUDP();
+        this.logger = pipelineConnector.sessionLoggerUDP();
         this.ttl     = request.ttl();
         this.tos     = request.tos();
         this.options = request.options();
@@ -251,7 +251,7 @@ public class NodeUDPSessionImpl extends NodeSessionImpl implements NodeUDPSessio
 
     protected void sendWritableEvent(int side)
     {
-        UDPSessionEvent wevent = new UDPSessionEvent(argonConnector, this);
+        UDPSessionEvent wevent = new UDPSessionEvent(pipelineConnector, this);
         if (side == CLIENT)
             dispatcher.dispatchUDPClientWritable(wevent);
         else
@@ -260,13 +260,13 @@ public class NodeUDPSessionImpl extends NodeSessionImpl implements NodeUDPSessio
 
     protected void sendCompleteEvent()
     {
-        UDPSessionEvent wevent = new UDPSessionEvent(argonConnector, this);
+        UDPSessionEvent wevent = new UDPSessionEvent(pipelineConnector, this);
         dispatcher.dispatchUDPComplete(wevent);
     }
 
     protected void sendExpiredEvent(int side)
     {
-        UDPSessionEvent wevent = new UDPSessionEvent(argonConnector, this);
+        UDPSessionEvent wevent = new UDPSessionEvent(pipelineConnector, this);
         if (side == CLIENT)
             dispatcher.dispatchUDPClientExpired(wevent);
         else
@@ -339,7 +339,7 @@ public class NodeUDPSessionImpl extends NodeSessionImpl implements NodeUDPSessio
         // a buffer manually -- the position and limit must already be correct when sent, so
         // there's no need for us to duplicate here.
 
-        UDPPacketEvent event = new UDPPacketEvent(argonConnector, this, pbuf, pheader);
+        UDPPacketEvent event = new UDPPacketEvent(pipelineConnector, this, pbuf, pheader);
         if (side == CLIENT)
             dispatcher.dispatchUDPClientPacket(event);
         else
@@ -359,7 +359,7 @@ public class NodeUDPSessionImpl extends NodeSessionImpl implements NodeUDPSessio
     protected void closeFinal()
     {
         try {
-            UDPSessionEvent wevent = new UDPSessionEvent(argonConnector, this);
+            UDPSessionEvent wevent = new UDPSessionEvent(pipelineConnector, this);
             dispatcher.dispatchUDPFinalized(wevent);
         } catch (Exception x) {
             logger.warn("Exception in Finalized", x);

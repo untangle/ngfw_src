@@ -31,7 +31,7 @@ public class SoloPipeSpec extends PipeSpec
     private final int strength;
 
     private final SessionEventListener listener;
-    private ArgonConnector argonConnector;
+    private PipelineConnector pipelineConnector;
 
     // constructors -----------------------------------------------------------
 
@@ -99,49 +99,49 @@ public class SoloPipeSpec extends PipeSpec
         return strength;
     }
 
-    public ArgonConnector getArgonConnector()
+    public PipelineConnector getPipelineConnector()
     {
-        return argonConnector;
+        return pipelineConnector;
     }
 
     // PipeSpec methods -------------------------------------------------------
 
     @Override
-    public void connectArgonConnector()
+    public void connectPipelineConnector()
     {
-        if (null == argonConnector) {
-            this.argonConnector = UvmContextFactory.context().pipelineFoundry().createArgonConnector( this, listener, fitting, fitting );
-            UvmContextFactory.context().pipelineFoundry().registerArgonConnector(argonConnector);
+        if (null == pipelineConnector) {
+            this.pipelineConnector = UvmContextFactory.context().pipelineFoundry().createPipelineConnector( this, listener, fitting, fitting );
+            UvmContextFactory.context().pipelineFoundry().registerPipelineConnector(pipelineConnector);
         } else {
-            logger.warn("argonConnectors already connected");
+            logger.warn("pipelineConnectors already connected");
         }
     }
 
     @Override
-    public void disconnectArgonConnector()
+    public void disconnectPipelineConnector()
     {
-        if (null != argonConnector) {
-            UvmContextFactory.context().pipelineFoundry().deregisterArgonConnector(argonConnector);
-            argonConnector.destroy();
-            argonConnector = null;
+        if (null != pipelineConnector) {
+            UvmContextFactory.context().pipelineFoundry().deregisterPipelineConnector(pipelineConnector);
+            pipelineConnector.destroy();
+            pipelineConnector = null;
         } else {
-            logger.warn("argonConnectors not connected");
+            logger.warn("pipelineConnectors not connected");
         }
     }
 
     @Override
-    public List<ArgonConnector> getArgonConnectors()
+    public List<PipelineConnector> getPipelineConnectors()
     {
-        ArrayList<ArgonConnector> connectors = new ArrayList<ArgonConnector>();
-        connectors.add(argonConnector);
+        ArrayList<PipelineConnector> connectors = new ArrayList<PipelineConnector>();
+        connectors.add(pipelineConnector);
         return connectors;
     }
     
     @Override
     public List<NodeSession> liveSessions()
     {
-        if (null != argonConnector) {
-            return argonConnector.liveSessions();
+        if (null != pipelineConnector) {
+            return pipelineConnector.liveSessions();
         } else {
             return null;
         }

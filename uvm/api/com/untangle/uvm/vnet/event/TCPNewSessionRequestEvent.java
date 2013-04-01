@@ -3,19 +3,19 @@
  */
 package com.untangle.uvm.vnet.event;
 
-import com.untangle.uvm.vnet.ArgonConnector;
+import com.untangle.uvm.vnet.PipelineConnector;
 import com.untangle.uvm.vnet.TCPNewSessionRequest;
 
 /**
  * New TCP session request event
  */
 @SuppressWarnings("serial")
-public class TCPNewSessionRequestEvent extends ArgonConnectorEvent
+public class TCPNewSessionRequestEvent extends PipelineConnectorEvent
 {
     
-    public TCPNewSessionRequestEvent(ArgonConnector argonConnector, TCPNewSessionRequest sessionRequest)
+    public TCPNewSessionRequestEvent(PipelineConnector pipelineConnector, TCPNewSessionRequest sessionRequest)
     {
-        super(argonConnector, sessionRequest);
+        super(pipelineConnector, sessionRequest);
     }
 
     public TCPNewSessionRequest sessionRequest()

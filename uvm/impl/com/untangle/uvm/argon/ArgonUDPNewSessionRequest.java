@@ -14,7 +14,7 @@ public class ArgonUDPNewSessionRequest extends ArgonIPNewSessionRequest
     protected byte tos;
     protected byte[] options;
 
-    public ArgonUDPNewSessionRequest( SessionGlobalState sessionGlobalState, ArgonAgent agent, SessionEvent pe )
+    public ArgonUDPNewSessionRequest( SessionGlobalState sessionGlobalState, PipelineAgent agent, SessionEvent pe )
     {
         super( sessionGlobalState, agent, pe );
 
@@ -25,7 +25,7 @@ public class ArgonUDPNewSessionRequest extends ArgonIPNewSessionRequest
         this.tos    = netcapUDPSession.tos();
     }
     
-    public ArgonUDPNewSessionRequest( NodeUDPSession session, ArgonAgent agent, SessionEvent pe, SessionGlobalState sessionGlobalState)
+    public ArgonUDPNewSessionRequest( NodeUDPSession session, PipelineAgent agent, SessionEvent pe, SessionGlobalState sessionGlobalState)
     {
         super( session, agent, pe, sessionGlobalState );
 

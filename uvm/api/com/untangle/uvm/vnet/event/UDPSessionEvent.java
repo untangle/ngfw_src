@@ -3,7 +3,7 @@
  */
 package com.untangle.uvm.vnet.event;
 
-import com.untangle.uvm.vnet.ArgonConnector;
+import com.untangle.uvm.vnet.PipelineConnector;
 import com.untangle.uvm.vnet.NodeUDPSession;
 
 /**
@@ -13,9 +13,9 @@ import com.untangle.uvm.vnet.NodeUDPSession;
 public class UDPSessionEvent extends IPSessionEvent
 {
     
-    public UDPSessionEvent(ArgonConnector argonConnector, NodeUDPSession session)
+    public UDPSessionEvent(PipelineConnector pipelineConnector, NodeUDPSession session)
     {
-        super(argonConnector, session);
+        super(pipelineConnector, session);
     }
 
     public NodeUDPSession session()

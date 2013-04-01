@@ -55,9 +55,9 @@ public class NodeTCPSessionImpl extends NodeSessionImpl implements NodeTCPSessio
         this.readBufferSize = new int[] { clientReadBufferSize, serverReadBufferSize };
         this.readLimit = new int[] { clientReadBufferSize, serverReadBufferSize };
 
-        ArgonConnectorImpl argonConnector = disp.argonConnector();
+        PipelineConnectorImpl pipelineConnector = disp.pipelineConnector();
 
-        logger = argonConnector.sessionLoggerTCP();
+        logger = pipelineConnector.sessionLoggerTCP();
     }
 
     public int serverReadBufferSize()
@@ -373,7 +373,7 @@ public class NodeTCPSessionImpl extends NodeSessionImpl implements NodeTCPSessio
     protected void sendWritableEvent(int side)
         
     {
-        TCPSessionEvent wevent = new TCPSessionEvent(argonConnector, this);
+        TCPSessionEvent wevent = new TCPSessionEvent(pipelineConnector, this);
 
         IPDataResult result = side == CLIENT ? dispatcher.dispatchTCPClientWritable(wevent)
             : dispatcher.dispatchTCPServerWritable(wevent);
@@ -391,7 +391,7 @@ public class NodeTCPSessionImpl extends NodeSessionImpl implements NodeTCPSessio
     protected void sendCompleteEvent()
         
     {
-        TCPSessionEvent wevent = new TCPSessionEvent(argonConnector, this);
+        TCPSessionEvent wevent = new TCPSessionEvent(pipelineConnector, this);
         dispatcher.dispatchTCPComplete(wevent);
     }
 
@@ -401,7 +401,7 @@ public class NodeTCPSessionImpl extends NodeSessionImpl implements NodeTCPSessio
         // First give the node a chance to do something...
         IPDataResult result;
         ByteBuffer dataBuf = existingReadBuf != null ? existingReadBuf : EMPTY_BUF;
-        TCPChunkEvent cevent = new TCPChunkEvent(argonConnector, this, dataBuf);
+        TCPChunkEvent cevent = new TCPChunkEvent(pipelineConnector, this, dataBuf);
         if (side == CLIENT)
             result = dispatcher.dispatchTCPClientDataEnd(cevent);
         else
@@ -416,7 +416,7 @@ public class NodeTCPSessionImpl extends NodeSessionImpl implements NodeTCPSessio
         }
 
         // Then run the FIN handler.  This will send the FIN along to the other side by default.
-        TCPSessionEvent wevent = new TCPSessionEvent(argonConnector, this);
+        TCPSessionEvent wevent = new TCPSessionEvent(pipelineConnector, this);
         if (side == CLIENT)
             dispatcher.dispatchTCPClientFIN(wevent);
         else
@@ -426,7 +426,7 @@ public class NodeTCPSessionImpl extends NodeSessionImpl implements NodeTCPSessio
     protected void sendRSTEvent(int side)
         
     {
-        TCPSessionEvent wevent = new TCPSessionEvent(argonConnector, this);
+        TCPSessionEvent wevent = new TCPSessionEvent(pipelineConnector, this);
         if (side == CLIENT)
             dispatcher.dispatchTCPClientRST(wevent);
         else
@@ -581,7 +581,7 @@ public class NodeTCPSessionImpl extends NodeSessionImpl implements NodeTCPSessio
         userBuf = readBuf[side].duplicate();
         userBuf.flip();
         IPDataResult result;
-        TCPChunkEvent event = new TCPChunkEvent(argonConnector, this, userBuf);
+        TCPChunkEvent event = new TCPChunkEvent(pipelineConnector, this, userBuf);
 
         if (side == CLIENT)
             result = dispatcher.dispatchTCPClientChunk(event);
@@ -616,7 +616,7 @@ public class NodeTCPSessionImpl extends NodeSessionImpl implements NodeTCPSessio
     protected void closeFinal()
     {
         try {
-            TCPSessionEvent wevent = new TCPSessionEvent(argonConnector, this);
+            TCPSessionEvent wevent = new TCPSessionEvent(pipelineConnector, this);
             dispatcher.dispatchTCPFinalized(wevent);
         } catch (Exception x) {
             logger.warn("Exception in Finalized", x);

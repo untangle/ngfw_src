@@ -12,7 +12,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.untangle.uvm.vnet.Fitting;
-import com.untangle.uvm.vnet.ArgonConnector;
+import com.untangle.uvm.vnet.PipelineConnector;
 import com.untangle.uvm.vnet.Pipeline;
 
 /**
@@ -28,7 +28,7 @@ class PipelineImpl implements Pipeline
         
     // constructors -----------------------------------------------------------
 
-    PipelineImpl(long sessionId, List<ArgonConnector> argonConnectors)
+    PipelineImpl(long sessionId, List<PipelineConnector> pipelineConnectors)
     {
     }
 
@@ -73,13 +73,13 @@ class PipelineImpl implements Pipeline
         return attachments.remove(key);
     }
 
-    public Fitting getClientFitting(ArgonConnector argonConnector)
+    public Fitting getClientFitting(PipelineConnector pipelineConnector)
     {
-        return argonConnector.getInputFitting();
+        return pipelineConnector.getInputFitting();
     }
 
-    public Fitting getServerFitting(ArgonConnector argonConnector)
+    public Fitting getServerFitting(PipelineConnector pipelineConnector)
     {
-        return argonConnector.getOutputFitting();
+        return pipelineConnector.getOutputFitting();
     }
 }

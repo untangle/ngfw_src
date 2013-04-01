@@ -15,13 +15,13 @@ import org.apache.log4j.MDC;
 import org.apache.log4j.helpers.AbsoluteTimeDateFormat;
 import static com.untangle.uvm.engine.Dispatcher.SESSION_ID_MDC_KEY;
 
-import com.untangle.uvm.vnet.ArgonConnector;
+import com.untangle.uvm.vnet.PipelineConnector;
 import com.untangle.uvm.vnet.NodeSession;
 import com.untangle.uvm.node.SessionEvent;
 import com.untangle.uvm.node.Node;
 import com.untangle.uvm.node.NodeSettings;
 import com.untangle.uvm.argon.ArgonIPNewSessionRequest;
-import com.untangle.uvm.argon.ArgonAgent;
+import com.untangle.uvm.argon.PipelineAgent;
 import com.untangle.uvm.argon.SessionGlobalState;
 import com.untangle.uvm.vnet.NodeSessionStats;
 import com.untangle.uvm.vnet.event.IPStreamer;
@@ -74,7 +74,7 @@ public abstract class NodeSessionImpl implements NodeSession
     protected final IncomingSocketQueue serverIncomingSocketQueue;
     protected final OutgoingSocketQueue serverOutgoingSocketQueue;
 
-    protected final ArgonAgent argonAgent;
+    protected final PipelineAgent pipelineAgent;
 
     protected final SessionGlobalState sessionGlobalState;
 
@@ -83,7 +83,7 @@ public abstract class NodeSessionImpl implements NodeSession
 
     protected final boolean isVectored;
 
-    protected ArgonConnectorImpl argonConnector;
+    protected PipelineConnectorImpl pipelineConnector;
 
     protected final SessionEvent sessionEvent;
 
@@ -92,12 +92,12 @@ public abstract class NodeSessionImpl implements NodeSession
     protected NodeSessionImpl( Dispatcher dispatcher, SessionEvent sessionEvent, ArgonIPNewSessionRequest request )
     {
         this.dispatcher = dispatcher;
-        this.argonConnector = dispatcher.argonConnector();
+        this.pipelineConnector = dispatcher.pipelineConnector();
         this.sessionEvent = sessionEvent;
         boolean isVectored = (request.state() == ArgonIPNewSessionRequest.REQUESTED || request.state() == ArgonIPNewSessionRequest.ENDPOINTED);
         
         sessionGlobalState        = request.sessionGlobalState();
-        argonAgent                = request.argonAgent();
+        pipelineAgent                = request.pipelineAgent();
 
         if ( isVectored ) {
             this.isVectored           = true;
@@ -116,7 +116,7 @@ public abstract class NodeSessionImpl implements NodeSession
             serverOutgoingSocketQueue = null;
         }
 
-        this.logger = this.argonConnector.sessionLogger();
+        this.logger = this.pipelineConnector.sessionLogger();
         
         this.stats = new NodeSessionStats();
         this.protocol      = request.getProtocol();
@@ -137,9 +137,9 @@ public abstract class NodeSessionImpl implements NodeSession
         }
     }
 
-    public ArgonConnector argonConnector()
+    public PipelineConnector pipelineConnector()
     {
-        return argonConnector;
+        return pipelineConnector;
     }
 
     public Object attach(Object ob)
@@ -184,9 +184,9 @@ public abstract class NodeSessionImpl implements NodeSession
         return sessionGlobalState.id();
     }
     
-    public ArgonAgent argonAgent()
+    public PipelineAgent pipelineAgent()
     {
-        return argonAgent;
+        return pipelineAgent;
     }
 
     public NetcapSession netcapSession()
@@ -351,7 +351,7 @@ public abstract class NodeSessionImpl implements NodeSession
         if ( serverIncomingSocketQueue != null ) serverIncomingSocketQueue.raze();
         if ( serverOutgoingSocketQueue != null ) serverOutgoingSocketQueue.raze();
 
-        Node xform = argonConnector().node();
+        Node xform = pipelineConnector().node();
         if (xform.getRunState() != NodeSettings.NodeState.RUNNING) {
             String message = "killing: raze for node in state " + xform.getRunState();
             logger.warn(message);
@@ -407,7 +407,7 @@ public abstract class NodeSessionImpl implements NodeSession
 
         /* Remove the session from the argon agent table */
         if ( isClientShutdown && isServerShutdown ) {
-            argonAgent.removeSession( this );
+            pipelineAgent.removeSession( this );
         }
     }
 
@@ -553,7 +553,7 @@ public abstract class NodeSessionImpl implements NodeSession
 
     public void complete()
     {
-        Node xform = argonConnector().node();
+        Node xform = pipelineConnector().node();
         if (xform.getRunState() != NodeSettings.NodeState.RUNNING) {
             String message = "killing: complete(in) for node in state " + xform.getRunState();
             logger.warn(message);
@@ -580,7 +580,7 @@ public abstract class NodeSessionImpl implements NodeSession
 
     public void clientEvent(IncomingSocketQueue in)
     {
-        Node xform = argonConnector().node();
+        Node xform = pipelineConnector().node();
         if (xform.getRunState() != NodeSettings.NodeState.RUNNING) {
             String message = "killing: clientEvent(in) for node in state " + xform.getRunState();
             logger.warn(message);
@@ -598,7 +598,7 @@ public abstract class NodeSessionImpl implements NodeSession
 
     public void serverEvent(IncomingSocketQueue in)
     {
-        Node xform = argonConnector().node();
+        Node xform = pipelineConnector().node();
         if (xform.getRunState() != NodeSettings.NodeState.RUNNING) {
             String message = "killing: serverEvent(in) for node in state " + xform.getRunState();
             logger.warn(message);
@@ -616,7 +616,7 @@ public abstract class NodeSessionImpl implements NodeSession
 
     public void clientEvent(OutgoingSocketQueue out)
     {
-        Node xform = argonConnector().node();
+        Node xform = pipelineConnector().node();
         if (xform.getRunState() != NodeSettings.NodeState.RUNNING) {
             String message = "killing: clientEvent(out) for node in state " + xform.getRunState();
             logger.warn(message);
@@ -634,7 +634,7 @@ public abstract class NodeSessionImpl implements NodeSession
 
     public void serverEvent(OutgoingSocketQueue out)
     {
-        Node xform = argonConnector().node();
+        Node xform = pipelineConnector().node();
         if (xform.getRunState() != NodeSettings.NodeState.RUNNING) {
             String message = "killing: serverEvent(out) for node in state " + xform.getRunState();
             logger.warn(message);
@@ -655,7 +655,7 @@ public abstract class NodeSessionImpl implements NodeSession
      * as an event */
     public void clientOutputResetEvent(OutgoingSocketQueue out)
     {
-        Node xform = argonConnector().node();
+        Node xform = pipelineConnector().node();
         if (xform.getRunState() != NodeSettings.NodeState.RUNNING) {
             String message = "killing: output reset(client) for node in state " + xform.getRunState();
             logger.warn(message);
@@ -688,7 +688,7 @@ public abstract class NodeSessionImpl implements NodeSession
      * as an event */
     public void serverOutputResetEvent(OutgoingSocketQueue out)
     {
-        Node xform = argonConnector().node();
+        Node xform = pipelineConnector().node();
         if (xform.getRunState() != NodeSettings.NodeState.RUNNING) {
             String message = "killing: output reset(server) for node in state " + xform.getRunState();
             logger.warn(message);

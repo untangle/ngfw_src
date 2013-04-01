@@ -49,9 +49,9 @@ public abstract class ArgonHook implements Runnable
     protected static final int REJECT_CODE_SRV = -1;
 
     /**
-     * List of all of the nodes( ArgonAgents )
+     * List of all of the nodes( PipelineAgents )
      */
-    protected List<ArgonAgent> pipelineAgents;
+    protected List<PipelineAgent> pipelineAgents;
     protected Long policyId = null;
 
     protected List<NodeSessionImpl> sessionList = new ArrayList<NodeSessionImpl>();
@@ -165,7 +165,7 @@ public abstract class ArgonHook implements Runnable
             }
 
             pipelineAgents = pipelineFoundry.weld( sessionGlobalState.id(), clientSide, policyId );
-            sessionGlobalState.setArgonAgents(pipelineAgents);
+            sessionGlobalState.setPipelineAgents(pipelineAgents);
             
             /* Create the sessionEvent early so they can be available at request time. */
             sessionEvent =  new SessionEvent( );
@@ -364,8 +364,8 @@ public abstract class ArgonHook implements Runnable
      */
     private void initNodes( SessionEvent event )
     {
-        for ( Iterator<ArgonAgent> iter = pipelineAgents.iterator() ; iter.hasNext() ; ) {
-            ArgonAgent agent = iter.next();
+        for ( Iterator<PipelineAgent> iter = pipelineAgents.iterator() ; iter.hasNext() ; ) {
+            PipelineAgent agent = iter.next();
 
             if ( state == ArgonIPNewSessionRequest.REQUESTED ) {
                 newSessionRequest( agent, iter, event );
@@ -496,7 +496,7 @@ public abstract class ArgonHook implements Runnable
                     logger.debug( "ArgonHook: buildPipeline - added session: " + session );
                 }
 
-                session.argonAgent().addSession( session );
+                session.pipelineAgent().addSession( session );
 
                 prevOutgoingSQ = session.serverOutgoingSocketQueue();
                 prevIncomingSQ = session.serverIncomingSocketQueue();
@@ -717,7 +717,7 @@ public abstract class ArgonHook implements Runnable
     protected abstract Source makeClientSource();
     protected abstract Source makeServerSource();
 
-    protected abstract void newSessionRequest( ArgonAgent agent, Iterator<?> iter, SessionEvent pe );
+    protected abstract void newSessionRequest( PipelineAgent agent, Iterator<?> iter, SessionEvent pe );
 
     protected abstract void raze();
 }

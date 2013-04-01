@@ -14,8 +14,8 @@ import org.apache.log4j.Logger;
 import com.untangle.jvector.Vector;
 import com.untangle.uvm.SessionMatcher;
 import com.untangle.uvm.vnet.PipeSpec;
-import com.untangle.uvm.vnet.ArgonConnector;
-import com.untangle.uvm.engine.ArgonConnectorImpl;
+import com.untangle.uvm.vnet.PipelineConnector;
+import com.untangle.uvm.engine.PipelineConnectorImpl;
 
 /**
  * This table stores a global list of all currently active sessions being vectored
@@ -138,11 +138,11 @@ public class ArgonSessionTable
         /**
          * Build the list of agents associated with this pipespec
          */
-        List<ArgonConnector> argonConnectors = ps.getArgonConnectors();
-        List<ArgonAgent> agents = new LinkedList<ArgonAgent>();
-        for (ArgonConnector connector : argonConnectors) {
-            ArgonConnectorImpl conn = (ArgonConnectorImpl) connector;
-            agents.add(conn.getArgonAgent());
+        List<PipelineConnector> pipelineConnectors = ps.getPipelineConnectors();
+        List<PipelineAgent> agents = new LinkedList<PipelineAgent>();
+        for (PipelineConnector connector : pipelineConnectors) {
+            PipelineConnectorImpl conn = (PipelineConnectorImpl) connector;
+            agents.add(conn.getPipelineAgent());
         }
         
         /**
@@ -159,11 +159,11 @@ public class ArgonSessionTable
             /**
              * Only process sessions involving the specified pipespec and associated agents
              */
-            if (session.getArgonAgents() == null)
+            if (session.getPipelineAgents() == null)
                 continue;
             boolean matchesOne = false;
-            for (ArgonAgent agent : agents)
-                if (session.getArgonAgents().contains(agent))
+            for (PipelineAgent agent : agents)
+                if (session.getPipelineAgents().contains(agent))
                     matchesOne = true;
             if (!matchesOne)
                 continue;

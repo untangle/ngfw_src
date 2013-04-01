@@ -3,7 +3,7 @@
  */
 package com.untangle.uvm.vnet.event;
 
-import com.untangle.uvm.vnet.ArgonConnector;
+import com.untangle.uvm.vnet.PipelineConnector;
 import com.untangle.uvm.vnet.NodeTCPSession;
 
 /**
@@ -12,9 +12,9 @@ import com.untangle.uvm.vnet.NodeTCPSession;
 @SuppressWarnings("serial")
 public class TCPSessionEvent extends IPSessionEvent
 {
-    public TCPSessionEvent(ArgonConnector argonConnector, NodeTCPSession session)
+    public TCPSessionEvent(PipelineConnector pipelineConnector, NodeTCPSession session)
     {
-        super(argonConnector, session);
+        super(pipelineConnector, session);
     }
 
     public NodeTCPSession session()

@@ -43,7 +43,7 @@ public class SessionGlobalState
      * This is used for resetting sessions with killMatchingSessions so we can only reset
      * sessions that were originally processed by the node calling killMatchingSessions
      */
-    private List<ArgonAgent> originalAgents;
+    private List<PipelineAgent> originalAgents;
     
     SessionGlobalState( NetcapSession netcapSession, SideListener clientSideListener, SideListener serverSideListener, ArgonHook argonHook )
     {
@@ -113,12 +113,12 @@ public class SessionGlobalState
         return serverSideListener;
     }
 
-    public List<ArgonAgent> getArgonAgents()
+    public List<PipelineAgent> getPipelineAgents()
     {
         return originalAgents;
     }
 
-    public void setArgonAgents( List<ArgonAgent> agents )
+    public void setPipelineAgents( List<PipelineAgent> agents )
     {
         this.originalAgents = agents;
     }

@@ -301,7 +301,7 @@
     <priority value="INFO"/>
   </category>
 
-  <category name="com.untangle.uvm.vnet.ArgonConnector">
+  <category name="com.untangle.uvm.vnet.PipelineConnector">
     <priority value="WARN"/>
   </category>
 

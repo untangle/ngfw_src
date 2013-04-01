@@ -221,7 +221,7 @@ public class ArgonTCPHook implements NetcapHook
             return new TCPSource( netcapTCPSession.tcpServerSide().fd(), serverSideListener );
         }
 
-        protected void newSessionRequest( ArgonAgent agent, Iterator<?> iter, SessionEvent pe )
+        protected void newSessionRequest( PipelineAgent agent, Iterator<?> iter, SessionEvent pe )
         {
             ArgonTCPNewSessionRequest request;
 

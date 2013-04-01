@@ -7,18 +7,18 @@ import com.untangle.jnetcap.NetcapSession;
 
 public abstract class ArgonNewSessionRequest
 {
-    protected final ArgonAgent    argonAgent;
+    protected final PipelineAgent    pipelineAgent;
     protected final SessionGlobalState sessionGlobalState;
     
-    ArgonNewSessionRequest( SessionGlobalState sessionGlobalState, ArgonAgent agent )
+    ArgonNewSessionRequest( SessionGlobalState sessionGlobalState, PipelineAgent agent )
     {
         this.sessionGlobalState = sessionGlobalState;
-        this.argonAgent         = agent;
+        this.pipelineAgent         = agent;
     }
     
-    public ArgonAgent argonAgent()
+    public PipelineAgent pipelineAgent()
     {
-        return argonAgent;
+        return pipelineAgent;
     }
     
     public NetcapSession netcapSession()

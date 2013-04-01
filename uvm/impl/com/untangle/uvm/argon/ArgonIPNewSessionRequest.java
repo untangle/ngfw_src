@@ -55,7 +55,7 @@ public abstract class ArgonIPNewSessionRequest extends ArgonNewSessionRequest
     /* Two ways to create an IPNewSessionRequest:
      * A. Pass in the netcap session and get the parameters from there.
      */
-    public ArgonIPNewSessionRequest( SessionGlobalState sessionGlobalState, ArgonAgent agent, SessionEvent pe )
+    public ArgonIPNewSessionRequest( SessionGlobalState sessionGlobalState, PipelineAgent agent, SessionEvent pe )
     {
         super( sessionGlobalState, agent );
 
@@ -85,7 +85,7 @@ public abstract class ArgonIPNewSessionRequest extends ArgonNewSessionRequest
     /* Two ways to create an IPNewSessionRequest:
      * B. Pass in the previous request and get the parameters from there
      */
-    public ArgonIPNewSessionRequest( NodeSession session, ArgonAgent agent, SessionEvent pe, SessionGlobalState sessionGlobalState)
+    public ArgonIPNewSessionRequest( NodeSession session, PipelineAgent agent, SessionEvent pe, SessionGlobalState sessionGlobalState)
     {
         super( ((NodeSessionImpl)session).sessionGlobalState(), agent);
 

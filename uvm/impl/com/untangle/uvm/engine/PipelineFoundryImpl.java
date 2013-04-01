@@ -6,6 +6,7 @@ package com.untangle.uvm.engine;
 
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
+import java.util.Comparator;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -19,13 +20,15 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.apache.log4j.Logger;
 
 import com.untangle.uvm.UvmContextFactory;
-import com.untangle.uvm.argon.ArgonAgent;
+import com.untangle.uvm.argon.PipelineAgent;
 import com.untangle.uvm.node.SessionTuple;
 import com.untangle.uvm.node.Node;
 import com.untangle.uvm.node.NodeSettings;
 import com.untangle.uvm.node.PolicyManager;
+import com.untangle.uvm.vnet.Affinity;
+
 import com.untangle.uvm.vnet.Fitting;
-import com.untangle.uvm.vnet.ArgonConnector;
+import com.untangle.uvm.vnet.PipelineConnector;
 import com.untangle.uvm.vnet.PipeSpec;
 import com.untangle.uvm.vnet.Pipeline;
 import com.untangle.uvm.vnet.PipelineFoundry;
@@ -37,10 +40,10 @@ import com.untangle.uvm.vnet.event.SessionEventListener;
  * Implements PipelineFoundry.
  * PipelineFoundry is responsible for building a list of processing nodes for each session
  *
- * When new sessions are created weld() is called to create the list of <code>ArgonConnectors</code>
- * weld() first finds a list of all ArgonConnectors for the given policyId and fitting type (stream, http, etc)
- * From there it removes the uninterested ArgonConnectors.
- * What is left is a list of all the ArgonConnectors that participate in a given session.
+ * When new sessions are created weld() is called to create the list of <code>PipelineConnectors</code>
+ * weld() first finds a list of all PipelineConnectors for the given policyId and fitting type (stream, http, etc)
+ * From there it removes the uninterested PipelineConnectors.
+ * What is left is a list of all the PipelineConnectors that participate in a given session.
  */
 public class PipelineFoundryImpl implements PipelineFoundry
 {
@@ -54,12 +57,12 @@ public class PipelineFoundryImpl implements PipelineFoundry
     /**
      * A global list of all current argon connectors
      */
-    private final List<ArgonConnector> argonConnectors = new LinkedList<ArgonConnector>();
+    private final List<PipelineConnector> pipelineConnectors = new LinkedList<PipelineConnector>();
 
     /**
      * A global list of all current casings
      */
-    private final Map<ArgonConnector, ArgonConnector> casings = new HashMap<ArgonConnector, ArgonConnector>();
+    private final Map<PipelineConnector, PipelineConnector> casings = new HashMap<PipelineConnector, PipelineConnector>();
 
     /**
      * This stores a list of "hints" about connections and what fitting types they are
@@ -76,7 +79,7 @@ public class PipelineFoundryImpl implements PipelineFoundry
     /**
      * This stores a map from policyId to a cache for that policy storing the list of argon connectors for various fitting types
      */
-    private static final Map<Long, Map<Fitting, List<ArgonConnector>>> pipelineFoundryCache = new HashMap<Long, Map<Fitting, List<ArgonConnector>>>();
+    private static final Map<Long, Map<Fitting, List<PipelineConnector>>> pipelineFoundryCache = new HashMap<Long, Map<Fitting, List<PipelineConnector>>>();
     
     /**
      * Private constructor to ensure singleton
@@ -92,17 +95,17 @@ public class PipelineFoundryImpl implements PipelineFoundry
     }
 
     /**
-     * "weld" is builds a list of all the interested argonAgents for a given session
+     * "weld" is builds a list of all the interested pipelineAgents for a given session
      * It does so based on the given policyId and all the nodes/apps given subscriptions.
      */
-    public List<ArgonAgent> weld( Long sessionId, SessionTuple sessionTuple, Long policyId )
+    public List<PipelineAgent> weld( Long sessionId, SessionTuple sessionTuple, Long policyId )
     {
         Long t0 = System.nanoTime();
-        List<ArgonConnector> argonConnectorList = new LinkedList<ArgonConnector>();
+        List<PipelineConnector> pipelineConnectorList = new LinkedList<PipelineConnector>();
         List<Fitting> fittings = new LinkedList<Fitting>();
 
-        printArgonConnectorList( this.argonConnectors );
-        printArgonConnectorList( this.casings.keySet() );
+        printPipelineConnectorList( this.pipelineConnectors );
+        printPipelineConnectorList( this.casings.keySet() );
         
         /**
          * Check fittingHints for hints
@@ -144,41 +147,41 @@ public class PipelineFoundryImpl implements PipelineFoundry
 
         long ct0 = System.nanoTime();
         for ( Fitting fitting : fittings ) {
-            List<ArgonConnector> acList = weldPipeline( sessionTuple, policyId, fitting );
-            argonConnectorList.addAll( acList );
+            List<PipelineConnector> acList = weldPipeline( sessionTuple, policyId, fitting );
+            pipelineConnectorList.addAll( acList );
         }
         long ct1 = System.nanoTime();
 
         /**
-         * We now have a list of given argonConnectors for that policyId & fitting,
-         * However, not all argonConnectors are interested in this traffic
+         * We now have a list of given pipelineConnectors for that policyId & fitting,
+         * However, not all pipelineConnectors are interested in this traffic
          * We now iterate through each and remove ones that are not interested
          */
         long ft0 = System.nanoTime();
-        List<ArgonAgent> argonAgentList = new ArrayList<ArgonAgent>(argonConnectorList.size());
+        List<PipelineAgent> pipelineAgentList = new ArrayList<PipelineAgent>(pipelineConnectorList.size());
         String nodeList = "nodes: [";
-        for (Iterator<ArgonConnector> i = argonConnectorList.iterator(); i.hasNext();) {
-            ArgonConnector argonConnector = i.next();
-            PipeSpec pipeSpec = argonConnector.getPipeSpec();
+        for (Iterator<PipelineConnector> i = pipelineConnectorList.iterator(); i.hasNext();) {
+            PipelineConnector pipelineConnector = i.next();
+            PipeSpec pipeSpec = pipelineConnector.getPipeSpec();
 
             /**
              * Check that this argon connector actually is interested in this session
              */
             if ( ! pipeSpec.matches(sessionTuple) ) {
-                // remove from argonConnectorList
-                // dont add to argonAgentList
+                // remove from pipelineConnectorList
+                // dont add to pipelineAgentList
                 i.remove(); 
             } else {
-                // keep in argonConnectorList
-                // add to argonAgentList
-                argonAgentList.add( ((ArgonConnectorImpl) argonConnector).getArgonAgent() );
+                // keep in pipelineConnectorList
+                // add to pipelineAgentList
+                pipelineAgentList.add( ((PipelineConnectorImpl) pipelineConnector).getPipelineAgent() );
                 nodeList += pipeSpec.getName() + " ";
             }
         }
         nodeList += "]";
         long ft1 = System.nanoTime();
 
-        PipelineImpl pipeline = new PipelineImpl(sessionId, argonConnectorList);
+        PipelineImpl pipeline = new PipelineImpl(sessionId, pipelineConnectorList);
         pipelines.put(sessionId, pipeline);
 
         Long t1 = System.nanoTime();
@@ -192,7 +195,7 @@ public class PipelineFoundryImpl implements PipelineFoundry
                          " filter time: " + (ft1 - ft0));
         }
 
-        return argonAgentList;
+        return pipelineAgentList;
     }
 
     /**
@@ -208,44 +211,44 @@ public class PipelineFoundryImpl implements PipelineFoundry
     }
 
     /**
-     * Create an ArgonConnector.
-     * This is here because ArgonConnectorImpl is in Impl and things in API need to create them. Should fix this
+     * Create an PipelineConnector.
+     * This is here because PipelineConnectorImpl is in Impl and things in API need to create them. Should fix this
      */
-    public ArgonConnector createArgonConnector(PipeSpec spec, SessionEventListener listener, Fitting input, Fitting output)
+    public PipelineConnector createPipelineConnector(PipeSpec spec, SessionEventListener listener, Fitting input, Fitting output)
     {
-        return new ArgonConnectorImpl( spec, listener, input, output );
+        return new PipelineConnectorImpl( spec, listener, input, output );
     }
 
     /**
      * Register an Argon Connector
      */
-    public synchronized void registerArgonConnector(ArgonConnector argonConnector)
+    public synchronized void registerPipelineConnector(PipelineConnector pipelineConnector)
     {
-        this.argonConnectors.add( argonConnector);
-        Collections.sort( this.argonConnectors, ArgonConnectorComparator.COMPARATOR );
+        this.pipelineConnectors.add( pipelineConnector);
+        Collections.sort( this.pipelineConnectors, PipelineConnectorComparator.COMPARATOR );
         clearCache();
     }
 
     /**
      * Unregister an Argon Connector
      */
-    public void deregisterArgonConnector(ArgonConnector argonConnector)
+    public void deregisterPipelineConnector(PipelineConnector pipelineConnector)
     {
-        this.argonConnectors.remove( argonConnector );
+        this.pipelineConnectors.remove( pipelineConnector );
         clearCache();
     }
 
     /**
      * Register a Casing
      */
-    public void registerCasing(ArgonConnector insideArgonConnector, ArgonConnector outsideArgonConnector)
+    public void registerCasing(PipelineConnector insidePipelineConnector, PipelineConnector outsidePipelineConnector)
     {
-        if (insideArgonConnector.getPipeSpec() != outsideArgonConnector.getPipeSpec()) {
+        if (insidePipelineConnector.getPipeSpec() != outsidePipelineConnector.getPipeSpec()) {
             throw new IllegalArgumentException("casing constraint violated");
         }
 
         synchronized (this) {
-            casings.put(insideArgonConnector, outsideArgonConnector);
+            casings.put(insidePipelineConnector, outsidePipelineConnector);
             clearCache();
         }
     }
@@ -253,10 +256,10 @@ public class PipelineFoundryImpl implements PipelineFoundry
     /**
      * Unregister a Casing
      */
-    public void deregisterCasing(ArgonConnector insideArgonConnector)
+    public void deregisterCasing(PipelineConnector insidePipelineConnector)
     {
         synchronized (this) {
-            casings.remove(insideArgonConnector);
+            casings.remove(insidePipelineConnector);
             clearCache();
         }
     }
@@ -293,88 +296,88 @@ public class PipelineFoundryImpl implements PipelineFoundry
      * This creates a full pipeline for the given policyId and fitting.
      * It also maintains a cache to memoize results
      */
-    private List<ArgonConnector> weldPipeline( SessionTuple sessionTuple, Long policyId, Fitting fitting )
+    private List<PipelineConnector> weldPipeline( SessionTuple sessionTuple, Long policyId, Fitting fitting )
     {
-        List<ArgonConnector> argonConnectorList = null;
+        List<PipelineConnector> pipelineConnectorList = null;
 
         /**
          * Check if there is a cache for this policy. First time is without the lock
          */
-        Map<Fitting, List<ArgonConnector>> fittingCache = pipelineFoundryCache.get(policyId);
+        Map<Fitting, List<PipelineConnector>> fittingCache = pipelineFoundryCache.get(policyId);
 
         /**
          * If there is a cache, check if the acList exists for this fitting
          */
         if ( fittingCache != null ) {
-            argonConnectorList = fittingCache.get( fitting );
+            pipelineConnectorList = fittingCache.get( fitting );
         }
 
-        if ( argonConnectorList == null ) {
+        if ( pipelineConnectorList == null ) {
             synchronized (this) {
                 /* Check if there is a cache again, after grabbing the lock */
                 fittingCache = pipelineFoundryCache.get( policyId );
 
                 if ( fittingCache == null ) {
                     /* Cache doesn't exist, create a new empty cache for this policy */
-                    fittingCache = new HashMap<Fitting, List<ArgonConnector>>();
+                    fittingCache = new HashMap<Fitting, List<PipelineConnector>>();
                     pipelineFoundryCache.put( policyId, fittingCache );
                 } else {
                     /* Cache exists, get the acList for this fitting */
-                    argonConnectorList = fittingCache.get( fitting );
+                    pipelineConnectorList = fittingCache.get( fitting );
                 }
 
                 /**
                  * No previously stored result was found in the cache
                  * We now need to calculate the correct result from scratch
                  */
-                if ( argonConnectorList == null ) {
-                    argonConnectorList = new LinkedList<ArgonConnector>();
+                if ( pipelineConnectorList == null ) {
+                    pipelineConnectorList = new LinkedList<PipelineConnector>();
 
-                    addArgonConnectors( argonConnectorList, fitting, policyId );
+                    addPipelineConnectors( pipelineConnectorList, fitting, policyId );
 
-                    removeDuplicates( policyId, argonConnectorList );
+                    removeDuplicates( policyId, pipelineConnectorList );
 
-                    fittingCache.put( fitting, argonConnectorList );
+                    fittingCache.put( fitting, pipelineConnectorList );
                 }
             }
         }
 
-        return argonConnectorList;
+        return pipelineConnectorList;
     }
 
     /**
      * Add all argon connectors to the list that match this policy and fitting type
      */
-    private boolean addArgonConnectors( List<ArgonConnector> argonConnectorList, Fitting fitting, Long policyId )
+    private boolean addPipelineConnectors( List<PipelineConnector> pipelineConnectorList, Fitting fitting, Long policyId )
     {
         boolean added = false;
 
         /**
          * Iterate through all the argonConnections and look for ones that fit the current fitting type
          */
-        for ( Iterator<ArgonConnector> i = argonConnectors.iterator(); i.hasNext() ; ) {
-            ArgonConnector argonConnector = i.next();
+        for ( Iterator<PipelineConnector> i = pipelineConnectors.iterator(); i.hasNext() ; ) {
+            PipelineConnector pipelineConnector = i.next();
 
             /**
-             * If this argonConnector is the wrong fitting type, skip it
+             * If this pipelineConnector is the wrong fitting type, skip it
              */
-            if ( ! fitting.equals( argonConnector.getInputFitting() ) )
+            if ( ! fitting.equals( pipelineConnector.getInputFitting() ) )
                 continue;
 
             /**
-             * If this argonConnector is not on this policy, skip it
+             * If this pipelineConnector is not on this policy, skip it
              */
-            if ( ! policyMatch( argonConnector.getPipeSpec().getNode().getNodeSettings().getPolicyId(), policyId) )
+            if ( ! policyMatch( pipelineConnector.getPipeSpec().getNode().getNodeSettings().getPolicyId(), policyId) )
                 continue;
             
-            argonConnectorList.add( argonConnector );
+            pipelineConnectorList.add( pipelineConnector );
             added = true;
         }
 
         /**
          * Now we should add in any casings
          */
-        boolean addedCasings = addCasings( argonConnectorList, fitting, policyId );
+        boolean addedCasings = addCasings( pipelineConnectorList, fitting, policyId );
         if ( addedCasings ) {
             added = true;
         }
@@ -384,47 +387,47 @@ public class PipelineFoundryImpl implements PipelineFoundry
 
     /**
      * Add all casings to the list that match this policy and fitting type
-     * Also calls addArgonConnectors recursively to add argon connectors
+     * Also calls addPipelineConnectors recursively to add argon connectors
      * for the "inner" fitting type
      */
-    private boolean addCasings( List<ArgonConnector> argonConnectorList, Fitting fitting, Long policyId )
+    private boolean addCasings( List<PipelineConnector> pipelineConnectorList, Fitting fitting, Long policyId )
     {
         boolean addedCasing = false;
 
-        for (Iterator<ArgonConnector> i = casings.keySet().iterator(); i.hasNext();) {
-            ArgonConnector insideArgonConnector = i.next();
-            ArgonConnector outsideArgonConnector = casings.get( insideArgonConnector );
+        for (Iterator<PipelineConnector> i = casings.keySet().iterator(); i.hasNext();) {
+            PipelineConnector insidePipelineConnector = i.next();
+            PipelineConnector outsidePipelineConnector = casings.get( insidePipelineConnector );
             
             /**
-             * If this insideArgonConnector is the wrong fitting type, skip it
+             * If this insidePipelineConnector is the wrong fitting type, skip it
              */
-            if ( ! fitting.equals( insideArgonConnector.getInputFitting() ) )
+            if ( ! fitting.equals( insidePipelineConnector.getInputFitting() ) )
                 continue;
 
             /**
-             * If this insideArgonConnector is not on this policy, skip it
+             * If this insidePipelineConnector is not on this policy, skip it
              */
-            if ( ! policyMatch( insideArgonConnector.getPipeSpec().getNode().getNodeSettings().getPolicyId(), policyId) ) 
+            if ( ! policyMatch( insidePipelineConnector.getPipeSpec().getNode().getNodeSettings().getPolicyId(), policyId) ) 
                 continue;
 
             /**
              * Add this casing
              */
-            argonConnectorList.add( insideArgonConnector );
+            pipelineConnectorList.add( insidePipelineConnector );
 
             /**
-             * add in any argonConnectors that should be inside the casing
+             * add in any pipelineConnectors that should be inside the casing
              */
-            boolean addedSubArgonConnectors = addArgonConnectors( argonConnectorList, insideArgonConnector.getOutputFitting(), policyId );
+            boolean addedSubPipelineConnectors = addPipelineConnectors( pipelineConnectorList, insidePipelineConnector.getOutputFitting(), policyId );
 
             /**
              * If no nodes were interested in this casing's traffic, just remove it
              * Otherwise, add the other casing
              */
-            if ( ! addedSubArgonConnectors ) {
-                argonConnectorList.remove( insideArgonConnector );
+            if ( ! addedSubPipelineConnectors ) {
+                pipelineConnectorList.remove( insidePipelineConnector );
             } else {
-                argonConnectorList.add( outsideArgonConnector );
+                pipelineConnectorList.add( outsidePipelineConnector );
                 addedCasing = true;
             }
         }
@@ -433,13 +436,13 @@ public class PipelineFoundryImpl implements PipelineFoundry
     }
 
     /**
-     * Remove "duplicate" nodes from a given pipeline of argonConnectors
+     * Remove "duplicate" nodes from a given pipeline of pipelineConnectors
      * For example, if there are two Web Filters in a given list, it will remove the one from the parent rack.
      */
-    private void removeDuplicates( Long policyId, List<ArgonConnector> acList )
+    private void removeDuplicates( Long policyId, List<PipelineConnector> acList )
     {
         Map<String, Integer> numParents = new HashMap<String, Integer>();
-        Map<ArgonConnector, Integer> fittingDistance = new HashMap<ArgonConnector, Integer>();
+        Map<PipelineConnector, Integer> fittingDistance = new HashMap<PipelineConnector, Integer>();
 
         List<String> enabledNodesInPolicy = new LinkedList<String>();
         List<Node> nodesInPolicy = UvmContextFactory.context().nodeManager().nodeInstances( policyId );
@@ -448,16 +451,16 @@ public class PipelineFoundryImpl implements PipelineFoundry
                 enabledNodesInPolicy.add(node.getNodeProperties().getName());
         }
         
-        for (Iterator<ArgonConnector> i = acList.iterator(); i.hasNext();) {
-            ArgonConnector argonConnector = i.next();
+        for (Iterator<PipelineConnector> i = acList.iterator(); i.hasNext();) {
+            PipelineConnector pipelineConnector = i.next();
 
-            Long nodePolicyId = argonConnector.node().getNodeSettings().getPolicyId();
+            Long nodePolicyId = pipelineConnector.node().getNodeSettings().getPolicyId();
 
             if (nodePolicyId == null) {
                 continue;
             }
 
-            String nodeName = argonConnector.node().getNodeProperties().getName();
+            String nodeName = pipelineConnector.node().getNodeProperties().getName();
 
             /**
              * Remove the items that are not enabled in this policy
@@ -479,7 +482,7 @@ public class PipelineFoundryImpl implements PipelineFoundry
                 continue;
             }
 
-            fittingDistance.put(argonConnector, distance);
+            fittingDistance.put(pipelineConnector, distance);
 
             /* If an existing node is closer then this node, remove this node. */
             if (n == null) {
@@ -501,17 +504,17 @@ public class PipelineFoundryImpl implements PipelineFoundry
             }
         }
 
-        for (Iterator<ArgonConnector> i = acList.iterator(); i.hasNext();) {
-            ArgonConnector argonConnector = i.next();
+        for (Iterator<PipelineConnector> i = acList.iterator(); i.hasNext();) {
+            PipelineConnector pipelineConnector = i.next();
 
-            Long nodePolicyId = argonConnector.node().getNodeSettings().getPolicyId();
+            Long nodePolicyId = pipelineConnector.node().getNodeSettings().getPolicyId();
 
             /* Keep items in the NULL Racks */
             if (nodePolicyId == null) {
                 continue;
             }
 
-            String nodeName = argonConnector.node().getNodeProperties().getName();
+            String nodeName = pipelineConnector.node().getNodeProperties().getName();
 
             Integer n = numParents.get(nodeName);
 
@@ -520,7 +523,7 @@ public class PipelineFoundryImpl implements PipelineFoundry
                 continue;
             }
 
-            Integer distance = fittingDistance.get( argonConnector );
+            Integer distance = fittingDistance.get( pipelineConnector );
 
             if (distance == null) {
                 logger.warn("null distance for a fitting.");
@@ -617,12 +620,12 @@ public class PipelineFoundryImpl implements PipelineFoundry
     /**
      * Lookup a list of argon connector for the given fittings & policyId
      */
-    private List<ArgonConnector> cacheLookup( Long policyId, Fitting fitting )
+    private List<PipelineConnector> cacheLookup( Long policyId, Fitting fitting )
     {
         /**
          * Check if there is a cache for this policy. First time is without the lock
          */
-        Map<Fitting, List<ArgonConnector>> fittingCache = pipelineFoundryCache.get(policyId);
+        Map<Fitting, List<PipelineConnector>> fittingCache = pipelineFoundryCache.get(policyId);
 
         if ( fittingCache == null )
             return null;
@@ -634,17 +637,17 @@ public class PipelineFoundryImpl implements PipelineFoundry
     }
     
     /**
-     * Utility function to print any list of argonConnectors
+     * Utility function to print any list of pipelineConnectors
      */
-    private void printArgonConnectorList( java.util.Collection<ArgonConnector> argonConnectors )
+    private void printPipelineConnectorList( java.util.Collection<PipelineConnector> pipelineConnectors )
     {
         if (logger.isDebugEnabled()) {
-            String strList = "argonConnectors: [";
+            String strList = "pipelineConnectors: [";
 
-            if ( argonConnectors == null )
+            if ( pipelineConnectors == null )
                 strList += " null";
             else {
-                for (ArgonConnector ac : argonConnectors) {
+                for (PipelineConnector ac : pipelineConnectors) {
                     strList += " " + ac;
                 }
             }
@@ -652,6 +655,69 @@ public class PipelineFoundryImpl implements PipelineFoundry
             strList += " ]";
             
             logger.debug( strList );
+        }
+    }
+
+    private static class PipelineConnectorComparator implements Comparator<PipelineConnector>
+    {
+        static final PipelineConnectorComparator COMPARATOR = new PipelineConnectorComparator();
+
+        private PipelineConnectorComparator() { }
+
+        public int compare(PipelineConnector mp1, PipelineConnector mp2)
+        {
+            SoloPipeSpec ps1 = null == mp1 ? null : (SoloPipeSpec)mp1.getPipeSpec();
+            SoloPipeSpec ps2 = null == mp2 ? null : (SoloPipeSpec)mp2.getPipeSpec();
+
+            Affinity ra1 = null == ps1 ? null : ps1.getAffinity();
+            Affinity ra2 = null == ps2 ? null : ps2.getAffinity();
+
+            if (null == ra1) {
+                if (null == ra2) {
+                    return 0;
+                } else {
+                    if (Affinity.CLIENT == ra2) {
+                        return 1;
+                    } else if (Affinity.SERVER == ra2) {
+                        return -1;
+                    } else {
+                        throw new RuntimeException("programmer malfunction");
+                    }
+                }
+            } else if (null == ra2) {
+                if (Affinity.CLIENT == ra1) {
+                    return -1;
+                } else if (Affinity.SERVER == ra2) {
+                    return 1;
+                } else {
+                    throw new RuntimeException("programmer malfunction");
+                }
+            } else if (ra1 == ra2) {
+                int s1 = ps1.getStrength();
+                int s2 = ps2.getStrength();
+
+                if (s1 == s2) {
+                    if (mp1 == mp2) {
+                        return 0;
+                    } else {
+                        int mp1Id = System.identityHashCode(mp1);
+                        int mp2Id = System.identityHashCode(mp2);
+                        return mp1Id < mp2Id ? -1 : 1;
+                    }
+                } else if (ra1 == Affinity.CLIENT) {
+                    return s1 < s2 ? 1 : -1;
+                } else if (ra1 == Affinity.SERVER) {
+                    return s1 < s2 ? -1 : 1;
+                } else {
+                    throw new RuntimeException("programmer malfunction");
+                }
+            } else if (Affinity.CLIENT == ra1) {
+                return -1;
+            } else if (Affinity.SERVER == ra1) {
+                return 1;
+            } else {
+                throw new RuntimeException("programmer malfunction");
+            }
         }
     }
 }
