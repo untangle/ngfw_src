@@ -13,6 +13,7 @@ import com.untangle.uvm.node.SessionTuple;
 import com.untangle.uvm.vnet.NodeUDPSession;
 import com.untangle.uvm.vnet.NodeTCPSession;
 import com.untangle.uvm.vnet.NodeSession;
+import com.untangle.uvm.engine.Dispatcher;
 import com.untangle.uvm.UvmContextFactory;
 
 /**
@@ -28,36 +29,29 @@ import com.untangle.uvm.UvmContextFactory;
  */
 public class PipelineAgent
 {
-    protected boolean live = true;
-    protected NewSessionEventListener listener = NULL_NEW_SESSION_LISTENER;
-    protected Set<NodeSession> activeSessions = new HashSet<NodeSession>();
-    private final String name; /* to aid debugging */
-
-    /* Debugging */
     private final Logger logger = Logger.getLogger(getClass());
 
-    private static final NewSessionEventListener NULL_NEW_SESSION_LISTENER = new NewSessionEventListener() {
-            public NodeUDPSession newSession( NetcapUDPNewSessionRequest request )
-            {
-                /* Release everything */
-                request.release();
-                return null;
-            }
+    /**
+     * human name - To aid debuging
+     */
+    private final String name; 
 
-            public NodeTCPSession newSession( NetcapTCPNewSessionRequest request )
-            {
-                /* Release everything */
-                request.release();
-                return null;
-            }
-        };
+    /**
+     * Live flag
+     */
+    private boolean live = true;
 
-    public PipelineAgent(String name)
-    {
-        this.name = name;
-    }
+    /**
+     * New session listener for this agent
+     */
+    private Dispatcher listener;
 
-    public PipelineAgent(String name, NewSessionEventListener listener )
+    /**
+     * Active Sessions for this agent
+     */
+    private Set<NodeSession> activeSessions = new HashSet<NodeSession>();
+
+    public PipelineAgent( String name, Dispatcher listener )
     {
         this.listener = listener;
         this.name = name;
@@ -79,7 +73,7 @@ public class PipelineAgent
         live = false;
 
         /* Remove the listener */
-        listener = NULL_NEW_SESSION_LISTENER;
+        listener = null;
 
         NetcapSessionTable.getInstance().shutdownActive();
 
@@ -87,12 +81,7 @@ public class PipelineAgent
         activeSessions.clear();
     }
 
-    public void setNewSessionEventListener(NewSessionEventListener listener)
-    {
-        this.listener = listener;
-    }
-
-    public NewSessionEventListener getNewSessionEventListener()
+    public Dispatcher getNewSessionEventListener()
     {
         return listener;
     }

@@ -44,7 +44,7 @@ import com.untangle.uvm.vnet.event.UDPSessionEvent;
  * One dispatcher per PipelineConnector.  This where all the new session logic
  * lives, and the event dispatching.
  */
-public class Dispatcher implements com.untangle.uvm.netcap.NewSessionEventListener
+public class Dispatcher
 {
     public static final String SESSION_ID_MDC_KEY = "SessionID";
 
@@ -231,7 +231,6 @@ public class Dispatcher implements com.untangle.uvm.netcap.NewSessionEventListen
     //////////////////////////////////////////////////////////////////
 
     void dispatchTCPNewSessionRequest(TCPNewSessionRequestEvent event)
-        
     {
         elog(Level.DEBUG, "TCPNewSessionRequest", event.sessionRequest().id());
         if ( sessionEventListener == null ) {
@@ -242,7 +241,6 @@ public class Dispatcher implements com.untangle.uvm.netcap.NewSessionEventListen
     }
 
     void dispatchUDPNewSessionRequest(UDPNewSessionRequestEvent event)
-        
     {
         elog(Level.DEBUG, "UDPNewSessionRequest", event.sessionRequest().id());
         if ( sessionEventListener == null ) {
@@ -253,7 +251,6 @@ public class Dispatcher implements com.untangle.uvm.netcap.NewSessionEventListen
     }
 
     void dispatchTCPNewSession(TCPSessionEvent event)
-        
     {
         NodeSessionImpl session = (NodeSessionImpl) event.session();
         elog(Level.DEBUG, "TCPNewSession", session.id());
@@ -264,7 +261,6 @@ public class Dispatcher implements com.untangle.uvm.netcap.NewSessionEventListen
     }
 
     void dispatchUDPNewSession(UDPSessionEvent event)
-        
     {
         NodeSessionImpl session = (NodeSessionImpl) event.session();
         elog(Level.DEBUG, "UDPNewSession", session.id());
@@ -489,7 +485,6 @@ public class Dispatcher implements com.untangle.uvm.netcap.NewSessionEventListen
         else
             sessionEventListener.handleTimer(event);
     }
-
 
     private NodeTCPSession newSessionInternal( NetcapTCPNewSessionRequest request )
     {

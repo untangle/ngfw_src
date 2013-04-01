@@ -5,14 +5,18 @@ package com.untangle.uvm.netcap;
 
 import java.net.InetAddress;
 
+import com.untangle.jnetcap.NetcapSession;
 import com.untangle.jnetcap.Endpoint;
 import com.untangle.jnetcap.Endpoints;
 import com.untangle.uvm.node.SessionEvent;
 import com.untangle.uvm.vnet.NodeSession;
 import com.untangle.uvm.engine.NodeSessionImpl;
 
-public abstract class NetcapIPNewSessionRequest extends NetcapNewSessionRequest
+public abstract class NetcapIPNewSessionRequest
 {
+    protected final PipelineAgent    pipelineAgent;
+    protected final SessionGlobalState sessionGlobalState;
+
     public static final byte REQUESTED = 2;
     public static final byte REJECTED = 99;
     public static final byte RELEASED = 98;
@@ -57,7 +61,8 @@ public abstract class NetcapIPNewSessionRequest extends NetcapNewSessionRequest
      */
     public NetcapIPNewSessionRequest( SessionGlobalState sessionGlobalState, PipelineAgent agent, SessionEvent pe )
     {
-        super( sessionGlobalState, agent );
+        this.sessionGlobalState = sessionGlobalState;
+        this.pipelineAgent      = agent;
 
         Endpoints clientSide = sessionGlobalState.netcapSession().clientSide();
         Endpoints serverSide = sessionGlobalState.netcapSession().serverSide();
@@ -87,7 +92,8 @@ public abstract class NetcapIPNewSessionRequest extends NetcapNewSessionRequest
      */
     public NetcapIPNewSessionRequest( NodeSession session, PipelineAgent agent, SessionEvent pe, SessionGlobalState sessionGlobalState)
     {
-        super( ((NodeSessionImpl)session).sessionGlobalState(), agent);
+        this.sessionGlobalState = ((NodeSessionImpl)session).sessionGlobalState();
+        this.pipelineAgent      = agent;
 
         /* Get the server and client from the previous request */
         clientAddr = session.getClientAddr();
@@ -106,6 +112,100 @@ public abstract class NetcapIPNewSessionRequest extends NetcapNewSessionRequest
         this.sessionEvent = pe;
     }
 
+    public PipelineAgent pipelineAgent()
+    {
+        return pipelineAgent;
+    }
+    
+    public NetcapSession netcapSession()
+    {
+        return sessionGlobalState.netcapSession();
+    }
+
+    public SessionGlobalState sessionGlobalState()
+    {
+        return sessionGlobalState;
+    }
+
+    public long id()
+    {
+        return sessionGlobalState.id();
+    }
+
+    public long getSessionId()
+    {
+        return sessionGlobalState.id();
+    }
+    
+    public String user()
+    {
+        return sessionGlobalState.user();
+    }
+
+    /**
+     * Number of bytes received from the client.
+     */
+    public long c2tBytes()
+    {
+        return sessionGlobalState.clientSideListener().rxBytes;
+    }
+
+    /**
+     * Number of bytes transmitted to the server.
+     */
+    public long t2sBytes()
+    {
+        return sessionGlobalState.serverSideListener().txBytes;
+    }
+
+    /**
+     * Number of bytes received from the server.
+     */
+    public long s2tBytes()
+    {
+        return sessionGlobalState.serverSideListener().rxBytes;
+    }
+    
+    /**
+     * Number of bytes transmitted to the client.
+     */
+    public long t2cBytes()
+    {
+        return sessionGlobalState.clientSideListener().rxBytes;
+    }
+
+    /**
+     * Number of chunks received from the client.
+     */
+    public long c2tChunks()
+    {
+        return sessionGlobalState.clientSideListener().rxChunks;
+    }
+
+    /**
+     * Number of chunks transmitted to the server.
+     */
+    public long t2sChunks()
+    {
+        return sessionGlobalState.serverSideListener().txChunks;
+    }
+
+    /**
+     * Number of chunks received from the server.
+     */
+    public long s2tChunks()
+    {
+        return sessionGlobalState.serverSideListener().rxChunks;
+    }
+    
+    /**
+     * Number of chunks transmitted to the client.
+     */
+    public long t2cChunks()
+    {
+        return sessionGlobalState.clientSideListener().rxChunks;
+    }
+    
     public short getProtocol()
     {
         return sessionGlobalState.getProtocol();
