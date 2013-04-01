@@ -225,7 +225,7 @@ if (!Ung.hasResource["Ung.Network"]) {
                         var connectedStr = this.i18n._("unknown");
                         if ( value == "CONNECTED" ) {
                             connectedStr = this.i18n._("connected");
-                            divClass = "ua-cell-enabled-interface";
+                            divClass = "ua-cell-enabled";
                         } else if ( value == "DISCONNECTED" ) {
                             connectedStr = this.i18n._("disconnected");
                         }
@@ -370,7 +370,9 @@ if (!Ung.hasResource["Ung.Network"]) {
                                                 }
                                                 var soruceData = Ext.decode(Ext.encode(sourceRecord.data));
                                                 var targetData = Ext.decode(Ext.encode(targetRecord.data));
-                                                
+
+                                                sourceRecord.suspendEvents();
+                                                //sourceRecord.set("physicalDev", targetData.physicalDev);
                                                 sourceRecord.set("systemDev", targetData.systemDev);
                                                 sourceRecord.set("symbolicDev", targetData.symbolicDev);
                                                 sourceRecord.set("macAddress",targetData.macAddress);
@@ -378,7 +380,9 @@ if (!Ung.hasResource["Ung.Network"]) {
                                                 sourceRecord.set("duplex",targetData.duplex);
                                                 sourceRecord.set("vendor",targetData.vendor);
                                                 sourceRecord.set("mbit",targetData.mbit);
+                                                sourceRecord.resumeEvents();
 
+                                                targetRecord.suspendEvents();
                                                 targetRecord.set("physicalDev", soruceData.physicalDev);
                                                 targetRecord.set("systemDev", soruceData.systemDev);
                                                 targetRecord.set("symbolicDev", soruceData.symbolicDev);
@@ -387,6 +391,7 @@ if (!Ung.hasResource["Ung.Network"]) {
                                                 targetRecord.set("duplex",soruceData.duplex);
                                                 targetRecord.set("vendor",soruceData.vendor);
                                                 targetRecord.set("mbit",soruceData.mbit);
+                                                targetRecord.resumeEvents();
                                             }, this)
                                         }
                                     }
@@ -1579,11 +1584,8 @@ if (!Ung.hasResource["Ung.Network"]) {
         // Routes Panel
         buildRoutes: function() {
             var devList = [];
-            if( Ung.Util.networkSettings == null ) {
-                Ung.Util.networkSettings = main.getNetworkManager().getNetworkSettings();
-            }
-            for ( var c = 0 ; c < Ung.Util.networkSettings.interfaces.list.length ; c++ ) {
-                var intf = Ung.Util.networkSettings.interfaces.list[c];
+            for ( var c = 0 ; c < this.settings.interfaces.list.length ; c++ ) {
+                var intf = this.settings.interfaces.list[c];
                 var name = "Local on " + intf['systemDev'];
                 var key = intf['systemDev'];
                 devList.push( [ key, name ] );
@@ -2634,12 +2636,12 @@ if (!Ung.hasResource["Ung.Network"]) {
         save: function (isApply) {
             this.saveSemaphore = 1;
             // save language settings
-            rpc.networkManager.setNetworkSettings(Ext.bind(function(result, exception) {
+            main.getNetworkManager().setNetworkSettings(Ext.bind(function(result, exception) {
                 this.afterSave(exception, isApply);
             }, this), this.settings);
         },
         refreshSettings: function() {
-            this.settings = rpc.networkManager.getNetworkSettings();
+            this.settings = main.getNetworkManager().getNetworkSettings();
             var deviceStatus=main.getNetworkManager().getDeviceStatus();
             var deviceStatusMap=Ung.Util.createRecordsMap(deviceStatus.list, "deviceName");
             for(var i=0; i<this.settings.interfaces.list.length; i++) {
@@ -2647,6 +2649,8 @@ if (!Ung.hasResource["Ung.Network"]) {
                 var deviceStatus = deviceStatusMap[intf.physicalDev];
                 Ext.applyIf(intf, deviceStatus);
             }
+            
+            Ung.Util.networkSettings = this.settings;
         },
         beforeSave: function(isApply, handler) {
             this.beforeSaveCount = 12;

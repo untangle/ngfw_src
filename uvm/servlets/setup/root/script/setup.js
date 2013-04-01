@@ -223,7 +223,7 @@ Ext.define('Ung.SetupWizard.ServerSettings', {
 Ext.define('Ung.SetupWizard.Interfaces', {
     constructor: function() {
         this.interfaceStore = Ext.create('Ext.data.ArrayStore', {
-            fields:[{name: "interfaceId"}, { name: "name" }, { name: "physicalDev" }],
+            fields:[{name: "interfaceId"}, { name: "name" }, { name: "physicalDev" }, { name: "macAddress" }, { name: "connected" }, { name: "duplex" }, { name: "vendor" }, { name: "mbit" }],
             data: []
         });
         this.deviceStore = Ext.create('Ext.data.ArrayStore', {
@@ -237,7 +237,7 @@ Ext.define('Ung.SetupWizard.Interfaces', {
             loadMask: true,
             stripeRows: true,
             cls: 'small-top-margin',
-            enableColumnResize: false,
+            enableColumnResize: true,
             enableColumnHide: false,
             enableColumnMove: false,
             selModel: Ext.create('Ext.selection.RowModel', {singleSelect: true}),
@@ -265,7 +265,6 @@ Ext.define('Ung.SetupWizard.Interfaces', {
                 header: i18n._( "Name" ),
                 dataIndex: 'name',
                 sortable: false,
-                resizable: false,
                 width: 80,
                 renderer: function( value ) {
                     return i18n._( value );
@@ -274,59 +273,108 @@ Ext.define('Ung.SetupWizard.Interfaces', {
                 xtype: 'templatecolumn',
                 menuDisabled: true,
                 resizable: false,
-                width: 40,
+                width: 35,
                 tpl: '<img src="'+Ext.BLANK_IMAGE_URL+'" class="icon-drag"/>' 
             }, {
                 header: i18n._( "Device" ),
+                tooltip: i18n._( "Click on a Device to open a combo and choose the desired Device from a list. When anoter Device is selected the 2 Devices are swithced." ),
+                tooltipType: "title",
                 dataIndex: 'physicalDev',
                 sortable: false,
+                tdCls: 'ua-pointer',
                 editor:{
                     xtype: 'combo',
                     store: this.deviceStore,
                     valueField: 'physicalDev',
                     displayField: 'physicalDev',
                     queryMode: 'local',
-                    triggerAction: "all",
-                    listCls: "x-combo-list-small",
                     editable: false,
+                    width:90,
                     listeners: {
                         "change": {
                             fn: Ext.bind(function(elem, newValue, oldValue) {
+                                var sourceRecord = null;
+                                var targetRecord = null;
                                 this.interfaceStore.each( function( currentRow ) {
-                                    if(newValue == currentRow.get( "physicalDev" )) {
-                                        currentRow.set( "physicalDev", oldValue )
+                                    if(oldValue==currentRow.get( "physicalDev" )) {
+                                        sourceRecord=currentRow;
+                                    } else if(newValue==currentRow.get( "physicalDev" )) {
+                                        targetRecord=currentRow;
+                                    }
+                                    if(sourceRecord!=null && targetRecord!=null) {
+                                        return false;
                                     }
                                 });
+                                if(sourceRecord==null || targetRecord==null || sourceRecord==targetRecord) {
+                                    console.log(sourceRecord, targetRecord);
+                                    return false;
+                                }
+                                var soruceData = Ext.decode(Ext.encode(sourceRecord.data));
+                                var targetData = Ext.decode(Ext.encode(targetRecord.data));
+                                
+                                sourceRecord.suspendEvents();
+                                //sourceRecord.set("physicalDev", targetData.physicalDev);
+                                sourceRecord.set("macAddress",targetData.macAddress);
+                                sourceRecord.set("duplex",targetData.duplex);
+                                sourceRecord.set("vendor",targetData.vendor);
+                                sourceRecord.set("mbit",targetData.mbit);
+                                //set connected must be the last to trigger column refresh
+                                sourceRecord.set("connected",targetData.connected);
+                                sourceRecord.resumeEvents();
+                                
+                                targetRecord.suspendEvents();
+                                targetRecord.set("physicalDev", soruceData.physicalDev);
+                                targetRecord.set("macAddress",soruceData.macAddress);
+                                targetRecord.set("duplex",soruceData.duplex);
+                                targetRecord.set("vendor",soruceData.vendor);
+                                targetRecord.set("mbit",soruceData.mbit);
+                                //set connected must be the last to trigger column refresh
+                                targetRecord.set("connected",soruceData.connected);
+                                targetRecord.resumeEvents();
                             }, this)
                         }
                     }
-                },
-                flex:1,
-                renderer: Ext.bind(function(value, metadata, record,rowIndex,colIndex,store,view) {
-                    return value;
-                }, this)
-            }
-                /*
-                renderer: function( value ) {
-                    var divClass = "draggable-disabled-interface";
-                    var status = i18n._( "unknown" );
-
-                    if (value[3] == "Unknown") {
-                        value[3] = i18n._("Unknown Vendor");
-                    }
-                    
-                    if ( value[1] == "connected" ) {
-                        status = i18n._( "connected" ) + "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" + " [" + value[0] + " | " + value[2] + " | " + value[3] + "]";
-                        divClass = "draggable-enabled-interface";
-                    }
-                    if ( value[1] == "disconnected" ) {
-                        status = i18n._( "disconnected" ) + "&nbsp;&nbsp;" + " [" + value[0] + " | " + value[2] + " | " + value[3] + "]";
-                        divClass = "draggable-disabled-interface";
-                    }
-                    
-                    return "<div class='" + divClass + "'>" + status + "</div>";
                 }
-            } */]
+            },{
+                dataIndex: 'connected',
+                sortable: false,
+                resizable: false,
+                tdCls: 'ua-draggable',
+                width: 30,
+                renderer: Ext.bind(function(value, metadata, record, rowIndex, colIndex, store, view) {
+                    var divClass = ( value == "CONNECTED" )?"ua-cell-enabled":"ua-cell-disabled";
+                    return "<div class='" + divClass + "'><div>";
+                }, this)
+            },{
+                dataIndex: 'connected',
+                sortable: false,
+                width: 220,
+                tdCls: 'ua-draggable',
+                renderer: Ext.bind(function(value, metadata, record, rowIndex, colIndex, store, view) {
+                    var connected = record.get("connected");
+                    var mbit = record.get("mbit");
+                    var duplex = record.get("duplex");
+                    var vendor = record.get("vendor");
+
+                    var connectedStr= ( connected == "CONNECTED" )?i18n._("connected") : ( connected == "DISCONNECTED" )?i18n._("disconnected") : i18n._("unknown");
+                    var duplexStr = (duplex=="FULL_DUPLEX")?i18n._("full-duplex") : (duplex=="HALF_DUPLEX") ? i18n._("half-duplex") : i18n._("unknown")
+                    return connectedStr + " " + mbit + " " + duplexStr +" " + vendor;
+                }, this)
+            }, {
+                header: i18n._( "MAC Address" ),
+                dataIndex: 'macAddress',
+                sortable: false,
+                width: 110,
+                renderer: function(value, metadata, record, rowIndex, colIndex, store, view) {
+                    var text = ""
+                    if ( value && value.length > 0 ) {
+                        // Build the link for the mac address
+                        text = '<a target="_blank" href="http://standards.ieee.org/cgi-bin/ouisearch?' + 
+                        value.substring( 0, 8 ).replace( /:/g, "" ) + '">' + value + '</a>';
+                    }
+                    return text; 
+                }
+            }]
         });
 
         
@@ -395,17 +443,35 @@ Ext.define('Ung.SetupWizard.Interfaces', {
     },
 
     initializeDragAndDrop: function() {
-        //var data = this.fixInterfaceList( Ung.SetupWizard.CurrentValues.interfaceArray );
         rpc.networkManager.getNetworkSettings( Ext.bind(function( result, exception ) {
             if(exception != null) {
                 Ext.MessageBox.alert(exception);
                 return;
             }
             this.networkSettings=result;
-            this.interfaceStore.loadData( result.interfaces.list );
-            this.deviceStore.loadData( result.interfaces.list );
-            this.isDragAndDropInitialized = true;
-        }, this ) );
+            var interfacesList=result.interfaces.list;
+            var deviceStatus=rpc.networkManager.getDeviceStatus(Ext.bind(function( result, exception ) {
+                if(exception != null) {
+                    Ext.MessageBox.alert(exception);
+                    return;
+                }
+                var deviceStatusList = result.list;
+                var deviceStatusMap = {};
+                for(var i=0; i<deviceStatusList.length; i++) {
+                    deviceStatusMap[deviceStatusList[i]["deviceName"]] = deviceStatusList[i];
+                }
+                
+                for(var i=0; i<interfacesList.length; i++) {
+                    var intf=interfacesList[i];
+                    var deviceStatus = deviceStatusMap[intf.physicalDev];
+                    Ext.applyIf(intf, deviceStatus);
+                }
+
+                this.interfaceStore.loadData( interfacesList );
+                this.deviceStore.loadData( interfacesList );
+                this.isDragAndDropInitialized = true;
+            }, this));
+        }, this));
     },
 
     onDrop: function(node,data,overModel,dropPosition,dropFunction, options) {
