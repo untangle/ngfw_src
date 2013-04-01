@@ -501,7 +501,6 @@ public class NodeManagerImpl implements NodeManager
             } else if ( packageDesc == null ) {
                 logger.error("Unable to load node \"" + name + "\": NULL package desc.");
             } else {
-                logger.warn("WTF: " + nodeProps);
                 Runnable r = new Runnable()
                     {
                         public void run()
