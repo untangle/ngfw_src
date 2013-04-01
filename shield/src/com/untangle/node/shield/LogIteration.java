@@ -15,7 +15,6 @@ import org.json.JSONObject;
 import org.json.JSONException;
 
 import com.untangle.uvm.IntfConstants;
-import com.untangle.uvm.ArgonException;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.network.InterfaceSettings;
 

@@ -33,12 +33,12 @@ import com.untangle.uvm.OemManager;
 import com.untangle.uvm.AlertManager;
 import com.untangle.uvm.CertificateManager;
 import com.untangle.uvm.NetworkManager;
+import com.untangle.uvm.ArgonManager;
 import com.untangle.uvm.ExecManager;
 import com.untangle.uvm.UvmException;
 import com.untangle.uvm.UvmState;
 import com.untangle.uvm.SessionMonitor;
 import com.untangle.uvm.HostTable;
-import com.untangle.uvm.argon.Argon;
 import com.untangle.uvm.argon.ArgonManagerImpl;
 import com.untangle.uvm.node.LicenseManager;
 import com.untangle.uvm.node.Reporting;
@@ -84,7 +84,6 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
     
     private UvmState state;
     private AdminManagerImpl adminManager;
-    private ArgonManagerImpl argonManager;
     private LoggingManagerImpl loggingManager;
     private MailSenderImpl mailSender;
     private NetworkManagerImpl networkManager;
@@ -207,9 +206,9 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
         return this.connectivityTester;
     }
 
-    public ArgonManagerImpl argonManager()
+    public ArgonManager argonManager()
     {
-        return this.argonManager;
+        return ArgonManagerImpl.getInstance();
     }
 
     public LicenseManager licenseManager()
@@ -645,15 +644,12 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
         // Retrieve the connectivity tester
         this.connectivityTester = ConnectivityTesterImpl.getInstance();
 
-        // Retrieve the argon manager
-        this.argonManager = ArgonManagerImpl.getInstance();
-
         this.certificateManager = new CertificateManagerImpl();
 
         this.alertManager = new AlertManagerImpl();
         
         // start vectoring
-        Argon.getInstance().run( );
+        ArgonManagerImpl.getInstance().run( );
 
         // Start statistic gathering
         messageManager.start();
@@ -697,7 +693,7 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
         
         // stop vectoring
         try {
-            Argon.getInstance().destroy();
+            ArgonManagerImpl.getInstance().destroy();
         } catch (Exception exn) {
             logger.warn("could not destroy Argon", exn);
         }
