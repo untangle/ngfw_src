@@ -3,6 +3,10 @@
  */
 package com.untangle.uvm.argon;
 
-public interface ArgonTCPSession extends ArgonIPSession
+public class ArgonTCPSession extends ArgonIPSession
 {
+    public ArgonTCPSession( ArgonTCPNewSessionRequest request )
+    {
+        super( request );
+    }
 }

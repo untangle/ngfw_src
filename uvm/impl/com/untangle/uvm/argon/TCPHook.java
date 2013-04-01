@@ -38,8 +38,6 @@ public class TCPHook implements NetcapHook
     {
         if ( INSTANCE == null )
             INSTANCE = new TCPHook();
-
-        ArgonHook.init();
     }
 
     public void event( long sessionID )

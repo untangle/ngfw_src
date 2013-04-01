@@ -3,34 +3,80 @@
  */
 package com.untangle.uvm.argon;
 
+import java.net.InetAddress;
 
-/**
- * The interface <code>Session</code> here.
- */
-public interface ArgonIPSession extends ArgonSession
+public abstract class ArgonIPSession extends ArgonSession
 {
-    /**
-     * <code>release</code> releases all interest in further events for this session.
-     *
-     * This call is only valid while in NORMAL_MODE.
-     *
-     */
-    void release();
+    protected final short protocol;
+    protected final InetAddress clientAddr;
+    protected final InetAddress serverAddr;
+    protected final int clientPort;
+    protected final int serverPort;
+    protected final int clientIntf;
+    protected final int serverIntf;
 
-    /**
-     * <code>scheduleTimer</code> sets the timer for this session to fire in
-     * the given number of milliseconds. If the timer is already scheduled, it
-     * the existing delay is discarded and the timer is rescheduled for the new
-     * <code>delay</code>.
-     *
-     * @param delay a <code>long</code> giving milliseconds until the timer is to fire
-     * @exception IllegalArgumentException if the delay is negative
-     */
-    void scheduleTimer(long delay) throws IllegalArgumentException;
+    public ArgonIPSession( ArgonIPNewSessionRequest request )
+    {
+        super( request, request.state() == ArgonIPNewSessionRequest.REQUESTED || request.state() == ArgonIPNewSessionRequest.ENDPOINTED );
 
-    /**
-     * <code>cancelTimer</code> cancels any scheduled timer expiration for this session.
-     *
-     */
-    void cancelTimer();
+        protocol      = request.getProtocol();
+        clientAddr    = request.getClientAddr();
+        clientPort    = request.getClientPort();
+        clientIntf    = request.getClientIntf();
+
+        serverPort    = request.getServerPort();
+        serverAddr    = request.getServerAddr();
+        serverIntf    = request.getServerIntf();
+    }
+
+    /** This should be abstract and reference the sub functions. */
+    public short getProtocol()
+    {
+        return protocol;
+    }
+
+    public InetAddress getClientAddr() 
+    {
+        return clientAddr;
+    }
+    
+    public InetAddress getServerAddr()
+    {
+        return serverAddr;
+    }
+
+    public int getClientPort()
+    {
+        return clientPort;
+    }
+    
+    public int getServerPort()
+    {
+        return serverPort;
+    }
+
+    public int getClientIntf()
+    {     
+        return clientIntf;
+    }
+    
+    public int getServerIntf()
+    {
+        return serverIntf;
+    }
+    
+    public void release()
+    {
+        /* Maybe someday */
+    }
+
+    public void scheduleTimer( long delay ) throws IllegalArgumentException
+    {
+        /* XX need some implementation */
+    }
+
+    public void cancelTimer()
+    {
+        /* Possible, unless just using the vectoring */
+    }
 }

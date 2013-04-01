@@ -241,7 +241,7 @@ public abstract class ArgonHook implements Runnable
 
                 // Complete (if we completed both server and client)
                 if (serverActionCompleted && clientActionCompleted)
-                    ((ArgonSessionImpl)session).complete();
+                    session.complete();
             }
 
             /* Only start vectoring if the session is alive */
@@ -586,12 +586,12 @@ public abstract class ArgonHook implements Runnable
     private void razeSessions()
     {
         for ( Iterator<ArgonSession> iter = sessionList.iterator() ; iter.hasNext() ; ) {
-            ArgonSessionImpl session = (ArgonSessionImpl)iter.next();
+            ArgonSession session = iter.next();
             session.raze();
         }
 
         for ( Iterator<ArgonSession> iter = releasedSessionList.iterator() ; iter.hasNext() ; ) {
-            ArgonSessionImpl session = (ArgonSessionImpl)iter.next();
+            ArgonSession session = iter.next();
             /* Raze all of the released sessions */
             session.raze();
         }
@@ -620,7 +620,7 @@ public abstract class ArgonHook implements Runnable
         ResetCrumb reset = ResetCrumb.getInstanceNotAcked();
 
         for ( ListIterator<ArgonSession> iter = sessionList.listIterator( size ) ; iter.hasPrevious(); ) {
-            ArgonSessionImpl session = (ArgonSessionImpl)iter.previous();
+            ArgonSession session = iter.previous();
 
             if ( !session.isVectored()) {
                 logger.debug( "vectorReset: skipping non-vectored session" );
@@ -714,9 +714,4 @@ public abstract class ArgonHook implements Runnable
     protected abstract void newSessionRequest( ArgonAgent agent, Iterator<?> iter, SessionEvent pe );
 
     protected abstract void raze();
-
-    static void init()
-    {
-        ArgonSessionImpl.init();
-    }
 }

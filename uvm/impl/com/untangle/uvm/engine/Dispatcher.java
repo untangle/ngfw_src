@@ -18,8 +18,6 @@ import com.untangle.uvm.argon.ArgonAgent;
 import com.untangle.uvm.argon.ArgonIPSession;
 import com.untangle.uvm.argon.ArgonUDPSession;
 import com.untangle.uvm.argon.ArgonTCPSession;
-import com.untangle.uvm.argon.ArgonUDPSessionImpl;
-import com.untangle.uvm.argon.ArgonTCPSessionImpl;
 import com.untangle.uvm.argon.ArgonTCPNewSessionRequest;
 import com.untangle.uvm.argon.ArgonUDPNewSessionRequest;
 import com.untangle.uvm.argon.ArgonIPNewSessionRequest;
@@ -537,7 +535,7 @@ public class Dispatcher implements com.untangle.uvm.argon.NewSessionEventListene
             }
 
             // Create the session, client and server channels
-            ArgonTCPSession argonSession = new ArgonTCPSessionImpl(request);
+            ArgonTCPSession argonSession = new ArgonTCPSession(request);
             NodeTCPSessionImpl session = new NodeTCPSessionImpl(this, argonSession, request.sessionEvent(), TCP_READ_BUFFER_SIZE, TCP_READ_BUFFER_SIZE);
             
             session.attach(treq.attachment());
@@ -602,7 +600,7 @@ public class Dispatcher implements com.untangle.uvm.argon.NewSessionEventListene
             }
 
             // Create the session, client and server channels
-            ArgonUDPSession argonSession = new ArgonUDPSessionImpl(request);
+            ArgonUDPSession argonSession = new ArgonUDPSession(request);
             NodeUDPSessionImpl session = new NodeUDPSessionImpl(this, argonSession, request.sessionEvent(), UDP_MAX_PACKET_SIZE, UDP_MAX_PACKET_SIZE);
             
             session.attach(ureq.attachment());

@@ -39,8 +39,6 @@ public class UDPHook implements NetcapHook
     {
         if ( INSTANCE == null )
             INSTANCE = new UDPHook();
-
-        ArgonHook.init();
     }
 
     public void event( long sessionID )
