@@ -128,6 +128,17 @@ class CaptureTests(unittest2.TestCase):
             nodeAD = uvmContext.nodeManager().instantiateAndStart(self.nodeNameAD(), defaultRackId)
             nodeDataAD = nodeAD.getSettings().get('activeDirectorySettings')
             nodeDataRD = nodeAD.getSettings().get('radiusSettings')
+        # remove previous temp files
+        clientControl.runCommand("rm /tmp/capture_test_010.log /tmp/capture_test_010.out \
+                                  /tmp/capture_test_020.log /tmp/capture_test_020.out \
+                                  /tmp/capture_test_021.log /tmp/capture_test_021.out \
+                                  /tmp/capture_test_030.log /tmp/capture_test_030.out \
+                                  /tmp/capture_test_030a.log /tmp/capture_test_030a.out \
+                                  /tmp/capture_test_030b.log /tmp/capture_test_030b.out \
+                                  /tmp/capture_test_040.log /tmp/capture_test_040.out \
+                                  /tmp/capture_test_040a.log /tmp/capture_test_040a.out \
+                                  /tmp/capture_test_040b.log /tmp/capture_test_040b.out \
+                                  ")
 
     def test_010_clientIsOnline(self):
         result = clientControl.runCommand("wget -4 -t 2 --timeout=5 -a /tmp/capture_test_010.log -O /tmp/capture_test_010.out http://www.untangle.com/")
@@ -138,19 +149,24 @@ class CaptureTests(unittest2.TestCase):
         assert (result == 0)
 
     def test_021_captureTrafficCheck(self):
-        global node, nodeData
+        global node, nodeData, captureIP
         nodeData['captureRules']['list'].append(createCaptureInternalNicRule())
         node.setSettings(nodeData)
         result = clientControl.runCommand("wget -4 -t 2 --timeout=5 -a /tmp/capture_test_021.log -O /tmp/capture_test_021.out http://www.google.com/")
         assert (result == 0)
         search = clientControl.runCommand("grep -q 'Captive Portal' /tmp/capture_test_021.out")
         assert (search == 0)
+        # get the IP address of the capture page 
+        ipfind = clientControl.runCommand("grep 'Location' /tmp/capture_test_021.log",True)
+        ip = re.findall( r'[0-9]+(?:\.[0-9]+){3}', ipfind )
+        captureIP = ip[0]
+        print 'Capture IP address is %s' % captureIP
 
     adResult = subprocess.call(["ping","-c","1",adHost],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
-    #@unittest2.skipIf(adResult != 0,  "No AD server available")
-    @unittest2.skipIf(True,  "Test Broken, hard-coded nonce.")
+    
+    @unittest2.skipIf(adResult != 0,  "No AD server available")
     def test_030_captureADLogin(self):
-        global nodeData, node, nodeDataAD, nodeAD
+        global nodeData, node, nodeDataAD, nodeAD, captureIP
         # Configure AD settings
         testResultString = nodeAD.getActiveDirectoryManager().getActiveDirectoryStatusForSettings(createADSettings())
         # print 'testResultString %s' % testResultString  # debug line
@@ -165,28 +181,29 @@ class CaptureTests(unittest2.TestCase):
         assert (result == 0)
         search = clientControl.runCommand("grep -q 'username and password' /tmp/capture_test_030.out")
         assert (search == 0)
-        # print 'Login page found'  # debug line
+        # Get the captive page IP address for logout use.
+        
+        
+        
         # check if AD login and password 
         appid = str(node.getNodeSettings()["id"])
         # print 'appid is %s' % appid  # debug line
         # get the IP address of the capture page 
-        gatewayIPAddress = systemProperties.internalInterfaceIP()
-        # print 'gatewayIPAddress is %s' % gatewayIPAddress
-        result = clientControl.runCommand("wget -a /tmp/capture_test_030a.log -O /tmp/capture_test_030a.out  \'http://" + gatewayIPAddress + "/capture/handler.py/authpost?username=atsadmin&password=passwd&nonce=9abd7f2eb5ecd82b&method=GET&appid=" + appid + "&host=test.untangle.com&uri=/\'",True)
+        result = clientControl.runCommand("wget -a /tmp/capture_test_030a.log -O /tmp/capture_test_030a.out  \'http://" + captureIP + "/capture/handler.py/authpost?username=atsadmin&password=passwd&nonce=9abd7f2eb5ecd82b&method=GET&appid=" + appid + "&host=test.untangle.com&uri=/\'",True)
         search = clientControl.runCommand("grep -q 'Hi!' /tmp/capture_test_030a.out")
         assert (search == 0)
         # logout user to clean up test.
         # wget http://<internal IP>/capture/logout  
-        result = clientControl.runCommand("wget -4 -t 2 --timeout=5 -a /tmp/capture_test_030c.log -O /tmp/capture_test_030c.out http://" + gatewayIPAddress + "/capture/logout")
+        result = clientControl.runCommand("wget -4 -t 2 --timeout=5 -a /tmp/capture_test_030b.log -O /tmp/capture_test_030b.out http://" + captureIP + "/capture/logout")
         assert (result == 0)
-        search = clientControl.runCommand("grep -q 'logout' /tmp/capture_test_030c.out")
+        search = clientControl.runCommand("grep -q 'logout' /tmp/capture_test_030b.out")
         assert (search == 0)
 
     RadiusResult = subprocess.call(["ping","-c","1",radiusHost],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
     #@unittest2.skipIf(RadiusResult != 0,  "No RADIUS server available")
     @unittest2.skipIf(True,  "Test Broken, hard-coded nonce.")
     def test_040_captureRadiusLogin(self):
-        global nodeData, node, nodeDataRD, nodeDataAD, nodeAD
+        global nodeData, node, nodeDataRD, nodeDataAD, nodeAD, captureIP
         # Configure RADIUS settings
         nodeAD.setSettings(createRadiusSettings())
         testResultString = nodeAD.getRadiusManager().getRadiusStatusForSettings(createRadiusSettings(),"normal","passwd")
@@ -199,22 +216,19 @@ class CaptureTests(unittest2.TestCase):
         # check that basic captive page is shown
         result = clientControl.runCommand("wget -4 -t 2 --timeout=5 -a /tmp/capture_test_040.log -O /tmp/capture_test_040.out http://www.google.com/")
         assert (result == 0)
-        search = clientControl.runCommand("grep -q 'username and password' /tmp/capture_test_030.out")
+        search = clientControl.runCommand("grep -q 'username and password' /tmp/capture_test_040.out")
         assert (search == 0)
         # check if RADIUS login and password 
         appid = str(node.getNodeSettings()["id"])
         # print 'appid is %s' % appid  # debug line
-        # get the IP address of the capture page 
-        gatewayIPAddress = systemProperties.internalInterfaceIP()
-        # print 'gatewayIPAddress is %s' % gatewayIPAddress
-        result = clientControl.runCommand("wget -a /tmp/capture_test_040b.log -O /tmp/capture_test_040b.out  \'http://" + gatewayIPAddress + "/capture/handler.py/authpost?username=normal&password=passwd&nonce=9abd7f2eb5ecd82b&method=GET&appid=" + appid + "&host=test.untangle.com&uri=/\'",True)
-        search = clientControl.runCommand("grep -q 'Hi!' /tmp/capture_test_030b.out")
+        result = clientControl.runCommand("wget -a /tmp/capture_test_040a.log -O /tmp/capture_test_040a.out  \'http://" + captureIP + "/capture/handler.py/authpost?username=normal&password=passwd&nonce=9abd7f2eb5ecd82b&method=GET&appid=" + appid + "&host=test.untangle.com&uri=/\'",True)
+        search = clientControl.runCommand("grep -q 'Hi!' /tmp/capture_test_040a.out")
         assert (search == 0)
         # logout user to clean up test.
         # wget http://<internal IP>/capture/logout  
-        result = clientControl.runCommand("wget -4 -t 2 --timeout=5 -a /tmp/capture_test_030c.log -O /tmp/capture_test_030c.out http://" + gatewayIPAddress + "/capture/logout")
+        result = clientControl.runCommand("wget -4 -t 2 --timeout=5 -a /tmp/capture_test_040b.log -O /tmp/capture_test_040b.out http://" + captureIP + "/capture/logout")
         assert (result == 0)
-        search = clientControl.runCommand("grep -q 'logout' /tmp/capture_test_040c.out")
+        search = clientControl.runCommand("grep -q 'logout' /tmp/capture_test_040b.out")
         assert (search == 0)
 
 
