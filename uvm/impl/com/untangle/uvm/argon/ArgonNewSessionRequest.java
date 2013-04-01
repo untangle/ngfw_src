@@ -3,38 +3,110 @@
  */
 package com.untangle.uvm.argon;
 
-import com.untangle.uvm.node.SessionTuple;
 import com.untangle.jnetcap.NetcapSession;
 
-public interface ArgonNewSessionRequest extends SessionTuple
+public abstract class ArgonNewSessionRequest
 {
-    /**
-     * return the globally unique session ID
-     */
-    long id();
+    protected final ArgonAgent    argonAgent;
+    protected final SessionGlobalState sessionGlobalState;
+    
+    ArgonNewSessionRequest( SessionGlobalState sessionGlobalState, ArgonAgent agent )
+    {
+        this.sessionGlobalState = sessionGlobalState;
+        this.argonAgent         = agent;
+    }
+    
+    public ArgonAgent argonAgent()
+    {
+        return argonAgent;
+    }
+    
+    public NetcapSession netcapSession()
+    {
+        return sessionGlobalState.netcapSession();
+    }
+
+    public SessionGlobalState sessionGlobalState()
+    {
+        return sessionGlobalState;
+    }
+
+    public long id()
+    {
+        return sessionGlobalState.id();
+    }
+
+    public long getSessionId()
+    {
+        return sessionGlobalState.id();
+    }
+    
+    public String user()
+    {
+        return sessionGlobalState.user();
+    }
 
     /**
-     * Return the user associated with this session
+     * Number of bytes received from the client.
      */
-    String user();
+    public long c2tBytes()
+    {
+        return sessionGlobalState.clientSideListener().rxBytes;
+    }
 
     /**
-     * Gets the Netcap NodeSession associated with this session request.</p>
-     *
-     * @return the Netcap Session.
+     * Number of bytes transmitted to the server.
      */
-    NetcapSession netcapSession();
+    public long t2sBytes()
+    {
+        return sessionGlobalState.serverSideListener().txBytes;
+    }
+
+    /**
+     * Number of bytes received from the server.
+     */
+    public long s2tBytes()
+    {
+        return sessionGlobalState.serverSideListener().rxBytes;
+    }
     
     /**
-     * Gets the Argon agent associated with this session request.</p>
-     *
-     * @return the Argon agent.
+     * Number of bytes transmitted to the client.
      */
-    public ArgonAgent argonAgent();
+    public long t2cBytes()
+    {
+        return sessionGlobalState.clientSideListener().rxBytes;
+    }
 
     /**
-     * Gets the global state for the session.</p>
-     * @return session global state.
+     * Number of chunks received from the client.
      */
-    public SessionGlobalState sessionGlobalState();
+    public long c2tChunks()
+    {
+        return sessionGlobalState.clientSideListener().rxChunks;
+    }
+
+    /**
+     * Number of chunks transmitted to the server.
+     */
+    public long t2sChunks()
+    {
+        return sessionGlobalState.serverSideListener().txChunks;
+    }
+
+    /**
+     * Number of chunks received from the server.
+     */
+    public long s2tChunks()
+    {
+        return sessionGlobalState.serverSideListener().rxChunks;
+    }
+    
+    /**
+     * Number of chunks transmitted to the client.
+     */
+    public long t2cChunks()
+    {
+        return sessionGlobalState.clientSideListener().rxChunks;
+    }
 }

@@ -199,9 +199,9 @@ public class UDPHook implements NetcapHook
             ArgonUDPNewSessionRequest request;
 
             if ( prevSession == null ) {
-                request = new ArgonUDPNewSessionRequestImpl( sessionGlobalState, agent, pe );
+                request = new ArgonUDPNewSessionRequest( sessionGlobalState, agent, pe );
             } else {
-                request = new ArgonUDPNewSessionRequestImpl( prevSession, agent, pe, sessionGlobalState );
+                request = new ArgonUDPNewSessionRequest( prevSession, agent, pe, sessionGlobalState );
             }
 
             ArgonUDPSession session = agent.getNewSessionEventListener().newSession( request );

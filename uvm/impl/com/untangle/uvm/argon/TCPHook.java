@@ -224,9 +224,9 @@ public class TCPHook implements NetcapHook
             ArgonTCPNewSessionRequest request;
 
             if ( prevSession == null ) {
-                request = new ArgonTCPNewSessionRequestImpl( sessionGlobalState, agent, pe );
+                request = new ArgonTCPNewSessionRequest( sessionGlobalState, agent, pe );
             } else {
-                request = new ArgonTCPNewSessionRequestImpl( prevSession, agent, pe, sessionGlobalState );
+                request = new ArgonTCPNewSessionRequest( prevSession, agent, pe, sessionGlobalState );
             }
 
             // newSession() returns null when rejecting the session
