@@ -531,7 +531,7 @@ public abstract class NodeBase implements Node
         if (matcher == null)
             return;
 
-        UvmContextFactory.context().argonManager().shutdownMatches( matcher );
+        UvmContextFactory.context().netcapManager().shutdownMatches( matcher );
     }
 
     /**
@@ -547,7 +547,7 @@ public abstract class NodeBase implements Node
             return;
         
         for (PipeSpec ps : pipeSpecs)
-            UvmContextFactory.context().argonManager().shutdownMatches( matcher, ps );
+            UvmContextFactory.context().netcapManager().shutdownMatches( matcher, ps );
     }
     
     /**

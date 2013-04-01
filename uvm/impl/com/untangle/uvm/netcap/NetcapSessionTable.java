@@ -1,7 +1,7 @@
 /*
  * $Id$
  */
-package com.untangle.uvm.argon;
+package com.untangle.uvm.netcap;
 
 import java.util.HashMap;
 import java.util.Iterator;
@@ -20,16 +20,16 @@ import com.untangle.uvm.engine.PipelineConnectorImpl;
 /**
  * This table stores a global list of all currently active sessions being vectored
  */
-public class ArgonSessionTable
+public class NetcapSessionTable
 {
     /* Debugging */
     private final Logger logger = Logger.getLogger(getClass());
-    private static final ArgonSessionTable INSTANCE = new ArgonSessionTable();
+    private static final NetcapSessionTable INSTANCE = new NetcapSessionTable();
 
     private final Map<Vector,SessionGlobalState> activeSessions = new HashMap<Vector,SessionGlobalState>();
 
     /* Singleton */
-    private ArgonSessionTable() {}
+    private NetcapSessionTable() {}
 
     /**
      * Add a vector to the hash set.
@@ -111,12 +111,12 @@ public class ArgonSessionTable
 
             SessionGlobalState session = e.getValue();
             Vector vector  = e.getKey();
-            ArgonHook argonHook = session.argonHook();
+            NetcapHook netcapHook = session.netcapHook();
 
-            isMatch = matcher.isMatch( argonHook.policyId, argonHook.clientSide.getProtocol(),
-                                       argonHook.clientSide.getClientIntf(), argonHook.serverSide.getServerIntf(),
-                                       argonHook.clientSide.getClientAddr(), argonHook.serverSide.getServerAddr(),
-                                       argonHook.clientSide.getClientPort(), argonHook.serverSide.getServerPort(),
+            isMatch = matcher.isMatch( netcapHook.policyId, netcapHook.clientSide.getProtocol(),
+                                       netcapHook.clientSide.getClientIntf(), netcapHook.serverSide.getServerIntf(),
+                                       netcapHook.clientSide.getClientAddr(), netcapHook.serverSide.getServerAddr(),
+                                       netcapHook.clientSide.getClientPort(), netcapHook.serverSide.getServerPort(),
                                        session.getAttachments() );
 
             logger.info( "shutdownMatches(): Tested    session: " + session + " id: " + session.id() + " matched: " + isMatch );
@@ -154,7 +154,7 @@ public class ArgonSessionTable
 
             SessionGlobalState session = e.getValue();
             Vector vector  = e.getKey();
-            ArgonHook argonHook = session.argonHook();
+            NetcapHook netcapHook = session.netcapHook();
 
             /**
              * Only process sessions involving the specified pipespec and associated agents
@@ -168,10 +168,10 @@ public class ArgonSessionTable
             if (!matchesOne)
                 continue;
 
-            isMatch = matcher.isMatch( argonHook.policyId, argonHook.clientSide.getProtocol(),
-                                       argonHook.clientSide.getClientIntf(), argonHook.serverSide.getServerIntf(),
-                                       argonHook.clientSide.getClientAddr(), argonHook.serverSide.getServerAddr(),
-                                       argonHook.clientSide.getClientPort(), argonHook.serverSide.getServerPort(),
+            isMatch = matcher.isMatch( netcapHook.policyId, netcapHook.clientSide.getProtocol(),
+                                       netcapHook.clientSide.getClientIntf(), netcapHook.serverSide.getServerIntf(),
+                                       netcapHook.clientSide.getClientAddr(), netcapHook.serverSide.getServerAddr(),
+                                       netcapHook.clientSide.getClientPort(), netcapHook.serverSide.getServerPort(),
                                        session.getAttachments() );
 
             logger.info( "shutdownMatches(): Tested    session: " + session + " id: " + session.id() + " matched: " + isMatch );
@@ -182,7 +182,7 @@ public class ArgonSessionTable
         }
     }
     
-    public static ArgonSessionTable getInstance()
+    public static NetcapSessionTable getInstance()
     {
         return INSTANCE;
     }

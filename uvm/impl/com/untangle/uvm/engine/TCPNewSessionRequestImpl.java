@@ -4,7 +4,7 @@
 package com.untangle.uvm.engine;
 
 import com.untangle.uvm.vnet.TCPNewSessionRequest;
-import com.untangle.uvm.argon.ArgonTCPNewSessionRequest;
+import com.untangle.uvm.netcap.NetcapTCPNewSessionRequest;
 
 /**
  * Implementation class for TCP new session requests
@@ -14,19 +14,19 @@ import com.untangle.uvm.argon.ArgonTCPNewSessionRequest;
  */
 class TCPNewSessionRequestImpl extends IPNewSessionRequestImpl implements TCPNewSessionRequest
 {
-    protected TCPNewSessionRequestImpl(Dispatcher disp, ArgonTCPNewSessionRequest argonRequest)
+    protected TCPNewSessionRequestImpl(Dispatcher disp, NetcapTCPNewSessionRequest netcapRequest)
     {
-        super(disp, argonRequest);
+        super(disp, netcapRequest);
     }
 
     public boolean acked()
     {
-        return ((ArgonTCPNewSessionRequest)argonRequest).acked();
+        return ((NetcapTCPNewSessionRequest)netcapRequest).acked();
     }
 
     public void rejectReturnRst()
     {
-        ((ArgonTCPNewSessionRequest)argonRequest).rejectReturnRst();
+        ((NetcapTCPNewSessionRequest)netcapRequest).rejectReturnRst();
     }
 
 }

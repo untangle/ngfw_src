@@ -1,16 +1,16 @@
 /**
  * $Id$
  */
-package com.untangle.uvm.argon;
+package com.untangle.uvm.netcap;
 
 import com.untangle.uvm.node.SessionEvent;
 import com.untangle.uvm.vnet.NodeTCPSession;
 
-public class ArgonTCPNewSessionRequest extends ArgonIPNewSessionRequest
+public class NetcapTCPNewSessionRequest extends NetcapIPNewSessionRequest
 {
     final boolean acked;
 
-    public ArgonTCPNewSessionRequest( SessionGlobalState sessionGlobalState, PipelineAgent agent, SessionEvent pe )
+    public NetcapTCPNewSessionRequest( SessionGlobalState sessionGlobalState, PipelineAgent agent, SessionEvent pe )
     {
         super( sessionGlobalState, agent, pe );
 
@@ -18,7 +18,7 @@ public class ArgonTCPNewSessionRequest extends ArgonIPNewSessionRequest
         acked = sessionGlobalState.netcapTCPSession().acked();
     }
 
-    public ArgonTCPNewSessionRequest( NodeTCPSession session, PipelineAgent agent, SessionEvent pe, SessionGlobalState sessionGlobalState)
+    public NetcapTCPNewSessionRequest( NodeTCPSession session, PipelineAgent agent, SessionEvent pe, SessionGlobalState sessionGlobalState)
     {
         super( session, agent, pe, sessionGlobalState);
 

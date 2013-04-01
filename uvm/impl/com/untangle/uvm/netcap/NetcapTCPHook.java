@@ -1,14 +1,14 @@
 /**
  * $Id$
  */
-package com.untangle.uvm.argon;
+package com.untangle.uvm.netcap;
 
 import java.net.InetAddress;
 import java.util.Iterator;
 
 import org.apache.log4j.Logger;
 
-import com.untangle.jnetcap.NetcapHook;
+import com.untangle.jnetcap.NetcapCallback;
 import com.untangle.jnetcap.NetcapSession;
 import com.untangle.jnetcap.NetcapTCPSession;
 import com.untangle.jvector.Sink;
@@ -19,13 +19,13 @@ import com.untangle.uvm.node.SessionEvent;
 import com.untangle.uvm.vnet.NodeTCPSession;
 import com.untangle.uvm.engine.NodeTCPSessionImpl;
 
-public class ArgonTCPHook implements NetcapHook
+public class NetcapTCPHook implements NetcapCallback
 {
-    private static ArgonTCPHook INSTANCE;
+    private static NetcapTCPHook INSTANCE;
     private final Logger logger = Logger.getLogger(getClass());
 
 
-    public static ArgonTCPHook getInstance()
+    public static NetcapTCPHook getInstance()
     {
         if ( INSTANCE == null )
             init();
@@ -34,20 +34,20 @@ public class ArgonTCPHook implements NetcapHook
     }
 
     /* Singleton */
-    private ArgonTCPHook() {}
+    private NetcapTCPHook() {}
 
     private static synchronized void init()
     {
         if ( INSTANCE == null )
-            INSTANCE = new ArgonTCPHook();
+            INSTANCE = new NetcapTCPHook();
     }
 
     public void event( long sessionID )
     {
-        new TCPArgonHook( sessionID ).run();
+        new TCPNetcapHook( sessionID ).run();
     }
 
-    private class TCPArgonHook extends ArgonHook
+    private class TCPNetcapHook extends NetcapHook
     {
         protected static final int TIMEOUT = -1;
 
@@ -64,7 +64,7 @@ public class ArgonTCPHook implements NetcapHook
         protected final TCPSideListener clientSideListener = new TCPSideListener();
         protected final TCPSideListener serverSideListener = new TCPSideListener();
 
-        protected TCPArgonHook( long id )
+        protected TCPNetcapHook( long id )
         {
             netcapTCPSession   = new NetcapTCPSession( id );
         }
@@ -163,16 +163,16 @@ public class ArgonTCPHook implements NetcapHook
             if ( logger.isDebugEnabled()) logger.debug( "TCP - Rejecting client" );
 
             switch( rejectCode ) {
-            case ArgonIPNewSessionRequest.TCP_REJECT_RESET:
+            case NetcapIPNewSessionRequest.TCP_REJECT_RESET:
                 netcapTCPSession.clientReset();
                 break;
 
-            case ArgonIPNewSessionRequest.NET_UNREACHABLE:
-            case ArgonIPNewSessionRequest.HOST_UNREACHABLE:
-            case ArgonIPNewSessionRequest.PROTOCOL_UNREACHABLE:
-            case ArgonIPNewSessionRequest.PORT_UNREACHABLE:
-            case ArgonIPNewSessionRequest.DEST_HOST_UNKNOWN:
-            case ArgonIPNewSessionRequest.PROHIBITED:
+            case NetcapIPNewSessionRequest.NET_UNREACHABLE:
+            case NetcapIPNewSessionRequest.HOST_UNREACHABLE:
+            case NetcapIPNewSessionRequest.PROTOCOL_UNREACHABLE:
+            case NetcapIPNewSessionRequest.PORT_UNREACHABLE:
+            case NetcapIPNewSessionRequest.DEST_HOST_UNKNOWN:
+            case NetcapIPNewSessionRequest.PROHIBITED:
                 netcapTCPSession.clientSendIcmpDestUnreach((byte)rejectCode );
                 break;
 
@@ -223,12 +223,12 @@ public class ArgonTCPHook implements NetcapHook
 
         protected void newSessionRequest( PipelineAgent agent, Iterator<?> iter, SessionEvent pe )
         {
-            ArgonTCPNewSessionRequest request;
+            NetcapTCPNewSessionRequest request;
 
             if ( prevSession == null ) {
-                request = new ArgonTCPNewSessionRequest( sessionGlobalState, agent, pe );
+                request = new NetcapTCPNewSessionRequest( sessionGlobalState, agent, pe );
             } else {
-                request = new ArgonTCPNewSessionRequest( prevSession, agent, pe, sessionGlobalState );
+                request = new NetcapTCPNewSessionRequest( prevSession, agent, pe, sessionGlobalState );
             }
 
             // newSession() returns null when rejecting the session
@@ -243,8 +243,8 @@ public class ArgonTCPHook implements NetcapHook
 	    
             if ( iter.hasNext()) {
             	/* Advance the previous session if the node requested or released the session */
-            	if (( request.state() == ArgonIPNewSessionRequest.REQUESTED ) ||
-            			( request.state() == ArgonIPNewSessionRequest.RELEASED && session != null )) {
+            	if (( request.state() == NetcapIPNewSessionRequest.REQUESTED ) ||
+            			( request.state() == NetcapIPNewSessionRequest.RELEASED && session != null )) {
             		prevSession = session;
             	}
             } else {

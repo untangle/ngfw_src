@@ -1,7 +1,7 @@
 /**
  * $Id$
  */
-package com.untangle.uvm.argon;
+package com.untangle.uvm.netcap;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -17,7 +17,7 @@ import com.untangle.uvm.UvmContextFactory;
 
 /**
  * The <code>PipelineAgent</code> represents an active Node as seen by
- * the node API and the pipeline implementation (Argon).  Most nodes
+ * the node API and the pipeline implementation (Netcap).  Most nodes
  * only have one active <code>PipelineAgent</code> at a time. Casings have two.
  *
  * This class's instances represent and contain the subscription state, pipeline state,
@@ -37,14 +37,14 @@ public class PipelineAgent
     private final Logger logger = Logger.getLogger(getClass());
 
     private static final NewSessionEventListener NULL_NEW_SESSION_LISTENER = new NewSessionEventListener() {
-            public NodeUDPSession newSession( ArgonUDPNewSessionRequest request )
+            public NodeUDPSession newSession( NetcapUDPNewSessionRequest request )
             {
                 /* Release everything */
                 request.release();
                 return null;
             }
 
-            public NodeTCPSession newSession( ArgonTCPNewSessionRequest request )
+            public NodeTCPSession newSession( NetcapTCPNewSessionRequest request )
             {
                 /* Release everything */
                 request.release();
@@ -64,7 +64,7 @@ public class PipelineAgent
     }
 
     /**
-     * Deactivates an active PipelineConnector and disconnects it from argon.  This kills
+     * Deactivates an active PipelineConnector and disconnects it from netcap.  This kills
      * all sessions and threads, and keeps any new sessions or further commands
      * from being issued.
      *
@@ -81,7 +81,7 @@ public class PipelineAgent
         /* Remove the listener */
         listener = NULL_NEW_SESSION_LISTENER;
 
-        ArgonSessionTable.getInstance().shutdownActive();
+        NetcapSessionTable.getInstance().shutdownActive();
 
         /* Remove all of the active sessions */
         activeSessions.clear();
@@ -110,7 +110,7 @@ public class PipelineAgent
     }
 
     /**
-     * Remove a session from the map of active sessions associated with this argon agent.
+     * Remove a session from the map of active sessions associated with this netcap agent.
      * @return True if the session was removed, false if the session was not in the list 
      *   of active session.
      */

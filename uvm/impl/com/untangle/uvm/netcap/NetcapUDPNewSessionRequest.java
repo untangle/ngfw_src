@@ -1,20 +1,20 @@
 /**
  * $Id$
  */
-package com.untangle.uvm.argon;
+package com.untangle.uvm.netcap;
 
 import com.untangle.jnetcap.NetcapUDPSession;
 import com.untangle.uvm.node.SessionEvent;
 import com.untangle.uvm.vnet.NodeUDPSession;
 import com.untangle.uvm.engine.NodeUDPSessionImpl;
 
-public class ArgonUDPNewSessionRequest extends ArgonIPNewSessionRequest
+public class NetcapUDPNewSessionRequest extends NetcapIPNewSessionRequest
 {
     protected byte ttl;
     protected byte tos;
     protected byte[] options;
 
-    public ArgonUDPNewSessionRequest( SessionGlobalState sessionGlobalState, PipelineAgent agent, SessionEvent pe )
+    public NetcapUDPNewSessionRequest( SessionGlobalState sessionGlobalState, PipelineAgent agent, SessionEvent pe )
     {
         super( sessionGlobalState, agent, pe );
 
@@ -25,7 +25,7 @@ public class ArgonUDPNewSessionRequest extends ArgonIPNewSessionRequest
         this.tos    = netcapUDPSession.tos();
     }
     
-    public ArgonUDPNewSessionRequest( NodeUDPSession session, PipelineAgent agent, SessionEvent pe, SessionGlobalState sessionGlobalState)
+    public NetcapUDPNewSessionRequest( NodeUDPSession session, PipelineAgent agent, SessionEvent pe, SessionGlobalState sessionGlobalState)
     {
         super( session, agent, pe, sessionGlobalState );
 

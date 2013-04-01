@@ -88,7 +88,7 @@ public interface NodeSession extends SessionTuple
 
     /**
      * <code>id</code> returns the session's unique identifier, a positive integer >= 1.
-     * All sessions have a unique id assigned by Argon.  This will eventually, of course,
+     * All sessions have a unique id assigned by Netcap.  This will eventually, of course,
      * wrap around.  This will take long enough, and any super-long-lived sessions that
      * get wrapped to will not be duplicated, so the rollover is ok.
      *
@@ -157,14 +157,14 @@ public interface NodeSession extends SessionTuple
     long getPolicyId();
     
     /**
-     * Returns an argon interface for the client.</p>
+     * Returns an netcap interface for the client.</p>
      *
      * @return a <code>int</code> giving the client interface of the session.
      */
     int getClientIntf();
 
     /**
-     * Returns an argon interface for the server.</p>
+     * Returns an netcap interface for the server.</p>
      *
      * @return a <code>int</code> giving the server interface of the session.
      */

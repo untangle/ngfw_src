@@ -1,16 +1,16 @@
 /**
  * $Id$
  */
-package com.untangle.uvm.argon;
+package com.untangle.uvm.netcap;
 
 import com.untangle.jnetcap.NetcapSession;
 
-public abstract class ArgonNewSessionRequest
+public abstract class NetcapNewSessionRequest
 {
     protected final PipelineAgent    pipelineAgent;
     protected final SessionGlobalState sessionGlobalState;
     
-    ArgonNewSessionRequest( SessionGlobalState sessionGlobalState, PipelineAgent agent )
+    NetcapNewSessionRequest( SessionGlobalState sessionGlobalState, PipelineAgent agent )
     {
         this.sessionGlobalState = sessionGlobalState;
         this.pipelineAgent         = agent;

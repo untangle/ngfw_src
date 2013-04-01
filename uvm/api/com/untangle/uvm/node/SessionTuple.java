@@ -21,14 +21,14 @@ public interface SessionTuple
     short getProtocol();
 
     /**
-     * Returns an argon interface for the client.</p>
+     * Returns an netcap interface for the client.</p>
      *
      * @return a <code>int</code> giving the client interface of the session.
      */
     int getClientIntf();
 
     /**
-     * Returns an argon interface for the server.</p>
+     * Returns an netcap interface for the server.</p>
      *
      * @return a <code>int</code> giving the server interface of the session.
      */

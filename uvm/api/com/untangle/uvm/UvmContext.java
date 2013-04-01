@@ -162,11 +162,11 @@ public interface UvmContext
     AlertManager alertManager();
     
     /**
-     * Get the ArgonManager
+     * Get the NetcapManager
      *
-     * @return the ArgonManager
+     * @return the NetcapManager
      */
-    ArgonManager argonManager();
+    NetcapManager netcapManager();
 
     /**
      * Get the UploadManager

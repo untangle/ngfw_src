@@ -33,13 +33,13 @@ import com.untangle.uvm.OemManager;
 import com.untangle.uvm.AlertManager;
 import com.untangle.uvm.CertificateManager;
 import com.untangle.uvm.NetworkManager;
-import com.untangle.uvm.ArgonManager;
+import com.untangle.uvm.NetcapManager;
 import com.untangle.uvm.ExecManager;
 import com.untangle.uvm.UvmException;
 import com.untangle.uvm.UvmState;
 import com.untangle.uvm.SessionMonitor;
 import com.untangle.uvm.HostTable;
-import com.untangle.uvm.argon.ArgonManagerImpl;
+import com.untangle.uvm.netcap.NetcapManagerImpl;
 import com.untangle.uvm.node.LicenseManager;
 import com.untangle.uvm.node.Reporting;
 import com.untangle.uvm.node.DayOfWeekMatcher;
@@ -206,9 +206,9 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
         return this.connectivityTester;
     }
 
-    public ArgonManager argonManager()
+    public NetcapManager netcapManager()
     {
-        return ArgonManagerImpl.getInstance();
+        return NetcapManagerImpl.getInstance();
     }
 
     public LicenseManager licenseManager()
@@ -649,7 +649,7 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
         this.alertManager = new AlertManagerImpl();
         
         // start vectoring
-        ArgonManagerImpl.getInstance().run( );
+        NetcapManagerImpl.getInstance().run( );
 
         // Start statistic gathering
         messageManager.start();
@@ -693,9 +693,9 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
         
         // stop vectoring
         try {
-            ArgonManagerImpl.getInstance().destroy();
+            NetcapManagerImpl.getInstance().destroy();
         } catch (Exception exn) {
-            logger.warn("could not destroy Argon", exn);
+            logger.warn("could not destroy Netcap", exn);
         }
 
         // stop nodes

@@ -10,7 +10,7 @@ public interface NewSessionRequest
 {
     /**
      * <code>id</code> returns the session's unique identifier, a positive integer >= 1.
-     * All sessions have a unique id assigned by Argon.  This will eventually, of course,
+     * All sessions have a unique id assigned by Netcap.  This will eventually, of course,
      * wrap around.  This will take long enough, and any super-long-lived sessions that
      * get wrapped to will not be duplicated, so the rollover is ok.
      *

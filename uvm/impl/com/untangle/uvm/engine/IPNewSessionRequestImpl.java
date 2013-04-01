@@ -8,7 +8,7 @@ import java.net.InetAddress;
 import com.untangle.uvm.node.SessionEvent;
 import com.untangle.uvm.vnet.IPNewSessionRequest;
 import com.untangle.uvm.vnet.PipelineConnector;
-import com.untangle.uvm.argon.ArgonIPNewSessionRequest;
+import com.untangle.uvm.netcap.NetcapIPNewSessionRequest;
 
 /**
  * Abstract base class for IP new session request implementations
@@ -24,12 +24,12 @@ abstract class IPNewSessionRequestImpl implements IPNewSessionRequest
      * The pipeline request that corresponds to this (node) request.
      *
      */
-    protected final ArgonIPNewSessionRequest argonRequest;
+    protected final NetcapIPNewSessionRequest netcapRequest;
 
-    protected IPNewSessionRequestImpl(Dispatcher disp, ArgonIPNewSessionRequest argonRequest)
+    protected IPNewSessionRequestImpl(Dispatcher disp, NetcapIPNewSessionRequest netcapRequest)
     {
         this.pipelineConnector = disp.pipelineConnector();
-        this.argonRequest = argonRequest;
+        this.netcapRequest = netcapRequest;
     }
 
     public PipelineConnector pipelineConnector()
@@ -39,92 +39,92 @@ abstract class IPNewSessionRequestImpl implements IPNewSessionRequest
 
     public long id()
     {
-        return argonRequest.id();
+        return netcapRequest.id();
     }
 
     public long getSessionId()
     {
-        return argonRequest.id();
+        return netcapRequest.id();
     }
     
     public short getProtocol()
     {
-        return argonRequest.getProtocol();
+        return netcapRequest.getProtocol();
     }
 
     public InetAddress getClientAddr()
     {
-        return argonRequest.getClientAddr();
+        return netcapRequest.getClientAddr();
     }
 
     public InetAddress getServerAddr()
     {
-        return argonRequest.getServerAddr();
+        return netcapRequest.getServerAddr();
     }
 
     public int getClientPort()
     {
-        return argonRequest.getClientPort();
+        return netcapRequest.getClientPort();
     }
 
     public int getServerPort()
     {
-        return argonRequest.getServerPort();
+        return netcapRequest.getServerPort();
     }
 
     public int getClientIntf()
     {
-        return argonRequest.getClientIntf();
+        return netcapRequest.getClientIntf();
     }
 
     public int getServerIntf()
     {
-        return argonRequest.getServerIntf();
+        return netcapRequest.getServerIntf();
     }
 
     public SessionEvent sessionEvent()
     {
-        return argonRequest.sessionEvent();
+        return netcapRequest.sessionEvent();
     }
 
     public void setClientAddr( InetAddress addr )
     {
-        argonRequest.setClientAddr(addr);
+        netcapRequest.setClientAddr(addr);
     }
 
     public void setServerAddr( InetAddress addr )
     {
-        argonRequest.setServerAddr(addr);
+        netcapRequest.setServerAddr(addr);
     }
 
     public void setClientPort( int port )
     {
-        argonRequest.setClientPort(port);
+        netcapRequest.setClientPort(port);
     }
 
     public void setServerPort( int port )
     {
-        argonRequest.setServerPort(port);
+        netcapRequest.setServerPort(port);
     }
 
     public void rejectSilently()
     {
-        argonRequest.rejectSilently();
+        netcapRequest.rejectSilently();
     }
 
     public void endpoint()
     {
-        argonRequest.endpoint();
+        netcapRequest.endpoint();
     }
 
     public void rejectReturnUnreachable( byte code )
     {
-        argonRequest.rejectReturnUnreachable(code);
+        netcapRequest.rejectReturnUnreachable(code);
     }
 
     public void release()
     {
-        argonRequest.release();
+        netcapRequest.release();
     }
 
     public Object attach(Object ob)
@@ -141,36 +141,36 @@ abstract class IPNewSessionRequestImpl implements IPNewSessionRequest
 
     public Object globalAttach(String key, Object ob)
     {
-        return this.argonRequest.sessionGlobalState().attach(key,ob);
+        return this.netcapRequest.sessionGlobalState().attach(key,ob);
     }
 
     public Object globalAttachment(String key)
     {
-        return this.argonRequest.sessionGlobalState().attachment(key);
+        return this.netcapRequest.sessionGlobalState().attachment(key);
     }
     
     public byte state()
     {
-        return argonRequest.state();
+        return netcapRequest.state();
     }
 
     public InetAddress getNatFromHost()
     {
-	return argonRequest.getNatFromHost();
+	return netcapRequest.getNatFromHost();
     }
 
     public int getNatFromPort()
     {
-        return argonRequest.getNatFromPort();
+        return netcapRequest.getNatFromPort();
     }
 
     public InetAddress getNatToHost()
     {
-        return argonRequest.getNatToHost();
+        return netcapRequest.getNatToHost();
     }
 
     public int getNatToPort()
     {
-        return argonRequest.getNatToPort();
+        return netcapRequest.getNatToPort();
     }
 }

@@ -20,7 +20,7 @@ import com.untangle.uvm.node.Node;
 public interface PipelineConnector
 {
     /**
-     * Deactivates an active PipelineConnector and disconnects it from argon.
+     * Deactivates an active PipelineConnector and disconnects it from netcap.
      * This kills all sessions and threads, and keeps any new sessions
      * or further commands from being issued.
      *

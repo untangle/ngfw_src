@@ -21,7 +21,7 @@ import java.util.regex.Pattern;
 
 import org.apache.log4j.Logger;
 
-import com.untangle.uvm.ArgonManager;
+import com.untangle.uvm.NetcapManager;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.logging.SystemStatEvent;
 import com.untangle.uvm.logging.LogEvent;
@@ -509,7 +509,7 @@ public class MessageManagerImpl implements MessageManager
             long rxBytes0 = 0, rxBytes1 = 0;
             long txBytes0 = 0, txBytes1 = 0;
 
-            ArgonManager am = UvmContextImpl.getInstance().argonManager();
+            NetcapManager am = UvmContextImpl.getInstance().netcapManager();
 
             m.put("uvmSessions",am.getSessionCount());
             m.put("uvmTCPSessions",am.getSessionCount(SessionTuple.PROTO_TCP));

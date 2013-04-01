@@ -20,7 +20,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.apache.log4j.Logger;
 
 import com.untangle.uvm.UvmContextFactory;
-import com.untangle.uvm.argon.PipelineAgent;
+import com.untangle.uvm.netcap.PipelineAgent;
 import com.untangle.uvm.node.SessionTuple;
 import com.untangle.uvm.node.Node;
 import com.untangle.uvm.node.NodeSettings;
@@ -55,7 +55,7 @@ public class PipelineFoundryImpl implements PipelineFoundry
     private static final PipelineFoundryImpl PIPELINE_FOUNDRY_IMPL = new PipelineFoundryImpl();
 
     /**
-     * A global list of all current argon connectors
+     * A global list of all current netcap connectors
      */
     private final List<PipelineConnector> pipelineConnectors = new LinkedList<PipelineConnector>();
 
@@ -77,7 +77,7 @@ public class PipelineFoundryImpl implements PipelineFoundry
     private final Map<Long, PipelineImpl> pipelines = new ConcurrentHashMap<Long, PipelineImpl>();
 
     /**
-     * This stores a map from policyId to a cache for that policy storing the list of argon connectors for various fitting types
+     * This stores a map from policyId to a cache for that policy storing the list of netcap connectors for various fitting types
      */
     private static final Map<Long, Map<Fitting, List<PipelineConnector>>> pipelineFoundryCache = new HashMap<Long, Map<Fitting, List<PipelineConnector>>>();
     
@@ -165,7 +165,7 @@ public class PipelineFoundryImpl implements PipelineFoundry
             PipeSpec pipeSpec = pipelineConnector.getPipeSpec();
 
             /**
-             * Check that this argon connector actually is interested in this session
+             * Check that this netcap connector actually is interested in this session
              */
             if ( ! pipeSpec.matches(sessionTuple) ) {
                 // remove from pipelineConnectorList
@@ -220,7 +220,7 @@ public class PipelineFoundryImpl implements PipelineFoundry
     }
 
     /**
-     * Register an Argon Connector
+     * Register an Netcap Connector
      */
     public synchronized void registerPipelineConnector(PipelineConnector pipelineConnector)
     {
@@ -230,7 +230,7 @@ public class PipelineFoundryImpl implements PipelineFoundry
     }
 
     /**
-     * Unregister an Argon Connector
+     * Unregister an Netcap Connector
      */
     public void deregisterPipelineConnector(PipelineConnector pipelineConnector)
     {
@@ -346,14 +346,14 @@ public class PipelineFoundryImpl implements PipelineFoundry
     }
 
     /**
-     * Add all argon connectors to the list that match this policy and fitting type
+     * Add all netcap connectors to the list that match this policy and fitting type
      */
     private boolean addPipelineConnectors( List<PipelineConnector> pipelineConnectorList, Fitting fitting, Long policyId )
     {
         boolean added = false;
 
         /**
-         * Iterate through all the argonConnections and look for ones that fit the current fitting type
+         * Iterate through all the netcapConnections and look for ones that fit the current fitting type
          */
         for ( Iterator<PipelineConnector> i = pipelineConnectors.iterator(); i.hasNext() ; ) {
             PipelineConnector pipelineConnector = i.next();
@@ -387,7 +387,7 @@ public class PipelineFoundryImpl implements PipelineFoundry
 
     /**
      * Add all casings to the list that match this policy and fitting type
-     * Also calls addPipelineConnectors recursively to add argon connectors
+     * Also calls addPipelineConnectors recursively to add netcap connectors
      * for the "inner" fitting type
      */
     private boolean addCasings( List<PipelineConnector> pipelineConnectorList, Fitting fitting, Long policyId )
@@ -618,7 +618,7 @@ public class PipelineFoundryImpl implements PipelineFoundry
     }
 
     /**
-     * Lookup a list of argon connector for the given fittings & policyId
+     * Lookup a list of netcap connector for the given fittings & policyId
      */
     private List<PipelineConnector> cacheLookup( Long policyId, Fitting fitting )
     {

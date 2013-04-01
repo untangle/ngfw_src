@@ -1,7 +1,7 @@
 /**
  * $Id$
  */
-package com.untangle.uvm.argon;
+package com.untangle.uvm.netcap;
 
 import java.util.List;
 import java.util.HashMap;
@@ -29,7 +29,7 @@ public class SessionGlobalState
     protected final SideListener clientSideListener;
     protected final SideListener serverSideListener;
 
-    protected final ArgonHook argonHook;
+    protected final NetcapHook netcapHook;
 
     /**
      * This is the global list of attachments for this session
@@ -45,9 +45,9 @@ public class SessionGlobalState
      */
     private List<PipelineAgent> originalAgents;
     
-    SessionGlobalState( NetcapSession netcapSession, SideListener clientSideListener, SideListener serverSideListener, ArgonHook argonHook )
+    SessionGlobalState( NetcapSession netcapSession, SideListener clientSideListener, SideListener serverSideListener, NetcapHook netcapHook )
     {
-        this.argonHook = argonHook;
+        this.netcapHook = netcapHook;
 
         this.netcapSession = netcapSession;
 
@@ -123,9 +123,9 @@ public class SessionGlobalState
         this.originalAgents = agents;
     }
 
-    public ArgonHook argonHook()
+    public NetcapHook netcapHook()
     {
-        return argonHook;
+        return netcapHook;
     }
 
     public Object attach(String key, Object attachment)

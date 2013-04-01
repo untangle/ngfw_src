@@ -24,7 +24,7 @@ import java.util.LinkedList;
 
 import java.util.regex.Pattern;
 
-class TestUDPHook implements NetcapHook {
+class TestUDPHook implements NetcapCallback {
     protected final int numTransforms;
     protected boolean verbose = false;
 

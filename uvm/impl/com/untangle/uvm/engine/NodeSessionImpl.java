@@ -20,9 +20,9 @@ import com.untangle.uvm.vnet.NodeSession;
 import com.untangle.uvm.node.SessionEvent;
 import com.untangle.uvm.node.Node;
 import com.untangle.uvm.node.NodeSettings;
-import com.untangle.uvm.argon.ArgonIPNewSessionRequest;
-import com.untangle.uvm.argon.PipelineAgent;
-import com.untangle.uvm.argon.SessionGlobalState;
+import com.untangle.uvm.netcap.NetcapIPNewSessionRequest;
+import com.untangle.uvm.netcap.PipelineAgent;
+import com.untangle.uvm.netcap.SessionGlobalState;
 import com.untangle.uvm.vnet.NodeSessionStats;
 import com.untangle.uvm.vnet.event.IPStreamer;
 import com.untangle.jnetcap.NetcapSession;
@@ -89,12 +89,12 @@ public abstract class NodeSessionImpl implements NodeSession
 
     protected volatile Object attachment = null;
 
-    protected NodeSessionImpl( Dispatcher dispatcher, SessionEvent sessionEvent, ArgonIPNewSessionRequest request )
+    protected NodeSessionImpl( Dispatcher dispatcher, SessionEvent sessionEvent, NetcapIPNewSessionRequest request )
     {
         this.dispatcher = dispatcher;
         this.pipelineConnector = dispatcher.pipelineConnector();
         this.sessionEvent = sessionEvent;
-        boolean isVectored = (request.state() == ArgonIPNewSessionRequest.REQUESTED || request.state() == ArgonIPNewSessionRequest.ENDPOINTED);
+        boolean isVectored = (request.state() == NetcapIPNewSessionRequest.REQUESTED || request.state() == NetcapIPNewSessionRequest.ENDPOINTED);
         
         sessionGlobalState        = request.sessionGlobalState();
         pipelineAgent                = request.pipelineAgent();
@@ -330,7 +330,7 @@ public abstract class NodeSessionImpl implements NodeSession
         }
 
         try {
-            Vector vector = sessionGlobalState.argonHook().getVector();
+            Vector vector = sessionGlobalState.netcapHook().getVector();
 
             /* Last send the kill signal to the vectoring machine */
             if ( vector != null ) vector.shutdown();
@@ -389,7 +389,7 @@ public abstract class NodeSessionImpl implements NodeSession
     }
 
     /**
-     * XXX All this does is remove the session from the argon agent table, this is being
+     * XXX All this does is remove the session from the netcap agent table, this is being
      * done from the tapi, so it is no longer necessary
      */
     public void shutdownEvent( OutgoingSocketQueue osq )
@@ -405,7 +405,7 @@ public abstract class NodeSessionImpl implements NodeSession
             return;
         }
 
-        /* Remove the session from the argon agent table */
+        /* Remove the session from the netcap agent table */
         if ( isClientShutdown && isServerShutdown ) {
             pipelineAgent.removeSession( this );
         }

@@ -1,7 +1,7 @@
 /**
  * $Id$
  */
-package com.untangle.uvm.argon;
+package com.untangle.uvm.netcap;
 
 import java.net.InetAddress;
 
@@ -11,7 +11,7 @@ import com.untangle.uvm.node.SessionEvent;
 import com.untangle.uvm.vnet.NodeSession;
 import com.untangle.uvm.engine.NodeSessionImpl;
 
-public abstract class ArgonIPNewSessionRequest extends ArgonNewSessionRequest
+public abstract class NetcapIPNewSessionRequest extends NetcapNewSessionRequest
 {
     public static final byte REQUESTED = 2;
     public static final byte REJECTED = 99;
@@ -55,7 +55,7 @@ public abstract class ArgonIPNewSessionRequest extends ArgonNewSessionRequest
     /* Two ways to create an IPNewSessionRequest:
      * A. Pass in the netcap session and get the parameters from there.
      */
-    public ArgonIPNewSessionRequest( SessionGlobalState sessionGlobalState, PipelineAgent agent, SessionEvent pe )
+    public NetcapIPNewSessionRequest( SessionGlobalState sessionGlobalState, PipelineAgent agent, SessionEvent pe )
     {
         super( sessionGlobalState, agent );
 
@@ -85,7 +85,7 @@ public abstract class ArgonIPNewSessionRequest extends ArgonNewSessionRequest
     /* Two ways to create an IPNewSessionRequest:
      * B. Pass in the previous request and get the parameters from there
      */
-    public ArgonIPNewSessionRequest( NodeSession session, PipelineAgent agent, SessionEvent pe, SessionGlobalState sessionGlobalState)
+    public NetcapIPNewSessionRequest( NodeSession session, PipelineAgent agent, SessionEvent pe, SessionGlobalState sessionGlobalState)
     {
         super( ((NodeSessionImpl)session).sessionGlobalState(), agent);
 

@@ -37,7 +37,7 @@
 #error MAX_INTERFACES
 #endif
 
-#define _HOOK_OBJ_STR     JP_BUILD_NAME( NetcapHook )
+#define _HOOK_OBJ_STR     JP_BUILD_NAME( NetcapCallback )
 #define _HOOK_METHOD_NAME "event"
 #define _HOOK_METHOD_DESC "(J)V"
 
@@ -46,7 +46,7 @@
 // XXXX Set this to 20 or something.
 #define _SESSION_LIMIT_MIN     5
 
-/* WARN: These are overriden by the argon property, so ignore them */
+/* WARN: These are overriden by the netcap property, so ignore them */
 #define _NEW_SESSION_SCHED_POLICY_DEFAULT   SCHED_NORMAL
 #define _SESSION_SCHED_POLICY_DEFAULT       SCHED_NORMAL
 

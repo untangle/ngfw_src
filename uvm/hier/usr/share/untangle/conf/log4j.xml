@@ -67,11 +67,11 @@
   <!-- Untangle Platform Categories                   -->
   <!-- ============================================== -->
 
-  <category name="com.untangle.uvm.argon.SessionGlobalState">
+  <category name="com.untangle.uvm.netcap.SessionGlobalState">
     <priority value="WARN"/>
   </category>
 
-  <category name="com.untangle.uvm.argon">
+  <category name="com.untangle.uvm.netcap">
     <priority value="WARN"/>
   </category>
 

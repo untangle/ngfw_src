@@ -1,7 +1,7 @@
 /**
  * $Id$
  */
-package com.untangle.uvm.argon;
+package com.untangle.uvm.netcap;
 
 import com.untangle.jvector.Sink;
 import com.untangle.jvector.SinkEndpointListener;

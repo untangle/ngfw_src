@@ -20,7 +20,7 @@ import com.untangle.jvector.*;
 import com.untangle.jnetcap.*;
 import java.util.LinkedList;
 
-class TestTCPHook implements NetcapHook {
+class TestTCPHook implements NetcapCallback {
     protected final int numTransforms;
     protected boolean verbose = false;
 

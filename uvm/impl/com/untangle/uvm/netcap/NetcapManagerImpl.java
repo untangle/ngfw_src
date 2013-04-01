@@ -1,18 +1,18 @@
 /**
  * $Id$
  */
-package com.untangle.uvm.argon;
+package com.untangle.uvm.netcap;
 
 import org.apache.log4j.Logger;
 
 import com.untangle.jnetcap.Netcap;
 import com.untangle.jvector.Vector;
-import com.untangle.uvm.ArgonManager;
+import com.untangle.uvm.NetcapManager;
 import com.untangle.uvm.SessionMatcher;
 import com.untangle.uvm.vnet.PipeSpec;
 import com.untangle.uvm.util.JsonClient;
 
-public class ArgonManagerImpl implements ArgonManager
+public class NetcapManagerImpl implements NetcapManager
 {
     /* Number of times to try and shutdown all vectoring machines cleanly before giving up */
     static final int SHUTDOWN_ATTEMPTS = 5;
@@ -24,7 +24,7 @@ public class ArgonManagerImpl implements ArgonManager
     public static final int SCHED_SOFTREAL = 4;
 
     /* Singleton */
-    private static final ArgonManagerImpl INSTANCE = new ArgonManagerImpl();
+    private static final NetcapManagerImpl INSTANCE = new NetcapManagerImpl();
 
     int netcapDebugLevel    = 1;
     int jnetcapDebugLevel   = 1;
@@ -43,7 +43,7 @@ public class ArgonManagerImpl implements ArgonManager
     private final Logger logger = Logger.getLogger( this.getClass());
 
     /* Singleton */
-    private ArgonManagerImpl() { }
+    private NetcapManagerImpl() { }
 
     public void run()
     {
@@ -53,8 +53,8 @@ public class ArgonManagerImpl implements ArgonManager
         try {
             init();
         } catch ( Exception e ) {
-            logger.fatal( "Error initializing argon", e );
-            throw new IllegalStateException( "Unable to initialize argon", e );
+            logger.fatal( "Error initializing netcap", e );
+            throw new IllegalStateException( "Unable to initialize netcap", e );
         }
 
         registerHooks();
@@ -67,48 +67,48 @@ public class ArgonManagerImpl implements ArgonManager
     {
         String temp;
 
-        if (( temp = System.getProperty( "argon.numthreads" )) != null ) {
+        if (( temp = System.getProperty( "netcap.numthreads" )) != null ) {
             int count;
             count = Integer.parseInt( temp );
             if ( count < 0 ) {
-                logger.error( "argon.numthreads must be > 0." + count + " continuing" );
+                logger.error( "netcap.numthreads must be > 0." + count + " continuing" );
             } else {
                 numThreads = count;
             }
         }
 
-        if (( temp = System.getProperty( "argon.debug.netcap" )) != null ) {
+        if (( temp = System.getProperty( "netcap.debug.netcap" )) != null ) {
             netcapDebugLevel = Integer.parseInt( temp );
         }
 
-        if (( temp = System.getProperty( "argon.debug.jnetcap" )) != null ) {
+        if (( temp = System.getProperty( "netcap.debug.jnetcap" )) != null ) {
             jnetcapDebugLevel = Integer.parseInt( temp );
         }
 
-        if (( temp = System.getProperty( "argon.debug.vector" )) != null ) {
+        if (( temp = System.getProperty( "netcap.debug.vector" )) != null ) {
             vectorDebugLevel = Integer.parseInt( temp );
         }
 
-        if (( temp = System.getProperty( "argon.debug.jvector" )) != null ) {
+        if (( temp = System.getProperty( "netcap.debug.jvector" )) != null ) {
             jvectorDebugLevel = Integer.parseInt( temp );
         }
 
-        if (( temp = System.getProperty( "argon.debug.mvutil" )) != null ) {
+        if (( temp = System.getProperty( "netcap.debug.mvutil" )) != null ) {
             mvutilDebugLevel = Integer.parseInt( temp );
         }
 
-        if (( temp = System.getProperty( "argon.sessionlimit" )) != null ) {
+        if (( temp = System.getProperty( "netcap.sessionlimit" )) != null ) {
             sessionThreadLimit  = Integer.parseInt( temp );
         }
 
         // Policy used for session threads (and new session threads if not specified below)
-        if (( temp = System.getProperty( "argon.sessionSchedPolicy" )) != null ) {
+        if (( temp = System.getProperty( "netcap.sessionSchedPolicy" )) != null ) {
             sessionSchedPolicy  = Integer.parseInt( temp );
             newSessionSchedPolicy  = sessionSchedPolicy;
         }
 
         // Policy used for newSession (Netcap Server) threads
-        if (( temp = System.getProperty( "argon.newSessionSchedPolicy" )) != null ) {
+        if (( temp = System.getProperty( "netcap.newSessionSchedPolicy" )) != null ) {
             newSessionSchedPolicy  = Integer.parseInt( temp );
         }
     }
@@ -118,9 +118,9 @@ public class ArgonManagerImpl implements ArgonManager
      */
     private void registerHooks()
     {
-        Netcap.registerUDPHook( ArgonUDPHook.getInstance());
+        Netcap.registerUDPHook( NetcapUDPHook.getInstance());
 
-        Netcap.registerTCPHook( ArgonTCPHook.getInstance());
+        Netcap.registerTCPHook( NetcapTCPHook.getInstance());
     }
 
     /**
@@ -155,7 +155,7 @@ public class ArgonManagerImpl implements ArgonManager
         Netcap.unregisterTCPHook();
         Netcap.unregisterUDPHook();
 
-        ArgonSessionTable activeSessions = ArgonSessionTable.getInstance();
+        NetcapSessionTable activeSessions = NetcapSessionTable.getInstance();
 
         /* Close all of the vectoring machines */
         for ( int c = 0; c <  SHUTDOWN_ATTEMPTS ; c++ ) {
@@ -176,31 +176,31 @@ public class ArgonManagerImpl implements ArgonManager
         Netcap.cleanup();
     }
 
-    public static ArgonManagerImpl getInstance()
+    public static NetcapManagerImpl getInstance()
     {
         return INSTANCE;
     }
 
-    /** Get the number of sessions from the ArgonSessionTable */
+    /** Get the number of sessions from the NetcapSessionTable */
     public int getSessionCount()
     {
-        return ArgonSessionTable.getInstance().count();
+        return NetcapSessionTable.getInstance().count();
     }
 
     public int getSessionCount(short protocol)
     {
-        return ArgonSessionTable.getInstance().count(protocol);
+        return NetcapSessionTable.getInstance().count(protocol);
     }
     
     /** Shutdown all of the sessions that match <code>matcher</code> */
     public void shutdownMatches( SessionMatcher matcher )
     {
-        ArgonSessionTable.getInstance().shutdownMatches( matcher );
+        NetcapSessionTable.getInstance().shutdownMatches( matcher );
     }
 
     /** Shutdown all of the sessions that have been touch by the PipeSpec that match <code>matcher</code> */
     public void shutdownMatches( SessionMatcher matcher, PipeSpec ps )
     {
-        ArgonSessionTable.getInstance().shutdownMatches( matcher, ps );
+        NetcapSessionTable.getInstance().shutdownMatches( matcher, ps );
     }
 }

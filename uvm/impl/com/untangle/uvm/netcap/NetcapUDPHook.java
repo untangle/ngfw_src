@@ -1,14 +1,14 @@
 /**
  * $Id$
  */
-package com.untangle.uvm.argon;
+package com.untangle.uvm.netcap;
 
 import java.util.Iterator;
 
 import org.apache.log4j.Logger;
 
 import com.untangle.jnetcap.IPTraffic;
-import com.untangle.jnetcap.NetcapHook;
+import com.untangle.jnetcap.NetcapCallback;
 import com.untangle.jnetcap.NetcapSession;
 import com.untangle.jnetcap.NetcapUDPSession;
 import com.untangle.jvector.Sink;
@@ -19,12 +19,12 @@ import com.untangle.uvm.node.SessionEvent;
 import com.untangle.uvm.vnet.NodeUDPSession;
 import com.untangle.uvm.engine.NodeUDPSessionImpl;
 
-public class ArgonUDPHook implements NetcapHook
+public class NetcapUDPHook implements NetcapCallback
 {
-    private static ArgonUDPHook INSTANCE;
+    private static NetcapUDPHook INSTANCE;
     private final Logger logger = Logger.getLogger(getClass());
 
-    public static ArgonUDPHook getInstance() {
+    public static NetcapUDPHook getInstance() {
         if ( INSTANCE == null )
             init();
 
@@ -32,22 +32,22 @@ public class ArgonUDPHook implements NetcapHook
     }
 
     /* Singleton */
-    private ArgonUDPHook()
+    private NetcapUDPHook()
     {
     }
 
     private static synchronized void init()
     {
         if ( INSTANCE == null )
-            INSTANCE = new ArgonUDPHook();
+            INSTANCE = new NetcapUDPHook();
     }
 
     public void event( long sessionID )
     {
-        new UDPArgonHook( sessionID ).run();
+        new UDPNetcapHook( sessionID ).run();
     }
 
-    private class UDPArgonHook extends ArgonHook
+    private class UDPNetcapHook extends NetcapHook
     {
         /**
          * Default 70 second timeout for UDP sessions this fixes VOIP
@@ -65,7 +65,7 @@ public class ArgonUDPHook implements NetcapHook
 
         protected NodeUDPSession prevSession = null;
 
-        protected UDPArgonHook( long id )
+        protected UDPNetcapHook( long id )
         {
             netcapUDPSession = new NetcapUDPSession( id );
         }
@@ -132,7 +132,7 @@ public class ArgonUDPHook implements NetcapHook
 
             if ( !netcapUDPSession.merge( serverTraffic, intf )) {
                 /* Merged out and indicate that the session was rejected */
-                state = ArgonIPNewSessionRequest.REJECTED;
+                state = NetcapIPNewSessionRequest.REJECTED;
                 return false;
             }
 
@@ -197,12 +197,12 @@ public class ArgonUDPHook implements NetcapHook
 
         protected void newSessionRequest( PipelineAgent agent, Iterator<?> iter, SessionEvent pe )
         {
-            ArgonUDPNewSessionRequest request;
+            NetcapUDPNewSessionRequest request;
 
             if ( prevSession == null ) {
-                request = new ArgonUDPNewSessionRequest( sessionGlobalState, agent, pe );
+                request = new NetcapUDPNewSessionRequest( sessionGlobalState, agent, pe );
             } else {
-                request = new ArgonUDPNewSessionRequest( prevSession, agent, pe, sessionGlobalState );
+                request = new NetcapUDPNewSessionRequest( prevSession, agent, pe, sessionGlobalState );
             }
 
             NodeUDPSession session = agent.getNewSessionEventListener().newSession( request );
@@ -216,8 +216,8 @@ public class ArgonUDPHook implements NetcapHook
 
             if ( iter.hasNext()) {
                 /* Only advance the previous session if the node requested the session */
-                if (( request.state() == ArgonIPNewSessionRequest.REQUESTED ) ||
-                    ( request.state() == ArgonIPNewSessionRequest.RELEASED && session != null )) {
+                if (( request.state() == NetcapIPNewSessionRequest.REQUESTED ) ||
+                    ( request.state() == NetcapIPNewSessionRequest.RELEASED && session != null )) {
                     logger.debug( "Passing new session data client: " + session.getClientAddr());
                     prevSession = session;
                 } else {

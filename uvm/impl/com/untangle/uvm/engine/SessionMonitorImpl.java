@@ -21,9 +21,9 @@ import com.untangle.uvm.SessionMonitorEntry;
 import com.untangle.uvm.node.Node;
 import com.untangle.uvm.node.NodeManager;
 import com.untangle.uvm.node.SessionTuple;
-import com.untangle.uvm.argon.SessionGlobalState;
-import com.untangle.uvm.argon.ArgonHook;
-import com.untangle.uvm.argon.ArgonSessionTable;
+import com.untangle.uvm.netcap.SessionGlobalState;
+import com.untangle.uvm.netcap.NetcapHook;
+import com.untangle.uvm.netcap.NetcapSessionTable;
 import com.untangle.uvm.vnet.NodeSession;
 import com.untangle.uvm.node.NodeSettings;
 import com.untangle.uvm.network.InterfaceSettings;
@@ -95,7 +95,7 @@ class SessionMonitorImpl implements SessionMonitor
     public List<SessionMonitorEntry> getMergedSessions(long nodeId)
     {
         List<SessionMonitorEntry> sessions = this._getConntrackSessionMonitorEntrys();
-        List<SessionGlobalState> argonSessions = ArgonSessionTable.getInstance().getSessions();
+        List<SessionGlobalState> netcapSessions = NetcapSessionTable.getInstance().getSessions();
         List<SessionTuple> nodeSessions = null;;
 
         Node node = null;
@@ -112,15 +112,15 @@ class SessionMonitorImpl implements SessionMonitor
             session.setPriority(session.getQosPriority()); 
             boolean foundUvmSession = false;
             
-            for (SessionGlobalState argonSession : argonSessions) {
-                com.untangle.uvm.node.SessionTuple clientSide = argonSession.argonHook().getClientSide();
-                com.untangle.uvm.node.SessionTuple serverSide = argonSession.argonHook().getServerSide();
-                int priority = argonSession.netcapSession().clientQosMark();
+            for (SessionGlobalState netcapSession : netcapSessions) {
+                com.untangle.uvm.node.SessionTuple clientSide = netcapSession.netcapHook().getClientSide();
+                com.untangle.uvm.node.SessionTuple serverSide = netcapSession.netcapHook().getServerSide();
+                int priority = netcapSession.netcapSession().clientQosMark();
 
                 try {
                     if ( _matches(clientSide,session) || _matches(serverSide,session) ) {
                         
-                        ArgonHook hook = argonSession.argonHook();
+                        NetcapHook hook = netcapSession.netcapHook();
                         if (hook == null)
                             continue;
                         
@@ -130,7 +130,7 @@ class SessionMonitorImpl implements SessionMonitor
                         else
                             session.setPolicy(policyId.toString()); 
 
-                        session.setSessionId(argonSession.id());
+                        session.setSessionId(netcapSession.id());
                         session.setBypassed(Boolean.FALSE);
                         session.setClientIntf(new Integer(clientSide.getClientIntf()));
                         session.setServerIntf(new Integer(serverSide.getServerIntf()));
@@ -151,7 +151,7 @@ class SessionMonitorImpl implements SessionMonitor
                         if (priority != 0)
                             session.setPriority(priority);
 
-                        session.setAttachments(argonSession.getAttachments());
+                        session.setAttachments(netcapSession.getAttachments());
                         
                         foundUvmSession = true;
                         break;

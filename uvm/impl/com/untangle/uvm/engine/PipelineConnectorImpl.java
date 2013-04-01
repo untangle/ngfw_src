@@ -7,7 +7,7 @@ import org.apache.log4j.Logger;
 import java.util.List;
 import java.util.LinkedList;
 
-import com.untangle.uvm.argon.PipelineAgent;
+import com.untangle.uvm.netcap.PipelineAgent;
 import com.untangle.uvm.node.Node;
 import com.untangle.uvm.node.NodeProperties;
 import com.untangle.uvm.vnet.PipelineConnector;

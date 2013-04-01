@@ -27,7 +27,7 @@ import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.XMLReaderFactory;
 
 import com.untangle.uvm.SettingsManager;
-import com.untangle.uvm.ArgonManager;
+import com.untangle.uvm.NetcapManager;
 import com.untangle.uvm.SettingsManager;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.message.MessageManager;

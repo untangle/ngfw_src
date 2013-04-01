@@ -4,7 +4,7 @@
 package com.untangle.uvm.engine;
 
 import com.untangle.uvm.vnet.UDPNewSessionRequest;
-import com.untangle.uvm.argon.ArgonUDPNewSessionRequest;
+import com.untangle.uvm.netcap.NetcapUDPNewSessionRequest;
 
 /**
  * Implementation class for UDP new session requests
@@ -15,9 +15,9 @@ import com.untangle.uvm.argon.ArgonUDPNewSessionRequest;
 class UDPNewSessionRequestImpl extends IPNewSessionRequestImpl implements UDPNewSessionRequest
 {
 
-    protected UDPNewSessionRequestImpl(Dispatcher disp, ArgonUDPNewSessionRequest argonRequest)
+    protected UDPNewSessionRequestImpl(Dispatcher disp, NetcapUDPNewSessionRequest netcapRequest)
     {
-        super(disp, argonRequest);
+        super(disp, netcapRequest);
     }
 
 }

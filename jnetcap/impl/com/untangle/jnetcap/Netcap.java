@@ -186,12 +186,12 @@ public final class Netcap
     /**
      * Setup a UDP hook 
      */
-    public static native int registerUDPHook( NetcapHook udpHook );
+    public static native int registerUDPHook( NetcapCallback udpHook );
     
     /**
      * Setup a TCP hook 
      */
-    public static native int registerTCPHook( NetcapHook tcpHook );
+    public static native int registerTCPHook( NetcapCallback tcpHook );
 
     /**
      * Clear out the UDP hook 

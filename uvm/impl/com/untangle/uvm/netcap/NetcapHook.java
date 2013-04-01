@@ -1,7 +1,7 @@
 /**
  * $Id$
  */
-package com.untangle.uvm.argon;
+package com.untangle.uvm.netcap;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -40,10 +40,10 @@ import com.untangle.uvm.network.InterfaceSettings;
 /**
  * Helper class for the IP session hooks.
  */
-public abstract class ArgonHook implements Runnable
+public abstract class NetcapHook implements Runnable
 {
     private final Logger logger = Logger.getLogger(getClass());
-    private static final ArgonSessionTable activeSessions = ArgonSessionTable.getInstance();
+    private static final NetcapSessionTable activeSessions = NetcapSessionTable.getInstance();
 
     /* Reject the client with whatever response the server returned */
     protected static final int REJECT_CODE_SRV = -1;
@@ -74,7 +74,7 @@ public abstract class ArgonHook implements Runnable
     /**
      * State of the session
      */
-    protected int state      = ArgonIPNewSessionRequest.REQUESTED;
+    protected int state      = NetcapIPNewSessionRequest.REQUESTED;
     protected int rejectCode = REJECT_CODE_SRV;
 
     public Vector getVector()
@@ -270,7 +270,7 @@ public abstract class ArgonHook implements Runnable
 
                     /* Call the raze method for each session */
                 } catch ( Exception e ) {
-                    logger.error( "Exception inside argon hook: " + sessionGlobalState, e );
+                    logger.error( "Exception inside netcap hook: " + sessionGlobalState, e );
                 }
 
                 if ( logger.isDebugEnabled())
@@ -293,7 +293,7 @@ public abstract class ArgonHook implements Runnable
             } else if ( message.startsWith( "netcap_interface_dst_intf" )) {
                 logger.warn( "Unable to determine the outgoing interface: " + sessionGlobalState.netcapSession() );
             } else {
-                logger.warn( "Exception executing argon hook:", e );
+                logger.warn( "Exception executing netcap hook:", e );
             }
         }
 
@@ -367,7 +367,7 @@ public abstract class ArgonHook implements Runnable
         for ( Iterator<PipelineAgent> iter = pipelineAgents.iterator() ; iter.hasNext() ; ) {
             PipelineAgent agent = iter.next();
 
-            if ( state == ArgonIPNewSessionRequest.REQUESTED ) {
+            if ( state == NetcapIPNewSessionRequest.REQUESTED ) {
                 newSessionRequest( agent, iter, event );
             } else {
                 /* NodeSession has been rejected or endpointed, remaining
@@ -390,26 +390,26 @@ public abstract class ArgonHook implements Runnable
     {
         boolean serverActionCompleted = true;
         switch ( state ) {
-        case ArgonIPNewSessionRequest.REQUESTED:
+        case NetcapIPNewSessionRequest.REQUESTED:
             /* If the server doesn't complete, we have to "vector" the reset */
             if ( !serverComplete()) {
                 /* ??? May want to send different codes, or something ??? */
                 if ( vectorReset()) {
                     /* Forward the rejection type that was passed from
                      * the server */
-                    state        = ArgonIPNewSessionRequest.REJECTED;
+                    state        = NetcapIPNewSessionRequest.REJECTED;
                     rejectCode = REJECT_CODE_SRV;
                     serverActionCompleted = false;
                 } else {
-                    state = ArgonIPNewSessionRequest.ENDPOINTED;
+                    state = NetcapIPNewSessionRequest.ENDPOINTED;
                 }
             }
             break;
 
             /* Nothing to do on the server side */
-        case ArgonIPNewSessionRequest.ENDPOINTED: /* fallthrough */
-        case ArgonIPNewSessionRequest.REJECTED: /* fallthrough */
-        case ArgonIPNewSessionRequest.REJECTED_SILENT: /* fallthrough */
+        case NetcapIPNewSessionRequest.ENDPOINTED: /* fallthrough */
+        case NetcapIPNewSessionRequest.REJECTED: /* fallthrough */
+        case NetcapIPNewSessionRequest.REJECTED_SILENT: /* fallthrough */
             break;
 
         default:
@@ -430,21 +430,21 @@ public abstract class ArgonHook implements Runnable
         boolean clientActionCompleted = true;
 
         switch ( state ) {
-        case ArgonIPNewSessionRequest.REQUESTED:
-        case ArgonIPNewSessionRequest.ENDPOINTED:
+        case NetcapIPNewSessionRequest.REQUESTED:
+        case NetcapIPNewSessionRequest.ENDPOINTED:
             if ( !clientComplete()) {
                 logger.info( "Unable to complete connection to client" );
-                state = ArgonIPNewSessionRequest.REJECTED;
+                state = NetcapIPNewSessionRequest.REJECTED;
                 clientActionCompleted = false;
             }
             break;
 
-        case ArgonIPNewSessionRequest.REJECTED:
+        case NetcapIPNewSessionRequest.REJECTED:
             logger.debug( "Rejecting session" );
             clientReject();
             break;
 
-        case ArgonIPNewSessionRequest.REJECTED_SILENT:
+        case NetcapIPNewSessionRequest.REJECTED_SILENT:
             logger.debug( "Rejecting session silently" );
             clientRejectSilent();
             break;
@@ -461,7 +461,7 @@ public abstract class ArgonHook implements Runnable
         LinkedList<Relay> relayList = new LinkedList<Relay>();
 
         if ( sessionList.isEmpty() ) {
-            if ( state == ArgonIPNewSessionRequest.ENDPOINTED ) {
+            if ( state == NetcapIPNewSessionRequest.ENDPOINTED ) {
                 throw new IllegalStateException( "Endpointed session without any nodes" );
             }
 
@@ -493,7 +493,7 @@ public abstract class ArgonHook implements Runnable
                 }
 
                 if ( logger.isDebugEnabled()) {
-                    logger.debug( "ArgonHook: buildPipeline - added session: " + session );
+                    logger.debug( "NetcapHook: buildPipeline - added session: " + session );
                 }
 
                 session.pipelineAgent().addSession( session );
@@ -504,13 +504,13 @@ public abstract class ArgonHook implements Runnable
                 first = false;
             }
 
-            if ( state == ArgonIPNewSessionRequest.REQUESTED ) {
+            if ( state == NetcapIPNewSessionRequest.REQUESTED ) {
                 serverSource = makeServerSource();
                 serverSink   = makeServerSink();
 
                 relayList.add( new Relay( prevOutgoingSQ, serverSink ));
                 relayList.add( new Relay( serverSource, prevIncomingSQ ));
-            } else if ( state == ArgonIPNewSessionRequest.ENDPOINTED ) {
+            } else if ( state == NetcapIPNewSessionRequest.ENDPOINTED ) {
                 /* XXX Also have to close the socket queues if the
                  * session is endpointed */
             } else {
@@ -523,13 +523,13 @@ public abstract class ArgonHook implements Runnable
     }
 
     @SuppressWarnings("fallthrough")
-    protected void processSession( ArgonIPNewSessionRequest request, NodeSessionImpl session )
+    protected void processSession( NetcapIPNewSessionRequest request, NodeSessionImpl session )
     {
         if ( logger.isDebugEnabled())
             logger.debug( "Processing session: with state: " + request.state() + " session: " + session );
 
         switch ( request.state()) {
-        case ArgonIPNewSessionRequest.RELEASED:
+        case NetcapIPNewSessionRequest.RELEASED:
             if ( session == null ) {
                 /* Released sessions don't need a session, but for
                  * those that redirects may modify session
@@ -551,12 +551,12 @@ public abstract class ArgonHook implements Runnable
             sessionList.add( session );
             break;
 
-        case ArgonIPNewSessionRequest.ENDPOINTED:
+        case NetcapIPNewSessionRequest.ENDPOINTED:
             /* Set the state to endpointed */
-            state = ArgonIPNewSessionRequest.ENDPOINTED;
+            state = NetcapIPNewSessionRequest.ENDPOINTED;
 
             /* fallthrough */
-        case ArgonIPNewSessionRequest.REQUESTED:
+        case NetcapIPNewSessionRequest.REQUESTED:
             if ( session == null ) {
                 throw new IllegalStateException( "Session required for this state: " + request.state());
             }
@@ -567,11 +567,11 @@ public abstract class ArgonHook implements Runnable
             sessionList.add( session );
             break;
 
-        case ArgonIPNewSessionRequest.REJECTED:
+        case NetcapIPNewSessionRequest.REJECTED:
             rejectCode  = request.rejectCode();
 
             /* fallthrough */
-        case ArgonIPNewSessionRequest.REJECTED_SILENT:
+        case NetcapIPNewSessionRequest.REJECTED_SILENT:
             state = request.state();
 
             /* Done if the session wants to be notified of complete */
@@ -618,7 +618,7 @@ public abstract class ArgonHook implements Runnable
         logger.debug( "vectorReset: " + state );
 
         /* No need to vector, the session wasn't even requested */
-        if ( state != ArgonIPNewSessionRequest.REQUESTED ) return true;
+        if ( state != NetcapIPNewSessionRequest.REQUESTED ) return true;
 
         int size = sessionList.size();
         boolean isEndpointed = false;
@@ -670,7 +670,7 @@ public abstract class ArgonHook implements Runnable
 
     protected boolean alive()
     {
-        if ( state == ArgonIPNewSessionRequest.REQUESTED || state == ArgonIPNewSessionRequest.ENDPOINTED ) {
+        if ( state == NetcapIPNewSessionRequest.REQUESTED || state == NetcapIPNewSessionRequest.ENDPOINTED ) {
             return true;
         }
 

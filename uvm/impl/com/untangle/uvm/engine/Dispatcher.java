@@ -14,10 +14,10 @@ import org.apache.log4j.Logger;
 import org.apache.log4j.MDC;
 
 import com.untangle.uvm.UvmContextFactory;
-import com.untangle.uvm.argon.PipelineAgent;
-import com.untangle.uvm.argon.ArgonTCPNewSessionRequest;
-import com.untangle.uvm.argon.ArgonUDPNewSessionRequest;
-import com.untangle.uvm.argon.ArgonIPNewSessionRequest;
+import com.untangle.uvm.netcap.PipelineAgent;
+import com.untangle.uvm.netcap.NetcapTCPNewSessionRequest;
+import com.untangle.uvm.netcap.NetcapUDPNewSessionRequest;
+import com.untangle.uvm.netcap.NetcapIPNewSessionRequest;
 import com.untangle.uvm.node.Node;
 import com.untangle.uvm.node.NodeProperties;
 import com.untangle.uvm.node.NodeManager;
@@ -44,7 +44,7 @@ import com.untangle.uvm.vnet.event.UDPSessionEvent;
  * One dispatcher per PipelineConnector.  This where all the new session logic
  * lives, and the event dispatching.
  */
-public class Dispatcher implements com.untangle.uvm.argon.NewSessionEventListener
+public class Dispatcher implements com.untangle.uvm.netcap.NewSessionEventListener
 {
     public static final String SESSION_ID_MDC_KEY = "SessionID";
 
@@ -146,7 +146,7 @@ public class Dispatcher implements com.untangle.uvm.argon.NewSessionEventListene
         liveSessions.put(sess, sess);
     }
 
-    public NodeTCPSession newSession( ArgonTCPNewSessionRequest request )
+    public NodeTCPSession newSession( NetcapTCPNewSessionRequest request )
     {
         try {
             UvmContextImpl.getInstance().loggingManager().setLoggingNode(node.getNodeSettings().getId());
@@ -158,7 +158,7 @@ public class Dispatcher implements com.untangle.uvm.argon.NewSessionEventListene
         }
     }
  
-    public NodeUDPSession newSession( ArgonUDPNewSessionRequest request )
+    public NodeUDPSession newSession( NetcapUDPNewSessionRequest request )
     {
         try {
             UvmContextImpl.getInstance().loggingManager().setLoggingNode(node.getNodeSettings().getId());
@@ -491,7 +491,7 @@ public class Dispatcher implements com.untangle.uvm.argon.NewSessionEventListene
     }
 
 
-    private NodeTCPSession newSessionInternal( ArgonTCPNewSessionRequest request )
+    private NodeTCPSession newSessionInternal( NetcapTCPNewSessionRequest request )
     {
         long sessionId = -1L;
 
@@ -511,17 +511,17 @@ public class Dispatcher implements com.untangle.uvm.argon.NewSessionEventListene
 
             // Check the session only if it was not rejected.
             switch (treq.state()) {
-            case ArgonIPNewSessionRequest.REJECTED:
-            case ArgonIPNewSessionRequest.REJECTED_SILENT:
+            case NetcapIPNewSessionRequest.REJECTED:
+            case NetcapIPNewSessionRequest.REJECTED_SILENT:
                 logger.debug("rejecting");
                 return null;
 
-            case ArgonIPNewSessionRequest.RELEASED:
+            case NetcapIPNewSessionRequest.RELEASED:
                 logger.debug("releasing");
                 return null;
 
-            case ArgonIPNewSessionRequest.REQUESTED:
-            case ArgonIPNewSessionRequest.ENDPOINTED:
+            case NetcapIPNewSessionRequest.REQUESTED:
+            case NetcapIPNewSessionRequest.ENDPOINTED:
             default:
                 break;
             }
@@ -536,7 +536,7 @@ public class Dispatcher implements com.untangle.uvm.argon.NewSessionEventListene
                 logger.info("New TCP session " +
                             session.getClientAddr().getHostAddress() + ":" + session.getClientPort() + " -> " +
                             session.getServerAddr().getHostAddress() + ":" + session.getServerPort());
-            if (treq.state() == ArgonIPNewSessionRequest.RELEASED) {
+            if (treq.state() == NetcapIPNewSessionRequest.RELEASED) {
                 session.release();
             } else {
                 TCPSessionEvent tevent = new TCPSessionEvent(pipelineConnector, session);
@@ -555,7 +555,7 @@ public class Dispatcher implements com.untangle.uvm.argon.NewSessionEventListene
         }
     }
 
-    private NodeUDPSession newSessionInternal(ArgonUDPNewSessionRequest request)
+    private NodeUDPSession newSessionInternal(NetcapUDPNewSessionRequest request)
     {
         long sessionId = -1;
 
@@ -574,17 +574,17 @@ public class Dispatcher implements com.untangle.uvm.argon.NewSessionEventListene
 
             // Check the session only if it was not rejected.
             switch (ureq.state()) {
-            case ArgonIPNewSessionRequest.REJECTED:
-            case ArgonIPNewSessionRequest.REJECTED_SILENT:
+            case NetcapIPNewSessionRequest.REJECTED:
+            case NetcapIPNewSessionRequest.REJECTED_SILENT:
                 logger.debug("rejecting");
                 return null;
 
-            case ArgonIPNewSessionRequest.RELEASED:
+            case NetcapIPNewSessionRequest.RELEASED:
                 logger.debug("releasing");
                 return null;
 
-            case ArgonIPNewSessionRequest.REQUESTED:
-            case ArgonIPNewSessionRequest.ENDPOINTED:
+            case NetcapIPNewSessionRequest.REQUESTED:
+            case NetcapIPNewSessionRequest.ENDPOINTED:
             default:
                 break;
             }
@@ -600,7 +600,7 @@ public class Dispatcher implements com.untangle.uvm.argon.NewSessionEventListene
                 logger.info("New UDP session " +
                             session.getClientAddr().getHostAddress() + ":" + session.getClientPort() + " -> " +
                             session.getServerAddr().getHostAddress() + ":" + session.getServerPort());
-            if (ureq.state() == ArgonIPNewSessionRequest.RELEASED) {
+            if (ureq.state() == NetcapIPNewSessionRequest.RELEASED) {
                 session.release();
             } else {
                 UDPSessionEvent tevent = new UDPSessionEvent(pipelineConnector, session);
