@@ -8,7 +8,6 @@ import java.util.List;
 import java.util.LinkedList;
 
 import com.untangle.uvm.argon.ArgonAgent;
-import com.untangle.uvm.argon.ArgonAgentImpl;
 import com.untangle.uvm.node.Node;
 import com.untangle.uvm.node.NodeProperties;
 import com.untangle.uvm.vnet.ArgonConnector;
@@ -151,7 +150,7 @@ public class ArgonConnectorImpl implements ArgonConnector
         if (listener != null)
             disp.setSessionEventListener(listener);
 
-        argonAgent = new ArgonAgentImpl(pipeSpec.getName(), disp); // Also sets new session listener to dispatcher
+        argonAgent = new ArgonAgent(pipeSpec.getName(), disp); // Also sets new session listener to dispatcher
     }
 
     /**
