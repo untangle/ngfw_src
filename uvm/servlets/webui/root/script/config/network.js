@@ -656,6 +656,7 @@ if (!Ung.hasResource["Ung.Network"]) {
                             fieldLabel: i18n._( "Netmask" ),
                             store: Ung.Util.getV4NetmaskList( false ),
                             queryMode: 'local',
+                            allowBlank: false, 
                             editable: false
                         }, {
                             xtype:'textfield',

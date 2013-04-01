@@ -14,7 +14,7 @@ import com.untangle.jvector.ShutdownCrumb;
 import com.untangle.jvector.UDPPacketCrumb;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.node.SessionEvent;
-import com.untangle.uvm.argon.ArgonUDPSession;
+import com.untangle.uvm.argon.ArgonUDPNewSessionRequest;
 import com.untangle.uvm.util.MetaEnv;
 import com.untangle.uvm.vnet.IPPacketHeader;
 import com.untangle.uvm.vnet.NodeSessionStats;
@@ -29,19 +29,19 @@ import com.untangle.uvm.vnet.event.UDPSessionEvent;
 /**
  * This is the primary implementation class for UDP live sessions.
  */
-class NodeUDPSessionImpl extends NodeIPSessionImpl implements NodeUDPSession
+public class NodeUDPSessionImpl extends NodeIPSessionImpl implements NodeUDPSession
 {
     protected int[] maxPacketSize;
 
+    protected final byte ttl;
+    protected final byte tos;
+    protected final byte options[];
+    
     private final String logPrefix;
     
-    protected NodeUDPSessionImpl(Dispatcher disp,
-                             ArgonUDPSession argonSession,
-                             SessionEvent pe,
-                             int clientMaxPacketSize,
-                             int serverMaxPacketSize)
+    protected NodeUDPSessionImpl(Dispatcher disp, SessionEvent pe, int clientMaxPacketSize, int serverMaxPacketSize, ArgonUDPNewSessionRequest request )
     {
-        super(disp, argonSession, pe);
+        super(disp, pe, request );
 
         logPrefix = "UDP" + id();
         
@@ -53,7 +53,10 @@ class NodeUDPSessionImpl extends NodeIPSessionImpl implements NodeUDPSession
 
         ArgonConnectorImpl argonConnector = disp.argonConnector();
 
-        logger = argonConnector.sessionLoggerUDP();
+        this.logger = argonConnector.sessionLoggerUDP();
+        this.ttl     = request.ttl();
+        this.tos     = request.tos();
+        this.options = request.options();
     }
 
     public int serverMaxPacketSize()
@@ -82,36 +85,36 @@ class NodeUDPSessionImpl extends NodeIPSessionImpl implements NodeUDPSession
 
     public byte clientState()
     {
-        if ((argonSession).clientIncomingSocketQueue() == null) {
-            assert (argonSession).clientOutgoingSocketQueue() == null;
+        if (clientIncomingSocketQueue() == null) {
+            assert clientOutgoingSocketQueue() == null;
             return NodeIPSession.EXPIRED;
         } else {
-            assert (argonSession).clientOutgoingSocketQueue() != null;
+            assert clientOutgoingSocketQueue() != null;
             return NodeIPSession.OPEN;
         }
     }
 
     public byte serverState()
     {
-        if ((argonSession).serverIncomingSocketQueue() == null) {
-            assert (argonSession).serverOutgoingSocketQueue() == null;
+        if (serverIncomingSocketQueue() == null) {
+            assert serverOutgoingSocketQueue() == null;
             return NodeIPSession.EXPIRED;
         } else {
-            assert (argonSession).serverOutgoingSocketQueue() != null;
+            assert serverOutgoingSocketQueue() != null;
             return NodeIPSession.OPEN;
         }
     }
 
     public void expireServer()
     {
-        OutgoingSocketQueue out = (argonSession).serverOutgoingSocketQueue();
+        OutgoingSocketQueue out = serverOutgoingSocketQueue();
         if (out != null) {
             Crumb crumb = ShutdownCrumb.getInstance(true);
             out.write(crumb);
         }
         // 8/15/05 we also now reset the incoming side, to avoid the race in case a packet outraces
         // the close-other-half event.
-        IncomingSocketQueue in = (argonSession).serverIncomingSocketQueue();
+        IncomingSocketQueue in = serverIncomingSocketQueue();
         if (in != null) {
             // Should always happen.
             in.reset();
@@ -120,18 +123,44 @@ class NodeUDPSessionImpl extends NodeIPSessionImpl implements NodeUDPSession
 
     public void expireClient()
     {
-        OutgoingSocketQueue out = (argonSession).clientOutgoingSocketQueue();
+        OutgoingSocketQueue out = clientOutgoingSocketQueue();
         if (out != null) {
             Crumb crumb = ShutdownCrumb.getInstance(true);
             out.write(crumb);
         }
         // 8/15/05 we also now reset the incoming side, to avoid the race in case a packet outraces
         // the close-other-half event.
-        IncomingSocketQueue in = (argonSession).clientIncomingSocketQueue();
+        IncomingSocketQueue in = clientIncomingSocketQueue();
         if (in != null) {
             // Should always happen.
             in.reset();
         }
+    }
+
+    /**
+     * Retrieve the TTL for a session, this only has an impact for the last session in the chain
+     * when passing data crumbs (UDPPacketCrumbs have TTL value inside of them)
+     */
+    public byte ttl()
+    {
+        return ttl;
+    }
+
+    /**
+     * Retrieve the TOS for a session, this only has an impact for the last session in the chain
+     * when passing data crumbs (UDPPacketCrumbs have TOS value inside of them).
+     */
+    public byte tos()
+    {
+        return tos;
+    }
+
+    /**
+     * Retrieve the options associated with the first UDP packet in the session.
+     */
+    public byte[] options()
+    {
+        return options;
     }
 
     protected boolean isSideDieing(int side, IncomingSocketQueue in)
@@ -140,7 +169,6 @@ class NodeUDPSessionImpl extends NodeIPSessionImpl implements NodeUDPSession
     }
 
     protected void sideDieing(int side)
-        
     {
         sendExpiredEvent(side);
     }
@@ -177,7 +205,6 @@ class NodeUDPSessionImpl extends NodeIPSessionImpl implements NodeUDPSession
     }
 
     protected void tryWrite(int side, OutgoingSocketQueue out, boolean warnIfUnable)
-        
     {
         assert out != null;
         if (out.isFull()) {
@@ -200,7 +227,6 @@ class NodeUDPSessionImpl extends NodeIPSessionImpl implements NodeUDPSession
     }
 
     protected void addStreamBuf(int side, IPStreamer ipStreamer)
-        
     {
 
         /* Not Yet supported
@@ -224,7 +250,6 @@ class NodeUDPSessionImpl extends NodeIPSessionImpl implements NodeUDPSession
     }
 
     protected void sendWritableEvent(int side)
-        
     {
         UDPSessionEvent wevent = new UDPSessionEvent(argonConnector, this);
         if (side == CLIENT)
@@ -234,14 +259,12 @@ class NodeUDPSessionImpl extends NodeIPSessionImpl implements NodeUDPSession
     }
 
     protected void sendCompleteEvent()
-        
     {
         UDPSessionEvent wevent = new UDPSessionEvent(argonConnector, this);
         dispatcher.dispatchUDPComplete(wevent);
     }
 
     protected void sendExpiredEvent(int side)
-        
     {
         UDPSessionEvent wevent = new UDPSessionEvent(argonConnector, this);
         if (side == CLIENT)
@@ -252,7 +275,6 @@ class NodeUDPSessionImpl extends NodeIPSessionImpl implements NodeUDPSession
 
     // Handles the actual reading from the client
     protected void tryRead(int side, IncomingSocketQueue in, boolean warnIfUnable)
-        
     {
         int numRead = 0;
 
@@ -345,16 +367,6 @@ class NodeUDPSessionImpl extends NodeIPSessionImpl implements NodeUDPSession
 
         super.closeFinal();
     }
-
-    @Override
-    protected void killSession(String reason)
-    {
-        // Sends a RST both directions and nukes the socket queues.
-        argonSession.killSession();
-    }
-
-    // Don't need equal or hashcode since we can only have one of these objects per
-    // session (so the memory address is ok for equals/hashcode).
 }
 
 

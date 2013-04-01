@@ -16,7 +16,8 @@ import com.untangle.jvector.Source;
 import com.untangle.jvector.UDPSink;
 import com.untangle.jvector.UDPSource;
 import com.untangle.uvm.node.SessionEvent;
-
+import com.untangle.uvm.vnet.NodeUDPSession;
+import com.untangle.uvm.engine.NodeUDPSessionImpl;
 
 public class UDPHook implements NetcapHook
 {
@@ -62,7 +63,7 @@ public class UDPHook implements NetcapHook
         protected IPTraffic serverTraffic = null;
         protected IPTraffic clientTraffic = null;
 
-        protected ArgonUDPSession prevSession = null;
+        protected NodeUDPSession prevSession = null;
 
         protected UDPArgonHook( long id )
         {
@@ -103,7 +104,7 @@ public class UDPHook implements NetcapHook
                 serverTraffic = new IPTraffic( netcapUDPSession.serverSide());
             } else {
                 /* Setup the UDP parameters to use the parameters from the last session in the chain */
-                ArgonUDPSession session = (ArgonUDPSession)sessionList.get( sessionList.size() - 1 );
+                NodeUDPSession session = (NodeUDPSession)sessionList.get( sessionList.size() - 1 );
 
                 if ( logger.isInfoEnabled()) {
                     logger.info( "UDP: Completing session:" );
@@ -113,8 +114,8 @@ public class UDPHook implements NetcapHook
 
                 serverTraffic = new IPTraffic( session.getClientAddr(), session.getClientPort(), session.getServerAddr(), session.getServerPort());
 
-                serverTraffic.ttl( session.ttl());
-                serverTraffic.tos( session.tos());
+                serverTraffic.ttl( ((NodeUDPSessionImpl)session).ttl());
+                serverTraffic.tos( ((NodeUDPSessionImpl)session).tos());
             }
 
             /* Packets cannot go back out on the client interface */
@@ -204,10 +205,10 @@ public class UDPHook implements NetcapHook
                 request = new ArgonUDPNewSessionRequest( prevSession, agent, pe, sessionGlobalState );
             }
 
-            ArgonUDPSession session = agent.getNewSessionEventListener().newSession( request );
+            NodeUDPSession session = agent.getNewSessionEventListener().newSession( request );
 
             try {
-                processSession( request, session );
+                processSession( request, ((NodeUDPSessionImpl)session) );
             } catch (IllegalStateException e) {
                 logger.warn(agent.toString() + " Exception: ", e);
                 throw e;

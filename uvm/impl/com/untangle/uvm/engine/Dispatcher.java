@@ -15,9 +15,6 @@ import org.apache.log4j.MDC;
 
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.argon.ArgonAgent;
-import com.untangle.uvm.argon.ArgonIPSession;
-import com.untangle.uvm.argon.ArgonUDPSession;
-import com.untangle.uvm.argon.ArgonTCPSession;
 import com.untangle.uvm.argon.ArgonTCPNewSessionRequest;
 import com.untangle.uvm.argon.ArgonUDPNewSessionRequest;
 import com.untangle.uvm.argon.ArgonIPNewSessionRequest;
@@ -149,7 +146,7 @@ public class Dispatcher implements com.untangle.uvm.argon.NewSessionEventListene
         liveSessions.put(sess, sess);
     }
 
-    public ArgonTCPSession newSession( ArgonTCPNewSessionRequest request )
+    public NodeTCPSession newSession( ArgonTCPNewSessionRequest request )
     {
         try {
             UvmContextImpl.getInstance().loggingManager().setLoggingNode(node.getNodeSettings().getId());
@@ -161,7 +158,7 @@ public class Dispatcher implements com.untangle.uvm.argon.NewSessionEventListene
         }
     }
  
-    public ArgonUDPSession newSession( ArgonUDPNewSessionRequest request )
+    public NodeUDPSession newSession( ArgonUDPNewSessionRequest request )
     {
         try {
             UvmContextImpl.getInstance().loggingManager().setLoggingNode(node.getNodeSettings().getId());
@@ -189,13 +186,13 @@ public class Dispatcher implements com.untangle.uvm.argon.NewSessionEventListene
         if (agent == null) {
             logger.warn("attempt to remove session " + sess.id() + " when already destroyed");
         } else {
-            agent.removeSession(((NodeIPSessionImpl)sess).argonSession);
+            agent.removeSession((NodeIPSessionImpl)sess);
         }
     }
 
-    protected void registerPipelineListener( ArgonIPSession argonSession, NodeIPSessionImpl session )
+    protected void registerPipelineListener( NodeIPSessionImpl session )
     {
-        argonSession.registerListener(session);
+        session.registerListener(session);
     }
 
     protected ArgonConnectorImpl argonConnector()
@@ -499,7 +496,7 @@ public class Dispatcher implements com.untangle.uvm.argon.NewSessionEventListene
     }
 
 
-    private ArgonTCPSession newSessionInternal( ArgonTCPNewSessionRequest request )
+    private NodeTCPSession newSessionInternal( ArgonTCPNewSessionRequest request )
     {
         long sessionId = -1L;
 
@@ -535,11 +532,10 @@ public class Dispatcher implements com.untangle.uvm.argon.NewSessionEventListene
             }
 
             // Create the session, client and server channels
-            ArgonTCPSession argonSession = new ArgonTCPSession(request);
-            NodeTCPSessionImpl session = new NodeTCPSessionImpl(this, argonSession, request.sessionEvent(), TCP_READ_BUFFER_SIZE, TCP_READ_BUFFER_SIZE);
+            NodeTCPSessionImpl session = new NodeTCPSessionImpl(this, request.sessionEvent(), TCP_READ_BUFFER_SIZE, TCP_READ_BUFFER_SIZE, request);
             
             session.attach(treq.attachment());
-            registerPipelineListener(argonSession, session);
+            registerPipelineListener( session );
 
             // Send the new session event.  
             if (logger.isInfoEnabled())
@@ -556,7 +552,7 @@ public class Dispatcher implements com.untangle.uvm.argon.NewSessionEventListene
             // Finally add it to our set of owned sessions.
             addSession(session);
 
-            return argonSession;
+            return session;
         } catch (Exception x) {
             String message = "" + x.getClass().getName() + " building TCP session " + sessionId + " : ";
             logger.error(message, x);
@@ -565,7 +561,7 @@ public class Dispatcher implements com.untangle.uvm.argon.NewSessionEventListene
         }
     }
 
-    private ArgonUDPSession newSessionInternal(ArgonUDPNewSessionRequest request)
+    private NodeUDPSession newSessionInternal(ArgonUDPNewSessionRequest request)
     {
         long sessionId = -1;
 
@@ -600,11 +596,10 @@ public class Dispatcher implements com.untangle.uvm.argon.NewSessionEventListene
             }
 
             // Create the session, client and server channels
-            ArgonUDPSession argonSession = new ArgonUDPSession(request);
-            NodeUDPSessionImpl session = new NodeUDPSessionImpl(this, argonSession, request.sessionEvent(), UDP_MAX_PACKET_SIZE, UDP_MAX_PACKET_SIZE);
+            NodeUDPSessionImpl session = new NodeUDPSessionImpl(this, request.sessionEvent(), UDP_MAX_PACKET_SIZE, UDP_MAX_PACKET_SIZE, request);
             
             session.attach(ureq.attachment());
-            registerPipelineListener(argonSession, session);
+            registerPipelineListener( session );
 
             // Send the new session event.  Maybe this should be done on the session handler
             // thread instead?  XXX
@@ -622,7 +617,7 @@ public class Dispatcher implements com.untangle.uvm.argon.NewSessionEventListene
             // Finally add it to our set of owned sessions.
             addSession(session);
 
-            return argonSession;
+            return session;
         } catch (Exception x) {
             String message = "" + x.getClass().getName() + " building UDP session " + sessionId + " : ";
             logger.error(message, x);

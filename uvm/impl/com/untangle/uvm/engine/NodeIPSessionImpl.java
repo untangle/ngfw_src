@@ -21,7 +21,7 @@ import com.untangle.jvector.IncomingSocketQueue;
 import com.untangle.jvector.OutgoingSocketQueue;
 import com.untangle.uvm.node.NodeSettings;
 import com.untangle.uvm.argon.PipelineListener;
-import com.untangle.uvm.argon.ArgonIPSession;
+import com.untangle.uvm.argon.ArgonIPNewSessionRequest;
 import com.untangle.uvm.node.Node;
 import com.untangle.uvm.util.MetaEnv;
 import com.untangle.uvm.vnet.NodeIPSession;
@@ -33,11 +33,19 @@ import com.untangle.uvm.node.SessionEvent;
 /**
  * Abstract base class for all IP live sessions
  */
-abstract class NodeIPSessionImpl extends NodeSessionImpl implements NodeIPSession, PipelineListener
+public abstract class NodeIPSessionImpl extends NodeSessionImpl implements NodeIPSession, PipelineListener
 {
     protected boolean released = false;
     protected boolean needsFinalization = true;
 
+    protected final short protocol;
+    protected final InetAddress clientAddr;
+    protected final InetAddress serverAddr;
+    protected final int clientPort;
+    protected final int serverPort;
+    protected final int clientIntf;
+    protected final int serverIntf;
+    
     private static DateFormat formatter = new AbsoluteTimeDateFormat();
 
     protected final Dispatcher dispatcher;
@@ -51,42 +59,21 @@ abstract class NodeIPSessionImpl extends NodeSessionImpl implements NodeIPSessio
 
     protected final NodeSessionStats stats;
 
-    protected NodeIPSessionImpl(Dispatcher disp, ArgonIPSession argonSession, SessionEvent sessionEvent)
+    protected NodeIPSessionImpl( Dispatcher disp, SessionEvent sessionEvent, ArgonIPNewSessionRequest request )
     {
-        super(disp.argonConnector(), argonSession, sessionEvent);
+        super(disp.argonConnector(), sessionEvent, request, request.state() == ArgonIPNewSessionRequest.REQUESTED || request.state() == ArgonIPNewSessionRequest.ENDPOINTED );
+
+        this.logger = disp.argonConnector().sessionLogger();
+        
         this.dispatcher = disp;
         this.stats = new NodeSessionStats();
-        logger = disp.argonConnector().sessionLogger();
-    }
-
-    public long id()
-    {
-        return ((ArgonIPSession)argonSession).id();
-    }
-    
-    public short getProtocol()
-    {
-        return ((ArgonIPSession)argonSession).getProtocol();
-    }
-
-    public InetAddress getClientAddr()
-    {
-        return ((ArgonIPSession)argonSession).getClientAddr();
-    }
-
-    public InetAddress getServerAddr()
-    {
-        return ((ArgonIPSession)argonSession).getServerAddr();
-    }
-
-    public int getClientPort()
-    {
-        return ((ArgonIPSession)argonSession).getClientPort();
-    }
-
-    public int getServerPort()
-    {
-        return ((ArgonIPSession)argonSession).getServerPort();
+        this.protocol      = request.getProtocol();
+        this.clientAddr    = request.getClientAddr();
+        this.clientPort    = request.getClientPort();
+        this.clientIntf    = request.getClientIntf();
+        this.serverPort    = request.getServerPort();
+        this.serverAddr    = request.getServerAddr();
+        this.serverIntf    = request.getServerIntf();
     }
 
     public long getPolicyId()
@@ -118,16 +105,6 @@ abstract class NodeIPSessionImpl extends NodeSessionImpl implements NodeIPSessio
 
         released = true;
         this.needsFinalization = needsFinalization;
-    }
-
-    public int getClientIntf()
-    {
-        return ((ArgonIPSession)argonSession).getClientIntf();
-    }
-
-    public int getServerIntf()
-    {
-        return ((ArgonIPSession)argonSession).getServerIntf();
     }
 
     public boolean released()
@@ -172,9 +149,9 @@ abstract class NodeIPSessionImpl extends NodeSessionImpl implements NodeIPSessio
         
         OutgoingSocketQueue out;
         if (side == CLIENT)
-            out = (argonSession).clientOutgoingSocketQueue();
+            out = clientOutgoingSocketQueue();
         else
-            out = (argonSession).serverOutgoingSocketQueue();
+            out = serverOutgoingSocketQueue();
 
         if (out == null || out.isClosed()) {
             String sideName = side == CLIENT ? "client" : "server";
@@ -210,7 +187,7 @@ abstract class NodeIPSessionImpl extends NodeSessionImpl implements NodeIPSessio
         if (xform.getRunState() != NodeSettings.NodeState.RUNNING) {
             String message = "killing: complete(in) for node in state " + xform.getRunState();
             logger.warn(message);
-            // killSession(message);
+            // killSession();
             return;
         }
 
@@ -222,7 +199,7 @@ abstract class NodeIPSessionImpl extends NodeSessionImpl implements NodeIPSessio
         } catch (Exception x) {
             String message = "" + x.getClass().getName() + " while completing";
             // logger.error(message, x);
-            killSession(message);
+            killSession();
         } catch (OutOfMemoryError x) {
             UvmContextImpl.getInstance().fatalError("SessionHandler", x);
         } finally {
@@ -238,7 +215,7 @@ abstract class NodeIPSessionImpl extends NodeSessionImpl implements NodeIPSessio
             String message = "killing: raze for node in state " + xform.getRunState();
             logger.warn(message);
             // No need to kill the session, it's already dead.
-            // killSession(message);
+            // killSession();
             return;
         }
 
@@ -249,10 +226,10 @@ abstract class NodeIPSessionImpl extends NodeSessionImpl implements NodeIPSessio
                 logger.debug("raze released");
             } else {
                 if (logger.isDebugEnabled()) {
-                    IncomingSocketQueue ourcin = (argonSession).clientIncomingSocketQueue();
-                    IncomingSocketQueue oursin = (argonSession).serverIncomingSocketQueue();
-                    OutgoingSocketQueue ourcout = (argonSession).clientOutgoingSocketQueue();
-                    OutgoingSocketQueue oursout = (argonSession).serverOutgoingSocketQueue();
+                    IncomingSocketQueue ourcin = clientIncomingSocketQueue();
+                    IncomingSocketQueue oursin = serverIncomingSocketQueue();
+                    OutgoingSocketQueue ourcout = clientOutgoingSocketQueue();
+                    OutgoingSocketQueue oursout = serverOutgoingSocketQueue();
                     logger.debug("raze ourcin: " + ourcin +
                                  ", ourcout: " + ourcout + ", ourcsin: " + oursin + ", oursout: " + oursout +
                                  "  /  crumbs[CLIENT]: " + crumbs2write[CLIENT] + ", crumbs[SERVER]: " + crumbs2write[SERVER]);
@@ -276,7 +253,7 @@ abstract class NodeIPSessionImpl extends NodeSessionImpl implements NodeIPSessio
         if (xform.getRunState() != NodeSettings.NodeState.RUNNING) {
             String message = "killing: clientEvent(in) for node in state " + xform.getRunState();
             logger.warn(message);
-            killSession(message);
+            killSession();
             return;
         }
 
@@ -294,7 +271,7 @@ abstract class NodeIPSessionImpl extends NodeSessionImpl implements NodeIPSessio
         if (xform.getRunState() != NodeSettings.NodeState.RUNNING) {
             String message = "killing: serverEvent(in) for node in state " + xform.getRunState();
             logger.warn(message);
-            killSession(message);
+            killSession();
             return;
         }
 
@@ -312,7 +289,7 @@ abstract class NodeIPSessionImpl extends NodeSessionImpl implements NodeIPSessio
         if (xform.getRunState() != NodeSettings.NodeState.RUNNING) {
             String message = "killing: clientEvent(out) for node in state " + xform.getRunState();
             logger.warn(message);
-            killSession(message);
+            killSession();
             return;
         }
 
@@ -330,7 +307,7 @@ abstract class NodeIPSessionImpl extends NodeSessionImpl implements NodeIPSessio
         if (xform.getRunState() != NodeSettings.NodeState.RUNNING) {
             String message = "killing: serverEvent(out) for node in state " + xform.getRunState();
             logger.warn(message);
-            killSession(message);
+            killSession();
             return;
         }
 
@@ -351,7 +328,7 @@ abstract class NodeIPSessionImpl extends NodeSessionImpl implements NodeIPSessio
         if (xform.getRunState() != NodeSettings.NodeState.RUNNING) {
             String message = "killing: output reset(client) for node in state " + xform.getRunState();
             logger.warn(message);
-            // killSession(message);
+            // killSession();
             return;
         }
 
@@ -359,14 +336,14 @@ abstract class NodeIPSessionImpl extends NodeSessionImpl implements NodeIPSessio
             UvmContextImpl.getInstance().loggingManager().setLoggingNode(xform.getNodeSettings().getId());
             MDC.put(SESSION_ID_MDC_KEY, idForMDC());
 
-            IncomingSocketQueue in = (argonSession).clientIncomingSocketQueue();
+            IncomingSocketQueue in = clientIncomingSocketQueue();
             if (in != null)
                 in.reset();
             sideDieing(CLIENT);
         } catch (Exception x) {
             String message = "" + x.getClass().getName() + " while output resetting";
             // logger.error(message, x);
-            killSession(message);
+            killSession();
         } catch (OutOfMemoryError x) {
             UvmContextImpl.getInstance().fatalError("SessionHandler", x);
         } finally {
@@ -384,7 +361,7 @@ abstract class NodeIPSessionImpl extends NodeSessionImpl implements NodeIPSessio
         if (xform.getRunState() != NodeSettings.NodeState.RUNNING) {
             String message = "killing: output reset(server) for node in state " + xform.getRunState();
             logger.warn(message);
-            // killSession(message);
+            // killSession();
             return;
         }
 
@@ -392,14 +369,14 @@ abstract class NodeIPSessionImpl extends NodeSessionImpl implements NodeIPSessio
             UvmContextImpl.getInstance().loggingManager().setLoggingNode(xform.getNodeSettings().getId());
             MDC.put(SESSION_ID_MDC_KEY, idForMDC());
 
-            IncomingSocketQueue in = (argonSession).serverIncomingSocketQueue();
+            IncomingSocketQueue in = serverIncomingSocketQueue();
             if (in != null)
                 in.reset();
             sideDieing(SERVER);
         } catch (Exception x) {
             String message = "" + x.getClass().getName() + " while output resetting";
             // logger.error(message, x);
-            killSession(message);
+            killSession();
         } catch (OutOfMemoryError x) {
             UvmContextImpl.getInstance().fatalError("SessionHandler", x);
         } finally {
@@ -413,7 +390,7 @@ abstract class NodeIPSessionImpl extends NodeSessionImpl implements NodeIPSessio
      */
     public int  clientMark()
     {
-        return this.argonSession.sessionGlobalState().netcapSession().clientMark();
+        return this.sessionGlobalState().netcapSession().clientMark();
     }
 
     /**
@@ -421,7 +398,7 @@ abstract class NodeIPSessionImpl extends NodeSessionImpl implements NodeIPSessio
      */
     public void clientMark(int newmark)
     {
-        this.argonSession.sessionGlobalState().netcapSession().clientMark(newmark);
+        this.sessionGlobalState().netcapSession().clientMark(newmark);
     }
 
     /**
@@ -433,7 +410,7 @@ abstract class NodeIPSessionImpl extends NodeSessionImpl implements NodeIPSessio
         //java.util.Formatter formatter = new java.util.Formatter(sb, java.util.Locale.US);
         //logger.debug(formatter.format("Set ClientMark to 0x%08x",client_mark).toString()); sb.setLength(0);
 
-        this.argonSession.sessionGlobalState().netcapSession().orClientMark(bitmask);
+        this.sessionGlobalState().netcapSession().orClientMark(bitmask);
     }
 
     /**
@@ -442,7 +419,7 @@ abstract class NodeIPSessionImpl extends NodeSessionImpl implements NodeIPSessio
     public void setClientQosMark(int priority)
     {
         logger.debug("Set Client QosMark to " + priority);
-        this.argonSession.sessionGlobalState().netcapSession().clientQosMark(priority);
+        this.sessionGlobalState().netcapSession().clientQosMark(priority);
     }
     
     /**
@@ -450,7 +427,7 @@ abstract class NodeIPSessionImpl extends NodeSessionImpl implements NodeIPSessio
      */
     public int  serverMark()
     {
-        return this.argonSession.sessionGlobalState().netcapSession().serverMark();
+        return this.sessionGlobalState().netcapSession().serverMark();
     }
 
     /**
@@ -458,7 +435,7 @@ abstract class NodeIPSessionImpl extends NodeSessionImpl implements NodeIPSessio
      */
     public void serverMark(int newmark)
     {
-        this.argonSession.sessionGlobalState().netcapSession().serverMark(newmark);
+        this.sessionGlobalState().netcapSession().serverMark(newmark);
     }
 
     /**
@@ -470,7 +447,7 @@ abstract class NodeIPSessionImpl extends NodeSessionImpl implements NodeIPSessio
         //java.util.Formatter formatter = new java.util.Formatter(sb, java.util.Locale.US);
         //logger.debug(formatter.format("Set ServerMark to 0x%08x",server_mark).toString()); sb.setLength(0);
 
-        this.argonSession.sessionGlobalState().netcapSession().orServerMark(bitmask);
+        this.sessionGlobalState().netcapSession().orServerMark(bitmask);
     }
 
     /**
@@ -479,9 +456,8 @@ abstract class NodeIPSessionImpl extends NodeSessionImpl implements NodeIPSessio
     public void setServerQosMark(int priority)
     {
         logger.debug("Set Server QosMark to " + priority);
-        this.argonSession.sessionGlobalState().netcapSession().serverQosMark(priority);
+        this.sessionGlobalState().netcapSession().serverQosMark(priority);
     }
-    
     
     // This is the main write hook called by the Vectoring machine
     public void writeEvent(int side, OutgoingSocketQueue out)
@@ -498,13 +474,13 @@ abstract class NodeIPSessionImpl extends NodeSessionImpl implements NodeIPSessio
             IncomingSocketQueue ourin;
             OutgoingSocketQueue ourout, otherout;
             if (side == CLIENT) {
-                ourin = (argonSession).serverIncomingSocketQueue();
-                ourout = (argonSession).clientOutgoingSocketQueue();
-                otherout = (argonSession).serverOutgoingSocketQueue();
+                ourin = serverIncomingSocketQueue();
+                ourout = clientOutgoingSocketQueue();
+                otherout = serverOutgoingSocketQueue();
             } else {
-                ourin = (argonSession).clientIncomingSocketQueue();
-                ourout = (argonSession).serverOutgoingSocketQueue();
-                otherout = (argonSession).clientOutgoingSocketQueue();
+                ourin = clientIncomingSocketQueue();
+                ourout = serverOutgoingSocketQueue();
+                otherout = clientOutgoingSocketQueue();
             }
             assert out == ourout;
 
@@ -526,7 +502,7 @@ abstract class NodeIPSessionImpl extends NodeSessionImpl implements NodeIPSessio
         } catch (Exception x) {
             String message = "" + x.getClass().getName() + " while writing to " + sideName;
             logger.error(message, x);
-            killSession(message);
+            killSession();
         } catch (OutOfMemoryError x) {
             UvmContextImpl.getInstance().fatalError("SessionHandler", x);
         } finally {
@@ -556,16 +532,16 @@ abstract class NodeIPSessionImpl extends NodeSessionImpl implements NodeIPSessio
             @SuppressWarnings("unused")
 			IncomingSocketQueue ourin, otherin;
             OutgoingSocketQueue ourout, otherout;
-            OutgoingSocketQueue cout = (argonSession).clientOutgoingSocketQueue();
-            OutgoingSocketQueue sout = (argonSession).serverOutgoingSocketQueue();
+            OutgoingSocketQueue cout = clientOutgoingSocketQueue();
+            OutgoingSocketQueue sout = serverOutgoingSocketQueue();
             if (side == CLIENT) {
-                ourin = (argonSession).clientIncomingSocketQueue();
-                otherin = (argonSession).serverIncomingSocketQueue();
+                ourin = clientIncomingSocketQueue();
+                otherin = serverIncomingSocketQueue();
                 ourout = sout;
                 otherout = cout;
             } else {
-                ourin = (argonSession).serverIncomingSocketQueue();
-                otherin = (argonSession).clientIncomingSocketQueue();
+                ourin = serverIncomingSocketQueue();
+                otherin = clientIncomingSocketQueue();
                 ourout = cout;
                 otherout = sout;
             }
@@ -597,7 +573,7 @@ abstract class NodeIPSessionImpl extends NodeSessionImpl implements NodeIPSessio
         } catch (Exception x) {
             String message = "" + x.getClass().getName() + " while reading from " + sideName;
             logger.error(message, x);
-            killSession(message);
+            killSession();
         } catch (OutOfMemoryError x) {
             UvmContextImpl.getInstance().fatalError("SessionHandler", x);
         } finally {
@@ -605,6 +581,41 @@ abstract class NodeIPSessionImpl extends NodeSessionImpl implements NodeIPSessio
         }
     }
 
+    public short getProtocol()
+    {
+        return protocol;
+    }
+
+    public InetAddress getClientAddr() 
+    {
+        return clientAddr;
+    }
+    
+    public InetAddress getServerAddr()
+    {
+        return serverAddr;
+    }
+
+    public int getClientPort()
+    {
+        return clientPort;
+    }
+    
+    public int getServerPort()
+    {
+        return serverPort;
+    }
+
+    public int getClientIntf()
+    {     
+        return clientIntf;
+    }
+    
+    public int getServerIntf()
+    {
+        return serverIntf;
+    }
+    
     // Callback called on finalize
     protected void closeFinal()
     {
@@ -623,10 +634,10 @@ abstract class NodeIPSessionImpl extends NodeSessionImpl implements NodeIPSessio
      */
     private void setupForStreaming()
     {
-        IncomingSocketQueue cin = (argonSession).clientIncomingSocketQueue();
-        IncomingSocketQueue sin = (argonSession).serverIncomingSocketQueue();
-        OutgoingSocketQueue cout = (argonSession).clientOutgoingSocketQueue();
-        OutgoingSocketQueue sout = (argonSession).serverOutgoingSocketQueue();
+        IncomingSocketQueue cin = clientIncomingSocketQueue();
+        IncomingSocketQueue sin = serverIncomingSocketQueue();
+        OutgoingSocketQueue cout = clientOutgoingSocketQueue();
+        OutgoingSocketQueue sout = serverOutgoingSocketQueue();
         assert (streamer != null);
 
         if (cin != null)
@@ -656,10 +667,10 @@ abstract class NodeIPSessionImpl extends NodeSessionImpl implements NodeIPSessio
      */
     private void setupForNormal()
     {
-        IncomingSocketQueue cin = (argonSession).clientIncomingSocketQueue();
-        IncomingSocketQueue sin = (argonSession).serverIncomingSocketQueue();
-        OutgoingSocketQueue cout = (argonSession).clientOutgoingSocketQueue();
-        OutgoingSocketQueue sout = (argonSession).serverOutgoingSocketQueue();
+        IncomingSocketQueue cin = clientIncomingSocketQueue();
+        IncomingSocketQueue sin = serverIncomingSocketQueue();
+        OutgoingSocketQueue cout = clientOutgoingSocketQueue();
+        OutgoingSocketQueue sout = serverOutgoingSocketQueue();
         assert (streamer == null);
 
         // We take care not to change the state unless it's really
@@ -693,7 +704,6 @@ abstract class NodeIPSessionImpl extends NodeSessionImpl implements NodeIPSessio
      * @return a <code>boolean</code> value
      */
     private boolean doWrite(int side, OutgoingSocketQueue out)
-        
     {
         boolean didSomething = false;
         if (out != null && out.isEmpty()) {
@@ -728,8 +738,6 @@ abstract class NodeIPSessionImpl extends NodeSessionImpl implements NodeIPSessio
     abstract protected boolean isSideDieing(int side, IncomingSocketQueue in);
 
     abstract protected void sideDieing(int side) ;
-
-    abstract protected void killSession(String message);
 
     abstract protected void sendWritableEvent(int side) ;
 

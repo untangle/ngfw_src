@@ -16,6 +16,8 @@ import com.untangle.jvector.Source;
 import com.untangle.jvector.TCPSink;
 import com.untangle.jvector.TCPSource;
 import com.untangle.uvm.node.SessionEvent;
+import com.untangle.uvm.vnet.NodeTCPSession;
+import com.untangle.uvm.engine.NodeTCPSessionImpl;
 
 public class TCPHook implements NetcapHook
 {
@@ -58,7 +60,7 @@ public class TCPHook implements NetcapHook
         protected boolean ifServerComplete = false;
         protected boolean ifClientComplete = false;
 
-        protected ArgonTCPSession prevSession = null;
+        protected NodeTCPSession prevSession = null;
         protected final TCPSideListener clientSideListener = new TCPSideListener();
         protected final TCPSideListener serverSideListener = new TCPSideListener();
 
@@ -102,7 +104,7 @@ public class TCPHook implements NetcapHook
                 serverPort = netcapTCPSession.serverSide().server().port();
             } else {
                 /* Complete with the parameters from the last node */
-                ArgonTCPSession session = (ArgonTCPSession)sessionList.get( sessionList.size() - 1 );
+                NodeTCPSession session = (NodeTCPSession)sessionList.get( sessionList.size() - 1 );
 
                 clientAddr = session.getClientAddr();
                 clientPort = session.getClientPort();
@@ -230,10 +232,10 @@ public class TCPHook implements NetcapHook
             }
 
             // newSession() returns null when rejecting the session
-            ArgonTCPSession session = agent.getNewSessionEventListener().newSession( request );
+            NodeTCPSession session = agent.getNewSessionEventListener().newSession( request );
 
             try {
-                processSession( request, session );
+                processSession( request, ((NodeTCPSessionImpl)session) );
             } catch (IllegalStateException e) {
                 logger.warn(agent.toString() + " Exception: ", e);
                 throw e;

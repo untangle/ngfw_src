@@ -8,7 +8,7 @@ import com.untangle.jvector.SinkEndpointListener;
 import com.untangle.jvector.Source;
 import com.untangle.jvector.SourceEndpointListener;
 
-class SideListener implements SinkEndpointListener, SourceEndpointListener
+public class SideListener implements SinkEndpointListener, SourceEndpointListener
 {
     protected long txChunks = 0;
     protected long txBytes  = 0;
@@ -45,12 +45,17 @@ class SideListener implements SinkEndpointListener, SourceEndpointListener
         isSinkShutdown   = true;
     }
 
-    protected boolean isShutdown()
+    public long getRxBytes() { return this.rxBytes; }
+    public long getTxBytes() { return this.txBytes; }
+    public long getRxChunks() { return this.rxChunks; }
+    public long getTxChunks() { return this.txChunks; }
+    
+    public boolean isShutdown()
     {
         return isSinkShutdown & isSourceShutdown;
     }
 
-    protected String stats()
+    public String stats()
     {
         return "rx: " + rxBytes + "/" + rxChunks + " tx: " + txBytes + "/" + txChunks;
     

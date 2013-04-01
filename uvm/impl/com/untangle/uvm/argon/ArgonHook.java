@@ -26,6 +26,7 @@ import com.untangle.uvm.NetworkManager;
 import com.untangle.uvm.HostTable;
 import com.untangle.uvm.HostTableEntry;
 import com.untangle.uvm.engine.PipelineFoundryImpl;
+import com.untangle.uvm.engine.NodeSessionImpl;
 import com.untangle.uvm.node.SessionTuple;
 import com.untangle.uvm.node.SessionTupleImpl;
 import com.untangle.uvm.node.SessionEvent;
@@ -53,8 +54,8 @@ public abstract class ArgonHook implements Runnable
     protected List<ArgonAgent> pipelineAgents;
     protected Long policyId = null;
 
-    protected List<ArgonSession> sessionList = new ArrayList<ArgonSession>();
-    protected List<ArgonSession> releasedSessionList = new ArrayList<ArgonSession>();
+    protected List<NodeSessionImpl> sessionList = new ArrayList<NodeSessionImpl>();
+    protected List<NodeSessionImpl> releasedSessionList = new ArrayList<NodeSessionImpl>();
 
     protected Source clientSource;
     protected Sink   clientSink;
@@ -76,6 +77,11 @@ public abstract class ArgonHook implements Runnable
     protected int state      = ArgonIPNewSessionRequest.REQUESTED;
     protected int rejectCode = REJECT_CODE_SRV;
 
+    public Vector getVector()
+    {
+        return this.vector;
+    }
+    
     /**
      * Thread hook
      */
@@ -230,9 +236,9 @@ public abstract class ArgonHook implements Runnable
              * to iterate the session list twice, but the list is
              * typically small and this logic may get very complex
              * otherwise */
-            for ( Iterator<ArgonSession> iter = sessionList.iterator(); iter.hasNext() ; ) {
-                ArgonSession session = iter.next();
-                if ( !session.isVectored()) {
+            for ( Iterator<NodeSessionImpl> iter = sessionList.iterator(); iter.hasNext() ; ) {
+                NodeSessionImpl session = iter.next();
+                if ( !session.isVectored() ) {
                     logger.debug( "Removing non-vectored session from the session list" + session );
                     iter.remove();
                     /* Append to the released session list */
@@ -471,8 +477,8 @@ public abstract class ArgonHook implements Runnable
             OutgoingSocketQueue prevOutgoingSQ = null;
 
             boolean first = true;
-            for ( Iterator<ArgonSession> iter = sessionList.iterator(); iter.hasNext() ; ) {
-                ArgonSession session = iter.next();
+            for ( Iterator<NodeSessionImpl> iter = sessionList.iterator(); iter.hasNext() ; ) {
+                NodeSessionImpl session = iter.next();
 
                 if ( first ) {
                     /* First one, link in the client sessionEvent */
@@ -517,7 +523,7 @@ public abstract class ArgonHook implements Runnable
     }
 
     @SuppressWarnings("fallthrough")
-    protected void processSession( ArgonIPNewSessionRequest request, ArgonSession session )
+    protected void processSession( ArgonIPNewSessionRequest request, NodeSessionImpl session )
     {
         if ( logger.isDebugEnabled())
             logger.debug( "Processing session: with state: " + request.state() + " session: " + session );
@@ -585,13 +591,13 @@ public abstract class ArgonHook implements Runnable
      */
     private void razeSessions()
     {
-        for ( Iterator<ArgonSession> iter = sessionList.iterator() ; iter.hasNext() ; ) {
-            ArgonSession session = iter.next();
+        for ( Iterator<NodeSessionImpl> iter = sessionList.iterator() ; iter.hasNext() ; ) {
+            NodeSessionImpl session = iter.next();
             session.raze();
         }
 
-        for ( Iterator<ArgonSession> iter = releasedSessionList.iterator() ; iter.hasNext() ; ) {
-            ArgonSession session = iter.next();
+        for ( Iterator<NodeSessionImpl> iter = releasedSessionList.iterator() ; iter.hasNext() ; ) {
+            NodeSessionImpl session = iter.next();
             /* Raze all of the released sessions */
             session.raze();
         }
@@ -619,32 +625,32 @@ public abstract class ArgonHook implements Runnable
         // Iterate through each session passing the reset.
         ResetCrumb reset = ResetCrumb.getInstanceNotAcked();
 
-        for ( ListIterator<ArgonSession> iter = sessionList.listIterator( size ) ; iter.hasPrevious(); ) {
-            ArgonSession session = iter.previous();
+        for ( ListIterator<NodeSessionImpl> iter = sessionList.listIterator( size ) ; iter.hasPrevious(); ) {
+            NodeSessionImpl session = iter.previous();
 
             if ( !session.isVectored()) {
                 logger.debug( "vectorReset: skipping non-vectored session" );
                 continue;
             }
 
-            session.serverIncomingSocketQueue.send_event( reset );
+            session.serverIncomingSocketQueue().send_event( reset );
 
             /* Make sure the guardian didn't leave a crumb in the queue */
             /* XXX Don't really need to do this */
-            while ( !session.serverIncomingSocketQueue.isEmpty()) {
+            while ( !session.serverIncomingSocketQueue().isEmpty()) {
                 logger.debug( "vectorReset: Removing crumb left in IncomingSocketQueue:" );
-                session.serverIncomingSocketQueue.read();
+                session.serverIncomingSocketQueue().read();
             }
 
             /* Indicate that the server is shutdown */
-            session.isServerShutdown = true;
+            session.setServerShutdown(true);
 
             /* Check if they passed the reset */
-            if ( session.clientOutgoingSocketQueue.isEmpty()) {
+            if ( session.clientOutgoingSocketQueue().isEmpty()) {
                 logger.debug( "vectorReset: ENDPOINTED by " + session );
                 isEndpointed = true;
             } else {
-                if ( !session.clientOutgoingSocketQueue.containsReset()) {
+                if ( !session.clientOutgoingSocketQueue().containsReset()) {
                     /* Sent data or non-reset, catch this error. */
                     logger.error( "Sent non-reset crumb before vectoring." );
                 }
@@ -653,7 +659,7 @@ public abstract class ArgonHook implements Runnable
                     logger.debug( "vectorReset: " + session + " passed reset" );
                 }
 
-                session.isClientShutdown = true;
+                session.setClientShutdown( true );
             }
         }
 

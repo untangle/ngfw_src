@@ -5,6 +5,8 @@ package com.untangle.uvm.argon;
 
 import com.untangle.jnetcap.NetcapUDPSession;
 import com.untangle.uvm.node.SessionEvent;
+import com.untangle.uvm.vnet.NodeUDPSession;
+import com.untangle.uvm.engine.NodeUDPSessionImpl;
 
 public class ArgonUDPNewSessionRequest extends ArgonIPNewSessionRequest
 {
@@ -23,13 +25,13 @@ public class ArgonUDPNewSessionRequest extends ArgonIPNewSessionRequest
         this.tos    = netcapUDPSession.tos();
     }
     
-    public ArgonUDPNewSessionRequest( ArgonUDPSession session, ArgonAgent agent, SessionEvent pe, SessionGlobalState sessionGlobalState)
+    public ArgonUDPNewSessionRequest( NodeUDPSession session, ArgonAgent agent, SessionEvent pe, SessionGlobalState sessionGlobalState)
     {
         super( session, agent, pe, sessionGlobalState );
 
         /* Grab the TTL and TOS from the last request */
-        this.ttl    = session.ttl();
-        this.tos    = session.tos();
+        this.ttl    = ((NodeUDPSessionImpl)session).ttl();
+        this.tos    = ((NodeUDPSessionImpl)session).tos();
     }
 
     /**

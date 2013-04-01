@@ -4,6 +4,7 @@
 package com.untangle.uvm.argon;
 
 import com.untangle.uvm.node.SessionEvent;
+import com.untangle.uvm.vnet.NodeTCPSession;
 
 public class ArgonTCPNewSessionRequest extends ArgonIPNewSessionRequest
 {
@@ -17,14 +18,13 @@ public class ArgonTCPNewSessionRequest extends ArgonIPNewSessionRequest
         acked = sessionGlobalState.netcapTCPSession().acked();
     }
 
-    public ArgonTCPNewSessionRequest( ArgonTCPSession session, ArgonAgent agent, SessionEvent pe, SessionGlobalState sessionGlobalState)
+    public ArgonTCPNewSessionRequest( NodeTCPSession session, ArgonAgent agent, SessionEvent pe, SessionGlobalState sessionGlobalState)
     {
         super( session, agent, pe, sessionGlobalState);
 
         /* Retrieve the value for acked */
         acked = sessionGlobalState.netcapTCPSession().acked();
     }
-
 
     /**
      * <code>acked</code> returns true if the new session has already been ACKed to the client.

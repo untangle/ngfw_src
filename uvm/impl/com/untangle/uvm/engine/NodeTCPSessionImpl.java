@@ -12,9 +12,9 @@ import com.untangle.jvector.OutgoingSocketQueue;
 import com.untangle.jvector.ResetCrumb;
 import com.untangle.jvector.ShutdownCrumb;
 import com.untangle.uvm.UvmContextFactory;
+import com.untangle.uvm.argon.ArgonIPNewSessionRequest;
 import com.untangle.uvm.node.SessionEvent;
 import com.untangle.uvm.util.MetaEnv;
-import com.untangle.uvm.argon.ArgonTCPSession;
 import com.untangle.uvm.vnet.NodeSessionStats;
 import com.untangle.uvm.vnet.NodeIPSession;
 import com.untangle.uvm.vnet.NodeTCPSession;
@@ -29,7 +29,7 @@ import com.untangle.uvm.node.SessionTuple;
 /**
  * This is the primary implementation class for TCP live sessions.
  */
-class NodeTCPSessionImpl extends NodeIPSessionImpl implements NodeTCPSession
+public class NodeTCPSessionImpl extends NodeIPSessionImpl implements NodeTCPSession
 {
     protected static final ByteBuffer SHUTDOWN_COOKIE_BUF = ByteBuffer.allocate(1);
 
@@ -42,13 +42,9 @@ class NodeTCPSessionImpl extends NodeIPSessionImpl implements NodeTCPSession
     protected boolean[] lineBuffering = new boolean[] { false, false };
     protected ByteBuffer[] readBuf = new ByteBuffer[] { null, null };
 
-    protected NodeTCPSessionImpl(Dispatcher disp,
-                                 ArgonTCPSession argonSession,
-                                 SessionEvent sessionEvent,
-                                 int clientReadBufferSize,
-                                 int serverReadBufferSize)
+    protected NodeTCPSessionImpl( Dispatcher disp, SessionEvent sessionEvent, int clientReadBufferSize, int serverReadBufferSize, ArgonIPNewSessionRequest request )
     {
-        super(disp, argonSession, sessionEvent);
+        super( disp, sessionEvent, request );
 
         logPrefix = "TCP" + id();
 
@@ -144,13 +140,13 @@ class NodeTCPSessionImpl extends NodeIPSessionImpl implements NodeTCPSession
 
     public byte clientState()
     {
-        if ((argonSession).clientIncomingSocketQueue() == null)
-            if ((argonSession).clientOutgoingSocketQueue() == null)
+        if (clientIncomingSocketQueue() == null)
+            if (clientOutgoingSocketQueue() == null)
                 return NodeIPSession.CLOSED;
             else
                 return NodeIPSession.HALF_OPEN_OUTPUT;
         else
-            if ((argonSession).clientOutgoingSocketQueue() == null)
+            if (clientOutgoingSocketQueue() == null)
                 return NodeIPSession.HALF_OPEN_INPUT;
             else
                 return NodeIPSession.OPEN;
@@ -158,13 +154,13 @@ class NodeTCPSessionImpl extends NodeIPSessionImpl implements NodeTCPSession
 
     public byte serverState()
     {
-        if ((argonSession).serverIncomingSocketQueue() == null)
-            if ((argonSession).serverOutgoingSocketQueue() == null)
+        if (serverIncomingSocketQueue() == null)
+            if (serverOutgoingSocketQueue() == null)
                 return NodeIPSession.CLOSED;
             else
                 return NodeIPSession.HALF_OPEN_OUTPUT;
         else
-            if ((argonSession).serverOutgoingSocketQueue() == null)
+            if (serverOutgoingSocketQueue() == null)
                 return NodeIPSession.HALF_OPEN_INPUT;
             else
                 return NodeIPSession.OPEN;
@@ -172,22 +168,22 @@ class NodeTCPSessionImpl extends NodeIPSessionImpl implements NodeTCPSession
 
     public void shutdownServer()
     {
-        shutdownSide(SERVER, (argonSession).serverOutgoingSocketQueue(), false);
+        shutdownSide(SERVER, serverOutgoingSocketQueue(), false);
     }
 
     public void shutdownServer(boolean force)
     {
-        shutdownSide(SERVER, (argonSession).serverOutgoingSocketQueue(), force);
+        shutdownSide(SERVER, serverOutgoingSocketQueue(), force);
     }
 
     public void shutdownClient()
     {
-        shutdownSide(CLIENT, (argonSession).clientOutgoingSocketQueue(), false);
+        shutdownSide(CLIENT, clientOutgoingSocketQueue(), false);
     }
 
     public void shutdownClient(boolean force)
     {
-        shutdownSide(CLIENT, (argonSession).clientOutgoingSocketQueue(), force);
+        shutdownSide(CLIENT, clientOutgoingSocketQueue(), force);
     }
 
     private void shutdownSide(int side, OutgoingSocketQueue out, boolean force)
@@ -208,8 +204,8 @@ class NodeTCPSessionImpl extends NodeIPSessionImpl implements NodeTCPSession
     public void resetServer()
     {
         // Go ahead and write out the reset.
-        OutgoingSocketQueue oursout = (argonSession).serverOutgoingSocketQueue();
-        IncomingSocketQueue oursin  = (argonSession).serverIncomingSocketQueue();
+        OutgoingSocketQueue oursout = serverOutgoingSocketQueue();
+        IncomingSocketQueue oursin  = serverIncomingSocketQueue();
         if (oursout != null) {
             Crumb crumb = ResetCrumb.getInstance();
             boolean success = oursout.write(crumb);
@@ -220,14 +216,14 @@ class NodeTCPSessionImpl extends NodeIPSessionImpl implements NodeTCPSession
         if ( oursin != null )
             oursin.reset();
 
-        // Will result in server's outgoing and incoming socket queue being set to null in argonSession.
+        // Will result in server's outgoing and incoming socket queue being set to null.
     }
 
     public void resetClient()
     {
         // Go ahead and write out the reset.
-        OutgoingSocketQueue ourcout = (argonSession).clientOutgoingSocketQueue();
-        IncomingSocketQueue ourcin  = (argonSession).clientIncomingSocketQueue();
+        OutgoingSocketQueue ourcout = clientOutgoingSocketQueue();
+        IncomingSocketQueue ourcin  = clientIncomingSocketQueue();
 
         if (ourcout != null) {
             Crumb crumb = ResetCrumb.getInstance();
@@ -238,7 +234,7 @@ class NodeTCPSessionImpl extends NodeIPSessionImpl implements NodeTCPSession
         if ( ourcin != null )
             ourcin.reset();
 
-        // Will result in client's outgoing and incoming socket queue being set to null in argonSession.
+        // Will result in client's outgoing and incoming socket queue being set to null 
     }
 
     public void beginClientStream(TCPStreamer streamer)
@@ -460,7 +456,7 @@ class NodeTCPSessionImpl extends NodeIPSessionImpl implements NodeTCPSession
                          readBuf[side].limit() + "," + readBuf[side].capacity() +
                          ", killing session");
             readBuf[side] = null;
-            killSession("full read buffer on " + sideName);
+            killSession();
             return numRead;
         }
 
@@ -630,15 +626,4 @@ class NodeTCPSessionImpl extends NodeIPSessionImpl implements NodeTCPSession
         readBuf[SERVER] = null;
         super.closeFinal();
     }
-
-    @Override
-    protected void killSession(String reason)
-    {
-        // Sends a RST both directions and nukes the socket queues.
-        argonSession.killSession();
-    }
-
-    // Don't need equal or hashcode since we can only have one of
-    // these objects per session (so the memory address is ok for
-    // equals/hashcode).
 }
