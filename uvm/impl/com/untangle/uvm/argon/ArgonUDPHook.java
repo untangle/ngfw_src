@@ -19,12 +19,12 @@ import com.untangle.uvm.node.SessionEvent;
 import com.untangle.uvm.vnet.NodeUDPSession;
 import com.untangle.uvm.engine.NodeUDPSessionImpl;
 
-public class UDPHook implements NetcapHook
+public class ArgonUDPHook implements NetcapHook
 {
-    private static UDPHook INSTANCE;
+    private static ArgonUDPHook INSTANCE;
     private final Logger logger = Logger.getLogger(getClass());
 
-    public static UDPHook getInstance() {
+    public static ArgonUDPHook getInstance() {
         if ( INSTANCE == null )
             init();
 
@@ -32,14 +32,14 @@ public class UDPHook implements NetcapHook
     }
 
     /* Singleton */
-    private UDPHook()
+    private ArgonUDPHook()
     {
     }
 
     private static synchronized void init()
     {
         if ( INSTANCE == null )
-            INSTANCE = new UDPHook();
+            INSTANCE = new ArgonUDPHook();
     }
 
     public void event( long sessionID )

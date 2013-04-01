@@ -190,11 +190,6 @@ public class Dispatcher implements com.untangle.uvm.argon.NewSessionEventListene
         }
     }
 
-    protected void registerPipelineListener( NodeIPSessionImpl session )
-    {
-        session.registerListener(session);
-    }
-
     protected ArgonConnectorImpl argonConnector()
     {
         return argonConnector;
@@ -535,7 +530,6 @@ public class Dispatcher implements com.untangle.uvm.argon.NewSessionEventListene
             NodeTCPSessionImpl session = new NodeTCPSessionImpl(this, request.sessionEvent(), TCP_READ_BUFFER_SIZE, TCP_READ_BUFFER_SIZE, request);
             
             session.attach(treq.attachment());
-            registerPipelineListener( session );
 
             // Send the new session event.  
             if (logger.isInfoEnabled())
@@ -597,9 +591,8 @@ public class Dispatcher implements com.untangle.uvm.argon.NewSessionEventListene
 
             // Create the session, client and server channels
             NodeUDPSessionImpl session = new NodeUDPSessionImpl(this, request.sessionEvent(), UDP_MAX_PACKET_SIZE, UDP_MAX_PACKET_SIZE, request);
-            
+
             session.attach(ureq.attachment());
-            registerPipelineListener( session );
 
             // Send the new session event.  Maybe this should be done on the session handler
             // thread instead?  XXX

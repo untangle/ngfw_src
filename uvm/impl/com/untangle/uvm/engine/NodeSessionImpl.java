@@ -343,8 +343,10 @@ public abstract class NodeSessionImpl implements NodeSession
         if ( serverOutgoingSocketQueue != null ) serverOutgoingSocketQueue.raze();
     }
 
-    /* XXX All this does is remove the session from the argon agent table, this is being
-     * done from the tapi, so it is no longer necessary */
+    /**
+     * XXX All this does is remove the session from the argon agent table, this is being
+     * done from the tapi, so it is no longer necessary
+     */
     public void shutdownEvent( OutgoingSocketQueue osq )
     {
         logger.debug( "Outgoing socket queue shutdown event: " + osq );
@@ -399,7 +401,7 @@ public abstract class NodeSessionImpl implements NodeSession
         return serverOutgoingSocketQueue;
     }
 
-    class SessionSocketQueueListener implements SocketQueueListener
+    private class SessionSocketQueueListener implements SocketQueueListener
     {
         SessionSocketQueueListener() { }
 
@@ -502,5 +504,4 @@ public abstract class NodeSessionImpl implements NodeSession
             }
         }
     }
-    
 }

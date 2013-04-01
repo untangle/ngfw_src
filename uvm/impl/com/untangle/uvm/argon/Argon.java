@@ -114,9 +114,9 @@ public class Argon
      */
     private void registerHooks()
     {
-        Netcap.registerUDPHook( UDPHook.getInstance());
+        Netcap.registerUDPHook( ArgonUDPHook.getInstance());
 
-        Netcap.registerTCPHook( TCPHook.getInstance());
+        Netcap.registerTCPHook( ArgonTCPHook.getInstance());
     }
 
     /**

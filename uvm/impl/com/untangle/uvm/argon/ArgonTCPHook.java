@@ -19,13 +19,13 @@ import com.untangle.uvm.node.SessionEvent;
 import com.untangle.uvm.vnet.NodeTCPSession;
 import com.untangle.uvm.engine.NodeTCPSessionImpl;
 
-public class TCPHook implements NetcapHook
+public class ArgonTCPHook implements NetcapHook
 {
-    private static TCPHook INSTANCE;
+    private static ArgonTCPHook INSTANCE;
     private final Logger logger = Logger.getLogger(getClass());
 
 
-    public static TCPHook getInstance()
+    public static ArgonTCPHook getInstance()
     {
         if ( INSTANCE == null )
             init();
@@ -34,12 +34,12 @@ public class TCPHook implements NetcapHook
     }
 
     /* Singleton */
-    private TCPHook() {}
+    private ArgonTCPHook() {}
 
     private static synchronized void init()
     {
         if ( INSTANCE == null )
-            INSTANCE = new TCPHook();
+            INSTANCE = new ArgonTCPHook();
     }
 
     public void event( long sessionID )

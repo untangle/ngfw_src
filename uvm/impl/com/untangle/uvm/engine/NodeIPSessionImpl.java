@@ -74,6 +74,8 @@ public abstract class NodeIPSessionImpl extends NodeSessionImpl implements NodeI
         this.serverPort    = request.getServerPort();
         this.serverAddr    = request.getServerAddr();
         this.serverIntf    = request.getServerIntf();
+
+        this.registerListener( this );
     }
 
     public long getPolicyId()
