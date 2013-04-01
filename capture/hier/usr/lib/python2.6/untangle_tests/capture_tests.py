@@ -176,22 +176,20 @@ class CaptureTests(unittest2.TestCase):
         nodeData['authenticationType']="ACTIVE_DIRECTORY"
         nodeData['pageType'] = "BASIC_LOGIN"
         node.setSettings(nodeData)
+
         # check that basic captive page is shown
         result = clientControl.runCommand("wget -4 -t 2 --timeout=5 -a /tmp/capture_test_030.log -O /tmp/capture_test_030.out http://www.google.com/")
         assert (result == 0)
         search = clientControl.runCommand("grep -q 'username and password' /tmp/capture_test_030.out")
         assert (search == 0)
-        # Get the captive page IP address for logout use.
-        
-        
-        
+
         # check if AD login and password 
         appid = str(node.getNodeSettings()["id"])
         # print 'appid is %s' % appid  # debug line
-        # get the IP address of the capture page 
         result = clientControl.runCommand("wget -a /tmp/capture_test_030a.log -O /tmp/capture_test_030a.out  \'http://" + captureIP + "/capture/handler.py/authpost?username=atsadmin&password=passwd&nonce=9abd7f2eb5ecd82b&method=GET&appid=" + appid + "&host=test.untangle.com&uri=/\'",True)
         search = clientControl.runCommand("grep -q 'Hi!' /tmp/capture_test_030a.out")
         assert (search == 0)
+
         # logout user to clean up test.
         # wget http://<internal IP>/capture/logout  
         result = clientControl.runCommand("wget -4 -t 2 --timeout=5 -a /tmp/capture_test_030b.log -O /tmp/capture_test_030b.out http://" + captureIP + "/capture/logout")
@@ -213,17 +211,20 @@ class CaptureTests(unittest2.TestCase):
         nodeData['authenticationType']="RADIUS"
         nodeData['pageType'] = "BASIC_LOGIN"
         node.setSettings(nodeData)
+
         # check that basic captive page is shown
         result = clientControl.runCommand("wget -4 -t 2 --timeout=5 -a /tmp/capture_test_040.log -O /tmp/capture_test_040.out http://www.google.com/")
         assert (result == 0)
         search = clientControl.runCommand("grep -q 'username and password' /tmp/capture_test_040.out")
         assert (search == 0)
+
         # check if RADIUS login and password 
         appid = str(node.getNodeSettings()["id"])
         # print 'appid is %s' % appid  # debug line
         result = clientControl.runCommand("wget -a /tmp/capture_test_040a.log -O /tmp/capture_test_040a.out  \'http://" + captureIP + "/capture/handler.py/authpost?username=normal&password=passwd&nonce=9abd7f2eb5ecd82b&method=GET&appid=" + appid + "&host=test.untangle.com&uri=/\'",True)
         search = clientControl.runCommand("grep -q 'Hi!' /tmp/capture_test_040a.out")
         assert (search == 0)
+
         # logout user to clean up test.
         # wget http://<internal IP>/capture/logout  
         result = clientControl.runCommand("wget -4 -t 2 --timeout=5 -a /tmp/capture_test_040b.log -O /tmp/capture_test_040b.out http://" + captureIP + "/capture/logout")
