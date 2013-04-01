@@ -933,7 +933,7 @@ if (!Ung.hasResource["Ung.Network"]) {
                     v4ConfigType.hide();
                     v6ConfigType.hide(); v6ConfigType.disable();
                     v4StaticAddress.hide(); v4StaticAddress.disable();
-                    v4StaticPrefix.hide();
+                    v4StaticPrefix.hide(); v4StaticPrefix.disable();
                     v4StaticGateway.hide(); v4StaticGateway.disable();
                     v4StaticDns1.hide(); v4StaticDns1.disable();
                     v4StaticDns2.hide();
@@ -993,7 +993,7 @@ if (!Ung.hasResource["Ung.Network"]) {
                         // if pppoe show pppoe fields (pppoe is only allowed on WANs)
                         if ( v4ConfigType.getValue() == "STATIC" ) {
                             v4StaticAddress.show(); v4StaticAddress.enable();
-                            v4StaticPrefix.show();
+                            v4StaticPrefix.show(); v4StaticPrefix.enable();
                             if (isWanValue) {
                                 v4StaticGateway.show(); v4StaticGateway.enable();
                                 v4StaticDns1.show(); v4StaticDns1.enable();
