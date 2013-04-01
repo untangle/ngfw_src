@@ -83,7 +83,6 @@ if (!Ung.hasResource["Ung.Network"]) {
             }];
 
             this.refreshSettings();
-            
             // builds the tabs
             this.buildInterfaces();
             this.buildHostName();
@@ -124,7 +123,7 @@ if (!Ung.hasResource["Ung.Network"]) {
                 title: this.i18n._("Interfaces"),
                 recordJavaClass: "com.untangle.uvm.network.InterfaceSettings",
                 columnsDefaultSortable: false,
-                dataProperty:'interfaces',
+                dataProperty: "interfaces",
                 fields: [{
                     name: 'interfaceId'
                 }, {
@@ -207,7 +206,7 @@ if (!Ung.hasResource["Ung.Network"]) {
                     name: 'dhcpDnsOverride'
                 }, {
                     name: 'javaClass'
-                }],
+                }, { name: "macAddress" }, { name: "connected" }, { name: "duplex" }, { name: "vendor" }, { name: "mbit" }],
                 columns: [{
                     header: this.i18n._("Interface Id"),
                     width: 80,
@@ -216,6 +215,22 @@ if (!Ung.hasResource["Ung.Network"]) {
                     header: this.i18n._("Name"),
                     dataIndex: 'name',
                     width:100
+                }, {
+                    header: this.i18n._( "Connected" ),
+                    dataIndex: 'connected',
+                    sortable: false,
+                    width: 120,
+                    renderer: Ext.bind(function(value, metadata, record, rowIndex, colIndex, store, view) {
+                        var divClass = "ua-cell-disabled";
+                        var connectedStr = this.i18n._("unknown");
+                        if ( value == "CONNECTED" ) {
+                            connectedStr = this.i18n._("connected");
+                            divClass = "ua-cell-enabled-interface";
+                        } else if ( value == "DISCONNECTED" ) {
+                            connectedStr = this.i18n._("disconnected");
+                        }
+                        return "<div class='" + divClass + "'>" + connectedStr + "</div>";
+                    }, this)
                 }, {
                     header: this.i18n._("Physical Dev"),
                     dataIndex: 'physicalDev',
@@ -250,11 +265,11 @@ if (!Ung.hasResource["Ung.Network"]) {
                     Ext.MessageBox.wait(i18n._("Loading device mapper..."), i18n._("Please wait"));
                     if (!this.winMapDevices) {
                         this.mapDevicesStore = Ext.create('Ext.data.ArrayStore', {
-                            fields:[{name: "interfaceId"}, { name: "name" }, { name: "physicalDev" }, { name: "systemDev" },{ name: "symbolicDev" }, { name: "deviceName" }, { name: "macAddress" }, { name: "connected" }, { name: "duplex" }, { name: "vendor" }, { name: "mbit" }],
+                            fields:[{name: "interfaceId"}, { name: "name" }, { name: "physicalDev" }, { name: "systemDev" },{ name: "symbolicDev" }, { name: "macAddress" }, { name: "connected" }, { name: "duplex" }, { name: "vendor" }, { name: "mbit" }],
                             data: []
                         });
                         this.availableDevicesStore = Ext.create('Ext.data.ArrayStore', {
-                            fields:[{ name: "deviceName" }],
+                            fields:[{ name: "physicalDev" }],
                             data: []
                         });
 
@@ -325,13 +340,13 @@ if (!Ung.hasResource["Ung.Network"]) {
                                 tpl: '<img src="'+Ext.BLANK_IMAGE_URL+'" class="icon-drag"/>' 
                             }, {
                                 header: i18n._( "Device" ),
-                                dataIndex: 'deviceName',
+                                dataIndex: 'physicalDev',
                                 sortable: false,
                                 editor:{
                                     xtype: 'combo',
                                     store: this.availableDevicesStore,
-                                    valueField: 'deviceName',
-                                    displayField: 'deviceName',
+                                    valueField: 'physicalDev',
+                                    displayField: 'physicalDev',
                                     queryMode: 'local',
                                     editable: false,
                                     listeners: {
@@ -340,9 +355,9 @@ if (!Ung.hasResource["Ung.Network"]) {
                                                 var sourceRecord = null;
                                                 var targetRecord = null;
                                                 this.mapDevicesStore.each( function( currentRow ) {
-                                                    if(oldValue==currentRow.get( "deviceName" )) {
+                                                    if(oldValue==currentRow.get( "physicalDev" )) {
                                                         sourceRecord=currentRow;
-                                                    } else if(newValue==currentRow.get( "deviceName" )) {
+                                                    } else if(newValue==currentRow.get( "physicalDev" )) {
                                                         targetRecord=currentRow;
                                                     }
                                                     if(sourceRecord!=null && targetRecord!=null) {
@@ -356,18 +371,14 @@ if (!Ung.hasResource["Ung.Network"]) {
                                                 var soruceData = Ext.decode(Ext.encode(sourceRecord.data));
                                                 var targetData = Ext.decode(Ext.encode(targetRecord.data));
                                                 
-                                                //sourceRecord.set("deviceName", targetData.deviceName);
-                                                sourceRecord.set("macAddress",targetData.macAddress);
-                                                sourceRecord.set("physicalDev", targetData.physicalDev);
                                                 sourceRecord.set("systemDev", targetData.systemDev);
                                                 sourceRecord.set("symbolicDev", targetData.symbolicDev);
+                                                sourceRecord.set("macAddress",targetData.macAddress);
                                                 sourceRecord.set("connected",targetData.connected);
                                                 sourceRecord.set("duplex",targetData.duplex);
                                                 sourceRecord.set("vendor",targetData.vendor);
                                                 sourceRecord.set("mbit",targetData.mbit);
 
-                                                
-                                                targetRecord.set("deviceName", soruceData.deviceName);
                                                 targetRecord.set("physicalDev", soruceData.physicalDev);
                                                 targetRecord.set("systemDev", soruceData.systemDev);
                                                 targetRecord.set("symbolicDev", soruceData.symbolicDev);
@@ -387,11 +398,11 @@ if (!Ung.hasResource["Ung.Network"]) {
                                 sortable: false,
                                 width: 120,
                                 renderer: Ext.bind(function(value, metadata, record, rowIndex, colIndex, store, view) {
-                                    var divClass = "ua-cell-disabled-interface";
+                                    var divClass = "ua-cell-disabled";
                                     var connectedStr = this.i18n._("unknown");
                                     if ( value == "CONNECTED" ) {
                                         connectedStr = this.i18n._("connected");
-                                        divClass = "ua-cell-enabled-interface";
+                                        divClass = "ua-cell-enabled";
                                     } else if ( value == "DISCONNECTED" ) {
                                         connectedStr = this.i18n._("disconnected");
                                     }
@@ -408,7 +419,7 @@ if (!Ung.hasResource["Ung.Network"]) {
                                 sortable: false,
                                 width: 100,
                                 renderer: Ext.bind(function(value, metadata, record, rowIndex, colIndex, store, view) {
-                                    return (value=="FULL_DUPLEX")?this.i18n._("full-duplex") : (value=="HALF_DUPLEX") ? this.i18n._("half-duplex") : this.i18n._("unknown");;
+                                    return (value=="FULL_DUPLEX")?this.i18n._("full-duplex") : (value=="HALF_DUPLEX") ? this.i18n._("half-duplex") : this.i18n._("unknown");
                                 }, this)
                             }, {
                                 header: this.i18n._( "Vendor" ),
@@ -462,29 +473,24 @@ if (!Ung.hasResource["Ung.Network"]) {
                                     currentRow.set("physicalDev",interfaceData.physicalDev);
                                     currentRow.set("systemDev",interfaceData.systemDev);
                                     currentRow.set("symbolicDev",interfaceData.symbolicDev);
+                                    currentRow.set("macAddress",interfaceData.macAddress);
+                                    currentRow.set("connected",interfaceData.connected);
+                                    currentRow.set("duplex",interfaceData.duplex);
+                                    currentRow.set("vendor",interfaceData.vendor);
+                                    currentRow.set("mbit",interfaceData.mbit);
                                 });
                                 this.winMapDevices.cancelAction();
                             }, this)
                         });
                     }
-                    var mapDeviceData = [];
-                    var deviceStatusList=main.getNetworkManager().getDeviceStatus(Ext.bind(function(result, exception) {
-                        if(Ung.Util.handleException(exception)) return;
-                        Ext.MessageBox.hide();
-                        var deviceStatusMap=Ung.Util.createRecordsMap(result.list, "deviceName");
-                        var interfaces = this.gridInterfaces.getPageList();
-                        for(var i=0; i<interfaces.length; i++) {
-                            var deviceData = interfaces[i];
-                            var deviceStatus= deviceStatusMap[interfaces[i].physicalDev];
-                            Ext.applyIf(deviceData, deviceStatus);
-                            mapDeviceData.push(deviceData);
-                        }
-                        this.mapDevicesStore.loadData( mapDeviceData );
-                        this.availableDevicesStore.loadData( mapDeviceData );
-                        this.winMapDevices.show();
-                    }, this));
+                    Ext.MessageBox.hide();
+                    var interfaces = this.gridInterfaces.getPageList();
+                    this.mapDevicesStore.loadData( interfaces );
+                    this.availableDevicesStore.loadData( interfaces );
+                    this.winMapDevices.show();
                 }, this)
             });
+
             this.gridInterfaces.getStore().on("update", Ext.bind(function( store, record, operation, modifiedFieldNames, eOpts) {
                 //Sync QoS Bandwith Grid data
                 var interfaces = this.gridInterfaces.getPageList();
@@ -2605,17 +2611,6 @@ if (!Ung.hasResource["Ung.Network"]) {
                     }
                 }]
             });
-            /*
-            this.panelNetworkCards = Ext.create('Ext.panel.Panel',{
-                name: 'panelNetworkCards',
-                helpSource: 'network_dns_server',
-                parentId: this.getId(),
-                title: this.i18n._('Network Cards'),
-                layout: 'anchor',
-                cls: 'ung-panel',
-                items: [this.gridNetworkCards]
-            });
-            */
         },
         validate: function() {
             if(this.settings.qosSettings.qosEnabled) {
@@ -2644,6 +2639,13 @@ if (!Ung.hasResource["Ung.Network"]) {
         },
         refreshSettings: function() {
             this.settings = rpc.networkManager.getNetworkSettings();
+            var deviceStatus=main.getNetworkManager().getDeviceStatus();
+            var deviceStatusMap=Ung.Util.createRecordsMap(deviceStatus.list, "deviceName");
+            for(var i=0; i<this.settings.interfaces.list.length; i++) {
+                var intf=this.settings.interfaces.list[i];
+                var deviceStatus = deviceStatusMap[intf.physicalDev];
+                Ext.applyIf(intf, deviceStatus);
+            }
         },
         beforeSave: function(isApply, handler) {
             this.beforeSaveCount = 12;

@@ -1402,7 +1402,7 @@ Ext.define('Ung.ReportDetails', {
                             if (exception || result == null) {
                                 if (!handleTimeout(exception) || result == null) {
                                     var message = i18n._('An error occured on the server and reports could not retrieve the data you requested.'),
-                                        title = i18n._('Failed');;
+                                        title = i18n._('Failed');
                                     if(exception){
                                         if(exception.message){
                                             message = exception.message;

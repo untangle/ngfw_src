@@ -3275,7 +3275,7 @@ Ext.define('Ung.MonitorGrid', {
                 this.data = (this.dataRoot!=null && this.dataRoot.length>0) ? data[this.dataRoot]:data;
             }
         } else {
-            this.data=(this.dataRoot!=null && this.dataRoot.length>0) ? data[this.dataRoot]:data;;
+            this.data=(this.dataRoot!=null && this.dataRoot.length>0) ? data[this.dataRoot]:data;
         }
 
         if(!this.data) {
