@@ -335,12 +335,6 @@ public abstract class NodeSessionImpl implements NodeSession
      */
     public void raze()
     {
-        /* Raze the incoming and outgoing socket queues */
-        if ( clientIncomingSocketQueue != null ) clientIncomingSocketQueue.raze();
-        if ( clientOutgoingSocketQueue != null ) clientOutgoingSocketQueue.raze();
-        if ( serverIncomingSocketQueue != null ) serverIncomingSocketQueue.raze();
-        if ( serverOutgoingSocketQueue != null ) serverOutgoingSocketQueue.raze();
-
         Node xform = pipelineConnector().node();
         if (xform.getRunState() != NodeSettings.NodeState.RUNNING) {
             String message = "killing: raze for node in state " + xform.getRunState();
