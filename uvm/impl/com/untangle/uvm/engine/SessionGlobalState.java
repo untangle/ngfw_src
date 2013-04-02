@@ -1,7 +1,7 @@
 /**
  * $Id$
  */
-package com.untangle.uvm.netcap;
+package com.untangle.uvm.engine;
 
 import java.util.List;
 import java.util.HashMap;
@@ -12,7 +12,6 @@ import org.apache.log4j.Logger;
 import com.untangle.jnetcap.NetcapSession;
 import com.untangle.jnetcap.NetcapTCPSession;
 import com.untangle.jnetcap.NetcapUDPSession;
-import com.untangle.uvm.engine.PipelineConnectorImpl;
 
 /**
  * This stores the global system-wide state for a given session

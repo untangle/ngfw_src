@@ -10,7 +10,6 @@ import java.util.List;
 import java.util.LinkedList;
 import org.apache.log4j.Logger;
 
-import com.untangle.uvm.netcap.NetcapSessionTable;
 import com.untangle.uvm.node.Node;
 import com.untangle.uvm.node.NodeProperties;
 import com.untangle.uvm.vnet.PipelineConnector;
@@ -183,7 +182,7 @@ public class PipelineConnectorImpl implements PipelineConnector
         /* Remove the listener */
         listener = null;
 
-        NetcapSessionTable.getInstance().shutdownActive();
+        SessionTable.getInstance().shutdownActive();
 
         /* Remove all of the active sessions */
         activeSessions.clear();

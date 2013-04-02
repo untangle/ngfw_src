@@ -7,7 +7,6 @@ import com.untangle.jnetcap.NetcapUDPSession;
 import com.untangle.uvm.node.SessionEvent;
 import com.untangle.uvm.vnet.NodeUDPSession;
 import com.untangle.uvm.vnet.UDPNewSessionRequest;
-import com.untangle.uvm.netcap.SessionGlobalState;
 
 public class UDPNewSessionRequestImpl extends IPNewSessionRequestImpl implements UDPNewSessionRequest
 {

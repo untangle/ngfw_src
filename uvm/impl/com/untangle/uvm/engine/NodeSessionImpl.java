@@ -20,7 +20,6 @@ import com.untangle.uvm.vnet.NodeSession;
 import com.untangle.uvm.node.SessionEvent;
 import com.untangle.uvm.node.Node;
 import com.untangle.uvm.node.NodeSettings;
-import com.untangle.uvm.netcap.SessionGlobalState;
 import com.untangle.uvm.vnet.NodeSessionStats;
 import com.untangle.uvm.vnet.event.IPStreamer;
 import com.untangle.jnetcap.NetcapSession;

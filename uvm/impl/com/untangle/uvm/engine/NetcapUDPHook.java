@@ -1,7 +1,7 @@
 /**
  * $Id$
  */
-package com.untangle.uvm.netcap;
+package com.untangle.uvm.engine;
 
 import java.util.Iterator;
 
@@ -17,10 +17,6 @@ import com.untangle.jvector.UDPSink;
 import com.untangle.jvector.UDPSource;
 import com.untangle.uvm.node.SessionEvent;
 import com.untangle.uvm.vnet.NodeUDPSession;
-import com.untangle.uvm.engine.NodeUDPSessionImpl;
-import com.untangle.uvm.engine.PipelineConnectorImpl;
-import com.untangle.uvm.engine.IPNewSessionRequestImpl;
-import com.untangle.uvm.engine.UDPNewSessionRequestImpl;
 
 public class NetcapUDPHook implements NetcapCallback
 {
@@ -109,10 +105,10 @@ public class NetcapUDPHook implements NetcapCallback
                 /* Setup the UDP parameters to use the parameters from the last session in the chain */
                 NodeUDPSession session = (NodeUDPSession)sessionList.get( sessionList.size() - 1 );
 
-                if ( logger.isInfoEnabled()) {
-                    logger.info( "UDP: Completing session:" );
-                    logger.info( "Client: " + session.getClientAddr() + ":" + session.getClientPort());
-                    logger.info( "Server: " + session.getServerAddr() + ":" + session.getServerPort());
+                if ( logger.isDebugEnabled()) {
+                    logger.debug( "UDP: Completing session:" );
+                    logger.debug( "Client: " + session.getClientAddr() + ":" + session.getClientPort());
+                    logger.debug( "Server: " + session.getServerAddr() + ":" + session.getServerPort());
                 }
 
                 serverTraffic = new IPTraffic( session.getClientAddr(), session.getClientPort(), session.getServerAddr(), session.getServerPort());

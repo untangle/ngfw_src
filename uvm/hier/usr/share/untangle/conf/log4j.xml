@@ -71,10 +71,6 @@
     <priority value="WARN"/>
   </category>
 
-  <category name="com.untangle.uvm.netcap">
-    <priority value="WARN"/>
-  </category>
-
   <category name="com.untangle.jnetcap">
     <priority value="WARN"/>
   </category>

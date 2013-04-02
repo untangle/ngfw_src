@@ -1,7 +1,7 @@
 /**
  * $Id$
  */
-package com.untangle.uvm.netcap;
+package com.untangle.uvm.engine;
 
 import org.apache.log4j.Logger;
 
@@ -155,7 +155,7 @@ public class NetcapManagerImpl implements NetcapManager
         Netcap.unregisterTCPHook();
         Netcap.unregisterUDPHook();
 
-        NetcapSessionTable activeSessions = NetcapSessionTable.getInstance();
+        SessionTable activeSessions = SessionTable.getInstance();
 
         /* Close all of the vectoring machines */
         for ( int c = 0; c <  SHUTDOWN_ATTEMPTS ; c++ ) {
@@ -181,26 +181,26 @@ public class NetcapManagerImpl implements NetcapManager
         return INSTANCE;
     }
 
-    /** Get the number of sessions from the NetcapSessionTable */
+    /** Get the number of sessions from the SessionTable */
     public int getSessionCount()
     {
-        return NetcapSessionTable.getInstance().count();
+        return SessionTable.getInstance().count();
     }
 
     public int getSessionCount(short protocol)
     {
-        return NetcapSessionTable.getInstance().count(protocol);
+        return SessionTable.getInstance().count(protocol);
     }
     
     /** Shutdown all of the sessions that match <code>matcher</code> */
     public void shutdownMatches( SessionMatcher matcher )
     {
-        NetcapSessionTable.getInstance().shutdownMatches( matcher );
+        SessionTable.getInstance().shutdownMatches( matcher );
     }
 
     /** Shutdown all of the sessions that have been touch by the PipeSpec that match <code>matcher</code> */
     public void shutdownMatches( SessionMatcher matcher, PipeSpec ps )
     {
-        NetcapSessionTable.getInstance().shutdownMatches( matcher, ps );
+        SessionTable.getInstance().shutdownMatches( matcher, ps );
     }
 }

@@ -39,7 +39,6 @@ import com.untangle.uvm.UvmException;
 import com.untangle.uvm.UvmState;
 import com.untangle.uvm.SessionMonitor;
 import com.untangle.uvm.HostTable;
-import com.untangle.uvm.netcap.NetcapManagerImpl;
 import com.untangle.uvm.node.LicenseManager;
 import com.untangle.uvm.node.Reporting;
 import com.untangle.uvm.node.DayOfWeekMatcher;

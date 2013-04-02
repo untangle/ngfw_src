@@ -1,7 +1,7 @@
 /**
  * $Id$
  */
-package com.untangle.uvm.netcap;
+package com.untangle.uvm.engine;
 
 import java.net.InetAddress;
 import java.util.Iterator;
@@ -17,10 +17,6 @@ import com.untangle.jvector.TCPSink;
 import com.untangle.jvector.TCPSource;
 import com.untangle.uvm.node.SessionEvent;
 import com.untangle.uvm.vnet.NodeTCPSession;
-import com.untangle.uvm.engine.NodeTCPSessionImpl;
-import com.untangle.uvm.engine.PipelineConnectorImpl;
-import com.untangle.uvm.engine.IPNewSessionRequestImpl;
-import com.untangle.uvm.engine.TCPNewSessionRequestImpl;
 
 public class NetcapTCPHook implements NetcapCallback
 {
@@ -120,8 +116,8 @@ public class NetcapTCPHook implements NetcapCallback
              * from 127.0.0.1 to 127.0.0.1, it just limits the number of possible sessions
              * to that one server to 0xFFFF */
 
-            if ( logger.isInfoEnabled()) {
-                logger.info( "TCP - Completing server connection: " + sessionGlobalState );
+            if ( logger.isDebugEnabled()) {
+                logger.debug( "TCP - Completing server connection: " + sessionGlobalState );
                 logger.debug( "Client: " + clientAddr + ":" + clientPort );
                 logger.debug( "Server: " + serverAddr + ":" + serverPort );
             }
@@ -132,7 +128,7 @@ public class NetcapTCPHook implements NetcapCallback
                 netcapTCPSession.tcpServerSide().blocking( false );
                 ifServerComplete = true;
             } catch ( Exception e ) {
-                logger.info( "TCP - Unable to complete connection to the server: " + e );
+                logger.debug( "TCP - Unable to complete connection to the server: " + e );
                 ifServerComplete = false;
             }
 
@@ -141,9 +137,9 @@ public class NetcapTCPHook implements NetcapCallback
 
         protected boolean clientComplete()
         {
-            if ( logger.isInfoEnabled()) {
-                logger.info( "TCP - Completing client connection: " + sessionGlobalState );
-                logger.info( "TCP - client acked: " + netcapTCPSession.acked());
+            if ( logger.isDebugEnabled()) {
+                logger.debug( "TCP - Completing client connection: " + sessionGlobalState );
+                logger.debug( "TCP - client acked: " + netcapTCPSession.acked());
             }
 
             try {
@@ -154,7 +150,7 @@ public class NetcapTCPHook implements NetcapCallback
 
                 ifClientComplete = true;
             } catch ( Exception e ) {
-                logger.info( "TCP - Unable to complete connection to the client: " + e );
+                logger.debug( "TCP - Unable to complete connection to the client: " + e );
                 ifClientComplete = false;
             }
 

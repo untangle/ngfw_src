@@ -6,7 +6,6 @@ package com.untangle.uvm.engine;
 import com.untangle.uvm.node.SessionEvent;
 import com.untangle.uvm.vnet.NodeTCPSession;
 import com.untangle.uvm.vnet.TCPNewSessionRequest;
-import com.untangle.uvm.netcap.SessionGlobalState;
 
 public class TCPNewSessionRequestImpl extends IPNewSessionRequestImpl implements TCPNewSessionRequest
 {

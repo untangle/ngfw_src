@@ -1,7 +1,7 @@
 /*
  * $Id$
  */
-package com.untangle.uvm.netcap;
+package com.untangle.uvm.engine;
 
 import java.util.HashMap;
 import java.util.Iterator;
@@ -15,21 +15,20 @@ import com.untangle.jvector.Vector;
 import com.untangle.uvm.SessionMatcher;
 import com.untangle.uvm.vnet.PipeSpec;
 import com.untangle.uvm.vnet.PipelineConnector;
-import com.untangle.uvm.engine.PipelineConnectorImpl;
 
 /**
  * This table stores a global list of all currently active sessions being vectored
  */
-public class NetcapSessionTable
+public class SessionTable
 {
     /* Debugging */
     private final Logger logger = Logger.getLogger(getClass());
-    private static final NetcapSessionTable INSTANCE = new NetcapSessionTable();
+    private static final SessionTable INSTANCE = new SessionTable();
 
     private final Map<Vector,SessionGlobalState> activeSessions = new HashMap<Vector,SessionGlobalState>();
 
     /* Singleton */
-    private NetcapSessionTable() {}
+    private SessionTable() {}
 
     /**
      * Add a vector to the hash set.
@@ -177,7 +176,7 @@ public class NetcapSessionTable
         }
     }
     
-    public static NetcapSessionTable getInstance()
+    public static SessionTable getInstance()
     {
         return INSTANCE;
     }

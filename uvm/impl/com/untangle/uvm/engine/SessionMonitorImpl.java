@@ -21,9 +21,6 @@ import com.untangle.uvm.SessionMonitorEntry;
 import com.untangle.uvm.node.Node;
 import com.untangle.uvm.node.NodeManager;
 import com.untangle.uvm.node.SessionTuple;
-import com.untangle.uvm.netcap.SessionGlobalState;
-import com.untangle.uvm.netcap.NetcapHook;
-import com.untangle.uvm.netcap.NetcapSessionTable;
 import com.untangle.uvm.vnet.NodeSession;
 import com.untangle.uvm.node.NodeSettings;
 import com.untangle.uvm.network.InterfaceSettings;
@@ -95,7 +92,7 @@ class SessionMonitorImpl implements SessionMonitor
     public List<SessionMonitorEntry> getMergedSessions(long nodeId)
     {
         List<SessionMonitorEntry> sessions = this._getConntrackSessionMonitorEntrys();
-        List<SessionGlobalState> netcapSessions = NetcapSessionTable.getInstance().getSessions();
+        List<SessionGlobalState> netcapSessions = SessionTable.getInstance().getSessions();
         List<SessionTuple> nodeSessions = null;;
 
         Node node = null;

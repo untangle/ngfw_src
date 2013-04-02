@@ -1,7 +1,7 @@
 /**
  * $Id$
  */
-package com.untangle.uvm.netcap;
+package com.untangle.uvm.engine;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -25,10 +25,6 @@ import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.NetworkManager;
 import com.untangle.uvm.HostTable;
 import com.untangle.uvm.HostTableEntry;
-import com.untangle.uvm.engine.PipelineFoundryImpl;
-import com.untangle.uvm.engine.PipelineConnectorImpl;
-import com.untangle.uvm.engine.NodeSessionImpl;
-import com.untangle.uvm.engine.IPNewSessionRequestImpl;
 import com.untangle.uvm.node.SessionTuple;
 import com.untangle.uvm.node.SessionTupleImpl;
 import com.untangle.uvm.node.SessionEvent;
@@ -45,7 +41,7 @@ import com.untangle.uvm.network.InterfaceSettings;
 public abstract class NetcapHook implements Runnable
 {
     private final Logger logger = Logger.getLogger(getClass());
-    private static final NetcapSessionTable activeSessions = NetcapSessionTable.getInstance();
+    private static final SessionTable activeSessions = SessionTable.getInstance();
 
     /* Reject the client with whatever response the server returned */
     protected static final int REJECT_CODE_SRV = -1;
@@ -278,7 +274,7 @@ public abstract class NetcapHook implements Runnable
                 if ( logger.isDebugEnabled())
                     logger.debug( "Finished vectoring for session: " + sessionGlobalState );
             } else {
-                logger.info( "Session rejected, skipping vectoring: " + sessionGlobalState );
+                logger.debug( "Session rejected, skipping vectoring: " + sessionGlobalState );
             }
         } catch ( Exception e ) {
             /* Some exceptions have null messages, who knew */
@@ -435,7 +431,7 @@ public abstract class NetcapHook implements Runnable
         case IPNewSessionRequestImpl.REQUESTED:
         case IPNewSessionRequestImpl.ENDPOINTED:
             if ( !clientComplete()) {
-                logger.info( "Unable to complete connection to client" );
+                logger.debug( "Unable to complete connection to client" );
                 state = IPNewSessionRequestImpl.REJECTED;
                 clientActionCompleted = false;
             }

@@ -11,7 +11,6 @@ import com.untangle.jnetcap.Endpoints;
 import com.untangle.uvm.node.SessionEvent;
 import com.untangle.uvm.vnet.NodeSession;
 import com.untangle.uvm.vnet.IPNewSessionRequest;
-import com.untangle.uvm.netcap.SessionGlobalState;
 
 public abstract class IPNewSessionRequestImpl implements IPNewSessionRequest
 {
