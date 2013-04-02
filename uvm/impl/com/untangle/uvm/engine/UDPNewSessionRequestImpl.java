@@ -1,22 +1,21 @@
 /**
- * $Id$
+ * $Id: UDPNewSessionRequestImpl.java -1   $
  */
-package com.untangle.uvm.netcap;
+package com.untangle.uvm.engine;
 
 import com.untangle.jnetcap.NetcapUDPSession;
 import com.untangle.uvm.node.SessionEvent;
 import com.untangle.uvm.vnet.NodeUDPSession;
 import com.untangle.uvm.vnet.UDPNewSessionRequest;
-import com.untangle.uvm.engine.NodeUDPSessionImpl;
-import com.untangle.uvm.engine.PipelineConnectorImpl;
+import com.untangle.uvm.netcap.SessionGlobalState;
 
-public class NetcapUDPNewSessionRequest extends NetcapIPNewSessionRequest implements UDPNewSessionRequest
+public class UDPNewSessionRequestImpl extends IPNewSessionRequestImpl implements UDPNewSessionRequest
 {
     protected byte ttl;
     protected byte tos;
     protected byte[] options;
 
-    public NetcapUDPNewSessionRequest( SessionGlobalState sessionGlobalState, PipelineConnectorImpl connector, SessionEvent pe )
+    public UDPNewSessionRequestImpl( SessionGlobalState sessionGlobalState, PipelineConnectorImpl connector, SessionEvent pe )
     {
         super( sessionGlobalState, connector, pe );
 
@@ -27,7 +26,7 @@ public class NetcapUDPNewSessionRequest extends NetcapIPNewSessionRequest implem
         this.tos    = netcapUDPSession.tos();
     }
     
-    public NetcapUDPNewSessionRequest( NodeUDPSession session, PipelineConnectorImpl connector, SessionEvent pe, SessionGlobalState sessionGlobalState)
+    public UDPNewSessionRequestImpl( NodeUDPSession session, PipelineConnectorImpl connector, SessionEvent pe, SessionGlobalState sessionGlobalState)
     {
         super( session, connector, pe, sessionGlobalState );
 

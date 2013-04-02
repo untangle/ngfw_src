@@ -28,6 +28,7 @@ import com.untangle.uvm.HostTableEntry;
 import com.untangle.uvm.engine.PipelineFoundryImpl;
 import com.untangle.uvm.engine.PipelineConnectorImpl;
 import com.untangle.uvm.engine.NodeSessionImpl;
+import com.untangle.uvm.engine.IPNewSessionRequestImpl;
 import com.untangle.uvm.node.SessionTuple;
 import com.untangle.uvm.node.SessionTupleImpl;
 import com.untangle.uvm.node.SessionEvent;
@@ -75,7 +76,7 @@ public abstract class NetcapHook implements Runnable
     /**
      * State of the session
      */
-    protected int state      = NetcapIPNewSessionRequest.REQUESTED;
+    protected int state      = IPNewSessionRequestImpl.REQUESTED;
     protected int rejectCode = REJECT_CODE_SRV;
 
     public Vector getVector()
@@ -368,7 +369,7 @@ public abstract class NetcapHook implements Runnable
         for ( Iterator<PipelineConnectorImpl> iter = pipelineConnectors.iterator() ; iter.hasNext() ; ) {
             PipelineConnectorImpl agent = iter.next();
 
-            if ( state == NetcapIPNewSessionRequest.REQUESTED ) {
+            if ( state == IPNewSessionRequestImpl.REQUESTED ) {
                 newSessionRequest( agent, iter, event );
             } else {
                 /* NodeSession has been rejected or endpointed, remaining
@@ -391,26 +392,26 @@ public abstract class NetcapHook implements Runnable
     {
         boolean serverActionCompleted = true;
         switch ( state ) {
-        case NetcapIPNewSessionRequest.REQUESTED:
+        case IPNewSessionRequestImpl.REQUESTED:
             /* If the server doesn't complete, we have to "vector" the reset */
             if ( !serverComplete()) {
                 /* ??? May want to send different codes, or something ??? */
                 if ( vectorReset()) {
                     /* Forward the rejection type that was passed from
                      * the server */
-                    state        = NetcapIPNewSessionRequest.REJECTED;
+                    state        = IPNewSessionRequestImpl.REJECTED;
                     rejectCode = REJECT_CODE_SRV;
                     serverActionCompleted = false;
                 } else {
-                    state = NetcapIPNewSessionRequest.ENDPOINTED;
+                    state = IPNewSessionRequestImpl.ENDPOINTED;
                 }
             }
             break;
 
             /* Nothing to do on the server side */
-        case NetcapIPNewSessionRequest.ENDPOINTED: /* fallthrough */
-        case NetcapIPNewSessionRequest.REJECTED: /* fallthrough */
-        case NetcapIPNewSessionRequest.REJECTED_SILENT: /* fallthrough */
+        case IPNewSessionRequestImpl.ENDPOINTED: /* fallthrough */
+        case IPNewSessionRequestImpl.REJECTED: /* fallthrough */
+        case IPNewSessionRequestImpl.REJECTED_SILENT: /* fallthrough */
             break;
 
         default:
@@ -431,21 +432,21 @@ public abstract class NetcapHook implements Runnable
         boolean clientActionCompleted = true;
 
         switch ( state ) {
-        case NetcapIPNewSessionRequest.REQUESTED:
-        case NetcapIPNewSessionRequest.ENDPOINTED:
+        case IPNewSessionRequestImpl.REQUESTED:
+        case IPNewSessionRequestImpl.ENDPOINTED:
             if ( !clientComplete()) {
                 logger.info( "Unable to complete connection to client" );
-                state = NetcapIPNewSessionRequest.REJECTED;
+                state = IPNewSessionRequestImpl.REJECTED;
                 clientActionCompleted = false;
             }
             break;
 
-        case NetcapIPNewSessionRequest.REJECTED:
+        case IPNewSessionRequestImpl.REJECTED:
             logger.debug( "Rejecting session" );
             clientReject();
             break;
 
-        case NetcapIPNewSessionRequest.REJECTED_SILENT:
+        case IPNewSessionRequestImpl.REJECTED_SILENT:
             logger.debug( "Rejecting session silently" );
             clientRejectSilent();
             break;
@@ -462,7 +463,7 @@ public abstract class NetcapHook implements Runnable
         LinkedList<Relay> relayList = new LinkedList<Relay>();
 
         if ( sessionList.isEmpty() ) {
-            if ( state == NetcapIPNewSessionRequest.ENDPOINTED ) {
+            if ( state == IPNewSessionRequestImpl.ENDPOINTED ) {
                 throw new IllegalStateException( "Endpointed session without any nodes" );
             }
 
@@ -505,13 +506,13 @@ public abstract class NetcapHook implements Runnable
                 first = false;
             }
 
-            if ( state == NetcapIPNewSessionRequest.REQUESTED ) {
+            if ( state == IPNewSessionRequestImpl.REQUESTED ) {
                 serverSource = makeServerSource();
                 serverSink   = makeServerSink();
 
                 relayList.add( new Relay( prevOutgoingSQ, serverSink ));
                 relayList.add( new Relay( serverSource, prevIncomingSQ ));
-            } else if ( state == NetcapIPNewSessionRequest.ENDPOINTED ) {
+            } else if ( state == IPNewSessionRequestImpl.ENDPOINTED ) {
                 /* XXX Also have to close the socket queues if the
                  * session is endpointed */
             } else {
@@ -524,13 +525,13 @@ public abstract class NetcapHook implements Runnable
     }
 
     @SuppressWarnings("fallthrough")
-    protected void processSession( NetcapIPNewSessionRequest request, NodeSessionImpl session )
+    protected void processSession( IPNewSessionRequestImpl request, NodeSessionImpl session )
     {
         if ( logger.isDebugEnabled())
             logger.debug( "Processing session: with state: " + request.state() + " session: " + session );
 
         switch ( request.state()) {
-        case NetcapIPNewSessionRequest.RELEASED:
+        case IPNewSessionRequestImpl.RELEASED:
             if ( session == null ) {
                 /* Released sessions don't need a session, but for
                  * those that redirects may modify session
@@ -552,12 +553,12 @@ public abstract class NetcapHook implements Runnable
             sessionList.add( session );
             break;
 
-        case NetcapIPNewSessionRequest.ENDPOINTED:
+        case IPNewSessionRequestImpl.ENDPOINTED:
             /* Set the state to endpointed */
-            state = NetcapIPNewSessionRequest.ENDPOINTED;
+            state = IPNewSessionRequestImpl.ENDPOINTED;
 
             /* fallthrough */
-        case NetcapIPNewSessionRequest.REQUESTED:
+        case IPNewSessionRequestImpl.REQUESTED:
             if ( session == null ) {
                 throw new IllegalStateException( "Session required for this state: " + request.state());
             }
@@ -568,11 +569,11 @@ public abstract class NetcapHook implements Runnable
             sessionList.add( session );
             break;
 
-        case NetcapIPNewSessionRequest.REJECTED:
+        case IPNewSessionRequestImpl.REJECTED:
             rejectCode  = request.rejectCode();
 
             /* fallthrough */
-        case NetcapIPNewSessionRequest.REJECTED_SILENT:
+        case IPNewSessionRequestImpl.REJECTED_SILENT:
             state = request.state();
 
             /* Done if the session wants to be notified of complete */
@@ -619,7 +620,7 @@ public abstract class NetcapHook implements Runnable
         logger.debug( "vectorReset: " + state );
 
         /* No need to vector, the session wasn't even requested */
-        if ( state != NetcapIPNewSessionRequest.REQUESTED ) return true;
+        if ( state != IPNewSessionRequestImpl.REQUESTED ) return true;
 
         int size = sessionList.size();
         boolean isEndpointed = false;
@@ -671,7 +672,7 @@ public abstract class NetcapHook implements Runnable
 
     protected boolean alive()
     {
-        if ( state == NetcapIPNewSessionRequest.REQUESTED || state == NetcapIPNewSessionRequest.ENDPOINTED ) {
+        if ( state == IPNewSessionRequestImpl.REQUESTED || state == IPNewSessionRequestImpl.ENDPOINTED ) {
             return true;
         }
 

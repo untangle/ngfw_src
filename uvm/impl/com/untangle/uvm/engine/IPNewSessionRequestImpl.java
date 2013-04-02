@@ -1,7 +1,7 @@
 /**
- * $Id$
+ * $Id: IPNewSessionRequestImpl.java,v 1.00 2013/04/01 19:36:48 dmorris Exp $
  */
-package com.untangle.uvm.netcap;
+package com.untangle.uvm.engine;
 
 import java.net.InetAddress;
 
@@ -11,10 +11,9 @@ import com.untangle.jnetcap.Endpoints;
 import com.untangle.uvm.node.SessionEvent;
 import com.untangle.uvm.vnet.NodeSession;
 import com.untangle.uvm.vnet.IPNewSessionRequest;
-import com.untangle.uvm.engine.NodeSessionImpl;
-import com.untangle.uvm.engine.PipelineConnectorImpl;
+import com.untangle.uvm.netcap.SessionGlobalState;
 
-public abstract class NetcapIPNewSessionRequest implements IPNewSessionRequest
+public abstract class IPNewSessionRequestImpl implements IPNewSessionRequest
 {
     protected final PipelineConnectorImpl pipelineConnector;
     protected final SessionGlobalState sessionGlobalState;
@@ -26,17 +25,16 @@ public abstract class NetcapIPNewSessionRequest implements IPNewSessionRequest
     public static final byte REJECTED_SILENT = 101;
 
     // Codes for rejectReturnUnreachable() and for reset
-    static final byte NET_UNREACHABLE = 0;
-    static final byte HOST_UNREACHABLE = 1;
-    static final byte PROTOCOL_UNREACHABLE = 2;
-    static final byte PORT_UNREACHABLE = 3;
-    // static final byte DEST_NETWORK_UNKNOWN = 6;  // By RFC1812, should use NET_UNREACHABLE instead
-    static final byte DEST_HOST_UNKNOWN = 7;
-    // static final byte PROHIBITED_NETWORK = 9;    // By RFC1812, should use PROHIBITED instead
-    // static final byte PROHIBITED_HOST = 10;      // By RFC1812, should use PROHIBITED instead
-    static final byte PROHIBITED = 13;
-    // Only valid for TCP connections
-    static final byte TCP_REJECT_RESET = 64;
+    public static final byte NET_UNREACHABLE = 0;
+    public static final byte HOST_UNREACHABLE = 1;
+    public static final byte PROTOCOL_UNREACHABLE = 2;
+    public static final byte PORT_UNREACHABLE = 3;
+    //public  static final byte DEST_NETWORK_UNKNOWN = 6;  // By RFC1812, should use NET_UNREACHABLE instead
+    public static final byte DEST_HOST_UNKNOWN = 7;
+    //public  static final byte PROHIBITED_NETWORK = 9;    // By RFC1812, should use PROHIBITED instead
+    //public  static final byte PROHIBITED_HOST = 10;      // By RFC1812, should use PROHIBITED instead
+    public static final byte PROHIBITED = 13;
+    public static final byte TCP_REJECT_RESET = 64; // Only valid for TCP connections
 
     protected InetAddress clientAddr;
     protected int clientPort;
@@ -63,7 +61,7 @@ public abstract class NetcapIPNewSessionRequest implements IPNewSessionRequest
     /* Two ways to create an IPNewSessionRequest:
      * A. Pass in the netcap session and get the parameters from there.
      */
-    public NetcapIPNewSessionRequest( SessionGlobalState sessionGlobalState, PipelineConnectorImpl connector, SessionEvent pe )
+    public IPNewSessionRequestImpl( SessionGlobalState sessionGlobalState, PipelineConnectorImpl connector, SessionEvent pe )
     {
         this.sessionGlobalState = sessionGlobalState;
         this.pipelineConnector  = connector;
@@ -85,16 +83,16 @@ public abstract class NetcapIPNewSessionRequest implements IPNewSessionRequest
         serverAddr = server.host();
         serverPort = server.port();
 
-        natFromHost = sessionGlobalState.netcapSession.natInfo.fromHost;
-        natFromPort = sessionGlobalState.netcapSession.natInfo.fromPort;
-        natToHost = sessionGlobalState.netcapSession.natInfo.toHost;
-        natToPort = sessionGlobalState.netcapSession.natInfo.toPort;
+        natFromHost = sessionGlobalState.netcapSession().natInfo.fromHost;
+        natFromPort = sessionGlobalState.netcapSession().natInfo.fromPort;
+        natToHost = sessionGlobalState.netcapSession().natInfo.toHost;
+        natToPort = sessionGlobalState.netcapSession().natInfo.toPort;
     }
 
     /* Two ways to create an IPNewSessionRequest:
      * B. Pass in the previous request and get the parameters from there
      */
-    public NetcapIPNewSessionRequest( NodeSession session, PipelineConnectorImpl connector, SessionEvent pe, SessionGlobalState sessionGlobalState)
+    public IPNewSessionRequestImpl( NodeSession session, PipelineConnectorImpl connector, SessionEvent pe, SessionGlobalState sessionGlobalState)
     {
         this.sessionGlobalState = ((NodeSessionImpl)session).sessionGlobalState();
         this.pipelineConnector  = connector;
@@ -108,10 +106,10 @@ public abstract class NetcapIPNewSessionRequest implements IPNewSessionRequest
         serverPort = session.getServerPort();
         serverIntf = session.getServerIntf();
 
-        natFromHost = sessionGlobalState.netcapSession.natInfo.fromHost;
-        natFromPort = sessionGlobalState.netcapSession.natInfo.fromPort;
-        natToHost = sessionGlobalState.netcapSession.natInfo.toHost;
-        natToPort = sessionGlobalState.netcapSession.natInfo.toPort;
+        natFromHost = sessionGlobalState.netcapSession().natInfo.fromHost;
+        natFromPort = sessionGlobalState.netcapSession().natInfo.fromPort;
+        natToHost = sessionGlobalState.netcapSession().natInfo.toHost;
+        natToPort = sessionGlobalState.netcapSession().natInfo.toPort;
 
         this.sessionEvent = pe;
     }
@@ -151,7 +149,7 @@ public abstract class NetcapIPNewSessionRequest implements IPNewSessionRequest
      */
     public long c2tBytes()
     {
-        return sessionGlobalState.clientSideListener().rxBytes;
+        return sessionGlobalState.clientSideListener().getRxBytes();
     }
 
     /**
@@ -159,7 +157,7 @@ public abstract class NetcapIPNewSessionRequest implements IPNewSessionRequest
      */
     public long t2sBytes()
     {
-        return sessionGlobalState.serverSideListener().txBytes;
+        return sessionGlobalState.serverSideListener().getTxBytes();
     }
 
     /**
@@ -167,7 +165,7 @@ public abstract class NetcapIPNewSessionRequest implements IPNewSessionRequest
      */
     public long s2tBytes()
     {
-        return sessionGlobalState.serverSideListener().rxBytes;
+        return sessionGlobalState.serverSideListener().getRxBytes();
     }
     
     /**
@@ -175,7 +173,7 @@ public abstract class NetcapIPNewSessionRequest implements IPNewSessionRequest
      */
     public long t2cBytes()
     {
-        return sessionGlobalState.clientSideListener().rxBytes;
+        return sessionGlobalState.clientSideListener().getTxBytes();
     }
 
     /**
@@ -183,7 +181,7 @@ public abstract class NetcapIPNewSessionRequest implements IPNewSessionRequest
      */
     public long c2tChunks()
     {
-        return sessionGlobalState.clientSideListener().rxChunks;
+        return sessionGlobalState.clientSideListener().getRxChunks();
     }
 
     /**
@@ -191,7 +189,7 @@ public abstract class NetcapIPNewSessionRequest implements IPNewSessionRequest
      */
     public long t2sChunks()
     {
-        return sessionGlobalState.serverSideListener().txChunks;
+        return sessionGlobalState.serverSideListener().getTxChunks();
     }
 
     /**
@@ -199,7 +197,7 @@ public abstract class NetcapIPNewSessionRequest implements IPNewSessionRequest
      */
     public long s2tChunks()
     {
-        return sessionGlobalState.serverSideListener().rxChunks;
+        return sessionGlobalState.serverSideListener().getRxChunks();
     }
     
     /**
@@ -207,7 +205,7 @@ public abstract class NetcapIPNewSessionRequest implements IPNewSessionRequest
      */
     public long t2cChunks()
     {
-        return sessionGlobalState.clientSideListener().rxChunks;
+        return sessionGlobalState.clientSideListener().getRxChunks();
     }
     
     public short getProtocol()

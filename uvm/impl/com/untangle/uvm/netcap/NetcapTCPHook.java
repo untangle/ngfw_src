@@ -19,6 +19,8 @@ import com.untangle.uvm.node.SessionEvent;
 import com.untangle.uvm.vnet.NodeTCPSession;
 import com.untangle.uvm.engine.NodeTCPSessionImpl;
 import com.untangle.uvm.engine.PipelineConnectorImpl;
+import com.untangle.uvm.engine.IPNewSessionRequestImpl;
+import com.untangle.uvm.engine.TCPNewSessionRequestImpl;
 
 public class NetcapTCPHook implements NetcapCallback
 {
@@ -164,16 +166,16 @@ public class NetcapTCPHook implements NetcapCallback
             if ( logger.isDebugEnabled()) logger.debug( "TCP - Rejecting client" );
 
             switch( rejectCode ) {
-            case NetcapIPNewSessionRequest.TCP_REJECT_RESET:
+            case IPNewSessionRequestImpl.TCP_REJECT_RESET:
                 netcapTCPSession.clientReset();
                 break;
 
-            case NetcapIPNewSessionRequest.NET_UNREACHABLE:
-            case NetcapIPNewSessionRequest.HOST_UNREACHABLE:
-            case NetcapIPNewSessionRequest.PROTOCOL_UNREACHABLE:
-            case NetcapIPNewSessionRequest.PORT_UNREACHABLE:
-            case NetcapIPNewSessionRequest.DEST_HOST_UNKNOWN:
-            case NetcapIPNewSessionRequest.PROHIBITED:
+            case IPNewSessionRequestImpl.NET_UNREACHABLE:
+            case IPNewSessionRequestImpl.HOST_UNREACHABLE:
+            case IPNewSessionRequestImpl.PROTOCOL_UNREACHABLE:
+            case IPNewSessionRequestImpl.PORT_UNREACHABLE:
+            case IPNewSessionRequestImpl.DEST_HOST_UNKNOWN:
+            case IPNewSessionRequestImpl.PROHIBITED:
                 netcapTCPSession.clientSendIcmpDestUnreach((byte)rejectCode );
                 break;
 
@@ -224,12 +226,12 @@ public class NetcapTCPHook implements NetcapCallback
 
         protected void newSessionRequest( PipelineConnectorImpl agent, Iterator<?> iter, SessionEvent pe )
         {
-            NetcapTCPNewSessionRequest request;
+            TCPNewSessionRequestImpl request;
 
             if ( prevSession == null ) {
-                request = new NetcapTCPNewSessionRequest( sessionGlobalState, agent, pe );
+                request = new TCPNewSessionRequestImpl( sessionGlobalState, agent, pe );
             } else {
-                request = new NetcapTCPNewSessionRequest( prevSession, agent, pe, sessionGlobalState );
+                request = new TCPNewSessionRequestImpl( prevSession, agent, pe, sessionGlobalState );
             }
 
             // newSession() returns null when rejecting the session
@@ -244,8 +246,8 @@ public class NetcapTCPHook implements NetcapCallback
 	    
             if ( iter.hasNext()) {
             	/* Advance the previous session if the node requested or released the session */
-            	if (( request.state() == NetcapIPNewSessionRequest.REQUESTED ) ||
-            			( request.state() == NetcapIPNewSessionRequest.RELEASED && session != null )) {
+            	if (( request.state() == IPNewSessionRequestImpl.REQUESTED ) ||
+            			( request.state() == IPNewSessionRequestImpl.RELEASED && session != null )) {
             		prevSession = session;
             	}
             } else {

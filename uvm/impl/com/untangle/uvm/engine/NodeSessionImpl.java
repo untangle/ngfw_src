@@ -20,7 +20,6 @@ import com.untangle.uvm.vnet.NodeSession;
 import com.untangle.uvm.node.SessionEvent;
 import com.untangle.uvm.node.Node;
 import com.untangle.uvm.node.NodeSettings;
-import com.untangle.uvm.netcap.NetcapIPNewSessionRequest;
 import com.untangle.uvm.netcap.SessionGlobalState;
 import com.untangle.uvm.vnet.NodeSessionStats;
 import com.untangle.uvm.vnet.event.IPStreamer;
@@ -86,12 +85,12 @@ public abstract class NodeSessionImpl implements NodeSession
 
     protected volatile Object attachment = null;
 
-    protected NodeSessionImpl( Dispatcher dispatcher, SessionEvent sessionEvent, NetcapIPNewSessionRequest request )
+    protected NodeSessionImpl( Dispatcher dispatcher, SessionEvent sessionEvent, IPNewSessionRequestImpl request )
     {
         this.dispatcher = dispatcher;
         this.pipelineConnector = dispatcher.pipelineConnector();
         this.sessionEvent = sessionEvent;
-        boolean isVectored = (request.state() == NetcapIPNewSessionRequest.REQUESTED || request.state() == NetcapIPNewSessionRequest.ENDPOINTED);
+        boolean isVectored = (request.state() == IPNewSessionRequestImpl.REQUESTED || request.state() == IPNewSessionRequestImpl.ENDPOINTED);
         
         sessionGlobalState        = request.sessionGlobalState();
         pipelineConnector         = request.pipelineConnector();

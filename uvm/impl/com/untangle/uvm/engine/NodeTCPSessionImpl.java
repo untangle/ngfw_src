@@ -12,7 +12,6 @@ import com.untangle.jvector.OutgoingSocketQueue;
 import com.untangle.jvector.ResetCrumb;
 import com.untangle.jvector.ShutdownCrumb;
 import com.untangle.uvm.UvmContextFactory;
-import com.untangle.uvm.netcap.NetcapIPNewSessionRequest;
 import com.untangle.uvm.node.SessionEvent;
 import com.untangle.uvm.util.MetaEnv;
 import com.untangle.uvm.vnet.NodeSessionStats;
@@ -42,7 +41,7 @@ public class NodeTCPSessionImpl extends NodeSessionImpl implements NodeTCPSessio
     protected boolean[] lineBuffering = new boolean[] { false, false };
     protected ByteBuffer[] readBuf = new ByteBuffer[] { null, null };
 
-    protected NodeTCPSessionImpl( Dispatcher disp, SessionEvent sessionEvent, int clientReadBufferSize, int serverReadBufferSize, NetcapIPNewSessionRequest request )
+    protected NodeTCPSessionImpl( Dispatcher disp, SessionEvent sessionEvent, int clientReadBufferSize, int serverReadBufferSize, IPNewSessionRequestImpl request )
     {
         super( disp, sessionEvent, request );
 

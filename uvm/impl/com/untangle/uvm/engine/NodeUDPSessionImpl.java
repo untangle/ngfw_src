@@ -14,7 +14,6 @@ import com.untangle.jvector.ShutdownCrumb;
 import com.untangle.jvector.UDPPacketCrumb;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.node.SessionEvent;
-import com.untangle.uvm.netcap.NetcapUDPNewSessionRequest;
 import com.untangle.uvm.util.MetaEnv;
 import com.untangle.uvm.vnet.IPPacketHeader;
 import com.untangle.uvm.vnet.NodeSessionStats;
@@ -39,7 +38,7 @@ public class NodeUDPSessionImpl extends NodeSessionImpl implements NodeUDPSessio
     
     private final String logPrefix;
     
-    protected NodeUDPSessionImpl(Dispatcher disp, SessionEvent sessionEvent, int clientMaxPacketSize, int serverMaxPacketSize, NetcapUDPNewSessionRequest request )
+    protected NodeUDPSessionImpl(Dispatcher disp, SessionEvent sessionEvent, int clientMaxPacketSize, int serverMaxPacketSize, UDPNewSessionRequestImpl request )
     {
         super(disp, sessionEvent, request );
 

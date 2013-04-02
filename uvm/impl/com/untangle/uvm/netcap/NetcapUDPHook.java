@@ -19,6 +19,8 @@ import com.untangle.uvm.node.SessionEvent;
 import com.untangle.uvm.vnet.NodeUDPSession;
 import com.untangle.uvm.engine.NodeUDPSessionImpl;
 import com.untangle.uvm.engine.PipelineConnectorImpl;
+import com.untangle.uvm.engine.IPNewSessionRequestImpl;
+import com.untangle.uvm.engine.UDPNewSessionRequestImpl;
 
 public class NetcapUDPHook implements NetcapCallback
 {
@@ -133,7 +135,7 @@ public class NetcapUDPHook implements NetcapCallback
 
             if ( !netcapUDPSession.merge( serverTraffic, intf )) {
                 /* Merged out and indicate that the session was rejected */
-                state = NetcapIPNewSessionRequest.REJECTED;
+                state = IPNewSessionRequestImpl.REJECTED;
                 return false;
             }
 
@@ -197,12 +199,12 @@ public class NetcapUDPHook implements NetcapCallback
 
         protected void newSessionRequest( PipelineConnectorImpl agent, Iterator<?> iter, SessionEvent pe )
         {
-            NetcapUDPNewSessionRequest request;
+            UDPNewSessionRequestImpl request;
 
             if ( prevSession == null ) {
-                request = new NetcapUDPNewSessionRequest( sessionGlobalState, agent, pe );
+                request = new UDPNewSessionRequestImpl( sessionGlobalState, agent, pe );
             } else {
-                request = new NetcapUDPNewSessionRequest( prevSession, agent, pe, sessionGlobalState );
+                request = new UDPNewSessionRequestImpl( prevSession, agent, pe, sessionGlobalState );
             }
 
             NodeUDPSession session = agent.getDispatcher().newSession( request );
@@ -216,8 +218,8 @@ public class NetcapUDPHook implements NetcapCallback
 
             if ( iter.hasNext()) {
                 /* Only advance the previous session if the node requested the session */
-                if (( request.state() == NetcapIPNewSessionRequest.REQUESTED ) ||
-                    ( request.state() == NetcapIPNewSessionRequest.RELEASED && session != null )) {
+                if (( request.state() == IPNewSessionRequestImpl.REQUESTED ) ||
+                    ( request.state() == IPNewSessionRequestImpl.RELEASED && session != null )) {
                     logger.debug( "Passing new session data client: " + session.getClientAddr());
                     prevSession = session;
                 } else {

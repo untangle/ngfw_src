@@ -1,18 +1,18 @@
 /**
- * $Id$
+ * $Id: TCPNewSessionRequestImpl.java -1   $
  */
-package com.untangle.uvm.netcap;
+package com.untangle.uvm.engine;
 
 import com.untangle.uvm.node.SessionEvent;
 import com.untangle.uvm.vnet.NodeTCPSession;
 import com.untangle.uvm.vnet.TCPNewSessionRequest;
-import com.untangle.uvm.engine.PipelineConnectorImpl;
+import com.untangle.uvm.netcap.SessionGlobalState;
 
-public class NetcapTCPNewSessionRequest extends NetcapIPNewSessionRequest implements TCPNewSessionRequest
+public class TCPNewSessionRequestImpl extends IPNewSessionRequestImpl implements TCPNewSessionRequest
 {
     final boolean acked;
 
-    public NetcapTCPNewSessionRequest( SessionGlobalState sessionGlobalState, PipelineConnectorImpl connector, SessionEvent pe )
+    public TCPNewSessionRequestImpl( SessionGlobalState sessionGlobalState, PipelineConnectorImpl connector, SessionEvent pe )
     {
         super( sessionGlobalState, connector, pe );
 
@@ -20,7 +20,7 @@ public class NetcapTCPNewSessionRequest extends NetcapIPNewSessionRequest implem
         acked = sessionGlobalState.netcapTCPSession().acked();
     }
 
-    public NetcapTCPNewSessionRequest( NodeTCPSession session, PipelineConnectorImpl connector, SessionEvent pe, SessionGlobalState sessionGlobalState)
+    public TCPNewSessionRequestImpl( NodeTCPSession session, PipelineConnectorImpl connector, SessionEvent pe, SessionGlobalState sessionGlobalState)
     {
         super( session, connector, pe, sessionGlobalState);
 

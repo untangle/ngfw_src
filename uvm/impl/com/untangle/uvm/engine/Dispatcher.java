@@ -14,9 +14,6 @@ import org.apache.log4j.Logger;
 import org.apache.log4j.MDC;
 
 import com.untangle.uvm.UvmContextFactory;
-import com.untangle.uvm.netcap.NetcapTCPNewSessionRequest;
-import com.untangle.uvm.netcap.NetcapUDPNewSessionRequest;
-import com.untangle.uvm.netcap.NetcapIPNewSessionRequest;
 import com.untangle.uvm.node.Node;
 import com.untangle.uvm.node.NodeProperties;
 import com.untangle.uvm.node.NodeManager;
@@ -145,7 +142,7 @@ public class Dispatcher
         liveSessions.put(sess, sess);
     }
 
-    public NodeTCPSession newSession( NetcapTCPNewSessionRequest request )
+    public NodeTCPSession newSession( TCPNewSessionRequestImpl request )
     {
         try {
             UvmContextImpl.getInstance().loggingManager().setLoggingNode(node.getNodeSettings().getId());
@@ -157,7 +154,7 @@ public class Dispatcher
         }
     }
  
-    public NodeUDPSession newSession( NetcapUDPNewSessionRequest request )
+    public NodeUDPSession newSession( UDPNewSessionRequestImpl request )
     {
         try {
             UvmContextImpl.getInstance().loggingManager().setLoggingNode(node.getNodeSettings().getId());
@@ -484,7 +481,7 @@ public class Dispatcher
             sessionEventListener.handleTimer(event);
     }
 
-    private NodeTCPSession newSessionInternal( NetcapTCPNewSessionRequest request )
+    private NodeTCPSession newSessionInternal( TCPNewSessionRequestImpl request )
     {
         long sessionId = -1L;
 
@@ -501,17 +498,17 @@ public class Dispatcher
 
             // Check the session only if it was not rejected.
             switch (request.state()) {
-            case NetcapIPNewSessionRequest.REJECTED:
-            case NetcapIPNewSessionRequest.REJECTED_SILENT:
+            case IPNewSessionRequestImpl.REJECTED:
+            case IPNewSessionRequestImpl.REJECTED_SILENT:
                 logger.debug("rejecting");
                 return null;
 
-            case NetcapIPNewSessionRequest.RELEASED:
+            case IPNewSessionRequestImpl.RELEASED:
                 logger.debug("releasing");
                 return null;
 
-            case NetcapIPNewSessionRequest.REQUESTED:
-            case NetcapIPNewSessionRequest.ENDPOINTED:
+            case IPNewSessionRequestImpl.REQUESTED:
+            case IPNewSessionRequestImpl.ENDPOINTED:
             default:
                 break;
             }
@@ -526,7 +523,7 @@ public class Dispatcher
                 logger.info("New TCP session " +
                             session.getClientAddr().getHostAddress() + ":" + session.getClientPort() + " -> " +
                             session.getServerAddr().getHostAddress() + ":" + session.getServerPort());
-            if (request.state() == NetcapIPNewSessionRequest.RELEASED) {
+            if (request.state() == IPNewSessionRequestImpl.RELEASED) {
                 session.release();
             } else {
                 TCPSessionEvent tevent = new TCPSessionEvent(pipelineConnector, session);
@@ -545,7 +542,7 @@ public class Dispatcher
         }
     }
 
-    private NodeUDPSession newSessionInternal( NetcapUDPNewSessionRequest request )
+    private NodeUDPSession newSessionInternal( UDPNewSessionRequestImpl request )
     {
         long sessionId = -1;
 
@@ -562,17 +559,17 @@ public class Dispatcher
 
             // Check the session only if it was not rejected.
             switch (request.state()) {
-            case NetcapIPNewSessionRequest.REJECTED:
-            case NetcapIPNewSessionRequest.REJECTED_SILENT:
+            case IPNewSessionRequestImpl.REJECTED:
+            case IPNewSessionRequestImpl.REJECTED_SILENT:
                 logger.debug("rejecting");
                 return null;
 
-            case NetcapIPNewSessionRequest.RELEASED:
+            case IPNewSessionRequestImpl.RELEASED:
                 logger.debug("releasing");
                 return null;
 
-            case NetcapIPNewSessionRequest.REQUESTED:
-            case NetcapIPNewSessionRequest.ENDPOINTED:
+            case IPNewSessionRequestImpl.REQUESTED:
+            case IPNewSessionRequestImpl.ENDPOINTED:
             default:
                 break;
             }
@@ -588,7 +585,7 @@ public class Dispatcher
                 logger.info("New UDP session " +
                             session.getClientAddr().getHostAddress() + ":" + session.getClientPort() + " -> " +
                             session.getServerAddr().getHostAddress() + ":" + session.getServerPort());
-            if (request.state() == NetcapIPNewSessionRequest.RELEASED) {
+            if (request.state() == IPNewSessionRequestImpl.RELEASED) {
                 session.release();
             } else {
                 UDPSessionEvent tevent = new UDPSessionEvent(pipelineConnector, session);
