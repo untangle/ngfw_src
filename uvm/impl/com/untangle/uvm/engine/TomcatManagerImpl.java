@@ -11,6 +11,8 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.Properties;
 
+import javax.naming.NamingException;
+import javax.naming.directory.Attributes;
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 
@@ -26,6 +28,8 @@ import org.apache.catalina.core.StandardContext;
 import org.apache.catalina.core.StandardHost;
 import org.apache.catalina.session.StandardManager;
 import org.apache.catalina.startup.Embedded;
+import org.apache.naming.resources.FileDirContext;
+import org.apache.naming.resources.ResourceAttributes;
 import org.apache.log4j.Logger;
 
 import com.untangle.uvm.UvmContextFactory;
@@ -329,7 +333,6 @@ public class TomcatManagerImpl implements TomcatManager
             StandardManager mgr = new StandardManager();
             mgr.setPathname(null); /* disable session persistence */
             ctx.setManager(mgr);
-
             ctx.setResources(new StrongETagDirContext());
 
             /* This should be the first valve */
@@ -412,5 +415,23 @@ public class TomcatManagerImpl implements TomcatManager
         }
 
         return p.getProperty("worker.uvmWorker.secret");
+    }
+
+    @SuppressWarnings("unchecked")
+    private class StrongETagDirContext extends FileDirContext
+    {
+	
+        @Override
+        public Attributes getAttributes(String name, String[] attrIds) throws NamingException
+        {
+            ResourceAttributes r = (ResourceAttributes) super.getAttributes(name, attrIds);
+            long cl = r.getContentLength();
+            long lm = r.getLastModified();
+
+            String strongETag = String.format("\"%s-%s\"", cl, lm);
+            r.setETag(strongETag);
+		
+            return r;
+        }
     }
 }
