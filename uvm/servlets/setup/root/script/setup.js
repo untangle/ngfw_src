@@ -293,6 +293,8 @@ Ext.define('Ung.SetupWizard.Interfaces', {
                     listeners: {
                         "change": {
                             fn: Ext.bind(function(elem, newValue, oldValue) {
+                                //FIXME: this is not working as expected, many times the rows are not switched correctly, because this event is not triggered.
+                                //Work in progress
                                 var sourceRecord = null;
                                 var targetRecord = null;
                                 this.interfaceStore.each( function( currentRow ) {
@@ -306,7 +308,7 @@ Ext.define('Ung.SetupWizard.Interfaces', {
                                     }
                                 });
                                 if(sourceRecord==null || targetRecord==null || sourceRecord==targetRecord) {
-                                    console.log(sourceRecord, targetRecord);
+                                    console.log(sourceRecord, targetRecord, newValue, oldValue);
                                     return false;
                                 }
                                 var soruceData = Ext.decode(Ext.encode(sourceRecord.data));
@@ -419,8 +421,6 @@ Ext.define('Ung.SetupWizard.Interfaces', {
             }]
         });
 
-        this.isDragAndDropInitialized = false;
-
         this.card = {
             title: i18n._( "Network Cards" ),
             panel: panel,
@@ -428,50 +428,13 @@ Ext.define('Ung.SetupWizard.Interfaces', {
 
                 this.refreshInterfaces();
                 
-                if ( this.isDragAndDropInitialized == false ) {
-                    this.initializeDragAndDrop();
-                }
-                
-
                 this.enableAutoRefresh = true;
-                this.autoRefreshInterfaces();
+                Ext.defer(this.autoRefreshInterfaces,3000,this);
                 
                 complete();
             }, this ),
             onNext: Ext.bind(this.saveInterfaceList, this )
         };
-    },
-
-    initializeDragAndDrop: function() {
-        rpc.networkManager.getNetworkSettings( Ext.bind(function( result, exception ) {
-            if(exception != null) {
-                Ext.MessageBox.alert(exception);
-                return;
-            }
-            this.networkSettings=result;
-            var interfacesList=result.interfaces.list;
-            var deviceStatus=rpc.networkManager.getDeviceStatus(Ext.bind(function( result, exception ) {
-                if(exception != null) {
-                    Ext.MessageBox.alert(exception);
-                    return;
-                }
-                var deviceStatusList = result.list;
-                var deviceStatusMap = {};
-                for(var i=0; i<deviceStatusList.length; i++) {
-                    deviceStatusMap[deviceStatusList[i]["deviceName"]] = deviceStatusList[i];
-                }
-                
-                for(var i=0; i<interfacesList.length; i++) {
-                    var intf=interfacesList[i];
-                    var deviceStatus = deviceStatusMap[intf.physicalDev];
-                    Ext.applyIf(intf, deviceStatus);
-                }
-
-                this.interfaceStore.loadData( interfacesList );
-                this.deviceStore.loadData( interfacesList );
-                this.isDragAndDropInitialized = true;
-            }, this));
-        }, this));
     },
 
     onDrop: function(node,data,overModel,dropPosition,dropFunction, options) {
@@ -535,7 +498,6 @@ Ext.define('Ung.SetupWizard.Interfaces', {
     },
 */
     saveInterfaceList: function( handler ) {
-
         // disable auto refresh
         this.enableAutoRefresh = false;
 
@@ -570,67 +532,96 @@ Ext.define('Ung.SetupWizard.Interfaces', {
         Ext.MessageBox.hide();
         handler();
     },
-
-    autoRefreshInterfacesCallback: function( result, exception ) {
-        if(exception != null) {
-            Ext.MessageBox.alert(exception);
-            return;
+    createRecordsMap : function(recList, property) {
+        var map = {};
+        for(var i=0; i<recList.length; i++) {
+            map[recList[i][property]] = recList[i];
         }
-
-        if (this.enableAutoRefresh) {
-            Ext.defer(this.autoRefreshInterfaces,3000,this);
-            this.completeRefreshInterfaces( result, exception );
-        }
+        return map;
     },
-    
     autoRefreshInterfaces: function() {
-        //rpc.networkManager.updateLinkStatus(); //FIXME
-        rpc.networkManager.getNetworkSettings( Ext.bind(this.autoRefreshInterfacesCallback, this ) );
+        rpc.networkManager.getNetworkSettings( Ext.bind(function( result, exception ) {
+            if ( exception ) {
+                Ext.MessageBox.show({
+                    title:i18n._( "Unable to refresh the interfaces." ),
+                    msg:exception.message,
+                    width:300,
+                    buttons:Ext.MessageBox.OK,
+                    icon:Ext.MessageBox.INFO
+                });
+                return;
+            }
+            var interfaceList=result.interfaces.list;
+            if ( interfaceList.length != this.interfaceStore.getCount()) {
+                Ext.MessageBox.alert( i18n._( "New interfaces" ), i18n._ ( "There are new interfaces, please restart the wizard." ), "" );
+                return;
+            }
+            
+            var deviceStatus=rpc.networkManager.getDeviceStatus(Ext.bind(function( result, exception ) {
+                if(exception != null) {
+                    Ext.MessageBox.alert(exception);
+                    return;
+                }
+                Ext.MessageBox.hide();
+                //result.list[1].connected="DISCONNECTED"; //TODO: comment test line
+                var deviceStatusMap = this.createRecordsMap(result.list, "deviceName");
+                
+                //update device connected status
+                this.interfaceStore.each( function(currentRow) {
+                    var deviceStatus= deviceStatusMap[currentRow.get("physicalDev")];
+                    if(deviceStatus!=null) {
+                        currentRow.set("connected", deviceStatus.connected);
+                    }
+                });
+                
+                if (this.enableAutoRefresh) {
+                    Ext.defer(this.autoRefreshInterfaces,3000,this);
+                }
+            }, this));
+        }, this));
     },
     
     refreshInterfaces: function() {
         Ext.MessageBox.wait( i18n._( "Refreshing Network Interfaces" ), i18n._( "Please Wait" ));
-        //rpc.networkManager.updateLinkStatus(); //FIXME
-        rpc.networkManager.getNetworkSettings( Ext.bind(this.completeRefreshInterfaces,this ) );
-    },
+        rpc.networkManager.getNetworkSettings( Ext.bind(function( result, exception ) {
+            if ( exception ) {
+                Ext.MessageBox.show({
+                    title:i18n._( "Unable to refresh the interfaces." ),
+                    msg:exception.message,
+                    width:300,
+                    buttons:Ext.MessageBox.OK,
+                    icon:Ext.MessageBox.INFO
+                });
+                return;
+            }
+            this.networkSettings=result;
+            var interfaceList=result.interfaces.list;
+            var deviceStatus=rpc.networkManager.getDeviceStatus(Ext.bind(function( result, exception ) {
+                if(exception != null) {
+                    Ext.MessageBox.alert(exception);
+                    return;
+                }
+                Ext.MessageBox.hide();
+                //result.list[1].vendor="VendTest"; //TODO: comment test line
+                var deviceStatusMap = this.createRecordsMap(result.list, "deviceName");
+                
+                for(var i=0; i<interfaceList.length; i++) {
+                    var intf=interfaceList[i];
+                    var deviceStatus = deviceStatusMap[intf.physicalDev];
+                    Ext.applyIf(intf, deviceStatus);
+                }
 
-    completeRefreshInterfaces: function( result, exception ) {
-        if ( exception ) {
-            Ext.MessageBox.show({
-                title:i18n._( "Unable to refresh the interfaces." ),
-                msg:exception.message,
-                width:300,
-                buttons:Ext.MessageBox.OK,
-                icon:Ext.MessageBox.INFO
-            });
-            return;
-        }
-        this.networkSettings=result;
+                this.interfaceStore.loadData( interfaceList );
+                this.deviceStore.loadData( interfaceList );
 
-        // result is now a NetworkSettings
-        var interfaceList = result.interfaces;
-        if ( interfaceList.length < 2) {
-            Ext.MessageBox.alert( i18n._( "Missing interfaces" ), i18n._ ( "Untangle requires two or more network cards. Please reinstall with at least two network cards." ), "" );
-            return;
-        }
-/*        
-        var statusHash = {};
-        //TODO: This status array is brittle and should be refactored.
-        for ( var c = 0 ;c < interfaceList.length ; c++ ) {
-            var status = interfaceList[c][1];
-            statusHash[status[0]] = status;
-        }
+                if ( interfaceList.length < 2) {
+                    Ext.MessageBox.alert( i18n._( "Missing interfaces" ), i18n._ ( "Untangle requires two or more network cards. Please reinstall with at least two network cards." ), "" );
+                }
 
-        // This is designed to handle the case where the interfaces have been remapped.
-        this.interfaceStore.each( function( currentRow ) {
-            var status = currentRow.get( "status" );
-            currentRow.set( "status", statusHash[status[0]]);
-        });
-*/
-        if (Ext.MessageBox.rendered) {
-            Ext.MessageBox.hide();
-        }
+            }, this));
+        }, this));
     }
+
 });
 
 // Setup Wizard - Step 3 (Configure WAN)
