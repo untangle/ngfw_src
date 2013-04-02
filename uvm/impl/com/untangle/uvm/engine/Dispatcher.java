@@ -14,7 +14,6 @@ import org.apache.log4j.Logger;
 import org.apache.log4j.MDC;
 
 import com.untangle.uvm.UvmContextFactory;
-import com.untangle.uvm.netcap.PipelineAgent;
 import com.untangle.uvm.netcap.NetcapTCPNewSessionRequest;
 import com.untangle.uvm.netcap.NetcapUDPNewSessionRequest;
 import com.untangle.uvm.netcap.NetcapIPNewSessionRequest;
@@ -182,11 +181,10 @@ public class Dispatcher
 
         liveSessions.remove(sess);
 
-        PipelineAgent agent = pipelineConnector.getPipelineAgent();
-        if (agent == null) {
+        if (pipelineConnector == null) {
             logger.warn("attempt to remove session " + sess.id() + " when already destroyed");
         } else {
-            agent.removeSession((NodeSessionImpl)sess);
+            pipelineConnector.removeSession((NodeSessionImpl)sess);
         }
     }
 

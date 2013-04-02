@@ -21,7 +21,6 @@ import com.untangle.uvm.node.SessionEvent;
 import com.untangle.uvm.node.Node;
 import com.untangle.uvm.node.NodeSettings;
 import com.untangle.uvm.netcap.NetcapIPNewSessionRequest;
-import com.untangle.uvm.netcap.PipelineAgent;
 import com.untangle.uvm.netcap.SessionGlobalState;
 import com.untangle.uvm.vnet.NodeSessionStats;
 import com.untangle.uvm.vnet.event.IPStreamer;
@@ -74,8 +73,6 @@ public abstract class NodeSessionImpl implements NodeSession
     protected final IncomingSocketQueue serverIncomingSocketQueue;
     protected final OutgoingSocketQueue serverOutgoingSocketQueue;
 
-    protected final PipelineAgent pipelineAgent;
-
     protected final SessionGlobalState sessionGlobalState;
 
     protected boolean isServerShutdown = false;
@@ -97,7 +94,7 @@ public abstract class NodeSessionImpl implements NodeSession
         boolean isVectored = (request.state() == NetcapIPNewSessionRequest.REQUESTED || request.state() == NetcapIPNewSessionRequest.ENDPOINTED);
         
         sessionGlobalState        = request.sessionGlobalState();
-        pipelineAgent                = request.pipelineAgent();
+        pipelineConnector         = request.pipelineConnector();
 
         if ( isVectored ) {
             this.isVectored           = true;
@@ -137,7 +134,7 @@ public abstract class NodeSessionImpl implements NodeSession
         }
     }
 
-    public PipelineConnector pipelineConnector()
+    public PipelineConnectorImpl pipelineConnector()
     {
         return pipelineConnector;
     }
@@ -184,11 +181,6 @@ public abstract class NodeSessionImpl implements NodeSession
         return sessionGlobalState.id();
     }
     
-    public PipelineAgent pipelineAgent()
-    {
-        return pipelineAgent;
-    }
-
     public NetcapSession netcapSession()
     {
         return sessionGlobalState.netcapSession();
@@ -407,7 +399,7 @@ public abstract class NodeSessionImpl implements NodeSession
 
         /* Remove the session from the netcap agent table */
         if ( isClientShutdown && isServerShutdown ) {
-            pipelineAgent.removeSession( this );
+            pipelineConnector.removeSession( this );
         }
     }
 

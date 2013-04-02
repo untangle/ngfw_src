@@ -18,6 +18,7 @@ import com.untangle.jvector.UDPSource;
 import com.untangle.uvm.node.SessionEvent;
 import com.untangle.uvm.vnet.NodeUDPSession;
 import com.untangle.uvm.engine.NodeUDPSessionImpl;
+import com.untangle.uvm.engine.PipelineConnectorImpl;
 
 public class NetcapUDPHook implements NetcapCallback
 {
@@ -195,7 +196,7 @@ public class NetcapUDPHook implements NetcapCallback
             return new UDPSource( netcapUDPSession.serverMailbox(), serverSideListener );
         }
 
-        protected void newSessionRequest( PipelineAgent agent, Iterator<?> iter, SessionEvent pe )
+        protected void newSessionRequest( PipelineConnectorImpl agent, Iterator<?> iter, SessionEvent pe )
         {
             NetcapUDPNewSessionRequest request;
 
@@ -205,7 +206,7 @@ public class NetcapUDPHook implements NetcapCallback
                 request = new NetcapUDPNewSessionRequest( prevSession, agent, pe, sessionGlobalState );
             }
 
-            NodeUDPSession session = agent.getNewSessionEventListener().newSession( request );
+            NodeUDPSession session = agent.getDispatcher().newSession( request );
 
             try {
                 processSession( request, ((NodeUDPSessionImpl)session) );

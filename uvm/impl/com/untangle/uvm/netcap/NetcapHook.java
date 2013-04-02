@@ -26,6 +26,7 @@ import com.untangle.uvm.NetworkManager;
 import com.untangle.uvm.HostTable;
 import com.untangle.uvm.HostTableEntry;
 import com.untangle.uvm.engine.PipelineFoundryImpl;
+import com.untangle.uvm.engine.PipelineConnectorImpl;
 import com.untangle.uvm.engine.NodeSessionImpl;
 import com.untangle.uvm.node.SessionTuple;
 import com.untangle.uvm.node.SessionTupleImpl;
@@ -49,9 +50,9 @@ public abstract class NetcapHook implements Runnable
     protected static final int REJECT_CODE_SRV = -1;
 
     /**
-     * List of all of the nodes( PipelineAgents )
+     * List of all of the nodes( PipelineConnectorImpls )
      */
-    protected List<PipelineAgent> pipelineAgents;
+    protected List<PipelineConnectorImpl> pipelineConnectors;
     protected Long policyId = null;
 
     protected List<NodeSessionImpl> sessionList = new ArrayList<NodeSessionImpl>();
@@ -164,8 +165,8 @@ public abstract class NetcapHook implements Runnable
                 this.policyId = 1L; /* Default Policy */
             }
 
-            pipelineAgents = pipelineFoundry.weld( sessionGlobalState.id(), clientSide, policyId );
-            sessionGlobalState.setPipelineAgents(pipelineAgents);
+            pipelineConnectors = pipelineFoundry.weld( sessionGlobalState.id(), clientSide, policyId );
+            sessionGlobalState.setPipelineConnectorImpls(pipelineConnectors);
             
             /* Create the sessionEvent early so they can be available at request time. */
             sessionEvent =  new SessionEvent( );
@@ -364,8 +365,8 @@ public abstract class NetcapHook implements Runnable
      */
     private void initNodes( SessionEvent event )
     {
-        for ( Iterator<PipelineAgent> iter = pipelineAgents.iterator() ; iter.hasNext() ; ) {
-            PipelineAgent agent = iter.next();
+        for ( Iterator<PipelineConnectorImpl> iter = pipelineConnectors.iterator() ; iter.hasNext() ; ) {
+            PipelineConnectorImpl agent = iter.next();
 
             if ( state == NetcapIPNewSessionRequest.REQUESTED ) {
                 newSessionRequest( agent, iter, event );
@@ -496,7 +497,7 @@ public abstract class NetcapHook implements Runnable
                     logger.debug( "NetcapHook: buildPipeline - added session: " + session );
                 }
 
-                session.pipelineAgent().addSession( session );
+                session.pipelineConnector().addSession( session );
 
                 prevOutgoingSQ = session.serverOutgoingSocketQueue();
                 prevIncomingSQ = session.serverIncomingSocketQueue();
@@ -717,7 +718,7 @@ public abstract class NetcapHook implements Runnable
     protected abstract Source makeClientSource();
     protected abstract Source makeServerSource();
 
-    protected abstract void newSessionRequest( PipelineAgent agent, Iterator<?> iter, SessionEvent pe );
+    protected abstract void newSessionRequest( PipelineConnectorImpl agent, Iterator<?> iter, SessionEvent pe );
 
     protected abstract void raze();
 }

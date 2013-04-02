@@ -5,22 +5,23 @@ package com.untangle.uvm.netcap;
 
 import com.untangle.uvm.node.SessionEvent;
 import com.untangle.uvm.vnet.NodeTCPSession;
+import com.untangle.uvm.engine.PipelineConnectorImpl;
 
 public class NetcapTCPNewSessionRequest extends NetcapIPNewSessionRequest
 {
     final boolean acked;
 
-    public NetcapTCPNewSessionRequest( SessionGlobalState sessionGlobalState, PipelineAgent agent, SessionEvent pe )
+    public NetcapTCPNewSessionRequest( SessionGlobalState sessionGlobalState, PipelineConnectorImpl connector, SessionEvent pe )
     {
-        super( sessionGlobalState, agent, pe );
+        super( sessionGlobalState, connector, pe );
 
         /* Retrieve the value for acked */
         acked = sessionGlobalState.netcapTCPSession().acked();
     }
 
-    public NetcapTCPNewSessionRequest( NodeTCPSession session, PipelineAgent agent, SessionEvent pe, SessionGlobalState sessionGlobalState)
+    public NetcapTCPNewSessionRequest( NodeTCPSession session, PipelineConnectorImpl connector, SessionEvent pe, SessionGlobalState sessionGlobalState)
     {
-        super( session, agent, pe, sessionGlobalState);
+        super( session, connector, pe, sessionGlobalState);
 
         /* Retrieve the value for acked */
         acked = sessionGlobalState.netcapTCPSession().acked();

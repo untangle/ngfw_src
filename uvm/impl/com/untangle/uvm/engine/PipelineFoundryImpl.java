@@ -20,7 +20,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.apache.log4j.Logger;
 
 import com.untangle.uvm.UvmContextFactory;
-import com.untangle.uvm.netcap.PipelineAgent;
 import com.untangle.uvm.node.SessionTuple;
 import com.untangle.uvm.node.Node;
 import com.untangle.uvm.node.NodeSettings;
@@ -57,12 +56,12 @@ public class PipelineFoundryImpl implements PipelineFoundry
     /**
      * A global list of all current netcap connectors
      */
-    private final List<PipelineConnector> pipelineConnectors = new LinkedList<PipelineConnector>();
+    private final List<PipelineConnectorImpl> pipelineConnectors = new LinkedList<PipelineConnectorImpl>();
 
     /**
      * A global list of all current casings
      */
-    private final Map<PipelineConnector, PipelineConnector> casings = new HashMap<PipelineConnector, PipelineConnector>();
+    private final Map<PipelineConnectorImpl, PipelineConnectorImpl> casings = new HashMap<PipelineConnectorImpl, PipelineConnectorImpl>();
 
     /**
      * This stores a list of "hints" about connections and what fitting types they are
@@ -79,7 +78,7 @@ public class PipelineFoundryImpl implements PipelineFoundry
     /**
      * This stores a map from policyId to a cache for that policy storing the list of netcap connectors for various fitting types
      */
-    private static final Map<Long, Map<Fitting, List<PipelineConnector>>> pipelineFoundryCache = new HashMap<Long, Map<Fitting, List<PipelineConnector>>>();
+    private static final Map<Long, Map<Fitting, List<PipelineConnectorImpl>>> pipelineFoundryCache = new HashMap<Long, Map<Fitting, List<PipelineConnectorImpl>>>();
     
     /**
      * Private constructor to ensure singleton
@@ -98,10 +97,10 @@ public class PipelineFoundryImpl implements PipelineFoundry
      * "weld" is builds a list of all the interested pipelineAgents for a given session
      * It does so based on the given policyId and all the nodes/apps given subscriptions.
      */
-    public List<PipelineAgent> weld( Long sessionId, SessionTuple sessionTuple, Long policyId )
+    public List<PipelineConnectorImpl> weld( Long sessionId, SessionTuple sessionTuple, Long policyId )
     {
         Long t0 = System.nanoTime();
-        List<PipelineConnector> pipelineConnectorList = new LinkedList<PipelineConnector>();
+        List<PipelineConnectorImpl> pipelineConnectorList = new LinkedList<PipelineConnectorImpl>();
         List<Fitting> fittings = new LinkedList<Fitting>();
 
         printPipelineConnectorList( this.pipelineConnectors );
@@ -147,7 +146,7 @@ public class PipelineFoundryImpl implements PipelineFoundry
 
         long ct0 = System.nanoTime();
         for ( Fitting fitting : fittings ) {
-            List<PipelineConnector> acList = weldPipeline( sessionTuple, policyId, fitting );
+            List<PipelineConnectorImpl> acList = weldPipeline( sessionTuple, policyId, fitting );
             pipelineConnectorList.addAll( acList );
         }
         long ct1 = System.nanoTime();
@@ -158,10 +157,9 @@ public class PipelineFoundryImpl implements PipelineFoundry
          * We now iterate through each and remove ones that are not interested
          */
         long ft0 = System.nanoTime();
-        List<PipelineAgent> pipelineAgentList = new ArrayList<PipelineAgent>(pipelineConnectorList.size());
         String nodeList = "nodes: [";
-        for (Iterator<PipelineConnector> i = pipelineConnectorList.iterator(); i.hasNext();) {
-            PipelineConnector pipelineConnector = i.next();
+        for (Iterator<PipelineConnectorImpl> i = pipelineConnectorList.iterator(); i.hasNext();) {
+            PipelineConnectorImpl pipelineConnector = i.next();
             PipeSpec pipeSpec = pipelineConnector.getPipeSpec();
 
             /**
@@ -169,12 +167,9 @@ public class PipelineFoundryImpl implements PipelineFoundry
              */
             if ( ! pipeSpec.matches(sessionTuple) ) {
                 // remove from pipelineConnectorList
-                // dont add to pipelineAgentList
                 i.remove(); 
             } else {
                 // keep in pipelineConnectorList
-                // add to pipelineAgentList
-                pipelineAgentList.add( ((PipelineConnectorImpl) pipelineConnector).getPipelineAgent() );
                 nodeList += pipeSpec.getName() + " ";
             }
         }
@@ -195,7 +190,7 @@ public class PipelineFoundryImpl implements PipelineFoundry
                          " filter time: " + (ft1 - ft0));
         }
 
-        return pipelineAgentList;
+        return pipelineConnectorList;
     }
 
     /**
@@ -211,10 +206,10 @@ public class PipelineFoundryImpl implements PipelineFoundry
     }
 
     /**
-     * Create an PipelineConnector.
+     * Create an PipelineConnectorImpl.
      * This is here because PipelineConnectorImpl is in Impl and things in API need to create them. Should fix this
      */
-    public PipelineConnector createPipelineConnector(PipeSpec spec, SessionEventListener listener, Fitting input, Fitting output)
+    public PipelineConnectorImpl createPipelineConnector(PipeSpec spec, SessionEventListener listener, Fitting input, Fitting output)
     {
         return new PipelineConnectorImpl( spec, listener, input, output );
     }
@@ -224,7 +219,7 @@ public class PipelineFoundryImpl implements PipelineFoundry
      */
     public synchronized void registerPipelineConnector(PipelineConnector pipelineConnector)
     {
-        this.pipelineConnectors.add( pipelineConnector);
+        this.pipelineConnectors.add( ((PipelineConnectorImpl) pipelineConnector) );
         Collections.sort( this.pipelineConnectors, PipelineConnectorComparator.COMPARATOR );
         clearCache();
     }
@@ -234,21 +229,21 @@ public class PipelineFoundryImpl implements PipelineFoundry
      */
     public void deregisterPipelineConnector(PipelineConnector pipelineConnector)
     {
-        this.pipelineConnectors.remove( pipelineConnector );
+        this.pipelineConnectors.remove( (PipelineConnectorImpl) pipelineConnector );
         clearCache();
     }
-
+    
     /**
      * Register a Casing
      */
-    public void registerCasing(PipelineConnector insidePipelineConnector, PipelineConnector outsidePipelineConnector)
+    public void registerCasing( PipelineConnector insidePipelineConnector, PipelineConnector outsidePipelineConnector )
     {
         if (insidePipelineConnector.getPipeSpec() != outsidePipelineConnector.getPipeSpec()) {
             throw new IllegalArgumentException("casing constraint violated");
         }
 
         synchronized (this) {
-            casings.put(insidePipelineConnector, outsidePipelineConnector);
+            casings.put( ((PipelineConnectorImpl) insidePipelineConnector) , ((PipelineConnectorImpl) outsidePipelineConnector) );
             clearCache();
         }
     }
@@ -256,10 +251,10 @@ public class PipelineFoundryImpl implements PipelineFoundry
     /**
      * Unregister a Casing
      */
-    public void deregisterCasing(PipelineConnector insidePipelineConnector)
+    public void deregisterCasing( PipelineConnector insidePipelineConnector )
     {
         synchronized (this) {
-            casings.remove(insidePipelineConnector);
+            casings.remove( ((PipelineConnectorImpl)insidePipelineConnector) );
             clearCache();
         }
     }
@@ -296,14 +291,14 @@ public class PipelineFoundryImpl implements PipelineFoundry
      * This creates a full pipeline for the given policyId and fitting.
      * It also maintains a cache to memoize results
      */
-    private List<PipelineConnector> weldPipeline( SessionTuple sessionTuple, Long policyId, Fitting fitting )
+    private List<PipelineConnectorImpl> weldPipeline( SessionTuple sessionTuple, Long policyId, Fitting fitting )
     {
-        List<PipelineConnector> pipelineConnectorList = null;
+        List<PipelineConnectorImpl> pipelineConnectorList = null;
 
         /**
          * Check if there is a cache for this policy. First time is without the lock
          */
-        Map<Fitting, List<PipelineConnector>> fittingCache = pipelineFoundryCache.get(policyId);
+        Map<Fitting, List<PipelineConnectorImpl>> fittingCache = pipelineFoundryCache.get(policyId);
 
         /**
          * If there is a cache, check if the acList exists for this fitting
@@ -319,7 +314,7 @@ public class PipelineFoundryImpl implements PipelineFoundry
 
                 if ( fittingCache == null ) {
                     /* Cache doesn't exist, create a new empty cache for this policy */
-                    fittingCache = new HashMap<Fitting, List<PipelineConnector>>();
+                    fittingCache = new HashMap<Fitting, List<PipelineConnectorImpl>>();
                     pipelineFoundryCache.put( policyId, fittingCache );
                 } else {
                     /* Cache exists, get the acList for this fitting */
@@ -331,7 +326,7 @@ public class PipelineFoundryImpl implements PipelineFoundry
                  * We now need to calculate the correct result from scratch
                  */
                 if ( pipelineConnectorList == null ) {
-                    pipelineConnectorList = new LinkedList<PipelineConnector>();
+                    pipelineConnectorList = new LinkedList<PipelineConnectorImpl>();
 
                     addPipelineConnectors( pipelineConnectorList, fitting, policyId );
 
@@ -348,15 +343,15 @@ public class PipelineFoundryImpl implements PipelineFoundry
     /**
      * Add all netcap connectors to the list that match this policy and fitting type
      */
-    private boolean addPipelineConnectors( List<PipelineConnector> pipelineConnectorList, Fitting fitting, Long policyId )
+    private boolean addPipelineConnectors( List<PipelineConnectorImpl> pipelineConnectorList, Fitting fitting, Long policyId )
     {
         boolean added = false;
 
         /**
          * Iterate through all the netcapConnections and look for ones that fit the current fitting type
          */
-        for ( Iterator<PipelineConnector> i = pipelineConnectors.iterator(); i.hasNext() ; ) {
-            PipelineConnector pipelineConnector = i.next();
+        for ( Iterator<PipelineConnectorImpl> i = pipelineConnectors.iterator(); i.hasNext() ; ) {
+            PipelineConnectorImpl pipelineConnector = i.next();
 
             /**
              * If this pipelineConnector is the wrong fitting type, skip it
@@ -390,13 +385,13 @@ public class PipelineFoundryImpl implements PipelineFoundry
      * Also calls addPipelineConnectors recursively to add netcap connectors
      * for the "inner" fitting type
      */
-    private boolean addCasings( List<PipelineConnector> pipelineConnectorList, Fitting fitting, Long policyId )
+    private boolean addCasings( List<PipelineConnectorImpl> pipelineConnectorList, Fitting fitting, Long policyId )
     {
         boolean addedCasing = false;
 
-        for (Iterator<PipelineConnector> i = casings.keySet().iterator(); i.hasNext();) {
-            PipelineConnector insidePipelineConnector = i.next();
-            PipelineConnector outsidePipelineConnector = casings.get( insidePipelineConnector );
+        for (Iterator<PipelineConnectorImpl> i = casings.keySet().iterator(); i.hasNext();) {
+            PipelineConnectorImpl insidePipelineConnector = i.next();
+            PipelineConnectorImpl outsidePipelineConnector = casings.get( insidePipelineConnector );
             
             /**
              * If this insidePipelineConnector is the wrong fitting type, skip it
@@ -439,10 +434,10 @@ public class PipelineFoundryImpl implements PipelineFoundry
      * Remove "duplicate" nodes from a given pipeline of pipelineConnectors
      * For example, if there are two Web Filters in a given list, it will remove the one from the parent rack.
      */
-    private void removeDuplicates( Long policyId, List<PipelineConnector> acList )
+    private void removeDuplicates( Long policyId, List<PipelineConnectorImpl> acList )
     {
         Map<String, Integer> numParents = new HashMap<String, Integer>();
-        Map<PipelineConnector, Integer> fittingDistance = new HashMap<PipelineConnector, Integer>();
+        Map<PipelineConnectorImpl, Integer> fittingDistance = new HashMap<PipelineConnectorImpl, Integer>();
 
         List<String> enabledNodesInPolicy = new LinkedList<String>();
         List<Node> nodesInPolicy = UvmContextFactory.context().nodeManager().nodeInstances( policyId );
@@ -451,8 +446,8 @@ public class PipelineFoundryImpl implements PipelineFoundry
                 enabledNodesInPolicy.add(node.getNodeProperties().getName());
         }
         
-        for (Iterator<PipelineConnector> i = acList.iterator(); i.hasNext();) {
-            PipelineConnector pipelineConnector = i.next();
+        for (Iterator<PipelineConnectorImpl> i = acList.iterator(); i.hasNext();) {
+            PipelineConnectorImpl pipelineConnector = i.next();
 
             Long nodePolicyId = pipelineConnector.node().getNodeSettings().getPolicyId();
 
@@ -504,8 +499,8 @@ public class PipelineFoundryImpl implements PipelineFoundry
             }
         }
 
-        for (Iterator<PipelineConnector> i = acList.iterator(); i.hasNext();) {
-            PipelineConnector pipelineConnector = i.next();
+        for (Iterator<PipelineConnectorImpl> i = acList.iterator(); i.hasNext();) {
+            PipelineConnectorImpl pipelineConnector = i.next();
 
             Long nodePolicyId = pipelineConnector.node().getNodeSettings().getPolicyId();
 
@@ -620,12 +615,12 @@ public class PipelineFoundryImpl implements PipelineFoundry
     /**
      * Lookup a list of netcap connector for the given fittings & policyId
      */
-    private List<PipelineConnector> cacheLookup( Long policyId, Fitting fitting )
+    private List<PipelineConnectorImpl> cacheLookup( Long policyId, Fitting fitting )
     {
         /**
          * Check if there is a cache for this policy. First time is without the lock
          */
-        Map<Fitting, List<PipelineConnector>> fittingCache = pipelineFoundryCache.get(policyId);
+        Map<Fitting, List<PipelineConnectorImpl>> fittingCache = pipelineFoundryCache.get(policyId);
 
         if ( fittingCache == null )
             return null;
@@ -639,7 +634,7 @@ public class PipelineFoundryImpl implements PipelineFoundry
     /**
      * Utility function to print any list of pipelineConnectors
      */
-    private void printPipelineConnectorList( java.util.Collection<PipelineConnector> pipelineConnectors )
+    private void printPipelineConnectorList( java.util.Collection<PipelineConnectorImpl> pipelineConnectors )
     {
         if (logger.isDebugEnabled()) {
             String strList = "pipelineConnectors: [";
@@ -647,7 +642,7 @@ public class PipelineFoundryImpl implements PipelineFoundry
             if ( pipelineConnectors == null )
                 strList += " null";
             else {
-                for (PipelineConnector ac : pipelineConnectors) {
+                for (PipelineConnectorImpl ac : pipelineConnectors) {
                     strList += " " + ac;
                 }
             }

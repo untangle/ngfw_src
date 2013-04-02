@@ -7,6 +7,7 @@ import com.untangle.jnetcap.NetcapUDPSession;
 import com.untangle.uvm.node.SessionEvent;
 import com.untangle.uvm.vnet.NodeUDPSession;
 import com.untangle.uvm.engine.NodeUDPSessionImpl;
+import com.untangle.uvm.engine.PipelineConnectorImpl;
 
 public class NetcapUDPNewSessionRequest extends NetcapIPNewSessionRequest
 {
@@ -14,9 +15,9 @@ public class NetcapUDPNewSessionRequest extends NetcapIPNewSessionRequest
     protected byte tos;
     protected byte[] options;
 
-    public NetcapUDPNewSessionRequest( SessionGlobalState sessionGlobalState, PipelineAgent agent, SessionEvent pe )
+    public NetcapUDPNewSessionRequest( SessionGlobalState sessionGlobalState, PipelineConnectorImpl connector, SessionEvent pe )
     {
-        super( sessionGlobalState, agent, pe );
+        super( sessionGlobalState, connector, pe );
 
         NetcapUDPSession netcapUDPSession = sessionGlobalState.netcapUDPSession();
 
@@ -25,9 +26,9 @@ public class NetcapUDPNewSessionRequest extends NetcapIPNewSessionRequest
         this.tos    = netcapUDPSession.tos();
     }
     
-    public NetcapUDPNewSessionRequest( NodeUDPSession session, PipelineAgent agent, SessionEvent pe, SessionGlobalState sessionGlobalState)
+    public NetcapUDPNewSessionRequest( NodeUDPSession session, PipelineConnectorImpl connector, SessionEvent pe, SessionGlobalState sessionGlobalState)
     {
-        super( session, agent, pe, sessionGlobalState );
+        super( session, connector, pe, sessionGlobalState );
 
         /* Grab the TTL and TOS from the last request */
         this.ttl    = ((NodeUDPSessionImpl)session).ttl();

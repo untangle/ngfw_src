@@ -11,10 +11,11 @@ import com.untangle.jnetcap.Endpoints;
 import com.untangle.uvm.node.SessionEvent;
 import com.untangle.uvm.vnet.NodeSession;
 import com.untangle.uvm.engine.NodeSessionImpl;
+import com.untangle.uvm.engine.PipelineConnectorImpl;
 
 public abstract class NetcapIPNewSessionRequest
 {
-    protected final PipelineAgent    pipelineAgent;
+    protected final PipelineConnectorImpl pipelineConnector;
     protected final SessionGlobalState sessionGlobalState;
 
     public static final byte REQUESTED = 2;
@@ -59,10 +60,10 @@ public abstract class NetcapIPNewSessionRequest
     /* Two ways to create an IPNewSessionRequest:
      * A. Pass in the netcap session and get the parameters from there.
      */
-    public NetcapIPNewSessionRequest( SessionGlobalState sessionGlobalState, PipelineAgent agent, SessionEvent pe )
+    public NetcapIPNewSessionRequest( SessionGlobalState sessionGlobalState, PipelineConnectorImpl connector, SessionEvent pe )
     {
         this.sessionGlobalState = sessionGlobalState;
-        this.pipelineAgent      = agent;
+        this.pipelineConnector  = connector;
 
         Endpoints clientSide = sessionGlobalState.netcapSession().clientSide();
         Endpoints serverSide = sessionGlobalState.netcapSession().serverSide();
@@ -90,10 +91,10 @@ public abstract class NetcapIPNewSessionRequest
     /* Two ways to create an IPNewSessionRequest:
      * B. Pass in the previous request and get the parameters from there
      */
-    public NetcapIPNewSessionRequest( NodeSession session, PipelineAgent agent, SessionEvent pe, SessionGlobalState sessionGlobalState)
+    public NetcapIPNewSessionRequest( NodeSession session, PipelineConnectorImpl connector, SessionEvent pe, SessionGlobalState sessionGlobalState)
     {
         this.sessionGlobalState = ((NodeSessionImpl)session).sessionGlobalState();
-        this.pipelineAgent      = agent;
+        this.pipelineConnector  = connector;
 
         /* Get the server and client from the previous request */
         clientAddr = session.getClientAddr();
@@ -112,9 +113,9 @@ public abstract class NetcapIPNewSessionRequest
         this.sessionEvent = pe;
     }
 
-    public PipelineAgent pipelineAgent()
+    public PipelineConnectorImpl pipelineConnector()
     {
-        return pipelineAgent;
+        return pipelineConnector;
     }
     
     public NetcapSession netcapSession()

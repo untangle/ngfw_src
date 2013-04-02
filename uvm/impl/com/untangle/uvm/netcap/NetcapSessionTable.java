@@ -76,7 +76,7 @@ public class NetcapSessionTable
      * of new vectoring machines, but it doesn't prevent the creating of new vectoring
      * machines
      * @return - Returns false if there are no active sessions. */
-    synchronized boolean shutdownActive()
+    public synchronized boolean shutdownActive()
     {
         if ( activeSessions.isEmpty()) return false;
 
@@ -139,11 +139,6 @@ public class NetcapSessionTable
          * Build the list of agents associated with this pipespec
          */
         List<PipelineConnector> pipelineConnectors = ps.getPipelineConnectors();
-        List<PipelineAgent> agents = new LinkedList<PipelineAgent>();
-        for (PipelineConnector connector : pipelineConnectors) {
-            PipelineConnectorImpl conn = (PipelineConnectorImpl) connector;
-            agents.add(conn.getPipelineAgent());
-        }
         
         /**
          * Iterate through all sessions and reset matching sessions
@@ -157,13 +152,13 @@ public class NetcapSessionTable
             NetcapHook netcapHook = session.netcapHook();
 
             /**
-             * Only process sessions involving the specified pipespec and associated agents
+             * Only process sessions involving the specified pipespec and associated connectors
              */
-            if (session.getPipelineAgents() == null)
+            if (session.getPipelineConnectors() == null)
                 continue;
             boolean matchesOne = false;
-            for (PipelineAgent agent : agents)
-                if (session.getPipelineAgents().contains(agent))
+            for ( PipelineConnector conn : pipelineConnectors )
+                if ( session.getPipelineConnectors().contains(conn) )
                     matchesOne = true;
             if (!matchesOne)
                 continue;

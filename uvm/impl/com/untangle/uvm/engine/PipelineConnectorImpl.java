@@ -3,11 +3,14 @@
  */
 package com.untangle.uvm.engine;
 
-import org.apache.log4j.Logger;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.Map;
 import java.util.List;
 import java.util.LinkedList;
+import org.apache.log4j.Logger;
 
-import com.untangle.uvm.netcap.PipelineAgent;
+import com.untangle.uvm.netcap.NetcapSessionTable;
 import com.untangle.uvm.node.Node;
 import com.untangle.uvm.node.NodeProperties;
 import com.untangle.uvm.vnet.PipelineConnector;
@@ -26,14 +29,22 @@ import com.untangle.uvm.vnet.event.SessionEventListener;
  */
 public class PipelineConnectorImpl implements PipelineConnector
 {
-    protected PipelineAgent pipelineAgent = null;
+    /**
+     * Live flag
+     */
+    private boolean live = true;
+    
+    /**
+     * Active Sessions for this agent
+     */
+    private Set<NodeSession> activeSessions = new HashSet<NodeSession>();
 
     private final PipeSpec pipeSpec;
 
-    private Dispatcher disp;
+    private Dispatcher dispatcher;
+    private SessionEventListener listener;
 
     private final Node node;
-    private final SessionEventListener listener;
 
     private final Logger logger;
     private final Logger sessionLogger;
@@ -52,6 +63,7 @@ public class PipelineConnectorImpl implements PipelineConnector
 
         this.listener = listener;
         this.pipeSpec = pipeSpec;
+        this.dispatcher = dispatcher;
 
         logger = Logger.getLogger(PipelineConnector.class);
         sessionLogger = Logger.getLogger(NodeSession.class);
@@ -69,6 +81,11 @@ public class PipelineConnectorImpl implements PipelineConnector
         }
     }
 
+    public Dispatcher getDispatcher()
+    {
+        return dispatcher;
+    }
+
     public PipeSpec getPipeSpec()
     {
         return pipeSpec;
@@ -77,11 +94,6 @@ public class PipelineConnectorImpl implements PipelineConnector
     public Node node()
     {
         return node;
-    }
-
-    public PipelineAgent getPipelineAgent()
-    {
-        return pipelineAgent;
     }
 
     public Fitting getInputFitting()
@@ -126,31 +138,27 @@ public class PipelineConnectorImpl implements PipelineConnector
 
     public long[] liveSessionIds()
     {
-        if (disp == null)
+        if (dispatcher == null)
             return new long[0];
-        return disp.liveSessionIds();
+        return dispatcher.liveSessionIds();
     }
 
     public List<NodeSession> liveSessions()
     {
-        if (disp != null)
-            return disp.liveSessions();
+        if (dispatcher != null)
+            return dispatcher.liveSessions();
         else
             return null;
     }
     
     private synchronized  void start() 
     {
-        if ( pipelineAgent != null ) {
-            logger.warn("Already running... ignoring start command");
-            return;
-        }
+        if ( live )
 
-        disp = new Dispatcher(this);
+        dispatcher = new Dispatcher(this);
         if (listener != null)
-            disp.setSessionEventListener(listener);
+            dispatcher.setSessionEventListener(listener);
 
-        pipelineAgent = new PipelineAgent(pipeSpec.getName(), disp); // Also sets new session listener to dispatcher
     }
 
     /**
@@ -161,25 +169,54 @@ public class PipelineConnectorImpl implements PipelineConnector
      */
     public synchronized void destroy()
     {
-        if ( pipelineAgent != null ) {
-            try {
-                disp.destroy();
-            } catch (Exception x) {
-                logger.info("Exception destroying PipelineConnector", x);
-            }
-            disp = null;
+        if ( ! this.live ) return;
 
-            try {
-                pipelineAgent.destroy();
-            } catch (Exception x) {
-                logger.info("Exception destroying PipelineConnector", x);
-            }
-            pipelineAgent = null;
+        live = false;
+        
+        try {
+            dispatcher.destroy();
+        } catch (Exception x) {
+            logger.info("Exception destroying PipelineConnector", x);
         }
+        dispatcher = null;
+
+        /* Remove the listener */
+        listener = null;
+
+        NetcapSessionTable.getInstance().shutdownActive();
+
+        /* Remove all of the active sessions */
+        activeSessions.clear();
+
     }
 
+
+    /**
+     * Add a session to the map of active sessions.
+     * @return True if the session was added, false if the agent is dead, or the session
+     *   has already been added.
+     */
+    public synchronized boolean addSession( NodeSession session )
+    {
+        if ( ! live ) return false;
+
+        return activeSessions.add( session );
+    }
+
+    /**
+     * Remove a session from the map of active sessions associated with this netcap agent.
+     * @return True if the session was removed, false if the session was not in the list 
+     *   of active session.
+     */
+    public synchronized boolean removeSession( NodeSession session )
+    {
+        if ( live ) return false;
+
+        return activeSessions.remove( session );
+    }
+    
     public String toString()
     {
-        return null == listener ? "no listener" : listener.toString();
+        return "PipelineConnector[" + this.pipeSpec.getName() + "]";
     }
 }

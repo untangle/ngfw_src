@@ -18,6 +18,7 @@ import com.untangle.jvector.TCPSource;
 import com.untangle.uvm.node.SessionEvent;
 import com.untangle.uvm.vnet.NodeTCPSession;
 import com.untangle.uvm.engine.NodeTCPSessionImpl;
+import com.untangle.uvm.engine.PipelineConnectorImpl;
 
 public class NetcapTCPHook implements NetcapCallback
 {
@@ -221,7 +222,7 @@ public class NetcapTCPHook implements NetcapCallback
             return new TCPSource( netcapTCPSession.tcpServerSide().fd(), serverSideListener );
         }
 
-        protected void newSessionRequest( PipelineAgent agent, Iterator<?> iter, SessionEvent pe )
+        protected void newSessionRequest( PipelineConnectorImpl agent, Iterator<?> iter, SessionEvent pe )
         {
             NetcapTCPNewSessionRequest request;
 
@@ -232,7 +233,7 @@ public class NetcapTCPHook implements NetcapCallback
             }
 
             // newSession() returns null when rejecting the session
-            NodeTCPSession session = agent.getNewSessionEventListener().newSession( request );
+            NodeTCPSession session = agent.getDispatcher().newSession( request );
 
             try {
                 processSession( request, ((NodeTCPSessionImpl)session) );

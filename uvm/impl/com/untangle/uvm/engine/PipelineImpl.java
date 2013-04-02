@@ -28,7 +28,7 @@ class PipelineImpl implements Pipeline
         
     // constructors -----------------------------------------------------------
 
-    PipelineImpl(long sessionId, List<PipelineConnector> pipelineConnectors)
+    PipelineImpl(long sessionId, List<PipelineConnectorImpl> pipelineConnectors)
     {
     }
 

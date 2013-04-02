@@ -12,6 +12,7 @@ import org.apache.log4j.Logger;
 import com.untangle.jnetcap.NetcapSession;
 import com.untangle.jnetcap.NetcapTCPSession;
 import com.untangle.jnetcap.NetcapUDPSession;
+import com.untangle.uvm.engine.PipelineConnectorImpl;
 
 /**
  * This stores the global system-wide state for a given session
@@ -43,7 +44,7 @@ public class SessionGlobalState
      * This is used for resetting sessions with killMatchingSessions so we can only reset
      * sessions that were originally processed by the node calling killMatchingSessions
      */
-    private List<PipelineAgent> originalAgents;
+    private List<PipelineConnectorImpl> originalAgents;
     
     SessionGlobalState( NetcapSession netcapSession, SideListener clientSideListener, SideListener serverSideListener, NetcapHook netcapHook )
     {
@@ -113,12 +114,12 @@ public class SessionGlobalState
         return serverSideListener;
     }
 
-    public List<PipelineAgent> getPipelineAgents()
+    public List<PipelineConnectorImpl> getPipelineConnectors()
     {
         return originalAgents;
     }
 
-    public void setPipelineAgents( List<PipelineAgent> agents )
+    public void setPipelineConnectorImpls( List<PipelineConnectorImpl> agents )
     {
         this.originalAgents = agents;
     }
