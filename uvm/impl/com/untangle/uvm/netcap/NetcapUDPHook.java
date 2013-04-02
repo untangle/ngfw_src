@@ -170,7 +170,6 @@ public class NetcapUDPHook implements NetcapCallback
             /* XXX do something */
         }
 
-
         protected void clientRejectSilent()
         {
             /* XXX do something */

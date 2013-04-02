@@ -6,10 +6,11 @@ package com.untangle.uvm.netcap;
 import com.untangle.jnetcap.NetcapUDPSession;
 import com.untangle.uvm.node.SessionEvent;
 import com.untangle.uvm.vnet.NodeUDPSession;
+import com.untangle.uvm.vnet.UDPNewSessionRequest;
 import com.untangle.uvm.engine.NodeUDPSessionImpl;
 import com.untangle.uvm.engine.PipelineConnectorImpl;
 
-public class NetcapUDPNewSessionRequest extends NetcapIPNewSessionRequest
+public class NetcapUDPNewSessionRequest extends NetcapIPNewSessionRequest implements UDPNewSessionRequest
 {
     protected byte ttl;
     protected byte tos;

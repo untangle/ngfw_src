@@ -228,7 +228,7 @@ public class Dispatcher
 
     //////////////////////////////////////////////////////////////////
 
-    void dispatchTCPNewSessionRequest(TCPNewSessionRequestEvent event)
+    void dispatchTCPNewSessionRequest( TCPNewSessionRequestEvent event )
     {
         elog(Level.DEBUG, "TCPNewSessionRequest", event.sessionRequest().id());
         if ( sessionEventListener == null ) {
@@ -238,7 +238,7 @@ public class Dispatcher
         }
     }
 
-    void dispatchUDPNewSessionRequest(UDPNewSessionRequestEvent event)
+    void dispatchUDPNewSessionRequest( UDPNewSessionRequestEvent event )
     {
         elog(Level.DEBUG, "UDPNewSessionRequest", event.sessionRequest().id());
         if ( sessionEventListener == null ) {
@@ -491,19 +491,16 @@ public class Dispatcher
         try {
             sessionId = request.id();
 
-            TCPNewSessionRequestImpl treq = new TCPNewSessionRequestImpl(this, request);
-
             this.node.incrementMetric(STAT_SESSION_REQUESTS);
             this.node.incrementMetric(STAT_TCP_SESSION_REQUESTS);
 
-            // Give the request event to the user, to give them a
-            // chance to reject the session.
+            // Give the request event to the user, to give them a chance to reject the session.
             logger.debug("sending TCP new session request event");
-            TCPNewSessionRequestEvent revent = new TCPNewSessionRequestEvent(pipelineConnector, treq);
+            TCPNewSessionRequestEvent revent = new TCPNewSessionRequestEvent(pipelineConnector, request);
             dispatchTCPNewSessionRequest(revent);
 
             // Check the session only if it was not rejected.
-            switch (treq.state()) {
+            switch (request.state()) {
             case NetcapIPNewSessionRequest.REJECTED:
             case NetcapIPNewSessionRequest.REJECTED_SILENT:
                 logger.debug("rejecting");
@@ -522,14 +519,14 @@ public class Dispatcher
             // Create the session, client and server channels
             NodeTCPSessionImpl session = new NodeTCPSessionImpl(this, request.sessionEvent(), TCP_READ_BUFFER_SIZE, TCP_READ_BUFFER_SIZE, request);
             
-            session.attach(treq.attachment());
+            session.attach(request.attachment());
 
             // Send the new session event.  
             if (logger.isInfoEnabled())
                 logger.info("New TCP session " +
                             session.getClientAddr().getHostAddress() + ":" + session.getClientPort() + " -> " +
                             session.getServerAddr().getHostAddress() + ":" + session.getServerPort());
-            if (treq.state() == NetcapIPNewSessionRequest.RELEASED) {
+            if (request.state() == NetcapIPNewSessionRequest.RELEASED) {
                 session.release();
             } else {
                 TCPSessionEvent tevent = new TCPSessionEvent(pipelineConnector, session);
@@ -548,25 +545,23 @@ public class Dispatcher
         }
     }
 
-    private NodeUDPSession newSessionInternal(NetcapUDPNewSessionRequest request)
+    private NodeUDPSession newSessionInternal( NetcapUDPNewSessionRequest request )
     {
         long sessionId = -1;
 
         try {
             sessionId = request.id();
 
-            UDPNewSessionRequestImpl ureq = new UDPNewSessionRequestImpl(this, request);
-
             this.node.incrementMetric(STAT_SESSION_REQUESTS);
             this.node.incrementMetric(STAT_UDP_SESSION_REQUESTS);
 
             // Give the request event to the user, to give them a chance to reject the session.
             logger.debug("sending UDP new session request event");
-            UDPNewSessionRequestEvent revent = new UDPNewSessionRequestEvent(pipelineConnector, ureq);
+            UDPNewSessionRequestEvent revent = new UDPNewSessionRequestEvent( pipelineConnector, request );
             dispatchUDPNewSessionRequest(revent);
 
             // Check the session only if it was not rejected.
-            switch (ureq.state()) {
+            switch (request.state()) {
             case NetcapIPNewSessionRequest.REJECTED:
             case NetcapIPNewSessionRequest.REJECTED_SILENT:
                 logger.debug("rejecting");
@@ -585,7 +580,7 @@ public class Dispatcher
             // Create the session, client and server channels
             NodeUDPSessionImpl session = new NodeUDPSessionImpl(this, request.sessionEvent(), UDP_MAX_PACKET_SIZE, UDP_MAX_PACKET_SIZE, request);
 
-            session.attach(ureq.attachment());
+            session.attach(request.attachment());
 
             // Send the new session event.  Maybe this should be done on the session handler
             // thread instead?  XXX
@@ -593,7 +588,7 @@ public class Dispatcher
                 logger.info("New UDP session " +
                             session.getClientAddr().getHostAddress() + ":" + session.getClientPort() + " -> " +
                             session.getServerAddr().getHostAddress() + ":" + session.getServerPort());
-            if (ureq.state() == NetcapIPNewSessionRequest.RELEASED) {
+            if (request.state() == NetcapIPNewSessionRequest.RELEASED) {
                 session.release();
             } else {
                 UDPSessionEvent tevent = new UDPSessionEvent(pipelineConnector, session);

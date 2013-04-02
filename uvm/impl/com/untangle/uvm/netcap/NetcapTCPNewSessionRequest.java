@@ -5,9 +5,10 @@ package com.untangle.uvm.netcap;
 
 import com.untangle.uvm.node.SessionEvent;
 import com.untangle.uvm.vnet.NodeTCPSession;
+import com.untangle.uvm.vnet.TCPNewSessionRequest;
 import com.untangle.uvm.engine.PipelineConnectorImpl;
 
-public class NetcapTCPNewSessionRequest extends NetcapIPNewSessionRequest
+public class NetcapTCPNewSessionRequest extends NetcapIPNewSessionRequest implements TCPNewSessionRequest
 {
     final boolean acked;
 

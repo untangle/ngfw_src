@@ -10,10 +10,11 @@ import com.untangle.jnetcap.Endpoint;
 import com.untangle.jnetcap.Endpoints;
 import com.untangle.uvm.node.SessionEvent;
 import com.untangle.uvm.vnet.NodeSession;
+import com.untangle.uvm.vnet.IPNewSessionRequest;
 import com.untangle.uvm.engine.NodeSessionImpl;
 import com.untangle.uvm.engine.PipelineConnectorImpl;
 
-public abstract class NetcapIPNewSessionRequest
+public abstract class NetcapIPNewSessionRequest implements IPNewSessionRequest
 {
     protected final PipelineConnectorImpl pipelineConnector;
     protected final SessionGlobalState sessionGlobalState;
@@ -57,6 +58,8 @@ public abstract class NetcapIPNewSessionRequest
     /* This is used to distinguish between REJECTED and REJECTED with code */
     protected byte code  = REJECTED;
 
+    protected volatile Object attachment = null;
+    
     /* Two ways to create an IPNewSessionRequest:
      * A. Pass in the netcap session and get the parameters from there.
      */
@@ -333,21 +336,43 @@ public abstract class NetcapIPNewSessionRequest
 
     public InetAddress getNatFromHost()
     {
-	return natFromHost;
+        return natFromHost;
     }
 
     public int getNatFromPort()
     {
-	return natFromPort;
+        return natFromPort;
     }
 
     public InetAddress getNatToHost()
     {
-	return natToHost;
+        return natToHost;
     }
 
     public int getNatToPort()
     {
-	return natToPort;
+        return natToPort;
+    }
+
+    public Object attach(Object ob)
+    {
+        Object oldOb = attachment;
+        attachment = ob;
+        return oldOb;
+    }
+
+    public Object attachment()
+    {
+        return attachment;
+    }
+
+    public Object globalAttach(String key, Object ob)
+    {
+        return this.sessionGlobalState().attach(key,ob);
+    }
+
+    public Object globalAttachment(String key)
+    {
+        return this.sessionGlobalState().attachment(key);
     }
 }
