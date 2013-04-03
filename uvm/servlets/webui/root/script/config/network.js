@@ -206,7 +206,7 @@ if (!Ung.hasResource["Ung.Network"]) {
                     name: 'dhcpDnsOverride'
                 }, {
                     name: 'javaClass'
-                }, { name: "macAddress" }, { name: "connected" }, { name: "duplex" }, { name: "vendor" }, { name: "mbit" }],
+                }, {name: "deviceName"}, { name: "macAddress" }, { name: "connected" }, { name: "duplex" }, { name: "vendor" }, { name: "mbit" }],
                 columns: [{
                     header: this.i18n._("Interface Id"),
                     width: 80,
@@ -265,7 +265,7 @@ if (!Ung.hasResource["Ung.Network"]) {
                     Ext.MessageBox.wait(i18n._("Loading device mapper..."), i18n._("Please wait"));
                     if (!this.winMapDevices) {
                         this.mapDevicesStore = Ext.create('Ext.data.ArrayStore', {
-                            fields:[{name: "interfaceId"}, { name: "name" }, { name: "physicalDev" }, { name: "systemDev" },{ name: "symbolicDev" }, { name: "macAddress" }, { name: "connected" }, { name: "duplex" }, { name: "vendor" }, { name: "mbit" }],
+                            fields:[{name: "interfaceId"}, { name: "name" }, {name: "deviceName"}, { name: "physicalDev" }, { name: "systemDev" },{ name: "symbolicDev" }, { name: "macAddress" }, { name: "connected" }, { name: "duplex" }, { name: "vendor" }, { name: "mbit" }],
                             data: []
                         });
                         this.availableDevicesStore = Ext.create('Ext.data.ArrayStore', {
@@ -340,8 +340,11 @@ if (!Ung.hasResource["Ung.Network"]) {
                                 tpl: '<img src="'+Ext.BLANK_IMAGE_URL+'" class="icon-drag"/>' 
                             }, {
                                 header: i18n._( "Device" ),
-                                dataIndex: 'physicalDev',
+                                tooltip: i18n._( "Click on a Device to open a combo and choose the desired Device from a list. When anoter Device is selected the 2 Devices are swithced." ),
+                                dataIndex: 'deviceName',
                                 sortable: false,
+                                width: 200,
+                                tdCls: 'ua-pointer',
                                 editor:{
                                     xtype: 'combo',
                                     store: this.availableDevicesStore,
@@ -365,43 +368,47 @@ if (!Ung.hasResource["Ung.Network"]) {
                                                     }
                                                 });
                                                 if(sourceRecord==null || targetRecord==null || sourceRecord==targetRecord) {
-                                                    console.log(sourceRecord, targetRecord);
+                                                    console.log(oldValue, newValue, sourceRecord, targetRecord);
                                                     return false;
                                                 }
+                                                //console.log(oldValue, newValue, sourceRecord, targetRecord);
                                                 var soruceData = Ext.decode(Ext.encode(sourceRecord.data));
                                                 var targetData = Ext.decode(Ext.encode(targetRecord.data));
-
+                                                soruceData.deviceName=oldValue;
+                                                targetData.deviceName=newValue;
+                                                
                                                 sourceRecord.suspendEvents();
-                                                //sourceRecord.set("physicalDev", targetData.physicalDev);
+                                                sourceRecord.set("physicalDev", targetData.physicalDev);
                                                 sourceRecord.set("systemDev", targetData.systemDev);
                                                 sourceRecord.set("symbolicDev", targetData.symbolicDev);
                                                 sourceRecord.set("macAddress",targetData.macAddress);
-                                                sourceRecord.set("connected",targetData.connected);
                                                 sourceRecord.set("duplex",targetData.duplex);
                                                 sourceRecord.set("vendor",targetData.vendor);
                                                 sourceRecord.set("mbit",targetData.mbit);
+                                                sourceRecord.set("connected",targetData.connected);
                                                 sourceRecord.resumeEvents();
-
+                                                
                                                 targetRecord.suspendEvents();
+                                                targetRecord.set("deviceName", soruceData.deviceName);
                                                 targetRecord.set("physicalDev", soruceData.physicalDev);
                                                 targetRecord.set("systemDev", soruceData.systemDev);
                                                 targetRecord.set("symbolicDev", soruceData.symbolicDev);
                                                 targetRecord.set("macAddress",soruceData.macAddress);
-                                                targetRecord.set("connected",soruceData.connected);
                                                 targetRecord.set("duplex",soruceData.duplex);
                                                 targetRecord.set("vendor",soruceData.vendor);
                                                 targetRecord.set("mbit",soruceData.mbit);
+                                                targetRecord.set("connected",soruceData.connected);
                                                 targetRecord.resumeEvents();
                                             }, this)
                                         }
                                     }
-                                },
-                                width:200
+                                }
                             }, {
                                 header: this.i18n._( "Connected" ),
                                 dataIndex: 'connected',
                                 sortable: false,
                                 width: 120,
+                                tdCls: 'ua-draggable',
                                 renderer: Ext.bind(function(value, metadata, record, rowIndex, colIndex, store, view) {
                                     var divClass = "ua-cell-disabled";
                                     var connectedStr = this.i18n._("unknown");
@@ -417,11 +424,13 @@ if (!Ung.hasResource["Ung.Network"]) {
                                 header: this.i18n._( "Speed" ),
                                 dataIndex: 'mbit',
                                 sortable: false,
+                                tdCls: 'ua-draggable',
                                 width: 100
                             }, {
                                 header: this.i18n._( "Duplex" ),
                                 dataIndex: 'duplex',
                                 sortable: false,
+                                tdCls: 'ua-draggable',
                                 width: 100,
                                 renderer: Ext.bind(function(value, metadata, record, rowIndex, colIndex, store, view) {
                                     return (value=="FULL_DUPLEX")?this.i18n._("full-duplex") : (value=="HALF_DUPLEX") ? this.i18n._("half-duplex") : this.i18n._("unknown");
@@ -430,7 +439,8 @@ if (!Ung.hasResource["Ung.Network"]) {
                                 header: this.i18n._( "Vendor" ),
                                 dataIndex: 'vendor',
                                 sortable: false,
-                                width: 180
+                                tdCls: 'ua-draggable',
+                                flex: 1
                             }, {
                                 header: this.i18n._( "MAC Address" ),
                                 dataIndex: 'macAddress',
@@ -475,6 +485,7 @@ if (!Ung.hasResource["Ung.Network"]) {
                                 });
                                 this.gridInterfaces.getStore().each(function( currentRow ) {
                                     var interfaceData = interfaceDataMap[currentRow.get("interfaceId")];
+                                    currentRow.set("deviceName",interfaceData.deviceName);
                                     currentRow.set("physicalDev",interfaceData.physicalDev);
                                     currentRow.set("systemDev",interfaceData.systemDev);
                                     currentRow.set("symbolicDev",interfaceData.symbolicDev);

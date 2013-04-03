@@ -223,7 +223,7 @@ Ext.define('Ung.SetupWizard.ServerSettings', {
 Ext.define('Ung.SetupWizard.Interfaces', {
     constructor: function() {
         this.interfaceStore = Ext.create('Ext.data.ArrayStore', {
-            fields:[{name: "interfaceId"}, { name: "name" }, { name: "physicalDev" }, { name: "macAddress" }, { name: "connected" }, { name: "duplex" }, { name: "vendor" }, { name: "mbit" }],
+            fields:[{name: "interfaceId"}, { name: "name" }, { name: "physicalDev" },{ name: "deviceName" }, { name: "macAddress" }, { name: "connected" }, { name: "duplex" }, { name: "vendor" }, { name: "mbit" }],
             data: []
         });
         this.deviceStore = Ext.create('Ext.data.ArrayStore', {
@@ -279,7 +279,7 @@ Ext.define('Ung.SetupWizard.Interfaces', {
                 header: i18n._( "Device" ),
                 tooltip: i18n._( "Click on a Device to open a combo and choose the desired Device from a list. When anoter Device is selected the 2 Devices are swithced." ),
                 tooltipType: "title",
-                dataIndex: 'physicalDev',
+                dataIndex: 'deviceName',
                 sortable: false,
                 tdCls: 'ua-pointer',
                 editor:{
@@ -293,8 +293,6 @@ Ext.define('Ung.SetupWizard.Interfaces', {
                     listeners: {
                         "change": {
                             fn: Ext.bind(function(elem, newValue, oldValue) {
-                                //FIXME: this is not working as expected, many times the rows are not switched correctly, because this event is not triggered.
-                                //Work in progress
                                 var sourceRecord = null;
                                 var targetRecord = null;
                                 this.interfaceStore.each( function( currentRow ) {
@@ -308,14 +306,17 @@ Ext.define('Ung.SetupWizard.Interfaces', {
                                     }
                                 });
                                 if(sourceRecord==null || targetRecord==null || sourceRecord==targetRecord) {
-                                    console.log(sourceRecord, targetRecord, newValue, oldValue);
+                                    console.log(oldValue, newValue, sourceRecord, targetRecord);
                                     return false;
                                 }
+                                //console.log(oldValue, newValue, sourceRecord, targetRecord);
                                 var soruceData = Ext.decode(Ext.encode(sourceRecord.data));
                                 var targetData = Ext.decode(Ext.encode(targetRecord.data));
+                                soruceData.deviceName=oldValue;
+                                targetData.deviceName=newValue;
                                 
                                 sourceRecord.suspendEvents();
-                                //sourceRecord.set("physicalDev", targetData.physicalDev);
+                                sourceRecord.set("physicalDev", targetData.physicalDev);
                                 sourceRecord.set("macAddress",targetData.macAddress);
                                 sourceRecord.set("duplex",targetData.duplex);
                                 sourceRecord.set("vendor",targetData.vendor);
@@ -325,6 +326,7 @@ Ext.define('Ung.SetupWizard.Interfaces', {
                                 sourceRecord.resumeEvents();
                                 
                                 targetRecord.suspendEvents();
+                                targetRecord.set("deviceName", soruceData.deviceName);
                                 targetRecord.set("physicalDev", soruceData.physicalDev);
                                 targetRecord.set("macAddress",soruceData.macAddress);
                                 targetRecord.set("duplex",soruceData.duplex);
@@ -563,7 +565,6 @@ Ext.define('Ung.SetupWizard.Interfaces', {
                     return;
                 }
                 Ext.MessageBox.hide();
-                //result.list[1].connected="DISCONNECTED"; //TODO: comment test line
                 var deviceStatusMap = this.createRecordsMap(result.list, "deviceName");
                 
                 //update device connected status
@@ -602,7 +603,6 @@ Ext.define('Ung.SetupWizard.Interfaces', {
                     return;
                 }
                 Ext.MessageBox.hide();
-                //result.list[1].vendor="VendTest"; //TODO: comment test line
                 var deviceStatusMap = this.createRecordsMap(result.list, "deviceName");
                 
                 for(var i=0; i<interfaceList.length; i++) {
