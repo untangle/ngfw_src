@@ -81,6 +81,9 @@ class SessionMonitorImpl implements SessionMonitor
         return getMergedBandwidthSessions("0");
     }
 
+    /**
+     * documented in SessionMonitor.java
+     */
     public List<SessionMonitorEntry> getMergedSessions()
     {
         return getMergedSessions(0);
@@ -305,6 +308,8 @@ class SessionMonitorImpl implements SessionMonitor
         try {
             String output = uvmContext.execManager().execOutput(execStr);
             List<SessionMonitorEntry> entryList = (List<SessionMonitorEntry>) ((UvmContextImpl)UvmContextFactory.context()).getSerializer().fromJSON(output);
+
+            logger.warn("XXXX: " + entryList);
             return entryList;
             
         } catch (org.jabsorb.serializer.UnmarshallException exc) {
