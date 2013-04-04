@@ -120,9 +120,11 @@ if (!Ung.hasResource["Ung.Network"]) {
                 hasReorder: false,
                 hasDelete: false,
                 hasAdd: false,
+                columnsDefaultSortable: true,
+                enableColumnHide: true,
+                columnMenuDisabled: false,
                 title: this.i18n._("Interfaces"),
                 recordJavaClass: "com.untangle.uvm.network.InterfaceSettings",
-                columnsDefaultSortable: false,
                 dataProperty: "interfaces",
                 fields: [{
                     name: 'interfaceId'
@@ -252,10 +254,12 @@ if (!Ung.hasResource["Ung.Network"]) {
                     dataIndex: 'physicalDev',
                     width:75
                 }, {
+                    hidden: true,
                     header: this.i18n._("System Dev"),
                     dataIndex: 'systemDev',
                     width:75
                 }, {
+                    hidden: true,
                     header: this.i18n._("Symbolic Dev"),
                     dataIndex: 'symbolicDev',
                     width:75
@@ -275,7 +279,16 @@ if (!Ung.hasResource["Ung.Network"]) {
                 }, {
                     header: this.i18n._("is WAN"),
                     dataIndex: 'isWan',
-                    width:55
+                    width:55,
+                    renderer: Ext.bind(function(value, metadata, record, rowIndex, colIndex, store, view) {
+                        if (value == null || value == "")
+                            return "";
+                        // only ADDRESSED interfaces can be WANs
+                        if (record.data['configType'] != 'ADDRESSED')
+                            return "";
+                        return value; // if its addressed return value
+                    }, this)
+                    
                 }],
                 bbar: [{
                     xtype: "button",

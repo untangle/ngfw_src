@@ -4246,6 +4246,8 @@ Ext.define('Ung.EditorGrid', {
     groupField: null,
     // the columns are sortable by default, if sortable is not specified
     columnsDefaultSortable: null,
+    // is the column header dropdown disabled
+    columnMenuDisabled: true,
     // paginate the grid by default
     paginated: true,
     // javaClass of the record, used in save function to create correct json-rpc
@@ -4312,7 +4314,7 @@ Ext.define('Ung.EditorGrid', {
         }
         for (var i = 0; i < this.columns.length; i++) {
             var col=this.columns[i];
-            col.menuDisabled= true;
+            col.menuDisabled = this.columnMenuDisabled ;
             if( col.sortable == null) {
                 col.sortable = this.columnsDefaultSortable;
             }
