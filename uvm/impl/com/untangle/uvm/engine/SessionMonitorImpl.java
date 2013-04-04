@@ -308,10 +308,7 @@ class SessionMonitorImpl implements SessionMonitor
         try {
             String output = uvmContext.execManager().execOutput(execStr);
             List<SessionMonitorEntry> entryList = (List<SessionMonitorEntry>) ((UvmContextImpl)UvmContextFactory.context()).getSerializer().fromJSON(output);
-
-            logger.warn("XXXX: " + entryList);
             return entryList;
-            
         } catch (org.jabsorb.serializer.UnmarshallException exc) {
             logger.error("Unable to read conntrack - invalid JSON",exc);
             return null;
