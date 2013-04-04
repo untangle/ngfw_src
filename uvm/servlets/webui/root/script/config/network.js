@@ -206,7 +206,23 @@ if (!Ung.hasResource["Ung.Network"]) {
                     name: 'dhcpDnsOverride'
                 }, {
                     name: 'javaClass'
-                }, {name: "deviceName"}, { name: "macAddress" }, { name: "connected" }, { name: "duplex" }, { name: "vendor" }, { name: "mbit" }],
+                }, {
+                    name: "deviceName" //from deviceStatus
+                }, {
+                    name: "macAddress" //from deviceStatus
+                }, {
+                    name: "connected" //from deviceStatus
+                }, {
+                    name: "duplex" //from deviceStatus
+                }, {
+                    name: "vendor" //from deviceStatus
+                }, {
+                    name: "mbit" //from deviceStatus
+                }, {
+                    name: "v4Address" //from interfaceStatus
+                }, {
+                    name: "v4PrefixLength" //from interfaceStatus
+                }],
                 columns: [{
                     header: this.i18n._("Interface Id"),
                     width: 80,
@@ -247,6 +263,15 @@ if (!Ung.hasResource["Ung.Network"]) {
                     header: this.i18n._("Config"),
                     dataIndex: 'configType',
                     width:100
+                }, {
+                    header: this.i18n._("Current Address"),
+                    dataIndex: 'v4Address',
+                    width:100,
+                    renderer: Ext.bind(function(value, metadata, record, rowIndex, colIndex, store, view) {
+                        if (value == null || value == "")
+                            return "";
+                        return value + "/" + record.data['v4PrefixLength'];
+                    }, this)
                 }, {
                     header: this.i18n._("is WAN"),
                     dataIndex: 'isWan',
@@ -366,6 +391,7 @@ if (!Ung.hasResource["Ung.Network"]) {
                                                     if(sourceRecord!=null && targetRecord!=null) {
                                                         return false;
                                                     }
+                                                    return true;
                                                 });
                                                 if(sourceRecord==null || targetRecord==null || sourceRecord==targetRecord) {
                                                     console.log(oldValue, newValue, sourceRecord, targetRecord);
@@ -399,6 +425,7 @@ if (!Ung.hasResource["Ung.Network"]) {
                                                 targetRecord.set("mbit",soruceData.mbit);
                                                 targetRecord.set("connected",soruceData.connected);
                                                 targetRecord.resumeEvents();
+                                                return true;
                                             }, this)
                                         }
                                     }
@@ -447,7 +474,7 @@ if (!Ung.hasResource["Ung.Network"]) {
                                 sortable: false,
                                 width: 150,
                                 renderer: function(value, metadata, record, rowIndex, colIndex, store, view) {
-                                    var text = ""
+                                    var text = "";
                                     if ( value && value.length > 0 ) {
                                         // Build the link for the mac address
                                         text = '<a target="_blank" href="http://standards.ieee.org/cgi-bin/ouisearch?' + 
@@ -2655,10 +2682,17 @@ if (!Ung.hasResource["Ung.Network"]) {
             this.settings = main.getNetworkManager().getNetworkSettings();
             var deviceStatus=main.getNetworkManager().getDeviceStatus();
             var deviceStatusMap=Ung.Util.createRecordsMap(deviceStatus.list, "deviceName");
+            var interfaceStatus=main.getNetworkManager().getInterfaceStatus();
+            var interfaceStatusMap=Ung.Util.createRecordsMap(interfaceStatus.list, "interfaceId");
             for(var i=0; i<this.settings.interfaces.list.length; i++) {
                 var intf=this.settings.interfaces.list[i];
-                var deviceStatus = deviceStatusMap[intf.physicalDev];
-                Ext.applyIf(intf, deviceStatus);
+                var deviceStatusInner = deviceStatusMap[intf.physicalDev];
+                if (deviceStatusInner != null) 
+                    Ext.applyIf(intf, deviceStatusInner);
+                var interfaceStatusInner = interfaceStatusMap[intf.interfaceId];
+                if (interfaceStatusInner != null) 
+                    Ext.applyIf(intf, interfaceStatusInner);
+                true;
             }
             
             Ung.Util.networkSettings = this.settings;

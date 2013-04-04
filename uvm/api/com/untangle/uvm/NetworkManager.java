@@ -41,6 +41,8 @@ public interface NetworkManager
     InterfaceSettings findInterfaceFirstWan( );
 
     InterfaceStatus getInterfaceStatus( int interfaceId );
+
+    List<InterfaceStatus> getInterfaceStatus( );
     
     List<DeviceStatus> getDeviceStatus( );
 }

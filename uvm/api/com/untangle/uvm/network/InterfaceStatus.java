@@ -21,6 +21,8 @@ import com.untangle.uvm.node.IPMaskedAddress;
 @SuppressWarnings("serial")
 public class InterfaceStatus implements Serializable, JSONString
 {
+    private int     interfaceId;
+
     private InetAddress v4Address = null;
     private InetAddress v4Netmask = null;
     private InetAddress v4Gateway = null;
@@ -40,6 +42,9 @@ public class InterfaceStatus implements Serializable, JSONString
         return jO.toString();
     }
     
+    public int getInterfaceId( ) { return this.interfaceId; }
+    public void setInterfaceId( int newValue ) { this.interfaceId = newValue; }
+
     public InetAddress getV4Address( ) { return this.v4Address; }
     public void setV4Address( InetAddress newValue ) { this.v4Address = newValue; }
 

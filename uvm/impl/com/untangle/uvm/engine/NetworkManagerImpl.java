@@ -380,6 +380,20 @@ public class NetworkManagerImpl implements NetworkManager
     }
 
     /**
+     * Return the status of all addressed interfaces
+     */
+    public List<InterfaceStatus> getInterfaceStatus( )
+    {
+        List<InterfaceStatus> statuses = new LinkedList<InterfaceStatus>();
+        for (InterfaceSettings intfSettings : this.networkSettings.getInterfaces()) {
+            if (InterfaceSettings.ConfigType.ADDRESSED.equals(intfSettings.getConfigType())) {
+                statuses.add( getInterfaceStatus( intfSettings.getInterfaceId() ) );
+            }
+        }
+        return statuses;
+    }
+    
+    /**
      * Returns a list of all the current device status'
      */
     @SuppressWarnings("unchecked") //JSON
