@@ -781,7 +781,7 @@ if (!Ung.hasResource["Ung.Network"]) {
                         allowBlank: false, 
                         fieldLabel: this.i18n._("Config Type"),
                         editable: false,
-                        store: [ ["AUTO", this.i18n._('Auto (SLAAC/RA)')], ["STATIC", this.i18n._('Static')] ],
+                        store: [ ["DISABLED", this.i18n._('Disabled')], ["AUTO", this.i18n._('Auto (SLAAC/RA)')], ["STATIC", this.i18n._('Static')] ],
                         valueField: "value",
                         displayField: "displayName",
                         queryMode: 'local',
@@ -1036,7 +1036,7 @@ if (!Ung.hasResource["Ung.Network"]) {
                                 v6StaticDns1.show();
                                 v6StaticDns2.show();
                             }
-                        } else  { //auto
+                        } else  { //auto //disabled
                             // no overriding in IPv6 so nothing to show
                         }
                     }

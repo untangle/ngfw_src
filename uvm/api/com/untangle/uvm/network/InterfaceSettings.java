@@ -63,8 +63,8 @@ public class InterfaceSettings implements Serializable, JSONString
     private Boolean     v4NatEgressTraffic;
     private Boolean     v4NatIngressTraffic;
     
-    public static enum V6ConfigType { STATIC, AUTO };
-    private V6ConfigType v6ConfigType = V6ConfigType.AUTO; /* IPv6 config type */
+    public static enum V6ConfigType { STATIC, AUTO, DISABLED };
+    private V6ConfigType v6ConfigType = V6ConfigType.DISABLED; /* IPv6 config type */
     
     private InetAddress v6StaticAddress; /* the address  of this interface if configured static, or dhcp override */ 
     private Integer     v6StaticPrefixLength; /* the netmask  of this interface if configured static, or dhcp override */
