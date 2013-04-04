@@ -186,7 +186,8 @@ class CaptureTests(unittest2.TestCase):
         # check if AD login and password 
         appid = str(node.getNodeSettings()["id"])
         # print 'appid is %s' % appid  # debug line
-        result = clientControl.runCommand("wget -a /tmp/capture_test_030a.log -O /tmp/capture_test_030a.out  \'http://" + captureIP + "/capture/handler.py/authpost?username=atsadmin&password=passwd&nonce=9abd7f2eb5ecd82b&method=GET&appid=" + appid + "&host=test.untangle.com&uri=/\'",True)
+        result = clientControl.runCommand("wget -a /tmp/capture_test_030a.log -O /tmp/capture_test_030a.out  \'http://" + captureIP + "/capture/handler.py/authpost?username=atsadmin&password=passwd&nonce=9abd7f2eb5ecd82b&method=GET&appid=" + appid + "&host=test.untangle.com&uri=/\'")
+        assert (result == 0)
         search = clientControl.runCommand("grep -q 'Hi!' /tmp/capture_test_030a.out")
         assert (search == 0)
 
@@ -194,12 +195,23 @@ class CaptureTests(unittest2.TestCase):
         # wget http://<internal IP>/capture/logout  
         result = clientControl.runCommand("wget -4 -t 2 --timeout=5 -a /tmp/capture_test_030b.log -O /tmp/capture_test_030b.out http://" + captureIP + "/capture/logout")
         assert (result == 0)
-        search = clientControl.runCommand("grep -q 'logout' /tmp/capture_test_030b.out")
+        search = clientControl.runCommand("grep -q 'logged out' /tmp/capture_test_030b.out")
+        assert (search == 0)
+
+        # check extend ascii in login and password 
+        result = clientControl.runCommand("wget -a /tmp/capture_test_030c.log -O /tmp/capture_test_030c.out  \'http://" + captureIP + "/capture/handler.py/authpost?username=britishguy&password=passwd%C2%A3&nonce=9abd7f2eb5ecd82b&method=GET&appid=" + appid + "&host=test.untangle.com&uri=/\'")
+        assert (result == 0)
+        search = clientControl.runCommand("grep -q 'Hi!' /tmp/capture_test_030c.out")
+        assert (search == 0)
+
+        # logout user to clean up test.
+        result = clientControl.runCommand("wget -4 -t 2 --timeout=5 -a /tmp/capture_test_030d.log -O /tmp/capture_test_030d.out http://" + captureIP + "/capture/logout")
+        assert (result == 0)
+        search = clientControl.runCommand("grep -q 'logged out' /tmp/capture_test_030d.out")
         assert (search == 0)
 
     RadiusResult = subprocess.call(["ping","-c","1",radiusHost],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
-    #@unittest2.skipIf(RadiusResult != 0,  "No RADIUS server available")
-    @unittest2.skipIf(True,  "Test Broken, hard-coded nonce.")
+    @unittest2.skipIf(RadiusResult != 0,  "No RADIUS server available")
     def test_040_captureRadiusLogin(self):
         global nodeData, node, nodeDataRD, nodeDataAD, nodeAD, captureIP
         # Configure RADIUS settings
@@ -229,7 +241,7 @@ class CaptureTests(unittest2.TestCase):
         # wget http://<internal IP>/capture/logout  
         result = clientControl.runCommand("wget -4 -t 2 --timeout=5 -a /tmp/capture_test_040b.log -O /tmp/capture_test_040b.out http://" + captureIP + "/capture/logout")
         assert (result == 0)
-        search = clientControl.runCommand("grep -q 'logout' /tmp/capture_test_040b.out")
+        search = clientControl.runCommand("grep -q 'logged out' /tmp/capture_test_040b.out")
         assert (search == 0)
 
 
