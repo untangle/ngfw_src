@@ -112,6 +112,7 @@ if (!Ung.hasResource["Ung.Network"]) {
         },
         // Interfaces Panel
         buildInterfaces: function() {
+            var settingsCmp = this;
             this.gridInterfaces = Ext.create('Ung.EditorGrid',{
                 anchor: '100% -80',
                 name: 'Interfaces',
@@ -208,7 +209,8 @@ if (!Ung.hasResource["Ung.Network"]) {
                     name: 'dhcpDnsOverride'
                 }, {
                     name: 'javaClass'
-                }, {
+                }, 
+                {
                     name: "deviceName" //from deviceStatus
                 }, {
                     name: "macAddress" //from deviceStatus
@@ -220,8 +222,17 @@ if (!Ung.hasResource["Ung.Network"]) {
                     name: "vendor" //from deviceStatus
                 }, {
                     name: "mbit" //from deviceStatus
-                }, {
+                }, 
+                {
                     name: "v4Address" //from interfaceStatus
+                }, {
+                    name: "v4Netmask" //from interfaceStatus
+                }, {
+                    name: "v4Gateway" //from interfaceStatus
+                }, {
+                    name: "v4Dns1" //from interfaceStatus
+                }, {
+                    name: "v4Dns2" //from interfaceStatus
                 }, {
                     name: "v4PrefixLength" //from interfaceStatus
                 }],
@@ -281,12 +292,8 @@ if (!Ung.hasResource["Ung.Network"]) {
                     dataIndex: 'isWan',
                     width:55,
                     renderer: Ext.bind(function(value, metadata, record, rowIndex, colIndex, store, view) {
-                        if (value == null || value == "")
-                            return "";
                         // only ADDRESSED interfaces can be WANs
-                        if (record.data['configType'] != 'ADDRESSED')
-                            return "";
-                        return value; // if its addressed return value
+                        return (record.data['configType'] == 'ADDRESSED') ? value: ""; // if its addressed return value
                     }, this)
                     
                 }],
@@ -732,34 +739,140 @@ if (!Ung.hasResource["Ung.Network"]) {
                             fieldLabel: this.i18n._("Secondary DNS"),
                             vtype: "ip4Address"
                         }, {
-                            xtype:'textfield',
-                            dataIndex: "v4AutoAddressOverride",
-                            fieldLabel: this.i18n._("Address Override"),
-                            vtype: "ip4Address"
+                            xtype: 'container',
+                            layout: 'column',
+                            name: "v4AutoAddressOverrideContainer",
+                            margin: '0 0 5 0',
+                            width: null,
+                            items: [{
+                                xtype:'textfield',
+                                dataIndex: "v4AutoAddressOverride",
+                                fieldLabel: this.i18n._("Address Override"),
+                                vtype: "ip4Address",
+                                labelWidth: 150,
+                                width: 350
+                            }, {
+                                xtype: 'label',
+                                dataIndex: "v4Address",
+                                setValue: function(value) {
+                                    this.dataValue=value;
+                                    this.setText(Ext.isEmpty(value)?"":Ext.String.format(settingsCmp.i18n._("Current: {0}"), value))
+                                },
+                                getValue: function() {
+                                    return this.dataValue;
+                                },
+                                html: "",
+                                cls: 'boxlabel'
+                            }]
+                        },{
+                            xtype: 'container',
+                            layout: 'column',
+                            name: "v4AutoPrefixOverrideContainer",
+                            margin: '0 0 5 0',
+                            width: null,
+                            items: [{
+                                xtype: "combo",
+                                dataIndex: "v4AutoPrefixOverride",
+                                fieldLabel: this.i18n._("Netmask Override"),
+                                store: Ung.Util.getV4NetmaskList( true ),
+                                valueField: "value",
+                                displayField: "displayName",
+                                queryMode: 'local',
+                                editable: false,
+                                labelWidth: 150,
+                                width: 350
+
+                            }, {
+                                xtype: 'label',
+                                dataIndex: "v4PrefixLength",
+                                setValue: function(value, record) {
+                                    this.dataValue=value;
+                                    this.setText(Ext.isEmpty(value)?"":Ext.String.format(settingsCmp.i18n._("Current: /{0} - {1}"), value, record.get("v4Netmask")))
+                                },
+                                getValue: function() {
+                                    return this.dataValue;
+                                },
+                                html: "",
+                                cls: 'boxlabel'
+                            }]
                         }, {
-                            xtype: "combo",
-                            dataIndex: "v4AutoPrefixOverride",
-                            fieldLabel: this.i18n._("Netmask Override"),
-                            store: Ung.Util.getV4NetmaskList( true ),
-                            valueField: "value",
-                            displayField: "displayName",
-                            queryMode: 'local',
-                            editable: false
+                            xtype: 'container',
+                            layout: 'column',
+                            name: "v4AutoGatewayOverrideContainer",
+                            margin: '0 0 5 0',
+                            width: null,
+                            items: [{
+                                xtype:'textfield',
+                                dataIndex: "v4AutoGatewayOverride",
+                                fieldLabel: this.i18n._("Gateway Override"),
+                                vtype: "ip4Address",
+                                labelWidth: 150,
+                                width: 350
+                            }, {
+                                xtype: 'label',
+                                dataIndex: "v4Gateway",
+                                setValue: function(value) {
+                                    this.dataValue=value;
+                                    this.setText(Ext.isEmpty(value)?"":Ext.String.format(settingsCmp.i18n._("Current: {0}"), value))
+                                },
+                                getValue: function() {
+                                    return this.dataValue;
+                                },
+                                html: "",
+                                cls: 'boxlabel'
+                            }]
                         }, {
-                            xtype:'textfield',
-                            dataIndex: "v4AutoGatewayOverride",
-                            fieldLabel: this.i18n._("Gateway Override"),
-                            vtype: "ip4Address"
+                            xtype: 'container',
+                            layout: 'column',
+                            name: "v4AutoDns1OverrideContainer",
+                            margin: '0 0 5 0',
+                            width: null,
+                            items: [{
+                                xtype:'textfield',
+                                dataIndex: "v4AutoDns1Override",
+                                fieldLabel: this.i18n._("Primary DNS Override"),
+                                vtype: "ip4Address",
+                                labelWidth: 150,
+                                width: 350
+                            }, {
+                                xtype: 'label',
+                                dataIndex: "v4Dns1",
+                                setValue: function(value) {
+                                    this.dataValue=value;
+                                    this.setText(Ext.isEmpty(value)?"":Ext.String.format(settingsCmp.i18n._("Current: {0}"), value))
+                                },
+                                getValue: function() {
+                                    return this.dataValue;
+                                },
+                                html: "",
+                                cls: 'boxlabel'
+                            }]
                         }, {
-                            xtype:'textfield',
-                            dataIndex: "v4AutoDns1Override",
-                            fieldLabel: this.i18n._("Primary DNS Override"),
-                            vtype: "ip4Address"
-                        }, {
-                            xtype:'textfield',
-                            dataIndex: "v4AutoDns2Override",
-                            fieldLabel: this.i18n._("Secondary DNS Override"),
-                            vtype: "ip4Address"
+                            xtype: 'container',
+                            layout: 'column',
+                            name: "v4AutoDns2OverrideContainer",
+                            margin: '0 0 5 0',
+                            width: null,
+                            items: [{
+                                xtype:'textfield',
+                                dataIndex: "v4AutoDns2Override",
+                                fieldLabel: this.i18n._("Secondary DNS Override"),
+                                vtype: "ip4Address",
+                                labelWidth: 150,
+                                width: 350
+                            }, {
+                                xtype: 'label',
+                                dataIndex: "v4Dns2",
+                                setValue: function(value) {
+                                    this.dataValue=value;
+                                    this.setText(Ext.isEmpty(value)?"":Ext.String.format(settingsCmp.i18n._("Current: {0}"), value))
+                                },
+                                getValue: function() {
+                                    return this.dataValue;
+                                },
+                                html: "",
+                                cls: 'boxlabel'
+                            }]
                         }, {
                             xtype:'textfield',
                             dataIndex: "v4PPPoEUsername",
@@ -953,11 +1066,11 @@ if (!Ung.hasResource["Ung.Network"]) {
                     var v4StaticDns1 = this.query('textfield[dataIndex="v4StaticDns1"]')[0];
                     var v4StaticDns2 = this.query('textfield[dataIndex="v4StaticDns2"]')[0];
                     
-                    var v4AutoAddressOverride = this.query('textfield[dataIndex="v4AutoAddressOverride"]')[0];
-                    var v4AutoGatewayOverride = this.query('textfield[dataIndex="v4AutoGatewayOverride"]')[0];
-                    var v4AutoPrefixOverride = this.query('combo[dataIndex="v4AutoPrefixOverride"]')[0];
-                    var v4AutoDns1Override = this.query('textfield[dataIndex="v4AutoDns1Override"]')[0];
-                    var v4AutoDns2Override = this.query('textfield[dataIndex="v4AutoDns2Override"]')[0];
+                    var v4AutoAddressOverrideContainer = this.query('container[name="v4AutoAddressOverrideContainer"]')[0];
+                    var v4AutoGatewayOverrideContainer = this.query('container[name="v4AutoGatewayOverrideContainer"]')[0];
+                    var v4AutoPrefixOverrideContainer = this.query('container[name="v4AutoPrefixOverrideContainer"]')[0];
+                    var v4AutoDns1OverrideContainer = this.query('container[name="v4AutoDns1OverrideContainer"]')[0];
+                    var v4AutoDns2OverrideContainer = this.query('container[name="v4AutoDns2OverrideContainer"]')[0];
                     
                     var v4PPPoEUsername = this.query('textfield[dataIndex="v4PPPoEUsername"]')[0];
                     var v4PPPoEPassword = this.query('textfield[dataIndex="v4PPPoEPassword"]')[0];
@@ -988,11 +1101,11 @@ if (!Ung.hasResource["Ung.Network"]) {
                     v4StaticGateway.hide(); v4StaticGateway.disable();
                     v4StaticDns1.hide(); v4StaticDns1.disable();
                     v4StaticDns2.hide();
-                    v4AutoAddressOverride.hide();
-                    v4AutoPrefixOverride.hide();
-                    v4AutoGatewayOverride.hide();
-                    v4AutoDns1Override.hide();
-                    v4AutoDns2Override.hide();
+                    v4AutoAddressOverrideContainer.hide();
+                    v4AutoPrefixOverrideContainer.hide();
+                    v4AutoGatewayOverrideContainer.hide();
+                    v4AutoDns1OverrideContainer.hide();
+                    v4AutoDns2OverrideContainer.hide();
                     v4PPPoEUsername.hide();
                     v4PPPoEPassword.hide();
                     v4PPPoEUsePeerDns.hide();
@@ -1051,11 +1164,11 @@ if (!Ung.hasResource["Ung.Network"]) {
                                 v4StaticDns2.show();
                             }
                         } else if ( v4ConfigType.getValue() == "AUTO" ) {
-                            v4AutoAddressOverride.show();
-                            v4AutoPrefixOverride.show();
-                            v4AutoGatewayOverride.show();
-                            v4AutoDns1Override.show();
-                            v4AutoDns2Override.show();
+                            v4AutoAddressOverrideContainer.show();
+                            v4AutoPrefixOverrideContainer.show();
+                            v4AutoGatewayOverrideContainer.show();
+                            v4AutoDns1OverrideContainer.show();
+                            v4AutoDns2OverrideContainer.show();
                         } else if ( v4ConfigType.getValue() == "PPPOE" ) {
                             v4PPPoEUsername.show();
                             v4PPPoEPassword.show();
