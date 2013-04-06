@@ -61,7 +61,7 @@ public interface Parser
      * @return the ByteBuffer to return
      * @throws ParseException
      */
-    ByteBuffer parse(TCPChunkEvent event) throws ParseException;
+    TCPChunkResult parse(TCPChunkEvent event) throws ParseException;
 
     /**
      * Called with last data from the read buffer on session close.

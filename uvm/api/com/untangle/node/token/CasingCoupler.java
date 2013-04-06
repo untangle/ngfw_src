@@ -124,11 +124,11 @@ public class CasingCoupler extends CasingBase
     private IPDataResult streamParse(Casing casing, TCPChunkEvent e, boolean s2c)
     {
         Parser parser = casing.parser();
-        ByteBuffer[] buffer = new ByteBuffer[1];
-
+        TCPChunkResult result = null;
+        
         try
         {
-            buffer[0] = parser.parse(e);
+            result = parser.parse(e);
         }
 
         catch (Exception exn)
@@ -137,18 +137,17 @@ public class CasingCoupler extends CasingBase
             return null;
         }
 
-        if (s2c) return new TCPChunkResult(buffer,null,null);
-        else return new TCPChunkResult(null,buffer,null);
+        return(result);
     }
 
     private IPDataResult streamUnparse(Casing casing, TCPChunkEvent e, boolean s2c)
     {
         Unparser unparser = casing.unparser();
-        ByteBuffer[] buffer = new ByteBuffer[1];
+        TCPChunkResult result = null;
 
         try
         {
-            buffer[0] = unparser.unparse(e);
+            result = unparser.unparse(e);
         }
 
         catch (Exception exn)
@@ -157,7 +156,6 @@ public class CasingCoupler extends CasingBase
             return null;
         }
 
-        if (s2c) return new TCPChunkResult(buffer,null,null);
-        else return new TCPChunkResult(null,buffer,null);
+        return(result);
     }
 }

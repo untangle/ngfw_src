@@ -33,7 +33,7 @@ public abstract class AbstractParser implements Parser
 
     /*
      * CasingAdaptor will call the ParseResult/ByteBuffer version
-     * CasingCoupler will call the ByteBuffer/TCPChunkEvent version
+     * CasingCoupler will call the TCPChunkResult/TCPChunkEvent version
      * If you forget to override one or the other in your casing
      * then you will see one of the helpful exception messages
      */
@@ -43,7 +43,7 @@ public abstract class AbstractParser implements Parser
         throw new ParseException("Unexpected call to base class parse(ByteBuffer)");
     }
 
-    public ByteBuffer parse(TCPChunkEvent event) throws ParseException
+    public TCPChunkResult parse(TCPChunkEvent event) throws ParseException
     {
         throw new ParseException("Unexpected call to base class parse(TCPChunkEvent)");
     }

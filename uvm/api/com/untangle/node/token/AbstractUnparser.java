@@ -34,7 +34,7 @@ public abstract class AbstractUnparser implements Unparser
 
     /*
      * CasingAdaptor will call the UnparseResult/Token version
-     * CasingCoupler will call the ByteBuffer/TCPChunkEvent version
+     * CasingCoupler will call the TCPChunkResult/TCPChunkEvent version
      * If you forget to override one or the other in your casing
      * then you will see one of the helpful exception messages
      */
@@ -44,7 +44,7 @@ public abstract class AbstractUnparser implements Unparser
         throw new UnparseException("Unexpected call to base class unparse(ByteBuffer)");
     }
 
-    public ByteBuffer unparse(TCPChunkEvent event) throws UnparseException
+    public TCPChunkResult unparse(TCPChunkEvent event) throws UnparseException
     {
         throw new UnparseException("Unexpected call to base class unparse(Token)");
     }

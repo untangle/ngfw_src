@@ -62,7 +62,7 @@ public interface Unparser
      * @return UnparseResult containing unparsed content of the chunk
      * @exception UnparseException on unparse error.
      */
-    ByteBuffer unparse(TCPChunkEvent event) throws UnparseException;
+    TCPChunkResult unparse(TCPChunkEvent event) throws UnparseException;
 
     /**
      * Called when a session is being released. The unparser should
