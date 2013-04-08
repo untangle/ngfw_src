@@ -4,13 +4,14 @@
 package com.untangle.uvm.node;
 
 import java.util.List;
+import java.net.InetAddress;
 
 import com.untangle.uvm.node.Node;
 import com.untangle.uvm.node.SessionTuple;
 
 public interface PolicyManager
 {
-    Long findPolicyId( SessionTuple tuple, String username, String hostname );
+    Long findPolicyId( short protocol, int clientIntf, int serverIntf, InetAddress clientAddr, InetAddress serverAddr, int clientPort, int serverPort, String username, String hostname );
 
     void shutdownSessions( Long policyId );
 
