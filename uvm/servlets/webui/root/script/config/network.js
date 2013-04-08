@@ -1048,6 +1048,11 @@ if (!Ung.hasResource["Ung.Network"]) {
                             xtype:'checkbox',
                             dataIndex: "raEnabled",
                             boxLabel: this.i18n._("Send Router Advertisements")
+                        },{
+                            xtype: 'label',
+                            name: "v6RouterAdvertisementWarning",
+                            html: "<font color=\"red\">" + this.i18n._("Warning: ") + "</font>" + this.i18n._("SLAAC only works with /64 subnets."),
+                            cls: 'boxlabel'
                         }]
                     }]
                 }, {
@@ -1163,6 +1168,7 @@ if (!Ung.hasResource["Ung.Network"]) {
                     var v6AliasesContainer = this.query('container[name="v6AliasesContainer"]')[0];
                     var v6OptionsContainer = this.query('container[name="v6OptionsContainer"]')[0];
                     var v6SendRouterAdvertisements = this.query('checkbox[dataIndex="raEnabled"]')[0];
+                    var v6SendRouterAdvertisementsWarning = this.query('label[name="v6RouterAdvertisementWarning"]')[0];
                     
                     // hide everything
                     isWan.hide();
@@ -1199,6 +1205,7 @@ if (!Ung.hasResource["Ung.Network"]) {
                     v6AliasesContainer.hide();
                     v6OptionsContainer.hide();
                     v6SendRouterAdvertisements.hide();
+                    v6SendRouterAdvertisementsWarning.hide();
                     
                     // if config disabled show nothing
                     if ( configTypeValue == "DISABLED") {
@@ -1272,6 +1279,8 @@ if (!Ung.hasResource["Ung.Network"]) {
                             } else {
                                 v6OptionsContainer.show();
                                 v6SendRouterAdvertisements.show();
+                                if (v6StaticPrefixLength.getValue() != 64)
+                                    v6SendRouterAdvertisementsWarning.show();
                             }
                         } else if ( v6ConfigType.getValue() == "AUTO" ) {
                             v6AliasesContainer.show();
