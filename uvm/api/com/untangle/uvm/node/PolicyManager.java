@@ -7,23 +7,23 @@ import java.util.List;
 import java.net.InetAddress;
 
 import com.untangle.uvm.node.Node;
-import com.untangle.uvm.node.SessionTuple;
 
 public interface PolicyManager
 {
+    /**
+     * Find the correct policy ID based on the Policy Manager rules for a provided session parameters
+     */
     Long findPolicyId( short protocol, int clientIntf, int serverIntf, InetAddress clientAddr, InetAddress serverAddr, int clientPort, int serverPort, String username, String hostname );
     
-    void shutdownSessions( Long policyId );
-
-    /*
-    * @param child: The node to test if this is a child.
-    * @param parent: The node to see the distance from the child to parent.
-    * @return.  The number of racks in between the child policy and parent.
-    *   This is 0 if child == parent.
-    *   This is -1 if child is not a child of parent.
-    *   The null rack is a child of every parent.
-    *   The null rack is never the parent of any child.
-    */
+    /**
+     * @param child: The node to test if this is a child.
+     * @param parent: The node to see the distance from the child to parent.
+     * @return.  The number of racks in between the child policy and parent.
+     *   This is 0 if child == parent.
+     *   This is -1 if child is not a child of parent.
+     *   The null rack is a child of every parent.
+     *   The null rack is never the parent of any child.
+     */
     int getPolicyGenerationDiff( Long childId, Long parentId );
 
     /**
