@@ -162,7 +162,15 @@
     <priority value="INFO"/>
   </category>
 
+  <category name="com.untangle.node.capture">
+    <priority value="INFO"/>
+  </category>
+
   <category name="com.untangle.node.clam">
+    <priority value="INFO"/>
+  </category>
+
+  <category name="com.untangle.node.classd">
     <priority value="INFO"/>
   </category>
 
@@ -190,6 +198,10 @@
     <priority value="INFO"/>
   </category>
 
+  <category name="com.untangle.node.https">
+    <priority value="DEBUG"/>
+  </category>
+
   <category name="com.untangle.node.ips">
     <priority value="INFO"/>
   </category>
@@ -197,7 +209,7 @@
   <category name="com.untangle.node.ipsec">
     <priority value="INFO"/>
   </category>
- 
+
   <category name="com.untangle.node.license">
     <priority value="WARN"/>
   </category>
@@ -264,18 +276,6 @@
 
   <category name="com.untangle.node.webfilter">
     <priority value="INFO"/>
-  </category>
-
-  <category name="com.untangle.node.classd">
-    <priority value="INFO"/>
-  </category>
-
-  <category name="com.untangle.node.capture">
-    <priority value="INFO"/>
-  </category>
-
-  <category name="com.untangle.node.https">
-    <priority value="DEBUG"/>
   </category>
 
   <category name="com.untangle.node">
