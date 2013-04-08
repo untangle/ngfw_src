@@ -53,6 +53,7 @@ public class InterfaceSettings implements Serializable, JSONString
     private InetAddress v4AutoDns2Override; /* the dhcp override dns2 (null means don't override) */
 
     private List<InterfaceAlias> v4Aliases = new LinkedList<InterfaceAlias>();
+    private List<InterfaceAlias> v6Aliases = new LinkedList<InterfaceAlias>();
     
     private String      v4PPPoEUsername; /* PPPoE Username */
     private String      v4PPPoEPassword; /* PPPoE Password */
@@ -175,6 +176,9 @@ public class InterfaceSettings implements Serializable, JSONString
 
     public List<InterfaceAlias> getV4Aliases( ) { return this.v4Aliases; }
     public void setV4Aliases( List<InterfaceAlias> newValue ) { this.v4Aliases = newValue; }
+
+    public List<InterfaceAlias> getV6Aliases( ) { return this.v6Aliases; }
+    public void setV6Aliases( List<InterfaceAlias> newValue ) { this.v6Aliases = newValue; }
     
     public V6ConfigType getV6ConfigType( ) { return this.v6ConfigType; }
     public void setV6ConfigType( V6ConfigType newValue ) { this.v6ConfigType = newValue; }
@@ -229,22 +233,22 @@ public class InterfaceSettings implements Serializable, JSONString
     
     public static class InterfaceAlias
     {
-        private InetAddress v4StaticAddress; /* the address  of this interface if configured static, or dhcp override */ 
-        private Integer     v4StaticPrefix; /* the netmask of this interface if configured static, or dhcp override */
+        private InetAddress staticAddress; /* the address  of this interface if configured static, or dhcp override */ 
+        private Integer     staticPrefix; /* the netmask of this interface if configured static, or dhcp override */
 
         public InterfaceAlias() {}
         
-        public InetAddress getV4StaticAddress( ) { return this.v4StaticAddress; }
-        public void setV4StaticAddress( InetAddress newValue ) { this.v4StaticAddress = newValue; }
+        public InetAddress getStaticAddress( ) { return this.staticAddress; }
+        public void setStaticAddress( InetAddress newValue ) { this.staticAddress = newValue; }
 
-        public Integer getV4StaticPrefix( ) { return this.v4StaticPrefix; }
-        public void setV4StaticPrefix( Integer newValue ) { this.v4StaticPrefix = newValue; }
+        public Integer getStaticPrefix( ) { return this.staticPrefix; }
+        public void setStaticPrefix( Integer newValue ) { this.staticPrefix = newValue; }
 
-        public InetAddress getV4StaticNetmask( )
+        public InetAddress getStaticNetmask( )
         {
-            if (this.v4StaticPrefix == null || this.v4StaticPrefix < 0 || this.v4StaticPrefix > 32 )
+            if (this.staticPrefix == null || this.staticPrefix < 0 || this.staticPrefix > 32 )
                 return null;
-            return V4_PREFIX_NETMASKS[this.v4StaticPrefix];
+            return V4_PREFIX_NETMASKS[this.staticPrefix];
         }
     }
 

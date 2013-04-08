@@ -22,7 +22,7 @@ if (!Ung.hasResource["Ung.Network"]) {
                 {name:"SRC_ADDR",displayName: settingsCmp.i18n._("Source Address"), type: "text", visible: true, vtype:"ipMatcher"},
                 {name:"SRC_PORT",displayName: settingsCmp.i18n._("Source Port"), type: "text",vtype:"portMatcher", visible: false},
                 {name:"SRC_INTF",displayName: settingsCmp.i18n._("Source Interface"), type: "checkgroup", values: Ung.Util.getInterfaceList(true, true), visible: true, allowInvert: false},
-                {name:"PROTOCOL",displayName: settingsCmp.i18n._("Protocol"), type: "checkgroup", values: [["TCP","TCP"],["UDP","UDP"]], visible: false, allowInvert: false}
+                {name:"PROTOCOL",displayName: settingsCmp.i18n._("Protocol"), type: "checkgroup", values: [["TCP","TCP"],["UDP","UDP"],["ICMP","ICMP"],["GRE","GRE"],["ESP","ESP"],["AH","AH"],["SCTP","SCTP"]], visible: true, allowInvert: false}
             ];
         },
         getBypassRuleMatchers: function (settingsCmp) {
@@ -55,7 +55,7 @@ if (!Ung.hasResource["Ung.Network"]) {
                 {name:"SRC_ADDR",displayName: settingsCmp.i18n._("Source Address"), type: "text", visible: true, vtype:"ipMatcher"},
                 {name:"SRC_PORT",displayName: settingsCmp.i18n._("Source Port"), type: "text",vtype:"portMatcher", visible: false},
                 {name:"SRC_INTF",displayName: settingsCmp.i18n._("Source Interface"), type: "checkgroup", values: Ung.Util.getInterfaceList(true, true), visible: true, allowInvert: false},
-                {name:"PROTOCOL",displayName: settingsCmp.i18n._("Protocol"), type: "checkgroup", values: [["TCP","TCP"],["UDP","UDP"]], visible: true, allowInvert: false}
+                {name:"PROTOCOL",displayName: settingsCmp.i18n._("Protocol"), type: "checkgroup", values: [["TCP","TCP"],["UDP","UDP"],["ICMP","ICMP"],["GRE","GRE"],["ESP","ESP"],["AH","AH"],["SCTP","SCTP"]], visible: true, allowInvert: false}
             ];
         }
     };
@@ -193,6 +193,10 @@ if (!Ung.hasResource["Ung.Network"]) {
                     name: 'v6StaticDns1'
                 }, {
                     name: 'v6StaticDns2'
+                }, {
+                    name: 'v6Aliases'
+                }, {
+                    name: 'raEnabled'
                 }, {
                     name: 'dhcpEnabled'
                 }, {
@@ -586,7 +590,7 @@ if (!Ung.hasResource["Ung.Network"]) {
                     html: this.i18n._("<b>Interfaces</b> are legit. Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.")
                 }, this.gridInterfaces]
             });
-            this.gridInterfacesAliasesEditor = Ext.create('Ung.EditorGrid',{
+            this.gridInterfacesV4AliasesEditor = Ext.create('Ung.EditorGrid',{
                 name: 'IPv4 Aliases',
                 height: 180,
                 width: 450,
@@ -598,18 +602,18 @@ if (!Ung.hasResource["Ung.Network"]) {
                 columnsDefaultSortable: false,
                 data: [],
                 emptyRow: {
-                    "v4StaticAddress": "1.2.3.4",
-                    "v4StaticPrefix": "24",
+                    "staticAddress": "1.2.3.4",
+                    "staticPrefix": "24",
                     "javaClass": "com.untangle.uvm.network.InterfaceSettings$InterfaceAlias"
                 },
                 fields: [{
-                    name: 'v4StaticAddress'
+                    name: 'staticAddress'
                 }, {
-                    name: 'v4StaticPrefix'
+                    name: 'staticPrefix'
                 }],
                 columns: [{
                     header: this.i18n._("Address"),
-                    dataIndex: 'v4StaticAddress',
+                    dataIndex: 'staticAddress',
                     width:200,
                     editor : {
                         xtype: 'textfield',
@@ -618,7 +622,61 @@ if (!Ung.hasResource["Ung.Network"]) {
                     }
                 }, {
                     header: this.i18n._("Netmask / Prefix"),
-                    dataIndex: 'v4StaticPrefix',
+                    dataIndex: 'staticPrefix',
+                    flex: 1,
+                    editor : {
+                        xtype: 'textfield',
+                        allowBlank: false
+                    }
+                }],
+                columnsDefaultSortable: false,
+                setValue: function (value) {
+                    var data = [];
+                    if(value!=null && value.list!=null) {
+                        data=value.list;
+                    }
+                    this.reload({data:data});
+                },
+                getValue: function () {
+                    return {
+                        javaClass: "java.util.LinkedList",
+                        list: this.getPageList()
+                    };
+                }
+            });
+            this.gridInterfacesV6AliasesEditor = Ext.create('Ung.EditorGrid',{
+                name: 'IPv6 Aliases',
+                height: 180,
+                width: 450,
+                settingsCmp: this,
+                paginated: false,
+                hasEdit: false,
+                dataIndex: 'v6Aliases',
+                recordJavaClass: "com.untangle.uvm.network.InterfaceSettings$InterfaceAlias",
+                columnsDefaultSortable: false,
+                data: [],
+                emptyRow: {
+                    "staticAddress": "::1",
+                    "staticPrefix": "64",
+                    "javaClass": "com.untangle.uvm.network.InterfaceSettings$InterfaceAlias"
+                },
+                fields: [{
+                    name: 'staticAddress'
+                }, {
+                    name: 'staticPrefix'
+                }],
+                columns: [{
+                    header: this.i18n._("Address"),
+                    dataIndex: 'staticAddress',
+                    width:200,
+                    editor : {
+                        xtype: 'textfield',
+                        vtype: 'ip6Address',
+                        allowBlank: false
+                    }
+                }, {
+                    header: this.i18n._("Netmask / Prefix"),
+                    dataIndex: 'staticPrefix',
                     flex: 1,
                     editor : {
                         xtype: 'textfield',
@@ -756,7 +814,7 @@ if (!Ung.hasResource["Ung.Network"]) {
                                 dataIndex: "v4Address",
                                 setValue: function(value) {
                                     this.dataValue=value;
-                                    this.setText(Ext.isEmpty(value)?"":Ext.String.format(settingsCmp.i18n._("Current: {0}"), value))
+                                    this.setText(Ext.isEmpty(value)?"":Ext.String.format(settingsCmp.i18n._("Current: {0}"), value));
                                 },
                                 getValue: function() {
                                     return this.dataValue;
@@ -787,7 +845,7 @@ if (!Ung.hasResource["Ung.Network"]) {
                                 dataIndex: "v4PrefixLength",
                                 setValue: function(value, record) {
                                     this.dataValue=value;
-                                    this.setText(Ext.isEmpty(value)?"":Ext.String.format(settingsCmp.i18n._("Current: /{0} - {1}"), value, record.get("v4Netmask")))
+                                    this.setText(Ext.isEmpty(value)?"":Ext.String.format(settingsCmp.i18n._("Current: /{0} - {1}"), value, record.get("v4Netmask")));
                                 },
                                 getValue: function() {
                                     return this.dataValue;
@@ -813,7 +871,7 @@ if (!Ung.hasResource["Ung.Network"]) {
                                 dataIndex: "v4Gateway",
                                 setValue: function(value) {
                                     this.dataValue=value;
-                                    this.setText(Ext.isEmpty(value)?"":Ext.String.format(settingsCmp.i18n._("Current: {0}"), value))
+                                    this.setText(Ext.isEmpty(value)?"":Ext.String.format(settingsCmp.i18n._("Current: {0}"), value));
                                 },
                                 getValue: function() {
                                     return this.dataValue;
@@ -839,7 +897,7 @@ if (!Ung.hasResource["Ung.Network"]) {
                                 dataIndex: "v4Dns1",
                                 setValue: function(value) {
                                     this.dataValue=value;
-                                    this.setText(Ext.isEmpty(value)?"":Ext.String.format(settingsCmp.i18n._("Current: {0}"), value))
+                                    this.setText(Ext.isEmpty(value)?"":Ext.String.format(settingsCmp.i18n._("Current: {0}"), value));
                                 },
                                 getValue: function() {
                                     return this.dataValue;
@@ -865,7 +923,7 @@ if (!Ung.hasResource["Ung.Network"]) {
                                 dataIndex: "v4Dns2",
                                 setValue: function(value) {
                                     this.dataValue=value;
-                                    this.setText(Ext.isEmpty(value)?"":Ext.String.format(settingsCmp.i18n._("Current: {0}"), value))
+                                    this.setText(Ext.isEmpty(value)?"":Ext.String.format(settingsCmp.i18n._("Current: {0}"), value));
                                 },
                                 getValue: function() {
                                     return this.dataValue;
@@ -907,10 +965,12 @@ if (!Ung.hasResource["Ung.Network"]) {
                     }, {
                         xtype: 'fieldset',
                         title: this.i18n._("IPv4 Aliases"),
-                        items: [this.gridInterfacesAliasesEditor]
+                        name: "v4AliasesContainer",
+                        items: [this.gridInterfacesV4AliasesEditor]
                     }, {
                         xtype: 'fieldset',
                         title: this.i18n._("IPv4 Options"),
+                        name: "v4OptionsContainer",
                         items: [{
                             xtype:'checkbox',
                             dataIndex: "v4NatEgressTraffic",
@@ -927,7 +987,7 @@ if (!Ung.hasResource["Ung.Network"]) {
                     border: true,
                     title: this.i18n._("IPv6 Configuration"),
                     collapsible: true,
-                    collapsed: true,
+                    collapsed: false,
                     items: [{
                         xtype: "combo",
                         dataIndex: "v6ConfigType",
@@ -975,6 +1035,20 @@ if (!Ung.hasResource["Ung.Network"]) {
                         fieldLabel: this.i18n._("Secondary DNS"),
                         vtype: "ip6Address",
                         width: 350
+                    }, {
+                        xtype: 'fieldset',
+                        title: this.i18n._("IPv6 Aliases"),
+                        name: "v6AliasesContainer",
+                        items: [this.gridInterfacesV6AliasesEditor]
+                    }, {
+                        xtype: 'fieldset',
+                        title: this.i18n._("IPv6 Options"),
+                        name: "v6OptionsContainer",
+                        items: [{
+                            xtype:'checkbox',
+                            dataIndex: "raEnabled",
+                            boxLabel: this.i18n._("Send Router Advertisements")
+                        }]
                     }]
                 }, {
                     xtype: 'fieldset',
@@ -986,7 +1060,7 @@ if (!Ung.hasResource["Ung.Network"]) {
                     items: [{
                         xtype:'checkbox',
                         dataIndex: "dhcpEnabled",
-                        boxLabel: this.i18n._("Enable DHCP")
+                        boxLabel: this.i18n._("Enable DHCP Serving")
                     }, {
                         xtype: 'textfield',
                         dataIndex: "dhcpRangeStart",
@@ -1059,7 +1133,7 @@ if (!Ung.hasResource["Ung.Network"]) {
                     var dhcp = this.query('fieldset[name="dhcp"]')[0];
                     var v4ConfigType = this.query('combo[dataIndex="v4ConfigType"]')[0];
                     var v6ConfigType = this.query('combo[dataIndex="v6ConfigType"]')[0];
-                    
+
                     var v4StaticAddress = this.query('textfield[dataIndex="v4StaticAddress"]')[0];
                     var v4StaticPrefix = this.query('combo[dataIndex="v4StaticPrefix"]')[0];
                     var v4StaticGateway = this.query('textfield[dataIndex="v4StaticGateway"]')[0];
@@ -1086,6 +1160,9 @@ if (!Ung.hasResource["Ung.Network"]) {
                     var v6StaticGateway = this.query('textfield[dataIndex="v6StaticGateway"]')[0];
                     var v6StaticDns1 = this.query('textfield[dataIndex="v6StaticDns1"]')[0];
                     var v6StaticDns2 = this.query('textfield[dataIndex="v6StaticDns2"]')[0];
+                    var v6AliasesContainer = this.query('container[name="v6AliasesContainer"]')[0];
+                    var v6OptionsContainer = this.query('container[name="v6OptionsContainer"]')[0];
+                    var v6SendRouterAdvertisements = this.query('checkbox[dataIndex="raEnabled"]')[0];
                     
                     // hide everything
                     isWan.hide();
@@ -1119,7 +1196,10 @@ if (!Ung.hasResource["Ung.Network"]) {
                     v6StaticGateway.hide(); v6StaticGateway.disable();
                     v6StaticDns1.hide();
                     v6StaticDns2.hide();
-
+                    v6AliasesContainer.hide();
+                    v6OptionsContainer.hide();
+                    v6SendRouterAdvertisements.hide();
+                    
                     // if config disabled show nothing
                     if ( configTypeValue == "DISABLED") {
                         return;
@@ -1182,15 +1262,21 @@ if (!Ung.hasResource["Ung.Network"]) {
                         // if static show static fields
                         // if auto show override fields
                         if ( v6ConfigType.getValue() == "STATIC" ) {
+                            v6AliasesContainer.show();
                             v6StaticAddress.show(); v6StaticAddress.enable();
                             v6StaticPrefixLength.show(); v6StaticPrefixLength.enable();
                             if (isWanValue) {
                                 v6StaticGateway.show(); v6StaticGateway.enable();
                                 v6StaticDns1.show();
                                 v6StaticDns2.show();
+                            } else {
+                                v6OptionsContainer.show();
+                                v6SendRouterAdvertisements.show();
                             }
-                        } else  { //auto //disabled
-                            // no overriding in IPv6 so nothing to show
+                        } else if ( v6ConfigType.getValue() == "AUTO" ) {
+                            v6AliasesContainer.show();
+                        } else { //DISABLED
+                            v6Config.collapse();
                         }
                     }
                 },
