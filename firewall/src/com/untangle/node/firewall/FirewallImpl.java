@@ -21,7 +21,6 @@ import com.untangle.uvm.node.IntfMatcher;
 import com.untangle.uvm.node.IPMatcher;
 import com.untangle.uvm.node.PortMatcher;
 import com.untangle.uvm.node.ProtocolMatcher;
-import com.untangle.uvm.node.SessionTuple;
 import com.untangle.uvm.node.EventLogQuery;
 import com.untangle.uvm.util.I18nUtil;
 import com.untangle.uvm.vnet.NodeBase;

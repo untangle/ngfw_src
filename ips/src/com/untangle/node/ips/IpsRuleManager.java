@@ -26,8 +26,7 @@ public class IpsRuleManager
     private static final Pattern variablePattern = Pattern.compile("\\$[^ \n\r\t]+");
 
     private final List<IpsRuleHeader> headers = new ArrayList<IpsRuleHeader>();
-    private final Map<IpsRuleHeader, Set<IpsRuleSignature>> signatures
-        = new HashMap<IpsRuleHeader, Set<IpsRuleSignature>>();
+    private final Map<IpsRuleHeader, Set<IpsRuleSignature>> signatures = new HashMap<IpsRuleHeader, Set<IpsRuleSignature>>();
 
     private final IpsNodeImpl ips;
 
@@ -194,17 +193,12 @@ public class IpsRuleManager
         return returnList;
     }
 
-    public Set<IpsRuleSignature> matchesHeader(SessionTuple sess,
-                                               boolean sessInbound,
-                                               boolean forward)
+    public Set<IpsRuleSignature> matchesHeader(SessionTuple sess, boolean sessInbound, boolean forward)
     {
         return matchesHeader(sess, sessInbound, forward, headers);
     }
 
-    public Set<IpsRuleSignature> matchesHeader(SessionTuple sess,
-                                               boolean sessInbound,
-                                               boolean forward,
-                                               List<IpsRuleHeader> matchList)
+    public Set<IpsRuleSignature> matchesHeader(SessionTuple sess, boolean sessInbound, boolean forward, List<IpsRuleHeader> matchList)
     {
         Set<IpsRuleSignature> returnSet = new HashSet<IpsRuleSignature>();
         //logger.debug("Total List size: "+matchList.size());

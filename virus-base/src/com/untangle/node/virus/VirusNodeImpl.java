@@ -26,7 +26,6 @@ import com.untangle.uvm.SessionMatcher;
 import com.untangle.uvm.node.GenericRule;
 import com.untangle.uvm.node.EventLogQuery;
 import com.untangle.uvm.node.NodeMetric;
-import com.untangle.uvm.node.SessionTuple;
 import com.untangle.uvm.util.I18nUtil;
 import com.untangle.uvm.vnet.NodeBase;
 import com.untangle.uvm.vnet.Affinity;
@@ -107,8 +106,8 @@ public abstract class VirusNodeImpl extends NodeBase implements VirusNode
             /* Kill all FTP, HTTP, SMTP, sessions */
             public boolean isMatch( Long policyId, short protocol, int clientIntf, int serverIntf, InetAddress clientAddr, InetAddress serverAddr, int clientPort, int serverPort, Map<String,Object> attachments )
             {
-                /* Don't kill any UDP NodeSession s */
-                if (protocol == SessionTuple.PROTO_UDP) {
+                /* Only look at TCP sessions */
+                if (protocol != 6 /* TCP */) {
                     return false;
                 }
 

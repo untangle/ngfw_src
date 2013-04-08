@@ -16,7 +16,7 @@ public interface SessionTuple
 
     /**
      * Returns the protocol for the session.</p>
-     * @return a <code>short</code> giving one of the protocols (right now always TCP or UDP)
+     * @return a <code>short</code> giving one of the protocols (right now always TCP(6) or UDP(17))
      */
     short getProtocol();
 
@@ -60,5 +60,8 @@ public interface SessionTuple
      */
     int getServerPort();
 
+    /**
+     * Return the session ID
+     */
     long getSessionId();
 }

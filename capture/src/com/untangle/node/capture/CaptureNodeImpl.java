@@ -42,7 +42,6 @@ import com.untangle.uvm.BrandingManager;
 import com.untangle.uvm.SettingsManager;
 import com.untangle.uvm.SessionMatcher;
 import com.untangle.uvm.node.EventLogQuery;
-import com.untangle.uvm.node.SessionTuple;
 
 public class CaptureNodeImpl extends NodeBase implements CaptureNode
 {
