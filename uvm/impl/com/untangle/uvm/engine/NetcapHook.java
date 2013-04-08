@@ -157,7 +157,11 @@ public abstract class NetcapHook implements Runnable
             
             PolicyManager policyManager = (PolicyManager) UvmContextFactory.context().nodeManager().node("untangle-node-policy");
             if (policyManager != null) {
-                this.policyId  = policyManager.findPolicyId( clientSide, username, hostname );
+                this.policyId  = policyManager.findPolicyId( sessionGlobalState.getProtocol(),
+                                                             netcapSession.clientSide().interfaceId(), netcapSession.serverSide().interfaceId(),
+                                                             netcapSession.clientSide().client().host(), netcapSession.clientSide().server().host(),
+                                                             netcapSession.clientSide().client().port(), netcapSession.clientSide().server().port(),
+                                                             username, hostname );
             } else {
                 this.policyId = 1L; /* Default Policy */
             }
