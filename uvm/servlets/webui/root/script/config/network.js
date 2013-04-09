@@ -1,7 +1,7 @@
 if (!Ung.hasResource["Ung.Network"]) {
     Ung.hasResource["Ung.Network"] = true;
 
-    Ung.NetworkUtil={
+    Ung.NetworkUtil = {
         getPortForwardMatchers: function (settingsCmp) {
             return [
                 {name:"DST_LOCAL",displayName: settingsCmp.i18n._("Destined Local"), type: "boolean", visible: true},
@@ -59,7 +59,7 @@ if (!Ung.hasResource["Ung.Network"]) {
             ];
         }
     };
-    
+    Ung.NetworkSettingsCmp = null;
     Ext.define("Ung.Network", {
         extend: "Ung.ConfigWin",
         gridPortForwardRules: null,
@@ -72,7 +72,9 @@ if (!Ung.hasResource["Ung.Network"]) {
         panelNatRules: null,
         panelRoutes: null,
         panelAdvanced: null,
+        panelTroubleshooting: null,
         initComponent: function() {
+            Ung.NetworkSettingsCmp = this;
             this.breadcrumbs = [{
                 title: i18n._("Configuration"),
                 action: Ext.bind(function() {
@@ -91,9 +93,10 @@ if (!Ung.hasResource["Ung.Network"]) {
             this.buildBypassRules();
             this.buildRoutes();
             this.buildAdvanced();
+            this.buildTroubleshooting();
             
             // builds the tab panel with the tabs
-            var pageTabs = [ this.panelInterfaces, this.panelHostName, this.panelPortForwardRules, this.panelNatRules, this.panelBypassRules, this.panelRoutes, this.panelAdvanced ];
+            var pageTabs = [ this.panelInterfaces, this.panelHostName, this.panelPortForwardRules, this.panelNatRules, this.panelBypassRules, this.panelRoutes, this.panelAdvanced, this.panelTroubleshooting ];
             this.buildTabPanel(pageTabs);
 
             //Check if QoS is enabled and there are some initial WANs without downloadBandwidthKbps or uploadBandwidthKbps limits set and mark dirty if true,
@@ -1475,7 +1478,7 @@ if (!Ung.hasResource["Ung.Network"]) {
                     header: this.i18n._("Description"),
                     width: 200,
                     dataIndex: 'description',
-                    flex:1,
+                    flex: 1,
                     editor: {
                         xtype:'textfield',
                         allowBlank:false
@@ -1618,7 +1621,7 @@ if (!Ung.hasResource["Ung.Network"]) {
                     header: this.i18n._("Description"),
                     width: 200,
                     dataIndex: 'description',
-                    flex:1,
+                    flex: 1,
                     editor: {
                         xtype:'textfield',
                         allowBlank:false
@@ -1769,7 +1772,7 @@ if (!Ung.hasResource["Ung.Network"]) {
                     header: this.i18n._("Description"),
                     width: 200,
                     dataIndex: 'description',
-                    flex:1,
+                    flex: 1,
                     editor: {
                         xtype:'textfield',
                         allowBlank:false
@@ -1893,7 +1896,7 @@ if (!Ung.hasResource["Ung.Network"]) {
                     header: this.i18n._("Description"),
                     width: 300,
                     dataIndex: 'description',
-                    flex:1,
+                    flex: 1,
                     editor: {
                         xtype:'textfield',
                         allowBlank:false
@@ -2232,7 +2235,7 @@ if (!Ung.hasResource["Ung.Network"]) {
                     header: this.i18n._("Description"),
                     width: 200,
                     dataIndex: 'description',
-                    flex:1,
+                    flex: 1,
                     editor: {
                         xtype:'textfield',
                         allowBlank:false
@@ -2567,7 +2570,7 @@ if (!Ung.hasResource["Ung.Network"]) {
                     header: this.i18n._("Description"),
                     width: 200,
                     dataIndex: 'description',
-                    flex:1,
+                    flex: 1,
                     editor: {
                         xtype:'textfield',
                         allowBlank:false
@@ -2611,7 +2614,7 @@ if (!Ung.hasResource["Ung.Network"]) {
                     items: [{
                         xtype: "checkbox",
                         name: "Block",
-                        dataIndex: "bypass",
+                        dataIndex: "blocked",
                         fieldLabel: this.i18n._("Block")
                     }]
                 }]
@@ -2667,7 +2670,7 @@ if (!Ung.hasResource["Ung.Network"]) {
                     header: this.i18n._("Description"),
                     width: 200,
                     dataIndex: 'description',
-                    flex:1,
+                    flex: 1,
                     editor: {
                         xtype:'textfield',
                         allowBlank:false
@@ -2711,7 +2714,7 @@ if (!Ung.hasResource["Ung.Network"]) {
                     items: [{
                         xtype: "checkbox",
                         name: "Block",
-                        dataIndex: "bypass",
+                        dataIndex: "blocked",
                         fieldLabel: this.i18n._("Block")
                     }]
                 }]
@@ -2759,7 +2762,7 @@ if (!Ung.hasResource["Ung.Network"]) {
                 },{
                     header: this.i18n._("Address"),
                     dataIndex: 'address',
-                    flex:1,
+                    flex: 1,
                     editor: {
                         xtype:'textfield',
                         allowBlank: false,
@@ -2797,7 +2800,7 @@ if (!Ung.hasResource["Ung.Network"]) {
                 },{
                     header: this.i18n._("Local Server"),
                     dataIndex: 'localServer',
-                    flex:1,
+                    flex: 1,
                     editor: {
                         xtype:'textfield',
                         allowBlank: false,
@@ -2873,6 +2876,76 @@ if (!Ung.hasResource["Ung.Network"]) {
                     }
                 }]
             });
+        },
+        buildTroubleshooting: function() {
+            var settingsCmp = this;
+            this.gridNetworkTests = Ext.create( 'Ung.EditorGrid', {
+                name: 'Network Cards',
+                parentId: this.getId(),
+                settingsCmp: this,
+                paginated: false,
+                hasAdd: false,
+                hasDelete: false,
+                hasEdit: false,
+                data: [{
+                    divClass : "ua-cell-test-connectivity",
+                    action : "openConnectivityTest",
+                    name : this.i18n._( "Connectivity Test" )
+                },{
+                    divClass : "ua-cell-test-ping",
+                    action : "openPingTest",
+                    name : this.i18n._( "Ping Test" )
+                },{
+                    divClass : "ua-cell-test-dns",
+                    action : "openDnsTest",
+                    name : this.i18n._( "DNS Test" )
+                },{
+                    divClass : "ua-cell-test-tcp",
+                    action : "openTcpTest",
+                    name : this.i18n._( "Connection Test" )
+                },{
+                    divClass : "ua-cell-test-traceroute",
+                    action : "openTracerouteTest",
+                    name : this.i18n._( "Traceroute Test" )
+                },{
+                    divClass : "ua-cell-test-packet",
+                    action : "openPacketTest",
+                    name : this.i18n._( "Packet Test" )
+                }],
+                fields: [{
+                    name: 'name'
+                }, {
+                    name: 'divClass'
+                }, {
+                    name: 'action'
+                }],
+                columns: [{
+                    header: this.i18n._("Network Tests"),
+                    flex: 1,
+                    dataIndex: 'name',
+                    renderer: Ext.bind(function( value, metadata, record ) {
+                        var data = record.data
+                        var link = "javascript: Ung.NetworkSettingsCmp." + data.action + "()";
+
+                        return "<a href='" + link + "'><div class=' ua-cell-test " + record.get("divClass") + "'>" + value + "</div></a>";
+                    }, this )
+                }]
+            });
+            this.panelTroubleshooting = Ext.create('Ext.panel.Panel',{
+                helpSource: 'troubleshoot',
+                parentId: this.getId(),
+                title: this.i18n._('Troubleshooting'),
+                layout: 'anchor',
+                cls: 'ung-panel',
+                items: [{
+                    xtype: 'fieldset',
+                    cls: 'description',
+                    title: this.i18n._('Network Tests')
+                }, this.gridNetworkTests]
+            });
+        },
+        openConnectivityTest: function() {
+            alert("work in progress");
         },
         validate: function() {
             if(this.settings.qosSettings.qosEnabled) {
