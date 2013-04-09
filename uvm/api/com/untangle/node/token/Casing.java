@@ -36,14 +36,8 @@ package com.untangle.node.token;
 /**
  * Casings are responsible for breaking byte-streams into tokens and
  * vice versa. They come in pairs with one side near the server and
- * the other near the client. Traffic on the inside is passed, by default,
+ * the other near the client. Traffic on the inside is passed
  * as tokens, and on the outside as a raw byte stream.
- *
- * Originally it was assumed that casings would always take a stream of
- * something as input and return tokens as output.  This doesn't work
- * with for the https-casing so we added the localStream flag.  When
- * true, it changes casing behavior to treat both outside and inside
- * traffic as a raw byte stream.  
  */
 
 public interface Casing
