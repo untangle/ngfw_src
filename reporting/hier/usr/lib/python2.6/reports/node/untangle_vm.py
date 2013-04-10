@@ -580,7 +580,7 @@ class Lease:
 
 class AdministrativeLoginsDetail(DetailSection):
     def __init__(self):
-        DetailSection.__init__(self, 'admin-logins-events', _('Administrative Logins Events'))
+        DetailSection.__init__(self, 'admin-logins-events', _('Administrative Login Events'))
 
     def get_columns(self, host=None, user=None, email=None):
         if host or user or email:
