@@ -595,7 +595,7 @@ Ung.Util = {
 
         return data;
     },
-    getInterfaceList: function(wanMatchers, anyMatcher) {
+    getInterfaceList: function( wanMatchers, anyMatcher ) {
         var data = [];
 
         if( Ung.Util.networkSettings == null ) {
@@ -650,7 +650,7 @@ Ung.Util = {
             var name = intf['name'];
             var key = intf['interfaceId'];
             
-            if ( intf['isWan'] == true ) {
+            if ( intf['configType'] == 'ADDRESSED' && intf['isWan'] == true ) {
                 data.push( [ key, name ] );
             }
         }
