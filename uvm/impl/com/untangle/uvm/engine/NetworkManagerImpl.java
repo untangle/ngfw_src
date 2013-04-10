@@ -724,6 +724,15 @@ public class NetworkManagerImpl implements NetworkManager
              interfaceSettings.getDhcpRangeStart() == null ) {
             initializeDhcpDefaults( interfaceSettings );
         }
+
+        /**
+         * If its bridge, unset isWan
+         * This is a bummer because if you change to bridge and back to static in the UI
+         * It will not have its previous configuration, but this is safer because is many places
+         * we check the value of isWan without checking the configuration
+         */
+        if (interfaceSettings.getConfigType() !=  InterfaceSettings.ConfigType.ADDRESSED)
+            interfaceSettings.setIsWan( false );
     }
 
     /**
