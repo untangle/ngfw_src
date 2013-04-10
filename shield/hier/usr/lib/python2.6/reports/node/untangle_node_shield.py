@@ -23,7 +23,6 @@ from reports import TIME_OF_DAY_FORMATTER
 from reports import TIME_SERIES_CHART
 from reports.engine import Column
 from reports.engine import Column
-from reports.engine import FactTable
 from reports.engine import Node
 from reports.engine import TOP_LEVEL
 from reports.sql_helper import print_timing
