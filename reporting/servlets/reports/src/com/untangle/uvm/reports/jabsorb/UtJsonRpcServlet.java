@@ -12,7 +12,6 @@ import javax.servlet.http.HttpSession;
 import org.apache.log4j.Logger;
 import org.jabsorb.JSONRPCBridge;
 import org.jabsorb.JSONRPCServlet;
-import org.jabsorb.serializer.impl.JSONBeanSerializer;
 
 import com.untangle.uvm.LanguageManager;
 import com.untangle.uvm.SkinManager;
@@ -112,7 +111,6 @@ public class UtJsonRpcServlet extends JSONRPCServlet
 
             try {
                 // general serializers
-                b.registerSerializer(new JSONBeanSerializer());
                 b.registerSerializer(new EnumSerializer());
                 b.registerSerializer(new URLSerializer());
                 b.registerSerializer(new InetAddressSerializer());

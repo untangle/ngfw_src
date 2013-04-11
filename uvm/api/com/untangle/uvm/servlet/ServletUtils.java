@@ -6,7 +6,6 @@ package com.untangle.uvm.servlet;
 import org.jabsorb.JSONRPCBridge;
 import org.jabsorb.JSONSerializer;
 import org.jabsorb.serializer.Serializer;
-import org.jabsorb.serializer.impl.JSONBeanSerializer;
 
 import com.untangle.uvm.webui.jabsorb.serializer.EnumSerializer;
 import com.untangle.uvm.webui.jabsorb.serializer.IPMaskedAddressSerializer;
@@ -55,7 +54,6 @@ public class ServletUtils
     private <T> void registerSerializers(Registrator<T> registrator, T root) throws Exception
     {
         // general serializers
-        registrator.registerSerializer(root, new JSONBeanSerializer());
         registrator.registerSerializer(root, new EnumSerializer());
         registrator.registerSerializer(root, new URLSerializer());
         registrator.registerSerializer(root, new InetAddressSerializer());
