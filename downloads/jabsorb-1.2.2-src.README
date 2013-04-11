@@ -1,0 +1,27 @@
+We have a couple minor modifications to jabsorb
+
+1) One is a classloader fix to get Class.forName to work when unmarshalling in our enviroment.
+I'm not sure why it doesn't just inherit the correct ClassLoader
+
+2) A couple minor fixes to BooleanSerializer and ObjectSerializer (already appear to be in later versions)
+
+3) A change to print out more information when marshall/unmarshall fails
+
+We also change jabsorb to build json.jar because it contains the org.json.* sources 
+
+
+
+I tried to move to jabsorb 1.3.2
+However, it appears they've changed the jsonrpc.js 
+
+Mainly this change:
+http://code.google.com/p/jabsorb/source/detail?r=bd3f9bab082adc3bf9ca4cd2294680a37c9349ec&path=/webapps/jsonrpc/jsonrpc.js
+
+prevents us from using 1.3.2
+As it fetches the list of methods when JsonClient() is created and if a new type of object is downloaded it no longer finds the methods as listMethods is not called.
+This breaks pretty much everything for us except objects that a registered as callable references in the servlet.
+Since many objects are loaded dynamically this doesn't work for us. We probably need to patch jsonrpc.js to support getting the methods for classes not in the knownClasses table.
+
+Also python RPC must be change in a minor way to support 1.3.2
+-            return ServiceProxy(self.__serviceURL, ".obj#%s" % result['objectID'], self.__handler)
++            return ServiceProxy(self.__serviceURL, ".obj[%s]" % result['objectID'], self.__handler)
