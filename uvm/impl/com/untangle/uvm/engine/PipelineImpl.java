@@ -18,7 +18,7 @@ import com.untangle.uvm.vnet.Pipeline;
 /**
  * Implementation of <code>Pipeline</code>.
  */
-class PipelineImpl implements Pipeline
+public class PipelineImpl implements Pipeline
 {
     // This does not need to be concurrent since there is only one thread per pipeline.
     private final Map<Long,Object> attachments = new HashMap<Long,Object>();

@@ -16,7 +16,7 @@ import com.untangle.uvm.ConnectivityTester;
 import com.untangle.uvm.network.NetworkSettings;
 import com.untangle.uvm.network.InterfaceSettings;
 
-class ConnectivityTesterImpl implements ConnectivityTester
+public class ConnectivityTesterImpl implements ConnectivityTester
 {
     private final Logger logger = Logger.getLogger(getClass());
 

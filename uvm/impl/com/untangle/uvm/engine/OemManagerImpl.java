@@ -13,7 +13,7 @@ import com.untangle.uvm.OemSettings;
 /**
  * OemManagerImpl determines the OEM name and URL
  */
-class OemManagerImpl implements OemManager
+public class OemManagerImpl implements OemManager
 {
     private final Logger logger = Logger.getLogger(getClass());
 

@@ -59,7 +59,7 @@ import com.untangle.uvm.apt.UpgradeStatus;
  * 
  * The public methods are documented in AptManager.java
  */
-class AptManagerImpl implements AptManager
+public class AptManagerImpl implements AptManager
 {
     private final Logger logger = Logger.getLogger(getClass());
 

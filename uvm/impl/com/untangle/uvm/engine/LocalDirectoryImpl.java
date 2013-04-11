@@ -18,7 +18,7 @@ import com.untangle.uvm.LocalDirectoryUser;
 /**
  * Local Directory stores a local list of users
  */
-class LocalDirectoryImpl implements LocalDirectory
+public class LocalDirectoryImpl implements LocalDirectory
 {
     private final Logger logger = Logger.getLogger(getClass());
 

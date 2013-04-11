@@ -9,7 +9,7 @@ import com.untangle.uvm.node.NodeSettings;
 import com.untangle.uvm.node.NodeManager;
 import com.untangle.uvm.vnet.NodeBase;
 
-class BrandingManagerImpl implements BrandingManager
+public class BrandingManagerImpl implements BrandingManager
 {
     private DefaultBrandingManager defaultBranding;
 

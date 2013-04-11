@@ -11,7 +11,7 @@ import com.untangle.uvm.node.DayOfWeekMatcher;
 /**
  * Implements <code>CronJob</code>.
  */
-class CronJobImpl implements CronJob
+public class CronJobImpl implements CronJob
 {
     private final CronManager cronManager;
     private final Runnable runnable;

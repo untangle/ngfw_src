@@ -21,7 +21,7 @@ import com.untangle.node.util.OpenSSLWrapper;
  * TODO A work in progress (currently a disorganized mess of crap taken
  * from the old "main" and "TomcatManager" code.
  */
-class CertificateManagerImpl implements CertificateManager
+public class CertificateManagerImpl implements CertificateManager
 {
     private static final String APACHE_PEM_FILE = "/etc/apache2/ssl/apache.pem";
 

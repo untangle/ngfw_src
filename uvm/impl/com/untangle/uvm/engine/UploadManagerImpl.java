@@ -1,5 +1,5 @@
 /**
- * 
+ * $Id$
  */
 package com.untangle.uvm.engine;
 
@@ -12,17 +12,19 @@ import com.untangle.uvm.servlet.UploadManager;
 
 
 /**
- * @author rbscott
+ * Managers upload of files
  *
  */
-class UploadManagerImpl implements UploadManager {
+public class UploadManagerImpl implements UploadManager
+{
     Map<String,UploadHandler> uploadHandlers = new HashMap<String,UploadHandler>();
     
     /* 
      * @see com.untangle.uvm.servlet.UploadManager#getUploadHandler(java.lang.String)
      */
     @Override
-    public UploadHandler getUploadHandler(String name) {
+    public UploadHandler getUploadHandler(String name)
+    {
         return this.uploadHandlers.get(name);
     }
 
@@ -30,7 +32,8 @@ class UploadManagerImpl implements UploadManager {
      * @see com.untangle.uvm.servlet.UploadManager#getUploadHandlers()
      */
     @Override
-    public Map<String,UploadHandler> getUploadHandlers() {
+    public Map<String,UploadHandler> getUploadHandlers()
+    {
         return Collections.unmodifiableMap(this.uploadHandlers);
     }
 
@@ -38,7 +41,8 @@ class UploadManagerImpl implements UploadManager {
      * @see com.untangle.uvm.servlet.UploadManager#registerHandler(com.untangle.uvm.servlet.UploadHandler)
      */
     @Override
-    public void registerHandler(UploadHandler handler) {
+    public void registerHandler(UploadHandler handler)
+    {
         this.uploadHandlers.put(handler.getName(), handler);
     }
 
@@ -46,7 +50,8 @@ class UploadManagerImpl implements UploadManager {
      * @see com.untangle.uvm.servlet.UploadManager#unregisterHandler(java.lang.String)
      */
     @Override
-    public void unregisterHandler(String name) {
+    public void unregisterHandler(String name)
+    {
         this.uploadHandlers.remove(name);
     }
 

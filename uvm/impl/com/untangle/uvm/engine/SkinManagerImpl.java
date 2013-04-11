@@ -34,7 +34,7 @@ import com.untangle.uvm.servlet.UploadHandler;
 /**
  * Implementation of SkinManager.
  */
-class SkinManagerImpl implements SkinManager
+public class SkinManagerImpl implements SkinManager
 {
     private static final String SKINS_DIR = System.getProperty("uvm.skins.dir");;
     private static final String DEFAULT_SKIN = "default";

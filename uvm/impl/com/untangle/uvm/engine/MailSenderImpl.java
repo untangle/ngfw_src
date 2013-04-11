@@ -54,7 +54,7 @@ import com.untangle.uvm.util.I18nUtil;
  * as a stand-alone application. The stand-alone mode is used for mailing out
  * Untangle Reports.
  */
-class MailSenderImpl implements MailSender
+public class MailSenderImpl implements MailSender
 {
     public static final String UNTANGLE_SMTP_RELAY = "mail.untangle.com";
 

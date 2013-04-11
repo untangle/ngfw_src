@@ -17,7 +17,7 @@ import com.untangle.uvm.logging.LogEvent;
 /**
  * Manages event logging.
  */
-class LoggingManagerImpl implements LoggingManager
+public class LoggingManagerImpl implements LoggingManager
 {
     private final Logger logger = Logger.getLogger(getClass());
 

@@ -31,7 +31,7 @@ import com.untangle.uvm.network.InterfaceSettings;
  *
  * This is used by the UI to display state
  */
-class SessionMonitorImpl implements SessionMonitor
+public class SessionMonitorImpl implements SessionMonitor
 {
     private final Logger logger = Logger.getLogger(getClass());
 
