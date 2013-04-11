@@ -58,55 +58,40 @@ public class TomcatManagerImpl implements TomcatManager
     protected TomcatManagerImpl(UvmContextImpl uvmContext, InheritableThreadLocal<HttpServletRequest> threadRequest, String catalinaHome, String webAppRoot, String logDir)
     {
         this.webAppRoot = webAppRoot;
+        String hostname = "localhost";
 
-        ClassLoader uvmCl = Thread.currentThread().getContextClassLoader();
-        ClassLoader tomcatParent = uvmCl;
+        emb = new Embedded();
+        emb.setCatalinaHome(catalinaHome);
 
-        try {
-            // Entering Tomcat ClassLoader ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-            Thread.currentThread().setContextClassLoader(tomcatParent);
+        // create an Engine
+        Engine baseEngine = emb.createEngine();
 
-            // jdi 8/30/04 -- canonical host name depends on ordering of
-            // /etc/hosts
-            String hostname = "localhost";
+        // set Engine properties
+        baseEngine.setName("tomcat");
+        baseEngine.setDefaultHost(hostname);
+        baseEngine.setParentClassLoader( Thread.currentThread().getContextClassLoader() );
 
-            emb = new Embedded();
-            emb.setCatalinaHome(catalinaHome);
+        // create Host
+        baseHost = (StandardHost)emb.createHost(hostname, webAppRoot);
+        baseHost.setUnpackWARs(true);
+        baseHost.setDeployOnStartup(true);
+        baseHost.setAutoDeploy(true);
+        baseHost.setErrorReportValveClass("com.untangle.uvm.engine.UvmErrorReportValve");
 
-            // create an Engine
-            Engine baseEngine = emb.createEngine();
+        // add host to Engine
+        baseEngine.addChild(baseHost);
 
-            // set Engine properties
-            baseEngine.setName("tomcat");
-            baseEngine.setDefaultHost(hostname);
-            baseEngine.setParentClassLoader(tomcatParent);
+        // add new Engine to set of
+        // Engine for embedded server
+        emb.addEngine(baseEngine);
 
-            // create Host
-            baseHost = (StandardHost)emb.createHost(hostname, webAppRoot);
-            baseHost.setUnpackWARs(true);
-            baseHost.setDeployOnStartup(true);
-            baseHost.setAutoDeploy(true);
-            baseHost.setErrorReportValveClass("com.untangle.uvm.engine.UvmErrorReportValve");
+        loadServlet("/blockpage", "blockpage");
+        ServletContext ctx = loadServlet("/webui", "webui", new AdministrationValve() );
+        ctx.setAttribute("threadRequest", threadRequest);
 
-            // add host to Engine
-            baseEngine.addChild(baseHost);
-
-            // add new Engine to set of
-            // Engine for embedded server
-            emb.addEngine(baseEngine);
-
-            loadServlet("/blockpage", "blockpage");
-            ServletContext ctx = loadServlet("/webui", "webui", new AdministrationValve() );
-            ctx.setAttribute("threadRequest", threadRequest);
-
-            ctx = loadServlet("/setup", "setup", new AdministrationValve() );
-            ctx.setAttribute("threadRequest", threadRequest);
+        ctx = loadServlet("/setup", "setup", new AdministrationValve() );
+        ctx.setAttribute("threadRequest", threadRequest);
             
-        } finally {
-            Thread.currentThread().setContextClassLoader(uvmCl);
-            // restored classloader ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-        }
-
         writeWelcomeFile();
     }
 
