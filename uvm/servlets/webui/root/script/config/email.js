@@ -877,11 +877,9 @@ if (!Ung.hasResource["Ung.Email"]) {
                     paginated: false,
                     emptyRow: {
                         "address": "email@example.com",
-                        "category": this.i18n._("[no category]"),
-                        "description": this.i18n._("[no description]"),
-                        "javaClass": "com.untangle.node.mail.papi.EmailAddressRule"
+                        "javaClass": "com.untangle.node.smtp.EmailAddressRule"
                     },
-                    recordJavaClass: "com.untangle.node.mail.papi.EmailAddressRule",
+                    recordJavaClass: "com.untangle.node.smtp.EmailAddressRule",
                     dataFn: Ext.bind(function() { 
                         return this.getMailNodeSettings().quarantineSettings.allowedAddressPatterns;
                     }, this),
@@ -920,24 +918,16 @@ if (!Ung.hasResource["Ung.Email"]) {
                     emptyRow: {
                         "address1": this.i18n._("distributionlistrecipient@example.com"),
                         "address2": this.i18n._("quarantinelistowner@example.com"),
-                        "category": this.i18n._("[no category]"),
-                        "description": this.i18n._("[no description]"),
-                        "javaClass": "com.untangle.node.mail.papi.EmailAddressPairRule"
+                        "javaClass": "com.untangle.node.smtp.EmailAddressPairRule"
                     },
-                    recordJavaClass: "com.untangle.node.mail.papi.EmailAddressPairRule",
+                    recordJavaClass: "com.untangle.node.smtp.EmailAddressPairRule",
                     dataFn: Ext.bind( function() { 
                         return this.getMailNodeSettings().quarantineSettings.addressRemaps;
                     }, this),
                     fields: [{
-                        name: 'id'
-                    }, {
                         name: 'address1'
                     }, {
                         name: 'address2'
-                    }, {
-                        name: 'category'
-                    }, {
-                        name: 'description'
                     }],
                     columns: [
                     {
@@ -958,8 +948,7 @@ if (!Ung.hasResource["Ung.Email"]) {
                         }
                     }],
                     rowEditorLabelWidth: 160,
-                    rowEditorInputLines: [
-                    {
+                    rowEditorInputLines: [{
                         xtype: 'textfield',
                         name: "Distribution List Address",
                         dataIndex: "address1",
@@ -971,20 +960,6 @@ if (!Ung.hasResource["Ung.Email"]) {
                         name: "Send To Address",
                         dataIndex: "address2",
                         fieldLabel: this.i18n._("Send To Address"),
-                        width: 450
-                    },
-                    {
-                        xtype: 'textfield',
-                        name: "Category",
-                        dataIndex: "category",
-                        fieldLabel: this.i18n._("Category"),
-                        width: 450
-                    }, 
-                    {
-                        xtype: 'textfield',
-                        name: "Description",
-                        dataIndex: "description",
-                        fieldLabel: this.i18n._("Description"),
                         width: 450
                     }]
                 })]
