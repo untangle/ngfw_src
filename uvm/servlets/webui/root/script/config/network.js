@@ -561,17 +561,17 @@ if (!Ung.hasResource["Ung.Network"]) {
                 }, {
                     header: this.i18n._("Physical Dev"),
                     dataIndex: 'physicalDev',
-                    width:75
+                    width:100
                 }, {
                     hidden: true,
                     header: this.i18n._("System Dev"),
                     dataIndex: 'systemDev',
-                    width:75
+                    width:80
                 }, {
                     hidden: true,
                     header: this.i18n._("Symbolic Dev"),
                     dataIndex: 'symbolicDev',
-                    width:75
+                    width:80
                 }, {
                     header: this.i18n._("Config"),
                     dataIndex: 'configType',
@@ -579,7 +579,7 @@ if (!Ung.hasResource["Ung.Network"]) {
                 }, {
                     header: this.i18n._("Current Address"),
                     dataIndex: 'v4Address',
-                    width:100,
+                    width:150,
                     renderer: Ext.bind(function(value, metadata, record, rowIndex, colIndex, store, view) {
                         if (value == null || value == "")
                             return "";
