@@ -30,20 +30,64 @@
  * of the library, but you are not obligated to do so.  If you do not wish
  * to do so, delete this exception statement from your version.
  */
-package com.untangle.node.sasl;
+package com.untangle.node.smtp.sasl;
+import java.nio.ByteBuffer;
 
 
 /**
- * Observer for ANONYMOUS (RFC 2245) mechanism.
+ * Base class for Observers of mechanisms
+ * which support privacy/integrity protection.
+ * <br><br>
+ * By default, this class does not inspect the
+ * protocol yet advertizes that integrity and
+ * privacy mey result from the exchange.
  */
-class ANONYMOUSObserver
-    extends InitialIDObserver {
+abstract class PrivIntObserver
+    extends SASLObserver {
 
-    static final String[] MECH_NAMES = new String[] {
-        "ANONYMOUS".toLowerCase()
-    };
 
-    ANONYMOUSObserver() {
-        super(MECH_NAMES[0], DEF_MAX_MSG_SZ);
+    PrivIntObserver(String mechName, int maxMessageSz) {
+        super(mechName, true, true, maxMessageSz);
     }
+
+    @Override
+    public FeatureStatus exchangeUsingPrivacy() {
+        return FeatureStatus.UNKNOWN;
+    }
+
+    @Override
+    public FeatureStatus exchangeUsingIntegrity() {
+        return FeatureStatus.UNKNOWN;
+    }
+
+    @Override
+    public FeatureStatus exchangeAuthIDFound() {
+        return FeatureStatus.UNKNOWN;
+    }
+
+    @Override
+    public String getAuthID() {
+        return null;
+    }
+
+    @Override
+    public FeatureStatus exchangeComplete() {
+        return FeatureStatus.UNKNOWN;
+    }
+
+    @Override
+    public boolean initialClientData(ByteBuffer buf) {
+        return false;
+    }
+
+    @Override
+    public boolean clientData(ByteBuffer buf) {
+        return false;
+    }
+
+    @Override
+    public boolean serverData(ByteBuffer buf) {
+        return false;
+    }
+
 }

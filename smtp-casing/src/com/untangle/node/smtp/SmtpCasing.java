@@ -21,8 +21,8 @@ package com.untangle.node.smtp;
 import org.apache.log4j.Logger;
 
 import com.untangle.node.smtp.AbstractMailCasing;
-import com.untangle.node.sasl.SASLObserver;
-import com.untangle.node.sasl.SASLObserverFactory;
+import com.untangle.node.smtp.sasl.SASLObserver;
+import com.untangle.node.smtp.sasl.SASLObserverFactory;
 import com.untangle.node.token.Parser;
 import com.untangle.node.token.Unparser;
 import com.untangle.uvm.vnet.NodeTCPSession;

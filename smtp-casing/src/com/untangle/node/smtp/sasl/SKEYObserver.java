@@ -30,23 +30,20 @@
  * of the library, but you are not obligated to do so.  If you do not wish
  * to do so, delete this exception statement from your version.
  */
-package com.untangle.node.sasl;
+package com.untangle.node.smtp.sasl;
 
 
 /**
- * Observer for CRAM-MD5 (RFC 2195) mechanism.  Does
- * not find the user's credentials, but serves as a
- * placeholder so we know that this mechanism
- * <b>cannot</b> result in an encrypted channel.
+ * Observer for SKEY (RFC 2222) mechanism.
  */
-class CRAM_MD5Observer
-    extends ClearObserver {
+class SKEYObserver
+    extends InitialIDObserver {
 
     static final String[] MECH_NAMES = new String[] {
-        "CRAM-MD5".toLowerCase()
+        "SKEY".toLowerCase()
     };
 
-    CRAM_MD5Observer() {
+    SKEYObserver() {
         super(MECH_NAMES[0], DEF_MAX_MSG_SZ);
     }
 }

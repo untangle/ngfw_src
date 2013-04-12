@@ -30,62 +30,23 @@
  * of the library, but you are not obligated to do so.  If you do not wish
  * to do so, delete this exception statement from your version.
  */
-package com.untangle.node.sasl;
-import static com.untangle.node.util.ASCIIUtil.bbToString;
-
-import java.nio.ByteBuffer;
+package com.untangle.node.smtp.sasl;
 
 
 /**
- * Abstract base class for SASL mechanisms which
- * send a clear UID as the first client message
- * (ANONYMOUS and SKEY that I know of).
+ * Observer for CRAM-MD5 (RFC 2195) mechanism.  Does
+ * not find the user's credentials, but serves as a
+ * placeholder so we know that this mechanism
+ * <b>cannot</b> result in an encrypted channel.
  */
-abstract class InitialIDObserver
+class CRAM_MD5Observer
     extends ClearObserver {
 
-    private String m_id;
-    private boolean m_seenInitialClientData = false;
+    static final String[] MECH_NAMES = new String[] {
+        "CRAM-MD5".toLowerCase()
+    };
 
-    InitialIDObserver(String mechName,
-                      int maxMsgSize) {
-        super(mechName, maxMsgSize);
-    }
-
-    @Override
-    public FeatureStatus exchangeAuthIDFound() {
-        return m_seenInitialClientData?
-            (m_id==null?FeatureStatus.NO:FeatureStatus.YES):
-            FeatureStatus.UNKNOWN;
-    }
-
-    @Override
-    public String getAuthID() {
-        return m_id;
-    }
-
-    @Override
-    public boolean initialClientData(ByteBuffer buf) {
-        return clientMessage(buf);
-    }
-
-    @Override
-    public boolean clientData(ByteBuffer buf) {
-        return clientMessage(buf);
-    }
-
-    private boolean clientMessage(ByteBuffer buf) {
-
-        if(m_seenInitialClientData) {
-            return false;
-        }
-
-        if(!buf.hasRemaining()) {
-            return false;
-        }
-
-        m_seenInitialClientData = true;
-        m_id = bbToString(buf);
-        return true;
+    CRAM_MD5Observer() {
+        super(MECH_NAMES[0], DEF_MAX_MSG_SZ);
     }
 }

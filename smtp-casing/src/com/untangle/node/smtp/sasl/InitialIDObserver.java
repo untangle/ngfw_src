@@ -30,34 +30,31 @@
  * of the library, but you are not obligated to do so.  If you do not wish
  * to do so, delete this exception statement from your version.
  */
-package com.untangle.node.sasl;
+package com.untangle.node.smtp.sasl;
 import static com.untangle.node.util.ASCIIUtil.bbToString;
 
 import java.nio.ByteBuffer;
 
 
 /**
- * Observer for SECUREID mechanism (RFC 2808).
+ * Abstract base class for SASL mechanisms which
+ * send a clear UID as the first client message
+ * (ANONYMOUS and SKEY that I know of).
  */
-class SECUREIDObserver
+abstract class InitialIDObserver
     extends ClearObserver {
 
-    static final String[] MECH_NAMES = new String[] {
-        "SECUREID".toLowerCase()
-    };
-
-
-
     private String m_id;
-    private boolean m_seenInitialClientMessage = false;
+    private boolean m_seenInitialClientData = false;
 
-    SECUREIDObserver() {
-        super(MECH_NAMES[0], DEF_MAX_MSG_SZ);
+    InitialIDObserver(String mechName,
+                      int maxMsgSize) {
+        super(mechName, maxMsgSize);
     }
 
     @Override
     public FeatureStatus exchangeAuthIDFound() {
-        return m_seenInitialClientMessage?
+        return m_seenInitialClientData?
             (m_id==null?FeatureStatus.NO:FeatureStatus.YES):
             FeatureStatus.UNKNOWN;
     }
@@ -79,49 +76,16 @@ class SECUREIDObserver
 
     private boolean clientMessage(ByteBuffer buf) {
 
-        if(m_seenInitialClientMessage) {
+        if(m_seenInitialClientData) {
             return false;
         }
-
 
         if(!buf.hasRemaining()) {
             return false;
         }
-        m_seenInitialClientMessage = true;
 
-        //I'm unclear from the spec if the authorization ID
-        //is blank, if there is a leading null.  If so,
-        //just strip it off
-        if(buf.get(buf.position()) == 0) {
-            buf.get();
-        }
-        if(!buf.hasRemaining()) {
-            return false;
-        }
-
-        //If we see yet-another leading null, then
-        //give-up.
-        if(buf.get(buf.position()) == 0) {
-            return true;
-        }
-
-
-        //Now, there should be at least one and at-most
-        //two NULL bytes (0) in this buffer.
-        int nullPos = -1;
-        for(int i = buf.position(); i<buf.limit(); i++) {
-            if(buf.get(i) == 0) {
-                nullPos = i;
-                break;
-            }
-        }
-
-        if(nullPos == -1) {
-            return false;
-        }
-        buf.limit(nullPos);
+        m_seenInitialClientData = true;
         m_id = bbToString(buf);
-
         return true;
     }
 }

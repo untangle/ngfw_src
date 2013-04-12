@@ -14,7 +14,7 @@ import org.apache.log4j.Logger;
 import com.untangle.node.smtp.NotAnSMTPResponseLineException;
 import com.untangle.node.smtp.Response;
 import com.untangle.node.smtp.ResponseParser;
-import com.untangle.node.sasl.SASLObserver;
+import com.untangle.node.smtp.sasl.SASLObserver;
 import com.untangle.node.util.ByteBufferBuilder;
 
 /**
