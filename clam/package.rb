@@ -2,7 +2,7 @@
 
 deps = []
 
-%w(untangle-casing-smtp untangle-casing-ftp untangle-casing-http).each do |c|
+%w(untangle-casing-smtp untangle-casing-ftp untangle-casing-http untangle-base-virus).each do |c|
   deps << BuildEnv::SRC[c]['src']
 end
 
