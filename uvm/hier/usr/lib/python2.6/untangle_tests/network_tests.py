@@ -21,6 +21,10 @@ defaultRackId = 1
 clientControl = ClientControl()
 # ATS Radius server
 external_client = "10.5.6.71" 
+dogfood = "10.0.0.1"
+dogfood_alt = "10.0.0.2"
+remote_network = "192.168.144.0"
+remote_gateway = "192.168.144.251"
 
 def createPortForwardLocalMatcherRule( matcherType, value, destinationIP):
     matcherTypeStr = str(matcherType)
@@ -142,6 +146,18 @@ def createSingleMatcherRule( matcherType, value, blocked=True, flagged=True ):
             }
         };
         
+def createRouteRule( networkAddr, netmask, gateway):
+    return {
+        "description": "test route", 
+        "javaClass": "com.untangle.uvm.network.StaticRoute", 
+        "network": networkAddr, 
+        "nextHop": gateway, 
+        "prefix": netmask, 
+        "ruleId": 1, 
+        "toAddr": True, 
+        "toDev": False
+         };
+                    
 def appendForward(newRule):
     netsettings = uvmContext.networkManager().getNetworkSettings()
     netsettings['portForwardRules']['list'].append(newRule);
@@ -156,6 +172,11 @@ def appendFWRule(newRule):
     rules = nodeFW.getRules()
     rules["list"].append(newRule);
     nodeFW.setRules(rules);
+
+def appendRouteRule(newRule):
+    netsettings = uvmContext.networkManager().getNetworkSettings()
+    netsettings['staticRoutes']['list'].append(newRule);
+    uvmContext.networkManager().setNetworkSettings(netsettings)
 
 class NetworkTests(unittest2.TestCase):
 
@@ -313,6 +334,34 @@ class NetworkTests(unittest2.TestCase):
         assert (result == 0)
         uvmContext.networkManager().setNetworkSettings(orig_netstatings)
         uvmContext.nodeManager().destroy( nodeFW.getNodeSettings()["id"] )
+
+    dogfoodAvail = subprocess.call(["ping","-c","1",dogfood],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
+    @unittest2.skipIf(dogfoodAvail != 0,  "Dogfood not available")
+    def test_070_routes(self):        
+        # This test relies on the site to site openvpn on dogfood
+        # TODO This test needs to work with DHCP WAN also
+        clientControl.runCommand("rm -f /tmp/network_test_070a.log")
+        netsettings = uvmContext.networkManager().getNetworkSettings()
+        i = 0
+        for interface in netsettings['interfaces']['list']:
+            if interface['isWan']:
+                if (netsettings['interfaces']['list'][i]['v4StaticGateway']==dogfood):
+                    # test box is pointing to dogfood
+                    netsettings['interfaces']['list'][i]['v4StaticGateway']=dogfood_alt
+                    uvmContext.networkManager().setNetworkSettings(netsettings)
+                    break
+                elif (netsettings['interfaces']['list'][i]['v4StaticGateway']==dogfood_alt):
+                    # Already set to non dogfood gateway
+                    break
+                else:
+                    print "Abort test since gateway is not dogfood or other alt"
+                    assert(False)
+            i += 1
+        appendRouteRule(createRouteRule(remote_network,24,dogfood))
+        result = clientControl.runCommand("wget --no-check-certificate  -a /tmp/network_test_070a.log -O /tmp/network_test_070a.out -t 1 \'https://" + remote_gateway + "\'" ,True)
+        search = clientControl.runCommand("grep -q 'Administrator Login' /tmp/network_test_070a.out")  
+        assert (search == 0)
+        uvmContext.networkManager().setNetworkSettings(orig_netstatings)
         
     def test_999_finalTearDown(self):
         global node,orig_netstatings
