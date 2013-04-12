@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import com.untangle.node.mime.EmailAddress;
+import com.untangle.node.smtp.mime.EmailAddress;
 
 import com.untangle.uvm.node.ParseException;
 

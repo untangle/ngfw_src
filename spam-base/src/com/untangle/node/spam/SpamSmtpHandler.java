@@ -22,12 +22,12 @@ import com.untangle.node.smtp.safelist.SafelistNodeView;
 import com.untangle.node.smtp.Response;
 import com.untangle.node.smtp.SmtpTransaction;
 import com.untangle.node.smtp.sapi.BufferingSessionHandler;
-import com.untangle.node.mime.EmailAddress;
-import com.untangle.node.mime.HeaderParseException;
-import com.untangle.node.mime.LCString;
-import com.untangle.node.mime.MIMEMessage;
-import com.untangle.node.mime.MIMEOutputStream;
-import com.untangle.node.mime.MIMEUtil;
+import com.untangle.node.smtp.mime.EmailAddress;
+import com.untangle.node.smtp.mime.HeaderParseException;
+import com.untangle.node.smtp.mime.LCString;
+import com.untangle.node.smtp.mime.MIMEMessage;
+import com.untangle.node.smtp.mime.MIMEOutputStream;
+import com.untangle.node.smtp.mime.MIMEUtil;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.vnet.NodeTCPSession;
 

@@ -34,10 +34,10 @@ package com.untangle.node.smtp;
 
 import java.util.List;
 
-import com.untangle.node.mime.EmailAddress;
-import com.untangle.node.mime.EmailAddressWithRcptType;
-import com.untangle.node.mime.MIMEMessageHeaders;
-import com.untangle.node.mime.RcptType;
+import com.untangle.node.smtp.mime.EmailAddress;
+import com.untangle.node.smtp.mime.EmailAddressWithRcptType;
+import com.untangle.node.smtp.mime.MIMEMessageHeaders;
+import com.untangle.node.smtp.mime.RcptType;
 import com.untangle.uvm.node.SessionEvent;
 
 public class MessageInfoFactory

@@ -27,7 +27,7 @@ import com.untangle.node.smtp.safelist.SafelistCount;
 import com.untangle.node.smtp.safelist.SafelistEndUserView;
 import com.untangle.node.smtp.safelist.SafelistNodeView;
 import com.untangle.node.smtp.safelist.SafelistSettings;
-import com.untangle.node.mime.EmailAddress;
+import com.untangle.node.smtp.mime.EmailAddress;
 
 /**
  * Implementation of the safelist stuff

@@ -34,7 +34,7 @@
 package com.untangle.node.smtp;
 
 import com.untangle.node.smtp.FatalMailParseException;
-import com.untangle.node.mime.EmailAddress;
+import com.untangle.node.smtp.mime.EmailAddress;
 import com.untangle.node.token.ParseException;
 
 /**

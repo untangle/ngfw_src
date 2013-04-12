@@ -44,7 +44,7 @@ import com.untangle.node.smtp.quarantine.QuarantineNodeView;
 import com.untangle.node.smtp.quarantine.QuarantineSettings;
 import com.untangle.node.smtp.quarantine.QuarantineUserActionFailedException;
 import com.untangle.node.smtp.quarantine.QuarantineUserView;
-import com.untangle.node.mime.EmailAddress;
+import com.untangle.node.smtp.mime.EmailAddress;
 import com.untangle.node.util.IOUtil;
 import com.untangle.node.util.Pair;
 import com.untangle.uvm.CronJob;

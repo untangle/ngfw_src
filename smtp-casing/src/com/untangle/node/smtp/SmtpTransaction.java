@@ -38,7 +38,7 @@ import static com.untangle.node.util.Ascii.CRLF;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.untangle.node.mime.EmailAddress;
+import com.untangle.node.smtp.mime.EmailAddress;
 import com.untangle.uvm.node.TemplateValues;
 
 

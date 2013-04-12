@@ -35,8 +35,8 @@ package com.untangle.node.smtp;
 
 import org.apache.log4j.Logger;
 
-import com.untangle.node.mime.MIMEMessage;
-import com.untangle.node.mime.MIMEUtil;
+import com.untangle.node.smtp.mime.MIMEMessage;
+import com.untangle.node.smtp.mime.MIMEUtil;
 import com.untangle.uvm.node.Template;
 import com.untangle.uvm.node.TemplateValues;
 import com.untangle.uvm.node.TemplateValuesChain;

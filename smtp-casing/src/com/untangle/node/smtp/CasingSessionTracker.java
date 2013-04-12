@@ -28,7 +28,7 @@ import com.untangle.node.smtp.RCPTCommand;
 import com.untangle.node.smtp.Response;
 import com.untangle.node.smtp.SmtpTransaction;
 import com.untangle.node.smtp.UnparsableCommand;
-import com.untangle.node.mime.EmailAddress;
+import com.untangle.node.smtp.mime.EmailAddress;
 
 
 /**

@@ -5,7 +5,7 @@ package com.untangle.node.smtp.safelist;
 
 import java.util.List;
 
-import com.untangle.node.mime.EmailAddress;
+import com.untangle.node.smtp.mime.EmailAddress;
 
 /**
  * Interface for the nodes to query the

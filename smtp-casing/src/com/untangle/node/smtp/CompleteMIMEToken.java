@@ -37,7 +37,7 @@ import java.nio.ByteBuffer;
 
 import org.apache.log4j.Logger;
 
-import com.untangle.node.mime.MIMEMessage;
+import com.untangle.node.smtp.mime.MIMEMessage;
 import com.untangle.node.token.MetadataToken;
 import com.untangle.uvm.vnet.Pipeline;
 import com.untangle.uvm.vnet.event.TCPStreamer;

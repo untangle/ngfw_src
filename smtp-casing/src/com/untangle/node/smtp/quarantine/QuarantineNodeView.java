@@ -35,7 +35,7 @@ package com.untangle.node.smtp.quarantine;
 
 import java.io.File;
 
-import com.untangle.node.mime.EmailAddress;
+import com.untangle.node.smtp.mime.EmailAddress;
 
 /**
  * Interface for the nodes to insert

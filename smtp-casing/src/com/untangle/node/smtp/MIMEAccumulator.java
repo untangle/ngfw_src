@@ -14,11 +14,11 @@ import java.nio.channels.FileChannel;
 
 import org.apache.log4j.Logger;
 
-import com.untangle.node.mime.FileMIMESource;
-import com.untangle.node.mime.MIMEMessage;
-import com.untangle.node.mime.MIMEMessageHeaders;
-import com.untangle.node.mime.MIMEParsingInputStream;
-import com.untangle.node.mime.MIMEPolicy;
+import com.untangle.node.smtp.mime.FileMIMESource;
+import com.untangle.node.smtp.mime.MIMEMessage;
+import com.untangle.node.smtp.mime.MIMEMessageHeaders;
+import com.untangle.node.smtp.mime.MIMEParsingInputStream;
+import com.untangle.node.smtp.mime.MIMEPolicy;
 import com.untangle.uvm.vnet.Pipeline;
 import com.untangle.uvm.vnet.event.TCPStreamer;
 
@@ -346,13 +346,13 @@ public class MIMEAccumulator {
             in.close();
             return m_headers;
         }
-        catch(com.untangle.node.mime.HeaderParseException hpe) {
+        catch(com.untangle.node.smtp.mime.HeaderParseException hpe) {
             m_logger.warn("Error parsing headers of MIME subsection", hpe);
             try {in.close();}catch(Exception ignore){}
             m_fileMIMESource = null;
             return null;
         }
-        catch(com.untangle.node.mime.InvalidHeaderDataException ihde) {
+        catch(com.untangle.node.smtp.mime.InvalidHeaderDataException ihde) {
             m_logger.warn("Invalid headers found in MIME subsection", ihde);
             try {in.close();}catch(Exception ignore){}
             m_fileMIMESource = null;
@@ -467,12 +467,12 @@ public class MIMEAccumulator {
             closeInput();
             return m_mimeMessage;
         }
-        catch(com.untangle.node.mime.HeaderParseException hpe) {
+        catch(com.untangle.node.smtp.mime.HeaderParseException hpe) {
             m_logger.warn("Error parsing headers of MIME subsection", hpe);
             try{mimeIn.close();}catch(Exception ignore){}
             return null;
         }
-        catch(com.untangle.node.mime.InvalidHeaderDataException ihde) {
+        catch(com.untangle.node.smtp.mime.InvalidHeaderDataException ihde) {
             m_logger.warn("Invalid headers found in MIME subsection", ihde);
             try{mimeIn.close();}catch(Exception ignore){}
             return null;

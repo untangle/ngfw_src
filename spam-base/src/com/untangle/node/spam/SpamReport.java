@@ -10,10 +10,10 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 
-import com.untangle.node.mime.HeaderParseException;
-import com.untangle.node.mime.LCString;
-import com.untangle.node.mime.MIMEMessage;
-import com.untangle.node.mime.MIMEMessageHeaders;
+import com.untangle.node.smtp.mime.HeaderParseException;
+import com.untangle.node.smtp.mime.LCString;
+import com.untangle.node.smtp.mime.MIMEMessage;
+import com.untangle.node.smtp.mime.MIMEMessageHeaders;
 import com.untangle.uvm.node.TemplateValues;
 
 /**

@@ -33,27 +33,27 @@
 
 package com.untangle.node.smtp;
 
-import static com.untangle.node.mime.HeaderNames.CONTENT_TRANSFER_ENCODING;
-import static com.untangle.node.mime.HeaderNames.CONTENT_TYPE;
-import static com.untangle.node.mime.HeaderNames.DATE;
-import static com.untangle.node.mime.HeaderNames.MIME_VERSION;
+import static com.untangle.node.smtp.mime.HeaderNames.CONTENT_TRANSFER_ENCODING;
+import static com.untangle.node.smtp.mime.HeaderNames.CONTENT_TYPE;
+import static com.untangle.node.smtp.mime.HeaderNames.DATE;
+import static com.untangle.node.smtp.mime.HeaderNames.MIME_VERSION;
 import static com.untangle.node.util.Ascii.CRLF_BA;
 
 import java.util.List;
 
 import org.apache.log4j.Logger;
 
-import com.untangle.node.mime.AttachedMIMEMessage;
-import com.untangle.node.mime.ByteArrayMIMESource;
-import com.untangle.node.mime.ContentTypeHeaderField;
-import com.untangle.node.mime.ContentXFerEncodingHeaderField;
-import com.untangle.node.mime.EmailAddress;
-import com.untangle.node.mime.MIMEMessage;
-import com.untangle.node.mime.MIMEMessageHeaders;
-import com.untangle.node.mime.MIMEPart;
-import com.untangle.node.mime.MIMESourceRecord;
-import com.untangle.node.mime.MIMEUtil;
-import com.untangle.node.mime.RcptType;
+import com.untangle.node.smtp.mime.AttachedMIMEMessage;
+import com.untangle.node.smtp.mime.ByteArrayMIMESource;
+import com.untangle.node.smtp.mime.ContentTypeHeaderField;
+import com.untangle.node.smtp.mime.ContentXFerEncodingHeaderField;
+import com.untangle.node.smtp.mime.EmailAddress;
+import com.untangle.node.smtp.mime.MIMEMessage;
+import com.untangle.node.smtp.mime.MIMEMessageHeaders;
+import com.untangle.node.smtp.mime.MIMEPart;
+import com.untangle.node.smtp.mime.MIMESourceRecord;
+import com.untangle.node.smtp.mime.MIMEUtil;
+import com.untangle.node.smtp.mime.RcptType;
 import com.untangle.uvm.node.Template;
 import com.untangle.uvm.node.TemplateValues;
 import com.untangle.uvm.node.TemplateValuesChain;

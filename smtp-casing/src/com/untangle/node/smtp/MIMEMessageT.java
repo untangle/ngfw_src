@@ -37,10 +37,10 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 
-import com.untangle.node.mime.FileMIMESource;
-import com.untangle.node.mime.MIMEMessage;
-import com.untangle.node.mime.MIMEMessageHeaders;
-import com.untangle.node.mime.MIMEParsingInputStream;
+import com.untangle.node.smtp.mime.FileMIMESource;
+import com.untangle.node.smtp.mime.MIMEMessage;
+import com.untangle.node.smtp.mime.MIMEMessageHeaders;
+import com.untangle.node.smtp.mime.MIMEParsingInputStream;
 import com.untangle.node.token.Token;
 
 public class MIMEMessageT implements Token
