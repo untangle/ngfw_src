@@ -13,6 +13,9 @@ from uvm import Uvm
 from untangle_tests import TestDict
 from untangle_tests import ClientControl
 
+node = None
+nodeFW = None
+
 uvmContext = Uvm().getUvmContext()
 defaultRackId = 1
 clientControl = ClientControl()
@@ -88,10 +91,71 @@ def createPortForwardNewPortMatcherRule( matcherType, value, destinationIP, dest
         "ruleId": 1
     } 
 
+def createBypassMatcherRule( matcherType, value):
+    matcherTypeStr = str(matcherType)
+    valueStr = str(value)
+    return {
+        "bypass": True, 
+        "description": "test bypass", 
+        "enabled": True, 
+        "javaClass": "com.untangle.uvm.network.BypassRule", 
+        "matchers": {
+            "javaClass": "java.util.LinkedList", 
+            "list": [
+                {
+                    "invert": False, 
+                    "javaClass": "com.untangle.uvm.network.BypassRuleMatcher", 
+                    "matcherType": matcherTypeStr, 
+                    "value": value
+                }, 
+                {
+                    "invert": False, 
+                    "javaClass": "com.untangle.uvm.network.BypassRuleMatcher", 
+                    "matcherType": "PROTOCOL", 
+                    "value": "TCP,UDP"
+                }
+            ]
+        }, 
+        "ruleId": 1
+    } 
+
+def createSingleMatcherRule( matcherType, value, blocked=True, flagged=True ):
+    matcherTypeStr = str(matcherType)
+    valueStr = str(value)
+    return {
+        "javaClass": "com.untangle.node.firewall.FirewallRule", 
+        "id": 1, 
+        "enabled": True, 
+        "description": "Single Matcher: " + matcherTypeStr + " = " + valueStr, 
+        "flag": flagged, 
+        "block": blocked, 
+        "matchers": {
+            "javaClass": "java.util.LinkedList", 
+            "list": [
+                {
+                    "invert": False, 
+                    "javaClass": "com.untangle.node.firewall.FirewallRuleMatcher", 
+                    "matcherType": matcherTypeStr, 
+                    "value": valueStr
+                    }
+                ]
+            }
+        };
+        
 def appendForward(newRule):
     netsettings = uvmContext.networkManager().getNetworkSettings()
     netsettings['portForwardRules']['list'].append(newRule);
     uvmContext.networkManager().setNetworkSettings(netsettings)
+
+def appendBypass(newRule):
+    netsettings = uvmContext.networkManager().getNetworkSettings()
+    netsettings['bypassRules']['list'].append(newRule);
+    uvmContext.networkManager().setNetworkSettings(netsettings)
+
+def appendFWRule(newRule):
+    rules = nodeFW.getRules()
+    rules["list"].append(newRule);
+    nodeFW.setRules(rules);
 
 class NetworkTests(unittest2.TestCase):
 
@@ -100,11 +164,15 @@ class NetworkTests(unittest2.TestCase):
         return "network"
 
     @staticmethod
+    def nodeNameFW():
+        return "untangle-node-firewall"
+
+    @staticmethod
     def vendorName():
         return "Untangle"
 
     def setUp(self):
-        global node,orig_netstatings
+        global node, nodeFW, orig_netstatings
         orig_netstatings = uvmContext.networkManager().getNetworkSettings()
         
     def test_010_clientIsOnline(self):
@@ -127,8 +195,8 @@ class NetworkTests(unittest2.TestCase):
         i = 0
         for interface in netsettings['interfaces']['list']:
             if interface['isWan']:
-                netsettings['interfaces']['list'][i]['downloadBandwidthKbps']=1000
-                netsettings['interfaces']['list'][i]['uploadBandwidthKbps']=1000
+                netsettings['interfaces']['list'][i]['downloadBandwidthKbps']=10000
+                netsettings['interfaces']['list'][i]['uploadBandwidthKbps']=10000
             i += 1
         uvmContext.networkManager().setNetworkSettings(netsettings)
         clientControl.runCommand("rm -f 5MB.zip /tmp/network_test_020b.log")
@@ -141,7 +209,7 @@ class NetworkTests(unittest2.TestCase):
         wget_speed_post_QoSLimit = float(wget_speed_post_QoSLimit)
         print "Result of wget_speed_pre_QoSLimit <%s> wget_speed_post_QoSLimit <%s>" % (wget_speed_pre_QoSLimit,wget_speed_post_QoSLimit)
         assert ((wget_speed_post_QoSLimit != 0) and (wget_speed_post_QoSLimit < 500))
-        assert (wget_speed_pre_QoSLimit <  wget_speed_post_QoSLimit)
+        assert (wget_speed_pre_QoSLimit >  wget_speed_post_QoSLimit)
 
     # webResult = clientControl.runCommand("netstat -an | grep -q :80")
     # @unittest2.skipIf(webResult != 0,  "No web server running on client")
@@ -225,6 +293,27 @@ class NetworkTests(unittest2.TestCase):
         clientControl.runCommand("kill \$(pgrep python)")
         uvmContext.networkManager().setNetworkSettings(orig_netstatings)
 
+    def test_060_bypassRules(self):
+        global nodeFW
+        if nodeFW == None:
+            if (uvmContext.nodeManager().isInstantiated(self.nodeNameFW())):
+                print "ERROR: Node %s already installed" % self.nodeNameFW();
+                raise Exception('node %s already instantiated' % self.nodeNameFW())
+            nodeFW = uvmContext.nodeManager().instantiateAndStart(self.nodeNameFW(), defaultRackId)
+        # verify port 80 is open
+        result = clientControl.runCommand("wget -o /dev/null http://test.untangle.com/")
+        assert (result == 0)
+        # Block port 80 and verify it's closed
+        appendFWRule(createSingleMatcherRule("DST_PORT","80"));
+        result = clientControl.runCommand("wget -o /dev/null -t 1 --timeout=3 http://test.untangle.com/")
+        assert (result != 0)
+        # bypass the client and verify the client can bypass the firewall
+        appendBypass(createBypassMatcherRule("SRC_ADDR",ClientControl.hostIP))
+        result = clientControl.runCommand("wget -o /dev/null -t 1 --timeout=3 http://test.untangle.com/")
+        assert (result == 0)
+        uvmContext.networkManager().setNetworkSettings(orig_netstatings)
+        uvmContext.nodeManager().destroy( nodeFW.getNodeSettings()["id"] )
+        
     def test_999_finalTearDown(self):
         global node,orig_netstatings
         # Restore original settings to return to initial settings
