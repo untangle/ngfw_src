@@ -157,7 +157,14 @@ def createRouteRule( networkAddr, netmask, gateway):
         "toAddr": True, 
         "toDev": False
          };
-                    
+
+def createDNSRule( networkAddr, name):
+    return {
+        "address": networkAddr, 
+        "javaClass": "com.untangle.uvm.network.DnsStaticEntry", 
+        "name": name
+         };
+
 def appendForward(newRule):
     netsettings = uvmContext.networkManager().getNetworkSettings()
     netsettings['portForwardRules']['list'].append(newRule);
@@ -176,6 +183,11 @@ def appendFWRule(newRule):
 def appendRouteRule(newRule):
     netsettings = uvmContext.networkManager().getNetworkSettings()
     netsettings['staticRoutes']['list'].append(newRule);
+    uvmContext.networkManager().setNetworkSettings(netsettings)
+
+def appendDNSRule(newRule):
+    netsettings = uvmContext.networkManager().getNetworkSettings()
+    netsettings['dnsSettings']['staticEntries']['list'].append(newRule);
     uvmContext.networkManager().setNetworkSettings(netsettings)
 
 class NetworkTests(unittest2.TestCase):
@@ -362,6 +374,19 @@ class NetworkTests(unittest2.TestCase):
         search = clientControl.runCommand("grep -q 'Administrator Login' /tmp/network_test_070a.out")  
         assert (search == 0)
         uvmContext.networkManager().setNetworkSettings(orig_netstatings)
+
+    def test_080_DNS(self):        
+        # Test static entries in Config -> Networking -> Advanced -> DNS
+        result = clientControl.runCommand("host test.untangle.com", True)
+        match = re.search(r'\d{1,3}.\d{1,3}.\d{1,3}.\d{1,3}', result)
+        ip_address_testuntangle = match.group()
+        print "IP address of test.untangle.com %s" % ip_address_testuntangle
+        appendDNSRule(createDNSRule(ip_address_testuntangle,"www.google.com"))
+        result = clientControl.runCommand("host www.google.com", True)
+        match = re.search(r'\d{1,3}.\d{1,3}.\d{1,3}.\d{1,3}', result)
+        ip_address_google = match.group()
+        print "IP address of www.google.com %s" % ip_address_google
+        assert(ip_address_testuntangle == ip_address_google)
         
     def test_999_finalTearDown(self):
         global node,orig_netstatings
