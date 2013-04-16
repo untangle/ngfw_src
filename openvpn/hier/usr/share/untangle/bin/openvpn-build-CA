@@ -1,0 +1,57 @@
+#! /bin/bash
+
+generateCA()
+{
+    export COMMON_NAME=${CA_NAME}
+    export KEY_DN_QUALIFIER=${DN_QUALIFIER_CA}
+
+    openssl req -days ${CERT_DURATION} -nodes -new -x509 -keyout ${CA_KEY} -out ${CA_CRT} -config ${OPENSSL_CFG_FILE} -batch
+    
+    ## Make the ca key readable only by root
+    chmod 0600 ${CA_KEY}
+
+    ## Copy into into the key dir
+    cp ${CA_KEY} ${CA_CRT} ${OPENVPN_DATA_DIR}
+}
+
+generateServerKey()
+{
+    SERVER_KEY="/usr/share/untangle/conf/openvpn/server.key"
+    SERVER_CRT="/usr/share/untangle/conf/openvpn/server.crt"
+
+    local serverCsrTmp=`mktemp || exit -3`
+
+    export COMMON_NAME=${SERVER_NAME}
+    export KEY_DN_QUALIFIER=${DN_QUALIFIER_SERVER}
+    
+    ## Generate the server private key and the certificate signing request
+    openssl req -days ${CERT_DURATION} -nodes -new -keyout ${SERVER_KEY} -out ${serverCsrTmp} -extensions server -config ${OPENSSL_CFG_FILE} -batch
+
+    ## Sign the cretificate signing request
+    openssl ca -days ${CERT_DURATION} -out ${SERVER_CRT} -in ${serverCsrTmp} -extensions server -config ${OPENSSL_CFG_FILE} -batch
+
+    ## Remove the CSR
+    rm -f ${serverCsrTmp}
+
+    ## Make the server key readable only by root
+    chmod 0600 ${SERVER_KEY}
+
+    cp ${SERVER_KEY} ${SERVER_CRT} /usr/share/untangle/conf/openvpn
+}
+
+## Clean out the key directories and create new keys.
+rm -rf /usr/share/untangle/conf/openvpn/*
+mkdir -p /usr/share/untangle/conf/openvpn
+mkdir -p /usr/share/untangle/conf/openvpn/clients
+
+## Generate the diffie hellman parameters.
+openssl dhparam -out /etc/openvpn/data/dh.pem 2048
+
+## Create the CA
+generateCA
+
+## Create the server key.
+generateServerKey
+
+## Update the client status file
+updateClientStatus

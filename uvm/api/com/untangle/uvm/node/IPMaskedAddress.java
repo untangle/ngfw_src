@@ -173,6 +173,21 @@ public class IPMaskedAddress implements Serializable
         }
         return v4PrefixLengthToNetmaskString( this.prefixLength );
     }
+
+    public InetAddress getNetmask()
+    {
+        String netmaskString = this.getNetmaskString();
+        InetAddress netmask;
+
+        try {
+            netmask = InetAddress.getByName(netmaskString);
+        } catch (Exception e) {
+            logger.error("Unable to determine netmask for string: " + netmaskString);
+            return null;
+        }
+        
+        return netmask;
+    }
     
     /**
      * This bitwise ANDs the mask with addr and returns the result:

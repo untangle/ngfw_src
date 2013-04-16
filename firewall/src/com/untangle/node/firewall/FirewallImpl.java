@@ -196,21 +196,25 @@ public class FirewallImpl extends NodeBase implements Firewall
         return pipeSpecs;
     }
 
+    @Override
     protected void preStart()
     {
         this.reconfigure();
     }
 
+    @Override
     protected void postStart()
     {
         killAllSessions();
     }
 
+    @Override
     protected void postStop()
     {
         killAllSessions();
     }
 
+    @Override
     protected void postInit()
     {
         SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
@@ -243,8 +247,6 @@ public class FirewallImpl extends NodeBase implements Firewall
 
         this.reconfigure();
     }
-
-    // package protected methods -----------------------------------------------
 
     FirewallSettings getDefaultSettings()
     {
@@ -279,8 +281,6 @@ public class FirewallImpl extends NodeBase implements Firewall
         
         return settings;
     }
-
-    // private methods ---------------------------------------------------------
 
     private void reconfigure() 
     {

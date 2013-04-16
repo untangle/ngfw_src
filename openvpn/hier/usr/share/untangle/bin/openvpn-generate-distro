@@ -1,0 +1,71 @@
+#! /bin/bash
+
+commonName=`removeSpaces ${1}`
+publicAddress=${2}
+siteName=${3}
+
+if [ -z "${commonName}" ]; then
+    echo "[`date`,generate-distro] Must specify a common name."
+    exit -3
+fi
+
+if [ -z "${siteName}" ]; then
+    echo "[`date`,generate-distro] Must specify a site name."
+    exit -3
+fi
+
+WIN_CONFIG_FILE=${PACKAGE_DIR}/client-${commonName}.ovpn
+UNIX_CONFIG_FILE=${PACKAGE_DIR}/client-${commonName}.conf
+CLI_CRT_FILE=${PKI_DIR}/client-${commonName}.crt
+CLI_KEY_FILE=${PKI_DIR}/client-${commonName}.key
+
+NSI_SCRIPT=${DATA_DIR}/installer/openvpn-gui.nsi
+
+## Create the output directory
+mkdir -p ${PACKAGE_DIR}
+
+## Create a tempory directory for the client
+buildConfigFile() {
+    local tmpDir=`mktemp -d || exit -3`
+
+    ## Done this way so the zip directory is called
+    local outputDir="${tmpDir}/${ZIP_BASE}"
+    local keyDir="${outputDir}/${ZIP_BASE}"
+
+    mkdir ${outputDir} || exit -4
+    mkdir ${keyDir} || exit -4
+    
+    cp ${UNIX_CONFIG_FILE} ${outputDir}/${siteName}.conf
+    cp ${WIN_CONFIG_FILE}  ${outputDir}/${siteName}.ovpn
+    cp ${CLI_KEY_FILE}     ${keyDir}/${siteName}-${commonName}.key
+    cp ${CLI_CRT_FILE}     ${keyDir}/${siteName}-${commonName}.crt
+    cp ${CA_CRT}           ${keyDir}/${siteName}-ca.crt
+
+    pushd ${tmpDir}
+    ## Remove the zip first, otherwise it will append files.
+    rm -f ${PACKAGE_DIR}/config-${commonName}.zip
+    zip -r ${PACKAGE_DIR}/config-${commonName}.zip ${ZIP_BASE} > /dev/null
+    popd
+
+    ## Clean up
+    ${RM_CMD} -f ${outputDir}/${siteName}.conf
+    ${RM_CMD} -f ${outputDir}/${siteName}.ovpn
+    ${RM_CMD} -f ${keyDir}/${siteName}-${commonName}.key
+    ${RM_CMD} -f ${keyDir}/${siteName}-${commonName}.crt
+    ${RM_CMD} -f ${keyDir}/${siteName}-ca.crt
+    
+    rmdir ${keyDir}
+    rmdir ${outputDir}
+    rmdir ${tmpDir}
+}
+
+## Convert the client file to dos
+unix2dos ${WIN_CONFIG_FILE}
+
+## Run NSIS to create client distro.
+makensis -V1 -DCOMMON_NAME="${commonName}" -DSITE_NAME="${siteName}" ${NSI_SCRIPT} > /dev/null
+
+buildConfigFile
+
+true
+

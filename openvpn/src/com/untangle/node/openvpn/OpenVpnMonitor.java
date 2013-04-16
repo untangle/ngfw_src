@@ -64,7 +64,7 @@ class OpenVpnMonitor implements Runnable
     /* This is a list that contains the contents of the command "status 2" from openvpn */
     private final List<String> clientStatus = new LinkedList<String>();
 
-    private final VpnNodeImpl node;
+    private final OpenVpnNodeImpl node;
 
     /* The thread the monitor is running on */
     private Thread thread = null;
@@ -77,7 +77,7 @@ class OpenVpnMonitor implements Runnable
 
     private final UvmContext localContext;
 
-    protected OpenVpnMonitor( VpnNodeImpl node )
+    protected OpenVpnMonitor( OpenVpnNodeImpl node )
     {
         this.localContext = UvmContextFactory.context();
         this.node = node;
@@ -148,16 +148,16 @@ class OpenVpnMonitor implements Runnable
     }
 
     /**
-     * Method returns a list of open clients as ClientStatusEvents w/o
+     * Method returns a list of open clients as OpenVpnStatusEvents w/o
      * an end date.
      */
-    public synchronized List<ClientStatusEvent> getOpenConnectionsAsEvents()
+    public synchronized List<OpenVpnStatusEvent> getOpenConnectionsAsEvents()
     {
         Date now = new Date();
-        List<ClientStatusEvent> ret = new ArrayList<ClientStatusEvent>();
+        List<OpenVpnStatusEvent> ret = new ArrayList<OpenVpnStatusEvent>();
         for(Stats s : activeMap.values()) {
             if(s.isActive) {
-                ClientStatusEvent copy = s.getCurrentStatusEventCopy(now);
+                OpenVpnStatusEvent copy = s.getCurrentStatusEventCopy(now);
                 copy.setEnd(null);
                 ret.add(copy);
             }
@@ -491,7 +491,7 @@ class Stats
 {
     final Key key;
 
-    final ClientStatusEvent sessionEvent;
+    final OpenVpnStatusEvent sessionEvent;
 
     /* Total bytes received since the last event */
     long bytesRxDelta;
@@ -520,7 +520,7 @@ class Stats
         this.bytesTxDelta  = bytesTx;
         this.lastUpdate   = new Date();
         this.isActive     = true;
-        this.sessionEvent = new ClientStatusEvent( new Timestamp(key.start.getTime()), this.key.address, this.key.port, this.key.name );
+        this.sessionEvent = new OpenVpnStatusEvent( new Timestamp(key.start.getTime()), this.key.address, this.key.port, this.key.name );
     }
 
     void fillEvent( Timestamp now )
@@ -528,7 +528,7 @@ class Stats
         this.fillEvent( this.sessionEvent, now );
     }
 
-    void fillEvent( ClientStatusEvent event, Timestamp now )
+    void fillEvent( OpenVpnStatusEvent event, Timestamp now )
     {
         event.setEnd( now );
         event.setBytesTxTotal( this.bytesTxTotal );
@@ -537,9 +537,9 @@ class Stats
         event.setBytesRxDelta( this.bytesRxDelta );
     }
     
-    ClientStatusEvent getCurrentStatusEventCopy(Date now)
+    OpenVpnStatusEvent getCurrentStatusEventCopy(Date now)
     {
-        return new ClientStatusEvent( this.sessionEvent );
+        return new OpenVpnStatusEvent( this.sessionEvent );
     }
 
     void update( long newBytesRxTotal, long newBytesTxTotal )

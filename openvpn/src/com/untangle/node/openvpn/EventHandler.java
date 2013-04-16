@@ -20,19 +20,9 @@ class EventHandler extends AbstractEventHandler
 {
     private final Logger logger = Logger.getLogger( EventHandler.class );
 
-    /* Is this a OPENVPN client, a OPENVPN client passes all traffic */
-    private boolean isUntanglePlatformClient = false;
+    private final OpenVpnNodeImpl node;
 
-    /* Any client can connect to any exported address and vice versa */
-    private List <IPMatcher> clientAddressList = new LinkedList<IPMatcher>();
-    private List <IPMatcher> exportedAddressList = new LinkedList<IPMatcher>();
-
-    private VpnSettings settings;
-    
-    /* Firewall Node */
-    private final VpnNodeImpl node;
-
-    EventHandler( VpnNodeImpl node )
+    public EventHandler( OpenVpnNodeImpl node )
     {
         super(node);
 
@@ -74,69 +64,5 @@ class EventHandler extends AbstractEventHandler
             node.incrementPassCount();
             request.release();
         }
-    }
-
-    void configure( VpnSettings settings )
-    {
-        logger.debug( "Configuring handler" );
-
-        this.settings = settings;
-        
-        if ( settings.isUntanglePlatformClient()) {
-            isUntanglePlatformClient = settings.isUntanglePlatformClient();
-            return;
-        }
-
-        /* Create temporary lists */
-        List <IPMatcher> clientAddressList = new LinkedList<IPMatcher>();
-        List <IPMatcher> exportedAddressList = new LinkedList<IPMatcher>();
-
-        for ( VpnGroup group : settings.getGroupList()) {
-            /* Don't insert inactive groups */
-            if ( !group.getLive()) continue;
-            IPMatcher matcher = IPMatcher.makeSubnetMatcher( group.getAddress(), group.getNetmask());
-
-            clientAddressList.add( matcher );
-            if (logger.isDebugEnabled()) {
-                logger.debug( "clientAddressList: [" + matcher + "]" );
-            }
-        }
-        
-        Map<String,VpnGroup> groupMap = OpenVpnManager.buildGroupMap(settings);
-
-        for ( VpnSite site : settings.getSiteList()) {
-            VpnGroup group = groupMap.get(site.getGroupName());
-            /* Continue if the client isn't live or the group the client is in isn't live */
-            if ( !site.trans_isEnabled() || ( group == null ) || !group.getLive()) {
-                continue;
-            }
-
-            for ( SiteNetwork siteNetwork : site.getExportedAddressList()) {
-                if ( !siteNetwork.getLive()) continue;
-                IPMatcher matcher =
-                    IPMatcher.makeSubnetMatcher( siteNetwork.getNetwork(), siteNetwork.getNetmask());
-
-                clientAddressList.add( matcher );
-                if (logger.isDebugEnabled()) {
-                    logger.debug( "clientAddressList: [" + matcher + "]" );
-                }
-            }
-        }
-
-        for ( SiteNetwork siteNetwork : settings.getExportedAddressList()) {
-            if ( !siteNetwork.getLive()) continue;
-            IPMatcher matcher =
-                IPMatcher.makeSubnetMatcher( siteNetwork.getNetwork(), siteNetwork.getNetmask());
-
-            exportedAddressList.add( matcher );
-            if (logger.isDebugEnabled()) {
-                logger.debug( "exportedAddressList: [" + matcher + "]" );
-            }
-        }
-
-        this.clientAddressList   = clientAddressList;
-        this.exportedAddressList = exportedAddressList;
-
-        logger.debug( "" );
     }
 }
