@@ -94,9 +94,7 @@ public class OpenVpnNodeImpl extends NodeBase implements OpenVpnNode
     {
         logger.info("Initializing Settings...");
 
-        OpenVpnSettings settings = getDefaultSettings();
-
-        setSettings(settings);
+        setSettings(getDefaultSettings());
     }
 
     public OpenVpnSettings getSettings()
@@ -104,9 +102,9 @@ public class OpenVpnNodeImpl extends NodeBase implements OpenVpnNode
         return this.settings;
     }
 
-    public void setSettings( OpenVpnSettings newValue )
+    public void setSettings( OpenVpnSettings newSettings )
     {
-        this.settings = newValue;
+        this._setSettings( newSettings );
     }
     
     public void incrementPassCount()
@@ -179,4 +177,26 @@ public class OpenVpnNodeImpl extends NodeBase implements OpenVpnNode
 
         return newSettings;
     }
+
+    private void _setSettings( OpenVpnSettings newSettings )
+    {
+        /**
+         * Save the settings
+         */
+        SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
+        String nodeID = this.getNodeSettings().getId().toString();
+        try {
+            settingsManager.save(OpenVpnSettings.class, System.getProperty("uvm.settings.dir") + "/" + "untangle-node-openvpn/" + "settings_"  + nodeID, newSettings);
+        } catch (SettingsManager.SettingsException e) {
+            logger.warn("Failed to save settings.",e);
+            return;
+        }
+
+        /**
+         * Change current settings
+         */
+        this.settings = newSettings;
+        try {logger.debug("New Settings: \n" + new org.json.JSONObject(this.settings).toString(2));} catch (Exception e) {}
+    }
+    
 }

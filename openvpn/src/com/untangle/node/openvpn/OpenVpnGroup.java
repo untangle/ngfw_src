@@ -16,10 +16,7 @@ public class OpenVpnGroup implements java.io.Serializable
     private int id;
     
     private String name;
-    private String description;
 
-    private IPMaskedAddress addressSpace;
-    
     private boolean fullTunnel = false;
 
     private boolean pushDNS = false;
@@ -40,18 +37,6 @@ public class OpenVpnGroup implements java.io.Serializable
      */
     public String getName() { return name; }
     public void setName( String newValue ) { this.name = newValue; }
-
-    /**
-     * Description of the group
-     */
-    public String getDescription() { return description; }
-    public void setDescription( String newValue ) { this.description = newValue; }
-
-    /**
-     * The "address pool" of the group
-     */
-    public IPMaskedAddress getAddressSpace() { return this.addressSpace; }
-    public void setAddressSpace( IPMaskedAddress newValue ) { this.addressSpace = newValue; }
 
     /**
      * Should this group be "full tunnel" (all traffic goes through VPN)

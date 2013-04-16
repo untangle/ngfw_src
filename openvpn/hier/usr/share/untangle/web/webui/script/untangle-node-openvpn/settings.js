@@ -153,38 +153,36 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
             }
             Ext.MessageBox.wait(this.i18n._( "Building OpenVPN Client..." ), this.i18n._( "Please Wait" ));
             // populate download links
-            if (this.isVpnSite) {
-                this.node.getAdminDownloadLink(Ext.bind(function(result, exception) {
-                    if(Ung.Util.handleException(exception)) return;
-                    this.downloadConfigurationFileEl.dom.innerHTML = '<a href="' + result + '" target="_blank">' + this.i18n._('Download VPN Site configuration.') + '</a>';
+            var loadSemaphore = 3;
+            this.node.getAdminDownloadLink(Ext.bind(function(result, exception) {
+                if(Ung.Util.handleException(exception)) return;
+                this.downloadWindowsInstallerEl.dom.innerHTML = '<a href="' + result + '" target="_blank">' + this.i18n._('Click here to download an installer for Windows clients.') + '</a>';
+                loadSemaphore--;
+                if(loadSemaphore == 0) {
                     Ext.MessageBox.hide();
-                }, this), this.record.data.name, "ZIP" );
-            } else {
-                var loadSemaphore = 2;
-                this.node.getAdminDownloadLink(Ext.bind(function(result, exception) {
-                    if(Ung.Util.handleException(exception)) return;
-                    this.downloadWindowsInstallerEl.dom.innerHTML = '<a href="' + result + '" target="_blank">' + this.i18n._('Click here to download an installer for Windows clients.') + '</a>';
-                    loadSemaphore--;
-                    if(loadSemaphore == 0) {
-                        Ext.MessageBox.hide();
-                    }
-                }, this), this.record.data.name, "SETUP_EXE" );
-                this.node.getAdminDownloadLink(Ext.bind(function(result, exception) {
-                    if(Ung.Util.handleException(exception)) return;
-                    this.downloadConfigurationFileEl.dom.innerHTML = '<a href="' + result + '" target="_blank">' + this.i18n._('Click here to download a configuration file for all OSs.') + '</a>';
-                    loadSemaphore--;
-                    if(loadSemaphore == 0) {
-                        Ext.MessageBox.hide();
-                    }
-                }, this), this.record.data.name, "ZIP" );
-
-            }
+                }
+            }, this), this.record.data.name, "SETUP_EXE" );
+            this.node.getAdminDownloadLink(Ext.bind(function(result, exception) {
+                if(Ung.Util.handleException(exception)) return;
+                this.downloadConfigurationFileEl.dom.innerHTML = '<a href="' + result + '" target="_blank">' + this.i18n._('Click here to download a configuration file for all OSs.') + '</a>';
+                loadSemaphore--;
+                if(loadSemaphore == 0) {
+                    Ext.MessageBox.hide();
+                }
+            }, this), this.record.data.name, "ZIP" );
+            this.node.getAdminDownloadLink(Ext.bind(function(result, exception) {
+                if(Ung.Util.handleException(exception)) return;
+                this.downloadConfigurationFileEl.dom.innerHTML = '<a href="' + result + '" target="_blank">' + this.i18n._('Click here to download a configuration file for remote Untangles.') + '</a>';
+                loadSemaphore--;
+                if(loadSemaphore == 0) {
+                    Ext.MessageBox.hide();
+                }
+            }, this), this.record.data.name, "ZIP" );
         }
     });
 
     Ext.define('Ung.OpenVPN', {
         extend:'Ung.NodeWin',
-        configState: null,
         groupsStore: null,
         panelStatus: null,
         panelRemoteServers: null,
@@ -249,14 +247,13 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
 
             return this.groupsStore;
         },
-        getDefaultGroupName: function(forceReload) {
-            if (forceReload || this.defaultGroupName === undefined) {
+        getDefaultGroupId: function(forceReload) {
+            if (forceReload || this.defaultGroupId === undefined) {
                 var defaultGroup = this.getGroupsStore().getCount()>0 ? this.getGroupsStore().getAt(0).data:null;
-                this.defaultGroupName = defaultGroup==null ? null: defaultGroup.name;
+                this.defaultGroupId = defaultGroup == null ? null : defaultGroup.id;
             }
-            return this.defaultGroupName;
+            return this.defaultGroupId;
         },
-
         // active connections/sessions grip
         buildActiveClientsGrid: function() {
             this.gridActiveClients = Ext.create('Ung.EditorGrid', {
@@ -293,7 +290,7 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                         }
                     ]
                 }),
-                recordJavaClass: "com.untangle.node.openvpn.FIXME",
+                recordJavaClass: "com.untangle.node.openvpn.OpenVpnStatusEvent",
                 dataFn: this.getRpcNode().getActiveClients,
                 fields: [{
                     name: "address"
@@ -495,30 +492,31 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                 anchor: "100% 48%",
                 style: "margin-bottom:10px;",
                 emptyRow: {
-                    "live": true,
+                    "enabled": true,
                     "name": this.i18n._("newClient"),
-                    "groupName": this.getDefaultGroupName(),
-                    "address": null
+                    "groupId": this.getDefaultGroupId(),
+                    "address": null,
+                    "export":false,
+                    "exportNetwork":null
                 },
                 title: this.i18n._("Remote Clients"),
-                recordJavaClass: "com.untangle.node.openvpn.FIXME",
+                recordJavaClass: "com.untangle.node.openvpn.OpenVpnRemoteClient",
                 dataProperty: "remoteClients",
                 fields: [{
-                    name: 'live'
+                    name: 'enabled'
                 }, {
                     name: 'name'
                 }, {
-                    name: 'originalName',
-                    mapping: 'name'
+                    name: 'groupId'
                 }, {
-                    name: 'groupName'
+                    name: 'export'
                 }, {
-                    name: 'address'
+                    name: 'exportNetwork'
                 }],
                 columns: [{
                         xtype:'checkcolumn',
                         header: this.i18n._("Enabled"),
-                        dataIndex: 'live',
+                        dataIndex: 'enabled',
                         width: 80,
                         resizable: false
                     }, {
@@ -533,22 +531,13 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                         }
                     },
                     this.getGroupsColumn(),
-                    this.getDistributeColumn(),
-                    {
-                        header: this.i18n._("Virtual Address"),
-                        width: 100,
-                        dataIndex: 'address',
-                        renderer: Ext.bind(function(value, metadata, record) {
-                            return value==null ? this.i18n._("unassigned"): value;
-                        }, this)
-                    }],
-                //sortField: 'name',
+                    this.getDistributeColumn()],
                 columnsDefaultSortable: true,
                 // the row input lines used by the row editor window
                 rowEditorInputLines: [{
                     xtype: 'checkbox',
                     name: "Enabled",
-                    dataIndex: "live",
+                    dataIndex: "enabled",
                     fieldLabel: this.i18n._("Enabled")
                 }, {
                     xtype: "textfield",
@@ -560,9 +549,9 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                     width: 300
                 }, {
                     xtype: "combo",
-                    name: "Address pool",
-                    dataIndex: "groupName",
-                    fieldLabel: this.i18n._("Address pool"),
+                    name: "Group",
+                    dataIndex: "groupId",
+                    fieldLabel: this.i18n._("Group"),
                     store: this.getGroupsStore(),
                     displayField: 'name',
                     valueField: 'name',
@@ -623,79 +612,74 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                 name: 'Exports',
                 helpSource: 'exports',
                 // the total records is set from the base settings
+                sortable: true,
                 paginated: false,
+                anchor: "100% 48%",
+                style: "margin-bottom:10px;",
                 emptyRow: {
-                    "live": true,
+                    "enabled": true,
                     "name": this.i18n._("[no name]"),
-                    "network": "192.168.1.0",
-                    "netmask": "255.255.255.0"
+                    "network": "192.168.1.0/24"
                 },
                 title: this.i18n._("Exported Networks"),
-                recordJavaClass: "com.untangle.node.openvpn.FIXME",
+                recordJavaClass: "com.untangle.node.openvpn.OpenVpnExport",
                 data: exports,
                 // the list of fields
                 fields: [{
+                    name: 'enabled'
+                }, {
                     name: 'name'
                 }, {
                     name: 'network'
-                }, {
-                    name: 'netmask'
                 }],
                 autoExpandMin: 250,
                 // the list of columns for the column model
                 columns: [{
-                    header: this.i18n._("Host/Network Name"),
-                    width: 250,
-                    dataIndex: 'name',
-                    flex:1,
-                    editor: { xtype:'textfield'}
-                }, {
-                    header: this.i18n._("IP Address"),
-                    width: 130,
-                    dataIndex: 'network',
-                    editor: {
-                        xtype:'textfield',
-                        allowBlank: false,
-                        vtype: 'ipAddress'
+                        xtype:'checkcolumn',
+                        header: this.i18n._("Enabled"),
+                        dataIndex: 'enabled',
+                        width: 80,
+                        resizable: false
+                    }, {
+                        header: this.i18n._("Export Name"),
+                        width: 150,
+                        dataIndex: 'name',
+                        editor: {
+                            xtype:'textfield',
+                            allowBlank: false
                         }
-                }, {
-                    header: this.i18n._("Netmask"),
-                    width: 130,
-                    dataIndex: 'netmask',
-                    editor: {
-                        xtype:'textfield',
-                        allowBlank: false,
-                        vtype: 'ipAddress'
-                    }
-                }],
+                    }, {
+                        header: this.i18n._("Network"),
+                        width: 150,
+                        dataIndex: 'network',
+                        flex:1,
+                        editor: {
+                            xtype:'textfield',
+                            allowBlank: false,
+                            vtype: 'cidrBlock'
+                        }
+                    }],
                 columnsDefaultSortable: true,
                 // the row input lines used by the row editor window
                 rowEditorInputLines: [{
                     xtype: 'checkbox',
                     name: "Enabled",
-                    dataIndex: "live",
+                    dataIndex: "enabled",
                     fieldLabel: this.i18n._("Enabled")
                 }, {
                     xtype: "textfield",
-                    name: "Host/network name",
+                    name: "Export name",
                     dataIndex: "name",
-                    fieldLabel: this.i18n._("Host/network name"),
+                    fieldLabel: this.i18n._("Export Name"),
+                    allowBlank: false,
                     width: 300
                 }, {
                     xtype: "textfield",
-                    name: "IP address",
-                    dataIndex: "network",
+                    name: "Export name",
+                    dataIndex: "name",
+                    fieldLabel: this.i18n._("Network"),
                     allowBlank: false,
-                    fieldLabel: this.i18n._("IP address"),
-                    vtype: 'ipAddress',
-                    width: 300
-                }, {
-                    xtype: "textfield",
-                    name: "Netmask",
-                    dataIndex: "netmask",
-                    fieldLabel: this.i18n._("Netmask"),
-                    allowBlank: false,
-                    vtype: 'ipAddress',
+                    vtype: 'cidrBlock',
                     width: 300
                 }]
             });
@@ -748,48 +732,39 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                 settingsCmp: this,
                 name: 'Groups',
                 // the total records is set from the base settings
-                anchor:"100% 100%",
+                sortable: true,
                 paginated: false,
-                height: 250,
-                autoScroll: true,
+                anchor: "100% 48%",
+                style: "margin-bottom:10px;",
                 emptyRow: {
-                    "live": true,
+                    "enabled": true,
                     "name": this.i18n._("[no name]"),
-                    "group": null,
-                    "address": "172.16.16.0",
-                    "netmask": "255.255.255.0"
+                    "pushDNS": false,
+                    "fullTunnel": false,
+                    "isDnsOverrideEnabled": false
                 },
                 title: this.i18n._("Groups"),
-                recordJavaClass: "com.untangle.node.openvpn.FIXME",
+                recordJavaClass: "com.untangle.node.openvpn.OpenVpnGroup",
                 dataProperty: 'groups',
                 // the list of fields
                 fields: [{
-                    name: 'live'
+                    name: 'id'
                 }, {
                     name: 'name'
                 }, {
-                    name: 'originalName',
-                    mapping: 'name'
-                }, {
-                    name: 'address'
-                }, {
-                    name: 'netmask'
-                }, {
-                    name: 'useDNS'
+                    name: 'pushDNS'
                 }, {
                     name: 'fullTunnel'
+                }, {
+                    name: 'isDnsOverrideEnabled'
+                }, {
+                    name: 'dnsOverride1'
+                }, {
+                    name: 'dnsOverride2'
                 }],
                 // the list of columns for the column model
-                columns: [
-                {
-                    xtype:'checkcolumn',
-                    header: this.i18n._("Enabled"),
-                    dataIndex: 'live',
-                    width: 80,
-                    resizable: false
-                },
-                {
-                    header: this.i18n._("Pool Name"),
+                columns: [{
+                    header: this.i18n._("Group Name"),
                     width: 160,
                     dataIndex: 'name',
                     flex:1,
@@ -797,38 +772,22 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                         xtype:'textfield',
                         allowBlank:false
                     }
-                },
-                {
-                    header: this.i18n._("IP Address"),
-                    width: 130,
-                    dataIndex: 'address',
-                    editor: {
-                        xtype:'textfield',
-                        allowBlank:false,
-                        vtype: 'ipAddress'
-                    }
-                },
-                {
-                    header: this.i18n._("Netmask"),
-                    width: 130,
-                    dataIndex: 'netmask',
-                    editor: {
-                        xtype:'textfield',
-                        allowBlank: false,
-                        vtype: 'ipAddress'
-                    }
-                },
-                {
-                    id: "useDNS",
-                    header: this.i18n._("Export DNS"),
-                    dataIndex: 'useDNS',
-                    width: 90,
-                    resizable: false
-                },
-                {
+                },{
                     id: "fullTunnel",
                     header: this.i18n._("Full Tunnel"),
                     dataIndex: 'fullTunnel',
+                    width: 90,
+                    resizable: false
+                },{
+                    id: "pushDNS",
+                    header: this.i18n._("Push DNS"),
+                    dataIndex: 'pushDNS',
+                    width: 90,
+                    resizable: false
+                },{
+                    id: "isDnsOverrideEnabled",
+                    header: this.i18n._("DNS Override"),
+                    dataIndex: 'isDnsOverrideEnabled',
                     width: 90,
                     resizable: false
                 }],
@@ -838,41 +797,46 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                 rowEditorInputLines: [{
                     xtype: 'checkbox',
                     name: "Enabled",
-                    dataIndex: "live",
+                    dataIndex: "enabled",
                     fieldLabel: this.i18n._("Enabled")
                 }, {
                     xtype: "textfield",
-                    name: "Pool Name",
+                    name: "Group Name",
                     dataIndex: "name",
-                    fieldLabel: this.i18n._("Pool Name"),
+                    fieldLabel: this.i18n._("Group Name"),
                     allowBlank: false,
                     width: 300
-                }, {
-                    xtype: "textfield",
-                    name: "IP address",
-                    dataIndex: "address",
-                    fieldLabel: this.i18n._("IP Address"),
-                    allowBlank: false,
-                    vtype: 'ipAddress',
-                    width: 300
-                }, {
-                    xtype: "textfield",
-                    name: "Netmask",
-                    dataIndex: 'netmask',
-                    fieldLabel: this.i18n._("Netmask"),
-                    allowBlank: false,
-                    vtype: 'ipAddress',
-                    width: 300
-                }, {
-                    xtype: 'checkbox',
-                    name: "Export DNS",
-                    dataIndex: "useDNS",
-                    fieldLabel: this.i18n._("Export DNS")
                 }, {
                     xtype: 'checkbox',
                     name: "Full Tunnel",
                     dataIndex: "fullTunnel",
                     fieldLabel: this.i18n._("Full Tunnel")
+                }, {
+                    xtype: 'checkbox',
+                    name: "Push DNS",
+                    dataIndex: "pushDNS",
+                    fieldLabel: this.i18n._("Push DNS")
+                }, {
+                    xtype: 'checkbox',
+                    name: "DNS Override",
+                    dataIndex: "isDnsOverrideEnabled",
+                    fieldLabel: this.i18n._("DNS Override")
+                }, {
+                    xtype: "textfield",
+                    name: "DNS Override 1",
+                    dataIndex: "dnsOverride1",
+                    fieldLabel: this.i18n._("DNS Override 1"),
+                    allowBlank: false,
+                    vtype: 'ipAddress',
+                    width: 300
+                }, {
+                    xtype: "textfield",
+                    name: "DNS Override 2",
+                    dataIndex: "dnsOverride2",
+                    fieldLabel: this.i18n._("DNS Override 2"),
+                    allowBlank: false,
+                    vtype: 'ipAddress',
+                    width: 300
                 }]
             });
             return gridGroups;
@@ -920,13 +884,7 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
 
         // validation function
         validate: function() {
-            if (this.configState == "SERVER") {
-                return  this.validateGeneralOptions() && this.validateGroups() &&
-                    this.validateVpnClients();
-            } else {
-                return true;
-            }
-
+            return  this.validateGeneralOptions() && this.validateGroups() && this.validateVpnClients();
         },
 
         //validate OpenVPN GeneralOptions settings
@@ -1014,16 +972,8 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
             var groupNames = {};
 
             for( i=0;i<groups.length;i++) {
-                var groupName = groups[i].name.toLowerCase();
-
                 var group = groups[i];
-                if(group.internalId>=0 && group.name!=group.originalName) {
-                    Ext.MessageBox.alert(i18n._("Failed"), this.i18n._("Changing name is not allowed. Create a new group."),
-                        Ext.bind(function () {
-                            this.tabs.setActiveTab(this.panelRemoteClients);
-                        }, this));
-                    return false;
-                }
+                var groupName = group.name.toLowerCase();
 
                 if ( groupNames[groupName] != null ) {
                     Ext.MessageBox.alert(this.i18n._('Failed'), Ext.String.format(this.i18n._("The group name: \"{0}\" in row: {1} already exists."), groups[j].name.toLowerCase(), j+1),
@@ -1043,29 +993,21 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
         validateVpnClients: function() {
             var clientList=this.gridRemoteClients.getPageList(false, true);
             var clientNames = {};
-            var client = null;
 
             for(var i=0;i<clientList.length;i++) {
-                client = clientList[i];
-                if(client.internalId>=0 && client.name!=client.originalName) {
-                    Ext.MessageBox.alert(i18n._("Failed"), this.i18n._("Changing name is not allowed. Create a new user."),
-                        Ext.bind(function () {
-                            this.tabs.setActiveTab(this.panelRemoteClients);
-                        }, this)
-                    );
-                    return false;
-                }
-
-                if ( clientNames[client.name] != null ) {
+                var client = clientList[i];
+                var clientName = client.name.toLowerCase();
+                
+                if ( clientNames[clientName] != null ) {
                     Ext.MessageBox.alert(this.i18n._('Failed'),
-                                         Ext.String.format(this.i18n._("The client name: \"{0}\" in row: {1} already exists."), client.name, i),
+                                         Ext.String.format(this.i18n._("The client name: \"{0}\" in row: {1} already exists."), clientName, i),
                                          Ext.bind(function () {
                                              this.tabs.setActiveTab(this.panelRemoteClients);
                                          }, this)
                                         );
                     return false;
                 }
-                clientNames[client.name] = true;
+                clientNames[clientName] = true;
             }
             return true;
         },
@@ -1075,20 +1017,14 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
         },
 
         save: function(isApply) {
-            if(this.configState == "SERVER") {
-                this.getSettings().groups.list = this.gridGroups.getPageList();
-                this.getSettings().exports.list = this.gridExports.getPageList();
-                this.getSettings().clientList.list = this.gridRemoteClients.getPageList();
-                this.getSettings().siteList.list = this.gridSites.getPageList();
+            this.getSettings().groups.list = this.gridGroups.getPageList();
+            this.getSettings().exports.list = this.gridExports.getPageList();
+            this.getSettings().remoteClients.list = this.gridRemoteClients.getPageList();
 
-
-                this.getRpcNode().setSettings(Ext.bind(function(result, exception) {
-                    if(Ung.Util.handleException(exception)) return;
-                    this.afterSave(isApply);
-                }, this), this.getSettings());
-            } else {
+            this.getRpcNode().setSettings(Ext.bind(function(result, exception) {
+                if(Ung.Util.handleException(exception)) return;
                 this.afterSave(isApply);
-            }
+            }));
         },
 
         afterSave: function(isApply) {
@@ -1099,23 +1035,19 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                 Ext.MessageBox.wait(i18n._("Reloading..."), i18n._("Please wait"));
                 this.getSettings(function() {
                     // Assume the config state hasn't changed
-                    if (this.configState == "SERVER") {
-                        this.getGroupsStore(true);
-                        this.getDefaultGroupName(true);
-                        this.gridSites.emptyRow.groupName = this.getDefaultGroupName();
-                        this.gridRemoteClients.emptyRow.groupName = this.getDefaultGroupName();
+                    this.getGroupsStore(true);
+                    this.getDefaultGroupId(true);
+                    this.gridRemoteClients.emptyRow.groupId = this.getDefaultGroupId();
 
-                        this.gridExports.reload({data: this.getSettings().exports.list });
+                    this.gridExports.reload({data: this.getSettings().exports.list });
 
-                        Ext.getCmp( "openvpn_advanced_siteName" ).setValue( this.getSettings().siteName );
+                    Ext.getCmp( "openvpn_advanced_siteName" ).setValue( this.getSettings().siteName );
 
-                        // Assuming radio box is intact
-                        Ext.getCmp("openvpn_advanced_dns1").setValue( this.getSettings().dns1 );
-                        Ext.getCmp("openvpn_advanced_dns2").setValue( this.getSettings().dns2 );
-                        this.clearDirty();
-                    } else {
-                        // do nothing
-                    }
+                    // Assuming radio box is intact
+                    Ext.getCmp("openvpn_advanced_dns1").setValue( this.getSettings().dns1 );
+                    Ext.getCmp("openvpn_advanced_dns2").setValue( this.getSettings().dns2 );
+
+                    this.clearDirty();
                     Ext.MessageBox.hide();
                 });
             }

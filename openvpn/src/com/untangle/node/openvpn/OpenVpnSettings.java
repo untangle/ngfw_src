@@ -21,11 +21,12 @@ public class OpenVpnSettings implements java.io.Serializable, JSONString
     private int port = 1194;
     private String siteName = "untangle";
     private InetAddress localAddress;
+    private IPMaskedAddress addressSpace;
     
     /**
      * List of addresses visible to those connecting to the VPN
      */
-    private List<IPMaskedAddress> exports = new LinkedList<IPMaskedAddress>();
+    private List<OpenVpnExport> exports = new LinkedList<OpenVpnExport>();
 
     /**
      * List of the various group of remote clients
@@ -53,8 +54,8 @@ public class OpenVpnSettings implements java.io.Serializable, JSONString
     public InetAddress getLocalAddress() { return this.localAddress; }
     public void setLocalAddress( InetAddress newValue ) { this.localAddress = newValue; }
     
-    public List<IPMaskedAddress> getExports() { return this.exports; }
-    public void setExports( List<IPMaskedAddress> newValue ) { this.exports = newValue; }
+    public List<OpenVpnExport> getExports() { return this.exports; }
+    public void setExports( List<OpenVpnExport> newValue ) { this.exports = newValue; }
 
     public List<OpenVpnGroup> getGroups() { return this.groups; }
     public void setGroups( List<OpenVpnGroup> newValue ) { this.groups = newValue; }
@@ -64,6 +65,9 @@ public class OpenVpnSettings implements java.io.Serializable, JSONString
 
     public List<OpenVpnServer> getRemoteServers() { return this.remoteServers; }
     public void setRemoteServers( List<OpenVpnServer> newValue ) { this.remoteServers = newValue; }
+
+    public IPMaskedAddress getAddressSpace() { return this.addressSpace; }
+    public void setAddressSpace( IPMaskedAddress newValue ) { this.addressSpace = newValue; }
 
     public String toJSONString()
     {

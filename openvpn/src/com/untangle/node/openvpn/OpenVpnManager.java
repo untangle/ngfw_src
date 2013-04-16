@@ -197,7 +197,7 @@ public class OpenVpnManager
 
         writePushRoute( sb, localEndpoint, null );
 
-        writeGroups( sb, settings );
+        writeRoutes( sb, settings );
 
         writeExports( sb, settings );
 
@@ -208,13 +208,10 @@ public class OpenVpnManager
     {
         sb.append( "# Exports\n" );
 
-        /* XXX This may need additional entries in the routing table,
-         * because the edgeguard must also know how to route this
-         * traffic
-         * not sure about this comment, the entries seem to get
-         * pushed automatically. */
-        for ( IPMaskedAddress maskedAddr : settings.getExports() ) {
-            writePushRoute( sb, maskedAddr.getMaskedAddress(), maskedAddr.getNetmask() );
+        for ( OpenVpnExport export : settings.getExports() ) {
+            if ( export.getEnabled() ) {
+                writePushRoute( sb, export.getNetwork().getMaskedAddress(), export.getNetwork().getNetmask() );
+            }
         }
 
         /* The client configuration file is written in writeClientFiles */
@@ -231,14 +228,15 @@ public class OpenVpnManager
         sb.append("\n");
     }
 
-    private void writeGroups( StringBuilder sb, OpenVpnSettings settings )
+    private void writeRoutes( StringBuilder sb, OpenVpnSettings settings )
     {
-        sb.append( "# Groups\n" );
+        sb.append( "# Routes\n" );
 
-        for ( OpenVpnGroup group : settings.getGroups()) {
+        writeRoute( sb, settings.getAddressSpace().getMaskedAddress(), settings.getAddressSpace().getNetmask());
 
-            writeRoute( sb, group.getAddressSpace().getMaskedAddress(), group.getAddressSpace().getNetmask());
-        }
+        //for ( OpenVpnGroup group : settings.getGroups()) {
+        //    writeRoute( sb, group.getAddressSpace().getMaskedAddress(), group.getAddressSpace().getNetmask());
+        //}
 
         sb.append( "\n" );
     }
@@ -415,16 +413,16 @@ public class OpenVpnManager
         sb.append( FLAG_PUSH + " " + value + "\n" );
     }
 
-    private void writeRoute( StringBuilder sb, InetAddress address, InetAddress netmask )
-    {
-        writeRoute( sb, FLAG_ROUTE, address, netmask );
-    }
-
     private void writeClientRoute( StringBuilder sb, InetAddress address, InetAddress netmask )
     {
         writeRoute( sb, FLAG_CLI_ROUTE, address, netmask );
     }
 
+    private void writeRoute( StringBuilder sb, InetAddress address, InetAddress netmask )
+    {
+        writeRoute( sb, FLAG_ROUTE, address, netmask );
+    }
+    
     private void writeRoute( StringBuilder sb, String type, InetAddress address, InetAddress netmask )
     {
         if ( address == null ) {
