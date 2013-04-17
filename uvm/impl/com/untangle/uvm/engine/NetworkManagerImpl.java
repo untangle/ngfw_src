@@ -909,7 +909,7 @@ public class NetworkManagerImpl implements NetworkManager
         filterRuleSsh.setMatchers( ruleSshMatchers );
 
         FilterRule filterRulePing = new FilterRule();
-        filterRulePing.setEnabled( UvmContextFactory.context().isDevel() );
+        filterRulePing.setEnabled( true );
         filterRulePing.setDescription( "Allow PING" );
         filterRulePing.setBlocked( false );
         List<FilterRuleMatcher> rulePingMatchers = new LinkedList<FilterRuleMatcher>();
