@@ -673,8 +673,8 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                     width: 300
                 }, {
                     xtype: "textfield",
-                    name: "Export name",
-                    dataIndex: "name",
+                    name: "Export network",
+                    dataIndex: "network",
                     fieldLabel: this.i18n._("Network"),
                     allowBlank: false,
                     vtype: 'cidrBlock',
@@ -902,6 +902,60 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                                 }, this)
                             }
                         }
+                    }, {
+                        xtype: 'textfield',
+                        labelWidth: 160,
+                        labelAlign:'left',
+                        width:300,
+                        fieldLabel: this.i18n._('Port'),
+                        name: 'Port',
+                        value: this.getSettings().siteName,
+                        id: 'openvpn_options_port',
+                        allowBlank: false,
+                        vtype: "port",
+                        listeners: {
+                            "change": {
+                                fn: Ext.bind(function(elem, newValue) {
+                                    this.getSettings().port = newValue;
+                                }, this)
+                            }
+                        }
+                    }, {
+                        xtype: 'textfield',
+                        labelWidth: 160,
+                        labelAlign:'left',
+                        width:300,
+                        fieldLabel: this.i18n._('Protocol'),
+                        name: 'Protocol',
+                        value: this.getSettings().protocol,
+                        id: 'openvpn_options_protocol',
+                        allowBlank: false,
+                        vtype: "port",
+                        listeners: {
+                            "change": {
+                                fn: Ext.bind(function(elem, newValue) {
+                                    this.getSettings().protocol = newValue;
+                                }, this)
+                            }
+                        }
+                    }, {
+                        xtype: 'textfield',
+                        labelWidth: 160,
+                        labelAlign:'left',
+                        width:300,
+                        fieldLabel: this.i18n._('Address Space'),
+                        name: 'Address Space',
+                        value: this.getSettings().addressSpace,
+                        id: 'openvpn_options_addressSpace',
+                        allowBlank: false,
+                        vtype: "cidrBlock",
+                        listeners: {
+                            "change": {
+                                fn: Ext.bind(function(elem, newValue) {
+                                    this.getSettings().addressSpace = newValue;
+                                }, this)
+                            }
+                        }
                     }]
                 }]
             });
@@ -1036,6 +1090,9 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                     this.gridExports.reload({data: this.getSettings().exports.list });
 
                     Ext.getCmp( "openvpn_options_siteName" ).setValue( this.getSettings().siteName );
+                    Ext.getCmp( "openvpn_options_port" ).setValue( this.getSettings().port );
+                    Ext.getCmp( "openvpn_options_protocol" ).setValue( this.getSettings().protocol );
+                    Ext.getCmp( "openvpn_options_addressSpace" ).setValue( this.getSettings().addressSpace );
 
                     this.clearDirty();
                     Ext.MessageBox.hide();

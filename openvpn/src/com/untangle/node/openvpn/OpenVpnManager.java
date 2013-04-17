@@ -191,7 +191,7 @@ public class OpenVpnManager
         sb.append( FLAG_PORT + " " + settings.getPort() + "\n");
         sb.append( FLAG_DEVICE + " " + TUN_DEVICE + "\n" );
 
-        InetAddress localEndpoint  = settings.getLocalAddress();
+        InetAddress localEndpoint  = getLocalEndpoint( settings.getAddressSpace() );
         InetAddress remoteEndpoint = getRemoteEndpoint( localEndpoint );
         sb.append( FLAG_IFCONFIG + " " +  localEndpoint + " " + remoteEndpoint + "\n");
 
@@ -441,6 +441,22 @@ public class OpenVpnManager
         }
 
         sb.append( type + " " + value + "\n" );
+    }
+
+    /**
+     * Gets the corresponding localEndpoint for the provided addressSpace (the first available address in that space)
+     */
+    private InetAddress getLocalEndpoint( IPMaskedAddress addressSpace )
+    {
+        InetAddress localEndpoint = addressSpace.getMaskedAddress();
+        byte[] data = localEndpoint.getAddress();
+        data[3] += 1;
+        try {
+            return InetAddress.getByAddress( data );
+        } catch ( UnknownHostException e ) {
+            logger.error( "getByAddress failed: " + data.length + " bytes", e );
+        }
+        return null;        
     }
 
     /**

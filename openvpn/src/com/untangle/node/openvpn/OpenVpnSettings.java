@@ -18,9 +18,10 @@ import com.untangle.uvm.node.IPMaskedAddress;
 @SuppressWarnings("serial")
 public class OpenVpnSettings implements java.io.Serializable, JSONString
 {
+    private String protocol = "udp"; /* "tcp" or "udp" */
     private int port = 1194;
+
     private String siteName = "untangle";
-    private InetAddress localAddress;
     private IPMaskedAddress addressSpace;
     
     /**
@@ -45,15 +46,18 @@ public class OpenVpnSettings implements java.io.Serializable, JSONString
 
     public OpenVpnSettings() { }
 
+    public String getProtocol() { return this.protocol; }
+    public void setProtocol( String newValue ) { this.protocol = newValue; }
+
     public int getPort() { return this.port; }
     public void setPort( int newValue ) { this.port = newValue; }
 
     public String getSiteName() { return this.siteName; }
     public void setSiteName( String newValue ) { this.siteName = newValue; }
 
-    public InetAddress getLocalAddress() { return this.localAddress; }
-    public void setLocalAddress( InetAddress newValue ) { this.localAddress = newValue; }
-    
+    public IPMaskedAddress getAddressSpace() { return this.addressSpace; }
+    public void setAddressSpace( IPMaskedAddress newValue ) { this.addressSpace = newValue; }
+
     public List<OpenVpnExport> getExports() { return this.exports; }
     public void setExports( List<OpenVpnExport> newValue ) { this.exports = newValue; }
 
@@ -65,9 +69,6 @@ public class OpenVpnSettings implements java.io.Serializable, JSONString
 
     public List<OpenVpnServer> getRemoteServers() { return this.remoteServers; }
     public void setRemoteServers( List<OpenVpnServer> newValue ) { this.remoteServers = newValue; }
-
-    public IPMaskedAddress getAddressSpace() { return this.addressSpace; }
-    public void setAddressSpace( IPMaskedAddress newValue ) { this.addressSpace = newValue; }
 
     public String toJSONString()
     {
