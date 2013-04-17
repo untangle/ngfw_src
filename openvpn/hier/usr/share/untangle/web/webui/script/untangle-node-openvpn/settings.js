@@ -334,8 +334,6 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
         // Status panel
         buildStatus: function() {
             var statusLabel = "";
-            var serverButtonDisabled = false;
-            var clientButtonDisabled = false;
             this.buildActiveClientsGrid();
 
             this.panelStatus = Ext.create('Ext.panel.Panel', {
@@ -465,11 +463,11 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
             return {
                 header: this.i18n._("Group"),
                 width: 160,
-                dataIndex: 'groupName',
+                dataIndex: 'groupId',
                 editor: Ext.create('Ext.form.ComboBox', {
                     store: this.getGroupsStore(),
                     displayField: 'name',
-                    valueField: 'name',
+                    valueField: 'id',
                     editable: false,
                     queryMode: 'local'
                 })
@@ -554,7 +552,7 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                     fieldLabel: this.i18n._("Group"),
                     store: this.getGroupsStore(),
                     displayField: 'name',
-                    valueField: 'name',
+                    valueField: 'id',
                     editable: false,
                     queryMode: 'local',
                     width: 300
@@ -820,9 +818,35 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                     xtype: 'checkbox',
                     name: "DNS Override",
                     dataIndex: "isDnsOverrideEnabled",
-                    fieldLabel: this.i18n._("DNS Override")
+                    fieldLabel: this.i18n._("DNS Override"),
+                    listeners: {
+                        "change": {
+                            fn: Ext.bind(function(elem, newValue) {
+                                if (newValue) {
+                                    Ext.getCmp('dnsOverride1').enable();
+                                    Ext.getCmp('dnsOverride2').enable();
+                                } else {
+                                    Ext.getCmp('dnsOverride1').disable();
+                                    Ext.getCmp('dnsOverride2').disable();
+                                }
+                            }, this)
+                        },
+                        "render": {
+                            fn: Ext.bind(function(field) {
+                                if (field.value) {
+                                    Ext.getCmp('dnsOverride1').enable();
+                                    Ext.getCmp('dnsOverride2').enable();
+                                } else {
+                                    Ext.getCmp('dnsOverride1').disable();
+                                    Ext.getCmp('dnsOverride2').disable();
+                                }
+                            }, this),
+                            scope: this
+                        }
+                    }
                 }, {
                     xtype: "textfield",
+                    id: "dnsOverride1",
                     name: "DNS Override 1",
                     dataIndex: "dnsOverride1",
                     fieldLabel: this.i18n._("DNS Override 1"),
@@ -831,6 +855,7 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                     width: 300
                 }, {
                     xtype: "textfield",
+                    id: "dnsOverride2",
                     name: "DNS Override 2",
                     dataIndex: "dnsOverride2",
                     fieldLabel: this.i18n._("DNS Override 2"),
@@ -845,7 +870,7 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
         buildGeneralOptions: function() {
             this.panelGeneralOptions = Ext.create('Ext.panel.Panel', {
                 name: 'GeneralOptions',
-                helpSource: 'advanced',
+                helpSource: 'general',
                 title: this.i18n._("Options"),
                 parentId: this.getId(),
 
@@ -867,7 +892,7 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                         fieldLabel: this.i18n._('Site Name'),
                         name: 'Site Name',
                         value: this.getSettings().siteName,
-                        id: 'openvpn_advanced_siteName',
+                        id: 'openvpn_options_siteName',
                         allowBlank: false,
                         blankText: this.i18n._("You must enter a site name."),
                         listeners: {
@@ -890,7 +915,7 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
         //validate OpenVPN GeneralOptions settings
         validateGeneralOptions: function() {
             //validate site name
-            var siteCmp = Ext.getCmp("openvpn_advanced_siteName");
+            var siteCmp = Ext.getCmp("openvpn_options_siteName");
             if(!siteCmp.validate()) {
                 Ext.MessageBox.alert(this.i18n._("Failed"), this.i18n._("You must enter a site name."),
                     Ext.bind(function () {
@@ -900,37 +925,6 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                 );
                 return false;
             };
-
-            if (this.getSettings().isDnsOverrideEnabled) {
-                var dns1Cmp = Ext.getCmp("openvpn_advanced_dns1");
-                if(!dns1Cmp.validate()) {
-                    Ext.MessageBox.alert(this.i18n._("Failed"), this.i18n._("A valid Primary IP Address must be specified."),
-                        Ext.bind(function () {
-                            this.tabs.setActiveTab(this.panelGeneralOptions);
-                            dns1Cmp.focus(true);
-                        }, this)
-                    );
-                    return false;
-                };
-
-                var dns2Cmp = Ext.getCmp("openvpn_advanced_dns2");
-                if(!dns2Cmp.validate()) {
-                    Ext.MessageBox.alert(this.i18n._("Failed"), this.i18n._("A valid Secondary IP Address must be specified."),
-                        Ext.bind(function () {
-                            this.tabs.setActiveTab(this.panelGeneralOptions);
-                            dns2Cmp.focus(true);
-                        }, this)
-                    );
-                    return false;
-                };
-
-                //prepare for save
-                this.getSettings().dns1 = dns1Cmp.getValue();
-                this.getSettings().dns2 = dns2Cmp.getValue() == "" ? null: dns2Cmp.getValue();
-            }  else {
-                this.getSettings().dns1 = null;
-                this.getSettings().dns2 = null;
-            }
 
             return true;
         },
@@ -1024,7 +1018,7 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
             this.getRpcNode().setSettings(Ext.bind(function(result, exception) {
                 if(Ung.Util.handleException(exception)) return;
                 this.afterSave(isApply);
-            }));
+            }, this), this.getSettings());
         },
 
         afterSave: function(isApply) {
@@ -1041,11 +1035,7 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
 
                     this.gridExports.reload({data: this.getSettings().exports.list });
 
-                    Ext.getCmp( "openvpn_advanced_siteName" ).setValue( this.getSettings().siteName );
-
-                    // Assuming radio box is intact
-                    Ext.getCmp("openvpn_advanced_dns1").setValue( this.getSettings().dns1 );
-                    Ext.getCmp("openvpn_advanced_dns2").setValue( this.getSettings().dns2 );
+                    Ext.getCmp( "openvpn_options_siteName" ).setValue( this.getSettings().siteName );
 
                     this.clearDirty();
                     Ext.MessageBox.hide();
