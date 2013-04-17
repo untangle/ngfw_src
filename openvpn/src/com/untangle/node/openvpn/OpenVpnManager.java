@@ -24,9 +24,16 @@ import com.untangle.uvm.util.I18nUtil;
 import com.untangle.uvm.network.NetworkSettings;
 import com.untangle.uvm.network.InterfaceSettings;
 
+/**
+ * This class has all the logic for "managing" the openVPN daemon.
+ * This includes writing all the server and client config files
+ * and starting/stopping the daemon
+ */
 public class OpenVpnManager
 {
-    static final String OPENVPN_CONF_DIR      = "/etc/openvpn";
+    private final Logger logger = Logger.getLogger( this.getClass());
+
+    private static final String OPENVPN_CONF_DIR      = "/etc/openvpn";
     private static final String OPENVPN_SERVER_FILE   = OPENVPN_CONF_DIR + "/server.conf";
     private static final String OPENVPN_CCD_DIR       = OPENVPN_CONF_DIR + "/ccd";
     private static final String CLIENT_CONF_FILE_BASE = System.getProperty( "uvm.conf.dir" ) + "/openvpn" + "/clients" + "/client-";
@@ -35,50 +42,34 @@ public class OpenVpnManager
     private static final String VPN_STOP_SCRIPT  = System.getProperty( "uvm.bin.dir" ) + "/openvpn-stop";
     private static final String GENERATE_DISTRO_SCRIPT = System.getProperty( "uvm.bin.dir" ) + "/openvpn-generate-distro";
 
-    private static final String FLAG_PORT        = "port";
-
-    //unused private static final String FLAG_PROTOCOL    = "proto";
-    //unused private static final String DEFAULT_PROTOCOL = "udp";
-    private static final String FLAG_DEVICE      = "dev";
-    private static final String TUN_DEVICE   = "tun0";
-
-    private static final String FLAG_ROUTE        = "route";
-    private static final String FLAG_IFCONFIG     = "ifconfig";
-    private static final String FLAG_CLI_IFCONFIG = "ifconfig-push";
-    private static final String FLAG_CLI_ROUTE    = "iroute";
-
-    private static final String FLAG_PUSH         = "push";
-
-    private static final String FLAG_REMOTE       = "remote";
-    private static final String SUPPORTED_CIPHER  = "AES-128-CBC";
-
-    private static final String FLAG_CERT         = "cert";
-    private static final String FLAG_KEY          = "key";
-    private static final String FLAG_CA           = "ca";
-
-    /* The directory where the key material ends up for a client */
-    private static final String CLI_KEY_DIR       = "untangle-vpn";
-
-    /* Ping every x seconds */
+    /**
+     * Ping every x seconds
+     */
     private static final int DEFAULT_PING_TIME      = 10;
 
-    /* If a ping response isn't received in this amount time, assume the connection is dead */
+    /**
+     * If a ping response isn't received in this amount time, assume the connection is dead
+     */
     private static final int DEFAULT_PING_TIMEOUT   = 60;
 
-    /* Default verbosity in the log messages(0-9) *
+    /**
+     * Default verbosity in the log messages(0-9) 
      * 0 -- No output except fatal errors.
      * 1 to 4 -- Normal usage range.
      * 5  --  Output  R  and W characters to the console for each packet read and write, uppercase is
      * used for TCP/UDP packets and lowercase is used for TUN/TAP packets.
-     * 6 to 11 -- Debug info range (see errlevel.h for additional information on debug levels). */
+     * 6 to 11 -- Debug info range (see errlevel.h for additional information on debug levels).
+     */
     private static final int DEFAULT_VERBOSITY   = 1;
 
-    static final int OPENVPN_PORT        = 1194;
-
-    /* XXX Just pick one that is unused (this is openvpn + 1) */
+    /**
+     * Just pick one that is unused (this is openvpn + 1)
+     */
     static final int MANAGEMENT_PORT     = 1195;
 
-    /* Key management directives */
+    /**
+     * Defaults for the server.conf
+     */
     private static final String SERVER_DEFAULTS[] = new String[] {
         "mode server",
         "multihome",
@@ -86,11 +77,10 @@ public class OpenVpnManager
         "cert data/server.crt",
         "key  data/server.key",
         "dh   data/dh.pem",
-        // XXX This is only valid if you specify a pool
-        // "ifconfig-pool-persist ipp.txt",
+        
+        // "ifconfig-pool-persist ipp.txt", // XXX should this be enabled?
         "client-config-dir ccd",
         "keepalive " + DEFAULT_PING_TIME + " " + DEFAULT_PING_TIMEOUT,
-        "cipher " + SUPPORTED_CIPHER,
         "user nobody",
         "group nogroup",
 
@@ -111,16 +101,19 @@ public class OpenVpnManager
         "management 127.0.0.1 " + MANAGEMENT_PORT,
 
         /* max clients */
-        "max-clients 2048" 
-        
+        "max-clients 2048",
+
+        /* device */
+        "dev tun0"
     };
 
+    /**
+     * Defaults for the client.conf
+     */
     private static final String CLIENT_DEFAULTS[] = new String[] {
         "client",
-        "proto udp",
         "resolv-retry 20",
         "keepalive " + DEFAULT_PING_TIME + " " + DEFAULT_PING_TIMEOUT,
-        "cipher " + SUPPORTED_CIPHER,
         "nobind",
         "mute-replay-warnings",
         "ns-cert-type server",
@@ -131,23 +124,17 @@ public class OpenVpnManager
         "verb " + DEFAULT_VERBOSITY,
         /* Exit if unable to connect to the server */
         "tls-exit",
+        /* device */
+        "dev tun0"
     };
 
     private static final String WIN_CLIENT_DEFAULTS[]  = new String[] {};
     private static final String WIN_EXTENSION          = "ovpn";
 
-    private static final String UNIX_CLIENT_DEFAULTS[] = new String[] {
-        // ??? Questionable because not all installs will have these users and groups.
-        // "user nobody",
-        // "group nogroup"
-    };
+    private static final String UNIX_CLIENT_DEFAULTS[] = new String[] {};
     private static final String UNIX_EXTENSION         = "conf";
 
-    private final Logger logger = Logger.getLogger( this.getClass());
-
-    OpenVpnManager()
-    {
-    }
+    protected OpenVpnManager() { }
 
     void start( OpenVpnSettings settings ) throws Exception
     {
@@ -188,16 +175,18 @@ public class OpenVpnManager
         }
 
         /* May want to expose this in the GUI */
-        sb.append( FLAG_PORT + " " + settings.getPort() + "\n");
-        sb.append( FLAG_DEVICE + " " + TUN_DEVICE + "\n" );
+        sb.append( "protocol" + " " + settings.getProtocol() + "\n" );
+        sb.append( "port" + " " + settings.getPort() + "\n");
+        sb.append( "cipher" + " " + settings.getCipher() + "\n");
 
-        InetAddress localEndpoint  = getLocalEndpoint( settings.getAddressSpace() );
-        InetAddress remoteEndpoint = getRemoteEndpoint( localEndpoint );
-        sb.append( FLAG_IFCONFIG + " " +  localEndpoint + " " + remoteEndpoint + "\n");
+        //InetAddress localEndpoint  = getLocalEndpoint( settings.getAddressSpace() );
+        //InetAddress remoteEndpoint = getRemoteEndpoint( localEndpoint );
+        //sb.append( "ifconfig" + " " +  localEndpoint.getHostAddress() + " " + remoteEndpoint.getHostAddress() + "\n");
+        //writePushRoute( sb, localEndpoint, null );
 
-        writePushRoute( sb, localEndpoint, null );
-
-        writeRoutes( sb, settings );
+        sb.append( "server" + " " +  settings.getAddressSpace().getMaskedAddress().getHostAddress() + " " + settings.getAddressSpace().getNetmask().getHostAddress() + "\n");
+        // XXX necessary to write route for this network?
+        // writeRoute( sb, settings.getAddressSpace().getMaskedAddress(), settings.getAddressSpace().getNetmask());
 
         writeExports( sb, settings );
 
@@ -226,19 +215,6 @@ public class OpenVpnManager
         }
 
         sb.append("\n");
-    }
-
-    private void writeRoutes( StringBuilder sb, OpenVpnSettings settings )
-    {
-        sb.append( "# Routes\n" );
-
-        writeRoute( sb, settings.getAddressSpace().getMaskedAddress(), settings.getAddressSpace().getNetmask());
-
-        //for ( OpenVpnGroup group : settings.getGroups()) {
-        //    writeRoute( sb, group.getAddressSpace().getMaskedAddress(), group.getAddressSpace().getNetmask());
-        //}
-
-        sb.append( "\n" );
     }
 
     /**
@@ -273,6 +249,7 @@ public class OpenVpnManager
      */
     private void writeClientConfigurationFile( OpenVpnSettings settings, OpenVpnRemoteClient client, String[] defaults, String extension )
     {
+        final String CLI_KEY_DIR = "untangle-openvpn";
         StringBuilder sb = new StringBuilder();
 
         /* Insert all of the default parameters */
@@ -283,14 +260,16 @@ public class OpenVpnManager
             sb.append( line + "\n" );
         }
 
-        sb.append( FLAG_DEVICE + " " + TUN_DEVICE + "\n" );
+        sb.append( "protocol" + " " + settings.getProtocol() + "\n" );
+        sb.append( "port" + " " + settings.getPort() + "\n" );
+        sb.append( "cipher" + " " + settings.getCipher() + "\n" );
 
         String name = client.getName();
         String siteName = settings.getSiteName();
 
-        sb.append( FLAG_CERT + " " + CLI_KEY_DIR + "/" + siteName + "-" + name + ".crt" + "\n");
-        sb.append( FLAG_KEY + " " + CLI_KEY_DIR + "/" + siteName + "-" + name + ".key" + "\n");
-        sb.append( FLAG_CA + " " + CLI_KEY_DIR + "/" + siteName + "-ca.crt" + "\n");
+        sb.append( "cert" + " " + CLI_KEY_DIR + "/" + siteName + "-" + name + ".crt" + "\n");
+        sb.append( "key"  + " " + CLI_KEY_DIR + "/" + siteName + "-" + name + ".key" + "\n");
+        sb.append( "ca"   + " " + CLI_KEY_DIR + "/" + siteName + "-ca.crt" + "\n");
 
         //FIXME this should be shown in the UI with a link to where to configure it
         String publicAddress = UvmContextFactory.context().systemManager().getPublicUrl();
@@ -299,7 +278,7 @@ public class OpenVpnManager
         publicAddress = publicAddress.split( ":" )[0];
         publicAddress = publicAddress.trim();
 
-        sb.append( FLAG_REMOTE + " " + publicAddress + " " + OPENVPN_PORT + "\n");
+        sb.append( "remote" + " " + publicAddress + " " + settings.getPort() + "\n");
         writeFile( CLIENT_CONF_FILE_BASE + name + "." + extension, sb );
     }
 
@@ -337,7 +316,7 @@ public class OpenVpnManager
             // FIXME (need AddressMapper?)
             // InetAddress localEndpoint  = client.getAddress();
             // InetAddress remoteEndpoint = getRemoteEndpoint( localEndpoint );
-            // sb.append( FLAG_CLI_IFCONFIG + " " + localEndpoint + " " + remoteEndpoint + "\n");
+            // sb.append( "ifconfig-push" + " " + localEndpoint + " " + remoteEndpoint + "\n");
 
             if( group.getFullTunnel() ) {
                 sb.append( "push" + " " + "\"redirect-gateway def1\"" + "\n");
@@ -410,17 +389,17 @@ public class OpenVpnManager
 
         value += "\"";
 
-        sb.append( FLAG_PUSH + " " + value + "\n" );
+        sb.append( "push" + " " + value + "\n" );
     }
 
     private void writeClientRoute( StringBuilder sb, InetAddress address, InetAddress netmask )
     {
-        writeRoute( sb, FLAG_CLI_ROUTE, address, netmask );
+        writeRoute( sb, "iroute", address, netmask );
     }
 
     private void writeRoute( StringBuilder sb, InetAddress address, InetAddress netmask )
     {
-        writeRoute( sb, FLAG_ROUTE, address, netmask );
+        writeRoute( sb, "route", address, netmask );
     }
     
     private void writeRoute( StringBuilder sb, String type, InetAddress address, InetAddress netmask )

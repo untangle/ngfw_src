@@ -943,6 +943,24 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                         labelWidth: 160,
                         labelAlign:'left',
                         width:300,
+                        fieldLabel: this.i18n._('Cipher'),
+                        name: 'Cipher',
+                        value: this.getSettings().cipher,
+                        id: 'openvpn_options_cipher',
+                        allowBlank: false,
+                        vtype: "port",
+                        listeners: {
+                            "change": {
+                                fn: Ext.bind(function(elem, newValue) {
+                                    this.getSettings().cipher = newValue;
+                                }, this)
+                            }
+                        }
+                    }, {
+                        xtype: 'textfield',
+                        labelWidth: 160,
+                        labelAlign:'left',
+                        width:300,
                         fieldLabel: this.i18n._('Address Space'),
                         name: 'Address Space',
                         value: this.getSettings().addressSpace,
@@ -1092,6 +1110,7 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                     Ext.getCmp( "openvpn_options_siteName" ).setValue( this.getSettings().siteName );
                     Ext.getCmp( "openvpn_options_port" ).setValue( this.getSettings().port );
                     Ext.getCmp( "openvpn_options_protocol" ).setValue( this.getSettings().protocol );
+                    Ext.getCmp( "openvpn_options_cipher" ).setValue( this.getSettings().cipher );
                     Ext.getCmp( "openvpn_options_addressSpace" ).setValue( this.getSettings().addressSpace );
 
                     this.clearDirty();

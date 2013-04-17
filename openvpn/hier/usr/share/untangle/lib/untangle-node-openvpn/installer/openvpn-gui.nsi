@@ -264,8 +264,8 @@ Section "OpenVPN GUI" SecGUI
   SetOutPath "$INSTDIR\config"
   File /oname=${SITE_NAME}.ovpn "${MV_PACKAGE_DIR}/client-${COMMON_NAME}.ovpn"
 
-  # Named untangle-vpn so it is safe to overwrite the files in it.
-  SetOutPath "$INSTDIR\config\untangle-vpn"
+  # Named untangle-openvpn so it is safe to overwrite the files in it.
+  SetOutPath "$INSTDIR\config\untangle-openvpn"
   File /oname=${SITE_NAME}-${COMMON_NAME}.crt "${MV_PKI_DIR}/client-${COMMON_NAME}.crt"
   File /oname=${SITE_NAME}-${COMMON_NAME}.key "${MV_PKI_DIR}/client-${COMMON_NAME}.key"
   File /oname=${SITE_NAME}-ca.crt "${MV_PKI_DIR}/ca.crt"
@@ -275,7 +275,7 @@ Section "OpenVPN GUI" SecGUI
 
   CreateDirectory "$INSTDIR\log"
   CreateDirectory "$INSTDIR\config"
-  CreateDirectory "$INSTDIR\config\untangle-vpn"
+  CreateDirectory "$INSTDIR\config\untangle-openvpn"
 
 
 SectionEnd

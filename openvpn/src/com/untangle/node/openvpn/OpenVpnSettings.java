@@ -20,9 +20,11 @@ public class OpenVpnSettings implements java.io.Serializable, JSONString
 {
     private String protocol = "udp"; /* "tcp" or "udp" */
     private int port = 1194;
-
+    private String cipher = "AES-128-CBC";
+    
     private String siteName = "untangle";
     private IPMaskedAddress addressSpace;
+
     
     /**
      * List of addresses visible to those connecting to the VPN
@@ -52,6 +54,9 @@ public class OpenVpnSettings implements java.io.Serializable, JSONString
     public int getPort() { return this.port; }
     public void setPort( int newValue ) { this.port = newValue; }
 
+    public String getCipher() { return this.cipher; }
+    public void setCipher( String newValue ) { this.cipher = newValue; }
+    
     public String getSiteName() { return this.siteName; }
     public void setSiteName( String newValue ) { this.siteName = newValue; }
 
