@@ -53,10 +53,7 @@ Ext.define("Ung.Main", {
         rpc.jsonrpc = new JSONRpcClient("/webui/JSON-RPC");
         //load all managers and startup info
         var startupInfo = rpc.jsonrpc.UvmContext.getWebuiStartupInfo();
-        Ext.apply(rpc, startupInfo);
-        
-        //Had to get policyManager this way because startupInfo.policyManager contains an object instead of a callableReference
-        rpc.policyManager=rpc.nodeManager.node("untangle-node-policy");
+        Ext.applyIf(rpc, startupInfo);
         
         i18n=new Ung.I18N({"map":rpc.translations.map});
         Ext.MessageBox.wait(i18n._("Starting..."), i18n._("Please wait"));

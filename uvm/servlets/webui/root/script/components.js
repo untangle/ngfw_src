@@ -4022,7 +4022,7 @@ Ext.define('Ung.RowEditorWindow', {
             this.sizeToComponent=this.grid;
         }
         var objPosition = this.sizeToComponent.getPosition();
-        if (this.sizeToGrid || this.height==null || this.width==null) {
+        if (this.sizeToComponent || this.height==null || this.width==null) {
             var objSize = this.sizeToComponent.getSize();
             this.setSize(objSize);
             if (objPosition[1] + objSize.height > main.viewport.getSize().height) {
@@ -4036,6 +4036,9 @@ Ext.define('Ung.RowEditorWindow', {
         this.record = record;
         this.initialRecordData = Ext.encode(record.data);
         this.populateRecursive(this.items, record, 0);
+        if(Ext.isFunction(this.syncComponents)) {
+            this.syncComponents();    
+        }
         Ung.Util.clearDirty(this.items);
     },
     populateRecursive: function(component, record, depth) {
@@ -4238,6 +4241,8 @@ Ext.define('Ung.EditorGrid', {
     rowEditorInputLines: null,
     // label width for row editor input lines
     rowEditorLabelWidth: null,
+    //size row editor to component
+    rowEditorConfig: null,
     // the default sort field
     sortField: null,
     // the default sort order
@@ -4443,12 +4448,16 @@ Ext.define('Ung.EditorGrid', {
             return "";
         };
 
-        if (this.rowEditor==null && this.rowEditorInputLines != null) {
-            this.rowEditor = Ext.create('Ung.RowEditorWindow', {
-                grid: this,
-                inputLines: this.rowEditorInputLines,
-                rowEditorLabelWidth: this.rowEditorLabelWidth
-            });
+        if (this.rowEditor==null) {
+            if(this.rowEditorInputLines != null) {
+                this.rowEditor = Ext.create('Ung.RowEditorWindow', {
+                    grid: this,
+                    inputLines: this.rowEditorInputLines,
+                    rowEditorLabelWidth: this.rowEditorLabelWidth
+                });
+            } else if (this.rowEditorConfig != null) {
+                this.rowEditor = Ext.create('Ung.RowEditorWindow', Ext.applyIf( this.rowEditorConfig, {grid: this}));
+            }
         }
         if(this.rowEditor!=null) {
             this.subCmps.push(this.rowEditor);
@@ -5938,8 +5947,7 @@ Ext.define('Ung.RuleBuilder', {
     initComponent: function() {
         Ext.applyIf(this, {
             height: 220,
-            width: 600,
-            anchor: "98%"
+            anchor: "100%"
         });
         this.selModel= Ext.create('Ext.selection.Model',{});
         this.tbar = [{
@@ -5977,8 +5985,8 @@ Ext.define('Ung.RuleBuilder', {
             }, this)
         },{
             header: this.settingsCmp.i18n._("Type"),
-            width: 320,
-            resizable: false,
+            width: 220,
+            sortable: false,
             menuDisabled: true,
             dataIndex: "name",
             renderer: Ext.bind(function(value, metadata, record, rowIndex, colIndex, store) {
@@ -6000,7 +6008,8 @@ Ext.define('Ung.RuleBuilder', {
             }, this)
         },{
             header: "",
-            width: 100,
+            width: 90,
+            sortable: false,
             resizable: false,
             menuDisabled: true,
             dataIndex: "invert",
@@ -6015,9 +6024,9 @@ Ext.define('Ung.RuleBuilder', {
                 }
                 var out=[];
                 out.push('<select class="rule_builder_invert" onchange="Ext.getCmp(\''+this.getId()+'\').changeRowInvert(\''+record.getId()+'\', this)">');
-                out.push('<option value="false" ' + ((value==false)?"selected":"") + '>' + 'is'     + '</option>');
+                out.push('<option value="false" ' + ((value==false)?"selected":"") + '>' + this.settingsCmp.i18n._("is")     + '</option>');
                 if (rule == null || rule.allowInvert == null || rule.allowInvert == true)
-                    out.push('<option value="true"  ' + ((value==true) ?"selected":"") + '>' + 'is NOT' + '</option>');
+                    out.push('<option value="true"  ' + ((value==true) ?"selected":"") + '>' + this.settingsCmp.i18n._("is NOT") + '</option>');
                 out.push("</select>");
                 return out.join("");
             }, this)
@@ -6025,6 +6034,7 @@ Ext.define('Ung.RuleBuilder', {
             header: this.settingsCmp.i18n._("Value"),
             width: 315,
             flex: 1,
+            sortable: false,
             resizable: false,
             menuDisabled: true,
             dataIndex: "value",

@@ -1012,7 +1012,7 @@ if (!Ung.hasResource["Ung.Network"]) {
                     listeners: {
                         "select": {
                             fn: Ext.bind(function(combo, ewVal, oldVal) {
-                                this.gridInterfaces.rowEditor.syncRuleEditorComponents();
+                                this.gridInterfaces.rowEditor.syncComponents();
                             }, this)
                         }
                     }
@@ -1023,7 +1023,7 @@ if (!Ung.hasResource["Ung.Network"]) {
                     listeners: {
                         "change": {
                             fn: Ext.bind(function(elem, newValue) {
-                                this.gridInterfaces.rowEditor.syncRuleEditorComponents();
+                                this.gridInterfaces.rowEditor.syncComponents();
                                 if ( newValue ) {
                                     var v4NatEgressTraffic = this.gridInterfaces.rowEditor.query('checkbox[dataIndex="v4NatEgressTraffic"]')[0];
                                     // auto-enable egress NAT when checking isWan
@@ -1055,7 +1055,7 @@ if (!Ung.hasResource["Ung.Network"]) {
                             listeners: {
                                 "select": {
                                     fn: Ext.bind(function(combo, ewVal, oldVal) {
-                                        this.gridInterfaces.rowEditor.syncRuleEditorComponents();
+                                        this.gridInterfaces.rowEditor.syncComponents();
                                     }, this)
                                 }
                             }
@@ -1241,7 +1241,7 @@ if (!Ung.hasResource["Ung.Network"]) {
                             listeners: {
                                 "change": {
                                     fn: Ext.bind(function(elem, newValue) {
-                                        this.gridInterfaces.rowEditor.syncRuleEditorComponents();
+                                        this.gridInterfaces.rowEditor.syncComponents();
                                     }, this)
                                 }
                             }
@@ -1295,7 +1295,7 @@ if (!Ung.hasResource["Ung.Network"]) {
                         listeners: {
                             "change": {
                                 fn: Ext.bind(function(elem, newValue) {
-                                    this.gridInterfaces.rowEditor.syncRuleEditorComponents();
+                                    this.gridInterfaces.rowEditor.syncComponents();
                                 }, this)
                             }
                         }
@@ -1422,7 +1422,7 @@ if (!Ung.hasResource["Ung.Network"]) {
                     queryMode: 'local',
                     editable: false
                 }],
-                syncRuleEditorComponents: function() {
+                syncComponents: function() {
                     var configTypeValue = this.query('combo[dataIndex="configType"]')[0].getValue();
                     var isWan = this.query('checkbox[dataIndex="isWan"]')[0];
                     var isWanValue = isWan.getValue();
@@ -1583,12 +1583,11 @@ if (!Ung.hasResource["Ung.Network"]) {
                         }
                     }
                 },
-                populate: function(record) {
+                populate: function(record, addMode) {
                     // refresh interface selector store (may have changed since last display)
                     var bridgedTo = this.query('combo[dataIndex="bridgedTo"]')[0];
                     bridgedTo.getStore().loadData( Ung.Util.getInterfaceAddressedList() );
-                    Ung.RowEditorWindow.prototype.populate.call(this, record);
-                    this.syncRuleEditorComponents();
+                    Ung.RowEditorWindow.prototype.populate.call(this, record, addMode);
                 }
             }) );
         },
@@ -1804,8 +1803,6 @@ if (!Ung.hasResource["Ung.Network"]) {
                         xtype:'rulebuilder',
                         settingsCmp: this,
                         javaClass: "com.untangle.uvm.network.PortForwardRuleMatcher",
-                        anchor:"98%",
-                        width: 900,
                         dataIndex: "matchers",
                         matchers: Ung.NetworkUtil.getPortForwardMatchers(this)
                     }]
@@ -1918,8 +1915,26 @@ if (!Ung.hasResource["Ung.Network"]) {
                         allowBlank:false
                     }
                 }],
-                columnsDefaultSortable: false,
-                rowEditorInputLines: [{
+                columnsDefaultSortable: false
+            });
+            
+            this.panelNatRules = Ext.create('Ext.panel.Panel',{
+                name: 'panelNatRules',
+                helpSource: 'network_nat_rules',
+                parentId: this.getId(),
+                title: this.i18n._('NAT Rules'),
+                layout: 'anchor',
+                cls: 'ung-panel',
+                items: [{
+                    xtype: 'fieldset',
+                    cls: 'description',
+                    title: this.i18n._('Note'),
+                    html: this.i18n._(" <b>NAT Rules</b>. Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.")
+                },  this.gridNatRules]
+            });
+            this.gridNatRules.setRowEditor(Ext.create('Ung.RowEditorWindow',{
+                sizeToComponent: this.panelNatRules,
+                inputLines: [{
                     xtype:'checkbox',
                     name: "Enable NAT Rule",
                     dataIndex: "enabled",
@@ -1937,8 +1952,6 @@ if (!Ung.hasResource["Ung.Network"]) {
                         xtype:'rulebuilder',
                         settingsCmp: this,
                         javaClass: "com.untangle.uvm.network.NatRuleMatcher",
-                        anchor:"98%",
-                        width: 900,
                         dataIndex: "matchers",
                         matchers: Ung.NetworkUtil.getNatRuleMatchers(this)
                     }]
@@ -1957,14 +1970,7 @@ if (!Ung.hasResource["Ung.Network"]) {
                         queryMode: 'local',
                         listeners: {
                             select: Ext.bind(function(combo, ewVal, oldVal) {
-                                var newSource = this.gridNatRules.rowEditor.query('textfield[dataIndex="newSource"]')[0];
-                                if (combo.value == true) /* Auto */ {
-                                    newSource.disable();
-                                    newSource.hide();
-                                } else {
-                                    newSource.enable();
-                                    newSource.show();
-                                }
+                                this.gridNatRules.rowEditor.syncComponents();
                             }, this )
                         }
                     }, {
@@ -1977,38 +1983,18 @@ if (!Ung.hasResource["Ung.Network"]) {
                         vtype: 'ipAddress'
                     }]
                 }],
-                
-                syncRuleEditorComponents: function () {
+                syncComponents: function () {
                     var natType  = this.query('combo[dataIndex="auto"]')[0];
                     var newSource = this.query('textfield[dataIndex="newSource"]')[0];
-
-                    newSource.disable();
-                    
-                    switch(natType.value) {
-                      case true:
-                        break;
-                      case false:
+                    if (natType.value == true) /* Auto */ {
+                        newSource.disable();
+                        newSource.hide();
+                    } else {
                         newSource.enable();
-                        break;
+                        newSource.show();
                     }
-                    newSource.setVisible(!newSource.disabled); 
                 }
-            });
-            
-            this.panelNatRules = Ext.create('Ext.panel.Panel',{
-                name: 'panelNatRules',
-                helpSource: 'network_nat_rules',
-                parentId: this.getId(),
-                title: this.i18n._('NAT Rules'),
-                layout: 'anchor',
-                cls: 'ung-panel',
-                items: [{
-                    xtype: 'fieldset',
-                    cls: 'description',
-                    title: this.i18n._('Note'),
-                    html: this.i18n._(" <b>NAT Rules</b>. Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.")
-                },  this.gridNatRules]
-            });
+            }));
         },
         // BypassRules Panel
         buildBypassRules: function() {
@@ -2075,8 +2061,26 @@ if (!Ung.hasResource["Ung.Network"]) {
                     resizable: false,
                     width:55
                 }],
-                columnsDefaultSortable: false,
-                rowEditorInputLines: [{
+                columnsDefaultSortable: false
+            });
+            
+            this.panelBypassRules = Ext.create('Ext.panel.Panel',{
+                name: 'panelBypassRules',
+                helpSource: 'network_bypass_rules',
+                parentId: this.getId(),
+                title: this.i18n._('Bypass Rules'),
+                layout: 'anchor',
+                cls: 'ung-panel',
+                items: [{
+                    xtype: 'fieldset',
+                    cls: 'description',
+                    title: this.i18n._('Note'),
+                    html: this.i18n._(" <b>Bypass Rules</b>. Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.")
+                }, this.gridBypassRules]
+            });
+            this.gridBypassRules.setRowEditor(Ext.create('Ung.RowEditorWindow',{
+                sizeToComponent: this.panelBypassRules,
+                inputLines:[{
                     xtype:'checkbox',
                     name: "Enable Bypass Rule",
                     dataIndex: "enabled",
@@ -2094,8 +2098,6 @@ if (!Ung.hasResource["Ung.Network"]) {
                         xtype:'rulebuilder',
                         settingsCmp: this,
                         javaClass: "com.untangle.uvm.network.BypassRuleMatcher",
-                        anchor:"98%",
-                        width: 900,
                         dataIndex: "matchers",
                         matchers: Ung.NetworkUtil.getBypassRuleMatchers(this)
                     }]
@@ -2117,22 +2119,7 @@ if (!Ung.hasResource["Ung.Network"]) {
                         queryMode: 'local'
                     }]
                 }]
-            });
-            
-            this.panelBypassRules = Ext.create('Ext.panel.Panel',{
-                name: 'panelBypassRules',
-                helpSource: 'network_bypass_rules',
-                parentId: this.getId(),
-                title: this.i18n._('Bypass Rules'),
-                layout: 'anchor',
-                cls: 'ung-panel',
-                items: [{
-                    xtype: 'fieldset',
-                    cls: 'description',
-                    title: this.i18n._('Note'),
-                    html: this.i18n._(" <b>Bypass Rules</b>. Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.")
-                }, this.gridBypassRules]
-            });
+            }));
         },
         // Routes Panel
         buildRoutes: function() {
@@ -2368,7 +2355,7 @@ if (!Ung.hasResource["Ung.Network"]) {
             this.gridQosWanBandwidth = Ext.create( 'Ung.EditorGrid', {
                 name: 'QoS Priorities',
                 margin: '5 0 0 0',
-                height: 200,
+                height: 160,
                 settingsCmp: this,
                 paginated: false,
                 hasAdd: false,
@@ -2465,7 +2452,7 @@ if (!Ung.hasResource["Ung.Network"]) {
             this.gridQosRules = Ext.create( 'Ung.EditorGrid', {
                 name: 'QoS Custom Rules',
                 margin: '5 0 0 0',
-                height: 450,
+                height: 200,
                 settingsCmp: this,
                 paginated: false,
                 hasReorder: true,
@@ -2532,45 +2519,7 @@ if (!Ung.hasResource["Ung.Network"]) {
                         allowBlank:false
                     }
                 }],
-                columnsDefaultSortable: false,
-                rowEditorInputLines: [{
-                    xtype:'checkbox',
-                    dataIndex: "enabled",
-                    fieldLabel: this.i18n._("Enable")
-                }, {
-                    xtype:'textfield',
-                    dataIndex: "description",
-                    fieldLabel: this.i18n._("Description"),
-                    width: 500
-                }, {
-                    xtype:'fieldset',
-                    title: this.i18n._("If all of the following conditions are met:"),
-                    items:[{
-                        xtype:'rulebuilder',
-                        settingsCmp: this,
-                        javaClass: "com.untangle.uvm.network.QosRuleMatcher",
-                        anchor:"98%",
-                        width: 900,
-                        dataIndex: "matchers",
-                        matchers: Ung.NetworkUtil.getQosRuleMatchers(this)
-                    }]
-                }, {
-                    xtype: 'fieldset',
-                    cls:'description',
-                    title: i18n._('Perform the following action(s):'),
-                    border: false,
-                    items: [{
-                        xtype: "combo",
-                        allowBlank: false,
-                        dataIndex: "priority",
-                        fieldLabel: this.i18n._("Priority"),
-                        editable: false,
-                        store: this.qosPriorityNoDefaultStore,
-                        valueField: "value",
-                        displayField: "displayName",
-                        queryMode: 'local'
-                    }]
-                }]
+                columnsDefaultSortable: false
             });
             
             this.gridQosPriorities = Ext.create( 'Ung.EditorGrid', {
@@ -2806,6 +2755,45 @@ if (!Ung.hasResource["Ung.Network"]) {
                     }]
                 }]
             });
+            this.gridQosRules.setRowEditor(Ext.create('Ung.RowEditorWindow',{
+                sizeToComponent: this.panelQoS,
+                inputLines:[{
+                    xtype:'checkbox',
+                    dataIndex: "enabled",
+                    fieldLabel: this.i18n._("Enable")
+                }, {
+                    xtype:'textfield',
+                    dataIndex: "description",
+                    fieldLabel: this.i18n._("Description"),
+                    width: 500
+                }, {
+                    xtype:'fieldset',
+                    title: this.i18n._("If all of the following conditions are met:"),
+                    items:[{
+                        xtype:'rulebuilder',
+                        settingsCmp: this,
+                        javaClass: "com.untangle.uvm.network.QosRuleMatcher",
+                        dataIndex: "matchers",
+                        matchers: Ung.NetworkUtil.getQosRuleMatchers(this)
+                    }]
+                }, {
+                    xtype: 'fieldset',
+                    cls:'description',
+                    title: i18n._('Perform the following action(s):'),
+                    border: false,
+                    items: [{
+                        xtype: "combo",
+                        allowBlank: false,
+                        dataIndex: "priority",
+                        fieldLabel: this.i18n._("Priority"),
+                        editable: false,
+                        store: this.qosPriorityNoDefaultStore,
+                        valueField: "value",
+                        displayField: "displayName",
+                        queryMode: 'local'
+                    }]
+                }]
+            }));
             this.gridQosWanBandwidth.updateTotalBandwidth();
         },
         // Filter Panel
@@ -2873,42 +2861,7 @@ if (!Ung.hasResource["Ung.Network"]) {
                     resizable: false,
                     width:55
                 }],
-                columnsDefaultSortable: false,
-                rowEditorInputLines: [{
-                    xtype:'checkbox',
-                    name: "Enable Forward Filter Rule",
-                    dataIndex: "enabled",
-                    fieldLabel: this.i18n._("Enable Forward Filter Rule")
-                }, {
-                    xtype:'textfield',
-                    name: "Description",
-                    dataIndex: "description",
-                    fieldLabel: this.i18n._("Description"),
-                    width: 500
-                }, {
-                    xtype:'fieldset',
-                    title: this.i18n._("If all of the following conditions are met:"),
-                    items:[{
-                        xtype:'rulebuilder',
-                        settingsCmp: this,
-                        javaClass: "com.untangle.uvm.network.FilterRuleMatcher",
-                        anchor:"98%",
-                        width: 900,
-                        dataIndex: "matchers",
-                        matchers: Ung.NetworkUtil.getFilterRuleMatchers(this)
-                    }]
-                }, {
-                    xtype: 'fieldset',
-                    cls:'description',
-                    title: i18n._('Perform the following action(s):'),
-                    border: false,
-                    items: [{
-                        xtype: "checkbox",
-                        name: "Block",
-                        dataIndex: "blocked",
-                        fieldLabel: this.i18n._("Block")
-                    }]
-                }]
+                columnsDefaultSortable: false
             });
             this.gridInputFilterRules = Ext.create( 'Ung.EditorGrid', {
                 anchor: '100% 48%',
@@ -2973,8 +2926,57 @@ if (!Ung.hasResource["Ung.Network"]) {
                     resizable: false,
                     width:55
                 }],
-                columnsDefaultSortable: false,
-                rowEditorInputLines: [{
+                columnsDefaultSortable: false
+            });
+            
+            this.panelFilter = Ext.create('Ext.panel.Panel',{
+                name: 'panelFilter',
+                helpSource: 'network_filter',
+                parentId: this.getId(),
+                title: this.i18n._('Filter Rules'),
+                layout: 'anchor',
+                cls: 'ung-panel',
+                items: [this.gridForwardFilterRules, this.gridInputFilterRules]
+            });
+            this.gridForwardFilterRules.setRowEditor(Ext.create('Ung.RowEditorWindow',{
+                sizeToComponent: this.panelFilter,
+                inputLines:[{
+                    xtype:'checkbox',
+                    name: "Enable Forward Filter Rule",
+                    dataIndex: "enabled",
+                    fieldLabel: this.i18n._("Enable Forward Filter Rule")
+                }, {
+                    xtype:'textfield',
+                    name: "Description",
+                    dataIndex: "description",
+                    fieldLabel: this.i18n._("Description"),
+                    width: 500
+                }, {
+                    xtype:'fieldset',
+                    title: this.i18n._("If all of the following conditions are met:"),
+                    items:[{
+                        xtype:'rulebuilder',
+                        settingsCmp: this,
+                        javaClass: "com.untangle.uvm.network.FilterRuleMatcher",
+                        dataIndex: "matchers",
+                        matchers: Ung.NetworkUtil.getFilterRuleMatchers(this)
+                    }]
+                }, {
+                    xtype: 'fieldset',
+                    cls:'description',
+                    title: i18n._('Perform the following action(s):'),
+                    border: false,
+                    items: [{
+                        xtype: "checkbox",
+                        name: "Block",
+                        dataIndex: "blocked",
+                        fieldLabel: this.i18n._("Block")
+                    }]
+                }]
+            }));
+            this.gridInputFilterRules.setRowEditor(Ext.create('Ung.RowEditorWindow',{
+                sizeToComponent: this.panelFilter,
+                inputLines:[{
                     xtype:'checkbox',
                     name: "Enable Forward Filter Rule",
                     dataIndex: "enabled",
@@ -2992,8 +2994,6 @@ if (!Ung.hasResource["Ung.Network"]) {
                         xtype:'rulebuilder',
                         settingsCmp: this,
                         javaClass: "com.untangle.uvm.network.FilterRuleMatcher",
-                        anchor:"98%",
-                        width: 900,
                         dataIndex: "matchers",
                         matchers: Ung.NetworkUtil.getFilterRuleMatchers(this)
                     }]
@@ -3009,17 +3009,7 @@ if (!Ung.hasResource["Ung.Network"]) {
                         fieldLabel: this.i18n._("Block")
                     }]
                 }]
-            });
-            
-            this.panelFilter = Ext.create('Ext.panel.Panel',{
-                name: 'panelFilter',
-                helpSource: 'network_filter',
-                parentId: this.getId(),
-                title: this.i18n._('Filter Rules'),
-                layout: 'anchor',
-                cls: 'ung-panel',
-                items: [this.gridForwardFilterRules, this.gridInputFilterRules]
-            });
+            }));
         },
         // DnsServer Panel
         buildDnsServer: function() {
