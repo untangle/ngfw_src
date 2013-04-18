@@ -213,12 +213,6 @@ class VirusHttpHandler extends HttpStateMachine
         if (result.isClean()) {
             node.incrementPassCount();
 
-            if (result.isVirusCleaned()) {
-                logger.info("Cleaned infected file:" + scanfile);
-            } else {
-                logger.debug("Clean");
-            }
-
             if (Mode.QUEUEING == getResponseMode()) {
                 releaseResponse();
             } else {
