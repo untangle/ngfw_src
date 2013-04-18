@@ -21,6 +21,7 @@ import org.jabsorb.serializer.UnmarshallException;
 
 import com.untangle.uvm.ExecManager;
 import com.untangle.uvm.ExecManagerResult;
+import com.untangle.uvm.ProcessWrapper;
 
 /**
  * ExecManagerImpl is a simple manager for all exec() calls.
@@ -113,7 +114,7 @@ public class ExecManagerImpl implements ExecManager
         return exec(cmd).getOutput();
     }
 
-    public Process execEvil(String cmd[]) throws IOException
+    public ProcessWrapper execEvil(String cmd[]) throws IOException
     {
         if (logger.isInfoEnabled()) {
             String cmdStr = new String();
@@ -123,7 +124,7 @@ public class ExecManagerImpl implements ExecManager
             logger.info("ExecManager.execEvil(" + cmdStr + ")");
         }
         try {
-            return Runtime.getRuntime().exec(cmd, null, null);
+            return new ProcessWrapperImpl(Runtime.getRuntime().exec(cmd, null, null));
         } catch (IOException exc) {
             String msg = exc.getMessage();
             if (msg.contains("Cannot allocate memory")) {
@@ -136,7 +137,7 @@ public class ExecManagerImpl implements ExecManager
         }
     }
 
-    public Process execEvil(String cmd) throws IOException
+    public ProcessWrapper execEvil(String cmd) throws IOException
     {
         StringTokenizer st = new StringTokenizer(cmd);
         String[] cmdArray = new String[st.countTokens()];
