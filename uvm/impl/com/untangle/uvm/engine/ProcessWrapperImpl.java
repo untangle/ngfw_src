@@ -1,3 +1,6 @@
+/**
+ * $Id: ProcessWrapperImpl.java,v 1.00 2013/04/18 10:02:08 dmorris Exp $
+ */
 package com.untangle.uvm.engine;
 
 import java.io.BufferedReader;
@@ -13,15 +16,18 @@ public class ProcessWrapperImpl implements ProcessWrapper
 
 	private Process process;
 
-	public ProcessWrapperImpl(Process process) {
+	public ProcessWrapperImpl(Process process)
+    {
 		this.process = process;
 	}
 
-	public void destroy() {
+	public void destroy()
+    {
 		process.destroy();
 	}
 
-	public int exitValue() {
+	public int exitValue()
+    {
 		int retVal = -1;
 		try {
 			retVal = process.exitValue();
@@ -31,24 +37,29 @@ public class ProcessWrapperImpl implements ProcessWrapper
 		return retVal;
 	}
 
-	public int waitFor() throws InterruptedException {
+	public int waitFor() throws InterruptedException
+    {
 		return process.waitFor();
 	}
 
-	public InputStream getErrorStream() {
+	public InputStream getErrorStream()
+    {
 		return process.getErrorStream();
 	}
 
-	public InputStream getInputStream() {
+	public InputStream getInputStream()
+    {
 		return process.getInputStream();
 	}
 
-	public OutputStream getOutputStream() {
+	public OutputStream getOutputStream()
+    {
 		return process.getOutputStream();
 	}
 
 	@Override
-	public String getOuptut() {
+	public String getOuptut()
+    {
 		StringBuffer result = new StringBuffer();
 		BufferedReader br = new BufferedReader(new InputStreamReader(process.getInputStream()));
 		try {
