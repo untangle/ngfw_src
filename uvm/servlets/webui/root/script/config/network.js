@@ -56,78 +56,6 @@ if (!Ung.hasResource["Ung.Network"]) {
                 {name:"SRC_INTF",displayName: settingsCmp.i18n._("Source Interface"), type: "checkgroup", values: Ung.Util.getInterfaceList(true, true), visible: true, allowInvert: false},
                 {name:"PROTOCOL",displayName: settingsCmp.i18n._("Protocol"), type: "checkgroup", values: [["TCP","TCP"],["UDP","UDP"],["ICMP","ICMP"],["GRE","GRE"],["ESP","ESP"],["AH","AH"],["SCTP","SCTP"]], visible: true, allowInvert: false}
             ];
-        },
-        /**
-         * @param path : The path to the request.
-         * @param handler : Callback to call on success.
-         * @param failure : Callback to call on failure.
-         * @param *args : All arguments after this will be converted to an array and passed into
-         *                the request as JSON.
-         */
-        executeRemoteFunction : function( path, handler, failure ) {
-            var args = [];
-            var argumentCount = arguments.length;
-            for ( var c = 3 ; c < argumentCount ; c++ ) {
-                args[c-3] = arguments[c];
-            }
-            
-            path = "/alpaca" + path;
-
-            // Now build the query
-            return Ext.Ajax.request({
-                url : path,
-                success : Ext.bind(this.remoteFunctionSuccess, this, [ handler, failure ], true ),
-                failure : Ext.bind(this.remoteFunctionFailure, this, [ failure ], true ),
-                jsonData : args
-            });
-        },
-        
-        remoteFunctionSuccess : function( response, options, handler, failure ) {
-            var json = Ext.util.JSON.decode( response.responseText );
-
-            // Append this in case another handler wants to reuse some other part of the JSON data.
-            response.jsonData = json;
-            if ( json["status"] != "success" ) {
-                return this.remoteFunctionFailure( response, options, failure );
-            }
-            
-            handler( json["result"], response, options );
-        },
-        
-        remoteFunctionFailure : function( response, options, handler )
-        {
-            var isSessionExpired = false;
-            
-            // Check if the session is expired
-            try {
-                var json = Ext.util.JSON.decode( response.responseText );
-                
-                isSessionExpired = (  json["error"] == "Session has expired." );
-            } catch ( e ) {
-            }
-
-            // Check if the UVM session is expired
-            /*
-            if ( !isSessionExpired ) {
-                if ( Ung.Alpaca.Glue.isUvmSessionExpired( response )) {
-                    isSessionExpired = true;
-                }
-            }
-
-            if ( isSessionExpired ) {
-                this.showSessionExpired();
-                return;
-            }
-            */  
-            if ( handler ) {
-                return handler( response, options );
-            }
-            try {
-                this.handleConnectionError( response, options );
-            } catch(e) {}
-        },
-        handleConnectionError : function( response, options ) {
-            throw "Unable to connect";
         }
     };
     Ext.define("Ung.NetworkTest", {
@@ -155,28 +83,19 @@ if (!Ung.hasResource["Ung.Network"]) {
             }];
             
             this.items = [{
-                xtype : "panel",
-                anchor: "100% 100%",
-                autoScroll: true,
-                autoWidth : true,
-                border : false,
-                layout : "form",
-                autoScroll : true,
-                style : "padding: 0px",
+                xtype: "panel",
+                layout: 'anchor',
                 bodyStyle : "padding: 10px 10px 0px 10px;",
-                buttonAlign : 'right',
-                cls : "alpaca-panel",
-                
                 items : [{
-                    xtype : "label",
-                    html : this.testDescription,
-                    style : "padding-bottom: 10px;"
+                    xtype: "label",
+                    html: this.testDescription,
+                    style: "padding-bottom: 10px;"
                 },{
-                    xtype : "panel",
-                    style : "margin: 10px 0px 0px 0px",
-                    layout : "anchor",
-                    height : 392,
-                    tbar : this.testTopToolbar.concat([this.runTest = Ext.create("Ext.button.Button",{
+                    xtype: "panel",
+                    style: "margin: 10px 0px 0px 0px",
+                    layout: "anchor",
+                    anchor: "100% -60",
+                    tbar: this.testTopToolbar.concat([this.runTest = Ext.create("Ext.button.Button",{
                         text : this.settingsCmp.i18n._("Run Test"),
                         iconCls : "icon-test-run",
                         handler : this.onRunTest,
@@ -204,17 +123,10 @@ if (!Ung.hasResource["Ung.Network"]) {
         helpAction: function() {
             main.openHelp(this.helpSource);
         },
+        getCommand: function () {
+            return this.command;
+        },
         onRunTest : function() {
-            if ( this.currentCommandKey != null ) {
-                Ext.MessageBox.show({
-                    title: this.settingsCmp.i18n._( "Warning" ),
-                    msg: this.settingsCmp.i18n._( "A network utility is already running." ),
-                    icon: Ext.MessageBox.WARNING,
-                    buttons: Ext.MessageBox.OK
-                });
-                return;
-            }
-
             if ( this.isValid != null ) {
                 if ( !this.isValid()) {
                     return;
@@ -226,123 +138,52 @@ if (!Ung.hasResource["Ung.Network"]) {
             this.output.focus();
             this.runTest.disable();
             this.enableParameters( false );
-            this.currentCommandKey = 0;
-            this.stdoutOffset = null;
-            this.stderrOffset = null;
             
-            this.startNetworkUtility();
+            main.getExecManager().execEvil(Ext.bind(function(result, exception) {
+                if(Ung.Util.handleException(exception)) return; 
+                this.execResultReader = result;
+                this.continueNetworkUtility();
+            }, this), this.getCommand());
         },
-        completeStartNetworkUtility : function( key, response, options ){
-            this.currentCommandKey = key["key"];
-            this.stdoutOffset = null;
-            this.stderrOffset = null;
-            this.pollCount = 0;
-            
-            window.setTimeout( Ext.bind(this.continueNetworkUtility, this), 1000 );
-        },
-        failureStartNetworkUtility: function( response, options ){
-            Ext.MessageBox.show({
-                title: this.settingsCmp.i18n._( "Warning" ),
-                msg: this.testErrorMessage,
-                icon: Ext.MessageBox.WARNING,
-                buttons: Ext.MessageBox.OK
-            });
-
-            this.currentCommandKey = null;
-            this.stdoutOffset = null;
-            this.stderrOffset = null;
-            this.pollCount = 0;
+        finishNetworkUtility: function() {
             this.runTest.setIconCls( "icon-test-run" );
-            this.runTest.enable();
             this.enableParameters( true );
+            this.runTest.enable();
+            this.execResultReader = null;
         },
-
         continueNetworkUtility: function(){
-            if ( this.currentCommandKey == null || this.currentCommandKey == 0 ) {
-                this.failureStartNetworkUtility();
+            if( this.execResultReader==null ) {
                 return;
             }
-
-            if ( this.hidden ) {
-                try {
-                    var commandKey = this.currentCommandKey;
-                    this.currentCommandKey = null;
-                   Ung.NetworkUtil.executeRemoteFunction( "/alpaca/stop_background_command",
-                                                           function() {}, function() {},
-                                                           { "key" : commandKey });
-                } catch ( e ) {
-                    // ignored 
-                }
-
-                this.currentCommandKey = null;
-                this.stdoutOffset = null;
-                this.stderrOffset = null;
-                this.pollCount = 0;
-                this.runTest.setIconCls( "icon-test-run" );
-                this.runTest.enable();
-                this.enableParameters( true );
-
+            if ( this.hidden) {
+                this.execResultReader.getResult(Ext.bind(function(result, exception) {
+                    if(Ung.Util.handleException(exception)) return;
+                    if(result == -1) {
+                        this.execResultReader.destroy(Ext.bind(function(result, exception) {
+                            this.finishNetworkUtility();
+                        }, this));
+                    }
+                }, this));
                 return;
             }
             
-            var message = { key : this.currentCommandKey };
-
-            if ( this.stdoutOffset != null ) {
-                message["stdout_offset"] = this.stdoutOffset;
-            }
-            if ( this.stderrOffset != null ) {
-                message["stderr_offset"] = this.stderrOffset;
-            }
-           Ung.NetworkUtil.executeRemoteFunction( "/alpaca/continue_background_command",
-                   Ext.bind(this.completeContinueNetworkUtility, this ),
-                   Ext.bind(this.failureStartNetworkUtility, this ),
-                                                   message );
-        },
-
-        completeContinueNetworkUtility: function( output, response, options ) {
-            var element = this.output.getEl();
-            var text = [];
-
-            text.push( this.output.getValue());
-
-            if ( this.stdoutOffset == null ) {
-                text.push( "" + new Date() + "\n" );
-            }
-            text.push( output["stdout"] );
-            text.push( output["stderr"] );
-                    
-            this.stdoutOffset = output["stdout_offset"];
-            this.stderrOffset = output["stderr_offset"];
-
-            if ( this.pollCount == null ) {
-                this.pollCount = 0;
-            }
-
-            this.pollCount++;
-
-            if ( this.pollCount > 180 ) {
+            this.execResultReader.readFromOutput(Ext.bind(function(result, exception) {
+                if(Ung.Util.handleException(exception)) return;
+                var element=this.output.getEl();
+                var text = [];
+                text.push( this.output.getValue());
+                if(result != null) { //Test is running
+                    text.push(result);
+                    window.setTimeout( Ext.bind(this.continueNetworkUtility, this), 1000 );  
+                } else { //Test is finished
+                    text.push( "" + new Date() + "\n\n");
+                    this.finishNetworkUtility();
+                }
                 this.output.setValue( text.join( "" ));
                 element.scroll( "b", 10000 );
-                this.failureStartNetworkUtility();
-                return;
-            }
-
-            if ( output["return_code"] < 0 ) {
-                window.setTimeout( Ext.bind(continueNetworkUtility, this), 1000 );
-            } else {
-                this.currentCommandKey = null;
-                this.stdoutOffset = null;
-                this.stderrOffset = null;
-                this.runTest.setIconCls( "icon-test-run" );
-                this.enableParameters( true );
-                this.runTest.enable();
-                text.push( "\n" );
-            }
-
-            this.output.setValue( text.join( "" ));
-            element.scroll( "b", 10000 );
+               
+            }, this));
         },
-
         onClearOutput: function() {
             this.output.setValue( "" );
         },
@@ -387,8 +228,7 @@ if (!Ung.hasResource["Ung.Network"]) {
             this.buildTroubleshooting();
             
             // builds the tab panel with the tabs
-            var pageTabs = [ this.panelInterfaces, this.panelHostName, this.panelPortForwardRules, this.panelNatRules, this.panelBypassRules, this.panelRoutes, this.panelAdvanced, this.panelTroubleshooting ];
-            this.buildTabPanel(pageTabs);
+            this.buildTabPanel([ this.panelInterfaces, this.panelHostName, this.panelPortForwardRules, this.panelNatRules, this.panelBypassRules, this.panelRoutes, this.panelAdvanced, this.panelTroubleshooting ]);
 
             //Check if QoS is enabled and there are some initial WANs without downloadBandwidthKbps or uploadBandwidthKbps limits set and mark dirty if true,
             // in order to make the user save the valid settings when new WANs are added
@@ -401,7 +241,6 @@ if (!Ung.hasResource["Ung.Network"]) {
                     }
                 }
             }
-
             this.callParent(arguments);
         },
         // Interfaces Panel
@@ -1587,7 +1426,7 @@ if (!Ung.hasResource["Ung.Network"]) {
                     // refresh interface selector store (may have changed since last display)
                     var bridgedTo = this.query('combo[dataIndex="bridgedTo"]')[0];
                     bridgedTo.getStore().loadData( Ung.Util.getInterfaceAddressedList() );
-                    Ung.RowEditorWindow.prototype.populate.call(this, record, addMode);
+                    Ung.RowEditorWindow.prototype.populate.apply(this, arguments);
                 }
             }) );
         },
@@ -3235,51 +3074,64 @@ if (!Ung.hasResource["Ung.Network"]) {
                     testErrorMessage : this.i18n._( "Unable to complete the Connectivity Test." ),
                     testEmptyText: this.i18n._("Connectivity Test Output"),
                     initComponent : function() {
-                        Ung.NetworkTest.prototype.initComponent.call(this);
+                        Ung.NetworkTest.prototype.initComponent.apply(this, arguments);
                     },
-                    startNetworkUtility : function() {
-                        //var comand=
-//                      echo -n "Testing DNS ... "
-//                      success="Successful"
-//                      dig updates.untangle.com > /dev/null 2>&1 
-//                      if [ "$?" = "0" ]; then
-//                        echo "OK"
-//                      else
-//                        echo "FAILED"
-//                        success="Failure"
-//                      fi
-//
-//                      echo -n "Testing TCP Connectivity ... "
-//                      echo "GET /" | netcat -q 0 -w 15 updates.untangle.com 80 > /dev/null 2>&1
-//                      if [ "$?" = "0" ]; then
-//                        echo "OK"
-//                      else
-//                        echo "FAILED"
-//                        success="Failure"
-//                      fi
-//
-//                      echo "`date` - Test ${success}!" 
-
-                        //TODO: replace with rpc.jsonrpc.UvmContext.execManager().execEvil(command)
-                        var proc=rpc.jsonrpc.UvmContext.execManager().execEvil("ping google.com");
-                        console.log(proc);
-//Warning: callable reference java.lang.UNIXProcess has not methods, so proc.getInputStream() cannot be called!
-                        window.setTimeout(function() {
-                            console.log(proc.getInputStream());
-
-                        },2000);
-                        
-                        /*
-                        Ung.NetworkUtil.executeRemoteFunction( "/network/start_connectivity_test",
-                               Ext.bind(this.completeStartNetworkUtility, this ),
-                               Ext.bind(this.failureStartNetworkUtility, this ),
-                               {});
-                       */        
-                    }
+                    command: 'dig updates.untangle.com'
                 });
                 this.subCmps.push(this.connectivityTest);
             }
             this.connectivityTest.show();
+        },
+        openPingTest: function() {
+            if(!this.pingTest) {
+                this.pingTest = Ext.create('Ung.NetworkTest',{
+                    helpSource: 'ping_test',
+                    settingsCmp: this,
+                    title: this.i18n._('Connectivity Test'),
+                    testDescription: this.i18n._("The <b>Ping Test</b> can be used to test that a particular host or client can be pinged"),
+                    testErrorMessage : this.i18n._( "Unable to complete the Ping Test." ),
+                    testEmptyText: this.i18n._("Ping Test Output"),
+                    initComponent : function() {
+                        this.testTopToolbar = [this.destination = new Ext.form.TextField({
+                            xtype : "textfield",
+                            width:150,
+                            emptyText : this.settingsCmp.i18n._( "IP Address or Hostname" )
+                        })];
+                        Ung.NetworkTest.prototype.initComponent.apply(this, arguments);
+                    },
+                    getCommand: function() {
+                        var destination = this.destination.getValue();
+                        return "ping -c 5 "+destination;
+                    },
+                    enableParameters : function( isEnabled ){
+                        if ( isEnabled ) {
+                            this.destination.enable();
+                        } else {
+                            this.destination.disable();
+                        }
+                    },
+                    isValid : function() {
+                        var destination = this.destination.getValue();
+                        
+                        if ( destination == null || destination.length==0 /*TODO: verify host or ip
+                             ( !Ext.form.VTypes.ipAddress( destination, this.destination ) && 
+                               !Ext.form.VTypes.hostname( destination, this.destination ))*/) {
+                            Ext.MessageBox.show({
+                                title : this.settingsCmp.i18n._( "Warning" ),
+                                msg : this.settingsCmp.i18n._( "Please enter a valid IP Address or hostname" ),
+                                icon : Ext.MessageBox.WARNING,
+                                buttons : Ext.MessageBox.OK
+                            });
+                            return false;
+                        }
+
+                        return true;
+                    },
+                    
+                });
+                this.subCmps.push(this.pingTest);
+            }
+            this.pingTest.show();
         },
         validate: function() {
             if(this.settings.qosSettings.qosEnabled) {

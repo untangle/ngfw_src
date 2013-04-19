@@ -516,7 +516,17 @@ Ext.define("Ung.Main", {
         }
         return rpc.licenseManager;
     },
+    getExecManager: function(forceReload) {
+        if (forceReload || rpc.execManager === undefined) {
+            try {
+                rpc.execManager = rpc.jsonrpc.UvmContext.execManager();
+            } catch (e) {
+                Ung.Util.rpcExHandler(e);
+            }
 
+        }
+        return rpc.execManager;
+    },
     getLocalDirectory: function(forceReload) {
         if (forceReload || rpc.localDirectory === undefined) {
             try {

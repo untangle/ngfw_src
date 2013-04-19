@@ -3,25 +3,19 @@
  */
 package com.untangle.uvm.engine;
 
-import java.io.IOException;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.BufferedReader;
-import java.net.UnknownHostException;
-import java.util.HashSet;
-import java.util.Set;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
 import java.util.StringTokenizer;
 
 import org.apache.log4j.Logger;
 import org.jabsorb.JSONSerializer;
-import org.jabsorb.serializer.MarshallException;
 import org.jabsorb.serializer.UnmarshallException;
 
 import com.untangle.uvm.ExecManager;
 import com.untangle.uvm.ExecManagerResult;
-import com.untangle.uvm.ProcessWrapper;
+import com.untangle.uvm.ExecResultReader;
 
 /**
  * ExecManagerImpl is a simple manager for all exec() calls.
@@ -114,7 +108,7 @@ public class ExecManagerImpl implements ExecManager
         return exec(cmd).getOutput();
     }
 
-    public ProcessWrapper execEvil(String cmd[]) throws IOException
+    public ExecResultReader execEvil(String cmd[]) throws IOException
     {
         if (logger.isInfoEnabled()) {
             String cmdStr = new String();
@@ -124,7 +118,7 @@ public class ExecManagerImpl implements ExecManager
             logger.info("ExecManager.execEvil(" + cmdStr + ")");
         }
         try {
-            return new ProcessWrapperImpl(Runtime.getRuntime().exec(cmd, null, null));
+            return new ExecResultReaderImpl(Runtime.getRuntime().exec(cmd, null, null));
         } catch (IOException exc) {
             String msg = exc.getMessage();
             if (msg.contains("Cannot allocate memory")) {
@@ -137,7 +131,7 @@ public class ExecManagerImpl implements ExecManager
         }
     }
 
-    public ProcessWrapper execEvil(String cmd) throws IOException
+    public ExecResultReader execEvil(String cmd) throws IOException
     {
         StringTokenizer st = new StringTokenizer(cmd);
         String[] cmdArray = new String[st.countTokens()];

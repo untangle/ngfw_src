@@ -26,13 +26,13 @@ public interface ExecManager
      * Execute the specified command and return the process
      * Called "execEvil" because it calls fork which can cause issues
      */
-    ProcessWrapper execEvil(String cmd[]) throws IOException;
+    ExecResultReader execEvil(String cmd[]) throws IOException;
 
     /**
      * Execute the specified command and return the process
      * Called "execEvil" because it calls fork which can cause issues
      */
-    ProcessWrapper execEvil(String cmd) throws IOException;
+    ExecResultReader execEvil(String cmd) throws IOException;
 
     void close();
 
