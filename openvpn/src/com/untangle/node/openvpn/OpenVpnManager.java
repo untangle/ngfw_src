@@ -322,7 +322,7 @@ public class OpenVpnManager
                 sb.append( "push" + " " + "\"redirect-gateway def1\"" + "\n");
             }
 
-            if( group.getPushDNS() ) {
+            if( group.getPushDns() ) {
                 List<InetAddress> dnsServers = null;
                 dnsServers = new LinkedList<InetAddress>();
 

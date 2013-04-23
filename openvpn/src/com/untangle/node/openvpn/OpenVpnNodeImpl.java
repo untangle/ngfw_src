@@ -4,14 +4,18 @@
 package com.untangle.node.openvpn;
 
 import java.util.List;
+import java.util.LinkedList;
 
 import org.apache.log4j.Logger;
 
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.SettingsManager;
+import com.untangle.uvm.network.InterfaceSettings;
+import com.untangle.uvm.network.InterfaceStatus;
 import com.untangle.uvm.util.I18nUtil;
 import com.untangle.uvm.node.NodeMetric;
 import com.untangle.uvm.node.EventLogQuery;
+import com.untangle.uvm.node.IPMaskedAddress;
 import com.untangle.uvm.vnet.Affinity;
 import com.untangle.uvm.vnet.Fitting;
 import com.untangle.uvm.vnet.NodeBase;
@@ -52,7 +56,8 @@ public class OpenVpnNodeImpl extends NodeBase implements OpenVpnNode
         this.connectEventsQuery = new EventLogQuery(I18nUtil.marktr("Connections"), "SELECT start_time,client_name,max(end_time) as end_time,sum(rx_bytes) as rx_bytes,sum(tx_bytes) as tx_bytes,max(host(remote_address)) as remote_address FROM reports.openvpn_stats GROUP BY start_time,client_name ORDER BY start_time DESC");
     }
 
-    @Override protected PipeSpec[] getPipeSpecs()
+    @Override
+    protected PipeSpec[] getPipeSpecs()
     {
         return pipeSpecs;
     }
@@ -175,6 +180,64 @@ public class OpenVpnNodeImpl extends NodeBase implements OpenVpnNode
     {
         OpenVpnSettings newSettings = new OpenVpnSettings();
 
+        /**
+         * create a list of default exports - use all static non-WANs by default
+         */
+        List<OpenVpnExport> exports = new LinkedList<OpenVpnExport>();
+        for( InterfaceSettings intfSettings : UvmContextFactory.context().networkManager().getEnabledInterfaces() ) {
+            if ( intfSettings.getConfigType() != InterfaceSettings.ConfigType.ADDRESSED )
+                continue;
+            if ( intfSettings.getV4ConfigType() != InterfaceSettings.V4ConfigType.STATIC )
+                continue;
+            if ( intfSettings.getIsWan() )
+                continue;
+            
+            OpenVpnExport export = new OpenVpnExport();
+            export.setEnabled( true );
+            export.setName( intfSettings.getName() + " " + I18nUtil.marktr("primary network") );
+            export.setNetwork( new IPMaskedAddress( intfSettings.getV4StaticAddress(), intfSettings.getV4StaticNetmask() ) );
+            exports.add( export );
+        }
+        newSettings.setExports( exports );
+
+        /**
+         * create a list of default groups (just one)
+         */
+        List<OpenVpnGroup> groups = new LinkedList<OpenVpnGroup>();
+        OpenVpnGroup group = new OpenVpnGroup();
+        group.setName(I18nUtil.marktr("Default Group"));
+        group.setFullTunnel( false );
+        group.setPushDns( true );
+        groups.add( group );
+        newSettings.setGroups( groups );
+
+        /**
+         * Find an address pool that doesn't intersect anything
+         */
+        List<IPMaskedAddress> possibleAddressPools = new LinkedList<IPMaskedAddress>();
+        possibleAddressPools.add( new IPMaskedAddress( "172.16.0.0/16" ) );
+        possibleAddressPools.add( new IPMaskedAddress( "10.10.0.0/16" ) );
+        possibleAddressPools.add( new IPMaskedAddress( "192.168.0.0/16" ) );
+        possibleAddressPools.add( new IPMaskedAddress( "172.16.16.0/24" ) );
+        possibleAddressPools.add( new IPMaskedAddress( "192.168.168.0/24" ) );
+        possibleAddressPools.add( new IPMaskedAddress( "1.2.3.0/24" ) );
+        for( IPMaskedAddress possibleAddressPool : possibleAddressPools ) {
+
+            boolean foundConflict = false;
+            for( InterfaceStatus intfStatus : UvmContextFactory.context().networkManager().getInterfaceStatus() ) {
+                if ( intfStatus.getV4Address() == null || intfStatus.getV4Netmask() == null )
+                    continue;
+                IPMaskedAddress intfMaskedAddress = new IPMaskedAddress( intfStatus.getV4Address(), intfStatus.getV4PrefixLength() );
+                if ( intfMaskedAddress.isIntersecting( possibleAddressPool ) )
+                    foundConflict = true;
+            }
+
+            if ( ! foundConflict ) {
+                newSettings.setAddressSpace( possibleAddressPool );
+                break;
+            }
+        }
+        
         return newSettings;
     }
 

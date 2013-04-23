@@ -19,7 +19,7 @@ public class OpenVpnGroup implements java.io.Serializable
 
     private boolean fullTunnel = false;
 
-    private boolean pushDNS = false;
+    private boolean pushDns = false;
     private boolean isDnsOverrideEnabled = false;
     private InetAddress dnsOverride1;
     private InetAddress dnsOverride2;
@@ -47,8 +47,8 @@ public class OpenVpnGroup implements java.io.Serializable
     /**
      * Should clients use DNS from the server
      */
-    public boolean getPushDNS() { return pushDNS; }
-    public void setPushDNS( boolean newValue ) { this.pushDNS = newValue; }
+    public boolean getPushDns() { return pushDns; }
+    public void setPushDns( boolean newValue ) { this.pushDns = newValue; }
 
     public boolean getIsDnsOverrideEnabled() { return this.isDnsOverrideEnabled; }
     public void setIsDnsOverrideEnabled( boolean newValue ) { this.isDnsOverrideEnabled = newValue; }
