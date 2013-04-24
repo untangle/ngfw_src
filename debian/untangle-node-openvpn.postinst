@@ -4,6 +4,15 @@
 
 /etc/init.d/apache2 reload
 
+disableOpenVPNStartup()
+{
+    mv /etc/init.d/openvpn /etc/init.d/openvpn.tmp # Backup the initialization script
+    update-rc.d openvpn remove > /dev/null # Disable openvpn at bootup
+    mv /etc/init.d/openvpn.tmp /etc/init.d/openvpn # Restore the ssh initialization script
+}
+
+## This is always disabled so the server never starts at system startup.
+disableOpenVPNStartup
 
 exit 0
 

@@ -1,33 +1,11 @@
 #! /bin/bash
 
-exec >> @UVM_LOG@/openvpn.log 2>&1
+/etc/init.d/openvpn stop
 
-GLOBALS=@UVM_HOME@/openvpn/globals
-
-## There must be a configuration file 
-if [ -r ${GLOBALS} ]; then
-    . ${GLOBALS}
-else
-    echo "[`date`,stop-openvpn] Unable to load the openvpn configuration file ${GLOBALS}"
-    exit -2
-fi
-
-## stop monitoring
-rm -f /etc/untangle/monit.d/untangle-openvpn*.conf
-# send HUP directly, as we can't wait here 30 seconds for the usual
-# /etc/untangle/monit-to-restart to do its thing
-kill -HUP $(cat /var/run/monit.pid)
-
-${OPENVPN_SCRIPT} stop
-
-## Openvpn is kind of a fickle program.
 killall openvpn > /dev/null 2>&1
 
 sleep .5
 
 killall -KILL openvpn > /dev/null 2>&1
-
-## This is always disabled so the server never starts at system startup.
-disableOpenVPNStartup
 
 true 

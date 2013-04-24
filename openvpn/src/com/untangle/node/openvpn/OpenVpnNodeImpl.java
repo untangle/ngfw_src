@@ -37,6 +37,7 @@ public class OpenVpnNodeImpl extends NodeBase implements OpenVpnNode
     private EventLogQuery connectEventsQuery;
 
     private final OpenVpnMonitor openVpnMonitor;
+    private final OpenVpnManager openVpnManager = new OpenVpnManager();
 
     private OpenVpnSettings settings;
     
@@ -93,7 +94,46 @@ public class OpenVpnNodeImpl extends NodeBase implements OpenVpnNode
             logger.debug("Settings: " + this.settings.toJSONString());
         }
     }
+
+    @Override
+    protected void preStart()
+    {
+        super.preStart();
+
+        try {
+            this.openVpnManager.configure( settings );
+            this.openVpnManager.start( settings );
+        } catch( Exception e ) {
+            logger.error("Error during startup", e);
+            try {
+                this.openVpnManager.stop();
+            } catch ( Exception stopException ) {
+                logger.error( "Unable to stop the openvpn process", stopException );
+            }
+            throw new RuntimeException(e);
+        }
+
+        this.openVpnMonitor.enable();
+    }
     
+    @Override
+    protected void preStop()
+    {
+        super.preStop();
+
+        try {
+            this.openVpnMonitor.disable();
+        } catch ( Exception e ) {
+            logger.warn( "Error disabling openvpn monitor", e );
+        }
+
+        try {
+            this.openVpnManager.stop();
+        } catch ( Exception e ) {
+            logger.warn( "Error stopping openvpn manager", e );
+        }
+    }
+
     @Override
     public void initializeSettings()
     {

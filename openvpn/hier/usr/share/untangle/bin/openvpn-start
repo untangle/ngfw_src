@@ -1,64 +1,25 @@
 #! /bin/bash
 
-exec >> @UVM_LOG@/openvpn.log 2>&1
-
-GLOBALS=@UVM_HOME@/openvpn/globals
-
-## There must be a configuration file 
-if [ -r ${GLOBALS} ]; then
-    . ${GLOBALS}
-else
-    echo "[`date`,start-openvpn] Unable to load the openvpn configuration file ${GLOBALS}"
-    exit -2
-fi
-
 RETRY_ATTEMPTS=5
 RESTART_DELAY=2
 
-TUN_DEVICE=/dev/net/tun
-
 # If the tun device doesn't exist, then create it
-if [ ! -c ${TUN_DEVICE} ]; then
+# https://forum.openwrt.org/viewtopic.php?id=15979
+if [ ! -c /dev/net/tun ]; then
     mkdir -p /dev/net
-    mknod ${TUN_DEVICE} c 10 200
-fi
-
-## This is always disabled so the server never starts at system startup.
-disableOpenVPNStartup
-
-## XXX May need to run reconfiguration for the bridge
-## 
-
-## Update legacy clients to use the new configuration
-if [ -f ${OPENVPN_CLIENT_CONF} ]; then
-    sed -i -e 's|^route-up /usr/share/untangle/openvpn/route-up$|route-up "bash /usr/share/untangle/openvpn/route-up"|'  ${OPENVPN_CLIENT_CONF} 
-
-    if [ -z "`grep keepalive ${OPENVPN_CLIENT_CONF}`" ]; then
-        echo "keepalive 10 120" >> ${OPENVPN_CLIENT_CONF}
-    fi
+    mknod /dev/net/tun c 10 200
 fi
 
 ## Use restart just in case there is one lingering around
 ## For some reason "restart" is different stop then start
-${OPENVPN_SCRIPT} stop
-
-## Let the dust settle
-sleep .5
+/etc/init.d/openvpn stop
 
 ## Just in case, kill all openvpn instances
 killall openvpn > /dev/null 2>&1 
 
 sleep .5
 
-echo "[`date`,start-openvpn] Starting the openvpn server"
-
-if [ -f ${OPENVPN_CLIENT_CONF} ] ; then
-    cp -f @PREFIX@/usr/share/untangle/openvpn/monit-client.conf /etc/untangle/monit.d/untangle-openvpn_all.conf
-fi
-if [ -f ${OPENVPN_SERVER_CONF} ] ; then
-    cp -f @PREFIX@/usr/share/untangle/openvpn/monit-server.conf /etc/untangle/monit.d/untangle-openvpn_all.conf
-fi
-
+echo "Starting the openvpn server"
 
 ## This is required or else openvpn won't restart properly (sometimes the UDP port is still bound)
 for (( t = 0 ; t < ${RETRY_ATTEMPTS} ; t++ )); do
@@ -66,24 +27,16 @@ for (( t = 0 ; t < ${RETRY_ATTEMPTS} ; t++ )); do
     /etc/init.d/openvpn start
 
     if [ $? -eq 0 ] ; then 
-        echo "[`date`,start-openvpn] Successfully started openvpn daemon"
-	    touch /etc/untangle/monit-to-restart
+        echo "Successfully started openvpn daemon"
         exit 0
     fi
 
-    echo "[`date`,start-openvpn] Unable to start openvpn daemon, waiting ${RESTART_DELAY} seconds"
+    echo "Unable to start openvpn daemon, waiting ${RESTART_DELAY} seconds..."
 
     ## Just in case, kill all openvpn instances
     killall openvpn > /dev/null 2>&1 
 
     sleep ${RESTART_DELAY}
-
-    ## Indicate the script failed if it never starts
-    false
 done
 
-# leave it to monit to restart it when it can
-kill -HUP $(cat /var/run/monit.pid)
-
-exit 0
-
+exit 1

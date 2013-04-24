@@ -140,23 +140,37 @@ public class OpenVpnManager
     {
         logger.info( "Starting openvpn server" );
 
-        UvmContextFactory.context().execManager().exec( VPN_START_SCRIPT );
+        ExecManagerResult result = UvmContextFactory.context().execManager().exec( VPN_START_SCRIPT );
+        try {
+            String lines[] = result.getOutput().split("\\r?\\n");
+            logger.info( VPN_START_SCRIPT + ": ");
+            for ( String line : lines )
+                logger.info( VPN_START_SCRIPT + ": " + line);
+        } catch (Exception e) {}
+
+        if ( result.getResult() != 0 ) {
+            logger.error("Failed to start OpenVPN daemon (return code: " + result.getResult() + ")");
+            throw new RuntimeException("Failed to start OpenVPN daemon");
+        }
 
         //FIXME update iptables rules
-    }
-
-    void restart( OpenVpnSettings settings ) throws Exception
-    {
-        /* The start script handles the case where it has to be stopped */
-        start( settings );
     }
 
     void stop() throws Exception
     {
         logger.info( "Stopping openvpn server" );
 
-        UvmContextFactory.context().execManager().exec( VPN_STOP_SCRIPT );
+        ExecManagerResult result = UvmContextFactory.context().execManager().exec( VPN_STOP_SCRIPT );
+        try {
+            String lines[] = result.getOutput().split("\\r?\\n");
+            logger.info( VPN_STOP_SCRIPT + ": ");
+            for ( String line : lines )
+                logger.info( VPN_STOP_SCRIPT + ": " + line);
+        } catch (Exception e) {}
 
+        if ( result.getResult() != 0 )
+            logger.error("Failed to stop OpenVPN daemon (return code: " + result.getResult() + ")");
+        
         //FIXME update iptables rules
     }
 
@@ -175,7 +189,7 @@ public class OpenVpnManager
         }
 
         /* May want to expose this in the GUI */
-        sb.append( "protocol" + " " + settings.getProtocol() + "\n" );
+        sb.append( "proto" + " " + settings.getProtocol() + "\n" );
         sb.append( "port" + " " + settings.getPort() + "\n");
         sb.append( "cipher" + " " + settings.getCipher() + "\n");
 
@@ -260,7 +274,7 @@ public class OpenVpnManager
             sb.append( line + "\n" );
         }
 
-        sb.append( "protocol" + " " + settings.getProtocol() + "\n" );
+        sb.append( "proto" + " " + settings.getProtocol() + "\n" );
         sb.append( "port" + " " + settings.getPort() + "\n" );
         sb.append( "cipher" + " " + settings.getCipher() + "\n" );
 

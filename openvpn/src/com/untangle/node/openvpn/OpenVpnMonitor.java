@@ -75,11 +75,8 @@ class OpenVpnMonitor implements Runnable
     /* Whether or not openvpn is started */
     private volatile boolean isEnabled = false;
 
-    private final UvmContext localContext;
-
     protected OpenVpnMonitor( OpenVpnNodeImpl node )
     {
-        this.localContext = UvmContextFactory.context();
         this.node = node;
     }
 
@@ -180,7 +177,7 @@ class OpenVpnMonitor implements Runnable
             return;
         }
 
-        thread = this.localContext.newThread( this );
+        thread = UvmContextFactory.context().newThread( this );
         thread.start();
     }
 
