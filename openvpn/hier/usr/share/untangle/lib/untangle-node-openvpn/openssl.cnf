@@ -19,14 +19,14 @@ default_ca  = CA_default        # The default ca section
 
 ####################################################################
 [ CA_default ]
-dir     = $ENV::PKI_DIR         # Where everything is kept
+dir     = @PREFIX@/usr/share/untangle/conf/openvpn         # Where everything is kept
 certs       = $dir          # Where the issued certs are kept
 crl_dir     = $dir          # Where the issued crl are kept
-database    = $ENV::INDEX_FILE  # database index file.
+database    = $dir/index.txt  # database index file.
 new_certs_dir   = $dir          # default place for new certs.
 
 certificate = $dir/ca.crt       # The CA certificate
-serial      = $ENV::SERIAL_FILE     # The current serial number
+serial      = $dir/serial     # The current serial number
 crl     = $dir/crl.pem      # The current CRL
 private_key = $dir/ca.key       # The private key
 RANDFILE    = $dir/.rand        # private random number file
@@ -64,7 +64,7 @@ dnQualifier             = optional
 ####################################################################
 [ req ]
 prompt                  = no
-default_bits        = $ENV::KEY_SIZE
+default_bits        = 2048
 default_keyfile     = privkey.pem
 distinguished_name  = req_distinguished_name_no_prompt
 attributes      = req_attributes_no_prompt
@@ -72,12 +72,20 @@ x509_extensions         = v3_ca # The extentions to add to the self signed cert
 string_mask             = nombstr
 
 [ req_distinguished_name_no_prompt ]
-CN          = $ENV::COMMON_NAME
-C           = $ENV::KEY_COUNTRY
-ST          = $ENV::KEY_PROVINCE
-L           = $ENV::KEY_CITY
-O           = $ENV::KEY_ORG
-OU          = $ENV::KEY_ORG_UNIT
+#CN          = Untangle_CN
+#C           = Untangle_COUNTRY
+#ST          = Untangle_PROVINCE
+#L           = Untangle_CITY
+#O           = Untangle_ORG
+#OU          = Untangle_ORG_UNIT
+#dnQualifier = Untangle_DN  ## a way to distinguish ca, server and client certs in the index file.
+
+CN          = CN
+C           = CO
+ST          = ST
+L           = L
+O           = O
+OU          = OU
 dnQualifier = $ENV::KEY_DN_QUALIFIER  ## a way to distinguish ca, server and client certs in the index file.
 
 [ req_attributes_no_prompt ]

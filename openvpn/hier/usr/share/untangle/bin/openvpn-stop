@@ -1,5 +1,9 @@
 #! /bin/bash
 
+#FIXME should be elsewhere
+iptables -t filter -D filter-rules-input -p tcp --dport 1194 -j ACCEPT -m comment --comment "allow OpenVPN traffic" >/dev/null 2>&1
+iptables -t filter -D filter-rules-input -p UDP --dport 1194 -j ACCEPT -m comment --comment "allow OpenVPN traffic" >/dev/null 2>&1
+
 /etc/init.d/openvpn stop
 
 killall openvpn > /dev/null 2>&1

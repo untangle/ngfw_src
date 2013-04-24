@@ -40,6 +40,8 @@ public class OpenVpnNodeImpl extends NodeBase implements OpenVpnNode
     private final OpenVpnManager openVpnManager = new OpenVpnManager();
 
     private OpenVpnSettings settings;
+
+    private static final String GENERATE_CA_SCRIPT = System.getProperty("uvm.bin.dir") + "/openvpn-build-CA";
     
     public OpenVpnNodeImpl( com.untangle.uvm.node.NodeSettings nodeSettings, com.untangle.uvm.node.NodeProperties nodeProperties )
     {
