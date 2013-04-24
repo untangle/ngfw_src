@@ -1,25 +1,21 @@
 /**
- * $Id: ExecResultReaderImpl.java,v 1.00 2013/04/19 23:04:51 vdumitrescu Exp $
+ * $Id: ExecManagerResultReader.java,v 1.00 2013/04/19 23:04:51 vdumitrescu Exp $
  */
-package com.untangle.uvm.engine;
+package com.untangle.uvm;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 
-import com.untangle.uvm.ExecResultReader;
-
-public class ExecResultReaderImpl implements ExecResultReader 
+public class ExecManagerResultReader
 {
-
 	private Process process;
 
-	public ExecResultReaderImpl(Process process)
+	public ExecManagerResultReader(Process process)
     {
 		this.process = process;
 	}
 	
-	@Override
 	public Integer getResult()
     {
 		int retVal = -1;
@@ -31,8 +27,8 @@ public class ExecResultReaderImpl implements ExecResultReader
 		return retVal;
 	}
 	
-	@Override
-	public String readFromOutput() {
+	public String readFromOutput()
+    {
 		StringBuffer result = new StringBuffer();
 		BufferedReader br = new BufferedReader(new InputStreamReader(process.getInputStream()));
 		try {
@@ -67,13 +63,13 @@ public class ExecResultReaderImpl implements ExecResultReader
 		return result.toString();
 	}
 
-	@Override
 	public void destroy()
     {
 		process.destroy();
 	}
 
-	private boolean isFinished(){
+	private boolean isFinished()
+    {
 		try {
 			process.exitValue();
 		} catch (IllegalThreadStateException ex) {
@@ -82,5 +78,4 @@ public class ExecResultReaderImpl implements ExecResultReader
 		}
 		return true;
 	}
-
 }

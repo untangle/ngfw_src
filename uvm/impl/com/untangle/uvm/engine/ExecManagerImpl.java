@@ -15,7 +15,7 @@ import org.jabsorb.serializer.UnmarshallException;
 
 import com.untangle.uvm.ExecManager;
 import com.untangle.uvm.ExecManagerResult;
-import com.untangle.uvm.ExecResultReader;
+import com.untangle.uvm.ExecManagerResultReader;
 
 /**
  * ExecManagerImpl is a simple manager for all exec() calls.
@@ -108,7 +108,7 @@ public class ExecManagerImpl implements ExecManager
         return exec(cmd).getOutput();
     }
 
-    public ExecResultReader execEvil(String cmd[]) throws IOException
+    public ExecManagerResultReader execEvil(String cmd[]) throws IOException
     {
         if (logger.isInfoEnabled()) {
             String cmdStr = new String();
@@ -118,7 +118,7 @@ public class ExecManagerImpl implements ExecManager
             logger.info("ExecManager.execEvil(" + cmdStr + ")");
         }
         try {
-            return new ExecResultReaderImpl(Runtime.getRuntime().exec(cmd, null, null));
+            return new ExecManagerResultReader(Runtime.getRuntime().exec(cmd, null, null));
         } catch (IOException exc) {
             String msg = exc.getMessage();
             if (msg.contains("Cannot allocate memory")) {
@@ -131,7 +131,7 @@ public class ExecManagerImpl implements ExecManager
         }
     }
 
-    public ExecResultReader execEvil(String cmd) throws IOException
+    public ExecManagerResultReader execEvil(String cmd) throws IOException
     {
         StringTokenizer st = new StringTokenizer(cmd);
         String[] cmdArray = new String[st.countTokens()];
