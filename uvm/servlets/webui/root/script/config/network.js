@@ -3076,7 +3076,9 @@ if (!Ung.hasResource["Ung.Network"]) {
                     initComponent : function() {
                         Ung.NetworkTest.prototype.initComponent.apply(this, arguments);
                     },
-                    command: 'dig updates.untangle.com'
+                    command: ["/bin/bash","-c", 
+                      'echo -n "Testing DNS ... " ; success="Successful"; dig updates.untangle.com > /dev/null 2>&1; if [ "$?" = "0" ]; then echo "OK"; else echo "FAILED"; success="Failure"; fi;echo -n "Testing TCP Connectivity ... "; echo "GET /" | netcat -q 0 -w 15 updates.untangle.com 80 > /dev/null 2>&1; if [ "$?" = "0" ]; then echo "OK";else echo "FAILED"; success="Failure"; fi;echo "`date` - Test ${success}!"'
+                    ]
                 });
                 this.subCmps.push(this.connectivityTest);
             }
@@ -3087,7 +3089,7 @@ if (!Ung.hasResource["Ung.Network"]) {
                 this.pingTest = Ext.create('Ung.NetworkTest',{
                     helpSource: 'ping_test',
                     settingsCmp: this,
-                    title: this.i18n._('Connectivity Test'),
+                    title: this.i18n._('Ping Test'),
                     testDescription: this.i18n._("The <b>Ping Test</b> can be used to test that a particular host or client can be pinged"),
                     testErrorMessage : this.i18n._( "Unable to complete the Ping Test." ),
                     testEmptyText: this.i18n._("Ping Test Output"),
@@ -3118,7 +3120,7 @@ if (!Ung.hasResource["Ung.Network"]) {
                                !Ext.form.VTypes.hostname( destination, this.destination ))*/) {
                             Ext.MessageBox.show({
                                 title : this.settingsCmp.i18n._( "Warning" ),
-                                msg : this.settingsCmp.i18n._( "Please enter a valid IP Address or hostname" ),
+                                msg : this.settingsCmp.i18n._( "Please enter a valid IP Address or Hostname" ),
                                 icon : Ext.MessageBox.WARNING,
                                 buttons : Ext.MessageBox.OK
                             });
@@ -3133,6 +3135,274 @@ if (!Ung.hasResource["Ung.Network"]) {
             }
             this.pingTest.show();
         },
+        openDnsTest: function() {
+            if(!this.dnsTest) {
+                this.dnsTest = Ext.create('Ung.NetworkTest',{
+                    helpSource: 'dns_test',
+                    settingsCmp: this,
+                    title: this.i18n._('DNS Test'),
+                    testDescription: this.i18n._("The <b>DNS Test</b> can be used to test DNS lookups"),
+                    testErrorMessage : this.i18n._( "Unable to complete DNS test." ),
+                    testEmptyText: this.i18n._("DNS Test Output"),
+                    initComponent : function() {
+                        this.testTopToolbar = [this.destination = new Ext.form.TextField({
+                            xtype : "textfield",
+                            width:150,
+                            emptyText : this.settingsCmp.i18n._( "Hostname" )
+                        })];
+                        Ung.NetworkTest.prototype.initComponent.apply(this, arguments);
+                    },
+                    getCommand: function() {
+                        var destination = this.destination.getValue();
+                        return "host "+destination;
+                        
+                        
+                    },
+                    enableParameters : function( isEnabled ){
+                        if ( isEnabled ) {
+                            this.destination.enable();
+                        } else {
+                            this.destination.disable();
+                        }
+                    },
+                    isValid : function() {
+                        var destination = this.destination.getValue();
+                        
+                        if ( destination == null || destination.length==0 /*TODO: verify host or ip
+                             ( !Ext.form.VTypes.ipAddress( destination, this.destination ) && 
+                               !Ext.form.VTypes.hostname( destination, this.destination ))*/) {
+                            Ext.MessageBox.show({
+                                title : this.settingsCmp.i18n._( "Warning" ),
+                                msg : this.settingsCmp.i18n._( "Please enter a valid Hostname" ),
+                                icon : Ext.MessageBox.WARNING,
+                                buttons : Ext.MessageBox.OK
+                            });
+                            return false;
+                        }
+
+                        return true;
+                    },
+                    
+                });
+                this.subCmps.push(this.dnsTest);
+            }
+            this.dnsTest.show();
+        },        
+        openTcpTest: function() {
+            if(!this.tcpTest) {
+                this.tcpTest = Ext.create('Ung.NetworkTest',{
+                    helpSource: 'tcp_test',
+                    settingsCmp: this,
+                    title: this.i18n._('Connection Test'),
+                    testDescription: this.i18n._("The <b>Connection Test</b> verifies that Untangle can open a TCP connection to a port on the given host or client."),
+                    testErrorMessage : this.i18n._( "Unable to complete Connection test." ),
+                    testEmptyText: this.i18n._("Connection Test Output"),
+                    initComponent : function() {
+                        this.testTopToolbar = [this.destination = new Ext.form.TextField({
+                            xtype : "textfield",
+                            width:150,
+                            emptyText : this.settingsCmp.i18n._( "IP Address or Hostname" )
+                        }), this.port = new Ext.form.field.Number({
+                            xtype : "numberfield",
+                            minValue : 1,
+                            maxValue : 65536,
+                            width: 60,
+                            emptyText : this.settingsCmp.i18n._( "Port" )
+                        })];
+                        Ung.NetworkTest.prototype.initComponent.apply(this, arguments);
+                    },
+                    getCommand: function() {
+                        var destination = this.destination.getValue();
+                        var port = this.port.getValue();
+                        //return "netcat -q 0 -v -w 15 " + destination + " " + port;
+                        return ["/bin/sh","-c","echo 1 | netcat -q 0 -v -w 15 " + destination + " " + port];
+                    },
+                    enableParameters : function( isEnabled ){
+                        if ( isEnabled ) {
+                            this.destination.enable();
+                            this.port.enable();
+                        } else {
+                            this.destination.disable();
+                            this.port.disable();
+                        }
+                    },
+                    isValid : function() {
+                        var destination = this.destination.getValue();
+                        var port = this.port.getValue();
+                        
+                        if ( destination == null || destination.length==0 /*TODO: verify host or ip
+                             ( !Ext.form.VTypes.ipAddress( destination, this.destination ) && 
+                               !Ext.form.VTypes.hostname( destination, this.destination ))*/) {
+                            Ext.MessageBox.show({
+                                title : this.settingsCmp.i18n._( "Warning" ),
+                                msg : this.settingsCmp.i18n._( "Please enter a valid IP Address or Hostname" ),
+                                icon : Ext.MessageBox.WARNING,
+                                buttons : Ext.MessageBox.OK
+                            });
+                            return false;
+                        }
+
+                        return true;
+                    },
+                    
+                });
+                this.subCmps.push(this.tcpTest);
+            }
+            this.tcpTest.show();
+        },
+        openTracerouteTest: function() {
+            if(!this.tracerouteTest) {
+                this.tracerouteTest = Ext.create('Ung.NetworkTest',{
+                    helpSource: 'traceroute_test',
+                    settingsCmp: this,
+                    title: this.i18n._('Traceroute Test'),
+                    testDescription: this.i18n._("The <b>Traceroute Test</b> traces the route to a given host or client."),
+                    testErrorMessage : this.i18n._( "Unable to complete the Traceroute Test." ),
+                    testEmptyText: this.i18n._("Traceroute Test Output"),
+                    initComponent : function() {
+                        this.testTopToolbar = [this.destination = new Ext.form.TextField({
+                            xtype : "textfield",
+                            width:150,
+                            emptyText : this.settingsCmp.i18n._( "IP Address or Hostname" )
+                        })];
+                        Ung.NetworkTest.prototype.initComponent.apply(this, arguments);
+                    },
+                    getCommand: function() {
+                        var destination = this.destination.getValue();
+                        return "traceroute "+destination;
+                    },
+                    enableParameters : function( isEnabled ){
+                        if ( isEnabled ) {
+                            this.destination.enable();
+                        } else {
+                            this.destination.disable();
+                        }
+                    },
+                    isValid : function() {
+                        var destination = this.destination.getValue();
+                        
+                        if ( destination == null || destination.length==0 /*TODO: verify host or ip
+                             ( !Ext.form.VTypes.ipAddress( destination, this.destination ) && 
+                               !Ext.form.VTypes.hostname( destination, this.destination ))*/) {
+                            Ext.MessageBox.show({
+                                title : this.settingsCmp.i18n._( "Warning" ),
+                                msg : this.settingsCmp.i18n._( "Please enter a valid IP Address or Hostname" ),
+                                icon : Ext.MessageBox.WARNING,
+                                buttons : Ext.MessageBox.OK
+                            });
+                            return false;
+                        }
+
+                        return true;
+                    },
+                    
+                });
+                this.subCmps.push(this.tracerouteTest);
+            }
+            this.tracerouteTest.show();
+        },
+        openPacketTest: function() {
+            if(!this.packetTest) {
+                this.packetTest = Ext.create('Ung.NetworkTest',{
+                    helpSource: 'packet_test',
+                    settingsCmp: this,
+                    title: this.i18n._('Packet Test'),
+                    testDescription: this.i18n._("The <b>Packet Test</b> can be used to view packets on the network wire for troubleshooting."),
+                    testErrorMessage : this.i18n._( "Unable to complete the Packet Test." ),
+                    testEmptyText: this.i18n._("Packet Test Output"),
+                    initComponent : function() {
+                        var timeouts = [[ 5, this.settingsCmp.i18n._( "5 seconds" )],
+                                        [ 30, this.settingsCmp.i18n._( "30 seconds" )],
+                                        [ 120, this.settingsCmp.i18n._( "120 seconds" )]];
+                        var interfaceStore =Ung.Util.getInterfaceList(false, false); 
+                        this.testTopToolbar = [this.destination = new Ext.form.TextField({
+                            xtype : "textfield",
+                            value : "any",
+                            width:150,
+                            emptyText : this.settingsCmp.i18n._( "IP Address or Hostname" )
+                        }), this.port = new Ext.form.field.Number({
+                            xtype : "numberfield",
+                            minValue : 1,
+                            maxValue : 65536,
+                            width: 60,
+                            emptyText : this.settingsCmp.i18n._( "Port" )
+                        }), this.intf = new Ext.form.field.ComboBox({
+                            xtype : "combo",
+                            editable : false,
+                            style : "margin-left: 10px",
+                            width : 100,
+                            value : interfaceStore[0][0],
+                            store : interfaceStore
+                        }),{
+                            xtype : "label",
+                            html : this.settingsCmp.i18n._("Timeout:"),
+                            style : "margin-left: 18px"
+                        }, this.timeout = new Ext.form.ComboBox({
+                            xtype : "combo",
+                            style : "margin-left: 2px",
+                            value : timeouts[0][0],
+                            editable : false,
+                            width : 100,
+                            store : timeouts
+                        })];
+                        Ung.NetworkTest.prototype.initComponent.apply(this, arguments);
+                    },
+                    getCommand: function() {
+                        var destination = this.destination.getValue();
+                        var port = this.port.getValue();
+                        var intf = this.intf.getValue();
+                        var timeout = this.timeout.getValue();
+                        
+                        var command = [
+                            'intf_name='+intf+';',
+                            /*'pppoe_name=`/usr/share/untangle-net-alpaca/scripts/get_pppoe_name ${intf_name}`;',
+                            'if [ "${pppoe_name}" != "ppp.${intf_name}" ]; then intf_name=${pppoe_name}; fi;',*/
+                            'tcpdump -i ${intf_name} -l -q -c 1024 -n ' + destination + ' '+port+' 2>&1 &;',
+                            'for t in `seq 1 ' + timeout + '`; do sleep 1;',
+                            '  ps aux | grep -q " $! .*[t]cpdump -i";',
+                            '  if [ "$?" != "0" ]; then break; fi;',
+                            'done;',
+                            'ps aux | grep -q " $! .*[t]cpdump -i" && kill -INT $!;',
+                            'ps aux | grep -q " $! .*[t]cpdump -i" && wait $!;',
+                            'echo "`date` - Test Complete!";'];
+                        return ["/bin/bash","-c",command.join("")];
+                    },
+                    enableParameters : function( isEnabled ){
+                        if ( isEnabled ) {
+                            this.destination.enable();
+                            this.port.enable();
+                            this.intf.enable();
+                            this.timeout.enable();
+                        } else {
+                            this.destination.disable();
+                            this.port.disable();
+                            this.intf.disable();
+                            this.timeout.disable();
+                        }
+                    },
+                    isValid : function() {
+                        var destination = this.destination.getValue();
+                        
+                        if ( destination == null || destination.length==0 /*TODO: verify host or ip
+                             ( !Ext.form.VTypes.ipAddress( destination, this.destination ) && 
+                               !Ext.form.VTypes.hostname( destination, this.destination ))*/) {
+                            Ext.MessageBox.show({
+                                title : this.settingsCmp.i18n._( "Warning" ),
+                                msg : this.settingsCmp.i18n._( "Please enter a valid IP Address or Hostname" ),
+                                icon : Ext.MessageBox.WARNING,
+                                buttons : Ext.MessageBox.OK
+                            });
+                            return false;
+                        }
+
+                        return true;
+                    },
+                    
+                });
+                this.subCmps.push(this.packetTest);
+            }
+            this.packetTest.show();
+        },        
         validate: function() {
             if(this.settings.qosSettings.qosEnabled) {
                 var qosBandwidthList = this.gridQosWanBandwidth.getPageList();
