@@ -138,7 +138,10 @@ if (!Ung.hasResource["Ung.Network"]) {
             this.output.focus();
             this.runTest.disable();
             this.enableParameters( false );
-            
+            var text = [];
+            text.push( this.output.getValue());
+            text.push( "" + new Date() + " - " + this.settingsCmp.i18n._("Test Started")+"\n");
+            this.output.setValue( text.join( "" ));
             main.getExecManager().execEvil(Ext.bind(function(result, exception) {
                 if(Ung.Util.handleException(exception)) return; 
                 this.execResultReader = result;
@@ -176,7 +179,7 @@ if (!Ung.hasResource["Ung.Network"]) {
                     text.push(result);
                     window.setTimeout( Ext.bind(this.continueNetworkUtility, this), 1000 );  
                 } else { //Test is finished
-                    text.push( "" + new Date() + "\n\n");
+                    text.push( "" + new Date() + " - " + this.settingsCmp.i18n._("Test Completed") +"\n\n");
                     this.finishNetworkUtility();
                 }
                 this.output.setValue( text.join( "" ));
@@ -439,9 +442,22 @@ if (!Ung.hasResource["Ung.Network"]) {
                     name: "remap_interfaces",
                     iconCls: 'icon-refresh',
                     text: this.i18n._("Remap Interfaces"),
-                    handler: Ext.bind(function() {
+                    handler: function() {
                         this.gridInterfaces.onMapDevices();
-                    }, this)
+                    },
+                    scope : this
+                },{
+                    xtype: "button",
+                    text : this.i18n._( "Test Connectivity" ),
+                    handler : this.testConnectivity,
+                    iconCls : "icon-test-connectivity",
+                    scope : this
+                },{
+                    xtype: "button",
+                    text : this.i18n._( "Ping Test" ),
+                    iconCls : "icon-test-ping",
+                    handler : this.openPingTest,
+                    scope : this
                 }],
                 onMapDevices: Ext.bind(function() {
                     Ext.MessageBox.wait(i18n._("Loading device mapper..."), i18n._("Please wait"));
@@ -3076,13 +3092,37 @@ if (!Ung.hasResource["Ung.Network"]) {
                     initComponent : function() {
                         Ung.NetworkTest.prototype.initComponent.apply(this, arguments);
                     },
-                    command: ["/bin/bash","-c", 
-                      'echo -n "Testing DNS ... " ; success="Successful"; dig updates.untangle.com > /dev/null 2>&1; if [ "$?" = "0" ]; then echo "OK"; else echo "FAILED"; success="Failure"; fi;echo -n "Testing TCP Connectivity ... "; echo "GET /" | netcat -q 0 -w 15 updates.untangle.com 80 > /dev/null 2>&1; if [ "$?" = "0" ]; then echo "OK";else echo "FAILED"; success="Failure"; fi;echo "`date` - Test ${success}!"'
-                    ]
+                    getCommand: function() {
+                        var script= [
+                          'echo -n "Testing DNS ... " ; success="Successful";',
+                          'dig updates.untangle.com > /dev/null 2>&1; if [ "$?" = "0" ]; then echo "OK"; else echo "FAILED"; success="Failure"; fi;',
+                          'echo -n "Testing TCP Connectivity ... ";',
+                          'echo "GET /" | netcat -q 0 -w 15 updates.untangle.com 80 > /dev/null 2>&1;', 
+                          'if [ "$?" = "0" ]; then echo "OK"; else echo "FAILED"; success="Failure"; fi;',
+                          'echo "Test ${success}!"'
+                        ];
+                        return ["/bin/bash","-c", script.join("")];
+                    }
                 });
                 this.subCmps.push(this.connectivityTest);
             }
             this.connectivityTest.show();
+        },
+        testConnectivity: function () {
+            Ext.MessageBox.wait( i18n._( "Testing Internet Connectivity" ), i18n._( "Please wait" ));
+            var script = [
+                 'dig updates.untangle.com > /dev/null 2>&1;',
+                 'if [ "$?" != "0" ]; then echo "'+this.i18n._('Failed to connect to the Internet, DNS failed.')+'"; exit 1; fi;',
+                 'echo "GET /" | netcat -q 0 -w 15 updates.untangle.com 80 > /dev/null 2>&1;', 
+                 'if [ "$?" != "0" ]; then echo "'+this.i18n._('Failed to connect to the Internet, TCP failed.')+'"; exit 1; fi;',
+                 'echo "'+this.i18n._('Successfully connected to the Internet.')+'";'
+               ];
+            var command =  "/bin/bash -c " + script.join("");
+            var execResultReader = null; 
+            main.getExecManager().exec(Ext.bind(function(result, exception) {
+                if(Ung.Util.handleException(exception)) return;
+                Ext.MessageBox.alert(this.i18n._("Test Connectivity Result"), result.output);
+            }, this), command);  
         },
         openPingTest: function() {
             if(!this.pingTest) {
@@ -3154,7 +3194,9 @@ if (!Ung.hasResource["Ung.Network"]) {
                     },
                     getCommand: function() {
                         var destination = this.destination.getValue();
-                        return "host "+destination;
+                        var script=['host '+ destination+';',
+                            'if [ "$?" = "0" ]; then echo "Test Successful"; else echo "Test Failure"; fi;']
+                        return ["/bin/bash","-c", script.join("")];
                         
                         
                     },
@@ -3214,8 +3256,9 @@ if (!Ung.hasResource["Ung.Network"]) {
                     getCommand: function() {
                         var destination = this.destination.getValue();
                         var port = this.port.getValue();
-                        //return "netcat -q 0 -v -w 15 " + destination + " " + port;
-                        return ["/bin/sh","-c","echo 1 | netcat -q 0 -v -w 15 " + destination + " " + port];
+                        var script=['echo 1 | netcat -q 0 -v -w 15 ' + destination + ' ' + port +';',
+                            'if [ "$?" = "0" ]; then echo "Test Successful"; else echo "Test Failure"; fi;'];
+                        return ["/bin/sh","-c", script.join("")];
                     },
                     enableParameters : function( isEnabled ){
                         if ( isEnabled ) {
@@ -3269,7 +3312,9 @@ if (!Ung.hasResource["Ung.Network"]) {
                     },
                     getCommand: function() {
                         var destination = this.destination.getValue();
-                        return "traceroute "+destination;
+                        var script = ['traceroute '+destination + ';',
+                          'if [ "$?" = "0" ]; then echo "Test Successful"; else echo "Test Failure"; fi;'];
+                        return ["/bin/sh","-c", script.join("")];
                     },
                     enableParameters : function( isEnabled ){
                         if ( isEnabled ) {
@@ -3352,20 +3397,30 @@ if (!Ung.hasResource["Ung.Network"]) {
                         var port = this.port.getValue();
                         var intf = this.intf.getValue();
                         var timeout = this.timeout.getValue();
-                        
-                        var command = [
+                        if(destination.toLowerCase() == "any") {
+                            destination = ""
+                        }
+                        if(destination != "") {
+                            destination = "host "+destination;
+                        }
+                        if(port != "") {
+                            port = "port "+port;
+                        }
+                        if(destination != "") {
+                            port = "and "+port;
+                        }
+                        var script = [
                             'intf_name='+intf+';',
                             /*'pppoe_name=`/usr/share/untangle-net-alpaca/scripts/get_pppoe_name ${intf_name}`;',
                             'if [ "${pppoe_name}" != "ppp.${intf_name}" ]; then intf_name=${pppoe_name}; fi;',*/
-                            'tcpdump -i ${intf_name} -l -q -c 1024 -n ' + destination + ' '+port+' 2>&1 &;',
+                            'tcpdump -i ${intf_name} -l -q -c 1024 -v -n ' + destination + ' '+port+' 2>&1 & echo "";',
                             'for t in `seq 1 ' + timeout + '`; do sleep 1;',
                             '  ps aux | grep -q " $! .*[t]cpdump -i";',
                             '  if [ "$?" != "0" ]; then break; fi;',
                             'done;',
                             'ps aux | grep -q " $! .*[t]cpdump -i" && kill -INT $!;',
-                            'ps aux | grep -q " $! .*[t]cpdump -i" && wait $!;',
-                            'echo "`date` - Test Complete!";'];
-                        return ["/bin/bash","-c",command.join("")];
+                            'ps aux | grep -q " $! .*[t]cpdump -i" && wait $!;'];
+                        return ["/bin/bash","-c", script.join("")];
                     },
                     enableParameters : function( isEnabled ){
                         if ( isEnabled ) {
