@@ -245,13 +245,15 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                     width: 180,
                     renderer: function(value) { return i18n.timestampFormat(value); }
                 }, {
-                    header: this.i18n._("Rx Bytes"),
+                    header: this.i18n._("Rx Data"),
                     dataIndex:'bytesRxTotal',
-                    width: 180
+                    width: 180,
+                    renderer: function(value) { return (Math.round(value/100000)/10) + " Mb"; }
                 }, {
-                    header: this.i18n._("Tx Bytes"),
+                    header: this.i18n._("Tx Data"),
                     dataIndex:'bytesTxTotal',
-                    width: 180
+                    width: 180,
+                    renderer: function(value) { return (Math.round(value/100000)/10) + " Mb"; }
                 }]
             });
         },
