@@ -38,7 +38,8 @@ public class OpenVpnManager
     private static final String VPN_STOP_SCRIPT  = System.getProperty( "uvm.bin.dir" ) + "/openvpn-stop";
     private static final String GENERATE_ZIP_SCRIPT = System.getProperty( "uvm.bin.dir" ) + "/openvpn-generate-client-zip";
     private static final String GENERATE_EXE_SCRIPT = System.getProperty( "uvm.bin.dir" ) + "/openvpn-generate-client-exec";
-
+    private static final String IPTABLES_SCRIPT = "/etc/untangle-netd/iptables-rules.d/720-openvpn";
+    
     private static final String OPENVPN_CONF_DIR      = "/etc/openvpn";
     private static final String OPENVPN_SERVER_FILE   = OPENVPN_CONF_DIR + "/server.conf";
     private static final String OPENVPN_CCD_DIR       = OPENVPN_CONF_DIR + "/ccd";
@@ -81,34 +82,26 @@ public class OpenVpnManager
         "cert data/server.crt",
         "key  data/server.key",
         "dh   data/dh.pem",
-        
-        // "ifconfig-pool-persist ipp.txt", // XXX should this be enabled?
         "client-config-dir ccd",
         "keepalive " + DEFAULT_PING_TIME + " " + DEFAULT_PING_TIMEOUT,
         "user nobody",
         "group nogroup",
-
-        "ccd-exclusive", /* Only talk to clients with a client configuration file */
         "tls-server",
         "comp-lzo",
-
-        "persist-key",
-        "persist-tun",
-
         "status openvpn-status.log",
         "verb " + DEFAULT_VERBOSITY,
-
+        "dev tun0",
+        "max-clients 2048",
+        /* Only talk to clients with a client configuration file */
+        "ccd-exclusive", 
+        /* Do not re-read key after SIGUSR1 */
+        "persist-key",
+        /* Do not re-init tun0 after SIGUSR1 */
+        "persist-tun",
         /* Stop logging repeated messages (after 20). */
         "mute 20",
-
         /* Allow management from localhost */
-        "management 127.0.0.1 " + MANAGEMENT_PORT,
-
-        /* max clients */
-        "max-clients 2048",
-
-        /* device */
-        "dev tun0"
+        "management 127.0.0.1 " + MANAGEMENT_PORT
     };
 
     /**
@@ -122,12 +115,11 @@ public class OpenVpnManager
         "mute-replay-warnings",
         "ns-cert-type server",
         "comp-lzo",
-        "verb 2",
-        "persist-key",
-        "persist-tun",
         "verb " + DEFAULT_VERBOSITY,
-        /* Exit if unable to connect to the server */
-        "tls-exit",
+        /* Do not re-read key after SIGUSR1 */
+        "persist-key",
+        /* Do not re-init tun0 after SIGUSR1 */
+        "persist-tun",
         /* device */
         "dev tun0"
     };
@@ -157,7 +149,7 @@ public class OpenVpnManager
             throw new RuntimeException("Failed to start OpenVPN daemon");
         }
 
-        //FIXME update iptables rules
+        insertIptablesRules();
     }
 
     protected void stop()
@@ -175,7 +167,7 @@ public class OpenVpnManager
         if ( result.getResult() != 0 )
             logger.error("Failed to stop OpenVPN daemon (return code: " + result.getResult() + ")");
         
-        //FIXME update iptables rules
+        insertIptablesRules(); // remove since openvpn is not running
     }
 
     protected void configure( OpenVpnSettings settings )
@@ -183,7 +175,6 @@ public class OpenVpnManager
         writeSettings( settings );
         writeClientFiles( settings );
     }
-
 
     /**
      * Create all of the client configuration files
@@ -338,11 +329,6 @@ public class OpenVpnManager
             logger.info( "Writing client configuration file for [" + name + "]" );
 
             StringBuilder sb = new StringBuilder();
-
-            // FIXME (need AddressMapper?)
-            // InetAddress localEndpoint  = client.getAddress();
-            // InetAddress remoteEndpoint = getRemoteEndpoint( localEndpoint );
-            // sb.append( "ifconfig-push" + " " + localEndpoint + " " + remoteEndpoint + "\n");
 
             if( group.getFullTunnel() ) {
                 sb.append( "push" + " " + "\"redirect-gateway def1\"" + "\n");
@@ -515,8 +501,7 @@ public class OpenVpnManager
     private void writeIptablesFiles( OpenVpnSettings settings )
     {
         try {
-            String fileName = "/etc/untangle-netd/iptables-rules.d/720-openvpn";
-            FileWriter iptablesScript = new FileWriter( fileName, false );
+            FileWriter iptablesScript = new FileWriter( IPTABLES_SCRIPT, false );
 
             iptablesScript.write("#!/bin/dash" + "\n");
             iptablesScript.write("## Auto Generated on " + new Date() + "\n");
@@ -548,7 +533,7 @@ public class OpenVpnManager
             
             iptablesScript.close();
 
-            UvmContextFactory.context().execManager().execResult( "chmod 755 " + fileName );
+            UvmContextFactory.context().execManager().execResult( "chmod 755 " + IPTABLES_SCRIPT );
 
             return;
 
@@ -556,5 +541,25 @@ public class OpenVpnManager
             logger.error( "Error writing iptables script", exc );
         }
     }
-    
+
+    /**
+     * Inserts necessary iptables rules if OpenVPN daemon is running
+     * Removes same rules if OpenVPN daemon is not running
+     * safe to run multiple times
+     */
+    private synchronized void insertIptablesRules()
+    {
+        ExecManagerResult result = UvmContextFactory.context().execManager().exec( IPTABLES_SCRIPT );
+        try {
+            String lines[] = result.getOutput().split("\\r?\\n");
+            logger.info( IPTABLES_SCRIPT + ": ");
+            for ( String line : lines )
+                logger.info( IPTABLES_SCRIPT + ": " + line);
+        } catch (Exception e) {}
+
+        if ( result.getResult() != 0 ) {
+            logger.error("Failed to start OpenVPN daemon (return code: " + result.getResult() + ")");
+            throw new RuntimeException("Failed to start OpenVPN daemon");
+        }
+    }
 }
