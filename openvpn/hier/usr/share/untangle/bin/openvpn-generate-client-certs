@@ -1,0 +1,50 @@
+#! /bin/bash
+
+#
+# This script generates all the base certificates and keys for a client
+# 
+
+commonName="${1}"
+
+SETTINGS_DIR="@PREFIX@/usr/share/untangle/settings/untangle-node-openvpn"
+
+CLIENT_KEY="${SETTINGS_DIR}/client-${commonName}.key"
+CLIENT_CRT="${SETTINGS_DIR}/client-${commonName}.crt"
+
+OPENSSL_CFG_FILE="@PREFIX@/usr/share/untangle/lib/untangle-node-openvpn/openssl.cnf"
+CERT_DURATION=3650 # 10 years
+
+generateClientKey()
+{
+    local clientCsr=`mktemp || exit -3`
+
+    export COMMON_NAME=${commonName}
+    export KEY_COMMON_NAME="${commonName}"
+    export KEY_DN_QUALIFIER="client-${commonName}"
+    
+    ## Generate the server private key and the certificate signing request
+    openssl req -days ${CERT_DURATION} -nodes -new -keyout ${CLIENT_KEY} -out ${clientCsr} -config ${OPENSSL_CFG_FILE} -batch
+
+    ## Sign the cretificate signing request
+    openssl ca -days ${CERT_DURATION} -out ${CLIENT_CRT} -in ${clientCsr} -config ${OPENSSL_CFG_FILE} -batch
+
+    ## Remove the CSR
+    rm -f ${clientCsr}
+
+    ## Make the server key readable only by root
+    chmod 0600 ${CLIENT_KEY}
+}
+
+if [ -z "${commonName}" ]; then
+    echo "Must specify a common name for the key"
+    exit -3
+fi
+
+if [ -f ${CLIENT_CRT} ]; then
+    echo "The client ${commonName} already has a key"
+    exit 0
+fi
+
+## Generate the client key
+generateClientKey
+

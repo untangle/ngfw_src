@@ -41,7 +41,7 @@ public class OpenVpnRemoteClient implements java.io.Serializable
     public void setEnabled( boolean newValue ) { this.enabled = newValue; }
 
     public String getName() { return name; }
-    public void setName(String name) { this.name = name; }
+    public void setName(String name) { this.name = ( name == null ? null : name.replaceAll("\\s","") ); }
 
     public int getGroupId() { return groupId; }
     public void setGroupId( int newValue ) { this.groupId = newValue; }

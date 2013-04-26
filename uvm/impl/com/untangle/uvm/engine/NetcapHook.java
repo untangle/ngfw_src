@@ -637,9 +637,8 @@ public abstract class NetcapHook implements Runnable
 
             session.serverIncomingSocketQueue().send_event( reset );
 
-            /* Make sure the guardian didn't leave a crumb in the queue */
-            /* XXX Don't really need to do this */
-            while ( !session.serverIncomingSocketQueue().isEmpty()) {
+            /* Empty the server queue */
+            while ( session.serverIncomingSocketQueue() != null && !session.serverIncomingSocketQueue().isEmpty()) {
                 logger.debug( "vectorReset: Removing crumb left in IncomingSocketQueue:" );
                 session.serverIncomingSocketQueue().read();
             }

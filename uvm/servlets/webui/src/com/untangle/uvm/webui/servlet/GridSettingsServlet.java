@@ -41,8 +41,7 @@ public class GridSettingsServlet extends HttpServlet
     
     private static final String CHARACTER_ENCODING = "utf-8";
 
-	protected void doPost(HttpServletRequest req, HttpServletResponse resp)
-			throws ServletException, IOException
+	protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException
     {
 		boolean isExport = "export".equals(req.getParameter("type"));
 		if (isExport) {
@@ -53,8 +52,7 @@ public class GridSettingsServlet extends HttpServlet
 
 	}
 
-	private void processImport(HttpServletRequest req, HttpServletResponse resp)
-			throws ServletException, IOException
+	private void processImport(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException
     {
 
 		// Create a factory for disk-based file items
@@ -118,9 +116,7 @@ public class GridSettingsServlet extends HttpServlet
         return I18nUtil.tr("Import failed. Settings must be formatted as a JSON Array.", i18n_map);
     }
 	
-	
-	private void processExport(HttpServletRequest req, HttpServletResponse resp)
-			throws ServletException, IOException
+	private void processExport(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException
     {
 		String gridData = req.getParameter("gridData");
         String oemName = UvmContextFactory.context().oemManager().getOemName();

@@ -4,15 +4,12 @@
 
 /etc/init.d/apache2 reload
 
-disableOpenVPNStartup()
-{
-    mv /etc/init.d/openvpn /etc/init.d/openvpn.tmp # Backup the initialization script
-    update-rc.d openvpn remove > /dev/null # Disable openvpn at bootup
-    mv /etc/init.d/openvpn.tmp /etc/init.d/openvpn # Restore the ssh initialization script
-}
+# Disable auto-starting of OpenVPN daemon
+update-rc.d openvpn remove
 
-## This is always disabled so the server never starts at system startup.
-disableOpenVPNStartup
+# Hide "WARN: Could not open database for 1536 bits. skipped" when starting daemon
+# https://help.ubuntu.com/community/OpenVPN
+touch /usr/share/openssl-blacklist/blacklist.RSA-1536
 
 exit 0
 

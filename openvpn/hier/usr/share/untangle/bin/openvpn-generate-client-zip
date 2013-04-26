@@ -1,0 +1,76 @@
+#! /bin/bash
+
+#
+# This takes the client name and site name and generates the zip file containing all the configuration
+# for the specified client. The specified client must already exist with all its config (cert etc)
+# 
+
+commonName="${1}"
+siteName="${2}"
+
+if [ -z "${commonName}" ]; then
+    echo "Must specify a common name."
+    exit -3
+fi
+
+if [ -z "${siteName}" ]; then
+    echo "specify a site name."
+    exit -3
+fi
+
+SETTINGS_DIR="@PREFIX@/usr/share/untangle/settings/untangle-node-openvpn"
+PACKAGE_DIR="/tmp/openvpn/client-packages"
+
+WIN_CONFIG_FILE=${PACKAGE_DIR}/client-${commonName}.ovpn
+UNIX_CONFIG_FILE=${PACKAGE_DIR}/client-${commonName}.conf
+CLI_CRT_FILE=${SETTINGS_DIR}/client-${commonName}.crt
+CLI_KEY_FILE=${SETTINGS_DIR}/client-${commonName}.key
+CA_CERT=${SETTINGS_DIR}/ca.crt
+
+## Create a tempory directory for the client
+buildConfigFile() {
+    local tmpDir=`mktemp -d || exit -3`
+
+    ## Done this way so the zip directory is called
+    local outputDir="${tmpDir}/untangle-vpn"
+    local keyDir="${outputDir}/untangle-vpn"
+
+    mkdir ${outputDir} || exit -4
+    mkdir ${keyDir} || exit -4
+    
+    cp ${UNIX_CONFIG_FILE} ${outputDir}/${siteName}.conf
+    cp ${WIN_CONFIG_FILE}  ${outputDir}/${siteName}.ovpn
+    todos ${outputDir}/${siteName}.ovpn
+    cp ${CLI_KEY_FILE}     ${keyDir}/${siteName}-${commonName}.key
+    cp ${CLI_CRT_FILE}     ${keyDir}/${siteName}-${commonName}.crt
+    cp ${CA_CERT}          ${keyDir}/${siteName}-ca.crt
+
+    pushd ${tmpDir} >/dev/null
+    mkdir -p ${PACKAGE_DIR}
+    ## Remove the zip first, otherwise it will append files.
+    rm -f ${PACKAGE_DIR}/config-${commonName}.zip
+    zip -r ${PACKAGE_DIR}/config-${commonName}.zip untangle-vpn > /dev/null
+    echo "Created ${PACKAGE_DIR}/config-${commonName}.zip"
+    popd >/dev/null
+
+    ## Clean up
+    rm -f ${outputDir}/${siteName}.conf
+    rm -f ${outputDir}/${siteName}.ovpn
+    rm -f ${keyDir}/${siteName}-${commonName}.key
+    rm -f ${keyDir}/${siteName}-${commonName}.crt
+    rm -f ${keyDir}/${siteName}-ca.crt
+    
+    rmdir ${keyDir}
+    rmdir ${outputDir}
+    rmdir ${tmpDir}
+}
+
+ZIP_FILE="${PACKAGE_DIR}/config-${commonName}.zip"
+if [ -f $ZIP_FILE ] && [ $ZIP_FILE -nt $CLI_CRT_FILE ] ; then
+    echo "$ZIP_FILE already exists and is up to date"
+else
+    buildConfigFile
+fi
+
+true
+

@@ -3,6 +3,7 @@
  */
 package com.untangle.node.openvpn;
 
+import java.net.URLEncoder;
 import java.util.List;
 import java.util.LinkedList;
 
@@ -10,9 +11,11 @@ import org.apache.log4j.Logger;
 
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.SettingsManager;
+import com.untangle.uvm.ExecManagerResult;
 import com.untangle.uvm.network.InterfaceSettings;
 import com.untangle.uvm.network.InterfaceStatus;
 import com.untangle.uvm.util.I18nUtil;
+import com.untangle.uvm.node.NodeSettings;
 import com.untangle.uvm.node.NodeMetric;
 import com.untangle.uvm.node.EventLogQuery;
 import com.untangle.uvm.node.IPMaskedAddress;
@@ -25,6 +28,9 @@ import com.untangle.uvm.vnet.SoloPipeSpec;
 public class OpenVpnNodeImpl extends NodeBase implements OpenVpnNode
 {
     private final Logger logger = Logger.getLogger(getClass());
+
+    private static final String GENERATE_CERTS_SCRIPT = System.getProperty("uvm.bin.dir") + "/openvpn-generate-certs";
+    private static final String GENERATE_CLIENT_CERTS_SCRIPT = System.getProperty("uvm.bin.dir") + "/openvpn-generate-client-certs";
 
     private static final String STAT_PASS = "pass";
     private static final String STAT_CONNECT = "connect";
@@ -41,7 +47,7 @@ public class OpenVpnNodeImpl extends NodeBase implements OpenVpnNode
 
     private OpenVpnSettings settings;
 
-    private static final String GENERATE_CA_SCRIPT = System.getProperty("uvm.bin.dir") + "/openvpn-build-CA";
+    private boolean isWebAppDeployed = false;
     
     public OpenVpnNodeImpl( com.untangle.uvm.node.NodeSettings nodeSettings, com.untangle.uvm.node.NodeProperties nodeProperties )
     {
@@ -95,6 +101,8 @@ public class OpenVpnNodeImpl extends NodeBase implements OpenVpnNode
             this.settings = readSettings;
             logger.debug("Settings: " + this.settings.toJSONString());
         }
+
+        deployWebApp();
     }
 
     @Override
@@ -104,7 +112,7 @@ public class OpenVpnNodeImpl extends NodeBase implements OpenVpnNode
 
         try {
             this.openVpnManager.configure( settings );
-            this.openVpnManager.start( settings );
+            this.openVpnManager.start();
         } catch( Exception e ) {
             logger.error("Error during startup", e);
             try {
@@ -136,12 +144,33 @@ public class OpenVpnNodeImpl extends NodeBase implements OpenVpnNode
         }
     }
 
+    @Override protected void postDestroy()
+    {
+        super.postDestroy();
+
+        unDeployWebApp();
+    }
+    
     @Override
     public void initializeSettings()
     {
         logger.info("Initializing Settings...");
 
         setSettings(getDefaultSettings());
+
+        ExecManagerResult result = UvmContextFactory.context().execManager().exec( GENERATE_CERTS_SCRIPT );
+
+        try {
+            String lines[] = result.getOutput().split("\\r?\\n");
+            logger.info( GENERATE_CERTS_SCRIPT + ": ");
+            for ( String line : lines )
+                logger.info( GENERATE_CERTS_SCRIPT + ": " + line);
+        } catch (Exception e) {}
+
+        if ( result.getResult() != 0 ) {
+            logger.error("Failed to generate CA (return code: " + result.getResult() + ")");
+            throw new RuntimeException("Failed to generate CA");
+        }
     }
 
     public OpenVpnSettings getSettings()
@@ -174,49 +203,58 @@ public class OpenVpnNodeImpl extends NodeBase implements OpenVpnNode
         return this.openVpnMonitor.getOpenConnectionsAsEvents();
     }
 
-    public String getAdminDownloadLink( String clientName, ConfigFormat format )
+    public String getClientDistributionDownloadLink( String clientName, String format /* "zip", "exe" */ )
     {
-        return "FIXME";
-        // boolean foundClient = false;
-        // for ( final VpnClient client : this.settings.trans_getCompleteClientList()) {
-        //     if ( !client.trans_getInternalName().equals( clientName ) &&
-        //          !client.getName().equals( clientName )) continue;
+        /**
+         * Find the client by that name
+         */
+        OpenVpnRemoteClient client = null;
+        for ( final OpenVpnRemoteClient iclient : this.settings.getRemoteClients()) {
+            if ( iclient.getName().equals( clientName )) client = iclient;
+        }
+        if ( client == null ) {
+            throw new RuntimeException( "Client \"" + clientName +"\" not found." );
+        }
 
-        //     clientName = client.trans_getInternalName();
+        /**
+         * Generate the certs ( if they already exist it will just return )
+         */
+        ExecManagerResult result = UvmContextFactory.context().execManager().exec( GENERATE_CLIENT_CERTS_SCRIPT + " \""  + client.getName() + "\"" );
+        try {
+            String lines[] = result.getOutput().split("\\r?\\n");
+            logger.info( GENERATE_CLIENT_CERTS_SCRIPT + ": ");
+            for ( String line : lines )
+                logger.info( GENERATE_CLIENT_CERTS_SCRIPT + ": " + line);
+        } catch (Exception e) {}
 
-        //     /* Clear out the distribution email */
-        //     client.setDistributionEmail( null );
-        //     distributeRealClientConfig( client );
-        //     foundClient = true;
-        //     break;
-        // }
+        if ( result.getResult() != 0 ) {
+            logger.error("Failed to generate client config (return code: " + result.getResult() + ")");
+            throw new RuntimeException("Failed to generate client config");
+        }
 
-        // if ( !foundClient ) {
-        //     throw new Exception( "Unable to download unsaved clients <" + clientName +">" );
-        // }
+        /**
+         * Generate the zip and exec files
+         */
+        this.openVpnManager.createClientDistribution( settings, client );
+        
+        /**
+         * Return the proper link for the requested format
+         */
+        String fileName = null;
+        if ( "exe".equals(format) ) fileName = "setup.exe";
+        else if ( "zip".equals(format) ) fileName = "config.zip";
+        else throw new RuntimeException("Unknown format: " + format);
 
-        // generateAdminClientKey();
+        String key = "";
+        String clientNameStr = "";
+        try {
+            clientNameStr = URLEncoder.encode( clientName , "UTF-8" );
+        } catch(java.io.UnsupportedEncodingException e) {
+            logger.warn("Unsupported Encoding:",e);
+        }
 
-        // String fileName = null;
-        // switch ( format ) {
-        // case SETUP_EXE : fileName = "setup.exe";  break;
-        // case ZIP: fileName = "config.zip"; break;
-        // }
-
-        // String key = "";
-        // String client = "";
-        // try {
-        //     key = URLEncoder.encode( this.adminDownloadClientKey , "UTF-8");
-        //     client = URLEncoder.encode( clientName , "UTF-8");
-        // } catch(java.io.UnsupportedEncodingException e) {
-        //     logger.warn("Unsupported Encoding:",e);
-        // }
-
-        // return WEB_APP_PATH + "/" + fileName +
-        //     "?" + Constants.ADMIN_DOWNLOAD_CLIENT_KEY + "=" + key +
-        //     "&" + Constants.ADMIN_DOWNLOAD_CLIENT_PARAM + "=" + client;
+        return "/openvpn" + "/" + fileName + "?" + "client" + "=" + clientNameStr;
     }
-
 
     private OpenVpnSettings getDefaultSettings()
     {
@@ -247,6 +285,7 @@ public class OpenVpnNodeImpl extends NodeBase implements OpenVpnNode
          */
         List<OpenVpnGroup> groups = new LinkedList<OpenVpnGroup>();
         OpenVpnGroup group = new OpenVpnGroup();
+        group.setGroupId(1);
         group.setName(I18nUtil.marktr("Default Group"));
         group.setFullTunnel( false );
         group.setPushDns( true );
@@ -286,6 +325,16 @@ public class OpenVpnNodeImpl extends NodeBase implements OpenVpnNode
     private void _setSettings( OpenVpnSettings newSettings )
     {
         /**
+         * Verify Settings
+         */
+        verifySettings( newSettings );
+
+        /**
+         * Sanitize Settings
+         */
+        sanitizeSettings( newSettings );
+
+        /**
          * Save the settings
          */
         SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
@@ -302,6 +351,95 @@ public class OpenVpnNodeImpl extends NodeBase implements OpenVpnNode
          */
         this.settings = newSettings;
         try {logger.debug("New Settings: \n" + new org.json.JSONObject(this.settings).toString(2));} catch (Exception e) {}
+
+        /**
+         * Sync those settings
+         */
+        this.openVpnManager.configure( this.settings );
+        
+        /**
+         * Restart the daemon
+         */
+        try {
+            if ( getRunState() == NodeSettings.NodeState.RUNNING ) {
+                /* This stops then starts openvpn */
+                this.openVpnManager.stop();
+                this.openVpnManager.start();
+                //FIXME iptables rules?
+            }
+        } catch ( Exception exn ) {
+            logger.error( "Could not save VPN settings", exn );
+        }
+
+    }
+
+    private void sanitizeSettings( OpenVpnSettings newSettings )
+    {
+        /**
+         * Set group IDs for any new groups
+         * New groups have ID of -1, set them to unused IDs
+         */
+        int highestKnownGroupId = 1;
+        for ( OpenVpnGroup group : newSettings.getGroups() ) {
+            if ( group.getGroupId() > highestKnownGroupId )
+                highestKnownGroupId = group.getGroupId();
+        }
+        for ( OpenVpnGroup group : newSettings.getGroups() ) {
+            if ( group.getGroupId() < 0 ) {
+                group.setGroupId( highestKnownGroupId + 1 );
+                highestKnownGroupId++;
+            }
+        }
+    }
+
+    private void verifySettings( OpenVpnSettings newSettings )
+    {
+        /**
+         * Verify no lists are null
+         */
+        if ( newSettings.getGroups() == null)
+            throw new RuntimeException("Invalid Settings: null groups list");
+        if ( newSettings.getRemoteClients() == null)
+            throw new RuntimeException("Invalid Settings: null remote clients list");
+
+        /**
+         * Check each client.
+         * Check that it has a good name, and the mapped group exist
+         */
+        for ( OpenVpnRemoteClient client : newSettings.getRemoteClients() ) {
+            if ( client.getName() == null || client.getName().contains(" ") )
+                throw new RuntimeException("Invalid Settings: Illegal client name: " + client.getName());
+            boolean foundGroup = false;
+            for ( OpenVpnGroup group : newSettings.getGroups() ) {
+                if ( group.getGroupId() == client.getGroupId() )
+                    foundGroup = true;
+            }
+            if (!foundGroup)
+                throw new RuntimeException("Invalid Settings: Missing Group " + client.getGroupId() + " for client: " + client.getName());
+        }
+
+            
+    }
+    
+    private synchronized void deployWebApp()
+    {
+        if ( !isWebAppDeployed ) {
+            if (null != UvmContextFactory.context().tomcatManager().loadServlet( "/openvpn", "openvpn")) {
+                logger.debug( "Deployed openvpn web app" );
+            }
+            else logger.warn( "Unable to deploy openvpn web app" );
+        }
+        isWebAppDeployed = true;
+    }
+
+    private synchronized void unDeployWebApp()
+    {
+        if ( isWebAppDeployed ) {
+            if( UvmContextFactory.context().tomcatManager().unloadServlet( "/openvpn" )) {
+                logger.debug( "Unloaded openvpn web app" );
+            } else logger.warn( "Unable to unload openvpn web app" );
+        }
+        isWebAppDeployed = false;
     }
     
 }

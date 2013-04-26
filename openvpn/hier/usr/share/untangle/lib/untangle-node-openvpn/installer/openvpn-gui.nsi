@@ -15,9 +15,8 @@ RequestExecutionLevel admin
 !include "GetWindowsVersion.nsi"
 
 !define HOME "openvpn"
-!define MV_FILES "/usr/share/untangle/conf/openvpn"
-!define MV_PACKAGE_DIR "${MV_FILES}/client-packages"
-!define MV_PKI_DIR "${MV_FILES}/pki"
+!define UNTANGLE_SETTINGS_DIR "@PREFIX@/usr/share/untangle/settings/untangle-node-openvpn"
+!define UNTANGLE_PACKAGE_DIR "/tmp/openvpn/client-packages"
 !define BIN "${HOME}\bin"
 
 !define PRODUCT_NAME "OpenVPN"
@@ -68,7 +67,7 @@ RequestExecutionLevel admin
 
   ;General
 
-  OutFile "${MV_PACKAGE_DIR}/setup-${COMMON_NAME}.exe"
+  OutFile "${UNTANGLE_PACKAGE_DIR}/setup-${COMMON_NAME}.exe"
 
   SetCompressor lzma
 
@@ -262,13 +261,13 @@ Section "OpenVPN GUI" SecGUI
 
   # Include your custom config file(s) here.
   SetOutPath "$INSTDIR\config"
-  File /oname=${SITE_NAME}.ovpn "${MV_PACKAGE_DIR}/client-${COMMON_NAME}.ovpn"
+  File /oname=${SITE_NAME}.ovpn "${UNTANGLE_PACKAGE_DIR}/client-${COMMON_NAME}.ovpn"
 
   # Named untangle-openvpn so it is safe to overwrite the files in it.
   SetOutPath "$INSTDIR\config\untangle-openvpn"
-  File /oname=${SITE_NAME}-${COMMON_NAME}.crt "${MV_PKI_DIR}/client-${COMMON_NAME}.crt"
-  File /oname=${SITE_NAME}-${COMMON_NAME}.key "${MV_PKI_DIR}/client-${COMMON_NAME}.key"
-  File /oname=${SITE_NAME}-ca.crt "${MV_PKI_DIR}/ca.crt"
+  File /oname=${SITE_NAME}-${COMMON_NAME}.crt "${UNTANGLE_SETTINGS_DIR}/client-${COMMON_NAME}.crt"
+  File /oname=${SITE_NAME}-${COMMON_NAME}.key "${UNTANGLE_SETTINGS_DIR}/client-${COMMON_NAME}.key"
+  File /oname=${SITE_NAME}-ca.crt "${UNTANGLE_SETTINGS_DIR}/ca.crt"
 
   SetOutPath "$INSTDIR"
   File "${HOME}\install-win32\OpenVPN_GUI_ReadMe.txt"

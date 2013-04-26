@@ -13,7 +13,7 @@ import com.untangle.uvm.node.IPMaskedAddress;
 @SuppressWarnings("serial")
 public class OpenVpnGroup implements java.io.Serializable
 {
-    private int id;
+    private int groupId;
     
     private String name;
 
@@ -29,8 +29,8 @@ public class OpenVpnGroup implements java.io.Serializable
     /**
      * Unique ID of the group
      */
-    public int getId() { return id; }
-    public void setId( int newValue ) { this.id = newValue; }
+    public int getGroupId() { return groupId; }
+    public void setGroupId( int newValue ) { this.groupId = newValue; }
 
     /**
      * Name of the group

@@ -8,6 +8,7 @@ import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.LinkedList;
@@ -33,14 +34,17 @@ public class OpenVpnManager
 {
     private final Logger logger = Logger.getLogger( this.getClass());
 
+    private static final String VPN_START_SCRIPT = System.getProperty( "uvm.bin.dir" ) + "/openvpn-start";
+    private static final String VPN_STOP_SCRIPT  = System.getProperty( "uvm.bin.dir" ) + "/openvpn-stop";
+    private static final String GENERATE_ZIP_SCRIPT = System.getProperty( "uvm.bin.dir" ) + "/openvpn-generate-client-zip";
+    private static final String GENERATE_EXE_SCRIPT = System.getProperty( "uvm.bin.dir" ) + "/openvpn-generate-client-exec";
+
     private static final String OPENVPN_CONF_DIR      = "/etc/openvpn";
     private static final String OPENVPN_SERVER_FILE   = OPENVPN_CONF_DIR + "/server.conf";
     private static final String OPENVPN_CCD_DIR       = OPENVPN_CONF_DIR + "/ccd";
-    private static final String CLIENT_CONF_FILE_BASE = System.getProperty( "uvm.conf.dir" ) + "/openvpn" + "/clients" + "/client-";
 
-    private static final String VPN_START_SCRIPT = System.getProperty( "uvm.bin.dir" ) + "/openvpn-start";
-    private static final String VPN_STOP_SCRIPT  = System.getProperty( "uvm.bin.dir" ) + "/openvpn-stop";
-    private static final String GENERATE_DISTRO_SCRIPT = System.getProperty( "uvm.bin.dir" ) + "/openvpn-generate-distro";
+    private static final String CLIENT_CONF_FILE_BASE = "/tmp/openvpn/client-packages/" + "/client-";
+
 
     /**
      * Ping every x seconds
@@ -136,7 +140,7 @@ public class OpenVpnManager
 
     protected OpenVpnManager() { }
 
-    void start( OpenVpnSettings settings ) throws Exception
+    protected void start()
     {
         logger.info( "Starting openvpn server" );
 
@@ -156,7 +160,7 @@ public class OpenVpnManager
         //FIXME update iptables rules
     }
 
-    void stop() throws Exception
+    protected void stop()
     {
         logger.info( "Stopping openvpn server" );
 
@@ -174,13 +178,46 @@ public class OpenVpnManager
         //FIXME update iptables rules
     }
 
-    void configure( OpenVpnSettings settings ) throws Exception
+    protected void configure( OpenVpnSettings settings )
     {
         writeSettings( settings );
         writeClientFiles( settings );
     }
 
-    private void writeSettings( OpenVpnSettings settings ) throws Exception
+
+    /**
+     * Create all of the client configuration files
+     */
+    protected void createClientDistribution( OpenVpnSettings settings, OpenVpnRemoteClient client )
+    {
+        writeClientConfigurationFile( settings, client, UNIX_CLIENT_DEFAULTS, UNIX_EXTENSION );
+        writeClientConfigurationFile( settings, client, WIN_CLIENT_DEFAULTS,  WIN_EXTENSION );
+
+        String cmdStr;
+        ExecManagerResult result;
+
+        cmdStr = GENERATE_ZIP_SCRIPT + " " + "\"" + client.getName() + "\"" + " " + "\"" + settings.getSiteName() + "\"";
+        logger.debug( "Executing: " + cmdStr );
+        result = UvmContextFactory.context().execManager().exec(cmdStr);
+        try {
+            String lines[] = result.getOutput().split("\\r?\\n");
+            logger.info( GENERATE_ZIP_SCRIPT + ": ");
+            for ( String line : lines )
+                logger.info(GENERATE_ZIP_SCRIPT + ": " + line);
+        } catch (Exception e) {}
+
+        cmdStr = GENERATE_EXE_SCRIPT + " " + "\"" + client.getName() + "\"" + " " + "\"" + settings.getSiteName() + "\"";
+        logger.debug( "Executing: " + cmdStr );
+        result = UvmContextFactory.context().execManager().exec(cmdStr);
+        try {
+            String lines[] = result.getOutput().split("\\r?\\n");
+            logger.info( GENERATE_EXE_SCRIPT + ": ");
+            for ( String line : lines )
+                logger.info(GENERATE_EXE_SCRIPT + ": " + line);
+        } catch (Exception e) {}
+    }
+    
+    private void writeSettings( OpenVpnSettings settings )
     {
         StringBuilder sb = new StringBuilder();
 
@@ -205,6 +242,8 @@ public class OpenVpnManager
         writeExports( sb, settings );
 
         writeFile( OPENVPN_SERVER_FILE, sb );
+
+        writeIptablesFiles( settings );
     }
 
     private void writeExports( StringBuilder sb, OpenVpnSettings settings )
@@ -230,40 +269,13 @@ public class OpenVpnManager
 
         sb.append("\n");
     }
-
-    /**
-     * Create all of the client configuration files
-     */
-    void writeClientConfigurationFiles( OpenVpnSettings settings, OpenVpnRemoteClient client )
-    {
-        String publicUrl = UvmContextFactory.context().systemManager().getPublicUrl();
-
-        writeClientConfigurationFile( settings, client, UNIX_CLIENT_DEFAULTS, UNIX_EXTENSION );
-        writeClientConfigurationFile( settings, client, WIN_CLIENT_DEFAULTS,  WIN_EXTENSION );
-
-        logger.debug( "Executing: " + GENERATE_DISTRO_SCRIPT );
-
-        String cmdStr = GENERATE_DISTRO_SCRIPT + " " +
-            "\"" + client.getName() + "\"" + " " +
-            "\"" + publicUrl + "\"" + " " +
-            "\"" + settings.getSiteName() + "\"";
-
-        ExecManagerResult result = UvmContextFactory.context().execManager().exec(cmdStr);
-        try {
-            String lines[] = result.getOutput().split("\\r?\\n");
-            logger.info( GENERATE_DISTRO_SCRIPT + ": ");
-            for ( String line : lines )
-                logger.info(GENERATE_DISTRO_SCRIPT + ": " + line);
-        } catch (Exception e) {}
-        
-    }
     
-    /*
+    /**
      * Write a client configuration file (unix or windows)
      */
     private void writeClientConfigurationFile( OpenVpnSettings settings, OpenVpnRemoteClient client, String[] defaults, String extension )
     {
-        final String CLI_KEY_DIR = "untangle-openvpn";
+        final String CLI_KEY_DIR = "untangle-vpn";
         StringBuilder sb = new StringBuilder();
 
         /* Insert all of the default parameters */
@@ -394,8 +406,7 @@ public class OpenVpnManager
 
         String value = "\"route ";
         if ( netmask != null ) {
-            IPMaskedAddress maskedAddr = new IPMaskedAddress( address, netmask );
-            value += maskedAddr.getMaskedAddress().getHostAddress() + "/" + maskedAddr.getPrefixLength();
+            value += address.getHostAddress();
             value += " " + netmask.getHostAddress();
         } else {
             value += address.getHostAddress();
@@ -494,10 +505,56 @@ public class OpenVpnManager
             return null;
         
         for ( OpenVpnGroup group : settings.getGroups() ) {
-            if ( group.getId() == groupId )
+            if ( group.getGroupId() == groupId )
                 return group;
         }
 
         return null;
     }
+
+    private void writeIptablesFiles( OpenVpnSettings settings )
+    {
+        try {
+            String fileName = "/etc/untangle-netd/iptables-rules.d/720-openvpn";
+            FileWriter iptablesScript = new FileWriter( fileName, false );
+
+            iptablesScript.write("#!/bin/dash" + "\n");
+            iptablesScript.write("## Auto Generated on " + new Date() + "\n");
+            iptablesScript.write("## DO NOT EDIT. Changes will be overwritten." + "\n");
+            iptablesScript.write("\n\n");
+
+            iptablesScript.write("if [ -z \"$IPTABLES\" ] ; then IPTABLES=iptables ; fi" + "\n");
+            iptablesScript.write("\n");
+
+            iptablesScript.write("# delete old rules (if they exist) " + "\n");
+            iptablesScript.write("${IPTABLES} -t filter -D filter-rules-input -p tcp --dport 1194 -j ACCEPT -m comment --comment \"Allow OpenVPN traffic\" >/dev/null 2>&1" + "\n");
+            iptablesScript.write("${IPTABLES} -t filter -D filter-rules-input -p udp --dport 1194 -j ACCEPT -m comment --comment \"Allow OpenVPN traffic\" >/dev/null 2>&1" + "\n");
+            iptablesScript.write("${IPTABLES} -t mangle -D mark-src-intf -i tun0 -j MARK --set-mark 0xfa/0xff -m comment --comment \"Set src interface mark for openvpn\" >/dev/null 2>&1" + "\n");
+            iptablesScript.write("${IPTABLES} -t mangle -D mark-dst-intf -o tun0 -j MARK --set-mark 0xfa00/0xff00 -m comment --comment \"Set dst interface mark for openvpn\" >/dev/null 2>&1" + "\n");
+            iptablesScript.write("\n");
+
+            iptablesScript.write("# allow traffic to openvpn daemon" + "\n");
+            iptablesScript.write("if [ ! -z \"`pidof openvpn`\" ] ; then" + "\n");
+            iptablesScript.write("    ${IPTABLES} -t filter -I filter-rules-input -p tcp --dport 1194 -j ACCEPT -m comment --comment \"Allow OpenVPN traffic\"" + "\n");
+            iptablesScript.write("    ${IPTABLES} -t filter -I filter-rules-input -p udp --dport 1194 -j ACCEPT -m comment --comment \"Allow OpenVPN traffic\"" + "\n");
+            iptablesScript.write("fi" + "\n");
+            iptablesScript.write("\n");
+
+            iptablesScript.write("# mark traffic from openvpn interface" + "\n");
+            iptablesScript.write("${IPTABLES} -t mangle -I mark-src-intf 3 -i tun0 -j MARK --set-mark 0xfa/0xff -m comment --comment \"Set src interface mark for openvpn\"" + "\n");
+            iptablesScript.write("# mark traffic to openvpn interface" + "\n");
+            iptablesScript.write("${IPTABLES} -t mangle -I mark-dst-intf 3 -o tun0 -j MARK --set-mark 0xfa00/0xff00 -m comment --comment \"Set dst interface mark for openvpn\"" + "\n");
+            iptablesScript.write("\n");
+            
+            iptablesScript.close();
+
+            UvmContextFactory.context().execManager().execResult( "chmod 755 " + fileName );
+
+            return;
+
+        } catch ( java.io.IOException exc ) {
+            logger.error( "Error writing iptables script", exc );
+        }
+    }
+    
 }

@@ -11,19 +11,12 @@ import com.untangle.uvm.node.EventLogQuery;
 
 public interface OpenVpnNode extends Node
 {
-    public enum ConfigFormat
-    {
-        SETUP_EXE,
-        ZIP;
-    };
-    
     public void setSettings( OpenVpnSettings settings );
     public OpenVpnSettings getSettings();
 
-    /* Returns a URL to use to download the admin key. */
-    public String getAdminDownloadLink( String clientName, ConfigFormat format );
+    public EventLogQuery[] getStatusEventsQueries();
+
+    public String getClientDistributionDownloadLink( String clientName, String format );
      
     public List<OpenVpnStatusEvent> getActiveClients();
-
-    public EventLogQuery[] getStatusEventsQueries();
 }
