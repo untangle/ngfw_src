@@ -365,7 +365,6 @@ public class OpenVpnNodeImpl extends NodeBase implements OpenVpnNode
                 /* This stops then starts openvpn */
                 this.openVpnManager.stop();
                 this.openVpnManager.start();
-                //FIXME iptables rules?
             }
         } catch ( Exception exn ) {
             logger.error( "Could not save VPN settings", exn );

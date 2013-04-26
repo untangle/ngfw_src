@@ -436,6 +436,9 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                 }, {
                     name: 'name'
                 }, {
+                    name: 'originalName',
+                    mapping: 'name'
+                }, {
                     name: 'groupId'
                 }, {
                     name: 'export'
@@ -1001,6 +1004,15 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
             for(var i=0;i<clientList.length;i++) {
                 var client = clientList[i];
                 var clientName = client.name.toLowerCase();
+
+                if(client.internalId>=0 && client.name!=client.originalName) {
+                    Ext.MessageBox.alert(i18n._("Failed"), this.i18n._("Changing name is not allowed. Create a new user."),
+                        Ext.bind(function () {
+                            this.tabs.setActiveTab(this.panelClients);
+                        }, this)
+                    );
+                    return false;
+                }
                 
                 if ( clientNames[clientName] != null ) {
                     Ext.MessageBox.alert(this.i18n._('Failed'),

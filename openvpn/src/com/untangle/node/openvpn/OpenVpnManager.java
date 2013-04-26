@@ -288,7 +288,6 @@ public class OpenVpnManager
         sb.append( "key"  + " " + CLI_KEY_DIR + "/" + siteName + "-" + name + ".key" + "\n");
         sb.append( "ca"   + " " + CLI_KEY_DIR + "/" + siteName + "-ca.crt" + "\n");
 
-        //FIXME this should be shown in the UI with a link to where to configure it
         String publicAddress = UvmContextFactory.context().systemManager().getPublicUrl();
 
         /* Strip off the port, (This guarantees if they set it to a hostname the value will be correct) */
@@ -301,7 +300,10 @@ public class OpenVpnManager
 
     private void writeClientFiles( OpenVpnSettings settings )
     {
-        /* Delete the old client files */
+        /**
+         * Delete the old client files
+         * This is so that when we disable clients, their CCD files will be gone
+         */
         try {
             File baseDirectory = new File( OPENVPN_CCD_DIR );
             if ( baseDirectory.exists()) {
@@ -366,12 +368,9 @@ public class OpenVpnManager
                     sb.append( "push" + " " + "\"dhcp-option DNS " + addr.toString() + "\"" + "\n");
                 }
 
-                // FIXME - should be from openvpn settings
-                String localDomain = "FIXME";
-                //String localDomain = networkSettings.getDnsLocalDomain();
                 //If the domain is set - push it
-                if(localDomain != null) {
-                    sb.append( "push" + " " + "\"dhcp-option DOMAIN " + localDomain + "\"" + "\n");
+                if( networkSettings.getDomainName() != null ) {
+                    sb.append( "push" + " " + "\"dhcp-option DOMAIN " + networkSettings.getDomainName() + "\"" + "\n");
                 }
             }
 

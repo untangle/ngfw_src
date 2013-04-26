@@ -23,7 +23,7 @@ PACKAGE_DIR="/tmp/openvpn/client-packages"
 EXE_FILE="${PACKAGE_DIR}/setup-${commonName}.exe"
 CLI_CRT_FILE=${SETTINGS_DIR}/client-${commonName}.crt
 
-if [ -f $EXE_FILE ] && [ $EXE_FILE -nt $CLI_CRT_FILE ] ; then
+if [ -f $EXE_FILE ] && [ $EXE_FILE -nt $CLI_CRT_FILE ] && [ $ZIP_FILE -nt /etc/openvpn/server.conf ] ; then
     echo "$EXE_FILE already exists and is up to date"
 else
     ## Run NSIS to create client distro.
