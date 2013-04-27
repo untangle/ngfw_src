@@ -404,6 +404,160 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                 })
             };
         },
+        buildGridServers: function() {
+            this.gridRemoteServers = Ext.create('Ung.EditorGrid', {
+                hasAdd: false,
+                settingsCmp: this,
+                name: 'Remote Servers',
+                sortable: true,
+                paginated: false,
+                anchor: "100% 40%",
+                style: "margin-bottom:10px;",
+                emptyRow: {
+                    "enabled": true,
+                    "name": this.i18n._("newServer")
+                },
+                title: this.i18n._("Remote Servers"),
+                recordJavaClass: "com.untangle.node.openvpn.OpenVpnRemoteServer",
+                dataProperty: "remoteServers",
+                fields: [{
+                    name: 'enabled'
+                }, {
+                    name: 'name'
+                }, {
+                    name: 'originalName',
+                    mapping: 'name'
+                }],
+                columns: [{
+                        xtype:'checkcolumn',
+                        header: this.i18n._("Enabled"),
+                        dataIndex: 'enabled',
+                        width: 80,
+                        resizable: false
+                    }, {
+                        header: this.i18n._("Server Name"),
+                        width: 130,
+                        dataIndex: 'name',
+                        flex:1,
+                        editor: {
+                            xtype:'textfield',
+                            allowBlank: false,
+                            maskRe: /[A-Za-z0-9]/,
+                            vtype: 'openvpnClientName'
+                        }
+                    }],
+                columnsDefaultSortable: true,
+                // the row input lines used by the row editor window
+                rowEditorInputLines: [{
+                    xtype: 'checkbox',
+                    name: "Enabled",
+                    dataIndex: "enabled",
+                    fieldLabel: this.i18n._("Enabled")
+                }, {
+                        xtype: 'container',
+                        layout: 'column',
+                        margin: '0 0 5 0',
+                        items: [{
+                            xtype: "textfield",
+                            name: "Server name",
+                            dataIndex: "name",
+                            fieldLabel: this.i18n._("Server name"),
+                            allowBlank: false,
+                            maskRe: /[A-Za-z0-9]/,
+                            vtype: 'openvpnClientName',
+                            width: 300
+                        },{
+                            xtype: 'label',
+                            html: this.i18n._("only alphanumerics allowed") + " [A-Za-z0-9]",
+                            cls: 'boxlabel'
+                        }]
+                }]
+            });
+        },
+        buildRemoteServers: function() {
+            this.buildGridServers();
+
+            this.submitForm = Ext.create('Ext.form.Panel', {
+                border: false,
+                xtype: 'fieldset',
+                cls: 'description',
+                items: [{
+                        html: "<i>" + this.i18n._("Configure a new Remote Server connection") + "</i>",
+                        cls: 'description',
+                        border: false
+                    }, {
+                        xtype: 'fieldset',
+                        buttonAlign: 'left',
+                        labelWidth: 150,
+                        labelAlign: 'right',
+                        items: [, {
+                            xtype: "textfield",
+                            name: "uploadConfigServerName",
+                            fieldLabel: this.i18n._("Server Name"),
+                            allowBlank: false,
+                            maskRe: /[A-Za-z0-9]/,
+                            vtype: 'openvpnClientName',
+                            width: 200
+                        }, {
+                            xtype: 'filefield',
+                            name: 'uploadConfigFileName',
+                            fieldLabel: this.i18n._('Configuration File'),
+                            allowBlank: false,
+                            width: 300,
+                            size: 50
+                        }, {
+                            xtype: 'button',
+                            id: "submitUpload",
+                            text: i18n._('Submit'),
+                            name: "Submit",
+                            handler: Ext.bind(function() {
+                                var servername = this.submitForm.query('textfield[name="uploadConfigServerName"]')[0].getValue();
+                                if ( servername == null || servername.length == 0 ) {
+                                    Ext.MessageBox.alert(this.i18n._( "Server Name" ), this.i18n._( "You must specify a server name." ));
+                                    return;
+                                }
+                                var filename = this.submitForm.query('textfield[name="uploadConfigFileName"]')[0].getValue();
+                                if ( filename == null || filename.length == 0 ) {
+                                    Ext.MessageBox.alert(this.i18n._( "Select File" ), this.i18n._( "Please choose a file to upload." ));
+                                    return;
+                                }
+
+                                this.submitForm.submit({
+                                    url: "/openvpn/uploadConfig?serverName=" + servername,
+                                    success: Ext.bind(function( form, action, handler ) {
+                                        Ext.MessageBox.alert(this.i18n._( "SUCCESS" ), this.i18n._( "SUCCESS." ));
+                                    }, this),
+                                    failure: Ext.bind(function( form, action ) {
+                                        Ext.MessageBox.alert(this.i18n._( "FAILURE" ), this.i18n._( "FAILURE." ));
+                                    }, this)
+                                });
+                                
+                                
+                            }, this)
+                        }]
+                    }]
+                });
+
+            this.panelRemoteServers = Ext.create('Ext.panel.Panel', {
+                name: 'Servers',
+                helpSource: 'servers',
+                parentId: this.getId(),
+                title: this.i18n._('Remote Servers'),
+                layout: 'anchor',
+                cls: 'ung-panel',
+                items: [{
+                    xtype: 'fieldset',
+                    cls: 'description',
+                    title: this.i18n._('Remote Servers'),
+                    items: [{
+                        html: "<i>" + this.i18n._("FIXME Describe Remote Servers.") + "</i>",
+                        cls: 'description',
+                        border: false
+                    }]
+                }, this.gridRemoteServers, this.submitForm]
+            });
+        },
+        
         buildGridClients: function() {
             this.gridRemoteClients = Ext.create('Ung.EditorGrid', {
                 initComponent: function() {
@@ -501,26 +655,6 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                     editable: false,
                     queryMode: 'local',
                     width: 300
-                }]
-            });
-        },
-        buildRemoteServers: function() {
-            this.panelRemoteServers = Ext.create('Ext.panel.Panel', {
-                name: 'Servers',
-                helpSource: 'servers',
-                parentId: this.getId(),
-                title: this.i18n._('Remote Servers'),
-                layout: 'anchor',
-                cls: 'ung-panel',
-                items: [{
-                    xtype: 'fieldset',
-                    cls: 'description',
-                    title: this.i18n._('Remote Servers'),
-                    items: [{
-                        html: "<i>" + this.i18n._("FIXME Describe Remote Servers.") + "</i>",
-                        cls: 'description',
-                        border: false
-                    }]
                 }]
             });
         },

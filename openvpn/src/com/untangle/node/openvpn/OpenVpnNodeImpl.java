@@ -256,6 +256,11 @@ public class OpenVpnNodeImpl extends NodeBase implements OpenVpnNode
         return "/openvpn" + "/" + fileName + "?" + "client" + "=" + clientNameStr;
     }
 
+    public String getClientDistributionUploadLink()
+    {
+        return "/openvpn" + "/uploadConfig?";
+    }
+    
     private OpenVpnSettings getDefaultSettings()
     {
         OpenVpnSettings newSettings = new OpenVpnSettings();

@@ -17,6 +17,8 @@ public interface OpenVpnNode extends Node
     public EventLogQuery[] getStatusEventsQueries();
 
     public String getClientDistributionDownloadLink( String clientName, String format );
+
+    public String getClientDistributionUploadLink( );
      
     public List<OpenVpnStatusEvent> getActiveClients();
 }

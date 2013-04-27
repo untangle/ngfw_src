@@ -28,4 +28,16 @@
     <url-pattern>/config.zip</url-pattern>
   </servlet-mapping>
 
+  <!-- Upload server zip config -->
+  <servlet>
+    <servlet-name>UploadConfig</servlet-name>
+    <servlet-class>com.untangle.node.openvpn.servlet.UploadConfig</servlet-class>
+    <load-on-startup>1</load-on-startup>
+  </servlet>
+
+  <servlet-mapping>
+    <servlet-name>UploadConfig</servlet-name>
+    <url-pattern>/uploadConfig</url-pattern>
+  </servlet-mapping>
+
 </web-app>

@@ -44,7 +44,7 @@ public class OpenVpnSettings implements java.io.Serializable, JSONString
     /**
      * List of all the remote servers
      */
-    private List<OpenVpnServer> remoteServers = new LinkedList<OpenVpnServer>();
+    private List<OpenVpnRemoteServer> remoteServers = new LinkedList<OpenVpnRemoteServer>();
 
     public OpenVpnSettings() { }
 
@@ -72,8 +72,8 @@ public class OpenVpnSettings implements java.io.Serializable, JSONString
     public List<OpenVpnRemoteClient> getRemoteClients() { return this.remoteClients; }
     public void setRemoteClients( List<OpenVpnRemoteClient> newValue ) { this.remoteClients = newValue; }
 
-    public List<OpenVpnServer> getRemoteServers() { return this.remoteServers; }
-    public void setRemoteServers( List<OpenVpnServer> newValue ) { this.remoteServers = newValue; }
+    public List<OpenVpnRemoteServer> getRemoteServers() { return this.remoteServers; }
+    public void setRemoteServers( List<OpenVpnRemoteServer> newValue ) { this.remoteServers = newValue; }
 
     public String toJSONString()
     {
