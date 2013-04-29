@@ -85,7 +85,7 @@ public class MailSenderImpl implements MailSender
         "CFILEMODE='644'\n" + 
         "dc_use_split_config='false'\n" + 
         "dc_hide_mailname='true'\n" + 
-        //"AUTH_CLIENT_ALLOW_NOTLS_PASSWORDS='1'\n" +
+        "AUTH_CLIENT_ALLOW_NOTLS_PASSWORDS='1'\n" +
         "dc_mailname_in_oh='true'\n";
 
     private static final Object LOCK = new Object();
