@@ -43,7 +43,7 @@ buildConfigFile() {
     todos ${outputDir}/${siteName}.ovpn
     cp ${CLI_KEY_FILE}     ${keyDir}/${siteName}-${commonName}.key
     cp ${CLI_CRT_FILE}     ${keyDir}/${siteName}-${commonName}.crt
-    cp ${CA_CERT}          ${keyDir}/${siteName}-ca.crt
+    cp ${CA_CERT}          ${keyDir}/${siteName}-${commonName}-ca.crt
 
     pushd ${tmpDir} >/dev/null
     mkdir -p ${PACKAGE_DIR}
@@ -58,7 +58,7 @@ buildConfigFile() {
     rm -f ${outputDir}/${siteName}.ovpn
     rm -f ${keyDir}/${siteName}-${commonName}.key
     rm -f ${keyDir}/${siteName}-${commonName}.crt
-    rm -f ${keyDir}/${siteName}-ca.crt
+    rm -f ${keyDir}/${siteName}-${commonName}-ca.crt
     
     rmdir ${keyDir}
     rmdir ${outputDir}

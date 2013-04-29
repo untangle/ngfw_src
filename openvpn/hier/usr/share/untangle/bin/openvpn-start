@@ -20,6 +20,7 @@ killall openvpn > /dev/null 2>&1
 sleep .5
 
 # Verify/set the links to the settings files from /etc/openvpn
+mkdir -p /etc/openvpn/data
 ln -fs @PREFIX@/usr/share/untangle/settings/untangle-node-openvpn/server.key /etc/openvpn/data/server.key
 ln -fs @PREFIX@/usr/share/untangle/settings/untangle-node-openvpn/server.crt /etc/openvpn/data/server.crt
 ln -fs @PREFIX@/usr/share/untangle/settings/untangle-node-openvpn/ca.key /etc/openvpn/data/ca.key

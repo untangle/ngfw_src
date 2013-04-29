@@ -121,7 +121,7 @@ public class OpenVpnManager
         /* Do not re-init tun0 after SIGUSR1 */
         "persist-tun",
         /* device */
-        "dev tun0"
+        "dev tun"
     };
 
     private static final String WIN_CLIENT_DEFAULTS[]  = new String[] {};
@@ -132,7 +132,7 @@ public class OpenVpnManager
 
     protected OpenVpnManager() { }
 
-    protected void start()
+    protected void restart()
     {
         logger.info( "Starting openvpn server" );
 
@@ -286,7 +286,7 @@ public class OpenVpnManager
 
         sb.append( "cert" + " " + CLI_KEY_DIR + "/" + siteName + "-" + name + ".crt" + "\n");
         sb.append( "key"  + " " + CLI_KEY_DIR + "/" + siteName + "-" + name + ".key" + "\n");
-        sb.append( "ca"   + " " + CLI_KEY_DIR + "/" + siteName + "-ca.crt" + "\n");
+        sb.append( "ca"   + " " + CLI_KEY_DIR + "/" + siteName + "-" + name + "-ca.crt" + "\n");
 
         String publicAddress = UvmContextFactory.context().systemManager().getPublicUrl();
 
@@ -513,9 +513,10 @@ public class OpenVpnManager
             iptablesScript.write("# delete old rules (if they exist) " + "\n");
             iptablesScript.write("${IPTABLES} -t filter -D filter-rules-input -p tcp --dport 1194 -j ACCEPT -m comment --comment \"Allow OpenVPN traffic\" >/dev/null 2>&1" + "\n");
             iptablesScript.write("${IPTABLES} -t filter -D filter-rules-input -p udp --dport 1194 -j ACCEPT -m comment --comment \"Allow OpenVPN traffic\" >/dev/null 2>&1" + "\n");
-            iptablesScript.write("${IPTABLES} -t mangle -D mark-src-intf -i tun0 -j MARK --set-mark 0xfa/0xff -m comment --comment \"Set src interface mark for openvpn\" >/dev/null 2>&1" + "\n");
-            iptablesScript.write("${IPTABLES} -t mangle -D mark-dst-intf -o tun0 -j MARK --set-mark 0xfa00/0xff00 -m comment --comment \"Set dst interface mark for openvpn\" >/dev/null 2>&1" + "\n");
-            iptablesScript.write("\n");
+            iptablesScript.write("for i in `seq 0 10` ; do" + "\n");
+            iptablesScript.write("    ${IPTABLES} -t mangle -D mark-src-intf -i tun$i -j MARK --set-mark 0xfa/0xff -m comment --comment \"Set src interface mark for openvpn\" >/dev/null 2>&1" + "\n");
+            iptablesScript.write("    ${IPTABLES} -t mangle -D mark-dst-intf -o tun$i -j MARK --set-mark 0xfa00/0xff00 -m comment --comment \"Set dst interface mark for openvpn\" >/dev/null 2>&1" + "\n");
+            iptablesScript.write("done" + "\n");
 
             iptablesScript.write("# allow traffic to openvpn daemon" + "\n");
             iptablesScript.write("if [ ! -z \"`pidof openvpn`\" ] ; then" + "\n");
@@ -524,11 +525,11 @@ public class OpenVpnManager
             iptablesScript.write("fi" + "\n");
             iptablesScript.write("\n");
 
-            iptablesScript.write("# mark traffic from openvpn interface" + "\n");
-            iptablesScript.write("${IPTABLES} -t mangle -I mark-src-intf 3 -i tun0 -j MARK --set-mark 0xfa/0xff -m comment --comment \"Set src interface mark for openvpn\"" + "\n");
-            iptablesScript.write("# mark traffic to openvpn interface" + "\n");
-            iptablesScript.write("${IPTABLES} -t mangle -I mark-dst-intf 3 -o tun0 -j MARK --set-mark 0xfa00/0xff00 -m comment --comment \"Set dst interface mark for openvpn\"" + "\n");
-            iptablesScript.write("\n");
+            iptablesScript.write("# mark traffic to/from openvpn interface" + "\n");
+            iptablesScript.write("for i in `seq 0 10` ; do" + "\n");
+            iptablesScript.write("    ${IPTABLES} -t mangle -I mark-src-intf 3 -i tun$i -j MARK --set-mark 0xfa/0xff -m comment --comment \"Set src interface mark for openvpn\"" + "\n");
+            iptablesScript.write("    ${IPTABLES} -t mangle -I mark-dst-intf 3 -o tun$i -j MARK --set-mark 0xfa00/0xff00 -m comment --comment \"Set dst interface mark for openvpn\"" + "\n");
+            iptablesScript.write("done" + "\n");
             
             iptablesScript.close();
 

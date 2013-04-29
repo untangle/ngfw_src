@@ -4,6 +4,7 @@
 package com.untangle.node.openvpn;
 
 import java.net.URLEncoder;
+import java.util.Random;
 import java.util.List;
 import java.util.LinkedList;
 
@@ -31,6 +32,7 @@ public class OpenVpnNodeImpl extends NodeBase implements OpenVpnNode
 
     private static final String GENERATE_CERTS_SCRIPT = System.getProperty("uvm.bin.dir") + "/openvpn-generate-certs";
     private static final String GENERATE_CLIENT_CERTS_SCRIPT = System.getProperty("uvm.bin.dir") + "/openvpn-generate-client-certs";
+    private static final String IMPORT_CLIENT_SCRIPT = System.getProperty("uvm.bin.dir") + "/openvpn-import-config";
 
     private static final String STAT_PASS = "pass";
     private static final String STAT_CONNECT = "connect";
@@ -112,7 +114,7 @@ public class OpenVpnNodeImpl extends NodeBase implements OpenVpnNode
 
         try {
             this.openVpnManager.configure( settings );
-            this.openVpnManager.start();
+            this.openVpnManager.restart();
         } catch( Exception e ) {
             logger.error("Error during startup", e);
             try {
@@ -261,10 +263,60 @@ public class OpenVpnNodeImpl extends NodeBase implements OpenVpnNode
         return "/openvpn" + "/uploadConfig?";
     }
     
+    public void importClientConfig( String filename )
+    {
+        ExecManagerResult result = UvmContextFactory.context().execManager().exec( IMPORT_CLIENT_SCRIPT + " \""  + filename + "\"");
+
+        String sitename = "siteName-" + (new Random().nextInt(10000));
+        try {
+            String lines[] = result.getOutput().split("\\r?\\n");
+            logger.info( IMPORT_CLIENT_SCRIPT + ": ");
+            for ( String line : lines ) {
+                logger.info( IMPORT_CLIENT_SCRIPT + ": " + line);
+
+                if (line.contains("SiteName: ")) {
+                    String[] tokens = line.split(" ");
+                    if (tokens.length > 1)
+                        sitename = tokens[1];
+                }
+            }
+        } catch (Exception e) {}
+
+        if ( result.getResult() != 0 ) {
+            logger.error("Failed to import client config (return code: " + result.getResult() + ")");
+            throw new RuntimeException("Failed to import client config");
+        }
+
+        /**
+         * Add a new server in settings, if it does not exist
+         */
+        OpenVpnSettings settings = getSettings();
+        List<OpenVpnRemoteServer> servers = settings.getRemoteServers();
+        for ( OpenVpnRemoteServer server : servers ) {
+            if (sitename.equals(server.getName()))
+                return;
+        }
+        OpenVpnRemoteServer server = new OpenVpnRemoteServer();
+        server.setName( sitename );
+        server.setEnabled( true );
+        servers.add( server );
+        settings.setRemoteServers( servers );
+        setSettings( settings );
+
+        /**
+         * Restart the daemon
+         */
+        this.openVpnManager.restart();
+        
+        return;
+    }
+
     private OpenVpnSettings getDefaultSettings()
     {
         OpenVpnSettings newSettings = new OpenVpnSettings();
 
+        newSettings.setSiteName( UvmContextFactory.context().networkManager().getNetworkSettings().getHostName() + "-" + (new Random().nextInt(10000)));
+        
         /**
          * create a list of default exports - use all static non-WANs by default
          */
@@ -367,9 +419,7 @@ public class OpenVpnNodeImpl extends NodeBase implements OpenVpnNode
          */
         try {
             if ( getRunState() == NodeSettings.NodeState.RUNNING ) {
-                /* This stops then starts openvpn */
-                this.openVpnManager.stop();
-                this.openVpnManager.start();
+                this.openVpnManager.restart();
             }
         } catch ( Exception exn ) {
             logger.error( "Could not save VPN settings", exn );

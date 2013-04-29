@@ -18,8 +18,6 @@ public class OpenVpnRemoteServer implements java.io.Serializable
      */
     private String name;
     
-    private InetAddress address;
-
     public OpenVpnRemoteServer() {}
 
     public boolean getEnabled() { return this.enabled; }
@@ -27,7 +25,4 @@ public class OpenVpnRemoteServer implements java.io.Serializable
 
     public String getName() { return name; }
     public void setName(String name) { this.name = ( name == null ? null : name.replaceAll("\\s","") ); }
-    
-    public InetAddress getAddress() { return this.address; }
-    public void setAddress( InetAddress newValue ) { this.address = newValue; }
 }

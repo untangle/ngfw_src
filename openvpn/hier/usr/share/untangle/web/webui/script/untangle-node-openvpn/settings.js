@@ -490,15 +490,7 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                         buttonAlign: 'left',
                         labelWidth: 150,
                         labelAlign: 'right',
-                        items: [, {
-                            xtype: "textfield",
-                            name: "uploadConfigServerName",
-                            fieldLabel: this.i18n._("Server Name"),
-                            allowBlank: false,
-                            maskRe: /[A-Za-z0-9]/,
-                            vtype: 'openvpnClientName',
-                            width: 200
-                        }, {
+                        items: [{
                             xtype: 'filefield',
                             name: 'uploadConfigFileName',
                             fieldLabel: this.i18n._('Configuration File'),
@@ -511,11 +503,6 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                             text: i18n._('Submit'),
                             name: "Submit",
                             handler: Ext.bind(function() {
-                                var servername = this.submitForm.query('textfield[name="uploadConfigServerName"]')[0].getValue();
-                                if ( servername == null || servername.length == 0 ) {
-                                    Ext.MessageBox.alert(this.i18n._( "Server Name" ), this.i18n._( "You must specify a server name." ));
-                                    return;
-                                }
                                 var filename = this.submitForm.query('textfield[name="uploadConfigFileName"]')[0].getValue();
                                 if ( filename == null || filename.length == 0 ) {
                                     Ext.MessageBox.alert(this.i18n._( "Select File" ), this.i18n._( "Please choose a file to upload." ));
@@ -523,12 +510,12 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                                 }
 
                                 this.submitForm.submit({
-                                    url: "/openvpn/uploadConfig?serverName=" + servername,
+                                    url: "/openvpn/uploadConfig",
                                     success: Ext.bind(function( form, action, handler ) {
-                                        Ext.MessageBox.alert(this.i18n._( "SUCCESS" ), this.i18n._( "SUCCESS." ));
+                                        Ext.MessageBox.alert(this.i18n._( "Success" ), this.i18n._( "The configuration has been imported." ));
                                     }, this),
                                     failure: Ext.bind(function( form, action ) {
-                                        Ext.MessageBox.alert(this.i18n._( "FAILURE" ), this.i18n._( "FAILURE." ));
+                                        Ext.MessageBox.alert(this.i18n._( "Failure" ), this.i18n._( action.result.code ));
                                     }, this)
                                 });
                                 

@@ -25,7 +25,7 @@ import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.apache.log4j.Logger;
 
 import com.untangle.uvm.UvmContextFactory;
-import com.untangle.node.openvpn.OpenVpnNode;
+import com.untangle.node.openvpn.OpenVpnNodeImpl;
 
 /**
  * Servlet used to upload a client configuration file.
@@ -46,7 +46,7 @@ public class UploadConfig extends HttpServlet
     protected void doPost( HttpServletRequest request,  HttpServletResponse response )
         throws ServletException, IOException
     {
-        OpenVpnNode node = (OpenVpnNode) UvmContextFactory.context().nodeManager().node( "untangle-node-openvpn" );
+        OpenVpnNodeImpl node = (OpenVpnNodeImpl) UvmContextFactory.context().nodeManager().node( "untangle-node-openvpn" );
 
         if ( node == null ) {
             logger.warn( "Unable to retrieve the OpenVPN node." );
@@ -81,16 +81,6 @@ public class UploadConfig extends HttpServlet
             return;
         }
         
-        String serverName = request.getParameter( "serverName" );
-
-        if ( serverName == null ) {
-            logger.info( "UploadConfig is missing the server name." );
-            writer.write( "{ \"success\" : false, \"code\" : \"client error\", \"type\" : 3 }" );
-            return;
-        } else {
-            serverName = serverName.replaceAll("/[^A-Za-z0-9 ]/", "");
-        }
-        
         InputStream inputStream = null;
         
         for ( FileItem item : items ) {
@@ -109,7 +99,7 @@ public class UploadConfig extends HttpServlet
         File temp = null;
         OutputStream outputStream = null;
         try {
-            temp = File.createTempFile( "openvpn-" + serverName, ".zip" );
+            temp = File.createTempFile( "openvpn-newconfig-", ".zip" );
             temp.deleteOnExit();
             outputStream = new FileOutputStream( temp );
             
@@ -133,17 +123,15 @@ public class UploadConfig extends HttpServlet
                 logger.warn( "Error closing input stream", e );
             }
         }
-        
+
         try {
-            boolean a = true;
-            logger.error("IMPLEMENT ME FIXME node.addServer( " + temp.getPath() + ")");
-            //node.addServerMethod( temp.getPath() );
+            node.importClientConfig( temp.getPath() );
         } catch ( Exception e ) {
             logger.warn( "Unable to install the client configuration", e );
-            writer.write( "{ \"success\" : false, \"code\" : \"unknown\" }" );
+            writer.write( "{ \"success\" : false, \"code\" : \"" + e.toString() + "\" }" );
             return;
         }
-
+        
         writer.write( "{ \"success\" : true }" );
     }
 
@@ -156,6 +144,4 @@ public class UploadConfig extends HttpServlet
 
         return SERVLET_FILE_UPLOAD;
     }
-
-
 }
