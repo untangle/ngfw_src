@@ -445,7 +445,7 @@ if (!Ung.hasResource["Ung.Reporting"]) {
                     }
                 }, this)
             });
-            this.gridReportingUsers.subCmps.push(this.gridReportingUsers.rowEditorChangePass);
+            this.gridReportingUsers.subCmps.push(this.gridReportingUsers.rowEditorChangePassword);
         },
         // syslog panel
         buildSyslog: function() {

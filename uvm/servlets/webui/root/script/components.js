@@ -375,6 +375,9 @@ Ung.Util = {
     handleException: function(exception, handler, type, continueExecution) { //type: alertCallback, alert, noAlert
         if(exception) {
             console.log("handleException:", exception);
+            if(exception.message == null) {
+                exception.message = "";
+            }
             var message=null;
             var gotoStartPage=false;
             /* special text for apt error */
@@ -433,11 +436,15 @@ Ung.Util = {
                 message += i18n._("<br/>");
                 if (exception.name != null)
                     message += exception.name + "<br/>";
-                if (exception.message != null)
+                if (exception.message != "")
                     message += exception.message + "<br/>";
                 if (exception.stack != null) {
                     message += "<br/>";
                     message += exception.stack + "<br/>";
+                }
+                if (exception.javaStack != null) {
+                    message += "<br/>";
+                    message += exception.javaStack + "<br/>";
                 }
             }
             /* worst case - just say something */
