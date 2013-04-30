@@ -101,7 +101,9 @@ public class OpenVpnManager
         /* Stop logging repeated messages (after 20). */
         "mute 20",
         /* Allow management from localhost */
-        "management 127.0.0.1 " + MANAGEMENT_PORT
+        "management 127.0.0.1 " + MANAGEMENT_PORT,
+        /* log to /var/log/openvpn.log */
+        "log-append /var/log/openvpn.log"
     };
 
     /**
@@ -173,7 +175,8 @@ public class OpenVpnManager
     protected void configure( OpenVpnSettings settings )
     {
         writeSettings( settings );
-        writeClientFiles( settings );
+        writeRemoteClientFiles( settings );
+        writeRemoteServerFiles( settings );
     }
 
     /**
@@ -181,8 +184,8 @@ public class OpenVpnManager
      */
     protected void createClientDistribution( OpenVpnSettings settings, OpenVpnRemoteClient client )
     {
-        writeClientConfigurationFile( settings, client, UNIX_CLIENT_DEFAULTS, UNIX_EXTENSION );
-        writeClientConfigurationFile( settings, client, WIN_CLIENT_DEFAULTS,  WIN_EXTENSION );
+        writeRemoteClientConfigurationFile( settings, client, UNIX_CLIENT_DEFAULTS, UNIX_EXTENSION );
+        writeRemoteClientConfigurationFile( settings, client, WIN_CLIENT_DEFAULTS,  WIN_EXTENSION );
 
         String cmdStr;
         ExecManagerResult result;
@@ -247,7 +250,7 @@ public class OpenVpnManager
             }
         }
 
-        /* The client configuration file is written in writeClientFiles */
+        /* The client configuration file is written in writeRemoteClientFiles */
         for ( OpenVpnRemoteClient client : settings.getRemoteClients() ) {
             if ( !client.getEnabled() || !client.getExport() || client.getExportNetwork() == null )
                 continue;
@@ -264,9 +267,9 @@ public class OpenVpnManager
     /**
      * Write a client configuration file (unix or windows)
      */
-    private void writeClientConfigurationFile( OpenVpnSettings settings, OpenVpnRemoteClient client, String[] defaults, String extension )
+    private void writeRemoteClientConfigurationFile( OpenVpnSettings settings, OpenVpnRemoteClient client, String[] defaults, String extension )
     {
-        final String CLI_KEY_DIR = "untangle-vpn";
+        final String KEY_DIR = "keys";
         StringBuilder sb = new StringBuilder();
 
         /* Insert all of the default parameters */
@@ -284,9 +287,9 @@ public class OpenVpnManager
         String name = client.getName();
         String siteName = settings.getSiteName();
 
-        sb.append( "cert" + " " + CLI_KEY_DIR + "/" + siteName + "-" + name + ".crt" + "\n");
-        sb.append( "key"  + " " + CLI_KEY_DIR + "/" + siteName + "-" + name + ".key" + "\n");
-        sb.append( "ca"   + " " + CLI_KEY_DIR + "/" + siteName + "-" + name + "-ca.crt" + "\n");
+        sb.append( "cert" + " " + KEY_DIR + "/" + siteName + "-" + name + ".crt" + "\n");
+        sb.append( "key"  + " " + KEY_DIR + "/" + siteName + "-" + name + ".key" + "\n");
+        sb.append( "ca"   + " " + KEY_DIR + "/" + siteName + "-" + name + "-ca.crt" + "\n");
 
         String publicAddress = UvmContextFactory.context().systemManager().getPublicUrl();
 
@@ -298,7 +301,7 @@ public class OpenVpnManager
         writeFile( CLIENT_CONF_FILE_BASE + name + "." + extension, sb );
     }
 
-    private void writeClientFiles( OpenVpnSettings settings )
+    private void writeRemoteClientFiles( OpenVpnSettings settings )
     {
         /**
          * Delete the old client files
@@ -375,13 +378,63 @@ public class OpenVpnManager
             }
 
             if ( client.getExport() && client.getExportNetwork() != null ) {
-                writeClientRoute( sb, client.getExportNetwork().getMaskedAddress(), client.getExportNetwork().getNetmask());
+                writeRemoteClientRoute( sb, client.getExportNetwork().getMaskedAddress(), client.getExportNetwork().getNetmask());
             }
             
             writeFile( OPENVPN_CCD_DIR + "/" + name, sb );
         }
     }
 
+    private void writeRemoteServerFiles( OpenVpnSettings settings )
+    {
+        /**
+         * Delete the old server files 
+         * This is so that when we disable server, their conf files will be removed
+         * Delete all .conf files in /etc/openvpn except "server.conf"
+         */
+        try {
+            File baseDirectory = new File( "/etc/openvpn" );
+            if ( baseDirectory.exists()) {
+                for ( File f : baseDirectory.listFiles()) {
+                    if ( f.getName() == null || !f.getName().endsWith(".conf") )
+                        continue;
+                    if ( f.getName().equals("server.conf") )
+                        continue;
+                    logger.debug("Deleting remoteServer conf file: " + f.getName());
+                    f.delete();
+                }
+            } else {
+                baseDirectory.mkdir();
+            }
+        } catch ( Exception e ) {
+            logger.error( "Unable to delete the previous server configuration files." );
+        }
+        
+        /**
+         * Copy the config file for all enabled remote servers
+         */
+        for ( OpenVpnRemoteServer server : settings.getRemoteServers() ) {
+            if ( !server.getEnabled() )
+                continue;
+
+            String name = server.getName();
+            logger.info( "Writing server configuration file for [" + name + "]" );
+
+            String cpCmd = "cp -f " + System.getProperty("uvm.settings.dir") + "/untangle-node-openvpn/remote-servers/" + name + ".conf /etc/openvpn/";
+            UvmContextFactory.context().execManager().exec( cpCmd );
+        }
+
+        /**
+         * Copy all keys in place
+         */
+        UvmContextFactory.context().execManager().exec( "cp -rf " + System.getProperty("uvm.settings.dir") + "/untangle-node-openvpn/remote-servers/keys /etc/openvpn/" );
+        /**
+         * "untangle-vpn" was the key directory name in 9.4 and prior
+         * keep this to maintain backwards compatibility with 9.4 and prior
+         */
+        UvmContextFactory.context().execManager().exec( "cp -rf " + System.getProperty("uvm.settings.dir") + "/untangle-node-openvpn/remote-servers/untangle-vpn /etc/openvpn/" );
+    }
+    
     private void writePushRoute( StringBuilder sb, InetAddress address, InetAddress netmask )
     {
         if ( address == null ) {
@@ -402,7 +455,7 @@ public class OpenVpnManager
         sb.append( "push" + " " + value + "\n" );
     }
 
-    private void writeClientRoute( StringBuilder sb, InetAddress address, InetAddress netmask )
+    private void writeRemoteClientRoute( StringBuilder sb, InetAddress address, InetAddress netmask )
     {
         writeRoute( sb, "iroute", address, netmask );
     }

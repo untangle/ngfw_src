@@ -9,14 +9,8 @@ serverAddress=${1}
 filename="${1}"
 destination=`mktemp || -3`
 
-logFile=@UVM_LOG@/openvpn.log
-
-
 cleanup()
 {
-    if [ ! -z ${SITENAME} ] ; then
-        rm -f /etc/openvpn/${SITENAME}.conf
-    fi
     if [ ! -z ${TMPDIR} ] ; then
         rm -rf ${TMPDIR};  
     fi
@@ -52,7 +46,12 @@ if [ -z "$SITENAME" ] ; then
 fi
 
 ## Copy in the necessary files
-cp ${TMPDIR}/untangle-vpn/*.conf /etc/openvpn/${SITENAME}.conf
+mkdir -p @PREFIX@/usr/share/untangle/settings/untangle-node-openvpn/remote-servers/
+mkdir -p @PREFIX@/usr/share/untangle/settings/untangle-node-openvpn/remote-servers/keys/
+
+CONF_FILE="@PREFIX@/usr/share/untangle/settings/untangle-node-openvpn/remote-servers/${SITENAME}.conf"
+
+cp ${TMPDIR}/untangle-vpn/*.conf ${CONF_FILE}
 
 if [ $? != 0 ] ; then
     echo "Copy failed"
@@ -60,18 +59,27 @@ if [ $? != 0 ] ; then
 fi
 
 ## Update the configuration file to log to a normal place
-sed -i -e "\$a log-append ${logFile}" /etc/openvpn/${SITENAME}.conf 
+sed -i -e "\$a log-append /var/log/openvpn.log" ${CONF_FILE}
 
 if [ $? != 0 ] ; then
     echo "Sed failed"
     cleanup
 fi
 
-mkdir -p /etc/openvpn/untangle-vpn
-cp -r ${TMPDIR}/untangle-vpn/untangle-vpn/* /etc/openvpn/untangle-vpn 
+# copy keys 
+# "untangle-vpn" was the key directory name in 9.4 and prior
+# keep this to maintain backwards compatibility with 9.4 and prior
+if [ -d ${TMPDIR}/untangle-vpn/untangle-vpn ] ; then
+    mkdir -p @PREFIX@/usr/share/untangle/settings/untangle-node-openvpn/remote-servers/untangle-vpn/
+    cp -r ${TMPDIR}/untangle-vpn/untangle-vpn/* @PREFIX@/usr/share/untangle/settings/untangle-node-openvpn/remote-servers/untangle-vpn/
+fi
+
+if [ -d ${TMPDIR}/untangle-vpn/keys ] ; then
+    cp -r ${TMPDIR}/untangle-vpn/keys/* @PREFIX@/usr/share/untangle/settings/untangle-node-openvpn/remote-servers/keys/
+fi
 
 if [ $? != 0 ] ; then
-    echo "Copy 2 failed"
+    echo "Key Copy failed"
     echo ${TMPDIR}
     exit
     cleanup
@@ -80,6 +88,6 @@ fi
 ## Cleanup
 rm -rf ${TMPDIR}
 
-echo "New configuration imported: /etc/openvpn/${SITENAME}.conf"
+echo "New configuration imported: ${CONF_FILE}"
 
 true

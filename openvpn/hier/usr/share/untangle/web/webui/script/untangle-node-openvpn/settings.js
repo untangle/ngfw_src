@@ -1157,6 +1157,7 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
             this.getSettings().groups.list = this.gridGroups.getPageList();
             this.getSettings().exports.list = this.gridExports.getPageList();
             this.getSettings().remoteClients.list = this.gridRemoteClients.getPageList();
+            this.getSettings().remoteServers.list = this.gridRemoteServers.getPageList();
 
             this.getRpcNode().setSettings(Ext.bind(function(result, exception) {
                 if(Ung.Util.handleException(exception)) return;

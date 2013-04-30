@@ -8,8 +8,8 @@ commonName="${1}"
 
 SETTINGS_DIR="@PREFIX@/usr/share/untangle/settings/untangle-node-openvpn"
 
-CLIENT_KEY="${SETTINGS_DIR}/client-${commonName}.key"
-CLIENT_CRT="${SETTINGS_DIR}/client-${commonName}.crt"
+CLIENT_KEY="${SETTINGS_DIR}/remote-clients/client-${commonName}.key"
+CLIENT_CRT="${SETTINGS_DIR}/remote-clients/client-${commonName}.crt"
 
 OPENSSL_CFG_FILE="@PREFIX@/usr/share/untangle/lib/untangle-node-openvpn/openssl.cnf"
 CERT_DURATION=3650 # 10 years
@@ -18,10 +18,14 @@ generateClientKey()
 {
     local clientCsr=`mktemp || exit -3`
 
+    # make dirs if necessary
+    mkdir -p `dirname $CLIENT_KEY`
+    mkdir -p `dirname $CLIENT_CRT`
+
     export COMMON_NAME=${commonName}
     export KEY_COMMON_NAME="${commonName}"
     export KEY_DN_QUALIFIER="client-${commonName}"
-    
+
     ## Generate the server private key and the certificate signing request
     openssl req -days ${CERT_DURATION} -nodes -new -keyout ${CLIENT_KEY} -out ${clientCsr} -config ${OPENSSL_CFG_FILE} -batch
 

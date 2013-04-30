@@ -23,8 +23,8 @@ PACKAGE_DIR="/tmp/openvpn/client-packages"
 
 WIN_CONFIG_FILE=${PACKAGE_DIR}/client-${commonName}.ovpn
 UNIX_CONFIG_FILE=${PACKAGE_DIR}/client-${commonName}.conf
-CLI_CRT_FILE=${SETTINGS_DIR}/client-${commonName}.crt
-CLI_KEY_FILE=${SETTINGS_DIR}/client-${commonName}.key
+CLI_CRT_FILE=${SETTINGS_DIR}/remote-clients/client-${commonName}.crt
+CLI_KEY_FILE=${SETTINGS_DIR}/remote-clients/client-${commonName}.key
 CA_CERT=${SETTINGS_DIR}/ca.crt
 
 ## Create a tempory directory for the client
@@ -33,7 +33,7 @@ buildConfigFile() {
 
     ## Done this way so the zip directory is called
     local outputDir="${tmpDir}/untangle-vpn"
-    local keyDir="${outputDir}/untangle-vpn"
+    local keyDir="${outputDir}/keys"
 
     mkdir ${outputDir} || exit -4
     mkdir ${keyDir} || exit -4
@@ -66,7 +66,7 @@ buildConfigFile() {
 }
 
 ZIP_FILE="${PACKAGE_DIR}/config-${commonName}.zip"
-if [ -f $ZIP_FILE ] && [ $ZIP_FILE -nt $CLI_CRT_FILE ] ; then
+if [ -f $ZIP_FILE ] && [ $ZIP_FILE -nt $CLI_CRT_FILE ] && [ $ZIP_FILE -nt /etc/openvpn/server.conf ] ; then
     echo "$ZIP_FILE already exists and is up to date"
 else
     buildConfigFile

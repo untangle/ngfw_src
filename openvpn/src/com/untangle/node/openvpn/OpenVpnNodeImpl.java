@@ -306,6 +306,7 @@ public class OpenVpnNodeImpl extends NodeBase implements OpenVpnNode
         /**
          * Restart the daemon
          */
+        this.openVpnManager.configure( this.settings );
         this.openVpnManager.restart();
         
         return;
