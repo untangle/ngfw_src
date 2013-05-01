@@ -205,8 +205,8 @@ class NetworkTests(unittest2.TestCase):
         return "Untangle"
 
     def setUp(self):
-        global node, nodeFW, orig_netstatings
-        orig_netstatings = uvmContext.networkManager().getNetworkSettings()
+        global node, nodeFW, orig_netsettings
+        orig_netsettings = uvmContext.networkManager().getNetworkSettings()
         
     def test_010_clientIsOnline(self):
         result = clientControl.runCommand("wget -4 -t 2 --timeout=5 -a /tmp/capture_test_010.log -O /tmp/capture_test_010.out http://www.untangle.com/")
@@ -235,7 +235,7 @@ class NetworkTests(unittest2.TestCase):
         clientControl.runCommand("rm -f 5MB.zip /tmp/network_test_020b.log")
         result = clientControl.runCommand("wget -o /tmp/network_test_020b.log http://test.untangle.com/5MB.zip")
         result = clientControl.runCommand("tail -2 /tmp/network_test_020b.log", True)
-        uvmContext.networkManager().setNetworkSettings(orig_netstatings)
+        uvmContext.networkManager().setNetworkSettings(orig_netsettings)
         # remove test file
         match = re.search(r'\d+\.\d{1,2}', result)
         wget_speed_post_QoSLimit =  match.group()
@@ -264,7 +264,7 @@ class NetworkTests(unittest2.TestCase):
         result = clientControl.runCommand("wget -a /tmp/network_test_030b.log -O /tmp/network_test_030b.out -t 1 \'http://" + wan_IP + "\'" ,True)
         search = clientControl.runCommand("grep -q 'works!' /tmp/network_test_030b.out")  # check for default apache web page
         assert (search == 0)
-        uvmContext.networkManager().setNetworkSettings(orig_netstatings)
+        uvmContext.networkManager().setNetworkSettings(orig_netsettings)
 
     # webResult = clientControl.runCommand("netstat -an | grep -q :443")
     # @unittest2.skipIf(webResult != 0,  "No ssl web server running on client")
@@ -290,7 +290,7 @@ class NetworkTests(unittest2.TestCase):
         # check if hairpin works
         result = clientControl.runCommand("wget --no-check-certificate  -a /tmp/network_test_040b.log -O /tmp/network_test_040b.out -t 1 \'https://" + wan_IP + "\'" ,True)
         search = clientControl.runCommand("grep -q 'works!' /tmp/network_test_040b.out")  # check for default apache web page
-        uvmContext.networkManager().setNetworkSettings(orig_netstatings)
+        uvmContext.networkManager().setNetworkSettings(orig_netsettings)
         # Move Admin port back to 443
         adminsettings = uvmContext.systemManager().getSettings()
         adminsettings['httpsPort']="443"
@@ -324,7 +324,7 @@ class NetworkTests(unittest2.TestCase):
         assert (search == 0)
         # kill the 8080 web server
         clientControl.runCommand("kill \$(pgrep python)")
-        uvmContext.networkManager().setNetworkSettings(orig_netstatings)
+        uvmContext.networkManager().setNetworkSettings(orig_netsettings)
 
     def test_060_bypassRules(self):
         global nodeFW
@@ -344,7 +344,7 @@ class NetworkTests(unittest2.TestCase):
         appendBypass(createBypassMatcherRule("SRC_ADDR",ClientControl.hostIP))
         result = clientControl.runCommand("wget -o /dev/null -t 1 --timeout=3 http://test.untangle.com/")
         assert (result == 0)
-        uvmContext.networkManager().setNetworkSettings(orig_netstatings)
+        uvmContext.networkManager().setNetworkSettings(orig_netsettings)
         uvmContext.nodeManager().destroy( nodeFW.getNodeSettings()["id"] )
 
     dogfoodAvail = subprocess.call(["ping","-c","1",dogfood],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
@@ -373,7 +373,7 @@ class NetworkTests(unittest2.TestCase):
         result = clientControl.runCommand("wget --no-check-certificate  -a /tmp/network_test_070a.log -O /tmp/network_test_070a.out -t 1 \'https://" + remote_gateway + "\'" ,True)
         search = clientControl.runCommand("grep -q 'Administrator Login' /tmp/network_test_070a.out")  
         assert (search == 0)
-        uvmContext.networkManager().setNetworkSettings(orig_netstatings)
+        uvmContext.networkManager().setNetworkSettings(orig_netsettings)
 
     def test_080_DNS(self):        
         # Test static entries in Config -> Networking -> Advanced -> DNS
@@ -389,9 +389,9 @@ class NetworkTests(unittest2.TestCase):
         assert(ip_address_testuntangle == ip_address_google)
         
     def test_999_finalTearDown(self):
-        global node,orig_netstatings
+        global node,orig_netsettings
         # Restore original settings to return to initial settings
-        uvmContext.networkManager().setNetworkSettings(orig_netstatings)
+        uvmContext.networkManager().setNetworkSettings(orig_netsettings)
         node = None
         return True
 
