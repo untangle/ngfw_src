@@ -965,13 +965,39 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                             }
                         }
                     }, {
+                        xtype: 'checkbox',
+                        name: "Server Enabled",
+                        dataIndex: "Server Enabled",
+                        fieldLabel: this.i18n._("Server Enabled"),
+                        checked: this.getSettings().serverEnabled,
+                        listeners: {
+                            "change": {
+                                fn: Ext.bind(function(elem, newValue) {
+                                    this.getSettings().serverEnabled = newValue;
+
+                                    Ext.getCmp('grid_remote_clients').disable();
+                                    Ext.getCmp('openvpn_options_port').disable();
+                                    Ext.getCmp('openvpn_options_protocol').disable();
+                                    Ext.getCmp('openvpn_options_cipher').disable();
+                                    Ext.getCmp('openvpn_options_addressSpace').disable();
+                                    if (newValue) {
+                                        Ext.getCmp('grid_remote_clients').enable();
+                                        Ext.getCmp('openvpn_options_port').enable();
+                                        Ext.getCmp('openvpn_options_protocol').enable();
+                                        Ext.getCmp('openvpn_options_cipher').enable();
+                                        Ext.getCmp('openvpn_options_addressSpace').enable();
+                                    }
+                                }, this)
+                            }
+                        }
+                    }, {
                         xtype: 'textfield',
                         labelWidth: 160,
                         labelAlign:'left',
                         width:300,
                         fieldLabel: this.i18n._('Port'),
                         name: 'Port',
-                        value: this.getSettings().siteName,
+                        value: this.getSettings().port,
                         id: 'openvpn_options_port',
                         allowBlank: false,
                         vtype: "port",

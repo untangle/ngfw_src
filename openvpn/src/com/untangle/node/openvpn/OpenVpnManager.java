@@ -174,7 +174,9 @@ public class OpenVpnManager
 
     protected void configure( OpenVpnSettings settings )
     {
-        writeSettings( settings );
+        deleteFiles( );
+        writeIptablesFiles( settings );
+        writeServerSettings( settings );
         writeRemoteClientFiles( settings );
         writeRemoteServerFiles( settings );
     }
@@ -211,33 +213,26 @@ public class OpenVpnManager
         } catch (Exception e) {}
     }
     
-    private void writeSettings( OpenVpnSettings settings )
+    private void writeServerSettings( OpenVpnSettings settings )
     {
+        if ( ! settings.getServerEnabled() )
+            return;
+
         StringBuilder sb = new StringBuilder();
 
         for ( String line : SERVER_DEFAULTS ) {
             sb.append( line + "\n" );
         }
 
-        /* May want to expose this in the GUI */
         sb.append( "proto" + " " + settings.getProtocol() + "\n" );
         sb.append( "port" + " " + settings.getPort() + "\n");
         sb.append( "cipher" + " " + settings.getCipher() + "\n");
 
-        //InetAddress localEndpoint  = getLocalEndpoint( settings.getAddressSpace() );
-        //InetAddress remoteEndpoint = getRemoteEndpoint( localEndpoint );
-        //sb.append( "ifconfig" + " " +  localEndpoint.getHostAddress() + " " + remoteEndpoint.getHostAddress() + "\n");
-        //writePushRoute( sb, localEndpoint, null );
-
         sb.append( "server" + " " +  settings.getAddressSpace().getMaskedAddress().getHostAddress() + " " + settings.getAddressSpace().getNetmask().getHostAddress() + "\n");
-        // XXX necessary to write route for this network?
-        // writeRoute( sb, settings.getAddressSpace().getMaskedAddress(), settings.getAddressSpace().getNetmask());
 
         writeExports( sb, settings );
 
         writeFile( OPENVPN_SERVER_FILE, sb );
-
-        writeIptablesFiles( settings );
     }
 
     private void writeExports( StringBuilder sb, OpenVpnSettings settings )
@@ -303,27 +298,6 @@ public class OpenVpnManager
 
     private void writeRemoteClientFiles( OpenVpnSettings settings )
     {
-        /**
-         * Delete the old client files
-         * This is so that when we disable clients, their CCD files will be gone
-         */
-        try {
-            File baseDirectory = new File( OPENVPN_CCD_DIR );
-            if ( baseDirectory.exists()) {
-                for ( File clientConfig : baseDirectory.listFiles()) {
-                    if (logger.isDebugEnabled()) {
-                        logger.debug( "Deleting the file: " + clientConfig );
-                    }
-                    clientConfig.delete();
-                }
-            } else {
-                baseDirectory.mkdir();
-            }
-        } catch ( Exception e ) {
-            logger.error( "Unable to delete the previous client configuration files." );
-        }
-        NetworkSettings networkSettings = UvmContextFactory.context().networkManager().getNetworkSettings();
-
         for ( OpenVpnRemoteClient client : settings.getRemoteClients() ) {
             OpenVpnGroup group = getGroup( settings, client.getGroupId() );
 
@@ -372,6 +346,7 @@ public class OpenVpnManager
                 }
 
                 //If the domain is set - push it
+                NetworkSettings networkSettings = UvmContextFactory.context().networkManager().getNetworkSettings();
                 if( networkSettings.getDomainName() != null ) {
                     sb.append( "push" + " " + "\"dhcp-option DOMAIN " + networkSettings.getDomainName() + "\"" + "\n");
                 }
@@ -385,20 +360,18 @@ public class OpenVpnManager
         }
     }
 
-    private void writeRemoteServerFiles( OpenVpnSettings settings )
+    private void deleteFiles( )
     {
         /**
          * Delete the old server files 
-         * This is so that when we disable server, their conf files will be removed
-         * Delete all .conf files in /etc/openvpn except "server.conf"
+         * This is so that when we disable clients/servers the files will be removed.
+         * Any enabled clients/servers will have their conf files re-written after this
          */
         try {
             File baseDirectory = new File( "/etc/openvpn" );
             if ( baseDirectory.exists()) {
                 for ( File f : baseDirectory.listFiles()) {
                     if ( f.getName() == null || !f.getName().endsWith(".conf") )
-                        continue;
-                    if ( f.getName().equals("server.conf") )
                         continue;
                     logger.debug("Deleting remoteServer conf file: " + f.getName());
                     f.delete();
@@ -409,6 +382,30 @@ public class OpenVpnManager
         } catch ( Exception e ) {
             logger.error( "Unable to delete the previous server configuration files." );
         }
+
+        /**
+         * Delete the old client files
+         * This is so that when we disable clients, their CCD files will be gone
+         */
+        try {
+            File baseDirectory = new File( OPENVPN_CCD_DIR );
+            if ( baseDirectory.exists()) {
+                for ( File clientConfig : baseDirectory.listFiles()) {
+                    if (logger.isDebugEnabled()) {
+                        logger.debug( "Deleting the file: " + clientConfig );
+                    }
+                    clientConfig.delete();
+                }
+            } else {
+                baseDirectory.mkdir();
+            }
+        } catch ( Exception e ) {
+            logger.error( "Unable to delete the previous client configuration files." );
+        }
+    }
+    
+    private void writeRemoteServerFiles( OpenVpnSettings settings )
+    {
         
         /**
          * Copy the config file for all enabled remote servers

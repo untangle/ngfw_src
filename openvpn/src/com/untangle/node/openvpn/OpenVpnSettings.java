@@ -25,6 +25,7 @@ public class OpenVpnSettings implements java.io.Serializable, JSONString
     private String siteName = "untangle";
     private IPMaskedAddress addressSpace;
 
+    private boolean serverEnabled = true;
     
     /**
      * List of addresses visible to those connecting to the VPN
@@ -47,6 +48,9 @@ public class OpenVpnSettings implements java.io.Serializable, JSONString
     private List<OpenVpnRemoteServer> remoteServers = new LinkedList<OpenVpnRemoteServer>();
 
     public OpenVpnSettings() { }
+
+    public boolean getServerEnabled() { return this.serverEnabled; }
+    public void setServerEnabled( boolean newValue ) { this.serverEnabled = newValue; }
 
     public String getProtocol() { return this.protocol; }
     public void setProtocol( String newValue ) { this.protocol = newValue; }
