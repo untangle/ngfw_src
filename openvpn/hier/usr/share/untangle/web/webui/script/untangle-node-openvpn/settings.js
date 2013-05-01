@@ -442,7 +442,7 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                         editor: {
                             xtype:'textfield',
                             allowBlank: false,
-                            maskRe: /[A-Za-z0-9]/,
+                            maskRe: /[A-Za-z0-9-]/,
                             vtype: 'openvpnClientName'
                         }
                     }],
@@ -463,12 +463,12 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                             dataIndex: "name",
                             fieldLabel: this.i18n._("Server name"),
                             allowBlank: false,
-                            maskRe: /[A-Za-z0-9]/,
+                            maskRe: /[A-Za-z0-9-]/,
                             vtype: 'openvpnClientName',
                             width: 300
                         },{
                             xtype: 'label',
-                            html: this.i18n._("only alphanumerics allowed") + " [A-Za-z0-9]",
+                            html: this.i18n._("only alphanumerics allowed") + " [A-Za-z0-9-]",
                             cls: 'boxlabel'
                         }]
                 }]
@@ -600,7 +600,7 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                         editor: {
                             xtype:'textfield',
                             allowBlank: false,
-                            maskRe: /[A-Za-z0-9]/,
+                            maskRe: /[A-Za-z0-9-]/,
                             vtype: 'openvpnClientName'
                         }
                     },
@@ -623,12 +623,12 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                             dataIndex: "name",
                             fieldLabel: this.i18n._("Client name"),
                             allowBlank: false,
-                            maskRe: /[A-Za-z0-9]/,
+                            maskRe: /[A-Za-z0-9-]/,
                             vtype: 'openvpnClientName',
                             width: 300
                         },{
                             xtype: 'label',
-                            html: this.i18n._("only alphanumerics allowed") + " [A-Za-z0-9]",
+                            html: this.i18n._("only alphanumerics allowed") + " [A-Za-z0-9-]",
                             cls: 'boxlabel'
                         }]
                 }, {
