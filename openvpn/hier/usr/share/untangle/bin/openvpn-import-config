@@ -70,6 +70,7 @@ fi
 # "untangle-vpn" was the key directory name in 9.4 and prior
 # keep this to maintain backwards compatibility with 9.4 and prior
 if [ -d ${TMPDIR}/untangle-vpn/untangle-vpn ] ; then
+    echo "${TMPDIR}/untangle-vpn/untangle-vpn exists"
     mkdir -p @PREFIX@/usr/share/untangle/settings/untangle-node-openvpn/remote-servers/untangle-vpn/
     cp -r ${TMPDIR}/untangle-vpn/untangle-vpn/* @PREFIX@/usr/share/untangle/settings/untangle-node-openvpn/remote-servers/untangle-vpn/
 fi

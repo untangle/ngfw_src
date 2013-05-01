@@ -134,17 +134,17 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                 Ext.form.VTypes["openvpnClientNameText"] = this.i18n._( "A client name should only contains numbers, letters, dashes and periods.  Spaces are not allowed." );
             }
 
+            this.buildGeneralOptions();
             this.buildRemoteServers();
             this.buildRemoteClients();
             this.buildExports();
             this.buildGroups();
-            this.buildGeneralOptions();
             this.buildConnectionEventLog();
 
+            tabs.push(this.panelGeneralOptions);
             tabs.push(this.panelRemoteClients);
             tabs.push(this.panelGroups);
             tabs.push(this.panelExports);
-            tabs.push(this.panelGeneralOptions);
             tabs.push(this.panelRemoteServers);
             tabs.push(this.gridConnectionEventLog);
 

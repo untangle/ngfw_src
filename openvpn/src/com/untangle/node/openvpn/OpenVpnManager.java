@@ -552,6 +552,13 @@ public class OpenVpnManager
 
     private void writeIptablesFiles( OpenVpnSettings settings )
     {
+        int maxNumTunDevices = 1;
+        for (OpenVpnRemoteServer server : settings.getRemoteServers()) {
+            if ( server.getEnabled() )
+                maxNumTunDevices++;
+        }
+            
+        
         try {
             FileWriter iptablesScript = new FileWriter( IPTABLES_SCRIPT, false );
 
@@ -563,7 +570,7 @@ public class OpenVpnManager
             iptablesScript.write("if [ -z \"$IPTABLES\" ] ; then IPTABLES=iptables ; fi" + "\n");
             iptablesScript.write("\n");
 
-            iptablesScript.write("# delete old rules (if they exist) " + "\n");
+            iptablesScript.write("# delete old rules (if they exist) (tun0-tun10) " + "\n");
             iptablesScript.write("${IPTABLES} -t filter -D filter-rules-input -p tcp --dport 1194 -j ACCEPT -m comment --comment \"Allow OpenVPN traffic\" >/dev/null 2>&1" + "\n");
             iptablesScript.write("${IPTABLES} -t filter -D filter-rules-input -p udp --dport 1194 -j ACCEPT -m comment --comment \"Allow OpenVPN traffic\" >/dev/null 2>&1" + "\n");
             iptablesScript.write("for i in `seq 0 10` ; do" + "\n");
@@ -579,7 +586,7 @@ public class OpenVpnManager
             iptablesScript.write("\n");
 
             iptablesScript.write("# mark traffic to/from openvpn interface" + "\n");
-            iptablesScript.write("for i in `seq 0 10` ; do" + "\n");
+            iptablesScript.write("for i in `seq 0 " + (maxNumTunDevices-1) + "` ; do" + "\n");
             iptablesScript.write("    ${IPTABLES} -t mangle -I mark-src-intf 3 -i tun$i -j MARK --set-mark 0xfa/0xff -m comment --comment \"Set src interface mark for openvpn\"" + "\n");
             iptablesScript.write("    ${IPTABLES} -t mangle -I mark-dst-intf 3 -o tun$i -j MARK --set-mark 0xfa00/0xff00 -m comment --comment \"Set dst interface mark for openvpn\"" + "\n");
             iptablesScript.write("done" + "\n");
