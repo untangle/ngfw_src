@@ -140,13 +140,10 @@ JNIEnv* jmvutil_get_java_env( void )
     }
 
     if ( tls->env == NULL ) {
-#ifdef JNI_VERSION_1_2
         res = (*jvm)->AttachCurrentThread( jvm, (void**)&tls->env, NULL );
-#else
-        res = (*jvm)->AttachCurrentThread( jvm, &tls->env, NULL );
-#endif // JNI_VERSION_1_2
         
-        if ( res < 0 ) return errlog_null( ERR_CRITICAL, "AttachCurrentThread\n" );
+        if ( res < 0 )
+            return errlog_null( ERR_CRITICAL, "AttachCurrentThread\n" );
     }
 
     return tls->env;
@@ -183,17 +180,13 @@ static int            _tls_init( void* buf, size_t size )
         return errlog( ERR_CRITICAL, "jmvutil_get_java_vm\n" );
     }
 
-#ifdef JNI_VERSION_1_2
     ret = (*jvm)->AttachCurrentThread( jvm, (void**)&tls->base.env, NULL );
-#else
-    ret = (*jvm)->AttachCurrentThread( jvm, (void**)&tls->base.env, NULL );
-#endif // JNI_VERSION_1_2
+
+    if ( ret < 0 )
+        return errlog( ERR_CRITICAL, "AttachCurrentThread: 0x%08x\n", ret );
     
-    if ( ret < 0 ) return errlog( ERR_CRITICAL, "AttachCurrentThread\n" );
-    
-    if ( _jmvutil_error_tls_init( &tls->error ) < 0 ) {
+    if ( _jmvutil_error_tls_init( &tls->error ) < 0 ) 
         return errlog( ERR_CRITICAL, "_jmvutil_error_tls_init\n" );
-    }
 
     return 0;
 }
