@@ -29,6 +29,9 @@ public class UtJsonRpcServlet extends JSONRPCServlet
 
     private InheritableThreadLocal<HttpServletRequest> threadRequest;
 
+    private JSONRPCBridge bridge;
+    private UtCallbackController callback;
+    
     // HttpServlet methods ----------------------------------------------------
 
     @SuppressWarnings("unchecked") //getAttribute
@@ -38,6 +41,57 @@ public class UtJsonRpcServlet extends JSONRPCServlet
         if (null == threadRequest) {
             logger.warn("could not get threadRequest");
         }
+
+        bridge = new JSONRPCBridge();
+        callback = new UtCallbackController( bridge );
+        bridge.setCallbackController( callback );
+        
+        try {
+            ServletUtils.getInstance().registerSerializers(bridge);
+        } catch (Exception e) {
+            logger.warn( "Unable to register serializers", e );
+        }
+
+        UvmContext uvm = UvmContextFactory.context();
+        bridge.registerObject("UvmContext", uvm, UvmContext.class);
+
+        /**
+         * This section registers hints that these classes should always be
+         * serialized as callable references
+         */
+        try {
+            bridge.registerCallableReference(uvm.languageManager().getClass());
+            bridge.registerCallableReference(uvm.localDirectory().getClass());
+            bridge.registerCallableReference(uvm.brandingManager().getClass());
+            bridge.registerCallableReference(uvm.skinManager().getClass());
+            bridge.registerCallableReference(uvm.messageManager().getClass());
+            bridge.registerCallableReference(uvm.languageManager().getClass());
+            bridge.registerCallableReference(uvm.certificateManager().getClass());
+            bridge.registerCallableReference(uvm.aptManager().getClass());
+            bridge.registerCallableReference(uvm.nodeManager().getClass());
+            bridge.registerCallableReference(uvm.loggingManager().getClass());
+            bridge.registerCallableReference(uvm.mailSender().getClass());
+            bridge.registerCallableReference(uvm.adminManager().getClass());
+            bridge.registerCallableReference(uvm.systemManager().getClass());
+            bridge.registerCallableReference(uvm.networkManager().getClass());
+            bridge.registerCallableReference(uvm.getConnectivityTester().getClass());
+            bridge.registerCallableReference(uvm.netcapManager().getClass());
+            bridge.registerCallableReference(uvm.licenseManager().getClass());
+            bridge.registerCallableReference(uvm.uploadManager().getClass());
+            bridge.registerCallableReference(uvm.settingsManager().getClass());
+            bridge.registerCallableReference(uvm.oemManager().getClass());
+            bridge.registerCallableReference(uvm.alertManager().getClass());
+            bridge.registerCallableReference(uvm.pipelineFoundry().getClass());
+            bridge.registerCallableReference(uvm.sessionMonitor().getClass());
+            bridge.registerCallableReference(uvm.execManager().getClass());
+            bridge.registerCallableReference(uvm.tomcatManager().getClass());
+            bridge.registerCallableReference(uvm.hostTable().getClass());
+
+            bridge.registerCallableReference(com.untangle.uvm.node.Node.class);
+        }
+        catch (Exception e) {
+            logger.warn("Exception registering callable reference classes",e);
+        }
     }
 
     public void service(HttpServletRequest req, HttpServletResponse resp) throws IOException
@@ -46,74 +100,16 @@ public class UtJsonRpcServlet extends JSONRPCServlet
             threadRequest.set(req);
         }
 
-        initSessionBridge(req);
-
+        HttpSession s = req.getSession();
+        JSONRPCBridge b = (JSONRPCBridge)s.getAttribute(BRIDGE_ATTRIBUTE);
+        if ( b == null ) {
+            s.setAttribute(BRIDGE_ATTRIBUTE, bridge);
+        }
+        
         super.service(req, resp);
 
         if (null != threadRequest) {
             threadRequest.set(null);
-        }
-    }
-
-    // private methods --------------------------------------------------------
-
-    private void initSessionBridge(HttpServletRequest req)
-    {
-        HttpSession s = req.getSession();
-        JSONRPCBridge b = (JSONRPCBridge)s.getAttribute(BRIDGE_ATTRIBUTE);
-
-        if (null == b) {
-            b = new JSONRPCBridge();
-            s.setAttribute(BRIDGE_ATTRIBUTE, b);
-
-            try {
-                ServletUtils.getInstance().registerSerializers(b);
-            } catch (Exception e) {
-                logger.warn( "Unable to register serializers", e );
-            }
-
-            b.setCallbackController(new UtCallbackController(b));
-
-            UvmContext uvm = UvmContextFactory.context();
-            b.registerObject("UvmContext", uvm, UvmContext.class);
-
-            /**
-             * This section registers hints that these classes should always be
-             * serialized as callable references
-             */
-            try {
-                b.registerCallableReference(uvm.languageManager().getClass());
-                b.registerCallableReference(uvm.localDirectory().getClass());
-                b.registerCallableReference(uvm.brandingManager().getClass());
-                b.registerCallableReference(uvm.skinManager().getClass());
-                b.registerCallableReference(uvm.messageManager().getClass());
-                b.registerCallableReference(uvm.languageManager().getClass());
-                b.registerCallableReference(uvm.certificateManager().getClass());
-                b.registerCallableReference(uvm.aptManager().getClass());
-                b.registerCallableReference(uvm.nodeManager().getClass());
-                b.registerCallableReference(uvm.loggingManager().getClass());
-                b.registerCallableReference(uvm.mailSender().getClass());
-                b.registerCallableReference(uvm.adminManager().getClass());
-                b.registerCallableReference(uvm.systemManager().getClass());
-                b.registerCallableReference(uvm.networkManager().getClass());
-                b.registerCallableReference(uvm.getConnectivityTester().getClass());
-                b.registerCallableReference(uvm.netcapManager().getClass());
-                b.registerCallableReference(uvm.licenseManager().getClass());
-                b.registerCallableReference(uvm.uploadManager().getClass());
-                b.registerCallableReference(uvm.settingsManager().getClass());
-                b.registerCallableReference(uvm.oemManager().getClass());
-                b.registerCallableReference(uvm.alertManager().getClass());
-                b.registerCallableReference(uvm.pipelineFoundry().getClass());
-                b.registerCallableReference(uvm.sessionMonitor().getClass());
-                b.registerCallableReference(uvm.execManager().getClass());
-                b.registerCallableReference(uvm.tomcatManager().getClass());
-                b.registerCallableReference(uvm.hostTable().getClass());
-
-                b.registerCallableReference(com.untangle.uvm.node.Node.class);
-            }
-            catch (Exception e) {
-                logger.warn("Exception registering callable reference classes",e);
-            }
         }
     }
 }

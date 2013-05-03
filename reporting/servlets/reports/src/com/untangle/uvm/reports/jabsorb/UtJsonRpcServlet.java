@@ -17,23 +17,7 @@ import com.untangle.uvm.LanguageManager;
 import com.untangle.uvm.SkinManager;
 import com.untangle.node.reporting.ReportingManager;
 
-import com.untangle.uvm.webui.jabsorb.serializer.EnumSerializer;
-import com.untangle.uvm.webui.jabsorb.serializer.IPMaskedAddressSerializer;
-import com.untangle.uvm.webui.jabsorb.serializer.InetAddressSerializer;
-import com.untangle.uvm.webui.jabsorb.serializer.MimeTypeSerializer;
-import com.untangle.uvm.webui.jabsorb.serializer.DistinguishedNameSerializer;
-import com.untangle.uvm.webui.jabsorb.serializer.TimeSerializer;
-import com.untangle.uvm.webui.jabsorb.serializer.TimeZoneSerializer;
-import com.untangle.uvm.webui.jabsorb.serializer.URLSerializer;
-import com.untangle.uvm.webui.jabsorb.serializer.GenericStringSerializer;
-import com.untangle.uvm.node.ProtocolMatcher;
-import com.untangle.uvm.node.IPMatcher;
-import com.untangle.uvm.node.PortMatcher;
-import com.untangle.uvm.node.IntfMatcher;
-import com.untangle.uvm.node.UserMatcher;
-import com.untangle.uvm.node.GlobMatcher;
-import com.untangle.uvm.node.DayOfWeekMatcher;
-import com.untangle.uvm.node.TimeOfDayMatcher;
+import com.untangle.uvm.servlet.ServletUtils;
 
 /**
  * Initializes the JSONRPCBridge.
@@ -47,6 +31,9 @@ public class UtJsonRpcServlet extends JSONRPCServlet
 
     private InheritableThreadLocal<HttpServletRequest> threadRequest;
 
+    private JSONRPCBridge bridge;
+    private UtCallbackController callback;
+    
     // HttpServlet methods ----------------------------------------------------
 
     @SuppressWarnings("unchecked") //getAttribute
@@ -56,6 +43,19 @@ public class UtJsonRpcServlet extends JSONRPCServlet
         if (null == threadRequest) {
             logger.warn("could not get threadRequest");
         }
+
+        bridge = new JSONRPCBridge();
+        callback = new UtCallbackController( bridge );
+        bridge.setCallbackController( callback );
+        
+        try {
+            ServletUtils.getInstance().registerSerializers(bridge);
+        } catch (Exception e) {
+            logger.warn( "Unable to register serializers", e );
+        }
+
+        ReportsContext rc = ReportsContextImpl.makeReportsContext();
+        bridge.registerObject("ReportsContext", rc, ReportsContext.class);
     }
 
     public void service(HttpServletRequest req, HttpServletResponse resp)
@@ -65,81 +65,16 @@ public class UtJsonRpcServlet extends JSONRPCServlet
             threadRequest.set(req);
         }
 
-        initSessionBridge(req);
+        HttpSession s = req.getSession();
+        JSONRPCBridge b = (JSONRPCBridge)s.getAttribute(BRIDGE_ATTRIBUTE);
+        if ( b == null ) {
+            s.setAttribute(BRIDGE_ATTRIBUTE, bridge);
+        }
 
         super.service(req, resp);
 
         if (null != threadRequest) {
             threadRequest.set(null);
-        }
-    }
-
-    /**
-     * Find the JSONRPCBridge from the current session.
-     * If it can't be found in the session, or there is no session,
-     * then return the global bridge.
-     *
-     * @param request The message received
-     * @return the JSONRPCBridge to use for this request
-     */
-    protected JSONRPCBridge findBridge(HttpServletRequest request)
-    {
-        // Find the JSONRPCBridge for this session or create one
-        // if it doesn't exist
-        HttpSession session = request.getSession( false );
-        JSONRPCBridge jsonBridge = null;
-        if (session != null) jsonBridge = (JSONRPCBridge) session.getAttribute( BRIDGE_ATTRIBUTE );
-
-        if ( jsonBridge == null) {
-            /* Use the global bridge if it can't find the session bridge. */
-            jsonBridge = JSONRPCBridge.getGlobalBridge();
-            if ( logger.isDebugEnabled()) logger.debug("Using global bridge.");
-        }
-        return jsonBridge;
-    }
-
-    // private methods --------------------------------------------------------
-
-    private void initSessionBridge(HttpServletRequest req)
-    {
-        HttpSession s = req.getSession();
-        JSONRPCBridge b = (JSONRPCBridge)s.getAttribute(BRIDGE_ATTRIBUTE);
-
-        if (null == b) {
-            b = new JSONRPCBridge();
-            s.setAttribute(BRIDGE_ATTRIBUTE, b);
-
-            try {
-                // general serializers
-                b.registerSerializer(new EnumSerializer());
-                b.registerSerializer(new URLSerializer());
-                b.registerSerializer(new InetAddressSerializer());
-                b.registerSerializer(new TimeSerializer());
-                // uvm related serializers
-                b.registerSerializer(new IPMaskedAddressSerializer());
-                b.registerSerializer(new TimeZoneSerializer());
-
-                b.registerSerializer(new MimeTypeSerializer());
-                b.registerSerializer(new DistinguishedNameSerializer());
-
-                // matchers
-                b.registerSerializer(new GenericStringSerializer(ProtocolMatcher.class));
-                b.registerSerializer(new GenericStringSerializer(IPMatcher.class));
-                b.registerSerializer(new GenericStringSerializer(PortMatcher.class));
-                b.registerSerializer(new GenericStringSerializer(IntfMatcher.class));
-                b.registerSerializer(new GenericStringSerializer(DayOfWeekMatcher.class));
-                b.registerSerializer(new GenericStringSerializer(TimeOfDayMatcher.class));
-                b.registerSerializer(new GenericStringSerializer(UserMatcher.class));
-                b.registerSerializer(new GenericStringSerializer(GlobMatcher.class));
-
-            } catch (Exception e) {
-                logger.warn( "Unable to register serializers", e );
-            }
-
-            b.setCallbackController(new UtCallbackController(b));
-
-            ReportsContext rc = ReportsContextImpl.makeReportsContext();
-            b.registerObject("ReportsContext", rc, ReportsContext.class);
         }
     }
 
