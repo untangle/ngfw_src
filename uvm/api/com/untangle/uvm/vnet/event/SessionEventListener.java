@@ -189,7 +189,6 @@ public interface SessionEventListener extends java.util.EventListener
      */
     void handleTCPComplete(TCPSessionEvent event);
 
-
     /**
      * UDP
      */
@@ -225,8 +224,16 @@ public interface SessionEventListener extends java.util.EventListener
      */
     void handleUDPNewSessionRequest(UDPNewSessionRequestEvent event) ;
 
+    /**
+     * Similar to a FIN event, but its just a timeout event, not actually
+     * something received from the client
+     */
     void handleUDPClientExpired(UDPSessionEvent event);
 
+    /**
+     * Similar to a FIN event, but its just a timeout event, not actually
+     * something received from the server
+     */
     void handleUDPServerExpired(UDPSessionEvent event);
 
     /**

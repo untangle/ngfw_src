@@ -175,10 +175,7 @@ public class CasingAdaptor extends CasingBase
         if (logger.isDebugEnabled()) {
             logger.debug("finalizing " + e.session().id());
         }
-        Casing c = getCasing(e.ipsession());
-        c.parser().handleFinalized();
-        c.unparser().handleFinalized();
-        removeCasingDesc(e.session());
+        finalize( e.ipsession() );
     }
 
     @Override
@@ -284,7 +281,9 @@ public class CasingAdaptor extends CasingBase
         if (token instanceof Release) {
             Release release = (Release)token;
 
+            finalize( s );
             s.release();
+
             UnparseResult ur = u.releaseFlush();
             if (ur.isStreamer()) {
                 TCPStreamer ts = new ReleaseTcpStreamer
@@ -354,7 +353,9 @@ public class CasingAdaptor extends CasingBase
                     logger.info("Protocol parse exception. releasing session: " + sessionEndpoints, exn);
                 }
                 
+                finalize( s );
                 s.release();
+
                 pr = new ParseResult(new Release(dup));
             } else {
                 s.shutdownServer();
@@ -407,5 +408,13 @@ public class CasingAdaptor extends CasingBase
                 return new TCPChunkResult(null, r, pr.getReadBuffer());
             }
         }
+    }
+
+    private void finalize( NodeSession sess )
+    {
+        Casing c = getCasing( sess );
+        c.parser().handleFinalized();
+        c.unparser().handleFinalized();
+        removeCasingDesc( sess );
     }
 }

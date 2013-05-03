@@ -118,21 +118,27 @@ public class TokenAdaptor extends AbstractEventHandler
     @Override
     public void handleTCPFinalized(TCPSessionEvent e) 
     {
-        NodeTCPSession session = e.session();
-        HandlerDesc handlerDesc = getHandlerDesc(session);
+        NodeTCPSession sess = e.session();
+
+        finalize( sess );
+        
+        super.handleTCPFinalized(e);
+    }
+
+    private void finalize( NodeTCPSession sess )
+    {
+        HandlerDesc handlerDesc = getHandlerDesc( sess );
 
         try {
             handlerDesc.handler.handleFinalized();
         } catch (TokenException exn) {
             logger.warn("resetting connection", exn);
-            session.resetClient();
-            session.resetServer();
+            sess.resetClient();
+            sess.resetServer();
         }
 
-        super.handleTCPFinalized(e);
-        removeHandler(e.session());
+        removeHandler( sess );
     }
-
     // UDP events -------------------------------------------------------------
 
     @Override
@@ -311,6 +317,7 @@ public class TokenAdaptor extends AbstractEventHandler
 
             TokenResult utr = handler.releaseFlush();
 
+            finalize( session );
             session.release();
 
             if (utr.isStreamer()) {
