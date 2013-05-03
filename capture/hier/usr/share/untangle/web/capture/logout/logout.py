@@ -6,13 +6,6 @@ from mod_python import apache
 from uvm import Uvm
 import pprint
 
-
-# global objects that we retrieve from the uvm
-uvmContext = None
-captureList = None
-captureSettings = None
-companyName = None
-
 #-----------------------------------------------------------------------------
 # This is the default function that gets called for a client logout request
 
@@ -27,11 +20,11 @@ def index(req):
     page = file.read();
     file.close()
 
-    # setup the global data
-    global_data_setup(req)
+    # load the node settings
+    captureSettings = load_capture_settings(req)
 
     # setup the uvm and node objects so we can make the RPC call
-    global_auth_setup()
+    captureList = load_rpc_manager_list()
 
     # track the number of successful calls to userLogout
     exitCount = 0
@@ -49,19 +42,16 @@ def index(req):
         page = replace_marker(page,'$.ExitMessage.$', 'You have successfully logged out')
         page = replace_marker(page,'$.ExitStyle.$', 'styleNormal')
 
-    page = replace_marker(page,'$.CompanyName.$', companyName)
+    page = replace_marker(page,'$.CompanyName.$', captureSettings['companyName'])
     page = replace_marker(page,'$.PageTitle.$', captureSettings['basicLoginPageTitle'])
 
     # return the logout page we just created
     return(page)
 
 #-----------------------------------------------------------------------------
-# loads the uvm and capture node objects for the authentication calls
+# loads and returns the node RPC objects needed for the authentication calls
 
-def global_auth_setup(appid=None):
-
-    global uvmContext
-    global captureList
+def load_rpc_manager_list(appid=None):
 
     # create a list for all of the nodes we discover
     captureList = list()
@@ -86,13 +76,12 @@ def global_auth_setup(appid=None):
     if (len(captureList) == 0):
         raise Exception("The uvm node manager could not locate untangle-node-capture")
 
+    return(captureList)
+
 #-----------------------------------------------------------------------------
-# loads the node settings and company name info into global variables
+# loads the node settings
 
-def global_data_setup(req,appid=None):
-
-    global captureSettings
-    global companyName
+def load_capture_settings(req,appid=None):
 
     companyName = 'Untangle'
 
@@ -109,10 +98,15 @@ def global_data_setup(req,appid=None):
     else:
         captureSettings = get_nodeid_settings(long(appid))
 
+    # add the company name to the node settings dictionary
+    captureSettings['companyName'] = companyName
+
     # add some headers to prevent caching any of our stuff
     req.headers_out.add("Cache-Control", "no-store, no-cache, must-revalidate, post-check=0, pre-check=0")
     req.headers_out.add("Pragma", "no-cache")
     req.headers_out.add("Expires", "Sat, 1 Jan 2000 00:00:00 GMT");
+
+    return(captureSettings)
 
 #-----------------------------------------------------------------------------
 # forces stuff loaded from settings files to be UTF-8 when plugged

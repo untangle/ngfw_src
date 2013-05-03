@@ -5,16 +5,12 @@ from uvm.settings_reader import get_settings_item
 from mod_python import apache
 from mod_python import util
 from uvm import Uvm
-import os.path
 import zipfile
 import urllib
 import pprint
-
-# global objects that we retrieve from the uvm
-uvmContext = None
-captureNode = None
-captureSettings = None
-companyName = None
+import imp
+import sys
+import os
 
 #-----------------------------------------------------------------------------
 # This is the default function that gets called when a client is redirected
@@ -31,12 +27,12 @@ def index(req):
     if (not 'HOST' in args):    args['HOST'] = "Empty"
     if (not 'URI' in args):     args['URI'] = "Empty"
 
-    # setup the global data
-    global_data_setup(req,args['APPID'])
+    # load the configuration data
+    captureSettings = load_capture_settings(req,args['APPID'])
 
     # if not using a custom capture page we generate and return a standard page
     if (captureSettings['pageType'] != 'CUSTOM'):
-        page = generate_page(req,args)
+        page = generate_page(req,captureSettings,args)
         return(page)
 
     # if we make it here they are using a custom page so we have to
@@ -47,7 +43,7 @@ def index(req):
     # found a custom.py file so load it up, grab the index function reference
     # and call the index function to generate the capture page
     if (os.path.exists(rawpath + "custom.py")):
-        cust = __import__(rawpath + "custom")
+        cust = import_file(rawpath + "custom.py")
         if not cust:
             raise Exception("Unable to locate or import custom.py")
         func = getattr(cust,"index")
@@ -58,7 +54,7 @@ def index(req):
         page = func(req,rawpath,webpath,str(args['APPID']),str(args['HOST']),str(args['URI']))
     # no custom.py file so we generate the capture page ourselves
     else:
-        page = generate_page(req,args)
+        page = generate_page(req,captureSettings,args)
 
     # return the capture page we just created
     return(page)
@@ -73,11 +69,11 @@ def authpost(req,username,password,method,nonce,appid,host,uri):
     # get the network address of the client
     address = req.get_remote_host(apache.REMOTE_NOLOOKUP,None)
 
-    # setup the global data
-    global_data_setup(req,appid)
+    # load the node settings
+    captureSettings = load_capture_settings(req,appid)
 
-    # setup the uvm and node objects so we can make the RPC call
-    global_auth_setup(appid)
+    # setup the uvm and retrieve the node object so we can make the RPC call
+    captureNode = load_rpc_manager(appid)
 
     # call the node to authenticate the user
     authResult = captureNode.userAuthenticate(address, username, urllib.quote(password))
@@ -103,11 +99,11 @@ def authpost(req,username,password,method,nonce,appid,host,uri):
 
     # pass the request object and post arguments to the page generator
     if (authResult == 1):
-        page = generate_page(req,args,"Invalid username or password. Please try again.")
+        page = generate_page(req,captureSettings,args,"Invalid username or password. Please try again.")
     elif (authResult == 2):
-        page = generate_page(req,args,"You are already logged in from another location.")
+        page = generate_page(req,captureSettings,args,"You are already logged in from another location.")
     else:
-        page = generate_page(req,args,"The server returned an unexpected error.")
+        page = generate_page(req,captureSettings,args,"The server returned an unexpected error.")
 
     # return the login page we just created
     return(page)
@@ -127,11 +123,11 @@ def infopost(req,method,nonce,appid,host,uri,agree='empty'):
     # get the network address of the client
     address = req.get_remote_host(apache.REMOTE_NOLOOKUP,None)
 
-    # setup the global data
-    global_data_setup(req,appid)
+    # load the node settings
+    captureSettings = load_capture_settings(req,appid)
 
     # setup the uvm and node objects so we can make the RPC call
-    global_auth_setup(appid)
+    captureNode = load_rpc_manager(appid)
 
     # call the node to authenticate the user
     authResult = captureNode.userActivate(address,agree)
@@ -157,9 +153,9 @@ def infopost(req,method,nonce,appid,host,uri,agree='empty'):
 
     # pass the request object and post arguments to the page generator
     if (authResult == 1):
-        page = generate_page(req,args,"You must enable the checkbox above to continue.")
+        page = generate_page(req,captureSettings,args,"You must enable the checkbox above to continue.")
     else:
-        page = generate_page(req,args,"The server returned an unexpected error.")
+        page = generate_page(req,captureSettings,args,"The server returned an unexpected error.")
 
     # return the login page we just created
     return(page)
@@ -265,7 +261,7 @@ def custom_remove(req,custom_file,appid):
 #-----------------------------------------------------------------------------
 # This function generates the actual captive portal page
 
-def generate_page(req,args,extra=''):
+def generate_page(req,captureSettings,args,extra=''):
 
     # use the path from the request filename to locate the correct template
     if (captureSettings['pageType'] == 'BASIC_LOGIN'):
@@ -282,7 +278,7 @@ def generate_page(req,args,extra=''):
     file.close()
 
     if (captureSettings['pageType'] == 'BASIC_LOGIN'):
-        page = replace_marker(page,'$.CompanyName.$', companyName)
+        page = replace_marker(page,'$.CompanyName.$', captureSettings['companyName'])
         page = replace_marker(page,'$.PageTitle.$', captureSettings['basicLoginPageTitle'])
         page = replace_marker(page,'$.WelcomeText.$', captureSettings['basicLoginPageWelcome'])
         page = replace_marker(page,'$.MessageText.$', captureSettings['basicLoginMessageText'])
@@ -291,7 +287,7 @@ def generate_page(req,args,extra=''):
         page = replace_marker(page,'$.FooterText.$', captureSettings['basicLoginFooter'])
 
     if (captureSettings['pageType'] == 'BASIC_MESSAGE'):
-        page = replace_marker(page,'$.CompanyName.$', companyName)
+        page = replace_marker(page,'$.CompanyName.$', captureSettings['companyName'])
         page = replace_marker(page,'$.PageTitle.$', captureSettings['basicMessagePageTitle'])
         page = replace_marker(page,'$.WelcomeText.$', captureSettings['basicMessagePageWelcome'])
         page = replace_marker(page,'$.MessageText.$', captureSettings['basicMessageMessageText'])
@@ -319,7 +315,7 @@ def generate_page(req,args,extra=''):
     # replace the text in the problem section with the agumented value
     page = replace_marker(page,'$.ProblemText.$',extra)
 
-#    debug = create_debug(args)
+#    debug = create_debug(args,captureSettings)
     debug = ""
     page = replace_marker(page,'<!--DEBUG-->',debug)
 
@@ -346,12 +342,9 @@ def split_args(args):
     return(canon_args)
 
 #-----------------------------------------------------------------------------
-# loads the uvm and capture node objects for the authentication calls
+# loads and returns the node RPC object needed for the authentication calls
 
-def global_auth_setup(appid=None):
-
-    global uvmContext
-    global captureNode
+def load_rpc_manager(appid=None):
 
     # first we get the uvm context
     uvmContext = Uvm().getUvmContext()
@@ -367,13 +360,12 @@ def global_auth_setup(appid=None):
     if (captureNode == None):
         raise Exception("The uvm node manager could not locate untangle-node-capture")
 
+    return(captureNode)
+
 #-----------------------------------------------------------------------------
-# loads the node settings and company name info into global variables
+# loads the node settings
 
-def global_data_setup(req,appid=None):
-
-    global captureSettings
-    global companyName
+def load_capture_settings(req,appid=None):
 
     companyName = 'Untangle'
 
@@ -390,16 +382,20 @@ def global_data_setup(req,appid=None):
     else:
         captureSettings = get_nodeid_settings(long(appid))
 
+    # add the company name to the node settings dictionary
+    captureSettings['companyName'] = companyName
+
     # add some headers to prevent caching any of our stuff
     req.headers_out.add("Cache-Control", "no-store, no-cache, must-revalidate, post-check=0, pre-check=0")
     req.headers_out.add("Pragma", "no-cache")
     req.headers_out.add("Expires", "Sat, 1 Jan 2000 00:00:00 GMT");
 
+    return(captureSettings)
+
 #-----------------------------------------------------------------------------
+# builds a string of debug info
 
-# builds a string of debug info which includes the global capture data
-
-def create_debug(args):
+def create_debug(args,captureSettings):
 
     debug = "<BR><HR><BR>";
     debug += "<BR>===== ARGUMENTS =====<BR>\r\n"
@@ -453,7 +449,7 @@ def custom_handler(req):
     webpath = "/capture/custom_" + str(args['APPID']) + "/"
 
     # import the custom.py
-    cust = __import__(rawpath + "custom")
+    cust = import_file(rawpath + "custom")
     if not cust:
         raise Exception("Unable to locate or import custom.py")
 
@@ -467,3 +463,10 @@ def custom_handler(req):
     # call the handler and return anything we get back
     page = func(req,rawpath,webpath,str(args['APPID']))
     return(page)
+
+#-----------------------------------------------------------------------------
+def import_file(filename):
+    (path, name) = os.path.split(filename)
+    (name, ext) = os.path.splitext(name)
+    (file, filename, data) = imp.find_module(name, [path])
+    return imp.load_module(name, file, filename, data)
