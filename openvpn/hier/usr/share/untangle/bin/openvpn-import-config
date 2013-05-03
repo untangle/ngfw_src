@@ -1,8 +1,8 @@
 #! /bin/bash
 
 # 
-# This script imports a config file from a remote server
-# and puts all the files in place so this server will connection to the remote server as a client
+# This script imports a config file containing the necessary configuration to connect to a remote server
+# It stores the files in settings, OpenVpnManager will later copy them into place
 #
 
 serverAddress=${1}
