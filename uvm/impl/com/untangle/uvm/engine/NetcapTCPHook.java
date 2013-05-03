@@ -43,6 +43,7 @@ public class NetcapTCPHook implements NetcapCallback
 
     public void event( long sessionID )
     {
+        Thread.currentThread().setName("Session " + sessionID);
         new TCPNetcapHook( sessionID ).run();
     }
 

@@ -101,7 +101,6 @@ void  uthread_tls_free( void* buf )
     if ( buf != NULL ) free( buf );
 }
 
-
 void* uthread_tls_get( pthread_key_t tls_key, size_t size, int(*init)(void *buf, size_t size ))
 {
     void* buf;

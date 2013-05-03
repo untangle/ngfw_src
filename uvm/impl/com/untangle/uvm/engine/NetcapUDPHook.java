@@ -43,6 +43,7 @@ public class NetcapUDPHook implements NetcapCallback
 
     public void event( long sessionID )
     {
+        Thread.currentThread().setName("Session " + sessionID);
         new UDPNetcapHook( sessionID ).run();
     }
 

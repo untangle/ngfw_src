@@ -57,7 +57,7 @@ public class Main
      */
     public static final void main(String[] args) throws Exception
     {
-        System.out.println("UVM starting...");
+        System.out.println("UVM starting... (java: " + System.getProperty("java.version") + ")");
         
         synchronized (Main.class) {
             if (null == MAIN) {

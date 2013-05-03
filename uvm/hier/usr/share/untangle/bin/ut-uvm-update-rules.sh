@@ -63,7 +63,7 @@ insert_iptables_rules()
     # Do not track output from the UVM 
     # If its UDP or ICMP its part of an existing session, and tracking it will create a new erroneous session
     # If its TCP its non-locally bound and won't go through iptables anyway
-    ${IPTABLES} -A OUTPUT -t raw -m mark --mark ${MASK_BYPASS}/${MASK_BYPASS} -j NOTRACK -m comment --comment 'NOTRACK packets with no-track bit mark set'
+    ${IPTABLES} -A OUTPUT -t raw -m mark --mark ${MASK_BYPASS}/${MASK_BYPASS} -j NOTRACK -m comment --comment 'NOTRACK packets with bypass bit mark set'
 
     # Redirect any re-injected packets from the TUN interface to us
     ## Add a redirect rule for each address,

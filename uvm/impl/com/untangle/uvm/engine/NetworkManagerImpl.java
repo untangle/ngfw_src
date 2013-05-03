@@ -6,6 +6,7 @@ package com.untangle.uvm.engine;
 import java.util.LinkedList;
 import java.util.List;
 import java.net.InetAddress;
+import java.io.File;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -131,6 +132,16 @@ public class NetworkManagerImpl implements NetworkManager
             logger.debug( "Loading Settings: " + this.networkSettings.toJSONString() );
         }
 
+        /**
+         * If the settings file date is newer than the system files, re-sync them
+         */
+        File settingsFile = new File(this.settingsFilename + ".js");
+        File interfacesFile = new File("/etc/network/interfaces");
+        if (settingsFile.lastModified() > interfacesFile.lastModified() ) {
+            logger.warn("Settings file newer than interfaces files, Syncing...");
+            this.setNetworkSettings( this.networkSettings );
+        }
+        
         logger.info( "Initialized NetworkManager" );
         this.getInterfaceStatus(1);
     }

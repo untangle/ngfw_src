@@ -31,7 +31,7 @@ public class PipelineConnectorImpl implements PipelineConnector
     /**
      * Live flag
      */
-    private boolean live = true;
+    private boolean live = false;
     
     /**
      * Active Sessions for this agent
@@ -152,12 +152,15 @@ public class PipelineConnectorImpl implements PipelineConnector
     
     private synchronized  void start() 
     {
-        if ( live )
-
+        if ( this.live )
+            return;
+        
         dispatcher = new Dispatcher(this);
-        if (listener != null)
-            dispatcher.setSessionEventListener(listener);
 
+        if (listener != null)
+            dispatcher.setSessionEventListener( listener );
+
+        this.live = true;
     }
 
     /**
@@ -170,8 +173,6 @@ public class PipelineConnectorImpl implements PipelineConnector
     {
         if ( ! this.live ) return;
 
-        live = false;
-        
         try {
             dispatcher.destroy();
         } catch (Exception x) {
@@ -179,14 +180,12 @@ public class PipelineConnectorImpl implements PipelineConnector
         }
         dispatcher = null;
 
-        /* Remove the listener */
-        listener = null;
-
         SessionTable.getInstance().shutdownActive();
 
         /* Remove all of the active sessions */
         activeSessions.clear();
 
+        this.live = false;
     }
 
 
@@ -197,8 +196,6 @@ public class PipelineConnectorImpl implements PipelineConnector
      */
     public synchronized boolean addSession( NodeSession session )
     {
-        if ( ! live ) return false;
-
         return activeSessions.add( session );
     }
 
@@ -209,8 +206,6 @@ public class PipelineConnectorImpl implements PipelineConnector
      */
     public synchronized boolean removeSession( NodeSession session )
     {
-        if ( live ) return false;
-
         return activeSessions.remove( session );
     }
     

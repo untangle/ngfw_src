@@ -757,7 +757,7 @@ static void*             _run_thread( void* _arg )
         ret = arg.thread_func( arg.arg );
 
     } while ( 0 );
-    
+
     _detach_thread( jvm );
 
     jnetcap_thread_destroy( &arg );
