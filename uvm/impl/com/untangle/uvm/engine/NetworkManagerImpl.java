@@ -135,11 +135,13 @@ public class NetworkManagerImpl implements NetworkManager
         /**
          * If the settings file date is newer than the system files, re-sync them
          */
-        File settingsFile = new File(this.settingsFilename + ".js");
-        File interfacesFile = new File("/etc/network/interfaces");
-        if (settingsFile.lastModified() > interfacesFile.lastModified() ) {
-            logger.warn("Settings file newer than interfaces files, Syncing...");
-            this.setNetworkSettings( this.networkSettings );
+        if ( ! UvmContextFactory.context().isDevel() ) {
+            File settingsFile = new File(this.settingsFilename + ".js");
+            File interfacesFile = new File("/etc/network/interfaces");
+            if (settingsFile.lastModified() > interfacesFile.lastModified() ) {
+                logger.warn("Settings file newer than interfaces files, Syncing...");
+                this.setNetworkSettings( this.networkSettings );
+            }
         }
         
         logger.info( "Initialized NetworkManager" );
