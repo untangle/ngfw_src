@@ -6,6 +6,7 @@ package com.untangle.uvm.vnet;
 import com.untangle.uvm.node.SessionTuple;
 import com.untangle.uvm.node.SessionEvent;
 
+import java.nio.ByteBuffer;
 import java.util.Map;
 import java.net.InetAddress;
 
@@ -293,5 +294,8 @@ public interface NodeSession extends SessionTuple
     byte serverState();
 
     NodeSessionStats stats();
+
+    void simulateClientData(ByteBuffer data);
+    void simulateServerData(ByteBuffer data);
 }
 

@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.nio.ByteBuffer;
 
 import org.apache.log4j.Logger;
 import org.apache.log4j.MDC;
@@ -50,7 +51,7 @@ public abstract class NodeSessionImpl implements NodeSession
     protected final int serverPort;
     protected final int clientIntf;
     protected final int serverIntf;
-    
+
     private static DateFormat formatter = new AbsoluteTimeDateFormat();
 
     protected final Dispatcher dispatcher;
@@ -61,7 +62,7 @@ public abstract class NodeSessionImpl implements NodeSession
     protected IPStreamer[] streamer = null;
 
     protected final NodeSessionStats stats;
-    
+
     protected int maxInputSize  = 0;
     protected int maxOutputSize = 0;
 
@@ -90,7 +91,7 @@ public abstract class NodeSessionImpl implements NodeSession
         this.pipelineConnector = dispatcher.pipelineConnector();
         this.sessionEvent = sessionEvent;
         boolean isVectored = (request.state() == IPNewSessionRequestImpl.REQUESTED || request.state() == IPNewSessionRequestImpl.ENDPOINTED);
-        
+
         sessionGlobalState        = request.sessionGlobalState();
         pipelineConnector         = request.pipelineConnector();
 
@@ -112,7 +113,7 @@ public abstract class NodeSessionImpl implements NodeSession
         }
 
         this.logger = this.pipelineConnector.sessionLogger();
-        
+
         this.stats = new NodeSessionStats();
         this.protocol      = request.getProtocol();
         this.clientAddr    = request.getClientAddr();
@@ -163,7 +164,7 @@ public abstract class NodeSessionImpl implements NodeSession
     {
         return this.sessionGlobalState().getAttachments();
     }
-    
+
     public SessionGlobalState sessionGlobalState()
     {
         return sessionGlobalState;
@@ -178,7 +179,7 @@ public abstract class NodeSessionImpl implements NodeSession
     {
         return sessionGlobalState.id();
     }
-    
+
     public NetcapSession netcapSession()
     {
         return sessionGlobalState.netcapSession();
@@ -400,7 +401,7 @@ public abstract class NodeSessionImpl implements NodeSession
 
     public boolean getClientShutdown() { return this.isClientShutdown; }
     public void setClientShutdown( boolean newValue ) { this.isClientShutdown = newValue; }
-    
+
     public void shutdownEvent( IncomingSocketQueue isq )
     {
         logger.debug( "Incoming socket queue shutdown event: " + isq );
@@ -500,7 +501,7 @@ public abstract class NodeSessionImpl implements NodeSession
     {
         if (buf == null)
             return;
-        
+
         OutgoingSocketQueue out;
         if (side == CLIENT)
             out = clientOutgoingSocketQueue();
@@ -736,7 +737,7 @@ public abstract class NodeSessionImpl implements NodeSession
         logger.debug("Set Client QosMark to " + priority);
         this.sessionGlobalState().netcapSession().clientQosMark(priority);
     }
-    
+
     /**
      * <code>serverMark</code> returns the server-side socket mark for this session
      */
@@ -773,7 +774,7 @@ public abstract class NodeSessionImpl implements NodeSession
         logger.debug("Set Server QosMark to " + priority);
         this.sessionGlobalState().netcapSession().serverQosMark(priority);
     }
-    
+
     // This is the main write hook called by the Vectoring machine
     public void writeEvent(int side, OutgoingSocketQueue out)
     {
@@ -845,7 +846,7 @@ public abstract class NodeSessionImpl implements NodeSession
                 return;
             }
             @SuppressWarnings("unused")
-			IncomingSocketQueue ourin, otherin;
+            IncomingSocketQueue ourin, otherin;
             OutgoingSocketQueue ourout, otherout;
             OutgoingSocketQueue cout = clientOutgoingSocketQueue();
             OutgoingSocketQueue sout = serverOutgoingSocketQueue();
@@ -901,11 +902,11 @@ public abstract class NodeSessionImpl implements NodeSession
         return protocol;
     }
 
-    public InetAddress getClientAddr() 
+    public InetAddress getClientAddr()
     {
         return clientAddr;
     }
-    
+
     public InetAddress getServerAddr()
     {
         return serverAddr;
@@ -915,27 +916,27 @@ public abstract class NodeSessionImpl implements NodeSession
     {
         return clientPort;
     }
-    
+
     public int getServerPort()
     {
         return serverPort;
     }
 
     public int getClientIntf()
-    {     
+    {
         return clientIntf;
     }
-    
+
     public int getServerIntf()
     {
         return serverIntf;
     }
-    
+
     // Callback called on finalize
     protected void closeFinal()
     {
         cancelTimer();
-        
+
         dispatcher.removeSession(this);
     }
 
@@ -1168,5 +1169,31 @@ public abstract class NodeSessionImpl implements NodeSession
                 throw new IllegalStateException( "Invalid socket queue: " + out );
             }
         }
+    }
+
+/*
+ * These functions allow injecting data directly at the client and server
+ * session endpoints.  They do this by adding the argumented data to the
+ * incoming socket queue so that it can be processed exactly as if the data
+ * had been received across the network directly from the client or server.
+ * These functions were added specifically to allow the client and server
+ * sides of the https-casing to pass messages back and forth without the data
+ * passing through all the other nodes subscribed to HTTP tokens.
+ */
+
+    public void simulateClientData(ByteBuffer data)
+    {
+        byte local[] = new byte[data.limit()];
+        data.get(local,0,data.limit());
+        DataCrumb crumb = new DataCrumb(local);
+        clientIncomingSocketQueue().send_event(crumb);
+    }
+
+    public void simulateServerData(ByteBuffer data)
+    {
+        byte local[] = new byte[data.limit()];
+        data.get(local,0,data.limit());
+        DataCrumb crumb = new DataCrumb(data.array(),data.limit());
+        serverIncomingSocketQueue().send_event(crumb);
     }
 }
