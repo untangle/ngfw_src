@@ -724,7 +724,7 @@ public class Quarantine
      */
     private boolean sendDigestEmail(String account, InboxIndex index)
     {
-        Map<String,String> i18nMap = UvmContextFactory.context().languageManager().getTranslations("untangle-casing-mail");
+        Map<String,String> i18nMap = UvmContextFactory.context().languageManager().getTranslations("untangle-casing-smtp");
         I18nUtil i18nUtil = new I18nUtil(i18nMap);
         String internalHost = UvmContextFactory.context().systemManager().getPublicUrl();
 
