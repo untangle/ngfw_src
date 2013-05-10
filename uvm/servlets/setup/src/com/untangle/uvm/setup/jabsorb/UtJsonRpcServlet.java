@@ -20,9 +20,6 @@ import org.jabsorb.JSONRPCServlet;
 
 /**
  * Initializes the JSONRPCBridge.
- *
- * @author <a href="mailto:amread@untangle.com">Aaron Read</a>
- * @version 1.0
  */
 @SuppressWarnings("serial")
 public class UtJsonRpcServlet extends JSONRPCServlet
@@ -68,8 +65,7 @@ public class UtJsonRpcServlet extends JSONRPCServlet
         }
 
         HttpSession s = req.getSession();
-        JSONRPCBridge b = (JSONRPCBridge)s.getAttribute(BRIDGE_ATTRIBUTE);
-        if ( b == null ) {
+        if ( s.getAttribute(BRIDGE_ATTRIBUTE) == null ) {
             s.setAttribute(BRIDGE_ATTRIBUTE, bridge);
         }
 
@@ -78,6 +74,30 @@ public class UtJsonRpcServlet extends JSONRPCServlet
         if (null != threadRequest) {
             threadRequest.set(null);
         }
+    }
+
+    /**
+     * Find the JSONRPCBridge from the current session.
+     * If it can't be found in the session, or there is no session,
+     * then return the global bridge.
+     *
+     * @param request The message received
+     * @return the JSONRPCBridge to use for this request
+     */
+    protected JSONRPCBridge findBridge(HttpServletRequest request)
+    {
+        // Find the JSONRPCBridge for this session or create one
+        // if it doesn't exist
+        HttpSession session = request.getSession( false );
+        JSONRPCBridge jsonBridge = null;
+        if (session != null) jsonBridge = (JSONRPCBridge) session.getAttribute( BRIDGE_ATTRIBUTE );
+
+        if ( jsonBridge == null) {
+            /* Use the global bridge if it can't find the session bridge. */
+            jsonBridge = JSONRPCBridge.getGlobalBridge();
+            if ( logger.isDebugEnabled()) logger.debug("Using global bridge.");
+        }
+        return jsonBridge;
     }
 
     public interface SetupContext
