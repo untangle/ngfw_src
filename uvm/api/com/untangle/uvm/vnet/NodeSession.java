@@ -146,6 +146,9 @@ public interface NodeSession extends SessionTuple
     public final String KEY_CLASSD_PRODUCTIVITY = "classd-productivity"; /* Integer */
     public final String KEY_CLASSD_RISK = "classd-risk"; /* Integer */
 
+    public final String KEY_HTTPS_CLIENT_MANAGER = "https-client-manager"; /* HttpsManager */
+    public final String KEY_HTTPS_SERVER_MANAGER = "https-server-manager"; /* HttpsManager */
+
     /**
      * Returns the protocol for the session.</p>
      * @return a <code>short</code> giving one of the protocols (right now always TCP or UDP)
