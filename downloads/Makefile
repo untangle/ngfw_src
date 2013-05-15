@@ -48,18 +48,6 @@ all: $(packages) ;
 	@find ${OUTPUT_DIRECTORY} -type f -name '* *' -print0 | xargs -0 rm -f
 	@find ${OUTPUT_DIRECTORY} -type d -name '* *' -print0 | xargs -0 rm -rf
 
-## This verifies that the output directory hasn't been modified, it
-## should be done before a release.
-verification: output.md5 verify
-	@echo "==> Verifying output directory"
-	@./verify
-
-## Create a new md5sum, this should also be committed
-md5sum:
-	@echo "==> Generating a new md5sum file"
-	@find ${OUTPUT_DIRECTORY} -type f -exec cat \{\} \; | md5sum | sed 's/$$/ File contents/' > output.md5
-	@find $(OUTPUT_DIRECTORY) | sort | md5sum | sed 's/$$/ Directory structure/' >> output.md5
-
 $(OUTPUT_DIRECTORY)/%: %.tar.gz %.excl $(OUTPUT_DIRECTORY).$(dir_target)
 	@echo "[untar gz] $< -> $@"
 	@$(RM_DIR) $@

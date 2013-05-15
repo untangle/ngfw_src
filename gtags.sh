@@ -2,8 +2,8 @@ echo "Warning: this file needs to be *sourced*"
 
 DIR=$(pwd)
 
-DEFAULT_RUP=${DIR}/../../hades/src
-[ ! -d "$DEFAULT_RUP" ] && DEFAULT_RUP=${DIR}/../hades/src
+DEFAULT_HADES=${DIR}/../../hades/src
+[ ! -d "$DEFAULT_HADES" ] && DEFAULT_HADES=${DIR}/../hades/src
 
 while getopts "u" flag ; do
   if [ "$flag" = "u" ] ; then
@@ -12,7 +12,7 @@ while getopts "u" flag ; do
 done
 shift $((${OPTIND}-1))
  
-rup=${1:-$DEFAULT_RUP}
+rup=${1:-$DEFAULT_HADES}
 
 export GTAGSLIBPATH=${DIR}:${rup}
 
