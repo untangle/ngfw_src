@@ -6,9 +6,6 @@ all: clean build
 	cp ./cookie-diff-* $(TARGET_DIR) || true
 	cp $(shell ls cookie-init-* | sort -n -t- -k2 -r | head -n1) $(TARGET_DIR)/cookie.txt
 
-	cp ./activex-diff-* $(TARGET_DIR) || true
-	cp $(shell ls activex-init-* | sort -n -t- -k2 -r | head -n1) $(TARGET_DIR)/activex.txt
-
 	cp ./subnet-diff-* $(TARGET_DIR) || true
 	cp $(shell ls subnet-init-* | sort -n -t- -k2 -r | head -n1) $(TARGET_DIR)/subnet.txt
 
@@ -23,7 +20,6 @@ clean:
 	rm -f ./files/*
 
 cookie: cookie-diff-$(shell expr `ls cookie-init-* | cut -d- -f3 | sort -r -n | head -n1` + 1)
-activex: activex-diff-$(shell expr `ls activex-init-* | cut -d- -f3 | sort -r -n | head -n1` + 1)
 subnet: subnet-diff-$(shell expr `ls subnet-init-* | cut -d- -f3 | sort -r -n | head -n1` + 1)
 
 url:
@@ -37,17 +33,6 @@ url:
 	@cat ./files/ag-sites-full.txt | egrep -v '^[0-9]{1,3}\.[0-9]{1,3}\.' | grep -v "^\." >> ./files/urlblacklist
 	@cat ./files/urlblacklist | grep -v '^$$' | sed -e "/[\x80-\xff]/d" | sort | uniq > ./files/urlblacklist.txt
 	@cat ./files/urlblacklist.txt | grep -vwf domains.clean > urlblacklist.txt
-
-activex-init-%:
-	mkdir -p ./files
-	@( cd ./files ; wget http://www.spywareguide.com/blocklist.reg )
-	cat ./files/blocklist.reg | grep HKEY | sed 's/^.*{\(.*\)}.*$$/\1/' | sort >$@
-
-activex-diff-%: activex-init-%
-	if diff activex-init-$(shell expr $* - 1) $< >$@; then \
-		echo "activex has not changed"; \
-		rm -f $< $@; \
-	fi
 
 cookie-init-%: domains.clean
 	mkdir -p ./files

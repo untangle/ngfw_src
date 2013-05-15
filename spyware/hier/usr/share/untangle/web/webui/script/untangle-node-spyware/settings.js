@@ -4,7 +4,6 @@ if (!Ung.hasResource["Ung.Spyware"]) {
 
     Ext.define('Ung.Spyware', {
         extend:'Ung.NodeWin',
-        //gridActiveXList: null,
         gridCookiesList: null,
         gridSubnetList: null,
         panelBlockLists: null,
@@ -32,7 +31,6 @@ if (!Ung.hasResource["Ung.Spyware"]) {
                 name: 'Block Lists',
                 helpSource: 'block_lists',
                 winCookiesList: null,
-                //winActiveXList: null,
                 winSubnetList: null,
                 subCmps: [],
                 title: this.i18n._("Block Lists"),
