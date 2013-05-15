@@ -9,7 +9,6 @@ all: clean build
 	cp ./subnet-diff-* $(TARGET_DIR) || true
 	cp $(shell ls subnet-init-* | sort -n -t- -k2 -r | head -n1) $(TARGET_DIR)/subnet.txt
 
-# Active X broken now that upstream is gone.
 build: url cookie subnet
 
 clean:
@@ -67,6 +66,6 @@ subnet-diff-%: subnet-init-%
 		rm -f $< $@; \
 	fi
 
-.PHONY: all build clean cookie activex subnet url
+.PHONY: all build clean cookie subnet url
 .SECONDARY:
 
