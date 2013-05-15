@@ -548,6 +548,17 @@ Ext.define("Ung.Main", {
         }
         return rpc.mailSender;
     },
+    
+    getNetworkSettings: function(forceReload) {
+        if (forceReload || rpc.networkSettings === undefined) {
+            try {
+                rpc.networkSettings = main.getNetworkManager().getNetworkSettings();
+            } catch (e) {
+                Ung.Util.rpcExHandler(e);
+            }
+        }
+        return rpc.networkSettings;
+    },
 
     unactivateNode: function(packageDesc) {
         Ung.AppItem.updateState(packageDesc.displayName,"unactivating");

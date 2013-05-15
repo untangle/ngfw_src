@@ -267,7 +267,6 @@ if (!Ung.hasResource["Ung.SpamAssassin"]) {
                                  id: 'spamassassin_smtpSuperStrengthValue',
                                  value: this.settings.smtpConfig.superSpamStrength / 10.0,
                                  allowDecimals: false,
-                                 allowNegative: false,
                                  minValue: 0,
                                  itemCls: 'left-indent-4 super-spam-threshold x-item-disabled',
                                  maxValue: 2147483647,

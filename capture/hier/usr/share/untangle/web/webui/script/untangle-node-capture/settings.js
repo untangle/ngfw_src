@@ -479,7 +479,6 @@ if (!Ung.hasResource["Ung.Capture"]) {
                         margin: '0 0 5 0',
                         items: [{
                             xtype: "numberfield",
-                            allowNegative: false,
                             allowBlank: false,
                             name: "idleTimeout",
                             minValue: 0,
@@ -505,7 +504,6 @@ if (!Ung.hasResource["Ung.Capture"]) {
                         margin: '0 0 5 0',
                         items: [{
                             xtype: "numberfield",
-                            allowNegative: false,
                             allowBlank: false,
                             name: "userTimeout",
                             maxValue: 525600,

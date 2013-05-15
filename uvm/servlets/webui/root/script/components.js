@@ -604,13 +604,9 @@ Ung.Util = {
     },
     getInterfaceList: function( wanMatchers, anyMatcher ) {
         var data = [];
-
-        if( Ung.Util.networkSettings == null ) {
-            Ung.Util.networkSettings = main.getNetworkManager().getNetworkSettings();
-        }
-
-        for ( var c = 0 ; c < Ung.Util.networkSettings.interfaces.list.length ; c++ ) {
-            var intf = Ung.Util.networkSettings.interfaces.list[c];
+        var networkSettings = main.getNetworkSettings();
+        for ( var c = 0 ; c < networkSettings.interfaces.list.length ; c++ ) {
+            var intf = networkSettings.interfaces.list[c];
             var name = intf['name'];
             var key = intf['interfaceId'];
             
@@ -629,13 +625,9 @@ Ung.Util = {
     },
     getInterfaceAddressedList: function() {
         var data = [];
-
-        if( Ung.Util.networkSettings == null ) {
-            Ung.Util.networkSettings = main.getNetworkManager().getNetworkSettings();
-        }
-
-        for ( var c = 0 ; c < Ung.Util.networkSettings.interfaces.list.length ; c++ ) {
-            var intf = Ung.Util.networkSettings.interfaces.list[c];
+        var networkSettings = main.getNetworkSettings();
+        for ( var c = 0 ; c < networkSettings.interfaces.list.length ; c++ ) {
+            var intf = networkSettings.interfaces.list[c];
             var name = intf['name'];
             var key = intf['interfaceId'];
             
@@ -647,13 +639,9 @@ Ung.Util = {
     },
     getWanList: function() {
         var data = [];
-
-        if( Ung.Util.networkSettings == null ) {
-            Ung.Util.networkSettings = main.getNetworkManager().getNetworkSettings();
-        }
-
-        for ( var c = 0 ; c < Ung.Util.networkSettings.interfaces.list.length ; c++ ) {
-            var intf = Ung.Util.networkSettings.interfaces.list[c];
+        var networkSettings = main.getNetworkSettings();
+        for ( var c = 0 ; c < networkSettings.interfaces.list.length ; c++ ) {
+            var intf = networkSettings.interfaces.list[c];
             var name = intf['name'];
             var key = intf['interfaceId'];
             
@@ -661,7 +649,6 @@ Ung.Util = {
                 data.push( [ key, name ] );
             }
         }
-
         return data;
     },
     getInterfaceStore: function(simpleMatchers) {

@@ -2246,10 +2246,12 @@ if (!Ung.hasResource["Ung.Network"]) {
                 }, {
                     header: this.i18n._("Download Bandwidth"),
                     dataIndex: 'downloadBandwidthKbps',
-                    width: 150,
+                    width: 180,
                     editor : {
                         xtype: 'numberfield',
-                        allowBlank : false
+                        allowBlank : false,
+                        allowDecimals: false,
+                        minValue: 0
                   },
                     renderer: Ext.bind(function( value, metadata, record ) { 
                         if (value == null) {
@@ -2261,10 +2263,12 @@ if (!Ung.hasResource["Ung.Network"]) {
                 }, {
                     header: this.i18n._("Upload Bandwidth"),
                     dataIndex: 'uploadBandwidthKbps',
-                    width: 150,
+                    width: 180,
                     editor : {
                         xtype: 'numberfield',
-                        allowBlank : false
+                        allowBlank : false,
+                        allowDecimals: false,
+                        minValue: 0
                     },
                     renderer: Ext.bind(function( value, metadata, record ) { 
                         if (value == null) {
@@ -3500,7 +3504,7 @@ if (!Ung.hasResource["Ung.Network"]) {
                 true;
             }
             
-            Ung.Util.networkSettings = this.settings;
+            rpc.networkSettings = this.settings;
         },
         beforeSave: function(isApply, handler) {
             this.beforeSaveCount = 12;
@@ -3607,7 +3611,7 @@ if (!Ung.hasResource["Ung.Network"]) {
         afterSave: function(exception, isApply) {
             if(Ung.Util.handleException(exception)) return;
 
-            Ung.Util.networkSettings = null; /* clear cached settings object */
+            delete rpc.networkSettings; // clear cached settings object
             
             this.saveSemaphore--;
             if (this.saveSemaphore == 0) {
