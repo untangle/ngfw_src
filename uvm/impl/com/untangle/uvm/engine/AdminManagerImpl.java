@@ -40,8 +40,7 @@ public class AdminManagerImpl implements AdminManager
     private static final String INITIAL_USER_LOGIN = "admin";
     private static final String INITIAL_USER_PASSWORD = "passwd";
 
-    private static final String SET_TIMEZONE_SCRIPT = System.getProperty("uvm.bin.dir") + "/ut-timezone";
-    private static final String UVM_VERSION_SCRIPT = System.getProperty("uvm.bin.dir") + "/ut-uvm-version.sh";
+    private static final String SET_TIMEZONE_SCRIPT = System.getProperty("uvm.bin.dir") + "/ut-set-timezone";
     private static final String KERNEL_VERSION_SCRIPT = "/bin/uname -r";
     private static final String REBOOT_COUNT_SCRIPT = System.getProperty("uvm.bin.dir") + "/ut-reboot-count.sh";
     private static final String TIMEZONE_FILE = "/etc/timezone";
@@ -132,7 +131,7 @@ public class AdminManagerImpl implements AdminManager
     public String getFullVersionAndRevision()
     {
         try {
-            String version = UvmContextImpl.context().execManager().execOutput(UVM_VERSION_SCRIPT);
+            String version = UvmContextImpl.context().execManager().execOutput("COLUMNS=200 dpkg -l \"untangle-vm\" | awk '/^ii/ {print $3}' | sort -u | tail -1");
 
             if (version == null)
                 return "";

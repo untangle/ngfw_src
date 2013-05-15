@@ -24,7 +24,7 @@ public class SessionGlobalState
 
     protected final long id;
     protected final short protocol;
-    protected String user; // Not final since we can set it later
+    protected String user; 
 
     protected final SideListener clientSideListener;
     protected final SideListener serverSideListener;
