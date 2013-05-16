@@ -40,11 +40,9 @@ task :build => [:core, BuildEnv::SRC['untangle-vm'], BuildEnv::SRC['node'] ]
 
 task :hier => [:core, BuildEnv::SRC.hierTarget]
 
-task :jslint => [:build, BuildEnv::SRC.jsLintTarget]
-  
 task :i18n => BuildEnv::SRC.i18nTarget
 
-task :devel => [:build, :hier, BuildEnv::SRC['install'], BuildEnv::SRC.installTarget, :jslint]
+task :devel => [:build, :hier, BuildEnv::SRC['install'], BuildEnv::SRC.installTarget]
 
 task :debian_init_files do
   FileList["./debian/**/etc/init.d/*"].each do |f|
@@ -52,7 +50,7 @@ task :debian_init_files do
   end
 end
 
-task :install => [:devel, :i18n, :jslint, :debian_init_files]
+task :install => [:devel, :i18n, :debian_init_files]
 
 task :javadoc do
   dirs = 'uvm/api'
