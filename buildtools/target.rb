@@ -407,7 +407,7 @@ class JsLintTarget < Target
 
   def build()
     info "[jslint  ] #{@filename}"
-    # Kernel.system(JS_LINT_COMMAND, @filename)
+    Kernel.system(JS_LINT_COMMAND, @filename)
   end
 end
 
