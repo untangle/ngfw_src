@@ -40,7 +40,7 @@ task :build => [:core, BuildEnv::SRC['untangle-vm'], BuildEnv::SRC['node'] ]
 
 task :hier => [:core, BuildEnv::SRC.hierTarget]
 
-task :jslint => BuildEnv::SRC.jsLintTarget
+task :jslint => [:build, BuildEnv::SRC.jsLintTarget]
   
 task :i18n => BuildEnv::SRC.i18nTarget
 
