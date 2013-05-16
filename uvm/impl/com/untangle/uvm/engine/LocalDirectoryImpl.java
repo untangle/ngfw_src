@@ -122,6 +122,33 @@ public class LocalDirectoryImpl implements LocalDirectory
 
         saveUsersList(users);
     }
+
+    public void addUser(LocalDirectoryUser user)
+    {
+        LinkedList<LocalDirectoryUser> users = this.getUsers();
+        user.setPasswordShaHash(calculateShaHash(user.getPassword()));
+        user.setPasswordMd5Hash(calculateMd5Hash(user.getPassword()));
+        user.setPasswordBase64Hash(calculateBase64Hash(user.getPassword()));
+        user.removeCleartextPassword();
+        users.add(user);
+        this.saveUsersList(users);
+    }
+
+
+    public boolean userExists(LocalDirectoryUser user) {
+        LinkedList<LocalDirectoryUser> users = this.getUsers();
+        for (LocalDirectoryUser u: users) {
+            if ( u.getUsername() != null && u.getUsername().equals( user.getUsername())) {
+                return true;
+            }
+            if ( u.getEmail() != null && u.getEmail().equals( user.getEmail())) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+
     
     private void saveUsersList(LinkedList<LocalDirectoryUser> list)
     {

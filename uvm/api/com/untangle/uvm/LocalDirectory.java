@@ -29,6 +29,18 @@ public interface LocalDirectory
      * Save a new list of users
      */
     public void setUsers( LinkedList<LocalDirectoryUser> users );
+
+    /**
+     * Adds a new user
+     */
+    public void addUser(LocalDirectoryUser user);
+
+    /**
+     * Checks if the given user exists
+     *
+     * @returns true if the user exists
+     */
+    public boolean userExists(LocalDirectoryUser user);
     
 }
 
