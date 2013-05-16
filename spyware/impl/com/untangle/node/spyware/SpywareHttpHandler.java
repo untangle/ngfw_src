@@ -87,7 +87,6 @@ public class SpywareHttpHandler extends HttpStateMachine
         node.incrementHttpScan();
         if (node.isDomainPasslisted(host, session.getClientAddr())) {
             node.incrementHttpWhitelisted();
-            getSession().release();
             releaseRequest();
             return requestHeader;
         } else if (isUrlBlocked(host, uri)) {
