@@ -102,8 +102,6 @@ public class FirewallImpl extends NodeBase implements Firewall
 
         this.handler = new EventHandler(this);
 
-        /* Have to figure out pipeline ordering, this should always
-         * next to towards the outside, then there is OpenVpn and then Nat */
         this.pipeSpec = new SoloPipeSpec("firewall", this, handler, Fitting.OCTET_STREAM, Affinity.CLIENT, SoloPipeSpec.MAX_STRENGTH - 3);
         this.pipeSpecs = new SoloPipeSpec[] { pipeSpec };
 

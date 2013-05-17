@@ -20,8 +20,11 @@ import com.untangle.uvm.node.NodeSettings;
 import com.untangle.uvm.node.EventLogQuery;
 import com.untangle.uvm.node.NodeMetric;
 import com.untangle.uvm.util.I18nUtil;
+import com.untangle.uvm.vnet.Affinity;
+import com.untangle.uvm.vnet.Fitting;
 import com.untangle.uvm.vnet.NodeBase;
 import com.untangle.uvm.vnet.PipeSpec;
+import com.untangle.uvm.vnet.SoloPipeSpec;
 
 public class ShieldNodeImpl extends NodeBase  implements ShieldNode
 {
@@ -40,7 +43,9 @@ public class ShieldNodeImpl extends NodeBase  implements ShieldNode
 
     private final Logger logger = Logger.getLogger(ShieldNodeImpl.class);
 
-    private final PipeSpec pipeSpec[] = new PipeSpec[0];
+    private final EventHandler handler;
+    private final SoloPipeSpec pipeSpec;
+    private final SoloPipeSpec[] pipeSpecs;
 
     private ShieldSettings settings;
 
@@ -50,6 +55,11 @@ public class ShieldNodeImpl extends NodeBase  implements ShieldNode
     {
         super( nodeSettings, nodeProperties );
 
+        this.handler = new EventHandler( this );
+
+        this.pipeSpec = new SoloPipeSpec("shield", this, handler, Fitting.OCTET_STREAM, Affinity.CLIENT, SoloPipeSpec.MAX_STRENGTH - 1);
+        this.pipeSpecs = new SoloPipeSpec[] { pipeSpec };
+        
         this.eventQuery = new EventLogQuery(I18nUtil.marktr("Events"),"SELECT * FROM reports.shield_rejection_totals ORDER BY time_stamp DESC");                                                 
         this.addMetric(new NodeMetric(STAT_ACCEPT, I18nUtil.marktr("Sessions accepted")));
         this.addMetric(new NodeMetric(STAT_LIMIT, I18nUtil.marktr("Sessions limited")));
@@ -89,7 +99,7 @@ public class ShieldNodeImpl extends NodeBase  implements ShieldNode
     @Override
     protected PipeSpec[] getPipeSpecs()
     {
-        return pipeSpec;
+        return this.pipeSpecs;
     }
 
     public void initializeSettings()

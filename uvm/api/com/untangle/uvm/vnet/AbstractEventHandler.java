@@ -21,11 +21,11 @@ import com.untangle.uvm.vnet.event.UDPSessionEvent;
  */
 public abstract class AbstractEventHandler implements SessionEventListener
 {
-    protected NodeBase xform;
+    protected NodeBase node;
 
-    protected AbstractEventHandler(Node xform)
+    protected AbstractEventHandler(Node node)
     {
-        this.xform = (NodeBase)xform;
+        this.node = (NodeBase)node;
     }
 
     public void handleTimer(IPSessionEvent event)
@@ -37,13 +37,11 @@ public abstract class AbstractEventHandler implements SessionEventListener
     //////////////////////////////////////////////////////////////////////
 
     public void handleTCPNewSessionRequest(TCPNewSessionRequestEvent event)
-        
     {
         /* accept */
     }
 
     public void handleTCPNewSession(TCPSessionEvent event)
-        
     {
         /* ignore */
     }
@@ -55,7 +53,6 @@ public abstract class AbstractEventHandler implements SessionEventListener
     }
 
     public void handleTCPClientFIN(TCPSessionEvent event)
-        
     {
         // Just go ahead and shut down the other side.  The node will override
         // this method if it wants to keep the other side open.
@@ -70,7 +67,6 @@ public abstract class AbstractEventHandler implements SessionEventListener
     }
 
     public void handleTCPServerFIN(TCPSessionEvent event)
-        
     {
         // Just go ahead and shut down the other side.  The node will override
         // this method if it wants to keep the other side open.
@@ -79,7 +75,6 @@ public abstract class AbstractEventHandler implements SessionEventListener
     }
 
     public void handleTCPClientRST(TCPSessionEvent event)
-        
     {
         // Just go ahead and reset the other side.  The node will override
         // this method if it wants to keep the other side open.
@@ -88,7 +83,6 @@ public abstract class AbstractEventHandler implements SessionEventListener
     }
 
     public void handleTCPServerRST(TCPSessionEvent event)
-        
     {
         // Just go ahead and reset the other side.  The node will override
         // this method if it wants to keep the other side open.
@@ -97,17 +91,14 @@ public abstract class AbstractEventHandler implements SessionEventListener
     }
 
     public void handleTCPFinalized(TCPSessionEvent event)
-        
     {
     }
 
     public void handleTCPComplete(TCPSessionEvent event)
-        
     {
     }
 
     public IPDataResult handleTCPClientChunk(TCPChunkEvent event)
-        
     {
         NodeTCPSession session = event.session();
         byte serverState = session.serverState();
@@ -119,7 +110,6 @@ public abstract class AbstractEventHandler implements SessionEventListener
     }
 
     public IPDataResult handleTCPServerChunk(TCPChunkEvent event)
-        
     {
         NodeTCPSession session = event.session();
         byte clientState = session.clientState();
@@ -131,14 +121,12 @@ public abstract class AbstractEventHandler implements SessionEventListener
     }
 
     public IPDataResult handleTCPServerWritable(TCPSessionEvent event)
-        
     {
         // Default writes nothing more.
         return IPDataResult.SEND_NOTHING;
     }
 
     public IPDataResult handleTCPClientWritable(TCPSessionEvent event)
-        
     {
         // Default writes nothing more.
         return IPDataResult.SEND_NOTHING;
@@ -150,19 +138,16 @@ public abstract class AbstractEventHandler implements SessionEventListener
     //////////////////////////////////////////////////////////////////////
 
     public void handleUDPNewSessionRequest(UDPNewSessionRequestEvent event)
-        
     {
         /* accept */
     }
 
     public void handleUDPNewSession(UDPSessionEvent event)
-        
     {
         /* ignore */
     }
 
     public void handleUDPClientExpired(UDPSessionEvent event)
-        
     {
         // Current assumption: A single expire will be generated on
         // one side of the pipeline, which will travel across it.
@@ -174,7 +159,6 @@ public abstract class AbstractEventHandler implements SessionEventListener
     }
 
     public void handleUDPServerExpired(UDPSessionEvent event)
-        
     {
         // Current assumption: A single expire will be generated on
         // one side of the pipeline, which will travel across it.
@@ -186,30 +170,24 @@ public abstract class AbstractEventHandler implements SessionEventListener
     }
 
     public void handleUDPServerWritable(UDPSessionEvent event)
-        
     {
         // Default writes nothing more.
     }
 
     public void handleUDPClientWritable(UDPSessionEvent event)
-        
     {
         // Default writes nothing more.
     }
 
     public void handleUDPFinalized(UDPSessionEvent event)
-        
     {
     }
 
     public void handleUDPComplete(UDPSessionEvent event)
-        
     {
     }
 
-
     public void handleUDPClientPacket(UDPPacketEvent event)
-        
     {
         NodeUDPSession session = event.session();
         byte serverState = session.serverState();
@@ -219,7 +197,6 @@ public abstract class AbstractEventHandler implements SessionEventListener
     }
 
     public void handleUDPServerPacket(UDPPacketEvent event)
-        
     {
         NodeUDPSession session = event.session();
         byte clientState = session.clientState();
