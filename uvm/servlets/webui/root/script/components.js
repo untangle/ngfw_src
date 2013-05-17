@@ -805,23 +805,25 @@ Ung.Util = {
                 name: 'id'
             }, {
                 name: 'name',
-                type: 'string'
+                defaultValue:  undefined
             }, {
                 name: 'string',
-                type: 'string'
+                defaultValue:  undefined
             }, {
                 name: 'description',
-                type: 'string'
+                defaultValue:  undefined
             }, {
                 name: 'category',
-                type: 'string'
+                defaultValue:  undefined
             }, {
                 name: 'enabled',
                 defaultValue: 'true'
             }, {
-                name: 'blocked'
+                name: 'blocked',
+                defaultValue:  undefined
             }, {
-                name: 'flagged'
+                name: 'flagged',
+                defaultValue:  undefined
             }];
     },
     buildJsonListFromStrings: function(stringsList, propertyName) {

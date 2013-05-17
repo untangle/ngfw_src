@@ -287,7 +287,7 @@ if (!Ung.hasResource["Ung.Spyware"]) {
                     "string": "1.2.3.4/24",
                     "name": this.i18n._("[no name]"),
                     "flagged": true,
-                    description: this.i18n._("[no description]")
+                    "description": this.i18n._("[no description]")
                 },
                 title: this.i18n._("Subnet List"),
                 dataProperty:'subnets',
