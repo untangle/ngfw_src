@@ -459,15 +459,12 @@ public class SpywareImpl extends NodeBase implements Spyware
 
         boolean match = false;
 
-        for (String d = domain; !match && null != d; d = nextHost(d)) {
-            GenericRule sr = cookieDomainMap.get(d);
-            if (sr != null) {
-                if (sr.getBlocked() != null)
-                    match = sr.getBlocked();
-                else if (sr.getEnabled() != null) /* if Block is null, use enabled instead */
-                    match = sr.getEnabled();
-            }
-        }
+		for (String d = domain; !match && null != d; d = nextHost(d)) {
+			GenericRule sr = cookieDomainMap.get(d);
+			if (sr != null) {
+				match = sr.getEnabled();
+			}
+		}
 
         return match;
     }

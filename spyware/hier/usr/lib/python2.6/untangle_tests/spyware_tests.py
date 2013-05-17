@@ -22,9 +22,16 @@ def addSubnetsBlocked(url, enabled=True, description="description"):
     node.setCookies(rules)
 
 
-def addCookieBlocked(url, enabled=True, description="description"):
+def addCookieEnabled(url, enabled=True, description="description"):
     global node
     newRule =  { "enabled": enabled, "description": description, "javaClass": "com.untangle.uvm.node.GenericRule", "string": url }
+    rules = node.getCookies()
+    rules["list"].append(newRule)
+    node.setCookies(rules)
+    
+def addCookieBlockedEnabled(url, enabled=True, description="description"):
+    global node
+    newRule =  { "enabled": enabled, "blocked": "", "description": description, "javaClass": "com.untangle.uvm.node.GenericRule", "string": url }
     rules = node.getCookies()
     rules["list"].append(newRule)
     node.setCookies(rules)
@@ -76,12 +83,21 @@ class SpywareTests(unittest2.TestCase):
         assert (result == 0)
 
     # verify a youtube cookie can be blocked
-    def test_013_youtubeCookieBlocked(self):
-        addCookieBlocked("youtube.com")
+    def test_013_youtubeCookieEnabled(self):
+        addCookieEnabled("youtube.com")
         # remove any previous instance of testcookie.txt
         clientControl.runCommand("/bin/rm -f testcookie.txt")
         # see if untangle cookie is downloaded.
         result = clientControl.runCommand("rm -f testcookie.txt ; wget -4 -q --save-cookies testcookie.txt -O - http://youtube.com/ >/dev/null 2>&1 ; grep -q youtube.com testcookie.txt")
+        assert (result == 1)
+        
+    # verify a youtube cookie can be blocked, but set both "enabled" and "blocked" params
+    def test_014_youtubeCookieBlockedEnabled(self):
+        addCookieBlockedEnabled("www.accuweather.com")
+        # remove any previous instance of testcookie.txt
+        clientControl.runCommand("/bin/rm -f testcookie.txt")
+        # see if untangle cookie is downloaded.
+        result = clientControl.runCommand("rm -f testcookie.txt ; wget -4 -q --save-cookies testcookie.txt -O - http://www.accuweather.com/ >/dev/null 2>&1 ; grep -q www.accuweather.com testcookie.txt")
         assert (result == 1)
 
     def test_999_finalTearDown(self):
