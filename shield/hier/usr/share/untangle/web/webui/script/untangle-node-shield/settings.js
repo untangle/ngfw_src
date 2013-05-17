@@ -43,7 +43,7 @@ if (!Ung.hasResource["Ung.Shield"]) {
                     title: this.i18n._('Note'),
                     cls: 'description',
                     html: this.i18n
-                            ._('Attack Blocker is a heuristic based intrusion prevention and requires no configuration. Users can modify the treatment of certain IP and/or networks on the exception tab.')
+                            ._('Shield is a heuristic based intrusion prevention and requires no configuration. Users can modify the treatment of certain IP and/or networks on the exception tab.')
                 }]
             });
         },

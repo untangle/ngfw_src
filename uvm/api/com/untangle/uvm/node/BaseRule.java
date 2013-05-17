@@ -1,4 +1,4 @@
-/*
+/**
  * $Id: BaseRule.java,v 1.00 2011/09/06 14:41:27 dmorris Exp $
  */
 package com.untangle.uvm.node;
@@ -47,75 +47,26 @@ public class BaseRule implements java.io.Serializable
         this.enabled = enabled;
     }
     
-    public Integer getId()
-    {
-        return this.id;
-    }
+    public Integer getId() { return this.id; }
+    public void setId( Integer newValue ) { this.id = newValue; }
 
-    public void setId(Integer id)
-    {
-        this.id = id;
-    }
+    public Boolean getBlocked() { return this.blocked; }
+    public void setBlocked( Boolean newValue ) { this.blocked = newValue; }
 
-    public Boolean getBlocked()
-    {
-        return this.blocked;
-    }
-
-    public void setBlocked(Boolean blocked)
-    {
-        this.blocked = blocked;
-    }
-
-    public Boolean getEnabled()
-    {
-        return this.enabled;
-    }
-
-    public void setEnabled(Boolean enabled)
-    {
-        this.enabled = enabled;
-    }
+    public Boolean getEnabled() { return this.enabled; }
+    public void setEnabled( Boolean newValue ) { this.enabled = newValue; }
     
-    public Boolean getFlagged()
-    {
-        return this.flagged;
-    }
-
-    public void setFlagged(Boolean flagged)
-    {
-        this.flagged = flagged;
-    }
+    public Boolean getFlagged() { return this.flagged; }
+    public void setFlagged( Boolean newValue ) { this.flagged = newValue; }
     
-    public String getDescription()
-    {
-        return this.description;
-    }
+    public String getDescription() { return this.description; }
+    public void setDescription( String newValue ) { this.description = newValue; }
 
-    public void setDescription(String description)
-    {
-        this.description = description;
-    }
+    public String getCategory() { return this.category; }
+    public void setCategory( String newValue ) { this.category = newValue; }
 
-    public String getCategory()
-    {
-        return this.category;
-    }
-
-    public void setCategory(String category)
-    {
-        this.category = category;
-    }
-
-    public String getName()
-    {
-        return this.name;
-    }
-
-    public void setName(String name)
-    {
-        this.name = name;
-    }
+    public String getName() { return this.name; }
+    public void setName( String newValue ) { this.name = newValue; }
 
     /**
      * Attach an object to this rule.

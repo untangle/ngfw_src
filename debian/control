@@ -160,8 +160,9 @@ Description: The SMTP Casing
 
 Package: untangle-node-shield
 Architecture: all
-Depends: untangle-vm, untangle-shield, dash
-XB-Display-Name: Attack Blocker
+Depends: untangle-vm
+XB-Display-Name: Shield
+XB-Auto-Start: true
 XB-Untangle-Type: service
 XB-Untangle-Pkg-Type: service
 XB-View-Position: 1110
@@ -227,8 +228,8 @@ XB-Desc-Icon: iVBORw0KGgoAAAANSUhEUgAAACoAAAAqCAYAAADFw8lbAAAACXBIWXMAAAsTAAALEw
  y+IHCzezuVFzaQra9hlrp/di7bHDNFnaz5C2zJoIojYruQJobL9XHBG3b0owOw229oW/+sMPzNYP
  4pSDhzfXmcV/8EBhv9GSD54Nzd2+9qG5q03Wn5bBrz3908DfA2s/AuXB45nrHJAdiEHkxz8/DZPr
  HKgdPBLiNCK/9f8DAFdry86iq51EAAAAAElFTkSuQmCC
-Description: Attack Blocker
- The Attack Blocker application.
+Description: Shield
+ The Shield application.
 
 Package: untangle-node-spyware
 Architecture: all

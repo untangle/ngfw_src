@@ -306,7 +306,7 @@ ORDER BY limited desc"""
 class ShieldDetail(DetailSection):
 
     def __init__(self):
-        DetailSection.__init__(self, 'attack-events', _('Attack Events'))
+        DetailSection.__init__(self, 'attack-events', _('Events'))
 
     def get_columns(self, host=None, user=None, email=None):
         if user or email:

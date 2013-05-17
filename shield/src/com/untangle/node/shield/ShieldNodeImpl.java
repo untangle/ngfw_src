@@ -46,25 +46,36 @@ public class ShieldNodeImpl extends NodeBase  implements ShieldNode
 
     private EventLogQuery eventQuery;
 
-    private final ShieldManager shieldManager;
-
     public ShieldNodeImpl( com.untangle.uvm.node.NodeSettings nodeSettings, com.untangle.uvm.node.NodeProperties nodeProperties )
     {
         super( nodeSettings, nodeProperties );
 
         this.eventQuery = new EventLogQuery(I18nUtil.marktr("Events"),"SELECT * FROM reports.shield_rejection_totals ORDER BY time_stamp DESC");                                                 
-
         this.addMetric(new NodeMetric(STAT_ACCEPT, I18nUtil.marktr("Sessions accepted")));
         this.addMetric(new NodeMetric(STAT_LIMIT, I18nUtil.marktr("Sessions limited")));
         this.addMetric(new NodeMetric(STAT_DROP, I18nUtil.marktr("Sessions dropped")));
         this.addMetric(new NodeMetric(STAT_REJECT, I18nUtil.marktr("Sessions rejected")));
-        
-        this.shieldManager = new ShieldManager( this );
     }
 
-    public void setSettings(final ShieldSettings settings)
+    public void setSettings(final ShieldSettings newSettings)
     {
-        this._setSettings(settings);
+        /**
+         * Save the settings
+         */
+        SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
+        String nodeID = this.getNodeSettings().getId().toString();
+        try {
+            settingsManager.save(ShieldSettings.class, System.getProperty("uvm.settings.dir") + "/" + "untangle-node-shield/" + "settings_"  + nodeID, newSettings);
+        } catch (SettingsManager.SettingsException e) {
+            logger.warn("Failed to save settings.",e);
+            return;
+        }
+
+        /**
+         * Change current settings
+         */
+        this.settings = newSettings;
+        try {logger.debug("New Settings: \n" + new org.json.JSONObject(this.settings).toString(2));} catch (Exception e) {}
     }
 
     public ShieldSettings getSettings()
@@ -93,6 +104,7 @@ public class ShieldNodeImpl extends NodeBase  implements ShieldNode
         return new EventLogQuery[] { this.eventQuery };
     }
     
+    @Override
     protected void postInit()
     {
         SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
@@ -121,71 +133,6 @@ public class ShieldNodeImpl extends NodeBase  implements ShieldNode
 
             this.settings = readSettings;
             logger.debug("Settings: " + this.settings.toJSONString());
-        }
-
-        this.reconfigure();
-    }
-
-    protected void preStart()
-    {
-    }
-
-    protected void postStart() 
-    {
-        try {
-            this.shieldManager.start();
-            this.shieldManager.blessUsers( this.settings );
-        } catch ( Exception e ) {
-            logger.error( "Error setting shield node rules", e );
-        }
-    }
-
-    protected void postStop() 
-    {
-        try {
-            this.shieldManager.stop();
-        } catch ( Exception e ) {
-            logger.error( "Error setting shield node rules", e );
-        }
-    }
-
-    private void _setSettings( ShieldSettings newSettings )
-    {
-        /**
-         * Save the settings
-         */
-        SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
-        String nodeID = this.getNodeSettings().getId().toString();
-        try {
-            settingsManager.save(ShieldSettings.class, System.getProperty("uvm.settings.dir") + "/" + "untangle-node-shield/" + "settings_"  + nodeID, newSettings);
-        } catch (SettingsManager.SettingsException e) {
-            logger.warn("Failed to save settings.",e);
-            return;
-        }
-
-        /**
-         * Change current settings
-         */
-        this.settings = newSettings;
-        try {logger.debug("New Settings: \n" + new org.json.JSONObject(this.settings).toString(2));} catch (Exception e) {}
-
-        this.reconfigure();
-    }
-    
-    private void reconfigure()
-    {
-        if (settings == null) {
-            logger.warn("NULL Settings");
-            return;
-        }
-
-        if ( getRunState() == NodeSettings.NodeState.RUNNING ) {
-            try {
-                this.shieldManager.start();
-                this.shieldManager.blessUsers( this.settings );
-            } catch ( Exception e ) {
-                logger.error( "Error setting shield node rules", e );
-            }
         }
     }
 }

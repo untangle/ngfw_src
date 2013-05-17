@@ -1,4 +1,4 @@
-/*
+/**
  * $Id$
  */
 package com.untangle.node.shield;
@@ -10,7 +10,7 @@ import com.untangle.uvm.node.EventLogQuery;
 
 public interface ShieldNode extends Node
 {
-    void setSettings(ShieldSettings baseSettings);
+    void setSettings( ShieldSettings settings );
 
     ShieldSettings getSettings();
 
