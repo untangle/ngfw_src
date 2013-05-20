@@ -1,4 +1,4 @@
-/*
+/**
  * $Id$
  */
 package com.untangle.node.firewall;
@@ -46,65 +46,23 @@ public class FirewallRule implements JSONString, Serializable
         this.setDescription(description);
     }
     
-    public List<FirewallRuleMatcher> getMatchers()
-    {
-        return this.matchers;
-    }
+    public List<FirewallRuleMatcher> getMatchers() { return this.matchers; }
+    public void setMatchers( List<FirewallRuleMatcher> newValue ) { this.matchers = newValue; }
 
-    public void setMatchers( List<FirewallRuleMatcher> matchers )
-    {
-        this.matchers = matchers;
-    }
+    public Integer getRuleId() { return this.ruleId; }
+    public void setRuleId( Integer newValue ) { this.ruleId = newValue; }
 
-    public Integer getRuleId()
-    {
-        return this.ruleId;
-    }
+    public Boolean getEnabled() { return enabled; }
+    public void setEnabled( Boolean newValue ) { this.enabled = newValue; }
 
-    public void setRuleId(Integer ruleId)
-    {
-        this.ruleId = ruleId;
-    }
+    public Boolean getBlock() { return block; }
+    public void setBlock( Boolean newValue ) { this.block = newValue; }
 
-    public Boolean getEnabled()
-    {
-        return enabled;
-    }
-
-    public void setEnabled( Boolean enabled )
-    {
-        this.enabled = enabled;
-    }
-
-    public Boolean getBlock()
-    {
-        return block;
-    }
-
-    public void setBlock( Boolean block )
-    {
-        this.block = block;
-    }
-
-    public Boolean getFlag()
-    {
-        return flag;
-    }
-
-    public void setFlag( Boolean flag )
-    {
-        this.flag = flag;
-    }
+    public Boolean getFlag() { return flag; }
+    public void setFlag( Boolean newValue ) { this.flag = newValue; }
     
-    public String getDescription()
-    {
-        return description;
-    }
-
-    public void setDescription( String description )
-    {
-        this.description = description;
-    }
+    public String getDescription() { return description; }
+    public void setDescription( String newValue ) { this.description = newValue; }
     
     public String toJSONString()
     {
@@ -121,7 +79,7 @@ public class FirewallRule implements JSONString, Serializable
         if (!getEnabled())
             return false;
 
-        //logger.debug("Checking rule " + getId() + " against [" + protocol + " " + srcAddress + ":" + srcPort + " -> " + dstAddress + ":" + dstPort + " (" + username + ")]");
+        //logger.debug("Checking rule " + getRuleId() + " against [" + protocol + " " + srcAddress + ":" + srcPort + " -> " + dstAddress + ":" + dstPort + " (" + username + ")]");
             
         /**
          * If no matchers return true

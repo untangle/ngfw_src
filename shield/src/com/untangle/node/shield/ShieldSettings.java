@@ -16,26 +16,15 @@ public class ShieldSettings implements java.io.Serializable
 {
     private LinkedList<ShieldRule> rules = new LinkedList<ShieldRule>();
 
+    private int requestPerSecondLimit = 30;
+    
     public ShieldSettings() { }
 
-    /**
-     * Shield node configuration rules.
-     *
-     * @return the set of user settings
-     */
-    public LinkedList<ShieldRule> getRules()
-    {
-        return this.rules;
-    }
-
-    public void setRules(LinkedList<ShieldRule> rules)
-    {
-        if (rules == null) {
-            rules = new LinkedList<ShieldRule>();
-        }
-
-        this.rules = rules;
-    }
+    public int getRequestPerSecondLimit() { return this.requestPerSecondLimit; }
+    public void setRequestPerSecondLimit( int newValue ) { this.requestPerSecondLimit = newValue; }
+    
+    public LinkedList<ShieldRule> getRules() { return this.rules; }
+    public void setRules( LinkedList<ShieldRule> newValue ) { this.rules = newValue; }
 
     public String toJSONString()
     {
