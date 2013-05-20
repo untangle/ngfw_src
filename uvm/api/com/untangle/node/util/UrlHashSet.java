@@ -4,16 +4,10 @@
 package com.untangle.node.util;
 
 import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.IOException;
-import java.io.BufferedReader;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.FileReader;
+import java.io.IOException;
 import java.util.HashSet;
-import java.util.ArrayList;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
+
 import org.apache.log4j.Logger;
 
 /**
@@ -38,7 +32,7 @@ public class UrlHashSet
         /**
          * Check to see if this specific URL is blocked (with all possible subdomains)
          */
-        for ( String dom = domain ; dom != null ; dom = nextHost(dom) ) {
+        for ( String dom = domain ; dom != null ; dom = UrlMatchingUtil.nextHost(dom) ) {
             if (urlHashSet.contains(dom + uri))
                 return true;
         }
@@ -46,7 +40,7 @@ public class UrlHashSet
         /**
          * Also check to see if the entire domain (or subdomain) is blocked
          */
-        for ( String dom = domain ; dom != null ; dom = nextHost(dom) ) {
+        for ( String dom = domain ; dom != null ; dom = UrlMatchingUtil.nextHost(dom) ) {
             if (urlHashSet.contains(dom + "/"))
                 return true;
         }
@@ -72,15 +66,5 @@ public class UrlHashSet
         catch (IOException e) {
             logger.error("Error loading category from file: " + filename, e);
         }
-    }
-
-    private String nextHost(String host)
-    {
-        int i = host.indexOf('.');
-        if (0 > i || i == host.lastIndexOf('.')) {
-            return null;  /* skip TLD */
-        }
-
-        return host.substring(i + 1);
     }
 }
