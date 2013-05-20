@@ -17,7 +17,7 @@ testsiteIP = "74.123.29.140"
 testsiteIPRange = "74.123.29.139-74.123.29.141"
 testsiteIPRange2 = "74.123.27.139-74.123.30.141"
 
-def createSingleMatcherRule( matcherType, value, blocked=True, flagged=True ):
+def createSingleMatcherRule( matcherType, value, blocked=True, flagged=True, invert=False ):
     matcherTypeStr = str(matcherType)
     valueStr = str(value)
     return {
@@ -31,7 +31,7 @@ def createSingleMatcherRule( matcherType, value, blocked=True, flagged=True ):
             "javaClass": "java.util.LinkedList", 
             "list": [
                 {
-                    "invert": False, 
+                    "invert": invert, 
                     "javaClass": "com.untangle.node.firewall.FirewallRuleMatcher", 
                     "matcherType": matcherTypeStr, 
                     "value": valueStr
@@ -40,7 +40,7 @@ def createSingleMatcherRule( matcherType, value, blocked=True, flagged=True ):
             }
         };
 
-def createDualMatcherRule( matcherType, value, matcherType2, value2, blocked=True, flagged=True ):
+def createDualMatcherRule( matcherType, value, matcherType2, value2, blocked=True, flagged=True, invert=False ):
     matcherTypeStr = str(matcherType)
     valueStr = str(value)
     matcherTypeStr2 = str(matcherType2)
@@ -56,13 +56,13 @@ def createDualMatcherRule( matcherType, value, matcherType2, value2, blocked=Tru
             "javaClass": "java.util.LinkedList", 
             "list": [
                 {
-                    "invert": False, 
+                    "invert": invert, 
                     "javaClass": "com.untangle.node.firewall.FirewallRuleMatcher", 
                     "matcherType": matcherTypeStr, 
                     "value": valueStr
                     },
                 {
-                    "invert": False, 
+                    "invert": invert, 
                     "javaClass": "com.untangle.node.firewall.FirewallRuleMatcher", 
                     "matcherType": matcherTypeStr2, 
                     "value": valueStr2
@@ -387,14 +387,14 @@ class FirewallTests(unittest2.TestCase):
         entry['httpUserAgentOs'] = None ;
         uvmContext.hostTable().setHostTableEntry( ClientControl.hostIP, entry )
 
-    # verify bogus user agent OS match not blocked
+    # verify bogus hostname match not blocked
     def test_074_blockClientHostname(self):
         nukeRules();
         appendRule( createSingleMatcherRule( "CLIENT_HOSTNAME", "*testtesttesttesttesttesttest*" ) );
         result = clientControl.runCommand("wget -o /dev/null -t 1 --timeout=3 http://test.untangle.com/")
         assert (result == 0)
 
-    # verify bogus user agent OS match blocked after setting OS
+    # verify bogus hostname match blocked after setting hostname
     def test_075_blockClientHostname2(self):
         nukeRules();
 
@@ -410,15 +410,92 @@ class FirewallTests(unittest2.TestCase):
         entry['hostname'] = None ;
         uvmContext.hostTable().setHostTableEntry( ClientControl.hostIP, entry )
 
+
+    # verify bogus username match not blocked
+    def test_076_blockClientUsername(self):
+        nukeRules();
+        appendRule( createSingleMatcherRule( "USERNAME", "*testtesttesttesttesttesttest*" ) );
+        result = clientControl.runCommand("wget -o /dev/null -t 1 --timeout=3 http://test.untangle.com/")
+        assert (result == 0)
+
+    # verify bogus username match not blocked
+    def test_077_blockClientUsernameUnauthenticated(self):
+        nukeRules();
+        appendRule( createSingleMatcherRule( "USERNAME", "[unauthenticated]" ) );
+        result = clientControl.runCommand("wget -o /dev/null -t 1 --timeout=3 http://test.untangle.com/")
+        assert (result == 1)
+
+    # verify bogus username match blocked after setting it
+    def test_078_blockClientUsernameManual(self):
+        nukeRules();
+
+        username = clientControl.runCommand("hostname -s", stdout=True)
+        entry = uvmContext.hostTable().getHostTableEntry( ClientControl.hostIP )
+        entry['usernameAdConnector'] = username
+        uvmContext.hostTable().setHostTableEntry( ClientControl.hostIP, entry )
+
+        appendRule( createSingleMatcherRule( "USERNAME", username ) );
+        result = clientControl.runCommand("wget -o /dev/null -t 1 --timeout=3 http://test.untangle.com/")
+        assert (result == 1)
+
+        entry['usernameAdConnector'] = None ;
+        uvmContext.hostTable().setHostTableEntry( ClientControl.hostIP, entry )
+
+    # verify bogus username match blocked after setting it
+    def test_079_blockClientUsernameAuthenticated(self):
+        nukeRules();
+
+        username = clientControl.runCommand("hostname -s", stdout=True)
+        entry = uvmContext.hostTable().getHostTableEntry( ClientControl.hostIP )
+        entry['usernameAdConnector'] = username
+        uvmContext.hostTable().setHostTableEntry( ClientControl.hostIP, entry )
+
+        appendRule( createSingleMatcherRule( "USERNAME", '[authenticated]' ) );
+        result = clientControl.runCommand("wget -o /dev/null -t 1 --timeout=3 http://test.untangle.com/")
+        assert (result == 1)
+
+        entry['usernameAdConnector'] = None ;
+        uvmContext.hostTable().setHostTableEntry( ClientControl.hostIP, entry )
+
+    # verify '' username matches null username
+    def test_080_blockClientUsernameBlank(self):
+        nukeRules();
+        appendRule( createSingleMatcherRule( "USERNAME", '' ) );
+        result = clientControl.runCommand("wget -o /dev/null -t 1 --timeout=3 http://test.untangle.com/")
+        assert (result == 1)
+
+    # verify username is NOT '*' matches null username
+    def test_081_blockClientUsernameBlank2(self):
+        nukeRules();
+        appendRule( createSingleMatcherRule( "USERNAME", '*', invert=True ) );
+        result = clientControl.runCommand("wget -o /dev/null -t 1 --timeout=3 http://test.untangle.com/")
+        assert (result == 1)
+
+    # verify username matches *
+    def test_082_blockClientUsernameStar(self):
+        nukeRules();
+
+        username = clientControl.runCommand("hostname -s", stdout=True)
+        entry = uvmContext.hostTable().getHostTableEntry( ClientControl.hostIP )
+        entry['usernameAdConnector'] = username
+        uvmContext.hostTable().setHostTableEntry( ClientControl.hostIP, entry )
+
+        appendRule( createSingleMatcherRule( "USERNAME", '*' ) );
+        result = clientControl.runCommand("wget -o /dev/null -t 1 --timeout=3 http://test.untangle.com/")
+        assert (result == 1)
+
+        entry['usernameAdConnector'] = None ;
+        uvmContext.hostTable().setHostTableEntry( ClientControl.hostIP, entry )
+
     # verify rules that a rule with two matching matchers works
-    def test_080_dualMatcherRule(self):
+    def test_085_dualMatcherRule(self):
         nukeRules();
         appendRule( createDualMatcherRule("SRC_ADDR", ClientControl.hostIP, "DST_PORT", 80) );
         result = clientControl.runCommand("wget -o /dev/null -t 1 --timeout=3 http://test.untangle.com/")
         assert (result != 0)
 
     # verify rules that both MUST match for the session to be blocked
-    def test_081_dualMatcherRuleAnd(self):
+    def test_086_dualMatcherRuleAnd(self):
         nukeRules();
         appendRule( createDualMatcherRule("SRC_ADDR", ClientControl.hostIP, "DST_PORT", 79) );
         result = clientControl.runCommand("wget -o /dev/null -t 1 --timeout=3 http://test.untangle.com/")

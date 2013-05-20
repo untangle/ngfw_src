@@ -354,8 +354,7 @@ public class CaptureNodeImpl extends NodeBase implements CaptureNode
                     if ( rule.isMatch( protocol,
                                        clientIntf, serverIntf,
                                        clientAddr, serverAddr,
-                                       clientPort, serverPort,
-                                       (String)attachments.get(NodeSession.KEY_PLATFORM_USERNAME)))
+                                       clientPort, serverPort))
                         {
                         // on a matching rule continue if capture is false
                         if (rule.getCapture() == false) continue;
@@ -687,8 +686,7 @@ public class CaptureNodeImpl extends NodeBase implements CaptureNode
                 if (rule.isMatch(sessreq.getProtocol(),
                     sessreq.getClientIntf(), sessreq.getServerIntf(),
                     sessreq.getClientAddr(), sessreq.getServerAddr(),
-                    sessreq.getClientPort(), sessreq.getServerPort(),
-                    (String)sessreq.globalAttachment(NodeSession.KEY_PLATFORM_USERNAME)))
+                    sessreq.getClientPort(), sessreq.getServerPort()))
                     {
                     return(rule);
                     }
@@ -707,8 +705,7 @@ public class CaptureNodeImpl extends NodeBase implements CaptureNode
                 if (rule.isMatch(session.getProtocol(),
                     session.getClientIntf(), session.getServerIntf(),
                     session.getClientAddr(), session.getServerAddr(),
-                    session.getClientPort(), session.getServerPort(),
-                    (String)session.globalAttachment(NodeSession.KEY_PLATFORM_USERNAME)))
+                    session.getClientPort(), session.getServerPort()))
                     {
                     return(rule);
                     }

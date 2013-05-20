@@ -204,13 +204,12 @@ public class RuleMatcher implements JSONString, Serializable
     public boolean matches( short protocol,
                             int srcIntf, int dstIntf,
                             InetAddress srcAddress, InetAddress dstAddress,
-                            int srcPort, int dstPort,
-                            String username)
+                            int srcPort, int dstPort)
     {
         if (this.getInvert()) 
-            return !_matches( protocol, srcIntf, dstIntf, srcAddress, dstAddress, srcPort, dstPort, username );
+            return !_matches( protocol, srcIntf, dstIntf, srcAddress, dstAddress, srcPort, dstPort );
         else
-            return _matches( protocol, srcIntf, dstIntf, srcAddress, dstAddress, srcPort, dstPort, username );
+            return _matches( protocol, srcIntf, dstIntf, srcAddress, dstAddress, srcPort, dstPort );
     }
     
     /**
@@ -558,8 +557,6 @@ public class RuleMatcher implements JSONString, Serializable
         case DIRECTORY_CONNECTOR_USERNAME:
         case USERNAME:
             attachment = (String) sess.globalAttachment(NodeSession.KEY_PLATFORM_USERNAME);
-            if ("none".equals(value) && attachment == null)
-                return true;
             if (this.userMatcher.isMatch(attachment))
                 return true;
             return false;
@@ -697,8 +694,7 @@ public class RuleMatcher implements JSONString, Serializable
     private boolean _matches( short protocol,
                               int srcIntf, int dstIntf,
                               InetAddress srcAddress, InetAddress dstAddress,
-                              int srcPort, int dstPort,
-                              String username)
+                              int srcPort, int dstPort)
     {
         String attachment = null;
         HostTableEntry entry;
@@ -761,9 +757,11 @@ public class RuleMatcher implements JSONString, Serializable
             return protocolMatcher.isMatch(protocol);
 
         case USERNAME:
-            if ("none".equals(value) && username == null)
-                return true;
-            if (this.userMatcher.isMatch(username))
+            entry = UvmContextFactory.context().hostTable().getHostTableEntry( srcAddress );
+            if (entry == null)
+                return false;
+            attachment = entry.getUsername();
+            if (this.userMatcher.isMatch( attachment ))
                 return true;
             return false;
 
@@ -826,17 +824,21 @@ public class RuleMatcher implements JSONString, Serializable
             return dayOfWeekMatcher.isMatch();
 
         case DIRECTORY_CONNECTOR_GROUP:
-            if (username == null)
+            entry = UvmContextFactory.context().hostTable().getHostTableEntry( srcAddress );
+            if ( entry == null )
+                return false;
+            attachment = entry.getUsername();
+            if ( attachment == null )
                 return false;
 
             DirectoryConnector adconnector = (DirectoryConnector)UvmContextFactory.context().nodeManager().node("untangle-node-adconnector");
             boolean isMemberOf = false;
 
-            if (adconnector.isMemberOf( username, value )) 
+            if (adconnector.isMemberOf( attachment, value )) 
                 isMemberOf = true;
 
             if (!isMemberOf) {
-                List<String> groupNames = adconnector.memberOf( username );
+                List<String> groupNames = adconnector.memberOf( attachment );
                 for (String groupName : groupNames) {
                     if ( this.groupMatcher.isMatch(groupName) ) {
                         isMemberOf = true;
@@ -845,7 +847,7 @@ public class RuleMatcher implements JSONString, Serializable
                 }
             }
             
-            logger.debug("Checking if " + username + " is in group \"" + value + "\" : " + isMemberOf);
+            logger.debug("Checking if " + attachment + " is in group \"" + value + "\" : " + isMemberOf);
             return isMemberOf;
 
         case HTTP_USER_AGENT:

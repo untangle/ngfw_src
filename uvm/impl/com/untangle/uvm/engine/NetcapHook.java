@@ -160,8 +160,7 @@ public abstract class NetcapHook implements Runnable
                 this.policyId  = policyManager.findPolicyId( sessionGlobalState.getProtocol(),
                                                              netcapSession.clientSide().interfaceId(), netcapSession.serverSide().interfaceId(),
                                                              netcapSession.clientSide().client().host(), netcapSession.clientSide().server().host(),
-                                                             netcapSession.clientSide().client().port(), netcapSession.clientSide().server().port(),
-                                                             username, hostname );
+                                                             netcapSession.clientSide().client().port(), netcapSession.clientSide().server().port());
             } else {
                 this.policyId = 1L; /* Default Policy */
             }

@@ -73,13 +73,12 @@ public class FirewallRule implements JSONString, Serializable
     public boolean isMatch( short protocol,
                             int srcIntf, int dstIntf,
                             InetAddress srcAddress, InetAddress dstAddress,
-                            int srcPort, int dstPort,
-                            String username)
+                            int srcPort, int dstPort )
     {
         if (!getEnabled())
             return false;
 
-        //logger.debug("Checking rule " + getRuleId() + " against [" + protocol + " " + srcAddress + ":" + srcPort + " -> " + dstAddress + ":" + dstPort + " (" + username + ")]");
+        //logger.debug("Checking rule " + getRuleId() + " against [" + protocol + " " + srcAddress + ":" + srcPort + " -> " + dstAddress + ":" + dstPort + "]");
             
         /**
          * If no matchers return true
@@ -93,7 +92,7 @@ public class FirewallRule implements JSONString, Serializable
          * IF any matcher doesn't match - return false
          */
         for ( FirewallRuleMatcher matcher : matchers ) {
-            if (!matcher.matches(protocol, srcIntf, dstIntf, srcAddress, dstAddress, srcPort, dstPort, username))
+            if (!matcher.matches(protocol, srcIntf, dstIntf, srcAddress, dstAddress, srcPort, dstPort))
                 return false;
         }
 

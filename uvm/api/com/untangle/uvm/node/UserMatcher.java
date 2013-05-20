@@ -14,13 +14,9 @@ import com.untangle.node.util.GlobUtil;
 public class UserMatcher
 {
     private static final String MARKER_SEPERATOR = ",";
-    private static final String MARKER_ANY = "[any]";
-    private static final String MARKER_NONE = "[none]";
     private static final String MARKER_UNAUTHENTICATED = "[unauthenticated]";
     private static final String MARKER_AUTHENTICATED = "[authenticated]";
 
-    private static UserMatcher ANY_MATCHER = new UserMatcher(MARKER_ANY);
-    
     private final Logger logger = Logger.getLogger(getClass());
 
     /**
@@ -31,12 +27,12 @@ public class UserMatcher
     /**
      * This is all the available types of user matchers
      */
-    private enum UserMatcherType { ANY, NONE, SINGLE, AUTHENTICATED, UNAUTHENTICATED, LIST };
+    private enum UserMatcherType { SINGLE, AUTHENTICATED, UNAUTHENTICATED, LIST };
 
     /**
      * The type of this matcher
      */
-    private UserMatcherType type = UserMatcherType.NONE;
+    private UserMatcherType type;
     
     /**
      * This stores the username if this is a single matcher
@@ -61,15 +57,13 @@ public class UserMatcher
     {
         switch (this.type) {
 
-        case ANY:
-            return true;
-
-        case NONE:
-            return false;
-            
         case SINGLE:
-            if (value == null)
+            if (value == null) {
+                /* "" matches null user */
+                if ("".equals( single ))
+                    return true;
                 return false;
+            }
             if (value.equalsIgnoreCase(this.single))
                 return true;
             if (Pattern.matches(this.regexValue, value))
@@ -102,11 +96,6 @@ public class UserMatcher
     public String toString()
     {
         return this.matcher;
-    }
-    
-    public static synchronized UserMatcher getAnyMatcher()
-    {
-        return ANY_MATCHER;
     }
 
     /**
@@ -143,14 +132,7 @@ public class UserMatcher
         /**
          * Check the common constants
          */
-        if (MARKER_ANY.equals(matcher))  {
-            this.type = UserMatcherType.ANY;
-            return;
-        }
-        if (MARKER_NONE.equals(matcher))  {
-            this.type = UserMatcherType.ANY;
-            return;
-        }
+
         if (MARKER_AUTHENTICATED.equals(matcher)) {
             this.type = UserMatcherType.AUTHENTICATED;
             return;

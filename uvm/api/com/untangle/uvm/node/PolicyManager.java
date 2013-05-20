@@ -13,7 +13,7 @@ public interface PolicyManager
     /**
      * Find the correct policy ID based on the Policy Manager rules for a provided session parameters
      */
-    Long findPolicyId( short protocol, int clientIntf, int serverIntf, InetAddress clientAddr, InetAddress serverAddr, int clientPort, int serverPort, String username, String hostname );
+    Long findPolicyId( short protocol, int clientIntf, int serverIntf, InetAddress clientAddr, InetAddress serverAddr, int clientPort, int serverPort );
     
     /**
      * @param child: The node to test if this is a child.

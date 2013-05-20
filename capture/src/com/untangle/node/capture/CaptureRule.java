@@ -122,8 +122,7 @@ public class CaptureRule implements JSONString, Serializable
     public boolean isMatch( short protocol,
                             int srcIntf, int dstIntf,
                             InetAddress srcAddress, InetAddress dstAddress,
-                            int srcPort, int dstPort,
-                            String username)
+                            int srcPort, int dstPort)
     {
         if (!getEnabled())
             return false;
@@ -142,7 +141,7 @@ public class CaptureRule implements JSONString, Serializable
          * IF any matcher doesn't match - return false
          */
         for ( CaptureRuleMatcher matcher : matchers ) {
-            if (!matcher.matches(protocol, srcIntf, dstIntf, srcAddress, dstAddress, srcPort, dstPort, username))
+            if (!matcher.matches(protocol, srcIntf, dstIntf, srcAddress, dstAddress, srcPort, dstPort ))
                 return false;
         }
 

@@ -53,7 +53,11 @@ public class FirewallImpl extends NodeBase implements Firewall
     private final SessionMatcher FIREWALL_SESSION_MATCHER = new SessionMatcher() {
             
             /* Kill all sessions that should be blocked */
-            public boolean isMatch( Long policyId, short protocol, int clientIntf, int serverIntf, InetAddress clientAddr, InetAddress serverAddr, int clientPort, int serverPort, Map<String,Object> attachments )
+            public boolean isMatch( Long policyId, short protocol,
+                                    int clientIntf, int serverIntf,
+                                    InetAddress clientAddr, InetAddress serverAddr,
+                                    int clientPort, int serverPort,
+                                    Map<String,Object> attachments )
             {
                 if (handler == null)
                     return false;
@@ -67,8 +71,7 @@ public class FirewallImpl extends NodeBase implements Firewall
                     if (rule.isMatch(protocol,
                                      clientIntf, serverIntf,
                                      clientAddr, serverAddr,
-                                     clientPort, serverPort,
-                                     (String)attachments.get(NodeSession.KEY_PLATFORM_USERNAME))) {
+                                     clientPort, serverPort)) {
                         matchedRule = rule;
                         break;
                     }

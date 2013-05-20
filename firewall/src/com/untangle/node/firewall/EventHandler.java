@@ -64,8 +64,7 @@ class EventHandler extends AbstractEventHandler
             if (rule.isMatch(request.getProtocol(),
                              request.getClientIntf(), request.getServerIntf(),
                              request.getClientAddr(), request.getNatToHost(),
-                             request.getClientPort(), request.getNatToPort(),
-                             (String)request.globalAttachment(NodeSession.KEY_PLATFORM_USERNAME))) {
+                             request.getClientPort(), request.getNatToPort())) {
                 matchedRule = rule;
                 break;
             }
