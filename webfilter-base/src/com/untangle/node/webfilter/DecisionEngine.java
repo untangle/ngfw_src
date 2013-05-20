@@ -6,8 +6,6 @@ package com.untangle.node.webfilter;
 import java.net.InetAddress;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -15,19 +13,17 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.regex.Pattern;
-import java.util.regex.PatternSyntaxException;
+
 import org.apache.log4j.Logger;
 
 import com.untangle.node.http.RequestLineToken;
 import com.untangle.node.token.Header;
-import com.untangle.uvm.UvmContextFactory;
-import com.untangle.uvm.node.IPMaskedAddress;
-import com.untangle.uvm.node.MimeType;
-import com.untangle.uvm.node.GenericRule;
-import com.untangle.uvm.node.IPMatcher;
 import com.untangle.node.util.GlobUtil;
+import com.untangle.node.util.UrlMatchingUtil;
+import com.untangle.uvm.UvmContextFactory;
+import com.untangle.uvm.node.GenericRule;
+import com.untangle.uvm.node.MimeType;
 import com.untangle.uvm.util.I18nUtil;
-import com.untangle.uvm.vnet.NodeSession;
 import com.untangle.uvm.vnet.NodeTCPSession;
 
 /**
@@ -95,11 +91,12 @@ public abstract class DecisionEngine
                 host = clientIp.getHostAddress();
             }
         }
-        host = normalizeHostname(host);
+        host = UrlMatchingUtil.normalizeHostname(host);
 
         // check client IP address pass list
         // If a client is on the pass list is is passed regardless of any other settings
-        String description = checkClientPassList( clientIp );
+        GenericRule rule =  UrlMatchingUtil.checkClientList( clientIp, node.getSettings().getPassedClients());
+        String description = (rule != null)? rule.getDescription():null;
         if (null != description) {
             WebFilterEvent hbe = new WebFilterEvent(requestLine.getRequestLine(), Boolean.FALSE, Boolean.FALSE, Reason.PASS_CLIENT, description, node.getName());
             node.logEvent(hbe);
@@ -108,7 +105,8 @@ public abstract class DecisionEngine
 
         // check passlisted rules
         // If a site/URL is on the pass list is is passed regardless of any other settings
-        description = checkSitePassList( host, uri );
+        rule = UrlMatchingUtil.checkSiteList( host, uri.toString(), node.getSettings().getPassedUrls() );
+        description = (rule != null)? rule.getDescription():null;		
         if ( description != null ) {
             WebFilterEvent hbe = new WebFilterEvent(requestLine.getRequestLine(), Boolean.FALSE, Boolean.FALSE, Reason.PASS_URL, description, node.getName());
             logger.debug("LOG: in pass list: " + requestLine.getRequestLine());
@@ -236,11 +234,11 @@ public abstract class DecisionEngine
         } catch (URISyntaxException e) {
             logger.error("Could not parse URI '" + uri + "'",e);
         }
-        String host = normalizeHostname(requestLine.getRequestLine().getUrl().getHost());
+        String host = UrlMatchingUtil.normalizeHostname(requestLine.getRequestLine().getUrl().getHost());
 
-        if (checkClientPassList(clientIp) != null)
+        if (UrlMatchingUtil.checkClientList(clientIp, node.getSettings().getPassedClients()) != null)
             return null;
-        if (checkSitePassList(host,uri) != null)
+        if (UrlMatchingUtil.checkSiteList(host,uri.toString(), node.getSettings().getPassedUrls()) != null)
             return null;
         if (checkUnblockedSites(host,uri,clientIp))
             return null;
@@ -332,47 +330,9 @@ public abstract class DecisionEngine
     }
 
     
-    /**
-     * checkSitePassList checks the host+uri against the pass list
-     *
-     * @param host host of the URL
-     * @param uri URI of the URL
-     * @return description of the rule that passlist rule, null if DNE
-     */
-    private String      checkSitePassList( String host, URI uri )
-    {
-        String dom;
-        for ( dom = host ; null != dom ; dom = nextHost(dom) ) {
-            GenericRule sr = findMatchingRule(node.getSettings().getPassedUrls(), dom, uri.toString());
-            String category = null == sr ? null : sr.getDescription();
+    
 
-            if (null != category) {
-                logger.debug("LOG: "+host+uri+" in pass list");
-                return category;
-            }
-        }
-
-        return null;
-    }
-
-    /**
-     * checkClientPassList checks the clientIp against the client pass list
-     *
-     * @param clientIp IP of the host
-     * @return description of the rule that passlist rule, null if DNE
-     */
-    private String      checkClientPassList( InetAddress clientIp )
-    {
-        for ( GenericRule rule : node.getSettings().getPassedClients() ) {
-            IPMatcher matcher = new IPMatcher(rule.getString());
-            if ( rule.getEnabled() && matcher.isMatch(clientIp) ) {
-                logger.debug("LOG: "+clientIp+" in client pass list");
-                return rule.getDescription();
-            }
-        }
-
-        return null;
-    }
+    
 
     /**
      * checkUnblockedSites checks the host+uri against the current unblocks for clientIp
@@ -385,7 +345,7 @@ public abstract class DecisionEngine
     private boolean     checkUnblockedSites( String host, URI uri, InetAddress clientIp )
     {
         String dom;
-        for ( dom = host ; null != dom ; dom = nextHost(dom) ) {
+        for ( dom = host ; null != dom ; dom = UrlMatchingUtil.nextHost(dom) ) {
             if (isDomainUnblocked(dom, clientIp)) {
                 logger.debug("LOG: "+host+uri+" in unblock list for "+ clientIp);
                 return true;
@@ -401,18 +361,8 @@ public abstract class DecisionEngine
      */
     private GenericRule checkUrlList( String host, String uri, int port, RequestLineToken requestLine )
     {
-        String dom;
-        GenericRule rule = null;
-
         logger.debug("checkUrlList( " + host + " , " + uri + " ...)");
-        
-        //iterate through domains & subdomains
-        for ( dom = host ; dom != null ; dom = nextHost(dom) ) {
-            String url = dom + uri;
-            rule = findMatchingRule(node.getSettings().getBlockedUrls(), dom, uri);
-            if (rule != null)
-                break;
-        }
+        GenericRule rule = UrlMatchingUtil.checkSiteList(host, uri, node.getSettings().getBlockedUrls());
 
         if (rule == null)
             return null;
@@ -541,131 +491,7 @@ public abstract class DecisionEngine
         return bestCategory;
     }
 
-    /**
-     * Finds a matching active rule from the ruleset that matches the given value
-     */
-    private GenericRule findMatchingRule( List<GenericRule> rules, String domain, String uri )
-    {
-        String value = normalizeDomain(domain) + uri;
-        
-        logger.debug("findMatchRule: rules = '" + rules +"', value = '" + value + "' (normalized from '" + domain + uri + ")");
-
-        for (GenericRule rule : rules) {
-            if (rule.getEnabled() != null && !rule.getEnabled()) 
-                continue;
-
-            Object  regexO = rule.attachment();
-            Pattern regex  = null;
-
-            /**
-             * If the regex is not attached to the rule, compile a new one and attach it
-             * Otherwise just use the regex already compiled and attached to the rule
-             */
-            if (regexO == null || !(regexO instanceof Pattern)) {
-                String re = GlobUtil.urlGlobToRegex(rule.getString());
-
-                logger.debug("Compile  rule: " + re );
-                try {
-                    regex = Pattern.compile(re);
-                }
-                catch (Exception e) {
-                    logger.warn("Failed to compile regex: " + re, e);
-                    //Use a regex that will never match anything
-                    regex = Pattern.compile("a^");
-                }
-                rule.attach(regex);
-            } else {
-                regex = (Pattern)regexO;
-            }
-            
-            /**
-             * Check the match
-             */
-            try {
-                logger.debug("Checking rule: " + rule.getString() + " (re: " + regex + ") against " + value);
-                
-                if (regex.matcher(value).matches()) {
-                    logger.debug("findMatchRule: ** matches pattern '" + regex + "'");
-                    return rule; // done, we do not care if others match too
-                } else {
-                    logger.debug("findMatchRule: ** does not match '" + regex + "'");		
-                }
-            } catch (PatternSyntaxException e) {
-                logger.error("findMatchRule: ** invalid pattern '" + regex + "'");		
-            }
-            
-        }
-
-        return null;
-    }
-
-    /**
-     * normalize the hostname
-     *
-     * @param host host of the URL
-     * @return the normalized string for that hostname, or null if param is null
-     */
-    private String      normalizeHostname( String oldhost )
-    {
-        if (null == oldhost)
-            return null;
-
-        // lowercase name
-        String host = oldhost.toLowerCase();
-
-        // remove dots at end
-        while (0 < host.length() && '.' == host.charAt(host.length() - 1)) {
-            host = host.substring(0, host.length() - 1);
-        }
-
-        return host;
-    }
-
-    /**
-     * Gets the next domain stripping off the lowest level domain from
-     * host. Does not return the top level domain. Returns null when
-     * no more domains are left.
-     *
-     * <b>This method assumes trailing dots are stripped from host.</b>
-     *
-     * @param host a <code>String</code> value
-     * @return a <code>String</code> value
-     */
-    private String      nextHost( String host )
-    {
-        int i = host.indexOf('.');
-        if (-1 == i) {
-            return null;
-        } else {
-            int j = host.indexOf('.', i + 1);
-            if (-1 == j) { // skip tld
-                return null;
-            }
-
-            return host.substring(i + 1);
-        }
-    }
-
-    /**
-     * normalizes a domain name
-     * removes extra "http://" or "www." or "." at the beginning
-     */
-    private String      normalizeDomain( String dom )
-    {
-        String url = dom.toLowerCase();
-        String uri = url.startsWith("http://") ? url.substring("http://".length()) : url;
-
-        while (0 < uri.length() && ('.' == uri.charAt(0))) {
-            uri = uri.substring(1);
-        }
-
-        if (uri.startsWith("www.")) {
-            uri = uri.substring("www.".length());
-        }
-
-        return uri;
-    }
-
+    
     /**
      * Checks whether a given domain has been unblocked for the given address
      */
@@ -680,7 +506,7 @@ public abstract class DecisionEngine
             if (unblocks == null) {
                 return false;
             } else {
-                for ( String d = domain ; d != null ; d = nextHost(d) ) {
+                for ( String d = domain ; d != null ; d = UrlMatchingUtil.nextHost(d) ) {
                     if (unblocks.contains(d)) {
                         return true;
                     }
