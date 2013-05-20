@@ -4,11 +4,14 @@ import subprocess
 from datetime import datetime
 import sys
 import os
+import subprocess
 from jsonrpc import ServiceProxy
 from jsonrpc import JSONRPCException
 from uvm import Manager
 from uvm import Uvm
 from untangle_tests import ClientControl
+
+ftp_server = "10.5.6.48"
 
 uvmContext = Uvm().getUvmContext()
 defaultRackId = 1
@@ -48,15 +51,31 @@ class VirusTests(unittest2.TestCase):
         result = clientControl.runCommand("wget -o /dev/null http://google.com/")
         assert (result == 0)
 
-    # test that client can download zip
+    # test that client can http download zip
     def test_011_httpNonVirusNotBlocked(self):
         result = clientControl.runCommand("wget -q -O - http://test.untangle.com/test/test.zip 2>&1 | grep -q text123")
         assert (result == 0)
 
-    # test that client can download zip
+    # test that client can block virus http download zip
     def test_012_httpVirusBlocked(self):
         result = clientControl.runCommand("wget -q -O - http://test.untangle.com/test/eicar.zip 2>&1 | grep -q blocked")
         assert (result == 0)
+
+    # test that client can ftp download zip
+    def test_021_ftpNonVirusNotBlocked(self):
+        adResult = subprocess.call(["ping","-c","1",ftp_server],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
+        if (adResult != 0):
+            raise unittest2.SkipTest("FTP server not available")
+        result = clientControl.runCommand("wget -q -O - ftp://" + ftp_server + "/test.zip")
+        assert (result == 0)
+
+    # test that client can block virus ftp download zip
+    def test_022_ftpVirusBlocked(self):
+        adResult = subprocess.call(["ping","-c","1",ftp_server],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
+        if (adResult != 0):
+            raise unittest2.SkipTest("FTP server not available")
+        result = clientControl.runCommand("wget -q -O - ftp://" + ftp_server + "/FedEx-Shipment-Notification-Jan23-2012-100100.zip")
+        assert (result != 0)
 
     def test_100_eventlog_httpVirus(self):
         fname = sys._getframe().f_code.co_name
