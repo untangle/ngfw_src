@@ -1571,6 +1571,21 @@ if (!Ung.hasResource["Ung.Network"]) {
         },
         // PortForwardRules Panel
         buildPortForwardRules: function() {
+            var troubleshootColumn = Ext.create('Ext.grid.column.Action',{
+                header: this.i18n._("Troubleshooting"),
+                width: 100,
+                iconCls: 'icon-detail-row',
+                init: function(grid) {
+                    this.grid = grid;
+                },
+                handler: function(view, rowIndex) {
+                    var record = view.getStore().getAt(rowIndex);
+                    // select current row
+                    this.grid.getSelectionModel().select(record);
+                    // show details
+                    this.grid.onTroubleshoot(record);
+                }
+            });
             this.gridPortForwardRules = Ext.create( 'Ung.EditorGrid', {
                 anchor: '100% -80',
                 name: 'Port Forward Rules',
@@ -1587,6 +1602,7 @@ if (!Ung.hasResource["Ung.Network"]) {
                 title: this.i18n._("Port Forward Rules"),
                 recordJavaClass: "com.untangle.uvm.network.PortForwardRule",
                 dataProperty:'portForwardRules',
+                plugins:[troubleshootColumn],
                 fields: [{
                     name: 'ruleId'
                 }, {
@@ -1638,7 +1654,7 @@ if (!Ung.hasResource["Ung.Network"]) {
                     dataIndex: 'newPort',
                     resizable: false,
                     width:55
-                }],
+                },troubleshootColumn],
                 columnsDefaultSortable: false,
                 rowEditorInputLines: [{
                     xtype:'checkbox',
@@ -1691,7 +1707,77 @@ if (!Ung.hasResource["Ung.Network"]) {
                             cls: 'boxlabel'
                         }]
                     }]
-                }]
+                }],
+                onTroubleshoot: Ext.bind(function(record) {
+                    if(!this.portForwardTroubleshootWin) {
+                        this.portForwardTroubleshootWin = Ext.create('Ung.Window', {
+                            title: this.i18n._('Port Forward Troubleshooter'),
+                            helpSource: 'Port_Forward_Troubleshooting_Guide',
+                            settingsCmp: this,
+                            helpAction: function() {
+                                main.openHelp(this.helpSource);
+                            },
+                            bbar: [{
+                                iconCls: 'icon-help',
+                                text: this.i18n._('Help'),
+                                handler: Ext.bind(function() {
+                                    this.portForwardTroubleshootWin.helpAction();
+                                }, this)
+                            },'->',{
+                                name: "Close",
+                                iconCls: 'cancel-icon',
+                                text: this.i18n._('Cancel'),
+                                handler: Ext.bind(function() {
+                                    this.portForwardTroubleshootWin.cancelAction();
+                                }, this)
+                            }],
+                            items: [{
+                                xtype: "panel",
+                                layout: 'anchor',
+                                cls: 'ung-panel',
+                                items: [{
+                                    xtype: 'fieldset',
+                                    layout: "vbox",
+                                    cls: 'description',
+                                    title: this.i18n._('Troubleshooting Port Forwards'),
+                                    items : [{
+                                        xtype : "label",
+                                        html : this.i18n._( 'Test 1: Verify pinging the <b>new destination</b>' )
+                                    },{
+                                        xtype : "button",
+                                        text : this.i18n._( "Ping Test" ),
+                                        handler : this.openPingTest,
+                                        scope : this
+                                    },{
+                                        xtype : "label",
+                                        style : "margin-top: 10px",
+                                        html : this.i18n._( "Test 2: Verify connecting to the new destination<br/><i>This test applies only to TCP port forwards.</i>" )
+                                    },{
+                                        xtype : "button",
+                                        text : this.i18n._( "Connect Test" ),
+                                        handler : this.openTcpTest,
+                                        scope : this
+                                    },{
+                                        xtype : "label",
+                                        style : "margin-top: 10px",
+                                        html : this.i18n._( "Test 3: Watch traffic using the Packet Test" )
+                                    },{
+                                        xtype : "button",
+                                        text : this.i18n._( "Packet Test" ),
+                                        handler : this.openPacketTest,
+                                        scope : this
+                                    }]
+                                }]
+                            }],
+                            showForRule: function(record) {
+                                //TODO: prepouplate network tests with rule values
+                                this.show();
+                            }
+                        });
+                        this.subCmps.push(this.portForwardTroubleshootWin);
+                    }
+                    this.portForwardTroubleshootWin.showForRule(record);
+                }, this)
             });
             
             this.panelPortForwardRules = Ext.create('Ext.panel.Panel',{
