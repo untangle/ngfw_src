@@ -389,7 +389,7 @@ class ServletBuilder < Target
 end
 
 class JsLintTarget < Target
-  JS_LINT_COMMAND = "/usr/bin/jslint"
+  JS_LINT_COMMAND = "/usr/bin/rhino /usr/share/javascript/jshint.js"
   
   attr_reader :filename
 
@@ -407,7 +407,7 @@ class JsLintTarget < Target
 
   def build()
     info "[jslint  ] #{@filename}"
-    # Kernel.system(JS_LINT_COMMAND, @filename)
+    # Kernel.system("#{JS_LINT_COMMAND} #{@filename}")
   end
 end
 
