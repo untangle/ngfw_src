@@ -76,6 +76,9 @@ class EventHandler extends AbstractEventHandler
 
         if ( stats.load5 > (node.getSettings().getRequestPerSecondLimit() * 5 * multiplier) ) {
             logger.info("Host " + clientAddr.getHostAddress() + " exceeded limit. 5-second load: " + String.format("%.2f",stats.load5) );
+
+            ShieldEvent evt = new ShieldEvent( request.sessionEvent(), true );
+            node.logEvent( evt );
             
             if (protocol == Protocol.UDP) {
                 request.rejectReturnUnreachable( IPNewSessionRequest.PORT_UNREACHABLE );

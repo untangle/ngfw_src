@@ -186,27 +186,21 @@ if (!Ung.hasResource["Ung.Firewall"]) {
                     name: 'time_stamp',
                     sortType: Ung.SortTypes.asTimestamp
                 }, {
-                    name: 'blocked',
-                    mapping: 'firewall_blocked'
+                    name: 'firewall_blocked'
                 }, {
-                    name: 'flagged',
-                    mapping: 'firewall_flagged'
+                    name: 'firewall_flagged'
                 }, {
                     name: 'firewall_rule_index'
                 }, {
-                    name: 'uid'
+                    name: 'username'
                 }, {
-                    name: 'client',
-                    mapping: 'c_client_addr'
+                    name: 'c_client_addr'
                 }, {
-                    name: 'client_port',
-                    mapping: 'c_client_port'
+                    name: 'c_client_port'
                 }, {
-                    name: 'server',
-                    mapping: 's_server_addr'
+                    name: 's_server_addr'
                 }, {
-                    name: 'server_port',
-                    mapping: 's_server_port'
+                    name: 's_server_port'
                 }],
                 columns: [{
                     header: this.i18n._("Timestamp"),
@@ -220,27 +214,27 @@ if (!Ung.hasResource["Ung.Firewall"]) {
                     header: this.i18n._("Client"),
                     width: Ung.Util.ipFieldWidth,
                     sortable: true,
-                    dataIndex: 'client'
+                    dataIndex: 'c_client_addr'
                 }, {
                     header: this.i18n._("Client Port"),
                     width: Ung.Util.portFieldWidth,
                     sortable: true,
-                    dataIndex: 'client_port'
+                    dataIndex: 'c_client_port'
                 }, {
                     header: this.i18n._("Username"),
                     width: Ung.Util.usernameFieldWidth,
                     sortable: true,
-                    dataIndex: 'uid'
+                    dataIndex: 'username'
                 }, {
                     header: this.i18n._("Blocked"),
                     width: Ung.Util.booleanFieldWidth,
                     sortable: true,
-                    dataIndex: 'blocked'
+                    dataIndex: 'firewall_blocked'
                 }, {
                     header: this.i18n._("Flagged"),
                     width: Ung.Util.booleanFieldWidth,
                     sortable: true,
-                    dataIndex: 'flagged'
+                    dataIndex: 'firewall_flagged'
                 }, {
                     header: this.i18n._('Rule Id'),
                     width: 60,
@@ -258,12 +252,12 @@ if (!Ung.hasResource["Ung.Firewall"]) {
                     header: this.i18n._("Server") ,
                     width: Ung.Util.ipFieldWidth + 40, // +40 for column header
                     sortable: true,
-                    dataIndex: 'server'
+                    dataIndex: 's_server_addr'
                 }, {
                     header: this.i18n._("Server Port"),
                     width: Ung.Util.portFieldWidth + 40, // +40 for column header
                     sortable: true,
-                    dataIndex: 'server_port'
+                    dataIndex: 's_server_port'
                 }]
             });
         },

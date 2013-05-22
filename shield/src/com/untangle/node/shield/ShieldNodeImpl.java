@@ -49,7 +49,8 @@ public class ShieldNodeImpl extends NodeBase  implements ShieldNode
 
     private ShieldSettings settings;
 
-    private EventLogQuery eventQuery;
+    private EventLogQuery scannedEventsQuery;
+    private EventLogQuery blockedEventsQuery;
 
     public ShieldNodeImpl( com.untangle.uvm.node.NodeSettings nodeSettings, com.untangle.uvm.node.NodeProperties nodeProperties )
     {
@@ -60,7 +61,14 @@ public class ShieldNodeImpl extends NodeBase  implements ShieldNode
         this.pipeSpec = new SoloPipeSpec("shield", this, handler, Fitting.OCTET_STREAM, Affinity.CLIENT, SoloPipeSpec.MAX_STRENGTH - 1);
         this.pipeSpecs = new SoloPipeSpec[] { pipeSpec };
         
-        this.eventQuery = new EventLogQuery(I18nUtil.marktr("Events"),"SELECT * FROM reports.shield_rejection_totals ORDER BY time_stamp DESC");                                                 
+        this.scannedEventsQuery = new EventLogQuery(I18nUtil.marktr("Scanned Sessions"),
+                                                    "SELECT * FROM reports.sessions " + 
+                                                    "ORDER BY time_stamp DESC");
+        this.blockedEventsQuery = new EventLogQuery(I18nUtil.marktr("Blocked Sessions"),
+                                                    "SELECT * FROM reports.sessions " + 
+                                                    "WHERE shield_blocked IS TRUE " +
+                                                    "ORDER BY time_stamp DESC");
+
         this.addMetric(new NodeMetric(STAT_ACCEPT, I18nUtil.marktr("Sessions accepted")));
         this.addMetric(new NodeMetric(STAT_LIMIT, I18nUtil.marktr("Sessions limited")));
         this.addMetric(new NodeMetric(STAT_DROP, I18nUtil.marktr("Sessions dropped")));
@@ -111,7 +119,7 @@ public class ShieldNodeImpl extends NodeBase  implements ShieldNode
 
     public EventLogQuery[] getEventQueries()
     {
-        return new EventLogQuery[] { this.eventQuery };
+        return new EventLogQuery[] { this.scannedEventsQuery, this.blockedEventsQuery };
     }
     
     @Override

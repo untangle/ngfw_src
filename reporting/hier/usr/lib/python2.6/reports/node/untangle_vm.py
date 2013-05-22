@@ -141,8 +141,7 @@ CREATE TABLE reports.sessions (
         s2p_bytes int8,
         p2s_bytes int8)""")
 
-        sql_helper.add_column('reports', 'sessions', 'bandwidth_priority', 'bigint')
-        sql_helper.add_column('reports', 'sessions', 'bandwidth_rule', 'bigint')
+        sql_helper.add_column('reports', 'sessions', 'shield_blocked', 'boolean')
         sql_helper.add_column('reports', 'sessions', 'firewall_blocked', 'boolean')
         sql_helper.add_column('reports', 'sessions', 'firewall_flagged', 'boolean')
         sql_helper.add_column('reports', 'sessions', 'firewall_rule_index', 'integer')
@@ -160,7 +159,8 @@ CREATE TABLE reports.sessions (
         sql_helper.add_column('reports', 'sessions', 'ips_blocked', 'boolean')
         sql_helper.add_column('reports', 'sessions', 'ips_ruleid', 'integer')
         sql_helper.add_column('reports', 'sessions', 'ips_description', 'text')
-        sql_helper.add_column('reports', 'sessions', 'spyware_access_ident', 'text')
+        sql_helper.add_column('reports', 'sessions', 'bandwidth_priority', 'integer')
+        sql_helper.add_column('reports', 'sessions', 'bandwidth_rule', 'integer')
 
         # If session_id index does not exist, create it
         if not sql_helper.index_exists("reports","sessions","session_id", unique=True):

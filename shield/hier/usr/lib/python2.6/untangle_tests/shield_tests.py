@@ -14,7 +14,6 @@ from untangle_tests import TestDict
 uvmContext = Uvm().getUvmContext()
 defaultRackId = 1
 clientControl = ClientControl()
-nodeData = None
 node = None
 
 def flushEvents():
@@ -30,43 +29,37 @@ class ShieldTests(unittest2.TestCase):
         return "untangle-node-shield"
 
     def setUp(self):
-        global nodeData, node
+        global node
         if node == None:
-            if (uvmContext.nodeManager().isInstantiated(self.nodeName())):
-                print "ERROR: Node %s already installed" % self.nodeName();
-                raise Exception('node %s already instantiated' % self.nodeName())
-            node = uvmContext.nodeManager().instantiateAndStart(self.nodeName(), 1)
-            nodeData = node.getSettings()
+            if (not uvmContext.nodeManager().isInstantiated(self.nodeName())):
+                print "ERROR: Node %s is not installed" % self.nodeName();
+                raise Exception('node %s is not installed' % self.nodeName())
+            node = uvmContext.nodeManager().node(self.nodeName())
 
     def test_010_clientIsOnline(self):
         result = clientControl.runCommand("wget -4 -a /tmp/shield_test_010.log -t 2 --timeout=5 http://www.untangle.com/")
         assert (result == 0)
 
-    def test_011_shieldIsRunning(self):
-        result = os.system("ps aux | grep /usr/bin/shield | grep -v grep >/dev/null 2>&1")
-        assert (result == 0)
-
-    def test_012_shieldDetectsNmap(self):
+    def test_011_shieldDetectsNmap(self):
         startTime = datetime.now()
         result = clientControl.runCommand("nmap -PN -sT -TInsane -p10000-12000 1.2.3.4 2>&1 >/dev/null")
         assert (result == 0)
         flushEvents()
         query = None;
         for q in node.getEventQueries():
-            if q['name'] == 'Events': query = q;
+            if q['name'] == 'Blocked Sessions': query = q;
         assert(query != None)
         events = uvmContext.getEvents(query['query'],defaultRackId,1)
         assert(events != None)
         assert(events['list'] != None)
         assert(len(events['list']) > 0)
-        assert(events['list'][0]['client_addr'] == ClientControl.hostIP)
+        assert(events['list'][0]['c_client_addr'] == ClientControl.hostIP)
         assert(datetime.fromtimestamp((events['list'][0]['time_stamp']['time'])/1000) > startTime)
 
     def test_999_finalTearDown(self):
+        # shield is always installed, nothing to do here
         global node
-        uvmContext.nodeManager().destroy( node.getNodeSettings()["id"] )
         node = None
-        nodeSettings = None
         
 
 TestDict.registerNode("shield", ShieldTests)

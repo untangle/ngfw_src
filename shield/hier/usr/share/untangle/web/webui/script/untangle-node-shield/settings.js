@@ -2,7 +2,7 @@ if (!Ung.hasResource["Ung.Shield"]) {
     Ung.hasResource["Ung.Shield"] = true;
     Ung.NodeWin.registerClassName('untangle-node-shield', 'Ung.Shield');
 
-     Ext.define('Ung.Shield', {
+    Ext.define('Ung.Shield', {
         extend: 'Ung.NodeWin',
         gridExceptions: null,
         gridEventLog: null,
@@ -43,14 +43,14 @@ if (!Ung.hasResource["Ung.Shield"]) {
                     title: this.i18n._('Note'),
                     cls: 'description',
                     html: this.i18n
-                            ._('Shield is a heuristic based intrusion prevention and requires no configuration. Users can modify the treatment of certain IP and/or networks on the exception tab.')
+                        ._('Shield is a heuristic based intrusion prevention and requires no configuration. Users can modify the treatment of certain IP and/or networks on the exception tab.')
                 }]
             });
         },
         // Exceptions grid
         buildExceptions: function() {
             var deviderData = [[5, 5 + ' ' + this.i18n._("users")], [25, 25 + ' ' + this.i18n._("users")],
-                    [40, 50 + ' ' + this.i18n._("users")], [75, 100 + ' ' + this.i18n._("users")], [-1, this.i18n._("unlimited")]];
+                               [40, 50 + ' ' + this.i18n._("users")], [75, 100 + ' ' + this.i18n._("users")], [-1, this.i18n._("unlimited")]];
 
             this.gridExceptions = Ext.create('Ung.EditorGrid',{
                 settingsCmp: this,
@@ -76,10 +76,10 @@ if (!Ung.hasResource["Ung.Shield"]) {
                 }, {
                     name: 'divider'
                 },
-                {
-                    name: 'description',
-                    type: 'string'
-                }],
+                         {
+                             name: 'description',
+                             type: 'string'
+                         }],
                 // the list of columns for the column model
                 columns: [{
                     xtype: 'checkcolumn',
@@ -172,33 +172,26 @@ if (!Ung.hasResource["Ung.Shield"]) {
         },
         // Event Log
         buildEventLog: function() {
-            this.gridEventLog = new Ung.GridEventLog({
-                title: this.i18n._( "Event Log" ),
-                helpSource: "event_log",
+            this.gridEventLog = Ext.create('Ung.GridEventLog',{
                 settingsCmp: this,
-                eventQueriesFn: this.getRpcNode().getEventQueries,
-                // the list of fields
                 fields: [{
+                    name: 'id'
+                }, {
                     name: 'time_stamp',
                     sortType: Ung.SortTypes.asTimestamp
                 }, {
-                    name: 'client_addr'
+                    name: 'shield_blocked'
                 }, {
-                    name: 'client_intf'
+                    name: 'username'
                 }, {
-                    name: 'reputation',
-                    sortType: Ext.data.SortTypes.asFloat 
+                    name: 'c_client_addr'
                 }, {
-                    name: 'limited',
-                    sortType: Ext.data.SortTypes.asInt 
+                    name: 'c_client_port'
                 }, {
-                    name: 'dropped',
-                    sortType: Ext.data.SortTypes.asInt 
+                    name: 's_server_addr'
                 }, {
-                    name: 'rejected',
-                    sortType: Ext.data.SortTypes.asInt 
+                    name: 's_server_port'
                 }],
-                // the list of columns
                 columns: [{
                     header: this.i18n._("Timestamp"),
                     width: Ung.Util.timestampFieldWidth,
@@ -208,58 +201,51 @@ if (!Ung.hasResource["Ung.Shield"]) {
                         return i18n.timestampFormat(value);
                     }
                 }, {
-                    header: this.i18n._("Client Address"),
+                    header: this.i18n._("Client"),
                     width: Ung.Util.ipFieldWidth,
                     sortable: true,
-                    dataIndex: 'client_addr'
+                    dataIndex: 'c_client_addr'
                 }, {
-                    header: this.i18n._("Client Interface"),
-                    width: Ung.Util.ipFieldWidth,
+                    header: this.i18n._("Client Port"),
+                    width: Ung.Util.portFieldWidth,
                     sortable: true,
-                    dataIndex: 'client_intf'
+                    dataIndex: 'c_client_port'
                 }, {
-                    header: this.i18n._("reputation"),
-                    width: 120,
+                    header: this.i18n._("Username"),
+                    width: Ung.Util.usernameFieldWidth,
                     sortable: true,
-                    dataIndex: 'reputation',
+                    dataIndex: 'username'
+                }, {
+                    header: this.i18n._("Blocked"),
+                    width: Ung.Util.booleanFieldWidth,
+                    sortable: true,
+                    dataIndex: 'shield_blocked',
                     renderer: function(value) {
-                        return i18n.numberFormat(value);
+                        if (value == "")
+                            return "false";
+                        else
+                            return value;
                     }
                 }, {
-                    header: this.i18n._("Limited"),
-                    width: 110,
+                    header: this.i18n._("Server") ,
+                    width: Ung.Util.ipFieldWidth + 40, // +40 for column header
                     sortable: true,
-                    dataIndex: 'limited',
-                    renderer: function(value) {
-                        return i18n.numberFormat(value);
-                    }
+                    dataIndex: 's_server_addr'
                 }, {
-                    header: this.i18n._("Dropped"),
-                    width: 110,
+                    header: this.i18n._("Server Port"),
+                    width: Ung.Util.portFieldWidth + 40, // +40 for column header
                     sortable: true,
-                    dataIndex: 'dropped',
-                    renderer: function(value) {
-                        return i18n.numberFormat(value);
-                    }
-                }, {
-                    header: this.i18n._("Reject"),
-                    width: 110,
-                    sortable: true,
-                    dataIndex: 'rejected',
-                    renderer: function(value) {
-                        return i18n.numberFormat(value);
-                    }
+                    dataIndex: 's_server_port'
                 }]
             });
         },
-        
         beforeSave: function(isApply, handler) {
             this.gridExceptions.getList(Ext.bind(function(saveList) {
                 this.settings.rules = saveList;
                 handler.call(this, isApply);
             }, this));
         }
-     
+        
     });
 }
 //@ sourceURL=shield-settings.js
