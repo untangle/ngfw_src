@@ -542,7 +542,14 @@ public class NetworkManagerImpl implements NetworkManager
 
         newSettings.setHostName( UvmContextFactory.context().oemManager().getOemName().toLowerCase() );
         newSettings.setDomainName( "example.com" );
-                                
+
+        newSettings.setInsideHttpEnabled( true );
+        newSettings.setHttpsPort( 443 );
+        if (UvmContextImpl.context().isDevel())
+            newSettings.setOutsideHttpsEnabled( true );
+        else
+            newSettings.setOutsideHttpsEnabled( false );
+        
         ExecManagerResult result = UvmContextFactory.context().execManager().exec( "find /sys/class/net -type l -name 'eth*' | sed -e 's|/sys/class/net/||' | sort " );
         String deviceNames[] = result.getOutput().split("\\r?\\n");
         

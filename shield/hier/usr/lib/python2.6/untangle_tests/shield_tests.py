@@ -57,6 +57,8 @@ class ShieldTests(unittest2.TestCase):
         assert(datetime.fromtimestamp((events['list'][0]['time_stamp']['time'])/1000) > startTime)
 
     def test_999_finalTearDown(self):
+        # sleep so the reputation goes down so it will not interfere with any future tests
+        time.sleep(3)
         # shield is always installed, nothing to do here
         global node
         node = None

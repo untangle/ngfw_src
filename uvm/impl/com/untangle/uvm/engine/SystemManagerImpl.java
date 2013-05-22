@@ -64,14 +64,6 @@ public class SystemManagerImpl implements SystemManager
         }
 
         /**
-         * If settings are v1 - then convert to v2 and save
-         */
-        if (settings.getVersion() == 1) {
-            this.convertSettingsV1toV2(settings);
-            this.setSettings(settings);
-        }
-
-        /**
          * If the settings file date is newer than the system files, re-sync them
          */
         File settingsFile = new File(settingsFileName + ".js");
@@ -105,7 +97,7 @@ public class SystemManagerImpl implements SystemManager
      */
     public String getPublicUrl()
     {
-        String httpsPortStr = Integer.toString( this.settings.getHttpsPort() );
+        String httpsPortStr = Integer.toString( UvmContextFactory.context().networkManager().getNetworkSettings().getHttpsPort() );
         String primaryAddressStr = "unconfigured.example.com";
         
         if ( SystemSettings.PUBLIC_URL_EXTERNAL_IP.equals( this.settings.getPublicUrlMethod() ) ) {
@@ -165,8 +157,6 @@ public class SystemManagerImpl implements SystemManager
         /* sync SnmpSettings to disk */
         syncSnmpSettings(this.settings.getSnmpSettings());
     
-        //UvmContextImpl.context().networkManager().refreshNetworkConfig();
-
         if (this.autoUpgradeCronJob != null)
             this.autoUpgradeCronJob.reschedule(this.settings.getAutoUpgradeDays(),
                                                this.settings.getAutoUpgradeHour(),
@@ -178,12 +168,6 @@ public class SystemManagerImpl implements SystemManager
     {
         SystemSettings newSettings = new SystemSettings();
         newSettings.setVersion(2);
-        newSettings.setInsideHttpEnabled( true );
-        if (UvmContextImpl.context().isDevel())
-            newSettings.setOutsideHttpsEnabled( true );
-        else
-            newSettings.setOutsideHttpsEnabled( false );
-        newSettings.setHttpsPort( 443 );
 
         newSettings.setPublicUrlMethod( SystemSettings.PUBLIC_URL_EXTERNAL_IP );
         newSettings.setPublicUrlAddress( "hostname.example.com" );
@@ -366,27 +350,4 @@ public class SystemManagerImpl implements SystemManager
             }
         }
     }
-
-    private void convertSettingsV1toV2( SystemSettings settings )
-    {
-        if (settings.getVersion() != 1)
-            logger.warn("convertSettingsV1toV2(): Cannot convert settings v" + settings.getVersion() + " to v2 ");
-
-        /**
-         * As discussed with support
-         * If any of the major 3 are disabled, disable outside HTTPS entirely
-         */
-        boolean httpsOutsideSettings = settings.getOutsideHttpsEnabled();
-        if (!settings.DEPRECATED_getOutsideHttpsAdministrationEnabled())
-            httpsOutsideSettings = false;
-
-        settings.setVersion(2);
-        settings.setOutsideHttpsEnabled(httpsOutsideSettings);
-
-        settings.setOutsideHttpsReportingEnabled(false); // disable obsolete setting
-        settings.setOutsideHttpsAdministrationEnabled(false); // disable obsolete setting
-        settings.setOutsideHttpsQuarantineEnabled(false); // disable obsolete setting
-    }
-
-    
 }

@@ -18,18 +18,14 @@ import com.untangle.uvm.node.DayOfWeekMatcher;
 public class SystemSettings implements Serializable, JSONString
 {
     private int version = 1;
-    private boolean supportEnabled;
-    private boolean insideHttpEnabled;
-    private boolean outsideHttpsEnabled;
-    private boolean outsideHttpsReportingEnabled;
-    private boolean outsideHttpsAdministrationEnabled;
-    private boolean outsideHttpsQuarantineEnabled;
     private int httpsPort;
 
     public static final String PUBLIC_URL_EXTERNAL_IP = "external";
     public static final String PUBLIC_URL_HOSTNAME = "hostname";
     public static final String PUBLIC_URL_ADDRESS_AND_PORT = "address_and_port";
     
+    private boolean supportEnabled;
+
     private String publicUrlMethod;
     private String publicUrlAddress;
     private int publicUrlPort;
@@ -50,53 +46,10 @@ public class SystemSettings implements Serializable, JSONString
     }
 
     /**
-     * untangle support access flag
+     * Untangle support access flag
      */
     public boolean getSupportEnabled() { return this.supportEnabled; }
     public void setSupportEnabled( boolean newValue ) { this.supportEnabled = newValue; }
-
-    /**
-     * This is the port that the HTTPS server lives on
-     */
-    public int getHttpsPort() { return this.httpsPort; }
-    public void setHttpsPort( int newValue ) { this.httpsPort = newValue ; }
-
-    /**
-     * Get whether or not local insecure access is enabled.
-     */
-    public boolean getInsideHttpEnabled() { return this.insideHttpEnabled; }
-    public void setInsideHttpEnabled( boolean newValue ) { this.insideHttpEnabled = newValue; }
-
-    /**
-     * Retrieve whether or not administration from the internet is allowed.
-     */
-    public boolean getOutsideHttpsEnabled() { return this.outsideHttpsEnabled; }
-    public void setOutsideHttpsEnabled( boolean newValue ) { this.outsideHttpsEnabled = newValue; }
-
-    /**
-     * Retrieve whether access is allowed to reports from the internet.
-     * DEPRECATED: 9.3.1
-     * This is still here because it is needed by the v1->v2 conversion
-     */
-    public boolean DEPRECATED_getOutsideHttpsReportingEnabled() { return this.outsideHttpsReportingEnabled; }
-    public void setOutsideHttpsReportingEnabled( boolean newValue ) { this.outsideHttpsReportingEnabled = newValue; }
-
-    /**
-     * Get whether or not external administration is allowed.
-     * DEPRECATED: 9.3.1
-     * This is still here because it is needed by the v1->v2 conversion
-     */
-    public boolean DEPRECATED_getOutsideHttpsAdministrationEnabled() { return this.outsideHttpsAdministrationEnabled; }
-    public void setOutsideHttpsAdministrationEnabled( boolean newValue ) { this.outsideHttpsAdministrationEnabled = newValue; }
-
-    /**
-     * Retrieve whether or not to access the user quarantine from the
-     * internet is allowed.
-     * DEPRECATED: 9.3.1
-     * This is still here because it is needed by the v1->v2 conversion
-     */
-    public boolean DEPRECATED_getOutsideHttpsQuarantineEnabled() { return this.outsideHttpsQuarantineEnabled; }
-    public void setOutsideHttpsQuarantineEnabled( boolean newValue ) { this.outsideHttpsQuarantineEnabled = newValue; }
 
     /**
      * This determines the method used to calculate the publicy available URL used to reach Untangle resources

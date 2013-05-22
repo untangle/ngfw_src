@@ -2281,6 +2281,56 @@ if (!Ung.hasResource["Ung.Network"]) {
                 layout: 'anchor',
                 cls: 'ung-panel',
                 items: [{
+                    xtype: 'numberfield',
+                    fieldLabel: this.i18n._('HTTPS port'),
+                    name: 'httpsPort',
+                    value: this.settings.httpsPort,
+                    allowDecimals: false,
+                    minValue: 0,
+                    allowBlank: false,
+                    blankText: this.i18n._("You must provide a valid port."),
+                    vtype: 'port',
+                    listeners: {
+                        "change": {
+                            fn: Ext.bind(function(elem, newValue) {
+                                this.settings().httpsPort = newValue;
+                            }, this)
+                        }
+                    }
+                }, {
+                    xtype: 'checkbox',
+                    name: 'Enable Outside HTTPS',
+                    boxLabel: this.i18n._('Enable Outside HTTPS'),
+                    hideLabel: true,
+                    checked: this.settings.outsideHttpsEnabled,
+                    listeners: {
+                        "change": {
+                            fn: Ext.bind(function(elem, newValue) {
+                                this.settings.outsideHttpsEnabled = newValue;
+                            }, this)
+                        }
+                    }
+                },{
+                    xtype: 'checkbox',
+                    name: 'insideHttpEnabled',
+                    boxLabel: this.i18n._('Enable Inside HTTP'),
+                    hideLabel: true,
+                    checked: this.settings.insideHttpEnabled,
+                    listeners: {
+                        "change": {
+                            fn: Ext.bind(function(elem, newValue) {
+                                this.settings.insideHttpEnabled = newValue;
+                            }, this)
+                        }
+                    }
+                },{
+                    border: false,
+                    cls: 'description',
+                    html: this.i18n._('Note:') + "<br/>" +
+                        this.i18n._('HTTP  Outside is always disabled and the port is not open.') + "<br/>" +
+                        this.i18n._('HTTPS Inside is always enabled on the <i>HTTPS port</i> specified.') + "<br/>" +
+                        this.i18n._('HTTP  Inside port is always open for block pages even when <i>Enable Inside HTTP</i> is disabled.')
+                }, {
                     xtype: "checkbox",
                     fieldLabel: this.i18n._("Enable SIP NAT Helper"),
                     labelStyle: 'width:150px',

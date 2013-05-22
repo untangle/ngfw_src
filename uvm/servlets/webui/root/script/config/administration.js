@@ -272,65 +272,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
                         fieldLabel: this.i18n._("Confirm Password"),
                         width: 400
                     }]
-                }), {
-                    xtype: 'fieldset',
-                    cls: 'description',
-                    title: this.i18n._('Services Access'),
-                    defaults: {
-                        labelWidth: 150
-                    },
-                    items: [{
-                        xtype: 'numberfield',
-                        fieldLabel: this.i18n._('HTTPS port'),
-                        name: 'httpsPort',
-                        value: this.getSystemSettings().httpsPort,
-                        allowDecimals: false,
-                        minValue: 0,
-                        allowBlank: false,
-                        blankText: this.i18n._("You must provide a valid port."),
-                        vtype: 'port',
-                        listeners: {
-                            "change": {
-                                fn: Ext.bind(function(elem, newValue) {
-                                    this.getSystemSettings().httpsPort = newValue;
-                                }, this)
-                            }
-                        }
-                    }, {
-                        xtype: 'checkbox',
-                        name: 'Enable Outside HTTPS',
-                        boxLabel: this.i18n._('Enable Outside HTTPS'),
-                        hideLabel: true,
-                        checked: this.getSystemSettings().outsideHttpsEnabled,
-                        listeners: {
-                            "change": {
-                                fn: Ext.bind(function(elem, newValue) {
-                                    this.getSystemSettings().outsideHttpsEnabled = newValue;
-                                }, this)
-                            }
-                        }
-                    },{
-                        xtype: 'checkbox',
-                        name: 'insideHttpEnabled',
-                        boxLabel: this.i18n._('Enable Inside HTTP'),
-                        hideLabel: true,
-                        checked: this.getSystemSettings().insideHttpEnabled,
-                        listeners: {
-                            "change": {
-                                fn: Ext.bind(function(elem, newValue) {
-                                    this.getSystemSettings().insideHttpEnabled = newValue;
-                                }, this)
-                            }
-                        }
-                    },{
-                        border: false,
-                        cls: 'description',
-                        html: this.i18n._('Note:') + "<br/>" +
-                            this.i18n._('HTTP  Outside is always disabled and the port is not open.') + "<br/>" +
-                            this.i18n._('HTTPS Inside is always enabled on the <i>HTTPS port</i> specified.') + "<br/>" +
-                            this.i18n._('HTTP  Inside port is always open for block pages even when <i>Enable Inside HTTP</i> is disabled.')
-                    }]
-                }]
+                })]
             });
             this.gridAdminAccounts.rowEditorChangePass = Ext.create("Ung.RowEditorWindow",{
                 grid: this.gridAdminAccounts,
@@ -1490,43 +1432,8 @@ if (!Ung.hasResource["Ung.Administration"]) {
             }
             return true;
         },
-        // tests for changes that might disconnect the UI from the server if saved
-        hasDangerousChanges: function() {
-            var i_systemSettings = this.initialSystemSettings;
-            var c_systemSettings = this.getSystemSettings();
-            
-            //external administration
-            if ( i_systemSettings.outsideHttpsAdministrationEnabled != c_systemSettings.outsideHttpsAdministrationEnabled ) {
-                return true;
-            }
-            //internal administration
-            if ( i_systemSettings.insideHttpEnabled != c_systemSettings.insideHttpEnabled ) {
-                return true;
-            }
-            if ( i_systemSettings.httpsPort != this.getSystemSettings().httpsPort ) {
-                return true;
-            }
-            if ( !i_systemSettings.outsideAccessRestricted && c_systemSettings.outsideAccessRestricted ) {
-                return true;
-            }
-            return false;
-        },
         beforeSave: function(isApply, handler) {
-            if (this.hasDangerousChanges()) {
-                Ext.Msg.show({
-                    title: this.i18n._("Warning"),
-                    msg: Ext.String.format(this.i18n._("Changing the administration settings may disconnect you. Do you want to proceed?")),
-                    buttons: Ext.Msg.YESNO,
-                    icon: Ext.MessageBox.WARNING,
-                    fn: Ext.bind(function (btn, text) {
-                        if (btn == 'yes') {
-                            handler.call(this, isApply);
-                        }
-                    }, this)
-                });
-            } else {
-                handler.call(this, isApply);
-            }
+            handler.call(this, isApply);
         },
         save: function(isApply) {
             this.saveSemaphore = 2;

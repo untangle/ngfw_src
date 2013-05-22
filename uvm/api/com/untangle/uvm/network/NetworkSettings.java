@@ -44,6 +44,10 @@ public class NetworkSettings implements Serializable, JSONString
     private boolean sendIcmpRedirects = true;
     private boolean dhcpAuthoritative = true;
 
+    private int httpsPort = 443;
+    private boolean insideHttpEnabled = true;
+    private boolean outsideHttpsEnabled = false;
+    
     private QosSettings qosSettings;
     private DnsSettings dnsSettings;
     
@@ -94,6 +98,24 @@ public class NetworkSettings implements Serializable, JSONString
     public String getDynamicDnsServiceHostnames() { return this.dynamicDnsServiceHostnames; }
     public void setDynamicDnsServiceHostnames( String newValue ) { this.dynamicDnsServiceHostnames = newValue; }
     
+    /**
+     * This is the port that the HTTPS server lives on
+     */
+    public int getHttpsPort() { return this.httpsPort; }
+    public void setHttpsPort( int newValue ) { this.httpsPort = newValue ; }
+
+    /**
+     * Get whether or not local insecure access is enabled.
+     */
+    public boolean getInsideHttpEnabled() { return this.insideHttpEnabled; }
+    public void setInsideHttpEnabled( boolean newValue ) { this.insideHttpEnabled = newValue; }
+
+    /**
+     * Retrieve whether or not administration from the internet is allowed.
+     */
+    public boolean getOutsideHttpsEnabled() { return this.outsideHttpsEnabled; }
+    public void setOutsideHttpsEnabled( boolean newValue ) { this.outsideHttpsEnabled = newValue; }
+
     public boolean getEnableSipNatHelper() { return this.enableSipNatHelper; }
     public void setEnableSipNatHelper( boolean newValue ) { this.enableSipNatHelper = newValue; }
 

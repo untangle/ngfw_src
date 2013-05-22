@@ -129,7 +129,7 @@ class CaptureTests(unittest2.TestCase):
             nodeDataAD = nodeAD.getSettings().get('activeDirectorySettings')
             nodeDataRD = nodeAD.getSettings().get('radiusSettings')
         # remove previous temp files
-        clientControl.runCommand("rm /tmp/capture_test_010.log /tmp/capture_test_010.out \
+        clientControl.runCommand("rm -f /tmp/capture_test_010.log /tmp/capture_test_010.out \
                                   /tmp/capture_test_020.log /tmp/capture_test_020.out \
                                   /tmp/capture_test_021.log /tmp/capture_test_021.out \
                                   /tmp/capture_test_030.log /tmp/capture_test_030.out \
