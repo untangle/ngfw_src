@@ -14,7 +14,7 @@ public class HostStats
      * The 1-second load
      * Represents the average number of requests per second
      */
-    protected double load1 = 0;
+    //protected double load1 = 0;
 
     /**
      * The 5-second load
@@ -42,13 +42,13 @@ public class HostStats
             duration = 1;
         } 
 
-        double num1  = Math.exp( -duration / ( 1000.0 ) );
+        //double num1  = Math.exp( -duration / ( 1000.0 ) );
         double num5  = Math.exp( -duration / ( 5000.0 ) );
 
-        double x1  = ( numRequests * ( 1000.0 ) ) / duration ;
+        //double x1  = ( numRequests * ( 1000.0 ) ) / duration ;
         double x5  = ( numRequests * ( 5000.0 ) ) / duration ;
 
-        load1  = (num1*load1 + (1-num1)*x1);
+        //load1  = (num1*load1 + (1-num1)*x1);
         load5  = (num5*load5 + (1-num5)*x5);
     }
 

@@ -87,9 +87,7 @@ class EventHandler extends AbstractEventHandler
             }
         } else {
             if ( logger.isDebugEnabled() ) {
-                logger.debug("Session allowed for " + clientAddr.getHostAddress() + "." +
-                             " 1-second-load: " + String.format("%.2f",stats.load1) +
-                             " 5-second-load: " + String.format("%.2f",stats.load5) );
+                logger.debug("Session allowed for " + clientAddr.getHostAddress() + "." + " 5-second-load: " + String.format("%.2f",stats.load5) );
             }
 
             stats.pulse(1);
