@@ -61,6 +61,7 @@ if (!Ung.hasResource["Ung.Network"]) {
     Ext.define("Ung.NetworkTest", {
         extend: "Ung.Window",
         settingsCmp: null,
+        execResultReader: null,
         initComponent : function( ){
             Ext.applyIf( this, {
                 testErrorMessage: this.settingsCmp.i18n._( "Unable to run this Network Utility." ),
@@ -127,7 +128,7 @@ if (!Ung.hasResource["Ung.Network"]) {
             return this.command;
         },
         onRunTest : function() {
-            if ( this.isValid != null ) {
+            if ( Ext.isFunction(this.isValid)) {
                 if ( !this.isValid()) {
                     return;
                 }
@@ -155,7 +156,7 @@ if (!Ung.hasResource["Ung.Network"]) {
             this.execResultReader = null;
         },
         continueNetworkUtility: function(){
-            if( this.execResultReader==null ) {
+            if( this.execResultReader === null ) {
                 return;
             }
             if ( this.hidden) {
@@ -175,7 +176,7 @@ if (!Ung.hasResource["Ung.Network"]) {
                 var element=this.output.getEl();
                 var text = [];
                 text.push( this.output.getValue());
-                if(result != null) { //Test is running
+                if(result !== null) { //Test is running
                     text.push(result);
                     window.setTimeout( Ext.bind(this.continueNetworkUtility, this), 1000 );  
                 } else { //Test is finished
@@ -238,7 +239,7 @@ if (!Ung.hasResource["Ung.Network"]) {
             if(this.settings.qosSettings.qosEnabled) {
                 for(var i=0; i<this.settings.interfaces.list.length; i++) {
                     var intf =this.settings.interfaces.list[i];
-                    if(intf.isWan && (intf.downloadBandwidthKbps == null || intf.uploadBandwidthKbps == null)) {
+                    if(intf.isWan && (Ext.isEmpty(intf.downloadBandwidthKbps) || Ext.isEmpty(intf.uploadBandwidthKbps))) {
                         this.markDirty();
                         break;
                     }
@@ -423,9 +424,9 @@ if (!Ung.hasResource["Ung.Network"]) {
                     dataIndex: 'v4Address',
                     width:150,
                     renderer: Ext.bind(function(value, metadata, record, rowIndex, colIndex, store, view) {
-                        if (value == null || value == "")
+                        if (Ext.isEmpty(value))
                             return "";
-                        return value + "/" + record.data['v4PrefixLength'];
+                        return value + "/" + record.data.v4PrefixLength;
                     }, this)
                 }, {
                     header: this.i18n._("is WAN"),
@@ -433,7 +434,7 @@ if (!Ung.hasResource["Ung.Network"]) {
                     width:55,
                     renderer: Ext.bind(function(value, metadata, record, rowIndex, colIndex, store, view) {
                         // only ADDRESSED interfaces can be WANs
-                        return (record.data['configType'] == 'ADDRESSED') ? value: ""; // if its addressed return value
+                        return (record.data.configType == 'ADDRESSED') ? value: ""; // if its addressed return value
                     }, this)
                     
                 }],
@@ -486,9 +487,9 @@ if (!Ung.hasResource["Ung.Network"]) {
                                 })
                             ],
                             viewConfig:{
-                               forceFit: true,
-                               disableSelection: false,
-                               plugins:{
+                                forceFit: true,
+                                disableSelection: false,
+                                plugins:{
                                     ptype: 'gridviewdragdrop',
                                     dragText: i18n._('Drag and drop to reorganize')
                                 },
@@ -561,12 +562,12 @@ if (!Ung.hasResource["Ung.Network"]) {
                                                     } else if(newValue==currentRow.get( "physicalDev" )) {
                                                         targetRecord=currentRow;
                                                     }
-                                                    if(sourceRecord!=null && targetRecord!=null) {
+                                                    if(sourceRecord !== null && targetRecord !== null) {
                                                         return false;
                                                     }
                                                     return true;
                                                 });
-                                                if(sourceRecord==null || targetRecord==null || sourceRecord==targetRecord) {
+                                                if(sourceRecord === null || targetRecord === null || sourceRecord === targetRecord) {
                                                     console.log(oldValue, newValue, sourceRecord, targetRecord);
                                                     return false;
                                                 }
@@ -778,10 +779,9 @@ if (!Ung.hasResource["Ung.Network"]) {
                         allowBlank: false
                     }
                 }],
-                columnsDefaultSortable: false,
                 setValue: function (value) {
                     var data = [];
-                    if(value!=null && value.list!=null) {
+                    if(value !== null && value.list !== null) {
                         data=value.list;
                     }
                     this.reload({data:data});
@@ -832,10 +832,9 @@ if (!Ung.hasResource["Ung.Network"]) {
                         allowBlank: false
                     }
                 }],
-                columnsDefaultSortable: false,
                 setValue: function (value) {
                     var data = [];
-                    if(value!=null && value.list!=null) {
+                    if(value!==null && value.list!==null) {
                         data=value.list;
                     }
                     this.reload({data:data});
@@ -1327,11 +1326,21 @@ if (!Ung.hasResource["Ung.Network"]) {
                     dhcp.hide();
                     
                     v4ConfigType.hide();
-                    v6ConfigType.hide(); v6ConfigType.disable();
-                    v4StaticAddress.hide(); v4StaticAddress.disable();
-                    v4StaticPrefix.hide(); v4StaticPrefix.disable();
-                    v4StaticGateway.hide(); v4StaticGateway.disable();
-                    v4StaticDns1.hide(); v4StaticDns1.disable();
+                    
+                    v6ConfigType.hide();
+                    v6ConfigType.disable();
+                    
+                    v4StaticAddress.hide();
+                    v4StaticAddress.disable();
+                    
+                    v4StaticPrefix.hide();
+                    v4StaticPrefix.disable();
+                    
+                    v4StaticGateway.hide();
+                    v4StaticGateway.disable();
+                    v4StaticDns1.hide();
+                    v4StaticDns1.disable();
+                    
                     v4StaticDns2.hide();
                     v4AutoAddressOverrideContainer.hide();
                     v4AutoPrefixOverrideContainer.hide();
@@ -1346,9 +1355,12 @@ if (!Ung.hasResource["Ung.Network"]) {
                     v4NatEgressTraffic.hide(); 
                     v4NatIngressTraffic.hide(); 
 
-                    v6StaticAddress.hide(); v6StaticAddress.disable();
-                    v6StaticPrefixLength.hide(); v6StaticPrefixLength.disable();
-                    v6StaticGateway.hide(); v6StaticGateway.disable();
+                    v6StaticAddress.hide();
+                    v6StaticAddress.disable();
+                    v6StaticPrefixLength.hide();
+                    v6StaticPrefixLength.disable();
+                    v6StaticGateway.hide();
+                    v6StaticGateway.disable();
                     v6StaticDns1.hide();
                     v6StaticDns2.hide();
                     v6AliasesContainer.hide();
@@ -1377,13 +1389,21 @@ if (!Ung.hasResource["Ung.Network"]) {
                         // if a WAN, can use auto or static
                         if ( isWanValue ) {
                             v4ConfigType.show(); //show full config options for WANs
-                            v6ConfigType.show(); v6ConfigType.enable(); //show full config options for WANs
+                            v6ConfigType.show(); //show full config options for WANs
+                            v6ConfigType.enable(); 
                             v4NatEgressTraffic.show(); // show NAT egress option on WANs
                         } else {
                             v4ConfigType.setValue("STATIC"); //don't allow auto/pppoe for non-WAN
-                            v6ConfigType.setValue("STATIC");  v6ConfigType.enable();//don't allow auto/pppoe for non-WAN
-                            v4StaticGateway.hide(); v4StaticGateway.disable(); // no gateways for non-WAN
-                            v6StaticGateway.hide(); v6StaticGateway.disable();// no gateways for non-WAN
+                            
+                            v6ConfigType.setValue("STATIC");  
+                            v6ConfigType.enable(); //don't allow auto/pppoe for non-WAN
+                            
+                            v4StaticGateway.hide(); // no gateways for non-WAN
+                            v4StaticGateway.disable(); 
+                            
+                            v6StaticGateway.hide(); // no gateways for non-WAN
+                            v6StaticGateway.disable();
+                            
                             v4NatIngressTraffic.show(); // show NAT ingress options on non-WANs
                             dhcp.show(); // show DHCP options on non-WANs
                         }
@@ -1392,11 +1412,17 @@ if (!Ung.hasResource["Ung.Network"]) {
                         // if auto show override fields (auto is only allowed on WANs)
                         // if pppoe show pppoe fields (pppoe is only allowed on WANs)
                         if ( v4ConfigType.getValue() == "STATIC" ) {
-                            v4StaticAddress.show(); v4StaticAddress.enable();
-                            v4StaticPrefix.show(); v4StaticPrefix.enable();
+                            v4StaticAddress.show();
+                            v4StaticAddress.enable();
+                            
+                            v4StaticPrefix.show();
+                            v4StaticPrefix.enable();
+                            
                             if (isWanValue) {
-                                v4StaticGateway.show(); v4StaticGateway.enable();
-                                v4StaticDns1.show(); v4StaticDns1.enable();
+                                v4StaticGateway.show();
+                                v4StaticGateway.enable();
+                                v4StaticDns1.show();
+                                v4StaticDns1.enable();
                                 v4StaticDns2.show();
                             }
                         } else if ( v4ConfigType.getValue() == "AUTO" ) {
@@ -1409,7 +1435,7 @@ if (!Ung.hasResource["Ung.Network"]) {
                             v4PPPoEUsername.show();
                             v4PPPoEPassword.show();
                             v4PPPoEUsePeerDns.show();
-                            if ( v4PPPoEUsePeerDns.getValue() == false ) {
+                            if ( !v4PPPoEUsePeerDns.getValue()) {
                                 v4PPPoEDns1.show();
                                 v4PPPoEDns2.show();
                             }
@@ -1419,10 +1445,13 @@ if (!Ung.hasResource["Ung.Network"]) {
                         // if auto show override fields
                         if ( v6ConfigType.getValue() == "STATIC" ) {
                             v6AliasesContainer.show();
-                            v6StaticAddress.show(); v6StaticAddress.enable();
-                            v6StaticPrefixLength.show(); v6StaticPrefixLength.enable();
+                            v6StaticAddress.show();
+                            v6StaticAddress.enable();
+                            v6StaticPrefixLength.show();
+                            v6StaticPrefixLength.enable();
                             if (isWanValue) {
-                                v6StaticGateway.show(); v6StaticGateway.enable();
+                                v6StaticGateway.show();
+                                v6StaticGateway.enable();
                                 v6StaticDns1.show();
                                 v6StaticDns2.show();
                             } else {
@@ -1482,28 +1511,28 @@ if (!Ung.hasResource["Ung.Network"]) {
                             cls: 'boxlabel'
                         }]
                     },{
-                          xtype: 'container',
-                          layout: 'column',
-                          margin: '0 0 5 0',
-                          items: [{
-                              xtype: "textfield",
-                              fieldLabel: this.i18n._("Domain Name"),
-                              emptyText: "example.com",
-                              name: 'DomainName',
-                              value: this.settings.domainName,
-                              listeners: {
-                                  "change": {
-                                      fn: Ext.bind(function(elem, newValue) {
-                                          this.settings.domainName = newValue;
-                                      }, this)
-                                  }
-                              }
-                          },{
-                              xtype: 'label',
-                              html: this.i18n._("(eg: example.com)"),
-                              cls: 'boxlabel'
-                          }]
+                        xtype: 'container',
+                        layout: 'column',
+                        margin: '0 0 5 0',
+                        items: [{
+                            xtype: "textfield",
+                            fieldLabel: this.i18n._("Domain Name"),
+                            emptyText: "example.com",
+                            name: 'DomainName',
+                            value: this.settings.domainName,
+                            listeners: {
+                                "change": {
+                                    fn: Ext.bind(function(elem, newValue) {
+                                        this.settings.domainName = newValue;
+                                    }, this)
+                                }
+                            }
+                        },{
+                            xtype: 'label',
+                            html: this.i18n._("(eg: example.com)"),
+                            cls: 'boxlabel'
                         }]
+                    }]
                 }, {
                     xtype: 'fieldset',
                     cls: 'description',
@@ -1740,37 +1769,64 @@ if (!Ung.hasResource["Ung.Network"]) {
                                     layout: "vbox",
                                     cls: 'description',
                                     title: this.i18n._('Troubleshooting Port Forwards'),
-                                    items : [{
-                                        xtype : "label",
-                                        html : this.i18n._( 'Test 1: Verify pinging the <b>new destination</b>' )
+                                    items: [{
+                                        xtype: "label",
+                                        html: this.i18n._( 'Test 1: Verify pinging the <b>new destination</b>' )
                                     },{
-                                        xtype : "button",
-                                        text : this.i18n._( "Ping Test" ),
-                                        handler : this.openPingTest,
-                                        scope : this
+                                        xtype: "button",
+                                        text: this.i18n._( "Ping Test" ),
+                                        handler: function () {
+                                            var destination = this.portForwardTroubleshootWin.recordData.newDestination;
+                                            this.openPingTest(destination);
+                                        },
+                                        scope: this
                                     },{
-                                        xtype : "label",
-                                        style : "margin-top: 10px",
-                                        html : this.i18n._( "Test 2: Verify connecting to the new destination<br/><i>This test applies only to TCP port forwards.</i>" )
+                                        xtype: "label",
+                                        style: "margin-top: 10px",
+                                        html: this.i18n._( "Test 2: Verify connecting to the new destination<br/><i>This test applies only to TCP port forwards.</i>" )
                                     },{
-                                        xtype : "button",
-                                        text : this.i18n._( "Connect Test" ),
-                                        handler : this.openTcpTest,
-                                        scope : this
+                                        xtype: "button",
+                                        name: "connect_test_button",
+                                        text: this.i18n._( "Connect Test" ),
+                                        handler: function () {
+                                            var recordData = this.portForwardTroubleshootWin.recordData;
+                                            this.openTcpTest(recordData.newDestination, recordData.newPort);
+                                        },
+                                        scope: this
                                     },{
-                                        xtype : "label",
-                                        style : "margin-top: 10px",
-                                        html : this.i18n._( "Test 3: Watch traffic using the Packet Test" )
+                                        xtype: "label",
+                                        style: "margin-top: 10px",
+                                        html: this.i18n._( "Test 3: Watch traffic using the Packet Test" )
                                     },{
-                                        xtype : "button",
-                                        text : this.i18n._( "Packet Test" ),
-                                        handler : this.openPacketTest,
-                                        scope : this
+                                        xtype: "button",
+                                        text: this.i18n._( "Packet Test" ),
+                                        handler: this.openPacketTest,
+                                        scope: this
+                                    },{
+                                        xtype: "label",
+                                        style: "margin-top: 10px",
+                                        html: Ext.String.format( this.i18n._( "For more help troubleshooting port forwards view the<br/>{0}Port Forward Troubleshooting Guide{1}" ), "<a href='http://wiki.untangle.com/index.php/Port_Forward_Troubleshooting_Guide'target='_blank'>", "</a>")
                                     }]
                                 }]
                             }],
                             showForRule: function(record) {
-                                //TODO: prepouplate network tests with rule values
+                                this.recordData = record.getData();
+                                
+                                //Show connect_test_button buton only if it has TCP protocol
+                                var hasTcpProtocol=false;
+                                var matchersList=this.recordData.matchers.list;
+                                for(var i=0;i<matchersList.length;i++) {
+                                    if(matchersList[i].matcherType == "PROTOCOL") {
+                                        hasTcpProtocol = (matchersList[i].value.indexOf("TCP") != -1);
+                                        break;
+                                    }
+                                }
+                                var connectTestButton = this.query('button[name="connect_test_button"]')[0];
+                                if(hasTcpProtocol) {
+                                    connectTestButton.enable();
+                                } else {
+                                    connectTestButton.disable();
+                                }
                                 this.show();
                             }
                         });
@@ -1927,7 +1983,7 @@ if (!Ung.hasResource["Ung.Network"]) {
                 syncComponents: function () {
                     var natType  = this.query('combo[dataIndex="auto"]')[0];
                     var newSource = this.query('textfield[dataIndex="newSource"]')[0];
-                    if (natType.value == true) /* Auto */ {
+                    if (natType.value) /* Auto */ {
                         newSource.disable();
                         newSource.hide();
                     } else {
@@ -2067,8 +2123,8 @@ if (!Ung.hasResource["Ung.Network"]) {
             var devList = [];
             for ( var c = 0 ; c < this.settings.interfaces.list.length ; c++ ) {
                 var intf = this.settings.interfaces.list[c];
-                var name = "Local on " + intf['systemDev'];
-                var key = intf['systemDev'];
+                var name = "Local on " + intf.systemDev;
+                var key = intf.systemDev;
                 devList.push( [ key, name ] );
             }
             this.gridStaticRoutes = Ext.create('Ung.EditorGrid', {
@@ -2123,7 +2179,7 @@ if (!Ung.hasResource["Ung.Network"]) {
                 }],
                 sortField: 'network',
                 columnsDefaultSortable: true,
-                rowEditorInputLines: [, {
+                rowEditorInputLines: [{
                     xtype:'textfield',
                     name: "Description",
                     dataIndex: "description",
@@ -2155,7 +2211,6 @@ if (!Ung.hasResource["Ung.Network"]) {
                     allowBlank: false,
                     dataIndex: "nextHop",
                     fieldLabel: i18n._("Next Hop"),
-                    editable: true,
                     store: devList,
                     valueField: "value",
                     displayField: "displayName",
@@ -2206,7 +2261,6 @@ if (!Ung.hasResource["Ung.Network"]) {
                 helpSource: 'network_advanced',
                 parentId: this.getId(),
                 title: this.i18n._('Advanced'),
-                layout: 'anchor',
                 cls: 'ung-panel',
                 layout: { type: 'vbox', pack: 'start', align: 'stretch' },
                 items: [{
@@ -2333,14 +2387,14 @@ if (!Ung.hasResource["Ung.Network"]) {
                     header: this.i18n._("Download Bandwidth"),
                     dataIndex: 'downloadBandwidthKbps',
                     width: 180,
-                    editor : {
+                    editor: {
                         xtype: 'numberfield',
                         allowBlank : false,
                         allowDecimals: false,
                         minValue: 0
-                  },
+                    },
                     renderer: Ext.bind(function( value, metadata, record ) { 
-                        if (value == null) {
+                        if (Ext.isEmpty(value)) {
                             return this.i18n._("Not set"); 
                         } else {
                             return value + this.i18n._( " kbps" );
@@ -2357,7 +2411,7 @@ if (!Ung.hasResource["Ung.Network"]) {
                         minValue: 0
                     },
                     renderer: Ext.bind(function( value, metadata, record ) { 
-                        if (value == null) {
+                        if (Ext.isEmpty(value)) {
                             return this.i18n._("Not set"); 
                         } else {
                             return value + this.i18n._( " kbps" );
@@ -2372,10 +2426,10 @@ if (!Ung.hasResource["Ung.Network"]) {
 
                     for ( var i = 0 ; i < interfaceList.length ; i++ ) {
                         if(interfaceList[i].isWan) {
-                            if(interfaceList[i].uploadBandwidthKbps !=null) {
+                            if(!Ext.isEmpty(interfaceList[i].uploadBandwidthKbps)) {
                                 u += interfaceList[i].uploadBandwidthKbps;    
                             }
-                            if(interfaceList[i].downloadBandwidthKbps !=null ) {
+                            if(!Ext.isEmpty(interfaceList[i].downloadBandwidthKbps)) {
                                 d += interfaceList[i].downloadBandwidthKbps;    
                             }
                         }
@@ -2507,11 +2561,11 @@ if (!Ung.hasResource["Ung.Network"]) {
                     editor : {
                         xtype: 'numberfield',
                         allowBlank : false,
-                        minValue : .1,
+                        minValue : 0.1,
                         maxValue : 100
                     },
                     renderer: Ext.bind(function( value, metadata, record ) { 
-                        if (value == 0) 
+                        if (value === 0) 
                             return this.i18n._("No reservation"); 
                         else 
                             return value + "%";
@@ -2523,11 +2577,11 @@ if (!Ung.hasResource["Ung.Network"]) {
                     editor : {
                         xtype: 'numberfield',
                         allowBlank : false,
-                        minValue : .1,
+                        minValue : 0.1,
                         maxValue : 100
                     },
                     renderer: Ext.bind(function( value, metadata, record ) { 
-                        if (value == 0) 
+                        if (value === 0) 
                             return this.i18n._("No limit"); 
                         else 
                             return value + "%";
@@ -2539,11 +2593,11 @@ if (!Ung.hasResource["Ung.Network"]) {
                     editor : {
                         xtype: 'numberfield',
                         allowBlank : false,
-                        minValue : .1,
+                        minValue : 0.1,
                         maxValue : 100
                     },
                     renderer: Ext.bind(function( value, metadata, record ) { 
-                        if (value == 0) 
+                        if (value === 0) 
                             return this.i18n._("No reservation"); 
                         else 
                             return value + "%";
@@ -2555,11 +2609,11 @@ if (!Ung.hasResource["Ung.Network"]) {
                     editor : {
                         xtype: 'numberfield',
                         allowBlank : false,
-                        minValue : .1,
+                        minValue : 0.1,
                         maxValue : 100
                     },
                     renderer: Ext.bind(function( value, metadata, record ) { 
-                        if (value == 0) 
+                        if (value === 0) 
                             return this.i18n._("No limit"); 
                         else 
                             return value + "%";
@@ -3047,13 +3101,13 @@ if (!Ung.hasResource["Ung.Network"]) {
         // NetworkCards Panel
         buildNetworkCards: function() {
             this.duplexStore = [
-              ["AUTO", this.i18n._( "Auto" )], 
-              ["M1000_FULL_DUPLEX", this.i18n._( "1000 Mbps, Full Duplex" )],
-              ["M1000_HALF_DUPLEX", this.i18n._( "1000 Mbps, Half Duplex" )],
-              ["M100_FULL_DUPLEX", this.i18n._( "100 Mbps, Full Duplex" )],
-              ["M100_HALF_DUPLEX", this.i18n._( "100 Mbps, Half Duplex" )],
-              ["M10_FULL_DUPLEX", this.i18n._( "10 Mbps, Full Duplex" )],
-              ["M10_HALF_DUPLEX", this.i18n._( "10 Mbps, Half Duplex" )]
+                ["AUTO", this.i18n._( "Auto" )], 
+                ["M1000_FULL_DUPLEX", this.i18n._( "1000 Mbps, Full Duplex" )],
+                ["M1000_HALF_DUPLEX", this.i18n._( "1000 Mbps, Half Duplex" )],
+                ["M100_FULL_DUPLEX", this.i18n._( "100 Mbps, Full Duplex" )],
+                ["M100_HALF_DUPLEX", this.i18n._( "100 Mbps, Half Duplex" )],
+                ["M10_FULL_DUPLEX", this.i18n._( "10 Mbps, Full Duplex" )],
+                ["M10_HALF_DUPLEX", this.i18n._( "10 Mbps, Half Duplex" )]
             ];
             this.duplexMap = Ung.Util.createStoreMap(this.duplexStore);
 
@@ -3150,10 +3204,7 @@ if (!Ung.hasResource["Ung.Network"]) {
                     flex: 1,
                     dataIndex: 'name',
                     renderer: Ext.bind(function( value, metadata, record ) {
-                        var data = record.data
-                        var link = "javascript: Ung.NetworkSettingsCmp." + data.action + "()";
-
-                        return "<a href='" + link + "'><div class=' ua-cell-test " + record.get("divClass") + "'>" + value + "</div></a>";
+                        return "<a href='/' onClick='Ung.NetworkSettingsCmp." + record.get("action") + "();return false;'><div class=' ua-cell-test " + record.get("divClass") + "'>" + value + "</div></a>";
                     }, this )
                 }]
             });
@@ -3184,12 +3235,12 @@ if (!Ung.hasResource["Ung.Network"]) {
                     },
                     getCommand: function() {
                         var script= [
-                          'echo -n "Testing DNS ... " ; success="Successful";',
-                          'dig updates.untangle.com > /dev/null 2>&1; if [ "$?" = "0" ]; then echo "OK"; else echo "FAILED"; success="Failure"; fi;',
-                          'echo -n "Testing TCP Connectivity ... ";',
-                          'echo "GET /" | netcat -q 0 -w 15 updates.untangle.com 80 > /dev/null 2>&1;', 
-                          'if [ "$?" = "0" ]; then echo "OK"; else echo "FAILED"; success="Failure"; fi;',
-                          'echo "Test ${success}!"'
+                            'echo -n "Testing DNS ... " ; success="Successful";',
+                            'dig updates.untangle.com > /dev/null 2>&1; if [ "$?" = "0" ]; then echo "OK"; else echo "FAILED"; success="Failure"; fi;',
+                            'echo -n "Testing TCP Connectivity ... ";',
+                            'echo "GET /" | netcat -q 0 -w 15 updates.untangle.com 80 > /dev/null 2>&1;', 
+                            'if [ "$?" = "0" ]; then echo "OK"; else echo "FAILED"; success="Failure"; fi;',
+                            'echo "Test ${success}!"'
                         ];
                         return ["/bin/bash","-c", script.join("")];
                     }
@@ -3201,12 +3252,12 @@ if (!Ung.hasResource["Ung.Network"]) {
         testConnectivity: function () {
             Ext.MessageBox.wait( i18n._( "Testing Internet Connectivity" ), i18n._( "Please wait" ));
             var script = [
-                 'dig updates.untangle.com > /dev/null 2>&1;',
-                 'if [ "$?" != "0" ]; then echo "'+this.i18n._('Failed to connect to the Internet, DNS failed.')+'"; exit 1; fi;',
-                 'echo "GET /" | netcat -q 0 -w 15 updates.untangle.com 80 > /dev/null 2>&1;', 
-                 'if [ "$?" != "0" ]; then echo "'+this.i18n._('Failed to connect to the Internet, TCP failed.')+'"; exit 1; fi;',
-                 'echo "'+this.i18n._('Successfully connected to the Internet.')+'";'
-               ];
+                'dig updates.untangle.com > /dev/null 2>&1;',
+                'if [ "$?" != "0" ]; then echo "'+this.i18n._('Failed to connect to the Internet, DNS failed.')+'"; exit 1; fi;',
+                'echo "GET /" | netcat -q 0 -w 15 updates.untangle.com 80 > /dev/null 2>&1;', 
+                'if [ "$?" != "0" ]; then echo "'+this.i18n._('Failed to connect to the Internet, TCP failed.')+'"; exit 1; fi;',
+                'echo "'+this.i18n._('Successfully connected to the Internet.')+'";'
+            ];
             var command =  "/bin/bash -c " + script.join("");
             var execResultReader = null; 
             main.getExecManager().exec(Ext.bind(function(result, exception) {
@@ -3214,7 +3265,7 @@ if (!Ung.hasResource["Ung.Network"]) {
                 Ext.MessageBox.alert(this.i18n._("Test Connectivity Result"), result.output);
             }, this), command);  
         },
-        openPingTest: function() {
+        openPingTest: function(destination) {
             if(!this.pingTest) {
                 this.pingTest = Ext.create('Ung.NetworkTest',{
                     helpSource: 'ping_test',
@@ -3245,7 +3296,7 @@ if (!Ung.hasResource["Ung.Network"]) {
                     isValid : function() {
                         var destination = this.destination.getValue();
                         
-                        if ( destination == null || destination.length==0 /*TODO: verify host or ip
+                        if ( Ext.isEmpty(destination) /*TODO: verify host or ip
                              ( !Ext.form.VTypes.ipAddress( destination, this.destination ) && 
                                !Ext.form.VTypes.hostname( destination, this.destination ))*/) {
                             Ext.MessageBox.show({
@@ -3258,10 +3309,12 @@ if (!Ung.hasResource["Ung.Network"]) {
                         }
 
                         return true;
-                    },
-                    
+                    }
                 });
                 this.subCmps.push(this.pingTest);
+            }
+            if(destination !== undefined) {
+                this.pingTest.destination.setValue(destination);
             }
             this.pingTest.show();
         },
@@ -3285,7 +3338,7 @@ if (!Ung.hasResource["Ung.Network"]) {
                     getCommand: function() {
                         var destination = this.destination.getValue();
                         var script=['host '+ destination+';',
-                            'if [ "$?" = "0" ]; then echo "Test Successful"; else echo "Test Failure"; fi;']
+                            'if [ "$?" = "0" ]; then echo "Test Successful"; else echo "Test Failure"; fi;'];
                         return ["/bin/bash","-c", script.join("")];
                         
                         
@@ -3299,8 +3352,7 @@ if (!Ung.hasResource["Ung.Network"]) {
                     },
                     isValid : function() {
                         var destination = this.destination.getValue();
-                        
-                        if ( destination == null || destination.length==0 /*TODO: verify host or ip
+                        if ( Ext.isEmpty(destination) /*TODO: verify host or ip
                              ( !Ext.form.VTypes.ipAddress( destination, this.destination ) && 
                                !Ext.form.VTypes.hostname( destination, this.destination ))*/) {
                             Ext.MessageBox.show({
@@ -3311,16 +3363,14 @@ if (!Ung.hasResource["Ung.Network"]) {
                             });
                             return false;
                         }
-
                         return true;
-                    },
-                    
+                    }
                 });
                 this.subCmps.push(this.dnsTest);
             }
             this.dnsTest.show();
         },        
-        openTcpTest: function() {
+        openTcpTest: function(destination, port) {
             if(!this.tcpTest) {
                 this.tcpTest = Ext.create('Ung.NetworkTest',{
                     helpSource: 'tcp_test',
@@ -3363,7 +3413,7 @@ if (!Ung.hasResource["Ung.Network"]) {
                         var destination = this.destination.getValue();
                         var port = this.port.getValue();
                         
-                        if ( destination == null || destination.length==0 /*TODO: verify host or ip
+                        if ( Ext.isEmpty(destination) /*TODO: verify host or ip
                              ( !Ext.form.VTypes.ipAddress( destination, this.destination ) && 
                                !Ext.form.VTypes.hostname( destination, this.destination ))*/) {
                             Ext.MessageBox.show({
@@ -3374,12 +3424,16 @@ if (!Ung.hasResource["Ung.Network"]) {
                             });
                             return false;
                         }
-
                         return true;
-                    },
-                    
+                    }
                 });
                 this.subCmps.push(this.tcpTest);
+            }
+            if(destination !== undefined) {
+                this.tcpTest.destination.setValue(destination);
+            }
+            if(port !== undefined) {
+                this.tcpTest.port.setValue(port);
             }
             this.tcpTest.show();
         },
@@ -3416,7 +3470,7 @@ if (!Ung.hasResource["Ung.Network"]) {
                     isValid : function() {
                         var destination = this.destination.getValue();
                         
-                        if ( destination == null || destination.length==0 /*TODO: verify host or ip
+                        if ( Ext.isEmpty(destination) /*TODO: verify host or ip
                              ( !Ext.form.VTypes.ipAddress( destination, this.destination ) && 
                                !Ext.form.VTypes.hostname( destination, this.destination ))*/) {
                             Ext.MessageBox.show({
@@ -3427,10 +3481,8 @@ if (!Ung.hasResource["Ung.Network"]) {
                             });
                             return false;
                         }
-
                         return true;
-                    },
-                    
+                    }
                 });
                 this.subCmps.push(this.tracerouteTest);
             }
@@ -3488,15 +3540,15 @@ if (!Ung.hasResource["Ung.Network"]) {
                         var intf = this.intf.getValue();
                         var timeout = this.timeout.getValue();
                         if(destination.toLowerCase() == "any") {
-                            destination = ""
+                            destination = "";
                         }
-                        if(destination != "") {
+                        if(destination !== "") {
                             destination = "host "+destination;
                         }
-                        if(port != "") {
+                        if(port !== "") {
                             port = "port "+port;
                         }
-                        if(destination != "") {
+                        if(destination !== "") {
                             port = "and "+port;
                         }
                         var script = [
@@ -3509,7 +3561,8 @@ if (!Ung.hasResource["Ung.Network"]) {
                             '  if [ "$?" != "0" ]; then break; fi;',
                             'done;',
                             'ps aux | grep -q " $! .*[t]cpdump -i" && kill -INT $!;',
-                            'ps aux | grep -q " $! .*[t]cpdump -i" && wait $!;'];
+                            'ps aux | grep -q " $! .*[t]cpdump -i" && wait $!;'
+                        ];
                         return ["/bin/bash","-c", script.join("")];
                     },
                     enableParameters : function( isEnabled ){
@@ -3528,7 +3581,7 @@ if (!Ung.hasResource["Ung.Network"]) {
                     isValid : function() {
                         var destination = this.destination.getValue();
                         
-                        if ( destination == null || destination.length==0 /*TODO: verify host or ip
+                        if ( Ext.isEmpty(destination) /*TODO: verify host or ip
                              ( !Ext.form.VTypes.ipAddress( destination, this.destination ) && 
                                !Ext.form.VTypes.hostname( destination, this.destination ))*/) {
                             Ext.MessageBox.show({
@@ -3539,10 +3592,8 @@ if (!Ung.hasResource["Ung.Network"]) {
                             });
                             return false;
                         }
-
                         return true;
-                    },
-                    
+                    }
                 });
                 this.subCmps.push(this.packetTest);
             }
@@ -3582,14 +3633,10 @@ if (!Ung.hasResource["Ung.Network"]) {
             for(var i=0; i<this.settings.interfaces.list.length; i++) {
                 var intf=this.settings.interfaces.list[i];
                 var deviceStatusInner = deviceStatusMap[intf.physicalDev];
-                if (deviceStatusInner != null) 
-                    Ext.applyIf(intf, deviceStatusInner);
+                Ext.applyIf(intf, deviceStatusInner);
                 var interfaceStatusInner = interfaceStatusMap[intf.interfaceId];
-                if (interfaceStatusInner != null) 
-                    Ext.applyIf(intf, interfaceStatusInner);
-                true;
+                Ext.applyIf(intf, interfaceStatusInner);
             }
-            
             rpc.networkSettings = this.settings;
         },
         beforeSave: function(isApply, handler) {
@@ -3598,16 +3645,17 @@ if (!Ung.hasResource["Ung.Network"]) {
             Ext.MessageBox.wait(i18n._("Applying Network Settings..."), i18n._("Please wait"));
 
             this.gridInterfaces.getList(Ext.bind(function(saveList) {
+                var i;
                 this.settings.interfaces = saveList;
                 var qosBandwidthList = this.gridQosWanBandwidth.getPageList();
                 var qosBandwidthMap = {};
-                for(var i=0; i<qosBandwidthList.length; i++) {
+                for(i=0; i<qosBandwidthList.length; i++) {
                     qosBandwidthMap[qosBandwidthList[i].interfaceId] = qosBandwidthList[i];
                 }
-                for(var i=0; i<this.settings.interfaces.list.length; i++) {
+                for(i=0; i<this.settings.interfaces.list.length; i++) {
                     var intf=this.settings.interfaces.list[i];
                     var intfBandwidth = qosBandwidthMap[intf.interfaceId];
-                    if(intfBandwidth != null) {
+                    if(intfBandwidth) {
                         intf.downloadBandwidthKbps=intfBandwidth.downloadBandwidthKbps;
                         intf.uploadBandwidthKbps=intfBandwidth.uploadBandwidthKbps;
                     }
@@ -3700,7 +3748,7 @@ if (!Ung.hasResource["Ung.Network"]) {
             delete rpc.networkSettings; // clear cached settings object
             
             this.saveSemaphore--;
-            if (this.saveSemaphore == 0) {
+            if (this.saveSemaphore === 0) {
                 this.refreshSettings();
                 if(isApply) {
                     this.clearDirty();
