@@ -163,9 +163,10 @@ Architecture: all
 Depends: untangle-vm
 XB-Display-Name: Shield
 XB-Auto-Start: true
+XB-View-Position: 2000
+XB-Invisible: true
 XB-Untangle-Type: service
 XB-Untangle-Pkg-Type: service
-XB-View-Position: 1110
 XB-Desc-Icon: iVBORw0KGgoAAAANSUhEUgAAACoAAAAqCAYAAADFw8lbAAAACXBIWXMAAAsTAAALEwEAmpwYAAAA
  IGNIUk0AAHolAACAgwAA+f8AAIDpAAB1MAAA6mAAADqYAAAXb5JfxUYAAA08SURBVHjarJlbjGTX
  VYa/tfe5VnVVdbfbHvfYY/fEY4/tyA6KHduRHGMHWQYBAh4QKPBAxBMvSEgIeEZIIAQPkRAPCGQE
