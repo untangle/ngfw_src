@@ -137,14 +137,15 @@ function expandFile()
     fi
 
     # Check that all required libitems are installed
-    cat $WORKING_DIR/$PACKAGES_FILE | while read line ; do 
+    while read line ; do 
         PKG="`echo $line | awk '{print $1}'`"
-        dpkg -l $PKG >/dev/null 2>&1
-        if [ $? != 0 ] ; then
+        if dpkg-query -Wf'${db:Status-abbrev}' $PKG 2>/dev/null | grep -q '^i' ; then
+            continue
+        else
             err "Required packages are not installed: $PKG"
             return 1
         fi
-    done
+    done < <(cat $WORKING_DIR/$PACKAGES_FILE )
 
     return 0
 }
