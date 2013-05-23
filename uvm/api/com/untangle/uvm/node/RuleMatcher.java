@@ -91,6 +91,7 @@ public class RuleMatcher implements JSONString, Serializable
             SITEFILTER_CATEGORY, /* "Pornography" or "Porn*" */ 
             SITEFILTER_CATEGORY_DESCRIPTION, /* *Nudity* */
             SITEFILTER_FLAGGED, /* boolean */
+            HTTPS_SNI_HOSTNAME, /* "microsoft.com" "any" */
 
             /* DEPRECATED */
             /* DEPRECATED */
@@ -322,6 +323,7 @@ public class RuleMatcher implements JSONString, Serializable
         case CLASSD_CATEGORY:
         case CLASSD_PROTOCHAIN:
         case CLASSD_DETAIL:
+        case HTTPS_SNI_HOSTNAME:
             this.regexValue = GlobUtil.globToRegex(value);
             break;
 
@@ -682,6 +684,12 @@ public class RuleMatcher implements JSONString, Serializable
             
         case SERVER_IN_PENALTY_BOX:
             return UvmContextFactory.context().hostTable().hostInPenaltyBox( sess.getServerAddr() );
+
+        case HTTPS_SNI_HOSTNAME:
+            attachment = (String) sess.globalAttachment(NodeSession.KEY_HTTPS_SNI_HOSTNAME);
+            if (attachment == null)
+                return false;
+            return Pattern.matches(regexValue, attachment);
 
         default:
             logger.error("Unknown Matcher Type: \"" + this.matcherType + "\""); 
