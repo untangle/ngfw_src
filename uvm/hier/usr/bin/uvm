@@ -104,7 +104,6 @@ def prepareSystem():
     procset('/proc/sys/net/ipv4/netfilter/ip_conntrack_udp_timeout_stream',"180",True)
     procset('/proc/sys/net/netfilter/nf_conntrack_udp_timeout',"70",True);
     procset('/proc/sys/net/ipv4/netfilter/ip_conntrack_udp_timeout',"70",True);
-    procset('/proc/sys/vm/swappiness',"60",True);
     procset('/proc/sys/net/ipv4/tcp_synack_retries',"0",True);
     procset('/proc/sys/net/ipv4/tcp_syncookies',"1",True);
     procset('/proc/sys/net/ipv4/netfilter/ip_conntrack_tcp_timeout_time_wait',"30",True);
