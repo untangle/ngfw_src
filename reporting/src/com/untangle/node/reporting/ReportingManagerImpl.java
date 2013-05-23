@@ -186,9 +186,7 @@ public class ReportingManagerImpl implements ReportingManager
     {
         Application platform = new Application("untangle-vm", "System");
 
-        List<Application> apps = getApplications(getDateDir(d, numDays),
-                                                 "user-drilldown");
-
+        List<Application> apps = getApplications( getDateDir(d, numDays), "user-drilldown" );
         List<User> users = new ArrayList<User>();
         List<Host> hosts = new ArrayList<Host>();
         List<Email> emails = new ArrayList<Email>();
@@ -201,8 +199,7 @@ public class ReportingManagerImpl implements ReportingManager
     {
         Application platform = new Application("untangle-vm", "System");
 
-        List<Application> apps = getApplications(getDateDir(d, numDays), "user-drilldown");
-
+        List<Application> apps = getApplications( getDateDir(d, numDays), "user-drilldown" );
         List<User> users = new ArrayList<User>();
         List<Host> hosts = new ArrayList<Host>();
         List<Email> emails = new ArrayList<Email>();
@@ -214,8 +211,7 @@ public class ReportingManagerImpl implements ReportingManager
     {
         Application platform = new Application("untangle-vm", "System");
 
-        List<Application> apps = getApplications(getDateDir(d, numDays), "email-drilldown");
-
+        List<Application> apps = getApplications( getDateDir(d, numDays), "email-drilldown" );
         List<User> users = new ArrayList<User>();
         List<Host> hosts = new ArrayList<Host>();
         List<Email> emails = new ArrayList<Email>();
@@ -444,7 +440,6 @@ public class ReportingManagerImpl implements ReportingManager
 
         for (String s : appNames) {
             PackageDesc md = UvmContextFactory.context().aptManager().packageDesc(s);
-
             int pos;
 
             if (null == md) {

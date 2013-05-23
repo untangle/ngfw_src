@@ -551,6 +551,12 @@ Ext.define('Ung.Reports', {
                     id: "untangle-node-reporting",
                     leaf: true,
                     icon: "./node-icons/server.png"
+                },
+                {
+                    text: i18n._("Shield"),
+                    id: "untangle-node-shield",
+                    leaf: true,
+                    icon: "./node-icons/untangle-node-shield.png"
                 }
             );
         }
@@ -1421,7 +1427,7 @@ Ext.define('Ung.ReportDetails', {
                                     var rec= [];
                                     var property;
                                     for (var i=0; i<fields.length ; i++) {
-                                        property = (fields[i].mapping != null)?fields[i].mapping:fields[i].name
+                                        property = (fields[i].mapping != null)?fields[i].mapping:fields[i].name;
                                         rec.push(
                                             (property=='id')?index+1:
                                             (property=='time_stamp')?{javaClass:"java.util.Date", time: (new Date(i*10000)).getTime()}:

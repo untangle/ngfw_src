@@ -43,7 +43,7 @@ class Shield(Node):
         return
 
     def get_toc_membership(self):
-        return [TOP_LEVEL, HOST_DRILLDOWN, USER_DRILLDOWN]
+        return [HOST_DRILLDOWN, USER_DRILLDOWN]
 
     def parents(self):
         return ['untangle-vm']
