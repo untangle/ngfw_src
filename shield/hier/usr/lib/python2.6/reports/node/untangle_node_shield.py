@@ -1,12 +1,15 @@
 import gettext
 import logging
 import mx
+import reports.colors as colors
 import reports.i18n_helper
 import reports.engine
 import reports.sql_helper as sql_helper
+import sys
 
 from psycopg2.extensions import DateFromMx
 from psycopg2.extensions import QuotedString
+from psycopg2.extensions import TimestampFromMx
 from reports import Chart
 from reports import ColumnDesc
 from reports import DATE_FORMATTER
@@ -17,14 +20,14 @@ from reports import HOUR_FORMATTER
 from reports import KeyStatistic
 from reports import PIE_CHART
 from reports import Report
+from reports import STACKED_BAR_CHART
 from reports import SummarySection
-from reports import TIMESTAMP_FORMATTER
 from reports import TIME_OF_DAY_FORMATTER
-from reports import TIME_SERIES_CHART
 from reports.engine import Column
-from reports.engine import Column
+from reports.engine import HOST_DRILLDOWN
 from reports.engine import Node
 from reports.engine import TOP_LEVEL
+from reports.engine import USER_DRILLDOWN
 from reports.sql_helper import print_timing
 
 _ = reports.i18n_helper.get_translation('untangle-node-shield').lgettext
@@ -35,86 +38,71 @@ class Shield(Node):
 
     @print_timing
     def setup(self):
-        self.__create_shield_rejection_totals()
-        self.__create_shield_totals()
-
-    def reports_cleanup(self, cutoff):
-        sql_helper.drop_fact_table("shield_rejection_totals", cutoff)
-        sql_helper.drop_fact_table("shield_totals", cutoff)        
-
-    @print_timing
-    def __create_shield_rejection_totals(self):
-        sql_helper.create_fact_table("""\
-CREATE TABLE reports.shield_rejection_totals (
-    time_stamp timestamp without time zone,
-    client_addr inet,
-    client_intf integer,
-    mode        integer,
-    reputation  float8,
-    limited     integer,
-    dropped     integer,
-    rejected    integer,
-    event_id bigserial)""")
-
-        sql_helper.create_index("reports","shield_rejection_totals","event_id");
-        sql_helper.create_index("reports","shield_rejection_totals","time_stamp");
-
-    def __create_shield_totals(self):
-        sql_helper.create_fact_table("""\
-CREATE TABLE reports.shield_totals (
-    time_stamp timestamp without time zone,
-    accepted   integer,
-    limited    integer,
-    dropped    integer,
-    rejected   integer)""")
+        ft = reports.engine.get_fact_table('reports.session_totals')
+        ft.measures.append(Column('shield_blocks', 'integer', "count(CASE WHEN shield_blocked THEN 1 ELSE null END)"))
+        return
 
     def get_toc_membership(self):
-        return [TOP_LEVEL]
+        return [TOP_LEVEL, HOST_DRILLDOWN, USER_DRILLDOWN]
 
     def parents(self):
         return ['untangle-vm']
 
     def get_report(self):
         sections = []
-
-        s = SummarySection('summary', _('Summary Report'),
-                           [ShieldHighlight(self.name),
-                            DailyRequest(),
-                            BlockedHosts(),
-                            LimitedHosts()])
+        s = reports.SummarySection('summary', _('Summary Report'),
+                                   [ShieldHighlight(self.name),
+                                    DailyRules(),
+                                    TopTenBlockedHostsByHits(),
+                                    TopTenBlockedUsersByHits()])
         sections.append(s)
 
         sections.append(ShieldDetail())
 
-        return Report(self, sections)
+        return reports.Report(self, sections)
+
+    def reports_cleanup(self, cutoff):
+        pass
 
 class ShieldHighlight(Highlight):
     def __init__(self, name):
         Highlight.__init__(self, name,
                            _(name) + " " +
                            _("scanned") + " " + "%(sessions)s" + " " +
-                           _("sessions, of which it limited") +
-                           " " + "%(limited)s" + " " + _("and dropped") +
-                           " " + "%(dropped)s")
+                           _("sessions and blocked") + " " +
+                           "%(blocks)s" + " " + _("sessions"))
 
     @print_timing
     def get_highlights(self, end_date, report_days,
                        host=None, user=None, email=None):
-        if host or user or email:
+        if email:
             return None
 
-        query = """
-SELECT COALESCE(sum(accepted+limited+dropped+rejected), 0) AS sessions,
-       COALESCE(sum(limited), 0) AS limited,
-       COALESCE(sum(dropped), 0) AS dropped
-FROM reports.shield_totals"""
+        ed = DateFromMx(end_date)
+        one_week = DateFromMx(end_date - mx.DateTime.DateTimeDelta(report_days))
+
+        query = """\
+SELECT COALESCE(SUM(new_sessions),0)::int AS sessions,
+       COALESCE(sum(shield_blocks), 0) AS blocks
+FROM reports.session_totals
+WHERE time_stamp >= %s::timestamp without time zone AND time_stamp < %s::timestamp without time zone"""
+
+        if host:
+            query = query + " AND hostname = %s"
+        elif user:
+            query = query + " AND username = %s"
 
         conn = sql_helper.get_connection()
         curs = conn.cursor()
 
         h = {}
         try:
-            curs.execute(query, ())
+            if host:
+                curs.execute(query, (one_week, ed, host))
+            elif user:
+                curs.execute(query, (one_week, ed, user))
+            else:
+                curs.execute(query, (one_week, ed))
 
             h = sql_helper.get_result_dictionary(curs)
                 
@@ -123,26 +111,33 @@ FROM reports.shield_totals"""
 
         return h
 
-class DailyRequest(Graph):
+class DailyRules(reports.Graph):
     def __init__(self):
-        Graph.__init__(self, 'requests', _('Requests'))
+        reports.Graph.__init__(self, 'sessions', _('Sessions'))
 
-    @print_timing
-    def get_graph(self, end_date, report_days, host=None, user=None,
-                  email=None):
-        if host or user or email:
+    @sql_helper.print_timing
+    def get_graph(self, end_date, report_days, host=None, user=None, email=None):
+        if email:
             return None
 
         start_date = end_date - mx.DateTime.DateTimeDelta(report_days)
 
         lks = []
-        
+
         conn = sql_helper.get_connection()
         curs = conn.cursor()
         try:
-            sums = ["coalesce(sum(accepted), 0)",
-                    "coalesce(sum(limited), 0)",
-                    "coalesce(sum(dropped+rejected), 0)"]
+            if report_days == 1:
+                time_interval = 60 * 60
+                unit = "Hour"
+                formatter = HOUR_FORMATTER
+            else:
+                time_interval = 24 * 60 * 60
+                unit = "Day"
+                formatter = DATE_FORMATTER
+
+            sums = ["COUNT(CASE WHEN shield_blocked is NULL THEN 1 ELSE null END)",
+                    "COUNT(CASE WHEN shield_blocked THEN 1 ELSE null END)"]
 
             extra_where = []
             if host:
@@ -150,193 +145,215 @@ class DailyRequest(Graph):
             elif user:
                 extra_where.append(("username = %(user)s" , { 'user' : user }))
 
-            q, h = sql_helper.get_averaged_query(sums, "reports.shield_totals",
+            q, h = sql_helper.get_averaged_query(sums, "reports.sessions",
                                                  start_date,
                                                  end_date,
                                                  extra_where = extra_where,
-                                                 time_field = "time_stamp")
+                                                 time_interval = time_interval,
+                                                 time_field = 'time_stamp')
             curs.execute(q, h)
 
-            times = []
-            accepted = []
-            limited = []
-            blocked = []
+            dates = []
+            scans = []
+            blocks = []
 
-            for r in curs.fetchall():
-                times.append(r[0])
-                accepted.append(r[1])
-                limited.append(r[2])
-                blocked.append(r[3])
+            while 1:
+                r = curs.fetchone()
+                if not r:
+                    break
+                dates.append(r[0])
+                scans.append(r[1])
+                blocks.append(r[2])
 
-            if not accepted:
-                accepted = [0,]
-            if not limited:
-                limited = [0,]
-            if not blocked:
-                blocked = [0,]
-
-            ks = KeyStatistic(_('Avg Requests'), sum(accepted+limited+blocked)/len(accepted),
-                              _('Sessions/minute'))
-            lks.append(ks)
-            ks = KeyStatistic(_('Max Requests'), sum(accepted+limited+blocked),
-                              _('Sessions/minute'))
-            lks.append(ks)
-            ks = KeyStatistic(_('Avg Limited'), sum(limited)/len(accepted),
-                              _('Sessions/minute'))
-            lks.append(ks)
-            ks = KeyStatistic(_('Max Limited'), sum(limited),
-                              _('Sessions/minute'))
-            lks.append(ks)
-            ks = KeyStatistic(_('Avg Blocked'), sum(blocked)/len(accepted),
-                              _('Sessions/minute'))
-            lks.append(ks)
-            ks = KeyStatistic(_('Max Blocked'), sum(blocked),
-                              _('Sessions/minute'))
-            lks.append(ks)
-
-            plot = Chart(type=TIME_SERIES_CHART,
-                         title=_('Request'),
-                         xlabel=_('Date'),
-                         ylabel=_('Requests Per Minute'),
-                         major_formatter=TIMESTAMP_FORMATTER)
-
-            plot.add_dataset(times, accepted, label=_('Accepted'))
-            plot.add_dataset(times, limited, label=_('Limited'))
-            plot.add_dataset(times, blocked, label=_('Blocked'))
+            if not scans:
+                scans = [0,]
+            if not blocks:
+                blocks = [0,]
                 
+            rp = sql_helper.get_required_points(start_date, end_date,
+                                                mx.DateTime.DateTimeDeltaFromSeconds(time_interval))
+
+            ks = reports.KeyStatistic(_('Avg Scanned'), sum(scans + blocks)/len(rp),_('Scanned')+'/'+_(unit))
+            lks.append(ks)
+            ks = reports.KeyStatistic(_('Max Scanned'), max(scans + blocks),_('Scanned')+'/'+_(unit))
+            lks.append(ks)
+            ks = reports.KeyStatistic(_('Avg Blocked'), sum(blocks)/len(rp),_('Blocks')+'/'+_(unit))
+            lks.append(ks)
+            ks = reports.KeyStatistic(_('Max Blocked'), max(blocks),_('Blocks')+'/'+_(unit))
+            lks.append(ks)
+
+            plot = reports.Chart(type=reports.STACKED_BAR_CHART,
+                                 title=_('Sessions'),
+                                 xlabel=_(unit),
+                                 ylabel=_('Sessions'),
+                                 major_formatter=formatter,
+                                 required_points=rp)
+
+            plot.add_dataset(dates, blocks, label=_('Blocked'), color=colors.badness)
+            plot.add_dataset(dates, scans, label=_('Scanned'), color=colors.goodness)
+
         finally:
             conn.commit()
 
         return (lks, plot)
 
-class BlockedHosts(Graph):
+class TopTenBlockedHostsByHits(Graph):
     def __init__(self):
-        Graph.__init__(self, 'blocked-hosts', _('Top Blocked Hosts'))
+        Graph.__init__(self, 'top-shield-blocked-hosts-by-hits', _('Top Shield Blocked Hosts By Hits'))
 
     @print_timing
     def get_graph(self, end_date, report_days, host=None, user=None,
                   email=None):
-        if host or user or email:
+        if email:
             return None
 
         ed = DateFromMx(end_date)
         one_week = DateFromMx(end_date - mx.DateTime.DateTimeDelta(report_days))
 
         query = """\
-SELECT client_addr, sum(dropped + rejected) AS blocked
-FROM reports.shield_rejection_totals
+SELECT hostname, count(*) as hits_sum
+FROM reports.session_totals
 WHERE time_stamp >= %s::timestamp without time zone AND time_stamp < %s::timestamp without time zone
-AND ((dropped > 0) OR (rejected > 0))
-GROUP BY client_addr
-ORDER BY blocked desc"""
+AND shield_blocks > 0"""
+
+        if host:
+            query += " AND hostname = %s"
+        elif user:
+            query += " AND username = %s"
+
+        query = query + " GROUP BY hostname ORDER BY hits_sum DESC"
 
         conn = sql_helper.get_connection()
         try:
+            lks = []
+            dataset = {}
+
             curs = conn.cursor()
 
-            curs.execute(query, (one_week, ed))
+            if host:
+                curs.execute(query, (one_week, ed, host))
+            elif user:
+                curs.execute(query, (one_week, ed, user))
+            else:
+                curs.execute(query, (one_week, ed))
 
-            lks = []
-            pds = {}
-
-            for r in curs.fetchall():
-                host = r[0]
-                num = r[1]
-
-                lks.append(KeyStatistic(host, num, _('Blocks'),
-                           link_type=reports.HNAME_LINK))
-                pds[host] = num
+                for r in curs.fetchall():
+                    ks = KeyStatistic(r[0], r[1], _('Hits'), link_type=reports.HNAME_LINK)
+                    lks.append(ks)
+                    dataset[r[0]] = r[1]
         finally:
             conn.commit()
 
         plot = Chart(type=PIE_CHART,
-                     title=_('Top Blocked Hosts'))
-
-        plot.add_pie_dataset(pds, display_limit=10)
-
+                     title=_('Top Ten Shield Blocked Hosts (by Hits)'),
+                     xlabel=_('Host'),
+                     ylabel=_('Blocks Per Day'))
+        plot.add_pie_dataset(dataset, display_limit=10)
 
         return (lks, plot, 10)
 
-class LimitedHosts(Graph):
+class TopTenBlockedUsersByHits(Graph):
     def __init__(self):
-        Graph.__init__(self, 'limited-hosts', _('Top Limited Hosts'))
+        Graph.__init__(self, 'top-shield-blocked-users-by-hits', _('Top Shield Blocked Users By Hits'))
 
     @print_timing
     def get_graph(self, end_date, report_days, host=None, user=None,
                   email=None):
-        if host or user or email:
+        if email:
             return None
 
         ed = DateFromMx(end_date)
         one_week = DateFromMx(end_date - mx.DateTime.DateTimeDelta(report_days))
 
         query = """\
-SELECT client_addr, sum(limited) AS limited
-FROM reports.shield_rejection_totals
+SELECT username, count(*) as hits_sum
+FROM reports.session_totals
 WHERE time_stamp >= %s::timestamp without time zone AND time_stamp < %s::timestamp without time zone
-AND limited > 0
-GROUP BY client_addr
-ORDER BY limited desc"""
+AND username != ''
+AND shield_blocks > 0"""
+
+        if host:
+            query += " AND hostname = %s"
+        elif user:
+            query += " AND username = %s"
+
+        query += " GROUP BY username ORDER BY hits_sum DESC"
 
         conn = sql_helper.get_connection()
         try:
+            lks = []
+            dataset = {}
+
             curs = conn.cursor()
 
-            curs.execute(query, (one_week, ed))
-
-            lks = []
-            pds = {}
+            if host:
+                curs.execute(query, (one_week, ed, host))
+            elif user:
+                curs.execute(query, (one_week, ed, user))
+            else:
+                curs.execute(query, (one_week, ed))
 
             for r in curs.fetchall():
-                host = r[0]
-                num = r[1]
-
-                lks.append(KeyStatistic(host, num, _('Limited'),
-                                        link_type=reports.HNAME_LINK))
-                pds[host] = num
+                ks = KeyStatistic(r[0], r[1], _('Hits'), link_type=reports.USER_LINK)
+                lks.append(ks)
+                dataset[r[0]] = r[1]
         finally:
             conn.commit()
 
-        plot = Chart(type=PIE_CHART, title=_('Top Limited Hosts'))
+        plot = Chart(type=PIE_CHART,
+                     title=_('Top Ten Shield Blocked Users (by Hits)'),
+                     xlabel=_('User'),
+                     ylabel=_('Blocks Per Day'))
 
-        plot.add_pie_dataset(pds, display_limit=10)
+        plot.add_pie_dataset(dataset, display_limit=10)
 
         return (lks, plot, 10)
 
 class ShieldDetail(DetailSection):
-
     def __init__(self):
-        DetailSection.__init__(self, 'attack-events', _('Events'))
+        DetailSection.__init__(self, 'shield-events', _('Shield Events'))
 
     def get_columns(self, host=None, user=None, email=None):
-        if user or email:
+        if email:
             return None
 
         rv = [ColumnDesc('time_stamp', _('Time'), 'Date')]
 
-        rv = rv + [ColumnDesc('client_addr', _('Client')),
-                   ColumnDesc('limited', _('Limited')),
-                   ColumnDesc('dropped', _('Dropped')),
-                   ColumnDesc('rejected', _('Rejected'))]
+        if not host:
+            rv.append(ColumnDesc('hostname', _('Client'), 'HostLink'))
+        if not user:
+            rv.append(ColumnDesc('username', _('User'), 'UserLink'))
+
+        rv = rv + [ColumnDesc('shield_blocked', _('Blocked')),
+                   ColumnDesc('c_server_addr', _('Destination Ip')),
+                   ColumnDesc('c_server_port', _('Destination Port')),
+                   ColumnDesc('c_client_addr', _('Source Ip')),
+                   ColumnDesc('c_client_port', _('Source Port'))]
 
         return rv
 
     def get_sql(self, start_date, end_date, host=None, user=None, email=None):
-        if user or email:
+        if email:
             return None
 
-        sql = "SELECT time_stamp, "
+        sql = "SELECT time_stamp,"
 
-        sql = sql + ("""host(client_addr), limited, dropped, rejected
-FROM reports.shield_rejection_totals
+        if not host:
+            sql = sql + "hostname, "
+        if not user:
+            sql = sql + "username, "
+
+        sql = sql + ("""shield_blocked::text, host(c_server_addr), c_server_port, host(c_client_addr), c_client_port
+FROM reports.sessions
 WHERE time_stamp >= %s::timestamp without time zone AND time_stamp < %s::timestamp without time zone
-      AND (limited + dropped + rejected) > 0""" % (DateFromMx(start_date),
-                                                   DateFromMx(end_date)))
+AND shield_blocked IS TRUE""" % (DateFromMx(start_date),
+                                 DateFromMx(end_date)))
 
         if host:
-            sql += " AND client_addr = %s" % (QuotedString(host),)
+            sql = sql + (" AND hostname = %s" % QuotedString(host))
+        if user:
+            sql = sql + (" AND username = %s" % QuotedString(user))
 
         return sql + " ORDER BY time_stamp DESC"
 
 reports.engine.register_node(Shield())
-

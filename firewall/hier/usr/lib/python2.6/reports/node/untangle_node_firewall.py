@@ -137,7 +137,8 @@ class DailyRules(reports.Graph):
                 unit = "Day"
                 formatter = DATE_FORMATTER
 
-            sums = ["COUNT(CASE WHEN firewall_rule_index IS NOT NULL AND NOT firewall_blocked THEN 1 ELSE null END)",
+            sums = ["COUNT(CASE WHEN firewall_rule_index IS NOT NULL AND NOT firewall_flagged AND NOT firewall_blocked THEN 1 ELSE null END)",
+                    "COUNT(CASE WHEN firewall_flagged AND NOT firewall_blocked THEN 1 ELSE null END)",
                     "COUNT(CASE WHEN firewall_blocked THEN 1 ELSE null END)"]
 
             extra_where = []
@@ -155,7 +156,8 @@ class DailyRules(reports.Graph):
             curs.execute(q, h)
 
             dates = []
-            logs = []
+            scans = []
+            flags = []
             blocks = []
 
             while 1:
@@ -163,20 +165,27 @@ class DailyRules(reports.Graph):
                 if not r:
                     break
                 dates.append(r[0])
-                logs.append(r[1])
-                blocks.append(r[2])
+                scans.append(r[1])
+                flags.append(r[2])
+                blocks.append(r[3])
 
-            if not logs:
-                logs = [0,]
+            if not scans:
+                scans = [0,]
+            if not flags:
+                flags = [0,]
             if not blocks:
                 blocks = [0,]
                 
             rp = sql_helper.get_required_points(start_date, end_date,
                                                 mx.DateTime.DateTimeDeltaFromSeconds(time_interval))
 
-            ks = reports.KeyStatistic(_('Avg Logged'), sum(logs + blocks)/len(rp),_('Logs')+'/'+_(unit))
+            ks = reports.KeyStatistic(_('Avg Scanned'), sum(scans + flags + blocks)/len(rp),_('Scans')+'/'+_(unit))
             lks.append(ks)
-            ks = reports.KeyStatistic(_('Max Logged'), max(logs + blocks),_('Logs')+'/'+_(unit))
+            ks = reports.KeyStatistic(_('Max Scanned'), max(scans + flags + blocks),_('Scans')+'/'+_(unit))
+            lks.append(ks)
+            ks = reports.KeyStatistic(_('Avg Flagged'), sum(flags + blocks)/len(rp),_('Flags')+'/'+_(unit))
+            lks.append(ks)
+            ks = reports.KeyStatistic(_('Max Flagged'), max(flags + blocks),_('Flags')+'/'+_(unit))
             lks.append(ks)
             ks = reports.KeyStatistic(_('Avg Blocked'), sum(blocks)/len(rp),_('Blocks')+'/'+_(unit))
             lks.append(ks)
@@ -191,7 +200,8 @@ class DailyRules(reports.Graph):
                                  required_points=rp)
 
             plot.add_dataset(dates, blocks, label=_('Blocked'), color=colors.badness)
-            plot.add_dataset(dates, logs, label=_('Logged'), color=colors.detected)
+            plot.add_dataset(dates, flags, label=_('Flagged'), color=colors.detected)
+            plot.add_dataset(dates, scans, label=_('Scanned'), color=colors.goodness)
 
         finally:
             conn.commit()
