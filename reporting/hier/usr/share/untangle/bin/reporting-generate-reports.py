@@ -1,7 +1,7 @@
 #! /usr/bin/env python 
 # $Id: reporting-generate-reports.py,v 1.00 2012/08/30 15:24:12 dmorris Exp $
 
-import getopt, logging, mx, os, os.path, re, sys, tempfile, time, shutil, datetime
+import getopt, logging, mx, os, os.path, re, sys, tempfile, time, shutil, datetime, traceback
 from subprocess import Popen, PIPE
 from psycopg2.extensions import DateFromMx, TimestampFromMx
 from uvm.settings_reader import get_node_settings_item
@@ -286,7 +286,7 @@ if report_lengths != []:
                reports.engine.process_fact_tables(init_date, start_time)
                reports.engine.post_facttable_setup(init_date, start_time)
           except Exception, e:
-               logger.critical("Exception while doing fact-tables: %s" % (e,), exc_info=True)
+               logger.critical("Exception while processing fact-tables: %s" % (e,), exc_info=True)
                sys.exit(1)
 
 if not create_schemas:

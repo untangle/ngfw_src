@@ -58,10 +58,10 @@ class SpamBaseNode(Node):
                         "count(CASE WHEN %s_is_spam THEN 1 ELSE null END)" \
                             % self.__short_name)
 
-        ft = reports.engine.get_fact_table('reports.n_mail_msg_totals')
+        ft = reports.engine.get_fact_table('reports.mail_msg_totals')
         ft.measures.append(column)
 
-        ft = reports.engine.get_fact_table('reports.n_mail_addr_totals')
+        ft = reports.engine.get_fact_table('reports.mail_addr_totals')
         ft.measures.append(column)
 
     def get_toc_membership(self):
@@ -137,7 +137,7 @@ class SpamHighlight(Highlight):
         query = """\
 SELECT coalesce(sum(msgs), 0)::int AS messages,
        coalesce(sum(%s_spam_msgs), 0)::int AS spam
-FROM reports.n_mail_addr_totals
+FROM reports.mail_addr_totals
 WHERE time_stamp >= %%s AND time_stamp < %%s
 AND addr_kind = 'T'""" % (self.__short_name,)
 
@@ -184,7 +184,7 @@ class TotalEmail(Graph):
         query = """
 SELECT coalesce(sum(msgs), 0)::int,
        coalesce(sum(%s_spam_msgs), 0)::int
-FROM reports.n_mail_addr_totals
+FROM reports.mail_addr_totals
 WHERE time_stamp >= %%s AND time_stamp < %%s
 AND addr_kind = 'T'""" % (self.__short_name,)
 
@@ -255,7 +255,7 @@ class HourlySpamRate(Graph):
             ks_query = """\
 SELECT COALESCE(sum(msgs), 0)::float / (%%s * 24) AS email_rate,
        COALESCE(sum(%s_spam_msgs), 0)::float / (%%s * 24) AS spam_rate
-FROM reports.n_mail_addr_totals
+FROM reports.mail_addr_totals
 WHERE time_stamp >= %%s AND time_stamp < %%s
 AND addr_kind = 'T'""" % (self.__short_name,)
 
@@ -293,7 +293,7 @@ AND addr_kind = 'T'""" % (self.__short_name,)
             else:
                 extra_where = (("addr_kind = 'T' AND addr_pos = '1'", {}),)
                 
-            q, h = sql_helper.get_averaged_query(sums, "reports.n_mail_addr_totals",
+            q, h = sql_helper.get_averaged_query(sums, "reports.mail_addr_totals",
                                                  end_date - mx.DateTime.DateTimeDelta(report_days),
                                                  end_date,
                                                  extra_where = extra_where)
@@ -365,7 +365,7 @@ class DailySpamRate(Graph):
                 unit = "Day"
                 formatter = DATE_FORMATTER
                 
-            q, h = sql_helper.get_averaged_query(sums, "reports.n_mail_addr_totals",
+            q, h = sql_helper.get_averaged_query(sums, "reports.mail_addr_totals",
                                                  start_date,
                                                  end_date,
                                                  extra_where = extra_where,
@@ -452,7 +452,7 @@ class TopSpammedUsers(Graph):
             query = """\
 SELECT foo.addr, foo.spam_msgs
 FROM (SELECT addr, sum(%s_spam_msgs)::int AS spam_msgs
-      FROM reports.n_mail_addr_totals
+      FROM reports.mail_addr_totals
       WHERE addr_kind = 'T'
       AND addr_pos = '1'
       AND time_stamp >= %%s AND time_stamp < %%s

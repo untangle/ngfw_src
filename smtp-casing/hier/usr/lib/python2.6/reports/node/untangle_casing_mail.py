@@ -23,7 +23,7 @@ class SmtpCasing(Node):
         self.__create_mail_msgs()
         self.__create_mail_addrs()
 
-        ft = FactTable('reports.n_mail_msg_totals', 'reports.mail_msgs',
+        ft = FactTable('reports.mail_msg_totals', 'reports.mail_msgs',
                        'time_stamp',
                        [Column('hostname', 'text'), Column('username', 'text'),
                         Column('client_intf', 'smallint'),
@@ -32,7 +32,7 @@ class SmtpCasing(Node):
                         Column('msg_bytes', 'bigint', 'sum(msg_bytes)')])
         reports.engine.register_fact_table(ft)
 
-        ft = FactTable('reports.n_mail_addr_totals', 'reports.mail_addrs',
+        ft = FactTable('reports.mail_addr_totals', 'reports.mail_addrs',
                        'time_stamp',
                        [Column('hostname', 'text'), Column('username', 'text'),
                         Column('client_intf', 'smallint'),
@@ -48,9 +48,9 @@ class SmtpCasing(Node):
 
     def reports_cleanup(self, cutoff):
         sql_helper.drop_fact_table("mail_addrs", cutoff)
-        sql_helper.drop_fact_table("n_mail_addr_totals", cutoff)        
+        sql_helper.drop_fact_table("mail_addr_totals", cutoff)        
         sql_helper.drop_fact_table("mail_msgs", cutoff)
-        sql_helper.drop_fact_table("n_mail_msg_totals", cutoff)        
+        sql_helper.drop_fact_table("mail_msg_totals", cutoff)        
         sql_helper.drop_fact_table("email", cutoff)        
 
     @print_timing
@@ -89,7 +89,6 @@ CREATE TABLE reports.mail_addrs (
     phish_score real,
     phish_is_spam boolean,
     phish_action character,
-    vendor text,
     commtouchav_clean boolean,
     commtouchav_name text)""")
 
@@ -106,20 +105,17 @@ CREATE TABLE reports.mail_addrs (
 
         sql_helper.add_column('reports', 'mail_addrs', 'event_id', 'bigserial')
         sql_helper.add_column('reports', 'mail_addrs', 'sender', 'text')
-        sql_helper.add_column('reports', 'mail_addrs', 'virus_clam_clean', 'boolean')
-        sql_helper.add_column('reports', 'mail_addrs', 'virus_clam_name', 'text')
-        sql_helper.add_column('reports', 'mail_addrs', 'sa_score', 'real')
-        sql_helper.add_column('reports', 'mail_addrs', 'sa_is_spam', 'boolean')
-        sql_helper.add_column('reports', 'mail_addrs', 'sa_action', 'character')
-        sql_helper.add_column('reports', 'mail_addrs', 'ct_score', 'real')
-        sql_helper.add_column('reports', 'mail_addrs', 'ct_is_spam', 'boolean')
-        sql_helper.add_column('reports', 'mail_addrs', 'ct_action', 'character')
-        sql_helper.add_column('reports', 'mail_addrs', 'virus_kaspersky_clean', 'boolean')
-        sql_helper.add_column('reports', 'mail_addrs', 'virus_kaspersky_name', 'text')
+        sql_helper.add_column('reports', 'mail_addrs', 'clam_clean', 'boolean')
+        sql_helper.add_column('reports', 'mail_addrs', 'clam_name', 'text')
+        sql_helper.add_column('reports', 'mail_addrs', 'spamassassin_score', 'real')
+        sql_helper.add_column('reports', 'mail_addrs', 'spamassassin_is_spam', 'boolean')
+        sql_helper.add_column('reports', 'mail_addrs', 'spamassassin_action', 'character')
+        sql_helper.add_column('reports', 'mail_addrs', 'commtouchas_score', 'real')
+        sql_helper.add_column('reports', 'mail_addrs', 'commtouchas_is_spam', 'boolean')
+        sql_helper.add_column('reports', 'mail_addrs', 'commtouchas_action', 'character')
         sql_helper.add_column('reports', 'mail_addrs', 'phish_score', 'real')
         sql_helper.add_column('reports', 'mail_addrs', 'phish_is_spam', 'boolean')
         sql_helper.add_column('reports', 'mail_addrs', 'phish_action', 'character')
-        sql_helper.add_column('reports', 'mail_addrs', 'vendor', 'text')
         sql_helper.add_column('reports', 'mail_addrs', 'commtouchav_clean', 'boolean')
         sql_helper.add_column('reports', 'mail_addrs', 'commtouchav_name', 'text')
 
@@ -142,13 +138,12 @@ CREATE TABLE reports.mail_addrs (
 
         # virus blocker event log query indexes
         # sql_helper.create_index("reports","mail_addrs","commtouchav_clean");
-        # sql_helper.create_index("reports","mail_addrs","virus_clam_clean");
-        # sql_helper.create_index("reports","mail_addrs","virus_kaspersky_clean");
+        # sql_helper.create_index("reports","mail_addrs","clam_clean");
 
         # spam blocker event log query indexes
         # sql_helper.create_index("reports","mail_addrs","addr_kind");
-        # sql_helper.create_index("reports","mail_addrs","sa_action");
-        # sql_helper.create_index("reports","mail_addrs","ct_action");
+        # sql_helper.create_index("reports","mail_addrs","spamassassin_action");
+        # sql_helper.create_index("reports","mail_addrs","commtouchas_action");
         # sql_helper.create_index("reports","mail_addrs","phish_action");
 
     @print_timing
@@ -167,7 +162,7 @@ CREATE TABLE reports.email (
             sql_helper.run_sql("""\
 INSERT INTO reports.email (date, email)
     SELECT DISTINCT date_trunc('day', time_stamp)::date, addr
-    FROM reports.n_mail_addr_totals
+    FROM reports.mail_addr_totals
     WHERE time_stamp >= %s::timestamp without time zone
     AND client_intf = 0 AND addr_kind = 'T'
     AND NOT addr ISNULL""", (sd,), connection=conn, auto_commit=False)
@@ -199,20 +194,17 @@ CREATE TABLE reports.mail_msgs (
     hostname text,
     event_id bigserial,
     sender text,
-    virus_clam_clean boolean,
-    virus_clam_name text,
-    sa_score real,
-    sa_is_spam boolean,
-    sa_action character,
-    ct_score real,
-    ct_is_spam boolean,
-    ct_action character,
-    virus_kaspersky_clean boolean,
-    virus_kaspersky_name text,
+    clam_clean boolean,
+    clam_name text,
+    spamassassin_score real,
+    spamassassin_is_spam boolean,
+    spamassassin_action character,
+    commtouchas_score real,
+    commtouchas_is_spam boolean,
+    commtouchas_action character,
     phish_score real,
     phish_is_spam boolean,
     phish_action character,
-    vendor text,
     commtouchav_clean boolean,
     commtouchav_name text)""")
 
@@ -229,20 +221,17 @@ CREATE TABLE reports.mail_msgs (
 
         sql_helper.add_column('reports', 'mail_msgs', 'event_id', 'bigserial')
         sql_helper.add_column('reports', 'mail_msgs', 'sender', 'text')
-        sql_helper.add_column('reports', 'mail_msgs', 'virus_clam_clean', 'boolean')
-        sql_helper.add_column('reports', 'mail_msgs', 'virus_clam_name', 'text')
-        sql_helper.add_column('reports', 'mail_msgs', 'sa_score', 'real')
-        sql_helper.add_column('reports', 'mail_msgs', 'sa_is_spam', 'boolean')
-        sql_helper.add_column('reports', 'mail_msgs', 'sa_action', 'character')
-        sql_helper.add_column('reports', 'mail_msgs', 'ct_score', 'real')
-        sql_helper.add_column('reports', 'mail_msgs', 'ct_is_spam', 'boolean')
-        sql_helper.add_column('reports', 'mail_msgs', 'ct_action', 'character')
-        sql_helper.add_column('reports', 'mail_msgs', 'virus_kaspersky_clean', 'boolean')
-        sql_helper.add_column('reports', 'mail_msgs', 'virus_kaspersky_name', 'text')
+        sql_helper.add_column('reports', 'mail_msgs', 'clam_clean', 'boolean')
+        sql_helper.add_column('reports', 'mail_msgs', 'clam_name', 'text')
+        sql_helper.add_column('reports', 'mail_msgs', 'spamassassin_score', 'real')
+        sql_helper.add_column('reports', 'mail_msgs', 'spamassassin_is_spam', 'boolean')
+        sql_helper.add_column('reports', 'mail_msgs', 'spamassassin_action', 'character')
+        sql_helper.add_column('reports', 'mail_msgs', 'commtouchas_score', 'real')
+        sql_helper.add_column('reports', 'mail_msgs', 'commtouchas_is_spam', 'boolean')
+        sql_helper.add_column('reports', 'mail_msgs', 'commtouchas_action', 'character')
         sql_helper.add_column('reports', 'mail_msgs', 'phish_score', 'real')
         sql_helper.add_column('reports', 'mail_msgs', 'phish_is_spam', 'boolean')
         sql_helper.add_column('reports', 'mail_msgs', 'phish_action', 'character')
-        sql_helper.add_column('reports', 'mail_msgs', 'vendor', 'text')
         sql_helper.add_column('reports', 'mail_msgs', 'commtouchav_clean', 'boolean')
         sql_helper.add_column('reports', 'mail_msgs', 'commtouchav_name', 'text')
 

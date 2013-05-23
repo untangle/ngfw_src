@@ -161,6 +161,8 @@ CREATE TABLE reports.sessions (
         sql_helper.add_column('reports', 'sessions', 'ips_description', 'text')
         sql_helper.add_column('reports', 'sessions', 'bandwidth_priority', 'integer')
         sql_helper.add_column('reports', 'sessions', 'bandwidth_rule', 'integer')
+        # FIXME remove me
+        sql_helper.add_column('reports', 'sessions', 'spyware_access_ident', 'text')
 
         # If session_id index does not exist, create it
         if not sql_helper.index_exists("reports","sessions","session_id", unique=True):

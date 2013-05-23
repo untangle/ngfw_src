@@ -57,7 +57,7 @@ class VirusBaseNode(Node):
 count(CASE WHEN %s_clean IS NULL OR %s_clean THEN null ELSE 1 END)
 """ % (2 * (self.__vendor_name,))))
 
-        ft = reports.engine.get_fact_table('reports.n_mail_msg_totals')
+        ft = reports.engine.get_fact_table('reports.mail_msg_totals')
 
         ft.measures.append(Column('viruses_%s_blocked' % self.__vendor_name,
                                   'integer', """\
@@ -146,7 +146,7 @@ WHERE time_stamp >= %%s AND time_stamp < %%s
         query_mail = """
 SELECT COALESCE(sum(msgs), 0)::int AS documents,
        COALESCE(sum(viruses_%s_blocked), 0)::int AS viruses
-FROM reports.n_mail_msg_totals
+FROM reports.mail_msg_totals
 WHERE time_stamp >= %%s AND time_stamp < %%s
 """ % (self.__vendor_name,)
 
@@ -236,7 +236,7 @@ class DailyVirusesBlocked(Graph):
             for r in curs.fetchall():
                 viruses[r[0]] = r[1]
 
-            q, h = sql_helper.get_averaged_query(sums, "reports.n_mail_msg_totals",
+            q, h = sql_helper.get_averaged_query(sums, "reports.mail_msg_totals",
                                                  start_date,
                                                  end_date,
                                                  extra_where = extra_where,

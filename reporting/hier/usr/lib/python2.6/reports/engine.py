@@ -10,6 +10,7 @@ import reports.sql_helper as sql_helper
 import string
 import sys
 import time
+import traceback
 
 from mx.DateTime import DateTimeDelta
 from psycopg2.extensions import DateFromMx
@@ -35,32 +36,33 @@ def get_wan_clause():
     for intf in NETCONFIG_JSON_OBJ['interfaces']['list']:
         if intf['configType'] == 'DISABLED':
             continue
-        if intf['isWan'] is not None and intf['isWan'].lower() == 'true':
-            wans.append(intf['interfaceId'])
-
+        if intf.get('isWan'):
+            wans.append(str(intf['interfaceId']))
     return "(" + ','.join(wans) + ")"
 
 def get_wan_names_map():
     map = {}
     for intf in NETCONFIG_JSON_OBJ['interfaces']['list']:
-        if intf['isWan'] is not None and intf['isWan'].lower() == 'true':
+        if intf.get('isWan'):
             map[int(intf['interfaceId'])] = intf['name']
 
     return map
 
 def get_wan_ip():
-    # FIXME
-    return "1.2.3.4"
     wans = []
     for intf in NETCONFIG_JSON_OBJ['interfaces']['list']:
-        if intf['isWan'] is not None and intf['isWan'].lower() == 'true':
-            if not 'primaryAddressStr' in intf:
+        if intf.get('isWan'):
+            try:
+                STATUS_JSON = json.loads(opens('/var/lib/untangle-netd/interface-' + intf.get('interfaceId') + '-status.js').read())
+                addr = STATUS_JSON.get('v4Address')
+                if addr != None:
+                    return addr
+                else:
+                    return "unknown.ip"
+            except Exception,e:
+                traceback.print_exc(e)
                 return "unknown.ip"
-            addr = intf['primaryAddressStr']
-            if addr == None:
-                return "unknown.ip"
-            else:
-                return addr.split("/")[0]
+    return "no.wan.found"
 
 class Node:
     def __init__(self, name):
@@ -550,11 +552,11 @@ def __get_emails(start_date, end_date):
     conn = sql_helper.get_connection()
 
     try:
-        if not sql_helper.table_exists('reports', 'n_mail_addr_totals'):
+        if not sql_helper.table_exists('reports', 'mail_addr_totals'):
             return [];
         curs = conn.cursor()
         # select all distinct email addresses from that time period
-        curs.execute("""SELECT DISTINCT addr FROM reports.n_mail_addr_totals
+        curs.execute("""SELECT DISTINCT addr FROM reports.mail_addr_totals
                       WHERE time_stamp >=%s AND time_stamp < %s
                       AND addr_kind IN ('T','C')""",
                      (start_date, end_date))
