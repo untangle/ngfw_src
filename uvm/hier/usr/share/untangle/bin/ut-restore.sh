@@ -49,12 +49,15 @@ function doRestore()
     rm -rf @PREFIX@/usr/share/untangle/settings/*
 
     # restore the files, both system and the /usr/share/untangle important stuf
-    tar zxfv $WORKING_DIR/$TARBALL_FILE -C /
+    debug "Restoring files..."
 
-    # Restart apache
-    if [ -x /etc/init.d/apache2 ] ; then
-        /etc/init.d/apache2 restart
+    if [ "true" == $VERBOSE ]; then
+      tar zxfv $WORKING_DIR/$TARBALL_FILE -C /
+    else
+      tar zxf $WORKING_DIR/$TARBALL_FILE -C /
     fi
+
+    debug "Restoring files...done"
 
     # start the UVM, depending on circumstances (menu driven restore) may need to be restopped
     if [ -x /etc/init.d/untangle-vm ] ; then
@@ -139,12 +142,10 @@ function expandFile()
     # Check that all required libitems are installed
     while read line ; do 
         PKG="`echo $line | awk '{print $1}'`"
-        if dpkg-query -Wf'${db:Status-abbrev}' $PKG 2>/dev/null | grep -q '^i' ; then
-            continue
-        else
+        dpkg -l $PKG | grep -q '^i' || {
             err "Required packages are not installed: $PKG"
             return 1
-        fi
+        }
     done < <(cat $WORKING_DIR/$PACKAGES_FILE )
 
     return 0
@@ -170,8 +171,6 @@ fi
 
 # Create a working directory
 WORKING_DIR=`mktemp -d -t ut-restore.XXXXXXXXXX`
-
-echo $WORKING_DIR
 
 expandFile $RESTORE_FILE
 RETURN_CODE=$?
