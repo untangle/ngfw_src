@@ -171,6 +171,8 @@ fi
 # Create a working directory
 WORKING_DIR=`mktemp -d -t ut-restore.XXXXXXXXXX`
 
+echo $WORKING_DIR
+
 expandFile $RESTORE_FILE
 RETURN_CODE=$?
 
