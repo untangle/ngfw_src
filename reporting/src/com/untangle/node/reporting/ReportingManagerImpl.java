@@ -66,7 +66,7 @@ import com.untangle.node.reporting.items.TableOfContents;
 import com.untangle.node.reporting.items.TimeSeriesChart;
 import com.untangle.node.reporting.items.User;
 
-class ReportingManagerImpl implements ReportingManager
+public class ReportingManagerImpl implements ReportingManager
 {
     private static final Logger logger = Logger.getLogger(ReportingManagerImpl.class);
 

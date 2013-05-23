@@ -70,7 +70,7 @@ public class ReportsContextImpl implements UtJsonRpcServlet.ReportsContext
     /**
      * This proxy object is used so the reporting servlet does not have access to setSettings and related methods
      */
-    private class SkinManagerImpl implements SkinManager
+    public class SkinManagerImpl implements SkinManager
     {
         public SkinSettings getSettings() { return context.skinManager().getSettings(); }
         public void setSettings( SkinSettings skinSettings ) { throw new RuntimeException("Unable to change the skin settings."); }
@@ -81,7 +81,7 @@ public class ReportsContextImpl implements UtJsonRpcServlet.ReportsContext
     /**
      * This proxy object is used so the reporting servlet does not have access to setSettings and related methods
      */
-    private class LanguageManagerImpl implements LanguageManager
+    public class LanguageManagerImpl implements LanguageManager
     {
         public LanguageSettings getLanguageSettings() { return context.languageManager().getLanguageSettings(); }
         public void setLanguageSettings(LanguageSettings langSettings) { throw new RuntimeException("Unable to change the language settings."); }

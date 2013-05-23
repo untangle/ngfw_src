@@ -58,8 +58,7 @@ public class UtJsonRpcServlet extends JSONRPCServlet
         bridge.registerObject("ReportsContext", rc, ReportsContext.class);
     }
 
-    public void service(HttpServletRequest req, HttpServletResponse resp)
-        throws IOException
+    public void service(HttpServletRequest req, HttpServletResponse resp) throws IOException
     {
         if (null != threadRequest) {
             threadRequest.set(req);
@@ -78,6 +77,30 @@ public class UtJsonRpcServlet extends JSONRPCServlet
         }
     }
 
+    /**
+     * Find the JSONRPCBridge from the current session.
+     * If it can't be found in the session, or there is no session,
+     * then return the global bridge.
+     *
+     * @param request The message received
+     * @return the JSONRPCBridge to use for this request
+     */
+    protected JSONRPCBridge findBridge(HttpServletRequest request)
+    {
+        // Find the JSONRPCBridge for this session or create one
+        // if it doesn't exist
+        HttpSession session = request.getSession( false );
+        JSONRPCBridge jsonBridge = null;
+        if (session != null) jsonBridge = (JSONRPCBridge) session.getAttribute( BRIDGE_ATTRIBUTE );
+
+        if ( jsonBridge == null) {
+            /* Use the global bridge if it can't find the session bridge. */
+            jsonBridge = JSONRPCBridge.getGlobalBridge();
+            if ( logger.isDebugEnabled()) logger.debug("Using global bridge.");
+        }
+        return jsonBridge;
+    }
+    
     public interface ReportsContext
     {
         public ReportingManager reportingManager();
