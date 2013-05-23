@@ -57,6 +57,9 @@ function doRestore()
       tar zxf $WORKING_DIR/$TARBALL_FILE -C /
     fi
 
+    # update date on all files
+    find @PREFIX@/usr/share/untangle/settings -type f -exec touch {} \;
+
     debug "Restoring files...done"
 
     # start the UVM, depending on circumstances (menu driven restore) may need to be restopped
