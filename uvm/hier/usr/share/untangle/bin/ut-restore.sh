@@ -38,48 +38,18 @@ function doHelp() {
 INST_OPTS=" -o DPkg::Options::=--force-confnew --yes --force-yes --fix-broken "
 UPGD_OPTS=" -o DPkg::Options::=--force-confnew --yes --force-yes --fix-broken "
 
-function clean_dirs()
+function check_packages()
 {
-    rm -rf /usr/share/untangle/settings/*
-    # XXX
-    #    rm -rf /usr/share/untangle/conf/openvpn
-    #    rm -rf /etc/openvpn
-}
-
-function restore_packages()
-{
-    packages_file=$1
-
-    debug "apt-get update"
-    apt-get update
-
-    debug "apt-get dist-upgrade"
-    apt-get dist-upgrade $UPGD_OPTS
-
-    debug "apt-get install"
-    cat $packages_file | awk '{print $1}' | xargs apt-get install $INST_OPTS
-
-    return $?
-}
-
-function restore_files() 
-{
-    tarfile=$1
-
-    # clean out stuff that restore would otherwise append to
-    clean_dirs
-
-    # restore the files, both system and the /usr/share/untangle important stuf
-    tar zxf $tarfile -C /
-
-    return 0
+    pkgs_file=$1
 }
 
 function doRestore() 
 {
-    restore_files $WORKING_DIR/$TARBALL_FILE 
-    
-    restore_packages $WORKING_DIR/$PACKAGES_FILE
+    # clean out stuff that restore would otherwise append to
+    rm -rf @PREFIX@/usr/share/untangle/settings/*
+
+    # restore the files, both system and the /usr/share/untangle important stuf
+    tar zxfv $WORKING_DIR/$TARBALL_FILE -C /
 
     # Restart apache
     if [ -x /etc/init.d/apache2 ] ; then
@@ -159,20 +129,22 @@ function expandFile()
     fi
 
     # Check that the version of the backup file is supported
-    CURRENT_VERSION="`cat /usr/share/untangle/lib/untangle-libuvm-api/PUBVERSION`"
+    CURRENT_VERSION="`cat @PREFIX@/usr/share/untangle/lib/untangle-libuvm-api/PUBVERSION`"
     BACKUP_VERSION="`cat $WORKING_DIR/$VERSION_FILE`"
     if [ "$BACKUP_VERSION" != "$CURRENT_VERSION" ] && [ "$BACKUP_VERSION" != "$ACCEPTED_PREVIOUS_VERSION" ] ; then
         err "Backup file version not supported. ($BACKUP_VERSION)"
         return 1
     fi
 
-    # check that all the needed packages are installed
-    # restore_packages $WORKING_DIR/$PACKAGES_FILE 1>/dev/null
-    # EXIT_VAL=$?
-    # if [ $EXIT_VAL != 0 ]; then
-    #    err "Failed to download the required packegs. (check internet connection)"
-    #    return 1
-    # fi
+    # Check that all required libitems are installed
+    cat $WORKING_DIR/$PACKAGES_FILE | while read line ; do 
+        PKG="`echo $line | awk '{print $1}'`"
+        dpkg -l $PKG >/dev/null 2>&1
+        if [ $? != 0 ] ; then
+            err "Required packages are not installed: $PKG"
+            return 1
+        fi
+    done
 
     return 0
 }
@@ -201,7 +173,7 @@ WORKING_DIR=`mktemp -d -t ut-restore.XXXXXXXXXX`
 expandFile $RESTORE_FILE
 RETURN_CODE=$?
 
-if [ "$CHECK_ONLY" == "true" ] ; then
+if [ "$CHECK_ONLY" == "true" ] || [ $RETURN_CODE != 0 ] ; then
     rm -rf ${WORKING_DIR}
     exit $RETURN_CODE
 fi
