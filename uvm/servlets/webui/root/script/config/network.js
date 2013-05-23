@@ -2298,38 +2298,47 @@ if (!Ung.hasResource["Ung.Network"]) {
                         }
                     }
                 }, {
-                    xtype: 'checkbox',
-                    name: 'Enable Outside HTTPS',
-                    boxLabel: this.i18n._('Enable Outside HTTPS'),
-                    hideLabel: true,
-                    checked: this.settings.outsideHttpsEnabled,
-                    listeners: {
-                        "change": {
-                            fn: Ext.bind(function(elem, newValue) {
-                                this.settings.outsideHttpsEnabled = newValue;
-                            }, this)
+                    xtype: 'container',
+                    layout: 'column',
+                    margin: '0 0 5 0',
+                    items: [{
+                        xtype: 'checkbox',
+                        fieldLabel: this.i18n._('Enable WAN HTTPS'),
+                        labelStyle: 'width:150px',
+                        checked: this.settings.outsideHttpsEnabled,
+                        listeners: {
+                            "change": {
+                                fn: Ext.bind(function(elem, newValue) {
+                                    this.settings.outsideHttpsEnabled = newValue;
+                                }, this)
+                            }
                         }
-                    }
+                    },{
+                        xtype: 'label',
+                        html: this.i18n._('If enabled the specified HTTPS port is open on WAN interfaces.'),
+                        cls: 'boxlabel'
+                    }]
                 },{
-                    xtype: 'checkbox',
-                    name: 'insideHttpEnabled',
-                    boxLabel: this.i18n._('Enable Inside HTTP'),
-                    hideLabel: true,
-                    checked: this.settings.insideHttpEnabled,
-                    listeners: {
-                        "change": {
-                            fn: Ext.bind(function(elem, newValue) {
-                                this.settings.insideHttpEnabled = newValue;
-                            }, this)
+                    xtype: 'container',
+                    layout: 'column',
+                    margin: '0 0 5 0',
+                    items: [{
+                        xtype: 'checkbox',
+                        fieldLabel: this.i18n._('Allow HTTP Administration'),
+                        labelStyle: 'width:150px',
+                        checked: this.settings.insideHttpEnabled,
+                        listeners: {
+                            "change": {
+                                fn: Ext.bind(function(elem, newValue) {
+                                    this.settings.insideHttpEnabled = newValue;
+                                }, this)
+                            }
                         }
-                    }
-                },{
-                    border: false,
-                    cls: 'description',
-                    html: this.i18n._('Note:') + "<br/>" +
-                        this.i18n._('HTTP  Outside is always disabled and the port is not open.') + "<br/>" +
-                        this.i18n._('HTTPS Inside is always enabled on the <i>HTTPS port</i> specified.') + "<br/>" +
-                        this.i18n._('HTTP  Inside port is always open for block pages even when <i>Enable Inside HTTP</i> is disabled.')
+                    },{
+                        xtype: 'label',
+                        html: this.i18n._('If enabled administration is allowed on HTTP available on non-WAN interfaces.'),
+                        cls: 'boxlabel'
+                    }]
                 }, {
                     xtype: "checkbox",
                     fieldLabel: this.i18n._("Enable SIP NAT Helper"),

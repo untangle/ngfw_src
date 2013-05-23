@@ -137,15 +137,19 @@ if (!Ung.hasResource["Ung.Administration"]) {
         },
         // get hostname
         getHostname: function(forceReload) {
-            if (forceReload || this.rpc.hostname === undefined) {
+            if ( forceReload || this.rpc.hostname === undefined || this.rpc.domainName === undefined ) {
                 try {
                     this.rpc.hostname = rpc.networkManager.getNetworkSettings()['hostName'];
+                    this.rpc.domainName = rpc.networkManager.getNetworkSettings()['domainName'];
                 } catch (e) {
                     Ung.Util.rpcExHandler(e);
                 }
 
             }
-            return this.rpc.hostname;
+            if ( this.rpc.domainName !== null && this.rpc.domainName !== "" )
+                return this.rpc.hostname + "." + this.rpc.domainName;
+            else
+                return this.rpc.hostname;
         },
         buildAdministration: function() {
             // keep initial system and address settings
@@ -308,17 +312,6 @@ if (!Ung.hasResource["Ung.Administration"]) {
             this.gridAdminAccounts.subCmps.push(this.gridAdminAccounts.rowEditorChangePass);
         },
         buildPublicAddress: function() {
-            var hostname = this.getHostname(true);
-
-            var currentHostnameMessage = Ext.String.format( this.i18n._( 'Current Hostname: {0}'), '<i>' + hostname + '</i>' );
-            if ( hostname.indexOf( "." ) < 0 ) {
-                // FIXME - link to hostname settings in networking
-                currentHostnameMessage += Ext.String.format( this.i18n._( '{0}The current hostname is not a qualified hostname, click {1}here{2} to fix it{3}' ),
-                                          '<br/><span class="warning">',
-                                          '<a href="" target="_blank">',
-                                          '</a>', '</span>');
-            }
-
             this.panelPublicAddress = Ext.create('Ext.panel.Panel',{
                 name: 'panelPublicAddress',
                 helpSource: 'public_address',
@@ -381,7 +374,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
                         border: false
                     }, {
                         cls: 'description',
-                        html: currentHostnameMessage,
+                        html: Ext.String.format( this.i18n._( 'Current Hostname: {0}'), '<i>' + this.getHostname(true) + '</i>' ),
                         bodyStyle: 'padding:0px 5px 10px 25px;',
                         border: false
                     }, {
