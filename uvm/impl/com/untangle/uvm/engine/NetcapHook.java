@@ -646,11 +646,14 @@ public abstract class NetcapHook implements Runnable
             session.setServerShutdown(true);
 
             /* Check if they passed the reset */
-            if ( session.clientOutgoingSocketQueue().isEmpty()) {
+            if ( session.clientOutgoingSocketQueue() != null && session.clientOutgoingSocketQueue().isEmpty() ) {
+
                 logger.debug( "vectorReset: ENDPOINTED by " + session );
                 isEndpointed = true;
+                
             } else {
-                if ( !session.clientOutgoingSocketQueue().containsReset()) {
+
+                if ( session.clientOutgoingSocketQueue() != null && !session.clientOutgoingSocketQueue().containsReset()) {
                     /* Sent data or non-reset, catch this error. */
                     logger.error( "Sent non-reset crumb before vectoring." );
                 }
