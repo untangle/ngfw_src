@@ -28,19 +28,6 @@ import com.untangle.uvm.vnet.SoloPipeSpec;
 
 public class ShieldNodeImpl extends NodeBase  implements ShieldNode
 {
-    protected static final String STAT_ACCEPT = "accept";
-    protected static final String STAT_LIMIT = "limit";
-    protected static final String STAT_DROP = "drop";
-    protected static final String STAT_REJECT = "reject";
-
-    private static final int CREATE_DATE_IDX =  1;
-    private static final int CLIENT_ADDR_IDX =  2;
-    private static final int CLIENT_INTF_IDX =  3;
-    private static final int REPUTATION_IDX  =  4;
-    private static final int LIMITED_IDX     =  5;
-    private static final int DROPPED_IDX     =  6;
-    private static final int REJECTED_IDX    =  7;
-
     private final Logger logger = Logger.getLogger(ShieldNodeImpl.class);
 
     private final EventHandler handler;
@@ -68,11 +55,6 @@ public class ShieldNodeImpl extends NodeBase  implements ShieldNode
                                                     "SELECT * FROM reports.sessions " + 
                                                     "WHERE shield_blocked IS TRUE " +
                                                     "ORDER BY time_stamp DESC");
-
-        this.addMetric(new NodeMetric(STAT_ACCEPT, I18nUtil.marktr("Sessions accepted")));
-        this.addMetric(new NodeMetric(STAT_LIMIT, I18nUtil.marktr("Sessions limited")));
-        this.addMetric(new NodeMetric(STAT_DROP, I18nUtil.marktr("Sessions dropped")));
-        this.addMetric(new NodeMetric(STAT_REJECT, I18nUtil.marktr("Sessions rejected")));
     }
 
     public void setSettings(final ShieldSettings newSettings)
@@ -121,7 +103,7 @@ public class ShieldNodeImpl extends NodeBase  implements ShieldNode
     {
         return new EventLogQuery[] { this.scannedEventsQuery, this.blockedEventsQuery };
     }
-    
+
     @Override
     protected void postInit()
     {
