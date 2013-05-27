@@ -1,6 +1,16 @@
 if (!Ung.hasResource["Ung.System"]) {
     Ung.hasResource["Ung.System"] = true;
 
+    Ung.SystemUtil={
+        getShieldMatchers: function (settingsCmp) {
+            return [
+                {name:"SRC_ADDR",displayName: settingsCmp.i18n._("Source Address"), type: "text", visible: true, vtype:"ipMatcher"},
+                {name:"SRC_PORT",displayName: settingsCmp.i18n._("Source Port"), type: "text",vtype:"portMatcher", visible: false},
+                {name:"SRC_INTF",displayName: settingsCmp.i18n._("Source Interface"), type: "checkgroup", values: Ung.Util.getInterfaceList(true, true), visible: true, allowInvert: false},
+                {name:"PROTOCOL",displayName: settingsCmp.i18n._("Protocol"), type: "checkgroup", values: [["TCP","TCP"],["UDP","UDP"],["ICMP","ICMP"],["GRE","GRE"],["ESP","ESP"],["AH","AH"],["SCTP","SCTP"]], visible: true, allowInvert: false}
+            ];
+        }
+    };
     Ext.define("Ung.System", {
         extend: "Ung.ConfigWin",
         panelSupport: null,
@@ -8,6 +18,7 @@ if (!Ung.hasResource["Ung.System"]) {
         panelRestore: null,
         panelProtocolSettings: null,
         panelRegionalSettings: null,
+        panelShieldSettings: null,
         initComponent: function() {
             this.breadcrumbs = [{
                 title: i18n._("Configuration"),
@@ -29,8 +40,9 @@ if (!Ung.hasResource["Ung.System"]) {
             this.buildRestore();
             this.buildProtocolSettings();
             this.buildRegionalSettings();
+            this.buildShieldSettings();
             // builds the tab panel with the tabs
-            this.buildTabPanel([this.panelSupport, this.panelBackup, this.panelRestore, this.panelProtocolSettings, this.panelRegionalSettings]);
+            this.buildTabPanel([this.panelSupport, this.panelBackup, this.panelRestore, this.panelProtocolSettings, this.panelRegionalSettings, this.panelShieldSettings]);
             if (!this.isHttpLoaded() && !this.isFtpLoaded() && !this.isMailLoaded() ) {
                 this.panelProtocolSettings.disable();
             }
@@ -130,6 +142,30 @@ if (!Ung.hasResource["Ung.System"]) {
                 }
             }
             return this.rpc.mailSettings;
+        },
+        getShieldNode: function(forceReload) {
+            if (forceReload || this.rpc.shieldNode === undefined) {
+                try {
+                    this.rpc.shieldNode = rpc.nodeManager.node("untangle-node-shield");
+                } catch (e) {
+                    Ung.Util.rpcExHandler(e);
+                }
+            }
+            return this.rpc.shieldNode;
+        },
+        isShieldLoaded: function(forceReload) {
+            return this.getShieldNode(forceReload) != null;
+        },
+        getShieldSettings: function(forceReload) {
+            if (forceReload || this.rpc.shieldSettings === undefined) {
+                try {
+                    this.rpc.shieldSettings = this.getShieldNode(forceReload).getSettings();
+                } catch (e) {
+                    Ung.Util.rpcExHandler(e);
+                }
+
+            }
+            return this.rpc.shieldSettings;
         },
         getTimeZone: function(forceReload) {
             if (forceReload || this.rpc.timeZone === undefined) {
@@ -738,12 +774,191 @@ if (!Ung.hasResource["Ung.System"]) {
                 }, this));
             }
         },
+        buildShieldSettings: function() {
+            this.gridShieldRules = Ext.create( 'Ung.EditorGrid', {
+                name: 'Shield Rules',
+                settingsCmp: this,
+                paginated: false,
+                hasReorder: true,
+                addAtTop: false,
+                emptyRow: {
+                    "ruleId": -1,
+                    "enabled": true,
+                    "description": this.i18n._("[no description]"),
+                    "javaClass": "com.untangle.node.shield.ShieldRule"
+                },
+                title: this.i18n._("Forward Filter Rules"),
+                recordJavaClass: "com.untangle.node.shield.ShieldRule",
+                data: this.getShieldSettings().rules.list,
+                fields: [{
+                    name: 'ruleId'
+                }, {
+                    name: 'enabled'
+                }, {
+                    name: 'matchers'
+                }, {
+                    name: 'description'
+                }, {
+                    name: 'multiplier'
+                }, {
+                    name: 'javaClass'
+                }],
+                columns: [{
+                    header: this.i18n._("Rule Id"),
+                    width: 50,
+                    dataIndex: 'ruleId',
+                    renderer: function(value) {
+                        if (value < 0) {
+                            return i18n._("new");
+                        } else {
+                            return value;
+                        }
+                    }
+                }, {
+                    header: this.i18n._("Description"),
+                    width: 200,
+                    dataIndex: 'description',
+                    flex: 1,
+                    editor: {
+                        xtype:'textfield',
+                        allowBlank:false
+                    }
+                }, {
+                    xtype:'checkcolumn',
+                    header: this.i18n._("Block"),
+                    dataIndex: 'blocked',
+                    resizable: false,
+                    width:55
+                }],
+                columnsDefaultSortable: false,
+                rowEditorInputLines:[{
+                    xtype:'checkbox',
+                    dataIndex: "enabled",
+                    fieldLabel: this.i18n._("Enable Shield Rule")
+                }, {
+                    xtype:'textfield',
+                    dataIndex: "description",
+                    fieldLabel: this.i18n._("Description"),
+                    width: 500
+                }, {
+                    xtype:'fieldset',
+                    title: this.i18n._("If all of the following conditions are met:"),
+                    items:[{
+                        xtype:'rulebuilder',
+                        settingsCmp: this,
+                        javaClass: "com.untangle.node.shield.ShieldRuleMatcher",
+                        dataIndex: "matchers",
+                        matchers: Ung.SystemUtil.getShieldMatchers(this)
+                    }]
+                }, {
+                    xtype: 'fieldset',
+                    cls:'description',
+                    title: i18n._('Perform the following action(s):'),
+                    border: false,
+                    items: [{
+                        xtype: "numberfield",
+                        dataIndex: "multiplier",
+                        fieldLabel: this.i18n._("Multiplier")
+                    }]
+                }]
+            });
+            
+            this.gridShieldEventLog = Ext.create('Ung.GridEventLog',{
+                eventQueriesFn: this.getShieldNode().getEventQueries,
+                settingsCmp: this,
+                fields: [{
+                    name: 'time_stamp',
+                    sortType: Ung.SortTypes.asTimestamp
+                }, {
+                    name: 'uid'
+                }, {
+                    name: 'client',
+                    mapping: 'c_client_addr'
+                }, {
+                    name: 'clientPort',
+                    mapping: 'c_client_port'
+                }, {
+                    name: 'server',
+                    mapping: 'c_server_addr'
+                }, {
+                    name: 'serverPort',
+                    mapping: 's_server_port'
+                }],
+                columns: [{
+                    header: this.i18n._("Timestamp"),
+                    width: Ung.Util.timestampFieldWidth,
+                    sortable: true,
+                    dataIndex: 'time_stamp',
+                    renderer: function(value) {
+                        return i18n.timestampFormat(value);
+                    }
+                }, {
+                    header: this.i18n._("Client"),
+                    width: Ung.Util.ipFieldWidth,
+                    sortable: true,
+                    dataIndex: 'client'
+                }, {
+                    header: this.i18n._("Client port"),
+                    width: Ung.Util.portFieldWidth,
+                    sortable: true,
+                    dataIndex: 'clientPort'
+                }, {
+                    header: this.i18n._("Username"),
+                    width: Ung.Util.usernameFieldWidth,
+                    sortable: true,
+                    dataIndex: 'uid'
+                }, {
+                    header: this.i18n._("Server"),
+                    width: Ung.Util.ipFieldWidth,
+                    sortable: true,
+                    dataIndex: 'server'
+                }, {
+                    header: this.i18n._("Server Port"),
+                    width: Ung.Util.portFieldWidth, 
+                    sortable: true,
+                    dataIndex: 'serverPort'
+                }]
+            });
+
+            this.panelShieldSettings = Ext.create('Ext.panel.Panel',{
+                parentId: this.getId(),
+                title: this.i18n._('Shield Settings'),
+                cls: 'ung-panel',
+                layout: { type: 'vbox', pack: 'start', align: 'stretch' },
+                items: [{
+                    xtype: 'fieldset',
+                    cls: 'description',
+                    flex: 0,
+                    title: this.i18n._("Shield settings"),
+                    items:[{
+                        xtype: 'checkbox',
+                        boxLabel: this.i18n._("Enable Shield"),
+                        hideLabel: true,
+                        checked: this.getShieldSettings().shieldEnabled,
+                        listeners: {
+                            "change": {
+                                fn: Ext.bind(function(elem, newValue) {
+                                    this.getShieldSettings().shieldEnabled = newValue;
+                                }, this)
+                            }
+                        }
+                    }]
+                }, {
+                    xtype: 'tabpanel',
+                    activeTab: 0,
+                    deferredRender: false,
+                    autoHeight: true,
+                    flex: 1,
+                    items: [this.gridShieldRules, this.gridShieldEventLog]
+                }]
+            });
+        },
         // validation function
         validate: function() {
             return true;
         },
         save: function (isApply) {
-            this.saveSemaphore = 6;
+            this.saveSemaphore = 7;
             // save language settings
             rpc.languageManager.setLanguageSettings(Ext.bind(function(result, exception) {
                 this.afterSave(exception, isApply);
@@ -777,6 +992,16 @@ if (!Ung.hasResource["Ung.System"]) {
                 this.getSmtpNode().setSmtpNodeSettings(Ext.bind(function(result, exception) {
                     this.afterSave(exception, isApply);
                 }, this), this.getSmtpNodeSettings());
+            } else {
+                this.saveSemaphore--;
+            }
+
+            // save shield settings
+            if (this.isShieldLoaded()) {
+                this.getShieldSettings().rules.list = this.gridShieldRules.getPageList();
+                this.getShieldNode().setSettings(Ext.bind(function(result, exception) {
+                    this.afterSave(exception, isApply);
+                }, this), this.getShieldSettings());
             } else {
                 this.saveSemaphore--;
             }
