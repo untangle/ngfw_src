@@ -159,7 +159,7 @@ if (!Ung.hasResource["Ung.System"]) {
         getShieldSettings: function(forceReload) {
             if (forceReload || this.rpc.shieldSettings === undefined) {
                 try {
-                    this.rpc.shieldSettings = this.getShieldNode(forceReload).getSettings();
+                    this.rpc.shieldSettings = this.getShieldNode().getSettings();
                 } catch (e) {
                     Ung.Util.rpcExHandler(e);
                 }
@@ -785,11 +785,12 @@ if (!Ung.hasResource["Ung.System"]) {
                     "ruleId": -1,
                     "enabled": true,
                     "description": this.i18n._("[no description]"),
+                    "multiplier": 1,
                     "javaClass": "com.untangle.node.shield.ShieldRule"
                 },
                 title: this.i18n._("Forward Filter Rules"),
                 recordJavaClass: "com.untangle.node.shield.ShieldRule",
-                data: this.getShieldSettings().rules.list,
+                dataExpression:'getShieldSettings().rules.list',
                 fields: [{
                     name: 'ruleId'
                 }, {
@@ -1023,6 +1024,9 @@ if (!Ung.hasResource["Ung.System"]) {
                 }
                 if(isApply) {
                     this.initialLanguage = this.getLanguageSettings().language;
+                    if (this.isShieldLoaded()) {
+                        this.getShieldSettings(true);
+                    }
                     this.clearDirty();
                     Ext.MessageBox.hide();
                 } else {
