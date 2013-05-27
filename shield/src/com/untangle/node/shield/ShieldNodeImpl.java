@@ -60,6 +60,14 @@ public class ShieldNodeImpl extends NodeBase  implements ShieldNode
     public void setSettings(final ShieldSettings newSettings)
     {
         /**
+         * Set the Rule IDs
+         */
+        int idx = 0;
+        for (ShieldRule rule : newSettings.getRules()) {
+            rule.setRuleId(++idx);
+        }
+
+        /**
          * Save the settings
          */
         SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
