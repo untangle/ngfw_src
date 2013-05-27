@@ -464,41 +464,7 @@ Ext.define('Ung.SetupWizard.Interfaces', {
         sm.clearSelections();
         return true;
     },
-/*
-    // Given a list of interfaces, this takes out the ones that are not used
-    fixInterfaceList: function( interfaceArray ) {
-        var cleanArray = [];
 
-        var data = interfaceArray.list;
-        var c, i;
-
-        for ( c = 0 ;  c < data.length ; c++ ) {
-            i = data[c];
-            // This is the VPN interfaces, and this is a magic number.
-            if ( i.systemName.indexOf( 'tun0' ) == 0 ) continue;
-
-            // This is an interface that does not exist
-            if ( i.systemName.indexOf( 'nointerface' ) == 0 ) continue;
-
-            cleanArray.push( i );
-        }
-
-        // Now create a new array, in order to handle reordering, it is better
-        // to just have two few fields
-        interfaceList = [];
-
-        for ( c = 0 ; c < cleanArray.length ; c++ ) {
-            i = cleanArray[c];
-            if (i.vendor == null) 
-                i.vendor = "Unknown";
-            if (i.macAddress == null) 
-                i.macAddress = "";
-            interfaceList.push( [ i.name, [ i.systemName, i.connectionState, i.macAddress, i.vendor ]] );
-        }
-
-        return interfaceList;
-    },
-*/
     saveInterfaceList: function( handler ) {
         // disable auto refresh
         this.enableAutoRefresh = false;
@@ -513,7 +479,7 @@ Ext.define('Ung.SetupWizard.Interfaces', {
         for(var i=0; i<interfaceList.length; i++) {
             var intf=interfaceList[i];
             intf["physicalDev"]=interfacesMap[intf["interfaceId"]];
-            console.log("Interface ("+ intf["interfaceId"]+ ") "+intf["name"] +" is mapped with phisical device "+intf["physicalDev"]);
+            console.log("Interface ("+ intf["interfaceId"]+ ") "+intf["name"] +" is mapped with physical device "+intf["physicalDev"]);
         }
         rpc.networkManager.setNetworkSettings(Ext.bind(function( result, exception ) {
             if(exception != null) {
@@ -542,6 +508,10 @@ Ext.define('Ung.SetupWizard.Interfaces', {
         return map;
     },
     autoRefreshInterfaces: function() {
+        if ( ! this.enableAutoRefresh ) {
+            return;
+        }
+        
         rpc.networkManager.getNetworkSettings( Ext.bind(function( result, exception ) {
             if ( exception ) {
                 Ext.MessageBox.show({
@@ -575,7 +545,7 @@ Ext.define('Ung.SetupWizard.Interfaces', {
                     }
                 });
                 
-                if (this.enableAutoRefresh) {
+                if ( this.enableAutoRefresh ) {
                     Ext.defer(this.autoRefreshInterfaces,3000,this);
                 }
             }, this));
@@ -968,8 +938,6 @@ Ext.define('Ung.SetupWizard.Internet', {
         }
 
         Ung.SetupWizard.CurrentValues.networkSettings = result;
-
-        this.refreshNetworkDisplay();
 
         if ( hideWindow || ( hideWindow == null ) ) {
             Ext.MessageBox.hide();
