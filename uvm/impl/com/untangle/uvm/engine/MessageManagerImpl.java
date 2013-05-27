@@ -53,7 +53,7 @@ public class MessageManagerImpl implements MessageManager
 
     private static final Pattern DISK_STATS_PATTERN = Pattern.compile("\\s*\\d+\\s+\\d+\\s+[hs]d[a-zA-Z]+\\d+\\s+(\\d+)\\s+\\d+\\s+(\\d+)");
 
-    private static final Logger logger = Logger.getLogger(MessageManager.class);
+    private static final Logger logger = Logger.getLogger( MessageManagerImpl.class );
 
     private static final Set<String> MEMINFO_KEEPERS;
     private static final Set<String> VMSTAT_KEEPERS;
