@@ -48,6 +48,11 @@ class EventHandler extends AbstractEventHandler
 
     private void handleNewSessionRequest(IPNewSessionRequest request, Protocol protocol)
     {
+        if ( ! node.getSettings().isShieldEnabled() ) {
+            request.release();
+            return;
+        }
+
         InetAddress clientAddr = request.getClientAddr();
 
         HostStats stats = hostStatsTable.get( clientAddr );
