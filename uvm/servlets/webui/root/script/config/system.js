@@ -399,10 +399,12 @@ if (!Ung.hasResource["Ung.System"]) {
 
                             if ( errorMsg.indexOf("NEED_TO_INSTALL:") !== -1 ) {
                                 var neededPkgs = errorMsg.replace("NEED_TO_INSTALL:","").split(",");
-
+                                var neededPkgsStr = neededPkgs.join("<br/>");
+                                
                                 Ext.MessageBox.confirm(cmp.i18n._("Alert"),
-                                                       cmp.i18n._("Missing packages are required to restore this backup file. Download required packages now?") + "<br/><br/>" +
-                                                       cmp.i18n._("Packages") + ":<br/>" + neededPkgs,
+                                                       cmp.i18n._("Missing packages are required to restore this backup file.") + "<br/>" +
+                                                       cmp.i18n._("Download required packages now?") + "<br/><br/>" +
+                                                       cmp.i18n._("Packages") + ":<br/>" + neededPkgsStr,
                                                        Ext.bind(function(btn) {
                                                            if (btn == "yes") {
                                                                Ext.MessageBox.hide();

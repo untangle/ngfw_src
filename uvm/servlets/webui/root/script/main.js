@@ -46,7 +46,7 @@ Ext.define("Ung.Main", {
         this.appsLastState = {};
         this.nodePreviews = {};
         JSONRpcClient.toplevel_ex_handler = Ung.Util.rpcExHandler;
-        JSONRpcClient.max_req_active = 2;
+        JSONRpcClient.max_req_active = 25;
 
         rpc = {};
         // get JSONRpcClient
