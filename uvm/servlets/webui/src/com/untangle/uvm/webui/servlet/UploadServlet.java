@@ -95,7 +95,7 @@ public class UploadServlet extends HttpServlet
                 obj.put("msg",((ExecManagerResult)result).getOutput());
             }
             else {
-                obj.put("result",new Boolean(success));
+                obj.put("success",new Boolean(success));
                 if (result != null){
                     obj.put("msg",result);
                 }
