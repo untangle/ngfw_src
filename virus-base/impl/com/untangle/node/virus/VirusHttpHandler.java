@@ -45,6 +45,10 @@ class VirusHttpHandler extends HttpStateMachine
     private final String vendor;
     private final VirusNodeImpl node;
 
+    private static final Pattern[] passlist = { Pattern.compile("*windowsupdate.com"),
+                                                Pattern.compile("*windowsupdate.microsoft.com"),
+                                                Pattern.compile("*update.microsoft.com")};
+    
     private boolean scan;
     private long bufferingStart;
     private int outstanding;
@@ -423,13 +427,11 @@ class VirusHttpHandler extends HttpStateMachine
         if (host == null)
             return false;
         host = host.toLowerCase();
-        
-        if ("download.windowsupdate.com".equals(host))
-            return true;
-        if ("windowsupdate.microsoft.com".equals(host))
-            return true;
-        if ("update.microsoft.com".equals(host))
-            return true;
+
+        for ( Pattern pat : this.passlist ) {
+            if (pat.matcher( host ).matches())
+                return true;
+        }
 
         return false;
     }
