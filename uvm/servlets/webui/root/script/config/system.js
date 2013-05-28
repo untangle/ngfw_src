@@ -98,7 +98,7 @@ if (!Ung.hasResource["Ung.System"]) {
             return this.rpc.httpNode;
         },
         isHttpLoaded: function(forceReload) {
-            return this.getHttpNode(forceReload) != null;
+            return this.getHttpNode(forceReload) !== null;
         },
         getHttpSettings: function(forceReload) {
             if (forceReload || this.rpc.httpSettings === undefined) {
@@ -123,7 +123,7 @@ if (!Ung.hasResource["Ung.System"]) {
             return this.rpc.ftpNode;
         },
         isFtpLoaded: function(forceReload) {
-            return this.getFtpNode(forceReload) != null;
+            return this.getFtpNode(forceReload) !== null;
         },
         getFtpSettings: function(forceReload) {
             if (forceReload || this.rpc.ftpSettings === undefined) {
@@ -146,7 +146,7 @@ if (!Ung.hasResource["Ung.System"]) {
             return this.rpc.smtpNode;
         },
         isMailLoaded: function(forceReload) {
-            return this.getSmtpNode(forceReload) != null;
+            return this.getSmtpNode(forceReload) !== null;
         },
         getSmtpNodeSettings: function(forceReload) {
             if (forceReload || this.rpc.mailSettings === undefined) {
@@ -169,7 +169,7 @@ if (!Ung.hasResource["Ung.System"]) {
             return this.rpc.shieldNode;
         },
         isShieldLoaded: function(forceReload) {
-            return this.getShieldNode(forceReload) != null;
+            return this.getShieldNode(forceReload) !== null;
         },
         getShieldSettings: function(forceReload) {
             if (forceReload || this.rpc.shieldSettings === undefined) {
@@ -187,7 +187,7 @@ if (!Ung.hasResource["Ung.System"]) {
                 try {
                     /* Handle the serialization mess of java with ZoneInfo. */
                     var tz = rpc.adminManager.getTimeZone();
-                    if ( tz != null && typeof ( tz ) != "string" ) {
+                    if ( tz && typeof ( tz ) != "string" ) {
                         tz = tz.ID;
                     }
 
@@ -266,7 +266,7 @@ if (!Ung.hasResource["Ung.System"]) {
                         iconCls: "reboot-icon",
                         handler: Ext.bind(function() {
                             Ext.MessageBox.confirm(this.i18n._("Manual Shutdown Warning"),
-                                Ext.String.format(this.i18n._("The server is about to shutdown the {0} Server.  This will stop all network operations."), this.companyName ),
+                                Ext.String.format(this.i18n._("The {0} Server is about to shutdown.  This will stop all network operations."), this.companyName ),
                                 Ext.bind(function(btn) {
                                 if (btn == "yes") {
                                     rpc.jsonrpc.UvmContext.shutdownBox(Ext.bind(function (result, exception) {
@@ -377,7 +377,7 @@ if (!Ung.hasResource["Ung.System"]) {
                     var prova = Ext.getCmp("upload_restore_file_form");
                     var cmp = Ext.getCmp(this.parentId);
                     var fileText = prova.items.get(0);
-                    if (fileText.getValue().length == 0) {
+                    if (fileText.getValue().length === 0) {
                         Ext.MessageBox.alert(cmp.i18n._("Failed"), cmp.i18n._("Please select a file to upload."));
                         return false;
                     }
@@ -401,36 +401,33 @@ if (!Ung.hasResource["Ung.System"]) {
                                 var neededPkgs = errorMsg.replace("NEED_TO_INSTALL:","").split(",");
                                 var neededPkgsStr = neededPkgs.join("<br/>");
                                 
-                                Ext.MessageBox.confirm(cmp.i18n._("Alert"),
-                                                       cmp.i18n._("Missing packages are required to restore this backup file.") + "<br/>" +
-                                                       cmp.i18n._("Download required packages now?") + "<br/><br/>" +
-                                                       cmp.i18n._("Packages") + ":<br/>" + neededPkgsStr,
-                                                       Ext.bind(function(btn) {
-                                                           if (btn == "yes") {
-                                                               Ext.MessageBox.hide();
-                                                               this.neededPackages = neededPkgs.length;
-                                                               Ext.MessageBox.wait(i18n._("Downloading packages..."), i18n._("Please wait"));
+                                Ext.MessageBox.confirm( cmp.i18n._("Alert"),
+                                    cmp.i18n._("Missing packages are required to restore this backup file.") + "<br/>" +
+                                    cmp.i18n._("Download required packages now?") + "<br/><br/>" +
+                                    cmp.i18n._("Packages") + ":<br/>" + neededPkgsStr,
+                                    Ext.bind(function(btn) {
+                                        if (btn == "yes") {
+                                            Ext.MessageBox.hide();
+                                            this.neededPackages = neededPkgs.length;
+                                            Ext.MessageBox.wait(i18n._("Downloading packages..."), i18n._("Please wait"));
 
-                                                               for (var i = 0; i < neededPkgs.length; i++) {
-                                                                   var pkgName = neededPkgs[i];
+                                            for (var i = 0; i < neededPkgs.length; i++) {
+                                                var pkgName = neededPkgs[i];
 
-                                                                   var restoreFn = Ext.bind( function() {
-                                                                       this.neededPackages--;
+                                                Ung.MessageManager.setModalDownloadMode( null, Ext.bind( function() {
+                                                    this.neededPackages--;
+                                                    if ( this.neededPackages === 0 ) {
+                                                        Ext.MessageBox.alert(cmp.i18n._("Download Complete"), cmp.i18n._("To continue the restore relaunch the restore process."));
+                                                    }
+                                                }, this) );
 
-                                                                       if ( this.neededPackages == 0 ) {
-                                                                           Ext.MessageBox.alert(cmp.i18n._("Download Complete"), i18n._("To continue the restore relaunch the restore process."));
-                                                                       }
-                                                                   }, this);
-
-                                                                   Ung.MessageManager.setModalDownloadMode( null, restoreFn );
-
-                                                                   console.log("Installing: " + pkgName);
-                                                                   rpc.aptManager.install(Ext.bind(function(result, exception) {
-                                                                       if(Ung.Util.handleException(exception)) return;
-                                                                   }, this), pkgName);
-                                                               }
-                                                           }
-                                                       }, this));
+                                                console.log("Installing: " + pkgName);
+                                                rpc.aptManager.install(Ext.bind(function(result, exception) {
+                                                    if(Ung.Util.handleException(exception)) return;
+                                                }, this), pkgName);
+                                            }
+                                       }
+                                   }, this));
                                 return;
                             }
                                 
@@ -597,7 +594,7 @@ if (!Ung.hasResource["Ung.System"]) {
                 defaults: {
                     xtype: "fieldset"
                 },
-                items: protocolSettingsItems.length != 0 ? protocolSettingsItems: null
+                items: protocolSettingsItems.length !== 0 ? protocolSettingsItems: null
             });
         },
         buildRegionalSettings: function() {
@@ -754,7 +751,7 @@ if (!Ung.hasResource["Ung.System"]) {
                                         rpc.jsonrpc.UvmContext.forceTimeSync(Ext.bind(function (result, exception) {
                                             if(Ung.Util.handleException(exception)) return;
                             
-                                            if(result != 0) {
+                                            if(result !== 0) {
                                                 Ext.MessageBox.hide();
                                                 Ext.MessageBox.alert(this.i18n._("Warning"), this.i18n._("Time synchronization failed. Return code: ") + result);
                                             } else {
@@ -813,13 +810,11 @@ if (!Ung.hasResource["Ung.System"]) {
             });
         },
         timeUpdate: function() {
-            if(!this.isVisible())
-                return;
-            else {
+            if(this.isVisible()) {
                 rpc.adminManager.getDate(Ext.bind(function(result, exception) {
                     if(Ung.Util.handleException(exception)) return;
                     var currentTimeObj = Ext.getCmp("system_regionalSettings_currentTime");
-                    if (currentTimeObj != null && currentTimeObj.body != null) {
+                    if (currentTimeObj && currentTimeObj.body) {
                         currentTimeObj.body.update(result);
                         //Updates every 10 seconds to decrease data trafic...
                         Ext.defer(this.timeUpdate, 10000, this);
@@ -828,6 +823,13 @@ if (!Ung.hasResource["Ung.System"]) {
             }
         },
         buildShieldSettings: function() {
+            var multiplierData = [
+                [5, 5 + ' ' + this.i18n._("users")], 
+                [25, 25 + ' ' + this.i18n._("users")],
+                [40, 50 + ' ' + this.i18n._("users")],
+                [75, 100 + ' ' + this.i18n._("users")],
+                [-1, this.i18n._("unlimited")]
+            ];
             this.gridShieldRules = Ext.create( 'Ung.EditorGrid', {
                 name: 'Shield Rules',
                 settingsCmp: this,
@@ -838,7 +840,7 @@ if (!Ung.hasResource["Ung.System"]) {
                     "ruleId": -1,
                     "enabled": true,
                     "description": this.i18n._("[no description]"),
-                    "multiplier": 1,
+                    "multiplier": -1,
                     "javaClass": "com.untangle.node.shield.ShieldRule"
                 },
                 title: this.i18n._("Forward Filter Rules"),
@@ -878,11 +880,17 @@ if (!Ung.hasResource["Ung.System"]) {
                         allowBlank:false
                     }
                 }, {
-                    xtype:'checkcolumn',
-                    header: this.i18n._("Block"),
-                    dataIndex: 'blocked',
-                    resizable: false,
-                    width:55
+                    header: this.i18n._("User Count"),
+                    width: 120,
+                    dataIndex: 'multiplier',
+                    renderer: function(value) {
+                        for (var i = 0; i < multiplierData.length; i++) {
+                            if (multiplierData[i][0] === value) {
+                                return multiplierData[i][1];
+                            }
+                        }
+                        return value;
+                    }
                 }],
                 columnsDefaultSortable: false,
                 rowEditorInputLines:[{
@@ -910,9 +918,12 @@ if (!Ung.hasResource["Ung.System"]) {
                     title: i18n._('Perform the following action(s):'),
                     border: false,
                     items: [{
-                        xtype: "numberfield",
+                        xtype: 'combo',
+                        store: multiplierData,
                         dataIndex: "multiplier",
-                        fieldLabel: this.i18n._("Multiplier")
+                        fieldLabel: this.i18n._("User Count"),
+                        queryMode: 'local',
+                        typeAhead: true
                     }]
                 }]
             });
@@ -1069,7 +1080,7 @@ if (!Ung.hasResource["Ung.System"]) {
             if(Ung.Util.handleException(exception)) return;
 
             this.saveSemaphore--;
-            if (this.saveSemaphore == 0) {
+            if (this.saveSemaphore === 0) {
                 var needRefresh = this.initialLanguage != this.getLanguageSettings().language;
                 if (needRefresh) {
                     Ung.Util.goToStartPage();
