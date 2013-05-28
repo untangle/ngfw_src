@@ -434,9 +434,42 @@ Ext.define("Ung.Main", {
             passwordText: i18n._('Passwords do not match')
         });
     },
+
     upgrade: function () {
-        Ext.MessageBox.wait(i18n._("Downloading updates..."), i18n._("Please wait"));
-        Ung.MessageManager.startUpgradeMode();
+        Ext.MessageBox.wait(i18n._("Downloading packages..."), i18n._("Please wait"));
+
+        var upgradeFn = Ext.bind( function() {
+            Ung.MessageManager.stop();
+
+            console.log("Applying Upgrades...");
+            var applyingUpgradesWindow=Ext.create('Ext.window.MessageBox', {
+                minProgressWidth: 360
+            });
+            applyingUpgradesWindow.wait(i18n._("Applying Upgrades..."), i18n._("Please wait"), {
+                interval: 500,
+                increment: 120,
+                duration: 60000,
+                scope: this,
+                fn: function() {
+                    console.log("Upgrade in Progress. Press ok to go to the Start Page...");
+                    if(main.configWin!=null && main.configWin.isVisible()) {
+                        main.configWin.closeWindow();    
+                    }
+                    applyingUpgradesWindow.hide();
+                    Ext.MessageBox.hide();
+                    Ext.MessageBox.alert(
+                        i18n._("Upgrade in Progress"),
+                        i18n._("The upgrades have been downloaded and are now being applied.") + "<br/>" +
+                            "<strong>" + i18n._("DO NOT REBOOT AT THIS TIME.") + "</strong>" + "<br/>" +
+                            i18n._("Please be patient this process will take a few minutes.") + "<br/>" +
+                            i18n._("After the upgrade is complete you will be able to log in again."),
+                        Ung.Util.goToStartPage);
+                }
+            });
+        }, this);
+
+        Ung.MessageManager.setModalDownloadMode( upgradeFn, null );
+
         rpc.aptManager.upgrade(Ext.bind(function(result, exception) {
             if(Ung.Util.handleException(exception)) return;
         }, this));

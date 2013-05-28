@@ -689,7 +689,7 @@ public class AptManagerImpl implements AptManager
                 throw exn;
             } catch (TimeoutException exn) {
                 f.cancel(true);
-                logger.warn("ut-apt timeout: ", exn);
+                logger.warn("ut-apt timeout.");
                 throw new Exception("ut-apt timed out");
             }
         } while (tryAgain);

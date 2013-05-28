@@ -1825,10 +1825,12 @@ Ung.MessageManager = {
     started: false,
     intervalId: null,
     cycleCompleted: true,
-    upgradeMode: false,
+    modalDownloadMode: false,
+    modalDownloadCompleteFn: null,
+    modalAptCompleteFn: null,
     installInProgress:0,
-    upgradeSummary: null,
-    upgradesComplete: 0,
+    downloadSummary: null,
+    downloadsComplete: 0,
     historyMaxSize:100,
     messageHistory:[], // for debug info
     firstToleratedError: null,
@@ -1842,9 +1844,11 @@ Ung.MessageManager = {
         this.setFrequency(this.normalFrequency);
         this.started = true;
     },
-    startUpgradeMode: function() {
+    setModalDownloadMode: function( modalDownloadCompleteFn, modalAptCompleteFn ) {
         this.stop();
-        this.upgradeMode=true;
+        this.modalDownloadMode = true;
+        this.modalDownloadCompleteFn = modalDownloadCompleteFn;
+        this.modalAptCompleteFn = modalAptCompleteFn;
         this.setFrequency(this.highFrequency);
         this.started = true;
     },
@@ -1854,6 +1858,19 @@ Ung.MessageManager = {
             window.clearInterval(this.intervalId);
         }
         this.intervalId = window.setInterval("Ung.MessageManager.run()", timeMs);
+    },
+    updateModalDownloadDialog: function( msg ) {
+        var text=Ext.String.format(i18n._("Package: {0}<br/>Progress: {1} kB/{2} kB <br/>Speed: {3}kB/sec"),msg.name, Math.round(msg.bytesDownloaded/1024), Math.round(msg.size/1024), msg.speed);
+        if(this.downloadSummary) {
+            text+=Ext.String.format(i18n._("<br/>Package {0}/{1}"), this.downloadsComplete+1, this.downloadSummary.count);
+        }
+        var msgTitle=i18n._("Downloading packages... Please wait");
+        if(!Ext.MessageBox.isVisible() || Ext.MessageBox.title!=msgTitle) {
+            Ext.MessageBox.progress(msgTitle, text);
+        }
+        var currentPercentComplete = parseFloat(msg.bytesDownloaded) / parseFloat(msg.size != 0 ? msg.size: 1);
+        var progressIndex = parseFloat(0.99 * currentPercentComplete);
+        Ext.MessageBox.updateProgress(progressIndex, "", text);
     },
     stop: function() {
         if (this.intervalId !== null) {
@@ -1946,8 +1963,6 @@ Ung.MessageManager = {
                     }
 
                     var refreshApps=false;
-                    var startUpgradeMode=false;
-                    var lastUpgradeDownloadProgressMsg=null;
                     for(var i=0;i<messageQueue.messages.list.length;i++) {
                         var msg=messageQueue.messages.list[i];
                         console.log("MQ:",msg.javaClass, msg);
@@ -2003,7 +2018,35 @@ Ung.MessageManager = {
                         } else if(msg.javaClass.indexOf("LicenseUpdateMessage") != -1) {
                             main.loadLicenses();
                         } else {
-                            if( msg.upgrade==false || msg.upgrade === undefined ) {
+                            if ( msg.upgrade ) {
+                                this.setModalDownloadMode();
+                            }
+                            
+                            if ( this.modalDownloadMode == true ) {
+                                if(msg.javaClass.indexOf("DownloadSummary") != -1) {
+                                    if(Ext.MessageBox.isVisible() && Ext.MessageBox.title==i18n._("Downloading packages...")) {
+                                        Ext.MessageBox.wait(i18n._("Downloading packages..."), i18n._("Please wait"));
+                                    }
+                                    this.downloadSummary = msg;
+                                } else if(msg.javaClass.indexOf("DownloadProgress") != -1) {
+                                    this.updateModalDownloadDialog( msg );
+                                } else if(msg.javaClass.indexOf("DownloadComplete") != -1) {
+                                    this.downloadsComplete++;
+                                    if(!msg.success) {
+                                        Ext.MessageBox.alert(i18n._("Warning"), i18n._("Error downloading packages. Install Aborted."));
+                                    }
+                                } else if(msg.javaClass.indexOf("DownloadAllComplete") != -1) {
+                                    if ( this.modalDownloadCompleteFn !== null )
+                                        this.modalDownloadCompleteFn();
+                                } else if(msg.javaClass.indexOf("AptMessage") != -1) {
+                                    /* This state will not  be reached for upgrades because the UVM will go down */
+                                    if(msg.action.indexOf("alldone") != -1) {
+                                        refreshApps = true;
+                                        if ( this.modalAptCompleteFn !== null )
+                                            this.modalAptCompleteFn();
+                                    }
+                                } 
+                            } else { /* modeDownloadMode == false */
                                 var appItemDisplayName = ( msg.requestingPackage == null ? "" : msg.requestingPackage.displayName );
                                 if(msg.javaClass.indexOf("DownloadSummary") != -1) {
                                     Ung.AppItem.updateState(appItemDisplayName, "download_summary", msg);
@@ -2031,94 +2074,26 @@ Ung.MessageManager = {
                                         Ung.AppItem.updateState(appItemDisplayName, "apt_progress", msg);
                                     }
                                 } 
-                            } else if(msg.upgrade==true) {
-                                if(startUpgradeMode!="stop" && !this.upgradeMode) {
-                                    startUpgradeMode=true;
-                                }
-                                if(msg.javaClass.indexOf("DownloadSummary") != -1) {
-                                    if(Ext.MessageBox.isVisible() && Ext.MessageBox.title==i18n._("Downloading upgrades...")) {
-                                        Ext.MessageBox.wait(i18n._("Downloading upgrades..."), i18n._("Please wait"));
-                                    }
-                                    this.upgradeSummary=msg;
-                                } else if(msg.javaClass.indexOf("DownloadProgress") != -1) {
-                                    if(lastUpgradeDownloadProgressMsg!="stop") {
-                                        lastUpgradeDownloadProgressMsg=msg;
-                                    }
-                                } else if(msg.javaClass.indexOf("DownloadComplete") != -1) {
-                                    this.upgradesComplete++;
-                                    if(!msg.success) {
-                                        lastUpgradeDownloadProgressMsg="stop";
-                                        startUpgradeMode="stop";
-                                        Ext.MessageBox.alert(i18n._("Warning"), i18n._("Error downloading packages. Install Aborted."));
-                                    }
-                                } else if(msg.javaClass.indexOf("DownloadAllComplete") != -1) {
-                                    lastUpgradeDownloadProgressMsg="stop";
-                                    startUpgradeMode="stop";
-                                    this.stop();
-                                    Ext.MessageBox.hide();
-                                    console.log("Applying Upgrades...");
-                                    var applyingUpgradesWindow=Ext.create('Ext.window.MessageBox', {
-                                        minProgressWidth: 360
-                                    });
-                                    applyingUpgradesWindow.wait(i18n._("Applying Upgrades..."), i18n._("Please wait"), {
-                                        interval: 500,
-                                        increment: 120,
-                                        duration: 60000,
-                                        scope: this,
-                                        fn: function() {
-                                            console.log("Upgrade in Progress. Press ok to go to the Start Page...");
-                                            if(main.configWin!=null && main.configWin.isVisible()) {
-                                                main.configWin.closeWindow();    
-                                            }
-                                            applyingUpgradesWindow.hide();
-                                            Ext.MessageBox.hide();
-                                            Ext.MessageBox.alert(
-                                                i18n._("Upgrade in Progress"),
-                                                i18n._("The upgrades have been downloaded and are now being applied.") + "<br/>" +
-                                                    "<strong>" + i18n._("DO NOT REBOOT AT THIS TIME.") + "</strong>" + "<br/>" +
-                                                    i18n._("Please be patient this process will take a few minutes.") + "<br/>" +
-                                                    i18n._("After the upgrade is complete you will be able to log in again."),
-                                                Ung.Util.goToStartPage);
-                                        }
-                                    });
-                                } 
-                            }
+                            } 
                         }
                     }
-                    if(lastUpgradeDownloadProgressMsg!=null && lastUpgradeDownloadProgressMsg!="stop") {
-                        var msg=lastUpgradeDownloadProgressMsg;
-                        var text=Ext.String.format(i18n._("Package: {0}<br/>Progress: {1} kB/{2} kB <br/>Speed: {3}kB/sec"),msg.name, Math.round(msg.bytesDownloaded/1024), Math.round(msg.size/1024), msg.speed);
-                        if(this.upgradeSummary) {
-                            text+=Ext.String.format(i18n._("<br/>Package {0}/{1}"), this.upgradesComplete+1, this.upgradeSummary.count);
-                        }
-                        var msgTitle=i18n._("Downloading upgrades... Please wait");
-                        if(!Ext.MessageBox.isVisible() || Ext.MessageBox.title!=msgTitle) {
-                            Ext.MessageBox.progress(msgTitle, text);
-                        }
-                        var currentPercentComplete = parseFloat(msg.bytesDownloaded) / parseFloat(msg.size != 0 ? msg.size: 1);
-                        var progressIndex = parseFloat(0.99 * currentPercentComplete);
-                        Ext.MessageBox.updateProgress(progressIndex, "", text);
-                    }
-                    if(startUpgradeMode==true) {
-                        this.startUpgradeMode();
-                    }
-                    if(refreshApps && !this.upgradeMode) {
+                    if( refreshApps ) {
                         main.updateSeparator();
                         main.loadApps();
                     }
                 }
-                if(!Ung.MessageManager.upgradeMode) {
-                    // update system stats
-                    main.systemStats.update(messageQueue.systemStats);
-                    // upgrade node metrics
-                    for (var i = 0; i < main.nodes.length; i++) {
-                        var nodeCmp = Ung.Node.getCmp(main.nodes[i].nodeId);
-                        if (nodeCmp && nodeCmp.isRunning()) {
-                            nodeCmp.metrics = messageQueue.metrics.map[main.nodes[i].nodeId];
-                            nodeCmp.updateMetrics();
-                        }
+
+                // update system stats
+                main.systemStats.update(messageQueue.systemStats);
+                // upgrade node metrics
+                for (var i = 0; i < main.nodes.length; i++) {
+                    var nodeCmp = Ung.Node.getCmp(main.nodes[i].nodeId);
+                    if (nodeCmp && nodeCmp.isRunning()) {
+                        nodeCmp.metrics = messageQueue.metrics.map[main.nodes[i].nodeId];
+                        nodeCmp.updateMetrics();
                     }
                 }
+                
             } catch (err) {
                 Ext.MessageBox.alert("Exception in MessageManager", err.message);
             }

@@ -228,8 +228,13 @@ public class NodeManagerImpl implements NodeManager
             logger.info("initializing node: " + nodeName);
 
             if ( nodeInstances( nodeName, policyId, false ).size() >= 1 ) 
-                throw new Exception("too many instances: " + nodeName);
-
+                throw new Exception("too many instances of " + nodeName + " + in policy " + policyId + ".");
+            for ( NodeSettings n2 : getSettings().getNodes() ) {
+                if ( n2.getPolicyId() == policyId && n2.getNodeName().equals(nodeName) )
+                     throw new Exception("too many instances of " + nodeName + " + in policy " + policyId + ".");
+            }
+                
+                 
             nodeProperties = initNodeProperties( packageDesc );
             nodeSettings = createNewNodeSettings( policyId, nodeName );
 

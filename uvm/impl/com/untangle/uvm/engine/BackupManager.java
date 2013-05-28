@@ -114,18 +114,20 @@ public class BackupManager
 
         // install all the needed packages
         String[] packages = result.getOutput().split("[\\r\\n]+");
-        boolean installingPackages = false;
         if (packages != null) {
+            String pkgsStr = "";
             for ( String pkg : packages ) {
-                if (! UvmContextFactory.context().aptManager().isInstalled( pkg )) {
-                    logger.info("Restore Backup: need package: " + pkg);
-                    installingPackages = true;
-                    UvmContextFactory.context().aptManager().requestInstall( pkg );
-                }
+                if ( UvmContextFactory.context().aptManager().isInstalled( pkg ) )
+                    continue;
+                
+                if (! "".equals(pkgsStr))
+                    pkgsStr += ",";
+
+                pkgsStr += pkg;
             }
-        }
-        if (installingPackages) {
-            return new ExecManagerResult( 0, i18nUtil.tr("Files required for the restore are missing. Please retry again after the download is complete."));
+
+            if (! "".equals(pkgsStr))
+                return new ExecManagerResult( -1, "NEED_TO_INSTALL:" + pkgsStr);
         }
             
         // run same command with nohup and without -c check-only flag

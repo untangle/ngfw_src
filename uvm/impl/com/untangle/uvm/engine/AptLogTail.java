@@ -42,12 +42,12 @@ class AptLogTail implements Runnable
 
     static {
         FETCH_PATTERN = Pattern.compile(".*'(http://.*)' (.*\\.deb) ([0-9]+) (MD5Sum:|SHA1:|SHA256:)?([0-9a-z]+)");
-        //6850K .......... .......... .......... .......... .......... 96 46.6K 6s
-        DOWNLOAD_PATTERN = Pattern.compile(".* ([0-9]+)K[ .]+([0-9]+) *([0-9]+\\.*[0-9]+)K.*");
+        //6850K .......... .......... .......... .......... .......... 96% 46.6K 6s
+        DOWNLOAD_PATTERN = Pattern.compile("([0-9]+)K[ .]+([0-9%]+) *([0-9]+\\.*[0-9]+)K.*");
         APT_INSTALL_PATTERN = Pattern.compile(".*\\s([0-9]+) newly installed,.*");
-        DPKG_UNPACK_PATTERN = Pattern.compile("\\s+Unpacking\\s*(\\S+) .*");
-        DPKG_INSTALL_PATTERN = Pattern.compile("\\s+Setting up\\s*(\\S+) .*");
-        DONE_PATTERN = Pattern.compile("\\s+done [0-9]+.*");
+        DPKG_UNPACK_PATTERN = Pattern.compile(".*Unpacking\\s*(\\S+) .*");
+        DPKG_INSTALL_PATTERN = Pattern.compile(".*Setting up\\s*(\\S+) .*");
+        DONE_PATTERN = Pattern.compile(".*done [0-9]+.*");
     }
 
     private final long key;
@@ -159,6 +159,8 @@ class AptLogTail implements Runnable
             while (true) {
                 String line = readLine();
                 Matcher match = DOWNLOAD_PATTERN.matcher(line);
+                //logger.debug("Processing line:" + line);
+
                 if (line.contains("DOWNLOAD SUCCEEDED: ")) {
                     logger.debug("AptLogTail(" + key + ")" + " Sending DownloadComplete");
                     mm.submitMessage(new DownloadComplete(true, requestingPackage));
@@ -208,6 +210,8 @@ class AptLogTail implements Runnable
             if (match.matches()) {
                 packageCount = Integer.parseInt(match.group(1));
                 break;
+            }  else {
+                logger.debug("AptLogTail(" + key + ")" + " ignoring line: " + line.substring(0,(line.length()<10 ? line.length() : 9)) + "...");
             }
         }
 
@@ -215,9 +219,8 @@ class AptLogTail implements Runnable
          * Unpack and install phase
          */
         while (true) {
-            logger.debug("Apt readline... ");
             String line = readLine();
-            logger.debug("Apt readline...  got \"" + line + "\"");
+            logger.debug("Processing apt line: \"" + line + "\"");
             Matcher unpackMatch = DPKG_UNPACK_PATTERN.matcher(line);
             Matcher installMatch = DPKG_INSTALL_PATTERN.matcher(line);
             if (unpackMatch.matches()) {
@@ -231,6 +234,8 @@ class AptLogTail implements Runnable
             } else if (DONE_PATTERN.matcher(line).matches()) {
                 logger.debug("APT DONE matched");
                 break; //its done
+            }  else {
+                logger.debug("AptLogTail(" + key + ")" + " ignoring line: " + line.substring(0,(line.length()<10 ? line.length() : 9)) + "...");
             }
         }
 
@@ -259,16 +264,7 @@ class AptLogTail implements Runnable
                     } catch (InterruptedException exn) { }
                 } else {
                     lastActivity = t;
-
-                    /**
-                     * rsyslog inserts the date at the beginning followed by ": "
-                     * find that and cut out the date
-                     */
-                    int index = line.indexOf(": ");
-                    if (index > 0) 
-                        return line.substring(index+1);
-                    else
-                        return line;
+                    return line;
                 } 
             }
         } catch (IOException exn) {

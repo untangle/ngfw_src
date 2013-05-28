@@ -238,7 +238,7 @@ if (!Ung.hasResource["Ung.System"]) {
                         iconCls: "reboot-icon",
                         handler: Ext.bind(function() {
                             Ext.MessageBox.confirm(this.i18n._("Manual Reboot Warning"),
-                                Ext.String.format(this.i18n._("You are about to manually reboot.  This will interrupt normal network operations until the {0} Server is finished automatically restarting. This may take up to several minutes to complete."), this.companyName ),
+                                Ext.String.format(this.i18n._("The server is about to manually reboot.  This will interrupt normal network operations until the {0} Server is finished automatically restarting. This may take up to several minutes to complete."), this.companyName ),
                                 Ext.bind(function(btn) {
                                 if (btn == "yes") {
                                     rpc.jsonrpc.UvmContext.rebootBox(Ext.bind(function (result, exception) {
@@ -266,7 +266,7 @@ if (!Ung.hasResource["Ung.System"]) {
                         iconCls: "reboot-icon",
                         handler: Ext.bind(function() {
                             Ext.MessageBox.confirm(this.i18n._("Manual Shutdown Warning"),
-                                Ext.String.format(this.i18n._("You are about to shutdown the {0} Server.  This will stop all network operations."), this.companyName ),
+                                Ext.String.format(this.i18n._("The server is about to shutdown the {0} Server.  This will stop all network operations."), this.companyName ),
                                 Ext.bind(function(btn) {
                                 if (btn == "yes") {
                                     rpc.jsonrpc.UvmContext.shutdownBox(Ext.bind(function (result, exception) {
@@ -294,7 +294,7 @@ if (!Ung.hasResource["Ung.System"]) {
                         iconCls: "reboot-icon",
                         handler: Ext.bind(function() {
                             Ext.MessageBox.confirm(this.i18n._("Setup Wizard Warning"),
-                               Ext.String.format(this.i18n._("You are about to re-run the Setup Wizard.  This may reconfigure the {0} Server and {1}overwrite your current settings.{2}"), this.companyName, "<b>", "</b>" ),
+                               Ext.String.format(this.i18n._("The Setup Wizard is about to be re-run.  This may reconfigure the {0} Server and {1}overwrite your current settings.{2}"), this.companyName, "<b>", "</b>" ),
                                Ext.bind(function(btn) {
                                    if (btn == "yes") {
                                        main.openSetupWizardScreen();
@@ -349,7 +349,7 @@ if (!Ung.hasResource["Ung.System"]) {
                     items: [{
                         border: false,
                         cls: "description",
-                        html: this.i18n._("You can backup your current system configuration to a file on your local computer for later restoration, in the event that you would like to replace new settings with your current settings.  The file name will end with \".backup\"") +
+                        html: this.i18n._("Backup can save the current system configuration to a file on your local computer for later restoration. The file name will end with \".backup\"") +
                                 "<br> <br> " +
                                 this.i18n._("After backing up your current system configuration to a file, you can then restore that configuration through this dialog by going to \"Restore\" -> \"From File\".")
                     },{
@@ -384,7 +384,7 @@ if (!Ung.hasResource["Ung.System"]) {
                     var form = prova.getForm();
                     form.submit({
                         parentId: cmp.getId(),
-                        waitMsg: cmp.i18n._("Please wait while Restoring..."),
+                        waitMsg: cmp.i18n._("Inspecting File..."),
                         success: function(form, action) {
                             var cmp = Ext.getCmp(action.parentId);
                             Ung.MessageManager.stop();
@@ -396,6 +396,42 @@ if (!Ung.hasResource["Ung.System"]) {
                             if (action.result && action.result.msg) {
                                 errorMsg = action.result.msg;
                             }
+
+                            if ( errorMsg.indexOf("NEED_TO_INSTALL:") !== -1 ) {
+                                var neededPkgs = errorMsg.replace("NEED_TO_INSTALL:","").split(",");
+
+                                Ext.MessageBox.confirm(cmp.i18n._("Alert"),
+                                                       cmp.i18n._("Missing packages are required to restore this backup file. Download required packages now?") + "<br/><br/>" +
+                                                       cmp.i18n._("Packages") + ":<br/>" + neededPkgs,
+                                                       Ext.bind(function(btn) {
+                                                           if (btn == "yes") {
+                                                               Ext.MessageBox.hide();
+                                                               this.neededPackages = neededPkgs.length;
+                                                               Ext.MessageBox.wait(i18n._("Downloading packages..."), i18n._("Please wait"));
+
+                                                               for (var i = 0; i < neededPkgs.length; i++) {
+                                                                   var pkgName = neededPkgs[i];
+
+                                                                   var restoreFn = Ext.bind( function() {
+                                                                       this.neededPackages--;
+
+                                                                       if ( this.neededPackages == 0 ) {
+                                                                           Ext.MessageBox.alert(cmp.i18n._("Download Complete"), i18n._("To continue the restore relaunch the restore process."));
+                                                                       }
+                                                                   }, this);
+
+                                                                   Ung.MessageManager.setModalDownloadMode( null, restoreFn );
+
+                                                                   console.log("Installing: " + pkgName);
+                                                                   rpc.aptManager.install(Ext.bind(function(result, exception) {
+                                                                       if(Ung.Util.handleException(exception)) return;
+                                                                   }, this), pkgName);
+                                                               }
+                                                           }
+                                                       }, this));
+                                return;
+                            }
+                                
                             Ext.MessageBox.alert(cmp.i18n._("Failed"), errorMsg);
                         }
                     });
@@ -407,7 +443,7 @@ if (!Ung.hasResource["Ung.System"]) {
                     items: [{
                         border: false,
                         cls: "description",
-                        html: this.i18n._("You can restore a previous system configuration from a backup file on your local computer.  The backup file name ends with \".backup\"")
+                        html: this.i18n._("Restore can restore a previous system configuration to the server from a backup file on your local computer.  The backup file name ends with \".backup\"")
                     },{
                         xtype: "form",
                         id: "upload_restore_file_form",

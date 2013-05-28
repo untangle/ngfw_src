@@ -44,7 +44,7 @@ function backupToDir()
     datestamp=$(date '+%Y%m%d%H%M')
 
     # tar up important files
-    tar zcf $outdir/files-$datestamp.tar.gz --ignore-failed-read -C / `echo @PREFIX@/usr/share/untangle/settings | sed -e 's|/||'`
+    tar zcfh $outdir/files-$datestamp.tar.gz --ignore-failed-read -C / usr/share/untangle/settings/
 
     # save the list of important packages
     @PREFIX@/usr/share/untangle/bin/ut-apt installed | grep 'libitem-' > $outdir/packages-$datestamp

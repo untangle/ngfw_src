@@ -30,7 +30,7 @@ function doHelp() {
   echo " -i input_file   (restore file)"
   echo "optional options: "
   echo " -h              (help)"
-  echo " -c              (check only)"
+  echo " -c              (check file)"
   echo " -f              (list required packages)"
   echo " -v              (verbose)"
 }
@@ -45,6 +45,15 @@ function check_packages()
 
 function doRestore() 
 {
+    # Check that all required libitems are installed
+    while read line ; do 
+        PKG="`echo $line | awk '{print $1}'`"
+        dpkg -l $PKG 2>/dev/null | grep -q '^i' || {
+            err "Required packages are not installed: $PKG"
+            return 1
+        }
+    done < <(cat $WORKING_DIR/$PACKAGES_FILE )
+
     # clean out stuff that restore would otherwise append to
     rm -rf @PREFIX@/usr/share/untangle/settings/*
 
@@ -141,15 +150,6 @@ function expandFile()
         err "Backup file version not supported. ($BACKUP_VERSION)"
         return 1
     fi
-
-    # Check that all required libitems are installed
-    while read line ; do 
-        PKG="`echo $line | awk '{print $1}'`"
-        dpkg -l $PKG | grep -q '^i' || {
-            err "Required packages are not installed: $PKG"
-            return 1
-        }
-    done < <(cat $WORKING_DIR/$PACKAGES_FILE )
 
     return 0
 }
