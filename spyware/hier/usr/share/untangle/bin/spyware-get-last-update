@@ -1,6 +1,0 @@
-#!/bin/dash
-
-## Ignore errors
-@UVM_HOME@/bin/ut-get-last-update /usr/share/untangle-webfilter-init/spyware-url
-
-exit 0

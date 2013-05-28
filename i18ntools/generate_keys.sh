@@ -5,7 +5,7 @@ ALL_MODULES='untangle-vm untangle-libuvm untangle-apache2-config untangle-casing
     untangle-node-firewall 
     untangle-node-ips untangle-node-openvpn untangle-node-phish 
     untangle-node-protofilter untangle-node-reporting untangle-node-shield 
-    untangle-node-spamassassin untangle-node-spyware 
+    untangle-node-spamassassin 
     untangle-node-adconnector untangle-node-bandwidth untangle-node-boxbackup 
     untangle-node-branding untangle-node-commtouchas 
     untangle-node-faild untangle-node-ipsec 
@@ -53,7 +53,6 @@ case "$1" in
     xgettext -j --copyright-holder='Untangle, Inc.' -L Java -kmarktr -o tmp_keys.pot ../../openvpn/impl/com/untangle/node/openvpn/VpnNodeImpl.java
     xgettext -j --copyright-holder='Untangle, Inc.' -L Java -kmarktr -o tmp_keys.pot ../../protofilter/impl/com/untangle/node/protofilter/ProtoFilterImpl.java
     xgettext -j --copyright-holder='Untangle, Inc.' -L Java -kmarktr -o tmp_keys.pot ../../spam-base/impl/com/untangle/node/spam/SpamNodeImpl.java
-    xgettext -j --copyright-holder='Untangle, Inc.' -L Java -kmarktr -o tmp_keys.pot ../../spyware/impl/com/untangle/node/spyware/SpywareImpl.java
     xgettext -j --copyright-holder='Untangle, Inc.' -L Java -kmarktr -o tmp_keys.pot ../../virus-base/impl/com/untangle/node/virus/VirusNodeImpl.java
     xgettext -j --copyright-holder='Untangle, Inc.' -L Java -kmarktr -o tmp_keys.pot ../../webfilter-base/impl/com/untangle/node/webfilter/WebFilterBase.java
     xgettext -j --copyright-holder='Untangle, Inc.' -L Java -kmarktr -o tmp_keys.pot ../../../../hades/src/faild/impl/com/untangle/node/faild/FailDImpl.java
@@ -97,20 +96,6 @@ case "$1" in
     xgettext -j --copyright-holder='Untangle, Inc.' -L Java -ktr -o tmp_keys.pot ../servlets/phish/src/com/untangle/node/phish/BlockPageServlet.java
     xgettext -j --copyright-holder='Untangle, Inc.' -L Java -ktr -o tmp_keys.pot ../../http-casing/api/com/untangle/node/http/BlockPageUtil.java
     xgettext -j --copyright-holder='Untangle, Inc.' -L Java -kmarktr -o tmp_keys.pot ../../spam-base/impl/com/untangle/node/spam/*.java
-    xgettext -j --copyright-holder='Untangle, Inc.' -L Java -kmarktr -o tmp_keys.pot ../impl/com/untangle/node/${moduleName}/*.java
-    find ../hier -name '*.py' | xargs xgettext -j --copyright-holder='Untangle, Inc.' -L Python -k_ -o tmp_keys.pot
-    ruby ../../i18ntools/xi18ntags.rb ../../uvm/servlets/blockpage/root/blockpage_template.jspx >> ./tmp_keys.pot
-    msgmerge -U -N $1.pot tmp_keys.pot
-    rm tmp_keys.pot
-    update_po $1
-    ;;
-"untangle-node-spyware")
-    moduleName=`echo "$1"|cut -d"-" -f3`
-    cd ../${moduleName}/po/
-    echo 'get new keys'
-    xgettext --copyright-holder='Untangle, Inc.' -L Python -ki18n._ -o tmp_keys.pot ../hier/usr/share/untangle/web/webui/script/${1}/settings.js
-    xgettext -j --copyright-holder='Untangle, Inc.' -L Java -ktr -o tmp_keys.pot ../servlets/spyware/src/com/untangle/node/spyware/BlockPageServlet.java
-    xgettext -j --copyright-holder='Untangle, Inc.' -L Java -ktr -o tmp_keys.pot ../../http-casing/api/com/untangle/node/http/BlockPageUtil.java
     xgettext -j --copyright-holder='Untangle, Inc.' -L Java -kmarktr -o tmp_keys.pot ../impl/com/untangle/node/${moduleName}/*.java
     find ../hier -name '*.py' | xargs xgettext -j --copyright-holder='Untangle, Inc.' -L Python -k_ -o tmp_keys.pot
     ruby ../../i18ntools/xi18ntags.rb ../../uvm/servlets/blockpage/root/blockpage_template.jspx >> ./tmp_keys.pot

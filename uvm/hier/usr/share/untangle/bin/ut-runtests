@@ -93,7 +93,7 @@ def printUsage():
     -l <file>  : log file
     -d <int>   : interface ID of the external interface (outside) default: 1
     -s <int>   : interface ID of the internal interface (client) default: 2
-    -t <nodes> : comma seperated list nodes to test (default: "all") (exm: "webfilter,spyware")
+    -t <nodes> : comma seperated list nodes to test (default: "all") (exm: "webfilter,adblocker")
     -v         : verbose (can be specified more than one time)
     -q         : quit on first failure
     -r         : repeat test indefinitely (or until failure if -q is specified)

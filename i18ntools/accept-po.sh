@@ -99,9 +99,6 @@ for f in $(find $t -type f -name '*.po'); do
         untangle-node-splitd)
             d=$hades/src/splitd
             ;;
-        untangle-node-spyware)
-            d=$work/src/spyware
-            ;;
         untangle-node-support)
             d=$hades/src/support
             ;;

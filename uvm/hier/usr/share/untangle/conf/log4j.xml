@@ -258,10 +258,6 @@
     <priority value="INFO"/>
   </category>
 
-  <category name="com.untangle.node.spyware">
-    <priority value="INFO"/>
-  </category>
-
   <category name="com.untangle.node.support">
     <priority value="INFO"/>
   </category>

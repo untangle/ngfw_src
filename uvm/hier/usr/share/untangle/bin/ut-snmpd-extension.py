@@ -172,7 +172,6 @@ class SnmpExtensionUvm(SnmpExtension):
             'untangle-node-protofilter' : 4,
             'untangle-node-ips' : 5,
             'untangle-node-phish' : 6,
-            'untangle-node-spyware' : 8,
             'untangle-node-clam' : 9,
             'untangle-node-spamassassin' : 10,
             'untangle-node-commtouchav' : 11,
