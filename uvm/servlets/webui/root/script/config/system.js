@@ -607,7 +607,7 @@ if (!Ung.hasResource["Ung.System"]) {
 
             var timeZones = [];
             for (var i = 0; i < Ung.TimeZoneData.length; i++) {
-                timeZones.push([Ung.TimeZoneData[i][2], "(" + Ung.TimeZoneData[i][0] + ") " + Ung.TimeZoneData[i][1]]);
+                timeZones.push([Ung.TimeZoneData[i][0], "(" + Ung.TimeZoneData[i][1] + ") " + Ung.TimeZoneData[i][0]]);
             }
             this.panelRegionalSettings = Ext.create('Ext.panel.Panel',{
                 // private fields
