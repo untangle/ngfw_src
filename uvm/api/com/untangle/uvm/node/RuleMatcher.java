@@ -359,6 +359,9 @@ public class RuleMatcher implements JSONString, Serializable
         case ESOFT_WEB_FILTER_CATEGORY_FLAGGED:
             logger.warn("matcher deprecated: " + this.matcherType);
             break;
+
+        case DST_LOCAL:
+            break;
             
         default:
             logger.warn("Unknown Matcher type: " + this.matcherType + " - ignoring precomputing");
@@ -692,7 +695,7 @@ public class RuleMatcher implements JSONString, Serializable
             return Pattern.matches(regexValue, attachment);
 
         default:
-            logger.error("Unknown Matcher Type: \"" + this.matcherType + "\""); 
+            logger.error("Unsupported Matcher Type: \"" + this.matcherType + "\""); 
             break;
         }
 
@@ -875,9 +878,9 @@ public class RuleMatcher implements JSONString, Serializable
             if (attachment == null)
                 return false;
             return Pattern.matches(regexValue, attachment);
-            
+
         default:
-            logger.error("Unknown Matcher Type: \"" + this.matcherType + "\""); 
+            logger.error("Unsupported Matcher Type: \"" + this.matcherType + "\""); 
             break;
         }
 
