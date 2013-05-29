@@ -988,8 +988,6 @@ public class NetworkManagerImpl implements NetworkManager
         rules.add( filterRulePing );
         rules.add( filterRuleDns );
         rules.add( filterRuleDhcp );
-        rules.add( filterRuleHttp );
-        rules.add( filterRuleHttps );
         rules.add( filterRuleBlock );
 
         return rules;
