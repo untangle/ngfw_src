@@ -231,14 +231,15 @@ Ext.define("Ung.form.DayOfWeekMatcherField", {
         return false;
     },
     initComponent: function() {
+        var i;
         var initValue = "none";
         if ((typeof this.value) == "string") {
              initValue = this.value.split(",");
         }
         this.value = null;
-        for (var i = 0 ; i < this.items.length ; i++)
+        for (i = 0 ; i < this.items.length ; i++)
             this.items[i].checked = false;
-        for (var i = 0 ; i < this.items.length ; i++) {
+        for (i = 0 ; i < this.items.length ; i++) {
             var item = this.items[i];
             if ( this.arrayContains(initValue, item.dayId) || this.arrayContains(initValue, item.name) || this.arrayContains(initValue, "any")) {
                 item.checked = true;
@@ -248,19 +249,22 @@ Ext.define("Ung.form.DayOfWeekMatcherField", {
     },
     getValue: function() {
         var checkCount = 0;
-        for (var i = 0 ; i < this.items.length ; i++) 
+        var i;
+        for (i = 0 ; i < this.items.length ; i++) 
             if (this.items.items[i].checked)
                 checkCount++;
         if (checkCount == 7)
             return "any";
         var arr = [];
-        for (var i = 0 ; i < this.items.length ; i++) 
+        for (i = 0 ; i < this.items.length ; i++) 
             if (this.items.items[i].checked)
                 arr.push(this.items.items[i].dayId);
-        if (arr.length == 0)
+        if (arr.length === 0){
             return "none";
-        else
+        } else {
             return arr.join();
+        }
+            
     }
 });
 
@@ -436,7 +440,7 @@ Ung.Util = {
                 message += i18n._("<br/>");
                 if (exception.name != null)
                     message += exception.name + "<br/>";
-                if (exception.message != "")
+                if (exception.message !== "")
                     message += exception.message + "<br/>";
                 if (exception.stack != null) {
                     message += "<br/>";
@@ -505,16 +509,19 @@ Ung.Util = {
     loadScript: function(sScriptSrc, handler) {
         var error=null;
         try {
-            if(window.XMLHttpRequest)
-                var req = new XMLHttpRequest();
-            else
-                var req = new ActiveXObject("Microsoft.XMLHTTP");
+            var req;
+            if(window.XMLHttpRequest) {
+                req = new XMLHttpRequest();
+            } else {
+                req = new ActiveXObject("Microsoft.XMLHTTP");
+            }
             req.open("GET",Ung.Util.addBuildStampToUrl(sScriptSrc),false);
             req.send(null);
-            if( window.execScript)
+            if( window.execScript) {
                 window.execScript(req.responseText);
-            else
+            } else {
                 window.eval(req.responseText);
+            }
         } catch (e) {
             error=e;
             alert(error);
@@ -565,7 +572,7 @@ Ung.Util = {
     },
     getV4NetmaskList: function( includeNull ) {
         var data = [];
-        if (includeNull == true) data.push( [null,""] );
+        if (includeNull) data.push( [null,""] );
         data.push( [32,"/32 - 255.255.255.255"] );
         data.push( [31,"/31 - 255.255.255.254"] );
         data.push( [30,"/30 - 255.255.255.252"] );
@@ -607,8 +614,8 @@ Ung.Util = {
         var networkSettings = main.getNetworkSettings();
         for ( var c = 0 ; c < networkSettings.interfaces.list.length ; c++ ) {
             var intf = networkSettings.interfaces.list[c];
-            var name = intf['name'];
-            var key = intf['interfaceId'];
+            var name = intf.name;
+            var key = intf.interfaceId;
             
             data.push( [ key, name ] );
         }
@@ -628,10 +635,10 @@ Ung.Util = {
         var networkSettings = main.getNetworkSettings();
         for ( var c = 0 ; c < networkSettings.interfaces.list.length ; c++ ) {
             var intf = networkSettings.interfaces.list[c];
-            var name = intf['name'];
-            var key = intf['interfaceId'];
+            var name = intf.name;
+            var key = intf.interfaceId;
             
-            if ( intf['configType'] == 'ADDRESSED' ) {
+            if ( intf.configType == 'ADDRESSED' ) {
                 data.push( [ key, name ] );
             }
         }
@@ -642,10 +649,10 @@ Ung.Util = {
         var networkSettings = main.getNetworkSettings();
         for ( var c = 0 ; c < networkSettings.interfaces.list.length ; c++ ) {
             var intf = networkSettings.interfaces.list[c];
-            var name = intf['name'];
-            var key = intf['interfaceId'];
+            var name = intf.name;
+            var key = intf.interfaceId;
             
-            if ( intf['configType'] == 'ADDRESSED' && intf['isWan'] == true ) {
+            if ( intf.configType == 'ADDRESSED' && intf.isWan) {
                 data.push( [ key, name ] );
             }
         }
@@ -702,7 +709,7 @@ Ung.Util = {
     // Test if there is data in the specified object
     hasData: function(obj) {
         var hasData = false;
-        for (id in obj) {
+        for (var id in obj) {
             hasData = true;
             break;
         }
@@ -719,7 +726,7 @@ Ung.Util = {
             return obj1 === null && obj2 === null;
         }
         var count = 0;
-        for (prop in obj1) {
+        for (var prop in obj1) {
             // the two properties have different types
             if (typeof obj1[prop] !== typeof obj1[prop]) {
                 return false;
@@ -748,7 +755,7 @@ Ung.Util = {
         for (prop in obj2) {
             count--;
         }
-        if (count != 0) {
+        if (count !== 0) {
             return false;
         }
         return true;
@@ -756,7 +763,7 @@ Ung.Util = {
 
     // Clone object
     clone: function (obj) {
-        if(obj == null || typeof(obj) != 'object')
+        if(obj || typeof(obj) != 'object')
             return obj;
 
         var temp = new obj.constructor();
@@ -772,7 +779,7 @@ Ung.Util = {
         Ext.WindowMgr.each(Ung.Util.setSizeToRack);
     },
     setSizeToRack: function (win) {
-        if(win!=null && win.sizeToRack==true) {
+        if(win && win.sizeToRack) {
             win.setSizeToRack();
         }
     },
@@ -855,7 +862,7 @@ Ung.Util = {
                 }
             }
             return dataProperty;
-        }
+        };
     },
     createStoreMap : function(pairArray) {
         var map = {};
@@ -909,32 +916,32 @@ Ung.Util.RetryHandler = {
         var handler = Ext.bind(this.tryAgain, this, [ exception, input ] );
         var type = "noAlert";
 
-        var count = input["count"];
+        var count = input.count;
 
         // Do not retry any more
         if (( count == null ) || ( count < 1 )) {
             handler = null;
             type = null;
         } else {
-            input["count"]--;
+            input.count--;
         }
 
         if ( Ung.Util.handleException( exception, handler, type )) {
             return;
         }
 
-        input["callback"]( result, exception );
+        input.callback( result, exception );
     },
 
     tryAgain: function( exception, input ) {
         if( exception.code == 500 ) {
             // If necessary try calling the function again.
-            window.setTimeout( Ext.bind(this.callFunction, this, [ input ] ), input["timeout"] );
+            window.setTimeout( Ext.bind(this.callFunction, this, [ input ] ), input.timeout );
             return;
         }
 
         var message = exception.message;
-        if (message == null || message == "Unknown" || message == "") {
+        if (message == null || message == "Unknown" || message === "") {
             message = i18n._("Please Try Again");
             if (exception.javaStack != null)
                 message += "<br/><br/>" + exception.javaStack;
@@ -944,12 +951,12 @@ Ung.Util.RetryHandler = {
 
     callFunction: function( input ) {
         var d = Ext.bind(this.completeRetry, this, [ input ], 2 );
-        var fn = input["fn"];
-        var fnScope = input["fnScope"];
+        var fn = input.fn;
+        var fnScope = input.fnScope;
         var params = [ d ];
 
-        if ( input["params"] != null ) {
-            params = params.concat( input["params"] );
+        if ( input.params ) {
+            params = params.concat( input.params );
         }
 
         fn.apply( fnScope, params );
@@ -994,7 +1001,7 @@ Ung.SortTypes = {
      * @param value of the last name field - if no value is given it is pushed to the last.
      */
     asLastName: function (value) {
-        if(value == null || value == "") {
+        if(Ext.isEmpty(value)) {
             return null;
         }
         return value;
@@ -1132,7 +1139,7 @@ Ext.define("Ung.AppItem", {
         if(appsLastState!=null) {
             this.download=appsLastState.download;
             this.setState(appsLastState.state,appsLastState.options);
-        };
+        }
     },
     // hack because I cant figure out how to tell extjs to apply style to progress text
     stylizeProgressText: function (str) {
@@ -1141,6 +1148,8 @@ Ext.define("Ung.AppItem", {
     // set the state of the progress bar
     setState: function(newState, options) {
         var progressString = "";
+        var currentPercentComplete;
+        var progressIndex;
         switch (newState) {
           case null:
           case "installed":
@@ -1169,8 +1178,8 @@ Ext.define("Ung.AppItem", {
           case "download_complete":
             if(this.download!=null && this.download.summary!=null) {
                 this.download.completePackages++;
-                var currentPercentComplete = parseFloat(this.download.completePackages) / parseFloat(this.download.summary.size > 0 ? this.download.summary.size: 1);
-                var progressIndex = parseFloat(0.99 * currentPercentComplete);
+                currentPercentComplete = parseFloat(this.download.completePackages) / parseFloat(this.download.summary.size > 0 ? this.download.summary.size: 1);
+                progressIndex = parseFloat(0.99 * currentPercentComplete);
                 progressString = this.stylizeProgressText(i18n._("DL") + Ext.String.format(" {0}/{1} ", this.download.completePackages, this.download.summary.count) + i18n._("done"));
                 //the progress bar works better without these updates
                 //this.progressBar.reset();
@@ -1181,8 +1190,8 @@ Ext.define("Ung.AppItem", {
             this.displayButtonsOrProgress(false);
             if(this.download!=null && this.download.summary!=null) {
                 this.download.completeSize=options.bytesDownloaded;
-                var currentPercentComplete = parseFloat(options.bytesDownloaded) / parseFloat(options.size != 0 ? options.size: 1);
-                var progressIndex = parseFloat(0.99 * currentPercentComplete);
+                currentPercentComplete = parseFloat(options.bytesDownloaded) / parseFloat(options.size != 0 ? options.size: 1);
+                progressIndex = parseFloat(0.99 * currentPercentComplete);
                 progressString = this.stylizeProgressText(i18n._("DL") + Ext.String.format(" {0}/{1} @ {2} KB/s", this.download.completePackages, this.download.summary.count, options.speed));
                 this.progressBar.reset();
                 this.progressBar.updateProgress(progressIndex, progressString);
@@ -1195,8 +1204,8 @@ Ext.define("Ung.AppItem", {
                 if (options.action.indexOf("unpack") != -1) {
                     action = i18n._("Unpacking");
                 } 
-                var currentPercentComplete = parseFloat(options.count) / parseFloat(options.totalCount != 0 ? options.totalCount: 1);
-                var progressIndex = parseFloat(0.99 * currentPercentComplete);
+                currentPercentComplete = parseFloat(options.count) / parseFloat(options.totalCount != 0 ? options.totalCount: 1);
+                progressIndex = parseFloat(0.99 * currentPercentComplete);
                 //progressString = this.stylizeProgressText(action + " " + Ext.String.format("{0}/{1}", options.count, options.totalCount));
                 progressString = this.stylizeProgressText(action + " " + Ext.String.format("{0}%", Math.round(progressIndex*100)) + "&nbsp;");
                 this.progressBar.reset();
@@ -2736,7 +2745,7 @@ Ext.define("Ung.GridEventLog", {
         this.callParent(arguments);
 
         var cmConfig = this.columns;
-        for (i in cmConfig) {
+        for (var i in cmConfig) {
             var col=cmConfig[i];
             if (col.sortable == true || col.sortable == null) {
                 col.menuDisabled= true;
@@ -2753,7 +2762,7 @@ Ext.define("Ung.GridEventLog", {
         this.autoRefreshEnabled=true;
         var columnModel=this.columns;
         this.getStore().sort(columnModel[0].dataIndex, "DESC");
-        for (i in columnModel) {
+        for (var i in columnModel) {
             columnModel[i].sortable = false;
         }
         if(setButton) {
@@ -2768,7 +2777,7 @@ Ext.define("Ung.GridEventLog", {
         this.autoRefreshEnabled=false;
         this.pagingToolbar.show();
         var columnModel=this.columns;
-        for (i in columnModel) {
+        for (var i in columnModel) {
             columnModel[i].sortable = columnModel[i].initialSortable;
         }
         if(setButton) {
@@ -2842,14 +2851,13 @@ Ext.define("Ung.GridEventLog", {
             this.rpc.eventLogQueries=this.eventQueriesFn();
             var queryList = this.rpc.eventLogQueries;
             var displayStyle;
+            var out =[];
             var i;
-            var out;
-            
-            out = [];
+            var selOpt;
             out.push('<select name="Event Type" id="selectQuery_' + this.getId() + '">');
             for (i = 0; i < queryList.length; i++) {
                 var queryDesc = queryList[i];
-                var selOpt = (i === 0) ? "selected": "";
+                selOpt = (i === 0) ? "selected": "";
                 out.push('<option value="' + queryDesc.query + '" ' + selOpt + '>' + this.settingsCmp.i18n._(queryDesc.name) + '</option>');
             }
             out.push('</select>');
@@ -2858,14 +2866,15 @@ Ext.define("Ung.GridEventLog", {
             displayStyle="";
             if (this.settingsCmp.node != null &&
                 this.settingsCmp.node.nodeProperties != null && 
-                this.settingsCmp.node.nodeProperties.type == "SERVICE")
+                this.settingsCmp.node.nodeProperties.type == "SERVICE") {
                 displayStyle = "display:none;"; //hide rack selector for services
+            }
             out = [];
             out.push('<select name="Rack" id="selectPolicy_' + this.getId() + '" style="'+displayStyle+'">');
-            out.push('<option value="-1" ' + selOpt + '>' + i18n._('All Racks') + '</option>');
+            out.push('<option value="-1">' + i18n._('All Racks') + '</option>');
             for (i = 0; i < rpc.policies.length; i++) {
                 var policy = rpc.policies[i];
-                var selOpt = ( policy == rpc.currentPolicy ) ? "selected": "";
+                selOpt = ( policy == rpc.currentPolicy ) ? "selected": "";
                 out.push('<option value="' + policy.policyId + '" ' + selOpt + '>' + policy.name + '</option>');
             }
             out.push('</select>');
@@ -2903,7 +2912,7 @@ Ext.define("Ung.GridEventLog", {
     getColumnList: function() {
         var columnList = "";
         for (var i=0; i<this.fields.length ; i++) {
-            if (i != 0)
+            if (i !== 0)
                 columnList += ",";
             if (this.fields[i].mapping != null)
                 columnList += this.fields[i].mapping;
@@ -3429,16 +3438,16 @@ Ext.define('Ung.Window', {
     isDirty: function() {
         return false;
     },
-    cancelAction: function() {
+    cancelAction: function(handler) {
         if (this.isDirty()) {
             Ext.MessageBox.confirm(i18n._('Warning'), i18n._('There are unsaved settings which will be lost. Do you want to continue?'),
                 Ext.bind(function(btn) {
                 if (btn == 'yes') {
-                    this.closeWindow();
+                    this.closeWindow(handler);
                 }
             }, this));
         } else {
-            this.closeWindow();
+            this.closeWindow(handler);
         }
     },
     close: function() {
@@ -3449,8 +3458,11 @@ Ext.define('Ung.Window', {
     },
     // the close window action
     // to override
-    closeWindow: function() {
+    closeWindow: function(handler) {
         this.hide();
+        if(handler) {
+            handler();
+        }
     }
 });
 
@@ -3476,9 +3488,6 @@ Ext.define("Ung.SettingsWin", {
     // tabs (if the window has tabs layout)
     tabs: null,
     dirtyFlag: false,
-    // holds the json rpc results for the settings class like baseSettings
-    // object, repository, repositoryDesc
-    rpc: null,
     layout: 'fit',
     // build Tab panel from an array of tab items
     constructor: function(config) {
@@ -3515,10 +3524,13 @@ Ext.define("Ung.SettingsWin", {
         }
         main.openHelp(helpSource);
     },
-    closeWindow: function() {
+    closeWindow: function(handler) {
         Ext.get("racks").show();
         this.hide();
         Ext.destroy(this);
+        if(handler) {
+            handler();
+        }
     },
     isDirty: function() {
         return this.dirtyFlag || Ung.Util.isDirty(this.tabs);
@@ -3582,7 +3594,7 @@ Ext.define("Ung.NodeWin", {
     initComponent: function() {
         if (this.helpSource == null) {
             this.helpSource = this.node.helpSource;
-        };
+        }
         this.breadcrumbs = [{
             title: i18n._(rpc.currentPolicy.name),
             action: Ext.bind(function() {
@@ -4075,17 +4087,17 @@ Ext.define('Ung.RowEditorWindow', {
     // this is the default functionality which can be overwritten
     isFormValid: function() {
         var validResult = this.isFormValidRecursive(this, 0);
-        if(validResult==true && this.validate!=null) {
+        if(validResult && this.validate!=null) {
             validResult = this.validate(this.items);
         }
-        if(validResult!=true) {
+        if(!validResult) {
             var errMsg = i18n._("The form is not valid!");
             if(validResult!=false) {
                 errMsg = validResult;
             }
             Ext.MessageBox.alert(i18n._('Warning'), errMsg);
         }
-        return (validResult == true);
+        return validResult;
     },
     isFormValidRecursive: function(component, depth) {
         if (component == null) {
@@ -4095,7 +4107,7 @@ Ext.define('Ung.RowEditorWindow', {
             console.log("Ung.RowEditorWindow.isFormValidRecursive depth>30");
             return true;
         }
-        if (component.dataIndex != null) {
+        if (component.dataIndex) {
             return Ext.isFunction(component.isValid)?component.isValid():Ung.Util.isValid(component);
         }
         if (component.items) {
@@ -4496,12 +4508,12 @@ Ext.define('Ung.EditorGrid', {
         if(!this.data) {
             this.data=[];
         }
-        if(testMode && this.data.length==0) {
+        if(testMode && this.data.length === 0) {
             if(this.testData) {
                 this.data.concat(this.testData);
             } else if(this.testDataFn) {
                 this.data.concat(this.testDataFn);
-            } else if(this.data.length==0) {
+            } else if(this.data.length === 0) {
                 var emptyRec={};
                 var length = Math.floor((Math.random()*5));
                 for(var i=0; i<length; i++) {
