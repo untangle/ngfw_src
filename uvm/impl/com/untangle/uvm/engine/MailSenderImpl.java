@@ -393,7 +393,7 @@ public class MailSenderImpl implements MailSender
                 }
                 else if (user != null) {
                     StringBuilder sbpasswd = new StringBuilder();
-                    sbpasswd.append(settings.getSmtpHost());
+                    sbpasswd.append("*");
                     sbpasswd.append(":");
                     sbpasswd.append(user);
                     sbpasswd.append(":");
