@@ -176,7 +176,7 @@ if (!Ung.hasResource["Ung.Email"]) {
                                 showDelay: 200,
                                 dismissDelay: 0,
                                 hideDelay: 0
-                            })
+                            });
                         }
                     }
                 },
@@ -203,8 +203,7 @@ if (!Ung.hasResource["Ung.Email"]) {
                                         html: '<strong style="margin-bottom:20px;font-size:11px;display:block;">'+emailTestMessage+'</strong>',
                                         width: 400,
                                         height: 100
-                                    },
-                                    {
+                                    },{
                                         xtype: 'textfield',
                                         name: 'Email Address',
                                         id: 'email-address-test',
@@ -313,16 +312,38 @@ if (!Ung.hasResource["Ung.Email"]) {
                             width: 400,
                             value: this.getMailSettings().smtpHost
                         }, {
-                            xtype: 'textfield',
-                            name: 'Server Port',
-                            id: 'email_smtpPort',
-                            fieldLabel: this.i18n._('Server Port'),
-                            labelWidth: 230,
-                            labelAlign: 'right',                        
-                            width: 280,
-                            value: this.getMailSettings().smtpPort,
-                            vtype: "port"
+                            xtype: 'container',
+                            layout: 'column',
+                            margin: '0 0 5 0',
+                            items: [{
+                                xtype: 'textfield',
+                                name: 'Server Port',
+                                id: 'email_smtpPort',
+                                fieldLabel: this.i18n._('Server Port'),
+                                labelWidth: 230,
+                                labelAlign: 'right',                        
+                                width: 280,
+                                value: this.getMailSettings().smtpPort,
+                                vtype: "port",
+                                listeners: {
+                                    "change": {
+                                        fn: Ext.bind(function(elem, newValue) {
+                                            if (newValue == 465) {
+                                                Ext.getCmp('email_smtpPort_TLS_Warning').setVisible(true);
+                                            } else {
+                                                Ext.getCmp('email_smtpPort_TLS_Warning').setVisible(false);
+                                            }
+                                        }, this)
+                                    }
+                                }
 
+                            },{
+                                border: false,
+                                id: 'email_smtpPort_TLS_Warning',
+                                hidden: (this.getMailSettings().smtpPort != 465),
+                                cls: "description",
+                                html: "<b>" + "<font color=\"red\">&nbsp;" + this.i18n._("Warning:") + "</font>&nbsp;" + this.i18n._("SMTPS is deprecated and not supported.") + "</b>"
+                            }]
                         }, {
                             xtype: 'checkbox',
                             labelWidth: 230,
