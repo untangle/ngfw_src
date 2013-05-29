@@ -38,12 +38,7 @@ function doHelp() {
 INST_OPTS=" -o DPkg::Options::=--force-confnew --yes --force-yes --fix-broken "
 UPGD_OPTS=" -o DPkg::Options::=--force-confnew --yes --force-yes --fix-broken "
 
-function check_packages()
-{
-    pkgs_file=$1
-}
-
-function doRestore() 
+function checkPackages()
 {
     # Check that all required libitems are installed
     while read line ; do 
@@ -53,7 +48,10 @@ function doRestore()
             return 1
         }
     done < <(cat $WORKING_DIR/$PACKAGES_FILE )
+}
 
+function doRestore() 
+{
     # clean out stuff that restore would otherwise append to
     rm -rf @PREFIX@/usr/share/untangle/settings/*
 
@@ -175,20 +173,32 @@ fi
 # Create a working directory
 WORKING_DIR=`mktemp -d -t ut-restore.XXXXXXXXXX`
 
+# Expand and check the file
 expandFile $RESTORE_FILE
 RETURN_CODE=$?
 
+# If the file doesn't check out or in check only mode exit with expandFile's return code
 if [ "$CHECK_ONLY" == "true" ] || [ $RETURN_CODE != 0 ] ; then
     rm -rf ${WORKING_DIR}
     exit $RETURN_CODE
 fi
 
+# If show needed option is specified, printed the needed packages and return
 if [ "$SHOW_NEEDED" == "true" ] ; then
     cat $WORKING_DIR/$PACKAGES_FILE | awk '{print $1}'
     rm -rf ${WORKING_DIR}
     exit 0
 fi
 
+# Finally check that all needed packages are installed, if not return error
+checkPackages
+RETURN_CODE=$?
+if [ $RETURN_CODE != 0 ] ; then
+    rm -rf ${WORKING_DIR}
+    exit $RETURN_CODE
+fi
+
+# Do the restore
 doRestore
 
 rm -rf ${WORKING_DIR}

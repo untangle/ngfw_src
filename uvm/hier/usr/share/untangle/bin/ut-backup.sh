@@ -36,6 +36,27 @@ function tarBackupFiles()
   debug "Done creating tar with return code $TAR_EXIT"
 }
 
+function backupSettings()
+{
+    # create a tmp directory to store settings
+    temp=`mktemp -d -t ut-backup-files.XXXXXXXXXX`
+    mkdir -p $temp/usr/share/untangle/settings
+
+    # copy settings files to tmp directory
+    # use -L so symlinks are dereferenced
+    cp -rL @PREFIX@/usr/share/untangle/settings/* $temp/usr/share/untangle/settings
+
+    # delete settings history files
+    # match a very specific regex so it doesnt accidently delete other files
+    find $temp/usr/share/untangle/settings/ -regextype sed -regex '.*/.*-version-[0-9]\{4\}-[0-9]\{2\}-[0-9]\{2\}-[0-9]\{4\}\.js' -exec rm -f {} \;
+    
+    # tar up important files
+    tar zcfh $1 --ignore-failed-read -C $temp usr/share/untangle/settings/
+
+    # remove tmp dir
+    rm -rf $temp
+}
+
 # $1 = dir to put backup files
 function backupToDir()
 {
@@ -43,8 +64,8 @@ function backupToDir()
 
     datestamp=$(date '+%Y%m%d%H%M')
 
-    # tar up important files
-    tar zcfh $outdir/files-$datestamp.tar.gz --ignore-failed-read -C / usr/share/untangle/settings/
+    # create a tarball of settings files
+    backupSettings $outdir/files-$datestamp.tar.gz
 
     # save the list of important packages
     @PREFIX@/usr/share/untangle/bin/ut-apt installed | grep 'libitem-' > $outdir/packages-$datestamp
