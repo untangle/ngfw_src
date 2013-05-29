@@ -361,7 +361,7 @@ Ext.define('Ung.SetupWizard.Interfaces', {
                     var vendor = record.get("vendor");
 
                     var connectedStr= ( connected == "CONNECTED" )?i18n._("connected") : ( connected == "DISCONNECTED" )?i18n._("disconnected") : i18n._("unknown");
-                    var duplexStr = (duplex=="FULL_DUPLEX")?i18n._("full-duplex") : (duplex=="HALF_DUPLEX") ? i18n._("half-duplex") : i18n._("unknown")
+                    var duplexStr = (duplex=="FULL_DUPLEX")?i18n._("full-duplex") : (duplex=="HALF_DUPLEX") ? i18n._("half-duplex") : i18n._("unknown");
                     return connectedStr + " " + mbit + " " + duplexStr +" " + vendor;
                 }, this)
             }, {
@@ -370,7 +370,7 @@ Ext.define('Ung.SetupWizard.Interfaces', {
                 sortable: false,
                 width: 110,
                 renderer: function(value, metadata, record, rowIndex, colIndex, store, view) {
-                    var text = ""
+                    var text = "";
                     if ( value && value.length > 0 ) {
                         // Build the link for the mac address
                         text = '<a target="_blank" href="http://standards.ieee.org/cgi-bin/ouisearch?' + 
@@ -671,13 +671,13 @@ Ext.define('Ung.SetupWizard.Internet', {
                     fieldLabel: i18n._( "IP Address" ),
                     allowBlank: false
                 }, {
-                    name: "netmask",
+                    name: "prefix",
                     fieldLabel: i18n._( "Netmask" ),
                     xtype: 'combo',
-                    store: Ung.SetupWizard.NetmaskData,
+                    store: Ung.SetupWizard.getV4NetmaskList( false ),
                     queryMode: 'local',
                     triggerAction: 'all',
-                    value: "255.255.255.0",
+                    value: 24,
                     editable: false,
                     allowBlank: false
                 }, {
@@ -752,7 +752,7 @@ Ext.define('Ung.SetupWizard.Internet', {
                     fieldClass: 'noborder'
                 }, {
                     fieldLabel: i18n._( "Netmask" ),
-                    name: "netmask",
+                    name: "prefix",
                     fieldClass: 'noborder'
                 }, {
                     name: "gateway",
@@ -860,7 +860,7 @@ Ext.define('Ung.SetupWizard.Internet', {
     clearInterfaceSettings: function( wanSettings ) {
         // delete unused stuff
         delete wanSettings.v4StaticAddress;
-        delete wanSettings.v4StaticNetmask;
+        delete wanSettings.v4StaticPrefix;
         delete wanSettings.v4StaticGateway;
         delete wanSettings.v4StaticDns1;
         delete wanSettings.v4StaticDns2;
@@ -894,7 +894,7 @@ Ext.define('Ung.SetupWizard.Internet', {
         wanSettings.v4ConfigType = "STATIC";
         wanSettings.v4NatEgressTraffic = true;
         wanSettings.v4StaticAddress = this.staticPanel.query('textfield[name="ip"]')[0].getValue();
-        wanSettings.v4StaticNetmask = this.staticPanel.query('textfield[name="netmask"]')[0].getValue();
+        wanSettings.v4StaticPrefix = this.staticPanel.query('textfield[name="prefix"]')[0].getValue();
         wanSettings.v4StaticGateway = this.staticPanel.query('textfield[name="gateway"]')[0].getValue();
         wanSettings.v4StaticDns1 = this.staticPanel.query('textfield[name="dns1"]')[0].getValue();
         wanSettings.v4StaticDns2 = this.staticPanel.query('textfield[name="dns2"]')[0].getValue();
@@ -936,8 +936,6 @@ Ext.define('Ung.SetupWizard.Internet', {
             });
             return;
         }
-
-        Ung.SetupWizard.CurrentValues.networkSettings = result;
 
         if ( hideWindow || ( hideWindow == null ) ) {
             Ext.MessageBox.hide();
@@ -1100,7 +1098,7 @@ Ext.define('Ung.SetupWizard.Internet', {
             for ( c = 0; c < this.cards.length ; c++ ) {
                 var card = this.cards[c];
                 this.updateValue( card.query('textfield[name="ip"]')[0], firstWanStatus.v4Address );
-                this.updateValue( card.query('textfield[name="netmask"]')[0], firstWanStatus.v4Netmask );
+                this.updateValue( card.query('textfield[name="prefix"]')[0], firstWanStatus.v4PrefixLength );
                 this.updateValue( card.query('textfield[name="gateway"]')[0], firstWanStatus.v4Gateway );
                 this.updateValue( card.query('textfield[name="dns1"]')[0], firstWanStatus.v4Dns1 );
                 this.updateValue( card.query('textfield[name="dns2"]')[0], firstWanStatus.v4Dns2 );
@@ -1109,7 +1107,7 @@ Ext.define('Ung.SetupWizard.Internet', {
             for ( c = 0; c < this.cards.length ; c++ ) {
                 var card = this.cards[c];
                 this.updateValue( card.query('textfield[name="ip"]')[0], "" );
-                this.updateValue( card.query('textfield[name="netmask"]')[0], "" );
+                this.updateValue( card.query('textfield[name="prefix"]')[0], "" );
                 this.updateValue( card.query('textfield[name="gateway"]')[0], "" );
                 this.updateValue( card.query('textfield[name="dns1"]')[0], "" );
                 this.updateValue( card.query('textfield[name="dns2"]')[0], "" );
@@ -1176,15 +1174,15 @@ Ext.define('Ung.SetupWizard.InternalNetwork', {
                     value: "192.168.1.1",
                     validationEvent: 'blur'
                 }, {
-                    name: "netmask",
+                    name: "prefix",
                     cls: 'wizard-internal-network-address',
                     fieldLabel: i18n._( "Internal Netmask" ),
                     labelWidth: Ung.SetupWizard.LabelWidth2,
                     xtype: 'combo',
-                    store: Ung.SetupWizard.NetmaskData,
+                    store: Ung.SetupWizard.getV4NetmaskList( false ),
                     queryMode: 'local',
                     triggerAction: 'all',
-                    value: "255.255.255.0",
+                    value: 24,
                     disabled: true,
                     editable: false
                 }, {
@@ -1233,19 +1231,10 @@ Ext.define('Ung.SetupWizard.InternalNetwork', {
         };
     },
     onLoadInternalSuggestion: function( complete ) {
-        // If the user modified the value, do not fetch a new value
-        if (( this.panel.query('combo[name="netmask"]')[0].getRawValue() != "255.255.255.0" ) ||
-            (( this.panel.query('textfield[name="network"]')[0].getValue() != "192.168.1.1" ) &&
-             ( this.panel.query('textfield[name="network"]')[0].getValue() != "172.16.0.1" ))) {
-            complete();
-            return;
-        }
+        var networkSettings = Ung.SetupWizard.CurrentValues.networkSettings;
 
         // find the internal interface and see if its currently set to static.
         // if so change the default to router
-        Ung.SetupWizard.CurrentValues.networkSettings = rpc.networkManager.getNetworkSettings();
-        var networkSettings = Ung.SetupWizard.CurrentValues.networkSettings;
-
         if ( networkSettings != null && networkSettings['interfaces'] != null && networkSettings['interfaces']['list'] != null ) {
             var intfs = networkSettings['interfaces']['list'];
             for ( var c = 0 ;  c < intfs.length ; c++ ) {
@@ -1262,9 +1251,9 @@ Ext.define('Ung.SetupWizard.InternalNetwork', {
                     this.panel.query('radio[name="bridgeOrRouter"]')[1].setValue(false);
                 }
 
-                if ( intfs[c]['v4StaticAddress'] != null && intfs[c]['v4StaticNetmask'] != null ) {
+                if ( intfs[c]['v4StaticAddress'] != null && intfs[c]['v4StaticPrefix'] != null ) {
                     this.panel.query('textfield[name="network"]')[0].setValue( intfs[c]['v4StaticAddress'] );
-                    this.panel.query('combo[name="netmask"]')[0].setValue( intfs[c]['v4StaticNetmask'] );
+                    this.panel.query('combo[name="prefix"]')[0].setValue( intfs[c]['v4StaticPrefix'] );
                 } 
 
                 break;
@@ -1274,7 +1263,7 @@ Ext.define('Ung.SetupWizard.InternalNetwork', {
         complete();
     },
     onSetRouter: function(isSet) {
-        var ar = [this.panel.query('textfield[name="network"]')[0],this.panel.query('combo[name="netmask"]')[0],this.panel.query('checkbox[name="enableDhcpServer"]')[0]];
+        var ar = [this.panel.query('textfield[name="network"]')[0],this.panel.query('combo[name="prefix"]')[0],this.panel.query('checkbox[name="enableDhcpServer"]')[0]];
         for(var i=0;i<ar.length;i++){
             ar[i].setDisabled(!isSet);
         }
@@ -1289,10 +1278,10 @@ Ext.define('Ung.SetupWizard.InternalNetwork', {
         return null;
     },
 
-    setFirstNonWanSettings: function( networkSettings, firstWanSettings ) {
+    setFirstNonWanSettings: function( networkSettings, intfSettings ) {
         for ( var c = 0 ; c < networkSettings['interfaces']['list'].length ; c++ ) {
-            if ( firstWanSettings['interfaceId'] == networkSettings['interfaces']['list'][c]['interfaceId'] )
-                networkSettings['interfaces']['list'][c] = firstWanSettings;
+            if ( intfSettings['interfaceId'] == networkSettings['interfaces']['list'][c]['interfaceId'] )
+                networkSettings['interfaces']['list'][c] = intfSettings;
         }
     },
     
@@ -1327,16 +1316,15 @@ Ext.define('Ung.SetupWizard.InternalNetwork', {
         if ( value == 'BRIDGED' ) {
             firstNonWan['configType'] = 'BRIDGED';
             this.setFirstNonWanSettings( Ung.SetupWizard.CurrentValues.networkSettings, firstNonWan );
-
             rpc.networkManager.setNetworkSettings( delegate, Ung.SetupWizard.CurrentValues.networkSettings ); 
         } else {
             var network = this.panel.query('textfield[name="network"]')[0].getValue();
-            var netmask = this.panel.query('combo[name="netmask"]')[0].getRawValue();
+            var prefix = this.panel.query('combo[name="prefix"]')[0].getValue();
             var enableDhcpServer = this.panel.query('checkbox[name="enableDhcpServer"]')[0].getValue();
             firstNonWan['configType'] = 'ADDRESSED';
             firstNonWan['v4ConfigType'] = 'STATIC';
             firstNonWan['v4StaticAddress'] = network;
-            firstNonWan['v4StaticNetmask'] = netmask;
+            firstNonWan['v4StaticPrefix'] = prefix;
             firstNonWan['dhcpEnabled'] = enableDhcpServer;
             delete firstNonWan.dhcpRangeStart; // new ones will be chosen
             delete firstNonWan.dhcpRangeEnd; // new ones will be chosen
@@ -1515,15 +1503,46 @@ Ung.Setup = {
             Ung.SetupWizard.TimeZoneStore.push([Ung.TimeZoneData[i][0], "(" + Ung.TimeZoneData[i][1] + ") " + Ung.TimeZoneData[i][0]]);
         }
 
-        // Initialize the netmask data
-        Ung.SetupWizard.NetmaskData = [
-            "255.0.0.0",       "255.128.0.0",     "255.192.0.0",     "255.224.0.0",
-            "255.240.0.0",     "255.248.0.0",     "255.252.0.0",     "255.254.0.0",
-            "255.255.0.0",     "255.255.128.0",   "255.255.192.0",   "255.255.224.0",
-            "255.255.240.0",   "255.255.248.0",   "255.255.252.0",   "255.255.254.0",
-            "255.255.255.0",   "255.255.255.128", "255.255.255.192", "255.255.255.224",
-            "255.255.255.240", "255.255.255.248", "255.255.255.252"
-        ];
+        // Initialize the prefix data
+        Ung.SetupWizard.getV4NetmaskList = function( includeNull ) {
+            var data = [];
+            if (includeNull) data.push( [null,""] );
+            data.push( [32,"/32 - 255.255.255.255"] );
+            data.push( [31,"/31 - 255.255.255.254"] );
+            data.push( [30,"/30 - 255.255.255.252"] );
+            data.push( [29,"/29 - 255.255.255.248"] );
+            data.push( [28,"/28 - 255.255.255.240"] );
+            data.push( [27,"/27 - 255.255.255.224"] );
+            data.push( [26,"/26 - 255.255.255.192"] );
+            data.push( [25,"/25 - 255.255.255.128"] );
+            data.push( [24,"/24 - 255.255.255.0"] );
+            data.push( [23,"/23 - 255.255.254.0"] );
+            data.push( [22,"/22 - 255.255.252.0"] );
+            data.push( [21,"/21 - 255.255.248.0"] );
+            data.push( [20,"/20 - 255.255.240.0"] );
+            data.push( [19,"/19 - 255.255.224.0"] );
+            data.push( [18,"/18 - 255.255.192.0"] );
+            data.push( [17,"/17 - 255.255.128.0"] );
+            data.push( [16,"/16 - 255.255.0.0"] );
+            data.push( [15,"/15 - 255.254.0.0"] );
+            data.push( [14,"/14 - 255.252.0.0"] );
+            data.push( [13,"/13 - 255.248.0.0"] );
+            data.push( [12,"/12 - 255.240.0.0"] );
+            data.push( [11,"/11 - 255.224.0.0"] );
+            data.push( [10,"/10 - 255.192.0.0"] );
+            data.push( [9,"/9 - 255.128.0.0"] );
+            data.push( [8,"/8 - 255.0.0.0"] );
+            data.push( [7,"/7 - 254.0.0.0"] );
+            data.push( [6,"/6 - 252.0.0.0"] );
+            data.push( [5,"/5 - 248.0.0.0"] );
+            data.push( [4,"/4 - 240.0.0.0"] );
+            data.push( [3,"/3 - 224.0.0.0"] );
+            data.push( [2,"/2 - 192.0.0.0"] );
+            data.push( [1,"/1 - 128.0.0.0"] );
+            data.push( [0,"/0 - 0.0.0.0"] );
+
+            return data;
+        };
 
         rpc.setup = new JSONRpcClient("/setup/JSON-RPC").SetupContext;
         
