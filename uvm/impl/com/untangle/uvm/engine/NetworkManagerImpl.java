@@ -938,25 +938,6 @@ public class NetworkManagerImpl implements NetworkManager
         rulePingMatcher1.setValue("icmp");
         rulePingMatchers.add(rulePingMatcher1);
         filterRulePing.setMatchers( rulePingMatchers );
-        
-        FilterRule filterRuleHttp = new FilterRule();
-        filterRuleHttp.setEnabled( true );
-        filterRuleHttp.setDescription( "Allow HTTP on non-WANs" );
-        filterRuleHttp.setBlocked( false );
-        List<FilterRuleMatcher> ruleHttpMatchers = new LinkedList<FilterRuleMatcher>();
-        FilterRuleMatcher ruleHttpMatcher1 = new FilterRuleMatcher();
-        ruleHttpMatcher1.setMatcherType(FilterRuleMatcher.MatcherType.DST_PORT);
-        ruleHttpMatcher1.setValue("80");
-        FilterRuleMatcher ruleHttpMatcher2 = new FilterRuleMatcher();
-        ruleHttpMatcher2.setMatcherType(FilterRuleMatcher.MatcherType.PROTOCOL);
-        ruleHttpMatcher2.setValue("tcp");
-        FilterRuleMatcher ruleHttpMatcher3 = new FilterRuleMatcher();
-        ruleHttpMatcher3.setMatcherType(FilterRuleMatcher.MatcherType.SRC_INTF);
-        ruleHttpMatcher3.setValue("non_wan");
-        ruleHttpMatchers.add(ruleHttpMatcher1);
-        ruleHttpMatchers.add(ruleHttpMatcher2);
-        ruleHttpMatchers.add(ruleHttpMatcher3);
-        filterRuleHttp.setMatchers( ruleHttpMatchers );
 
         FilterRule filterRuleDns = new FilterRule();
         filterRuleDns.setEnabled( true );
@@ -996,21 +977,6 @@ public class NetworkManagerImpl implements NetworkManager
         ruleDhcpMatchers.add(ruleDhcpMatcher3);
         filterRuleDhcp.setMatchers( ruleDhcpMatchers );
         
-        FilterRule filterRuleHttps = new FilterRule();
-        filterRuleHttps.setEnabled( true );
-        filterRuleHttps.setDescription( "Allow HTTPS" );
-        filterRuleHttps.setBlocked( false );
-        List<FilterRuleMatcher> ruleHttpsMatchers = new LinkedList<FilterRuleMatcher>();
-        FilterRuleMatcher ruleHttpsMatcher1 = new FilterRuleMatcher();
-        ruleHttpsMatcher1.setMatcherType(FilterRuleMatcher.MatcherType.DST_PORT);
-        ruleHttpsMatcher1.setValue("443");
-        FilterRuleMatcher ruleHttpsMatcher2 = new FilterRuleMatcher();
-        ruleHttpsMatcher2.setMatcherType(FilterRuleMatcher.MatcherType.PROTOCOL);
-        ruleHttpsMatcher2.setValue("tcp");
-        ruleHttpsMatchers.add(ruleHttpsMatcher1);
-        ruleHttpsMatchers.add(ruleHttpsMatcher2);
-        filterRuleHttps.setMatchers( ruleHttpsMatchers );
-
         FilterRule filterRuleBlock = new FilterRule();
         filterRuleBlock.setEnabled( true );
         filterRuleBlock.setDescription( "Block All" );
