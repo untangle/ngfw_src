@@ -342,7 +342,7 @@ if (!Ung.hasResource["Ung.Email"]) {
                                 id: 'email_smtpPort_TLS_Warning',
                                 hidden: (this.getMailSettings().smtpPort != 465),
                                 cls: "description",
-                                html: "<b>" + "<font color=\"red\">&nbsp;" + this.i18n._("Warning:") + "</font>&nbsp;" + this.i18n._("SMTPS is deprecated and not supported.") + "</b>"
+                                html: "<b>" + "<font color=\"red\">&nbsp;" + this.i18n._("Warning:") + "</font>&nbsp;" + this.i18n._("SMTPS (465) is deprecated and not supported. Use STARTTLS (587).") + "</b>"
                             }]
                         }, {
                             xtype: 'checkbox',
