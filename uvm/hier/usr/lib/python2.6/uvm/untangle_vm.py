@@ -23,7 +23,7 @@ class CurlRequestHandler(object):
         self.__curl.setopt( pycurl.COOKIEFILE, "" )
         self.__curl.setopt( pycurl.FOLLOWLOCATION, 0 )
 
-    def make_request(self, url, postdata, content_type = "text/plain" ):
+    def make_request(self, url, postdata, content_type = "text/plain; charset=utf-8" ):
         response = StringIO()
 
         self.__curl.setopt( pycurl.URL, url )
@@ -31,7 +31,7 @@ class CurlRequestHandler(object):
         if not content_type == None:
             self.__curl.setopt( pycurl.HTTPHEADER, [ "Content-type: ", content_type ] )
         self.__curl.setopt( pycurl.VERBOSE, False )
-        self.__curl.setopt( pycurl.POSTFIELDS, str( postdata ))
+        self.__curl.setopt( pycurl.POSTFIELDS, postdata.encode('utf-8'))
         self.__curl.setopt( pycurl.WRITEFUNCTION, response.write )
         try:
             self.__curl.perform()
@@ -71,6 +71,7 @@ class Uvm:
         
         proxy = ServiceProxy( "http://" + hostname +  "/webui/JSON-RPC", None, handler )
         return proxy.UvmContext
+
 
 
 
