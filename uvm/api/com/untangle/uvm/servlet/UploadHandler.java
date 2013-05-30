@@ -6,5 +6,5 @@ public interface UploadHandler
 {
     public String getName();
     
-    public Object handleFile(FileItem fileItem) throws Exception;
+    public Object handleFile(FileItem fileItem, String argument) throws Exception;
 }

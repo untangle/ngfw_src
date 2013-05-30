@@ -376,7 +376,7 @@ if (!Ung.hasResource["Ung.System"]) {
                 onRestoreFromFile: function() {
                     var prova = Ext.getCmp("upload_restore_file_form");
                     var cmp = Ext.getCmp(this.parentId);
-                    var fileText = prova.items.get(0);
+                    var fileText = prova.items.get(1);
                     if (fileText.getValue().length === 0) {
                         Ext.MessageBox.alert(cmp.i18n._("Failed"), cmp.i18n._("Please select a file to upload."));
                         return false;
@@ -443,12 +443,22 @@ if (!Ung.hasResource["Ung.System"]) {
                         border: false,
                         cls: "description",
                         html: this.i18n._("Restore can restore a previous system configuration to the server from a backup file on your local computer.  The backup file name ends with \".backup\"")
-                    },{
+                    }, {
                         xtype: "form",
                         id: "upload_restore_file_form",
                         url: "upload",
                         border: false,
                         items: [{
+                            xtype: "combo",
+                            name: "argument",
+                            fieldLabel: i18n._( "Restore Options" ),
+                            width: 400,
+                            store: [["","Restore all settings."], [".*/network.*","Restore all except keep current network settings."]],
+                            value: "",
+                            queryMode: 'local',
+                            allowBlank: false, 
+                            editable: false
+                        }, {
                             xtype: 'filefield',
                             fieldLabel: this.i18n._("File"),
                             name: "file",

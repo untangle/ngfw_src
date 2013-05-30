@@ -66,29 +66,30 @@ public class BackupManager
         }
     }
 
-    private ExecManagerResult restoreBackup(byte[] backupFileBytes) throws IOException, IllegalArgumentException
+    private ExecManagerResult restoreBackup( byte[] backupFileBytes, String maintainRegex ) throws IOException, IllegalArgumentException
     {
-
-        File tempFile = File.createTempFile("restore_", ".tar.gz");
+        File restoreFile = new File(System.getProperty("uvm.conf.dir") + "/restore.tar.gz");
         ExecManagerResult checkResult = null;
         ExecManagerResult result = null;
 
+        logger.info("restoreBackup( " + restoreFile + " , \"" + maintainRegex + "\" );");
+        
         try {
             //Copy the bytes to a temp file
-            IOUtil.bytesToFile(backupFileBytes, tempFile);
+            IOUtil.bytesToFile(backupFileBytes, restoreFile);
         }
         catch(IOException ex) {
             //Delete our temp file
-            IOUtil.delete(tempFile);
+            IOUtil.delete(restoreFile);
             logger.error("Exception performing restore", ex);
             throw ex;
         }
 
-        logger.info("Restore Backup: " + tempFile);
+        logger.info("Restore Backup: " + restoreFile);
         
         // just check the backup file
-        logger.info("Restore Backup: check file " + tempFile);
-        checkResult = UvmContextFactory.context().execManager().exec(RESTORE_SCRIPT + " -i " + tempFile.getAbsolutePath() + " -v -c");
+        logger.info("Restore Backup: check file " + restoreFile);
+        checkResult = UvmContextFactory.context().execManager().exec(RESTORE_SCRIPT + " -i " + restoreFile.getAbsolutePath() + " -v -c");
 
         // if the backup file is not legitimate then just return the results
         if (checkResult.getResult() != 0) {
@@ -104,8 +105,8 @@ public class BackupManager
         }
         
         // get the list of required files
-        logger.info("Restore Backup: check packages " + tempFile);
-        result = UvmContextFactory.context().execManager().exec(RESTORE_SCRIPT + " -i " + tempFile.getAbsolutePath() + " -f");
+        logger.info("Restore Backup: check packages " + restoreFile);
+        result = UvmContextFactory.context().execManager().exec(RESTORE_SCRIPT + " -i " + restoreFile.getAbsolutePath() + " -f");
 
         // if the backup file is not legitimate then just return the results
         if (result.getResult() != 0) {
@@ -114,25 +115,30 @@ public class BackupManager
 
         // install all the needed packages
         String[] packages = result.getOutput().split("[\\r\\n]+");
-        if (packages != null) {
+        if ( packages != null ) {
             String pkgsStr = "";
             for ( String pkg : packages ) {
+                // if the needed package is installed, skip it
                 if ( UvmContextFactory.context().aptManager().isInstalled( pkg ) )
                     continue;
-                
+                // also ignore missing packages in development environment
+                if ( UvmContextFactory.context().isDevel() )
+                    continue;
+
                 if (! "".equals(pkgsStr))
                     pkgsStr += ",";
 
                 pkgsStr += pkg;
             }
 
+            // if there are missing packages
             if (! "".equals(pkgsStr))
                 return new ExecManagerResult( -1, "NEED_TO_INSTALL:" + pkgsStr);
         }
             
         // run same command with nohup and without -c check-only flag
-        logger.info("Restore Backup: launching restore " + tempFile);
-        UvmContextFactory.context().execManager().exec("nohup " + RESTORE_SCRIPT + " -i " + tempFile.getAbsolutePath() + " -v >/var/log/uvm/restore.log 2>&1 &");
+        logger.info("Restore Backup: launching restore " + restoreFile);
+        UvmContextFactory.context().execManager().exec("nohup " + RESTORE_SCRIPT + " -i " + restoreFile.getAbsolutePath() + " -v -m \"" + maintainRegex + "\" >/var/log/uvm/restore.log 2>&1 &");
 
         logger.info("Restore Backup: returning");
         return new ExecManagerResult( 0, i18nUtil.tr("The restore procedure is running. This may take several minutes. The server may be unavailable during this time. Once the process is complete you will be able to log in again."));
@@ -147,9 +153,9 @@ public class BackupManager
         }
 
         @Override
-        public ExecManagerResult handleFile(FileItem fileItem) throws Exception
+        public ExecManagerResult handleFile(FileItem fileItem, String argument) throws Exception
         {
-            return restoreBackup( fileItem.get() );
+            return restoreBackup( fileItem.get(), argument );
         }
         
     }

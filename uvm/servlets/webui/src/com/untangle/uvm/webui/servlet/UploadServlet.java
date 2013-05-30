@@ -49,6 +49,7 @@ public class UploadServlet extends HttpServlet
             items = upload.parseRequest(req);
 
             String uploadType = getUploadType(items);
+            String arg = getArgument(items);
 
             // Process the uploaded items
             UploadManager uploadManager = UvmContextFactory.context().uploadManager();
@@ -60,7 +61,7 @@ public class UploadServlet extends HttpServlet
                         result = "Do not know how to handler the type '" + uploadType + "'";
                         logger.info("Unable to handle an upload of type: " + uploadType );
                     } else {
-                        result = handler.handleFile(item);
+                        result = handler.handleFile(item, arg);
                     }                    
                 }
             }
@@ -82,6 +83,16 @@ public class UploadServlet extends HttpServlet
         return null;
     }
 
+    private String getArgument(List<FileItem> items)
+    {
+        for ( FileItem fileItem : items ) {
+            if (fileItem.isFormField() && "argument".equals(fileItem.getFieldName())) {
+                return fileItem.getString();
+            }
+        }
+        return null;
+    }
+    
     private void createResponse(HttpServletResponse resp, boolean success, Object result)
         throws IOException
     {

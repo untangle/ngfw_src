@@ -274,7 +274,7 @@ public class SkinManagerImpl implements SkinManager
         }
         
         @Override
-        public String handleFile(FileItem fileItem) throws Exception
+        public String handleFile(FileItem fileItem, String argument) throws Exception
         {
             uploadSkin(fileItem);
             return "Successfully updated a skin";

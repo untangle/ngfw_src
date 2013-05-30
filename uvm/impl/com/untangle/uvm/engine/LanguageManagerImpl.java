@@ -497,7 +497,7 @@ public class LanguageManagerImpl implements LanguageManager
         }
 
         @Override
-        public String handleFile(FileItem fileItem) throws Exception
+        public String handleFile(FileItem fileItem, String argument) throws Exception
         {
             if ( uploadLanguagePack(fileItem)) {
                 return "Uploaded language pack successfully";

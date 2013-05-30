@@ -29,6 +29,7 @@ function doHelp() {
   echo "required options: "
   echo " -i input_file   (restore file)"
   echo "optional options: "
+  echo " -m regex        (files in the current configuration to maintain - regex)"            
   echo " -h              (help)"
   echo " -c              (check file)"
   echo " -f              (list required packages)"
@@ -52,7 +53,9 @@ function checkPackages()
 
 function doRestore() 
 {
-    # clean out stuff that restore would otherwise append to
+    # save old settings & delete the current settings
+    temp=`mktemp -d -t ut-backup-restore.XXXXXXXXXX`
+    cp -rL @PREFIX@/usr/share/untangle/settings/* $temp/
     rm -rf @PREFIX@/usr/share/untangle/settings/*
 
     # restore the files, both system and the /usr/share/untangle important stuf
@@ -69,9 +72,22 @@ function doRestore()
 
     debug "Restoring files...done"
 
+    # restore "maintain files"
+    if [ ! -z "$MAINTAIN_REGEX" ] ; then
+        echo "Maintaining files..."
+
+        pushd > /dev/null 2>&1
+        cd $temp
+        find . -regextype sed -regex "$MAINTAIN_REGEX" -exec echo Keeping original @PREFIX@/usr/share/untangle/settings/{} \;
+        find . -regextype sed -regex "$MAINTAIN_REGEX" -exec cp -f --parents {} @PREFIX@/usr/share/untangle/settings/ \;
+        popd > /dev/null 2>&1
+
+        echo "Maintaining files... done"
+    fi
+
     # start the UVM, depending on circumstances (menu driven restore) may need to be restopped
-    if [ -x /etc/init.d/untangle-vm ] ; then
-        /etc/init.d/untangle-vm restart
+    if [ -x @PREFIX@/etc/init.d/untangle-vm ] ; then
+        @PREFIX@/etc/init.d/untangle-vm restart
     fi
 
     debug "Completed.  Success"
@@ -155,10 +171,11 @@ function expandFile()
 ####################################
 # "Main" logic starts here
 
-while getopts "i:hvcf" opt; do
+while getopts "i:m:hvcf" opt; do
   case $opt in
     h) doHelp;exit 0;;
     i) RESTORE_FILE=$OPTARG;;
+    m) MAINTAIN_REGEX=$OPTARG;;
     c) CHECK_ONLY="true";;
     f) SHOW_NEEDED="true";;
     v) VERBOSE="true";;
