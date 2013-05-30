@@ -236,9 +236,7 @@ class VirusHttpHandler extends HttpStateMachine
                 String nonce = node.generateNonce(bd);
                 NodeTCPSession sess = getSession();
 
-                //bug #9164 - always close connection after writing redirect despite if the connection is persistent
-                //Token[] response = node.generateResponse(nonce, sess, uri, isRequestPersistent());
-                Token[] response = node.generateResponse(nonce, sess, uri, false);
+                Token[] response = node.generateResponse( nonce, sess, uri );
                 
                 blockResponse(response);
             } else {

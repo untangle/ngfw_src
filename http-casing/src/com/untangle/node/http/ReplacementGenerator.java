@@ -42,53 +42,53 @@ public abstract class ReplacementGenerator<T extends BlockDetails>
 
     // constructors -----------------------------------------------------------
 
-    public ReplacementGenerator(NodeSettings tid)
+    public ReplacementGenerator( NodeSettings tid )
     {
         this.tid = tid;
     }
 
     // public methods ---------------------------------------------------------
 
-    public String generateNonce(T o)
+    public String generateNonce( T o )
     {
         return nonceFactory.generateNonce(o);
     }
 
-    public T getNonceData(String nonce)
+    public T getNonceData( String nonce )
     {
         return nonceFactory.getNonceData(nonce);
     }
 
-    public T removeNonce(String nonce)
+    public T removeNonce( String nonce )
     {
         return nonceFactory.removeNonce(nonce);
     }
 
-    public Token[] generateResponse(T o, NodeTCPSession session, boolean persistent)
+    public Token[] generateResponse( T o, NodeTCPSession session )
     {
-        return generateResponse(o, session, null, null, persistent);
+        return generateResponse(o, session, null, null );
     }
 
-    public Token[] generateResponse(T o, NodeTCPSession session, String uri, Header requestHeader, boolean persistent)
+    public Token[] generateResponse( T o, NodeTCPSession session, String uri, Header requestHeader )
     {
         String n = generateNonce(o);
-        return generateResponse(n, session, uri, requestHeader, persistent);
+        return generateResponse(n, session, uri, requestHeader );
     }
 
-    public Token[] generateResponse(String nonce, NodeTCPSession session, boolean persistent)
+    public Token[] generateResponse( String nonce, NodeTCPSession session )
     {
-        return generateResponse(nonce, session, null, null, persistent);
+        return generateResponse(nonce, session, null, null );
     }
 
-    public Token[] generateResponse(String nonce, NodeTCPSession session, String uri, Header requestHeader, boolean persistent)
+    public Token[] generateResponse( String nonce, NodeTCPSession session, String uri, Header requestHeader )
     {
         if (imagePreferred(uri, requestHeader)) {
-            return generateSimplePage(nonce, persistent, true);
+            return generateSimplePage(nonce, true);
         } else {
             InetAddress addr = UvmContextFactory.context().networkManager().getInterfaceHttpAddress( session.getClientIntf() );
                 
             if (addr == null) {
-                return generateSimplePage(nonce, persistent, false);
+                return generateSimplePage(nonce, false);
             } else {
                 String host = addr.getHostAddress();
                 int httpPort = UvmContextFactory.context().networkManager().getNetworkSettings().getHttpPort();
@@ -96,20 +96,20 @@ public abstract class ReplacementGenerator<T extends BlockDetails>
                     host = host + ":" + httpPort;
                 }
                 
-                return generateRedirect(nonce, host, persistent);
+                return generateRedirect( nonce, host );
             }
         }
     }
 
-    public Token[] generateSimpleResponse(String nonce, NodeTCPSession session, String uri, Header requestHeader, boolean persistent)
+    public Token[] generateSimpleResponse( String nonce, NodeTCPSession session, String uri, Header requestHeader )
     {
-        return generateSimplePage(nonce, persistent, imagePreferred(uri, requestHeader));
+        return generateSimplePage(nonce, imagePreferred(uri, requestHeader));
     }
     
     // protected methods ------------------------------------------------------
 
-    protected abstract String getReplacement(T data);
-    protected abstract String getRedirectUrl(String nonce, String host, NodeSettings tid);
+    protected abstract String getReplacement( T data );
+    protected abstract String getRedirectUrl( String nonce, String host, NodeSettings tid );
 
     protected NodeSettings getNodeSettings()
     {
@@ -118,7 +118,7 @@ public abstract class ReplacementGenerator<T extends BlockDetails>
 
     // private methods --------------------------------------------------------
 
-    private Token[] generateSimplePage(String nonce, boolean persistent, boolean gif)
+    private Token[] generateSimplePage( String nonce, boolean gif )
     {
         Chunk chunk;
         if (gif) {
@@ -141,7 +141,7 @@ public abstract class ReplacementGenerator<T extends BlockDetails>
         Header h = new Header();
         h.addField("Content-Length", Integer.toString(chunk.getSize()));
         h.addField("Content-Type", gif ? "image/gif" : "text/html");
-        h.addField("Connection", persistent ? "Keep-Alive" : "Close");
+        h.addField("Connection", "Close");
         response[1] = h;
 
         response[2] = chunk;
@@ -151,7 +151,7 @@ public abstract class ReplacementGenerator<T extends BlockDetails>
         return response;
     }
 
-    private Token[] generateRedirect(String nonce, String host, boolean persistent)
+    private Token[] generateRedirect( String nonce, String host )
     {
         Token response[] = new Token[4];
 
@@ -165,7 +165,7 @@ public abstract class ReplacementGenerator<T extends BlockDetails>
         h.addField("Expires", "Mon, 10 Jan 2000 00:00:00 GMT");
         h.addField("Content-Type", "text/plain");
         h.addField("Content-Length", "0");
-        h.addField("Connection", persistent ? "Keep-Alive" : "Close");
+        h.addField("Connection", "Close");
         response[1] = h;
 
         response[2] = Chunk.EMPTY;
@@ -175,7 +175,7 @@ public abstract class ReplacementGenerator<T extends BlockDetails>
         return response;
     }
 
-    private boolean imagePreferred(String uri, Header header)
+    private boolean imagePreferred( String uri, Header header )
     {
         if (null != uri && IMAGE_PATTERN.matcher(uri).matches()) {
             return true;

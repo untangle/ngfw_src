@@ -1,4 +1,4 @@
-/*
+/**
  * $Id$
  */
 package com.untangle.node.webfilter;
@@ -15,9 +15,6 @@ import com.untangle.uvm.vnet.NodeTCPSession;
 
 /**
  * Blocks HTTP traffic that is on an active block list.
- *
- * @author <a href="mailto:amread@untangle.com">Aaron Read</a>
- * @version 1.0
  */
 public class WebFilterHandler extends HttpStateMachine
 {
@@ -60,10 +57,7 @@ public class WebFilterHandler extends HttpStateMachine
         } else {
             node.incrementBlockCount();
             String uri = getRequestLine().getRequestUri().toString();
-
-            //bug #9164 - always close connection after writing redirect despite if the connection is persistent
-            //Token[] response = node.generateResponse(nonce, sess, uri, requestHeader, isRequestPersistent());
-            Token[] response = node.generateResponse(nonce, sess, uri, requestHeader, false);
+            Token[] response = node.generateResponse(nonce, sess, uri, requestHeader );
 
             blockRequest(response);
         }
@@ -106,8 +100,7 @@ public class WebFilterHandler extends HttpStateMachine
                 releaseResponse();
             } else {
                 node.incrementBlockCount();
-                boolean p = isResponsePersistent();
-                Token[] response = node.generateResponse(nonce, sess, p);
+                Token[] response = node.generateResponse(nonce, sess);
                 blockResponse(response);
             }
         }

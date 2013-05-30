@@ -264,9 +264,9 @@ public abstract class WebFilterBase extends NodeBase implements WebFilter
 
     public abstract String getName();
 
-    public Token[] generateResponse( String nonce, NodeTCPSession session, String uri, Header header, boolean persistent )
+    public Token[] generateResponse( String nonce, NodeTCPSession session, String uri, Header header )
     {
-        return replacementGenerator.generateResponse(nonce, session, uri,header, persistent);
+        return replacementGenerator.generateResponse( nonce, session, uri,header );
     }
 
     public abstract void initializeSettings( WebFilterSettings settings );
@@ -378,9 +378,9 @@ public abstract class WebFilterBase extends NodeBase implements WebFilter
         return replacementGenerator.generateNonce(details);
     }
 
-    protected Token[] generateResponse( String nonce, NodeTCPSession session, boolean persistent )
+    protected Token[] generateResponse( String nonce, NodeTCPSession session )
     {
-        return replacementGenerator.generateResponse(nonce, session, persistent);
+        return replacementGenerator.generateResponse( nonce, session );
     }
 
     protected static synchronized void deployWebAppIfRequired( Logger logger )

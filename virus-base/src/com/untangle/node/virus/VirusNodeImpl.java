@@ -221,9 +221,9 @@ public abstract class VirusNodeImpl extends NodeBase implements VirusNode
         return replacementGenerator.generateNonce(details);
     }
 
-    public Token[] generateResponse( String nonce, NodeTCPSession session, String uri, boolean persistent )
+    public Token[] generateResponse( String nonce, NodeTCPSession session, String uri )
     {
-        return replacementGenerator.generateResponse(nonce, session, uri, null, persistent);
+        return replacementGenerator.generateResponse(nonce, session, uri, null );
     }
 
     public Date getLastSignatureUpdate()

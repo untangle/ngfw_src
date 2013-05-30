@@ -449,7 +449,7 @@ public class CaptureNodeImpl extends NodeBase implements CaptureNode
 
     protected Token[] generateResponse(CaptureBlockDetails block, NodeTCPSession session)
     {
-        return replacementGenerator.generateResponse(block, session, false);
+        return replacementGenerator.generateResponse( block, session );
     }
 
 ///// ------------------------------------------------------------------------
