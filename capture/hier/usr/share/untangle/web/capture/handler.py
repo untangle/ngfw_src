@@ -208,16 +208,17 @@ def custom_upload(req,upload_file,appid):
     try:
         for item in zlist:
             (filepath,filename) = os.path.split(item)
-            if (filename == ''):
+            if (filename == ''):    # ignore directories since we create below
+                continue
+            if (filepath == ''):
+                fd = open(custpath + '/' + filename,"w")
+            else:
                 if not os.path.exists(custpath + '/' + filepath):
                     os.mkdir(custpath + '/' + filepath)
-            else:
-                if (filepath == ''):
-                    fd = open(custpath + '/' + filename,"w")
-                else:
-                    fd = open(custpath + '/' + filepath + '/' + filename,"w")
-                fd.write(zfile.read(item))
-                fd.close()
+                fd = open(custpath + '/' + filepath + '/' + filename,"w")
+
+            fd.write(zfile.read(item))
+            fd.close()
 
             if (filepath == ''):
                 detail += " " + filename
