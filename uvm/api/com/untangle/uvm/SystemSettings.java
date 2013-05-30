@@ -25,6 +25,7 @@ public class SystemSettings implements Serializable, JSONString
     public static final String PUBLIC_URL_ADDRESS_AND_PORT = "address_and_port";
     
     private boolean supportEnabled;
+    private boolean httpAdministrationAllowed = true;
 
     private String publicUrlMethod;
     private String publicUrlAddress;
@@ -45,6 +46,12 @@ public class SystemSettings implements Serializable, JSONString
         return jO.toString();
     }
 
+    /**
+     * Get whether or not local insecure administration is enabled.
+     */
+    public boolean getHttpAdministrationAllowed() { return this.httpAdministrationAllowed; }
+    public void setHttpAdministrationAllowed( boolean newValue ) { this.httpAdministrationAllowed = newValue; }
+    
     /**
      * Untangle support access flag
      */

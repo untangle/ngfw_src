@@ -11,8 +11,11 @@ APACHE_UPGRADE_HTML_PAGE="${APACHE_UPGRADE_HTML_DIR}/${BASENAME}.html"
 APACHE_UPGRADE_JS_PAGE="${APACHE_UPGRADE_HTML_DIR}/${BASENAME}.js"
 APACHE_UPGRADE_CONFIG_FILE="/etc/apache2/conf.d/${BASENAME}"
 
-APACHE_UPGRADE_CONFIG="RedirectMatch 302 ^/(webui|auth|login|index).* /uvm-upgrade.html\nRedirectMatch 302 ^/$ /uvm-upgrade.html"
-APACHE_UPGRADEDONE_CONFIG="RedirectMatch 302 ^/$(basename $APACHE_HTML_PAGE).* /webui"
+APACHE_UPGRADE_CONFIG="
+RedirectMatch 302 ^/(webui|auth|login|index).* /uvm-upgrade.html\n
+RedirectMatch 302 ^/$ /uvm-upgrade.html\n
+"
+APACHE_UPGRADEDONE_CONFIG="Redirect 302 ^/$(basename $APACHE_HTML_PAGE).* /webui"
 #RewriteEngine does not handle HTTPS port correctly
 #APACHE_UPGRADE_CONFIG="RewriteEngine On\nRewriteRule ^/(webui|auth|login|index).* /uvm-upgrade.html [R=302]\nRewriteRule ^/$ /uvm-upgrade.html [R=302]\n"
 #APACHE_UPGRADEDONE_CONFIG="RewriteEngine On\nRewriteRule ^/$(basename $APACHE_HTML_PAGE).* /webui [R=302]\n"

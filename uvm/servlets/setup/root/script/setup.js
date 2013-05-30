@@ -19,15 +19,12 @@ if(typeof console === "undefined") {
     };
 }
 
-Ung.SetupWizard.LabelWidth = 180;
-Ung.SetupWizard.LabelWidth2 = 120;
-
 Ext.apply(Ext.form.field.VTypes, {
-    ipCheck: function( val, field ) {
-        return val.match( this.ipCheckRegex );
+    ipAddress: function( val, field ) {
+        return val.match( this.ipAddressRegex );
     },
-    ipCheckText: 'Please enter a valid IP Address',
-    ipCheckRegex: /\b(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\b/,
+    ipAddressText: 'Please enter a valid IP Address',
+    ipAddressRegex: /\b(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\b/,
 
     passwordConfirmCheck: function(val,field) {
             var pass_original = Ext.getCmp(field.comparePasswordField);
@@ -219,7 +216,6 @@ Ext.define('Ung.SetupWizard.ServerSettings', {
 });
 
 // Setup Wizard - Step 2 (Remap Interfaces)
-
 Ext.define('Ung.SetupWizard.Interfaces', {
     constructor: function() {
         this.interfaceStore = Ext.create('Ext.data.ArrayStore', {
@@ -664,7 +660,7 @@ Ext.define('Ung.SetupWizard.Internet', {
                     msgTarget: 'side',
                     validationEvent: 'blur',
                     maskRe: /(\d+|\.)/,
-                    vtype: 'ipCheck'
+                    vtype: 'ipAddress'
                 },
                 items: [{
                     name: "ip",
@@ -1166,7 +1162,7 @@ Ext.define('Ung.SetupWizard.InternalNetwork', {
                     fieldLabel: i18n._('Internal Address'),
                     labelWidth: Ung.SetupWizard.LabelWidth2,
                     vText: i18n._('Please enter a valid Network  Address'),
-                    vtype: 'ipCheck',
+                    vtype: 'ipAddress',
                     allowBlank: false,
                     msgTarget: 'side',
                     maskRe: /(\d+|\.)/,
@@ -1448,6 +1444,7 @@ Ext.define('Ung.SetupWizard.AutoUpgrades', {
     }
 });
 
+// Setup Wizard - Step 6 (Complete)
 Ext.define('Ung.SetupWizard.Complete', {
     constructor: function( config ) {
         var panel = Ext.create('Ext.form.Panel', {
@@ -1484,8 +1481,6 @@ Ext.define('Ung.SetupWizard.Complete', {
     }
 });
 
-Ung.SetupWizard.TimeZoneStore = [];
-
 Ung.Setup = {
     isInitialized: false,
     init: function() {
@@ -1498,7 +1493,11 @@ Ung.Setup = {
 
         rpc = {};
 
+        Ung.SetupWizard.LabelWidth = 180;
+        Ung.SetupWizard.LabelWidth2 = 120;
+        
         // Initialize the timezone data
+        Ung.SetupWizard.TimeZoneStore = [];
         for ( var i = 0; i < Ung.TimeZoneData.length; i++) {
             Ung.SetupWizard.TimeZoneStore.push([Ung.TimeZoneData[i][0], "(" + Ung.TimeZoneData[i][1] + ") " + Ung.TimeZoneData[i][0]]);
         }

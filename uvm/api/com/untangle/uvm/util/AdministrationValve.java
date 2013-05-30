@@ -55,7 +55,7 @@ public class AdministrationValve extends ValveBase
     private boolean isAccessAllowed( ServletRequest request )
     {
         String address = request.getRemoteAddr();
-        boolean isHttpAllowed = UvmContextFactory.context().networkManager().getNetworkSettings().getInsideHttpEnabled();
+        boolean isHttpAllowed = UvmContextFactory.context().systemManager().getSettings().getHttpAdministrationAllowed();
 
         logger.debug("isAccessAllowed( " + request + " ) [scheme: " + request.getScheme() + " HTTP allowed: " + isHttpAllowed + "]"); 
 

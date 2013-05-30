@@ -1616,8 +1616,39 @@ if (!Ung.hasResource["Ung.Network"]) {
                     this.grid.onTroubleshoot(record);
                 }
             });
+
+            this.portForwardReserveWarnings = {
+                border: false,
+                cls: 'description',
+                html: "<br/>" + this.i18n._('The following ports are currently reserved and can not be forwarded:') + "<br/>"
+            };
+
+            var i;
+            for ( i = 0 ; i < this.settings.interfaces.list.length ; i++) {
+                var intf = this.settings.interfaces.list[i];
+                if (intf.v4Address) {
+                    this.portForwardReserveWarnings.html += " <b>" + intf.v4Address + ":" + this.settings.httpsPort + "</b> for HTTPS services.<br/>";
+                }
+            }
+            for ( i = 0 ; i < this.settings.interfaces.list.length ; i++) {
+                var intf = this.settings.interfaces.list[i];
+                if (intf.v4Address && !intf.isWan) {
+                    this.portForwardReserveWarnings.html += " <b>" + intf.v4Address + ":" + this.settings.httpPort + "</b> for HTTP services.<br/>";
+                }
+            }
+            for ( i = 0 ; i < this.settings.interfaces.list.length ; i++) {
+                var intf = this.settings.interfaces.list[i];
+                if (intf.v4Address && intf.isWan) {
+                    for ( var j = 0 ; j < this.settings.interfaces.list.length ; j++) {
+                        var sub_intf = this.settings.interfaces.list[j];
+                        if (sub_intf.configType == "BRIDGED" && sub_intf.bridgedTo == intf.interfaceId)
+                            this.portForwardReserveWarnings.html += " <b>" + intf.v4Address + ":" + this.settings.httpPort + "</b> on " + sub_intf.name + " interface for HTTP services.<br/>";
+                    }
+                }
+            }
+            
             this.gridPortForwardRules = Ext.create( 'Ung.EditorGrid', {
-                anchor: '100% -80',
+                anchor: '100% -200',
                 name: 'Port Forward Rules',
                 settingsCmp: this,
                 paginated: false,
@@ -1849,7 +1880,7 @@ if (!Ung.hasResource["Ung.Network"]) {
                     cls: 'description',
                     title: this.i18n._('Note'),
                     html: this.i18n._(" <b>Port Forward Rules</b>. Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.")
-                },  this.gridPortForwardRules]
+                },  this.gridPortForwardRules, this.portForwardReserveWarnings]
             });
         },
         // NatRules Panel
@@ -2294,52 +2325,27 @@ if (!Ung.hasResource["Ung.Network"]) {
                     listeners: {
                         "change": {
                             fn: Ext.bind(function(elem, newValue) {
-                                this.settings().httpsPort = newValue;
+                                this.settings.httpsPort = newValue;
                             }, this)
                         }
                     }
                 }, {
-                    xtype: 'container',
-                    layout: 'column',
-                    margin: '0 0 5 0',
-                    items: [{
-                        xtype: 'checkbox',
-                        fieldLabel: this.i18n._('Enable WAN HTTPS'),
-                        labelStyle: 'width:150px',
-                        checked: this.settings.outsideHttpsEnabled,
-                        listeners: {
-                            "change": {
-                                fn: Ext.bind(function(elem, newValue) {
-                                    this.settings.outsideHttpsEnabled = newValue;
-                                }, this)
-                            }
+                    xtype: 'numberfield',
+                    fieldLabel: this.i18n._('HTTP port'),
+                    name: 'httpPort',
+                    value: this.settings.httpPort,
+                    allowDecimals: false,
+                    minValue: 0,
+                    allowBlank: false,
+                    blankText: this.i18n._("You must provide a valid port."),
+                    vtype: 'port',
+                    listeners: {
+                        "change": {
+                            fn: Ext.bind(function(elem, newValue) {
+                                this.settings.httpPort = newValue;
+                            }, this)
                         }
-                    },{
-                        xtype: 'label',
-                        html: this.i18n._('If enabled the specified HTTPS port is open on WAN interfaces.'),
-                        cls: 'boxlabel'
-                    }]
-                },{
-                    xtype: 'container',
-                    layout: 'column',
-                    margin: '0 0 5 0',
-                    items: [{
-                        xtype: 'checkbox',
-                        fieldLabel: this.i18n._('Allow HTTP Administration'),
-                        labelStyle: 'width:150px',
-                        checked: this.settings.insideHttpEnabled,
-                        listeners: {
-                            "change": {
-                                fn: Ext.bind(function(elem, newValue) {
-                                    this.settings.insideHttpEnabled = newValue;
-                                }, this)
-                            }
-                        }
-                    },{
-                        xtype: 'label',
-                        html: this.i18n._('If enabled administration is allowed on HTTP available on non-WAN interfaces.'),
-                        cls: 'boxlabel'
-                    }]
+                    }
                 }, {
                     xtype: "checkbox",
                     fieldLabel: this.i18n._("Enable SIP NAT Helper"),
@@ -3599,16 +3605,19 @@ if (!Ung.hasResource["Ung.Network"]) {
                         var port = this.port.getValue();
                         var intf = this.intf.getValue();
                         var timeout = this.timeout.getValue();
-                        if(destination.toLowerCase() == "any") {
+                        if(destination === null || destination.toLowerCase() == "any") {
                             destination = "";
                         }
-                        if(destination !== "") {
+                        if(port === null) {
+                            port = "";
+                        }
+                        if(destination !== "" && destination != null) {
                             destination = "host "+destination;
                         }
                         if(port !== "") {
-                            port = "port "+port;
+                            port = "port " + port;
                         }
-                        if(destination !== "") {
+                        if(destination !== "" && port !== "") {
                             port = "and "+port;
                         }
                         var script = [

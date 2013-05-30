@@ -167,117 +167,109 @@ if (!Ung.hasResource["Ung.Administration"]) {
                 }
             });
 
-            this.panelAdministration = Ext.create('Ext.panel.Panel',{
-                name: 'panelAdministration',
-                helpSource: 'administration',
-                // private fields
-                parentId: this.getId(),
-                title: this.i18n._('Administration'),
-                layout: "anchor",
-                cls: 'ung-panel',
-                items: [this.gridAdminAccounts=Ext.create('Ung.EditorGrid', {
-                    anchor: "100% -260",
-                    settingsCmp: this,
-                    title: this.i18n._("Admin Accounts"),
-                    bodyStyle: 'padding-bottom:30px;',
-                    autoScroll: true,
-                    hasEdit: false,
-                    name: 'gridAdminAccounts',
-                    recordJavaClass: "com.untangle.uvm.AdminUserSettings",
-                    emptyRow: {
-                        "username": this.i18n._("[no username]"),
-                        "description": this.i18n._("[no description]"),
-                        "emailAddress": this.i18n._("[no email]"),
-                        "password": null,
-                        "passwordHashBase64": null
-                    },
-                    data: this.getAdminSettings().users.list,
-                    paginated: false,
-                    // the list of fields; we need all as we get/set all records once
-                    fields: [{
-                        name: 'username'
-                    }, {
-                        name: 'description'
-                    }, {
-                        name: 'emailAddress'
-                    }, {
-                        name: 'password'
-                    }, {
-                        name: 'passwordHashBase64'
-                    }],
-                    // the list of columns for the column model
-                    columns: [{
-                        header: this.i18n._("Username"),
-                        width: 200,
-                        dataIndex: 'username',
-                        field:{
-                            xtype:'textfield',
-                            allowBlank: false,
-                            blankText: this.i18n._("The username cannot be blank.")
-                        }
-                    }, {
-                        header: this.i18n._("Description"),
-                        width: 200,
-                        dataIndex: 'description',
-                        flex: 1,
-                        editor:{
-                            xtype:'textfield',
-                            allowBlank: false
-                        }
-                    },{
-                        header: this.i18n._("Email"),
-                        width: 200,
-                        dataIndex: 'emailAddress',
-                        editor: {
-                            xtype:'textfield',
-                            allowBlank: false
-                        }
-                    }, changePasswordColumn
-                    ],
-                    sortField: 'username',
-                    columnsDefaultSortable: true,
-                    plugins: [changePasswordColumn],
-                    // the row input lines used by the row editor window
-                    rowEditorInputLines: [{
-                        xtype: "textfield",
-                        name: "Username",
-                        dataIndex: "username",
-                        fieldLabel: this.i18n._("Username"),
+            this.gridAdminAccounts=Ext.create('Ung.EditorGrid', {
+                anchor: "100% -260",
+                settingsCmp: this,
+                title: this.i18n._("Admin Accounts"),
+                bodyStyle: 'padding-bottom:30px;',
+                autoScroll: true,
+                hasEdit: false,
+                name: 'gridAdminAccounts',
+                recordJavaClass: "com.untangle.uvm.AdminUserSettings",
+                emptyRow: {
+                    "username": this.i18n._("[no username]"),
+                    "description": this.i18n._("[no description]"),
+                    "emailAddress": this.i18n._("[no email]"),
+                    "password": null,
+                    "passwordHashBase64": null
+                },
+                data: this.getAdminSettings().users.list,
+                paginated: false,
+                // the list of fields; we need all as we get/set all records once
+                fields: [{
+                    name: 'username'
+                }, {
+                    name: 'description'
+                }, {
+                    name: 'emailAddress'
+                }, {
+                    name: 'password'
+                }, {
+                    name: 'passwordHashBase64'
+                }],
+                // the list of columns for the column model
+                columns: [{
+                    header: this.i18n._("Username"),
+                    width: 200,
+                    dataIndex: 'username',
+                    field:{
+                        xtype:'textfield',
                         allowBlank: false,
-                        blankText: this.i18n._("The username cannot be blank."),
-                        width: 400
-                    }, {
-                        xtype: "textfield",
-                        name: "Description",
-                        dataIndex: "description",
-                        fieldLabel: this.i18n._("Description"),
-                        allowBlank: false,
-                        width: 400
-                    },{
-                        xtype: "textfield",
-                        name: "Email",
-                        dataIndex: "emailAddress",
-                        fieldLabel: this.i18n._("Email"),
-                        width: 400
-                    },{
-                        xtype: "textfield",
-                        inputType: 'password',
-                        name: "password",
-                        dataIndex: "password",
-                        fieldLabel: this.i18n._("Password"),
-                        width: 400,
-                        minLength: 3,
-                        minLengthText: Ext.String.format(this.i18n._("The password is shorter than the minimum {0} characters."), 3)
-                    },{
-                        xtype: "textfield",
-                        inputType: 'password',
-                        name: "confirmPassword",
-                        dataIndex: "password",
-                        fieldLabel: this.i18n._("Confirm Password"),
-                        width: 400
-                    }]
-                })]
+                        blankText: this.i18n._("The username cannot be blank.")
+                    }
+                }, {
+                    header: this.i18n._("Description"),
+                    width: 200,
+                    dataIndex: 'description',
+                    flex: 1,
+                    editor:{
+                        xtype:'textfield',
+                        allowBlank: false
+                    }
+                },{
+                    header: this.i18n._("Email"),
+                    width: 200,
+                    dataIndex: 'emailAddress',
+                    editor: {
+                        xtype:'textfield',
+                        allowBlank: false
+                    }
+                }, changePasswordColumn
+                         ],
+                sortField: 'username',
+                columnsDefaultSortable: true,
+                plugins: [changePasswordColumn],
+                // the row input lines used by the row editor window
+                rowEditorInputLines: [{
+                    xtype: "textfield",
+                    name: "Username",
+                    dataIndex: "username",
+                    fieldLabel: this.i18n._("Username"),
+                    allowBlank: false,
+                    blankText: this.i18n._("The username cannot be blank."),
+                    width: 400
+                }, {
+                    xtype: "textfield",
+                    name: "Description",
+                    dataIndex: "description",
+                    fieldLabel: this.i18n._("Description"),
+                    allowBlank: false,
+                    width: 400
+                },{
+                    xtype: "textfield",
+                    name: "Email",
+                    dataIndex: "emailAddress",
+                    fieldLabel: this.i18n._("Email"),
+                    width: 400
+                },{
+                    xtype: "textfield",
+                    inputType: 'password',
+                    name: "password",
+                    dataIndex: "password",
+                    fieldLabel: this.i18n._("Password"),
+                    width: 400,
+                    minLength: 3,
+                    minLengthText: Ext.String.format(this.i18n._("The password is shorter than the minimum {0} characters."), 3)
+                },{
+                    xtype: "textfield",
+                    inputType: 'password',
+                    name: "confirmPassword",
+                    dataIndex: "password",
+                    fieldLabel: this.i18n._("Confirm Password"),
+                    width: 400
+                }]
             });
+            
             this.gridAdminAccounts.rowEditorChangePass = Ext.create("Ung.RowEditorWindow",{
                 grid: this.gridAdminAccounts,
                 inputLines: [{
@@ -309,7 +301,38 @@ if (!Ung.hasResource["Ung.Administration"]) {
                     }
                 }, this)
             });
+
             this.gridAdminAccounts.subCmps.push(this.gridAdminAccounts.rowEditorChangePass);
+
+            this.panelAdministration = Ext.create('Ext.panel.Panel',{
+                name: 'panelAdministration',
+                helpSource: 'administration',
+                // private fields
+                parentId: this.getId(),
+                title: this.i18n._('Administration'),
+                layout: "anchor",
+                cls: 'ung-panel',
+                items: [
+                    this.gridAdminAccounts, {
+                        xtype: 'checkbox',
+                        fieldLabel: this.i18n._('Allow HTTP Administration'),
+                        labelStyle: 'width:150px',
+                        checked: this.getSystemSettings().httpAdministrationAllowed,
+                        listeners: {
+                            "change": {
+                                fn: Ext.bind(function(elem, newValue) {
+                                    this.getSystemSettings().httpAdministrationAllowed = newValue;
+                                }, this)
+                            }
+                        }
+                    }, {
+                        border: false,
+                        cls: 'description',
+                        html: this.i18n._('Note:') + "<br/>" +
+                            this.i18n._('HTTP is open on non-WANs (internal interfaces) for blockpages and other services.') + "<br/>" +
+                            this.i18n._('This settings only controls the availability of <b>administration</b> via HTTP.')
+                    }]
+            });
         },
         buildPublicAddress: function() {
             this.panelPublicAddress = Ext.create('Ext.panel.Panel',{

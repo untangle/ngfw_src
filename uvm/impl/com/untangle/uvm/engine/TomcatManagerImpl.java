@@ -155,7 +155,8 @@ public class TomcatManagerImpl implements TomcatManager
             //w.write("RewriteRule ^/$ " + WELCOME_URI + " [R=302]\n");
 
             // old apache way
-            w.write("RedirectMatch 302 ^/index.html " + WELCOME_URI + "\n");
+            // w.write("RedirectMatch 302 ^/index.html " + WELCOME_URI + "\n");
+            w.write("RedirectMatch 302 ^/$ " + WELCOME_URI + "\n");
         } catch (IOException exn) {
             logger.warn("could not write homepage redirect", exn);
         } finally {
