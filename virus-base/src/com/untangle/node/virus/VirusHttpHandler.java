@@ -43,9 +43,9 @@ class VirusHttpHandler extends HttpStateMachine
 
     private final VirusNodeImpl node;
 
-    private static final Pattern[] passlist = { Pattern.compile("*windowsupdate.com"),
-                                                Pattern.compile("*windowsupdate.microsoft.com"),
-                                                Pattern.compile("*update.microsoft.com")};
+    private static final Pattern[] passlist = { Pattern.compile(".*windowsupdate.com"),
+                                                Pattern.compile(".*windowsupdate.microsoft.com"),
+                                                Pattern.compile(".*update.microsoft.com")};
     
     private boolean scan;
     private long bufferingStart;
