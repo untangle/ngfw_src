@@ -619,7 +619,7 @@ Ext.define('Ung.SetupWizard.Internet', {
                     name: "ip",
                     fieldLabel: i18n._( "Current IP Address" )
                 }, {
-                    name: "netmask",
+                    name: "prefix",
                     fieldLabel: i18n._( "Current Netmask" )
                 }, {
                     name: "gateway",
