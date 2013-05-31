@@ -49,6 +49,8 @@ public class NetworkSettings implements Serializable, JSONString
     
     private QosSettings qosSettings;
     private DnsSettings dnsSettings;
+
+    private String dnsmasqOptions;
     
     public NetworkSettings() { }
 
@@ -117,6 +119,9 @@ public class NetworkSettings implements Serializable, JSONString
 
     public DnsSettings getDnsSettings() { return this.dnsSettings; }
     public void setDnsSettings( DnsSettings newValue ) { this.dnsSettings = newValue; }
+
+    public String getDnsmasqOptions() { return this.dnsmasqOptions; }
+    public void setDnsmasqOptions( String newValue ) { this.dnsmasqOptions = newValue; }
     
     public String toJSONString()
     {

@@ -205,6 +205,7 @@ if (!Ung.hasResource["Ung.Network"]) {
         gridStaticRoutes: null,
         panelInterfaces: null,
         panelHostName: null,
+        panelServices: null,
         panelPortForwardRules: null,
         panelNatRules: null,
         panelRoutes: null,
@@ -225,6 +226,7 @@ if (!Ung.hasResource["Ung.Network"]) {
             // builds the tabs
             this.buildInterfaces();
             this.buildHostName();
+            this.buildServices();
             this.buildPortForwardRules();
             this.buildNatRules();
             this.buildBypassRules();
@@ -233,7 +235,7 @@ if (!Ung.hasResource["Ung.Network"]) {
             this.buildTroubleshooting();
             
             // builds the tab panel with the tabs
-            this.buildTabPanel([ this.panelInterfaces, this.panelHostName, this.panelPortForwardRules, this.panelNatRules, this.panelBypassRules, this.panelRoutes, this.panelAdvanced, this.panelTroubleshooting ]);
+            this.buildTabPanel([ this.panelInterfaces, this.panelHostName, this.panelServices, this.panelPortForwardRules, this.panelNatRules, this.panelBypassRules, this.panelRoutes, this.panelAdvanced, this.panelTroubleshooting ]);
 
             //Check if QoS is enabled and there are some initial WANs without downloadBandwidthKbps or uploadBandwidthKbps limits set and mark dirty if true,
             // in order to make the user save the valid settings when new WANs are added
@@ -349,6 +351,8 @@ if (!Ung.hasResource["Ung.Network"]) {
                     name: 'dhcpPrefixOverride'
                 }, {
                     name: 'dhcpDnsOverride'
+                }, {
+                    name: 'dhcpOptions'
                 }, {
                     name: 'javaClass'
                 }, 
@@ -834,6 +838,68 @@ if (!Ung.hasResource["Ung.Network"]) {
                     };
                 }
             });
+            this.gridInterfacesDhcpOptionsEditor = Ext.create('Ung.EditorGrid',{
+                name: 'DHCP Options',
+                height: 180,
+                width: 450,
+                settingsCmp: this,
+                paginated: false,
+                hasEdit: false,
+                dataIndex: 'dhcpOptions',
+                recordJavaClass: "com.untangle.uvm.network.DhcpOption",
+                columnsDefaultSortable: false,
+                data: [],
+                emptyRow: {
+                    "enabled": true,
+                    "value": "66,1.2.3.4",
+                    "description": "[no description]",
+                    "javaClass": "com.untangle.uvm.network.DhcpOption"
+                },
+                fields: [{
+                    name: 'enabled'
+                }, {
+                    name: 'value'
+                }, {
+                    name: 'description'
+                }],
+                columns: [{
+                    xtype:'checkcolumn',
+                    header: this.i18n._("Enable"),
+                    dataIndex: 'enabled',
+                    resizable: false,
+                    width:55
+                }, {
+                    header: this.i18n._("Description"),
+                    width: 200,
+                    dataIndex: 'description',
+                    flex: 1,
+                    editor: {
+                        xtype:'textfield',
+                        allowBlank:false
+                    }
+                }, {
+                    header: this.i18n._("Value"),
+                    dataIndex: 'value',
+                    width:200,
+                    editor : {
+                        xtype: 'textfield',
+                        allowBlank: false
+                    }
+                }],
+                setValue: function (value) {
+                    var data = [];
+                    if( value && value.list ) {
+                        data=value.list;
+                    }
+                    this.reload({data:data});
+                },
+                getValue: function () {
+                    return {
+                        javaClass: "java.util.LinkedList",
+                        list: this.getPageList()
+                    };
+                }
+            });
             this.gridInterfaces.setRowEditor( Ext.create('Ung.RowEditorWindow',{
                 sizeToComponent: this.panelInterfaces,
                 title: this.i18n._('Edit Interface'),
@@ -1231,9 +1297,6 @@ if (!Ung.hasResource["Ung.Network"]) {
                         title: this.i18n._("DHCP Advanced"),
                         collapsible: true,
                         collapsed: true,
-                        defaults: {
-                            width: 300
-                        },
                         items: [{
                             xtype:'textfield',
                             dataIndex: "dhcpGatewayOverride",
@@ -1253,6 +1316,11 @@ if (!Ung.hasResource["Ung.Network"]) {
                             dataIndex: "dhcpDnsOverride",
                             fieldLabel: this.i18n._("DNS Override"),
                             vtype: "ip4Address"
+                        }, {
+                            xtype: 'fieldset',
+                            title: this.i18n._("Dhcp Options"),
+                            name: "dhcpOptionsContainer",
+                            items: [this.gridInterfacesDhcpOptionsEditor]
                         }]
                     }]
                 }, {
@@ -1579,6 +1647,67 @@ if (!Ung.hasResource["Ung.Network"]) {
                             "change": {
                                 fn: Ext.bind(function(elem, newValue) {
                                     this.settings.dynamicDnsServiceHostnames = newValue;
+                                }, this)
+                            }
+                        }
+                    }]
+                }]
+            });
+        },
+        // Services Panel
+        buildServices: function() {
+            this.panelServices = Ext.create('Ext.panel.Panel',{
+                name: 'panelServices',
+                helpSource: 'network_interfaces',
+                parentId: this.getId(),
+                title: this.i18n._('Services'),
+                layout: 'anchor',
+                cls: 'ung-panel',
+                items: [{
+                    xtype: 'fieldset',
+                    cls: 'description',
+                    title: this.i18n._('Local Services'),
+                    items: [{
+                        border: false,
+                        cls: 'description',
+                        style: "padding-bottom: 10px;",
+                        html: "<br/>" + this.i18n._('The specified HTTPS port will be forwarded from all interfaces to the local HTTPS server to provide administration and other services.') + "<br/>"
+                    }, {
+                        xtype: 'numberfield',
+                        fieldLabel: this.i18n._('HTTPS port'),
+                        name: 'httpsPort',
+                        value: this.settings.httpsPort,
+                        allowDecimals: false,
+                        minValue: 0,
+                        allowBlank: false,
+                        blankText: this.i18n._("You must provide a valid port."),
+                        vtype: 'port',
+                        listeners: {
+                            "change": {
+                                fn: Ext.bind(function(elem, newValue) {
+                                    this.settings.httpsPort = newValue;
+                                }, this)
+                            }
+                        }
+                    }, {
+                        border: false,
+                        cls: 'description',
+                        style: "padding-bottom: 10px;",
+                        html: "<br/>" + this.i18n._('The specified HTTP port will be forwarded on non-WAN interfaces to the local HTTP server to provide administration, blockpages, and other services.') + "<br/>"
+                    }, {
+                        xtype: 'numberfield',
+                        fieldLabel: this.i18n._('HTTP port'),
+                        name: 'httpPort',
+                        value: this.settings.httpPort,
+                        allowDecimals: false,
+                        minValue: 0,
+                        allowBlank: false,
+                        blankText: this.i18n._("You must provide a valid port."),
+                        vtype: 'port',
+                        listeners: {
+                            "change": {
+                                fn: Ext.bind(function(elem, newValue) {
+                                    this.settings.httpPort = newValue;
                                 }, this)
                             }
                         }
@@ -2260,11 +2389,12 @@ if (!Ung.hasResource["Ung.Network"]) {
         // Advanced Panel
         buildAdvanced: function() {
 
-            this.buildGeneral();
+            this.buildOptions();
             this.buildQoS();
             this.buildFilter();
             this.buildDnsServer();
             this.buildNetworkCards();
+            this.buildDnsmasqOptions();
 
             this.advancedTabPanel = Ext.create('Ext.tab.Panel',{
                 activeTab: 0,
@@ -2272,7 +2402,7 @@ if (!Ung.hasResource["Ung.Network"]) {
                 parentId: this.getId(),
                 autoHeight: true,
                 flex: 1,
-                items: [ this.panelGeneral, this.panelQoS, this.panelFilter, this.panelDnsServer, this.gridNetworkCards ]
+                items: [ this.panelOptions, this.panelQoS, this.panelFilter, this.panelDnsServer, this.gridNetworkCards, this.panelDnsmasqOptions ]
             });
             
             this.panelAdvanced = Ext.create('Ext.panel.Panel',{
@@ -2290,54 +2420,19 @@ if (!Ung.hasResource["Ung.Network"]) {
                 }, this.advancedTabPanel]
             });
         },
-        // General Panel
-        buildGeneral: function() {
-            this.panelGeneral = Ext.create('Ext.panel.Panel',{
-                name: 'panelGeneral',
+        // Options Panel
+        buildOptions: function() {
+            this.panelOptions = Ext.create('Ext.panel.Panel',{
+                name: 'panelOptions',
                 helpSource: 'network_general',
                 parentId: this.getId(),
-                title: this.i18n._('General'),
+                title: this.i18n._('Options'),
                 layout: 'anchor',
                 cls: 'ung-panel',
                 items: [{
-                    xtype: 'numberfield',
-                    fieldLabel: this.i18n._('HTTPS port'),
-                    name: 'httpsPort',
-                    value: this.settings.httpsPort,
-                    allowDecimals: false,
-                    minValue: 0,
-                    allowBlank: false,
-                    blankText: this.i18n._("You must provide a valid port."),
-                    vtype: 'port',
-                    listeners: {
-                        "change": {
-                            fn: Ext.bind(function(elem, newValue) {
-                                this.settings.httpsPort = newValue;
-                            }, this)
-                        }
-                    }
-                }, {
-                    xtype: 'numberfield',
-                    fieldLabel: this.i18n._('HTTP port'),
-                    name: 'httpPort',
-                    value: this.settings.httpPort,
-                    allowDecimals: false,
-                    minValue: 0,
-                    allowBlank: false,
-                    blankText: this.i18n._("You must provide a valid port."),
-                    vtype: 'port',
-                    listeners: {
-                        "change": {
-                            fn: Ext.bind(function(elem, newValue) {
-                                this.settings.httpPort = newValue;
-                            }, this)
-                        }
-                    }
-                }, {
                     xtype: "checkbox",
                     fieldLabel: this.i18n._("Enable SIP NAT Helper"),
                     labelStyle: 'width:150px',
-                    name: 'HostName',
                     checked: this.settings.enableSipNatHelper,
                     listeners: {
                         "change": {
@@ -2350,7 +2445,6 @@ if (!Ung.hasResource["Ung.Network"]) {
                     xtype: "checkbox",
                     fieldLabel: this.i18n._("Send ICMP Redirects"),
                     labelStyle: 'width:150px',
-                    name: 'DomainName',
                     checked: this.settings.sendIcmpRedirects,
                     listeners: {
                         "change": {
@@ -2363,7 +2457,6 @@ if (!Ung.hasResource["Ung.Network"]) {
                     xtype: "checkbox",
                     fieldLabel: this.i18n._("DHCP Authoritative"),
                     labelStyle: 'width:150px',
-                    name: 'DomainName',
                     checked: this.settings.dhcpAuthoritative,
                     listeners: {
                         "change": {
@@ -3210,6 +3303,37 @@ if (!Ung.hasResource["Ung.Network"]) {
                 }]
             });
         },
+        // Dnsmasq Options Panel
+        buildDnsmasqOptions: function() {
+            this.panelDnsmasqOptions = Ext.create('Ext.panel.Panel',{
+                name: 'panelDnsmasqOptions',
+                helpSource: 'network_general',
+                parentId: this.getId(),
+                title: this.i18n._('Dnsmasq Options'),
+                layout: 'anchor',
+                cls: 'ung-panel',
+                items: [{
+                    border: false,
+                    cls: 'description',
+                    html: "<br/>" + this.i18n._('Custom dnsmasq options.') + "<br/>" +
+                        "<b>" + this.i18n._("Warning: Invalid syntax will halt all DHCP & DNS services.") + "</b>" + "<br/>",
+                    style: "padding-bottom: 10px;"
+                }, {
+                    xtype: "textarea",
+                    width : 397,
+                    height : 140,                    
+                    value: this.settings.dnsmasqOptions,
+                    listeners: {
+                        "change": {
+                            fn: Ext.bind(function(elem, newValue) {
+                                this.settings.dnsmasqOptions = newValue;
+                            }, this)
+                        }
+                    }
+                }]
+            });
+        },
+        // Troubleshooting Panel
         buildTroubleshooting: function() {
             var settingsCmp = this;
             this.gridNetworkTests = Ext.create( 'Ung.EditorGrid', {

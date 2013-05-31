@@ -80,7 +80,8 @@ public class InterfaceSettings implements Serializable, JSONString
     private InetAddress dhcpGatewayOverride; /* DHCP gateway override, if null defaults to this interface's IP */
     private Integer     dhcpPrefixOverride; /* DHCP netmask override, if null defaults to this interface's netmask */
     private InetAddress dhcpDnsOverride; /* DHCP DNS override, if null defaults to this interface's IP */
-
+    private List<DhcpOption> dhcpOptions; /* DHCP dnsmasq options */
+    
     private Boolean raEnabled; /* are IPv6 router advertisements available? */
     
     private List<IPMaskedAddress> aliases; /* alias addresses for static & dhcp */
@@ -222,6 +223,9 @@ public class InterfaceSettings implements Serializable, JSONString
     public InetAddress getDhcpDnsOverride() { return this.dhcpDnsOverride; }
     public void setDhcpDnsOverride( InetAddress newValue ) { this.dhcpDnsOverride = newValue; }
 
+    public List<DhcpOption> getDhcpOptions() { return this.dhcpOptions; }
+    public void setDhcpOptions( List<DhcpOption> newValue ) { this.dhcpOptions = newValue; }
+    
     public Boolean getRaEnabled() { return this.raEnabled; }
     public void setRaEnabled( Boolean newValue ) { this.raEnabled = newValue; }
 
