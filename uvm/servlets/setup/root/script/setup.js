@@ -105,7 +105,7 @@ Ext.define('Ung.SetupWizard.SettingsSaver', {
 Ext.define('Ung.SetupWizard.Welcome', {
     constructor: function( config ) {
         var panel = Ext.create('Ext.form.Panel', {
-        	border: false,
+            border: false,
             items: [{
                 xtype: 'container',
                 html: '<h2 class="wizard-title">' + Ext.String.format(i18n._( "Thanks for choosing {0}!" ),oemName) + '</h2>'
@@ -413,9 +413,9 @@ Ext.define('Ung.SetupWizard.Interfaces', {
                 html: panelText,
                 border: false
             }, { xtype: "panel",
-            	layout:'fit',
-            	border: false,
-            	items: this.interfaceGrid
+                layout:'fit',
+                border: false,
+                items: this.interfaceGrid
             }]
         });
 
@@ -436,28 +436,15 @@ Ext.define('Ung.SetupWizard.Interfaces', {
     },
 
     onDrop: function(node,data,overModel,dropPosition,dropFunction, options) {
-        var sm = this.interfaceGrid.getSelectionModel();
-        var rows=sm.getSelection();
-
-        if ( rows.length != 1 ) {
-            return false;
-        }
-        var intfId = rows[0].get("interfaceId");
-        var intfName = rows[0].get("name");
-        var origIntfId = overModel.get("interfaceId");
-        var origIntfName = overModel.get("name");
-
-        this.interfaceStore.each( function( currentRow ) {
-            if ( currentRow == overModel) {
-                currentRow.set("interfaceId", intfId);
-                currentRow.set("name", intfName);
-            }
-            if ( currentRow == rows[0]) {
-                currentRow.set("interfaceId", origIntfId);
-                currentRow.set("name", origIntfName);
-            }
-        });
-        sm.clearSelections();
+        var i = 0;
+        var interfaceList=this.networkSettings.interfaces.list;
+        this.interfaceStore.each( Ext.bind(function( currentRow ) {
+            console.log("this.mapDevicesStore.each:",arguments);
+            var intf=interfaceList[i];
+            currentRow.set("interfaceId", intf.interfaceId);
+            currentRow.set("name", intf.name);
+            i++;
+        }, this));
         return true;
     },
 
@@ -1448,7 +1435,7 @@ Ext.define('Ung.SetupWizard.AutoUpgrades', {
 Ext.define('Ung.SetupWizard.Complete', {
     constructor: function( config ) {
         var panel = Ext.create('Ext.form.Panel', {
-        	border: false,
+            border: false,
             items: [{
                 xtype: 'container',
                 html: '<h2 class="wizard-title">'+i18n._( "Congratulations!" )+'</h2>'

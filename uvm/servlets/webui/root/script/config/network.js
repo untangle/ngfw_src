@@ -252,7 +252,7 @@ if (!Ung.hasResource["Ung.Network"]) {
         buildInterfaces: function() {
             var settingsCmp = this;
             this.gridInterfaces = Ext.create('Ung.EditorGrid',{
-                anchor: '100% -80',
+                flex: 1,
                 name: 'Interfaces',
                 settingsCmp: this,
                 paginated: false,
@@ -497,28 +497,14 @@ if (!Ung.hasResource["Ung.Network"]) {
                                 listeners: {
                                     "drop": {
                                         fn:  Ext.bind(function(node, data, overModel, dropPosition, eOpts) {
-                                            var sm = this.gridMapDevices.getSelectionModel();
-                                            var rows=sm.getSelection();
-
-                                            if ( rows.length != 1 ) {
-                                                return false;
-                                            }
-                                            var intfId = rows[0].get("interfaceId");
-                                            var intfName = rows[0].get("name");
-                                            var origIntfId = overModel.get("interfaceId");
-                                            var origIntfName = overModel.get("name");
-
-                                            this.mapDevicesStore.each( function( currentRow ) {
-                                                if ( currentRow == overModel) {
-                                                    currentRow.set("interfaceId", intfId);
-                                                    currentRow.set("name", intfName);
-                                                }
-                                                if ( currentRow == rows[0]) {
-                                                    currentRow.set("interfaceId", origIntfId);
-                                                    currentRow.set("name", origIntfName);
-                                                }
-                                            });
-                                            sm.clearSelections();
+                                            var i = 0;
+                                            this.mapDevicesStore.each( Ext.bind(function( currentRow ) {
+                                                console.log("this.mapDevicesStore.each:",arguments);
+                                                var intf=this.currentInterfaces[i];
+                                                currentRow.set("interfaceId", intf.interfaceId);
+                                                currentRow.set("name", intf.name);
+                                                i++;
+                                            }, this));
                                             return true;
                                         },this )
                                     }
@@ -702,9 +688,9 @@ if (!Ung.hasResource["Ung.Network"]) {
                         });
                     }
                     Ext.MessageBox.hide();
-                    var interfaces = this.gridInterfaces.getPageList();
-                    this.mapDevicesStore.loadData( interfaces );
-                    this.availableDevicesStore.loadData( interfaces );
+                    this.currentInterfaces = this.gridInterfaces.getPageList();
+                    this.mapDevicesStore.loadData( this.currentInterfaces );
+                    this.availableDevicesStore.loadData( this.currentInterfaces );
                     this.winMapDevices.show();
                 }, this)
             });
@@ -732,10 +718,11 @@ if (!Ung.hasResource["Ung.Network"]) {
                 helpSource: 'network_interfaces',
                 parentId: this.getId(),
                 title: this.i18n._('Interfaces'),
-                layout: 'anchor',
+                layout: { type: 'vbox', pack: 'start', align: 'stretch' },
                 cls: 'ung-panel',
                 items: [{
                     xtype: 'fieldset',
+                    flex: 0,
                     cls: 'description',
                     title: this.i18n._('Note'),
                     html: this.i18n._("<b>Interfaces</b> are legit. Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.")
