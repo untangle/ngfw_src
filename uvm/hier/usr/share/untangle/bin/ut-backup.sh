@@ -9,31 +9,31 @@ VERBOSE=false
 
 function debug() 
 {
-  if [ "true" == $VERBOSE ]; then
-    echo $*
-  fi
+    if [ "true" == $VERBOSE ]; then
+        echo $*
+    fi
 }
 
 function err() 
 {
-  echo $* >> /dev/stderr
+    echo $* >> /dev/stderr
 }
 
 function doHelp() 
 {
-  echo "$0 -o (output file) -h (help) -v (verbose)"
+    echo "$0 -o (output file) -h (help) -v (verbose)"
 }
 
 # $1 = tar file
 # $2 = dir with backups files
 function tarBackupFiles() 
 {
-  debug "Taring files in $2 into tar $1"
-  pushd $2 > /dev/null 2>&1
-  tar -cf $1 .
-  popd > /dev/null 2>&1
-  TAR_EXIT=$?
-  debug "Done creating tar with return code $TAR_EXIT"
+    debug "Taring files in $2 into tar $1"
+    pushd $2 > /dev/null 2>&1
+    tar -cf $1 .
+    popd > /dev/null 2>&1
+    TAR_EXIT=$?
+    debug "Done creating tar with return code $TAR_EXIT"
 }
 
 function backupSettings()
@@ -76,16 +76,16 @@ function backupToDir()
 
 
 while getopts "ho:v" opt; do
-  case $opt in
-    h) doHelp;exit 0;;
-    o) OUT_FILE=$OPTARG;;
-    v) VERBOSE=true;;
-  esac
+    case $opt in
+        h) doHelp;exit 0;;
+        o) OUT_FILE=$OPTARG;;
+        v) VERBOSE=true;;
+    esac
 done
 
 if [ -z "$OUT_FILE" ]; then
-  err "Please provide an output file";
-  doHelp; exit 1;
+    err "Please provide an output file";
+    doHelp; exit 1;
 fi
 
 debug "Outputting to file: " $OUT_FILE
