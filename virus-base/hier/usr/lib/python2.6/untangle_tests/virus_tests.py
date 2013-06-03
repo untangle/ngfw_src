@@ -66,7 +66,7 @@ class VirusTests(unittest2.TestCase):
         adResult = subprocess.call(["ping","-c","1",ftp_server],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
         if (adResult != 0):
             raise unittest2.SkipTest("FTP server not available")
-        result = clientControl.runCommand("wget -q -O - ftp://" + ftp_server + "/test.zip")
+        result = clientControl.runCommand("wget -q -O /dev/null ftp://" + ftp_server + "/test.zip")
         assert (result == 0)
 
     # test that client can block virus ftp download zip
@@ -74,7 +74,7 @@ class VirusTests(unittest2.TestCase):
         adResult = subprocess.call(["ping","-c","1",ftp_server],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
         if (adResult != 0):
             raise unittest2.SkipTest("FTP server not available")
-        result = clientControl.runCommand("wget -q -O - ftp://" + ftp_server + "/FedEx-Shipment-Notification-Jan23-2012-100100.zip")
+        result = clientControl.runCommand("wget -q -O /dev/null ftp://" + ftp_server + "/FedEx-Shipment-Notification-Jan23-2012-100100.zip")
         assert (result != 0)
 
     def test_100_eventlog_httpVirus(self):
