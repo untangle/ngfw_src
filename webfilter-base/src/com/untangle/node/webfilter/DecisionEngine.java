@@ -29,8 +29,6 @@ import com.untangle.uvm.vnet.NodeTCPSession;
 /**
  * This is the core functionality of web filter
  * It decides if a site should be blocked, passed, logged, etc based on the settings and categorization.
- *
- * @version 1.0
  */
 public abstract class DecisionEngine
 {

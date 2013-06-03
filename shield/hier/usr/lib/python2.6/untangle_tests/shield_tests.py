@@ -37,7 +37,7 @@ class ShieldTests(unittest2.TestCase):
             node = uvmContext.nodeManager().node(self.nodeName())
 
     def test_010_clientIsOnline(self):
-        result = clientControl.runCommand("wget -4 -a /tmp/shield_test_010.log -t 2 --timeout=5 http://www.untangle.com/")
+        result = clientControl.runCommand("wget -4 -t 2 --timeout=5 -o /dev/null http://test.untangle.com/")
         assert (result == 0)
 
     def test_011_shieldDetectsNmap(self):

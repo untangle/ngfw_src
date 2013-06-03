@@ -64,7 +64,7 @@ class IpsTests(unittest2.TestCase):
 
     # verify client is online
     def test_010_clientIsOnline(self):
-        result = clientControl.runCommand("wget -o /dev/null http://google.com/")
+        result = clientControl.runCommand("wget -4 -t 2 --timeout=5 -o /dev/null http://test.untangle.com/")
         assert (result == 0)
 
     def test_011_testblock(self):
