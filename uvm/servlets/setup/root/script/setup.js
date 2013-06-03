@@ -606,7 +606,7 @@ Ext.define('Ung.SetupWizard.Internet', {
                     name: "ip",
                     fieldLabel: i18n._( "Current IP Address" )
                 }, {
-                    name: "prefix",
+                    name: "netmask",
                     fieldLabel: i18n._( "Current Netmask" )
                 }, {
                     name: "gateway",
@@ -1082,6 +1082,7 @@ Ext.define('Ung.SetupWizard.Internet', {
                 var card = this.cards[c];
                 this.updateValue( card.query('textfield[name="ip"]')[0], firstWanStatus.v4Address );
                 this.updateValue( card.query('textfield[name="prefix"]')[0], firstWanStatus.v4PrefixLength );
+                this.updateValue( card.query('textfield[name="netmask"]')[0], firstWanStatus.v4Netmask );
                 this.updateValue( card.query('textfield[name="gateway"]')[0], firstWanStatus.v4Gateway );
                 this.updateValue( card.query('textfield[name="dns1"]')[0], firstWanStatus.v4Dns1 );
                 this.updateValue( card.query('textfield[name="dns2"]')[0], firstWanStatus.v4Dns2 );
