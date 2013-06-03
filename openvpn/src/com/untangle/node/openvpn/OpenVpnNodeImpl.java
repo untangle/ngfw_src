@@ -479,7 +479,7 @@ public class OpenVpnNodeImpl extends NodeBase implements OpenVpnNode
     private synchronized void deployWebApp()
     {
         if ( !isWebAppDeployed ) {
-            if (null != UvmContextFactory.context().tomcatManager().loadServlet( "/openvpn", "openvpn")) {
+            if (null != UvmContextFactory.context().tomcatManager().loadServlet( "/openvpn", "openvpn", true)) {
                 logger.debug( "Deployed openvpn web app" );
             }
             else logger.warn( "Unable to deploy openvpn web app" );

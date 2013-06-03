@@ -36,11 +36,6 @@ for (( t = 0 ; t < ${RETRY_ATTEMPTS} ; t++ )); do
 
     if [ $? -eq 0 ] ; then 
         echo "Successfully started openvpn daemon"
-        
-        #FIXME should be elsewhere
-        iptables -t filter -I filter-rules-input -p tcp --dport 1194 -j ACCEPT -m comment --comment "allow OpenVPN traffic"
-        iptables -t filter -I filter-rules-input -p UDP --dport 1194 -j ACCEPT -m comment --comment "allow OpenVPN traffic"
-
         exit 0
     fi
 

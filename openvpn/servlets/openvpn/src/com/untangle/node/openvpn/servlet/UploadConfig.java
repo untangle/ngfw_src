@@ -54,8 +54,6 @@ public class UploadConfig extends HttpServlet
             return;
         }
 
-        //FIXME check ADMIN
-
         /* See the extjs documentation for why this is text/html.
          * when the flag fileUpload is set to true on a form panel,
          * then it must return text/html as the content type,

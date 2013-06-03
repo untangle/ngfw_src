@@ -11,5 +11,7 @@ public interface TomcatManager
 
     public ServletContext loadServlet(String urlBase, String rootDir);
 
+    public ServletContext loadServlet(String urlBase, String rootDir, boolean requireAdminPrivs);
+
     public boolean unloadServlet(String contextRoot);
 }

@@ -34,8 +34,6 @@ public class Downloader extends HttpServlet
 
     protected void service( HttpServletRequest request,  HttpServletResponse response ) throws ServletException, IOException
     {
-        /* XXX FIXME require ADMIN */
-
         String commonName = request.getParameter( "client" );
         String fileName = null;
         String downloadFilename = null;

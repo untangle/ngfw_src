@@ -86,10 +86,10 @@ public class TomcatManagerImpl implements TomcatManager
         emb.addEngine(baseEngine);
 
         loadServlet("/blockpage", "blockpage");
-        ServletContext ctx = loadServlet("/webui", "webui", new AdministrationValve() );
+        ServletContext ctx = loadServlet("/webui", "webui", true );
         ctx.setAttribute("threadRequest", threadRequest);
 
-        ctx = loadServlet("/setup", "setup", new AdministrationValve() );
+        ctx = loadServlet("/setup", "setup", true );
         ctx.setAttribute("threadRequest", threadRequest);
             
         writeWelcomeFile();
@@ -102,9 +102,9 @@ public class TomcatManagerImpl implements TomcatManager
         return loadServlet(urlBase, rootDir, null, null);
     }
 
-    public ServletContext loadServlet(String urlBase, String rootDir, Valve v)
+    public ServletContext loadServlet(String urlBase, String rootDir, boolean requireAdminPrivs)
     {
-        return loadServlet(urlBase, rootDir, null, null, new WebAppOptions(v));
+        return loadServlet(urlBase, rootDir, null, null, new WebAppOptions(new AdministrationValve()));
     }
     
     public boolean unloadServlet(String contextRoot)
