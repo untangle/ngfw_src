@@ -26,6 +26,7 @@ public class OpenVpnSettings implements java.io.Serializable, JSONString
     private IPMaskedAddress addressSpace;
 
     private boolean serverEnabled = true;
+    private boolean natOpenVpnTraffic = true;
     
     /**
      * List of addresses visible to those connecting to the VPN
@@ -52,6 +53,9 @@ public class OpenVpnSettings implements java.io.Serializable, JSONString
     public boolean getServerEnabled() { return this.serverEnabled; }
     public void setServerEnabled( boolean newValue ) { this.serverEnabled = newValue; }
 
+    public boolean getNatOpenVpnTraffic() { return this.natOpenVpnTraffic; }
+    public void setNatOpenVpnTraffic( boolean newValue ) { this.natOpenVpnTraffic = newValue; }
+    
     public String getProtocol() { return this.protocol; }
     public void setProtocol( String newValue ) { this.protocol = newValue; }
 

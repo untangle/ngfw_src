@@ -554,7 +554,6 @@ public class OpenVpnManager
             if ( server.getEnabled() )
                 maxNumTunDevices++;
         }
-            
         
         try {
             FileWriter iptablesScript = new FileWriter( IPTABLES_SCRIPT, false );
@@ -570,10 +569,20 @@ public class OpenVpnManager
             iptablesScript.write("# delete old rules (if they exist) (tun0-tun10) " + "\n");
             iptablesScript.write("${IPTABLES} -t filter -D filter-rules-input -p tcp --dport 1194 -j ACCEPT -m comment --comment \"Allow OpenVPN traffic\" >/dev/null 2>&1" + "\n");
             iptablesScript.write("${IPTABLES} -t filter -D filter-rules-input -p udp --dport 1194 -j ACCEPT -m comment --comment \"Allow OpenVPN traffic\" >/dev/null 2>&1" + "\n");
-            iptablesScript.write("for i in `seq 0 10` ; do" + "\n");
+            iptablesScript.write("for i in `seq 0 " + (maxNumTunDevices + 10 ) + "` ; do" + "\n");
             iptablesScript.write("    ${IPTABLES} -t mangle -D mark-src-intf -i tun$i -j MARK --set-mark 0xfa/0xff -m comment --comment \"Set src interface mark for openvpn\" >/dev/null 2>&1" + "\n");
             iptablesScript.write("    ${IPTABLES} -t mangle -D mark-dst-intf -o tun$i -j MARK --set-mark 0xfa00/0xff00 -m comment --comment \"Set dst interface mark for openvpn\" >/dev/null 2>&1" + "\n");
             iptablesScript.write("done" + "\n");
+
+            iptablesScript.write("# delete old global NAT rule" + "\n");
+            iptablesScript.write("${IPTABLES} -t nat -D nat-rules -m mark --mark 0xfa/0xff -j MASQUERADE -m comment --comment \"NAT openvpn traffic\" >/dev/null 2>&1" + "\n");
+            for ( InterfaceSettings intfSettings : UvmContextFactory.context().networkManager().getNetworkSettings().getInterfaces() ) {
+                if ( intfSettings.getConfigType() == InterfaceSettings.ConfigType.ADDRESSED && intfSettings.getIsWan() ) {
+                    iptablesScript.write("# delete old WAN NAT rule" + "\n");
+                    iptablesScript.write("${IPTABLES} -t nat -D nat-rules -m mark --mark 0x" + Integer.toHexString( (intfSettings.getInterfaceId() << 8) + 0x00fa ) + "/0xffff " +
+                                         "-j MASQUERADE -m comment --comment \"NAT WAN-bound openvpn traffic\" >/dev/null 2>&1" + "\n");
+                }
+            }
 
             iptablesScript.write("# allow traffic to openvpn daemon" + "\n");
             iptablesScript.write("if [ ! -z \"`pidof openvpn`\" ] ; then" + "\n");
@@ -587,6 +596,20 @@ public class OpenVpnManager
             iptablesScript.write("    ${IPTABLES} -t mangle -I mark-src-intf 3 -i tun$i -j MARK --set-mark 0xfa/0xff -m comment --comment \"Set src interface mark for openvpn\"" + "\n");
             iptablesScript.write("    ${IPTABLES} -t mangle -I mark-dst-intf 3 -o tun$i -j MARK --set-mark 0xfa00/0xff00 -m comment --comment \"Set dst interface mark for openvpn\"" + "\n");
             iptablesScript.write("done" + "\n");
+
+            if ( settings.getNatOpenVpnTraffic() ) {
+                iptablesScript.write("# NAT traffic from openvpn interfaces" + "\n");
+                iptablesScript.write("${IPTABLES} -t nat -I nat-rules -m mark --mark 0xfa/0xff -j MASQUERADE -m comment --comment \"NAT openvpn traffic\"" + "\n");
+            } else {
+                for ( InterfaceSettings intfSettings : UvmContextFactory.context().networkManager().getNetworkSettings().getInterfaces() ) {
+                    if ( intfSettings.getConfigType() == InterfaceSettings.ConfigType.ADDRESSED && intfSettings.getIsWan() ) {
+                        iptablesScript.write("# Always NAT wan bound traffic" + "\n");
+                        iptablesScript.write("${IPTABLES} -t nat -I nat-rules -m mark --mark 0x" + Integer.toHexString( (intfSettings.getInterfaceId() << 8) + 0x00fa ) + "/0xffff " +
+                                             "-j MASQUERADE -m comment --comment \"NAT WAN-bound openvpn traffic\"" + "\n");
+                    }
+                }
+            }
+
             
             iptablesScript.close();
 

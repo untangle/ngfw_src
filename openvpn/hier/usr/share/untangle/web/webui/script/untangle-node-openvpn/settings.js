@@ -968,8 +968,8 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                         }
                     }, {
                         xtype: 'checkbox',
+                        labelWidth: 160,
                         name: "Server Enabled",
-                        dataIndex: "Server Enabled",
                         fieldLabel: this.i18n._("Server Enabled"),
                         checked: this.getSettings().serverEnabled,
                         listeners: {
@@ -1064,6 +1064,20 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                             "change": {
                                 fn: Ext.bind(function(elem, newValue) {
                                     this.getSettings().addressSpace = newValue;
+                                }, this)
+                            }
+                        }
+                    }, {
+                        xtype: 'checkbox',
+                        hidden: true, /* HIDDEN */
+                        labelWidth: 160,
+                        name: "NAT OpenVPN Traffic",
+                        fieldLabel: this.i18n._("NAT All OpenVPN Traffic"),
+                        checked: this.getSettings().natOpenVpnTraffic,
+                        listeners: {
+                            "change": {
+                                fn: Ext.bind(function(elem, newValue) {
+                                    this.getSettings().natOpenVpnTraffic = newValue;
                                 }, this)
                             }
                         }
