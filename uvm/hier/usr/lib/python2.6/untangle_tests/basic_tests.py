@@ -1,4 +1,3 @@
-is
 import unittest2
 from jsonrpc import ServiceProxy
 from jsonrpc import JSONRPCException
