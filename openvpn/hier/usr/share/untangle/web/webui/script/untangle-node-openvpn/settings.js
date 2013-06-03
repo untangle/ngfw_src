@@ -151,12 +151,6 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
             this.buildTabPanel(tabs);
             this.callParent(arguments);
         },
-        getExports: function(forceReload) {
-            if (forceReload || this.rpc.exports === undefined) {
-                this.rpc.exports = this.getRpcNode().getExports();
-            }
-            return this.rpc.exports;
-        },
         getGroupsStore: function(force) {
             if (this.groupsStore == null ) {
                 this.groupsStore = Ext.create('Ext.data.Store', {
@@ -196,8 +190,8 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                 hasEdit: false,
                 hasDelete: false,
                 columnsDefaultSortable: true,
-                title: this.i18n._("Active Clients"),
-                qtip: this.i18n._("The Active Clients list shows connected clients."),
+                title: this.i18n._("Connected Remote Clients"),
+                qtip: this.i18n._("The Connected Remote Clients list shows connected clients."),
                 paginated: false,
                 bbar: Ext.create('Ext.toolbar.Toolbar', {
                     items: [
@@ -263,6 +257,14 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
             var statusLabel = "";
             this.buildActiveClientsGrid();
 
+            var runState = this.getRpcNode().getRunState();
+            var statusDescription = "";
+            if (runState === "RUNNING") {
+                statusDescription = "<font color=\"green\">" + this.i18n._("OpenVPN is currently running.") + "</font>";
+            } else {
+                statusDescription = "<font color=\"red\">" + this.i18n._("OpenVPN is not currently running.") + "</font>";
+            }
+            
             this.panelStatus = Ext.create('Ext.panel.Panel', {
                 name: 'Status',
                 helpSource: 'status',
@@ -276,9 +278,9 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                 items: [{
                     xtype: 'fieldset',
                     cls: 'description',
-                    title: this.i18n._('Current Mode'),
+                    title: this.i18n._('Status'),
                     items: [{
-                        html: "<i>" + this.i18n._("FIXME OpenVPN status here.") + "</i>",
+                        html: "<i>" + statusDescription + "</i>",
                         cls: 'description',
                         border: false
                     }]
@@ -537,7 +539,7 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                     cls: 'description',
                     title: this.i18n._('Remote Servers'),
                     items: [{
-                        html: "<i>" + this.i18n._("FIXME Describe Remote Servers.") + "</i>",
+                        html: "<i>" + this.i18n._("This is a list remote OpenVPN servers that OpenVPN should connect to as a client.") + "</i>",
                         cls: 'description',
                         border: false
                     }]
@@ -659,7 +661,7 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                     cls: 'description',
                     title: this.i18n._('Remote Clients'),
                     items: [{
-                        html: "<i>" + this.i18n._("FIXME Describe Remote Clients.") + "</i>",
+                        html: "<i>" + this.i18n._("This is a list of remote OpenVPN clients allowed to connect to this server.") + "</i>",
                         cls: 'description',
                         border: false
                     }]
@@ -763,7 +765,7 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                     cls: 'description',
                     title: this.i18n._('Exports'),
                     items: [{
-                        html: "<i>" + this.i18n._("FIXME Describe Exports.") + "</i>",
+                        html: "<i>" + this.i18n._("The exported networks will be reachable by connected clients.") + "</i>",
                         cls: 'description',
                         border: false
                     }]
@@ -784,7 +786,7 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                     cls: 'description',
                     title: this.i18n._('Groups'),
                     items: [{
-                        html: "<i>" + this.i18n._("FIXME Describe Groups.") + "</i>",
+                        html: "<i>" + this.i18n._("This is the groups available for grouping clients by similar configuration.") + "</i>",
                         cls: 'description',
                         border: false
                     }]
@@ -992,6 +994,7 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                         }
                     }, {
                         xtype: 'textfield',
+                        hidden: true, /* HIDDEN */
                         labelWidth: 160,
                         labelAlign:'left',
                         width:300,
@@ -1010,6 +1013,7 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                         }
                     }, {
                         xtype: 'textfield',
+                        hidden: true, /* HIDDEN */
                         labelWidth: 160,
                         labelAlign:'left',
                         width:300,
@@ -1028,6 +1032,7 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                         }
                     }, {
                         xtype: 'textfield',
+                        hidden: true, /* HIDDEN */
                         labelWidth: 160,
                         labelAlign:'left',
                         width:300,
