@@ -279,7 +279,7 @@ class NetworkTests(unittest2.TestCase):
 
     def test_030_port80Forward(self):
         nukeFWRules()
-        netstatResult = clientControl.runCommand("netstat -an | grep 0.0.0.0:80 | wc -l")
+        netstatResult = clientControl.runCommand("netstat -an | grep -q 0.0.0.0:80")
         if (netstatResult == 0):
             raise unittest2.SkipTest("No web server running on client, skipping port 80 forwarding test")
         clientControl.runCommand("rm -f /tmp/network_test_030*")
@@ -302,7 +302,7 @@ class NetworkTests(unittest2.TestCase):
         uvmContext.networkManager().setNetworkSettings(orig_netsettings)
 
     def test_040_port443Forward(self):
-        netstatResult = clientControl.runCommand("netstat -an | grep -q  0.0.0.0:443 | wc -l")
+        netstatResult = clientControl.runCommand("netstat -an | grep -q 0.0.0.0:443")
         if (netstatResult == 0):
             raise unittest2.SkipTest("No ssl web server running on client, skipping port 443 forwarding test")
         clientControl.runCommand("rm -f /tmp/network_test_040*")
@@ -386,7 +386,7 @@ class NetworkTests(unittest2.TestCase):
     def test_070_routes(self):        
         # This test relies on the site to site openvpn on dogfood
         # TODO This test needs to work with DHCP WAN also
-        pingResult = clientControl.runCommand("ping -c 1 " + dogfood)
+        pingResult = clientControl.runCommand("ping -c 1 " + dogfood + " >/dev/null 2>&1")
         # print "pingResult <%s>" % pingResult
         if (pingResult != 0):
             raise unittest2.SkipTest("Office route Dogfood not available")
@@ -457,7 +457,7 @@ class NetworkTests(unittest2.TestCase):
         node = None
         nodeFW = None
         # In case test_050_portForwardAlt fails and leaves the python web server running
-        clientControl.runCommand("kill $(ps aux | grep SimpleHTTPServer | grep -v grep | awk '{print $2}')")
+        clientControl.runCommand("kill $(ps aux | grep SimpleHTTPServer | grep -v grep | awk '{print $2}') 2>/dev/null")
         return True
 
 
