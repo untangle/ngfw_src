@@ -234,6 +234,7 @@ class NetworkTests(unittest2.TestCase):
         global node, nodeFW, orig_netsettings, utBridged
         orig_netsettings = uvmContext.networkManager().getNetworkSettings()
         utBridged = isBridgeMode(ClientControl.hostIP)
+        clientControl.runCommand("kill $(ps aux | grep SimpleHTTPServer | grep -v grep | awk '{print $2}') 2>/dev/null")
         
     def test_010_clientIsOnline(self):
         result = clientControl.runCommand("wget -4 -t 2 --timeout=5 -o /dev/null http://test.untangle.com/")
@@ -279,8 +280,10 @@ class NetworkTests(unittest2.TestCase):
 
     def test_030_port80Forward(self):
         nukeFWRules()
-        netstatResult = clientControl.runCommand("netstat -an | grep -q 0.0.0.0:80")
+        netstatResult = int(clientControl.runCommand("netstat -an | grep '0.0.0.0:80 ' | wc -l",True))
+        # print "netstatResult <%s>" % netstatResult
         if (netstatResult == 0):
+            print "doing raise error"
             raise unittest2.SkipTest("No web server running on client, skipping port 80 forwarding test")
         clientControl.runCommand("rm -f /tmp/network_test_030*")
         netsettings = uvmContext.networkManager().getNetworkSettings()
@@ -291,40 +294,40 @@ class NetworkTests(unittest2.TestCase):
         # switch client to external box
         clientControl.hostIP = external_client
         result = clientControl.runCommand("wget -a /tmp/network_test_030a.log -O /tmp/network_test_030a.out -t 1 \'http://" + wan_IP + "\'" ,True)
-        search = clientControl.runCommand("grep -q 'works!' /tmp/network_test_030a.out")  # check for default apache web page
+        search = clientControl.runCommand("grep -q 'It works' /tmp/network_test_030a.out")  # check for default apache web page
         assert (search == 0)
         clientControl.hostIP = tmp_hostIP
         # check if hairpin works only on non bridge setups
         if not utBridged:
             result = clientControl.runCommand("wget -a /tmp/network_test_030b.log -O /tmp/network_test_030b.out -t 1 \'http://" + wan_IP + "\'" ,True)
-            search = clientControl.runCommand("grep -q 'works!' /tmp/network_test_030b.out")  # check for default apache web page
+            search = clientControl.runCommand("grep -q 'It works' /tmp/network_test_030b.out")  # check for default apache web page
             assert (search == 0)
         uvmContext.networkManager().setNetworkSettings(orig_netsettings)
 
     def test_040_port443Forward(self):
-        netstatResult = clientControl.runCommand("netstat -an | grep -q 0.0.0.0:443")
+        netstatResult = int(clientControl.runCommand("netstat -an | grep 0.0.0.0:443 | wc -l",True))
+        # print "netstatResult <%s>" % netstatResult
         if (netstatResult == 0):
             raise unittest2.SkipTest("No ssl web server running on client, skipping port 443 forwarding test")
         clientControl.runCommand("rm -f /tmp/network_test_040*")
         netsettings = uvmContext.networkManager().getNetworkSettings()
         wan_IP = uvmContext.networkManager().getFirstWanAddress()
         # Move Admin port 443 to 4443
-        adminsettings = uvmContext.systemManager().getSettings()
-        adminsettings['httpsPort']="4443"
-        uvmContext.systemManager().setSettings(adminsettings)
+        netsettings['httpsPort'] = 4443
+        uvmContext.networkManager().setNetworkSettings(netsettings)
         # port forward 443 to client box
         appendForward(createPortForwardLocalMatcherRule("DST_PORT","443",ClientControl.hostIP))
         tmp_hostIP = ClientControl.hostIP
         # switch client to external box
         ClientControl.hostIP = external_client
         result = clientControl.runCommand("wget --no-check-certificate  -a /tmp/network_test_040a.log -O /tmp/network_test_040a.out -t 1 \'https://" + wan_IP + "\'" ,True)
-        search = clientControl.runCommand("grep -q 'works!' /tmp/network_test_040a.out")  # check for default apache web page
+        search = clientControl.runCommand("grep -q 'It works' /tmp/network_test_040a.out")  # check for default apache web page
         assert (search == 0)
         ClientControl.hostIP = tmp_hostIP
         clientControl.runCommand("rm -f /tmp/network_test_040*")
         # check if hairpin works
         result = clientControl.runCommand("wget --no-check-certificate  -a /tmp/network_test_040b.log -O /tmp/network_test_040b.out -t 1 \'https://" + wan_IP + "\'" ,True)
-        search = clientControl.runCommand("grep -q 'works!' /tmp/network_test_040b.out")  # check for default apache web page
+        search = clientControl.runCommand("grep -q 'It works' /tmp/network_test_040b.out")  # check for default apache web page
         uvmContext.networkManager().setNetworkSettings(orig_netsettings)
         # Move Admin port back to 443
         adminsettings = uvmContext.systemManager().getSettings()
@@ -359,7 +362,7 @@ class NetworkTests(unittest2.TestCase):
             search = clientControl.runCommand("grep -q 'Directory listing' /tmp/network_test_050b.out")  # check for default apache web page
             assert (search == 0)
         # kill the 8080 web server
-        clientControl.runCommand("kill $(ps aux | grep SimpleHTTPServer | grep -v grep | awk '{print $2}')")
+        clientControl.runCommand("kill $(ps aux | grep SimpleHTTPServer | grep -v grep | awk '{print $2}') 2>/dev/null")
         uvmContext.networkManager().setNetworkSettings(orig_netsettings)
 
     def test_060_bypassRules(self):
@@ -435,17 +438,15 @@ class NetworkTests(unittest2.TestCase):
                 i += 1
             uvmContext.networkManager().setNetworkSettings(netsettings)
             result = clientControl.runCommand("host www.google.com " + wan_IP, True)
-            # netsettings['inputFilterRules']['list'][i]['matchers']['list'][j]["value"] = "non_wan"
-            # uvmContext.networkManager().setNetworkSettings(netsettings)
             # print "Results of www.google.com <%s>" % result
         else:
             result = clientControl.runCommand("host www.google.com", True)
         match = re.search(r'address \d{1,3}.\d{1,3}.\d{1,3}.\d{1,3}', result)
         ip_address_google = (match.group()).replace('address ','')
-        # ip_address_google = ip_address_google.replace('address ','')
         # print "IP address of www.google.com <%s>" % ip_address_google
         # print "IP address of test.untangle.com <%s>" % ip_address_testuntangle
         assert(ip_address_testuntangle == ip_address_google)
+        uvmContext.networkManager().setNetworkSettings(orig_netsettings)
         
     def test_999_finalTearDown(self):
         global node,nodeFW,orig_netsettings
