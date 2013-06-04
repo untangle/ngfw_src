@@ -100,6 +100,9 @@ class BuildEnv
     ## This is the staging ground for debian packages
     @deb    = "#{home}/debian"
 
+    ## Build tools
+    @buildtools = "#{home}/buildtools"
+    
     ## This is the staging area for compilation
     @staging = "#{home}/staging"
 

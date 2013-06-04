@@ -2,13 +2,12 @@ package com.untangle.node.util;
 
 import java.net.InetAddress;
 import java.util.List;
-import java.util.regex.Pattern;
-import java.util.regex.PatternSyntaxException;
 
 import org.apache.log4j.Logger;
 
 import com.untangle.uvm.node.GenericRule;
 import com.untangle.uvm.node.IPMatcher;
+import com.untangle.uvm.node.UrlMatcher;
 
 public class UrlMatchingUtil
 {
@@ -64,102 +63,39 @@ public class UrlMatchingUtil
 	}
 
 	/**
-	 * normalizes a domain name removes extra "http://" or "www." or "." at the
-	 * beginning
-	 */
-	public static String normalizeDomain(String dom)
-	{
-		String url = dom.toLowerCase();
-		String uri = url.startsWith("http://") ? url.substring("http://".length()) : url;
-
-		while (0 < uri.length() && ('.' == uri.charAt(0))) {
-			uri = uri.substring(1);
-		}
-
-		if (uri.startsWith("www.")) {
-			uri = uri.substring("www.".length());
-		}
-
-		return uri;
-	}
-
-	/**
-	 * Finds a matching active rule from the ruleset that matches the given
-	 * value
-	 */
-	public static GenericRule findMatchingRule(List<GenericRule> rules, String domain, String uri)
-	{
-		String value = normalizeDomain(domain) + uri;
-
-		logger.debug("findMatchRule: rules = '" + rules + "', value = '" + value + "' (normalized from '" + domain
-				+ uri + ")");
-
-		for (GenericRule rule : rules) {
-			if (rule.getEnabled() != null && !rule.getEnabled())
-				continue;
-
-			Object regexO = rule.attachment();
-			Pattern regex = null;
-
-			/**
-			 * If the regex is not attached to the rule, compile a new one and
-			 * attach it Otherwise just use the regex already compiled and
-			 * attached to the rule
-			 */
-			if (regexO == null || !(regexO instanceof Pattern)) {
-				String re = GlobUtil.urlGlobToRegex(rule.getString());
-
-				logger.debug("Compile  rule: " + re);
-				try {
-					regex = Pattern.compile(re);
-				} catch (Exception e) {
-					logger.warn("Failed to compile regex: " + re, e);
-					// Use a regex that will never match anything
-					regex = Pattern.compile("a^");
-				}
-				rule.attach(regex);
-			} else {
-				regex = (Pattern) regexO;
-			}
-
-			/**
-			 * Check the match
-			 */
-			try {
-				logger.debug("Checking rule: " + rule.getString() + " (re: " + regex + ") against " + value);
-
-				if (regex.matcher(value).matches()) {
-					logger.debug("findMatchRule: ** matches pattern '" + regex + "'");
-					return rule; // done, we do not care if others match too
-				} else {
-					logger.debug("findMatchRule: ** does not match '" + regex + "'");
-				}
-			} catch (PatternSyntaxException e) {
-				logger.error("findMatchRule: ** invalid pattern '" + regex + "'");
-			}
-
-		}
-
-		return null;
-	}
-
-	/**
 	 * checkSiteList checks the host+uri against the provided list
 	 * 
 	 * @param host
 	 *            host of the URL
 	 * @param uri
 	 *            URI of the URL
-	 * @return the rule that matches, null if DNE
+	 * @return the rule that matches, null if DNE6
 	 */
-	public static GenericRule checkSiteList(String host, String uri, List<GenericRule> rulesList)
+	public static GenericRule checkSiteList( String domain, String uri, List<GenericRule> rules )
 	{
-		String dom;
-		for (dom = host; null != dom; dom = nextHost(dom)) {
-			GenericRule sr = findMatchingRule(rulesList, dom, uri);
+		for (GenericRule rule : rules) {
+			if (rule.getEnabled() != null && !rule.getEnabled())
+				continue;
 
-			if (sr != null) {
-				return sr;
+			Object matcherO = rule.attachment();
+			UrlMatcher matcher = null;
+
+			/**
+			 * If the matcher is not attached to the rule, initialize a new one
+			 * and attach it. Otherwise just use the matcher already initialized
+			 * and attached to the rule
+			 */
+			if (matcherO == null || !(matcherO instanceof UrlMatcher)) {
+				matcher = new UrlMatcher( rule.getString() );
+				rule.attach( matcher );
+			} else {
+				matcher = (UrlMatcher) matcherO;
+			}
+
+            logger.warn("CHECK " + matcher.getRegexValue() + " to " + domain + uri );
+			if ( matcher.isMatch( domain, uri ) ) {
+				logger.debug("LOG: " + domain + uri + " in site list");
+				return rule;
 			}
 		}
 
@@ -181,6 +117,7 @@ public class UrlMatchingUtil
 
 			Object matcherO = rule.attachment();
 			IPMatcher matcher = null;
+
 			/**
 			 * If the matcher is not attached to the rule, initialize a new one
 			 * and attach it. Otherwise just use the matcher already initialized
@@ -188,12 +125,12 @@ public class UrlMatchingUtil
 			 */
 			if (matcherO == null || !(matcherO instanceof IPMatcher)) {
 				matcher = new IPMatcher(rule.getString());
-				rule.attach(matcher);
+				rule.attach( matcher );
 			} else {
 				matcher = (IPMatcher) matcherO;
 			}
 
-			if (rule.getEnabled() && matcher.isMatch(clientIp)) {
+			if ( matcher.isMatch(clientIp) ) {
 				logger.debug("LOG: " + clientIp + " in client pass list");
 				return rule;
 			}

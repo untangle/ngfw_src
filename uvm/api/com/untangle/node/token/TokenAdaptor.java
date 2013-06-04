@@ -131,8 +131,8 @@ public class TokenAdaptor extends AbstractEventHandler
 
         try {
             handlerDesc.handler.handleFinalized();
-        } catch (TokenException exn) {
-            logger.warn("resetting connection", exn);
+        } catch ( Exception exn ) {
+            logger.warn("Exception. resetting connection", exn);
             sess.resetClient();
             sess.resetServer();
         }

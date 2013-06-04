@@ -24,6 +24,7 @@ import com.untangle.uvm.node.DayOfWeekMatcher;
 import com.untangle.uvm.node.TimeOfDayMatcher;
 import com.untangle.uvm.node.UserMatcher;
 import com.untangle.uvm.node.GlobMatcher;
+import com.untangle.uvm.node.UrlMatcher;
 
 @SuppressWarnings("unchecked")
 public class ServletUtils 
@@ -75,6 +76,7 @@ public class ServletUtils
         registrator.registerSerializer(root, new GenericStringSerializer(TimeOfDayMatcher.class));
         registrator.registerSerializer(root, new GenericStringSerializer(UserMatcher.class));
         registrator.registerSerializer(root, new GenericStringSerializer(GlobMatcher.class));
+        registrator.registerSerializer(root, new GenericStringSerializer(UrlMatcher.class));
     }
     
     private static interface Registrator<T>

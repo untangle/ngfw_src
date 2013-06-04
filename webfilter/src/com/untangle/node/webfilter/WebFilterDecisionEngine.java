@@ -1,4 +1,4 @@
-/*
+/**
  * $Id: WebFilterDecisionEngine.java,v 1.00 2011/07/07 12:12:27 dmorris Exp $
  */
 package com.untangle.node.webfilter;
@@ -20,10 +20,10 @@ import java.util.regex.Pattern;
 
 import org.apache.log4j.Logger;
 
+import com.untangle.node.util.UrlMatchingUtil;
+
 /**
  * This class has the Web Filter Lite (webfilter) specifics for the decision engine
- *
- * @version 1.0
  */
 class WebFilterDecisionEngine extends DecisionEngine
 {
@@ -65,7 +65,7 @@ class WebFilterDecisionEngine extends DecisionEngine
          */
         if (categories.size() == 0) {
             String dom;
-            for ( dom = domain ; null != dom ; dom = nextHost(dom) ) {
+            for ( dom = domain ; null != dom ; dom = UrlMatchingUtil.nextHost(dom) ) {
                 category = urlDatabase.get(dom + uri);
                 if (category != null) {
                     categories.add(category);
@@ -81,7 +81,7 @@ class WebFilterDecisionEngine extends DecisionEngine
          */
         if (categories.size() == 0) {
             String dom;
-            for ( dom = domain ; null != dom ; dom = nextHost(dom) ) {
+            for ( dom = domain ; null != dom ; dom = UrlMatchingUtil.nextHost(dom) ) {
                 category = urlDatabase.get(dom + "/");
                 if (category != null) {
                     categories.add(category);
@@ -212,30 +212,4 @@ class WebFilterDecisionEngine extends DecisionEngine
 
         logger.info("Initializing urlDatabase... done.");
     }
-
-    /**
-     * Gets the next domain stripping off the lowest level domain from
-     * host. Does not return the top level domain. Returns null when
-     * no more domains are left.
-     *
-     * <b>This method assumes trailing dots are stripped from host.</b>
-     *
-     * @param host a <code>String</code> value
-     * @return a <code>String</code> value
-     */
-    private String     nextHost( String host )
-    {
-        int i = host.indexOf('.');
-        if (-1 == i) {
-            return null;
-        } else {
-            int j = host.indexOf('.', i + 1);
-            if (-1 == j) { // skip tld
-                return null;
-            }
-
-            return host.substring(i + 1);
-        }
-    }
-    
 }

@@ -1,4 +1,6 @@
-/* $HeadURL$ */
+/**
+ * $HeadURL$
+ */
 package com.untangle.uvm.node;
 
 import java.util.LinkedList;
@@ -15,9 +17,6 @@ import org.apache.log4j.Logger;
  * "80,90-100" matches 80 and 90-100
  * "any" matches any interface
  * "none" matches nothing
- *
- * @author <a href="mailto:dmorris@untangle.com">Dirk Morris</a>
- * @version 1.0
  */
 @SuppressWarnings("serial")
 public class PortMatcher implements java.io.Serializable
@@ -59,12 +58,6 @@ public class PortMatcher implements java.io.Serializable
     private int singleInt = -1;
 
 
-
-    
-    /**
-     * There are no public constructors
-     * Use the "create" static function to create Port Matchers
-     */
     public PortMatcher(String matcher)
     {
         initialize(matcher);

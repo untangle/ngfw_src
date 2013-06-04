@@ -99,8 +99,6 @@ public class GlobMatcher
      */
     private void initialize( String matcher )
     {
-        // We used to ';' as a seperator, we now use ','
-        matcher = matcher.replaceAll(";",",");
         // only lower case
         matcher = matcher.toLowerCase().trim();
         this.matcher = matcher;

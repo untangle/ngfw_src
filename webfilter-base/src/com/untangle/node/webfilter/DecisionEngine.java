@@ -1,4 +1,4 @@
-/*
+/**
  * $HeadURL: svn://chef/work/src/webfilter-base/impl/com/untangle/node/webfilter/DecisionEngine.java $
  */
 package com.untangle.node.webfilter;
@@ -11,16 +11,14 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.regex.Pattern;
 
 import org.apache.log4j.Logger;
 
+import com.untangle.uvm.UvmContextFactory;
 import com.untangle.node.http.RequestLineToken;
 import com.untangle.node.token.Header;
-import com.untangle.node.util.GlobUtil;
 import com.untangle.node.util.UrlMatchingUtil;
-import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.node.GenericRule;
 import com.untangle.uvm.node.MimeType;
 import com.untangle.uvm.util.I18nUtil;
@@ -49,7 +47,7 @@ public abstract class DecisionEngine
      * Unblocked sites are temporary and only stored in memory
      * This map stores a list of unblocked sites by IP address
      */
-    private final Map<InetAddress, Set<String>> unblockedDomains = new HashMap<InetAddress, Set<String>>();
+    private final Map<InetAddress, HashSet<String>> unblockedDomains = new HashMap<InetAddress, HashSet<String>>();
 
 
     public DecisionEngine( WebFilterBase node )
@@ -234,11 +232,11 @@ public abstract class DecisionEngine
         }
         String host = UrlMatchingUtil.normalizeHostname(requestLine.getRequestLine().getUrl().getHost());
 
-        if (UrlMatchingUtil.checkClientList(clientIp, node.getSettings().getPassedClients()) != null)
+        if ( UrlMatchingUtil.checkClientList( clientIp, node.getSettings().getPassedClients() ) != null )
             return null;
-        if (UrlMatchingUtil.checkSiteList(host,uri.toString(), node.getSettings().getPassedUrls()) != null)
+        if ( UrlMatchingUtil.checkSiteList( host,uri.toString(), node.getSettings().getPassedUrls() ) != null )
             return null;
-        if (checkUnblockedSites(host,uri,clientIp))
+        if ( checkUnblockedSites( host,uri,clientIp ) )
             return null;
 
         logger.debug("checkResponse: " + host + uri + " content: " + contentType);
@@ -270,7 +268,7 @@ public abstract class DecisionEngine
      */
     public void addUnblockedSite( InetAddress addr, String site )
     {
-        Set<String> wl;
+        HashSet<String> wl;
         synchronized (unblockedDomains) {
             wl = unblockedDomains.get(addr);
             if (null == wl) {
@@ -296,7 +294,7 @@ public abstract class DecisionEngine
 
         InetAddress addr;
         List<String> unblockedSites;
-        Set<String> hostSites;
+        HashSet<String> hostSites;
 
         synchronized(unblockedDomains) {
             for (Map.Entry<InetAddress, List<String>> entry : map.entrySet()) {
@@ -327,10 +325,6 @@ public abstract class DecisionEngine
         unblockedDomains.clear();
     }
 
-    
-    
-
-    
 
     /**
      * checkUnblockedSites checks the host+uri against the current unblocks for clientIp
@@ -342,12 +336,9 @@ public abstract class DecisionEngine
      */
     private boolean     checkUnblockedSites( String host, URI uri, InetAddress clientIp )
     {
-        String dom;
-        for ( dom = host ; null != dom ; dom = UrlMatchingUtil.nextHost(dom) ) {
-            if (isDomainUnblocked(dom, clientIp)) {
-                logger.debug("LOG: "+host+uri+" in unblock list for "+ clientIp);
-                return true;
-            }
+        if ( isDomainUnblocked( host, clientIp ) ) {
+            logger.debug("LOG: "+host+uri+" in unblock list for "+ clientIp);
+            return true;
         }
 
         return false;
@@ -500,7 +491,7 @@ public abstract class DecisionEngine
         } else {
             domain = domain.toLowerCase();
 
-            Set<String> unblocks = unblockedDomains.get(clientAddr);
+            HashSet<String> unblocks = unblockedDomains.get(clientAddr);
             if (unblocks == null) {
                 return false;
             } else {

@@ -457,9 +457,10 @@ public abstract class HttpStateMachine extends AbstractTokenHandler
                 /**
                  * Attach metadata
                  */
-                this.session.globalAttach(NodeSession.KEY_HTTP_HOSTNAME,host);
+                this.session.globalAttach( NodeSession.KEY_HTTP_HOSTNAME, host );
                 String uri = getRequestLine().getRequestUri().normalize().getPath();
-                this.session.globalAttach(NodeSession.KEY_HTTP_URI,uri);
+                this.session.globalAttach( NodeSession.KEY_HTTP_URI, uri );
+                this.session.globalAttach( NodeSession.KEY_HTTP_URL, host + uri );
 
                 switch (requestMode) {
                 case QUEUEING:

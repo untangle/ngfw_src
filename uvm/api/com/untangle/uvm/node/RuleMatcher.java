@@ -24,7 +24,7 @@ import com.untangle.uvm.node.IntfMatcher;
 import com.untangle.uvm.node.UserMatcher;
 import com.untangle.uvm.node.GroupMatcher;
 import com.untangle.uvm.node.ProtocolMatcher;
-import com.untangle.uvm.node.RuleMatcher;
+import com.untangle.uvm.node.UrlMatcher;
 import com.untangle.uvm.node.DirectoryConnector;
 import com.untangle.node.util.GlobUtil;
 
@@ -70,6 +70,7 @@ public class RuleMatcher implements JSONString, Serializable
             /* application specific matchers */
             HTTP_HOST, /* "playboy.com" "any" */
             HTTP_URI, /* "/foo.html" "any" */
+            HTTP_URL, /* UrlMatcher syntax "playboy.com/foo.html" */
             HTTP_CONTENT_TYPE, /* "image/jpeg" "any" */
             HTTP_CONTENT_LENGTH_GREATER_THAN, /* "800" "any" */
             HTTP_CONTENT_LENGTH_LESS_THAN, /* "800" "any" */
@@ -121,6 +122,7 @@ public class RuleMatcher implements JSONString, Serializable
     private ProtocolMatcher  protocolMatcher = null;
     private TimeOfDayMatcher timeOfDayMatcher = null;
     private DayOfWeekMatcher dayOfWeekMatcher = null;
+    private UrlMatcher       urlMatcher     = null;
     private String           regexValue      = null;
     private Integer          intValue        = null;
     private Long             longValue        = null;
@@ -308,6 +310,15 @@ public class RuleMatcher implements JSONString, Serializable
             // nothing necessary
             break;
 
+        case HTTP_URL: 
+            try {
+                this.urlMatcher = new UrlMatcher( this.value );
+            } catch (Exception e) {
+                logger.warn("Invalid Url Matcher: " + value, e);
+            }
+
+            break;
+            
         case CLIENT_HOSTNAME:
         case SERVER_HOSTNAME:
         case HTTP_HOST:
@@ -453,7 +464,7 @@ public class RuleMatcher implements JSONString, Serializable
             return UvmContextFactory.context().hostTable().hostQuotaExceeded( sess.getServerAddr() );
             
         case TIME_OF_DAY:
-            if (timeOfDayMatcher == null) {
+            if ( timeOfDayMatcher == null ) {
                 logger.warn("Invalid Time Of Day Matcher: " + this.timeOfDayMatcher);
                 return false;
             }
@@ -461,12 +472,22 @@ public class RuleMatcher implements JSONString, Serializable
             return timeOfDayMatcher.isMatch();
 
         case DAY_OF_WEEK:
-            if (dayOfWeekMatcher == null) {
+            if ( dayOfWeekMatcher == null ) {
                 logger.warn("Invalid Day Of Week Matcher: " + this.dayOfWeekMatcher);
                 return false;
             }
 
             return dayOfWeekMatcher.isMatch();
+
+        case HTTP_URL:
+            attachment = (String) sess.globalAttachment(NodeSession.KEY_HTTP_URL);
+
+            if ( urlMatcher == null ) {
+                logger.warn("Invalid Url Matcher: " + this.urlMatcher);
+                return false;
+            }
+
+            return urlMatcher.isMatch( attachment );
 
         case HTTP_HOST:
             attachment = (String) sess.globalAttachment(NodeSession.KEY_HTTP_HOSTNAME);

@@ -217,8 +217,24 @@ class WebFilterBaseTests(unittest2.TestCase):
         nukeBlockedUrls()
         assert (result == 0)
 
+    # verify that untangle.com block rule also blocks test.untangle.com
+    def test_039_blockedUrlSubdomain(self):
+        addBlockedUrl("untangle.com")
+        # this test URL should NOT be blocked 
+        result = clientControl.runCommand("wget -q -O - http://test.untangle.com/test/testPage1.html 2>&1 | grep -q blockpage")
+        nukeBlockedUrls()
+        assert (result == 0)
+
+    # verify that t.untangle.com block rule DOES NOT block test.untangle.com ( it should block foo.t.untangle.com though )
+    def test_040_blockedUrlSubdomain2(self):
+        addBlockedUrl("t.untangle.com")
+        # this test URL should NOT be blocked 
+        result = clientControl.runCommand("wget -q -O - http://test.untangle.com/test/testPage1.html 2>&1 | grep -q text123")
+        nukeBlockedUrls()
+        assert (result == 0)
+
     # verify that a the action in taken from the first rule
-    def test_038_blockedUrlRuleOrder(self):
+    def test_045_blockedUrlRuleOrder(self):
         addBlockedUrl("test.untangle.com/test/testPage1.html", blocked=False, flagged=True)
         addBlockedUrl("test.untangle.com", blocked=True, flagged=True)
         # this test URL should NOT be blocked 
@@ -227,7 +243,7 @@ class WebFilterBaseTests(unittest2.TestCase):
         assert (result == 0)
 
     # verify that a the action in taken from the second rule (first rule doesn't match)
-    def test_039_blockedUrlRuleOrder(self):
+    def test_046_blockedUrlRuleOrder(self):
         addBlockedUrl("test.untangle.com/test/testPage1.html", blocked=False, flagged=True)
         addBlockedUrl("test.untangle.com", blocked=True, flagged=True)
         # this test URL should NOT be blocked 
@@ -240,8 +256,8 @@ class WebFilterBaseTests(unittest2.TestCase):
         addPassedUrl("playboy.com")
         # this test URL should NOT be blocked (porn is blocked by default, but playboy.com now on pass list
         result = clientControl.runCommand("wget -q -O - http://playboy.com/ 2>&1 | grep -qi 'Girls'")
-        nukePassedUrls()
         assert (result == 0)
+        nukePassedUrls()
 
     # verify that an entry in the pass list overrides a blocked category
     def test_051_passedUrlOverridesBlockedUrl(self):
