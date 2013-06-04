@@ -3,17 +3,18 @@
  */
 package com.untangle.uvm.engine;
 
-import java.util.LinkedList;
-import java.util.HashSet;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
+import com.untangle.uvm.LocalDirectory;
+import com.untangle.uvm.LocalDirectoryUser;
+import com.untangle.uvm.SettingsManager;
+import com.untangle.uvm.UvmContextFactory;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.log4j.Logger;
 
-import com.untangle.uvm.UvmContextFactory;
-import com.untangle.uvm.SettingsManager;
-import com.untangle.uvm.LocalDirectory;
-import com.untangle.uvm.LocalDirectoryUser;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.LinkedList;
 
 /**
  * Local Directory stores a local list of users
@@ -32,7 +33,13 @@ public class LocalDirectoryImpl implements LocalDirectory
     {
         loadUsersList();
     }
-    
+
+
+    private boolean accountExpired(LocalDirectoryUser user)
+    {
+        return user.getExpirationTime() > 0 && System.currentTimeMillis() >= user.getExpirationTime();
+    }
+
     public boolean authenticate( String username, String password )
     {
         if ( username == null ) {
@@ -47,19 +54,19 @@ public class LocalDirectoryImpl implements LocalDirectory
             logger.info("Blank passwords not allowed");
             return false;
         }
-            
+
         for (LocalDirectoryUser user : this.currentList) {
             if (username.equals(user.getUsername())) {
-                if (password.equals(user.getPassword()))
+                if (password.equals(user.getPassword()) && !accountExpired(user))
                     return true;
                 String base64 = calculateBase64Hash(password);
-                if (base64 != null && base64.equals(user.getPasswordBase64Hash()))
+                if (base64 != null && base64.equals(user.getPasswordBase64Hash()) && !accountExpired(user))
                     return true;
                 String md5 = calculateMd5Hash(password);
-                if (md5 != null && md5.equals(user.getPasswordMd5Hash()))
+                if (md5 != null && md5.equals(user.getPasswordMd5Hash()) && !accountExpired(user))
                     return true;
                 String sha = calculateShaHash(password);
-                if (sha != null && sha.equals(user.getPasswordShaHash()))
+                if (sha != null && sha.equals(user.getPasswordShaHash()) && !accountExpired(user))
                     return true;
             }
         }
@@ -134,23 +141,92 @@ public class LocalDirectoryImpl implements LocalDirectory
         this.saveUsersList(users);
     }
 
+    private boolean userNameMatch(LocalDirectoryUser u1, LocalDirectoryUser u2)
+    {
+        return u1.getUsername() != null && u1.getUsername().equals(u2.getUsername());
+    }
 
-    public boolean userExists(LocalDirectoryUser user) {
+    private boolean emailMatch(LocalDirectoryUser u1, LocalDirectoryUser u2)
+    {
+        return u1.getEmail() != null && u1.getEmail().equals(u2.getEmail());
+    }
+
+
+    public boolean userExists(LocalDirectoryUser user)
+    {
         LinkedList<LocalDirectoryUser> users = this.getUsers();
         for (LocalDirectoryUser u: users) {
-            if ( u.getUsername() != null && u.getUsername().equals( user.getUsername())) {
-                return true;
-            }
-            if ( u.getEmail() != null && u.getEmail().equals( user.getEmail())) {
+            if ( userNameMatch(u, user) || emailMatch(u, user)) {
                 return true;
             }
         }
         return false;
     }
 
+    public boolean updateUser(LocalDirectoryUser user)
+    {
+        LinkedList<LocalDirectoryUser> users = this.getUsers();
+        boolean retVal = false;
+        for (LocalDirectoryUser u: users) {
+            if ( userNameMatch(u, user) || emailMatch( u, user)) {
+                if ( user.getPassword() != null && !user.getPassword().equals( UNCHANGED_PASSWORD )) {
+                    u.setPasswordShaHash(calculateShaHash(user.getPassword()));
+                    u.setPasswordMd5Hash(calculateMd5Hash(user.getPassword()));
+                    u.setPasswordBase64Hash(calculateBase64Hash(user.getPassword()));
+                    u.removeCleartextPassword();
+                }
+                if ( user.getFirstName() != null && user.getFirstName().trim().length() > 0 ) {
+                    u.setFirstName( user.getFirstName());
+                }
+                if ( user.getLastName() != null && user.getLastName().trim().length() > 0 ) {
+                    u.setLastName( user.getLastName());
+                }
+                if ( user.getExpirationTime() > 0) {
+                    u.setExpirationTime(user.getExpirationTime());
+                }
+                retVal=true;
+                break;
+            }
+        }
+        if ( retVal) {
+            this.saveUsersList(users);
+        }
+        return retVal;
+    }
+
+
+    public boolean userExpired(LocalDirectoryUser user)
+    {
+        LinkedList<LocalDirectoryUser> users = this.getUsers();
+        for (LocalDirectoryUser u: users) {
+            if ( userNameMatch(u, user) || emailMatch( u, user)) {
+                if (accountExpired(u)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    public void cleanupExpiredUsers()
+    {
+        Iterator<LocalDirectoryUser> iter = this.getUsers().iterator();
+        boolean entriesDeleted = false;
+        while (iter.hasNext()) {
+            LocalDirectoryUser u = iter.next();
+            if ( accountExpired(u)) {
+                iter.remove();
+                entriesDeleted = true;
+            }
+        }
+        if ( entriesDeleted) {
+            saveUsersList( this.getUsers());
+        }
+    }
+
 
     
-    private void saveUsersList(LinkedList<LocalDirectoryUser> list)
+    private synchronized void saveUsersList(LinkedList<LocalDirectoryUser> list)
     {
         SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
 
@@ -165,8 +241,6 @@ public class LocalDirectoryImpl implements LocalDirectory
         }
 
         this.currentList = list;
-
-        return;
     }
         
     @SuppressWarnings("unchecked")

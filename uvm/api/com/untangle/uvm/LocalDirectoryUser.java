@@ -27,6 +27,8 @@ public final class LocalDirectoryUser implements Serializable, Comparable<LocalD
     private String passwordMd5Hash;
     private String passwordBase64Hash;
 
+    private long expirationTime;
+
     public LocalDirectoryUser()
     {
         this(null, null, null, null);
@@ -64,6 +66,7 @@ public final class LocalDirectoryUser implements Serializable, Comparable<LocalD
     {
         this.username = makeNotNull(username).toLowerCase();
     }
+
 
     /**
      * Get the passwordShaHash to used in account creation
@@ -180,7 +183,25 @@ public final class LocalDirectoryUser implements Serializable, Comparable<LocalD
     {
         this.password = null;
     }
-    
+
+    /**
+     * Gets the account expiration time
+     *
+     * @return expiration time in milliseconds expressing the difference between the current time and midnight, January 1, 1970 UTC.
+     */
+    public long getExpirationTime() {
+        return expirationTime;
+    }
+
+    /**
+     * Sets the account expiration time
+     *
+     * @param expirationTime
+     */
+    public void setExpirationTime(long expirationTime) {
+        this.expirationTime = expirationTime;
+    }
+
     /**
      * Equality test based on username (case insensitive)
      */

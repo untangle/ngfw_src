@@ -41,7 +41,30 @@ public interface LocalDirectory
      * @returns true if the user exists
      */
     public boolean userExists(LocalDirectoryUser user);
-    
+
+    /**
+     * Updates a user's password, firstname, lastname or account expiration time
+     *
+     * @param user
+     * @return
+     */
+    public boolean updateUser(LocalDirectoryUser user);
+
+
+    /**
+     * Checks if the given user has expired
+     *
+     * @param user
+     * @return true if the user expired
+     */
+    public boolean userExpired(LocalDirectoryUser user);
+
+
+    /**
+     * Deletes the expired users from the user list
+     */
+    public void cleanupExpiredUsers();
+
 }
 
 

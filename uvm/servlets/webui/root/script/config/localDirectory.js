@@ -28,12 +28,26 @@ if (!Ung.hasResource["Ung.LocalDirectory"]) {
                 settingsCmp: this,
                 height: 500,
                 paginated: false,
+                bbar: Ext.create('Ext.toolbar.Toolbar', {
+                    items: [
+                        '-',
+                        {
+                            xtype: 'button',
+                            text: i18n._('Cleanup expired users'),
+                            iconCls: 'icon-delete-row',
+                            handler: Ext.bind(function() {
+                                this.cleanupExpiredUsers();
+                            }, this)
+                        }
+                    ]
+                }),
                 emptyRow: {
                     "username": this.i18n._('[login]'),
                     "firstName": this.i18n._('[firstName]'),
                     "lastName": this.i18n._('[lastName]'),
                     "email": this.i18n._('[email@example.com]'),
                     "password": "",
+                    "expirationTime":0,
                     "javaClass": "com.untangle.uvm.LocalDirectoryUser"
                 },
                 recordJavaClass: "com.untangle.uvm.LocalDirectoryUser",
@@ -55,7 +69,9 @@ if (!Ung.hasResource["Ung.LocalDirectory"]) {
                     name: 'email'
                 }, {
                     name: 'password'
-                }, {
+                },{
+                    name: 'expirationTime'
+                },{
                     name: 'javaClass'
                 }],
                 columns: [{
@@ -107,6 +123,18 @@ if (!Ung.hasResource["Ung.LocalDirectory"]) {
                         }
                         return result;
                     }
+                },
+                {
+                    header: this.i18n._("expiration time"),
+                    width: 150,
+                    dataIndex: 'expirationTime',
+                    renderer: Ext.bind(function(value, metadata, record) {
+                        if (value == 0) {
+                            return this.i18n._("Never");
+                        } else {
+                            return i18n.timestampFormat(value);
+                        }
+                    },this)
                 }],
                 sortField: 'username',
                 columnsDefaultSortable: true,
@@ -150,6 +178,13 @@ if (!Ung.hasResource["Ung.LocalDirectory"]) {
                     name: "Password",
                     dataIndex: "password",
                     fieldLabel: this.i18n._("Password"),
+                    width: 300
+                },
+                {
+                    xtype:'textfield',
+                    name: "Expiration Time",
+                    dataIndex: "expirationTime",
+                    fieldLabel: this.i18n._("Expiration Time"),
                     width: 300
                 }]
             });
@@ -229,6 +264,14 @@ if (!Ung.hasResource["Ung.LocalDirectory"]) {
                     this.clearDirty();
                 }
             }, this), {javaClass:"java.util.LinkedList",list:this.gridUsers.getPageList()});
+        },
+        cleanupExpiredUsers:function() {
+            Ext.MessageBox.wait(i18n._("Cleaning up expired users..."), i18n._("Please wait"));
+            main.getLocalDirectory().cleanupExpiredUsers(Ext.bind(function(result, exception) {
+                Ext.MessageBox.hide();
+                if(Ung.Util.handleException(exception)) return;
+                this.gridUsers.reload();
+            }, this));
         }
     });
 }
