@@ -92,7 +92,6 @@ public class UrlMatchingUtil
 				matcher = (UrlMatcher) matcherO;
 			}
 
-            logger.warn("CHECK " + matcher.getRegexValue() + " to " + domain + uri );
 			if ( matcher.isMatch( domain, uri ) ) {
 				logger.debug("LOG: " + domain + uri + " in site list");
 				return rule;
