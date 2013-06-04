@@ -421,6 +421,14 @@ class FirewallTests(unittest2.TestCase):
     # verify bogus username match not blocked
     def test_077_blockClientUsernameUnauthenticated(self):
         nukeRules();
+
+        # make sure no username is known for this IP
+        username = clientControl.runCommand("hostname -s", stdout=True)
+        entry = uvmContext.hostTable().getHostTableEntry( ClientControl.hostIP )
+        entry['usernameAdConnector'] = None
+        entry['usernameCaptive'] = None
+        uvmContext.hostTable().setHostTableEntry( ClientControl.hostIP, entry )
+
         appendRule( createSingleMatcherRule( "USERNAME", "[unauthenticated]" ) );
         result = clientControl.runCommand("wget -o /dev/null -t 1 --timeout=3 http://test.untangle.com/")
         assert (result == 1)
