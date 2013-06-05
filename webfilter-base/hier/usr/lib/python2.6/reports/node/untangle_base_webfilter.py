@@ -1142,11 +1142,10 @@ class WebFilterDetailDomains(DetailSection):
             return None
 
         sql = """\
-SELECT regexp_replace(host, E'.*?([^.]+\.[^.]+)(:[0-9]+)?$', E'\\\\1') AS domain,
+SELECT host AS domain,
        count(*) AS count, round(COALESCE(sum(s2c_content_length) / 10^6, 0)::numeric, 2)::float
 FROM reports.http_events
-WHERE regexp_replace(host, E'[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+(:[0-9]+)?', '') != ''
-AND time_stamp >= %s::timestamp without time zone AND time_stamp < %s::timestamp without time zone
+WHERE time_stamp >= %s::timestamp without time zone AND time_stamp < %s::timestamp without time zone
 """  % (DateFromMx(start_date),
         DateFromMx(end_date))
 
