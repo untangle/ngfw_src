@@ -433,7 +433,7 @@ public class NetworkManagerImpl implements NetworkManager
     private synchronized void _setSettings( NetworkSettings newSettings )
     {
         /**
-         * TODO:
+         * FIXME:
          * validate settings
          * validatU: routes must route traffic to reachable destinations
          * validate: routes can not route traffic to self
@@ -483,6 +483,11 @@ public class NetworkManagerImpl implements NetworkManager
          * If not found, create some reasonable defaults
          */
         for ( String deviceName : deviceNames ) {
+
+            // ignore vlan interfaces, don't create new settings for them
+            if ( deviceName.matches(".*\\.[0-9]+$") )
+                continue;
+            
             boolean foundMatchingInterface = false;
             if ( netSettings.getInterfaces() != null ) {
                 for ( InterfaceSettings interfaceSettings : netSettings.getInterfaces() ) {
@@ -495,7 +500,7 @@ public class NetworkManagerImpl implements NetworkManager
                 logger.warn("Creating new InterfaceSettings for " + deviceName + ".");
 
                 InterfaceSettings interfaceSettings = new InterfaceSettings();
-                interfaceSettings.setInterfaceId( nextFreeInterfaceId( netSettings ));
+                interfaceSettings.setInterfaceId( nextFreeInterfaceId( netSettings, 1 ));
                 interfaceSettings.setPhysicalDev( deviceName );
                 interfaceSettings.setSystemDev( deviceName );
                 interfaceSettings.setSymbolicDev( deviceName );
@@ -646,6 +651,8 @@ public class NetworkManagerImpl implements NetworkManager
 
     private void sanitizeNetworkSettings( NetworkSettings networkSettings)
     {
+        logger.warn("XXXXX Sanitize Network Settings");
+        
         /**
          * Fix rule IDs
          */
@@ -682,7 +689,6 @@ public class NetworkManagerImpl implements NetworkManager
             intf.setSymbolicDev( intf.getSystemDev() );
         }
 
-
         /**
          * If hostname is null, set it to the default
          * Make sure hostname is not fully qualified
@@ -706,6 +712,36 @@ public class NetworkManagerImpl implements NetworkManager
         }
         
         /**
+         * Handle vlans
+         */
+        for ( InterfaceSettings intf : networkSettings.getInterfaces() ) {
+            logger.warn("XXXXX CHECK INTERFACE VLAN: " + intf.getName() + " - " + intf.getIsVlanInterface());
+            if ( ! intf.getIsVlanInterface() )
+                continue;
+            
+            if ( intf.getInterfaceId() < 0 )
+                intf.setInterfaceId( nextFreeInterfaceId( networkSettings, 100 ) );
+            
+            if ( intf.getVlanTag() == null )
+                throw new RuntimeException("VLAN tag missing on VLAN interface");
+            if ( intf.getVlanParent() == null )
+                throw new RuntimeException("VLAN parent missing on VLAN interface");
+            
+            InterfaceSettings parent = null;
+            for ( InterfaceSettings intf2 : networkSettings.getInterfaces() ) {
+                if ( intf.getVlanParent() == intf2.getInterfaceId() )
+                    parent = intf2;
+            }
+
+            if (parent == null)
+                throw new RuntimeException( "Unable to find parent of VLAN: " + intf.getVlanParent() );
+
+            intf.setPhysicalDev( parent.getPhysicalDev() );
+            intf.setSystemDev( parent.getSystemDev() + "." + intf.getVlanTag() );
+            intf.setSymbolicDev( intf.getSystemDev() );
+        }
+
+        /**
          * Determine if the interface is a bridge. If so set the symbolic device name
          */
         for ( InterfaceSettings intf : networkSettings.getInterfaces() ) {
@@ -719,7 +755,7 @@ public class NetworkManagerImpl implements NetworkManager
                 }
             }
         }
-
+        
         /**
          * Sanitize the interface Settings
          */
@@ -1054,11 +1090,11 @@ public class NetworkManagerImpl implements NetworkManager
         return rules;
     }
 
-    private int nextFreeInterfaceId( NetworkSettings netSettings)
+    private int nextFreeInterfaceId( NetworkSettings netSettings, int min)
     {
         if (netSettings == null)
-            return 1;
-        int free = 1;
+            return min;
+        int free = min;
         for ( InterfaceSettings intfSettings : netSettings.getInterfaces() ) {
             if ( free <= intfSettings.getInterfaceId() )
                 free = intfSettings.getInterfaceId() + 1;

@@ -33,6 +33,10 @@ public class InterfaceSettings implements Serializable, JSONString
 
     private boolean isWan = false; /* is a WAN interface? */
 
+    private boolean isVlanInterface = false; /* is it an 802.1q alias interface */
+    private Integer vlanTag = null; /* vlan 802.1q tag */
+    private Integer vlanParent = null; /* The parent interface of this vlan alias */
+
     public static enum ConfigType { ADDRESSED, BRIDGED, DISABLED };
     private ConfigType configType = ConfigType.DISABLED; /* config type */
 
@@ -115,6 +119,15 @@ public class InterfaceSettings implements Serializable, JSONString
     public boolean getIsWan( ) { return this.isWan; }
     public void setIsWan( boolean newValue ) { this.isWan = newValue; }
 
+    public boolean getIsVlanInterface( ) { return this.isVlanInterface; }
+    public void setIsVlanInterface( boolean newValue ) { this.isVlanInterface = newValue; }
+    
+    public Integer getVlanTag( ) { return this.vlanTag; }
+    public void setVlanTag( Integer newValue ) { this.vlanTag = newValue; }
+
+    public Integer getVlanParent( ) { return this.vlanParent; }
+    public void setVlanParent( Integer newValue ) { this.vlanParent = newValue; }
+    
     public ConfigType getConfigType( ) { return this.configType; }
     public void setConfigType( ConfigType newValue ) { this.configType = newValue; }
     

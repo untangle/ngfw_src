@@ -262,6 +262,7 @@ if (!Ung.hasResource["Ung.Network"]) {
                 hasReorder: false,
                 hasDelete: false,
                 hasAdd: false,
+                addAtTop: false,
                 columnsDefaultSortable: true,
                 enableColumnHide: true,
                 columnMenuDisabled: false,
@@ -280,8 +281,14 @@ if (!Ung.hasResource["Ung.Network"]) {
                     name: 'symbolicDev'
                 }, {
                     name: 'configType'
-                },{
+                }, {
                     name: 'isWan'
+                }, {
+                    name: 'isVlanInterface'
+                }, {
+                    name: 'vlanTag'
+                }, {
+                    name: 'vlanParent'
                 }, {
                     name: 'bridgedTo'
                 }, {
@@ -465,7 +472,26 @@ if (!Ung.hasResource["Ung.Network"]) {
                     iconCls : "icon-test-ping",
                     handler : this.openPingTest,
                     scope : this
+                },{
+                    xtype: "button",
+                    text : this.i18n._( "Add 802.1q Tagged Interface" ),
+                    handler: function() {
+                        this.gridInterfaces.addVlanInterface();
+                    },
+                    scope : this
                 }],
+                addVlanInterface: function () {
+                    var emptyRow = {
+                        "interfaceId": -1,
+                        "isVlanInterface": true,
+                        "vlanTag": 0
+                    };
+                    var record = Ext.create(Ext.ClassManager.getName(this.getStore().getProxy().getModel()), Ext.decode(Ext.encode( emptyRow )));
+                    record.set("internalId", this.genAddedId());
+                    this.stopEditing();
+                    this.rowEditor.populate(record, true);
+                    this.rowEditor.show();
+                },
                 onMapDevices: Ext.bind(function() {
                     Ext.MessageBox.wait(i18n._("Loading device mapper..."), i18n._("Please wait"));
                     if (!this.winMapDevices) {
@@ -910,6 +936,25 @@ if (!Ung.hasResource["Ung.Network"]) {
                     fieldLabel: this.i18n._("Interface Name"),
                     width: 300
                 }, {
+                    xtype:'checkbox',
+                    dataIndex: "isVlanInterface",
+                    fieldLabel: this.i18n._("Is VLAN (802.1q) Alias Interface"),
+                    disabled: true,
+                    width: 300
+                }, {
+                    xtype: "combo",
+                    dataIndex: "vlanParent",
+                    fieldLabel: this.i18n._("Parent Interface"),
+                    store: Ung.Util.getInterfaceAddressedList(),
+                    width: 300,
+                    queryMode: 'local',
+                    editable: false
+                }, {
+                    xtype: "numberfield",
+                    dataIndex: "vlanTag",
+                    fieldLabel: this.i18n._("8021.q Tag"),
+                    width: 300
+                }, {
                     xtype: "combo",
                     allowBlank: false,
                     dataIndex: "configType",
@@ -1335,8 +1380,12 @@ if (!Ung.hasResource["Ung.Network"]) {
                 }],
                 syncComponents: function() {
                     var configTypeValue = this.query('combo[dataIndex="configType"]')[0].getValue();
+                    var isVlanInterface = this.query('checkbox[dataIndex="isVlanInterface"]')[0];
+                    var isVlanInterfaceValue = isVlanInterface.getValue();
                     var isWan = this.query('checkbox[dataIndex="isWan"]')[0];
                     var isWanValue = isWan.getValue();
+                    var vlanTag = this.query('numberfield[dataIndex="vlanTag"]')[0];
+                    var vlanParent = this.query('combo[dataIndex="vlanParent"]')[0];
                     var bridgedTo = this.query('combo[dataIndex="bridgedTo"]')[0];
                     var v4Config = this.query('fieldset[name="v4Config"]')[0];
                     var v6Config = this.query('fieldset[name="v6Config"]')[0];
@@ -1377,6 +1426,9 @@ if (!Ung.hasResource["Ung.Network"]) {
                     
                     // hide everything
                     isWan.hide();
+                    isVlanInterface.hide();
+                    vlanParent.hide();
+                    vlanTag.hide();
                     bridgedTo.hide();
                     v4Config.hide();
                     v6Config.hide();
@@ -1425,6 +1477,12 @@ if (!Ung.hasResource["Ung.Network"]) {
                     v6SendRouterAdvertisements.hide();
                     v6SendRouterAdvertisementsWarning.hide();
                     
+                    if ( isVlanInterfaceValue ) {
+                        isVlanInterface.show();
+                        vlanParent.show();
+                        vlanTag.show();
+                    }
+
                     // if config disabled show nothing
                     if ( configTypeValue == "DISABLED") {
                         return;
