@@ -46,4 +46,4 @@ if (!request && window.createRequest) {
     }
 }
 
-setInterval("doIt()", 1000); // every second
+setInterval(function() {doIt();}, 1000); // every second

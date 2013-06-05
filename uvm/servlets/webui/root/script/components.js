@@ -1319,14 +1319,14 @@ Ext.define("Ung.Node", {
                 '<div style="text-align: left;">',
                 i18n._("The <B>Status Indicator</B> shows the current operating condition of a particular application."),
                 '<BR>',
-                '<font color="#00FF00"><b>' + i18n._("Green") + '</b></font> '
-                        + i18n._('indicates that the application is "on" and operating normally.'),
+                '<font color="#00FF00"><b>' + i18n._("Green") + '</b></font> ' +
+                i18n._('indicates that the application is "on" and operating normally.'),
                 '<BR>',
-                '<font color="#FF0000"><b>' + i18n._("Red") + '</b></font> '
-                        + i18n._('indicates that the application is "on", but that an abnormal condition has occurred.'),
+                '<font color="#FF0000"><b>' + i18n._("Red") + '</b></font> ' +
+                i18n._('indicates that the application is "on", but that an abnormal condition has occurred.'),
                 '<BR>',
-                '<font color="#FFFF00"><b>' + i18n._("Yellow") + '</b></font> '
-                        + i18n._('indicates that the application is saving or refreshing settings.'), '<BR>',
+                '<font color="#FFFF00"><b>' + i18n._("Yellow") + '</b></font> ' +
+                i18n._('indicates that the application is saving or refreshing settings.'), '<BR>',
                 '<b>' + i18n._("Clear") + '</b> ' + i18n._('indicates that the application is "off", and may be turned "on" by the user.'),
                 '</div>'].join('');
         },
@@ -1866,7 +1866,7 @@ Ung.MessageManager = {
         if (this.intervalId !== null) {
             window.clearInterval(this.intervalId);
         }
-        this.intervalId = window.setInterval("Ung.MessageManager.run()", timeMs);
+        this.intervalId = window.setInterval(function() {Ung.MessageManager.run();}, timeMs);
     },
     updateModalDownloadDialog: function( msg ) {
         var text=Ext.String.format(i18n._("Package: {0}<br/>Progress: {1} kB/{2} kB <br/>Speed: {3}kB/sec"),msg.name, Math.round(msg.bytesDownloaded/1024), Math.round(msg.size/1024), msg.speed);
@@ -2277,11 +2277,11 @@ Ext.define("Ung.SystemStats", {
             toolTipEl.down("span[name=cpu_speed]").dom.innerHTML=stats.map.cpuSpeed;
             var uptimeAux=Math.round(stats.map.uptime);
             var uptimeSeconds = uptimeAux%60;
-            uptimeAux=parseInt(uptimeAux/60);
+            uptimeAux=parseInt(uptimeAux/60, 10);
             var uptimeMinutes = uptimeAux%60;
-            uptimeAux=parseInt(uptimeAux/60);
+            uptimeAux=parseInt(uptimeAux/60, 10);
             var uptimeHours = uptimeAux%24;
-            uptimeAux=parseInt(uptimeAux/24);
+            uptimeAux=parseInt(uptimeAux/24, 10);
             var uptimeDays = uptimeAux;
 
             toolTipEl.down("span[name=uptime]").dom.innerHTML=(uptimeDays>0?(uptimeDays+" "+(uptimeDays==1?i18n._("Day"):i18n._("Days"))+", "):"") + ((uptimeDays>0 || uptimeHours>0)?(uptimeHours+" "+(uptimeHours==1?i18n._("Hour"):i18n._("Hours"))+", "):"") + uptimeMinutes+" "+(uptimeMinutes==1?i18n._("Minute"):i18n._("Minutes"));
@@ -4724,7 +4724,7 @@ Ext.define('Ung.EditorGrid', {
                     var record = Ext.create(Ext.ClassManager.getName(store.getProxy().getModel()), cd.recData);
                     store.insert(0, [record]);
                 } else if ("modified" == cd.op) {
-                    var recIndex = store.findExact("internalId", parseInt(id));
+                    var recIndex = store.findExact("internalId", parseInt(id, 10));
                     if (recIndex >= 0) {
                         var rec = store.getAt(recIndex);
                         rec.data = cd.recData;
@@ -4898,18 +4898,17 @@ Ext.define('Ung.EditorGrid', {
         this.subCmps.push(this.rowEditor);
     },
     findFirstChangedDataByFieldValue: function(field, value) {
-        for (id in this.changedData) {
+        for (var id in this.changedData) {
             var cd = this.changedData[id];
             if (cd.op != "deleted" && cd.recData[field] == value) {
                 return cd;
-                break;
             }
         }
         return null;
     },
 
     focusChangedDataField: function(cd, field) {
-        var recIndex = this.getStore().findExact("internalId", parseInt(cd.recData["internalId"]));
+        var recIndex = this.getStore().findExact("internalId", parseInt(cd.recData["internalId"], 10));
         if (recIndex >= 0) {
             this.getView().focusRow(recIndex);
         }
@@ -4934,11 +4933,11 @@ Ext.define('Ung.EditorGrid', {
         var added = [];
         var deleted = [];
         var modified = [];
-        for (id in this.changedData) {
+        for (var id in this.changedData) {
           var cd = this.changedData[id];
           if ("deleted" == cd.op) {
             if (id > 0) {
-              deleted.push(parseInt(id));
+              deleted.push(parseInt(id, 10));
               }
           } else {
             if (this.recordJavaClass != null) {
@@ -5026,7 +5025,7 @@ Ext.define('Ung.EditorGrid', {
             }
     
             //make all cahnged data apear in first page
-            for (id in this.changedData) {
+            for (var id in this.changedData) {
                 var cd = this.changedData[id];
                 cd.page=1;
             }
@@ -5053,7 +5052,7 @@ Ext.define('Ung.EditorGrid', {
                             javaClass: "java.util.LinkedList",
                             list: result
                         });
-                    };
+                    }
                 }, this),
                 scope: this
             });

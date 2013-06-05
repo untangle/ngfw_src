@@ -1799,25 +1799,27 @@ if (!Ung.hasResource["Ung.Network"]) {
             };
 
             var i;
+            var intf;
             for ( i = 0 ; i < this.settings.interfaces.list.length ; i++) {
-                var intf = this.settings.interfaces.list[i];
+                intf = this.settings.interfaces.list[i];
                 if (intf.v4Address) {
                     this.portForwardReserveWarnings.html += " <b>" + intf.v4Address + ":" + this.settings.httpsPort + "</b> for HTTPS services.<br/>";
                 }
             }
             for ( i = 0 ; i < this.settings.interfaces.list.length ; i++) {
-                var intf = this.settings.interfaces.list[i];
+                intf = this.settings.interfaces.list[i];
                 if (intf.v4Address && !intf.isWan) {
                     this.portForwardReserveWarnings.html += " <b>" + intf.v4Address + ":" + this.settings.httpPort + "</b> for HTTP services.<br/>";
                 }
             }
             for ( i = 0 ; i < this.settings.interfaces.list.length ; i++) {
-                var intf = this.settings.interfaces.list[i];
+                intf = this.settings.interfaces.list[i];
                 if (intf.v4Address && intf.isWan) {
                     for ( var j = 0 ; j < this.settings.interfaces.list.length ; j++) {
                         var sub_intf = this.settings.interfaces.list[j];
-                        if (sub_intf.configType == "BRIDGED" && sub_intf.bridgedTo == intf.interfaceId)
+                        if (sub_intf.configType == "BRIDGED" && sub_intf.bridgedTo == intf.interfaceId) {
                             this.portForwardReserveWarnings.html += " <b>" + intf.v4Address + ":" + this.settings.httpPort + "</b> on " + sub_intf.name + " interface for HTTP services.<br/>";
+                        }
                     }
                 }
             }

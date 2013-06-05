@@ -969,7 +969,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
                 items: [{
                     title: this.i18n._('SNMP'),
                     defaults: {
-                        labelWidth: 150,
+                        labelWidth: 150
                     },
                     items: [{
                         xtype: 'radio',
