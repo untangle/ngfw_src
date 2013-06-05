@@ -97,7 +97,7 @@ Ung.Language = {
 
         rpc.setup = new JSONRpcClient("/setup/JSON-RPC").SetupContext;
 
-        i18n = new Ung.I18N( { "map": {} })
+        i18n = new Ung.I18N( { "map": {} });
 
         var language = Ext.create('Ung.SetupWizard.Language',{});
 

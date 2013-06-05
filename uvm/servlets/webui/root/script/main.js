@@ -157,14 +157,12 @@ Ext.define("Ung.Main", {
             '</div>'];
 
         var cssRule = Ext.util.CSS.getRule(".content-left",true);
-        this.contentLeftWidth = ( cssRule ) ? parseInt( cssRule.style.width ): 214;
+        this.contentLeftWidth = ( cssRule ) ? parseInt( cssRule.style.width, 10 ): 214;
         this.viewport = Ext.create('Ext.container.Viewport',{
             layout:'border',
             items:[{
                 region: 'west',
                 id: 'west',
-                //split: true,
-                buttonAlign: 'center',
                 cls: "content-left",
                 border: false,
                 width: this.contentLeftWidth,
@@ -660,15 +658,16 @@ Ext.define("Ung.Main", {
     },
     buildApps: function () {
         //destroy Apps
+        var i;
         if(main.apps!=null) {
-            for(var i=0; i<main.apps.length; i++) {
+            for(i=0; i<main.apps.length; i++) {
                 Ext.destroy(main.apps[i]);
             }
             this.apps=null;
         }
         //build Apps
         this.apps=[];
-        for(var i=0;i<rpc.rackView.applications.list.length;i++) {
+        for(i=0;i<rpc.rackView.applications.list.length;i++) {
             var application=rpc.rackView.applications.list[i];
             var appCmp=new Ung.AppItem(application);
             if(appCmp.isValid) {
@@ -693,11 +692,13 @@ Ext.define("Ung.Main", {
 
         this.destoyNodes();
         this.nodes=[];
-        for(var i=0;i<rpc.rackView.instances.list.length;i++) {
+        var i;
+        var node;
+        for(i=0;i<rpc.rackView.instances.list.length;i++) {
             var nodeSettings=rpc.rackView.instances.list[i];
             var nodeProperties=rpc.rackView.nodeProperties.list[i];
 
-            var node=this.createNode(nodeProperties,
+            node=this.createNode(nodeProperties,
                                      nodeSettings,
                                      rpc.rackView.nodeMetrics.map[nodeSettings.id],
                                      rpc.rackView.licenseMap.map[nodeProperties.name],
@@ -708,15 +709,15 @@ Ext.define("Ung.Main", {
             this.showInitialScreen();
         }
         this.updateSeparator();
-        for(var i=0;i<this.nodes.length;i++) {
-            var node=this.nodes[i];
+        for(i=0; i<this.nodes.length; i++) {
+            node=this.nodes[i];
             Ext.Function.defer(this.addNode,1, this,[node]);
         }
         if(!main.disableThreads) {
             Ung.MessageManager.start(true);
         }
         if(Ext.MessageBox.isVisible() && Ext.MessageBox.title==i18n._("Please wait")) {
-        Ext.Function.defer(Ext.MessageBox.hide,30,Ext.MessageBox);
+            Ext.Function.defer(Ext.MessageBox.hide,30,Ext.MessageBox);
         }
     },
     // load the rack view for current policy
@@ -1049,11 +1050,10 @@ Ext.define("Ung.Main", {
         }
     },
     removeNode: function(index) {
-        var tid = main.nodes[index].nodeId,
-        nd,
-        nodeUI = tid != null ? Ext.getCmp('node_'+tid): null;
-        nd = main.nodes.splice(index, 1);
-        delete(nd);
+        var tid = main.nodes[index].nodeId;
+        var nodeUI = (tid != null) ? Ext.getCmp('node_'+tid): null;
+        main.nodes.splice(index, 1);
+        
         if(nodeUI) {
             Ext.destroy(nodeUI);
             return true;        

@@ -1265,7 +1265,7 @@ if (!Ung.hasResource["Ung.Email"]) {
                 } else {
                     Ext.MessageBox.hide();
                     this.closeWindow();
-                };
+                }
             }
         }
     });

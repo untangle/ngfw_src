@@ -33,8 +33,8 @@ if (!Ung.hasResource["Ung.SessionMonitor"]) {
                 var sessions = result.list;
                 if(testMode) {
                     var testSessionsSize=400 + Math.floor((Math.random()*150));
-                    for(var i=0;i<testSessionsSize;i++) {
-                        var ii=i+Math.floor((Math.random()*5));
+                    for(var t=0;t<testSessionsSize;t++) {
+                        var ii=t+Math.floor((Math.random()*5));
                         sessions.push({
                             "postNatServer": "184.27.239."+(ii%10),
                             "bypassed": ((ii%3)==1),
@@ -44,8 +44,8 @@ if (!Ung.hasResource["Ung.SessionMonitor"]) {
                             "priority": (ii%7)+1,
                             "postNatClient": "50.193.63."+((ii+1)%10),
                             "postNatClientPort": (ii+1000),
-                            "preNatClient": "10.0.0."+((i+2)%10),
-                            "preNatServer": "184.27.239."+((i+3)%10),
+                            "preNatClient": "10.0.0."+((t+2)%10),
+                            "preNatServer": "184.27.239."+((t+3)%10),
                             "attachments": {
                                 "map": {
                                     "sitefilter-best-category-name": "Social Networking",
@@ -53,12 +53,12 @@ if (!Ung.hasResource["Ung.SessionMonitor"]) {
                                     "sitefilter-best-category-description": "Social Networking",
                                     "sitefilter-best-category-blocked": false,
                                     "sitefilter-flagged": false,
-                                    "platform-hostname": "acct07-wxp"+i,
+                                    "platform-hostname": "acct07-wxp"+t,
                                     "sitefilter-best-category-flagged": (ii%2==1),
                                     "sitefilter-best-category-id": null,
                                     "http-uri": "/t.gif",
-                                    "platform-username": "rbooroojian"+i,
-                                    "http-hostname": "p.twitter.com"+i
+                                    "platform-username": "rbooroojian"+t,
+                                    "http-hostname": "p.twitter.com"+t
                                 },
                                 "javaClass": "java.util.HashMap"
                             },
@@ -66,10 +66,10 @@ if (!Ung.hasResource["Ung.SessionMonitor"]) {
                             "serverKBps": null,
                             "portForwarded": (ii%2==0),
                             "preNatClientPort": 1471,
-                            "preNatServerPort": i+1500,
+                            "preNatServerPort": t+1500,
                             "serverIntf": ii%10,
-                            "clientIntf": i%9,
-                            "sessionId": 88616525732127+i,
+                            "clientIntf": t%9,
+                            "sessionId": 88616525732127+t,
                             "javaClass": "com.untangle.uvm.SessionMonitorEntry",
                             "qosPriority": (ii%8),
                             "clientKBps": null,

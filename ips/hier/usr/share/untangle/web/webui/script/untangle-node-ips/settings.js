@@ -88,7 +88,6 @@ if (!Ung.hasResource["Ung.Ips"]) {
                         "category": this.i18n._("[no category]"),
                         "name": this.i18n._("[no name]"),
                         "text": this.i18n._("[no signature]"),
-                        "category": this.i18n._("[no category]"),
                         "sid": "0",
                         "live": true,
                         "log": true,

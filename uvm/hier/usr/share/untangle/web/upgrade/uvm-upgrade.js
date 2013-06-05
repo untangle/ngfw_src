@@ -2,16 +2,16 @@ function doIt() {
     request.open("GET", "uvm-upgrade.log", false);
     request.send(null);
     if (request.readyState == 4) {
-	if (request.status != 404 ) {
-	    var lines = request.responseText.split("\n");
-	    var lastLog = "";
-	    for (i=Math.max(0,lines.length-30) ; i < lines.length-1; i++) {
-		lastLog += lines[i] + "<br>";
-	    }
-	    document.getElementById("upgrade").innerHTML = lastLog;
-	} else {
-	    location.href = "/webui";
-	}
+        if (request.status != 404 ) {
+            var lines = request.responseText.split("\n");
+            var lastLog = "";
+            for (i=Math.max(0,lines.length-30) ; i < lines.length-1; i++) {
+            lastLog += lines[i] + "<br>";
+            }
+            document.getElementById("upgrade").innerHTML = lastLog;
+        } else {
+            location.href = "/webui";
+        }
     }
 }
 
@@ -33,16 +33,16 @@ var request = false;
 
 if (!request && typeof XMLHttpRequest != 'undefined') {
     try {
-	request = new XMLHttpRequest();
+        request = new XMLHttpRequest();
     } catch (e) {
-	request=false;
+        request=false;
     }
 }
 if (!request && window.createRequest) {
     try {
-	request = window.createRequest();
+        request = window.createRequest();
     } catch (e) {
-	request=false;
+        request=false;
     }
 }
 

@@ -1103,8 +1103,7 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                     }, this)
                 );
                 return false;
-            };
-
+            }
             return true;
         },
 
@@ -1116,7 +1115,7 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
             if(groups.length <= 0 ) {
                 Ext.MessageBox.alert(this.i18n._('Failed'), this.i18n._("You must create at least one group."),
                     Ext.bind(function () {
-                        this.tabs.setActiveTab(this.panelGeneralOptions);
+                        this.tabs.setActiveTab(this.panelGroups);
                     }, this)
                 );
                 return false;
@@ -1128,11 +1127,11 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                 var clientList = this.gridRemoteClients.getPageList();
                 for( i=0; i<removedGroups.length;i++) {
                     for(var j=0; j<clientList.length;j++) {
-                        if (removedGroups[i].name == clientList[j].groupName) {
+                        if (removedGroups[i].groupId == clientList[j].groupId) {
                             Ext.MessageBox.alert(this.i18n._('Failed'),
                                 Ext.String.format(this.i18n._("The group: \"{0}\" cannot be deleted because it is being used by the client: {1} in the Client To Site List."), removedGroups[i].name, clientList[j].name),
                                 Ext.bind(function () {
-                                    this.tabs.setActiveTab(this.panelGeneralOptions);
+                                    this.tabs.setActiveTab(this.panelGroups);
                                 }, this)
                             );
                             return false;
@@ -1149,14 +1148,14 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                 var groupName = group.name.toLowerCase();
 
                 if ( groupNames[groupName] != null ) {
-                    Ext.MessageBox.alert(this.i18n._('Failed'), Ext.String.format(this.i18n._("The group name: \"{0}\" in row: {1} already exists."), groups[j].name.toLowerCase(), j+1),
-                                         Ext.bind(function () {
-                                             this.tabs.setActiveTab(this.panelGeneralOptions);
-                                         }, this));
+                    Ext.MessageBox.alert(this.i18n._('Failed'), Ext.String.format(this.i18n._("The group name: \"{0}\" in row: {1} already exists."), group.name, i+1),
+                        Ext.bind(function () {
+                            this.tabs.setActiveTab(this.panelGroups);
+                        }, this));
                     return false;
                 }
 
-                /* Save the group name */
+                // Save the group name
                 groupNames[groupName] = true;
             }
 

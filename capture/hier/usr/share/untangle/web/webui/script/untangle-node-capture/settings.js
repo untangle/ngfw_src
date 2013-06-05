@@ -251,21 +251,18 @@ if (!Ung.hasResource["Ung.Capture"]) {
                         width: 500
                     },{
                         xtype:'fieldset',
-                        title: this.i18n._("Rule") ,
-                        title: "If all of the following conditions are met:",
+                        title: this.i18n._("If all of the following conditions are met:"),
                         items:[{
                             xtype:'rulebuilder',
                             settingsCmp: this,
                             javaClass: "com.untangle.node.capture.CaptureRuleMatcher",
-                            anchor:"98%",
-                            width: 900,
                             dataIndex: "matchers",
                             matchers: Ung.CaptureUtil.getMatchers(this)
                         }]
                     },{
                         xtype: 'fieldset',
                         cls:'description',
-                        title: i18n._('Perform the following action(s):'),
+                        title: this.i18n._('Perform the following action(s):'),
                         border: false,
                         items: [{
                             xtype: "combo",
@@ -894,7 +891,7 @@ if (!Ung.hasResource["Ung.Capture"]) {
 
         uploadCustomFileSuccess: function(origin,reply) {
             this.settings.customFilename = reply.result.filename;
-            var worker = Ext.getCmp('custom_file')
+            var worker = Ext.getCmp('custom_file');
             worker.setValue(reply.result.filename);
             Ext.Msg.show({
                 title: this.i18n._("Custom Page Upload Success"),
@@ -910,7 +907,7 @@ if (!Ung.hasResource["Ung.Capture"]) {
                 msg: this.i18n._(reply.result.msg),
                 buttons: Ext.MessageBox.OK,
                 icon: Ext.MessageBox.ERROR
-            })
+            });
         },
 
         onRemoveCustomFile: function() {
@@ -941,7 +938,7 @@ if (!Ung.hasResource["Ung.Capture"]) {
                 msg: this.i18n._(reply.result.msg),
                 buttons: Ext.MessageBox.OK,
                 icon: Ext.MessageBox.ERROR
-            })
+            });
         },
 
         buildUserEventLog: function() {
@@ -1020,7 +1017,7 @@ if (!Ung.hasResource["Ung.Capture"]) {
                         case "RADIUS":
                             return this.i18n._( "RADIUS" );
                         case "CUSTOM":
-                            return this.i18n._( "Custom" )
+                            return this.i18n._( "Custom" );
                         }
 
                         return "";

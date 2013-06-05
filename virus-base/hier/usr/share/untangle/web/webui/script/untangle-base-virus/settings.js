@@ -59,19 +59,17 @@ if (!Ung.hasResource["Ung.Virus"]) {
                     collapsible: true,
                     collapsed: true,
                     labelWidth: 370,
-                    items: [
-                        {
-                            xtype:'fieldset',
-                            items:    {
-                                xtype: 'button',
-                                name: 'File Extensions',
-                                text: this.i18n._('Edit File Extensions'),
-                                handler: Ext.bind(function() {
-                                    this.panelWeb.onManageExtensions();
-                                }, this)
-                            }
+                    items: [{
+                        xtype:'fieldset',
+                        items:    {
+                            xtype: 'button',
+                            name: 'File Extensions',
+                            text: this.i18n._('Edit File Extensions'),
+                            handler: Ext.bind(function() {
+                                this.panelWeb.onManageExtensions();
+                            }, this)
                         }
-                    , {
+                    }, {
                         xtype:'fieldset',
                         items: {
                             xtype: 'button',
@@ -84,8 +82,8 @@ if (!Ung.hasResource["Ung.Virus"]) {
                     }]
                 }, {
                     cls: 'description',
-                    html: this.i18n._("Virus Blocker signatures were last updated") + ":&nbsp;&nbsp;&nbsp;&nbsp;"
-                        + ((this.getRpcNode().getLastSignatureUpdate() != null) ? i18n.timestampFormat(this.getRpcNode().getLastSignatureUpdate()): this.i18n._("Unknown"))
+                    html: this.i18n._("Virus Blocker signatures were last updated") + ":&nbsp;&nbsp;&nbsp;&nbsp;" +
+                        ((this.getRpcNode().getLastSignatureUpdate() != null) ? i18n.timestampFormat(this.getRpcNode().getLastSignatureUpdate()): this.i18n._("Unknown"))
                 }],
 
                 onManageExtensions: function() {
@@ -359,8 +357,8 @@ if (!Ung.hasResource["Ung.Virus"]) {
                     }]
                 }, {
                     cls: 'description',
-                    html: this.i18n._("Virus Blocker signatures were last updated") + ":&nbsp;&nbsp;&nbsp;&nbsp;"
-                        + ((this.getRpcNode().getLastSignatureUpdate() != null) ? i18n.timestampFormat(this.getRpcNode().getLastSignatureUpdate()): this.i18n._("Unknown"))
+                    html: this.i18n._("Virus Blocker signatures were last updated") + ":&nbsp;&nbsp;&nbsp;&nbsp;" +
+                        ((this.getRpcNode().getLastSignatureUpdate() != null) ? i18n.timestampFormat(this.getRpcNode().getLastSignatureUpdate()): this.i18n._("Unknown"))
                 }]
 
             });
@@ -386,8 +384,8 @@ if (!Ung.hasResource["Ung.Virus"]) {
                 items: [{
                     layout:'column',
                     items:[{
-                        columnWidth:.3,
-                        border:false,
+                        columnWidth: 0.3,
+                        border: false,
                         items: [{
                             xtype: 'checkbox',
                             boxLabel: this.i18n._('Scan SMTP'),
@@ -403,8 +401,8 @@ if (!Ung.hasResource["Ung.Virus"]) {
                             }
                         }]
                     },{
-                        columnWidth:.7,
-                        border:false,
+                        columnWidth: 0.7,
+                        border: false,
                         items: [{
                             xtype: 'combo',
                             name: 'SMTP Action',
@@ -426,8 +424,8 @@ if (!Ung.hasResource["Ung.Virus"]) {
                     }]
                 }, {
                     cls: 'description',
-                    html: this.i18n._("Virus Blocker signatures were last updated") + ":&nbsp;&nbsp;&nbsp;&nbsp;"
-                        + ((this.getRpcNode().getLastSignatureUpdate() != null) ? i18n.timestampFormat(this.getRpcNode().getLastSignatureUpdate()): this.i18n._("Unknown"))
+                    html: this.i18n._("Virus Blocker signatures were last updated") + ":&nbsp;&nbsp;&nbsp;&nbsp;" +
+                        ((this.getRpcNode().getLastSignatureUpdate() != null) ? i18n.timestampFormat(this.getRpcNode().getLastSignatureUpdate()): this.i18n._("Unknown"))
                 }]
 
             });

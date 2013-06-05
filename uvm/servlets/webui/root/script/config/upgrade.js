@@ -102,7 +102,7 @@ if (!Ung.hasResource["Ung.Upgrade"]) {
                                 if (!somethingVisibleAdded) {
                                     upgradeData.push({
                                         image: "image?name=unknown",
-                                        name: md.name,
+                                        name: "unknown",
                                         displayName: this.i18n._("Various Updates"),
                                         availableVersion: this.i18n._("N/A"),
                                         type: this.i18n._("Misc."),

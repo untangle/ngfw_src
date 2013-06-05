@@ -422,11 +422,10 @@ if (!Ung.hasResource["Ung.SpamAssassin"]) {
                     xtype: 'fieldset',
                     title: this.i18n._('Note'),
                     cls: 'description',
-                    html: this.i18n._('Spam Blocker Lite last checked for updates') + ":&nbsp;&nbsp;&nbsp;&nbsp;"
-                        + (this.lastCheck != null ? i18n.timestampFormat(this.lastCheck): i18n._("unknown"))
-                        + '<br\>'
-                        + this.i18n._('Spam Blocker Lite was last updated') + ":&nbsp;&nbsp;&nbsp;&nbsp;"
-                        + (this.lastUpdate != null ? i18n.timestampFormat(this.lastUpdate): i18n._("unknown"))
+                    html: this.i18n._('Spam Blocker Lite last checked for updates') + ":&nbsp;&nbsp;&nbsp;&nbsp;" +
+                        (this.lastCheck != null ? i18n.timestampFormat(this.lastCheck): i18n._("unknown")) + '<br\>' +
+                        this.i18n._('Spam Blocker Lite was last updated') + ":&nbsp;&nbsp;&nbsp;&nbsp;" +
+                        (this.lastUpdate != null ? i18n.timestampFormat(this.lastUpdate): i18n._("unknown"))
             }]
             });
         },

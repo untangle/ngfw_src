@@ -446,7 +446,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
                             allowBlank: false,
                             width: 400,
                             blankText: this.i18n._("You must provide a valid IP Address or hostname."),
-                            disabled: !this.getSystemSettings().publicUrlMethod == "address_and_port"
+                            disabled: this.getSystemSettings().publicUrlMethod != "address_and_port"
                         },{
                             xtype: 'numberfield',
                             fieldLabel: this.i18n._('Port'),
@@ -458,7 +458,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
                             width: 210,
                             blankText: this.i18n._("You must provide a valid port."),
                             vtype: 'port',
-                            disabled: !this.getSystemSettings().publicUrlMethod == "address_and_port"
+                            disabled: this.getSystemSettings().publicUrlMethod != "address_and_port"
                         }]
                     }]
                 }
@@ -485,7 +485,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
                 items: [{
                     title: this.i18n._('Status'),
                     defaults: {
-                        labelWidth: 150,
+                        labelWidth: 150
                     },
                     items: [{
                         xtype: 'textfield',

@@ -403,7 +403,6 @@ Ext.define('Ung.SetupWizard.Interfaces', {
                 type: 'vbox',
                 align:'left'
             },
-            border: false,
             items: [{
                 xtype: 'container',
                 html: '<h2 class=" wizard-title">'+panelTitle+'<h2>',
@@ -940,7 +939,7 @@ Ext.define('Ung.SetupWizard.Internet', {
     },
 
     testConnectivity: function( afterFn ) {
-        if ( !( this.validateInternetConnection() === true )) {
+        if ( !this.validateInternetConnection()) {
             Ext.MessageBox.show({
                 title: i18n._("Unable to Test Connectivity" ),
                 msg: i18n._( "Please complete all of the required fields." ),
@@ -1070,7 +1069,7 @@ Ext.define('Ung.SetupWizard.Internet', {
         }
 
         var isConfigured = (firstWan.configType != null && firstWan.v4ConfigType != null);
-
+        var card;
         if (isConfigured) {
             for ( c = 0; c < this.v4ConfigTypes.length ; c++ ) {
                 if (this.v4ConfigTypes[c][0] == firstWan.v4ConfigType)
@@ -1079,7 +1078,7 @@ Ext.define('Ung.SetupWizard.Internet', {
             this.updateValue( this.card.panel.query('combo[name="v4ConfigType"]')[0], firstWan.v4ConfigType);
             
             for ( c = 0; c < this.cards.length ; c++ ) {
-                var card = this.cards[c];
+                card = this.cards[c];
                 this.updateValue( card.query('textfield[name="ip"]')[0], firstWanStatus.v4Address );
                 this.updateValue( card.query('textfield[name="prefix"]')[0], firstWanStatus.v4PrefixLength );
                 this.updateValue( card.query('textfield[name="netmask"]')[0], firstWanStatus.v4Netmask );
@@ -1089,7 +1088,7 @@ Ext.define('Ung.SetupWizard.Internet', {
             }
         } else { // not configured
             for ( c = 0; c < this.cards.length ; c++ ) {
-                var card = this.cards[c];
+                card = this.cards[c];
                 this.updateValue( card.query('textfield[name="ip"]')[0], "" );
                 this.updateValue( card.query('textfield[name="prefix"]')[0], "" );
                 this.updateValue( card.query('textfield[name="gateway"]')[0], "" );

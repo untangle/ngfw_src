@@ -139,17 +139,13 @@ if (!Ung.hasResource["Ung.Firewall"]) {
                         width: 500
                     }, {
                         xtype:'fieldset',
-                        title: this.i18n._("Rule") ,
-                        cls:'firewall-spacing-2',
-                        title: "If all of the following conditions are met:",
+                        title: this.i18n._("If all of the following conditions are met:"),
                         items:[{
                             xtype:'rulebuilder',
                             settingsCmp: this,
                             javaClass: "com.untangle.node.firewall.FirewallRuleMatcher",
-                            anchor:"98%",
-                            width: 900,
                             dataIndex: "matchers",
-                            matchers: Ung.FirewallUtil.getMatchers(this),
+                            matchers: Ung.FirewallUtil.getMatchers(this)
                         }]
                     }, {
                         xtype: 'fieldset',
