@@ -567,8 +567,8 @@ public class OpenVpnManager
             iptablesScript.write("\n");
 
             iptablesScript.write("# delete old rules (if they exist) (tun0-tun10) " + "\n");
-            iptablesScript.write("${IPTABLES} -t filter -D filter-rules-input -p tcp --dport 1194 -j ACCEPT -m comment --comment \"Allow OpenVPN traffic\" >/dev/null 2>&1" + "\n");
-            iptablesScript.write("${IPTABLES} -t filter -D filter-rules-input -p udp --dport 1194 -j ACCEPT -m comment --comment \"Allow OpenVPN traffic\" >/dev/null 2>&1" + "\n");
+            iptablesScript.write("${IPTABLES} -t filter -D filter-rules-input -p tcp --dport 1194 -j RETURN -m comment --comment \"Allow OpenVPN traffic\" >/dev/null 2>&1" + "\n");
+            iptablesScript.write("${IPTABLES} -t filter -D filter-rules-input -p udp --dport 1194 -j RETURN -m comment --comment \"Allow OpenVPN traffic\" >/dev/null 2>&1" + "\n");
             iptablesScript.write("for i in `seq 0 " + (maxNumTunDevices + 10 ) + "` ; do" + "\n");
             iptablesScript.write("    ${IPTABLES} -t mangle -D mark-src-intf -i tun$i -j MARK --set-mark 0xfa/0xff -m comment --comment \"Set src interface mark for openvpn\" >/dev/null 2>&1" + "\n");
             iptablesScript.write("    ${IPTABLES} -t mangle -D mark-dst-intf -o tun$i -j MARK --set-mark 0xfa00/0xff00 -m comment --comment \"Set dst interface mark for openvpn\" >/dev/null 2>&1" + "\n");
@@ -586,8 +586,8 @@ public class OpenVpnManager
 
             iptablesScript.write("# allow traffic to openvpn daemon" + "\n");
             iptablesScript.write("if [ ! -z \"`pidof openvpn`\" ] ; then" + "\n");
-            iptablesScript.write("    ${IPTABLES} -t filter -I filter-rules-input -p tcp --dport 1194 -j ACCEPT -m comment --comment \"Allow OpenVPN traffic\"" + "\n");
-            iptablesScript.write("    ${IPTABLES} -t filter -I filter-rules-input -p udp --dport 1194 -j ACCEPT -m comment --comment \"Allow OpenVPN traffic\"" + "\n");
+            iptablesScript.write("    ${IPTABLES} -t filter -I filter-rules-input -p tcp --dport 1194 -j RETURN -m comment --comment \"Allow OpenVPN traffic\"" + "\n");
+            iptablesScript.write("    ${IPTABLES} -t filter -I filter-rules-input -p udp --dport 1194 -j RETURN -m comment --comment \"Allow OpenVPN traffic\"" + "\n");
             iptablesScript.write("fi" + "\n");
             iptablesScript.write("\n");
 
