@@ -33,7 +33,7 @@ public class License implements Serializable
     public static final String SPLITD = "untangle-node-splitd";
     public static final String WEBCACHE = "untangle-node-webcache";
     public static final String CLASSD = "untangle-node-classd";
-    public static final String HTTPS = "untangle-node-https";
+    public static final String HTTPS = "untangle-casing-https";
     
     /** Identifier for the product this license is for */
     private String name;
