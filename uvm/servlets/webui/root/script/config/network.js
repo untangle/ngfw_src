@@ -3371,6 +3371,13 @@ if (!Ung.hasResource["Ung.Network"]) {
                     header: this.i18n._("MTU"),
                     dataIndex: 'mtu',
                     width: 100,
+                    renderer: function(value) {
+                        if ( value === "" || value === null ) {
+                            return "Auto";
+                        } else {
+                            return value;
+                        }
+                    },
                     editor: {
                         xtype:'numberfield'
                     }
