@@ -16,6 +16,7 @@
     <script type="text/javascript" src="/ext4/ext-all.js?s=${buildStamp}"></script>
     <script type="text/javascript" src="/ext4/examples/ux/data/PagingMemoryProxy.js?s=${buildStamp}"></script>
     <script type="text/javascript" src="/ext4/examples/ux/CheckColumn.js?s=${buildStamp}"></script>
+    <script type="text/javascript" src="script/datetime.js?s=${buildStamp}"></script>
 
     <script type="text/javascript" src="/jsonrpc/jsonrpc-min.js?s=${buildStamp}"></script>
     <script type="text/javascript" src="/script/i18n.js?s=${buildStamp}"></script>
@@ -31,6 +32,8 @@
     <script type="text/javascript" src="/ext4/ext-all-debug.js?s=${buildStamp}"></script>
     <script type="text/javascript" src="/ext4/examples/ux/data/PagingMemoryProxy.js?s=${buildStamp}"></script>
     <script type="text/javascript" src="/ext4/examples/ux/CheckColumn.js?s=${buildStamp}"></script>
+    <script type="text/javascript" src="script/datetime.js?s=${buildStamp}"></script>
+    
 
     <script type="text/javascript" src="/jsonrpc/jsonrpc.js?s=${buildStamp}"></script>
     <script type="text/javascript" src="/script/i18n.js?s=${buildStamp}"></script>

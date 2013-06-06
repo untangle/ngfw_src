@@ -28,8 +28,7 @@ if (!Ung.hasResource["Ung.LocalDirectory"]) {
                 settingsCmp: this,
                 height: 500,
                 paginated: false,
-                bbar: Ext.create('Ext.toolbar.Toolbar', {
-                    items: [
+                tbar: [
                         '-',
                         {
                             xtype: 'button',
@@ -38,16 +37,16 @@ if (!Ung.hasResource["Ung.LocalDirectory"]) {
                             handler: Ext.bind(function() {
                                 this.cleanupExpiredUsers();
                             }, this)
-                        }
-                    ]
-                }),
+                        },
+                        '-'
+                ],
                 emptyRow: {
                     "username": this.i18n._('[login]'),
                     "firstName": this.i18n._('[firstName]'),
                     "lastName": this.i18n._('[lastName]'),
                     "email": this.i18n._('[email@example.com]'),
                     "password": "",
-                    "expirationTime":0,
+                    "expirationTime": 0,
                     "javaClass": "com.untangle.uvm.LocalDirectoryUser"
                 },
                 recordJavaClass: "com.untangle.uvm.LocalDirectoryUser",
@@ -181,11 +180,47 @@ if (!Ung.hasResource["Ung.LocalDirectory"]) {
                     width: 300
                 },
                 {
-                    xtype:'textfield',
-                    name: "Expiration Time",
-                    dataIndex: "expirationTime",
-                    fieldLabel: this.i18n._("Expiration Time"),
-                    width: 300
+                    xtype:'container',
+                    layout: {
+                        type: 'hbox',
+                        align: 'stretch'
+                    },
+                    dataIndex:'expirationTime',
+                    setValue:function(value) {
+                        if ( value == 0) {
+                            this.query("[name='expirationTime']")[0].setVisible(false);
+                            this.query("[name='neverExpire']")[0].setValue(true);
+                            this.query("[name='expirationTime']")[0].setValue(new Date(0));
+                        } else {
+                            this.query("[name='neverExpire']")[0].setValue(false);
+                            this.query("[name='expirationTime']")[0].setVisible(true);
+                            this.query("[name='expirationTime']")[0].setValue(value);
+                        }
+                    },
+                    getValue: function() {
+                        var neverExpired =this.query("[name='neverExpire']")[0].getValue();
+                        if ( neverExpired) {
+                            return 0;
+                        }
+                        return this.query("[name='expirationTime']")[0].getValue();
+                    },
+                    items:[{
+                        xtype:'checkbox',
+                        name:'neverExpire',
+                        fieldLabel: this.i18n._("Expiration Time"),
+                        boxLabel:this.i18n._('Never'),
+                        listeners: {
+                            "change": Ext.bind(function (elem,checked) { 
+                                var expirationCtl = this.gridUsers.rowEditor.query("[name='expirationTime']")[0];
+                                expirationCtl.setVisible(!checked);
+                            },this)
+                        },
+                        width:180
+                    },
+                    {
+                        xtype:'xdatetime',
+                        name: "expirationTime"
+                    }]
                 }]
             });
 
@@ -266,7 +301,11 @@ if (!Ung.hasResource["Ung.LocalDirectory"]) {
             }, this), {javaClass:"java.util.LinkedList",list:this.gridUsers.getPageList()});
         },
         cleanupExpiredUsers:function() {
-            Ext.MessageBox.wait(i18n._("Cleaning up expired users..."), i18n._("Please wait"));
+            if ( this.isDirty()) {
+                Ext.MessageBox.alert(this.i18n._("Warning"), this.i18n._("Please save the changes before cleaning up expired users !"));
+                return;
+            }
+            Ext.MessageBox.wait(this.i18n._("Cleaning up expired users..."), i18n._("Please wait"));
             main.getLocalDirectory().cleanupExpiredUsers(Ext.bind(function(result, exception) {
                 Ext.MessageBox.hide();
                 if(Ung.Util.handleException(exception)) return;
