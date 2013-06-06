@@ -516,7 +516,7 @@ Ext.define('Ung.SetupWizard.Interfaces', {
                     Ext.MessageBox.alert(exception);
                     return;
                 }
-                Ext.MessageBox.hide();
+
                 var deviceStatusMap = this.createRecordsMap(result.list, "deviceName");
                 
                 //update device connected status
