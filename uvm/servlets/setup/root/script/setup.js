@@ -495,6 +495,10 @@ Ext.define('Ung.SetupWizard.Interfaces', {
         }
         
         rpc.networkManager.getNetworkSettings( Ext.bind(function( result, exception ) {
+            if ( ! this.enableAutoRefresh ) {
+                return; // if auto refresh is now disabled, just return
+            }
+
             if ( exception ) {
                 Ext.MessageBox.show({
                     title:i18n._( "Unable to refresh the interfaces." ),
