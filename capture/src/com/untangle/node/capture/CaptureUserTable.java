@@ -12,6 +12,7 @@ import java.util.TimerTask;
 import org.apache.log4j.Logger;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.HostTable;
+import com.untangle.uvm.HostTableEntry;
 
 public class CaptureUserTable
 {
@@ -93,7 +94,7 @@ public class CaptureUserTable
     public ArrayList<StaleUser> buildStaleList(long idleTimeout,long userTimeout)
     {
         ArrayList<StaleUser> wipelist = new ArrayList<StaleUser>();
-        long currentTime,idleTrigger,userTrigger;
+        long currentTime,idleTrigger,idleTrigger2,userTrigger;
         StaleUser stale;
         int wipecount;
 
@@ -101,30 +102,34 @@ public class CaptureUserTable
         Enumeration ee = userTable.elements();
         wipecount = 0;
 
-            while (ee.hasMoreElements())
-            {
+        while (ee.hasMoreElements()) {
             CaptureUserEntry item = (CaptureUserEntry)ee.nextElement();
             userTrigger = ((item.getSessionCreation() / 1000) + userTimeout);
-            idleTrigger = ((item.getSessionActivity() / 1000) + idleTimeout);
 
-                // look for users with no traffic within the configured non-zero idle timeout
-                if ( (idleTimeout > 0) && (currentTime > idleTrigger) )
-                {
-                    logger.info("Idle timeout removing user " + item.getUserAddress() + " " + item.getUserName());
-                    stale = new StaleUser(item.getUserAddress(),CaptureUserEvent.EventType.INACTIVE);
-                    wipelist.add(stale);
-                    wipecount++;
-                }
-
-                // look for users who have exceeded the configured maximum session time
-                if (currentTime > userTrigger)
-                {
-                    logger.info("Session timeout removing user " + item.getUserAddress() + " " + item.getUserName());
-                    stale = new StaleUser(item.getUserAddress(),CaptureUserEvent.EventType.TIMEOUT);
-                    wipelist.add(stale);
-                    wipecount++;
-                }
+            HostTableEntry entry = UvmContextFactory.context().hostTable().getHostTableEntry( item.getUserAddress() );
+            if ( entry != null ) {
+                idleTrigger = (entry.getLastSessionTime() / 1000) + idleTimeout;
+            } else {
+                logger.warn("HostTableEntry missing for logged in Captive Portal Entry: " + item.getUserAddress().getHostAddress() + " : " + item.getUserName() );
+                idleTrigger = ((item.getSessionActivity() / 1000) + userTimeout);
             }
+            
+            // look for users with no traffic within the configured non-zero idle timeout
+            if ( ( idleTimeout > 0) && ( currentTime > idleTrigger ) ) {
+                logger.info("Idle timeout removing user " + item.getUserAddress() + " " + item.getUserName());
+                stale = new StaleUser(item.getUserAddress(),CaptureUserEvent.EventType.INACTIVE);
+                wipelist.add(stale);
+                wipecount++;
+            }
+
+            // look for users who have exceeded the configured maximum session time
+            if (currentTime > userTrigger) {
+                logger.info("Session timeout removing user " + item.getUserAddress() + " " + item.getUserName());
+                stale = new StaleUser(item.getUserAddress(),CaptureUserEvent.EventType.TIMEOUT);
+                wipelist.add(stale);
+                wipecount++;
+            }
+        }
 
         return(wipelist);
     }

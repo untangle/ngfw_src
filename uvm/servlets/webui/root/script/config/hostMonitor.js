@@ -43,6 +43,7 @@ if (!Ung.hasResource["Ung.HostMonitor"]) {
                             "address": "184.27.239."+(ii%10),
                             "hostname": "p.twitter.com"+i,
                             "lastAccessTime": 0,//d.getTime()+(i*86400000),
+                            "lastSessionTime": 0,//d.getTime()+(i*86400000),
                             "username": "testuser"+i,
                             "usernameAdConnector": "uad"+ii,
                             "usernameCapture": "ucap"+(ii%50),
@@ -107,11 +108,17 @@ if (!Ung.hasResource["Ung.HostMonitor"]) {
                     name: "address"
                 },{
                     name: "hostname"
-                },{
+                }, {
                     name: "lastAccessTime"
                 }, {
                     name: "lastAccessTimeDate",
                     mapping: "lastAccessTime",
+                    convert: dateConvertFn
+                }, {
+                    name: "lastSessionTime"
+                }, {
+                    name: "lastSessionTimeDate",
+                    mapping: "lastSessionTime",
                     convert: dateConvertFn
                 },{
                     name: "username"
@@ -168,6 +175,18 @@ if (!Ung.hasResource["Ung.HostMonitor"]) {
                     width: 150,
                     renderer: function(value, metaData, record) {
                         var val=record.get("lastAccessTime");
+                        return val == 0 || val == "" ? "" : i18n.timestampFormat(val);
+                    },
+                    filter: {
+                        type: 'date'
+                    }
+                }, {
+                    hidden: true,
+                    header: this.i18n._("Last Session Time"),
+                    dataIndex: "lastSessionTimeDate",
+                    width: 150,
+                    renderer: function(value, metaData, record) {
+                        var val=record.get("lastSessionTime");
                         return val == 0 || val == "" ? "" : i18n.timestampFormat(val);
                     },
                     filter: {

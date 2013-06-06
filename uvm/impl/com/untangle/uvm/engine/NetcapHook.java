@@ -127,6 +127,8 @@ public abstract class NetcapHook implements Runnable
 
             /* lookup the user information */
             HostTableEntry entry = UvmContextFactory.context().hostTable().getHostTableEntry( clientAddr );
+            if ( entry != null )
+                entry.setLastSessionTime( System.currentTimeMillis() );
             String username = ( entry == null ? null : entry.getUsername() );
             if (username != null && username.length() > 0 ) { 
                 logger.debug( "user information: " + username );
