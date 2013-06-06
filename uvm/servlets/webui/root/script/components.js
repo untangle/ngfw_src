@@ -520,7 +520,7 @@ Ung.Util = {
             if( window.execScript) {
                 window.execScript(req.responseText);
             } else {
-                window.eval(req.responseText);
+                eval(req.responseText);
             }
         } catch (e) {
             error=e;
@@ -1974,11 +1974,12 @@ Ung.MessageManager = {
 
                     var refreshApps=false;
                     var appItemDisplayName;
+                    var node;
                     for(i=0;i<messageQueue.messages.list.length;i++) {
                         var msg=messageQueue.messages.list[i];
                         console.log("MQ:",msg.javaClass, msg);
                         if(msg.javaClass.indexOf("NodeStateChangeMessage") >= 0) {
-                            var node=Ung.Node.getCmp(msg.nodeSettings.id);
+                            node=Ung.Node.getCmp(msg.nodeSettings.id);
                             if( node !== undefined && node != null) {
                                 node.updateRunState(msg.nodeState);
                             }
@@ -2008,7 +2009,7 @@ Ung.MessageManager = {
                         } else if(msg.javaClass.indexOf("NodeInstantiatedMessage") != -1) {
                             if( msg.policyId == null || msg.policyId == rpc.currentPolicy.policyId ) {
                                 refreshApps=true;
-                                var node=main.getNode( msg.nodeProperties.name, msg.policyId );
+                                node=main.getNode( msg.nodeProperties.name, msg.policyId );
                                 if(!node) {
                                     node=main.createNode(msg.nodeProperties, msg.nodeSettings, msg.nodeMetrics, msg.license,"INITIALIZED");
                                     main.nodes.push(node);
@@ -2437,22 +2438,23 @@ Ext.define("Ung.FaceplateMetric", {
             Ext.MessageBox.alert(i18n._("Warning"), Ext.String.format(i18n._("The node {0} has {1} metrics. The maximum number of metrics is {2}."),nodeCmp.displayName ,activeMetrics.length,4));
         }
         var metricsLen=Math.min(activeMetrics.length,4);
+        var i, nameDiv, valueDiv;
         /* set all four to blank */
-        for(var i=0; i<4;i++) {
-            var nameDiv=document.getElementById('systemName_' + this.getId() + '_' + i);
-            var valueDiv=document.getElementById('systemValue_' + this.getId() + '_' + i);
+        for(i=0; i<4;i++) {
+            nameDiv=document.getElementById('systemName_' + this.getId() + '_' + i);
+            valueDiv=document.getElementById('systemValue_' + this.getId() + '_' + i);
             nameDiv.innerHTML = "&nbsp;";
             nameDiv.style.display="none";
             valueDiv.innerHTML = "&nbsp;";
             valueDiv.style.display="none";
         }
         /* fill in name and value */
-        for(var i=0; i<metricsLen;i++) {
+        for(i=0; i<metricsLen;i++) {
             var metricIndex=activeMetrics[i];
             var metric = nodeCmp.metrics.list[metricIndex];
             if (metric != null && metric !== undefined) {
-                var nameDiv=document.getElementById('systemName_' + this.getId() + '_' + i);
-                var valueDiv=document.getElementById('systemValue_' + this.getId() + '_' + i);
+                nameDiv=document.getElementById('systemName_' + this.getId() + '_' + i);
+                valueDiv=document.getElementById('systemValue_' + this.getId() + '_' + i);
                 nameDiv.innerHTML = i18n._(metric.displayName);
                 nameDiv.style.display="";
                 valueDiv.innerHTML = "&nbsp;";
@@ -2463,9 +2465,10 @@ Ext.define("Ung.FaceplateMetric", {
     showMetricSettings: function() {
         var nodeCmp = Ext.getCmp(this.parentId);
         this.newActiveMetrics=[];
+        var i;
         if(this.configWin==null) {
             var configItems=[];
-            for(var i=0;i<nodeCmp.metrics.list.length;i++) {
+            for(i=0;i<nodeCmp.metrics.list.length;i++) {
                 var metric = nodeCmp.metrics.list[i];
                 configItems.push({
                     xtype: 'checkbox',
@@ -2542,11 +2545,11 @@ Ext.define("Ung.FaceplateMetric", {
             });
         }
 
-        for(var i=0;i<this.configWin.items.length;i++) {
+        for(i=0;i<this.configWin.items.length;i++) {
             this.configWin.items.get(i).setValue(false);
         }
-        for( var j=0 ; j<nodeCmp.activeMetrics.length ; j++ ) {
-            var metricIndex = nodeCmp.activeMetrics[j];
+        for(i=0 ; i<nodeCmp.activeMetrics.length ; i++ ) {
+            var metricIndex = nodeCmp.activeMetrics[i];
             var metricItem=this.configWin.items.get(metricIndex);
             if (metricItem != null)
                 metricItem.setValue(true);
@@ -2562,7 +2565,8 @@ Ext.define("Ung.FaceplateMetric", {
         // UPDATE COUNTS
         var nodeCmp = Ext.getCmp(this.parentId);
         var activeMetrics = nodeCmp.activeMetrics;
-        for (var i = 0; i < activeMetrics.length; i++) {
+        var i;
+        for (i = 0; i < activeMetrics.length; i++) {
             var metricIndex = activeMetrics[i];
             var metric = nodeCmp.metrics.list[metricIndex];
             if (metric != null && metric !== undefined) {
@@ -2576,7 +2580,7 @@ Ext.define("Ung.FaceplateMetric", {
         }
         if( this.hasChart && this.chartData != null ) {
             var reloadChart = this.chartData[0].sessions != 0;
-            for(var i=0;i<this.chartData.length-1;i++) {
+            for(i=0;i<this.chartData.length-1;i++) {
                 this.chartData[i].sessions=this.chartData[i+1].sessions;
                 reloadChart = (reloadChart || (this.chartData[i].sessions != 0));
             }
@@ -2612,11 +2616,12 @@ Ext.define("Ung.FaceplateMetric", {
     },
     reset: function() {
         if (this.chartData != null) {
-            for(var i=0;i<this.chartData.length;i++) {
+            var i;
+            for(i = 0; i<this.chartData.length; i++) {
                 this.chartData[i].sessions=0;
             }
             this.chart.store.loadData(this.chartData);
-            for (var i = 0; i < 4; i++) {
+            for (i = 0; i < 4; i++) {
                 var valueDiv = document.getElementById('systemValue_' + this.getId() + '_' + i);
                 valueDiv.innerHTML = "&nbsp;";
             }
@@ -4522,8 +4527,8 @@ Ext.define('Ung.EditorGrid', {
             } else if(this.data.length === 0) {
                 var emptyRec={};
                 var length = Math.floor((Math.random()*5));
-                for(var i=0; i<length; i++) {
-                    this.data.push(this.getTestRecord(i));
+                for(var t=0; t<length; t++) {
+                    this.data.push(this.getTestRecord(t));
                 }
             }
         }
@@ -4781,9 +4786,10 @@ Ext.define('Ung.EditorGrid', {
     updateChangedDataOnImport: function(records, currentOp) {
         this.disableSorting();
         var recLength=records.length;
+        var i, record;
         if(currentOp == "added") {
-            for (var i = 0; i < recLength; i++) {
-                var record=records[i];
+            for (i=0; i < recLength; i++) {
+                record=records[i];
                 this.changedData[record.get("internalId")] = {
                     op: currentOp,
                     recData: record.data,
@@ -4791,9 +4797,9 @@ Ext.define('Ung.EditorGrid', {
                 };
             }
         } else if (currentOp == "deleted") {
-            for(var i=0;i<recLength; i++) {
+            for(i=0; i<recLength; i++) {
                 this.getStore().suspendEvents();
-                var record=records[i];
+                record=records[i];
                 var id = record.get("internalId");
                 var cd = this.changedData[id];
                 if (cd == null) {
@@ -4827,6 +4833,7 @@ Ext.define('Ung.EditorGrid', {
         this.disableSorting();
         var id = record.get("internalId");
         var cd = this.changedData[id];
+        var index;
         if (cd == null) {
             this.changedData[id] = {
                 op: currentOp,
@@ -4834,7 +4841,7 @@ Ext.define('Ung.EditorGrid', {
                 page: this.getStore().currentPage
             };
             if ("deleted" == currentOp) {
-                var index = this.getStore().indexOf(record);
+                index = this.getStore().indexOf(record);
                 this.getView().refreshNode(index);
             }
         } else {
@@ -4849,7 +4856,7 @@ Ext.define('Ung.EditorGrid', {
                         recData: record.data,
                         page: this.getStore().currentPage
                     };
-                    var index = this.getStore().indexOf(record);
+                    index = this.getStore().indexOf(record);
                     this.getView().refreshNode(index);
                 }
             } else {
@@ -6099,8 +6106,9 @@ Ext.define('Ung.RuleBuilder', {
             Ext.MessageBox.alert(i18n._("Warning"),i18n._("A valid type must be selected."));
             return;
         }
+        var i;
         // iterate through and make sure there are no other matchers of this type
-        for (var i = 0; i < this.store.data.length ; i++) {
+        for (i = 0; i < this.store.data.length ; i++) {
             if (this.store.data.items[i].id == recordId)
                 continue;
             if (this.store.data.items[i].data.name == newName) {
@@ -6111,7 +6119,7 @@ Ext.define('Ung.RuleBuilder', {
             }
         }
         // find the selected matcher
-        for (var i = 0; i < this.matchers.length; i++) {
+        for (i = 0; i < this.matchers.length; i++) {
             if (this.matchers[i].name == newName) {
                 rule=this.matchers[i];
                 break;

@@ -61,10 +61,9 @@ if (!Ung.hasResource["Ung.Phish"]) {
                         hideLabel: true,
                         checked: this.settings.smtpConfig.scan,
                         handler: Ext.bind(function(elem, newValue) {
-                                    this.settings.smtpConfig.scan = newValue;
-                                }, this)
-                        }
-                     , {
+                            this.settings.smtpConfig.scan = newValue;
+                        }, this)
+                    }, {
                         xtype: 'combo',
                         name: 'SMTP Action',
                         editable: false,
@@ -86,8 +85,8 @@ if (!Ung.hasResource["Ung.Phish"]) {
                     xtype: 'fieldset',
                     title: this.i18n._('Note'),
                     cls: 'description',
-                    html: this.i18n._('Phish Blocker email signatures were last updated') + ":&nbsp;&nbsp;&nbsp;&nbsp;"
-                          + (this.lastUpdate != null ? i18n.timestampFormat(this.lastUpdate): i18n._("unknown"))
+                    html: this.i18n._('Phish Blocker email signatures were last updated') + ":&nbsp;&nbsp;&nbsp;&nbsp;" +
+                        (this.lastUpdate != null ? i18n.timestampFormat(this.lastUpdate): i18n._("unknown"))
                 }]
             });
         },

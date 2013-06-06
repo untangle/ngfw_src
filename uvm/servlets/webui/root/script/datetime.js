@@ -48,7 +48,7 @@ Ext.define('Ext.ux.form.field.DateTime', {
                 id: this.id + "-date",
                 name : this.name + "-date",
                 format: this.dateFormat || Ext.form.DateField.prototype.format,
-                flex: .55,
+                flex: 0.55,
                 margin: '0 1 0 0',
                 submitValue: false,
                 listeners : {     
@@ -62,7 +62,7 @@ Ext.define('Ext.ux.form.field.DateTime', {
                 id: this.id + "-time",
                 name : this.name + "-time",
                 format: this.timeFormat || Ext.form.TimeField.prototype.format,
-                flex: .45,
+                flex: 0.45,
                 margin: '0 0 0 1',
                 submitValue: false,
                 listeners : {     
@@ -86,12 +86,12 @@ Ext.define('Ext.ux.form.field.DateTime', {
         getSubmitData: function(){
             data = {};
             if(this.ownerCt){
-                data[this.ownerCt.name] = '' + this.ownerCt.getRawValue()
+                data[this.ownerCt.name] = '' + this.ownerCt.getRawValue();
             }
             return data;
         }
             }, this.valueCfg)
-        ]
+        ];
     },
 
     getValue: function() {
@@ -119,11 +119,12 @@ Ext.define('Ext.ux.form.field.DateTime', {
 
     getSubmitData: function(){
         data = {};
-        return  data[this.name] = '' + this.getRawValue();
+        data[this.name] = '' + this.getRawValue();
+        return data; 
     },
 
     getFormat: function(){
-        return (this.dateField.submitFormat || this.dateField.format) + " " + (this.timeField.submitFormat || this.timeField.format)
+        return (this.dateField.submitFormat || this.dateField.format) + " " + (this.timeField.submitFormat || this.timeField.format);
     },
     
     getRawValue: function() {
@@ -168,4 +169,4 @@ Ext.define('Ext.ux.form.field.DateTime', {
         this.valueField.value = this.getRawValue();
     }
     
-})
+});

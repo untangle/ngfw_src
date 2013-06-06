@@ -228,19 +228,19 @@ if (!Ung.hasResource["Ung.LocalDirectory"]) {
         validate: function() {
             //validate local directory users
             var listUsers = this.gridUsers.getPageList();
-            
+            var mapUsers = {};
             for(var i=0; i<listUsers.length;i++) {
                 // verify that the login name is not duplicated
-                for(var j=i+1; j<listUsers.length;j++) {
-                    if (listUsers[i].username == listUsers[j].username) {
-                        Ext.MessageBox.alert(this.i18n._('Warning'), Ext.String.format(this.i18n._('The login name "{0}" at row {1} has already been taken.'), listUsers[j].username, j+1),
-                            Ext.bind(function () {
-                                this.tabs.setActiveTab(this.gridUsers);
-                            }, this) 
-                        );
-                        return false;
-                    }
+                if(mapUsers[listUsers[i].username]) {
+                    Ext.MessageBox.alert(this.i18n._('Warning'), Ext.String.format(this.i18n._('The login name "{0}" at row {1} has already been taken.'), listUsers[i].username, i+1),
+                        Ext.bind(function () {
+                            this.tabs.setActiveTab(this.gridUsers);
+                        }, this) 
+                    );
+                    return false;
                 }
+                mapUsers[listUsers[i].username]=true;
+                
                 // login name contains no forward slash character
                 if (listUsers[i].username.indexOf("/") != -1) {
                     Ext.MessageBox.alert(this.i18n._('Warning'), Ext.String.format(this.i18n._('The login name at row {0} must not contain forward slash character.'), i+1),

@@ -922,14 +922,14 @@ if (!Ung.hasResource["Ung.Capture"]) {
 
         removeCustomFileSuccess: function(origin,reply) {
             this.settings.customFilename = "";
-            var worker = Ext.getCmp('custom_file')
+            var worker = Ext.getCmp('custom_file');
             worker.setValue("");
             Ext.MessageBox.show({
                 title: this.i18n._("Custom Page Remove Success"),
                 msg: this.i18n._(reply.result.msg),
                 buttons: Ext.MessageBox.OK,
                 icon: Ext.MessageBox.INFO
-            })
+            });
         },
 
         removeCustomFileFailure: function(origin,reply) {
