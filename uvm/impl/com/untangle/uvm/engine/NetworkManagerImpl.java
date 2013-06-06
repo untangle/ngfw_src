@@ -439,7 +439,8 @@ public class NetworkManagerImpl implements NetworkManager
          * validate: routes can not route traffic to self
          * validate: two interfaces can't have the identical subnet (192.168.1.2/24 external and 192.168.1.3/24 internal)
          */
-
+        sanityCheckNetworkSettings( newSettings );
+        
         /**
          * TODO:
          * calculate system dev based on settings of each dev
@@ -649,10 +650,37 @@ public class NetworkManagerImpl implements NetworkManager
         logger.info("reconfigure()");
     }
 
+    private void sanityCheckNetworkSettings( NetworkSettings networkSettings)
+    {
+        /**
+         * Check that no two statically configured interfaces have the same masked address.
+         * For example, don't let people put 192.168.1.100/24 on external and 192.168.1.101/24 on internal
+         * This never makes sense if the netmasks are equal
+         */
+        for ( InterfaceSettings intf1 : networkSettings.getInterfaces() ) {
+            if ( intf1.getConfigType() == InterfaceSettings.ConfigType.DISABLED || intf1.getV4ConfigType() != InterfaceSettings.V4ConfigType.STATIC )
+                continue;
+            for ( InterfaceSettings intf2 : networkSettings.getInterfaces() ) {
+                if ( intf2.getConfigType() == InterfaceSettings.ConfigType.DISABLED || intf2.getV4ConfigType() != InterfaceSettings.V4ConfigType.STATIC )
+                    continue;
+
+                if ( intf1.getInterfaceId() == intf2.getInterfaceId() )
+                    continue;
+                
+                IPMaskedAddress intf1ma = new IPMaskedAddress( intf1.getV4StaticAddress(), intf1.getV4StaticPrefix() );
+                IPMaskedAddress intf2ma = new IPMaskedAddress( intf2.getV4StaticAddress(), intf2.getV4StaticPrefix() );
+
+                if ( intf1ma.getMaskedAddress().equals( intf2ma.getMaskedAddress() ) ) {
+                    throw new RuntimeException( intf1.getName() + " & " + intf2.getName() + " address conflict. " +
+                                                intf1ma.getMaskedAddress().getHostAddress() + " = " + intf2ma.getMaskedAddress().getHostAddress() ); 
+                }
+            }
+        }
+
+    }
+
     private void sanitizeNetworkSettings( NetworkSettings networkSettings)
     {
-        logger.warn("XXXXX Sanitize Network Settings");
-        
         /**
          * Fix rule IDs
          */
@@ -712,10 +740,9 @@ public class NetworkManagerImpl implements NetworkManager
         }
         
         /**
-         * Handle vlans
+         * Handle VLAN alias interfaces
          */
         for ( InterfaceSettings intf : networkSettings.getInterfaces() ) {
-            logger.warn("XXXXX CHECK INTERFACE VLAN: " + intf.getName() + " - " + intf.getIsVlanInterface());
             if ( ! intf.getIsVlanInterface() )
                 continue;
             
