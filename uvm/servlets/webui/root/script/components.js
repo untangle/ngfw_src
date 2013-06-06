@@ -1925,6 +1925,7 @@ Ung.MessageManager = {
             this.cycleCompleted = true;
             try {
                 var messageQueue=result;
+                var i;
                 if(testMode) {
                     //TEST: Adding test queue messages
                     /*
@@ -1972,7 +1973,8 @@ Ung.MessageManager = {
                     }
 
                     var refreshApps=false;
-                    for(var i=0;i<messageQueue.messages.list.length;i++) {
+                    var appItemDisplayName;
+                    for(i=0;i<messageQueue.messages.list.length;i++) {
                         var msg=messageQueue.messages.list[i];
                         console.log("MQ:",msg.javaClass, msg);
                         if(msg.javaClass.indexOf("NodeStateChangeMessage") >= 0) {
@@ -1982,7 +1984,7 @@ Ung.MessageManager = {
                             }
                         } else if (msg.javaClass.indexOf("PackageInstallRequest") >= 0) {
                             if(!msg.installed) {
-                                var appItemDisplayName = msg.packageDesc.displayName;
+                                appItemDisplayName = msg.packageDesc.displayName;
                                 Ung.AppItem.updateState(appItemDisplayName, "download");
                                 main.closeStore();
                                 rpc.aptManager.installAndInstantiate(Ext.bind(function(result, exception) {
@@ -1993,7 +1995,7 @@ Ung.MessageManager = {
                             }
                         } else if (msg.javaClass.indexOf("PackageUninstallRequest") >= 0) {
                             if(!msg.installed) {
-                                var appItemDisplayName = msg.packageDesc.displayName;
+                                appItemDisplayName = msg.packageDesc.displayName;
                                 Ung.AppItem.updateState(appItemDisplayName, "uninstall");
                                 rpc.aptManager.unregister(Ext.bind(function(result, exception) {
                                     if(Ung.Util.handleException(exception)) return;
@@ -2021,7 +2023,7 @@ Ung.MessageManager = {
                         } else if(msg.javaClass.indexOf("InstallAndInstantiateComplete") != -1) {
                             refreshApps=true;
                             this.installInProgress--;
-                            var appItemDisplayName = msg.requestingPackage.displayName;
+                            appItemDisplayName = msg.requestingPackage.displayName;
                             Ung.MessageManager.setFrequency(Ung.MessageManager.normalFrequency);
                             Ung.AppItem.updateState(appItemDisplayName, null);
                         } else if(msg.javaClass.indexOf("LicenseUpdateMessage") != -1) {
@@ -2056,7 +2058,7 @@ Ung.MessageManager = {
                                     }
                                 } 
                             } else { /* modeDownloadMode == false */
-                                var appItemDisplayName = ( msg.requestingPackage == null ? "" : msg.requestingPackage.displayName );
+                                appItemDisplayName = ( msg.requestingPackage == null ? "" : msg.requestingPackage.displayName );
                                 if(msg.javaClass.indexOf("DownloadSummary") != -1) {
                                     Ung.AppItem.updateState(appItemDisplayName, "download_summary", msg);
                                 } else if(msg.javaClass.indexOf("DownloadProgress") != -1) {
@@ -2095,7 +2097,7 @@ Ung.MessageManager = {
                 // update system stats
                 main.systemStats.update(messageQueue.systemStats);
                 // upgrade node metrics
-                for (var i = 0; i < main.nodes.length; i++) {
+                for (i = 0; i < main.nodes.length; i++) {
                     var nodeCmp = Ung.Node.getCmp(main.nodes[i].nodeId);
                     if (nodeCmp && nodeCmp.isRunning()) {
                         nodeCmp.metrics = messageQueue.metrics.map[main.nodes[i].nodeId];
@@ -2236,6 +2238,7 @@ Ext.define("Ung.SystemStats", {
 
     },
     update: function(stats) {
+        var toolTipEl;
         var sessionsText = '<font color="#55BA47">' + stats.map.uvmSessions + "</font>";
         this.getEl().down("div[class=sessions]").dom.innerHTML=sessionsText;
         
@@ -2243,10 +2246,12 @@ Ext.define("Ung.SystemStats", {
         var oneMinuteLoadAvg = stats.map.oneMinuteLoadAvg;
         var oneMinuteLoadAvgAdjusted = oneMinuteLoadAvg - stats.map.numCpus;
         var loadText = '<font color="#55BA47">' + i18n._('low') + '</font>';
-        if (oneMinuteLoadAvgAdjusted > 1.0)
+        if (oneMinuteLoadAvgAdjusted > 1.0) {
             loadText = '<font color="orange">' + i18n._('medium') + '</font>';
-        if (oneMinuteLoadAvgAdjusted > 4.0)
+        }
+        if (oneMinuteLoadAvgAdjusted > 4.0) {
             loadText = '<font color="red">' + i18n._('high') + '</font>';
+        }
         this.getEl().down("div[class=cpu]").dom.innerHTML=loadText;
             
         var txSpeed=Math.round(stats.map.txBps/10)/100;
@@ -2260,18 +2265,18 @@ Ext.define("Ung.SystemStats", {
         var diskPercent=Math.round((1-stats.map.freeDiskSpace/stats.map.totalDiskSpace)*20 )*5;
         this.getEl().down("div[name=disk_value]").dom.className="disk"+diskPercent;
         if(this.networkToolTip.rendered) {
-            var toolTipEl=this.networkToolTip.getEl();
+            toolTipEl=this.networkToolTip.getEl();
             toolTipEl.down("span[name=tx_speed]").dom.innerHTML=txSpeed;
             toolTipEl.down("span[name=rx_speed]").dom.innerHTML=rxSpeed;
         }
         if(this.sessionsToolTip.rendered) {
-            var toolTipEl=this.sessionsToolTip.getEl();
+            toolTipEl=this.sessionsToolTip.getEl();
             toolTipEl.down("span[name=totalSessions]").dom.innerHTML=stats.map.uvmSessions ; 
             toolTipEl.down("span[name=uvmTCPSessions]").dom.innerHTML=stats.map.uvmTCPSessions;
             toolTipEl.down("span[name=uvmUDPSessions]").dom.innerHTML=stats.map.uvmUDPSessions;
         }
         if(this.cpuToolTip.rendered) {
-            var toolTipEl=this.cpuToolTip.getEl();
+            toolTipEl=this.cpuToolTip.getEl();
             toolTipEl.down("span[name=num_cpus]").dom.innerHTML=stats.map.numCpus;
             toolTipEl.down("span[name=cpu_model]").dom.innerHTML=stats.map.cpuModel;
             toolTipEl.down("span[name=cpu_speed]").dom.innerHTML=stats.map.cpuSpeed;
@@ -2291,7 +2296,7 @@ Ext.define("Ung.SystemStats", {
             toolTipEl.down("span[name=load_average_15_min]").dom.innerHTML=stats.map.fifteenMinuteLoadAvg;
         }
         if(this.memoryToolTip.rendered) {
-            var toolTipEl=this.memoryToolTip.getEl();
+            toolTipEl=this.memoryToolTip.getEl();
             toolTipEl.down("span[name=memory_used]").dom.innerHTML=memoryUsed;
             toolTipEl.down("span[name=memory_free]").dom.innerHTML=memoryFree;
             toolTipEl.down("span[name=memory_total]").dom.innerHTML=Ung.Util.bytesToMBs(stats.map.MemTotal);
@@ -2302,7 +2307,7 @@ Ext.define("Ung.SystemStats", {
             toolTipEl.down("span[name=swap_used]").dom.innerHTML=Ung.Util.bytesToMBs(stats.map.SwapTotal-stats.map.SwapFree);
         }
         if(this.diskToolTip.rendered) {
-            var toolTipEl=this.diskToolTip.getEl();
+            toolTipEl=this.diskToolTip.getEl();
             toolTipEl.down("span[name=total_disk_space]").dom.innerHTML=Math.round(stats.map.totalDiskSpace/10000000)/100;
             toolTipEl.down("span[name=free_disk_space]").dom.innerHTML=Math.round(stats.map.freeDiskSpace/10000000)/100;
             toolTipEl.down("span[name=disk_reads]").dom.innerHTML=Ung.Util.bytesToMBs(stats.map.diskReads);
@@ -2357,7 +2362,8 @@ Ext.define("Ung.FaceplateMetric", {
         this.callParent(arguments);
     },
     buildChart: function() {
-        for(var i=0; i<this.metrics.list.length; i++) {
+        var i;
+        for(i=0; i<this.metrics.list.length; i++) {
             if(this.metrics.list[i].name=="live-sessions") {
                 this.hasChart = true;
                 break;
@@ -2377,7 +2383,7 @@ Ext.define("Ung.FaceplateMetric", {
         }
 
         this.chartData = [];
-        for(var i=0; i<this.chartDataLength; i++) {
+        for(i=0; i<this.chartDataLength; i++) {
             this.chartData.push({time:i, sessions:0});
         }
         this.chart = Ext.create('Ext.chart.Chart', {
@@ -4677,7 +4683,7 @@ Ext.define('Ung.EditorGrid', {
             this.setTotalRecords(this.totalRecords);
     
             //make all cahnged data apear in first page
-            for (id in this.changedData) {
+            for (var id in this.changedData) {
                 var cd = this.changedData[id];
                 cd.page=1;
             }
@@ -4717,7 +4723,7 @@ Ext.define('Ung.EditorGrid', {
     // when a page is rendered load the changedData for it
     updateFromChangedData: function(store, records) {
         var page = store.currentPage;
-        for (id in this.changedData) {
+        for (var id in this.changedData) {
             var cd = this.changedData[id];
             if (page == cd.page) {
                 if ("added" == cd.op) {
@@ -4765,7 +4771,7 @@ Ext.define('Ung.EditorGrid', {
     disableSorting: function () {
         if (!this.sortingDisabled) {
             var cmConfig = this.columns;
-            for (i in cmConfig) {
+            for (var i in cmConfig) {
                 cmConfig[i].sortable = false;
             }
             this.sortingDisabled=true;
