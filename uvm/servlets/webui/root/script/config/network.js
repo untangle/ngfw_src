@@ -2337,7 +2337,7 @@ if (!Ung.hasResource["Ung.Network"]) {
                 devList.push( [ key, name ] );
             }
             this.gridStaticRoutes = Ext.create('Ung.EditorGrid', {
-                anchor: "100% -80",
+                height: 300,
                 name: 'Static Routes',
                 settingsCmp: this,
                 emptyRow: {
@@ -2432,6 +2432,27 @@ if (!Ung.hasResource["Ung.Network"]) {
                 }]
             });
 
+            this.routeArea = Ext.create('Ext.form.TextArea',{
+                style: "font-family: monospace",
+                name: "state",
+                hideLabel: true,
+                labelSeperator: "",
+                readOnly: true,
+                autoCreate: { tag: 'textarea', autocomplete: 'off', spellcheck: 'false' },
+                height: 200,
+                width: "100%"
+            });
+
+            this.routeButton = Ext.create('Ext.button.Button',{
+                text: " Refresh Routes ",
+                handler: Ext.bind(function(b,e) {
+                    main.getExecManager().exec(Ext.bind(function(result, exception) {
+                        if(Ung.Util.handleException(exception)) return;
+                        this.routeArea.setValue( result.output );
+                    }, this), "ip route show table main | grep -v '192.0.2.42'");  
+                }, this)
+            });
+            
             this.panelRoutes = Ext.create('Ext.panel.Panel',{
                 name: 'panelRoutes',
                 helpSource: 'network_route_rules',
@@ -2444,7 +2465,12 @@ if (!Ung.hasResource["Ung.Network"]) {
                     cls: 'description',
                     title: this.i18n._('Note'),
                     html: this.i18n._(" <b>Static Routes</b> are global routes that control how traffic is routed by destination address. The most specific Static Route is taken for a particular packet, order is not important.")
-                }, this.gridStaticRoutes]
+                }, this.gridStaticRoutes, {
+                    xtype: 'fieldset',
+                    cls: 'description',
+                    title: this.i18n._('Current Routes'),
+                    html: this.i18n._(" <b>Current Routes</b> shows the current routing table and how all traffic will be routed. Traffic that meets non of the following subnets will be sent with using the default route(s).")
+                }, this.routeArea, this.routeButton]
             });
         },
         // Advanced Panel
