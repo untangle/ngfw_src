@@ -102,7 +102,7 @@ public class OpenSSLWrapper
 
         //=================================================
         // Tested command as follows:
-        // prompt> openssl x509 -in gobbles.pem -dates -noout -subject -issuer -nameopt Distinguished
+        // prompt> openssl x509 -in gobbles.pem -dates -noout -subject -issuer -nameopt RFC2253
         // prompt> notBefore=Jan  4 22:53:52 2006 GMT
         // prompt> notAfter=Jan  4 22:53:52 2007 GMT
         // prompt> subject= CN=gobbles.untangle.com,L=San Mateo,ST=CA,C=US
@@ -115,7 +115,7 @@ public class OpenSSLWrapper
         // be in "/usr/bin".  It exits with "1" if it is not a CA (0 if it is).
         //=================================================
 
-        ExecManagerResult result = UvmContextFactory.context().execManager().exec("openssl x509 -in " + certFile.getAbsolutePath() + " -dates -noout -subject -issuer -nameopt Distinguished");
+        ExecManagerResult result = UvmContextFactory.context().execManager().exec("openssl x509 -in " + certFile.getAbsolutePath() + " -dates -noout -subject -issuer -nameopt RFC2253");
 
         if(result.getResult()==0) {
             Date notBefore = null;
