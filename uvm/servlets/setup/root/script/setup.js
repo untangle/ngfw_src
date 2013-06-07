@@ -156,7 +156,7 @@ Ext.define('Ung.SetupWizard.ServerSettings', {
                     name: 'login',
                     value: 'admin',
                     readOnly: true,
-                    fieldClass: 'noborder',
+                    fieldCls: 'noborder',
                     cls: 'small-top-margin'
                 }, {
                     xtype: 'textfield',
@@ -602,7 +602,7 @@ Ext.define('Ung.SetupWizard.Internet', {
                 defaultType: 'textfield',
                 defaults: {
                     readOnly: true,
-                    fieldClass: 'noborder',
+                    fieldCls: 'noborder',
                     labelWidth: Ung.SetupWizard.LabelWidth
                 },
                 items: [{
@@ -713,15 +713,13 @@ Ext.define('Ung.SetupWizard.Internet', {
                     fieldLabel: i18n._( "Username" ),
                     name: "username",
                     disabled: false,
-                    readOnly: false,
-                    fieldClass: ''
+                    readOnly: false
                 }, {
                     name: "password",
                     inputType: 'password',
                     fieldLabel: i18n._( "Password" ),
                     disabled: false,
-                    readOnly: false,
-                    fieldClass: ''
+                    readOnly: false
                 }]
             }, {
                 xtype: 'fieldset',
@@ -730,28 +728,24 @@ Ext.define('Ung.SetupWizard.Internet', {
                 defaultType: 'textfield',
                 defaults: {
                     labelWidth: Ung.SetupWizard.LabelWidth,
-                    readOnly: true
+                    readOnly: true,
+                    fieldCls: 'noborder'
                 },
                 items: [{
                     fieldLabel: i18n._( "IP Address" ),
-                    name: "ip",
-                    fieldClass: 'noborder'
+                    name: "ip"
                 }, {
                     fieldLabel: i18n._( "Netmask" ),
-                    name: "prefix",
-                    fieldClass: 'noborder'
+                    name: "prefix"
                 }, {
                     name: "gateway",
-                    fieldLabel: i18n._( "Gateway" ),
-                    fieldClass: 'noborder'
+                    fieldLabel: i18n._( "Gateway" )
                 }, {
                     name: "dns1",
-                    fieldLabel: i18n._( "Primary DNS" ),
-                    fieldClass: 'noborder'
+                    fieldLabel: i18n._( "Primary DNS" )
                 }, {
                     name: "dns2",
-                    fieldLabel: i18n._( "Secondary DNS" ),
-                    fieldClass: 'noborder'
+                    fieldLabel: i18n._( "Secondary DNS" )
                 }]
             }],
             buttonAlign: 'center',
