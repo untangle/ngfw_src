@@ -128,14 +128,12 @@ if (!Ung.hasResource["Ung.Firewall"]) {
                         xtype:'checkbox',
                         name: "Enable Rule",
                         dataIndex: "enabled",
-                        fieldLabel: this.i18n._("Enable Rule"),
-                        itemCls:'firewall-spacing-1'
+                        fieldLabel: this.i18n._("Enable Rule")
                     }, {
                         xtype:'textfield',
                         name: "Description",
                         dataIndex: "description",
-                        fieldLabel: this.i18n._("Description"),
-                        itemCls:'firewall-spacing-1',
+                        fieldLabel: this.i18n._("Description")
                         width: 500
                     }, {
                         xtype:'fieldset',
@@ -165,7 +163,6 @@ if (!Ung.hasResource["Ung.Firewall"]) {
                             xtype:'checkbox',
                             name: "Flag",
                             dataIndex: "flag",
-                            itemCls:'firewall-spacing-1',
                             fieldLabel: this.i18n._("Flag")
                         }]
                     }]

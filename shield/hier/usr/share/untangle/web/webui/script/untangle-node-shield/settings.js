@@ -33,9 +33,7 @@ if (!Ung.hasResource["Ung.Shield"]) {
                         allowBlank: false,
                         style: 'color:green',
                         value: this.node.isRunning() ? this.i18n._('active'): this.i18n._('inactive'),
-                        /*disabled: true,*/
-                        readOnly: true,
-                        cls:'attack-blocker-style-1'
+                        readOnly: true
 
                     }]
                 }, {
