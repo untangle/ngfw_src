@@ -133,7 +133,7 @@ if (!Ung.hasResource["Ung.Firewall"]) {
                         xtype:'textfield',
                         name: "Description",
                         dataIndex: "description",
-                        fieldLabel: this.i18n._("Description")
+                        fieldLabel: this.i18n._("Description"),
                         width: 500
                     }, {
                         xtype:'fieldset',
