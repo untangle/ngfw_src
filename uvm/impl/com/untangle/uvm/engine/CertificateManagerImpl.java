@@ -23,7 +23,7 @@ import com.untangle.node.util.OpenSSLWrapper;
  */
 public class CertificateManagerImpl implements CertificateManager
 {
-    private static final String APACHE_PEM_FILE = "/usr/share/untangle/settings/untangle-certificates/apache.pem";
+    private static final String APACHE_PEM_FILE = "/etc/apache2/ssl/apache.pem";
 
     private final Logger logger = Logger.getLogger(getClass());
 
