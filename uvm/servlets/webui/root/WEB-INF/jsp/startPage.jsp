@@ -14,37 +14,24 @@
     </style>
 <c:if test="${isDebug==false}">
     <script type="text/javascript" src="/ext4/ext-all.js?s=${buildStamp}"></script>
-    <script type="text/javascript" src="/ext4/examples/ux/data/PagingMemoryProxy.js?s=${buildStamp}"></script>
-    <script type="text/javascript" src="/ext4/examples/ux/CheckColumn.js?s=${buildStamp}"></script>
-    <script type="text/javascript" src="script/datetime.js?s=${buildStamp}"></script>
-
     <script type="text/javascript" src="/jsonrpc/jsonrpc-min.js?s=${buildStamp}"></script>
-    <script type="text/javascript" src="/script/i18n.js?s=${buildStamp}"></script>
-    <script type="text/javascript" src="script/components.js?s=${buildStamp}"></script>
-    <script type="text/javascript" src="script/main.js?s=${buildStamp}"></script>
-
-    <!-- todo, move this to a place where it is loaded dynamically. -->
-    <script type="text/javascript" src="/script/timezone.js?s=${buildStamp}"></script>
-    <script type="text/javascript" src="/script/country.js?s=${buildStamp}"></script>
-    <script type="text/javascript" src="/script/wizard.js?s=${buildStamp}"></script>
 </c:if>
 <c:if test="${isDebug==true}">
     <script type="text/javascript" src="/ext4/ext-all-debug.js?s=${buildStamp}"></script>
+    <script type="text/javascript" src="/jsonrpc/jsonrpc.js?s=${buildStamp}"></script>
+</c:if>
     <script type="text/javascript" src="/ext4/examples/ux/data/PagingMemoryProxy.js?s=${buildStamp}"></script>
     <script type="text/javascript" src="/ext4/examples/ux/CheckColumn.js?s=${buildStamp}"></script>
-    <script type="text/javascript" src="script/datetime.js?s=${buildStamp}"></script>
-    
 
-    <script type="text/javascript" src="/jsonrpc/jsonrpc.js?s=${buildStamp}"></script>
     <script type="text/javascript" src="/script/i18n.js?s=${buildStamp}"></script>
     <script type="text/javascript" src="script/components.js?s=${buildStamp}"></script>
     <script type="text/javascript" src="script/main.js?s=${buildStamp}"></script>
- 
+
     <!-- todo, move this to a place where it is loaded dynamically. -->
     <script type="text/javascript" src="/script/timezone.js?s=${buildStamp}"></script>
     <script type="text/javascript" src="/script/country.js?s=${buildStamp}"></script>
     <script type="text/javascript" src="/script/wizard.js?s=${buildStamp}"></script>
-</c:if>
+    <script type="text/javascript" src="/script/datetime.js?s=${buildStamp}"></script>
 
 <c:if test="${param['console']==1}">
     <script type="text/javascript">
