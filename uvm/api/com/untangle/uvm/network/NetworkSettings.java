@@ -30,7 +30,8 @@ public class NetworkSettings implements Serializable, JSONString
     private List<FilterRule> inputFilterRules = null;
     private List<FilterRule> forwardFilterRules = null;
     private List<StaticRoute> staticRoutes = null;
-
+    private List<DhcpStaticEntry> staticDhcpEntries = null;
+    
     private String hostName;
     private String domainName;
 
@@ -55,29 +56,32 @@ public class NetworkSettings implements Serializable, JSONString
     public NetworkSettings() { }
 
     public List<InterfaceSettings> getInterfaces() { return this.interfaces; }
-    public void setInterfaces( List<InterfaceSettings> interfaces ) { this.interfaces = interfaces; }
+    public void setInterfaces( List<InterfaceSettings> newValue ) { this.interfaces = newValue; }
 
     public List<DeviceSettings> getDevices() { return this.devices; }
-    public void setDevices( List<DeviceSettings> devices ) { this.devices = devices; }
+    public void setDevices( List<DeviceSettings> newValue ) { this.devices = newValue; }
     
     public List<PortForwardRule> getPortForwardRules() { return this.portForwardRules; }
-    public void setPortForwardRules( List<PortForwardRule> portForwardRules ) { this.portForwardRules = portForwardRules; }
+    public void setPortForwardRules( List<PortForwardRule> newValue ) { this.portForwardRules = newValue; }
 
     public List<NatRule> getNatRules() { return this.natRules; }
-    public void setNatRules( List<NatRule> natRules ) { this.natRules = natRules; }
+    public void setNatRules( List<NatRule> newValue ) { this.natRules = newValue; }
 
     public List<BypassRule> getBypassRules() { return this.bypassRules; }
-    public void setBypassRules( List<BypassRule> bypassRules ) { this.bypassRules = bypassRules; }
+    public void setBypassRules( List<BypassRule> newValue ) { this.bypassRules = newValue; }
 
     public List<FilterRule> getInputFilterRules() { return this.inputFilterRules; }
-    public void setInputFilterRules( List<FilterRule> bypassRules ) { this.inputFilterRules = bypassRules; }
+    public void setInputFilterRules( List<FilterRule> newValue ) { this.inputFilterRules = newValue; }
 
     public List<FilterRule> getForwardFilterRules() { return this.forwardFilterRules; }
-    public void setForwardFilterRules( List<FilterRule> bypassRules ) { this.forwardFilterRules = bypassRules; }
+    public void setForwardFilterRules( List<FilterRule> newValue ) { this.forwardFilterRules = newValue; }
     
     public List<StaticRoute> getStaticRoutes() { return this.staticRoutes; }
-    public void setStaticRoutes( List<StaticRoute> staticRoutes ) { this.staticRoutes = staticRoutes; }
+    public void setStaticRoutes( List<StaticRoute> newValue ) { this.staticRoutes = newValue; }
 
+    public List<DhcpStaticEntry> getStaticDhcpEntries() { return this.staticDhcpEntries; }
+    public void setStaticDhcpEntries( List<DhcpStaticEntry> newValue ) { this.staticDhcpEntries = newValue; }
+    
     public String getHostName() { return this.hostName; }
     public void setHostName( String newValue ) { this.hostName = newValue; }
 

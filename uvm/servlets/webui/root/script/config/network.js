@@ -2480,8 +2480,8 @@ if (!Ung.hasResource["Ung.Network"]) {
             this.buildQoS();
             this.buildFilter();
             this.buildDnsServer();
+            this.buildDhcpServer();
             this.buildNetworkCards();
-            this.buildDnsmasqOptions();
 
             this.advancedTabPanel = Ext.create('Ext.tab.Panel',{
                 activeTab: 0,
@@ -2489,7 +2489,7 @@ if (!Ung.hasResource["Ung.Network"]) {
                 parentId: this.getId(),
                 autoHeight: true,
                 flex: 1,
-                items: [ this.panelOptions, this.panelQoS, this.panelFilter, this.panelDnsServer, this.gridNetworkCards, this.panelDnsmasqOptions ]
+                items: [ this.panelOptions, this.panelQoS, this.panelFilter, this.panelDnsServer, this.panelDhcpServer, this.gridNetworkCards ]
             });
             
             this.panelAdvanced = Ext.create('Ext.panel.Panel',{
@@ -3331,6 +3331,85 @@ if (!Ung.hasResource["Ung.Network"]) {
                 items: [ this.gridDnsStaticEntries, this.gridDnsLocalServers ]
             });
         },        
+        // DhcpServer Panel
+        buildDhcpServer: function() {
+            this.gridDhcpStaticEntries = Ext.create( 'Ung.EditorGrid', {
+                anchor: '100% 48%',
+                name: 'Static DHCP Entries',
+                settingsCmp: this,
+                paginated: false,
+                hasEdit: false,
+                emptyRow: {
+                    "macAddress": "11:22:33:44:55:66",
+                    "address": "1.2.3.4",
+                    "description": this.i18n._("[no description]"),
+                    "javaClass": "com.untangle.uvm.network.DhcpStaticEntry"
+                },
+                title: this.i18n._("Static DHCP Entries"),
+                recordJavaClass: "com.untangle.uvm.network.DhcpStaticEntry",
+                dataExpression:'settings.staticDhcpEntries.list',
+                fields: [{
+                    name: 'macAddress'
+                }, {
+                    name: 'address'
+                }, {
+                    name: 'description'
+                }],
+                columns: [{
+                    header: this.i18n._("MAC Address"),
+                    width: 200,
+                    dataIndex: 'macAddress',
+                    editor: {
+                        xtype:'textfield',
+                        allowBlank:false
+                    }
+                },{
+                    header: this.i18n._("Address"),
+                    dataIndex: 'address',
+                    flex: 1,
+                    editor: {
+                        xtype:'textfield',
+                        allowBlank: false,
+                        vtype:"ipAddress"
+                    }
+                },{
+                    header: this.i18n._("Description"),
+                    width: 200,
+                    dataIndex: 'description',
+                    editor: {
+                        xtype:'textfield',
+                        allowBlank:false
+                    }
+                }]
+            });
+            this.panelDhcpServer = Ext.create('Ext.panel.Panel',{
+                name: 'panelDhcpServer',
+                helpSource: 'network_dhcp_server',
+                parentId: this.getId(),
+                title: this.i18n._('DHCP Server'),
+                layout: 'anchor',
+                cls: 'ung-panel',
+                items: [ this.gridDhcpStaticEntries, {
+                    border: false,
+                    cls: 'description',
+                    html: "<br/>" + this.i18n._('Custom dnsmasq options.') + "<br/>" +
+                        "<b>" + this.i18n._("Warning: Invalid syntax will halt all DHCP & DNS services.") + "</b>" + "<br/>",
+                    style: "padding-bottom: 10px;"
+                }, {
+                    xtype: "textarea",
+                    width : 397,
+                    height : 140,                    
+                    value: this.settings.dnsmasqOptions,
+                    listeners: {
+                        "change": {
+                            fn: Ext.bind(function(elem, newValue) {
+                                this.settings.dnsmasqOptions = newValue;
+                            }, this)
+                        }
+                    }
+                }]
+            });
+        },        
         // NetworkCards Panel
         buildNetworkCards: function() {
             this.duplexStore = [
@@ -3393,36 +3472,6 @@ if (!Ung.hasResource["Ung.Network"]) {
                         store: this.duplexStore,
                         queryMode: 'local',
                         editable: false
-                    }
-                }]
-            });
-        },
-        // Dnsmasq Options Panel
-        buildDnsmasqOptions: function() {
-            this.panelDnsmasqOptions = Ext.create('Ext.panel.Panel',{
-                name: 'panelDnsmasqOptions',
-                helpSource: 'network_general',
-                parentId: this.getId(),
-                title: this.i18n._('Dnsmasq Options'),
-                layout: 'anchor',
-                cls: 'ung-panel',
-                items: [{
-                    border: false,
-                    cls: 'description',
-                    html: "<br/>" + this.i18n._('Custom dnsmasq options.') + "<br/>" +
-                        "<b>" + this.i18n._("Warning: Invalid syntax will halt all DHCP & DNS services.") + "</b>" + "<br/>",
-                    style: "padding-bottom: 10px;"
-                }, {
-                    xtype: "textarea",
-                    width : 397,
-                    height : 140,                    
-                    value: this.settings.dnsmasqOptions,
-                    listeners: {
-                        "change": {
-                            fn: Ext.bind(function(elem, newValue) {
-                                this.settings.dnsmasqOptions = newValue;
-                            }, this)
-                        }
                     }
                 }]
             });
@@ -3914,7 +3963,7 @@ if (!Ung.hasResource["Ung.Network"]) {
             rpc.networkSettings = this.settings;
         },
         beforeSave: function(isApply, handler) {
-            this.beforeSaveCount = 12;
+            this.beforeSaveCount = 13;
 
             Ext.MessageBox.wait(i18n._("Applying Network Settings..."), i18n._("Please wait"));
 
@@ -4009,6 +4058,14 @@ if (!Ung.hasResource["Ung.Network"]) {
                 if (this.beforeSaveCount <= 0)
                     handler.call(this, isApply);
             }, this));
+
+            this.gridDhcpStaticEntries.getList(Ext.bind(function(saveList) {
+                this.settings.staticDhcpEntries = saveList;
+                this.beforeSaveCount--;
+                if (this.beforeSaveCount <= 0)
+                    handler.call(this, isApply);
+            }, this));
+            
             this.gridNetworkCards.getList(Ext.bind(function(saveList) {
                 this.settings.devices = saveList;
                 this.beforeSaveCount--;

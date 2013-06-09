@@ -35,6 +35,7 @@ import com.untangle.uvm.network.QosPriority;
 import com.untangle.uvm.network.DnsSettings;
 import com.untangle.uvm.network.DnsStaticEntry;
 import com.untangle.uvm.network.DnsLocalServer;
+import com.untangle.uvm.network.DhcpStaticEntry;
 import com.untangle.uvm.node.IPMaskedAddress;
 
 /**
@@ -111,6 +112,9 @@ public class NetworkManagerImpl implements NetworkManager
             //FIXME can remove me later - for dev box
             if ( readSettings.getInputFilterRules() == null )
                 readSettings.setInputFilterRules( defaultInputFilterRules() );
+            //FIXME can remove me later - for dev box
+            if ( readSettings.getStaticDhcpEntries() == null )
+                readSettings.setStaticDhcpEntries( new LinkedList<DhcpStaticEntry>() );
             //FIXME can remove me later - for dev box
             if ( readSettings.getDnsSettings() == null ) {
                 DnsSettings dnsSettings = new DnsSettings();
@@ -637,6 +641,7 @@ public class NetworkManagerImpl implements NetworkManager
 
             newSettings.setForwardFilterRules( defaultForwardFilterRules() );
             newSettings.setInputFilterRules( defaultInputFilterRules() );
+            newSettings.setStaticDhcpEntries( new LinkedList<DhcpStaticEntry>() );
         }
         catch (Exception e) {
             logger.error("Error creating Network Settings",e);
