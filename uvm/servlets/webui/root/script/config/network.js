@@ -3334,7 +3334,7 @@ if (!Ung.hasResource["Ung.Network"]) {
         // DhcpServer Panel
         buildDhcpServer: function() {
             this.gridDhcpStaticEntries = Ext.create( 'Ung.EditorGrid', {
-                anchor: '100% 48%',
+                height: 200,
                 name: 'Static DHCP Entries',
                 settingsCmp: this,
                 paginated: false,
@@ -3382,6 +3382,82 @@ if (!Ung.hasResource["Ung.Network"]) {
                     }
                 }]
             });
+            
+            this.gridCurrentDhcpLeases = Ext.create('Ung.EditorGrid',{
+                name: "gridCurrentDhcpLeases",
+                height: 200,
+                settingsCmp: this,
+                parentId: this.getId(),
+                hasAdd: false,
+                hasEdit: false,
+                hasDelete: false,
+                columnsDefaultSortable: true,
+                title: this.i18n._("Current DHCP Leases"),
+                paginated: false,
+                bbar: Ext.create('Ext.toolbar.Toolbar', {
+                    items: [
+                        '-',
+                        {
+                            xtype: 'button',
+                            id: "refresh_"+this.getId(),
+                            text: i18n._('Refresh'),
+                            name: "Refresh",
+                            tooltip: i18n._('Refresh'),
+                            iconCls: 'icon-refresh',
+                            handler: Ext.bind(function() {
+                                this.gridCurrentDhcpLeases.reload();
+                            }, this)
+                        }
+                    ]
+                }),
+                dataRoot: null,
+                dataFn: function() {
+                    var leaseText = main.getExecManager().execOutput("cat /var/lib/misc/dnsmasq.leases");  
+                    var lines = leaseText.split("\n");
+                    var leases = [];
+                    for ( var i = 0 ; i < lines.length ; i++ ) {
+                        if ( lines[i] === null || lines[i] === "" ) continue;
+                        
+                        var lineparts = lines[i].split(/\s+/);
+                        leases.push( {
+                            date: lineparts[0],
+                            macAddress: lineparts[1],
+                            address: lineparts[2],
+                            hostname: lineparts[3],
+                            clientId: lineparts[4]
+                        } );
+                    }
+                    return leases;
+                },
+                fields: [{
+                    name: "date"
+                },{
+                    name: "macAddress"
+                },{
+                    name: "address"
+                },{
+                    name: "hostname"
+                }],
+                columns: [{
+                    header: this.i18n._("MAC Address"),
+                    dataIndex:'macAddress',
+                    width: 150
+                },{
+                    header: this.i18n._("Address"),
+                    dataIndex:'address',
+                    width: 200
+                },{
+                    header: this.i18n._("Hostname"),
+                    dataIndex:'hostname',
+                    width: 200
+                },{
+                    header: this.i18n._("Expiration Time"),
+                    dataIndex:'date',
+                    width: 180,
+                    renderer: function(value) { return i18n.timestampFormat(value*1000); }
+                }]
+            });
+
             this.panelDhcpServer = Ext.create('Ext.panel.Panel',{
                 name: 'panelDhcpServer',
                 helpSource: 'network_dhcp_server',
@@ -3390,24 +3466,29 @@ if (!Ung.hasResource["Ung.Network"]) {
                 layout: 'anchor',
                 cls: 'ung-panel',
                 items: [ this.gridDhcpStaticEntries, {
-                    border: false,
-                    cls: 'description',
-                    html: "<br/>" + this.i18n._('Custom dnsmasq options.') + "<br/>" +
-                        "<b>" + this.i18n._("Warning: Invalid syntax will halt all DHCP & DNS services.") + "</b>" + "<br/>",
-                    style: "padding-bottom: 10px;"
-                }, {
-                    xtype: "textarea",
-                    width : 397,
-                    height : 140,                    
-                    value: this.settings.dnsmasqOptions,
-                    listeners: {
-                        "change": {
-                            fn: Ext.bind(function(elem, newValue) {
-                                this.settings.dnsmasqOptions = newValue;
-                            }, this)
-                        }
-                    }
-                }]
+                             border: false,
+                             cls: 'description',
+                             style: "padding-bottom: 10px;"
+                         },
+                         this.gridCurrentDhcpLeases, {
+                             border: false,
+                             cls: 'description',
+                             html: "<br/><b>" + this.i18n._('Custom dnsmasq options.') + "</b><br/>" +
+                                 "<font color=\"red\">" + this.i18n._("Warning: Invalid syntax will halt all DHCP & DNS services.") + "</font>" + "<br/>",
+                             style: "padding-bottom: 10px;"
+                         }, {
+                             xtype: "textarea",
+                             width : 397,
+                             height : 140,                    
+                             value: this.settings.dnsmasqOptions,
+                             listeners: {
+                                 "change": {
+                                     fn: Ext.bind(function(elem, newValue) {
+                                         this.settings.dnsmasqOptions = newValue;
+                                     }, this)
+                                 }
+                             }
+                         }]
             });
         },        
         // NetworkCards Panel
