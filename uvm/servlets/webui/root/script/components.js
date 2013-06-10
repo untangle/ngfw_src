@@ -2140,9 +2140,9 @@ Ext.define("Ung.SystemStats", {
         // network tooltip
         var networkArr=[
             '<div class="title">'+i18n._("TX Speed:")+'</div>',
-            '<div class="values"><span name="tx_speed"></span> KB/sec</div>',
+            '<div class="values"><span name="tx_speed"></span></div>',
             '<div class="title">'+i18n._("RX Speed:")+'</div>',
-            '<div class="values"><span name="rx_speed"></span> KB/sec</div>'
+            '<div class="values"><span name="rx_speed"></span></div>'
         ];
         this.networkToolTip= Ext.create('Ext.tip.ToolTip',{
             target: this.getEl().down("div[class=network]"),
@@ -2254,11 +2254,11 @@ Ext.define("Ung.SystemStats", {
             loadText = '<font color="red">' + i18n._('high') + '</font>';
         }
         this.getEl().down("div[class=cpu]").dom.innerHTML=loadText;
-            
-        var txSpeed=Math.round(stats.map.txBps/10)/100;
-        var rxSpeed=Math.round(stats.map.rxBps/10)/100;
-        this.getEl().down("div[class=tx-value]").dom.innerHTML=txSpeed+"KB/s";
-        this.getEl().down("div[class=rx-value]").dom.innerHTML=rxSpeed+"KB/s";
+
+        var txSpeed=(stats.map.txBps<1000000) ? { value: Math.round(stats.map.txBps/10)/100, unit:"KB/s" }: {value: Math.round(stats.map.txBps/10000)/100, unit:"MB/s"};
+        var rxSpeed=(stats.map.rxBps<1000000) ? { value: Math.round(stats.map.rxBps/10)/100, unit:"KB/s" }: {value: Math.round(stats.map.rxBps/10000)/100, unit:"MB/s"};
+        this.getEl().down("div[class=tx-value]").dom.innerHTML=txSpeed.value+txSpeed.unit;
+        this.getEl().down("div[class=rx-value]").dom.innerHTML=rxSpeed.value+rxSpeed.unit;
         var memoryFree=Ung.Util.bytesToMBs(stats.map.MemFree);
         var memoryUsed=Ung.Util.bytesToMBs(stats.map.MemTotal-stats.map.MemFree);
         this.getEl().down("div[class=free-value]").dom.innerHTML=memoryFree+" MB";
@@ -2267,8 +2267,8 @@ Ext.define("Ung.SystemStats", {
         this.getEl().down("div[name=disk_value]").dom.className="disk"+diskPercent;
         if(this.networkToolTip.rendered) {
             toolTipEl=this.networkToolTip.getEl();
-            toolTipEl.down("span[name=tx_speed]").dom.innerHTML=txSpeed;
-            toolTipEl.down("span[name=rx_speed]").dom.innerHTML=rxSpeed;
+            toolTipEl.down("span[name=tx_speed]").dom.innerHTML=txSpeed.value+" "+txSpeed.unit;
+            toolTipEl.down("span[name=rx_speed]").dom.innerHTML=rxSpeed.value+" "+rxSpeed.unit;
         }
         if(this.sessionsToolTip.rendered) {
             toolTipEl=this.sessionsToolTip.getEl();
