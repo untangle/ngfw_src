@@ -5,7 +5,6 @@
 # WARNING: This script is destructive!  Any existing root CA will be
 # unconditionally deleted and a new one created from scratch.
 
-OPENSSL_CONF="/usr/share/untangle/conf/https-openssl.cnf"
 OPENSSL_TOOL="/usr/bin/openssl"
 ROOT_PATH="/usr/share/untangle/settings/untangle-certificates"
 CERT_PATH="/var/cache/untangle-https"
