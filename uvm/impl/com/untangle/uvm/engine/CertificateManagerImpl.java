@@ -23,7 +23,7 @@ import com.untangle.node.util.OpenSSLWrapper;
  */
 public class CertificateManagerImpl implements CertificateManager
 {
-    private static final String ROOT_CA_CREATOR_SCRIPT = "/usr/share/untangle/bin/https-rootgen";
+    private static final String ROOT_CA_CREATOR_SCRIPT = "/usr/share/untangle/bin/ut-rootgen";
     private static final String rootCertFile = "/usr/share/untangle/settings/untangle-certificates/untangle.crt";
     private static final String rootKeyFile = "/usr/share/untangle/settings/untangle-certificates/untangle.key";
     private static final String APACHE_PEM_FILE = "/etc/apache2/ssl/apache.pem";
