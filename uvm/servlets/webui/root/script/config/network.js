@@ -1081,8 +1081,6 @@ if (!Ung.hasResource["Ung.Network"]) {
                                 dataIndex: "v4AutoPrefixOverride",
                                 fieldLabel: this.i18n._("Netmask Override"),
                                 store: Ung.Util.getV4NetmaskList( true ),
-                                valueField: "value",
-                                displayField: "displayName",
                                 queryMode: 'local',
                                 editable: false,
                                 labelWidth: 150,
@@ -1243,8 +1241,6 @@ if (!Ung.hasResource["Ung.Network"]) {
                         fieldLabel: this.i18n._("Config Type"),
                         editable: false,
                         store: [ ["DISABLED", this.i18n._('Disabled')], ["AUTO", this.i18n._('Auto (SLAAC/RA)')], ["STATIC", this.i18n._('Static')] ],
-                        valueField: "value",
-                        displayField: "displayName",
                         queryMode: 'local',
                         listeners: {
                             "change": {
@@ -1353,8 +1349,6 @@ if (!Ung.hasResource["Ung.Network"]) {
                             dataIndex: "dhcpPrefixOverride",
                             fieldLabel: this.i18n._("Netmask Override"),
                             store: Ung.Util.getV4NetmaskList( true ),
-                            valueField: "value",
-                            displayField: "displayName",
                             queryMode: 'local',
                             editable: false
                         }, {
@@ -2320,8 +2314,6 @@ if (!Ung.hasResource["Ung.Network"]) {
                         fieldLabel: this.i18n._("Bypass"),
                         editable: false,
                         store: [[true,i18n._('Bypass')], [false,i18n._('Capture')]],
-                        valueField: "value",
-                        displayField: "displayName",
                         queryMode: 'local'
                     }]
                 }]
@@ -2408,8 +2400,6 @@ if (!Ung.hasResource["Ung.Network"]) {
                     dataIndex: "prefix",
                     fieldLabel: i18n._( "Netmask/Prefix" ),
                     store: Ung.Util.getV4NetmaskList( false ),
-                    valueField: "value",
-                    displayField: "displayName",
                     width: 300,
                     listWidth: 70,
                     queryMode: 'local',
@@ -2421,8 +2411,6 @@ if (!Ung.hasResource["Ung.Network"]) {
                     dataIndex: "nextHop",
                     fieldLabel: i18n._("Next Hop"),
                     store: devList,
-                    valueField: "value",
-                    displayField: "displayName",
                     queryMode: 'local'
                 }, {
                     xtype: 'fieldset',
@@ -3020,8 +3008,6 @@ if (!Ung.hasResource["Ung.Network"]) {
                         fieldLabel: this.i18n._("Priority"),
                         editable: false,
                         store: this.qosPriorityNoDefaultStore,
-                        valueField: "value",
-                        displayField: "displayName",
                         queryMode: 'local'
                     }]
                 }]
