@@ -2370,10 +2370,10 @@ Ext.define("Ung.FaceplateMetric", {
                 break;
             }
         }
-        //Do not show chart graph for Firewal and OpenVpn nodes even though they have the live-sessions metrics
+        //Do not show chart graph for these apps even though they have the live-sessions metrics
         if(this.nodeName === "untangle-node-firewall" ||
            this.nodeName === "untangle-node-openvpn" ||
-           this.nodeName === "untangle-node-shield") {
+           this.nodeName === "untangle-node-splitd") {
             this.hasChart = false;
         }
         var chartContainerEl = this.getEl().down("div[class=chart]");
