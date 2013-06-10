@@ -755,8 +755,8 @@ if (!Ung.hasResource["Ung.Network"]) {
                     xtype: 'fieldset',
                     flex: 0,
                     cls: 'description',
-                    title: this.i18n._('Note'),
-                    html: this.i18n._("<b>Interfaces</b> are legit. Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.")
+                    title: this.i18n._("<b>Interface</b> configuration"),
+                    html: this.i18n._("Use this page to configure each interface's configuration and its mapping to a physical network card.")
                 }, this.gridInterfaces]
             });
             this.gridInterfacesV4AliasesEditor = Ext.create('Ung.EditorGrid',{
@@ -2049,8 +2049,8 @@ if (!Ung.hasResource["Ung.Network"]) {
                 items: [{
                     xtype: 'fieldset',
                     cls: 'description',
-                    title: this.i18n._('Note'),
-                    html: this.i18n._(" <b>Port Forward Rules</b>. Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.")
+                    title: this.i18n._('Port Fortward Rules'),
+                    html: this.i18n._("Port Forward rules forward sessions matching the configured criteria from a public IP to an IP on an internal (NAT'd) network. The rules are evaluated in order.")
                 },  this.gridPortForwardRules, this.portForwardReserveWarnings]
             });
         },
@@ -2128,8 +2128,8 @@ if (!Ung.hasResource["Ung.Network"]) {
                 items: [{
                     xtype: 'fieldset',
                     cls: 'description',
-                    title: this.i18n._('Note'),
-                    html: this.i18n._(" <b>NAT Rules</b>. Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.")
+                    title: this.i18n._('NAT Rules'),
+                    html: this.i18n._("NAT Rules control the rewriting of the IP source address of traffic (Network Address Translation). The rules are evaluated in order.")
                 },  this.gridNatRules]
             });
             this.gridNatRules.setRowEditor(Ext.create('Ung.RowEditorWindow',{
@@ -2274,8 +2274,8 @@ if (!Ung.hasResource["Ung.Network"]) {
                 items: [{
                     xtype: 'fieldset',
                     cls: 'description',
-                    title: this.i18n._('Note'),
-                    html: this.i18n._(" <b>Bypass Rules</b>. Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.")
+                    title: this.i18n._('Bypass Rules'),
+                    html: this.i18n._("Bypass Rules control what traffic is scanned by the applications. Bypassed traffic skips application processing. The rules are evaluated in order. Sessions that meet no rule are not bypassed.")
                 }, this.gridBypassRules]
             });
             this.gridBypassRules.setRowEditor(Ext.create('Ung.RowEditorWindow',{
@@ -2437,7 +2437,7 @@ if (!Ung.hasResource["Ung.Network"]) {
                     main.getExecManager().exec(Ext.bind(function(result, exception) {
                         if(Ung.Util.handleException(exception)) return;
                         this.routeArea.setValue( result.output );
-                    }, this), "ip route show table main | grep -v '192.0.2.42'");  
+                    }, this), "/usr/share/untangle/bin/ut-routedump.sh");  
                 }, this)
             });
             
@@ -2457,7 +2457,7 @@ if (!Ung.hasResource["Ung.Network"]) {
                     xtype: 'fieldset',
                     cls: 'description',
                     title: this.i18n._('Current Routes'),
-                    html: this.i18n._(" <b>Current Routes</b> shows the current routing table and how all traffic will be routed. Traffic that meets non of the following subnets will be sent with using the default route(s).")
+                    html: this.i18n._(" <b>Current Routes</b> shows the current routing system's configuration and how all traffic will be routed.")
                 }, this.routeArea, this.routeButton]
             });
         },
@@ -2491,7 +2491,8 @@ if (!Ung.hasResource["Ung.Network"]) {
                     xtype: 'fieldset',
                     cls: 'description',
                     flex: 0,
-                    html: this.i18n._(" <b>Advanced</b> is for advanced settings. Don't change them. YES THIS MEANS YOU.")
+                    title: this.i18n._("Advanced"),
+                    html: this.i18n._("Advanced settings require careful configuration. Misconfiguration can compromise the proper operation and security of your server.")
                 }, this.advancedTabPanel]
             });
         },
