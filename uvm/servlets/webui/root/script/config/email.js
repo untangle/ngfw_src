@@ -255,11 +255,9 @@ if (!Ung.hasResource["Ung.Email"]) {
                 items: [{
                     title: this.i18n._('Outgoing Email Server (SMTP)'),
                     items: [{
-                        cls: 'description',
-                        border: false,
-                        html: Ext.String.format(this.i18n
-                                ._("The Outgoing Email Server settings determine how the {0} Server sends emails such as reports, quarantine digests, etc. <br/>In most cases the default setting should work. If not, specify an valid SMTP server that will relay mail for the {0} Server."),
-                                main.getBrandingManager().getCompanyName())
+                        xtype: 'label',
+                        html: Ext.String.format(this.i18n._("The Outgoing Email Server settings determine how the {0} Server sends emails such as reports, quarantine digests, etc. <br/>In most cases the default setting should work. If not, specify an valid SMTP server that will relay mail for the {0} Server."),
+                            main.getBrandingManager().getCompanyName())
                     }, {
                         xtype: 'radio',
                         id: 'email_smtpDisabled',
@@ -682,12 +680,8 @@ if (!Ung.hasResource["Ung.Email"]) {
                 parentId: this.getId(),
                 title: this.i18n._('Quarantine'),
                 cls: 'ung-panel',
-                style: 'padding-right: 17px',//To solve rendering issue of Ext 4.1.1 with Chrome
                 autoScroll: true,
-                layout: 'anchor',
-                defaults: {
-                    anchor: '100%'
-                },
+                layout: { type: 'vbox', pack: 'start', align: 'stretch' },
                 items: [{
                     xtype: 'fieldset',
                     items: [{
