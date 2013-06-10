@@ -2451,8 +2451,8 @@ if (!Ung.hasResource["Ung.Network"]) {
                 items: [{
                     xtype: 'fieldset',
                     cls: 'description',
-                    title: this.i18n._('Note'),
-                    html: this.i18n._(" <b>Static Routes</b> are global routes that control how traffic is routed by destination address. The most specific Static Route is taken for a particular packet, order is not important.")
+                    title: this.i18n._('Static Routes'),
+                    html: this.i18n._("Static Routes are global routes that control how traffic is routed by destination address. The most specific Static Route is taken for a particular packet, order is not important.")
                 }, this.gridStaticRoutes, {
                     xtype: 'fieldset',
                     cls: 'description',
