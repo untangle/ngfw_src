@@ -728,7 +728,7 @@ Ung.Util = {
         var count = 0;
         for (var prop in obj1) {
             // the two properties have different types
-            if (typeof obj1[prop] !== typeof obj1[prop]) {
+            if (typeof obj1[prop] !== typeof obj2[prop]) {
                 return false;
             }
 
