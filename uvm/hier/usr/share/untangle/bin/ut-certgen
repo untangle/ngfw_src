@@ -1,6 +1,6 @@
 #!/bin/dash
 
-OPENSSL_CONF="/usr/share/untangle/conf/ut-openssl.cnf"
+OPENSSL_CONF="@PREFIX@/usr/share/untangle/conf/ut-openssl.cnf"
 OPENSSL_TOOL="/usr/bin/openssl"
 CERT_PATH="/var/cache/untangle-https"
 TEMP="/dev/shm"
