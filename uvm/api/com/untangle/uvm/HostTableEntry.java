@@ -54,7 +54,7 @@ public class HostTableEntry implements Serializable, JSONString
     public void setLastSessionTime( long newValue ) { this.lastSessionTime = newValue; updateAccessTime(); }
     
     public String getHostname() { return this.hostname; }
-    public void setHostname( String newValue ) { this.hostname = hostname; updateAccessTime(); }
+    public void setHostname( String newValue ) { this.hostname = newValue; updateAccessTime(); }
 
     public String getUsernameAdConnector() { return this.usernameAdConnector; }
     public void setUsernameAdConnector( String newValue ) { this.usernameAdConnector = newValue; updateAccessTime(); }

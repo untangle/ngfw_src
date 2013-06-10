@@ -67,7 +67,6 @@ class UvmNode(Node):
                         Column('c2s_bytes', 'bigint', 'sum(p2s_bytes)')])
         reports.engine.register_fact_table(ft)
 
-
         self.branded_name = self.__get_branded_name() or self.name
 
     @print_timing
