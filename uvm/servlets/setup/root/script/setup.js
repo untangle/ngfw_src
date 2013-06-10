@@ -1490,7 +1490,7 @@ Ung.Setup = {
         // Initialize the prefix data
         Ung.SetupWizard.getV4NetmaskList = function( includeNull ) {
             var data = [];
-            if (includeNull) data.push( [null,""] );
+            if (includeNull) data.push( [null,"\u00a0"] );
             data.push( [32,"/32 - 255.255.255.255"] );
             data.push( [31,"/31 - 255.255.255.254"] );
             data.push( [30,"/30 - 255.255.255.252"] );
