@@ -1,0 +1,70 @@
+#!/bin/dash
+
+# This script will create the root certificate authority that we need for
+# generating and signing all the other certificates we use.
+# WARNING: This script is destructive!  Any existing root CA will be
+# unconditionally deleted and a new one created from scratch.
+
+OPENSSL_CONF="/usr/share/untangle/conf/https-openssl.cnf"
+OPENSSL_TOOL="/usr/bin/openssl"
+ROOT_PATH="/usr/share/untangle/settings/untangle-certificates"
+CERT_PATH="/var/cache/untangle-https"
+SUBJECT="/C=US/ST=California/L=Sunnyvale/O=Untangle/OU=Security/CN=www.untangle.com"
+
+# We use /dev/urandom because it does not block and because all of the security
+# articles I found suggest it has plenty of entropy and should always be used
+# insead of /dev/random for stuff like this unless you have a very specific
+# reason requiring the raw entropy pool, which is not the case for us.
+RANDFILE="/dev/urandom"
+export RANDFILE
+
+show_usage()
+{
+echo " "
+echo "  USAGE: https-rootgen subject"
+echo " "
+echo "  subject = /C=US/ST=California/L=Sunnyvale/O=Untangle/OU=Security/CN=www.untangle.com"
+echo " "
+echo "  WARNING: Any existing root CA files will be deleted and created from scratch!"
+echo " "
+}
+
+# The first argument should be the subject field for the root certificate
+if [ -z $1 ]; then
+    show_usage
+    exit 1
+fi
+
+# first we make sure the root CA directory exists
+if [ ! -d $ROOT_PATH ]; then
+    mkdir -p $ROOT_PATH
+fi
+
+# next we make sure the cert directory exists
+if [ ! -d $CERT_PATH ]; then
+    mkdir -p $CERT_PATH
+fi
+
+# if they pass anything other than DEFAULT then we use the provided subject
+if [ "$1" != "DEFAULT" ]; then
+    SUBJECT="$1"
+fi
+
+# next cleanup any existing files
+rm -f $CERT_PATH/*
+rm -f $ROOT_PATH/untangle.crt
+rm -f $ROOT_PATH/untangle.key
+rm -f $ROOT_PATH/index*
+rm -f $ROOT_PATH/serial*
+
+# create the initial serial using the current epoch time plus six extra digits
+date +%s000000 > $ROOT_PATH/serial.txt
+
+# create the certificate index file
+touch $ROOT_PATH/index.txt
+
+# create the CA certificate and key
+$OPENSSL_TOOL req -batch -nodes -new -x509 -extensions v3_ca -newkey rsa:2048 -keyout $ROOT_PATH/untangle.key -out $ROOT_PATH/untangle.crt -days 7305 -subj $SUBJECT
+
+# only root should have access to the key
+chmod 600 $ROOT_PATH/untangle.key
