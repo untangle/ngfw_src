@@ -316,7 +316,8 @@ if (!Ung.hasResource["Ung.Administration"]) {
                     this.gridAdminAccounts, {
                         xtype: 'checkbox',
                         fieldLabel: this.i18n._('Allow HTTP Administration'),
-                        labelStyle: 'width:150px',
+                        labelWidth: 200,
+                        style: "margin-top: 10px",
                         checked: this.getSystemSettings().httpAdministrationAllowed,
                         listeners: {
                             "change": {
@@ -326,11 +327,13 @@ if (!Ung.hasResource["Ung.Administration"]) {
                             }
                         }
                     }, {
-                        border: false,
-                        cls: 'description',
-                        html: this.i18n._('Note:') + "<br/>" +
-                            this.i18n._('HTTP is open on non-WANs (internal interfaces) for blockpages and other services.') + "<br/>" +
-                            this.i18n._('This settings only controls the availability of <b>administration</b> via HTTP.')
+                        xtype:'fieldset',
+                        title: this.i18n._('Note:'),
+                        items: [{
+                            xtype: 'label',
+                            html: this.i18n._('HTTP is open on non-WANs (internal interfaces) for blockpages and other services.') + "<br/>" +
+                                this.i18n._('This settings only controls the availability of <b>administration</b> via HTTP.')    
+                        }]
                     }]
             });
         },
@@ -1254,8 +1257,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
 
         // validation function
         validate: function() {
-            return  this.validateAdminAccounts() && this.validateExternalAdministration() &&
-                this.validatePublicAddress() && this.validateSnmp();
+            return  this.validateAdminAccounts() && this.validatePublicAddress() && this.validateSnmp();
         },
 
         //validate Admin Accounts
@@ -1300,49 +1302,6 @@ if (!Ung.hasResource["Ung.Administration"]) {
                     }, this)
                 );
                 return false;
-            }
-
-            return true;
-        },
-
-        //validate External Administration
-        validateExternalAdministration: function() {
-            var httpsPortCmp = this.panelAdministration.query('numberfield[name="httpsPort"]')[0];
-            if (!httpsPortCmp.isValid()) {
-                Ext.MessageBox.alert(this.i18n._('Warning'), Ext.String.format(this.i18n._("The port must be an integer number between {0} and {1}."), 1, 65535),
-                    Ext.bind(function () {
-                        this.tabs.setActiveTab(this.panelAdministration);
-                        httpsPortCmp.focus(true);
-                    }, this)
-                );
-                return false;
-            }
-
-            var outsideAccessRestricted = this.getSystemSettings().outsideAccessRestricted;
-            if (outsideAccessRestricted) {
-                var outsideNetworkCmp = Ext.getCmp('administration_outsideNetwork');
-                if (!outsideNetworkCmp.isValid()) {
-                    Ext.MessageBox.alert(this.i18n._('Warning'), this.i18n._('Invalid External Remote Administration \"IP Address\" specified.'),
-                        Ext.bind(function () {
-                            this.tabs.setActiveTab(this.panelAdministration);
-                            outsideNetworkCmp.focus(true);
-                        }, this)
-                    );
-                    return false;
-                }
-                var outsideNetmaskCmp = Ext.getCmp('administration_outsideNetmask');
-                if (!outsideNetmaskCmp.isValid()) {
-                    Ext.MessageBox.alert(this.i18n._('Warning'), this.i18n._("Invalid External Remote Administration \"Netmask\" specified."),
-                        Ext.bind(function () {
-                            this.tabs.setActiveTab(this.panelAdministration);
-                            outsideNetmaskCmp.focus(true);
-                        }, this)
-                    );
-                    return false;
-                }
-                //prepare for save
-                this.getSystemSettings().outsideNetwork = outsideNetworkCmp.getValue();
-                this.getSystemSettings().outsideNetmask = outsideNetmaskCmp.getValue();
             }
 
             return true;
