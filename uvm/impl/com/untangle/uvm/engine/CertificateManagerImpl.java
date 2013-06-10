@@ -23,12 +23,25 @@ import com.untangle.node.util.OpenSSLWrapper;
  */
 public class CertificateManagerImpl implements CertificateManager
 {
+    private static final String ROOT_CA_CREATOR_SCRIPT = "/usr/share/untangle/bin/https-rootgen";
+    private static final String rootCertFile = "/usr/share/untangle/settings/untangle-certificates/untangle.crt";
+    private static final String rootKeyFile = "/usr/share/untangle/settings/untangle-certificates/untangle.key";
     private static final String APACHE_PEM_FILE = "/etc/apache2/ssl/apache.pem";
 
     private final Logger logger = Logger.getLogger(getClass());
 
     protected CertificateManagerImpl()
     {
+        // make sure the root CA files exist since we need this to
+        // generate our on fake certificates on the fly
+        File certCheck = new File(rootCertFile);
+        File keyCheck = new File(rootKeyFile);
+
+        if ((certCheck.exists() != true) || (keyCheck.exists() != true))
+        {
+            logger.info("Creating new root certificate authority");
+            UvmContextFactory.context().execManager().exec(ROOT_CA_CREATOR_SCRIPT + " DEFAULT");
+        }
     }
 
     public boolean regenCert(DistinguishedName dn, int durationInDays)
