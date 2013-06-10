@@ -1,3 +1,3 @@
 #!/bin/dash
 
-/usr/bin/x-www-browser http://localhost/setup/welcome.do\?console=1
+/usr/bin/x-www-browser `xdpyinfo | grep 'dimensions:' | awk '{print $2}'| awk -F 'x' '{ print " -width " $1-10 " -height " $2-10}'` http://localhost/setup/welcome.do\?console=1
