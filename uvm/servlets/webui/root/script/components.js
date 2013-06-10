@@ -6051,13 +6051,13 @@ Ext.define('Ung.RuleBuilder', {
                 }
                 switch(rule.type) {
                   case "text":
-                    res='<input type="text" size="20" class="x-form-text x-form-field rule_builder_value" onchange="Ext.getCmp(\''+this.getId()+'\').changeRowValue(\''+record.getId()+'\', this)" value="'+value+'"/>';
+                    res='<input type="text" size="30" class="x-form-text x-form-field rule_builder_value" onchange="Ext.getCmp(\''+this.getId()+'\').changeRowValue(\''+record.getId()+'\', this)" value="'+value+'"/>';
                     break;
                   case "boolean":
                     res="<div>" + this.settingsCmp.i18n._("True") + "</div>";
                     break;
                   case "editor":
-                    res='<input type="text" size="20" class="x-form-text x-form-field rule_builder_value" onclick="Ext.getCmp(\''+this.getId()+'\').openRowEditor(\''+record.getId()+'\', \''+rule.editor.getId()+'\', this)" onchange="Ext.getCmp(\''+this.getId()+'\').changeRowValue(\''+record.getId()+'\', this)" value="'+value+'"/>';
+                    res='<input type="text" size="30" class="x-form-text x-form-field rule_builder_value" onclick="Ext.getCmp(\''+this.getId()+'\').openRowEditor(\''+record.getId()+'\', \''+rule.editor.getId()+'\', this)" onchange="Ext.getCmp(\''+this.getId()+'\').changeRowValue(\''+record.getId()+'\', this)" value="'+value+'"/>';
                     break;
                   case "checkgroup":
                     if (name == "PROTOCOL" && (value == "tcp&udp" || value == "udp&tcp")) value = "any"; // hack to support obsolete protocol matcher syntax
