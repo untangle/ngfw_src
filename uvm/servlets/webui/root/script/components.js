@@ -763,7 +763,7 @@ Ung.Util = {
 
     // Clone object
     clone: function (obj) {
-        if(obj || typeof(obj) != 'object')
+        if(obj === null || typeof(obj) != 'object')
             return obj;
 
         var temp = new obj.constructor();
