@@ -158,7 +158,8 @@ class CaptureTests(unittest2.TestCase):
         assert (search == 0)
         # get the IP address of the capture page 
         ipfind = clientControl.runCommand("grep 'Location' /tmp/capture_test_021.log",True)
-        ip = re.findall( r'[0-9]+(?:\.[0-9]+){3}', ipfind )
+        print 'ipFind %s' % ipfind
+        ip = re.findall( r'[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}(?:[0-9:]{0,6})', ipfind )
         captureIP = ip[0]
         print 'Capture IP address is %s' % captureIP
 
