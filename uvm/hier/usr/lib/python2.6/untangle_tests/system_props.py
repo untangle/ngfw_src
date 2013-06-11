@@ -36,14 +36,19 @@ class SystemProperties():
         # finds the first IP address of any interface which is on the same network as the IP passed in
         NETCONFIG_JSON_OBJ = json.loads(open(network_settings_file , 'r').read())
         for intf in NETCONFIG_JSON_OBJ['interfaces']['list']:
-            if intf['configType'] == 'ADDRESSED':
-                testIP = intf['v4StaticAddress']
-                testMask = intf['v4StaticNetmask']
-                testRange = testIP + '/' + self.get_net_size(testMask)
-                testNet = ipaddr.IPNetwork(testRange)
-                testAddr = ipaddr.IPAddress(remoteIP)
-                if testAddr in testNet:
-                    return testIP
+            if (intf['configType'] == 'ADDRESSED'):
+                try:
+                    testIP = intf['v4StaticAddress']
+                    testMask = intf['v4StaticNetmask']
+                    testRange = testIP + '/' + self.get_net_size(testMask)
+                    testNet = ipaddr.IPNetwork(testRange)
+                    testAddr = ipaddr.IPAddress(remoteIP)
+                    if testAddr in testNet:
+                        return testIP
+                except:
+                    pass  # no static ips   
+            else:
+                pass
         return None
 
     def get_net_size(self, netmask):
