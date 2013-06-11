@@ -677,10 +677,6 @@ Ung.Util = {
         
         return interfaceStore;
     },
-    clearInterfaceStore: function() {
-        // It will automatically reload the next time the interface store is fetched.
-        this.interfaceStore = null;
-    },
     protocolStore: null,
     getProtocolStore: function() {
         if(this.protocolStore==null) {

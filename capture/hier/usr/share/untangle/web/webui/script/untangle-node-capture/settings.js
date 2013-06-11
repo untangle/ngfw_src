@@ -43,7 +43,7 @@ if (!Ung.hasResource["Ung.Capture"]) {
         gridUserEventLog: null,
         gridRuleEventLog: null,
         initComponent: function() {
-            Ung.Util.clearInterfaceStore();
+            main.getNetworkSettings(true);
 
             // builds the tabs
             this.buildCaptiveStatus();
