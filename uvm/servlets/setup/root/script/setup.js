@@ -311,26 +311,24 @@ Ext.define('Ung.SetupWizard.Interfaces', {
                                 soruceData.deviceName=oldValue;
                                 targetData.deviceName=newValue;
                                 
-                                sourceRecord.suspendEvents();
-                                sourceRecord.set("physicalDev", targetData.physicalDev);
-                                sourceRecord.set("macAddress",targetData.macAddress);
-                                sourceRecord.set("duplex",targetData.duplex);
-                                sourceRecord.set("vendor",targetData.vendor);
-                                sourceRecord.set("mbit",targetData.mbit);
-                                //set connected must be the last to trigger column refresh
-                                sourceRecord.set("connected",targetData.connected);
-                                sourceRecord.resumeEvents();
+                                sourceRecord.set({
+                                    "physicalDev": targetData.physicalDev,
+                                    "macAddress": targetData.macAddress,
+                                    "duplex": targetData.duplex,
+                                    "vendor": targetData.vendor,
+                                    "mbit": targetData.mbit,
+                                    "connected": targetData.connected
+                                });
                                 
-                                targetRecord.suspendEvents();
-                                targetRecord.set("deviceName", soruceData.deviceName);
-                                targetRecord.set("physicalDev", soruceData.physicalDev);
-                                targetRecord.set("macAddress",soruceData.macAddress);
-                                targetRecord.set("duplex",soruceData.duplex);
-                                targetRecord.set("vendor",soruceData.vendor);
-                                targetRecord.set("mbit",soruceData.mbit);
-                                //set connected must be the last to trigger column refresh
-                                targetRecord.set("connected",soruceData.connected);
-                                targetRecord.resumeEvents();
+                                targetRecord.set({
+                                    "deviceName": soruceData.deviceName,
+                                    "physicalDev": soruceData.physicalDev,
+                                    "macAddress": soruceData.macAddress,
+                                    "duplex": soruceData.duplex,
+                                    "vendor": soruceData.vendor,
+                                    "mbit": soruceData.mbit,
+                                    "connected": soruceData.connected
+                                });
                             }, this)
                         }
                     }
@@ -440,8 +438,10 @@ Ext.define('Ung.SetupWizard.Interfaces', {
         this.interfaceStore.each( Ext.bind(function( currentRow ) {
             console.log("this.mapDevicesStore.each:",arguments);
             var intf=interfaceList[i];
-            currentRow.set("interfaceId", intf.interfaceId);
-            currentRow.set("name", intf.name);
+            currentRow.set({
+                "interfaceId": intf.interfaceId,
+                "name": intf.name
+            });
             i++;
         }, this));
         return true;

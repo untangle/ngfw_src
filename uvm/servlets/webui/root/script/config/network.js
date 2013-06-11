@@ -58,6 +58,35 @@ if (!Ung.hasResource["Ung.Network"]) {
                 {name:"SRC_INTF",displayName: settingsCmp.i18n._("Source Interface"), type: "checkgroup", values: Ung.Util.getInterfaceList(true, true), visible: true, allowInvert: false},
                 {name:"PROTOCOL",displayName: settingsCmp.i18n._("Protocol"), type: "checkgroup", values: [["TCP","TCP"],["UDP","UDP"],["ICMP","ICMP"],["GRE","GRE"],["ESP","ESP"],["AH","AH"],["SCTP","SCTP"]], visible: true, allowInvert: false}
             ];
+        },
+        onRefreshDeviceStatus: function(settingsCmp, grid) {
+            Ext.MessageBox.wait(settingsCmp.i18n._("Refreshing Device Status..."), i18n._("Please wait"));
+            main.getNetworkManager().getDeviceStatus(Ext.bind(function(result, exception) {
+                if(Ung.Util.handleException(exception)) return;
+                var deviceStatusMap=Ung.Util.createRecordsMap(result.list, "deviceName");
+                grid.getStore().suspendEvents();
+                grid.getStore().each(function( currentRow ) {
+                    var deviceStatus = deviceStatusMap[currentRow.get("deviceName")];
+                    if(deviceStatus) {
+                        var isDirty = currentRow.dirty;
+                        currentRow.set({
+                            "macAddress": deviceStatus.macAddress,
+                            "duplex": deviceStatus.duplex,
+                            "vendor": deviceStatus.vendor,
+                            "mbit": deviceStatus.mbit,
+                            "connected": deviceStatus.connected
+                        });
+                        //To prevent coloring the row when device status is changed
+                        if(!isDirty) {
+                            currentRow.commit();
+                        }
+                    }
+                });
+                grid.getStore().resumeEvents();
+                grid.getView().refresh();
+
+                Ext.MessageBox.hide();
+            }, this));
         }
     };
     Ext.define("Ung.NetworkTest", {
@@ -454,10 +483,18 @@ if (!Ung.hasResource["Ung.Network"]) {
                 bbar: [{
                     xtype: "button",
                     name: "remap_interfaces",
-                    iconCls: 'icon-refresh',
+                    iconCls: 'icon-drag',
                     text: this.i18n._("Remap Interfaces"),
                     handler: function() {
                         this.gridInterfaces.onMapDevices();
+                    },
+                    scope : this
+                },{
+                    xtype: "button",
+                    iconCls: 'icon-refresh',
+                    text: this.i18n._("Refresh Device Status"),
+                    handler: function() {
+                        Ung.NetworkUtil.onRefreshDeviceStatus(this, this.gridInterfaces);
                     },
                     scope : this
                 },{
@@ -505,7 +542,7 @@ if (!Ung.hasResource["Ung.Network"]) {
                         });
 
                         this.gridMapDevices = Ext.create('Ext.grid.Panel', {
-                            anchor: '100% -80',
+                            flex: 1,
                             store: this.mapDevicesStore,
                             loadMask: true,
                             stripeRows: true,
@@ -518,6 +555,15 @@ if (!Ung.hasResource["Ung.Network"]) {
                                     clicksToEdit: 1
                                 })
                             ],
+                            bbar: [{
+                                xtype: "button",
+                                iconCls: 'icon-refresh',
+                                text: this.i18n._("Refresh Device Status"),
+                                handler: function() {
+                                    Ung.NetworkUtil.onRefreshDeviceStatus(this, this.gridMapDevices);
+                                },
+                                scope : this
+                            }],
                             viewConfig:{
                                 forceFit: true,
                                 disableSelection: false,
@@ -532,8 +578,10 @@ if (!Ung.hasResource["Ung.Network"]) {
                                             this.mapDevicesStore.each( Ext.bind(function( currentRow ) {
                                                 console.log("this.mapDevicesStore.each:",arguments);
                                                 var intf=this.currentInterfaces[i];
-                                                currentRow.set("interfaceId", intf.interfaceId);
-                                                currentRow.set("name", intf.name);
+                                                currentRow.set({
+                                                    "interfaceId": intf.interfaceId,
+                                                    "name": intf.name
+                                                });
                                                 i++;
                                             }, this));
                                             return true;
@@ -595,28 +643,28 @@ if (!Ung.hasResource["Ung.Network"]) {
                                                 soruceData.deviceName=oldValue;
                                                 targetData.deviceName=newValue;
                                                 
-                                                sourceRecord.suspendEvents();
-                                                sourceRecord.set("physicalDev", targetData.physicalDev);
-                                                sourceRecord.set("systemDev", targetData.systemDev);
-                                                sourceRecord.set("symbolicDev", targetData.symbolicDev);
-                                                sourceRecord.set("macAddress",targetData.macAddress);
-                                                sourceRecord.set("duplex",targetData.duplex);
-                                                sourceRecord.set("vendor",targetData.vendor);
-                                                sourceRecord.set("mbit",targetData.mbit);
-                                                sourceRecord.set("connected",targetData.connected);
-                                                sourceRecord.resumeEvents();
+                                                sourceRecord.set({
+                                                    "physicalDev": targetData.physicalDev,
+                                                    "systemDev": targetData.systemDev,
+                                                    "symbolicDev": targetData.symbolicDev,
+                                                    "macAddress": targetData.macAddress,
+                                                    "duplex": targetData.duplex,
+                                                    "vendor": targetData.vendor,
+                                                    "mbit": targetData.mbit,
+                                                    "connected": targetData.connected
+                                                });
                                                 
-                                                targetRecord.suspendEvents();
-                                                targetRecord.set("deviceName", soruceData.deviceName);
-                                                targetRecord.set("physicalDev", soruceData.physicalDev);
-                                                targetRecord.set("systemDev", soruceData.systemDev);
-                                                targetRecord.set("symbolicDev", soruceData.symbolicDev);
-                                                targetRecord.set("macAddress",soruceData.macAddress);
-                                                targetRecord.set("duplex",soruceData.duplex);
-                                                targetRecord.set("vendor",soruceData.vendor);
-                                                targetRecord.set("mbit",soruceData.mbit);
-                                                targetRecord.set("connected",soruceData.connected);
-                                                targetRecord.resumeEvents();
+                                                targetRecord.set({
+                                                    "deviceName": soruceData.deviceName,
+                                                    "physicalDev": soruceData.physicalDev,
+                                                    "systemDev": soruceData.systemDev,
+                                                    "symbolicDev": soruceData.symbolicDev,
+                                                    "macAddress": soruceData.macAddress,
+                                                    "duplex": soruceData.duplex,
+                                                    "vendor": soruceData.vendor,
+                                                    "mbit": soruceData.mbit,
+                                                    "connected": soruceData.connected
+                                                });
                                                 return true;
                                             }, this)
                                         }
@@ -688,9 +736,10 @@ if (!Ung.hasResource["Ung.Network"]) {
                             }],
                             items: [{
                                 xtype: 'panel',
-                                layout: 'anchor',
+                                layout: { type: 'vbox', align: 'stretch' },
                                 items: [{
                                     xtype: 'fieldset',
+                                    flex: 0,
                                     margin: '10 0 0 0',
                                     cls: 'description',
                                     title: this.i18n._("How to map Devices with Interfaces"),
@@ -704,15 +753,17 @@ if (!Ung.hasResource["Ung.Network"]) {
                                 });
                                 this.gridInterfaces.getStore().each(function( currentRow ) {
                                     var interfaceData = interfaceDataMap[currentRow.get("interfaceId")];
-                                    currentRow.set("deviceName",interfaceData.deviceName);
-                                    currentRow.set("physicalDev",interfaceData.physicalDev);
-                                    currentRow.set("systemDev",interfaceData.systemDev);
-                                    currentRow.set("symbolicDev",interfaceData.symbolicDev);
-                                    currentRow.set("macAddress",interfaceData.macAddress);
-                                    currentRow.set("connected",interfaceData.connected);
-                                    currentRow.set("duplex",interfaceData.duplex);
-                                    currentRow.set("vendor",interfaceData.vendor);
-                                    currentRow.set("mbit",interfaceData.mbit);
+                                    currentRow.set({
+                                        "deviceName": interfaceData.deviceName,
+                                        "physicalDev": interfaceData.physicalDev,
+                                        "systemDev": interfaceData.systemDev,
+                                        "symbolicDev": interfaceData.symbolicDev,
+                                        "macAddress": interfaceData.macAddress,
+                                        "connected": interfaceData.connected,
+                                        "duplex": interfaceData.duplex,
+                                        "vendor": interfaceData.vendor,
+                                        "mbit": interfaceData.mbit
+                                    });
                                 });
                                 this.winMapDevices.cancelAction();
                             }, this)
@@ -734,11 +785,11 @@ if (!Ung.hasResource["Ung.Network"]) {
                 qosBandwidthStore.clearFilter();
                 qosBandwidthStore.each( function( currentRow ) {
                     var interfaceData = interfacesMap[currentRow.get("interfaceId")];
-                    currentRow.suspendEvents();
-                    currentRow.set("isWan", interfaceData.isWan);
-                    currentRow.set("name", interfaceData.name);
-                    currentRow.set("configType", interfaceData.configType);
-                    currentRow.resumeEvents();
+                    currentRow.set({
+                        "isWan": interfaceData.isWan,
+                        "name": interfaceData.name,
+                        "configType": interfaceData.configType
+                    });
                 });
                 qosBandwidthStore.filter([{property: "configType", value: "ADDRESSED"}, {property:"isWan", value: true}]);
                 this.gridQosWanBandwidth.updateTotalBandwidth();
@@ -2186,7 +2237,7 @@ if (!Ung.hasResource["Ung.Network"]) {
                 syncComponents: function () {
                     var natType  = this.query('combo[dataIndex="auto"]')[0];
                     var newSource = this.query('textfield[dataIndex="newSource"]')[0];
-                    if (natType.value) /* Auto */ {
+                    if (natType.value) { //Auto
                         newSource.disable();
                         newSource.hide();
                     } else {
