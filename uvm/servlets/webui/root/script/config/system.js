@@ -853,7 +853,7 @@ if (!Ung.hasResource["Ung.System"]) {
                     "multiplier": -1,
                     "javaClass": "com.untangle.node.shield.ShieldRule"
                 },
-                title: this.i18n._("Forward Filter Rules"),
+                title: this.i18n._("Shield Rules"),
                 recordJavaClass: "com.untangle.node.shield.ShieldRule",
                 dataExpression:'getShieldSettings().rules.list',
                 fields: [{
