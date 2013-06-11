@@ -71,8 +71,7 @@ public class BlockPageUtil
         }
 
         request.setAttribute( "contact", I18nUtil.tr("If you have any questions, Please contact {0}.", contactHtml, i18n_map));
-
-        
+        request.setAttribute( "companyUrl", bm.getCompanyUrl());
         String mode = (params.getUnblockMode() == null ? "" : params.getUnblockMode()).trim().toLowerCase();
 
         if ((!BlockPageParameters.UNBLOCK_MODE_NONE.equals(mode)) && ( null != bd ) && ( null != bd.getWhitelistHost())) {
