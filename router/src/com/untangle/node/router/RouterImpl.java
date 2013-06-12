@@ -3,20 +3,17 @@
  */
 package com.untangle.node.router;
 
-import java.util.Map;
 import java.net.InetAddress;
 
+import org.apache.log4j.Logger;
+
 import com.untangle.node.token.TokenAdaptor;
-import com.untangle.uvm.UvmContextFactory;
-import com.untangle.uvm.logging.LogEvent;
-import com.untangle.uvm.NetworkManager;
-import com.untangle.uvm.vnet.NodeBase;
 import com.untangle.uvm.vnet.Affinity;
 import com.untangle.uvm.vnet.Fitting;
-import com.untangle.uvm.vnet.PipelineConnector;
+import com.untangle.uvm.vnet.NodeBase;
 import com.untangle.uvm.vnet.PipeSpec;
+import com.untangle.uvm.vnet.PipelineConnector;
 import com.untangle.uvm.vnet.SoloPipeSpec;
-import org.apache.log4j.Logger;
 
 public class RouterImpl extends NodeBase implements Router
 {
@@ -25,7 +22,8 @@ public class RouterImpl extends NodeBase implements Router
     private final DhcpMonitor dhcpMonitor;
 
     private final SoloPipeSpec routerPipeSpec;
-    private final SoloPipeSpec routerFtpPipeSpec;
+    private final SoloPipeSpec routerFtpPipeSpecCtl;
+    private final SoloPipeSpec routerFtpPipeSpecData;
 
     private final PipeSpec[] pipeSpecs;
 
@@ -47,9 +45,11 @@ public class RouterImpl extends NodeBase implements Router
         /**
          * This subscription has to evaluate after NAT
          */
-        routerFtpPipeSpec = new SoloPipeSpec("router-ftp", this, new TokenAdaptor(this, new RouterFtpFactory(this)), Fitting.FTP_TOKENS, Affinity.SERVER, 0);
+        //routerFtpPipeSpec = new SoloPipeSpec("router-ftp", this, new TokenAdaptor(this, new RouterFtpFactory(this)), Fitting.FTP_TOKENS, Affinity.SERVER, 0);
+        routerFtpPipeSpecCtl = new SoloPipeSpec("router-ftp-ctl", this, new TokenAdaptor(this, new RouterFtpFactory(this)), Fitting.FTP_CTL_TOKENS, Affinity.SERVER, 0);
+   		routerFtpPipeSpecData = new SoloPipeSpec("router-ftp-data", this, new TokenAdaptor(this, new RouterFtpFactory(this)), Fitting.FTP_DATA_TOKENS, Affinity.SERVER, 0);
 
-        pipeSpecs = new SoloPipeSpec[] { routerPipeSpec, routerFtpPipeSpec };
+        pipeSpecs = new SoloPipeSpec[] { routerPipeSpec, routerFtpPipeSpecCtl, routerFtpPipeSpecData };
     }
 
     // package protected methods ----------------------------------------------
@@ -64,9 +64,14 @@ public class RouterImpl extends NodeBase implements Router
         return routerPipeSpec.getPipelineConnector();
     }
 
-    PipelineConnector getRouterFtpPipeSpec()
+    PipelineConnector getRouterFtpPipeSpecCtl()
     {
-        return routerFtpPipeSpec.getPipelineConnector();
+        return routerFtpPipeSpecCtl.getPipelineConnector();
+    }
+    
+    PipelineConnector getRouterFtpPipeSpecData()
+    {
+        return routerFtpPipeSpecData.getPipelineConnector();
     }
 
     // NodeBase methods ----------------------------------------------
