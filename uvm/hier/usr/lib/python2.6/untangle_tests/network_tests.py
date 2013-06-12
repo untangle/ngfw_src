@@ -201,12 +201,25 @@ def isBridgeMode(clientIPAdress):
     netsettings = uvmContext.networkManager().getNetworkSettings()
     for interface in netsettings['interfaces']['list']:
         if interface['isWan']:
-            wanIP = interface['v4StaticGateway']
-            wanNetmask = interface['v4StaticNetmask']
-            systemProperties = system_props.SystemProperties()
-            wanRange = wanIP + '/' + systemProperties.get_net_size(wanNetmask)
-            wanNet = ipaddr.IPNetwork(wanRange)
-            wanAddr = ipaddr.IPAddress(clientIPAdress)
+            if interface['v4StaticGateway']:
+                wanIP = interface['v4StaticGateway']
+                wanNetmask = interface['v4StaticNetmask']
+                systemProperties = system_props.SystemProperties()
+                wanNetSize = systemProperties.get_net_size(wanNetmask)
+                wanRange = wanIP + '/' + wanNetSize
+                wanNet = ipaddr.IPNetwork(wanRange)
+                wanAddr = ipaddr.IPAddress(clientIPAdress)
+            elif (interface['v4ConfigType'] == 'AUTO'):
+                # is this a dynamic IP
+                nicDevice = str(interface['physicalDev'])
+                systemProperties = system_props.SystemProperties()
+                wanIP = systemProperties.get_ip_address(nicDevice)
+                wanNetmask =  systemProperties.get_netmask(nicDevice)
+                wanRange = wanIP + '/' + systemProperties.get_net_size(wanNetmask)
+                wanNet = ipaddr.IPNetwork(wanRange)
+                wanAddr = ipaddr.IPAddress(clientIPAdress)
+            else:
+                raise unittest2.SkipTest("Unable to determine WAN IP")
             if wanAddr in wanNet:
                 return True
             else:
@@ -283,11 +296,11 @@ class NetworkTests(unittest2.TestCase):
         netstatResult = int(clientControl.runCommand("netstat -an | grep '0.0.0.0:80 ' | wc -l",True))
         # print "netstatResult <%s>" % netstatResult
         if (netstatResult == 0):
-            print "doing raise error"
             raise unittest2.SkipTest("No web server running on client, skipping port 80 forwarding test")
         clientControl.runCommand("rm -f /tmp/network_test_030*")
         netsettings = uvmContext.networkManager().getNetworkSettings()
         wan_IP = uvmContext.networkManager().getFirstWanAddress()
+        # print "wan_IP <%s>" % wan_IP
         # port forward 80 to client box
         appendForward(createPortForwardLocalMatcherRule("DST_PORT","80",ClientControl.hostIP))
         tmp_hostIP = clientControl.hostIP
