@@ -209,6 +209,7 @@ public class BackupManager
                 logger.warn("Failed to write backup data",e);
             }
 
+            backupFile.delete();
         }
     }
 
