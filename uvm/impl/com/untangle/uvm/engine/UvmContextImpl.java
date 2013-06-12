@@ -47,7 +47,7 @@ import com.untangle.uvm.message.MessageManager;
 import com.untangle.uvm.node.NodeManager;
 import com.untangle.uvm.servlet.ServletUtils;
 import com.untangle.uvm.servlet.UploadHandler;
-import com.untangle.uvm.servlet.UploadManager;
+import com.untangle.uvm.servlet.ServletFileManager;
 
 /**
  * This is the root API providing the Untangle VM functionality for applications and the user interface
@@ -98,7 +98,7 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
     private LanguageManagerImpl languageManager;
     private DefaultLicenseManagerImpl defaultLicenseManager;
     private TomcatManagerImpl tomcatManager;
-    private UploadManagerImpl uploadManager;
+    private ServletFileManagerImpl servletFileManager;
     private SettingsManagerImpl settingsManager;
     private OemManagerImpl oemManager;
     private AlertManagerImpl alertManager;
@@ -220,9 +220,9 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
             return lm;
     }
 
-    public UploadManager uploadManager()
+    public ServletFileManager servletFileManager()
     {
-        return this.uploadManager;
+        return this.servletFileManager;
     }
     
     public SettingsManager settingsManager()
@@ -600,7 +600,7 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
             throw new IllegalStateException("register serializers should never fail!", e);
         }
         
-        this.uploadManager = new UploadManagerImpl();
+        this.servletFileManager = new ServletFileManagerImpl();
 
         this.languageManager = new LanguageManagerImpl();
         

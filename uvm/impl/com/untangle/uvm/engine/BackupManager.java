@@ -7,7 +7,14 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.util.Map;
+import java.util.Calendar;
+import java.text.SimpleDateFormat;
+
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.fileupload.FileItem;
 import org.apache.log4j.Logger;
@@ -17,7 +24,7 @@ import com.untangle.uvm.ExecManagerResult;
 import com.untangle.uvm.util.I18nUtil;
 import com.untangle.node.util.IOUtil;
 import com.untangle.uvm.servlet.UploadHandler;
-import com.untangle.uvm.servlet.UploadManager;
+import com.untangle.uvm.servlet.DownloadHandler;
 
 /**
  * Helper class to do backup/restore
@@ -33,18 +40,23 @@ public class BackupManager
 
     protected BackupManager()
     {
-        UvmContextFactory.context().uploadManager().registerHandler(new RestoreUploadHandler());
+        UvmContextFactory.context().servletFileManager().registerUploadHandler( new RestoreUploadHandler() );
+        UvmContextFactory.context().servletFileManager().registerDownloadHandler( new BackupDownloadHandler() );
 
         Map<String,String> i18nMap = UvmContextFactory.context().languageManager().getTranslations("untangle-libuvm");
         this.i18nUtil = new I18nUtil(i18nMap);
+
+
     }
     
-    protected byte[] createBackup() throws IOException
+    protected byte[] createBackup() 
     {
-        //Create the temp file which will be the tar
-        File tempFile = File.createTempFile("localdump", ".tar.gz.tmp");
-
+        File tempFile = null;
+        
         try {
+            //Create the temp file which will be the tar
+            tempFile = File.createTempFile("localdump", ".tar.gz.tmp");
+
             Integer result = UvmContextFactory.context().execManager().execResult(BACKUP_SCRIPT + " -o " + tempFile.getAbsolutePath() +" -v");
 
             if(result != 0) {
@@ -60,9 +72,9 @@ public class BackupManager
         }
         catch(IOException ex) {
             //Don't forget to delete the temp file
-            IOUtil.delete(tempFile);
+            if ( tempFile != null ) IOUtil.delete(tempFile);
             logger.error("Exception creating backup for transfer to client", ex);
-            throw new IOException("Unable to create backup file - can't transfer to client.");//Generic, in case it ever gets shown in the UI
+            throw new RuntimeException("Unable to create backup file");
         }
     }
 
@@ -159,4 +171,42 @@ public class BackupManager
         }
         
     }
+
+    private class BackupDownloadHandler implements DownloadHandler
+    {
+        private static final String DATE_FORMAT_NOW = "yyyy-MM-dd_HH-mm-ss";
+        private static final String ATTR_BACKUP_DATA = "backupData";
+
+        @Override
+        public String getName()
+        {
+            return "backup";
+        }
+        
+        @Override
+        public void serveDownload( HttpServletRequest req, HttpServletResponse resp, String argument )
+        {
+            String oemName = UvmContextFactory.context().oemManager().getOemName();
+            String version = UvmContextFactory.context().version().replace(".","_");
+            String hostName = UvmContextFactory.context().networkManager().getNetworkSettings().getHostName().replace(".","_");
+            String dateStr = (new SimpleDateFormat(DATE_FORMAT_NOW)).format((Calendar.getInstance()).getTime());
+            String filename = oemName + "-" + version + "-" + "backup" + "-" + hostName + "-" + dateStr + ".backup";
+
+            byte[] backupData = createBackup();
+			
+            // Set the headers.
+            resp.setContentType("application/x-download");
+            resp.setHeader("Content-Disposition", "attachment; filename=" + filename);
+
+            // Send to client
+            try {
+                OutputStream out = resp.getOutputStream();
+                out.write(backupData, 0, backupData.length);
+            } catch (Exception e) {
+                logger.warn("Failed to write backup data",e);
+            }
+
+        }
+    }
+
 }

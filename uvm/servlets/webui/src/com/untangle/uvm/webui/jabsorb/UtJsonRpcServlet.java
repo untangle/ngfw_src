@@ -77,7 +77,7 @@ public class UtJsonRpcServlet extends JSONRPCServlet
             bridge.registerCallableReference(uvm.getConnectivityTester().getClass());
             bridge.registerCallableReference(uvm.netcapManager().getClass());
             bridge.registerCallableReference(uvm.licenseManager().getClass());
-            bridge.registerCallableReference(uvm.uploadManager().getClass());
+            bridge.registerCallableReference(uvm.servletFileManager().getClass());
             bridge.registerCallableReference(uvm.settingsManager().getClass());
             bridge.registerCallableReference(uvm.oemManager().getClass());
             bridge.registerCallableReference(uvm.alertManager().getClass());

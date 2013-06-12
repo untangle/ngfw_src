@@ -17,7 +17,7 @@ import com.untangle.uvm.node.NodeManager;
 import com.untangle.uvm.node.LicenseManager;
 import com.untangle.uvm.node.PolicyManager;
 import com.untangle.uvm.node.DayOfWeekMatcher;
-import com.untangle.uvm.servlet.UploadManager;
+import com.untangle.uvm.servlet.ServletFileManager;
 import com.untangle.uvm.apt.AptManager;
 import com.untangle.uvm.vnet.PipelineFoundry;
 
@@ -173,7 +173,7 @@ public interface UvmContext
      *
      * @return the UploadManager
      */
-    UploadManager uploadManager();
+    ServletFileManager servletFileManager();
 
     /**
      * Get the TomcatManager

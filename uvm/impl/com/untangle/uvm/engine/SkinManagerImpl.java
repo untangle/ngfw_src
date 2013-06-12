@@ -245,7 +245,7 @@ public class SkinManagerImpl implements SkinManager
     private void reconfigure() 
     {
         /* Register a handler to upload skins */
-        UvmContextImpl.context().uploadManager().registerHandler(new SkinUploadHandler());
+        UvmContextImpl.context().servletFileManager().registerUploadHandler( new SkinUploadHandler() );
     }
     
     private void processSkinFolder(File dir, List<File> processedSkinFolders)

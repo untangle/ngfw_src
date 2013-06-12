@@ -82,7 +82,7 @@ public class LanguageManagerImpl implements LanguageManager
         allLanguages = loadAllLanguages();
         blacklist = loadBlacklist();
         allCountries = loadAllCountries();
-        UvmContextFactory.context().uploadManager().registerHandler(new LanguageUploadHandler());
+        UvmContextFactory.context().servletFileManager().registerUploadHandler( new LanguageUploadHandler() );
     }
 
     // public methods ---------------------------------------------------------

@@ -22,7 +22,6 @@ import org.json.JSONObject;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.ExecManagerResult;
 import com.untangle.uvm.servlet.UploadHandler;
-import com.untangle.uvm.servlet.UploadManager;
 
 /**
  * A servlet for uploading a file
@@ -51,15 +50,14 @@ public class UploadServlet extends HttpServlet
             String uploadType = getUploadType(items);
             String arg = getArgument(items);
 
-            // Process the uploaded items
-            UploadManager uploadManager = UvmContextFactory.context().uploadManager();
-
+            logger.info("Handling Upload: " + uploadType + " (" + arg + ")");
+            
             for ( FileItem item : items ) {
                 if (!item.isFormField()) {
-                    UploadHandler handler = uploadManager.getUploadHandler(uploadType);
+                    UploadHandler handler = UvmContextFactory.context().servletFileManager().getUploadHandler(uploadType);
                     if ( handler == null ) {
                         result = "Do not know how to handler the type '" + uploadType + "'";
-                        logger.info("Unable to handle an upload of type: " + uploadType );
+                        logger.error("Unable to handle an upload of type: " + uploadType );
                     } else {
                         result = handler.handleFile(item, arg);
                     }                    

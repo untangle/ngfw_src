@@ -316,32 +316,10 @@ if (!Ung.hasResource["Ung.System"]) {
                 cls: "ung-panel",
                 autoScroll: true,
                 onBackupToFile: Ext.bind(function() {
-                    // A two step process: first asks the server for permission to download the file (the outer ajax request)
-                    // and then if successful opens the iframe which initiates the download.
-                    Ext.MessageBox.wait(this.i18n._("Generating Backup File..."), i18n._("Please wait"));
-                    Ext.Ajax.request({
-                        url: "backup",
-                        params: {action:"requestBackup"},
-                        success: function(response) {
-                            try {
-                                Ext.destroy(Ext.get("downloadIframe"));
-                            }
-                            catch(e) {}
-                            Ext.DomHelper.append(document.body, {
-                                tag: "iframe",
-                                id:"downloadIframe",
-                                frameBorder: 0,
-                                width: 0,
-                                height: 0,
-                                css: "display:none;visibility:hidden;height:0px;",
-                                src: "backup?action=initiateDownload"
-                            });
-                            Ext.MessageBox.hide();
-                        },
-                        failure: function() {
-                            Ext.MessageBox.alert(this.i18n._("Backup Failure Warning"), this.i18n._("Error:  The local file backup procedure failed.  Please try again."));
-                        }
-                    });
+                    Ext.MessageBox.wait(i18n._("Downloading backup..."), i18n._("Please wait"));
+                    downloadForm["type"].value="backup";
+                    downloadForm.submit();
+                    Ext.MessageBox.hide();
                 }, this),
                 items: [{
                     xtype: "fieldset",
