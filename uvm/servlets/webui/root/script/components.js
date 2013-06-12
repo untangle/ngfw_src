@@ -4206,6 +4206,7 @@ Ext.define('Ung.EditorGrid', {
     hasAdd: true,
     // should add add rows at top or bottom
     addAtTop: true,
+    configAdd: null,
     // has Import Export buttons
     hasImportExport: null,    
     // has Edit buton on each record
@@ -4258,8 +4259,7 @@ Ext.define('Ung.EditorGrid', {
     constructor: function(config) {
         var defaults = {
             data: [],
-            plugins: [
-            ],
+            plugins: [],
             viewConfig: {
                 enableTextSelection: true,
                 stripeRows: true,
@@ -4274,7 +4274,6 @@ Ext.define('Ung.EditorGrid', {
                     msg: i18n._("Loading...")
                 }
             },
-            
             changedData: {},
             subCmps:[]
         };
@@ -4383,14 +4382,14 @@ Ext.define('Ung.EditorGrid', {
             this.hasImportExport=this.hasAdd;
         }
         if (this.hasAdd) {
-            this.tbar.push({
+            this.tbar.push(Ext.applyIf(this.configAdd || {}, {
                 text: i18n._('Add'),
                 tooltip: i18n._('Add New Row'),
                 iconCls: 'icon-add-row',
                 name: 'Add',
                 parentId: this.getId(),
                 handler: Ext.bind(this.addHandler, this)
-            });
+            }));
         }
         if (this.hasImportExport) {
             this.tbar.push('->', {

@@ -283,6 +283,30 @@ if (!Ung.hasResource["Ung.Network"]) {
         // Interfaces Panel
         buildInterfaces: function() {
             var settingsCmp = this;
+            var deleteVlanColumn = Ext.create('Ext.grid.column.Action', {
+                menuDisabled: true,
+                dataIndex: 'isVlanInterface',
+                header:i18n._("Delete VLAN"),
+                width: 80,
+                init:function(grid) {
+                    this.grid=grid;
+                },
+                handler: function(view, rowIndex, colIndex) {
+                    var rec = view.getStore().getAt(rowIndex);
+                    if(rec.get("isVlanInterface")) {
+                        this.grid.deleteHandler(rec);
+                    }
+                },
+                getClass: function(value, metadata, record) { 
+                    if(record.get("isVlanInterface")) {
+                        return 'icon-delete-row'; 
+                    } else {
+                        return 'x-hide-display';
+                                       
+                    }
+                }
+            }); 
+            
             this.gridInterfaces = Ext.create('Ung.EditorGrid',{
                 flex: 1,
                 name: 'Interfaces',
@@ -290,7 +314,9 @@ if (!Ung.hasResource["Ung.Network"]) {
                 paginated: false,
                 hasReorder: false,
                 hasDelete: false,
-                hasAdd: false,
+                configAdd: {
+                    text: i18n._('Add 802.1q Tagged Interface'),
+                },
                 addAtTop: false,
                 columnsDefaultSortable: true,
                 enableColumnHide: true,
@@ -298,6 +324,12 @@ if (!Ung.hasResource["Ung.Network"]) {
                 title: this.i18n._("Interfaces"),
                 recordJavaClass: "com.untangle.uvm.network.InterfaceSettings",
                 dataProperty: "interfaces",
+                emptyRow: { //Used only to add VLAN Interfaces
+                    "interfaceId": -1,
+                    "isVlanInterface": true,
+                    "vlanTag": 0,
+                    "javaClass": "com.untangle.uvm.network.InterfaceSettings"
+                },
                 fields: [{
                     name: 'interfaceId'
                 }, {
@@ -426,7 +458,7 @@ if (!Ung.hasResource["Ung.Network"]) {
                 }, {
                     header: this.i18n._("Name"),
                     dataIndex: 'name',
-                    width:100
+                    width:120
                 }, {
                     header: this.i18n._( "Connected" ),
                     dataIndex: 'connected',
@@ -444,9 +476,20 @@ if (!Ung.hasResource["Ung.Network"]) {
                         return "<div class='" + divClass + "'>" + connectedStr + "</div>";
                     }, this)
                 }, {
+                    header: this.i18n._("Device"),
+                    dataIndex: 'physicalDev',
+                    width:90,
+                    renderer: Ext.bind(function(value, metadata, record, rowIndex, colIndex, store, view) {
+                        if (record.get("isVlanInterface")) {
+                            return record.get("systemDev");
+                        }
+                        return value;
+                    }, this)
+                },{
+                    hidden: true,
                     header: this.i18n._("Physical Dev"),
                     dataIndex: 'physicalDev',
-                    width:100
+                    width:80
                 }, {
                     hidden: true,
                     header: this.i18n._("System Dev"),
@@ -473,14 +516,15 @@ if (!Ung.hasResource["Ung.Network"]) {
                 }, {
                     header: this.i18n._("is WAN"),
                     dataIndex: 'isWan',
-                    width:55,
+                    width:60,
                     renderer: Ext.bind(function(value, metadata, record, rowIndex, colIndex, store, view) {
                         // only ADDRESSED interfaces can be WANs
                         return (record.data.configType == 'ADDRESSED') ? value: ""; // if its addressed return value
                     }, this)
                     
-                }],
-                bbar: [{
+                }, deleteVlanColumn],
+                plugins: [deleteVlanColumn],
+                bbar: ['-',{
                     xtype: "button",
                     name: "remap_interfaces",
                     iconCls: 'icon-drag',
@@ -489,7 +533,7 @@ if (!Ung.hasResource["Ung.Network"]) {
                         this.gridInterfaces.onMapDevices();
                     },
                     scope : this
-                },{
+                },'-',{
                     xtype: "button",
                     iconCls: 'icon-refresh',
                     text: this.i18n._("Refresh Device Status"),
@@ -497,7 +541,7 @@ if (!Ung.hasResource["Ung.Network"]) {
                         Ung.NetworkUtil.onRefreshDeviceStatus(this, this.gridInterfaces);
                     },
                     scope : this
-                },{
+                },'-',{
                     xtype: "button",
                     text : this.i18n._( "Test Connectivity" ),
                     handler : this.testConnectivity,
@@ -509,26 +553,7 @@ if (!Ung.hasResource["Ung.Network"]) {
                     iconCls : "icon-test-ping",
                     handler : this.openPingTest,
                     scope : this
-                },{
-                    xtype: "button",
-                    text : this.i18n._( "Add 802.1q Tagged Interface" ),
-                    handler: function() {
-                        this.gridInterfaces.addVlanInterface();
-                    },
-                    scope : this
                 }],
-                addVlanInterface: function () {
-                    var emptyRow = {
-                        "interfaceId": -1,
-                        "isVlanInterface": true,
-                        "vlanTag": 0
-                    };
-                    var record = Ext.create(Ext.ClassManager.getName(this.getStore().getProxy().getModel()), Ext.decode(Ext.encode( emptyRow )));
-                    record.set("internalId", this.genAddedId());
-                    this.stopEditing();
-                    this.rowEditor.populate(record, true);
-                    this.rowEditor.show();
-                },
                 onMapDevices: Ext.bind(function() {
                     Ext.MessageBox.wait(i18n._("Loading device mapper..."), i18n._("Please wait"));
                     if (!this.winMapDevices) {
@@ -576,7 +601,6 @@ if (!Ung.hasResource["Ung.Network"]) {
                                         fn:  Ext.bind(function(node, data, overModel, dropPosition, eOpts) {
                                             var i = 0;
                                             this.mapDevicesStore.each( Ext.bind(function( currentRow ) {
-                                                console.log("this.mapDevicesStore.each:",arguments);
                                                 var intf=this.currentInterfaces[i];
                                                 currentRow.set({
                                                     "interfaceId": intf.interfaceId,
@@ -637,7 +661,6 @@ if (!Ung.hasResource["Ung.Network"]) {
                                                     console.log(oldValue, newValue, sourceRecord, targetRecord);
                                                     return false;
                                                 }
-                                                //console.log(oldValue, newValue, sourceRecord, targetRecord);
                                                 var soruceData = Ext.decode(Ext.encode(sourceRecord.data));
                                                 var targetData = Ext.decode(Ext.encode(targetRecord.data));
                                                 soruceData.deviceName=oldValue;
@@ -753,24 +776,32 @@ if (!Ung.hasResource["Ung.Network"]) {
                                 });
                                 this.gridInterfaces.getStore().each(function( currentRow ) {
                                     var interfaceData = interfaceDataMap[currentRow.get("interfaceId")];
-                                    currentRow.set({
-                                        "deviceName": interfaceData.deviceName,
-                                        "physicalDev": interfaceData.physicalDev,
-                                        "systemDev": interfaceData.systemDev,
-                                        "symbolicDev": interfaceData.symbolicDev,
-                                        "macAddress": interfaceData.macAddress,
-                                        "connected": interfaceData.connected,
-                                        "duplex": interfaceData.duplex,
-                                        "vendor": interfaceData.vendor,
-                                        "mbit": interfaceData.mbit
-                                    });
+                                    if(interfaceData) {
+                                        currentRow.set({
+                                            "deviceName": interfaceData.deviceName,
+                                            "physicalDev": interfaceData.physicalDev,
+                                            "systemDev": interfaceData.systemDev,
+                                            "symbolicDev": interfaceData.symbolicDev,
+                                            "macAddress": interfaceData.macAddress,
+                                            "connected": interfaceData.connected,
+                                            "duplex": interfaceData.duplex,
+                                            "vendor": interfaceData.vendor,
+                                            "mbit": interfaceData.mbit
+                                        });
+                                    }
                                 });
                                 this.winMapDevices.cancelAction();
                             }, this)
                         });
                     }
                     Ext.MessageBox.hide();
-                    this.currentInterfaces = this.gridInterfaces.getPageList();
+                    var allInterfaces=this.gridInterfaces.getPageList();
+                    this.currentInterfaces = [];
+                    for(var i=0; i<allInterfaces.length; i++) {
+                        if(!allInterfaces[i].isVlanInterface) {
+                            this.currentInterfaces.push(allInterfaces[i]);
+                        }
+                    }
                     this.mapDevicesStore.loadData( this.currentInterfaces );
                     this.availableDevicesStore.loadData( this.currentInterfaces );
                     this.winMapDevices.show();
@@ -791,7 +822,7 @@ if (!Ung.hasResource["Ung.Network"]) {
                         "configType": interfaceData.configType
                     });
                 });
-                qosBandwidthStore.filter([{property: "configType", value: "ADDRESSED"}, {property:"isWan", value: true}]);
+                qosBandwidthStore.filter([{property: "configType", value: "ADDRESSED"}, {property:"isWan", value: true},{property: "isVlanInterface", value: false}]);
                 this.gridQosWanBandwidth.updateTotalBandwidth();
             }, this));
             

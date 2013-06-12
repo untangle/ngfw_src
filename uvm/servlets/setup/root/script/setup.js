@@ -305,7 +305,6 @@ Ext.define('Ung.SetupWizard.Interfaces', {
                                     console.log(oldValue, newValue, sourceRecord, targetRecord);
                                     return false;
                                 }
-                                //console.log(oldValue, newValue, sourceRecord, targetRecord);
                                 var soruceData = Ext.decode(Ext.encode(sourceRecord.data));
                                 var targetData = Ext.decode(Ext.encode(targetRecord.data));
                                 soruceData.deviceName=oldValue;
@@ -436,7 +435,7 @@ Ext.define('Ung.SetupWizard.Interfaces', {
         var i = 0;
         var interfaceList=this.networkSettings.interfaces.list;
         this.interfaceStore.each( Ext.bind(function( currentRow ) {
-            console.log("this.mapDevicesStore.each:",arguments);
+            //console.log("this.mapDevicesStore.each:",arguments);
             var intf=interfaceList[i];
             currentRow.set({
                 "interfaceId": intf.interfaceId,
@@ -460,8 +459,10 @@ Ext.define('Ung.SetupWizard.Interfaces', {
         var interfaceList=this.networkSettings.interfaces.list;
         for(var i=0; i<interfaceList.length; i++) {
             var intf=interfaceList[i];
-            intf["physicalDev"]=interfacesMap[intf["interfaceId"]];
-            console.log("Interface ("+ intf["interfaceId"]+ ") "+intf["name"] +" is mapped with physical device "+intf["physicalDev"]);
+            if(!intf.isVlanInterface) {
+                intf["physicalDev"]=interfacesMap[intf["interfaceId"]];
+                //console.log("Interface ("+ intf["interfaceId"]+ ") "+intf["name"] +" is mapped with physical device "+intf["physicalDev"]);
+            }
         }
         rpc.networkManager.setNetworkSettings(Ext.bind(function( result, exception ) {
             if(exception != null) {
@@ -509,7 +510,14 @@ Ext.define('Ung.SetupWizard.Interfaces', {
                 });
                 return;
             }
-            var interfaceList=result.interfaces.list;
+            var interfaceList = [];
+            var allInterfaces = result.interfaces.list;
+            for(var i=0; i<allInterfaces.length; i++) {
+                if(!allInterfaces[i].isVlanInterface) {
+                    interfaceList.push(allInterfaces[i]);
+                }
+            }
+
             if ( interfaceList.length != this.interfaceStore.getCount()) {
                 Ext.MessageBox.alert( i18n._( "New interfaces" ), i18n._ ( "There are new interfaces, please restart the wizard." ), "" );
                 return;
@@ -552,7 +560,14 @@ Ext.define('Ung.SetupWizard.Interfaces', {
                 return;
             }
             this.networkSettings=result;
-            var interfaceList=result.interfaces.list;
+            var interfaceList = [];
+            var allInterfaces = result.interfaces.list;
+            for(var i=0; i<allInterfaces.length; i++) {
+                if(!allInterfaces[i].isVlanInterface) {
+                    interfaceList.push(allInterfaces[i]);
+                }
+            }
+            
             var deviceStatus=rpc.networkManager.getDeviceStatus(Ext.bind(function( result, exception ) {
                 if(exception != null) {
                     Ext.MessageBox.alert(exception);
