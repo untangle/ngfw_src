@@ -389,11 +389,6 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
         return com.untangle.uvm.Version.getFullVersion();
     }
 
-    public byte[] createBackup() throws IOException
-    {
-        return backupManager.createBackup();
-    }
-
     public boolean isWizardComplete()
     {
         File keyFile = new File(WIZARD_COMPLETE_FLAG_FILE);

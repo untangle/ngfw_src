@@ -229,7 +229,6 @@ public interface UvmContext
      */
     String version();
 
-
     /**
      * Return the Full Version
      */
@@ -241,20 +240,6 @@ public interface UvmContext
      * @return a <code>boolean</code> true if in development.
      */
     boolean isDevel();
-
-    /**
-     * Create a backup which the client can save to a local disk.  The
-     * returned bytes are for a .tar.gz file, so it is a good idea to
-     * either use a ".tar.gz" extension so basic validation can be
-     * performed for {@link #restoreBackup restoreBackup}.
-     *
-     * @return the byte[] contents of the backup.
-     *
-     * @exception IOException if something goes wrong (a lot can go wrong,
-     *            but it is nothing the user did to cause this).
-     */
-    byte[] createBackup()
-        throws IOException;
 
     /**
      * create a UID (if one doesn't exist)

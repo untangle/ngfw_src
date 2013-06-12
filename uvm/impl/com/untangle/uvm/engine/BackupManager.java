@@ -45,11 +45,9 @@ public class BackupManager
 
         Map<String,String> i18nMap = UvmContextFactory.context().languageManager().getTranslations("untangle-libuvm");
         this.i18nUtil = new I18nUtil(i18nMap);
-
-
     }
     
-    protected byte[] createBackup() 
+    private File createBackup() 
     {
         File tempFile = null;
         
@@ -63,12 +61,7 @@ public class BackupManager
                 throw new IOException("Unable to create local backup to \"" + tempFile.getAbsolutePath() + "\".  Process details " + result);
             }
 
-            //Read contents into a byte[]
-            byte[] ret = IOUtil.fileToBytes(tempFile);
-
-            //Delete our temp files
-            IOUtil.delete(tempFile);
-            return ret;
+            return tempFile;
         }
         catch(IOException ex) {
             //Don't forget to delete the temp file
@@ -192,7 +185,7 @@ public class BackupManager
             String dateStr = (new SimpleDateFormat(DATE_FORMAT_NOW)).format((Calendar.getInstance()).getTime());
             String filename = oemName + "-" + version + "-" + "backup" + "-" + hostName + "-" + dateStr + ".backup";
 
-            byte[] backupData = createBackup();
+            File backupFile = createBackup();
 			
             // Set the headers.
             resp.setContentType("application/x-download");
@@ -200,8 +193,18 @@ public class BackupManager
 
             // Send to client
             try {
+                byte[] buffer = new byte[1024];
+                int read;
+                FileInputStream fis = new FileInputStream(backupFile);
                 OutputStream out = resp.getOutputStream();
-                out.write(backupData, 0, backupData.length);
+                
+                while ( ( read = fis.read( buffer ) ) > 0 ) {
+                    out.write( buffer, 0, read);
+                }
+
+                fis.close();
+                out.flush();
+                out.close();
             } catch (Exception e) {
                 logger.warn("Failed to write backup data",e);
             }
