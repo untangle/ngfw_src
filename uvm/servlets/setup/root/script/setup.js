@@ -427,7 +427,11 @@ Ext.define('Ung.SetupWizard.Interfaces', {
                 
                 complete();
             }, this ),
-            onNext: Ext.bind(this.saveInterfaceList, this )
+            onNext: Ext.bind(this.saveInterfaceList, this ),
+            onPrevious: Ext.bind(function(handler) {
+                this.enableAutoRefresh = false;
+                handler();
+            }, this )
         };
     },
 
