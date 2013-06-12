@@ -20,19 +20,6 @@ class SystemProperties():
                 return intf
         return None
 
-    def internalInterfaceIP(self):
-        # FIXME
-        return "UnknownIP"
-        
-        # intf = self.getInterface("Internal")
-
-        # while intf['configType'] == 'bridge':
-        #     intf = self.getInterface(intf['bridgedTo'])
-
-        # if intf['primaryAddressStr'] != None:
-        #     return intf['primaryAddressStr'].split("/")[0]
-        # else:
-        #     return "UnknownIP"
 
     def findInterfaceIPbyIP(self, remoteIP):
         # finds the first IP address of any interface which is on the same network as the IP passed in

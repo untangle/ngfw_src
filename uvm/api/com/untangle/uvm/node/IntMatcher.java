@@ -1,5 +1,5 @@
 /**
- * $HeadURL$
+ * $HeadURL: svn://chef/work/src/uvm/api/com/untangle/uvm/node/IntMatcher.java $
  */
 package com.untangle.uvm.node;
 
@@ -8,57 +8,61 @@ import java.util.LinkedList;
 import org.apache.log4j.Logger;
 
 /**
- * This class manages the "matching" of ports.
+ * This class manages the "matching" of integers
  *
- * PortMatchers are a string that matches ports
- * "80" matches port 80
- * "81,82" matches port 81 and 82
- * "80-90" matches port 80 through port 90
+ * IntMatchers are a string that matches integers
+ * "80" matches 80
+ * "81,82" matches 81 and 82
+ * "80-90" matches 80 through 90
  * "80,90-100" matches 80 and 90-100
- * "any" matches any interface
+ * ">80" matches any int greater than 80
+ * "<80" matches any int less than 80
+ * "any" matches any int
  * "none" matches nothing
  */
 @SuppressWarnings("serial")
-public class PortMatcher implements java.io.Serializable
+public class IntMatcher implements java.io.Serializable
 {
     private static final String MARKER_ANY = "any";
     private static final String MARKER_ALL = "all";
     private static final String MARKER_NONE = "none";
     private static final String MARKER_SEPERATOR = ",";
+    private static final String MARKER_GREATER_THAN = ">";
+    private static final String MARKER_LESS_THAN = "<";
     private static final String MARKER_RANGE = "-";
 
-    private static PortMatcher ANY_MATCHER = new PortMatcher(MARKER_ANY);
+    private static IntMatcher ANY_MATCHER = new IntMatcher(MARKER_ANY);
      
     private final Logger logger = Logger.getLogger(getClass());
 
     
     public String matcher;
 
-    private enum PortMatcherType { ANY, NONE, SINGLE, RANGE, LIST };
+    private enum IntMatcherType { ANY, NONE, SINGLE, GREATER_THAN, LESS_THAN, RANGE, LIST };
     
     /**
      * The type of this matcher
      */
-    private PortMatcherType type = PortMatcherType.NONE;
+    private IntMatcherType type = IntMatcherType.NONE;
 
     /**
      * if this port matcher is a list of port matchers, this list stores the children
      */
-    private LinkedList<PortMatcher> children = null;
+    private LinkedList<IntMatcher> children = null;
 
     /**
      * if its a range these two variable store the min and max
      */
-    private int rangeMin = -1;
-    private int rangeMax = -1;
+    private long rangeMin = -1;
+    private long rangeMax = -1;
 
     /**
      * if its just an int matcher this stores the number
      */
-    private int singleInt = -1;
+    private long singleInt = -1;
 
 
-    public PortMatcher(String matcher)
+    public IntMatcher(String matcher)
     {
         initialize(matcher);
     }
@@ -79,7 +83,7 @@ public class PortMatcher implements java.io.Serializable
      * @param port The port to test
      * @return True if the <param>port</param> matches.
      */
-    public boolean isMatch( int port )
+    public boolean isMatch( long port )
     {
         switch (this.type) {
 
@@ -94,13 +98,23 @@ public class PortMatcher implements java.io.Serializable
                 return true;
             return false;
 
+        case GREATER_THAN:
+            if ( port > singleInt )
+                return true;
+            return false;
+
+        case LESS_THAN:
+            if ( port < singleInt )
+                return true;
+            return false;
+            
         case RANGE:
             if (port >= rangeMin && port <= rangeMax)
                 return true;
             return false;
 
         case LIST:
-            for (PortMatcher child : this.children) {
+            for (IntMatcher child : this.children) {
                 if (child.isMatch(port))
                     return true;
             }
@@ -122,7 +136,7 @@ public class PortMatcher implements java.io.Serializable
         return matcher;
     }
 
-    public static synchronized PortMatcher getAnyMatcher()
+    public static synchronized IntMatcher getAnyMatcher()
     {
         return ANY_MATCHER;
     }
@@ -140,15 +154,15 @@ public class PortMatcher implements java.io.Serializable
          * if so, go ahead and initialize the children
          */
         if (matcher.contains(MARKER_SEPERATOR)) {
-            this.type = PortMatcherType.LIST;
+            this.type = IntMatcherType.LIST;
 
-            this.children = new LinkedList<PortMatcher>();
+            this.children = new LinkedList<IntMatcher>();
 
             String[] results = matcher.split(MARKER_SEPERATOR);
             
             /* check each one */
             for (String childString : results) {
-                PortMatcher child = new PortMatcher(childString);
+                IntMatcher child = new IntMatcher(childString);
                 this.children.add(child);
             }
 
@@ -159,37 +173,70 @@ public class PortMatcher implements java.io.Serializable
          * Check the common constants
          */
         if (MARKER_ANY.equals(matcher))  {
-            this.type = PortMatcherType.ANY;
+            this.type = IntMatcherType.ANY;
             return;
         }
         if (MARKER_ALL.equals(matcher)) {
-            this.type = PortMatcherType.ANY;
+            this.type = IntMatcherType.ANY;
             return;
         }
         if (MARKER_NONE.equals(matcher)) {
-            this.type = PortMatcherType.NONE;
+            this.type = IntMatcherType.NONE;
             return;
         }
         
         /**
+         * Check for > and < 
+         */
+        if (matcher.contains(MARKER_GREATER_THAN)) {
+            this.type = IntMatcherType.GREATER_THAN;
+
+            int charIdx = matcher.indexOf('>');
+            String intStr = matcher.substring( charIdx + 1 );
+            logger.warn("XXX: " + intStr);
+            
+            try {
+                this.singleInt = Integer.parseInt( intStr );
+            } catch (NumberFormatException e) {
+                logger.warn("Unknown IntMatcher format: \"" + intStr + "\"", e);
+                throw new java.lang.IllegalArgumentException("Unknown IntMatcher format: \"" + matcher + "\"", e);
+            }
+            return;
+        }
+        if (matcher.contains(MARKER_LESS_THAN)) {
+            this.type = IntMatcherType.LESS_THAN;
+
+            int charIdx = matcher.indexOf('<');
+            String intStr = matcher.substring( charIdx + 1 );
+            try {
+                this.singleInt = Integer.parseInt( intStr );
+            } catch (NumberFormatException e) {
+                logger.warn("Unknown IntMatcher format: \"" + intStr + "\"", e);
+                throw new java.lang.IllegalArgumentException("Unknown IntMatcher format: \"" + matcher + "\"", e);
+            }
+            return;
+        }
+        
+
+        /**
          * If it contains a dash it must be a range
          */
         if (matcher.contains(MARKER_RANGE)) {
-            this.type = PortMatcherType.RANGE;
+            this.type = IntMatcherType.RANGE;
             
             String[] results = matcher.split(MARKER_RANGE);
 
             if (results.length != 2) {
-                logger.warn("Invalid PortMatcher: Invalid Range: " + matcher);
-                throw new java.lang.IllegalArgumentException("Invalid PortMatcher: Invalid Range: " + matcher);
+                logger.warn("Invalid IntMatcher: Invalid Range: " + matcher);
+                throw new java.lang.IllegalArgumentException("Invalid IntMatcher: Invalid Range: " + matcher);
             }
 
             try {
                 this.rangeMin = Integer.parseInt(results[0]);
                 this.rangeMax = Integer.parseInt(results[1]);
             } catch (NumberFormatException e) {
-                logger.warn("Unknown PortMatcher format: \"" + matcher + "\"", e);
-                throw new java.lang.IllegalArgumentException("Unknown PortMatcher format: \"" + matcher + "\"", e);
+                logger.warn("Unknown IntMatcher format: \"" + matcher + "\"", e);
+                throw new java.lang.IllegalArgumentException("Unknown IntMatcher format: \"" + matcher + "\"", e);
             }
 
             return;
@@ -198,12 +245,12 @@ public class PortMatcher implements java.io.Serializable
         /**
          * if it isn't any of these it must be a basic SINGLE matcher
          */
-        this.type = PortMatcherType.SINGLE;
+        this.type = IntMatcherType.SINGLE;
         try {
             this.singleInt = Integer.parseInt(matcher);
         } catch (NumberFormatException e) {
-            logger.warn("Unknown PortMatcher format: \"" + matcher + "\"", e);
-            throw new java.lang.IllegalArgumentException("Unknown PortMatcher format: \"" + matcher + "\"", e);
+            logger.warn("Unknown IntMatcher format: \"" + matcher + "\"", e);
+            throw new java.lang.IllegalArgumentException("Unknown IntMatcher format: \"" + matcher + "\"", e);
 
         }
 

@@ -404,6 +404,12 @@ Ext.define("Ung.Main", {
                   case 'any':
                     return true;
                 default:
+                    if ( val.indexOf('>') != -1 && val.indexOf(',') == -1) {
+                        return Ung.RuleValidator.isSinglePortValid( val.substring( val.indexOf('>') + 1 ));
+                    }
+                    if ( val.indexOf('<') != -1 && val.indexOf(',') == -1) {
+                        return Ung.RuleValidator.isSinglePortValid( val.substring( val.indexOf('<') + 1 ));
+                    }
                     if ( val.indexOf('-') == -1 && val.indexOf(',') == -1) {
                         return Ung.RuleValidator.isSinglePortValid(val);
                     }

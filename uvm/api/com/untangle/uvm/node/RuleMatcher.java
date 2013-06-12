@@ -19,7 +19,7 @@ import com.untangle.uvm.HostTableEntry;
 import com.untangle.uvm.vnet.NodeSession;
 import com.untangle.uvm.vnet.NodeSession;
 import com.untangle.uvm.node.IPMatcher;
-import com.untangle.uvm.node.PortMatcher;
+import com.untangle.uvm.node.IntMatcher;
 import com.untangle.uvm.node.IntfMatcher;
 import com.untangle.uvm.node.UserMatcher;
 import com.untangle.uvm.node.GroupMatcher;
@@ -47,8 +47,8 @@ public class RuleMatcher implements JSONString, Serializable
         /* Generic IP matchers */
         SRC_ADDR, /* IPMatcher syntax */
             DST_ADDR, /* IPMatcher syntax */
-            SRC_PORT, /* PortMatcher syntax */
-            DST_PORT, /* PortMatcher syntax */
+            SRC_PORT, /* IntMatcher syntax */
+            DST_PORT, /* IntMatcher syntax */
             SRC_INTF, /* "External" "any" */
             DST_INTF, /* "External" "any" */
             PROTOCOL, /* "TCP" "UDP" "TCP,UDP" "any" */
@@ -72,8 +72,7 @@ public class RuleMatcher implements JSONString, Serializable
             HTTP_URI, /* "/foo.html" "any" */
             HTTP_URL, /* UrlMatcher syntax "playboy.com/foo.html" */
             HTTP_CONTENT_TYPE, /* "image/jpeg" "any" */
-            HTTP_CONTENT_LENGTH_GREATER_THAN, /* "800" "any" */
-            HTTP_CONTENT_LENGTH_LESS_THAN, /* "800" "any" */
+            HTTP_CONTENT_LENGTH, /* "800" "any" */
             HTTP_USER_AGENT, /* "playboy.com" "any" */
             HTTP_USER_AGENT_OS, /* "*Mozilla*" "any" */
             PROTOCOL_CONTROL_SIGNATURE, /* "Bittorrent" "*" */
@@ -83,12 +82,9 @@ public class RuleMatcher implements JSONString, Serializable
             CLASSD_CATEGORY, /* Proxy */
             CLASSD_PROTOCHAIN, /* /IP/TCP/HTTP/GOOGLE */
             CLASSD_DETAIL, /* blahblahblah */
-            CLASSD_CONFIDENCE_GREATER_THAN,  /* 100 */
-            CLASSD_CONFIDENCE_LESS_THAN, /* 100 */
-            CLASSD_PRODUCTIVITY_GREATER_THAN, /* productivity index */
-            CLASSD_PRODUCTIVITY_LESS_THAN, /* productivity index */
-            CLASSD_RISK_GREATER_THAN, /* risk index */
-            CLASSD_RISK_LESS_THAN, /* risk index */
+            CLASSD_CONFIDENCE, /* 100 */
+            CLASSD_PRODUCTIVITY, /* productivity index */
+            CLASSD_RISK, /* risk index */
             DIRECTORY_CONNECTOR_GROUP, /* "teachers" or "none" or "*" */
             SITEFILTER_CATEGORY, /* "Pornography" or "Porn*" */ 
             SITEFILTER_CATEGORY_DESCRIPTION, /* *Nudity* */
@@ -115,7 +111,7 @@ public class RuleMatcher implements JSONString, Serializable
      * They are prepared by calling _computerMatchers()
      */
     private IPMatcher        ipMatcher       = null;
-    private PortMatcher      portMatcher     = null;
+    private IntMatcher       intMatcher     = null;
     private IntfMatcher      intfMatcher     = null;
     private UserMatcher      userMatcher     = null;
     private GroupMatcher     groupMatcher     = null;
@@ -239,7 +235,7 @@ public class RuleMatcher implements JSONString, Serializable
         case DST_PORT:
         case SRC_PORT: 
             try {
-                this.portMatcher = new PortMatcher(this.value);
+                this.intMatcher = new IntMatcher(this.value);
             } catch (Exception e) {
                 logger.warn("Invalid Port Matcher: " + value, e);
             }
@@ -339,30 +335,16 @@ public class RuleMatcher implements JSONString, Serializable
             this.regexValue = GlobUtil.globToRegex(value);
             break;
 
-        case HTTP_CONTENT_LENGTH_GREATER_THAN:
-        case HTTP_CONTENT_LENGTH_LESS_THAN:
+        case CLASSD_CONFIDENCE:
+        case CLASSD_PRODUCTIVITY:
+        case CLASSD_RISK:
+        case HTTP_CONTENT_LENGTH:
             try {
-                this.longValue = Long.parseLong(value);
+                this.intMatcher = new IntMatcher(this.value);
+            } catch (Exception e) {
+                logger.warn("Invalid Port Matcher: " + value, e);
             }
-            catch (Exception e) {
-                logger.warn("Invalid long matcher: " + value, e);
-                this.longValue = 100L;
-            }
-            break;
 
-        case CLASSD_CONFIDENCE_GREATER_THAN:
-        case CLASSD_CONFIDENCE_LESS_THAN:
-        case CLASSD_PRODUCTIVITY_GREATER_THAN:
-        case CLASSD_PRODUCTIVITY_LESS_THAN:
-        case CLASSD_RISK_GREATER_THAN:
-        case CLASSD_RISK_LESS_THAN:
-            try {
-                this.intValue = Integer.parseInt(value);
-            }
-            catch (Exception e) {
-                logger.warn("Invalid Integer matcher: " + value, e);
-                this.intValue = 100;
-            }
             break;
             
         case SITEFILTER_CATEGORY_FLAGGED:
@@ -406,20 +388,20 @@ public class RuleMatcher implements JSONString, Serializable
             return this.ipMatcher.isMatch(sess.getServerAddr());
 
         case SRC_PORT:
-            if (this.portMatcher == null) {
-                logger.warn("Invalid Src Port Matcher: " + this.portMatcher);
+            if (this.intMatcher == null) {
+                logger.warn("Invalid Src Port Matcher: " + this.intMatcher);
                 return false;
             }
 
-            return this.portMatcher.isMatch(sess.getClientPort());
+            return this.intMatcher.isMatch(sess.getClientPort());
 
         case DST_PORT:
-            if (this.portMatcher == null) {
-                logger.warn("Invalid Dst Port Matcher: " + this.portMatcher);
+            if (this.intMatcher == null) {
+                logger.warn("Invalid Dst Port Matcher: " + this.intMatcher);
                 return false;
             }
 
-            return this.portMatcher.isMatch(sess.getServerPort());
+            return this.intMatcher.isMatch(sess.getServerPort());
 
         case SRC_INTF:
             if (this.intfMatcher == null) {
@@ -525,19 +507,14 @@ public class RuleMatcher implements JSONString, Serializable
                 return false;
             return Pattern.matches(regexValue, attachment);
 
-        case HTTP_CONTENT_LENGTH_GREATER_THAN:
+        case HTTP_CONTENT_LENGTH:
             attachmentLong = (Long) sess.globalAttachment(NodeSession.KEY_HTTP_CONTENT_LENGTH);
-            if (attachmentLong != null && attachmentLong > this.longValue)
-                return true;
-            else
+            if (this.intMatcher == null) {
+                logger.warn("Invalid Dst Port Matcher: " + this.intMatcher);
                 return false;
+            }
 
-        case HTTP_CONTENT_LENGTH_LESS_THAN:
-            attachmentLong = (Long) sess.globalAttachment(NodeSession.KEY_HTTP_CONTENT_LENGTH);
-            if (attachmentLong != null && attachmentLong < this.longValue)
-                return true;
-            else
-                return false;
+            return this.intMatcher.isMatch( attachmentLong );
             
         case PROTOCOL_CONTROL_SIGNATURE:
             attachment = (String) sess.globalAttachment(NodeSession.KEY_PROTOFILTER_SIGNATURE);
@@ -645,47 +622,30 @@ public class RuleMatcher implements JSONString, Serializable
                 return true;
             return Pattern.matches(regexValue, attachment);
 
-        case CLASSD_CONFIDENCE_GREATER_THAN:
+        case CLASSD_CONFIDENCE:
             attachmentInt = (Integer) sess.globalAttachment(NodeSession.KEY_CLASSD_CONFIDENCE);
             if (attachmentInt != null && attachmentInt > this.intValue)
                 return true;
             else
                 return false;
 
-        case CLASSD_CONFIDENCE_LESS_THAN:
-            attachmentInt = (Integer) sess.globalAttachment(NodeSession.KEY_CLASSD_CONFIDENCE);
-            if (attachmentInt != null && attachmentInt < this.intValue)
-                return true;
-            else
-                return false;
-
-        case CLASSD_PRODUCTIVITY_GREATER_THAN:
+        case CLASSD_PRODUCTIVITY:
             attachmentInt = (Integer) sess.globalAttachment(NodeSession.KEY_CLASSD_PRODUCTIVITY);
-            if (attachmentInt != null && attachmentInt > this.intValue)
-                return true;
-            else
+            if (this.intMatcher == null) {
+                logger.warn("Invalid Dst Port Matcher: " + this.intMatcher);
                 return false;
+            }
 
-        case CLASSD_PRODUCTIVITY_LESS_THAN:
-            attachmentInt = (Integer) sess.globalAttachment(NodeSession.KEY_CLASSD_PRODUCTIVITY);
-            if (attachmentInt != null && attachmentInt < this.intValue)
-                return true;
-            else
-                return false;
+            return this.intMatcher.isMatch( attachmentInt );
 
-        case CLASSD_RISK_GREATER_THAN:
+        case CLASSD_RISK:
             attachmentInt = (Integer) sess.globalAttachment(NodeSession.KEY_CLASSD_RISK);
-            if (attachmentInt != null && attachmentInt > this.intValue)
-                return true;
-            else
+            if (this.intMatcher == null) {
+                logger.warn("Invalid Dst Port Matcher: " + this.intMatcher);
                 return false;
+            }
 
-        case CLASSD_RISK_LESS_THAN:
-            attachmentInt = (Integer) sess.globalAttachment(NodeSession.KEY_CLASSD_RISK);
-            if (attachmentInt != null && attachmentInt < this.intValue)
-                return true;
-            else
-                return false;
+            return this.intMatcher.isMatch( attachmentInt );
 
         case CLIENT_HOSTNAME:
             entry = UvmContextFactory.context().hostTable().getHostTableEntry( sess.getClientAddr() );
@@ -751,20 +711,20 @@ public class RuleMatcher implements JSONString, Serializable
             return this.ipMatcher.isMatch(dstAddress);
 
         case SRC_PORT:
-            if (this.portMatcher == null) {
-                logger.warn("Invalid Src Port Matcher: " + this.portMatcher);
+            if (this.intMatcher == null) {
+                logger.warn("Invalid Src Port Matcher: " + this.intMatcher);
                 return false;
             }
 
-            return this.portMatcher.isMatch(srcPort);
+            return this.intMatcher.isMatch(srcPort);
 
         case DST_PORT:
-            if (this.portMatcher == null) {
-                logger.warn("Invalid Dst Port Matcher: " + this.portMatcher);
+            if (this.intMatcher == null) {
+                logger.warn("Invalid Dst Port Matcher: " + this.intMatcher);
                 return false;
             }
 
-            return this.portMatcher.isMatch(dstPort);
+            return this.intMatcher.isMatch(dstPort);
 
         case SRC_INTF:
             if (this.intfMatcher == null) {

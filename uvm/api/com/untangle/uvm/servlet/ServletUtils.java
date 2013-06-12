@@ -18,7 +18,7 @@ import com.untangle.uvm.webui.jabsorb.serializer.URLSerializer;
 import com.untangle.uvm.webui.jabsorb.serializer.GenericStringSerializer;
 import com.untangle.uvm.node.ProtocolMatcher;
 import com.untangle.uvm.node.IPMatcher;
-import com.untangle.uvm.node.PortMatcher;
+import com.untangle.uvm.node.IntMatcher;
 import com.untangle.uvm.node.IntfMatcher;
 import com.untangle.uvm.node.DayOfWeekMatcher;
 import com.untangle.uvm.node.TimeOfDayMatcher;
@@ -70,7 +70,7 @@ public class ServletUtils
         // matchers
         registrator.registerSerializer(root, new GenericStringSerializer(ProtocolMatcher.class));
         registrator.registerSerializer(root, new GenericStringSerializer(IPMatcher.class));
-        registrator.registerSerializer(root, new GenericStringSerializer(PortMatcher.class));
+        registrator.registerSerializer(root, new GenericStringSerializer(IntMatcher.class));
         registrator.registerSerializer(root, new GenericStringSerializer(IntfMatcher.class));
         registrator.registerSerializer(root, new GenericStringSerializer(DayOfWeekMatcher.class));
         registrator.registerSerializer(root, new GenericStringSerializer(TimeOfDayMatcher.class));

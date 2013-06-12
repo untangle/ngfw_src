@@ -136,7 +136,7 @@ class FirewallTests(unittest2.TestCase):
         result = clientControl.runCommand("wget -o /dev/null -t 1 --timeout=3 http://test.untangle.com/")
         assert (result != 0)
 
-    # verify a block port 79,80,81 rule works
+    # verify a block port 79,81 rule doesnt match 80
     def test_023_blockDstPort79comma81(self):
         nukeRules();
         appendRule(createSingleMatcherRule("DST_PORT","79,81"));
@@ -156,6 +156,27 @@ class FirewallTests(unittest2.TestCase):
         appendRule(createSingleMatcherRule("DST_PORT","any"));
         result = clientControl.runCommand("wget -o /dev/null -t 1 --timeout=3 http://test.untangle.com/")
         assert (result != 0)
+
+    # verify a block port >79 rule blocks 80
+    def test_026_blockDstPortGreaterThan(self):
+        nukeRules();
+        appendRule(createSingleMatcherRule("DST_PORT",">79"));
+        result = clientControl.runCommand("wget -o /dev/null -t 1 --timeout=3 http://test.untangle.com/")
+        assert (result != 0)
+
+    # verify a block port <81 rule blocks 80
+    def test_027_blockDstPortLessThan(self):
+        nukeRules();
+        appendRule(createSingleMatcherRule("DST_PORT","<81"));
+        result = clientControl.runCommand("wget -o /dev/null -t 1 --timeout=3 http://test.untangle.com/")
+        assert (result != 0)
+
+    # verify a block port <1 rule doesnt block 80
+    def test_028_blockDstPortLessThanInverse(self):
+        nukeRules();
+        appendRule(createSingleMatcherRule("DST_PORT","<1"));
+        result = clientControl.runCommand("wget -o /dev/null -t 1 --timeout=3 http://test.untangle.com/")
+        assert (result == 0)
 
     # verify src addr rule with any works
     def test_030_blockSrcAddrAny(self):
