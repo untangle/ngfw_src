@@ -314,9 +314,7 @@ if (!Ung.hasResource["Ung.Network"]) {
                 paginated: false,
                 hasReorder: false,
                 hasDelete: false,
-                configAdd: {
-                    text: i18n._('Add 802.1q Tagged Interface'),
-                },
+                hasAdd: false,
                 addAtTop: false,
                 columnsDefaultSortable: true,
                 enableColumnHide: true,
@@ -542,6 +540,14 @@ if (!Ung.hasResource["Ung.Network"]) {
                     },
                     scope : this
                 },'-',{
+                    xtype: "button",
+                    text : this.i18n._( "Add 802.1q Tagged Interface" ),
+                    iconCls : "icon-add-row",
+                    handler: function() {
+                        this.gridInterfaces.addHandler();
+                    },
+                    scope : this
+                }, '-', {
                     xtype: "button",
                     text : this.i18n._( "Test Connectivity" ),
                     handler : this.testConnectivity,
@@ -1016,6 +1022,7 @@ if (!Ung.hasResource["Ung.Network"]) {
                     xtype:'textfield',
                     dataIndex: "name",
                     fieldLabel: this.i18n._("Interface Name"),
+                    allowBlank: false,
                     width: 300
                 }, {
                     xtype:'checkbox',
@@ -1035,6 +1042,9 @@ if (!Ung.hasResource["Ung.Network"]) {
                     xtype: "numberfield",
                     dataIndex: "vlanTag",
                     fieldLabel: this.i18n._("8021.q Tag"),
+                    minValue: 0,
+                    allowBlank: false,
+                    blankText: this.i18n._("8021.q Tag must be a valid integer."),
                     width: 300
                 }, {
                     xtype: "combo",
@@ -1572,7 +1582,9 @@ if (!Ung.hasResource["Ung.Network"]) {
 
                     // if config addressed show necessary options
                     if ( configTypeValue == "ADDRESSED") {
-                        isWan.show();
+                        if(!isVlanInterfaceValue) { // VLAN cannot be a WAN 
+                            isWan.show();
+                        }
                         v4Config.show();
                         v6Config.show();
 
@@ -1659,9 +1671,24 @@ if (!Ung.hasResource["Ung.Network"]) {
                     }
                 },
                 populate: function(record, addMode) {
-                    // refresh interface selector store (may have changed since last display)
+                    var interfaceId=record.get("interfaceId")
+                    var allInterfaces=this.grid.getPageList();
+                    var bridgedToInterfaces = [];
+                    var vlanParentInterfaces = [];
+                    for(var i=0; i<allInterfaces.length; i++) {
+                        var intf=allInterfaces[i];
+                        if(intf.configType == 'ADDRESSED' && intf.interfaceId!=interfaceId) {
+                            bridgedToInterfaces.push([ intf.interfaceId, intf.name]);
+                            if(!intf.isVlanInterface) {
+                                vlanParentInterfaces.push([intf.interfaceId, intf.name]);    
+                            } 
+                        }
+                    }
+                    // refresh interface selector stores
                     var bridgedTo = this.query('combo[dataIndex="bridgedTo"]')[0];
-                    bridgedTo.getStore().loadData( Ung.Util.getInterfaceAddressedList() );
+                    bridgedTo.getStore().loadData( bridgedToInterfaces );
+                    var vlanParent = this.query('combo[dataIndex="vlanParent"]')[0];
+                    vlanParent.getStore().loadData( vlanParentInterfaces );
                     Ung.RowEditorWindow.prototype.populate.apply(this, arguments);
                 }
             }) );
