@@ -665,8 +665,13 @@ public class NetworkManagerImpl implements NetworkManager
         for ( InterfaceSettings intf1 : networkSettings.getInterfaces() ) {
             if ( intf1.getConfigType() == InterfaceSettings.ConfigType.DISABLED || intf1.getV4ConfigType() != InterfaceSettings.V4ConfigType.STATIC )
                 continue;
+            if ( intf1.getV4StaticAddress() == null || intf1.getV4StaticPrefix() == null )
+                continue;
+
             for ( InterfaceSettings intf2 : networkSettings.getInterfaces() ) {
                 if ( intf2.getConfigType() == InterfaceSettings.ConfigType.DISABLED || intf2.getV4ConfigType() != InterfaceSettings.V4ConfigType.STATIC )
+                    continue;
+                if ( intf2.getV4StaticAddress() == null || intf2.getV4StaticPrefix() == null )
                     continue;
 
                 if ( intf1.getInterfaceId() == intf2.getInterfaceId() )
