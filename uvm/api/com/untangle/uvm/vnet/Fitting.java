@@ -18,7 +18,6 @@ public enum Fitting
 
     TOKEN_STREAM, /* token stream */
     HTTP_TOKENS, /* http token stream */
-    FTP_TOKENS, /* ftp token stream */
     FTP_CTL_TOKENS, /* ftp control token stream */ 
     FTP_DATA_TOKENS, /* ftp data token stream */
     SMTP_TOKENS /* smtp token stream */
