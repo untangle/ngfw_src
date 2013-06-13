@@ -1503,8 +1503,8 @@ Ung.Setup = {
         // Initialize the timezone data
         Ung.SetupWizard.TimeZoneStore = [];
         rpc.jsonrpc = new JSONRpcClient( "/webui/JSON-RPC" );
-        var execManager = rpc.jsonrpc.UvmContext.execManager();
-        var timeZoneData = eval(execManager.exec('/usr/share/untangle/bin/ut-get-timezones').output);
+        var adminManager = rpc.jsonrpc.UvmContext.adminManager();
+        var timeZoneData = eval(adminManager.getTimeZones());
         for ( var i = 0; i < timeZoneData.length; i++) {
             Ung.SetupWizard.TimeZoneStore.push([timeZoneData[i][0], "(" + timeZoneData[i][1] + ") " + timeZoneData[i][0]]);
         }

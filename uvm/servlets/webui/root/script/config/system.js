@@ -595,7 +595,7 @@ if (!Ung.hasResource["Ung.System"]) {
             });
 
             var timeZones = [];
-            var timeZoneData = eval(main.getExecManager().exec('/usr/share/untangle/bin/ut-get-timezones').output);
+            var timeZoneData = eval(rpc.jsonrpc.UvmContext.adminManager().getTimeZones());
             for (var i = 0; i < timeZoneData.length; i++) {
                 timeZones.push([timeZoneData[i][0], "(" + timeZoneData[i][1] + ") " + timeZoneData[i][0]]);
             }

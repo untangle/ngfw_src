@@ -11,9 +11,13 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.net.URLEncoder;
 import java.net.UnknownHostException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.Hashtable;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Set;
 import java.util.TimeZone;
 import java.io.InputStream;
@@ -204,6 +208,49 @@ public class AdminManagerImpl implements AdminManager
         }
 
         return "Unknown";
+    }
+    
+    private String getTZString(TimeZone tz, long d) 
+    {
+        long offset = tz.getOffset(d) / 1000;
+        long hours = Math.abs(offset) / 3600;
+        long minutes = Math.abs(offset) % 60;
+        if ( offset < 0) {
+            return "~UTC-" + (hours < 10 ? "0" + hours:hours) + ":" + (minutes < 10 ? "0" + minutes:minutes);
+        } else {
+            return "~UTC+" + (hours < 10 ? "0" + hours:hours) + ":" + (minutes < 10 ? "0" + minutes:minutes);
+        }
+    }
+    
+    public String getTimeZones() 
+    {
+        String[] timezones = TimeZone.getAvailableIDs();
+        List<TimeZone> all = new ArrayList<TimeZone>();
+        for (String tz: timezones) {
+            all.add( TimeZone.getTimeZone(tz));
+        }
+        final long d = new Date().getTime();
+        Collections.sort(all, new Comparator<TimeZone>() {
+                                    @Override
+    	                            public int compare(TimeZone o1, TimeZone o2) {
+                                        if ( o1.getOffset(d) < o2.getOffset(d)) return -1;
+                                        if ( o1.getOffset(d) > o2.getOffset(d)) return 1;
+                                        return 0;
+                                    }
+        });
+        StringBuffer sb = new StringBuffer();
+        sb.append("[");
+        boolean first = true;
+        for (TimeZone tz: all) {
+            if (!first) {
+                sb.append(",");
+            } else {
+                first = false;
+            }
+            sb.append("['").append(tz.getID()).append("','").append(getTZString(tz,d)).append("']");
+        }
+        sb.append("]");
+        return sb.toString();
     }
 
     private void _setSettings( AdminSettings newSettings )

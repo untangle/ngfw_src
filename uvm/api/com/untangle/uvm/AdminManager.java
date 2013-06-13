@@ -38,4 +38,6 @@ public interface AdminManager
 
     String getKernelVersion();
     
+    String getTimeZones();
+    
 }
