@@ -155,6 +155,7 @@ class VirusFtpHandler extends FtpStateMachine
         //             return new TokenResult(new Token[] { reply }, null);
         //         }
         
+            	
         return new TokenResult(null, new Token[] { command });
     }
 
@@ -196,7 +197,7 @@ class VirusFtpHandler extends FtpStateMachine
         }
 
         /* XXX handle the case where result is null */
-        node.logEvent( new VirusFtpEvent(getSession().sessionEvent(), result, node.getName()) );
+        node.logEvent( new VirusFtpEvent(getSession().sessionEvent(), result, node.getName(), null));
 
         if (result.isClean()) {
             node.incrementPassCount();

@@ -21,6 +21,7 @@ public interface VirusNode extends Node
     String getName();
     
     EventLogQuery[] getWebEventQueries();
+    EventLogQuery[] getFtpEventQueries();
     EventLogQuery[] getMailEventQueries();
 
     Date getLastSignatureUpdate();

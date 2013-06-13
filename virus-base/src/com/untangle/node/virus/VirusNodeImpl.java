@@ -100,6 +100,9 @@ public abstract class VirusNodeImpl extends NodeBase implements VirusNode
     private EventLogQuery mailScannedEventQuery;
     private EventLogQuery mailInfectedEventQuery;
     private EventLogQuery mailCleanEventQuery;
+    private EventLogQuery ftpScannedEventQuery;
+    private EventLogQuery ftpInfectedEventQuery;
+    private EventLogQuery ftpCleanEventQuery;
     
     /* This can't be static because it uses policy which is per node */
     private final SessionMatcher VIRUS_SESSION_MATCHER = new SessionMatcher() {
@@ -170,6 +173,21 @@ public abstract class VirusNodeImpl extends NodeBase implements VirusNode
                                                      " AND " + nodeName + "_clean IS TRUE" + 
                                                      " AND policy_id = :policyId" + 
                                                      " ORDER BY time_stamp DESC");
+        this.ftpScannedEventQuery = new EventLogQuery(I18nUtil.marktr("Scanned Ftp Events"),
+									                " SELECT * FROM reports.ftp_events " + 
+									                " WHERE " + nodeName + "_clean IS NOT NULL" + 
+									                " AND policy_id = :policyId" + 
+									                " ORDER BY time_stamp DESC");
+		this.ftpInfectedEventQuery = new EventLogQuery(I18nUtil.marktr("Infected Ftp Events"),
+									                " SELECT * FROM reports.ftp_events " + 
+									                " WHERE " + nodeName + "_clean IS FALSE" + 
+									                " AND policy_id = :policyId" + 
+									                " ORDER BY time_stamp DESC");
+		this.ftpCleanEventQuery = new EventLogQuery(I18nUtil.marktr("Clean Ftp Events"),
+										             " SELECT * FROM reports.ftp_events " + 
+										             " WHERE " + nodeName + "_clean IS TRUE" + 
+										             " AND policy_id = :policyId" + 
+										             " ORDER BY time_stamp DESC");
 
         this.addMetric(new NodeMetric(STAT_SCAN, I18nUtil.marktr("Documents scanned")));
         this.addMetric(new NodeMetric(STAT_BLOCK, I18nUtil.marktr("Documents blocked")));
@@ -204,6 +222,11 @@ public abstract class VirusNodeImpl extends NodeBase implements VirusNode
     public EventLogQuery[] getWebEventQueries()
     {
         return new EventLogQuery[] { this.httpScannedEventQuery, this.httpInfectedEventQuery, this.httpCleanEventQuery };
+    }
+    
+    public EventLogQuery[] getFtpEventQueries()
+    {
+        return new EventLogQuery[] { this.ftpScannedEventQuery, this.ftpInfectedEventQuery, this.ftpCleanEventQuery };
     }
     
     public EventLogQuery[] getMailEventQueries()

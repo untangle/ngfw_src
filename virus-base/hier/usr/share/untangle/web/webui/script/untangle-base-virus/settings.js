@@ -9,6 +9,7 @@ if (!Ung.hasResource["Ung.Virus"]) {
         panelFtp: null,
         gridWebEventLog: null,
         gridMailEventLog: null,
+        gridFtpEventLog: null,
         // called when the component is rendered
         initComponent: function() {
             this.nodeName=this.getRpcNode().getName();
@@ -17,9 +18,10 @@ if (!Ung.hasResource["Ung.Virus"]) {
             this.buildFtp();
             this.buildWebEventLog();
             this.buildMailEventLog();
+            this.buildFtpEventLog();
             
             // builds the tab panel with the tabs
-            this.buildTabPanel([this.panelWeb, this.panelEmail, this.panelFtp, this.gridWebEventLog, this.gridMailEventLog]);
+            this.buildTabPanel([this.panelWeb, this.panelEmail, this.panelFtp, this.gridWebEventLog, this.gridMailEventLog, this.gridFtpEventLog]);
             this.callParent(arguments);
         },
         // Web Panel
@@ -570,6 +572,79 @@ if (!Ung.hasResource["Ung.Virus"]) {
                     dataIndex: 'subject'
                 }, {
                     header: this.i18n._("Virus name"),
+                    width: 140,
+                    sortable: true,
+                    dataIndex: 'reason'
+                }, {
+                    header: this.i18n._("Server"),
+                    width: Ung.Util.ipFieldWidth,
+                    sortable: true,
+                    dataIndex: 'server'
+                }]
+            });
+        },
+        buildFtpEventLog: function() {
+            this.gridFtpEventLog = Ext.create('Ung.GridEventLog',{
+                name: 'Ftp Event Log',
+                helpSource: 'Ftp_Event_Log',
+                settingsCmp: this,
+                title: this.i18n._("Ftp Event Log"),
+                eventQueriesFn: this.getRpcNode().getFtpEventQueries,
+
+                // the list of fields
+                fields: [{
+                    name: 'time_stamp',
+                    sortType: Ung.SortTypes.asTimestamp
+                }, {
+                    name: 'client',
+                    mapping: 'c_client_addr'
+                }, {
+                    name: 'uid'
+                }, {
+                    name: 'server',
+                    mapping: 'c_server_addr'
+                }, {
+                    name: 'host',
+                    mapping: 'host'
+                }, {
+                    name: 'uri',
+                    mapping: 'uri'
+                }, {
+                    name: 'location'
+                }, {
+                    name: 'reason',
+                    mapping: this.nodeName + '_name'
+                }],
+                // the list of columns
+                columns: [{
+                    header: this.i18n._("Timestamp"),
+                    width: Ung.Util.timestampFieldWidth,
+                    sortable: true,
+                    dataIndex: 'time_stamp',
+                    renderer: function(value) {
+                        return i18n.timestampFormat(value);
+                    }
+                }, {
+                    header: this.i18n._("Client"),
+                    width: Ung.Util.ipFieldWidth,
+                    sortable: true,
+                    dataIndex: 'client'
+                }, {
+                    header: this.i18n._("Username"),
+                    width: Ung.Util.usernameFieldWidth,
+                    sortable: true,
+                    dataIndex: 'uid'
+                }, {
+                    header: this.i18n._("Host"),
+                    width: Ung.Util.hostnameFieldWidth,
+                    dataIndex: 'host'
+                }, {
+                    header: this.i18n._("Uri"),
+                    flex:1,
+                    width: Ung.Util.uriFieldWidth,
+                    dataIndex: 'uri'
+                }, {
+                    header: this.i18n._("Virus Name"),
                     width: 140,
                     sortable: true,
                     dataIndex: 'reason'
