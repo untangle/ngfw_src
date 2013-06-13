@@ -177,7 +177,7 @@ public class BackupManager
         }
         
         @Override
-        public void serveDownload( HttpServletRequest req, HttpServletResponse resp, String argument )
+        public void serveDownload( HttpServletRequest req, HttpServletResponse resp )
         {
             String oemName = UvmContextFactory.context().oemManager().getOemName();
             String version = UvmContextFactory.context().version().replace(".","_");

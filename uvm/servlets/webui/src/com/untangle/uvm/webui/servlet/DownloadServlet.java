@@ -35,7 +35,6 @@ public class DownloadServlet extends HttpServlet
 			throws ServletException, IOException
     {
         String downloadType = req.getParameter("type");
-		String argument = req.getParameter("argument");
 
         DownloadHandler handler = UvmContextFactory.context().servletFileManager().getDownloadHandler( downloadType );
         
@@ -44,8 +43,8 @@ public class DownloadServlet extends HttpServlet
             return;
         }
 
-        logger.info("Serving Download: " + downloadType + " ( " + argument + ")");
-        handler.serveDownload( req, resp, argument );
+        logger.info("Serving Download: " + downloadType);
+        handler.serveDownload( req, resp );
 	}
     
 }

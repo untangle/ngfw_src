@@ -28,6 +28,12 @@ import java.util.regex.Pattern;
 import java.net.InetAddress;
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.apache.log4j.Logger;
 
@@ -43,6 +49,7 @@ import com.untangle.uvm.AdminManager;
 import com.untangle.uvm.logging.LogEvent;
 import com.untangle.uvm.vnet.NodeBase;
 import com.untangle.uvm.vnet.PipeSpec;
+import com.untangle.uvm.servlet.DownloadHandler;
 
 public class ReportingNodeImpl extends NodeBase implements ReportingNode, Reporting
 {
@@ -70,6 +77,8 @@ public class ReportingNodeImpl extends NodeBase implements ReportingNode, Report
             eventReader = new EventReaderImpl( this );
         if (reportingManager == null)
             reportingManager = new ReportingManagerImpl( this );
+
+        UvmContextFactory.context().servletFileManager().registerDownloadHandler( new EventLogExportDownloadHandler() );
     }
 
     public void setSettings(final ReportingSettings settings)
@@ -368,4 +377,86 @@ public class ReportingNodeImpl extends NodeBase implements ReportingNode, Report
 
 
     }
+
+    private class EventLogExportDownloadHandler implements DownloadHandler
+    {
+        private static final String CHARACTER_ENCODING = "utf-8";
+
+        @Override
+        public String getName()
+        {
+            return "eventLogExport";
+        }
+        
+        public void serveDownload( HttpServletRequest req, HttpServletResponse resp )
+        {
+            String name = req.getParameter("arg1");
+            String query = req.getParameter("arg2");
+            String policyIdStr = req.getParameter("arg3");
+            String columnListStr = req.getParameter("arg4");
+
+            if (name == null || query == null || policyIdStr == null || columnListStr == null) {
+                logger.warn("Invalid parameters: " + name + " , " + query + " , " + policyIdStr + " , " + columnListStr);
+                return;
+            }
+
+            Long policyId = Long.parseLong(policyIdStr);
+            logger.info("Export CSV( name:" + name + " query: " + query + " policyId: " + policyId + " columnList: " + columnListStr + ")");
+
+            ReportingNode reporting = (ReportingNode) UvmContextFactory.context().nodeManager().node("untangle-node-reporting");
+            if (reporting == null) {
+                logger.warn("reporting node not found");
+                return;
+            }
+
+            try {
+                ResultSet resultSet = reporting.getEventsResultSet( query, policyId, -1 );
+        
+                // Write content type and also length (determined via byte array).
+                resp.setCharacterEncoding(CHARACTER_ENCODING);
+                resp.setHeader("Content-Type","text/csv");
+                resp.setHeader("Content-Disposition","attachment; filename="+name+".csv");
+                // Write the header
+                resp.getWriter().write(columnListStr + "\n");
+                resp.getWriter().flush();
+
+                if (resultSet == null)
+                    return;
+
+                ResultSetMetaData metadata = resultSet.getMetaData();
+                int numColumns = metadata.getColumnCount();
+                String[] columnList = columnListStr.split(",");
+
+                // Write each row 
+                while (resultSet.next()) {
+                    // build JSON object from columns
+                    int writtenColumnCount = 0;
+
+                    for ( String columnName : columnList ) {
+                        Object o = null;
+                        try {
+                            o = resultSet.getObject( columnName );
+                        } catch (Exception e) {
+                            // do nothing - object not found
+                        }
+                        String oStr = "";
+                        if (o != null)
+                            oStr = o.toString().replaceAll(",","");
+                    
+                        if (writtenColumnCount != 0)
+                            resp.getWriter().write(",");
+                        resp.getWriter().write(oStr);
+                        writtenColumnCount++;
+                    }
+                    resp.getWriter().write("\n");
+                }
+            } catch (Exception e) {
+                logger.warn("Failed to export CSV.",e);
+            } finally {
+                reporting.getEventsResultSetCommit( );
+            }
+        
+        }
+    }
+    
 }

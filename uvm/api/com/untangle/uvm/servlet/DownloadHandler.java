@@ -11,5 +11,5 @@ public interface DownloadHandler
 {
     public String getName();
     
-    public void serveDownload( HttpServletRequest req, HttpServletResponse resp, String argument );
+    public void serveDownload( HttpServletRequest req, HttpServletResponse resp );
 }

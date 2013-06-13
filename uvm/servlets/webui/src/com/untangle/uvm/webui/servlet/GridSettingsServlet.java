@@ -35,90 +35,89 @@ import com.untangle.uvm.util.I18nUtil;
 @SuppressWarnings({ "serial", "unchecked" })
 public class GridSettingsServlet extends HttpServlet
 {
-	private final Logger logger = Logger.getLogger(getClass());
+    private final Logger logger = Logger.getLogger(getClass());
 
     private static final String DATE_FORMAT_NOW = "yyyy-MM-dd_HH-mm-ss";
     
     private static final String CHARACTER_ENCODING = "utf-8";
 
-	protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException
+    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException
     {
-		boolean isExport = "export".equals(req.getParameter("type"));
-		if (isExport) {
-			processExport(req, resp);
-		} else {
-			processImport(req, resp);
-		}
+        boolean isExport = "export".equals(req.getParameter("type"));
+        if (isExport) {
+            processExport(req, resp);
+        } else {
+            processImport(req, resp);
+        }
 
-	}
+    }
 
-	private void processImport(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException
+    private void processImport(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException
     {
 
-		// Create a factory for disk-based file items
-		DiskFileItemFactory factory = new DiskFileItemFactory();
-		// Create a new file upload handler
-		ServletFileUpload upload = new ServletFileUpload(factory);
+        // Create a factory for disk-based file items
+        DiskFileItemFactory factory = new DiskFileItemFactory();
+        // Create a new file upload handler
+        ServletFileUpload upload = new ServletFileUpload(factory);
 
-		// Parse the request
-		List<FileItem> items = null;
-		JSONArray gridSettings = null;
-		try {
-			items = upload.parseRequest(req);
-			for (FileItem item : items) {
-				if (!item.isFormField()) {
-					String fileString = item.getString();
-					if (fileString != null && fileString.trim().length() > 0) {
-						gridSettings = new JSONArray(fileString.trim());
-						createImportRespose(resp, true, gridSettings);
-						return;
-					} else {
-						createImportRespose(resp, false, importFailedMessage());
-						return;
-					}
-				}
-			}
-		} catch (JSONException e) {
-			logger.debug("Import grid settings failed. Settings must be formatted as a JSON Array.", e);
-			createImportRespose(resp, false, importFailedMessage());
-			return;
-		} catch (Exception exn) {
-			logger.warn("could not upload", exn);
-			createImportRespose(resp, false, exn.getMessage());
-			return;
-		}
+        // Parse the request
+        List<FileItem> items = null;
+        JSONArray gridSettings = null;
+        try {
+            items = upload.parseRequest(req);
+            for (FileItem item : items) {
+                if (!item.isFormField()) {
+                    String fileString = item.getString();
+                    if (fileString != null && fileString.trim().length() > 0) {
+                        gridSettings = new JSONArray(fileString.trim());
+                        createImportRespose(resp, true, gridSettings);
+                        return;
+                    } else {
+                        createImportRespose(resp, false, importFailedMessage());
+                        return;
+                    }
+                }
+            }
+        } catch (JSONException e) {
+            logger.debug("Import grid settings failed. Settings must be formatted as a JSON Array.", e);
+            createImportRespose(resp, false, importFailedMessage());
+            return;
+        } catch (Exception exn) {
+            logger.warn("could not upload", exn);
+            createImportRespose(resp, false, exn.getMessage());
+            return;
+        }
 
-	}
-	
-	private void createImportRespose(HttpServletResponse resp, boolean success, Object msg) throws IOException
+    }
+    
+    private void createImportRespose(HttpServletResponse resp, boolean success, Object msg) throws IOException
     {
-		resp.setContentType("text/html");
-		PrintWriter out = resp.getWriter();
-		try {
-			JSONObject obj = new JSONObject();
-			obj.put("success", new Boolean(success));
-			if (msg != null) {
-				obj.put("msg", msg);
-			}
-			out.print(encodeHtml(obj.toString()));
-		} catch (JSONException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		out.flush();
-		out.close();
-	}
-	
-	private String importFailedMessage()
+        resp.setContentType("text/html");
+        PrintWriter out = resp.getWriter();
+        try {
+            JSONObject obj = new JSONObject();
+            obj.put("success", new Boolean(success));
+            if (msg != null) {
+                obj.put("msg", msg);
+            }
+            out.print(encodeHtml(obj.toString()));
+        } catch (JSONException e) {
+            logger.warn( "Import failed.", e );
+        }
+        out.flush();
+        out.close();
+    }
+    
+    private String importFailedMessage()
     {
         UvmContext uvm = UvmContextFactory.context();
         Map<String,String> i18n_map = uvm.languageManager().getTranslations("untangle-libuvm");
         return I18nUtil.tr("Import failed. Settings must be formatted as a JSON Array.", i18n_map);
     }
-	
-	private void processExport(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException
+    
+    private void processExport(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException
     {
-		String gridData = req.getParameter("gridData");
+        String gridData = req.getParameter("gridData");
         String oemName = UvmContextFactory.context().oemManager().getOemName();
         String version = UvmContextFactory.context().version().replace(".","_");
         String hostName = UvmContextFactory.context().networkManager().getNetworkSettings().getHostName().replace(".","_");
@@ -135,34 +134,34 @@ public class GridSettingsServlet extends HttpServlet
             JSONArray json = new JSONArray(gridData);
             json.write(resp.getWriter());
         } catch (JSONException e) {
-			logger.debug("Export grid settings failed. Settings must be formatted as a JSON Array.", e);
+            logger.debug("Export grid settings failed. Settings must be formatted as a JSON Array.", e);
             throw new ServletException("Export failed. Settings must be formatted as a JSON Array.");
         }
-	}
+    }
 
-	private static String encodeHtml(String aText)
+    private static String encodeHtml(String aText)
     {
-	     final StringBuilder result = new StringBuilder();
-	     final StringCharacterIterator iterator = new StringCharacterIterator(aText);
-	     char character =  iterator.current();
-	     while (character != CharacterIterator.DONE ){
-	       if (character == '<') {
-	         result.append("&lt;");
-	       }
-	       else if (character == '>') {
-	         result.append("&gt;");
-	       }
-	       else if (character == '&') {
-	         result.append("&amp;");
-	       }
-	       else {
-	         //the char is not a special one
-	         //add it to the result as is
-	         result.append(character);
-	       }
-	       character = iterator.next();
-	     }
-	     return result.toString();
-	  }
-	
+        final StringBuilder result = new StringBuilder();
+        final StringCharacterIterator iterator = new StringCharacterIterator(aText);
+        char character =  iterator.current();
+        while (character != CharacterIterator.DONE ){
+            if (character == '<') {
+                result.append("&lt;");
+            }
+            else if (character == '>') {
+                result.append("&gt;");
+            }
+            else if (character == '&') {
+                result.append("&amp;");
+            }
+            else {
+                //the char is not a special one
+                //add it to the result as is
+                result.append(character);
+            }
+            character = iterator.next();
+        }
+        return result.toString();
+    }
+    
 }

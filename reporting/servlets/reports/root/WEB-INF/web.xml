@@ -19,7 +19,6 @@ PUBLIC "-//Sun Microsystems, Inc.//DTD Web Application 2.2//EN"
     <load-on-startup>1</load-on-startup>
   </servlet>
 
-  <!-- Installer, this will install a package based on the query string. -->
   <servlet-mapping>
     <servlet-name>CsvDumper</servlet-name>
     <url-pattern>/csv</url-pattern>
@@ -47,16 +46,6 @@ PUBLIC "-//Sun Microsystems, Inc.//DTD Web Application 2.2//EN"
   <servlet-mapping>
     <servlet-name>ImageServlet</servlet-name>
     <url-pattern>/image</url-pattern>
-  </servlet-mapping>
-
-  <servlet>
-    <servlet-name>EventLogExportServlet</servlet-name>
-    <servlet-class>com.untangle.uvm.reports.servlet.EventLogExportServlet</servlet-class>
-  </servlet>
-
-  <servlet-mapping>
-    <servlet-name>EventLogExportServlet</servlet-name>
-    <url-pattern>/eventLogExport</url-pattern>
   </servlet-mapping>
 
   <welcome-file-list>

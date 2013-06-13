@@ -2829,12 +2829,13 @@ Ext.define("Ung.GridEventLog", {
             Ext.MessageBox.wait(i18n._("Exporting Events..."), i18n._("Please wait"));
             var name = ( (this.name!=null) ? this.name: i18n._("Event Log") ) + " " +selQueryName;
             name=name.trim().replace(/ /g,"_");
-            var exportForm = document.getElementById('exportEventLogEvents');
-            exportForm["name"].value=name;
-            exportForm["query"].value=selQuery;
-            exportForm["policyId"].value=selPolicy;
-            exportForm["columnList"].value=this.getColumnList();
-            exportForm.submit();
+            var downloadForm = document.getElementById('downloadForm');
+            downloadForm["type"].value="eventLogExport";
+            downloadForm["arg1"].value=name;
+            downloadForm["arg2"].value=selQuery;
+            downloadForm["arg3"].value=selPolicy;
+            downloadForm["arg4"].value=this.getColumnList();
+            downloadForm.submit();
             Ext.MessageBox.hide();
         }
     },

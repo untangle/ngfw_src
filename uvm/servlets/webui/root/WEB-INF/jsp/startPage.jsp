@@ -14,7 +14,7 @@
     </style>
 <c:if test="${isDebug==false}">
     <script type="text/javascript" src="/ext4/ext-all.js?s=${buildStamp}"></script>
-    <script type="text/javascript" src="/jsonrpc/jsonrpc-min.js?s=${buildStamp}"></script>
+    <script type="text/javascript" src="/jsonrpc/jsonrpc.js?s=${buildStamp}"></script>
 </c:if>
 <c:if test="${isDebug==true}">
     <script type="text/javascript" src="/ext4/ext-all-debug.js?s=${buildStamp}"></script>
@@ -58,7 +58,10 @@
 </form>
 <form name="downloadForm" id="downloadForm" method="post" action="download" style="display:none;">
 <input type="hidden" name="type" value=""/>
-<input type="hidden" name="argument" value=""/>
+<input type="hidden" name="arg1" value=""/>
+<input type="hidden" name="arg2" value=""/>
+<input type="hidden" name="arg3" value=""/>
+<input type="hidden" name="arg4" value=""/>
 </form>
 </div>
 <div id="extra-div-1" style="display:none;"><span></span></div>
