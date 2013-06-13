@@ -317,6 +317,7 @@ if (!Ung.hasResource["Ung.System"]) {
                 autoScroll: true,
                 onBackupToFile: Ext.bind(function() {
                     Ext.MessageBox.wait(i18n._("Downloading backup..."), i18n._("Please wait"));
+                    var downloadForm = document.getElementById('downloadForm');
                     downloadForm["type"].value="backup";
                     downloadForm.submit();
                     Ext.MessageBox.hide();
