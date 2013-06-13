@@ -1502,8 +1502,11 @@ Ung.Setup = {
         
         // Initialize the timezone data
         Ung.SetupWizard.TimeZoneStore = [];
-        for ( var i = 0; i < Ung.TimeZoneData.length; i++) {
-            Ung.SetupWizard.TimeZoneStore.push([Ung.TimeZoneData[i][0], "(" + Ung.TimeZoneData[i][1] + ") " + Ung.TimeZoneData[i][0]]);
+        rpc.jsonrpc = new JSONRpcClient( "/webui/JSON-RPC" );
+        var execManager = rpc.jsonrpc.UvmContext.execManager();
+        var timeZoneData = eval(execManager.exec('/usr/share/untangle/bin/ut-get-timezones').output);
+        for ( var i = 0; i < timeZoneData.length; i++) {
+            Ung.SetupWizard.TimeZoneStore.push([timeZoneData[i][0], "(" + timeZoneData[i][1] + ") " + timeZoneData[i][0]]);
         }
 
         // Initialize the prefix data

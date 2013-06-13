@@ -1,0 +1,34 @@
+#! /usr/bin/env python
+
+import pytz
+from datetime import datetime
+
+def formatDelta(delta):
+    hour = delta.seconds / 3600
+    minutes = delta.seconds % 60
+    if  delta.days < 0:
+	hour = (86400 - delta.seconds) / 3600
+        minutes = (86400-delta.seconds) % 60
+        return "-%02d:%02d" % ( hour, minutes)
+    else:
+	return "+%02d:%02d" % (hour,minutes)
+                                                
+                                                
+timezones = []
+for name in pytz.all_timezones:
+    timezone = pytz.timezone(name)
+    if not hasattr(timezone, '_tzinfos'):
+	continue
+    utc = pytz.timezone('UTC')
+    now =datetime.utcnow()
+    delta =  utc.localize(now) - timezone.localize(now)
+    offset = "~ UTC" + formatDelta(delta)
+    if not [name,offset,delta] in timezones:
+	timezones.append([name,offset,delta])
+timezones.sort(key=lambda tup: tup[2])
+print "["
+for tz in timezones[:-1]:
+    print "['%s','%s']," % (tz[0],tz[1])
+for tz in timezones[-1:]:
+    print "['%s','%s']" % ( tz[0], tz[1])
+print "]"

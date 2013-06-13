@@ -595,8 +595,9 @@ if (!Ung.hasResource["Ung.System"]) {
             });
 
             var timeZones = [];
-            for (var i = 0; i < Ung.TimeZoneData.length; i++) {
-                timeZones.push([Ung.TimeZoneData[i][0], "(" + Ung.TimeZoneData[i][1] + ") " + Ung.TimeZoneData[i][0]]);
+            var timeZoneData = eval(main.getExecManager().exec('/usr/share/untangle/bin/ut-get-timezones').output);
+            for (var i = 0; i < timeZoneData.length; i++) {
+                timeZones.push([timeZoneData[i][0], "(" + timeZoneData[i][1] + ") " + timeZoneData[i][0]]);
             }
             this.panelRegionalSettings = Ext.create('Ext.panel.Panel',{
                 // private fields
