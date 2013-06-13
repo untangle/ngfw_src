@@ -34,12 +34,17 @@ class VirusTests(unittest2.TestCase):
         return "untangle"
 
     def setUp(self):
-        global node
+        global node,md5StdNum
         if node == None:
-            # download eicar before installing virus blocker
+            # download eicar and trojan files before installing virus blocker
+            clientControl.runCommand("rm /tmp/eicar /tmp/std_022_ftpVirusBlocked_file >/dev/null 2>&1")
             result = clientControl.runCommand("wget http://test.untangle.com/virus/00_eicar.com -O /tmp/eicar -o /dev/null 2>&1")
             assert (result == 0)
-
+            result = clientControl.runCommand("wget -q -O /tmp/std_022_ftpVirusBlocked_file ftp://" + ftp_server + "/FedEx-Shipment-Notification-Jan23-2012-100100.zip")
+            assert (result == 0)
+            md5StdNum = clientControl.runCommand("\"md5sum /tmp/std_022_ftpVirusBlocked_file | awk '{print $1}'\"", True)
+            print "md5StdNum <%s>" % md5StdNum
+            assert (result == 0)
             if (uvmContext.nodeManager().isInstantiated(self.nodeName())):
                 print "ERROR: Node %s already installed" % self.nodeName();
                 raise unittest2.SkipTest('node %s already instantiated' % self.nodeName())
@@ -74,8 +79,26 @@ class VirusTests(unittest2.TestCase):
         adResult = subprocess.call(["ping","-c","1",ftp_server],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
         if (adResult != 0):
             raise unittest2.SkipTest("FTP server not available")
-        result = clientControl.runCommand("wget -q -O /dev/null ftp://" + ftp_server + "/FedEx-Shipment-Notification-Jan23-2012-100100.zip")
-        assert (result != 0)
+        clientControl.runCommand("rm /tmp/temp_022_ftpVirusBlocked_file  >/dev/null 2>&1") 
+        result = clientControl.runCommand("wget -q -O /tmp/temp_022_ftpVirusBlocked_file ftp://" + ftp_server + "/FedEx-Shipment-Notification-Jan23-2012-100100.zip")
+        assert (result == 0)
+        md5TestNum = clientControl.runCommand("\"md5sum /tmp/temp_022_ftpVirusBlocked_file | awk '{print $1}'\"", True)
+        print "md5StdNum <%s> vs md5TestNum <%s>" % (md5StdNum, md5TestNum)
+        assert (md5StdNum != md5TestNum)
+        flushEvents()
+        query = None;
+        for q in node.getFtpEventQueries():
+            if q['name'] == 'Infected Ftp Events': query = q;
+        assert(query != None)
+        events = uvmContext.getEvents(query['query'],defaultRackId,1)
+        assert(events != None)
+        assert(events['list'])  # pass if event list is not empty
+        assert(len(events['list']) > 0)
+        print "Event:" + str(events['list'][0])
+        assert(events['list'][0]['s_server_addr'] == ftp_server)
+        assert(events['list'][0]['c_client_addr'] == ClientControl.hostIP)
+        assert(events['list'][0][ self.shortName() + '_name'] != None)
+        assert(events['list'][0][ self.shortName() + '_clean'] == False)
 
     def test_100_eventlog_httpVirus(self):
         fname = sys._getframe().f_code.co_name
@@ -179,11 +202,3 @@ class VirusTests(unittest2.TestCase):
         uvmContext.nodeManager().destroy( node.getNodeSettings()["id"] )
         node = None
         
-
-
-
-
-
-
-
-
