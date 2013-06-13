@@ -27,6 +27,7 @@ dogfood = "10.0.0.1"
 dogfood_alt = "10.0.0.2"
 remote_network = "192.168.144.0"
 remote_gateway = "192.168.144.251"
+orig_netsettings = None
 
 def createPortForwardLocalMatcherRule( matcherType, value, destinationIP):
     matcherTypeStr = str(matcherType)
@@ -197,6 +198,11 @@ def nukeFWRules():
     netsettings['portForwardRules']['list'][:] = []
     uvmContext.networkManager().setNetworkSettings(netsettings)
     
+def nukeDNSRules():
+    netsettings = uvmContext.networkManager().getNetworkSettings()
+    netsettings['dnsSettings']['staticEntries']['list'][:] = []
+    uvmContext.networkManager().setNetworkSettings(netsettings)    
+    
 def isBridgeMode(clientIPAdress):
     netsettings = uvmContext.networkManager().getNetworkSettings()
     for interface in netsettings['interfaces']['list']:
@@ -322,6 +328,7 @@ class NetworkTests(unittest2.TestCase):
         # print "netstatResult <%s>" % netstatResult
         if (netstatResult == 0):
             raise unittest2.SkipTest("No ssl web server running on client, skipping port 443 forwarding test")
+        nukeFWRules()            
         clientControl.runCommand("rm -f /tmp/network_test_040*")
         netsettings = uvmContext.networkManager().getNetworkSettings()
         wan_IP = uvmContext.networkManager().getFirstWanAddress()
@@ -343,9 +350,9 @@ class NetworkTests(unittest2.TestCase):
         search = clientControl.runCommand("grep -q 'It works' /tmp/network_test_040b.out")  # check for default apache web page
         uvmContext.networkManager().setNetworkSettings(orig_netsettings)
         # Move Admin port back to 443
-        adminsettings = uvmContext.systemManager().getSettings()
-        adminsettings['httpsPort']="443"
-        uvmContext.systemManager().setSettings(adminsettings)
+        netsettings['httpsPort'] = 443
+        uvmContext.networkManager().setNetworkSettings(netsettings)
+        nukeFWRules()
         assert (search == 0)
 
     def test_050_portForwardAlt(self):
@@ -401,7 +408,6 @@ class NetworkTests(unittest2.TestCase):
 
     def test_070_routes(self):        
         # This test relies on the site to site openvpn on dogfood
-        # TODO This test needs to work with DHCP WAN also
         pingResult = clientControl.runCommand("ping -c 1 " + dogfood + " >/dev/null 2>&1")
         # print "pingResult <%s>" % pingResult
         if (pingResult != 0):
@@ -411,17 +417,33 @@ class NetworkTests(unittest2.TestCase):
         i = 0
         for interface in netsettings['interfaces']['list']:
             if interface['isWan']:
-                if (netsettings['interfaces']['list'][i]['v4StaticGateway']==dogfood):
-                    # test box is pointing to dogfood
-                    netsettings['interfaces']['list'][i]['v4StaticGateway']=dogfood_alt
-                    uvmContext.networkManager().setNetworkSettings(netsettings)
-                    break
-                elif (netsettings['interfaces']['list'][i]['v4StaticGateway']==dogfood_alt):
-                    # Already set to non dogfood gateway
-                    break
+                # static WAN case
+                if interface['v4StaticGateway']:
+                    if (netsettings['interfaces']['list'][i]['v4StaticGateway']==dogfood):
+                        # test box is pointing to dogfood, change to non dogfood gateway
+                        netsettings['interfaces']['list'][i]['v4StaticGateway']=dogfood_alt
+                        uvmContext.networkManager().setNetworkSettings(netsettings)
+                        break
+                    elif (netsettings['interfaces']['list'][i]['v4StaticGateway']==dogfood_alt):
+                        # Already set to non dogfood gateway
+                        break
+                elif (interface['v4ConfigType'] == 'AUTO'):
+                    # handle DHCP WAN case
+                    nicDevice = str(interface['physicalDev'])
+                    systemProperties = system_props.SystemProperties()
+                    gatewayIP = systemProperties.get_gateway(nicDevice)
+                    if (gatewayIP == dogfood):
+                        # test box is pointing to dogfood, change to non dogfood gateway
+                        netsettings['interfaces']['list'][i]['v4AutoGatewayOverride']=dogfood_alt
+                        uvmContext.networkManager().setNetworkSettings(netsettings)
+                        break
+                    elif (gatewayIP == dogfood_alt):
+                        # Already set to non dogfood gateway
+                        break
+               
                 else:
-                    print "Abort test since gateway is not dogfood or other alt"
-                    assert(False)
+                    raise unittest2.SkipTest("Abort test since gateway is not dogfood or other alt")
+
             i += 1
         appendRouteRule(createRouteRule(remote_network,24,dogfood))
         result = clientControl.runCommand("wget --no-check-certificate  -a /tmp/network_test_070a.log -O /tmp/network_test_070a.out -t 1 \'https://" + remote_gateway + "\'" ,True)
@@ -431,12 +453,15 @@ class NetworkTests(unittest2.TestCase):
 
     def test_080_DNS(self):        
         # Test static entries in Config -> Networking -> Advanced -> DNS
+        nukeDNSRules()
         result = clientControl.runCommand("host test.untangle.com", True)
+        # print "result <%s>" % result
         match = re.search(r'\d{1,3}.\d{1,3}.\d{1,3}.\d{1,3}', result)
         ip_address_testuntangle = match.group()
         # print "IP address of test.untangle.com <%s>" % ip_address_testuntangle
         appendDNSRule(createDNSRule(ip_address_testuntangle,"www.google.com"))
         wan_IP = uvmContext.networkManager().getFirstWanAddress()
+        print "wan_IP <%s>" % wan_IP
         if utBridged:
             # allow DNS on the WAN
             netsettings = uvmContext.networkManager().getNetworkSettings()
@@ -454,6 +479,7 @@ class NetworkTests(unittest2.TestCase):
             # print "Results of www.google.com <%s>" % result
         else:
             result = clientControl.runCommand("host www.google.com", True)
+        # print "result <%s>" % result
         match = re.search(r'address \d{1,3}.\d{1,3}.\d{1,3}.\d{1,3}', result)
         ip_address_google = (match.group()).replace('address ','')
         # print "IP address of www.google.com <%s>" % ip_address_google
@@ -462,17 +488,16 @@ class NetworkTests(unittest2.TestCase):
         uvmContext.networkManager().setNetworkSettings(orig_netsettings)
         
     def test_999_finalTearDown(self):
-        global node,nodeFW,orig_netsettings
+        global node,nodeFW
         # Restore original settings to return to initial settings
         uvmContext.networkManager().setNetworkSettings(orig_netsettings)
         # In case firewall is still installed.
         if (uvmContext.nodeManager().isInstantiated(self.nodeNameFW())):
             uvmContext.nodeManager().destroy( nodeFW.getNodeSettings()["id"] )
-        node = None
-        nodeFW = None
         # In case test_050_portForwardAlt fails and leaves the python web server running
         clientControl.runCommand("kill $(ps aux | grep SimpleHTTPServer | grep -v grep | awk '{print $2}') 2>/dev/null")
-        return True
+        node = None
+        nodeFW = None
 
 
 TestDict.registerNode("network", NetworkTests)

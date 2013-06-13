@@ -7,6 +7,7 @@ import socket
 import ipaddr
 import fcntl
 import struct
+import commands
 
 class SystemProperties():
 
@@ -20,6 +21,19 @@ class SystemProperties():
                 return intf
         return None
 
+    def internalInterfaceIP(self):
+        # FIXME
+        return "UnknownIP"
+        
+        # intf = self.getInterface("Internal")
+
+        # while intf['configType'] == 'bridge':
+        #     intf = self.getInterface(intf['bridgedTo'])
+
+        # if intf['primaryAddressStr'] != None:
+        #     return intf['primaryAddressStr'].split("/")[0]
+        # else:
+        #     return "UnknownIP"
 
     def findInterfaceIPbyIP(self, remoteIP):
         # finds the first IP address of any interface which is on the same network as the IP passed in
@@ -78,9 +92,19 @@ class SystemProperties():
             35099,
             struct.pack('256s', ifname)
         )[20:24])    
+
+    def get_gateway(self, ifname):
+        cmd = "route -n | grep '[ \t]" + ifname + "' | grep 'UH[ \t]' | awk '{print $1}'"
+        status, output = commands.getstatusoutput(cmd)
+        if (not status) and output:
+            return output
+        else:
+            return None
+
         
 # debug
 # systemProperties = SystemProperties()
 # print "return value <%s>" % systemProperties.findInterfaceIPbyIP('10.5.6.60')
 # print "return value <%s>" % systemProperties.get_ip_address('eth0')
 # print "return value <%s>" % systemProperties.get_ip_address('eth4')
+# print "return value <%s>" % systemProperties.get_gateway('eth4')
