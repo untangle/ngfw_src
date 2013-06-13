@@ -2433,8 +2433,8 @@ if (!Ung.hasResource["Ung.Network"]) {
             var devList = [];
             for ( var c = 0 ; c < this.settings.interfaces.list.length ; c++ ) {
                 var intf = this.settings.interfaces.list[c];
-                var name = "Local on " + intf.systemDev;
-                var key = intf.systemDev;
+                var name = "Local on " + intf.name + "(" + intf.systemDev + ")";
+                var key = intf.interfaceId;
                 devList.push( [ key, name ] );
             }
             this.gridStaticRoutes = Ext.create('Ung.EditorGrid', {
