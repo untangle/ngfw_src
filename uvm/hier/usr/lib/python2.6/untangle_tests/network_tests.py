@@ -25,8 +25,6 @@ clientControl = ClientControl()
 external_client = "10.5.6.71" 
 dogfood = "10.0.0.1"
 dogfood_alt = "10.0.0.2"
-remote_network = "192.168.144.0"
-remote_gateway = "192.168.144.251"
 orig_netsettings = None
 
 def createPortForwardLocalMatcherRule( matcherType, value, destinationIP):
@@ -203,6 +201,16 @@ def nukeDNSRules():
     netsettings['dnsSettings']['staticEntries']['list'][:] = []
     uvmContext.networkManager().setNetworkSettings(netsettings)    
     
+def nukeBypassRules():
+    netsettings = uvmContext.networkManager().getNetworkSettings()
+    netsettings['bypassRules']['list'][:] = []
+    uvmContext.networkManager().setNetworkSettings(netsettings)    
+
+def nukeRouteRules():
+    netsettings = uvmContext.networkManager().getNetworkSettings()
+    netsettings['staticRoutes']['list'][:] = []
+    uvmContext.networkManager().setNetworkSettings(netsettings)    
+
 def isBridgeMode(clientIPAdress):
     netsettings = uvmContext.networkManager().getNetworkSettings()
     for interface in netsettings['interfaces']['list']:
@@ -407,7 +415,7 @@ class NetworkTests(unittest2.TestCase):
         uvmContext.nodeManager().destroy( nodeFW.getNodeSettings()["id"] )
 
     def test_070_routes(self):        
-        # This test relies on the site to site openvpn on dogfood
+        # This test relies on the dogfood to block playboy.com
         pingResult = clientControl.runCommand("ping -c 1 " + dogfood + " >/dev/null 2>&1")
         # print "pingResult <%s>" % pingResult
         if (pingResult != 0):
@@ -440,15 +448,18 @@ class NetworkTests(unittest2.TestCase):
                     elif (gatewayIP == dogfood_alt):
                         # Already set to non dogfood gateway
                         break
-               
                 else:
                     raise unittest2.SkipTest("Abort test since gateway is not dogfood or other alt")
 
             i += 1
-        appendRouteRule(createRouteRule(remote_network,24,dogfood))
-        result = clientControl.runCommand("wget --no-check-certificate  -a /tmp/network_test_070a.log -O /tmp/network_test_070a.out -t 1 \'https://" + remote_gateway + "\'" ,True)
-        search = clientControl.runCommand("grep -q 'Administrator Login' /tmp/network_test_070a.out")  
-        assert (search == 0)
+        result = clientControl.runCommand("host www.playboy.com", True)
+        # print "result <%s>" % result
+        match = re.search(r'address \d{1,3}.\d{1,3}.\d{1,3}.\d{1,3}', result)
+        ip_address_playboy = (match.group()).replace('address ','')
+            
+        appendRouteRule(createRouteRule(ip_address_playboy,32,dogfood))
+        result = clientControl.runCommand("wget -q -O - http://www.playboy.com 2>&1 | grep -q blockpage")
+        assert (result == 0)
         uvmContext.networkManager().setNetworkSettings(orig_netsettings)
 
     def test_080_DNS(self):        
@@ -456,8 +467,8 @@ class NetworkTests(unittest2.TestCase):
         nukeDNSRules()
         result = clientControl.runCommand("host test.untangle.com", True)
         # print "result <%s>" % result
-        match = re.search(r'\d{1,3}.\d{1,3}.\d{1,3}.\d{1,3}', result)
-        ip_address_testuntangle = match.group()
+        match = re.search(r'address \d{1,3}.\d{1,3}.\d{1,3}.\d{1,3}', result)
+        ip_address_testuntangle = (match.group()).replace('address ','')
         # print "IP address of test.untangle.com <%s>" % ip_address_testuntangle
         appendDNSRule(createDNSRule(ip_address_testuntangle,"www.google.com"))
         wan_IP = uvmContext.networkManager().getFirstWanAddress()
@@ -490,6 +501,10 @@ class NetworkTests(unittest2.TestCase):
     def test_999_finalTearDown(self):
         global node,nodeFW
         # Restore original settings to return to initial settings
+        nukeFWRules()
+        nukeDNSRules()
+        nukeBypassRules()
+        nukeRouteRules()
         uvmContext.networkManager().setNetworkSettings(orig_netsettings)
         # In case firewall is still installed.
         if (uvmContext.nodeManager().isInstantiated(self.nodeNameFW())):
