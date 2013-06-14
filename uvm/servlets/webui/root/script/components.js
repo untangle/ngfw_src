@@ -4050,7 +4050,7 @@ Ext.define('Ung.RowEditorWindow', {
         }
     },
     updateAction: function() {
-        if (!this.isFormValid()) {
+        if (this.isFormValid()!==true) {
             return;
         }
         if (this.record !== null) {
@@ -4092,9 +4092,9 @@ Ext.define('Ung.RowEditorWindow', {
         if(validResult && this.validate!=null) {
             validResult = this.validate(this.items);
         }
-        if(validResult===false) {
+        if(validResult!==true) {
             var errMsg = i18n._("The form is not valid!");
-            if(validResult!=false) {
+            if(validResult!==false) {
                 errMsg = validResult;
             }
             Ext.MessageBox.alert(i18n._('Warning'), errMsg);
@@ -4115,8 +4115,9 @@ Ext.define('Ung.RowEditorWindow', {
         if (component.items) {
             for (var i = 0; i < component.items.length; i++) {
                 var item = Ext.isFunction(component.items.get)?component.items.get(i):component.items[i];
-                if(!this.isFormValidRecursive( item, depth+1)) {
-                    return false;
+                var isValidItem = this.isFormValidRecursive( item, depth+1);
+                if(isValidItem !==true) {
+                    return isValidItem;
                 }
             }
         }
