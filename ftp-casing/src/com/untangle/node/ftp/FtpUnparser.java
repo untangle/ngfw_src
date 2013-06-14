@@ -103,10 +103,18 @@ class FtpUnparser extends AbstractUnparser
              * This is so we will get the access to the stream.
              */
             UvmContextFactory.context().pipelineFoundry().addConnectionFittingHint(socketAddress, Fitting.FTP_DATA_STREAM);
+            /**
+             * Keep the correlation between the data session and the control session that opened it
+             */
+            FtpStateMachine.addDataSocket(socketAddress, session.getSessionId());
         }
 
         return new UnparseResult(new ByteBuffer[] { token.getBytes() });
     }
 
-    public TCPStreamer endSession() { return null; }
+    public TCPStreamer endSession()
+    {
+        FtpStateMachine.removeDataSockets(session.getSessionId());
+        return null;
+    }
 }

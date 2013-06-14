@@ -7,8 +7,11 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.log4j.Logger;
 
@@ -19,11 +22,13 @@ import com.untangle.node.ftp.FtpStateMachine;
 import com.untangle.node.token.Chunk;
 import com.untangle.node.token.EndMarker;
 import com.untangle.node.token.FileChunkStreamer;
+import com.untangle.node.token.ParseException;
 import com.untangle.node.token.Token;
 import com.untangle.node.token.TokenException;
 import com.untangle.node.token.TokenResult;
 import com.untangle.node.token.TokenStreamer;
 import com.untangle.node.token.TokenStreamerAdaptor;
+import com.untangle.uvm.vnet.NodeSession;
 import com.untangle.uvm.vnet.Pipeline;
 import com.untangle.uvm.vnet.NodeTCPSession;
 import com.untangle.uvm.vnet.event.TCPStreamer;
@@ -43,10 +48,18 @@ class VirusFtpHandler extends FtpStateMachine
     private FileChannel outChannel;
     private boolean c2s;
 
+    /**
+     * Map of filenames requested.
+     * 
+     * Used by ftp virus scanner to know the name of the file being scanned -
+     * the name is obtained on the control session and passed to the data
+     * session using this map.
+     */
+    private static final Map<Long, String> fileNamesByCtlSessionId = new ConcurrentHashMap<Long, String>();
+
     // constructors -----------------------------------------------------------
 
-    VirusFtpHandler(NodeTCPSession session, VirusNodeImpl node)
-    {
+    VirusFtpHandler(NodeTCPSession session, VirusNodeImpl node) {
         super(session);
 
         this.node = node;
@@ -150,13 +163,30 @@ class VirusFtpHandler extends FtpStateMachine
     {
         // no longer have a setting for blocking partial fetches
         // it causes too many issues
-        //         if (FtpFunction.REST == command.getFunction() && !node.getSettings().getAllowFtpResume()) {
-        //             FtpReply reply = FtpReply.makeReply(502, "Command not implemented.");
-        //             return new TokenResult(new Token[] { reply }, null);
-        //         }
-        
-            	
+        // if (FtpFunction.REST == command.getFunction() &&
+        // !node.getSettings().getAllowFtpResume()) {
+        // FtpReply reply = FtpReply.makeReply(502, "Command not implemented.");
+        // return new TokenResult(new Token[] { reply }, null);
+        // }
+
+        if (command.getFunction() == FtpFunction.RETR){
+            String fileName = command.getArgument();
+            addFileName(getSession().getSessionId(), fileName);
+        }
         return new TokenResult(null, new Token[] { command });
+    }
+    
+    protected TokenResult doReply(FtpReply reply) throws TokenException
+    {
+        if (reply.getReplyCode() == FtpReply.PASV || reply.getReplyCode() == FtpReply.EPSV){
+            try {
+                InetSocketAddress socketAddress = reply.getSocketAddress();
+                addDataSocket(socketAddress, getSession().getSessionId());
+            } catch (ParseException e) {
+                throw new TokenException(e);
+            }
+        }
+        return new TokenResult(new Token[] { reply }, null);
     }
 
     // private methods --------------------------------------------------------
@@ -197,13 +227,13 @@ class VirusFtpHandler extends FtpStateMachine
         }
 
         /* XXX handle the case where result is null */
-        node.logEvent( new VirusFtpEvent(getSession().sessionEvent(), result, node.getName(), null));
+        String fileName = (String)getSession().globalAttachment(NodeSession.KEY_FTP_FILE_NAME);
+        node.logEvent(new VirusFtpEvent(getSession().sessionEvent(), result, node.getName(), fileName));
 
         if (result.isClean()) {
             node.incrementPassCount();
             Pipeline p = getPipeline();
-            TokenStreamer tokSt = new FileChunkStreamer
-                (file, inChannel, null, EndMarker.MARKER, true);
+            TokenStreamer tokSt = new FileChunkStreamer(file, inChannel, null, EndMarker.MARKER, true);
             return new TokenStreamerAdaptor(p, tokSt);
         } else {
             node.incrementBlockCount();
@@ -229,5 +259,38 @@ class VirusFtpHandler extends FtpStateMachine
         } catch (IOException exn) {
             throw new TokenException("could not create tmp file");
         }
+        
+        /**
+         * Obtain the sessionId of the control session that opened this data session
+         */
+        Long ctlSessionId = removeDataSocket(new InetSocketAddress(getSession().getServerAddr(), getSession()
+                .getServerPort()));
+        if (ctlSessionId == null) {
+            ctlSessionId = removeDataSocket(new InetSocketAddress(getSession().getClientAddr(), getSession()
+                    .getClientPort()));
+        }
+
+        /**
+         * Obtain the file name and attach it to the current session
+         */
+        if (ctlSessionId != null) {
+            String fileName = removeFileName(ctlSessionId);
+            if (fileName != null)
+                getSession().globalAttach(NodeSession.KEY_FTP_FILE_NAME, fileName);
+        }
+
+    }
+
+    public static void addFileName(Long ctlSessionId, String fileName)
+    {
+        fileNamesByCtlSessionId.put(ctlSessionId, fileName);
+    }
+
+    public static String removeFileName(Long ctlSessionId)
+    {
+        if (fileNamesByCtlSessionId.containsKey(ctlSessionId)) {
+            return fileNamesByCtlSessionId.remove(ctlSessionId);
+        }
+        return null;
     }
 }

@@ -33,6 +33,12 @@
 
 package com.untangle.node.ftp;
 
+import java.net.InetSocketAddress;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+
 import com.untangle.node.token.AbstractTokenHandler;
 import com.untangle.node.token.Chunk;
 import com.untangle.node.token.EndMarker;
@@ -54,6 +60,12 @@ public abstract class FtpStateMachine extends AbstractTokenHandler
     private final Fitting clientFitting;
     private final Fitting serverFitting;
 
+    /**
+     * Used to obtain the control session that opened the data session on the
+     * given port.
+     */
+    private static final Map<InetSocketAddress, Long> ctlSessionIdByDataSocket = new ConcurrentHashMap<InetSocketAddress, Long>();
+    
     // constructors -----------------------------------------------------------
 
     protected FtpStateMachine(NodeTCPSession session)
@@ -137,5 +149,37 @@ public abstract class FtpStateMachine extends AbstractTokenHandler
     public void handleServerFin() throws TokenException
     {
         doServerDataEnd();
+    }
+    
+    /**
+     * Add a dataSocket that will be opened by this control session
+     * @param dataSocket
+     * @param ctlSessionId
+     */
+    public static void addDataSocket(InetSocketAddress dataSocket, Long ctlSessionId)
+    {
+        ctlSessionIdByDataSocket.put(dataSocket, ctlSessionId);
+    }
+
+    /**
+     * Remove the mapping of this data socket
+     */
+    public static Long removeDataSocket(InetSocketAddress dataSocket)
+    {
+        if (ctlSessionIdByDataSocket.containsKey(dataSocket)) {
+            return ctlSessionIdByDataSocket.remove(dataSocket);
+        }
+        return null;
+    }
+    
+    /**
+     * Remove all mappings of this control session
+     */
+    public static void removeDataSockets(long ctlSessionId){
+        Set<InetSocketAddress> set = new HashSet<InetSocketAddress>(ctlSessionIdByDataSocket.keySet());
+        for (InetSocketAddress dataSocket : set){
+            if (ctlSessionIdByDataSocket.get(dataSocket).longValue() == ctlSessionId)
+                ctlSessionIdByDataSocket.remove(dataSocket);
+        }
     }
 }

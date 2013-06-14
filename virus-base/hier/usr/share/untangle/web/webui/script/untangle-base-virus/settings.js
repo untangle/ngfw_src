@@ -604,9 +604,6 @@ if (!Ung.hasResource["Ung.Virus"]) {
                     name: 'server',
                     mapping: 'c_server_addr'
                 }, {
-                    name: 'host',
-                    mapping: 'host'
-                }, {
                     name: 'uri',
                     mapping: 'uri'
                 }, {
@@ -635,11 +632,7 @@ if (!Ung.hasResource["Ung.Virus"]) {
                     sortable: true,
                     dataIndex: 'uid'
                 }, {
-                    header: this.i18n._("Host"),
-                    width: Ung.Util.hostnameFieldWidth,
-                    dataIndex: 'host'
-                }, {
-                    header: this.i18n._("Uri"),
+                    header: this.i18n._("File Name"),
                     flex:1,
                     width: Ung.Util.uriFieldWidth,
                     dataIndex: 'uri'

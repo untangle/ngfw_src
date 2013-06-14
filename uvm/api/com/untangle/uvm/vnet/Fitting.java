@@ -11,7 +11,6 @@ public enum Fitting
     OCTET_STREAM, /* byte stream */
     HTTP_STREAM, /* http (port 80) byte stream */
     HTTPS_STREAM, /* https (port 443) byte stream */
-    FTP_STREAM, /* ftp (port 21) byte stream */
     FTP_CTL_STREAM, /* ftp (port 21) byte stream */
     FTP_DATA_STREAM, /* ftp data byte stream */
     SMTP_STREAM, /* smtp stream */
