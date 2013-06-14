@@ -2035,7 +2035,7 @@ Ung.MessageManager = {
                                         Ext.MessageBox.alert(i18n._("Warning"), i18n._("Error downloading packages. Install Aborted."));
                                     }
                                 } else if(msg.javaClass.indexOf("DownloadAllComplete") != -1) {
-                                    if ( this.modalDownloadCompleteFn !== null )
+                                    if ( this.modalDownloadCompleteFn )
                                         this.modalDownloadCompleteFn();
                                 } else if(msg.javaClass.indexOf("AptMessage") != -1) {
                                     /* This state will not  be reached for upgrades because the UVM will go down */
