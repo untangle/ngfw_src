@@ -1032,6 +1032,7 @@ if (!Ung.hasResource["Ung.Network"]) {
                     width: 300
                 }, {
                     xtype: "combo",
+                    allowBlank: false,
                     dataIndex: "vlanParent",
                     fieldLabel: this.i18n._("Parent Interface"),
                     store: Ung.Util.getInterfaceAddressedList(),
@@ -1272,12 +1273,14 @@ if (!Ung.hasResource["Ung.Network"]) {
                         }, {
                             xtype:'textfield',
                             dataIndex: "v4PPPoEUsername",
-                            fieldLabel: this.i18n._("Username")
+                            fieldLabel: this.i18n._("Username"),
+                            width: 350
                         }, {
                             xtype:'textfield',
                             inputType:'password',
                             dataIndex: "v4PPPoEPassword",
-                            fieldLabel: this.i18n._("Password")
+                            fieldLabel: this.i18n._("Password"),
+                            width: 350
                         }, {
                             xtype:'checkbox',
                             dataIndex: "v4PPPoEUsePeerDns",
@@ -1293,12 +1296,14 @@ if (!Ung.hasResource["Ung.Network"]) {
                             xtype:'textfield',
                             dataIndex: "v4PPPoEDns1",
                             fieldLabel: this.i18n._("Primary DNS"),
-                            vtype: "ip4Address"
+                            vtype: "ip4Address",
+                            width: 350
                         }, {
                             xtype:'textfield',
                             dataIndex: "v4PPPoEDns2",
                             fieldLabel: this.i18n._("Secondary DNS"),
-                            vtype: "ip4Address"
+                            vtype: "ip4Address",
+                            width: 350
                         }]
                     }, {
                         xtype: 'fieldset',
@@ -1326,14 +1331,18 @@ if (!Ung.hasResource["Ung.Network"]) {
                     title: this.i18n._("IPv6 Configuration"),
                     collapsible: true,
                     collapsed: false,
+                    defaults: {
+                        labelWidth: 150
+                    },
                     items: [{
                         xtype: "combo",
                         dataIndex: "v6ConfigType",
-                        allowBlank: false, 
+                        allowBlank: false,
                         fieldLabel: this.i18n._("Config Type"),
                         editable: false,
                         store: [ ["DISABLED", this.i18n._('Disabled')], ["AUTO", this.i18n._('Auto (SLAAC/RA)')], ["STATIC", this.i18n._('Static')] ],
                         queryMode: 'local',
+                        width: 350,
                         listeners: {
                             "change": {
                                 fn: Ext.bind(function(elem, newValue) {
@@ -1344,15 +1353,14 @@ if (!Ung.hasResource["Ung.Network"]) {
                     }, {
                         xtype:'textfield',
                         dataIndex: "v6StaticAddress",
-                        
                         fieldLabel: this.i18n._("Address"),
                         vtype: "ip6Address",
-                        width: 350
+                        width: 450
                     }, {
                         xtype:'textfield',
                         dataIndex: "v6StaticPrefixLength",
                         fieldLabel: this.i18n._("Prefix Length"),
-                        width: 150
+                        width: 200
                     }, {
                         xtype:'textfield',
                         dataIndex: "v6StaticGateway",
@@ -1383,7 +1391,9 @@ if (!Ung.hasResource["Ung.Network"]) {
                         items: [{
                             xtype:'checkbox',
                             dataIndex: "raEnabled",
-                            boxLabel: this.i18n._("Send Router Advertisements")
+                            boxLabel: this.i18n._("Send Router Advertisements"),
+                            labelWidth: 150,
+                            width: 350
                         },{
                             xtype: 'label',
                             name: "v6RouterAdvertisementWarning",
@@ -1398,6 +1408,9 @@ if (!Ung.hasResource["Ung.Network"]) {
                     title: this.i18n._("DHCP Configuration"),
                     collapsible: true,
                     collapsed: false,
+                    defaults: {
+                        labelWidth: 150
+                    },
                     items: [{
                         xtype:'checkbox',
                         dataIndex: "dhcpEnabled",
@@ -1406,12 +1419,14 @@ if (!Ung.hasResource["Ung.Network"]) {
                         xtype: 'textfield',
                         dataIndex: "dhcpRangeStart",
                         fieldLabel: this.i18n._("Range Start"),
-                        vtype: "ip4Address"
+                        vtype: "ip4Address",
+                        width: 350
                     }, {
                         xtype:'textfield',
                         dataIndex: "dhcpRangeEnd",
                         fieldLabel: this.i18n._("Range End"),
-                        vtype: "ip4Address"
+                        vtype: "ip4Address",
+                        width: 350
                     }, {
                         xtype: 'container',
                         layout: 'column',
@@ -1419,7 +1434,9 @@ if (!Ung.hasResource["Ung.Network"]) {
                         items: [{
                             xtype: 'textfield',
                             dataIndex: "dhcpLeaseDuration",
-                            fieldLabel: this.i18n._("Lease Duration")
+                            fieldLabel: this.i18n._("Lease Duration"),
+                            labelWidth: 150,
+                            width: 350
                         }, {
                             xtype: 'label',
                             html: this.i18n._("(seconds)"),
@@ -1431,23 +1448,29 @@ if (!Ung.hasResource["Ung.Network"]) {
                         title: this.i18n._("DHCP Advanced"),
                         collapsible: true,
                         collapsed: true,
+                        defaults: {
+                            labelWidth: 150
+                        },
                         items: [{
                             xtype:'textfield',
                             dataIndex: "dhcpGatewayOverride",
                             fieldLabel: this.i18n._("Gateway Override"),
-                            vtype: "ip4Address"
+                            vtype: "ip4Address",
+                            width: 350
                         }, {
                             xtype: "combo",
                             dataIndex: "dhcpPrefixOverride",
                             fieldLabel: this.i18n._("Netmask Override"),
                             store: Ung.Util.getV4NetmaskList( true ),
                             queryMode: 'local',
-                            editable: false
+                            editable: false,
+                            width: 350
                         }, {
                             xtype:'textfield',
                             dataIndex: "dhcpDnsOverride",
                             fieldLabel: this.i18n._("DNS Override"),
-                            vtype: "ip4Address"
+                            vtype: "ip4Address",
+                            width: 350
                         }, {
                             xtype: 'fieldset',
                             title: this.i18n._("Dhcp Options"),
@@ -1457,6 +1480,7 @@ if (!Ung.hasResource["Ung.Network"]) {
                     }]
                 }, {
                     xtype: "combo",
+                    allowBlank: false,
                     dataIndex: "bridgedTo",
                     fieldLabel: this.i18n._("Bridged To"),
                     store: Ung.Util.getInterfaceAddressedList(),
@@ -1514,8 +1538,13 @@ if (!Ung.hasResource["Ung.Network"]) {
                     isWan.hide();
                     isVlanInterface.hide();
                     vlanParent.hide();
+                    vlanParent.disable();
+                    
                     vlanTag.hide();
+                    vlanTag.disable();
+                    
                     bridgedTo.hide();
+                    bridgedTo.disable();
                     v4Config.hide();
                     v6Config.hide();
                     dhcp.hide();
@@ -1566,7 +1595,9 @@ if (!Ung.hasResource["Ung.Network"]) {
                     if ( isVlanInterfaceValue ) {
                         isVlanInterface.show();
                         vlanParent.show();
+                        vlanParent.enable();
                         vlanTag.show();
+                        vlanTag.enable();
                     }
 
                     // if config disabled show nothing
@@ -1577,6 +1608,7 @@ if (!Ung.hasResource["Ung.Network"]) {
                     // if config bridged just show the one field 
                     if ( configTypeValue == "BRIDGED") {
                         bridgedTo.show();
+                        bridgedTo.enable();
                         return;
                     }
 

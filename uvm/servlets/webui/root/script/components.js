@@ -53,7 +53,8 @@ Ext.override(Ext.Button, {
     }
 });
 
-Ext.override(Ext.form.field.Base, { 
+Ext.override(Ext.form.field.Base, {
+    msgTarget: 'side',
     clearDirty: function() {
         if(this.xtype=='radiogroup') {
             this.items.each(function(item) {
@@ -139,6 +140,7 @@ Ext.override(Ext.PagingToolbar, {
 Ext.override( Ext.form.FieldSet, {
    border: 0 
 });
+
 Ext.define("Ung.form.DayOfWeekMatcherField", {
     extend: "Ext.form.CheckboxGroup",
     alias: "widget.udayfield",
@@ -3995,8 +3997,7 @@ Ext.define('Ung.RowEditorWindow', {
             bodyStyle: 'padding:10px 10px 0px 10px;',
             autoScroll: true,
             defaults: {
-                selectOnFocus: true,
-                msgTarget: 'side'
+                selectOnFocus: true
             },
             items: this.inputLines
         });
@@ -5971,7 +5972,7 @@ Ext.define('Ung.RuleBuilder', {
             }, this)
         },{
             header: this.settingsCmp.i18n._("Type"),
-            width: 220,
+            width: 250,
             sortable: false,
             menuDisabled: true,
             dataIndex: "name",
