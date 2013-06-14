@@ -11,7 +11,6 @@ import com.untangle.uvm.webui.jabsorb.serializer.EnumSerializer;
 import com.untangle.uvm.webui.jabsorb.serializer.IPMaskedAddressSerializer;
 import com.untangle.uvm.webui.jabsorb.serializer.InetAddressSerializer;
 import com.untangle.uvm.webui.jabsorb.serializer.MimeTypeSerializer;
-import com.untangle.uvm.webui.jabsorb.serializer.DistinguishedNameSerializer;
 import com.untangle.uvm.webui.jabsorb.serializer.TimeSerializer;
 import com.untangle.uvm.webui.jabsorb.serializer.TimeZoneSerializer;
 import com.untangle.uvm.webui.jabsorb.serializer.URLSerializer;
@@ -65,7 +64,6 @@ public class ServletUtils
         registrator.registerSerializer(root, new TimeZoneSerializer());
 
         registrator.registerSerializer(root, new MimeTypeSerializer());
-        registrator.registerSerializer(root, new DistinguishedNameSerializer());
         
         // matchers
         registrator.registerSerializer(root, new GenericStringSerializer(ProtocolMatcher.class));

@@ -124,10 +124,10 @@ if (!Ung.hasResource["Ung.Administration"]) {
             return this.rpc.systemSettings;
         },
         // get Current Server CertInfo
-        getCurrentServerCertInfo: function(forceReload) {
+        getCertificateInformation: function(forceReload) {
             if (forceReload || this.rpc.currentServerCertInfo === undefined) {
                 try {
-                    this.rpc.currentServerCertInfo = main.getCertificateManager().getCurrentServerCertInfo();
+                    this.rpc.currentServerCertInfo = main.getCertificateManager().getCertificateInformation();
                 } catch (e) {
                     Ung.Util.rpcExHandler(e);
                 }
@@ -269,7 +269,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
                     width: 400
                 }]
             });
-            
+
             this.gridAdminAccounts.rowEditorChangePass = Ext.create("Ung.RowEditorWindow",{
                 grid: this.gridAdminAccounts,
                 inputLines: [{
@@ -332,7 +332,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
                         items: [{
                             xtype: 'label',
                             html: this.i18n._('HTTP is open on non-WANs (internal interfaces) for blockpages and other services.') + "<br/>" +
-                                this.i18n._('This settings only controls the availability of <b>administration</b> via HTTP.')    
+                                this.i18n._('This settings only controls the availability of <b>administration</b> via HTTP.')
                         }]
                     }]
             });
@@ -486,42 +486,69 @@ if (!Ung.hasResource["Ung.Administration"]) {
                     xtype: 'fieldset'
                 },
                 items: [{
-                    title: this.i18n._('Status'),
-                    defaults: {
-                        labelWidth: 150
-                    },
+                    title: this.i18n._('Root Certificate Authority'),
+                    defaults: { labelWidth: 150 },
                     items: [{
                         xtype: 'textfield',
                         fieldLabel: this.i18n._('Valid starting'),
                         labelStyle: 'font-weight:bold',
-                        id: 'administration_status_notBefore',
-                        value: this.getCurrentServerCertInfo() == null ? "": i18n.timestampFormat(this.getCurrentServerCertInfo().notBefore),
-                        disabled: true,
+                        id: 'rootca_status_notBefore',
+                        value: this.getCertificateInformation() == null ? "" : i18n.timestampFormat(this.getCertificateInformation().rootcaDateValid),
+                        readOnly: true,
                         anchor:'100%'
                     },{
                         xtype: 'textfield',
                         fieldLabel: this.i18n._('Valid until'),
                         labelStyle: 'font-weight:bold',
-                        id: 'administration_status_notAfter',
-                        value: this.getCurrentServerCertInfo() == null ? "": i18n.timestampFormat(this.getCurrentServerCertInfo().notAfter),
-                        disabled: true,
+                        id: 'rootca_status_notAfter',
+                        value: this.getCertificateInformation() == null ? "" : i18n.timestampFormat(this.getCertificateInformation().rootcaDateExpires),
+                        readOnly: true,
                         anchor:'100%'
                     },{
                         xtype: 'textarea',
                         fieldLabel: this.i18n._('Subject DN'),
                         labelStyle: 'font-weight:bold',
-                        id: 'administration_status_subjectDN',
-                        value: this.getCurrentServerCertInfo() == null ? "": this.getCurrentServerCertInfo().subjectDN,
-                        disabled: true,
+                        id: 'rootca_status_subjectDN',
+                        value: this.getCertificateInformation() == null ? "" : this.getCertificateInformation().rootcaSubject,
+                        readOnly: true,
+                        anchor:'100%',
+                        height: 40
+                    }]
+                },{
+                    title: this.i18n._('Server Certificate'),
+                    defaults: { labelWidth: 150 },
+                    items: [{
+                        xtype: 'textfield',
+                        fieldLabel: this.i18n._('Valid starting'),
+                        labelStyle: 'font-weight:bold',
+                        id: 'server_status_notBefore',
+                        value: this.getCertificateInformation() == null ? "" : i18n.timestampFormat(this.getCertificateInformation().serverDateValid),
+                        readOnly: true,
+                        anchor:'100%'
+                    },{
+                        xtype: 'textfield',
+                        fieldLabel: this.i18n._('Valid until'),
+                        labelStyle: 'font-weight:bold',
+                        id: 'server_status_notAfter',
+                        value: this.getCertificateInformation() == null ? "" : i18n.timestampFormat(this.getCertificateInformation().serverDateExpires),
+                        readOnly: true,
+                        anchor:'100%'
+                    },{
+                        xtype: 'textarea',
+                        fieldLabel: this.i18n._('Subject DN'),
+                        labelStyle: 'font-weight:bold',
+                        id: 'server_status_subjectDN',
+                        value: this.getCertificateInformation() == null ? "" : this.getCertificateInformation().serverSubject,
+                        readOnly: true,
                         anchor:'100%',
                         height: 40
                     },{
                         xtype: 'textarea',
                         fieldLabel: this.i18n._('Issuer DN'),
                         labelStyle: 'font-weight:bold',
-                        id: 'administration_status_issuerDN',
-                        value: this.getCurrentServerCertInfo() == null ? "": this.getCurrentServerCertInfo().issuerDN,
-                        disabled: true,
+                        id: 'server_status_issuerDN',
+                        value: this.getCertificateInformation() == null ? "" : this.getCertificateInformation().serverIssuer,
+                        readOnly: true,
                         anchor:'100%',
                         height: 40
                     }]
@@ -657,7 +684,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
                             xtype: 'fieldset',
                             defaults: {
                                 labelWidth: 150,
-                                width: 400                        
+                                width: 400
                             },
                             items: [{
                                 cls: 'description',
@@ -714,7 +741,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
                     },
                     proceedAction: Ext.bind(function() {
                         Ext.MessageBox.wait(this.i18n._("Generating Certificate..."), i18n._("Please wait"));
-    
+
                         //validation
                         var organizationCmp = Ext.getCmp('administration_organization');
                         var organizationUnitCmp = Ext.getCmp('administration_organizationUnit');
@@ -728,7 +755,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
                             this.isBlankField(countryCmp, this.i18n._("You must specify a country."))) {
                                 return;
                         }
-    
+
                         //get user values
                         var organization = organizationCmp.getValue();
                         var organizationUnit = organizationUnitCmp.getValue();
@@ -737,16 +764,16 @@ if (!Ung.hasResource["Ung.Administration"]) {
                         var country = countryCmp.getValue();
                         var distinguishedName = Ext.String.format("C={4},ST={3},L={2},OU={1},O={0}",
                                 organization, organizationUnit, city, state, country);
-    
+
                         // generate certificate
                         main.getCertificateManager().regenCert(Ext.bind(function(result, exception) {
                             if(Ung.Util.handleException(exception)) return;
                             if (result) { //true or false
                                 //success
-    
+
                                 //update status
                                 this.updateCertificatesStatus();
-    
+
                                 Ext.MessageBox.alert(this.i18n._("Succeeded"), this.i18n._("Certificate Successfully Generated"),
                                         Ext.bind(function () {
                                         this.winGenerateSelfSignedCertificate.cancelAction();
@@ -758,7 +785,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
                                 return;
                             }
                         }, this), distinguishedName, 5*365);
-    
+
                     }, this),
                     cancelAction: function() {
                         Ext.getCmp('administration_organization').reset();
@@ -820,7 +847,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
                     },
                     proceedAction: Ext.bind(function() {
                         Ext.MessageBox.wait(this.i18n._("Generating Certificate..."), i18n._("Please wait"));
-    
+
                         // generate certificate request
                         main.getCertificateManager().generateCSR(Ext.bind(function(result, exception) {
                             if(Ung.Util.handleException(exception)) return;
@@ -839,7 +866,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
                                 return;
                             }
                         }, this));
-    
+
                     }, this),
                     cancelAction: function() {
                         Ext.getCmp('administration_crs').reset();
@@ -909,20 +936,20 @@ if (!Ung.hasResource["Ung.Administration"]) {
                     },
                     proceedAction: Ext.bind(function() {
                         Ext.MessageBox.wait(this.i18n._("Importing Certificate..."), i18n._("Please wait"));
-    
+
                         //get user values
                         var cert = Ext.getCmp('administration_import_cert').getValue();
                         var caCert = Ext.getCmp('administration_import_caCert').getValue();
-    
+
                         // import certificate
                         main.getCertificateManager().importServerCert(Ext.bind(function(result, exception) {
                             if(Ung.Util.handleException(exception)) return;
                             if (result) { //true or false
                                 //success
-    
+
                                 //update status
                                 this.updateCertificatesStatus();
-    
+
                                 Ext.MessageBox.alert(this.i18n._("Succeeded"), this.i18n._("Certificate Successfully Imported"),
                                     Ext.bind(function () {
                                         this.winCertImportTrusted.cancelAction();
@@ -934,7 +961,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
                                 return;
                             }
                         }, this), cert, caCert.length==0?null:caCert );
-    
+
                     }, this),
                     cancelAction: function() {
                         Ext.getCmp('administration_import_cert').reset();
@@ -948,12 +975,11 @@ if (!Ung.hasResource["Ung.Administration"]) {
         },
 
         updateCertificatesStatus: function() {
-            var certInfo = this.getCurrentServerCertInfo(true);
+            var certInfo = this.getCertificateInformation(true);
             if (certInfo != null) {
-                Ext.getCmp('administration_status_notBefore').setValue(i18n.timestampFormat(certInfo.notBefore));
-                Ext.getCmp('administration_status_notAfter').setValue(i18n.timestampFormat(certInfo.notAfter));
-                Ext.getCmp('administration_status_subjectDN').setValue(certInfo.subjectDN);
-                Ext.getCmp('administration_status_issuerDN').setValue(certInfo.issuerDN);
+                Ext.getCmp('rootca_status_notBefore').setValue(i18n.timestampFormat(certInfo.rootcaDateValid));
+                Ext.getCmp('rootca_status_notAfter').setValue(i18n.timestampFormat(certInfo.rootcaDateExpires));
+                Ext.getCmp('rootca_status_subjectDN').setValue(certInfo.rootcaSubject);
             }
         },
 
@@ -1155,7 +1181,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
 
             this.skinManager.addRefreshableStore( adminSkinsStore );
 
-            
+
             this.panelSkins = Ext.create('Ext.panel.Panel',{
                 name: "panelSkins",
                 helpSource: 'skins',
@@ -1415,7 +1441,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
             Ext.MessageBox.wait(i18n._("Saving..."), i18n._("Please wait"));
 
             this.getAdminSettings().users.list=this.gridAdminAccounts.getPageList();
-            
+
             rpc.adminManager.setSettings(Ext.bind(function(result, exception) {
                 this.afterSave(exception, isApply);
             }, this), this.getAdminSettings());
@@ -1431,7 +1457,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
                 // access settings should be saved last as saving these changes may disconnect the user from the Untangle box
                 rpc.systemManager.setSettings(Ext.bind(function(result, exception) {
                     if(Ung.Util.handleException(exception)) return;
-                    //If skin changed it needs a refresh 
+                    //If skin changed it needs a refresh
                     if(this.initialSkin != this.getSkinSettings().skinName) {
                         Ung.Util.goToStartPage();
                         return;
@@ -1439,7 +1465,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
                     if(isApply) {
                         this.gridAdminAccounts.reload({data: this.getAdminSettings(true).users.list});
                         this.initialSystemSettings = Ung.Util.clone(this.getSystemSettings(true));
-                        this.getCurrentServerCertInfo(true);
+                        this.getCertificateInformation(true);
                         this.getHostname(true);
                         this.clearDirty();
                         Ext.MessageBox.hide();
