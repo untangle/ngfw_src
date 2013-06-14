@@ -241,6 +241,23 @@ def isBridgeMode(clientIPAdress):
         else:
             pass
     return False
+
+def getDownloadSpeed():
+    # Download file and record the average speed in which the file was download
+    clientControl.runCommand("rm /tmp/test.txt >/dev/null 2>&1")
+    result = clientControl.runCommand("wget -o /tmp/test.txt http://test.untangle.com/5MB.zip")
+    ClientControl.verbosity = 1
+    result = clientControl.runCommand("tail -2 /tmp/test.txt", True)
+    # remove test file
+    match = re.search(r'([0-9.]+) [KM]B\/s', result)
+    bandwidth_speed =  match.group(1)
+    # cast string to float for comparsion.
+    bandwidth_speed = float(bandwidth_speed)
+    # adjust value if MB or KB
+    if "MB/s" in result:
+        bandwidth_speed *= 1000
+    # print "bandwidth_speed <%s>" % bandwidth_speed
+    return bandwidth_speed
     
 
 class NetworkTests(unittest2.TestCase):
@@ -274,15 +291,8 @@ class NetworkTests(unittest2.TestCase):
         # remove previous test file and log
         netsettings['qosSettings']['qosEnabled'] = False
         uvmContext.networkManager().setNetworkSettings(netsettings)            
-        clientControl.runCommand("rm -f 5MB.zip /tmp/network_test_020a.log")
-        result = clientControl.runCommand("wget -o /tmp/network_test_020a.log http://test.untangle.com/5MB.zip")
-        result = clientControl.runCommand("tail -2 /tmp/network_test_020a.log", True)
-        match = re.search(r'\d+\.\d{1,2}', result)
-        wget_speed_pre_QoSLimit =  match.group()
-        # cast string to float for comparsion.
-        wget_speed_pre_QoSLimit = float(wget_speed_pre_QoSLimit)
-        if "MB/s" in result:
-            wget_speed_pre_QoSLimit *= 1000
+        wget_speed_pre_QoSLimit = getDownloadSpeed()
+        
         netsettings['qosSettings']['qosEnabled'] = True
         i = 0
         for interface in netsettings['interfaces']['list']:
@@ -291,18 +301,10 @@ class NetworkTests(unittest2.TestCase):
                 netsettings['interfaces']['list'][i]['uploadBandwidthKbps']=10000
             i += 1
         uvmContext.networkManager().setNetworkSettings(netsettings)
-        clientControl.runCommand("rm -f 5MB.zip /tmp/network_test_020b.log")
-        result = clientControl.runCommand("wget -o /tmp/network_test_020b.log http://test.untangle.com/5MB.zip")
-        result = clientControl.runCommand("tail -2 /tmp/network_test_020b.log", True)
+        wget_speed_post_QoSLimit= getDownloadSpeed()
         uvmContext.networkManager().setNetworkSettings(orig_netsettings)
-        # remove test file
-        match = re.search(r'\d+\.\d{1,2}', result)
-        wget_speed_post_QoSLimit =  match.group()
-        wget_speed_post_QoSLimit = float(wget_speed_post_QoSLimit)
-        if "MB/s" in result:
-            wget_speed_post_QoSLimit *= 1000
         print "Result of wget_speed_pre_QoSLimit <%s> wget_speed_post_QoSLimit <%s>" % (wget_speed_pre_QoSLimit,wget_speed_post_QoSLimit)
-        assert ((wget_speed_pre_QoSLimit != 0) and (wget_speed_post_QoSLimit != 0))
+        assert ((wget_speed_pre_QoSLimit) and (wget_speed_post_QoSLimit))
         assert (wget_speed_pre_QoSLimit >  wget_speed_post_QoSLimit)
 
     def test_030_port80Forward(self):
