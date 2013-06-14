@@ -4092,7 +4092,7 @@ Ext.define('Ung.RowEditorWindow', {
         if(validResult && this.validate!=null) {
             validResult = this.validate(this.items);
         }
-        if(!validResult) {
+        if(validResult===false) {
             var errMsg = i18n._("The form is not valid!");
             if(validResult!=false) {
                 errMsg = validResult;
@@ -6248,9 +6248,9 @@ Ext.define('Ung.RuleBuilder', {
     isValid: function() {
         // check that all the matchers have a selected type and value
         for (var i = 0; i < this.store.data.length ; i++) {
-            if (this.store.data.items[i].data.name == null || this.store.data.items[i].data.name == "") {
-                Ext.MessageBox.alert(i18n._("Warning"),i18n._("A valid type must be selected for all matchers."));
-                return false;
+            var typeItem=this.store.data.items[i];
+            if (Ext.isEmpty(typeItem.data.name)) {
+                return i18n._("A valid type must be selected for all matchers.");
             }
         }
         return true;

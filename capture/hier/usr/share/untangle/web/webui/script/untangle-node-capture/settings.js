@@ -872,7 +872,7 @@ if (!Ung.hasResource["Ung.Capture"]) {
 
         onUploadCustomFile: function() {
             var form = Ext.getCmp('upload_form').getForm();
-            if (form.isValid() == false) {
+            if (form.isValid() === false) {
                 Ext.MessageBox.show({
                     title: this.i18n._("Missing Filename"),
                     msg: this.i18n._("Click the Browse button to select a custom file to upload"),
