@@ -20,9 +20,6 @@
     <script type="text/javascript" src="/ext4/ext-all-debug.js?s=${buildStamp}"></script>
     <script type="text/javascript" src="/jsonrpc/jsonrpc.js?s=${buildStamp}"></script>
 </c:if>
-    <script type="text/javascript" src="/ext4/examples/ux/data/PagingMemoryProxy.js?s=${buildStamp}"></script>
-    <script type="text/javascript" src="/ext4/examples/ux/CheckColumn.js?s=${buildStamp}"></script>
-
     <script type="text/javascript" src="/script/i18n.js?s=${buildStamp}"></script>
     <script type="text/javascript" src="script/components.js?s=${buildStamp}"></script>
     <script type="text/javascript" src="script/main.js?s=${buildStamp}"></script>

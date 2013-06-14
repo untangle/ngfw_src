@@ -9,14 +9,11 @@
     <title>Setup Wizard</title>
     <style type="text/css">
         @import "/ext4/resources/css/ext-all-gray.css?s=${buildStamp}";
-        @import "/ext4/examples/ux/css/CheckHeader.css?s=${buildStamp}";
     </style>
     
     <uvm:skin src="admin.css?s=${buildStamp}" name="${skinSettings.skinName}"/>
 
     <script type="text/javascript" src="/ext4/ext-all-debug.js?s=${buildStamp}"></script>
-	<script type="text/javascript" src="/ext4/examples/ux/data/PagingMemoryProxy.js?s=${buildStamp}"></script>
-	<script type="text/javascript" src="/ext4/examples/ux/CheckColumn.js?s=${buildStamp}"></script>
     
     <script type="text/javascript" src="/jsonrpc/jsonrpc.js?s=${buildStamp}"></script>
     <script type="text/javascript" src="/script/i18n.js?s=${buildStamp}"></script>

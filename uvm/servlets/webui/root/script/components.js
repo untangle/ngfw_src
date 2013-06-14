@@ -5,6 +5,8 @@ Ext.BLANK_IMAGE_URL = '/ext4/resources/themes/images/default/tree/s.gif'; // The
 Ext.Loader.setConfig({enabled: true});
 Ext.Loader.setPath('Ext.ux', '/ext4/examples/ux');
 Ext.require([
+    'Ext.ux.data.PagingMemoryProxy',
+    'Ext.ux.CheckColumn',
     'Ext.ux.grid.FiltersFeature'
 ]);
 
