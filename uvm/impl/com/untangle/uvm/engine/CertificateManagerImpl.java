@@ -6,6 +6,7 @@ package com.untangle.uvm.engine;
 import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
 import java.text.DateFormat;
+import java.io.ByteArrayInputStream;
 import java.io.FileInputStream;
 import java.io.File;
 import java.util.Date;
@@ -41,20 +42,55 @@ public class CertificateManagerImpl implements CertificateManager
     public CertificateInformation getCertificateInformation()
     {
         CertificateInformation certInfo = new CertificateInformation();
-        
+        FileInputStream certStream;
+        X509Certificate certObject;
+
         try
         {
-            // get an instance of the X509 certificate factory
+            // get an instance of the X509 certificate factory that we can
+            // use to create X509Certificates from which we can grab info
             CertificateFactory factory = CertificateFactory.getInstance("X.509");
 
 
-            File certFile = new File(ROOT_CERT_FILE);
-            FileInputStream certStream = new FileInputStream(certFile);
-            X509Certificate certObject = (X509Certificate)factory.generateCertificate(certStream);
+            // Grab the info from our root CA certificate.  We can use the file
+            // as is since it only contains the DER cert encoded in Base64
+            certStream = new FileInputStream(ROOT_CERT_FILE);
+            certObject = (X509Certificate)factory.generateCertificate(certStream);
+            certStream.close();
 
             certInfo.setRootcaDateValid(new Date(certObject.getNotBefore().toString()));
             certInfo.setRootcaDateExpires(new Date(certObject.getNotBefore().toString()));
             certInfo.setRootcaSubject(certObject.getSubjectDN().toString());
+
+            // Now grab the info from the Apache certificate.  This is a little
+            // more complicated because we have to skip over the private key
+            // and look for the certificate portion of the file
+            File certFile = new File(APACHE_PEM_FILE);
+            certStream = new FileInputStream(certFile);
+            byte[] fileData = new byte[(int)certFile.length()];
+            certStream.read(fileData);
+            certStream.close();
+
+            // look for the header and trailer strings
+            String pemString = new String(fileData);
+            int certTop = pemString.indexOf("-----BEGIN CERTIFICATE-----");
+            int certEnd = pemString.indexOf("-----END CERTIFICATE-----");
+            int certLen = (certEnd - certTop + 25);
+
+            // if either certTop or certEnd returned an error something is
+            // wrong so just return what we have so far
+            if ((certTop < 0) || (certEnd < 0)) return certInfo;
+
+            // create a new String with just the certificate we isolated
+            // and pass it to the certificate factory generatory function
+            String certString = new String(pemString.getBytes(),certTop,certLen);
+            ByteArrayInputStream byteStream = new ByteArrayInputStream(certString.getBytes());
+            certObject = (X509Certificate)factory.generateCertificate(byteStream);
+
+            certInfo.setServerDateValid(new Date(certObject.getNotBefore().toString()));
+            certInfo.setServerDateExpires(new Date(certObject.getNotBefore().toString()));
+            certInfo.setServerSubject(certObject.getSubjectDN().toString());
+            certInfo.setServerIssuer(certObject.getIssuerDN().toString());
         }
 
         catch (Exception exn)
