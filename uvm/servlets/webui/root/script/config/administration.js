@@ -1,3 +1,5 @@
+// margin: 'top right bottom left'
+
 if (!Ung.hasResource["Ung.Administration"]) {
     Ung.hasResource["Ung.Administration"] = true;
 
@@ -513,6 +515,48 @@ if (!Ung.hasResource["Ung.Administration"]) {
                         disabled: true,
                         anchor:'100%',
                         height: 40
+                    },{
+                        xtype: 'displayfield',
+                        margin: '10 0 10 0',
+                        value:  'The Root Certificate Authority is used to create and sign certificates used by other applications and ' +
+                                'services, such as HTTPS Inspector, and Captive Portal. To eliminate certificate security warnings on client ' +
+                                'computers and devices, you should download the root certificate and add it to the list of trusted authorities ' +
+                                'on each client conneced to your network.'
+                    },{
+                        xtype: 'fieldset',
+                        layout: 'column',
+                        items: [{
+                            xtype: 'button',
+                            margin: '0 10 0 10',
+                            minWidth: 200,
+                            text: 'Download Root Certificate',
+                            iconCls: 'action-icon',
+                            handler: Ext.bind(function() {
+                                var downloadForm = document.getElementById('downloadForm');
+                                downloadForm["type"].value = "root_download"
+                                downloadForm.submit();
+                                }, this)
+                        },{
+                            xtype: 'displayfield',
+                            margin: '0 10 0 10',
+                            columnWidth: 1,
+                            value: 'Click here to download the root certificate which you can then install on client devices connected to your network.'
+                        }]
+                    },{
+                        xtype: 'fieldset',
+                        layout: 'column',
+                        items: [{
+                            xtype: 'button',
+                            margin: '0 10 0 10',
+                            minWidth: 200,
+                            text: 'Create New Root CA',
+                            iconCls: 'action-icon'
+                        },{
+                            xtype: 'displayfield',
+                            margin: '0 10 0 10',
+                            columnWidth: 1,
+                            value: 'Click here to re-create the root certificate authority.  Use this to change the information in the Subject DN of the certificate.'
+                        }]
                     }]
                 },{
                     title: this.i18n._('Server Certificate'),
@@ -1185,7 +1229,6 @@ if (!Ung.hasResource["Ung.Administration"]) {
             });
 
             this.skinManager.addRefreshableStore( adminSkinsStore );
-
 
             this.panelSkins = Ext.create('Ext.panel.Panel',{
                 name: "panelSkins",

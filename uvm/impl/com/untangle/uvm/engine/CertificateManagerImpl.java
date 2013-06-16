@@ -8,12 +8,21 @@ import java.security.cert.X509Certificate;
 import java.text.DateFormat;
 import java.io.ByteArrayInputStream;
 import java.io.FileInputStream;
+import java.io.OutputStream;
 import java.io.File;
 import java.util.Date;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.apache.commons.fileupload.FileItem;
 import org.apache.log4j.Logger;
 import com.untangle.uvm.CertificateInformation;
 import com.untangle.uvm.CertificateManager;
 import com.untangle.uvm.UvmContextFactory;
+import com.untangle.uvm.ExecManagerResult;
+import com.untangle.uvm.servlet.UploadHandler;
+import com.untangle.uvm.servlet.DownloadHandler;
 
 @SuppressWarnings("deprecation")
 public class CertificateManagerImpl implements CertificateManager
@@ -29,6 +38,9 @@ public class CertificateManagerImpl implements CertificateManager
 
     protected CertificateManagerImpl()
     {
+        UvmContextFactory.context().servletFileManager().registerUploadHandler( new CertificateUploadHandler() );
+        UvmContextFactory.context().servletFileManager().registerDownloadHandler( new CertificateDownloadHandler() );
+
         File certCheck = new File(ROOT_CERT_FILE);
         File keyCheck = new File(ROOT_KEY_FILE);
 
@@ -39,6 +51,60 @@ public class CertificateManagerImpl implements CertificateManager
             UvmContextFactory.context().execManager().exec(ROOT_CA_CREATOR_SCRIPT + " DEFAULT");
         }
     }
+
+    private class CertificateUploadHandler implements UploadHandler
+    {
+        @Override
+        public String getName()
+        {
+            return "cert_upload";
+        }
+
+        @Override
+        public ExecManagerResult handleFile(FileItem fileItem, String argument) throws Exception
+        {
+            logger.info("CERT_UPLOAD FILE=" + fileItem.getName() + " ARG=" + argument);
+            return new ExecManagerResult(0,"Whatever buddy... whatever.");
+        }
+    }
+
+    private class CertificateDownloadHandler implements DownloadHandler
+    {
+        @Override
+        public String getName()
+        {
+            return "root_download";
+        }
+
+        @Override
+        public void serveDownload(HttpServletRequest req, HttpServletResponse resp)
+        {
+            try
+            {
+            File certFile = new File(ROOT_CERT_FILE);
+            FileInputStream certStream = new FileInputStream(certFile);
+            byte[] certData = new byte[(int)certFile.length()];
+            certStream.read(certData);
+            certStream.close();
+
+            // set the headers.
+            resp.setContentType("application/x-download");
+            resp.setHeader("Content-Disposition", "attachment; filename=root_authority.crt");
+
+            OutputStream webStream = resp.getOutputStream();
+            webStream.write(certData);
+            }
+
+            catch (Exception exn)
+            {
+            logger.warn("Exception during certificate download",exn);
+            }
+        }
+    }
+
+// ----------------------------------------------------------------------------
+// Public functions called by the administration.js certificates tab
+// ----------------------------------------------------------------------------
 
     public CertificateInformation getCertificateInformation()
     {
@@ -68,12 +134,12 @@ public class CertificateManagerImpl implements CertificateManager
             // and look for the certificate portion of the file
             File certFile = new File(APACHE_PEM_FILE);
             certStream = new FileInputStream(certFile);
-            byte[] fileData = new byte[(int)certFile.length()];
-            certStream.read(fileData);
+            byte[] certData = new byte[(int)certFile.length()];
+            certStream.read(certData);
             certStream.close();
 
             // look for the header and trailer strings
-            String pemString = new String(fileData);
+            String pemString = new String(certData);
             int certTop = pemString.indexOf("-----BEGIN CERTIFICATE-----");
             int certEnd = pemString.indexOf("-----END CERTIFICATE-----");
             int certLen = (certEnd - certTop + 25);
