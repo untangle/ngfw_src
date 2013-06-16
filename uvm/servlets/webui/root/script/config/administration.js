@@ -549,8 +549,12 @@ if (!Ung.hasResource["Ung.Administration"]) {
                             xtype: 'button',
                             margin: '0 10 0 10',
                             minWidth: 200,
-                            text: 'Create New Root CA',
-                            iconCls: 'action-icon'
+                            text: 'Generate New Root CA',
+                            iconCls: 'action-icon',
+                            handler: Ext.bind(function() {
+// FIXME                                this.certInfoPopup(this.getHostname(true),'Generate New Root CA','Blah blah blah');
+                                this.certInfoPopup(null,'Generate New Root CA','Blah blah blah');
+                            }, this)
                         },{
                             xtype: 'displayfield',
                             margin: '0 10 0 10',
@@ -1016,6 +1020,148 @@ if (!Ung.hasResource["Ung.Administration"]) {
                 this.subCmps.push(this.winCertImportTrusted);
             }
             this.winCertImportTrusted.show();
+        },
+
+        certInfoPopup: function(hostName, titleText, infoText)
+        {
+            popup = new Ext.Window({
+                title: titleText,
+                layout: 'fit',
+                width: 600,
+                height: 400,
+                border: true,
+                xtype: 'form',
+                items: [{
+                    xtype: "form",
+                    id: "cert_info_form",
+                    border: false,
+                    items: [{
+                        xtype: 'combo',
+                        fieldLabel: this.i18n._('Country') + " (C)",
+                        labelWidth: 150,
+                        name: 'Country',
+                        id: 'Country',
+                        margin: "10 10 10 10",
+                        size: 50,
+                        allowBlank: true,
+                        store: Ung.Country.getCountryStore(i18n),
+                        queryMode: 'local',
+                        editable: false
+                    },{
+                        xtype: 'textfield',
+                        fieldLabel: this.i18n._('State') + " (ST)",
+                        labelWidth: 150,
+                        name: "State",
+                        id: "State",
+                        margin: "10 10 10 10",
+                        size: 200,
+                        allowBlank: true
+                    },{
+                        xtype: 'textfield',
+                        fieldLabel: this.i18n._('Locality') + " (L)",
+                        labelWidth: 150,
+                        name: "Locality",
+                        id: "Locality",
+                        margin: "10 10 10 10",
+                        size: 200,
+                        allowBlank: true
+                    },{
+                        xtype: 'textfield',
+                        fieldLabel: this.i18n._('Organization') + " (O)",
+                        labelWidth: 150,
+                        name: "Organization",
+                        id: "Organization",
+                        margin: "10 10 10 10",
+                        size: 200,
+                        allowBlank: true
+                    },{
+                        xtype: 'textfield',
+                        fieldLabel: this.i18n._('Organaizationl Unit') + " (OU)",
+                        labelWidth: 150,
+                        name: "OrganizationalUnit",
+                        id: "OrganizationalUnit",
+                        margin: "10 10 10 10",
+                        size: 200,
+                        allowBlank: true
+                    },{
+                        xtype: 'textfield',
+                        fieldLabel: this.i18n._('Common Name') + " (CN)",
+                        labelWidth: 150,
+                        name: "CommonName",
+                        id: "CommonName",
+                        margin: "10 10 10 10",
+                        size: 200,
+                        allowBlank: false,
+                        disabled: (hostName === null ? false : true),
+                        value: hostName
+                    },{
+                        xtype: 'displayfield',
+                        margin: '20 10 20 10',
+                        value:  infoText
+                    },{
+                        xtype: "button",
+                        text: this.i18n._("Accept"),
+                        name: "Accept",
+                        width: 100,
+                        margin: "10 10 10 180",
+                        handler: Ext.bind(function() {
+                            this.handleCertPopup();
+                        }, this)
+                    },{
+                        xtype: "button",
+                        text: this.i18n._("Cancel"),
+                        name: "Cancel",
+                        width: 100,
+                        margin: "10 10 10 10",
+                        handler: Ext.bind(function() {
+                            popup.close()
+                        }, this)
+                    }]
+                }]
+            });
+
+            popup.show();
+        },
+
+        handleCertPopup: function()
+        {
+            var form_C = Ext.getCmp('Country');
+            var form_ST = Ext.getCmp('State');
+            var form_L = Ext.getCmp('Locality');
+            var form_O = Ext.getCmp('Organization');
+            var form_OU = Ext.getCmp('OrganizationalUnit');
+            var form_CN = Ext.getCmp('CommonName');
+
+            if (form_CN.getValue().length == 0)
+            {
+                Ext.MessageBox.alert(this.i18n._('Warning'), this.i18n._('The Common Name field must not be empty'));
+                return;
+            }
+
+            var certSubject = ("/CN=" + form_CN.getValue());
+            if ((form_C.getValue()) && (form_C.getValue().length > 0)) certSubject += ("/C=" + form_C.getValue());
+            if ((form_ST.getValue()) && (form_ST.getValue().length > 0)) certSubject += ("/ST=" + form_ST.getValue());
+            if ((form_L.getValue()) && (form_L.getValue().length > 0)) certSubject += ("/L=" + form_L.getValue());
+            if ((form_O.getValue()) && (form_O.getValue().length > 0)) certSubject += ("/O=" + form_O.getValue());
+            if ((form_OU.getValue()) && (form_OU.getValue().length > 0)) certSubject += ("/OU=" + form_OU.getValue());
+
+            main.getCertificateManager().generateCertificateAuthority(Ext.bind(function(result, exception)
+            {
+                popup.close();
+
+                if(Ung.Util.handleException(exception)) return;
+
+                if (result)
+                {
+                    this.updateCertificatesStatus();
+
+                    Ext.MessageBox.alert(this.i18n._("Succeeded"), this.i18n._("Successfully created root certificate authority"));
+                }
+                else
+                {
+                    Ext.MessageBox.alert(i18n._("Failed"), this.i18n._("Error generating root certificate authority"));
+                }
+            }, this), certSubject);
         },
 
         updateCertificatesStatus: function() {

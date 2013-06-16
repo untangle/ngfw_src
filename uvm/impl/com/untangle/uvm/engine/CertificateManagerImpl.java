@@ -47,7 +47,7 @@ public class CertificateManagerImpl implements CertificateManager
         // if either of the root CA files are missing create the thing now
         if ((certCheck.exists() == false) || (keyCheck.exists() == false))
         {
-            logger.info("Creating new root certificate authority");
+            logger.info("Creating default root certificate authority");
             UvmContextFactory.context().execManager().exec(ROOT_CA_CREATOR_SCRIPT + " DEFAULT");
         }
     }
@@ -167,6 +167,14 @@ public class CertificateManagerImpl implements CertificateManager
 
         return certInfo;
     }
+    
+    public boolean generateCertificateAuthority(String certSubject)
+    {
+        logger.info("Creating new root certificate authority: " + certSubject);
+        UvmContextFactory.context().execManager().exec(ROOT_CA_CREATOR_SCRIPT + " " + certSubject);
+        return(true);
+    }
+
 
     public boolean generateServerCertificate(String certSubject)
     {
