@@ -12,4 +12,5 @@ package com.untangle.uvm;
 public interface CertificateManager
 {
 	CertificateInformation getCertificateInformation();
+	boolean generateServerCertificate(String certSubject);
 }

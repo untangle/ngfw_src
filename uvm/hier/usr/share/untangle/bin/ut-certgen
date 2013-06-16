@@ -79,9 +79,8 @@ $OPENSSL_TOOL ca -batch -config $OPENSSL_CONF -policy policy_anything -startdate
 
 if [ "$1" = "APACHE" ]; then
     # special case when generating the Apache server certificate
-    mkdir -p /etc/apache2/ssl
-    cp $TEMP/server.key /etc/apache2/ssl/apache.pem
-    grep -A 1000 BEGIN $TEMP/server.crt >> /etc/apache2/ssl/apache.pem
+    cp $TEMP/server.key $UT_ROOT_PATH/apache.pem
+    grep -A 1000 BEGIN $TEMP/server.crt >> $UT_ROOT_PATH/apache.pem
 else
     # for all other put the signed server key and cert into a PKCS12 file
     $OPENSSL_TOOL pkcs12 -passout pass:password -export -name default -in $TEMP/server.crt -inkey $TEMP/server.key -out "$CERT_PATH/$1"

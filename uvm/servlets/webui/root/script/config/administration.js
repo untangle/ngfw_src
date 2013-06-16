@@ -494,7 +494,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
                         labelStyle: 'font-weight:bold',
                         id: 'rootca_status_notBefore',
                         value: this.getCertificateInformation() == null ? "" : i18n.timestampFormat(this.getCertificateInformation().rootcaDateValid),
-                        readOnly: true,
+                        disabled: true,
                         anchor:'100%'
                     },{
                         xtype: 'textfield',
@@ -502,7 +502,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
                         labelStyle: 'font-weight:bold',
                         id: 'rootca_status_notAfter',
                         value: this.getCertificateInformation() == null ? "" : i18n.timestampFormat(this.getCertificateInformation().rootcaDateExpires),
-                        readOnly: true,
+                        disabled: true,
                         anchor:'100%'
                     },{
                         xtype: 'textarea',
@@ -510,7 +510,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
                         labelStyle: 'font-weight:bold',
                         id: 'rootca_status_subjectDN',
                         value: this.getCertificateInformation() == null ? "" : this.getCertificateInformation().rootcaSubject,
-                        readOnly: true,
+                        disabled: true,
                         anchor:'100%',
                         height: 40
                     }]
@@ -523,7 +523,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
                         labelStyle: 'font-weight:bold',
                         id: 'server_status_notBefore',
                         value: this.getCertificateInformation() == null ? "" : i18n.timestampFormat(this.getCertificateInformation().serverDateValid),
-                        readOnly: true,
+                        disabled: true,
                         anchor:'100%'
                     },{
                         xtype: 'textfield',
@@ -531,7 +531,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
                         labelStyle: 'font-weight:bold',
                         id: 'server_status_notAfter',
                         value: this.getCertificateInformation() == null ? "" : i18n.timestampFormat(this.getCertificateInformation().serverDateExpires),
-                        readOnly: true,
+                        disabled: true,
                         anchor:'100%'
                     },{
                         xtype: 'textarea',
@@ -539,7 +539,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
                         labelStyle: 'font-weight:bold',
                         id: 'server_status_subjectDN',
                         value: this.getCertificateInformation() == null ? "" : this.getCertificateInformation().serverSubject,
-                        readOnly: true,
+                        disabled: true,
                         anchor:'100%',
                         height: 40
                     },{
@@ -548,7 +548,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
                         labelStyle: 'font-weight:bold',
                         id: 'server_status_issuerDN',
                         value: this.getCertificateInformation() == null ? "" : this.getCertificateInformation().serverIssuer,
-                        readOnly: true,
+                        disabled: true,
                         anchor:'100%',
                         height: 40
                     }]
@@ -743,6 +743,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
                         Ext.MessageBox.wait(this.i18n._("Generating Certificate..."), i18n._("Please wait"));
 
                         //validation
+                        var hostnameCmp = Ext.getCmp('administration_hostname');
                         var organizationCmp = Ext.getCmp('administration_organization');
                         var organizationUnitCmp = Ext.getCmp('administration_organizationUnit');
                         var cityCmp = Ext.getCmp('administration_city');
@@ -757,16 +758,16 @@ if (!Ung.hasResource["Ung.Administration"]) {
                         }
 
                         //get user values
+                        var hostname = hostnameCmp.getValue();
                         var organization = organizationCmp.getValue();
                         var organizationUnit = organizationUnitCmp.getValue();
                         var city = cityCmp.getValue();
                         var state = stateCmp.getValue();
                         var country = countryCmp.getValue();
-                        var distinguishedName = Ext.String.format("C={4},ST={3},L={2},OU={1},O={0}",
-                                organization, organizationUnit, city, state, country);
-
+                        var distinguishedName = Ext.String.format("/C={0}/ST={1}/L={2}/O={3}/OU={4}/CN={5}",
+                                country, state, city, organization, organizationUnit, hostname);
                         // generate certificate
-                        main.getCertificateManager().regenCert(Ext.bind(function(result, exception) {
+                        main.getCertificateManager().generateServerCertificate(Ext.bind(function(result, exception) {
                             if(Ung.Util.handleException(exception)) return;
                             if (result) { //true or false
                                 //success
@@ -784,8 +785,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
                                 Ext.MessageBox.alert(i18n._("Failed"), this.i18n._("Error generating self-signed certificate"));
                                 return;
                             }
-                        }, this), distinguishedName, 5*365);
-
+                        }, this), distinguishedName);
                     }, this),
                     cancelAction: function() {
                         Ext.getCmp('administration_organization').reset();
@@ -980,6 +980,11 @@ if (!Ung.hasResource["Ung.Administration"]) {
                 Ext.getCmp('rootca_status_notBefore').setValue(i18n.timestampFormat(certInfo.rootcaDateValid));
                 Ext.getCmp('rootca_status_notAfter').setValue(i18n.timestampFormat(certInfo.rootcaDateExpires));
                 Ext.getCmp('rootca_status_subjectDN').setValue(certInfo.rootcaSubject);
+
+                Ext.getCmp('server_status_notBefore').setValue(i18n.timestampFormat(certInfo.serverDateValid));
+                Ext.getCmp('server_status_notAfter').setValue(i18n.timestampFormat(certInfo.serverDateExpires));
+                Ext.getCmp('server_status_subjectDN').setValue(certInfo.serverSubject);
+                Ext.getCmp('server_status_issuerDN').setValue(certInfo.serverIssuer);
             }
         },
 

@@ -18,21 +18,22 @@ import com.untangle.uvm.UvmContextFactory;
 @SuppressWarnings("deprecation")
 public class CertificateManagerImpl implements CertificateManager
 {
+    private static final String CERTIFICATE_GENERATOR_SCRIPT = "/usr/share/untangle/bin/ut-certgen";
     private static final String ROOT_CA_CREATOR_SCRIPT = "/usr/share/untangle/bin/ut-rootgen";
     private static final String ROOT_CERT_FILE = "/usr/share/untangle/settings/untangle-certificates/untangle.crt";
     private static final String ROOT_KEY_FILE = "/usr/share/untangle/settings/untangle-certificates/untangle.key";
+    private static final String LOCAL_PEM_FILE = "/usr/share/untangle/settings/untangle-certificates/apache.pem";
     private static final String APACHE_PEM_FILE = "/etc/apache2/ssl/apache.pem";
 
     private final Logger logger = Logger.getLogger(getClass());
 
     protected CertificateManagerImpl()
     {
-        // make sure the root CA files exist since we need this to
-        // generate our on fake certificates on the fly
         File certCheck = new File(ROOT_CERT_FILE);
         File keyCheck = new File(ROOT_KEY_FILE);
 
-        if ((certCheck.exists() != true) || (keyCheck.exists() != true))
+        // if either of the root CA files are missing create the thing now
+        if ((certCheck.exists() == false) || (keyCheck.exists() == false))
         {
             logger.info("Creating new root certificate authority");
             UvmContextFactory.context().execManager().exec(ROOT_CA_CREATOR_SCRIPT + " DEFAULT");
@@ -59,7 +60,7 @@ public class CertificateManagerImpl implements CertificateManager
             certStream.close();
 
             certInfo.setRootcaDateValid(new Date(certObject.getNotBefore().toString()));
-            certInfo.setRootcaDateExpires(new Date(certObject.getNotBefore().toString()));
+            certInfo.setRootcaDateExpires(new Date(certObject.getNotAfter().toString()));
             certInfo.setRootcaSubject(certObject.getSubjectDN().toString());
 
             // Now grab the info from the Apache certificate.  This is a little
@@ -88,7 +89,7 @@ public class CertificateManagerImpl implements CertificateManager
             certObject = (X509Certificate)factory.generateCertificate(byteStream);
 
             certInfo.setServerDateValid(new Date(certObject.getNotBefore().toString()));
-            certInfo.setServerDateExpires(new Date(certObject.getNotBefore().toString()));
+            certInfo.setServerDateExpires(new Date(certObject.getNotAfter().toString()));
             certInfo.setServerSubject(certObject.getSubjectDN().toString());
             certInfo.setServerIssuer(certObject.getIssuerDN().toString());
         }
@@ -99,5 +100,19 @@ public class CertificateManagerImpl implements CertificateManager
         }
 
         return certInfo;
+    }
+
+    public boolean generateServerCertificate(String certSubject)
+    {
+        logger.info("Creating locally signed apache certificate: " + certSubject);
+
+        File apacheFile = new File(APACHE_PEM_FILE);
+        File localFile = new File(LOCAL_PEM_FILE);
+
+        UvmContextFactory.context().execManager().exec(CERTIFICATE_GENERATOR_SCRIPT + " APACHE " + certSubject);
+        UvmContextFactory.context().execManager().exec("cp " + LOCAL_PEM_FILE + " " + APACHE_PEM_FILE);
+        UvmContextFactory.context().execManager().exec("/usr/sbin/apache2ctl graceful");
+
+        return(true);
     }
 }
