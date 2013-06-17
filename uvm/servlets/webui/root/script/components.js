@@ -3991,13 +3991,13 @@ Ext.define('Ung.RowEditorWindow', {
         }
         this.items = Ext.create('Ext.panel.Panel',{
             anchor: "100% 100%",
-            labelWidth: this.rowEditorLabelWidth,
             buttonAlign: 'right',
             border: false,
             bodyStyle: 'padding:10px 10px 0px 10px;',
             autoScroll: true,
             defaults: {
-                selectOnFocus: true
+                selectOnFocus: true,
+                labelWidth: this.rowEditorLabelWidth
             },
             items: this.inputLines
         });
@@ -5955,7 +5955,7 @@ Ext.define('Ung.RuleBuilder', {
             });
         }
         this.store = Ext.create('Ext.data.Store', { model:this.modelName});
-
+        this.matchersMap=Ung.Util.createRecordsMap(this.matchers, 'name');
       
         this.recordDefaults={name:"", value:"", vtype:""};
         var deleteColumn = Ext.create('Ung.grid.DeleteColumn',{});
@@ -6002,14 +6002,7 @@ Ext.define('Ung.RuleBuilder', {
             menuDisabled: true,
             dataIndex: "invert",
             renderer: Ext.bind(function(value, metadata, record, rowIndex, colIndex, store) {
-                var name=record.get("name");
-                var rule=null;
-                for (var i = 0; i < this.matchers.length; i++) {
-                    if (this.matchers[i].name == name) {
-                        rule=this.matchers[i];
-                        break;
-                    }
-                }
+                var rule=this.matchersMap[record.get("name")];
                 var out=[];
                 out.push('<select class="rule_builder_invert" onchange="Ext.getCmp(\''+this.getId()+'\').changeRowInvert(\''+record.getId()+'\', this)">');
                 out.push('<option value="false" ' + ((value==false)?"selected":"") + '>' + this.settingsCmp.i18n._("is")     + '</option>');
@@ -6029,15 +6022,9 @@ Ext.define('Ung.RuleBuilder', {
             renderer: Ext.bind(function(value, metadata, record, rowIndex, colIndex, store) {
                 var name=record.get("name");
                 value=record.data.value;
-                var rule=null;
-                for (var i = 0; i < this.matchers.length; i++) {
-                    if (this.matchers[i].name == name) {
-                        rule=this.matchers[i];
-                        break;
-                    }
-                }
+                var rule=this.matchersMap[name];
                 var res="";
-                if ( rule == null ) {
+                if (!rule) {
                     return "";
                 }
                 switch(rule.type) {
@@ -6092,7 +6079,6 @@ Ext.define('Ung.RuleBuilder', {
     changeRowType: function(recordId,selObj) {
         var record=this.store.getById(recordId);
         var newName=selObj.options[selObj.selectedIndex].value;
-        var rule=null;
         if (newName == "") {
             Ext.MessageBox.alert(i18n._("Warning"),i18n._("A valid type must be selected."));
             return;
@@ -6100,7 +6086,7 @@ Ext.define('Ung.RuleBuilder', {
         var i;
         // iterate through and make sure there are no other matchers of this type
         for (i = 0; i < this.store.data.length ; i++) {
-            if (this.store.data.items[i].id == recordId)
+            if (this.store.data.items[i].data.id == recordId)
                 continue;
             if (this.store.data.items[i].data.name == newName) {
                 Ext.MessageBox.alert(i18n._("Warning"),i18n._("A matcher of this type already exists in this rule."));
@@ -6110,12 +6096,7 @@ Ext.define('Ung.RuleBuilder', {
             }
         }
         // find the selected matcher
-        for (i = 0; i < this.matchers.length; i++) {
-            if (this.matchers[i].name == newName) {
-                rule=this.matchers[i];
-                break;
-            }
-        }
+        var rule=this.matchersMap[newName];
         var newValue="";
         if(rule.type=="boolean") {
             newValue="true";
@@ -6199,15 +6180,14 @@ Ext.define('Ung.RuleBuilder', {
     setValue: function(value) {
         this.dirtyFlag=false;
         var entries=[];
+        var rule;
         if (value != null && value.list != null) {
             for(var i=0; i<value.list.length; i++) {
                 if ( value.list[i].vtype == undefined) {
                     // get the vtype for the current value
-                    for (var j = 0; j < this.matchers.length; j++) {
-                        if (this.matchers[j].name == value.list[i].matcherType) {
-                            value.list[i].vtype=this.matchers[j].vtype;
-                            break;
-                        }
+                    rule=this.matchersMap[value.list[i].matcherType];
+                    if(rule) {
+                        value.list[i].vtype=rule.vtype;
                     }
                 }
                 entries.push( [value.list[i].matcherType, value.list[i].invert, value.list[i].value, value.list[i].vtype] );
@@ -6248,11 +6228,28 @@ Ext.define('Ung.RuleBuilder', {
     },
     isValid: function() {
         // check that all the matchers have a selected type and value
-        for (var i = 0; i < this.store.data.length ; i++) {
-            var typeItem=this.store.data.items[i];
-            if (Ext.isEmpty(typeItem.data.name)) {
+        var records=this.store.getRange();
+        var rule;
+        for(var i=0; i<records.length;i++) {
+            var record=records[i];
+            if(Ext.isEmpty(record.get("name"))) {
                 return i18n._("A valid type must be selected for all matchers.");
-            }
+            } else {
+                rule=this.matchersMap[record.get("name")];
+                if(rule.type=='text') {
+                    if(Ext.isEmpty(record.get("value"))) {
+                        if(rule.allowBlank!==true) {
+                            if(record.get("vtype")=='portMatcher') {
+                                return Ext.form.field.VTypes.portMatcherText;
+                            } else if(record.get("vtype")=='ipMatcher') {
+                                return Ext.form.field.VTypes.ipMatcherText;
+                            } else {
+                                return Ext.String.format(i18n._("{0} value is required."), rule.displayName);
+                            }
+                        }
+                    }
+                }
+            } 
         }
         return true;
     },

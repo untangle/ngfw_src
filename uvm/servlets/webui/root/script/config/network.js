@@ -1926,41 +1926,9 @@ if (!Ung.hasResource["Ung.Network"]) {
                     this.grid.onTroubleshoot(record);
                 }
             });
-
-            this.portForwardReserveWarnings = {
-                border: false,
-                cls: 'description',
-                html: "<br/>" + this.i18n._('The following ports are currently reserved and can not be forwarded:') + "<br/>"
-            };
-
-            var i;
-            var intf;
-            for ( i = 0 ; i < this.settings.interfaces.list.length ; i++) {
-                intf = this.settings.interfaces.list[i];
-                if (intf.v4Address) {
-                    this.portForwardReserveWarnings.html += " <b>" + intf.v4Address + ":" + this.settings.httpsPort + "</b> for HTTPS services.<br/>";
-                }
-            }
-            for ( i = 0 ; i < this.settings.interfaces.list.length ; i++) {
-                intf = this.settings.interfaces.list[i];
-                if (intf.v4Address && !intf.isWan) {
-                    this.portForwardReserveWarnings.html += " <b>" + intf.v4Address + ":" + this.settings.httpPort + "</b> for HTTP services.<br/>";
-                }
-            }
-            for ( i = 0 ; i < this.settings.interfaces.list.length ; i++) {
-                intf = this.settings.interfaces.list[i];
-                if (intf.v4Address && intf.isWan) {
-                    for ( var j = 0 ; j < this.settings.interfaces.list.length ; j++) {
-                        var sub_intf = this.settings.interfaces.list[j];
-                        if (sub_intf.configType == "BRIDGED" && sub_intf.bridgedTo == intf.interfaceId) {
-                            this.portForwardReserveWarnings.html += " <b>" + intf.v4Address + ":" + this.settings.httpPort + "</b> on " + sub_intf.name + " interface for HTTP services.<br/>";
-                        }
-                    }
-                }
-            }
             
             this.gridPortForwardRules = Ext.create( 'Ung.EditorGrid', {
-                anchor: '100% -200',
+                flex: 1,
                 name: 'Port Forward Rules',
                 settingsCmp: this,
                 paginated: false,
@@ -1972,6 +1940,15 @@ if (!Ung.hasResource["Ung.Network"]) {
                     "description": this.i18n._("[no description]"),
                     "javaClass": "com.untangle.uvm.network.PortForwardRule"
                 },
+                /*initComponent : function() {
+                    this.tbar= [{
+                        text: i18n._('Add Wizard'),
+                        iconCls: 'icon-add-row',
+                        parentId: this.getId(),
+                        handler: Ext.bind(this.addHandler, this)
+                    }];
+                    Ung.EditorGrid.prototype.initComponent.apply(this, arguments);
+                },*/ 
                 title: this.i18n._("Port Forward Rules"),
                 recordJavaClass: "com.untangle.uvm.network.PortForwardRule",
                 dataProperty:'portForwardRules',
@@ -2029,58 +2006,6 @@ if (!Ung.hasResource["Ung.Network"]) {
                     width:55
                 },troubleshootColumn],
                 columnsDefaultSortable: false,
-                rowEditorInputLines: [{
-                    xtype:'checkbox',
-                    name: "Enable Port Forward Rule",
-                    dataIndex: "enabled",
-                    fieldLabel: this.i18n._("Enable Port Forward Rule")
-                }, {
-                    xtype:'textfield',
-                    name: "Description",
-                    dataIndex: "description",
-                    fieldLabel: this.i18n._("Description"),
-                    width: 500
-                }, {
-                    xtype:'fieldset',
-                    title: this.i18n._("If all of the following conditions are met:"),
-                    items:[{
-                        xtype:'rulebuilder',
-                        settingsCmp: this,
-                        javaClass: "com.untangle.uvm.network.PortForwardRuleMatcher",
-                        dataIndex: "matchers",
-                        matchers: Ung.NetworkUtil.getPortForwardMatchers(this)
-                    }]
-                }, {
-                    xtype: 'fieldset',
-                    cls:'description',
-                    title: i18n._('Perform the following action(s):'),
-                    border: false,
-                    items: [{
-                        xtype:'textfield',
-                        name: "newDestination",
-                        allowBlank: false,
-                        dataIndex: "newDestination",
-                        fieldLabel: this.i18n._("New Destination"),
-                        vtype: 'ipAddress'
-                    }, {
-                        xtype: 'container',
-                        layout: 'column',
-                        margin: '0 0 5 0',
-                        items: [{
-                            xtype:'textfield',
-                            name: "newPort",
-                            allowBlank: true,
-                            width: 200,
-                            dataIndex: "newPort",
-                            fieldLabel: this.i18n._("New Port"),
-                            vtype: 'port'
-                        }, {
-                            xtype: 'label',
-                            html: this.i18n._("(optional)"),
-                            cls: 'boxlabel'
-                        }]
-                    }]
-                }],
                 onTroubleshoot: Ext.bind(function(record) {
                     if(!this.portForwardTroubleshootWin) {
                         this.portForwardTroubleshootWin = Ext.create('Ung.Window', {
@@ -2180,20 +2105,111 @@ if (!Ung.hasResource["Ung.Network"]) {
                 }, this)
             });
             
+            //Build port forward warnings
+            var portForwardWarningsHtml=["<br/>" + this.i18n._('The following ports are currently reserved and can not be forwarded:') + "<br/>"];
+            var i;
+            var intf;
+            for ( i = 0 ; i < this.settings.interfaces.list.length ; i++) {
+                intf = this.settings.interfaces.list[i];
+                if (intf.v4Address) {
+                    portForwardWarningsHtml.push("<b>" + intf.v4Address + ":" + this.settings.httpsPort + "</b> for HTTPS services.<br/>");
+                }
+            }
+            for ( i = 0 ; i < this.settings.interfaces.list.length ; i++) {
+                intf = this.settings.interfaces.list[i];
+                if (intf.v4Address && !intf.isWan) {
+                    portForwardWarningsHtml.push("<b>" + intf.v4Address + ":" + this.settings.httpPort + "</b> for HTTP services.<br/>");
+                }
+            }
+            for ( i = 0 ; i < this.settings.interfaces.list.length ; i++) {
+                intf = this.settings.interfaces.list[i];
+                if (intf.v4Address && intf.isWan) {
+                    for ( var j = 0 ; j < this.settings.interfaces.list.length ; j++) {
+                        var sub_intf = this.settings.interfaces.list[j];
+                        if (sub_intf.configType == "BRIDGED" && sub_intf.bridgedTo == intf.interfaceId) {
+                            portForwardWarningsHtml.push("<b>" + intf.v4Address + ":" + this.settings.httpPort + "</b> on " + sub_intf.name + " interface for HTTP services.<br/>");
+                        }
+                    }
+                }
+            }
+            
             this.panelPortForwardRules = Ext.create('Ext.panel.Panel',{
                 name: 'panelPortForwardRules',
                 helpSource: 'network_port_forwards',
                 parentId: this.getId(),
                 title: this.i18n._('Port Forward Rules'),
-                layout: 'anchor',
+                layout: { type: 'vbox', align: 'stretch' },
                 cls: 'ung-panel',
                 items: [{
+                    xtype: "label",
+                    flex: 0,
+                    html: this.i18n._("Port Forward rules forward sessions matching the configured criteria from a public IP to an IP on an internal (NAT'd) network. The rules are evaluated in order."),
+                    style: "padding-bottom: 10px;"
+                }, this.gridPortForwardRules, 
+                {
+                    xtype: 'label',
+                    flex: 0,
+                    html: portForwardWarningsHtml.join(""),
+                    style: 'margin-bottom: 10px;'
+                }]
+            });
+            
+            this.gridPortForwardRules.setRowEditor(Ext.create('Ung.RowEditorWindow',{
+                sizeToComponent: this.panelPortForwardRules,
+                rowEditorLabelWidth: 160,
+                inputLines: [{
+                    xtype:'checkbox',
+                    name: "Enable Port Forward Rule",
+                    dataIndex: "enabled",
+                    fieldLabel: this.i18n._("Enable Port Forward Rule")
+                }, {
+                    xtype:'textfield',
+                    name: "Description",
+                    dataIndex: "description",
+                    fieldLabel: this.i18n._("Description"),
+                    width: 500
+                }, {
+                    xtype:'fieldset',
+                    title: this.i18n._("If all of the following conditions are met:"),
+                    items:[{
+                        xtype:'rulebuilder',
+                        settingsCmp: this,
+                        javaClass: "com.untangle.uvm.network.PortForwardRuleMatcher",
+                        dataIndex: "matchers",
+                        matchers: Ung.NetworkUtil.getPortForwardMatchers(this)
+                    }]
+                }, {
                     xtype: 'fieldset',
                     cls: 'description',
-                    title: this.i18n._('Port Fortward Rules'),
-                    html: this.i18n._("Port Forward rules forward sessions matching the configured criteria from a public IP to an IP on an internal (NAT'd) network. The rules are evaluated in order.")
-                },  this.gridPortForwardRules, this.portForwardReserveWarnings]
-            });
+                    title: i18n._('Perform the following action(s):'),
+                    border: false,
+                    items: [{
+                        xtype:'textfield',
+                        name: "newDestination",
+                        allowBlank: false,
+                        dataIndex: "newDestination",
+                        fieldLabel: this.i18n._("New Destination"),
+                        vtype: 'ipAddress'
+                    }, {
+                        xtype: 'container',
+                        layout: 'column',
+                        margin: '0 0 5 0',
+                        items: [{
+                            xtype:'textfield',
+                            name: "newPort",
+                            allowBlank: true,
+                            width: 200,
+                            dataIndex: "newPort",
+                            fieldLabel: this.i18n._("New Port"),
+                            vtype: 'port'
+                        }, {
+                            xtype: 'label',
+                            html: this.i18n._("(optional)"),
+                            cls: 'boxlabel'
+                        }]
+                    }]
+                }]
+            }));
         },
         // NatRules Panel
         buildNatRules: function() {
