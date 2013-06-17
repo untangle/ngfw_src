@@ -1,5 +1,3 @@
-// margin: 'top right bottom left'
-
 if (!Ung.hasResource["Ung.Administration"]) {
     Ung.hasResource["Ung.Administration"] = true;
 
@@ -478,7 +476,6 @@ if (!Ung.hasResource["Ung.Administration"]) {
                 helpSource: 'certificates',
                 // private fields
                 parentId: this.getId(),
-                winGenerateSelfSignedCertificate: null,
                 winGenerateCertGenTrusted: null,
                 winCertImportTrusted: null,
 
@@ -699,9 +696,10 @@ if (!Ung.hasResource["Ung.Administration"]) {
                 title: titleText,
                 layout: 'fit',
                 width: 600,
-                height: 400,
+                height: 320,
                 border: true,
                 xtype: 'form',
+                modal: true,
                 items: [{
                     xtype: "form",
                     id: "cert_info_form",
@@ -770,7 +768,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
                         text: this.i18n._("Accept"),
                         name: "Accept",
                         width: 100,
-                        margin: "10 10 10 180",
+                        margin: "20 10 10 180",
                         handler: Ext.bind(function() {
                             this.certGeneratorWorker(certMode);
                         }, this)
@@ -779,7 +777,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
                         text: this.i18n._("Cancel"),
                         name: "Cancel",
                         width: 100,
-                        margin: "10 10 10 10",
+                        margin: "20 10 10 10",
                         handler: Ext.bind(function() {
                             popup.close()
                         }, this)
