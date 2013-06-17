@@ -245,10 +245,10 @@ public class IPMatcher
                 this.rangeMin = addrToLong(addrMin);
                 this.rangeMax = addrToLong(addrMax);
             } catch (java.net.UnknownHostException e) {
-                logger.warn("Unknown IPMatcher format: \"" + matcher + "\"", e);
+                logger.warn("Unknown IPMatcher range format: \"" + matcher + "\"", e);
                 throw new java.lang.IllegalArgumentException("Unknown IPMatcher format: \"" + matcher + "\" (unknown host)", e);
             } catch (Exception e) {
-                logger.warn("Unknown IPMatcher format: \"" + matcher + "\"", e);
+                logger.warn("Unknown IPMatcher range format: \"" + matcher + "\"", e);
                 throw new java.lang.IllegalArgumentException("Unknown IPMatcher format: \"" + matcher + "\" (exception)", e);
             }
  
@@ -291,10 +291,10 @@ public class IPMatcher
                 }
 
             } catch (java.net.UnknownHostException e) {
-                logger.warn("Unknown IPMatcher format: \"" + matcher + "\"", e);
+                logger.warn("Unknown IPMatcher subnet format: \"" + matcher + "\"", e);
                 throw new java.lang.IllegalArgumentException("Unknown IPMatcher format: \"" + matcher + "\" (unknown host)", e);
             } catch (Exception e) {
-                logger.warn("Unknown IPMatcher format: \"" + matcher + "\"", e);
+                logger.warn("Unknown IPMatcher subnet format: \"" + matcher + "\"", e);
                 throw new java.lang.IllegalArgumentException("Unknown IPMatcher format: \"" + matcher + "\" (exception)", e);
             }
  
@@ -308,10 +308,10 @@ public class IPMatcher
         try {
             this.single = InetAddress.getByName(matcher);
         } catch (java.net.UnknownHostException e) {
-            logger.warn("Unknown IPMatcher format: \"" + matcher + "\"", e);
+            logger.warn("Unknown IPMatcher single format: \"" + matcher + "\"", e);
             throw new java.lang.IllegalArgumentException("Unknown IPMatcher format: \"" + matcher + "\" (unknown host)", e);
         } catch (Exception e) {
-            logger.warn("Unknown IPMatcher format: \"" + matcher + "\"", e);
+            logger.warn("Unknown IPMatcher single format: \"" + matcher + "\"", e);
             throw new java.lang.IllegalArgumentException("Unknown IPMatcher format: \"" + matcher + "\" (exception)", e);
         }
 

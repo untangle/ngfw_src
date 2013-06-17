@@ -8,6 +8,8 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.log4j.Logger;
+
 import com.untangle.uvm.node.ParseException;
 import com.untangle.uvm.node.PortRange;
 import com.untangle.uvm.node.IPMatcher;
@@ -15,8 +17,10 @@ import com.untangle.uvm.vnet.Protocol;
 
 public class IpsStringParser
 {
-    public static final String HOME_IP = "Home"+0xBEEF;
-    public static final String EXTERNAL_IP = "External"+0xBEEF;
+    private static final Logger logger = Logger.getLogger( IpsStringParser.class );
+
+    public static final String HOME_IP = "Home";
+    public static final String EXTERNAL_IP = "External";
 
     private static final Pattern maskPattern = Pattern.compile("\\d\\d");
 
@@ -41,7 +45,8 @@ public class IpsStringParser
         boolean clientPortFlag = false;
         boolean serverIPFlag = false;
         boolean serverPortFlag = false;
-
+        IpsRuleHeader.Direction dir = IpsRuleHeader.Direction.BOTH;
+        
         /* Header should match: prot sourceIP sourcePort -> destIP destPort */
         String tokens[] = header.split(" ");
         if (tokens.length != 6) {
@@ -50,7 +55,7 @@ public class IpsStringParser
 
         /*Objects needed for a IpsRuleHeader constructor*/
         Protocol protocol;
-        List<IPMatcher> clientIPList, serverIPList;
+        List<IPMatcher> clientIPList = null, serverIPList = null;
         PortRange clientPortRange, serverPortRange;
         boolean direction = parseDirection(tokens[3]);
 
@@ -62,11 +67,21 @@ public class IpsStringParser
         /*Parse server and client IP data - this will throw exceptions*/
         clientIPFlag    = parseNegation(tokens[1]);
         tokens[1]       = stripNegation(tokens[1]);
-        clientIPList    = parseIPToken(tokens[1]);
+        if (tokens[1].equalsIgnoreCase(EXTERNAL_IP))
+            dir = IpsRuleHeader.Direction.INBOUND;
+        else if (tokens[1].equalsIgnoreCase(HOME_IP))
+            dir = IpsRuleHeader.Direction.OUTBOUND;
+        else
+            clientIPList    = parseIPToken(tokens[1]);
 
         serverIPFlag    = parseNegation(tokens[4]);
         tokens[4]       = stripNegation(tokens[4]);
-        serverIPList    = parseIPToken(tokens[4]);
+        if (tokens[4].equalsIgnoreCase(EXTERNAL_IP))
+            dir = IpsRuleHeader.Direction.OUTBOUND;
+        else if (tokens[4].equalsIgnoreCase(HOME_IP))
+            dir = IpsRuleHeader.Direction.INBOUND;
+        else
+            serverIPList    = parseIPToken(tokens[4]);
 
         /*Parse server and client port data - this will not throw exceptions*/
         clientPortFlag  = parseNegation(tokens[2]);
@@ -85,14 +100,15 @@ public class IpsStringParser
         }
 
         /*Build and return the rule header*/
-        IpsRuleHeader ruleHeader = IpsRuleHeader.getHeader
-            (action, direction, protocol, clientIPList, clientPortRange,
-             serverIPList, serverPortRange, clientIPFlag, clientPortFlag,
-             serverIPFlag, serverPortFlag);
+        IpsRuleHeader ruleHeader = IpsRuleHeader.getHeader (action, direction, dir, protocol,
+                                                            clientIPList, clientPortRange,
+                                                            serverIPList, serverPortRange,
+                                                            clientIPFlag, clientPortFlag,
+                                                            serverIPFlag, serverPortFlag);
         return ruleHeader;
     }
 
-    private static Protocol parseProtocol(String protoString)
+    private static Protocol parseProtocol( String protoString )
         throws ParseException
     {
         if (protoString.equalsIgnoreCase("tcp"))
@@ -107,13 +123,13 @@ public class IpsStringParser
             throw new ParseException("Invalid Protocol string: " + protoString);
     }
 
-    private static boolean parseDirection(String direction)
+    private static boolean parseDirection( String direction )
         throws ParseException
     {
         if (direction.equals("<>"))
-            return IpsRuleHeader.IS_BIDIRECTIONAL;
+            return true; /* bidirectional */
         else if (direction.equals("->"))
-            return !IpsRuleHeader.IS_BIDIRECTIONAL;
+            return false; /* one dierction only */
         else
             throw new ParseException("Invalid direction opperator: " + direction);
     }
@@ -130,19 +146,25 @@ public class IpsStringParser
         return false;
     }
 
-    private static List<IPMatcher> parseIPToken(String ipString)
+    private static List<IPMatcher> parseIPToken( String ipString )
         throws ParseException
     {
         List<IPMatcher> ipList = new ArrayList<IPMatcher>();
         if (ipString.equalsIgnoreCase("any"))
-            ipList.add(IPMatcher.getAnyMatcher());
+            ipList.add( IPMatcher.getAnyMatcher() );
         else {
             ipString = ipString.replaceAll("\\[","");
             ipString = ipString.replaceAll("\\]","");
 
             String allAddrs[] = ipString.split(",");
-            for (int i=0; i < allAddrs.length; i++)
-                ipList.add(new IPMatcher(validateMask(allAddrs[i])));
+            for (int i=0; i < allAddrs.length; i++) {
+                try {
+                    IPMatcher matcher = new IPMatcher(validateMask(allAddrs[i]));
+                    ipList.add(matcher);
+                } catch (Exception e) {
+                    logger.warn("Invalid IPMatcher - skipping:" + allAddrs[i]);
+                }
+            }
         }
         return ipList;
     }

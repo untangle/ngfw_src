@@ -19,9 +19,6 @@ import com.untangle.uvm.vnet.Protocol;
 
 public class IpsRuleHeader
 {
-    public static final boolean IS_BIDIRECTIONAL = true;
-    public static final boolean IS_SERVER = true;
-
     private static final Map<IpsRuleHeader, WeakReference<IpsRuleHeader>> INSTANCES = new WeakHashMap<IpsRuleHeader, WeakReference<IpsRuleHeader>>();
 
     private final int action;
@@ -31,7 +28,9 @@ public class IpsRuleHeader
     private final PortRange clientPortRange;
 
     private final boolean bidirectional;
-
+    public static enum Direction { BOTH, INBOUND, OUTBOUND };
+    private final Direction direction;
+    
     private final Set<IPMatcher> serverIpSet;
     private final PortRange serverPortRange;
 
@@ -42,7 +41,8 @@ public class IpsRuleHeader
 
     // constructors ------------------------------------------------------------
 
-    private IpsRuleHeader(int action, boolean bidirectional, Protocol protocol,
+    private IpsRuleHeader(int action, boolean bidirectional, Direction direction,
+                          Protocol protocol,
                           List<IPMatcher> clientIPList,
                           PortRange clientPortRange,
                           List<IPMatcher> serverIPList,
@@ -53,13 +53,20 @@ public class IpsRuleHeader
 
         this.action = action;
         this.bidirectional = bidirectional;
+        this.direction = direction;
         this.protocol = protocol;
-        this.clientIpSet = new HashSet<IPMatcher>(clientIPList);
-        this.serverIpSet = new HashSet<IPMatcher>(serverIPList);
+                                       
+        if (clientIPList == null)
+            this.clientIpSet = new HashSet<IPMatcher>();
+        else
+            this.clientIpSet = new HashSet<IPMatcher>(clientIPList);
+        if (serverIPList == null)
+            this.serverIpSet = new HashSet<IPMatcher>();
+        else
+            this.serverIpSet = new HashSet<IPMatcher>(serverIPList);
 
         this.clientPortRange = clientPortRange;
         this.serverPortRange = serverPortRange;
-
 
         this.clientIPFlag = clientIPFlag;
         this.clientPortFlag = clientPortFlag;
@@ -69,7 +76,7 @@ public class IpsRuleHeader
 
     // static methods ----------------------------------------------------------
 
-    public static IpsRuleHeader getHeader(int action, boolean bidirectional,
+    public static IpsRuleHeader getHeader(int action, boolean bidirectional, Direction direction,
                                           Protocol protocol,
                                           List<IPMatcher> clientIPList,
                                           PortRange clientPortRange,
@@ -81,7 +88,7 @@ public class IpsRuleHeader
                                           boolean serverPortFlag)
 
     {
-        IpsRuleHeader h = new IpsRuleHeader(action, bidirectional, protocol,
+        IpsRuleHeader h = new IpsRuleHeader(action, bidirectional, direction, protocol, 
                                             clientIPList, clientPortRange,
                                             serverIPList,serverPortRange,
                                             clientIPFlag, clientPortFlag,
@@ -106,7 +113,7 @@ public class IpsRuleHeader
 
     // public methods ----------------------------------------------------------
 
-    public boolean portMatches(int port, boolean toServer)
+    public boolean portMatches( int port, boolean toServer )
     {
         if(toServer)
             return serverPortFlag ^ serverPortRange.contains(port);
@@ -114,38 +121,29 @@ public class IpsRuleHeader
             return clientPortFlag ^ clientPortRange.contains(port);
     }
 
-    public boolean matches(SessionTuple sess, boolean sessInbound, boolean forward)
+    public boolean matches( SessionTuple sess, boolean sessInbound, boolean forward )
     {
         return matches(sess, sessInbound, forward, false);
     }
 
-    private boolean matches(SessionTuple sess, boolean sessInbound, boolean forward, boolean swapFlag)
+    private boolean matches( SessionTuple sess, boolean sessInbound, boolean forward, boolean swapFlag )
     {
         if(this.protocol != Protocol.getInstance(sess.getProtocol()))
             return false;
 
-        // logger.debug("protocol match succeeded");
-
         /**Check Port Match*/
         boolean clientPortMatch = clientPortRange.contains(forward ? sess.getClientPort() : sess.getServerPort());
         boolean serverPortMatch = serverPortRange.contains(forward ? sess.getServerPort() : sess.getClientPort());
-
         boolean portMatch = (clientPortMatch ^ clientPortFlag) && (serverPortMatch ^ serverPortFlag);
-
-        /*  if(!portMatch && !bidirectional)
-            {
-            System.out.println();
-            System.out.println("Header: " + this);
-            System.out.println("ClientPort: " + clientPort);
-            System.out.println("ServerPort: " + serverPort);
-            System.out.println();
-            }*/
 
         if(!portMatch && !bidirectional)
             return false;
 
-        // logger.debug("port match succeeded");
-
+        if ( this.direction == Direction.OUTBOUND && sessInbound )
+            return false;
+        if ( this.direction == Direction.INBOUND && !sessInbound )
+            return false;
+        
         boolean isInbound = forward ? sessInbound : !sessInbound;
 
         /**Check IP Match*/
