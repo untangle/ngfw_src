@@ -72,6 +72,11 @@ public class SetupContextImpl implements UtJsonRpcServlet.SetupContext
         this.context.adminManager().setTimeZone( timeZone );
     }
 
+    public String getTimeZones()
+    {
+        return this.context.adminManager().getTimeZones( );
+    }
+    
     public String getOemName()
     {
         return this.context.oemManager().getOemName();

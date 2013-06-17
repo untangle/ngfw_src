@@ -1500,15 +1500,6 @@ Ung.Setup = {
         Ung.SetupWizard.LabelWidth = 180;
         Ung.SetupWizard.LabelWidth2 = 120;
         
-        // Initialize the timezone data
-        Ung.SetupWizard.TimeZoneStore = [];
-        rpc.jsonrpc = new JSONRpcClient( "/webui/JSON-RPC" );
-        var adminManager = rpc.jsonrpc.UvmContext.adminManager();
-        var timeZoneData = eval(adminManager.getTimeZones());
-        for ( var i = 0; i < timeZoneData.length; i++) {
-            Ung.SetupWizard.TimeZoneStore.push([timeZoneData[i][0], "(" + timeZoneData[i][1] + ") " + timeZoneData[i][0]]);
-        }
-
         // Initialize the prefix data
         Ung.SetupWizard.getV4NetmaskList = function( includeNull ) {
             var data = [];
@@ -1552,6 +1543,13 @@ Ung.Setup = {
 
         rpc.setup = new JSONRpcClient("/setup/JSON-RPC").SetupContext;
         
+        // Initialize the timezone data
+        Ung.SetupWizard.TimeZoneStore = [];
+        var timeZoneData = eval(rpc.setup.getTimeZones());
+        for ( var i = 0; i < timeZoneData.length; i++) {
+            Ung.SetupWizard.TimeZoneStore.push([timeZoneData[i][0], "(" + timeZoneData[i][1] + ") " + timeZoneData[i][0]]);
+        }
+
         oemName = rpc.setup.getOemName();
 
         i18n = new Ung.I18N( { "map": Ung.SetupWizard.CurrentValues.languageMap });

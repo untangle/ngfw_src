@@ -109,5 +109,7 @@ public class UtJsonRpcServlet extends JSONRPCServlet
         public void setTimeZone( TimeZone timeZone ) throws TransactionRolledbackException;
 
         public String getOemName( );
+
+        public String getTimeZones( );
     }
 }
