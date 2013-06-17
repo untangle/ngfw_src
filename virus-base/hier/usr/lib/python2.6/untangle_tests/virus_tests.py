@@ -25,7 +25,7 @@ def flushEvents():
         reports.flushEvents()
 
 class VirusTests(unittest2.TestCase):
- 
+
     @staticmethod
     def nodeName():
         return "untangle-base-virus"
