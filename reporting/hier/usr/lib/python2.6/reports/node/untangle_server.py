@@ -37,7 +37,7 @@ class ServerNode(Node):
     @print_timing
     def setup(self):
         self.__create_server_events()
-        ft = FactTable('reports.n_server_totals', 'reports.server_events', 'time_stamp', [], [])
+        ft = FactTable('reports.server_totals', 'reports.server_events', 'time_stamp', [], [])
         ft.measures.append(Column('mem_free', 'int8', "avg(mem_free)"))
         ft.measures.append(Column('mem_cache', 'int8', "avg(mem_cache)"))
         ft.measures.append(Column('mem_buffers', 'int8', "avg(mem_buffers)"))
@@ -54,7 +54,7 @@ class ServerNode(Node):
 
     def reports_cleanup(self, cutoff):
         sql_helper.drop_fact_table("server_events", cutoff)
-        sql_helper.drop_fact_table("n_server_totals", cutoff)        
+        sql_helper.drop_fact_table("server_totals", cutoff)        
 
     def get_report(self):
         sections = []
@@ -106,7 +106,7 @@ class MemoryUsage(Graph):
             sums = ["COALESCE(AVG(mem_free),0) / 1000000",
                     "COALESCE(AVG(mem_cache), 0) / 1000000"]
 
-            q, h = sql_helper.get_averaged_query(sums, "reports.n_server_totals",
+            q, h = sql_helper.get_averaged_query(sums, "reports.server_totals",
                                                  end_date - mx.DateTime.DateTimeDelta(report_days),
                                                  end_date)
 
@@ -166,7 +166,7 @@ class LoadUsage(Graph):
                     "ROUND((COALESCE(AVG(load_5),0))::numeric, 2)",
                     "ROUND((COALESCE(AVG(load_15),0))::numeric, 2)"]
 
-            q, h = sql_helper.get_averaged_query(sums, "reports.n_server_totals",
+            q, h = sql_helper.get_averaged_query(sums, "reports.server_totals",
                                                  end_date - mx.DateTime.DateTimeDelta(report_days),
                                                  end_date)
 
@@ -241,7 +241,7 @@ class CpuUsage(Graph):
             sums = ["ROUND((COALESCE(AVG(cpu_user),0)*100)::numeric, 2)",
                     "ROUND((COALESCE(AVG(cpu_system),0)*100)::numeric, 2)"]
 
-            q, h = sql_helper.get_averaged_query(sums, "reports.n_server_totals",
+            q, h = sql_helper.get_averaged_query(sums, "reports.server_totals",
                                                  end_date - mx.DateTime.DateTimeDelta(report_days),
                                                  end_date)
 
@@ -300,7 +300,7 @@ class DiskUsage(Graph):
             sums = ["ROUND((COALESCE(AVG(disk_free),0) / 1000000000)::numeric, 2)",
                     "ROUND((COALESCE(AVG(disk_total),0) / 1000000000)::numeric, 2)"]
 
-            q, h = sql_helper.get_averaged_query(sums, "reports.n_server_totals",
+            q, h = sql_helper.get_averaged_query(sums, "reports.server_totals",
                                                  end_date - mx.DateTime.DateTimeDelta(report_days),
                                                  end_date)
 
@@ -362,7 +362,7 @@ class SwapUsage(Graph):
             sums = ["ROUND((COALESCE(AVG(swap_total-swap_free),0) / 1000000)::numeric, 2)",
                     "ROUND((COALESCE(AVG(swap_free),0) / 1000000)::numeric, 2)"]
                                                  
-            q, h = sql_helper.get_averaged_query(sums, "reports.n_server_totals",
+            q, h = sql_helper.get_averaged_query(sums, "reports.server_totals",
                                                  end_date - mx.DateTime.DateTimeDelta(report_days),
                                                  end_date)
             
