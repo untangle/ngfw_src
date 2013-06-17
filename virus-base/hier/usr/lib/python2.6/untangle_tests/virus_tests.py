@@ -12,6 +12,7 @@ from uvm import Uvm
 from untangle_tests import ClientControl
 
 ftp_server = "10.5.6.48"
+ftp_virus_file_name = "FedEx-Shipment-Notification-Jan23-2012-100100.zip"
 
 uvmContext = Uvm().getUvmContext()
 defaultRackId = 1
@@ -40,7 +41,7 @@ class VirusTests(unittest2.TestCase):
             clientControl.runCommand("rm /tmp/eicar /tmp/std_022_ftpVirusBlocked_file >/dev/null 2>&1")
             result = clientControl.runCommand("wget http://test.untangle.com/virus/00_eicar.com -O /tmp/eicar -o /dev/null 2>&1")
             assert (result == 0)
-            result = clientControl.runCommand("wget -q -O /tmp/std_022_ftpVirusBlocked_file ftp://" + ftp_server + "/FedEx-Shipment-Notification-Jan23-2012-100100.zip")
+            result = clientControl.runCommand("wget -q -O /tmp/std_022_ftpVirusBlocked_file ftp://" + ftp_server + "/" + ftp_virus_file_name)
             assert (result == 0)
             md5StdNum = clientControl.runCommand("\"md5sum /tmp/std_022_ftpVirusBlocked_file | awk '{print $1}'\"", True)
             print "md5StdNum <%s>" % md5StdNum
@@ -80,7 +81,7 @@ class VirusTests(unittest2.TestCase):
         if (adResult != 0):
             raise unittest2.SkipTest("FTP server not available")
         clientControl.runCommand("rm /tmp/temp_022_ftpVirusBlocked_file  >/dev/null 2>&1") 
-        result = clientControl.runCommand("wget -q -O /tmp/temp_022_ftpVirusBlocked_file ftp://" + ftp_server + "/FedEx-Shipment-Notification-Jan23-2012-100100.zip")
+        result = clientControl.runCommand("wget -q -O /tmp/temp_022_ftpVirusBlocked_file ftp://" + ftp_server + "/" + ftp_virus_file_name)
         assert (result == 0)
         md5TestNum = clientControl.runCommand("\"md5sum /tmp/temp_022_ftpVirusBlocked_file | awk '{print $1}'\"", True)
         print "md5StdNum <%s> vs md5TestNum <%s>" % (md5StdNum, md5TestNum)
@@ -97,7 +98,7 @@ class VirusTests(unittest2.TestCase):
         print "Event:" + str(events['list'][0])
         assert(events['list'][0]['s_server_addr'] == ftp_server)
         assert(events['list'][0]['c_client_addr'] == ClientControl.hostIP)
-        assert(events['list'][0]['uri'] == "/FedEx-Shipment-Notification-Jan23-2012-100100.zip")
+        assert(events['list'][0]['uri'] == ftp_virus_file_name)
         assert(events['list'][0][ self.shortName() + '_name'] != None)
         assert(events['list'][0][ self.shortName() + '_clean'] == False)
 
@@ -137,10 +138,45 @@ class VirusTests(unittest2.TestCase):
         assert(events['list'][0]['host'] == "test.untangle.com")
         assert(events['list'][0]['uri'] == ("/test/test.zip?arg=%s" % fname))
         assert(events['list'][0][self.shortName() + '_clean'] == True)
+        
+    def test_102_eventlog_ftpVirus(self):
+        fname = sys._getframe().f_code.co_name
+        result = clientControl.runCommand("wget -q -O /tmp/temp_022_ftpVirusBlocked_file ftp://" + ftp_server + "/" + ftp_virus_file_name)
+        assert (result == 0)
+        flushEvents()
+        query = None;
+        for q in node.getFtpEventQueries():
+            if q['name'] == 'Infected Ftp Events': query = q;
+        assert(query != None)
+        events = uvmContext.getEvents(query['query'],defaultRackId,1)
+        assert(events != None)
+        assert(events['list'])  # pass if event list is not empty
+        assert(len(events['list']) > 0)
+        print "Event:" + str(events['list'][0])
+        assert(events['list'][0]['uri'] == ftp_virus_file_name)
+        assert(events['list'][0][ self.shortName() + '_name'] != None)
+        assert(events['list'][0][ self.shortName() + '_clean'] == False)
+
+    def test_103_eventlog_ftpNonVirus(self):
+        fname = sys._getframe().f_code.co_name
+        result = clientControl.runCommand("wget -q -O /dev/null ftp://" + ftp_server + "/test.zip")
+        assert (result == 0)
+        flushEvents()
+        query = None;
+        for q in node.getFtpEventQueries():
+            if q['name'] == 'Clean Ftp Events': query = q;
+        assert(query != None)
+        events = uvmContext.getEvents(query['query'],defaultRackId,1)
+        assert(events != None)
+        assert(events['list'] != None)
+        assert(len(events['list']) > 0)
+        print "Event:" + str(events['list'][0])
+        assert(events['list'][0]['uri'] == "test.zip")
+        assert(events['list'][0][self.shortName() + '_clean'] == True)
 
     port25Test = subprocess.call(["netcat","-z","-w","1","test.untangle.com","25"],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
     @unittest2.skipIf(port25Test != 0,  "Port 25 blocked")
-    def test_102_eventlog_smtpVirus(self):
+    def test_104_eventlog_smtpVirus(self):
         startTime = datetime.now()
         fname = sys._getframe().f_code.co_name
         # download the email script
@@ -169,7 +205,7 @@ class VirusTests(unittest2.TestCase):
 
     port25Test = subprocess.call(["netcat","-z","-w","1","test.untangle.com","25"],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
     @unittest2.skipIf(port25Test != 0,  "Port 25 blocked")
-    def test_103_eventlog_smtpNonVirus(self):
+    def test_105_eventlog_smtpNonVirus(self):
         startTime = datetime.now()
         fname = sys._getframe().f_code.co_name
         result = clientControl.runCommand("echo '%s' > /tmp/attachment-%s" % (fname, fname))

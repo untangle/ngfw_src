@@ -24,12 +24,8 @@ class FtpCasing(Node):
         ft = FactTable('reports.ftp_totals', 'reports.ftp_events',
                        'time_stamp',
                        [Column('hostname', 'text'),
-                        Column('username', 'text'),
-                        Column('host', 'text'),
-                        Column('s2c_content_type', 'text')],
-                       [Column('hits', 'bigint', 'count(*)'),
-                        Column('c2s_content_length', 'bigint', 'sum(c2s_content_length)'),
-                        Column('s2c_content_length', 'bigint', 'sum(s2c_content_length)')])
+                        Column('username', 'text')],
+                       [Column('hits', 'bigint', 'count(*)')])
         
         # remove obsolete columns
         sql_helper.drop_column('reports', 'ftp_totals', 's2c_bytes')
@@ -50,17 +46,12 @@ CREATE TABLE reports.ftp_events (
     s_client_addr inet, 
     c_server_addr inet, 
     s_server_addr inet,
-    c_client_port integer, 
-    s_client_port integer, 
-    c_server_port integer, 
-    s_server_port integer,
     policy_id bigint, 
     username text,
     hostname text,
     request_id bigint, 
     method character(1), 
     uri text,
-    host text, 
     clam_clean boolean,
     clam_name text,
     commtouchav_clean boolean,

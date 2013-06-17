@@ -84,12 +84,12 @@ public class VirusFtpEvent extends LogEvent
     
     
     private static String sql = "INSERT INTO reports.ftp_events " + "(time_stamp, "
-			+ "session_id, client_intf, server_intf, " + "c_client_addr, c_client_port, c_server_addr, c_server_port, "
-			+ "s_client_addr, s_client_port, s_server_addr, s_server_port, " + "policy_id, username, "
+			+ "session_id, client_intf, server_intf, " + "c_client_addr, c_server_addr, "
+			+ "s_client_addr, s_server_addr, policy_id, username, "
 			+ " hostname, uri, ";
     
     private static String sql_end = ") values "
-			+ "( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? )";
+			+ "( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
 	@Override
 	public java.sql.PreparedStatement getDirectEventSql(java.sql.Connection conn) throws Exception
@@ -103,13 +103,9 @@ public class VirusFtpEvent extends LogEvent
 		pstmt.setInt(++i, getSessionEvent().getClientIntf());
 		pstmt.setInt(++i, getSessionEvent().getServerIntf());
 		pstmt.setObject(++i, getSessionEvent().getCClientAddr().getHostAddress(), java.sql.Types.OTHER);
-		pstmt.setInt(++i, getSessionEvent().getCClientPort());
 		pstmt.setObject(++i, getSessionEvent().getCServerAddr().getHostAddress(), java.sql.Types.OTHER);
-		pstmt.setInt(++i, getSessionEvent().getCServerPort());
 		pstmt.setObject(++i, getSessionEvent().getSClientAddr().getHostAddress(), java.sql.Types.OTHER);
-		pstmt.setInt(++i, getSessionEvent().getSClientPort());
 		pstmt.setObject(++i, getSessionEvent().getSServerAddr().getHostAddress(), java.sql.Types.OTHER);
-		pstmt.setInt(++i, getSessionEvent().getSServerPort());
 		pstmt.setLong(++i, getSessionEvent().getPolicyId());
 		pstmt.setString(++i, getSessionEvent().getUsername());
 		pstmt.setString(++i, getSessionEvent().getHostname());
