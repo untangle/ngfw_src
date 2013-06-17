@@ -265,8 +265,8 @@ Section "OpenVPN GUI" SecGUI
 
   # Named untangle-openvpn so it is safe to overwrite the files in it.
   SetOutPath "$INSTDIR\config\untangle-openvpn"
-  File /oname=${SITE_NAME}-${COMMON_NAME}.crt "${UNTANGLE_SETTINGS_DIR}/client-${COMMON_NAME}.crt"
-  File /oname=${SITE_NAME}-${COMMON_NAME}.key "${UNTANGLE_SETTINGS_DIR}/client-${COMMON_NAME}.key"
+  File /oname=${SITE_NAME}-${COMMON_NAME}.crt "${UNTANGLE_SETTINGS_DIR}/remote-clients/client-${COMMON_NAME}.crt"
+  File /oname=${SITE_NAME}-${COMMON_NAME}.key "${UNTANGLE_SETTINGS_DIR}/remote-clients/client-${COMMON_NAME}.key"
   File /oname=${SITE_NAME}-ca.crt "${UNTANGLE_SETTINGS_DIR}/ca.crt"
 
   SetOutPath "$INSTDIR"
