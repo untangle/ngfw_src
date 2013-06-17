@@ -97,6 +97,7 @@ class VirusTests(unittest2.TestCase):
         print "Event:" + str(events['list'][0])
         assert(events['list'][0]['s_server_addr'] == ftp_server)
         assert(events['list'][0]['c_client_addr'] == ClientControl.hostIP)
+        assert(events['list'][0]['uri'] == "/FedEx-Shipment-Notification-Jan23-2012-100100.zip")
         assert(events['list'][0][ self.shortName() + '_name'] != None)
         assert(events['list'][0][ self.shortName() + '_clean'] == False)
 
