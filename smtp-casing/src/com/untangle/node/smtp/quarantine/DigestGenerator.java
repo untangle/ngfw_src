@@ -62,8 +62,7 @@ class DigestGenerator
             }
             templatedDirName = templateRoot.getAbsolutePath();
 
-            in = getClass().getClassLoader().getResourceAsStream(
-                                                                 RESOURCE_ROOT + HTML_TEMPLATE_NAME);
+            in = getClass().getClassLoader().getResourceAsStream(RESOURCE_ROOT + HTML_TEMPLATE_NAME);
             fOut = new FileOutputStream(new File(templateRoot, HTML_TEMPLATE_NAME));
             IOUtil.pipe(in, fOut);
             fOut.flush();
