@@ -54,7 +54,7 @@ class SystemProperties():
                         pass
                 elif (intf['v4ConfigType'] == 'AUTO'):
                     # is this a dynamic IP
-                    nicDevice = str(intf['physicalDev'])
+                    nicDevice = str(intf['symbolicDev'])
                     testIP = self.get_ip_address(nicDevice)
                     testMask =  self.get_netmask(nicDevice)
                     testRange = testIP + '/' + self.get_net_size(testMask)
@@ -78,6 +78,7 @@ class SystemProperties():
         return str(len(binary_str.rstrip('0')))
 
     def get_ip_address(self, ifname):
+        print "ifname <%s>" % ifname
         s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         return socket.inet_ntoa(fcntl.ioctl(
             s.fileno(),
@@ -105,6 +106,6 @@ class SystemProperties():
 # debug
 # systemProperties = SystemProperties()
 # print "return value <%s>" % systemProperties.findInterfaceIPbyIP('10.5.6.60')
-# print "return value <%s>" % systemProperties.get_ip_address('eth0')
+# print "return value <%s>" % systemProperties.get_ip_address('br.eth0')
 # print "return value <%s>" % systemProperties.get_ip_address('eth4')
 # print "return value <%s>" % systemProperties.get_gateway('eth4')

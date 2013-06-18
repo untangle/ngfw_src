@@ -225,7 +225,7 @@ def isBridgeMode(clientIPAdress):
                 wanAddr = ipaddr.IPAddress(clientIPAdress)
             elif (interface['v4ConfigType'] == 'AUTO'):
                 # is this a dynamic IP
-                nicDevice = str(interface['physicalDev'])
+                nicDevice = str(interface['symbolicDev'])
                 systemProperties = system_props.SystemProperties()
                 wanIP = systemProperties.get_ip_address(nicDevice)
                 wanNetmask =  systemProperties.get_netmask(nicDevice)
@@ -439,7 +439,7 @@ class NetworkTests(unittest2.TestCase):
                         break
                 elif (interface['v4ConfigType'] == 'AUTO'):
                     # handle DHCP WAN case
-                    nicDevice = str(interface['physicalDev'])
+                    nicDevice = str(interface['symbolicDev'])
                     systemProperties = system_props.SystemProperties()
                     gatewayIP = systemProperties.get_gateway(nicDevice)
                     if (gatewayIP == dogfood):
