@@ -683,6 +683,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
 
         certGeneratorPopup: function(certMode, hostName, titleText)
         {
+            master = this;
             popup = new Ext.Window({
                 title: titleText,
                 layout: 'fit',
@@ -824,8 +825,8 @@ if (!Ung.hasResource["Ung.Administration"]) {
 
                 if (result)
                 {
-                    this.updateCertificateStatus();
                     Ext.MessageBox.alert(this.i18n._("Success"), this.i18n._("Certificate generation successfully completed"));
+                    this.updateCertificateDisplay();
                 }
                 else
                 {
@@ -865,7 +866,6 @@ if (!Ung.hasResource["Ung.Administration"]) {
                         margin: "10 10 10 80",
                         handler: Ext.bind(function() {
                             this.handleFileUpload();
-                            this.updateCertificateStatus();
                         }, this)
                     }, {
                         xtype: "button",
@@ -904,6 +904,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
                 success: function(form, action) {
                     popup.close();
                     Ext.MessageBox.alert("Success", action.result.msg);
+                    master.updateCertificateDisplay();
                     },
                 failure: function(form, action) {
                     popup.close();
@@ -914,7 +915,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
             return true;
         },
 
-        updateCertificateStatus: function()
+        updateCertificateDisplay: function()
         {
             var certInfo = this.getCertificateInformation(true);
             if (certInfo != null)
