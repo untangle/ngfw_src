@@ -1,6 +1,7 @@
 /**
  * $Id$
  */
+
 package com.untangle.uvm.engine;
 
 import java.security.cert.CertificateFactory;
@@ -29,6 +30,7 @@ public class CertificateManagerImpl implements CertificateManager
 {
     private static final String CERTIFICATE_GENERATOR_SCRIPT = "/usr/share/untangle/bin/ut-certgen";
     private static final String ROOT_CA_CREATOR_SCRIPT = "/usr/share/untangle/bin/ut-rootgen";
+    private static final String SERVER_CSR_FILE = "/usr/share/untangle/settings/untangle-certificates/untangle.csr";
     private static final String ROOT_CERT_FILE = "/usr/share/untangle/settings/untangle-certificates/untangle.crt";
     private static final String ROOT_KEY_FILE = "/usr/share/untangle/settings/untangle-certificates/untangle.key";
     private static final String LOCAL_PEM_FILE = "/usr/share/untangle/settings/untangle-certificates/apache.pem";
@@ -38,8 +40,9 @@ public class CertificateManagerImpl implements CertificateManager
 
     protected CertificateManagerImpl()
     {
-        UvmContextFactory.context().servletFileManager().registerUploadHandler( new CertificateUploadHandler() );
-        UvmContextFactory.context().servletFileManager().registerDownloadHandler( new CertificateDownloadHandler() );
+        UvmContextFactory.context().servletFileManager().registerUploadHandler( new ServerCertificateUploadHandler() );
+        UvmContextFactory.context().servletFileManager().registerDownloadHandler( new RootCertificateDownloadHandler() );
+        UvmContextFactory.context().servletFileManager().registerDownloadHandler( new CertificateRequestDownloadHandler() );
 
         File certCheck = new File(ROOT_CERT_FILE);
         File keyCheck = new File(ROOT_KEY_FILE);
@@ -52,12 +55,13 @@ public class CertificateManagerImpl implements CertificateManager
         }
     }
 
-    private class CertificateUploadHandler implements UploadHandler
+    // called by the UI to upload a signed server certificate
+    private class ServerCertificateUploadHandler implements UploadHandler
     {
         @Override
         public String getName()
         {
-            return "cert_upload";
+            return "server_certificate_upload";
         }
 
         @Override
@@ -68,12 +72,13 @@ public class CertificateManagerImpl implements CertificateManager
         }
     }
 
-    private class CertificateDownloadHandler implements DownloadHandler
+    // called by the UI to download the root CA certificate file
+    private class RootCertificateDownloadHandler implements DownloadHandler
     {
         @Override
         public String getName()
         {
-            return "root_download";
+            return "root_certificate_download";
         }
 
         @Override
@@ -90,6 +95,45 @@ public class CertificateManagerImpl implements CertificateManager
             // set the headers.
             resp.setContentType("application/x-download");
             resp.setHeader("Content-Disposition", "attachment; filename=root_authority.crt");
+
+            OutputStream webStream = resp.getOutputStream();
+            webStream.write(certData);
+            }
+
+            catch (Exception exn)
+            {
+            logger.warn("Exception during certificate download",exn);
+            }
+        }
+    }
+
+    // called by the UI to generate and download a certificate signing request
+    private class CertificateRequestDownloadHandler implements DownloadHandler
+    {
+        @Override
+        public String getName()
+        {
+            return "certificate_request_download";
+        }
+
+        @Override
+        public void serveDownload(HttpServletRequest req, HttpServletResponse resp)
+        {
+            String certSubject = req.getParameter("arg1");
+
+            UvmContextFactory.context().execManager().exec(CERTIFICATE_GENERATOR_SCRIPT + " REQUEST " + certSubject);
+
+            try
+            {
+            File certFile = new File(SERVER_CSR_FILE);
+            FileInputStream certStream = new FileInputStream(certFile);
+            byte[] certData = new byte[(int)certFile.length()];
+            certStream.read(certData);
+            certStream.close();
+
+            // set the headers.
+            resp.setContentType("application/x-download");
+            resp.setHeader("Content-Disposition", "attachment; filename=server_certificate.csr");
 
             OutputStream webStream = resp.getOutputStream();
             webStream.write(certData);
@@ -167,7 +211,7 @@ public class CertificateManagerImpl implements CertificateManager
 
         return certInfo;
     }
-    
+
     public boolean generateCertificateAuthority(String certSubject)
     {
         logger.info("Creating new root certificate authority: " + certSubject);
