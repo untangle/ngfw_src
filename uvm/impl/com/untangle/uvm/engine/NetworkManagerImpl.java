@@ -572,7 +572,7 @@ public class NetworkManagerImpl implements NetworkManager
             if (deviceNames.length > 0) {
                 InterfaceSettings external = new InterfaceSettings();
                 external.setInterfaceId( 1 );
-                external.setName( "Extern\u00e1l" );
+                external.setName( "External" );
                 external.setIsWan( true );
                 external.setPhysicalDev( deviceNames[0] );
                 external.setSystemDev( deviceNames[0] );
@@ -587,7 +587,7 @@ public class NetworkManagerImpl implements NetworkManager
             if (deviceNames.length > 1) {
                 InterfaceSettings internal = new InterfaceSettings();
                 internal.setInterfaceId( 2 );
-                internal.setName( "Intern\u00e1l" );
+                internal.setName( "Internal" );
                 internal.setIsWan( false );
                 internal.setPhysicalDev( deviceNames[1] );
                 internal.setSystemDev( deviceNames[1] );
