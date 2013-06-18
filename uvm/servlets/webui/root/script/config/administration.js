@@ -476,8 +476,6 @@ if (!Ung.hasResource["Ung.Administration"]) {
                 helpSource: 'certificates',
                 // private fields
                 parentId: this.getId(),
-                winGenerateCertGenTrusted: null,
-                winCertImportTrusted: null,
 
                 title: this.i18n._('Certificates'),
                 layout: "anchor",
@@ -669,11 +667,9 @@ if (!Ung.hasResource["Ung.Administration"]) {
                             xtype: 'button',
                             margin: '0 10 0 10',
                             minWidth: 200,
-                            text: 'Import Signed Certificate',
+                            text: 'Import Signed Server Certificate',
                             iconCls: 'action-icon',
-                            handler: Ext.bind(function() {
-                                Ext.MessageBox.alert("UNDER CONSTRUCTION","Work in progress... Please try again later");
-                            }, this)
+                            handler: Ext.bind(function() { this.handleCertificateUpload(); }, this)
                         },{
                             xtype: 'displayfield',
                             margin: '0 10 0 10',
@@ -828,7 +824,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
 
                 if (result)
                 {
-                    this.updateCertificatesStatus();
+                    this.updateCertificateStatus();
                     Ext.MessageBox.alert(this.i18n._("Success"), this.i18n._("Certificate generation successfully completed"));
                 }
                 else
@@ -838,184 +834,91 @@ if (!Ung.hasResource["Ung.Administration"]) {
             }, this), certSubject);
         },
 
-        // Generate Signature Request
-        onGenerateCertGenTrusted: function() {
-            if(!this.winGenerateCertGenTrusted) {
-                this.winGenerateCertGenTrusted = Ext.create('Ung.CertGenerateWindow', {
-                    settingsCmp: this,
-                    breadcrumbs: [{
-                        title: i18n._("Configuration"),
-                        action: Ext.bind(function() {
-                            this.winGenerateCertGenTrusted.cancelAction();
-                            this.cancelAction();
+        handleCertificateUpload: function() {
+            popup = new Ext.Window({
+                title: "Import Signed Server Certificate",
+                layout: 'fit',
+                width: 600,
+                height: 120,
+                border: true,
+                xtype: 'form',
+                items: [{
+                    xtype: "form",
+                    id: "upload_signed_cert_form",
+                    url: "upload",
+                    border: false,
+                    items: [{
+                        xtype: 'filefield',
+                        fieldLabel: this.i18n._("File"),
+                        name: "filename",
+                        id: "filename",
+                        margin: "10 10 10 10",
+                        width: 560,
+                        size: 50,
+                        labelWidth: 50,
+                        allowBlank: false
+                    }, {
+                        xtype: "button",
+                        text: this.i18n._("Upload Certificate"),
+                        name: "Upload Certificate",
+                        width: 200,
+                        margin: "10 10 10 80",
+                        handler: Ext.bind(function() {
+                            this.handleFileUpload();
+                            this.updateCertificateStatus();
                         }, this)
                     }, {
-                        title: i18n._('Administration'),
-                        action: Ext.bind(function() {
-                            this.winGenerateCertGenTrusted.cancelAction();
+                        xtype: "button",
+                        text: this.i18n._("Cancel"),
+                        name: "Cancel",
+                        width: 200,
+                        margin: "10 10 10 10",
+                        handler: Ext.bind(function() {
+                            popup.close()
                         }, this)
                     }, {
-                        title: i18n._('Certificates'),
-                        action: Ext.bind(function() {
-                            this.winGenerateCertGenTrusted.cancelAction();
-                        }, this)
-                    }, {
-                        title: this.i18n._("Generate a Certificate Signature Request")
-                    }],
-                    items: {
-                        xtype: 'panel',
-                        name: 'panelGenerateCertGenTrusted',
-                        layout: "anchor",
-                        title: this.i18n._('Generate a Certificate Signature Request'),
-                        cls: 'ung-panel',
-                        autoScroll: true,
-                        items: [{
-                            cls: 'description',
-                            html: this.i18n._('Click the Proceed button to generate a signature below. Copy the signature (Control-C), and paste it into the necessary form from your Certificate Authority (Verisign, Thawte, etc.).'),
-                            bodyStyle: 'padding-bottom:10px;',
-                            border: false
-                        },{
-                            xtype: 'textarea',
-                            name: 'crs',
-                            id: 'administration_crs',
-                            anchor:'98%',
-                            height: 200,
-                            hideLabel: true
+                        xtype: "hidden",
+                        name: "type",
+                        value: "server_cert"
                         }]
-                    },
-                    proceedAction: Ext.bind(function() {
-                        Ext.MessageBox.wait(this.i18n._("Generating Certificate..."), i18n._("Please wait"));
+                    }]
+            });
 
-                        // generate certificate request
-                        main.getCertificateManager().generateCSR(Ext.bind(function(result, exception) {
-                            if(Ung.Util.handleException(exception)) return;
-                            if (result != null) {
-                                //success
-                                Ext.MessageBox.alert(this.i18n._("Succeeded"), this.i18n._("Certificate Signature Request Successfully Generated"),
-                                    Ext.bind(function () {
-                                        var crsCmp = Ext.getCmp('administration_crs');
-                                        crsCmp.setValue(result);
-                                        crsCmp.focus(true);
-                                    }, this)
-                                );
-                            } else {
-                                //failed
-                                Ext.MessageBox.alert(i18n._("Failed"), this.i18n._("Error generating certificate signature request"));
-                                return;
-                            }
-                        }, this));
-
-                    }, this),
-                    cancelAction: function() {
-                        Ext.getCmp('administration_crs').reset();
-                        this.hide();
-                    }
-                });
-                this.subCmps.push(this.winGenerateCertGenTrusted);
-            }
-            this.winGenerateCertGenTrusted.show();
+            popup.show();
         },
 
-        // Import Signed Certificate
-        onCertImportTrusted: function() {
-            if(!this.winCertImportTrusted) {
-                this.winCertImportTrusted = Ext.create('Ung.CertGenerateWindow', {
-                    settingsCmp: this,
-                    breadcrumbs: [{
-                        title: i18n._("Configuration"),
-                        action: Ext.bind(function() {
-                            this.winCertImportTrusted.cancelAction();
-                            this.cancelAction();
-                        }, this)
-                    }, {
-                        title: i18n._('Administration'),
-                        action: Ext.bind(function() {
-                            this.winCertImportTrusted.cancelAction();
-                        }, this)
-                    }, {
-                        title: i18n._('Certificates'),
-                        action: Ext.bind(function() {
-                            this.winCertImportTrusted.cancelAction();
-                        }, this)
-                    }, {
-                        title: this.i18n._("Import Signed Certificate")
-                    }],
-                    items: {
-                        name: 'panelCertImportTrusted',
-                        // private fields
-                        layout: "anchor",
-                        title: this.i18n._('Import Signed Certificate'),
-                        cls: 'ung-panel',
-                        autoScroll: true,
-                            items: [{
-                                cls: 'description',
-                                html: this.i18n._('When your Certificate Authority (Verisign, Thawte, etc.) has sent your Signed Certificate, copy and paste it below (Control-V) then press the Proceed button.'),
-                                bodyStyle: 'padding-bottom:10px;',
-                                border: false
-                            },{
-                                xtype: 'textarea',
-                                name: 'cert',
-                                id: 'administration_import_cert',
-                                anchor:'98%',
-                                height: 200,
-                                hideLabel: true
-                            },{
-                                cls: 'description',
-                                html: this.i18n._('If your Certificate Authority (Verisign, Thawte, etc.) also send you an Intermediate Certificate, paste it below. Otherwise, do not paste anything below.'),
-                                bodyStyle: 'padding:20px 0px 10px 0px;',
-                                border: false
-                            },{
-                                xtype: 'textarea',
-                                name: 'caCert',
-                                id: 'administration_import_caCert',
-                                anchor:'98%',
-                                height: 200,
-                                hideLabel: true
-                            }]
+        handleFileUpload: function()
+        {
+            var prova = Ext.getCmp("upload_signed_cert_form");
+            var fileText = prova.items.get(0);
+
+            if (fileText.getValue().length === 0)
+            {
+                Ext.MessageBox.alert(this.i18n._("Invalid or missing File"), this.i18n._("Please select a certificate to upload."));
+                return false;
+            }
+
+            var form = prova.getForm();
+            form.submit({
+                waitMsg: this.i18n._("Uploading certificate..."),
+                success: function(form, action) {
+                    popup.close();
+                    Ext.MessageBox.alert("Success", action.result.msg);
                     },
-                    proceedAction: Ext.bind(function() {
-                        Ext.MessageBox.wait(this.i18n._("Importing Certificate..."), i18n._("Please wait"));
-
-                        //get user values
-                        var cert = Ext.getCmp('administration_import_cert').getValue();
-                        var caCert = Ext.getCmp('administration_import_caCert').getValue();
-
-                        // import certificate
-                        main.getCertificateManager().importServerCert(Ext.bind(function(result, exception) {
-                            if(Ung.Util.handleException(exception)) return;
-                            if (result) { //true or false
-                                //success
-
-                                //update status
-                                this.updateCertificatesStatus();
-
-                                Ext.MessageBox.alert(this.i18n._("Succeeded"), this.i18n._("Certificate Successfully Imported"),
-                                    Ext.bind(function () {
-                                        this.winCertImportTrusted.cancelAction();
-                                    }, this)
-                                );
-                            } else {
-                                //failed
-                                Ext.MessageBox.alert(i18n._("Failed"), this.i18n._("Error importing certificate"));
-                                return;
-                            }
-                        }, this), cert, caCert.length==0?null:caCert );
-
-                    }, this),
-                    cancelAction: function() {
-                        Ext.getCmp('administration_import_cert').reset();
-                        Ext.getCmp('administration_import_caCert').reset();
-                        this.hide();
+                failure: function(form, action) {
+                    popup.close();
+                    Ext.MessageBox.alert("Failure", action.result.msg);
                     }
                 });
-                this.subCmps.push(this.winCertImportTrusted);
-            }
-            this.winCertImportTrusted.show();
+
+            return true;
         },
 
-        updateCertificatesStatus: function() {
+        updateCertificateStatus: function()
+        {
             var certInfo = this.getCertificateInformation(true);
-            if (certInfo != null) {
+            if (certInfo != null)
+            {
                 Ext.getCmp('rootca_status_notBefore').setValue(i18n.timestampFormat(certInfo.rootcaDateValid));
                 Ext.getCmp('rootca_status_notAfter').setValue(i18n.timestampFormat(certInfo.rootcaDateExpires));
                 Ext.getCmp('rootca_status_subjectDN').setValue(certInfo.rootcaSubject);
@@ -1197,6 +1100,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
                 }]
             });
         },
+
         buildSkins: function() {
             // keep initial skin settings
             var adminSkinsStore = Ext.create("Ext.data.Store",{
@@ -1309,19 +1213,6 @@ if (!Ung.hasResource["Ung.Administration"]) {
                     }
                 }, this)
             });
-        },
-
-        isBlankField: function (cmp, errMsg) {
-            if (cmp.getValue().length == 0) {
-                Ext.MessageBox.alert(this.i18n._('Warning'), errMsg ,
-                    function () {
-                        cmp.focus(true);
-                    }
-                );
-                return true;
-            } else {
-                return false;
-            }
         },
 
         // validation function

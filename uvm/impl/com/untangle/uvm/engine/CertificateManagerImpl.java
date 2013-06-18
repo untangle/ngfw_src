@@ -1,4 +1,4 @@
-/**
+/*
  * $Id$
  */
 
@@ -9,6 +9,7 @@ import java.security.cert.X509Certificate;
 import java.text.DateFormat;
 import java.io.ByteArrayInputStream;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.OutputStream;
 import java.io.File;
 import java.util.Date;
@@ -61,14 +62,30 @@ public class CertificateManagerImpl implements CertificateManager
         @Override
         public String getName()
         {
-            return "server_certificate_upload";
+            return "server_cert";
         }
 
         @Override
         public ExecManagerResult handleFile(FileItem fileItem, String argument) throws Exception
         {
-            logger.info("CERT_UPLOAD FILE=" + fileItem.getName() + " ARG=" + argument);
-            return new ExecManagerResult(0,"Whatever buddy... whatever.");
+            String certString = new String(fileItem.get());
+            int testFlag = 0;
+
+            if (certString.contains("BEGIN CERTIFICATE") == true) testFlag++;
+            if (certString.contains("END CERTIFICATE") == true) testFlag++;
+            if (certString.contains("PRIVATE KEY") == true) testFlag++;
+
+            if (testFlag != 3) return new ExecManagerResult(1,"The uploaded certificate must be in PEM file format");
+
+            File certFile = new File(LOCAL_PEM_FILE);
+            FileOutputStream certStream = new FileOutputStream(certFile);
+            certStream.write(fileItem.get());
+            certStream.close();
+
+            UvmContextFactory.context().execManager().exec("cp " + LOCAL_PEM_FILE + " " + APACHE_PEM_FILE);
+            UvmContextFactory.context().execManager().exec("/usr/sbin/apache2ctl graceful");
+
+            return new ExecManagerResult(0,"Certificate successfully uploaded");
         }
     }
 
@@ -223,9 +240,6 @@ public class CertificateManagerImpl implements CertificateManager
     public boolean generateServerCertificate(String certSubject)
     {
         logger.info("Creating locally signed apache certificate: " + certSubject);
-
-        File apacheFile = new File(APACHE_PEM_FILE);
-        File localFile = new File(LOCAL_PEM_FILE);
 
         UvmContextFactory.context().execManager().exec(CERTIFICATE_GENERATOR_SCRIPT + " APACHE " + certSubject);
         UvmContextFactory.context().execManager().exec("cp " + LOCAL_PEM_FILE + " " + APACHE_PEM_FILE);

@@ -1,6 +1,6 @@
 /*
  * $Id: CertificateInformation.java 0 2013-03-04 20:00:00Z mahotz $
-*/
+ */
 
 package com.untangle.uvm;
 
