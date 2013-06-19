@@ -26,7 +26,7 @@ if (!Ung.hasResource["Ung.Upgrade"]) {
             Ung.Util.clearDirty(this.panelSettings);
         },
         getSystemSettings: function(forceReload) {
-            if (forceReload || this.rpc.systemSettings === undefined) {
+            if (forceReload || this.rpc.systemSettings === undefined) {s
                 try {
                     this.rpc.systemSettings = rpc.systemManager.getSettings();
                 } catch (e) {
@@ -58,28 +58,8 @@ if (!Ung.hasResource["Ung.Upgrade"]) {
                                 var totalSize=0;
                                 for (var i = 0; i < upgradeList.length; i++) {
                                     var md = upgradeList[i];
-                                    var mtype;
                                     var displayName = md.displayNane;
                                     totalSize+=md.size;
-                                    // Leave out only libitems
-                                    switch (md.type) {
-                                    case "LIB_ITEM":
-                                    case "TRIAL":
-                                      // Skip
-                                      continue;
-                                    case "LIBRARY":
-                                    case "BASE":
-                                    case "CASING":
-                                      mtype = this.i18n._("System Component");
-                                      break;
-                                    case "NODE":
-                                    case "SERVICE":
-                                      mtype = this.i18n._("Product");
-                                      break;
-                                    case "UNKNOWN":
-                                      mtype = this.i18n._("System Component");
-                                      break;
-                                    }
                                     if (displayName == null) {
                                     if (md.shortDescription != null)
                                         displayName = md.shortDescription;
@@ -95,7 +75,6 @@ if (!Ung.hasResource["Ung.Upgrade"]) {
                                         name: md.name,
                                         displayName: displayName,
                                         availableVersion: md.availableVersion,
-                                        type: mtype,
                                         size: Math.round(md.size / 1000)
                                     });
                                 }
@@ -105,7 +84,6 @@ if (!Ung.hasResource["Ung.Upgrade"]) {
                                         name: "unknown",
                                         displayName: this.i18n._("Various Updates"),
                                         availableVersion: this.i18n._("N/A"),
-                                        type: this.i18n._("Misc."),
                                         size: Math.round(totalSize / 1000)
                                     });
                                 }
@@ -152,8 +130,6 @@ if (!Ung.hasResource["Ung.Upgrade"]) {
                         }, {
                             name: 'availableVersion'
                         }, {
-                            name: 'type'
-                        }, {
                             name: 'size'
                     }]
                 }),
@@ -181,12 +157,6 @@ if (!Ung.hasResource["Ung.Upgrade"]) {
                     menuDisabled: true,
                     dataIndex: 'availableVersion'
 
-                }, {
-                    header: this.i18n._("type"),
-                    width: 150,
-                    sortable: true,
-                    menuDisabled: true,
-                    dataIndex: 'type'
                 }, {
                     header: this.i18n._("size (kb)"),
                     width: 110,

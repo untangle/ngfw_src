@@ -213,7 +213,7 @@ public final class Session extends SmtpTokenStream
         "RSET",
         "VRFY",
         "NOOP",
-        "STARTTLS",		// Dynamically removed later if !allowTLS
+        "STARTTLS",        // Dynamically removed later if !allowTLS
         "AUTH"
     };
 
@@ -231,7 +231,7 @@ public final class Session extends SmtpTokenStream
         "NOOP",
         "SIZE",
         //    "PIPELINING",
-        "STARTTLS",		// Dynamically removed later if !allowTLS
+        "STARTTLS",        // Dynamically removed later if !allowTLS
         "DSN",
         "DELIVERBY",
         "AUTH",
@@ -269,23 +269,23 @@ public final class Session extends SmtpTokenStream
 
         //Install defaults for permitted
         //commands/extensions
-	String[] allowedCommands, allowedExtensions;
-	if (allowTLS) {
-	    allowedCommands = DEF_ALLOWED_COMMANDS;
-	    allowedExtensions = DEF_ALLOWED_EXTENSIONS;
-	} else {
-	    int j = 0;
-	    // don't allow TLS
-	    allowedCommands = new String[DEF_ALLOWED_COMMANDS.length - 1];
-	    allowedExtensions = new String[DEF_ALLOWED_EXTENSIONS.length - 1];
-	    for (String com : DEF_ALLOWED_COMMANDS)
-		if (!com.equals("STARTTLS"))
-		    allowedCommands[j++] = com;
-	    j = 0;
-	    for (String ext : DEF_ALLOWED_EXTENSIONS)
-		if (!ext.equals("STARTTLS"))
-		    allowedExtensions[j++] = ext;
-	}
+    String[] allowedCommands, allowedExtensions;
+    if (allowTLS) {
+        allowedCommands = DEF_ALLOWED_COMMANDS;
+        allowedExtensions = DEF_ALLOWED_EXTENSIONS;
+    } else {
+        int j = 0;
+        // don't allow TLS
+        allowedCommands = new String[DEF_ALLOWED_COMMANDS.length - 1];
+        allowedExtensions = new String[DEF_ALLOWED_EXTENSIONS.length - 1];
+        for (String com : DEF_ALLOWED_COMMANDS)
+        if (!com.equals("STARTTLS"))
+            allowedCommands[j++] = com;
+        j = 0;
+        for (String ext : DEF_ALLOWED_EXTENSIONS)
+        if (!ext.equals("STARTTLS"))
+            allowedExtensions[j++] = ext;
+    }
         setAllowedCommands(allowedCommands);
         setAllowedExtensions(allowedExtensions);
 

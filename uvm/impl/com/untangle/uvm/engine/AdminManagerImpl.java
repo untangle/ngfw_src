@@ -182,7 +182,7 @@ public class AdminManagerImpl implements AdminManager
     {
         try {
             String count = UvmContextImpl.context().execManager().execOutput(REBOOT_COUNT_SCRIPT);
-	    
+        
             if (count == null)
                 return "";
             else
@@ -198,7 +198,7 @@ public class AdminManagerImpl implements AdminManager
     {
         try {
             String version = UvmContextImpl.context().execManager().execOutput(KERNEL_VERSION_SCRIPT);
-	    
+        
             if (version == null)
                 return "";
             else
@@ -232,7 +232,7 @@ public class AdminManagerImpl implements AdminManager
         final long d = new Date().getTime();
         Collections.sort(all, new Comparator<TimeZone>() {
                                     @Override
-    	                            public int compare(TimeZone o1, TimeZone o2) {
+                                    public int compare(TimeZone o1, TimeZone o2) {
                                         if ( o1.getOffset(d) < o2.getOffset(d)) return -1;
                                         if ( o1.getOffset(d) > o2.getOffset(d)) return 1;
                                         return 0;

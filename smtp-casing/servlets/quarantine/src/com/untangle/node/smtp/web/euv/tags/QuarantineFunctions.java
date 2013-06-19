@@ -33,11 +33,11 @@ public class QuarantineFunctions
         if ( remapped == null ) return null;
 
         if ( isEncoded ) {
-        	try {
-        		remapped = URLEncoder.encode( remapped , "UTF-8");
-        	} catch (UnsupportedEncodingException e) {	
-            	logger.warn("Unsupported Encoding:",e);
-            }	
+            try {
+                remapped = URLEncoder.encode( remapped , "UTF-8");
+            } catch (UnsupportedEncodingException e) {    
+                logger.warn("Unsupported Encoding:",e);
+            }    
         }
             
         return remapped;

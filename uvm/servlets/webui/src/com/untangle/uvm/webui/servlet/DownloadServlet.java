@@ -21,18 +21,18 @@ import com.untangle.uvm.servlet.DownloadHandler;
 @SuppressWarnings({ "serial", "unchecked" })
 public class DownloadServlet extends HttpServlet
 {
-	private final Logger logger = Logger.getLogger(getClass());
+    private final Logger logger = Logger.getLogger(getClass());
 
     private static final String CHARACTER_ENCODING = "utf-8";
     
-	protected void doPost(HttpServletRequest req, HttpServletResponse resp)
-			throws ServletException, IOException
+    protected void doPost(HttpServletRequest req, HttpServletResponse resp)
+            throws ServletException, IOException
     {
         processExport(req, resp);
-	}
+    }
 
-	private void processExport(HttpServletRequest req, HttpServletResponse resp)
-			throws ServletException, IOException
+    private void processExport(HttpServletRequest req, HttpServletResponse resp)
+            throws ServletException, IOException
     {
         String downloadType = req.getParameter("type");
 
@@ -45,6 +45,6 @@ public class DownloadServlet extends HttpServlet
 
         logger.info("Serving Download: " + downloadType);
         handler.serveDownload( req, resp );
-	}
+    }
     
 }

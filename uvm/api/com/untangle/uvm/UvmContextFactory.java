@@ -35,7 +35,7 @@ public class UvmContextFactory
      * @return the <code>UvmContext</code>.
      */
     @SuppressWarnings("unchecked")
-	public static UvmContext context()
+    public static UvmContext context()
     {
         if (null == UVM_CONTEXT) {
             synchronized (UvmContextFactory.class) {

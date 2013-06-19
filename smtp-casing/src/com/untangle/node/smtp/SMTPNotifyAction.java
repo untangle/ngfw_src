@@ -54,13 +54,13 @@ public enum SMTPNotifyAction
 
     public static SMTPNotifyAction getInstance(char key)
     {
-    	SMTPNotifyAction[] values = values();
-    	for (int i = 0; i < values.length; i++) {
-    		if (values[i].getKey() == key){
-    			return values[i];
-    		}
-		}
-    	return null;
+        SMTPNotifyAction[] values = values();
+        for (int i = 0; i < values.length; i++) {
+            if (values[i].getKey() == key){
+                return values[i];
+            }
+        }
+        return null;
     }
 
     public char getKey() {

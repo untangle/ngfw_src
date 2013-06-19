@@ -102,7 +102,7 @@ public abstract class DecisionEngine
         // check passlisted rules
         // If a site/URL is on the pass list is is passed regardless of any other settings
         rule = UrlMatchingUtil.checkSiteList( host, uri.toString(), node.getSettings().getPassedUrls() );
-        description = (rule != null)? rule.getDescription():null;		
+        description = (rule != null)? rule.getDescription():null;        
         if ( description != null ) {
             WebFilterEvent hbe = new WebFilterEvent(requestLine.getRequestLine(), Boolean.FALSE, Boolean.FALSE, Reason.PASS_URL, description, node.getName());
             logger.debug("LOG: in pass list: " + requestLine.getRequestLine());

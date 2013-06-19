@@ -17,7 +17,7 @@ public interface SkinManager
      *
      * @return the settings.
      */
-	SkinSettings getSettings();
+    SkinSettings getSettings();
 
     /**
      * Set the settings.

@@ -13,53 +13,53 @@ package com.untangle.uvm.logging;
 public class SystemStatEvent extends LogEvent
 {
     private long memFree;
-	private long memCache;
-	private long memBuffers;
+    private long memCache;
+    private long memBuffers;
 
-	private float load1;
-	private float load5;
-	private float load15;
+    private float load1;
+    private float load5;
+    private float load15;
 
-	private float cpuUser;
-	private float cpuSystem;
+    private float cpuUser;
+    private float cpuSystem;
 
-	private long diskTotal;
-	private long diskFree;
+    private long diskTotal;
+    private long diskFree;
 
     private long swapFree;
     private long swapTotal;
 
     public SystemStatEvent() { }
 
-	public long getMemFree() { return memFree; }
-	public void setMemFree(long newMemFree) { this.memFree = newMemFree; }
+    public long getMemFree() { return memFree; }
+    public void setMemFree(long newMemFree) { this.memFree = newMemFree; }
 
-	public long getMemCache() { return memCache; }
-	public void setMemCache(long newMemCache) { this.memCache = newMemCache; }
+    public long getMemCache() { return memCache; }
+    public void setMemCache(long newMemCache) { this.memCache = newMemCache; }
 
-	public long getMemBuffers() { return memBuffers; }
-	public void setMemBuffers(long newMemBuffers) { this.memBuffers = newMemBuffers; }
+    public long getMemBuffers() { return memBuffers; }
+    public void setMemBuffers(long newMemBuffers) { this.memBuffers = newMemBuffers; }
 
-	public float getLoad1() { return load1; }
-	public void setLoad1(float newLoad1) { this.load1 = newLoad1; }
+    public float getLoad1() { return load1; }
+    public void setLoad1(float newLoad1) { this.load1 = newLoad1; }
 
-	public float getLoad5() { return load5; }
-	public void setLoad5(float newLoad5) { this.load5 = newLoad5; }
+    public float getLoad5() { return load5; }
+    public void setLoad5(float newLoad5) { this.load5 = newLoad5; }
 
-	public float getLoad15() { return load15; }
-	public void setLoad15(float newLoad15) { this.load15 = newLoad15; }
+    public float getLoad15() { return load15; }
+    public void setLoad15(float newLoad15) { this.load15 = newLoad15; }
 
-	public float getCpuUser() { return cpuUser; }
-	public void setCpuUser(float newCpuUser) { this.cpuUser = newCpuUser; }
+    public float getCpuUser() { return cpuUser; }
+    public void setCpuUser(float newCpuUser) { this.cpuUser = newCpuUser; }
 
-	public float getCpuSystem() { return cpuSystem; }
-	public void setCpuSystem(float newCpuSystem) { this.cpuSystem = newCpuSystem; }
+    public float getCpuSystem() { return cpuSystem; }
+    public void setCpuSystem(float newCpuSystem) { this.cpuSystem = newCpuSystem; }
 
-	public long getDiskTotal() { return diskTotal; }
-	public void setDiskTotal(long newDiskTotal) { this.diskTotal = newDiskTotal; }
+    public long getDiskTotal() { return diskTotal; }
+    public void setDiskTotal(long newDiskTotal) { this.diskTotal = newDiskTotal; }
 
-	public long getDiskFree() { return diskFree; }
-	public void setDiskFree(long newDiskFree) { this.diskFree = newDiskFree; }
+    public long getDiskFree() { return diskFree; }
+    public void setDiskFree(long newDiskFree) { this.diskFree = newDiskFree; }
 
     public long getSwapFree() { return swapFree; }
     public void setSwapFree(final long newSwapFree) { this.swapFree = newSwapFree; }

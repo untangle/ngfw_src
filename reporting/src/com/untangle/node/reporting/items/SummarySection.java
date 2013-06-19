@@ -24,13 +24,13 @@ public class SummarySection extends Section implements Serializable
 
     public List<Highlight> getHighlights()
     {
-	List<Highlight> list = new ArrayList<Highlight>();
+    List<Highlight> list = new ArrayList<Highlight>();
 
-	for (SummaryItem i : getSummaryItems()) {
-	    if (i instanceof Highlight) {
-		list.add((Highlight)i);
-	    }
-	}
+    for (SummaryItem i : getSummaryItems()) {
+        if (i instanceof Highlight) {
+        list.add((Highlight)i);
+        }
+    }
 
         return list;
     }

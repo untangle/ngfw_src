@@ -754,7 +754,7 @@ public class Quarantine
     }
 
     @SuppressWarnings("unused")
-	private List<EmailAddressRule> toEmailAddressRule(List<String> typedList) 
+    private List<EmailAddressRule> toEmailAddressRule(List<String> typedList) 
     {
         ArrayList<EmailAddressRule> ret = new ArrayList<EmailAddressRule>();
 

@@ -54,7 +54,7 @@ public class UtLogger
     }
     
     @SuppressWarnings("unchecked")
-	public UtLogger(Class category) {
+    public UtLogger(Class category) {
         this(Logger.getLogger(category));
     }
 

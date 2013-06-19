@@ -11,131 +11,131 @@ import com.untangle.uvm.node.UrlMatcher;
 
 public class UrlMatchingUtil
 {
-	private static final Logger logger = Logger.getLogger(UrlMatchingUtil.class);
+    private static final Logger logger = Logger.getLogger(UrlMatchingUtil.class);
 
-	/**
-	 * normalize the hostname
-	 * 
-	 * @param host
-	 *            host of the URL
-	 * @return the normalized string for that hostname, or null if param is null
-	 */
-	public static String normalizeHostname(String oldhost)
-	{
-		if (null == oldhost)
-			return null;
+    /**
+     * normalize the hostname
+     * 
+     * @param host
+     *            host of the URL
+     * @return the normalized string for that hostname, or null if param is null
+     */
+    public static String normalizeHostname(String oldhost)
+    {
+        if (null == oldhost)
+            return null;
 
-		// lowercase name
-		String host = oldhost.toLowerCase();
+        // lowercase name
+        String host = oldhost.toLowerCase();
 
-		// remove dots at end
-		while (0 < host.length() && '.' == host.charAt(host.length() - 1)) {
-			host = host.substring(0, host.length() - 1);
-		}
+        // remove dots at end
+        while (0 < host.length() && '.' == host.charAt(host.length() - 1)) {
+            host = host.substring(0, host.length() - 1);
+        }
 
-		return host;
-	}
+        return host;
+    }
 
-	/**
-	 * Gets the next domain stripping off the lowest level domain from host.
-	 * Does not return the top level domain. Returns null when no more domains
-	 * are left.
-	 * 
-	 * <b>This method assumes trailing dots are stripped from host.</b>
-	 * 
-	 * @param host
-	 *            a <code>String</code> value
-	 * @return a <code>String</code> value
-	 */
-	public static String nextHost(String host)
-	{
-		int i = host.indexOf('.');
-		if (-1 == i) {
-			return null;
-		} else {
-			int j = host.indexOf('.', i + 1);
-			if (-1 == j) { // skip tld
-				return null;
-			}
+    /**
+     * Gets the next domain stripping off the lowest level domain from host.
+     * Does not return the top level domain. Returns null when no more domains
+     * are left.
+     * 
+     * <b>This method assumes trailing dots are stripped from host.</b>
+     * 
+     * @param host
+     *            a <code>String</code> value
+     * @return a <code>String</code> value
+     */
+    public static String nextHost(String host)
+    {
+        int i = host.indexOf('.');
+        if (-1 == i) {
+            return null;
+        } else {
+            int j = host.indexOf('.', i + 1);
+            if (-1 == j) { // skip tld
+                return null;
+            }
 
-			return host.substring(i + 1);
-		}
-	}
+            return host.substring(i + 1);
+        }
+    }
 
-	/**
-	 * checkSiteList checks the host+uri against the provided list
-	 * 
-	 * @param host
-	 *            host of the URL
-	 * @param uri
-	 *            URI of the URL
-	 * @return the rule that matches, null if DNE6
-	 */
-	public static GenericRule checkSiteList( String domain, String uri, List<GenericRule> rules )
-	{
-		for (GenericRule rule : rules) {
-			if (rule.getEnabled() != null && !rule.getEnabled())
-				continue;
+    /**
+     * checkSiteList checks the host+uri against the provided list
+     * 
+     * @param host
+     *            host of the URL
+     * @param uri
+     *            URI of the URL
+     * @return the rule that matches, null if DNE6
+     */
+    public static GenericRule checkSiteList( String domain, String uri, List<GenericRule> rules )
+    {
+        for (GenericRule rule : rules) {
+            if (rule.getEnabled() != null && !rule.getEnabled())
+                continue;
 
-			Object matcherO = rule.attachment();
-			UrlMatcher matcher = null;
+            Object matcherO = rule.attachment();
+            UrlMatcher matcher = null;
 
-			/**
-			 * If the matcher is not attached to the rule, initialize a new one
-			 * and attach it. Otherwise just use the matcher already initialized
-			 * and attached to the rule
-			 */
-			if (matcherO == null || !(matcherO instanceof UrlMatcher)) {
-				matcher = new UrlMatcher( rule.getString() );
-				rule.attach( matcher );
-			} else {
-				matcher = (UrlMatcher) matcherO;
-			}
+            /**
+             * If the matcher is not attached to the rule, initialize a new one
+             * and attach it. Otherwise just use the matcher already initialized
+             * and attached to the rule
+             */
+            if (matcherO == null || !(matcherO instanceof UrlMatcher)) {
+                matcher = new UrlMatcher( rule.getString() );
+                rule.attach( matcher );
+            } else {
+                matcher = (UrlMatcher) matcherO;
+            }
 
-			if ( matcher.isMatch( domain, uri ) ) {
-				logger.debug("LOG: " + domain + uri + " in site list");
-				return rule;
-			}
-		}
+            if ( matcher.isMatch( domain, uri ) ) {
+                logger.debug("LOG: " + domain + uri + " in site list");
+                return rule;
+            }
+        }
 
-		return null;
-	}
+        return null;
+    }
 
-	/**
-	 * checkClientPassList checks the clientIp against the client pass list
-	 * 
-	 * @param clientIp
-	 *            IP of the host
-	 * @return the rule that matches, null if DNE
-	 */
-	public static GenericRule checkClientList(InetAddress clientIp, List<GenericRule> rulesList)
-	{
-		for (GenericRule rule : rulesList) {
-			if (rule.getEnabled() != null && !rule.getEnabled())
-				continue;
+    /**
+     * checkClientPassList checks the clientIp against the client pass list
+     * 
+     * @param clientIp
+     *            IP of the host
+     * @return the rule that matches, null if DNE
+     */
+    public static GenericRule checkClientList(InetAddress clientIp, List<GenericRule> rulesList)
+    {
+        for (GenericRule rule : rulesList) {
+            if (rule.getEnabled() != null && !rule.getEnabled())
+                continue;
 
-			Object matcherO = rule.attachment();
-			IPMatcher matcher = null;
+            Object matcherO = rule.attachment();
+            IPMatcher matcher = null;
 
-			/**
-			 * If the matcher is not attached to the rule, initialize a new one
-			 * and attach it. Otherwise just use the matcher already initialized
-			 * and attached to the rule
-			 */
-			if (matcherO == null || !(matcherO instanceof IPMatcher)) {
-				matcher = new IPMatcher(rule.getString());
-				rule.attach( matcher );
-			} else {
-				matcher = (IPMatcher) matcherO;
-			}
+            /**
+             * If the matcher is not attached to the rule, initialize a new one
+             * and attach it. Otherwise just use the matcher already initialized
+             * and attached to the rule
+             */
+            if (matcherO == null || !(matcherO instanceof IPMatcher)) {
+                matcher = new IPMatcher(rule.getString());
+                rule.attach( matcher );
+            } else {
+                matcher = (IPMatcher) matcherO;
+            }
 
-			if ( matcher.isMatch(clientIp) ) {
-				logger.debug("LOG: " + clientIp + " in client pass list");
-				return rule;
-			}
-		}
+            if ( matcher.isMatch(clientIp) ) {
+                logger.debug("LOG: " + clientIp + " in client pass list");
+                return rule;
+            }
+        }
 
-		return null;
-	}
+        return null;
+    }
 
 }

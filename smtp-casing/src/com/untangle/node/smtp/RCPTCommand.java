@@ -50,7 +50,7 @@ public class RCPTCommand extends CommandWithEmailAddress
 {
 
     public RCPTCommand(String cmd, String argStr) 
-    	throws ParseException, FatalMailParseException 
+        throws ParseException, FatalMailParseException 
     {
         super(CommandType.RCPT, cmd, argStr);
 

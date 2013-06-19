@@ -240,15 +240,15 @@ public class NetcapTCPHook implements NetcapCallback
                 logger.warn(agent.toString() + " Exception: ", e);
                 throw e;
             }
-	    
+        
             if ( iter.hasNext()) {
-            	/* Advance the previous session if the node requested or released the session */
-            	if (( request.state() == IPNewSessionRequestImpl.REQUESTED ) ||
-            			( request.state() == IPNewSessionRequestImpl.RELEASED && session != null )) {
-            		prevSession = session;
-            	}
+                /* Advance the previous session if the node requested or released the session */
+                if (( request.state() == IPNewSessionRequestImpl.REQUESTED ) ||
+                        ( request.state() == IPNewSessionRequestImpl.RELEASED && session != null )) {
+                    prevSession = session;
+                }
             } else {
-            	prevSession = null;
+                prevSession = null;
             }
         }
 

@@ -23,30 +23,30 @@ public class SkinInfo
     private static final int COMPATIBLE_ADMIN_SKIN = 2;
     private static final int COMPATIBLE_USER_SKIN = 2;
 
-	public SkinInfo() {}
-	
-	public SkinInfo(String name, String displayName, boolean adminSkin, int adminSkinVersion, boolean userFacingSkin, int userFacingSkinVersion)
+    public SkinInfo() {}
+    
+    public SkinInfo(String name, String displayName, boolean adminSkin, int adminSkinVersion, boolean userFacingSkin, int userFacingSkinVersion)
     {
-		super();
-		this.name = name;
-		this.displayName = displayName;
-		this.adminSkin = adminSkin;
-		this.adminSkinVersion = adminSkinVersion;
-		this.userFacingSkin = userFacingSkin;
-		this.userFacingSkinVersion = userFacingSkinVersion;
-	}
+        super();
+        this.name = name;
+        this.displayName = displayName;
+        this.adminSkin = adminSkin;
+        this.adminSkinVersion = adminSkinVersion;
+        this.userFacingSkin = userFacingSkin;
+        this.userFacingSkinVersion = userFacingSkinVersion;
+    }
 
-	public String getName() { return name; }
-	public void setName( String name ) { this.name = name; }
+    public String getName() { return name; }
+    public void setName( String name ) { this.name = name; }
 
-	public String getDisplayName() { return displayName; }
-	public void setDisplayName(String displayName) { this.displayName = displayName; }
+    public String getDisplayName() { return displayName; }
+    public void setDisplayName(String displayName) { this.displayName = displayName; }
 
-	public boolean isAdminSkin() { return adminSkin; }
-	public void setAdminSkin(boolean adminSkin) { this.adminSkin = adminSkin; }
+    public boolean isAdminSkin() { return adminSkin; }
+    public void setAdminSkin(boolean adminSkin) { this.adminSkin = adminSkin; }
 
-	public int getAdminSkinVersion() { return adminSkinVersion; }
-	public void setAdminSkinVersion(int adminSkinVersion) { this.adminSkinVersion = adminSkinVersion; }
+    public int getAdminSkinVersion() { return adminSkinVersion; }
+    public void setAdminSkinVersion(int adminSkinVersion) { this.adminSkinVersion = adminSkinVersion; }
 
-	public boolean isAdminSkinOutOfDate() { return getAdminSkinVersion() < COMPATIBLE_ADMIN_SKIN; }
+    public boolean isAdminSkinOutOfDate() { return getAdminSkinVersion() < COMPATIBLE_ADMIN_SKIN; }
 }

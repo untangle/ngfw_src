@@ -132,12 +132,12 @@ public class IpsRule implements Serializable
 
     public void update(IpsRule rule)
     {
-		this.name = rule.name;
-		this.category = rule.category;
-		this.description = rule.description;
-		this.live = rule.live;
-		this.alert = rule.alert;
-		this.log = rule.log;
+        this.name = rule.name;
+        this.category = rule.category;
+        this.description = rule.description;
+        this.live = rule.live;
+        this.alert = rule.alert;
+        this.log = rule.log;
         this.rule = rule.rule;
         this.sid = rule.sid;
     }

@@ -27,6 +27,6 @@ public class SkinSettings implements Serializable, JSONString
     /**
      * Get the skin used in the administration client
      */
-	public String getSkinName() { return skinName; }
-	public void setSkinName( String skinName ) { this.skinName = skinName; }
+    public String getSkinName() { return skinName; }
+    public void setSkinName( String skinName ) { this.skinName = skinName; }
 }

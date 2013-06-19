@@ -42,9 +42,9 @@ public class IPTraffic
     private static final int FLAG_MARK      = 0x007;
     private static final int FLAG_PROTOCOL  = 0x008;    
     @SuppressWarnings("unused")
-	private static final int FLAG_MASK      = 0x0FF | LOCKABLE_MASK;
+    private static final int FLAG_MASK      = 0x0FF | LOCKABLE_MASK;
     @SuppressWarnings("unused")
-	private static final int FLAG_SRC       = 0x100;
+    private static final int FLAG_SRC       = 0x100;
     private static final int FLAG_SRC_MASK  = 0x100;
 
     private final MutableEndpoint src;

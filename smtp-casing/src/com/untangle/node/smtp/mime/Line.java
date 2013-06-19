@@ -183,7 +183,7 @@ public class Line {
      * However, they are not returned in the returned String
      */
     @SuppressWarnings("unused")
-	private static String linesToString(Line[] lines,
+    private static String linesToString(Line[] lines,
                                         int startingAt,
                                         int len,
                                         boolean unfoldLines) {

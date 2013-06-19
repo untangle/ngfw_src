@@ -29,7 +29,7 @@ public abstract class NetcapSession
     /* This is the mask for the the client/server parts */
     @SuppressWarnings("unused")
     /* It is suppressed warning here because its used in JNI */
-	private final static int FLAG_MASK        = 0xFFF;
+    private final static int FLAG_MASK        = 0xFFF;
 
     protected final Endpoints clientSide;
     protected final Endpoints serverSide;
@@ -44,7 +44,7 @@ public abstract class NetcapSession
 
         clientSide = makeEndpoints( true );
         serverSide = makeEndpoints( false );
-     	
+         
         updateNatInfo();
     }
     

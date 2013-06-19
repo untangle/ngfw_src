@@ -30,7 +30,7 @@ public class InetAddressSerializer extends AbstractSerializer {
     public Class[] getSerializableClasses() {
         return _serializableClasses;
     }
-	
+    
     /*
      * (non-Javadoc)
      * 
@@ -39,7 +39,7 @@ public class InetAddressSerializer extends AbstractSerializer {
      */
     public Object marshall(SerializerState state, Object p, Object o)
         throws MarshallException {
-		
+        
         if( o == null ) {
             return "";
         } else if (o instanceof InetAddress) {
@@ -83,7 +83,7 @@ public class InetAddressSerializer extends AbstractSerializer {
         } catch (Exception e) {
             throw new UnmarshallException("Invalid \"InetAddress\" specified:" + val);
         }
-		
+        
         if (returnValue == null) {
             throw new UnmarshallException("invalid class " + clazz);
         }

@@ -19,7 +19,7 @@ public class BrandingManagerImpl implements BrandingManager
     public BrandingManagerImpl()
     {
         this.defaultBranding = new DefaultBrandingManager();
-	}
+    }
 
     @Override
     public String getCompanyName()
@@ -77,19 +77,19 @@ public class BrandingManagerImpl implements BrandingManager
     @Override
     public String getContactName()
     {
-		return this.getBrandingManager().getContactName();
+        return this.getBrandingManager().getContactName();
     }
 
     @Override
     public String getContactEmail()
     {
-		return this.getBrandingManager().getContactEmail();
+        return this.getBrandingManager().getContactEmail();
     }
 
     @Override
     public String getContactHtml()
     {
-		return this.getBrandingManager().getContactHtml();
+        return this.getBrandingManager().getContactHtml();
     }
     
     private BrandingManager getBrandingManager()
@@ -108,7 +108,7 @@ public class BrandingManagerImpl implements BrandingManager
     @SuppressWarnings("unused")
     private class DefaultBrandingManager implements BrandingManager
     {
-		public boolean isDefaultLogo() {return true;}
+        public boolean isDefaultLogo() {return true;}
         public String getContactHtml() {return this.getContactName();}
         public String getContactEmail() {return null;}
         public String getContactName() {return "your network administrator";} 

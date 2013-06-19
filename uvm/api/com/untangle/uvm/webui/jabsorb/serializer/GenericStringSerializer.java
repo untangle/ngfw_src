@@ -20,48 +20,48 @@ public class GenericStringSerializer extends AbstractSerializer
     }
 
     /**
-	 * @see org.jabsorb.serializer.Serializer#getJSONClasses()
-	 */
-	public Class[] getJSONClasses()
+     * @see org.jabsorb.serializer.Serializer#getJSONClasses()
+     */
+    public Class[] getJSONClasses()
     {
         return new Class[] { String.class };
-	}
+    }
 
-	/**
-	 * @see org.jabsorb.serializer.Serializer#getSerializableClasses()
-	 */
-	public Class[] getSerializableClasses()
+    /**
+     * @see org.jabsorb.serializer.Serializer#getSerializableClasses()
+     */
+    public Class[] getSerializableClasses()
     {
         return new Class[] { this.clazz };
-	}
+    }
 
-	/**
-	 * @see org.jabsorb.serializer.Serializer#marshall(org.jabsorb.serializer.SerializerState, java.lang.Object, java.lang.Object)
-	 */
-	public Object marshall(SerializerState state, Object p, Object o)
-			throws MarshallException
+    /**
+     * @see org.jabsorb.serializer.Serializer#marshall(org.jabsorb.serializer.SerializerState, java.lang.Object, java.lang.Object)
+     */
+    public Object marshall(SerializerState state, Object p, Object o)
+            throws MarshallException
     {
-		if (this.clazz.isInstance(o)) {
-			return o.toString();
-		}
-		return null;
-	}
+        if (this.clazz.isInstance(o)) {
+            return o.toString();
+        }
+        return null;
+    }
 
-	/**
-	 * @see org.jabsorb.serializer.Serializer#tryUnmarshall(org.jabsorb.serializer.SerializerState, java.lang.Class, java.lang.Object)
-	 */
-	public ObjectMatch tryUnmarshall(SerializerState state, Class clazz, Object json)
+    /**
+     * @see org.jabsorb.serializer.Serializer#tryUnmarshall(org.jabsorb.serializer.SerializerState, java.lang.Class, java.lang.Object)
+     */
+    public ObjectMatch tryUnmarshall(SerializerState state, Class clazz, Object json)
         throws UnmarshallException
     {
-		state.setSerialized(json, ObjectMatch.OKAY);
-		return ObjectMatch.OKAY;
-	}
+        state.setSerialized(json, ObjectMatch.OKAY);
+        return ObjectMatch.OKAY;
+    }
 
-	/**
-	 * @see org.jabsorb.serializer.Serializer#unmarshall(org.jabsorb.serializer.SerializerState, java.lang.Class, java.lang.Object)
-	 */
-	public Object unmarshall(SerializerState state, Class clazz, Object json)
-			throws UnmarshallException
+    /**
+     * @see org.jabsorb.serializer.Serializer#unmarshall(org.jabsorb.serializer.SerializerState, java.lang.Class, java.lang.Object)
+     */
+    public Object unmarshall(SerializerState state, Class clazz, Object json)
+            throws UnmarshallException
     {
         Object returnValue = null;
         String val = json instanceof String ? (String) json : json.toString();
@@ -77,6 +77,6 @@ public class GenericStringSerializer extends AbstractSerializer
         }
         state.setSerialized(json, returnValue);
         return returnValue;
-	}
+    }
 
 }

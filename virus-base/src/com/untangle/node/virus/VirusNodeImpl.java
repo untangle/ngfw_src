@@ -174,20 +174,20 @@ public abstract class VirusNodeImpl extends NodeBase implements VirusNode
                                                      " AND policy_id = :policyId" + 
                                                      " ORDER BY time_stamp DESC");
         this.ftpScannedEventQuery = new EventLogQuery(I18nUtil.marktr("Scanned Ftp Events"),
-									                " SELECT * FROM reports.ftp_events " + 
-									                " WHERE " + nodeName + "_clean IS NOT NULL" + 
-									                " AND policy_id = :policyId" + 
-									                " ORDER BY time_stamp DESC");
-		this.ftpInfectedEventQuery = new EventLogQuery(I18nUtil.marktr("Infected Ftp Events"),
-									                " SELECT * FROM reports.ftp_events " + 
-									                " WHERE " + nodeName + "_clean IS FALSE" + 
-									                " AND policy_id = :policyId" + 
-									                " ORDER BY time_stamp DESC");
-		this.ftpCleanEventQuery = new EventLogQuery(I18nUtil.marktr("Clean Ftp Events"),
-										             " SELECT * FROM reports.ftp_events " + 
-										             " WHERE " + nodeName + "_clean IS TRUE" + 
-										             " AND policy_id = :policyId" + 
-										             " ORDER BY time_stamp DESC");
+                                                    " SELECT * FROM reports.ftp_events " + 
+                                                    " WHERE " + nodeName + "_clean IS NOT NULL" + 
+                                                    " AND policy_id = :policyId" + 
+                                                    " ORDER BY time_stamp DESC");
+        this.ftpInfectedEventQuery = new EventLogQuery(I18nUtil.marktr("Infected Ftp Events"),
+                                                    " SELECT * FROM reports.ftp_events " + 
+                                                    " WHERE " + nodeName + "_clean IS FALSE" + 
+                                                    " AND policy_id = :policyId" + 
+                                                    " ORDER BY time_stamp DESC");
+        this.ftpCleanEventQuery = new EventLogQuery(I18nUtil.marktr("Clean Ftp Events"),
+                                                     " SELECT * FROM reports.ftp_events " + 
+                                                     " WHERE " + nodeName + "_clean IS TRUE" + 
+                                                     " AND policy_id = :policyId" + 
+                                                     " ORDER BY time_stamp DESC");
 
         this.addMetric(new NodeMetric(STAT_SCAN, I18nUtil.marktr("Documents scanned")));
         this.addMetric(new NodeMetric(STAT_BLOCK, I18nUtil.marktr("Documents blocked")));
@@ -264,7 +264,7 @@ public abstract class VirusNodeImpl extends NodeBase implements VirusNode
     {
         int strength = getStrength();
         PipeSpec[] result = new PipeSpec[] {
-        	new SoloPipeSpec("virus-ftp-ctl", this, new TokenAdaptor(this, new VirusFtpFactory(this)), Fitting.FTP_CTL_TOKENS, Affinity.SERVER, strength),
+            new SoloPipeSpec("virus-ftp-ctl", this, new TokenAdaptor(this, new VirusFtpFactory(this)), Fitting.FTP_CTL_TOKENS, Affinity.SERVER, strength),
             new SoloPipeSpec("virus-ftp-data", this, new TokenAdaptor(this, new VirusFtpFactory(this)), Fitting.FTP_DATA_TOKENS, Affinity.SERVER, strength),
             new SoloPipeSpec("virus-http", this, new TokenAdaptor(this, new VirusHttpFactory(this)), Fitting.HTTP_TOKENS, Affinity.SERVER, strength),
             new SoloPipeSpec("virus-smtp", this, new TokenAdaptor(this, new VirusSmtpFactory(this)), Fitting.SMTP_TOKENS, Affinity.CLIENT, strength),

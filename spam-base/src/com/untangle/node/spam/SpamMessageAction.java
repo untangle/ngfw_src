@@ -32,13 +32,13 @@ public enum SpamMessageAction
 
     public static SpamMessageAction getInstance(char key)
     {
-    	SpamMessageAction[] values = values();
-    	for (int i = 0; i < values.length; i++) {
-    		if (values[i].getKey() == key){
-    			return values[i];
-    		}
-		}
-    	return null;
+        SpamMessageAction[] values = values();
+        for (int i = 0; i < values.length; i++) {
+            if (values[i].getKey() == key){
+                return values[i];
+            }
+        }
+        return null;
     }
 
     public char getKey() {

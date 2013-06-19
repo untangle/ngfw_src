@@ -99,7 +99,7 @@ public class IpsRuleSignatureImpl
     }
 
     @SuppressWarnings("unchecked")
-	public IpsOption getOption(String[] names, IpsOption callingOption)
+    public IpsOption getOption(String[] names, IpsOption callingOption)
     {
         Class[] optionDefinitions = new Class[names.length];
         for (int i = 0; i < names.length; i++) {

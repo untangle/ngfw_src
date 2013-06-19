@@ -41,7 +41,7 @@ public abstract class IpsOption
     }
 
     @SuppressWarnings("unchecked")
-	public static IpsOption buildOption(IpsDetectionEngine engine,
+    public static IpsOption buildOption(IpsDetectionEngine engine,
                                         IpsRuleSignatureImpl signature,
                                         IpsRule rule,
                                         String optionName,

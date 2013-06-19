@@ -17,7 +17,7 @@ import org.apache.log4j.Logger;
 public final class CurrentAuthTokenTag extends SingleValueTag 
 {
     private final Logger logger = Logger.getLogger(CurrentAuthTokenTag.class);
-	
+    
     private static final String AUTH_TOKEN_KEY = "untangle.auth_token";
     private static final String EL_AUTH_TOKEN_KEY = "currentAuthToken";
 
@@ -41,12 +41,12 @@ public final class CurrentAuthTokenTag extends SingleValueTag
             s = getCurrent(pageContext.getRequest());
             if(isEncoded()) {
                 try {
-                	s = URLEncoder.encode(s,"UTF-8");
-                } catch (UnsupportedEncodingException e) {	
-                	logger.warn("Unsupported Encoding:",e);
-                	s = "";
+                    s = URLEncoder.encode(s,"UTF-8");
+                } catch (UnsupportedEncodingException e) {    
+                    logger.warn("Unsupported Encoding:",e);
+                    s = "";
                 }
-            }	
+            }    
         }
         return s;
     }

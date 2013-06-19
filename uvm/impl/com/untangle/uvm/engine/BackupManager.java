@@ -186,7 +186,7 @@ public class BackupManager
             String filename = oemName + "-" + version + "-" + "backup" + "-" + hostName + "-" + dateStr + ".backup";
 
             File backupFile = createBackup();
-			
+            
             // Set the headers.
             resp.setContentType("application/x-download");
             resp.setHeader("Content-Disposition", "attachment; filename=" + filename);

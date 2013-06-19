@@ -46,11 +46,11 @@ public class CaptureSettings implements Serializable
 
     public List<CaptureRule> getCaptureRules()
     {
-    	if ( this.captureRules == null )
-    	{
-    		this.captureRules = new LinkedList<CaptureRule>();
-    	}
-    	
+        if ( this.captureRules == null )
+        {
+            this.captureRules = new LinkedList<CaptureRule>();
+        }
+        
         return this.captureRules;
     }
 

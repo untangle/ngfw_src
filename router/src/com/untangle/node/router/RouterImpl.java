@@ -46,7 +46,7 @@ public class RouterImpl extends NodeBase implements Router
          * This subscription has to evaluate after NAT
          */
         routerFtpPipeSpecCtl = new SoloPipeSpec("router-ftp-ctl", this, new TokenAdaptor(this, new RouterFtpFactory(this)), Fitting.FTP_CTL_TOKENS, Affinity.SERVER, 0);
-   		routerFtpPipeSpecData = new SoloPipeSpec("router-ftp-data", this, new TokenAdaptor(this, new RouterFtpFactory(this)), Fitting.FTP_DATA_TOKENS, Affinity.SERVER, 0);
+           routerFtpPipeSpecData = new SoloPipeSpec("router-ftp-data", this, new TokenAdaptor(this, new RouterFtpFactory(this)), Fitting.FTP_DATA_TOKENS, Affinity.SERVER, 0);
 
         pipeSpecs = new SoloPipeSpec[] { routerPipeSpec, routerFtpPipeSpecCtl, routerFtpPipeSpecData };
     }

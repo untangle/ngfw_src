@@ -11,7 +11,7 @@ import java.io.Serializable;
 @SuppressWarnings("serial")
 public class BlockDetails implements Serializable
 {
-	private static final int SUB_LINE_LEN = 80;
+    private static final int SUB_LINE_LEN = 80;
     private static final int MAX_LEN = 40;
 
     private final String host;

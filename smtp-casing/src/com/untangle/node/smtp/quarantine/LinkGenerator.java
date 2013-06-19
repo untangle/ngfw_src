@@ -31,9 +31,9 @@ public class LinkGenerator
         sb.append(WebConstants.AUTH_TOKEN_RP);
         sb.append('=');
         try { 
-        	sb.append(URLEncoder.encode(authTkn,"UTF-8"));
+            sb.append(URLEncoder.encode(authTkn,"UTF-8"));
         } catch(java.io.UnsupportedEncodingException e) {
-        	logger.warn("Unsupported Encoding:",e);
+            logger.warn("Unsupported Encoding:",e);
         }
 
         m_urlBase = sb.toString();
@@ -82,9 +82,9 @@ public class LinkGenerator
         sb.append(base);
         sb.append('&').append(name).append('=');
         try {
-        	sb.append(URLEncoder.encode(value,"UTF-8"));
-        } catch (UnsupportedEncodingException e) {	
-        	logger.warn("Unsupported Encoding:",e);
+            sb.append(URLEncoder.encode(value,"UTF-8"));
+        } catch (UnsupportedEncodingException e) {    
+            logger.warn("Unsupported Encoding:",e);
         }
         return sb.toString();
     }

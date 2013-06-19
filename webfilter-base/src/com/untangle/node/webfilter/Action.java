@@ -36,12 +36,12 @@ public enum Action
     
     public static Action getInstance(char key)
     {
-    	Action[] values = values();
-    	for (int i = 0; i < values.length; i++) {
-    		if (values[i].getKey() == key){
-    			return values[i];
-    		}
-		}
-    	return null;
+        Action[] values = values();
+        for (int i = 0; i < values.length; i++) {
+            if (values[i].getKey() == key){
+                return values[i];
+            }
+        }
+        return null;
     }
 }

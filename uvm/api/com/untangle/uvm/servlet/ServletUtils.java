@@ -83,7 +83,7 @@ public class ServletUtils
     }
       
 
-	private static Registrator JSON_SERIALIZER_REGISTRATOR = new Registrator<JSONSerializer>() {       
+    private static Registrator JSON_SERIALIZER_REGISTRATOR = new Registrator<JSONSerializer>() {       
         public void registerSerializer(JSONSerializer serializer, Serializer s ) throws Exception {
             serializer.registerSerializer(s);
         }

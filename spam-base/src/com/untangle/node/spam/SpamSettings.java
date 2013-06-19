@@ -35,7 +35,7 @@ public class SpamSettings implements Serializable
         return id;
     }
 
-	private void setId(Long id)
+    private void setId(Long id)
     {
         this.id = id;
     }

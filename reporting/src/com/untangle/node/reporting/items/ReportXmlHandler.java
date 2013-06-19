@@ -80,7 +80,7 @@ public class ReportXmlHandler extends DefaultHandler
                 logger.warn("no currentSummary for highlight");
             } else {
                 currentHighlight = new Highlight(attrs.getValue("name"),
-						 attrs.getValue("string-template"));
+                         attrs.getValue("string-template"));
                 currentSummary.addSummaryItem(currentHighlight);
             }
         } else if (qName.equals("highlight-value")) {
@@ -88,8 +88,8 @@ public class ReportXmlHandler extends DefaultHandler
                 logger.warn("no currentHighlight for highlight-value");
             } else {
                 currentHighlight.addValue(attrs.getValue("name"),
-					  attrs.getValue("value"));
-// 		logger.info(currentHighlight);
+                      attrs.getValue("value"));
+//         logger.info(currentHighlight);
             }
         } else if (qName.equals("plot")) {
             currentPlot = null;

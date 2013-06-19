@@ -22,13 +22,13 @@ public class Message implements Serializable, JSONString
     private final Date time = new Date();
 
     @SuppressWarnings("unused")
-	public final String getMessageType()
+    public final String getMessageType()
     {
         return getClass().getName();
     }
 
     @SuppressWarnings("unused")
-	public final Date getTime()
+    public final Date getTime()
     {
         return time;
     }

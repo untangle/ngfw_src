@@ -96,7 +96,7 @@ public class TimeSeriesChart extends Plot
         da.setMaximumDate(max);
 
         da.setDateFormatOverride(new SimpleDateFormat(dateFormatStr));
-        // 	da.setTickUnit(new DateTickUnit(DateTickUnitType.DAY, 1));
+        //     da.setTickUnit(new DateTickUnit(DateTickUnitType.DAY, 1));
     }
 
     /*
@@ -173,7 +173,7 @@ public class TimeSeriesChart extends Plot
     }
 
     @SuppressWarnings("unchecked")
-	public void generate(String reportBase, String csvUrl, String imageUrl)
+    public void generate(String reportBase, String csvUrl, String imageUrl)
         throws IOException
     {
         String path = reportBase + "/" + csvUrl;
@@ -259,7 +259,7 @@ public class TimeSeriesChart extends Plot
     {
         Calendar cal = Calendar.getInstance();
         cal.setTime(date);
-	
+    
         int count = -1;
         if (where == Calendar.DATE) {
             count = 4;
@@ -268,7 +268,7 @@ public class TimeSeriesChart extends Plot
         } else if (where == Calendar.MINUTE) {
             count = 2;
         }
-	    
+        
         for (int i = 0 ; i <= count ; i++) {
             cal.set(Calendar.MILLISECOND - i, 0);
         }

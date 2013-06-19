@@ -406,7 +406,7 @@ public class TomcatManagerImpl implements TomcatManager
     @SuppressWarnings("unchecked")
     private class StrongETagDirContext extends FileDirContext
     {
-	
+    
         @Override
         public Attributes getAttributes(String name, String[] attrIds) throws NamingException
         {
@@ -416,7 +416,7 @@ public class TomcatManagerImpl implements TomcatManager
 
             String strongETag = String.format("\"%s-%s\"", cl, lm);
             r.setETag(strongETag);
-		
+        
             return r;
         }
     }

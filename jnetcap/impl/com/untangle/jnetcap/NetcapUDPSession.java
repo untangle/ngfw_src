@@ -139,7 +139,7 @@ public class NetcapUDPSession extends NetcapSession
     private static native int  send( long packetPointer );
 
     /* Complete a session that was previously captured */
-	private static native void serverComplete( long sessionPointer );
+    private static native void serverComplete( long sessionPointer );
 
     /* Set the Session mark */
     private static native void setSessionMark( long sessionPointer, int mark );

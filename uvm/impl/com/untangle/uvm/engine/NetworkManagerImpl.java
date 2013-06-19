@@ -391,7 +391,7 @@ public class NetworkManagerImpl implements NetworkManager
         }
 
         if (status == null) {
-        	status = new InterfaceStatus(); // never return null
+            status = new InterfaceStatus(); // never return null
         }
         status.setInterfaceId(interfaceId); //Interface id must be set in all cases. It is not stored in interface-<interfaceId>-status.js file
         return status;

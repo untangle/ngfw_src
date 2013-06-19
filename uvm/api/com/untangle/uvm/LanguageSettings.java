@@ -15,15 +15,15 @@ public class LanguageSettings implements Serializable
 
     public LanguageSettings() { }
 
-	public String getLanguage()
+    public String getLanguage()
     {
-		return language;
-	}
+        return language;
+    }
 
-	public void setLanguage(String language)
+    public void setLanguage(String language)
     {
-		this.language = language;
-	}
+        this.language = language;
+    }
 
     public void copy(LanguageSettings settings)
     {

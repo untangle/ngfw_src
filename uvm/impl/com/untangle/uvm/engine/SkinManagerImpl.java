@@ -51,7 +51,7 @@ public class SkinManagerImpl implements SkinManager
         SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
         SkinSettings readSettings = null;
         String settingsFileName = System.getProperty("uvm.settings.dir") + "/untangle-vm/" + "skin";
-    	
+        
         try {
             readSettings = settingsManager.load( SkinSettings.class, settingsFileName );
         } catch (SettingsManager.SettingsException e) {
@@ -100,7 +100,7 @@ public class SkinManagerImpl implements SkinManager
     {
         this._setSettings( newSettings );
     }
-	
+    
     public void uploadSkin(FileItem item) throws UvmException
     {
         try {
@@ -109,12 +109,12 @@ public class SkinManagerImpl implements SkinManager
             File defaultSkinDir = new File(SKINS_DIR + File.separator + DEFAULT_SKIN);
             File skinDir = new File(SKINS_DIR);
             List<File> processedSkinFolders = new ArrayList<File>();
-			
+            
             //validate skin
             if (!item.getName().endsWith(".zip")) {
                 throw new UvmException("Invalid Skin");
             }
-			
+            
             // Open the ZIP file
             InputStream uploadedStream = item.getInputStream();
             ZipInputStream zis = new ZipInputStream(uploadedStream);
@@ -127,7 +127,7 @@ public class SkinManagerImpl implements SkinManager
                         throw new UvmException("The default skin can not be overwritten");
                     }
                 }
-			    
+                
                 if (entry.isDirectory()) {
                     File dir = new File(SKINS_DIR + File.separator + entry.getName());
                     processSkinFolder(dir, processedSkinFolders);
@@ -161,7 +161,7 @@ public class SkinManagerImpl implements SkinManager
                     }
                 }
             }
-            zis.close();		    	
+            zis.close();                
             uploadedStream.close();
         } catch (IOException e) {
             logger.error(e);
@@ -171,10 +171,10 @@ public class SkinManagerImpl implements SkinManager
 
     public List<SkinInfo> getSkinsList( )
     {
-    	
-    	List<SkinInfo> skins = new ArrayList<SkinInfo>();
-    	File dir = new File(SKINS_DIR);
-    	
+        
+        List<SkinInfo> skins = new ArrayList<SkinInfo>();
+        File dir = new File(SKINS_DIR);
+        
         File[] children = dir.listFiles();
         if (children == null) {
             logger.warn("Skin dir \""+SKINS_DIR+"\" does not exist");
@@ -188,9 +188,9 @@ public class SkinManagerImpl implements SkinManager
                             }
                         });
                     if (skinFiles.length < 1) {
-                    	logger.warn("Skin folder \""+file.getName()+"\" does not have skin info file - skin.xml");
+                        logger.warn("Skin folder \""+file.getName()+"\" does not have skin info file - skin.xml");
                     } else {
-                    	SkinInfo skinInfo;
+                        SkinInfo skinInfo;
                         skinInfo = getSkinInfo( skinFiles[0] );
                         if (skinInfo != null) {
                             skins.add(skinInfo);
@@ -198,8 +198,8 @@ public class SkinManagerImpl implements SkinManager
                     }
                 }
             }
-        }    	
-        return skins;    	
+        }        
+        return skins;        
     }
 
     public SkinInfo getSkinInfo( File skinXML  )

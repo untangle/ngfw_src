@@ -46,8 +46,8 @@ import java.util.Map;
 @SuppressWarnings("serial")
 public class HttpMethod implements Serializable
 {
-	
-	public static final HttpMethod OPTIONS = new HttpMethod('O', "OPTIONS");
+    
+    public static final HttpMethod OPTIONS = new HttpMethod('O', "OPTIONS");
     public static final HttpMethod GET = new HttpMethod('G', "GET");
     public static final HttpMethod HEAD = new HttpMethod('H', "HEAD");
     public static final HttpMethod POST = new HttpMethod('P', "POST");

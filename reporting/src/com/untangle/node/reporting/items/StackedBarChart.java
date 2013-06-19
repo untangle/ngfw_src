@@ -63,18 +63,18 @@ public class StackedBarChart extends Plot
 
     private int getInterval(String timeStr)
     {
-    	try {
+        try {
             HF.parse(timeStr);
             return 1;
-    	} catch (java.text.ParseException exn) {
+        } catch (java.text.ParseException exn) {
             try{
                 DF.parse(timeStr);
                 return 8;
             } catch (java.text.ParseException exn2) {
                 logger.warn("Couldn't get time interval for row key: " + timeStr, exn2);
             }
-    	}
-    	return 1;
+        }
+        return 1;
     }
 
     private void formatDateAxis(DateAxis da, File csvPath)
@@ -150,21 +150,21 @@ public class StackedBarChart extends Plot
 
     private Date parseTimeStamp(String timeStr) 
     {
-    	Date date = null;
-    	try {
+        Date date = null;
+        try {
             date = HF.parse(timeStr);
-    	} catch (java.text.ParseException exn) {
+        } catch (java.text.ParseException exn) {
             try{
                 date = DF.parse(timeStr);
             } catch (java.text.ParseException exn2) {
                 logger.warn("Couldn't parse time for row key: " + timeStr, exn2);
             }
-    	}
-    	return date;
+        }
+        return date;
     }
 
     @SuppressWarnings("unchecked")
-	public void generate(String reportBase, String csvUrl, String imageUrl)
+    public void generate(String reportBase, String csvUrl, String imageUrl)
         throws IOException
     {
         String path = reportBase + "/" + csvUrl;
@@ -260,7 +260,7 @@ public class StackedBarChart extends Plot
     {
         Calendar cal = Calendar.getInstance();
         cal.setTime(date);
-	
+    
         int count = -1;
         if (where == Calendar.DATE) {
             count = 4;
@@ -269,7 +269,7 @@ public class StackedBarChart extends Plot
         } else if (where == Calendar.MINUTE) {
             count = 2;
         }
-	    
+        
         for (int i = 0 ; i <= count ; i++) {
             cal.set(Calendar.MILLISECOND - i, 0);
         }

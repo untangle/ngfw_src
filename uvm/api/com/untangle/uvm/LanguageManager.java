@@ -21,7 +21,7 @@ public interface LanguageManager
      *
      * @return the settings.
      */
-	LanguageSettings getLanguageSettings();
+    LanguageSettings getLanguageSettings();
 
     /**
      * Set the settings.

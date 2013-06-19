@@ -226,7 +226,7 @@ public class TokenAdaptor extends AbstractEventHandler
     }
 
     @SuppressWarnings("unused")
-	private Pipeline getPipeline(NodeSession session)
+    private Pipeline getPipeline(NodeSession session)
     {
         HandlerDesc handlerDesc = handlers.get(session);
         return handlerDesc.pipeline;

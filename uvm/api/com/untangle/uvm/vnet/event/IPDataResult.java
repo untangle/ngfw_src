@@ -78,7 +78,7 @@ public class IPDataResult
     
     public byte getCode()
     {
-    	return code;
+        return code;
     }
 
 

@@ -45,7 +45,7 @@ public class Highlight extends SummaryItem implements Serializable
 
     public Highlight(String name, String stringTemplate)
     {
-	super(name, name);
+    super(name, name);
         this.stringTemplate = stringTemplate;
     }
 
@@ -55,24 +55,24 @@ public class Highlight extends SummaryItem implements Serializable
     }
 
     public void addValue(String key, String value) {
-	highlightValues.put(key, value);
+    highlightValues.put(key, value);
     }
 
     public Map<String, String> getHighlightValues() {
-	return highlightValues;
+    return highlightValues;
     }
 
     public String toString()
     {
         String s =  "[Highlight name='" + getName() + 
-	    "', stringTemplate='" + stringTemplate +
-	    "', values={" ;
+        "', stringTemplate='" + stringTemplate +
+        "', values={" ;
 
-	for (String k: highlightValues.keySet()) {
-	    s = s + k + "=" + highlightValues.get(k) + ", ";
-	}
+    for (String k: highlightValues.keySet()) {
+        s = s + k + "=" + highlightValues.get(k) + ", ";
+    }
 
-	s = s + "}]";
-	return s;
+    s = s + "}]";
+    return s;
     }
 }

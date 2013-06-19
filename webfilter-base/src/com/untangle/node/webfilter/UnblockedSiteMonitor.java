@@ -66,7 +66,7 @@ class UnblockedSitesMonitor
     private final class Monitor implements Worker
     {
         private SortedSet<UnblockedSite> unblockedSites = new TreeSet<UnblockedSite>();
-	
+    
         public synchronized void addUnblockedSite(InetAddress addr, String site)
         {
             UnblockedSite bs = new UnblockedSite(addr, site);
@@ -144,7 +144,7 @@ class UnblockedSitesMonitor
         private String site;
         private InetAddress addr;
         private long creationTimeMillis;
-	
+    
         public UnblockedSite(InetAddress myAddr, String mySite)
         {
             site = mySite;
@@ -156,12 +156,12 @@ class UnblockedSitesMonitor
         {
             return (17 + 37 * (site.hashCode() + addr.hashCode()));
         }
-	
+    
         public int compareTo(UnblockedSite other)
         {
             return (int)(creationTimeMillis - other.creationTimeMillis);
         }
-	
+    
         public String toString()
         {
             return "Unblock {" + addr + ", " + site + "}";

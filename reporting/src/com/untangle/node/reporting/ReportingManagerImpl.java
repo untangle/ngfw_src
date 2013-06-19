@@ -133,7 +133,7 @@ public class ReportingManagerImpl implements ReportingManager
             }
         } catch (SQLException exn) {
             logger.warn("could not get reports cutoff", exn);
-	    
+        
         } finally {
             if (conn != null) {
                 try {

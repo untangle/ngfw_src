@@ -300,7 +300,7 @@ class VirusHttpHandler extends HttpStateMachine
                     return rule.getEnabled();
                 } 
             } catch (PatternSyntaxException e) {
-                logger.error("findMatchRule: ** invalid pattern '" + regex + "'");		
+                logger.error("findMatchRule: ** invalid pattern '" + regex + "'");        
             }
         }
 
@@ -404,7 +404,7 @@ class VirusHttpHandler extends HttpStateMachine
     }
 
     @SuppressWarnings("unused")
-	private boolean isPersistent(Header header)
+    private boolean isPersistent(Header header)
     {
         String con = header.getValue("connection");
         return null == con ? false : con.equalsIgnoreCase("keep-alive");
