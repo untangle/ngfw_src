@@ -241,6 +241,9 @@ if (!Ung.hasResource["Ung.Network"]) {
         panelRoutes: null,
         panelAdvanced: null,
         panelTroubleshooting: null,
+        protocolStore:[[ "tcp,udp",  "TCP & UDP"],[ "tcp",  "TCP" ],[ "udp", "UDP"]],
+        portStore:  [[ 21, "FTP (21)" ],[ 25, "SMTP (25)" ],[ 53, "DNS (53)" ],[ 80, "HTTP (80)" ],[ 110, "POP3 (110)" ],[ 143, "IMAP (143)" ],[ 443, "HTTPS (443)" ],[ 1723, "PPTP (1723)" ],[ -1, "Other" ]],
+
         initComponent: function() {
             Ung.NetworkSettingsCmp = this;
             this.breadcrumbs = [{
@@ -1703,7 +1706,7 @@ if (!Ung.hasResource["Ung.Network"]) {
                     }
                 },
                 populate: function(record, addMode) {
-                    var interfaceId=record.get("interfaceId")
+                    var interfaceId=record.get("interfaceId");
                     var allInterfaces=this.grid.getPageList();
                     var bridgedToInterfaces = [];
                     var vlanParentInterfaces = [];
@@ -1938,17 +1941,25 @@ if (!Ung.hasResource["Ung.Network"]) {
                     "ruleId": -1,
                     "enabled": true,
                     "description": this.i18n._("[no description]"),
+                    "simple":false,
                     "javaClass": "com.untangle.uvm.network.PortForwardRule"
                 },
-                /*initComponent : function() {
+                addSimpleRuleHandler:function() {
+                    var record = Ext.create(Ext.ClassManager.getName(this.getStore().getProxy().getModel()), Ext.apply(Ext.decode(Ext.encode(this.emptyRow)),{"simple":true}));
+                    record.set("internalId", this.genAddedId());
+                    this.stopEditing();
+                    this.rowEditor.populate(record, true);
+                    this.rowEditor.show();
+                },
+                initComponent : function() {
                     this.tbar= [{
-                        text: i18n._('Add Wizard'),
+                        text: i18n._('Add simple rule'),
                         iconCls: 'icon-add-row',
                         parentId: this.getId(),
-                        handler: Ext.bind(this.addHandler, this)
+                        handler: Ext.bind(this.addSimpleRuleHandler, this)
                     }];
                     Ung.EditorGrid.prototype.initComponent.apply(this, arguments);
-                },*/ 
+                }, 
                 title: this.i18n._("Port Forward Rules"),
                 recordJavaClass: "com.untangle.uvm.network.PortForwardRule",
                 dataProperty:'portForwardRules',
@@ -1965,7 +1976,9 @@ if (!Ung.hasResource["Ung.Network"]) {
                     name: 'matchers'
                 },{
                     name: 'description'
-                }, {
+                },{
+                    name: 'simple'
+                },{
                     name: 'javaClass'
                 }],
                 columns: [{
@@ -2154,10 +2167,30 @@ if (!Ung.hasResource["Ung.Network"]) {
                 }]
             });
             
+            
+            
             this.gridPortForwardRules.setRowEditor(Ext.create('Ung.RowEditorWindow',{
                 sizeToComponent: this.panelPortForwardRules,
                 rowEditorLabelWidth: 160,
-                inputLines: [{
+                syncComponents: function () {
+                    var isSimple = this.query('checkbox[dataIndex="simple"]')[0].getValue();
+                    this.query('[name="simple_portforward_editor"]')[0].setVisible(isSimple);
+                    this.query('[name="advanced_portforward_editor"]')[0].setVisible(!isSimple);
+                    this.query('[name="switch_advanced_btn"]')[0].setVisible(isSimple);
+                    this.query('[name="new_port_container"]')[0].setVisible(!isSimple);
+                    if ( !isSimple) {
+                        this.query('fieldset[name="fwd_description"]')[0].setTitle( i18n._('Forward to the following location:'));
+                    } else {
+                        this.query('fieldset[name="fwd_description"]')[0].setTitle( i18n._('To the following location:'));
+                    }
+                },
+                inputLines: [
+                {
+                    xtype:'checkbox',
+                    hidden:true,
+                    dataIndex: "simple",
+                },
+                {
                     xtype:'checkbox',
                     name: "Enable Port Forward Rule",
                     dataIndex: "enabled",
@@ -2168,20 +2201,85 @@ if (!Ung.hasResource["Ung.Network"]) {
                     dataIndex: "description",
                     fieldLabel: this.i18n._("Description"),
                     width: 500
-                }, {
+                },
+                {   
+                    xtype : "fieldset",
+                    name: 'simple_portforward_editor',
+                    simpleMode : true,
+                    autoHeight : true,
+                    title : this.i18n._( "Forward the following traffic:" ),
+                    items : [{
+                        editable : false,
+                        xtype : "combo",
+                        fieldLabel : this.i18n._("Protocol" ),
+                        width : 300,
+                        name : "simple_protocol",
+                        value : this.protocolStore[0][0],
+                        store : this.protocolStore,
+                        triggerAction : "all",
+                        mode : "local"
+                    },{
+                        editable : false,
+                        xtype : "combo",
+                        fieldLabel : this.i18n._("Port" ),
+                        width : 300,
+                        name : "simple_basic_port",
+                        value : this.portStore[0][0],
+                        store : this.portStore,
+                        triggerAction : "all",
+                        mode : "local",
+                        listeners: {
+                            "select": {
+                                fn: Ext.bind(function(combo, record, index) {
+                                        console.log("Basic port select");
+                                        var value = record[0].data.field1;
+                                        var isVisible = value == -1;
+                                        var port = this.gridPortForwardRules.rowEditor.query('[name="simple_destination_port"]')[0];
+                                        port.setVisible( isVisible );
+                                        if ( !isVisible ) {
+                                            port.setValue( value );
+                                        }
+                                }, this)
+                            }
+                        }
+                    },{
+                        xtype : "numberfield",
+                        fieldLabel : this.i18n._("Port Number" ),
+                        hidden: true,
+                        value:this.portStore[0][0],
+                        listeners: {
+                            "change": 
+                            {
+                                fn: Ext.bind(function(field, value) {
+                                        var newPort=this.gridPortForwardRules.rowEditor.query('[name="newPort"]')[0];
+                                        newPort.setValue( value );
+                                    },this)
+                            }
+                        },
+                        name : "simple_destination_port",
+                        minValue : 1,
+                        maxValue : 0xFFFF,
+                        width : 200
+                    }]
+                },
+                {
                     xtype:'fieldset',
+                    name:"advanced_portforward_editor",
+                    hidden:true,
                     title: this.i18n._("If all of the following conditions are met:"),
                     items:[{
                         xtype:'rulebuilder',
+                        name:"rulebuilder",
                         settingsCmp: this,
                         javaClass: "com.untangle.uvm.network.PortForwardRuleMatcher",
                         dataIndex: "matchers",
                         matchers: Ung.NetworkUtil.getPortForwardMatchers(this)
                     }]
-                }, {
+                },
+                {
                     xtype: 'fieldset',
                     cls: 'description',
-                    title: i18n._('Perform the following action(s):'),
+                    name: 'fwd_description',
                     border: false,
                     items: [{
                         xtype:'textfield',
@@ -2192,6 +2290,8 @@ if (!Ung.hasResource["Ung.Network"]) {
                         vtype: 'ipAddress'
                     }, {
                         xtype: 'container',
+                        hidden:true,
+                        name:"new_port_container",
                         layout: 'column',
                         margin: '0 0 5 0',
                         items: [{
@@ -2208,6 +2308,25 @@ if (!Ung.hasResource["Ung.Network"]) {
                             cls: 'boxlabel'
                         }]
                     }]
+                },
+                {
+                        xtype : "button",
+                        name: "switch_advanced_btn",
+                        simpleMode : true,
+                        text : this.i18n._( "Switch to Advanced" ),
+                        style : "padding: 10px;",
+                        handler : Ext.bind(function() {
+                            this.gridPortForwardRules.rowEditor.query('checkbox[dataIndex="simple"]')[0].setValue(false);
+                            var proto = this.gridPortForwardRules.rowEditor.query('[name="simple_protocol"]')[0].getValue();
+                            var port = this.gridPortForwardRules.rowEditor.query('[name="simple_destination_port"]')[0].getValue();
+                            var newPort = this.gridPortForwardRules.rowEditor.query('[name="newPort"]')[0].getValue();
+                            var advancedValue={javaClass: "java.util.LinkedList", list:[]};
+                            advancedValue.list.push({javaClass: "com.untangle.uvm.network.PortForwardRuleMatcher",matcherType:'DST_LOCAL',invert:"",value:true});
+                            advancedValue.list.push({javaClass: "com.untangle.uvm.network.PortForwardRuleMatcher",matcherType:'PROTOCOL',invert:"",value:proto.toUpperCase()});
+                            advancedValue.list.push({javaClass: "com.untangle.uvm.network.PortForwardRuleMatcher",matcherType:'DST_PORT',invert:"",value:newPort});
+                            this.gridPortForwardRules.rowEditor.query('[name="rulebuilder"]')[0].setValue(advancedValue);
+                            this.gridPortForwardRules.rowEditor.syncComponents();
+                        },this)
                 }]
             }));
         },

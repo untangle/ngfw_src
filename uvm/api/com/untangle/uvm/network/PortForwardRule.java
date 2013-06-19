@@ -29,6 +29,7 @@ public class PortForwardRule implements JSONString, Serializable
     private InetAddress newDestination;
     private Integer newPort;
     private String description;
+    private Boolean simple;
     
     public PortForwardRule() { }
 
@@ -39,6 +40,7 @@ public class PortForwardRule implements JSONString, Serializable
         this.setNewDestination(newDestination);
         this.setNewPort(newPort);
         this.setDescription(description);
+        this.setSimple(false);
     }
     
     public List<PortForwardRuleMatcher> getMatchers() { return this.matchers; }
@@ -58,6 +60,9 @@ public class PortForwardRule implements JSONString, Serializable
 
     public Integer getNewPort() { return newPort; }
     public void setNewPort( Integer newPort ) { this.newPort = newPort; }
+    
+    public Boolean getSimple() { return simple;}
+    public void setSimple( Boolean simple ) { this.simple = simple; }
     
     public String toJSONString()
     {
