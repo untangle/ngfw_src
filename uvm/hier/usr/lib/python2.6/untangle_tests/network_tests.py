@@ -417,51 +417,19 @@ class NetworkTests(unittest2.TestCase):
         uvmContext.nodeManager().destroy( nodeFW.getNodeSettings()["id"] )
 
     def test_070_routes(self):        
-        # This test relies on the dogfood to block playboy.com
-        pingResult = clientControl.runCommand("ping -c 1 " + dogfood + " >/dev/null 2>&1")
-        # print "pingResult <%s>" % pingResult
-        if (pingResult != 0):
-            raise unittest2.SkipTest("Office route Dogfood not available")
         clientControl.runCommand("rm -f /tmp/network_test_070a.log")
         netsettings = uvmContext.networkManager().getNetworkSettings()
-        i = 0
-        for interface in netsettings['interfaces']['list']:
-            if interface['isWan']:
-                # static WAN case
-                if interface['v4StaticGateway']:
-                    if (netsettings['interfaces']['list'][i]['v4StaticGateway']==dogfood):
-                        # test box is pointing to dogfood, change to non dogfood gateway
-                        netsettings['interfaces']['list'][i]['v4StaticGateway']=dogfood_alt
-                        uvmContext.networkManager().setNetworkSettings(netsettings)
-                        break
-                    elif (netsettings['interfaces']['list'][i]['v4StaticGateway']==dogfood_alt):
-                        # Already set to non dogfood gateway
-                        break
-                elif (interface['v4ConfigType'] == 'AUTO'):
-                    # handle DHCP WAN case
-                    nicDevice = str(interface['symbolicDev'])
-                    systemProperties = system_props.SystemProperties()
-                    gatewayIP = systemProperties.get_gateway(nicDevice)
-                    if (gatewayIP == dogfood):
-                        # test box is pointing to dogfood, change to non dogfood gateway
-                        netsettings['interfaces']['list'][i]['v4AutoGatewayOverride']=dogfood_alt
-                        uvmContext.networkManager().setNetworkSettings(netsettings)
-                        break
-                    elif (gatewayIP == dogfood_alt):
-                        # Already set to non dogfood gateway
-                        break
-                else:
-                    raise unittest2.SkipTest("Abort test since gateway is not dogfood or other alt")
-
-            i += 1
         result = clientControl.runCommand("host www.playboy.com", True)
         # print "result <%s>" % result
         match = re.search(r'address \d{1,3}.\d{1,3}.\d{1,3}.\d{1,3}', result)
         ip_address_playboy = (match.group()).replace('address ','')
-            
-        appendRouteRule(createRouteRule(ip_address_playboy,32,dogfood))
-        result = clientControl.runCommand("wget -q -O - http://www.playboy.com 2>&1 | grep -q blockpage")
+        appendRouteRule(createRouteRule(ip_address_playboy,32,"169.254.1.1"))
+        # verify other sites are still available.
+        result = clientControl.runCommand("wget -o /dev/null -t 1 --timeout=3 http://test.untangle.com")
         assert (result == 0)
+        # Verify playboy is not accessible 
+        result = clientControl.runCommand("wget -o /dev/null -t 1 --timeout=3 http://www.playboy.com")
+        assert (result != 0)
         uvmContext.networkManager().setNetworkSettings(orig_netsettings)
 
     def test_080_DNS(self):        
