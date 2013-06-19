@@ -41,16 +41,15 @@ public class CertificateManagerImpl implements CertificateManager
 
     protected CertificateManagerImpl()
     {
-        UvmContextFactory.context().servletFileManager().registerUploadHandler( new ServerCertificateUploadHandler() );
-        UvmContextFactory.context().servletFileManager().registerDownloadHandler( new RootCertificateDownloadHandler() );
-        UvmContextFactory.context().servletFileManager().registerDownloadHandler( new CertificateRequestDownloadHandler() );
+        UvmContextFactory.context().servletFileManager().registerUploadHandler(new ServerCertificateUploadHandler());
+        UvmContextFactory.context().servletFileManager().registerDownloadHandler(new RootCertificateDownloadHandler());
+        UvmContextFactory.context().servletFileManager().registerDownloadHandler(new CertificateRequestDownloadHandler());
 
         File certCheck = new File(ROOT_CERT_FILE);
         File keyCheck = new File(ROOT_KEY_FILE);
 
         // if either of the root CA files are missing create the thing now
-        if ((certCheck.exists() == false) || (keyCheck.exists() == false))
-        {
+        if ((certCheck.exists() == false) || (keyCheck.exists() == false)) {
             logger.info("Creating default root certificate authority");
             UvmContextFactory.context().execManager().exec(ROOT_CA_CREATOR_SCRIPT + " DEFAULT");
         }
@@ -71,11 +70,15 @@ public class CertificateManagerImpl implements CertificateManager
             String certString = new String(fileItem.get());
             int testFlag = 0;
 
-            if (certString.contains("BEGIN CERTIFICATE") == true) testFlag++;
-            if (certString.contains("END CERTIFICATE") == true) testFlag++;
-            if (certString.contains("PRIVATE KEY") == true) testFlag++;
+            if (certString.contains("BEGIN CERTIFICATE") == true)
+                testFlag++;
+            if (certString.contains("END CERTIFICATE") == true)
+                testFlag++;
+            if (certString.contains("PRIVATE KEY") == true)
+                testFlag++;
 
-            if (testFlag != 3) return new ExecManagerResult(1,"The uploaded certificate must be in PEM file format");
+            if (testFlag != 3)
+                return new ExecManagerResult(1, "The uploaded certificate must be in PEM file format");
 
             File certFile = new File(LOCAL_PEM_FILE);
             FileOutputStream certStream = new FileOutputStream(certFile);
@@ -85,7 +88,7 @@ public class CertificateManagerImpl implements CertificateManager
             UvmContextFactory.context().execManager().exec("cp " + LOCAL_PEM_FILE + " " + APACHE_PEM_FILE);
             UvmContextFactory.context().execManager().exec("/usr/sbin/apache2ctl graceful");
 
-            return new ExecManagerResult(0,"Certificate successfully uploaded");
+            return new ExecManagerResult(0, "Certificate successfully uploaded");
         }
     }
 
@@ -101,25 +104,23 @@ public class CertificateManagerImpl implements CertificateManager
         @Override
         public void serveDownload(HttpServletRequest req, HttpServletResponse resp)
         {
-            try
-            {
-            File certFile = new File(ROOT_CERT_FILE);
-            FileInputStream certStream = new FileInputStream(certFile);
-            byte[] certData = new byte[(int)certFile.length()];
-            certStream.read(certData);
-            certStream.close();
+            try {
+                File certFile = new File(ROOT_CERT_FILE);
+                FileInputStream certStream = new FileInputStream(certFile);
+                byte[] certData = new byte[(int) certFile.length()];
+                certStream.read(certData);
+                certStream.close();
 
-            // set the headers.
-            resp.setContentType("application/x-download");
-            resp.setHeader("Content-Disposition", "attachment; filename=root_authority.crt");
+                // set the headers.
+                resp.setContentType("application/x-download");
+                resp.setHeader("Content-Disposition", "attachment; filename=root_authority.crt");
 
-            OutputStream webStream = resp.getOutputStream();
-            webStream.write(certData);
+                OutputStream webStream = resp.getOutputStream();
+                webStream.write(certData);
             }
 
-            catch (Exception exn)
-            {
-            logger.warn("Exception during certificate download",exn);
+            catch (Exception exn) {
+                logger.warn("Exception during certificate download", exn);
             }
         }
     }
@@ -140,32 +141,30 @@ public class CertificateManagerImpl implements CertificateManager
 
             UvmContextFactory.context().execManager().exec(CERTIFICATE_GENERATOR_SCRIPT + " REQUEST " + certSubject);
 
-            try
-            {
-            File certFile = new File(SERVER_CSR_FILE);
-            FileInputStream certStream = new FileInputStream(certFile);
-            byte[] certData = new byte[(int)certFile.length()];
-            certStream.read(certData);
-            certStream.close();
+            try {
+                File certFile = new File(SERVER_CSR_FILE);
+                FileInputStream certStream = new FileInputStream(certFile);
+                byte[] certData = new byte[(int) certFile.length()];
+                certStream.read(certData);
+                certStream.close();
 
-            // set the headers.
-            resp.setContentType("application/x-download");
-            resp.setHeader("Content-Disposition", "attachment; filename=server_certificate.csr");
+                // set the headers.
+                resp.setContentType("application/x-download");
+                resp.setHeader("Content-Disposition", "attachment; filename=server_certificate.csr");
 
-            OutputStream webStream = resp.getOutputStream();
-            webStream.write(certData);
+                OutputStream webStream = resp.getOutputStream();
+                webStream.write(certData);
             }
 
-            catch (Exception exn)
-            {
-            logger.warn("Exception during certificate download",exn);
+            catch (Exception exn) {
+                logger.warn("Exception during certificate download", exn);
             }
         }
     }
 
-// ----------------------------------------------------------------------------
-// Public functions called by the administration.js certificates tab
-// ----------------------------------------------------------------------------
+    // ----------------------------------------------------------------------------
+    // Public functions called by the administration.js certificates tab
+    // ----------------------------------------------------------------------------
 
     public CertificateInformation getCertificateInformation()
     {
@@ -173,29 +172,27 @@ public class CertificateManagerImpl implements CertificateManager
         FileInputStream certStream;
         X509Certificate certObject;
 
-        try
-        {
+        try {
             // get an instance of the X509 certificate factory that we can
             // use to create X509Certificates from which we can grab info
             CertificateFactory factory = CertificateFactory.getInstance("X.509");
 
-
-            // Grab the info from our root CA certificate.  We can use the file
+            // Grab the info from our root CA certificate. We can use the file
             // as is since it only contains the DER cert encoded in Base64
             certStream = new FileInputStream(ROOT_CERT_FILE);
-            certObject = (X509Certificate)factory.generateCertificate(certStream);
+            certObject = (X509Certificate) factory.generateCertificate(certStream);
             certStream.close();
 
             certInfo.setRootcaDateValid(new Date(certObject.getNotBefore().toString()));
             certInfo.setRootcaDateExpires(new Date(certObject.getNotAfter().toString()));
             certInfo.setRootcaSubject(certObject.getSubjectDN().toString());
 
-            // Now grab the info from the Apache certificate.  This is a little
+            // Now grab the info from the Apache certificate. This is a little
             // more complicated because we have to skip over the private key
             // and look for the certificate portion of the file
             File certFile = new File(APACHE_PEM_FILE);
             certStream = new FileInputStream(certFile);
-            byte[] certData = new byte[(int)certFile.length()];
+            byte[] certData = new byte[(int) certFile.length()];
             certStream.read(certData);
             certStream.close();
 
@@ -207,13 +204,14 @@ public class CertificateManagerImpl implements CertificateManager
 
             // if either certTop or certEnd returned an error something is
             // wrong so just return what we have so far
-            if ((certTop < 0) || (certEnd < 0)) return certInfo;
+            if ((certTop < 0) || (certEnd < 0))
+                return certInfo;
 
             // create a new String with just the certificate we isolated
             // and pass it to the certificate factory generatory function
-            String certString = new String(pemString.getBytes(),certTop,certLen);
+            String certString = new String(pemString.getBytes(), certTop, certLen);
             ByteArrayInputStream byteStream = new ByteArrayInputStream(certString.getBytes());
-            certObject = (X509Certificate)factory.generateCertificate(byteStream);
+            certObject = (X509Certificate) factory.generateCertificate(byteStream);
 
             certInfo.setServerDateValid(new Date(certObject.getNotBefore().toString()));
             certInfo.setServerDateExpires(new Date(certObject.getNotAfter().toString()));
@@ -221,9 +219,8 @@ public class CertificateManagerImpl implements CertificateManager
             certInfo.setServerIssuer(certObject.getIssuerDN().toString());
         }
 
-        catch (Exception exn)
-        {
-            logger.error("Exception in getCertificateInformation()",exn);
+        catch (Exception exn) {
+            logger.error("Exception in getCertificateInformation()", exn);
         }
 
         return certInfo;
@@ -233,9 +230,8 @@ public class CertificateManagerImpl implements CertificateManager
     {
         logger.info("Creating new root certificate authority: " + certSubject);
         UvmContextFactory.context().execManager().exec(ROOT_CA_CREATOR_SCRIPT + " " + certSubject);
-        return(true);
+        return (true);
     }
-
 
     public boolean generateServerCertificate(String certSubject)
     {
@@ -245,6 +241,6 @@ public class CertificateManagerImpl implements CertificateManager
         UvmContextFactory.context().execManager().exec("cp " + LOCAL_PEM_FILE + " " + APACHE_PEM_FILE);
         UvmContextFactory.context().execManager().exec("/usr/sbin/apache2ctl graceful");
 
-        return(true);
+        return (true);
     }
 }

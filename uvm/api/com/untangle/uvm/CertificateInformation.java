@@ -21,23 +21,75 @@ public class CertificateInformation implements JSONString, Serializable
     private String serverSubject;
     private String serverIssuer;
 
-    public void setRootcaDateValid(Date argValue) { rootcaDateValid = argValue; }
-    public void setRootcaDateExpires(Date argValue) { rootcaDateExpires = argValue; }
-    public void setRootcaSubject(String argValue) { rootcaSubject = argValue; }
+    public void setRootcaDateValid(Date argValue)
+    {
+        rootcaDateValid = argValue;
+    }
 
-    public void setServerDateValid(Date argValue) { serverDateValid = argValue; }
-    public void setServerDateExpires(Date argValue) { serverDateExpires = argValue; }
-    public void setServerSubject(String argValue) { serverSubject = argValue; }
-    public void setServerIssuer(String argValue) { serverIssuer = argValue; }
+    public void setRootcaDateExpires(Date argValue)
+    {
+        rootcaDateExpires = argValue;
+    }
 
-    public Date getRootcaDateValid() { return rootcaDateValid; }
-    public Date getRootcaDateExpires() { return rootcaDateExpires; }
-    public String getRootcaSubject() { return rootcaSubject; }
+    public void setRootcaSubject(String argValue)
+    {
+        rootcaSubject = argValue;
+    }
 
-    public Date getServerDateValid() { return serverDateValid; }
-    public Date getServerDateExpires() { return serverDateExpires; }
-    public String getServerSubject() { return serverSubject; }
-    public String getServerIssuer() { return serverIssuer; }
+    public void setServerDateValid(Date argValue)
+    {
+        serverDateValid = argValue;
+    }
+
+    public void setServerDateExpires(Date argValue)
+    {
+        serverDateExpires = argValue;
+    }
+
+    public void setServerSubject(String argValue)
+    {
+        serverSubject = argValue;
+    }
+
+    public void setServerIssuer(String argValue)
+    {
+        serverIssuer = argValue;
+    }
+
+    public Date getRootcaDateValid()
+    {
+        return rootcaDateValid;
+    }
+
+    public Date getRootcaDateExpires()
+    {
+        return rootcaDateExpires;
+    }
+
+    public String getRootcaSubject()
+    {
+        return rootcaSubject;
+    }
+
+    public Date getServerDateValid()
+    {
+        return serverDateValid;
+    }
+
+    public Date getServerDateExpires()
+    {
+        return serverDateExpires;
+    }
+
+    public String getServerSubject()
+    {
+        return serverSubject;
+    }
+
+    public String getServerIssuer()
+    {
+        return serverIssuer;
+    }
 
     public String toJSONString()
     {
