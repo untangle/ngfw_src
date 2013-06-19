@@ -2231,7 +2231,6 @@ if (!Ung.hasResource["Ung.Network"]) {
                         listeners: {
                             "select": {
                                 fn: Ext.bind(function(combo, record, index) {
-                                        console.log("Basic port select");
                                         var value = record[0].data.field1;
                                         var isVisible = value == -1;
                                         var port = this.gridPortForwardRules.rowEditor.query('[name="simple_destination_port"]')[0];
