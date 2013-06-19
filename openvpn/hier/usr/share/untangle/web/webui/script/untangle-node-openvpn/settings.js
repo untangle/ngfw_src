@@ -515,6 +515,9 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                                     url: "/openvpn/uploadConfig",
                                     success: Ext.bind(function( form, action, handler ) {
                                         Ext.MessageBox.alert(this.i18n._( "Success" ), this.i18n._( "The configuration has been imported." ));
+                                        this.getSettings(function () {
+                                            this.gridRemoteServers.reload(this.getSettings().remoteServers);
+                                        });
                                     }, this),
                                     failure: Ext.bind(function( form, action ) {
                                         Ext.MessageBox.alert(this.i18n._( "Failure" ), this.i18n._( action.result.code ));
