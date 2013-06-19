@@ -26,7 +26,7 @@ if (!Ung.hasResource["Ung.Upgrade"]) {
             Ung.Util.clearDirty(this.panelSettings);
         },
         getSystemSettings: function(forceReload) {
-            if (forceReload || this.rpc.systemSettings === undefined) {s
+            if (forceReload || this.rpc.systemSettings === undefined) {
                 try {
                     this.rpc.systemSettings = rpc.systemManager.getSettings();
                 } catch (e) {

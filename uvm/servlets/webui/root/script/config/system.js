@@ -393,12 +393,13 @@ if (!Ung.hasResource["Ung.System"]) {
                                             for (var i = 0; i < neededPkgs.length; i++) {
                                                 var pkgName = neededPkgs[i];
 
-                                                Ung.MessageManager.setModalDownloadMode( null, Ext.bind( function() {
+                                                var modalDownloadCompleteFn = Ext.bind( function() {
                                                     this.neededPackages--;
                                                     if ( this.neededPackages === 0 ) {
                                                         Ext.MessageBox.alert(cmp.i18n._("Download Complete"), cmp.i18n._("To continue the restore relaunch the restore process."));
                                                     }
-                                                }, this) );
+                                                }, this);
+                                                Ung.MessageManager.setModalDownloadMode( null, modalDownloadCompleteFn, null );
 
                                                 console.log("Installing: " + pkgName);
                                                 rpc.aptManager.install(Ext.bind(function(result, exception) {

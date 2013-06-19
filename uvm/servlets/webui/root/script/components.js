@@ -1828,13 +1828,14 @@ Ung.MessageManager = {
     modalDownloadMode: false,
     modalDownloadCompleteFn: null,
     modalAptCompleteFn: null,
+    modalExceptionFn: null,
     installInProgress:0,
     downloadSummary: null,
     downloadsComplete: 0,
     historyMaxSize:100,
     messageHistory:[], // for debug info
     firstToleratedError: null,
-    errorToleranceInterval: 600000, //10 minutes
+    errorToleranceInterval: 300000, //5 minutes
 
     start: function(now) {
         this.stop();
@@ -1844,11 +1845,12 @@ Ung.MessageManager = {
         this.setFrequency(this.normalFrequency);
         this.started = true;
     },
-    setModalDownloadMode: function( modalDownloadCompleteFn, modalAptCompleteFn ) {
+    setModalDownloadMode: function( modalDownloadCompleteFn, modalAptCompleteFn, modalExceptionFn ) {
         this.stop();
         this.modalDownloadMode = true;
         this.modalDownloadCompleteFn = modalDownloadCompleteFn;
         this.modalAptCompleteFn = modalAptCompleteFn;
+        this.modalExceptionFn = modalExceptionFn;
         this.setFrequency(this.highFrequency);
         this.started = true;
     },
@@ -1887,14 +1889,14 @@ Ung.MessageManager = {
         rpc.messageManager.getMessageQueue(Ext.bind(function(result, exception) {
             if(Ung.Util.handleException(exception, Ext.bind(function() {
                 //Tolerate Error 500: Internal Server Error after an install
-                //Keep silent for maximum 10 minutes of sequential error messages
+                //Keep silent for maximum 5 minutes of sequential error messages
                 //because apache may reload
-                if(exception.code==500 || exception.code ==12031) {
+                if ( exception.code == 500 || exception.code == 12031 ) {
                     if(this.firstToleratedError==null) {
                         this.firstToleratedError=(new Date()).getTime();
                         this.cycleCompleted = true;
                         return;
-                    } else if(((new Date()).getTime()-this.firstToleratedError)<this.errorToleranceInterval) {
+                    } else if( ((new Date()).getTime() - this.firstToleratedError ) < this.errorToleranceInterval ) {
                         this.cycleCompleted = true;
                         return;
                     }
@@ -1907,10 +1909,16 @@ Ung.MessageManager = {
                     return;
                 }
 
+                if ( this.modalDownloadMode && this.modalExceptionFn !== null ) {
+                    this.modalExceptionFn();
+                    return;
+                }
+                
                 // otherwise call handleException but without "noAlert"
                 Ung.Util.handleException(exception, Ext.bind(function() {
                     this.cycleCompleted = true;
                 }, this));
+                
             }, this),"noAlert")) return;
             this.firstToleratedError=null; //reset error tolerance on a good response
             this.cycleCompleted = true;

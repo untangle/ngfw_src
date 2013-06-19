@@ -475,7 +475,7 @@ Ext.define("Ung.Main", {
             });
         }, this);
 
-        Ung.MessageManager.setModalDownloadMode( upgradeFn, null );
+        Ung.MessageManager.setModalDownloadMode( upgradeFn, null, upgradeFn );
 
         rpc.aptManager.upgrade(Ext.bind(function(result, exception) {
             if(Ung.Util.handleException(exception)) return;
