@@ -263,18 +263,18 @@ Section "OpenVPN GUI" SecGUI
   SetOutPath "$INSTDIR\config"
   File /oname=${SITE_NAME}.ovpn "${UNTANGLE_PACKAGE_DIR}/client-${COMMON_NAME}.ovpn"
 
-  # Named untangle-openvpn so it is safe to overwrite the files in it.
-  SetOutPath "$INSTDIR\config\untangle-openvpn"
+  # Copy crt and key files
+  SetOutPath "$INSTDIR\config\keys"
   File /oname=${SITE_NAME}-${COMMON_NAME}.crt "${UNTANGLE_SETTINGS_DIR}/remote-clients/client-${COMMON_NAME}.crt"
   File /oname=${SITE_NAME}-${COMMON_NAME}.key "${UNTANGLE_SETTINGS_DIR}/remote-clients/client-${COMMON_NAME}.key"
-  File /oname=${SITE_NAME}-ca.crt "${UNTANGLE_SETTINGS_DIR}/ca.crt"
+  File /oname=${SITE_NAME}-${COMMON_NAME}-ca.crt "${UNTANGLE_SETTINGS_DIR}/ca.crt"
 
   SetOutPath "$INSTDIR"
   File "${HOME}\install-win32\OpenVPN_GUI_ReadMe.txt"
 
   CreateDirectory "$INSTDIR\log"
   CreateDirectory "$INSTDIR\config"
-  CreateDirectory "$INSTDIR\config\untangle-openvpn"
+  CreateDirectory "$INSTDIR\config\keys"
 
 
 SectionEnd
