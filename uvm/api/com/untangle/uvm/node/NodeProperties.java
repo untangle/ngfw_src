@@ -24,7 +24,7 @@ public class NodeProperties implements Serializable, JSONString
     private String nodeBase = null;
 
     public enum Type {
-        NODE,
+        FILTER,
         SERVICE,
         UNKNOWN
     }

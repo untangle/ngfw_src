@@ -4,7 +4,7 @@
         "nodeBase" : "untangle-base-spam",
         "name" : "untangle-node-phish",
         "displayName" : "Phish Blocker",
-        "type" : "NODE",
+        "type" : "FILTER",
         "viewPosition" : 70,
         "parents" : {
             "javaClass": "java.util.LinkedList",

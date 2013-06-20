@@ -4,7 +4,7 @@
         "nodeBase" : "untangle-base-webfilter",
         "name" : "untangle-node-webfilter",
         "displayName" : "Web Filter Lite",
-        "type" : "NODE",
+        "type" : "FILTER",
         "viewPosition" : 20,
         "parents" : {
             "javaClass": "java.util.LinkedList",

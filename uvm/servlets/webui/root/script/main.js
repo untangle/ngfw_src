@@ -1032,7 +1032,7 @@ Ext.define("Ung.Main", {
         main.removeNodePreview(this.name);
         var nodeWidget=new Ung.Node(node);
         nodeWidget.fadeIn=fadeIn;
-        var place=(node.type=="NODE")?'filter_nodes':'service_nodes';
+        var place=(node.type=="FILTER")?'filter_nodes':'service_nodes';
         var position=this.getNodePosition(place,node.viewPosition);
         nodeWidget.render(place,position);
         Ung.AppItem.updateState(node.displayName, null);
@@ -1045,7 +1045,7 @@ Ext.define("Ung.Main", {
     },
     addNodePreview: function (md) {
         var nodeWidget=new Ung.NodePreview(md);
-        var place=(md.type=="NODE")?'filter_nodes':'service_nodes';
+        var place=(md.type=="FILTER")?'filter_nodes':'service_nodes';
         var position=this.getNodePosition(place,md.viewPosition);
         nodeWidget.render(place,position);
         main.nodePreviews[md.name]=true;
@@ -1121,7 +1121,7 @@ Ext.define("Ung.Main", {
         var hasUtil=false;
         var hasService=false;
         for(var i=0;i<this.nodes.length;i++) {
-            if(this.nodes[i].type != "NODE") {
+            if(this.nodes[i].type != "FILTER") {
                 hasService=true;
                 if(this.nodes[i].type != "SERVICE") {
                     hasUtil=true;

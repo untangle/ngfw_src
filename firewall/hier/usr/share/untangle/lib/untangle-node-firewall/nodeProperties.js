@@ -3,7 +3,7 @@
         "className" : "com.untangle.node.firewall.FirewallImpl",
         "name" : "untangle-node-firewall",
         "displayName" : "Firewall",
-        "type" : "NODE",
+        "type" : "FILTER",
         "viewPosition" : 110,
         "singleInstance" : "true"
 }

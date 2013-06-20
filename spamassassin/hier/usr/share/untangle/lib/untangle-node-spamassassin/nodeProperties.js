@@ -4,7 +4,7 @@
         "nodeBase" : "untangle-base-spam",
         "name" : "untangle-node-spamassassin",
         "displayName" : "Spam Blocker Lite",
-        "type" : "NODE",
+        "type" : "FILTER",
         "viewPosition" : 61,
         "parents" : {
             "javaClass": "java.util.LinkedList",

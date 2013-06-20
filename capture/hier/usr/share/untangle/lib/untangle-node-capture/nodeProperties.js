@@ -3,7 +3,7 @@
         "className" : "com.untangle.node.capture.CaptureNodeImpl",
         "name" : "untangle-node-capture",
         "displayName" : "Captive Portal",
-        "type" : "NODE",
+        "type" : "FILTER",
         "viewPosition" : 105,
         "autoStart" : true,
         "parents" : {

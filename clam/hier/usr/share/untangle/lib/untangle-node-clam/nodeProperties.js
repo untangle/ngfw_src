@@ -4,7 +4,7 @@
         "name" : "untangle-node-clam",
         "nodeBase" : "untangle-base-virus",
         "displayName" : "Virus Blocker Lite",
-        "type" : "NODE",
+        "type" : "FILTER",
         "viewPosition" : 40,
         "parents" : {
             "javaClass": "java.util.LinkedList",
