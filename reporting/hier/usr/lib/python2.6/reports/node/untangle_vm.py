@@ -164,7 +164,7 @@ CREATE TABLE reports.sessions (
         sql_helper.add_column('reports', 'sessions', 'https_flagged', 'boolean')
         sql_helper.add_column('reports', 'sessions', 'https_bypass', 'boolean')
         # FIXME remove me
-        sql_helper.add_column('reports', 'sessions', 'spyware_access_ident', 'text')
+        sql_helper.add_column('reports', 'sessions', 'adblocker_access_ident', 'text')
 
         # If session_id index does not exist, create it
         if not sql_helper.index_exists("reports","sessions","session_id", unique=True):
