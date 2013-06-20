@@ -455,8 +455,8 @@ if (!Ung.hasResource["Ung.Network"]) {
                     name: "v4PrefixLength" //from interfaceStatus
                 }],
                 columns: [{
-                    header: this.i18n._("Interface Id"),
-                    width: 80,
+                    header: this.i18n._("Id"),
+                    width: 30,
                     dataIndex: 'interfaceId'
                 }, {
                     header: this.i18n._("Name"),
@@ -2220,7 +2220,7 @@ if (!Ung.hasResource["Ung.Network"]) {
                 inputLines: [{
                     xtype:'checkbox',
                     hidden:true,
-                    dataIndex: "simple",
+                    dataIndex: "simple"
                 }, {
                     xtype:'checkbox',
                     name: "Enable Port Forward Rule",
@@ -2930,8 +2930,8 @@ if (!Ung.hasResource["Ung.Network"]) {
                     name: 'isWan'
                 }],                
                 columns: [{
-                    header: this.i18n._("Interface Id"),
-                    width: 80,
+                    header: this.i18n._("Id"),
+                    width: 30,
                     dataIndex: 'interfaceId'
                 }, {
                     header: this.i18n._("WAN"),
