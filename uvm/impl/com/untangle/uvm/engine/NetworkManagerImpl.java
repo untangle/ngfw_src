@@ -982,7 +982,7 @@ public class NetworkManagerImpl implements NetworkManager
         // enabled in dev env
         // disabled but there in normal env
         FilterRule filterRuleSsh = new FilterRule();
-        filterRuleSsh.setEnabled( UvmContextFactory.context().isDevel() );
+        filterRuleSsh.setEnabled( UvmContextFactory.context().isDevel() || UvmContextFactory.context().isNetBoot() );
         filterRuleSsh.setDescription( "Allow SSH" );
         filterRuleSsh.setBlocked( false );
         List<FilterRuleMatcher> ruleSshMatchers = new LinkedList<FilterRuleMatcher>();
@@ -1084,7 +1084,7 @@ public class NetworkManagerImpl implements NetworkManager
         filterRuleHttpsNonWan.setMatchers( ruleHttpsNonWanMatchers );
 
         FilterRule filterRuleHttpsWan = new FilterRule();
-        filterRuleHttpsWan.setEnabled( UvmContextFactory.context().isDevel() );
+        filterRuleHttpsWan.setEnabled( UvmContextFactory.context().isDevel() || UvmContextFactory.context().isNetBoot());
         filterRuleHttpsWan.setDescription( "Allow HTTPS on WANs" );
         filterRuleHttpsWan.setBlocked( false );
         List<FilterRuleMatcher> ruleHttpsWanMatchers = new LinkedList<FilterRuleMatcher>();

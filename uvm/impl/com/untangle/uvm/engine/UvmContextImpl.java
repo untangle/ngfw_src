@@ -395,11 +395,37 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
         return keyFile.exists();
     }
 
+    /**
+     * Returns true if this is a developer build in the development environment
+     */
     public boolean isDevel()
     {
         return Boolean.getBoolean(PROPERTY_IS_DEVEL);
     }
 
+    /**
+     * Returns true if this is a netbooted install on Untangle internal network
+     */
+    public boolean isNetBoot()
+    {
+        File installerSyslog = new File("/var/log/installer/syslog");
+        if ( installerSyslog.exists() ) {
+            try {
+                java.util.Scanner scanner = new java.util.Scanner( installerSyslog );
+                while ( scanner.hasNextLine() ) {
+                    String line = scanner.nextLine();
+
+                    if ( line.contains("BOOTIF") && line.contains("netboot.preseed") )
+                        return true;
+                }
+            } catch (Exception e) {
+                logger.warn("Exception in isNetBoot()",e);
+            }
+        }
+
+        return false;
+    }
+    
     public void wizardComplete()
     {
         File wizardCompleteFlagFile = new File(WIZARD_COMPLETE_FLAG_FILE);
@@ -423,15 +449,18 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
         if (isDevel())
             return true;
 
-        extraOptions += " -f \"" + System.getProperty("uvm.conf.dir") + "/uid" + "\" ";
-
-        if ( com.untangle.uvm.Version.getMajorVersion() != null )
+        // if its an untangle netboot, point to internal package server
+        if (isNetBoot()) {
+            extraOptions += " -u \"package-server.\" ";
+            extraOptions += " -d \"nightly\" ";
+        } else {
             extraOptions += " -d \"stable-" + com.untangle.uvm.Version.getMajorVersion() + "\" ";
+        }
+
+        extraOptions += " -f \"" + System.getProperty("uvm.conf.dir") + "/uid" + "\" ";
+        
         if ( com.untangle.uvm.Version.getVersionName() != null )
             extraOptions += " -n \"" + com.untangle.uvm.Version.getVersionName() + "\" ";
-        
-        //if (isNetBoot())
-        //    extraOptions += " -u \"package-server.\" ";
 
         Integer exitValue = this.execManager().execResult(CREATE_UID_SCRIPT + extraOptions);
         if (0 != exitValue) {

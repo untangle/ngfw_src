@@ -236,11 +236,14 @@ public interface UvmContext
     
     /**
      * Return true if running in a development environment.
-     *
-     * @return a <code>boolean</code> true if in development.
      */
     boolean isDevel();
 
+    /**
+     * Returns true if this is a netbooted install on Untangle internal network
+     */
+    boolean isNetBoot();
+    
     /**
      * create a UID (if one doesn't exist)
      * Called by the setup wizard
