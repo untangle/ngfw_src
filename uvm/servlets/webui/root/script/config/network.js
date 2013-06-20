@@ -328,7 +328,7 @@ if (!Ung.hasResource["Ung.Network"]) {
                 emptyRow: { //Used only to add VLAN Interfaces
                     "interfaceId": -1,
                     "isVlanInterface": true,
-                    "vlanTag": 0,
+                    "vlanTag": 1,
                     "javaClass": "com.untangle.uvm.network.InterfaceSettings",
                     "v4ConfigType": "STATIC", 
                     "v6ConfigType": "DISABLED"
