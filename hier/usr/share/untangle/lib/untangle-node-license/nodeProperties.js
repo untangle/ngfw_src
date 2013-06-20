@@ -3,7 +3,6 @@
         "className" : "com.untangle.node.license.LicenseManagerImpl",
         "name" : "untangle-node-license",
         "displayName" : "License Manager",
-        "type" : "SERVICE",
-        "singleInstance" : true
+        "type" : "SERVICE"
 }
 
