@@ -145,8 +145,8 @@ public class NodeManagerImpl implements NodeManager
         for ( Node node : getNodesForPolicy( policyId, parents ) ) {
             String nodeName = node.getNodeProperties().getName();
 
-            if (nodeName.equals(name)) {
-                list.add(node);
+            if ( nodeName.equals( name ) ) {
+                list.add( node );
             }
         }
 
@@ -174,8 +174,8 @@ public class NodeManagerImpl implements NodeManager
             }
         }
 
-        for (Node node : loadedNodes) {
-            if ( !node.getPackageDesc().isInvisible() && node.getPackageDesc().getType() == PackageDesc.Type.SERVICE ) {
+        for (Node node : getNodesForPolicy( null /* services */ )) {
+            if ( !node.getPackageDesc().isInvisible() ) {
                 list.add( node );
             }
         }
@@ -199,8 +199,7 @@ public class NodeManagerImpl implements NodeManager
 
     public Node instantiate( String nodeName ) throws Exception
     {
-        Long policyId = getDefaultPolicyForNode( nodeName );
-        return instantiate( nodeName, policyId );
+        return instantiate( nodeName, 1L /* Default Policy ID */ );
     }
 
     public Node instantiate( String nodeName, Long policyId ) throws Exception
@@ -216,16 +215,17 @@ public class NodeManagerImpl implements NodeManager
             return null;
         }
 
-        if (PackageDesc.Type.SERVICE == packageDesc.getType()) {
-            policyId = null;
-        }
-
         Node node = null;
         NodeProperties nodeProperties = null;
         NodeSettings nodeSettings = null;
         
         synchronized (this) {
             logger.info("initializing node: " + nodeName);
+
+            nodeProperties = initNodeProperties( packageDesc );
+
+            if (nodeProperties.getType() == NodeProperties.Type.SERVICE )
+                policyId = null;
 
             if ( nodeInstances( nodeName, policyId, false ).size() >= 1 ) 
                 throw new Exception("too many instances of " + nodeName + " + in policy " + policyId + ".");
@@ -234,10 +234,9 @@ public class NodeManagerImpl implements NodeManager
                      throw new Exception("too many instances of " + nodeName + " + in policy " + policyId + ".");
             }
                 
-                 
-            nodeProperties = initNodeProperties( packageDesc );
             nodeSettings = createNewNodeSettings( policyId, nodeName );
 
+            
             if (!live) 
                 throw new Exception("NodeManager is shut down");
 
@@ -262,9 +261,7 @@ public class NodeManagerImpl implements NodeManager
             
         }
 
-        PackageDesc.Type type = packageDesc.getType();
-
-        if ( node != null && !packageDesc.isInvisible() && (PackageDesc.Type.NODE == type || PackageDesc.Type.SERVICE == type)) {
+        if ( node != null && !packageDesc.isInvisible() ) {
             NodeInstantiatedMessage ne = new NodeInstantiatedMessage(nodeProperties, nodeSettings, node.getMetrics(), uvmContext.licenseManager().getLicense(packageDesc.getName()), node.getNodeSettings().getPolicyId());
             uvmContext.messageManager().submitMessage(ne);
         }
@@ -714,19 +711,6 @@ public class NodeManagerImpl implements NodeManager
         return nodeProperties;
     }
 
-    private Long getDefaultPolicyForNode(String nodeName) throws Exception
-    {
-        AptManager tbm = UvmContextFactory.context().aptManager();
-        PackageDesc packageDesc = tbm.packageDesc(nodeName);
-        if (packageDesc == null)
-            throw new Exception("Node named " + nodeName + " not found");
-        if (PackageDesc.Type.SERVICE == packageDesc.getType()) {
-            return null;
-        } else {
-            return 1L; /* XXX */
-        }
-    }
-
     private NodeSettings createNewNodeSettings( Long policyId, String nodeName )
     {
         long newNodeId = settings.getNextNodeId();
@@ -763,7 +747,7 @@ public class NodeManagerImpl implements NodeManager
 
     private List<Node> getNodesForPolicy( Long policyId )
     {
-        return getNodesForPolicy( policyId,true );
+        return getNodesForPolicy( policyId, true );
     }
 
     private List<Node> getNodesForPolicy( Long policyId, boolean parents )
@@ -805,9 +789,9 @@ public class NodeManagerImpl implements NodeManager
             int i = parentPolicies.indexOf(nodePolicyId);
             if (i >= 0) {
                 parentNodeArray.get(i).add( node );
-            } else if (nodePolicyId == null && policyId == null) {
+            } else if ( nodePolicyId == null && policyId == null ) {
                 thisPolicyNodes.add( node );
-            } else if (nodePolicyId != null && policyId != null && nodePolicyId.equals(policyId)) {
+            } else if ( nodePolicyId != null && policyId != null && nodePolicyId.equals(policyId) ) {
                 thisPolicyNodes.add( node );
             }
         }

@@ -22,7 +22,13 @@ public class NodeProperties implements Serializable, JSONString
     private String displayName = null;
     private String className = null;
     private String nodeBase = null;
-    private String type = null;
+
+    public enum Type {
+        NODE,
+        SERVICE,
+        UNKNOWN
+    }
+    private Type type;
     
     private Boolean hasPowerButton = true;
     private Boolean autoStart = true;
@@ -94,12 +100,11 @@ public class NodeProperties implements Serializable, JSONString
 
     /**
      * The type is the type of node
-     * "NODE|CASING|SERVICE|LIBRARY|BASE|LIB_ITEM|TRIAL|UNKNOW"
      *
      * @return the type, null if node does not have a type.
      */
-    public String getType() { return type; }
-    public void setType(String type) { this.type = type; }
+    public Type getType() { return type; }
+    public void setType(Type type) { this.type = type; }
 
     /**
      * The view position in the rack

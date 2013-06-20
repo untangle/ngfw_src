@@ -742,10 +742,6 @@ public abstract class NodeBase implements Node
             throw new Exception("could not create parent: " + parent);
         }
 
-        if (PackageDesc.Type.CASING == md.getType()) {
-            policyId = null;
-        }
-
         staticLogger.debug( "Starting required parent: " + parent );
 
         Node parentNode = getParentNode( parent, policyId );

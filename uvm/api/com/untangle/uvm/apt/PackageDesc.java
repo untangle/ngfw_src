@@ -22,19 +22,8 @@ public class PackageDesc implements Serializable, JSONString
 
     public static final int UNKNOWN_POSITION = -1;
 
-    public enum Type {
-        NODE,
-        CASING,
-        SERVICE,
-        LIBRARY,
-        BASE,
-        LIB_ITEM,
-        UNKNOWN
-    }
-
     private final String name;
     private final String displayName;
-    private final Type type;
     private final String installedVersion;
     private final String availableVersion;
     private final String shortDescription;
@@ -50,20 +39,6 @@ public class PackageDesc implements Serializable, JSONString
     public PackageDesc(Map<String, String> m, String installedVersion)
     {
         name = m.get("package");
-
-        String ut = m.get("untangle-pkg-type");
-        Type untangleType = Type.UNKNOWN;
-        if (null != ut) {
-            try {
-                untangleType = Type.valueOf(ut.toUpperCase());
-            } catch (IllegalArgumentException e) {
-                if (!"trial".equals(ut))
-                    logger.warn("Unknown type: " + ut);
-                untangleType = Type.UNKNOWN;
-            }
-        }
-
-        type = untangleType;
 
         displayName = m.get("display-name");
 
@@ -119,11 +94,6 @@ public class PackageDesc implements Serializable, JSONString
     public String getDisplayName()
     {
         return displayName;
-    }
-
-    public Type   getType()
-    {
-        return type;
     }
 
     public String getInstalledVersion()

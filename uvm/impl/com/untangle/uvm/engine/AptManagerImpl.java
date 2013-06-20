@@ -164,21 +164,8 @@ public class AptManagerImpl implements AptManager
         for (PackageDesc md : available) {
             String dn = md.getDisplayName();
             String name = md.getName();
-            PackageDesc.Type type = md.getType();
 
-            /**
-             * SPECIAL CASE: ignore obsolete libitems, even if they are available they should never be displayed
-             */
-            if ("untangle-libitem-cpd".equals(name) ||
-                "untangle-libitem-kav".equals(name) ||
-                "untangle-libitem-commtouch".equals(name) ||
-                "untangle-libitem-rap".equals(name) ||
-                "untangle-libitem-pcremote".equals(name) ||
-                "untangle-libitem-nas".equals(name) ||
-                "untangle-libitem-professional-package".equals(name))
-                continue;
-            
-            if (type == PackageDesc.Type.LIB_ITEM) {
+            if ( name.contains("-libitem-") ) {
                 displayNames.add(dn);
                 installableLibitems.put(dn, md);
             }
@@ -199,18 +186,18 @@ public class AptManagerImpl implements AptManager
         Map<Long, NodeSettings.NodeState> runStates=nm.allNodeStates();
 
         /**
-         * Iterate through installed installableLibitems and make adjustments
+         * Iterate through installed packages 
          *
-         * If its a libitem, hide it from the left-hand-nav and remove it from the hidden apps (so it will show even if hidden if installed)
-         * If its a node, put it in displayNames nodes and remove from hidden apps
+         * If its a libitem, hide it from the left-hand-nav (its already downloaded)
+         * If its a node, put it in displayNames nodes (it can be installed)
          */
         for (PackageDesc md : installed) {
             String dn = md.getDisplayName();
-            PackageDesc.Type type = md.getType();
+            String name = md.getName();
 
-            if (type == PackageDesc.Type.LIB_ITEM) {
+            if ( name.contains("-libitem-") ) {
                 installableLibitems.remove(dn); /* don't show it on left hand apps pane */
-            } else if (!md.isInvisible() && (type == PackageDesc.Type.NODE || type == PackageDesc.Type.SERVICE)) {
+            } else if ( !md.isInvisible() && ( name.contains("-casing-") || name.contains("-node-") ) ) {
                 displayNames.add(dn);
                 installableNodes.put(dn, md);
             } 
@@ -437,44 +424,34 @@ public class AptManagerImpl implements AptManager
         }
 
         /**
-         * check that all versions match untangle-vm version
+         * check that the version matches untangle-vm version
          */
-        List<String> subnodes;
-        try {
-            subnodes = predictNodeInstall(name);
-        }
-        catch (Exception e) {
-            throw e;
-        }
-        for (String node : subnodes) {
-            PackageDesc pkgDesc = packageDesc(node);
+        do {
+            PackageDesc pkgDesc = packageDesc( name );
             PackageDesc uvmDesc = packageDesc("untangle-vm");
             if (pkgDesc == null || uvmDesc == null) {
                 logger.warn("Unable to read package desc");
-                continue; //assume it matches
+                break; //assume it matches
             } 
-
             String[] pkgVers = pkgDesc.getAvailableVersion().split("~");
             String[] uvmVers = uvmDesc.getInstalledVersion().split("~");
-
             if (pkgVers.length < 2 || uvmVers.length < 2) {
                 //example 7.2.0~svnblahblah
                 logger.warn("Misunderstood version strings: " + pkgDesc.getAvailableVersion() + " & " + uvmDesc.getInstalledVersion());
-                continue; //assume it matches
+                break; //assume it matches
             }
-            
             String pkgVer = pkgVers[0];
             String uvmVer = uvmVers[0];
             if (pkgVer == null || uvmVer == null) {
                 logger.warn("Unable to read package version: " + pkgVer + " " + uvmVer);
-                continue; //assume it matches
+                break; //assume it matches
             }
-
             if (!pkgVer.equals(uvmVer)) {
-                logger.warn("Unable to install: " + node + " version mismatch (" + pkgVer + " != " + uvmVer + ")");
-                throw new Exception("Unable to install: " + node + " version mismatch (" + pkgVer + " != " + uvmVer + ")");
+                logger.warn("Unable to install: " + name + " version mismatch (" + pkgVer + " != " + uvmVer + ")");
+                throw new Exception("Unable to install: " + name + " version mismatch (" + pkgVer + " != " + uvmVer + ")");
             }
-        }
+        } while ( false );
+
 
         final AptLogTail alt;
 
@@ -506,7 +483,7 @@ public class AptManagerImpl implements AptManager
         synchronized (this) {
             UvmContextImpl uvmContext = UvmContextImpl.getInstance();
             NodeManager nm = uvmContext.nodeManager();
-            List<String> subnodes = null;
+            List<String> subpkgs = null;
 
             if (isInstalled(name)) {
                 logger.warn("package " + name + " already installed, ignoring");
@@ -519,7 +496,7 @@ public class AptManagerImpl implements AptManager
              * Get the list of all subnodes
              */
             try {
-                subnodes = predictNodeInstall(name);
+                subpkgs = predictNodeInstall(name);
             }
             catch (Exception e) {
                 throw e;
@@ -531,9 +508,13 @@ public class AptManagerImpl implements AptManager
             install(name);
 
             /**
-             * Instantiate all subnodes
+             * Instantiate all subpkgs that are nodes
              */
-            for (String node : subnodes) {
+            for (String node : subpkgs) {
+
+                if ( ! node.contains("-node-") )
+                    continue;
+
                 try {
                     logger.info("instantiate( " + node + ")");
                     register(node);
@@ -789,9 +770,9 @@ public class AptManagerImpl implements AptManager
                 String name = m.get("package");
 
                 PackageDesc md = new PackageDesc(m, instList.get(name));
-                if (null == md.getType()) {
-                    continue;
-                }
+                // if (null == md.getType()) {
+                //     continue;
+                // }
 
                 if (hidePkgs.contains(name)) {
                     logger.info("Hiding package: " + name);
@@ -925,11 +906,8 @@ public class AptManagerImpl implements AptManager
                     logger.debug("Ignoring non-package: " + line);
                     continue;
                 }
-                PackageDesc.Type mdType = md.getType();
-                if (mdType != PackageDesc.Type.NODE && mdType != PackageDesc.Type.SERVICE) {
-                    logger.debug("Ignoring non-node/service package: " + line);
-                    continue;
-                }
+                String name = md.getName();
+
                 l.add(line);
             }
 
