@@ -161,8 +161,8 @@ CREATE TABLE reports.sessions (
         sql_helper.add_column('reports', 'sessions', 'bandwidth_priority', 'integer')
         sql_helper.add_column('reports', 'sessions', 'bandwidth_rule', 'integer')
         sql_helper.add_column('reports', 'sessions', 'https_ruleid', 'integer')
-        sql_helper.add_column('reports', 'sessions', 'https_flagged', 'boolean')
-        sql_helper.add_column('reports', 'sessions', 'https_bypass', 'boolean')
+        sql_helper.add_column('reports', 'sessions', 'https_status', 'text')
+        sql_helper.add_column('reports', 'sessions', 'https_detail', 'text')
         # FIXME remove me
         sql_helper.add_column('reports', 'sessions', 'adblocker_access_ident', 'text')
 
