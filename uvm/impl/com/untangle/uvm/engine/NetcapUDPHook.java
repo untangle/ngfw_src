@@ -68,6 +68,9 @@ public class NetcapUDPHook implements NetcapCallback
         protected UDPNetcapHook( long id )
         {
             netcapUDPSession = new NetcapUDPSession( id );
+            Thread.currentThread().setName("Session " + id + " (" +
+                                           netcapUDPSession.clientSide().client().host().getHostAddress() + ":" + netcapUDPSession.clientSide().client().port() + " -> " +
+                                           netcapUDPSession.serverSide().server().host().getHostAddress() + ":" + netcapUDPSession.serverSide().server().port() + ")");
         }
 
         protected int timeout()
