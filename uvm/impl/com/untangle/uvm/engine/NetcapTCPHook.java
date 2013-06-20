@@ -67,7 +67,7 @@ public class NetcapTCPHook implements NetcapCallback
         protected TCPNetcapHook( long id )
         {
             netcapTCPSession   = new NetcapTCPSession( id );
-            Thread.currentThread().setName("Session " + id + " (" +
+            Thread.currentThread().setName("Session " + id + " (TCP " +
                                            netcapTCPSession.clientSide().client().host().getHostAddress() + ":" + netcapTCPSession.clientSide().client().port() + " -> " +
                                            netcapTCPSession.serverSide().server().host().getHostAddress() + ":" + netcapTCPSession.serverSide().server().port() + ")");
         }
