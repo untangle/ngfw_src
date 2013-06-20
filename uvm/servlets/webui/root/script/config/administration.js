@@ -548,7 +548,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
                             iconCls: 'action-icon',
                             handler: Ext.bind(function() {
                                 var downloadForm = document.getElementById('downloadForm');
-                                downloadForm["type"].value = "root_certificate_download"
+                                downloadForm["type"].value = "root_certificate_download";
                                 downloadForm.submit();
                             }, this)
                         },{
@@ -771,7 +771,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
                         width: 100,
                         margin: "20 10 10 10",
                         handler: Ext.bind(function() {
-                            popup.close()
+                            popup.close();
                         }, this)
                     }]
                 }]
@@ -808,7 +808,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
             {
                 popup.close();
                 var downloadForm = document.getElementById('downloadForm');
-                downloadForm["type"].value = "certificate_request_download"
+                downloadForm["type"].value = "certificate_request_download";
                 downloadForm["arg1"].value = certSubject;
                 downloadForm.submit();
                 return;
@@ -874,7 +874,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
                         width: 200,
                         margin: "10 10 10 10",
                         handler: Ext.bind(function() {
-                            popup.close()
+                            popup.close();
                         }, this)
                     }, {
                         xtype: "hidden",
