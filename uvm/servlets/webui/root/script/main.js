@@ -659,7 +659,7 @@ Ext.define("Ung.Main", {
         node.name=nodeProperties.name;
         node.displayName=nodeProperties.displayName;
         node.license=license;
-        node.image='image?name='+node.name;
+        node.image='chiclet?name='+node.name;
         node.metrics=nodeMetrics;
         node.runState=runState;
         node.viewPosition=nodeProperties.viewPosition;

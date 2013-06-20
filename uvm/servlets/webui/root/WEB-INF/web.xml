@@ -47,13 +47,13 @@
   </servlet-mapping>
 
   <servlet>
-    <servlet-name>ImageServlet</servlet-name>
-    <servlet-class>com.untangle.uvm.servlet.ImageServlet</servlet-class>
+    <servlet-name>ChicletServlet</servlet-name>
+    <servlet-class>com.untangle.uvm.servlet.ChicletServlet</servlet-class>
   </servlet>
 
   <servlet-mapping>
-    <servlet-name>ImageServlet</servlet-name>
-    <url-pattern>/image</url-pattern>
+    <servlet-name>ChicletServlet</servlet-name>
+    <url-pattern>/chiclet</url-pattern>
   </servlet-mapping>
 
   <servlet>

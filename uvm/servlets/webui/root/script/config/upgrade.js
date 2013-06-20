@@ -71,7 +71,7 @@ if (!Ung.hasResource["Ung.Upgrade"]) {
                                     }
                                     somethingVisibleAdded = true;
                                         upgradeData.push({
-                                        image: "image?name=" + md.name,
+                                        image: "chiclet?name=" + md.name,
                                         name: md.name,
                                         displayName: displayName,
                                         availableVersion: md.availableVersion,
@@ -80,7 +80,7 @@ if (!Ung.hasResource["Ung.Upgrade"]) {
                                 }
                                 if (!somethingVisibleAdded) {
                                     upgradeData.push({
-                                        image: "image?name=unknown",
+                                        image: "chiclet?name=unknown",
                                         name: "unknown",
                                         displayName: this.i18n._("Various Updates"),
                                         availableVersion: this.i18n._("N/A"),

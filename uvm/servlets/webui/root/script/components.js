@@ -1083,7 +1083,7 @@ Ext.define("Ung.AppItem", {
         var imageHtml = null;
         if (this.iconCls == null) {
             if (this.iconSrc == null) {
-                this.iconSrc = 'image?name=' + this.item.name;
+                this.iconSrc = 'chiclet?name=' + this.item.name;
             }
             imageHtml = '<img src="' + this.iconSrc + '" style="vertical-align: middle;"/>';
         } else {
@@ -1802,7 +1802,7 @@ Ext.define("Ung.NodePreview", {
         });
         var templateHTML = Ung.NodePreview.template.applyTemplate({
             'id': this.getId(),
-            'image': 'image?name='+this.name,
+            'image': 'chiclet?name='+this.name,
             'displayName': this.displayName
         });
         this.getEl().insertHtml("afterBegin", templateHTML);
