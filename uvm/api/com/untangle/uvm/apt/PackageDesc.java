@@ -34,7 +34,6 @@ public class PackageDesc implements Serializable, JSONString
     private final byte[] descIcon;
     private final int viewPosition;
     private final boolean autoStart;
-    private final boolean invisible;
 
     public PackageDesc(Map<String, String> m, String installedVersion)
     {
@@ -51,9 +50,6 @@ public class PackageDesc implements Serializable, JSONString
 
         v = m.get("auto-start");
         autoStart = (v != null && Boolean.parseBoolean(v));
-
-        v = m.get("invisible");
-        invisible = (v != null && Boolean.parseBoolean(v));
 
         // size
         v = m.get("size");
@@ -155,7 +151,7 @@ public class PackageDesc implements Serializable, JSONString
 
     public boolean isInvisible()
     {
-        return invisible;
+        return (viewPosition == UNKNOWN_POSITION);
     }
 
     // Object methods ----------------------------------------------------------

@@ -197,7 +197,7 @@ public class AptManagerImpl implements AptManager
 
             if ( name.contains("-libitem-") ) {
                 installableLibitems.remove(dn); /* don't show it on left hand apps pane */
-            } else if ( !md.isInvisible() && ( name.contains("-casing-") || name.contains("-node-") ) ) {
+            } else if ( !md.isInvisible() ) {
                 displayNames.add(dn);
                 installableNodes.put(dn, md);
             } 
@@ -512,7 +512,8 @@ public class AptManagerImpl implements AptManager
              */
             for (String node : subpkgs) {
 
-                if ( ! node.contains("-node-") )
+                PackageDesc packageDesc = packageDesc(node);
+                if ( packageDesc.isInvisible() )
                     continue;
 
                 try {

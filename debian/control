@@ -46,7 +46,6 @@ Package: untangle-casing-ftp
 Architecture: all
 Depends: untangle-libuvm
 XB-Display-Name: FTP Casing
-XB-Invisible: true
 XB-Desc-Icon: iVBORw0KGgoAAAANSUhEUgAAACoAAAAqCAIAAABKoV4MAAAABGdBTUEAANbY1E9Y
  MgAAABl0RVh0U29mdHdhcmUAQWRvYmUgSW1hZ2VSZWFkeXHJZTwAAATkSURBVHja
  1JhrKG1bFMftg1semyghESVKSClSSilSinyQV5S8SoqUV5RIKSJFREJuiigRpZQS
@@ -83,7 +82,6 @@ Package: untangle-casing-http
 Architecture: all
 Depends: untangle-libuvm
 XB-Display-Name: HTTP Casing
-XB-Invisible: true
 XB-Desc-Icon: iVBORw0KGgoAAAANSUhEUgAAACoAAAAqCAIAAABKoV4MAAAABGdBTUEAANbY1E9Y
  MgAAABl0RVh0U29mdHdhcmUAQWRvYmUgSW1hZ2VSZWFkeXHJZTwAAATkSURBVHja
  1JhrKG1bFMftg1semyghESVKSClSSilSinyQV5S8SoqUV5RIKSJFREJuiigRpZQS
@@ -120,7 +118,6 @@ Package: untangle-casing-smtp
 Architecture: all
 Depends: untangle-libuvm
 XB-Display-Name: SMTP Casing
-XB-Invisible: true
 XB-Desc-Icon: iVBORw0KGgoAAAANSUhEUgAAACoAAAAqCAIAAABKoV4MAAAABGdBTUEAANbY1E9Y
  MgAAABl0RVh0U29mdHdhcmUAQWRvYmUgSW1hZ2VSZWFkeXHJZTwAAATkSURBVHja
  1JhrKG1bFMftg1semyghESVKSClSSilSinyQV5S8SoqUV5RIKSJFREJuiigRpZQS
@@ -158,8 +155,6 @@ Architecture: all
 Depends: untangle-vm
 XB-Display-Name: Shield
 XB-Auto-Start: true
-XB-View-Position: 2000
-XB-Invisible: true
 XB-Desc-Icon: iVBORw0KGgoAAAANSUhEUgAAACoAAAAqCAYAAADFw8lbAAAACXBIWXMAAAsTAAALEwEAmpwYAAAA
  IGNIUk0AAHolAACAgwAA+f8AAIDpAAB1MAAA6mAAADqYAAAXb5JfxUYAAA08SURBVHjarJlbjGTX
  VYa/tfe5VnVVdbfbHvfYY/fEY4/tyA6KHduRHGMHWQYBAh4QKPBAxBMvSEgIeEZIIAQPkRAPCGQE
@@ -474,8 +469,6 @@ Architecture: all
 Depends: untangle-vm, dnsmasq, untangle-casing-ftp
 XB-Display-Name: Router
 XB-Auto-Start: true
-XB-View-Position: 2000
-XB-Invisible: true
 XB-Desc-Icon: iVBORw0KGgoAAAANSUhEUgAAACoAAAAqCAYAAADFw8lbAAAACXBIWXMAAAsTAAALEwEAmpwY
  AAAABGdBTUEAALGOfPtRkwAAACBjSFJNAAB6JQAAgIMAAPn/AACA6QAAdTAAAOpgAAA6mAAA
  F2+SX8VGAAAJu0lEQVR42syYeYxV9RXHP/dtM29W3rDMDFBgKsoigywKLggaRdkCQWmkYgtd
