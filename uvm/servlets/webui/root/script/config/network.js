@@ -330,7 +330,7 @@ if (!Ung.hasResource["Ung.Network"]) {
                     "isVlanInterface": true,
                     "vlanTag": 0,
                     "javaClass": "com.untangle.uvm.network.InterfaceSettings",
-                    "v4ConfigType": "STATIC",
+                    "v4ConfigType": "STATIC", 
                     "v6ConfigType": "DISABLED"
                 },
                 fields: [{
@@ -1048,7 +1048,8 @@ if (!Ung.hasResource["Ung.Network"]) {
                     xtype: "numberfield",
                     dataIndex: "vlanTag",
                     fieldLabel: this.i18n._("802.1q Tag"),
-                    minValue: 0,
+                    minValue: 1,
+                    maxValue: 4096,
                     allowBlank: false,
                     blankText: this.i18n._("802.1q Tag must be a valid integer."),
                     width: 300
