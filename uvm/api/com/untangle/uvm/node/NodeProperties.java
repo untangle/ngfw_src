@@ -32,10 +32,8 @@ public class NodeProperties implements Serializable, JSONString
     
     private Boolean hasPowerButton = true;
     private Boolean autoStart = true;
-    private Boolean singleInstance = false;
 
     private List<String> parents = new LinkedList<String>();
-    private List<String> annotatedClasses = new LinkedList<String>();
 
     private Integer viewPosition = null;
 
@@ -65,22 +63,6 @@ public class NodeProperties implements Serializable, JSONString
     public List<String> getParents() { return parents; }
     public void setParents(List<String> parents) { this.parents = parents; }
 
-    /**
-     * A list of uvm resources, resources to be loaded into the UVM Class Path.
-     *
-     * @return The list of UVM resources.
-     */
-    public List<String> getAnnotatedClasses() { return annotatedClasses; }
-    public void setAnnotatedClasses(List<String> annotatedClasses) { this.annotatedClasses = annotatedClasses; }
-    
-    /**
-     * Only a single instance may be initialized in the system.
-     *
-     * @return true if only a single instance may be loaded.
-     */
-    public Boolean getSingleInstance() { return singleInstance; }
-    public void setSingleInstance(Boolean singleInstance) { this.singleInstance = singleInstance; }
-    
     /**
      * The name of the node, for display purposes.
      *

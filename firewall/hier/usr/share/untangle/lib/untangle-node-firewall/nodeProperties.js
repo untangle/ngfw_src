@@ -4,7 +4,6 @@
         "name" : "untangle-node-firewall",
         "displayName" : "Firewall",
         "type" : "FILTER",
-        "viewPosition" : 110,
-        "singleInstance" : "true"
+        "viewPosition" : 110
 }
 

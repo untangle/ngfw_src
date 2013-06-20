@@ -5,7 +5,6 @@
         "displayName" : "OpenVPN",
         "type" : "SERVICE",
         "viewPosition" : 1080,
-        "autoStart" : "false",
-        "singleInstance" : "true"
+        "autoStart" : "false"
 }
 
