@@ -4131,8 +4131,6 @@ Ext.define('Ung.RowEditorWindow', {
         }
         return true;
     },
-    
-
     isDirty: function() {
         return Ung.Util.isDirty(this.items);
     },
