@@ -1045,10 +1045,10 @@ if (!Ung.hasResource["Ung.Network"]) {
                 }, {
                     xtype: "numberfield",
                     dataIndex: "vlanTag",
-                    fieldLabel: this.i18n._("8021.q Tag"),
+                    fieldLabel: this.i18n._("802.1q Tag"),
                     minValue: 0,
                     allowBlank: false,
-                    blankText: this.i18n._("8021.q Tag must be a valid integer."),
+                    blankText: this.i18n._("802.1q Tag must be a valid integer."),
                     width: 300
                 }, {
                     xtype: "combo",
