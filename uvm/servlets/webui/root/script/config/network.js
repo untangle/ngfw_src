@@ -329,7 +329,9 @@ if (!Ung.hasResource["Ung.Network"]) {
                     "interfaceId": -1,
                     "isVlanInterface": true,
                     "vlanTag": 0,
-                    "javaClass": "com.untangle.uvm.network.InterfaceSettings"
+                    "javaClass": "com.untangle.uvm.network.InterfaceSettings",
+                    "v4ConfigType": "STATIC",
+                    "v6ConfigType": "DISABLED"
                 },
                 fields: [{
                     name: 'interfaceId'
