@@ -800,6 +800,7 @@ if (!Ung.hasResource["Ung.System"]) {
                 }
             });
         },
+        timeUpdateId:-1,
         timeUpdate: function() {
             if(this.isVisible()) {
                 rpc.adminManager.getDate(Ext.bind(function(result, exception) {
@@ -807,8 +808,13 @@ if (!Ung.hasResource["Ung.System"]) {
                     var currentTimeObj = Ext.getCmp("system_regionalSettings_currentTime");
                     if (currentTimeObj && currentTimeObj.body) {
                         currentTimeObj.body.update(result);
+                        if ( this.timeUpdateId != -1) {
+                            // Clear timeout for any previously defined deferred call. 
+                            // This is used because this function is called for updating the time after applying changes and without this multiple deffered calls will accumulate
+                            clearTimeout(this.timeUpdateId);
+                        }
                         //Updates every 10 seconds to decrease data trafic...
-                        Ext.defer(this.timeUpdate, 10000, this);
+                        this.timeUpdateId = Ext.defer(this.timeUpdate, 10000, this);
                     }
                 }, this));
             }
@@ -1065,6 +1071,7 @@ if (!Ung.hasResource["Ung.System"]) {
             //save timezone
             rpc.adminManager.setTimeZone(Ext.bind(function(result, exception) {
                 this.afterSave(exception, isApply);
+                this.timeUpdate();
             }, this), this.rpc.timeZone);
         },
         afterSave: function(exception, isApply) {
