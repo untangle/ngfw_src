@@ -447,6 +447,7 @@ Ext.define("Ung.Main", {
 
         var doneFn = Ext.bind( function() {
             Ung.MessageManager.stop();
+            Ext.MessageBox.hide();
 
             console.log("Applying Upgrades...");
             var applyingUpgradesWindow=Ext.create('Ext.window.MessageBox', {

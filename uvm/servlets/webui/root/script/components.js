@@ -1830,9 +1830,12 @@ Ung.MessageManager = {
     setModalDownloadMode: function( downloadCompleteFn, aptCompleteFn, exceptionFn ) {
         this.stop();
         this.modalDownloadMode = true;
-        this.modalDownloadCompleteFn = downloadCompleteFn;
-        this.modalAptCompleteFn = aptCompleteFn;
-        this.modalExceptionFn = exceptionFn;
+        if ( downloadCompleteFn )
+            this.modalDownloadCompleteFn = downloadCompleteFn;
+        if ( aptCompleteFn )
+            this.modalAptCompleteFn = aptCompleteFn;
+        if ( exceptionFn )
+            this.modalExceptionFn = exceptionFn;
         this.setFrequency( this.highFrequency );
         this.started = true;
     },
