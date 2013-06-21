@@ -443,9 +443,9 @@ Ext.define("Ung.Main", {
     },
 
     upgrade: function () {
-        Ext.MessageBox.wait(i18n._("Downloading packages..."), i18n._("Please wait"));
+        Ext.MessageBox.show(i18n._("Downloading packages..."), i18n._("Please wait"));
 
-        var upgradeFn = Ext.bind( function() {
+        var doneFn = Ext.bind( function() {
             Ung.MessageManager.stop();
 
             console.log("Applying Upgrades...");
@@ -455,7 +455,7 @@ Ext.define("Ung.Main", {
             applyingUpgradesWindow.wait(i18n._("Applying Upgrades..."), i18n._("Please wait"), {
                 interval: 500,
                 increment: 120,
-                duration: 60000,
+                duration: 30000,
                 scope: this,
                 fn: function() {
                     console.log("Upgrade in Progress. Press ok to go to the Start Page...");
@@ -475,7 +475,7 @@ Ext.define("Ung.Main", {
             });
         }, this);
 
-        Ung.MessageManager.setModalDownloadMode( upgradeFn, null, upgradeFn );
+        Ung.MessageManager.setModalDownloadMode( doneFn, doneFn, doneFn );
 
         rpc.aptManager.upgrade(Ext.bind(function(result, exception) {
             if(Ung.Util.handleException(exception)) return;

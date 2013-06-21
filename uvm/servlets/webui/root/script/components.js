@@ -1827,13 +1827,13 @@ Ung.MessageManager = {
         this.setFrequency(this.normalFrequency);
         this.started = true;
     },
-    setModalDownloadMode: function( modalDownloadCompleteFn, modalAptCompleteFn, modalExceptionFn ) {
+    setModalDownloadMode: function( downloadCompleteFn, aptCompleteFn, exceptionFn ) {
         this.stop();
         this.modalDownloadMode = true;
-        this.modalDownloadCompleteFn = modalDownloadCompleteFn;
-        this.modalAptCompleteFn = modalAptCompleteFn;
-        this.modalExceptionFn = modalExceptionFn;
-        this.setFrequency(this.highFrequency);
+        this.modalDownloadCompleteFn = downloadCompleteFn;
+        this.modalAptCompleteFn = aptCompleteFn;
+        this.modalExceptionFn = exceptionFn;
+        this.setFrequency( this.highFrequency );
         this.started = true;
     },
     setFrequency: function(timeMs) {
@@ -1869,6 +1869,11 @@ Ung.MessageManager = {
         }
         this.cycleCompleted = false;
         rpc.messageManager.getMessageQueue(Ext.bind(function(result, exception) {
+            if ( exception && this.modalDownloadMode && this.modalExceptionFn !== null ) {
+                this.modalExceptionFn();
+                return;
+            }
+
             if(Ung.Util.handleException(exception, Ext.bind(function() {
                 //Tolerate Error 500: Internal Server Error after an install
                 //Keep silent for maximum 5 minutes of sequential error messages
@@ -1888,11 +1893,6 @@ Ung.MessageManager = {
                     Ext.MessageBox.alert(i18n._("System Busy"), "Please refresh the page", Ext.bind(function() {
                         this.cycleCompleted = true;
                     }, this));
-                    return;
-                }
-
-                if ( this.modalDownloadMode && this.modalExceptionFn !== null ) {
-                    this.modalExceptionFn();
                     return;
                 }
                 
