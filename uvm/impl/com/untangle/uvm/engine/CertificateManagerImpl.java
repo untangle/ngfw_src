@@ -53,6 +53,26 @@ public class CertificateManagerImpl implements CertificateManager
             logger.info("Creating default root certificate authority");
             UvmContextFactory.context().execManager().exec(ROOT_CA_CREATOR_SCRIPT + " DEFAULT");
         }
+
+        File localPem = new File(LOCAL_PEM_FILE);
+
+        // now that we know we have a root CA we check for the local
+        // apache.pem and create it here if it doesn't yet exist
+        if (localPem.exists() == false) {
+            String hostName = UvmContextFactory.context().networkManager().getNetworkSettings().getHostName();
+            logger.info("Creating default locally signed apache certificate for " + hostName);
+            UvmContextFactory.context().execManager().exec(CERTIFICATE_GENERATOR_SCRIPT + " APACHE /CN=" + hostName);
+        }
+
+        File apachePem = new File(APACHE_PEM_FILE);
+
+        // if the apache.pem in the settings directory is newer than
+        // the one used by apache we copy the new file and restart
+        if (localPem.lastModified() > apachePem.lastModified()) {
+            logger.info("Copying newer apache cert from " + LOCAL_PEM_FILE + " to " + APACHE_PEM_FILE);
+            UvmContextFactory.context().execManager().exec("cp " + LOCAL_PEM_FILE + " " + APACHE_PEM_FILE);
+            UvmContextFactory.context().execManager().exec("/usr/sbin/apache2ctl graceful");
+        }
     }
 
     // called by the UI to upload a signed server certificate
@@ -80,11 +100,13 @@ public class CertificateManagerImpl implements CertificateManager
             if (testFlag != 3)
                 return new ExecManagerResult(1, "The uploaded certificate must be in PEM file format");
 
+            // first write the pem file to our settings directory
             File certFile = new File(LOCAL_PEM_FILE);
             FileOutputStream certStream = new FileOutputStream(certFile);
             certStream.write(fileItem.get());
             certStream.close();
 
+            // now copy the pem file to the apache directory and restart
             UvmContextFactory.context().execManager().exec("cp " + LOCAL_PEM_FILE + " " + APACHE_PEM_FILE);
             UvmContextFactory.context().execManager().exec("/usr/sbin/apache2ctl graceful");
 
@@ -162,10 +184,7 @@ public class CertificateManagerImpl implements CertificateManager
         }
     }
 
-    // ----------------------------------------------------------------------------
-    // Public functions called by the administration.js certificates tab
-    // ----------------------------------------------------------------------------
-
+    // called by the UI to get info about the root and server certificates
     public CertificateInformation getCertificateInformation()
     {
         CertificateInformation certInfo = new CertificateInformation();
@@ -226,6 +245,7 @@ public class CertificateManagerImpl implements CertificateManager
         return certInfo;
     }
 
+    // called by the UI to generate a new root certificate authority
     public boolean generateCertificateAuthority(String certSubject)
     {
         logger.info("Creating new root certificate authority: " + certSubject);
@@ -233,11 +253,15 @@ public class CertificateManagerImpl implements CertificateManager
         return (true);
     }
 
+    // called by the UI to generate a new server certificate
     public boolean generateServerCertificate(String certSubject)
     {
-        logger.info("Creating locally signed apache certificate: " + certSubject);
+        logger.info("Creating new locally signed apache certificate: " + certSubject);
 
+        // APACHE argument puts the cert file in our settings directory
         UvmContextFactory.context().execManager().exec(CERTIFICATE_GENERATOR_SCRIPT + " APACHE " + certSubject);
+
+        // now copy the pem file to the apache directory and restart
         UvmContextFactory.context().execManager().exec("cp " + LOCAL_PEM_FILE + " " + APACHE_PEM_FILE);
         UvmContextFactory.context().execManager().exec("/usr/sbin/apache2ctl graceful");
 
