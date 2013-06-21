@@ -140,7 +140,7 @@ if (!Ung.hasResource["Ung.Upgrade"]) {
                     sortable: true,
                     dataIndex: 'image',
                     renderer: function(value) {
-                        return "<img src='" + value + "'/>";
+                        return "<img src='" + value + "' height='17'/>";
                     }
                 }, {
                     header: this.i18n._("name"),
