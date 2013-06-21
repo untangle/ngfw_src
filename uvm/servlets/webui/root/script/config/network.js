@@ -1955,7 +1955,7 @@ if (!Ung.hasResource["Ung.Network"]) {
                             list:[{
                                 matcherType:'DST_LOCAL',
                                 invert: false,
-                                value: true,
+                                value: "true",
                                 javaClass: "com.untangle.uvm.network.PortForwardRuleMatcher"
                             }, {
                                 matcherType: 'PROTOCOL',
@@ -1965,7 +1965,7 @@ if (!Ung.hasResource["Ung.Network"]) {
                             }, {
                                 matcherType:'DST_PORT',
                                 invert: false,
-                                value: 80,
+                                value: "80",
                                 javaClass: "com.untangle.uvm.network.PortForwardRuleMatcher"
                             }]
                         },
@@ -2148,19 +2148,19 @@ if (!Ung.hasResource["Ung.Network"]) {
             });
             
             //Build port forward warnings
-            var portForwardWarningsHtml=["<br/>" + this.i18n._('The following ports are currently reserved and can not be forwarded:') + "<br/>"];
+            var portForwardWarningsHtml=[this.i18n._('The following ports are currently reserved and can not be forwarded:') + "<br/>"];
             var i;
             var intf;
             for ( i = 0 ; i < this.settings.interfaces.list.length ; i++) {
                 intf = this.settings.interfaces.list[i];
                 if (intf.v4Address) {
-                    portForwardWarningsHtml.push("<b>" + intf.v4Address + ":" + this.settings.httpsPort + "</b> for HTTPS services.<br/>");
+                    portForwardWarningsHtml.push( Ext.String.format(this.i18n._("<b>{0}:{1}</b> for HTTPS services."),intf.v4Address, this.settings.httpsPort)+"<br/>");
                 }
             }
             for ( i = 0 ; i < this.settings.interfaces.list.length ; i++) {
                 intf = this.settings.interfaces.list[i];
                 if (intf.v4Address && !intf.isWan) {
-                    portForwardWarningsHtml.push("<b>" + intf.v4Address + ":" + this.settings.httpPort + "</b> for HTTP services.<br/>");
+                    portForwardWarningsHtml.push( Ext.String.format(this.i18n._("<b>{0}:{1}</b> for HTTP services."),intf.v4Address, this.settings.httpPort)+"<br/>");
                 }
             }
             for ( i = 0 ; i < this.settings.interfaces.list.length ; i++) {
@@ -2169,13 +2169,13 @@ if (!Ung.hasResource["Ung.Network"]) {
                     for ( var j = 0 ; j < this.settings.interfaces.list.length ; j++) {
                         var sub_intf = this.settings.interfaces.list[j];
                         if (sub_intf.configType == "BRIDGED" && sub_intf.bridgedTo == intf.interfaceId) {
-                            portForwardWarningsHtml.push("<b>" + intf.v4Address + ":" + this.settings.httpPort + "</b> on " + sub_intf.name + " interface for HTTP services.<br/>");
+                            portForwardWarningsHtml.push( Ext.String.format(this.i18n._("<b>{0}:{1}</b> on {2} interface for HTTP services."),intf.v4Address, this.settings.httpPort, sub_intf.name)+"<br/>");
                         }
                     }
                 }
             }
-            var protocolStore =[[ "TCP,UDP",  "TCP & UDP"],[ "TCP",  "TCP" ],[ "UDP", "UDP"]];
-            var portStore =[[ 21, "FTP (21)" ],[ 25, "SMTP (25)" ],[ 53, "DNS (53)" ],[ 80, "HTTP (80)" ],[ 110, "POP3 (110)" ],[ 143, "IMAP (143)" ],[ 443, "HTTPS (443)" ],[ 1723, "PPTP (1723)" ],[ -1, "Other" ]];
+            var protocolStore =[[ "TCP,UDP",  "TCP & UDP"],[ "TCP",  "TCP"],[ "UDP", "UDP"]];
+            var portStore =[[ "21", "FTP (21)" ],[ "25", "SMTP (25)" ],[ "53", "DNS (53)" ],[ "80", "HTTP (80)" ],[ "110", "POP3 (110)" ],[ "143", "IMAP (143)" ],[ "443", "HTTPS (443)" ],[ "1723", "PPTP (1723)" ],[ "-1", this.i18n._("Other") ]];
             this.panelPortForwardRules = Ext.create('Ext.panel.Panel',{
                 name: 'panelPortForwardRules',
                 helpSource: 'network_port_forwards',
@@ -2187,35 +2187,47 @@ if (!Ung.hasResource["Ung.Network"]) {
                     xtype: "label",
                     flex: 0,
                     html: this.i18n._("Port Forward rules forward sessions matching the configured criteria from a public IP to an IP on an internal (NAT'd) network. The rules are evaluated in order."),
-                    style: "padding-bottom: 10px;"
+                    style: "margin-bottom: 10px;"
                 }, this.gridPortForwardRules, 
                 {
                     xtype: 'label',
                     flex: 0,
                     html: portForwardWarningsHtml.join(""),
-                    style: 'margin-bottom: 10px;'
+                    style: 'margin: 10px;'
                 }]
             });
-            
-            
-            
+            var settingsCmp = this;
             this.gridPortForwardRules.setRowEditor(Ext.create('Ung.RowEditorWindow',{
                 sizeToComponent: this.panelPortForwardRules,
                 rowEditorLabelWidth: 160,
+                populate: function(record, addMode) {
+                    //reinitialize dataIndex on both editors
+                    this.query('fieldset[name="simple_portforward_editor"]')[0].dataIndex="matchers";
+                    this.query('rulebuilder')[0].dataIndex="matchers";
+                    Ung.RowEditorWindow.prototype.populate.apply(this, arguments);
+                },
                 syncComponents: function () {
                     var isSimple = this.query('checkbox[dataIndex="simple"]')[0].getValue();
-                    
-                    this.query('[name="simple_portforward_editor"]')[0].setVisible(isSimple);
+                    var simpleEditor=this.query('fieldset[name="simple_portforward_editor"]')[0];
+                    var advancedEditor=this.query('[name="advanced_portforward_editor"]')[0];
+                    var rulebuilder=advancedEditor.query('rulebuilder')[0];
+                    simpleEditor.setVisible(isSimple);
+                    advancedEditor.setVisible(!isSimple);
+                    if(isSimple) {
+                        simpleEditor.dataIndex="matchers";
+                        rulebuilder.dataIndex="";
+                    } else {
+                        simpleEditor.dataIndex="";
+                        rulebuilder.dataIndex="matchers";
+                    }
                     this.query('[name="switch_advanced_btn"]')[0].setVisible(isSimple);
                     this.query('[name="new_port_container"]')[0].setVisible(!isSimple);
-
-                    this.query('[name="advanced_portforward_editor"]')[0].setVisible(!isSimple);
                     
-                    if ( !isSimple) {
-                        this.query('fieldset[name="fwd_description"]')[0].setTitle( i18n._('Forward to the following location:'));
-                    } else {
-                        this.query('fieldset[name="fwd_description"]')[0].setTitle( i18n._('Traffic matching the above description destined to any Untangle IP will be forwarded to the new location:'));
-                    }
+                    Ext.defer( function(){
+                        this.query('fieldset[name="fwd_description"]')[0].setTitle( isSimple ?
+                            settingsCmp.i18n._('Traffic matching the above description destined to any Untangle IP will be forwarded to the new location:') :
+                            settingsCmp.i18n._('Forward to the following location:'));
+                    },1, this);
                 },
                 inputLines: [{
                     xtype:'checkbox',
@@ -2223,17 +2235,15 @@ if (!Ung.hasResource["Ung.Network"]) {
                     dataIndex: "simple"
                 }, {
                     xtype:'checkbox',
-                    name: "Enable Port Forward Rule",
                     dataIndex: "enabled",
                     fieldLabel: this.i18n._("Enable Port Forward Rule")
                 }, {
                     xtype:'textfield',
-                    name: "Description",
                     dataIndex: "description",
                     fieldLabel: this.i18n._("Description"),
                     width: 500
                 }, {   
-                    xtype : "fieldset",
+                    xtype : 'fieldset',
                     name: 'simple_portforward_editor',
                     autoHeight : true,
                     dataIndex: "matchers",
@@ -2241,7 +2251,7 @@ if (!Ung.hasResource["Ung.Network"]) {
                         if(record.get("simple")) {
                             var matchersMap=Ung.Util.createRecordsMap(record.get("matchers").list, "matcherType");
                             var protocol = matchersMap["PROTOCOL"]?matchersMap["PROTOCOL"].value:"TCP";
-                            this.query('[name="simple_protocol"]')[0].setValue(protocol);
+                            this.query('combo[name="simple_protocol"]')[0].setValue(protocol);
 
                             var dstPort = matchersMap["DST_PORT"]?matchersMap["DST_PORT"].value:"";
                             var dstPortOther=this.query('numberfield[name="simple_destination_port"]')[0];
@@ -2256,33 +2266,38 @@ if (!Ung.hasResource["Ung.Network"]) {
                                 }
                             }
                             if(isOtherPort) {
-                                dstPortCombo.setValue(-1);
+                                dstPortCombo.setValue("-1");
                             }
                             dstPortOther.setVisible(isOtherPort);
                         }
                     },
                     getValue: function() {
-                        var protocol = this.query('combo[name="simple_protocol"]')[0].getValue();
-                        var port = this.query('[name="simple_destination_port"]')[0].getValue();
-                        return {
-                            javaClass: "java.util.LinkedList", 
-                            list:[{
-                                matcherType:'DST_LOCAL',
-                                invert: false,
-                                value:true,
-                                javaClass: "com.untangle.uvm.network.PortForwardRuleMatcher"
-                            }, {
-                                matcherType: 'PROTOCOL',
-                                invert: false,
-                                value: protocol,
-                                javaClass: "com.untangle.uvm.network.PortForwardRuleMatcher"
-                            }, {
-                                matcherType:'DST_PORT',
-                                invert: false,
-                                value: port,
-                                javaClass: "com.untangle.uvm.network.PortForwardRuleMatcher"
-                            }]
-                        };                   
+                        var isSimple = settingsCmp.gridPortForwardRules.rowEditor.query('checkbox[dataIndex="simple"]')[0].getValue();
+                        if(isSimple) {
+                            var protocol = this.query('combo[name="simple_protocol"]')[0].getValue();
+                            var port = ""+this.query('[name="simple_destination_port"]')[0].getValue();
+                            return {
+                                javaClass: "java.util.LinkedList", 
+                                list:[{
+                                    matcherType:'DST_LOCAL',
+                                    invert: false,
+                                    value: "true",
+                                    javaClass: "com.untangle.uvm.network.PortForwardRuleMatcher"
+                                }, {
+                                    matcherType: 'PROTOCOL',
+                                    invert: false,
+                                    value: protocol,
+                                    javaClass: "com.untangle.uvm.network.PortForwardRuleMatcher"
+                                }, {
+                                    matcherType:'DST_PORT',
+                                    invert: false,
+                                    value: port,
+                                    javaClass: "com.untangle.uvm.network.PortForwardRuleMatcher"
+                                }]
+                            };                   
+                        } else {
+                            return undefined;
+                        }
                     },
                     title : this.i18n._("Forward the following traffic:"),
                     items : [{
@@ -2305,7 +2320,7 @@ if (!Ung.hasResource["Ung.Network"]) {
                             "select": {
                                 fn: Ext.bind(function(combo, records, eOpts) {
                                     var value = combo.getValue();
-                                    var isVisible = (value == -1);
+                                    var isVisible = (value == "-1");
                                     var port = this.gridPortForwardRules.rowEditor.query('[name="simple_destination_port"]')[0];
                                     port.setVisible( isVisible );
                                     if ( !isVisible ) {
@@ -2344,9 +2359,8 @@ if (!Ung.hasResource["Ung.Network"]) {
                     }]
                 }, {
                     xtype: 'fieldset',
-                    cls: 'description',
                     name: 'fwd_description',
-                    border: false,
+                    title: "",
                     items: [{
                         xtype:'textfield',
                         allowBlank: false,
@@ -2380,9 +2394,9 @@ if (!Ung.hasResource["Ung.Network"]) {
                     text: this.i18n._( "Switch to Advanced" ),
                     handler: function() {
                         var rowEditor = this.gridPortForwardRules.rowEditor;
+                        var matchers = rowEditor.query('fieldset[name="simple_portforward_editor"]')[0].getValue();
                         rowEditor.query('checkbox[dataIndex="simple"]')[0].setValue(false);
-                        var matchers = rowEditor.query('fieldset[dataIndex="matchers"]')[0].getValue();
-                        rowEditor.query('rulebuilder[dataIndex="matchers"]')[0].setValue(matchers);
+                        rowEditor.query('rulebuilder')[0].setValue(matchers);
                         rowEditor.syncComponents();
                     },
                     scope: this
