@@ -4359,8 +4359,10 @@ if (!Ung.hasResource["Ung.Network"]) {
             }
             return true;
         },
+        needRackReload: false,
         save: function (isApply) {
             this.saveSemaphore = 1;
+            this.needRackReload = true;
             // save language settings
             main.getNetworkManager().setNetworkSettings(Ext.bind(function(result, exception) {
                 this.afterSave(exception, isApply);
@@ -4508,8 +4510,13 @@ if (!Ung.hasResource["Ung.Network"]) {
                     this.closeWindow();
                 }
             }
-        }
-        
+        },
+        closeWindow: function() {
+            Ung.Network.superclass.closeWindow.call(this);
+            if (this.needRackReload) {
+                Ung.Util.goToStartPage();
+            }
+        }        
     });
 }
 //@ sourceURL=network.js
