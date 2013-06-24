@@ -996,6 +996,44 @@ public class NetworkManagerImpl implements NetworkManager
         ruleSshMatchers.add(ruleSshMatcher2);
         filterRuleSsh.setMatchers( ruleSshMatchers );
 
+        FilterRule filterRuleHttpsWan = new FilterRule();
+        filterRuleHttpsWan.setEnabled( UvmContextFactory.context().isDevel() || UvmContextFactory.context().isNetBoot());
+        filterRuleHttpsWan.setDescription( "Allow HTTPS on WANs" );
+        filterRuleHttpsWan.setBlocked( false );
+        List<FilterRuleMatcher> ruleHttpsWanMatchers = new LinkedList<FilterRuleMatcher>();
+        FilterRuleMatcher ruleHttpsWanMatcher1 = new FilterRuleMatcher();
+        ruleHttpsWanMatcher1.setMatcherType(FilterRuleMatcher.MatcherType.DST_PORT);
+        ruleHttpsWanMatcher1.setValue("443");
+        FilterRuleMatcher ruleHttpsWanMatcher2 = new FilterRuleMatcher();
+        ruleHttpsWanMatcher2.setMatcherType(FilterRuleMatcher.MatcherType.PROTOCOL);
+        ruleHttpsWanMatcher2.setValue("tcp");
+        FilterRuleMatcher ruleHttpsWanMatcher3 = new FilterRuleMatcher();
+        ruleHttpsWanMatcher3.setMatcherType(FilterRuleMatcher.MatcherType.SRC_INTF);
+        ruleHttpsWanMatcher3.setValue("wan");
+        ruleHttpsWanMatchers.add(ruleHttpsWanMatcher1);
+        ruleHttpsWanMatchers.add(ruleHttpsWanMatcher2);
+        ruleHttpsWanMatchers.add(ruleHttpsWanMatcher3);
+        filterRuleHttpsWan.setMatchers( ruleHttpsWanMatchers );
+
+        FilterRule filterRuleHttpsNonWan = new FilterRule();
+        filterRuleHttpsNonWan.setEnabled( true );
+        filterRuleHttpsNonWan.setDescription( "Allow HTTPS on non-WANs" );
+        filterRuleHttpsNonWan.setBlocked( false );
+        List<FilterRuleMatcher> ruleHttpsNonWanMatchers = new LinkedList<FilterRuleMatcher>();
+        FilterRuleMatcher ruleHttpsNonWanMatcher1 = new FilterRuleMatcher();
+        ruleHttpsNonWanMatcher1.setMatcherType(FilterRuleMatcher.MatcherType.DST_PORT);
+        ruleHttpsNonWanMatcher1.setValue("443");
+        FilterRuleMatcher ruleHttpsNonWanMatcher2 = new FilterRuleMatcher();
+        ruleHttpsNonWanMatcher2.setMatcherType(FilterRuleMatcher.MatcherType.PROTOCOL);
+        ruleHttpsNonWanMatcher2.setValue("tcp");
+        FilterRuleMatcher ruleHttpsNonWanMatcher3 = new FilterRuleMatcher();
+        ruleHttpsNonWanMatcher3.setMatcherType(FilterRuleMatcher.MatcherType.SRC_INTF);
+        ruleHttpsNonWanMatcher3.setValue("non_wan");
+        ruleHttpsNonWanMatchers.add(ruleHttpsNonWanMatcher1);
+        ruleHttpsNonWanMatchers.add(ruleHttpsNonWanMatcher2);
+        ruleHttpsNonWanMatchers.add(ruleHttpsNonWanMatcher3);
+        filterRuleHttpsNonWan.setMatchers( ruleHttpsNonWanMatchers );
+
         FilterRule filterRulePing = new FilterRule();
         filterRulePing.setEnabled( true );
         filterRulePing.setDescription( "Allow PING" );
@@ -1006,6 +1044,17 @@ public class NetworkManagerImpl implements NetworkManager
         rulePingMatcher1.setValue("icmp");
         rulePingMatchers.add(rulePingMatcher1);
         filterRulePing.setMatchers( rulePingMatchers );
+
+        FilterRule filterRuleIPsec = new FilterRule();
+        filterRuleIPsec.setEnabled( true );
+        filterRuleIPsec.setDescription( "Allow IPsec" );
+        filterRuleIPsec.setBlocked( false );
+        List<FilterRuleMatcher> ruleIPsecMatchers = new LinkedList<FilterRuleMatcher>();
+        FilterRuleMatcher ruleIPsecMatcher1 = new FilterRuleMatcher();
+        ruleIPsecMatcher1.setMatcherType(FilterRuleMatcher.MatcherType.PROTOCOL);
+        ruleIPsecMatcher1.setValue("esp,ah");
+        ruleIPsecMatchers.add(ruleIPsecMatcher1);
+        filterRuleIPsec.setMatchers( ruleIPsecMatchers );
         
         FilterRule filterRuleDns = new FilterRule();
         filterRuleDns.setEnabled( true );
@@ -1064,44 +1113,6 @@ public class NetworkManagerImpl implements NetworkManager
         ruleHttpMatchers.add(ruleHttpMatcher3);
         filterRuleHttp.setMatchers( ruleHttpMatchers );
 
-        FilterRule filterRuleHttpsNonWan = new FilterRule();
-        filterRuleHttpsNonWan.setEnabled( true );
-        filterRuleHttpsNonWan.setDescription( "Allow HTTPS on non-WANs" );
-        filterRuleHttpsNonWan.setBlocked( false );
-        List<FilterRuleMatcher> ruleHttpsNonWanMatchers = new LinkedList<FilterRuleMatcher>();
-        FilterRuleMatcher ruleHttpsNonWanMatcher1 = new FilterRuleMatcher();
-        ruleHttpsNonWanMatcher1.setMatcherType(FilterRuleMatcher.MatcherType.DST_PORT);
-        ruleHttpsNonWanMatcher1.setValue("443");
-        FilterRuleMatcher ruleHttpsNonWanMatcher2 = new FilterRuleMatcher();
-        ruleHttpsNonWanMatcher2.setMatcherType(FilterRuleMatcher.MatcherType.PROTOCOL);
-        ruleHttpsNonWanMatcher2.setValue("tcp");
-        FilterRuleMatcher ruleHttpsNonWanMatcher3 = new FilterRuleMatcher();
-        ruleHttpsNonWanMatcher3.setMatcherType(FilterRuleMatcher.MatcherType.SRC_INTF);
-        ruleHttpsNonWanMatcher3.setValue("non_wan");
-        ruleHttpsNonWanMatchers.add(ruleHttpsNonWanMatcher1);
-        ruleHttpsNonWanMatchers.add(ruleHttpsNonWanMatcher2);
-        ruleHttpsNonWanMatchers.add(ruleHttpsNonWanMatcher3);
-        filterRuleHttpsNonWan.setMatchers( ruleHttpsNonWanMatchers );
-
-        FilterRule filterRuleHttpsWan = new FilterRule();
-        filterRuleHttpsWan.setEnabled( UvmContextFactory.context().isDevel() || UvmContextFactory.context().isNetBoot());
-        filterRuleHttpsWan.setDescription( "Allow HTTPS on WANs" );
-        filterRuleHttpsWan.setBlocked( false );
-        List<FilterRuleMatcher> ruleHttpsWanMatchers = new LinkedList<FilterRuleMatcher>();
-        FilterRuleMatcher ruleHttpsWanMatcher1 = new FilterRuleMatcher();
-        ruleHttpsWanMatcher1.setMatcherType(FilterRuleMatcher.MatcherType.DST_PORT);
-        ruleHttpsWanMatcher1.setValue("443");
-        FilterRuleMatcher ruleHttpsWanMatcher2 = new FilterRuleMatcher();
-        ruleHttpsWanMatcher2.setMatcherType(FilterRuleMatcher.MatcherType.PROTOCOL);
-        ruleHttpsWanMatcher2.setValue("tcp");
-        FilterRuleMatcher ruleHttpsWanMatcher3 = new FilterRuleMatcher();
-        ruleHttpsWanMatcher3.setMatcherType(FilterRuleMatcher.MatcherType.SRC_INTF);
-        ruleHttpsWanMatcher3.setValue("wan");
-        ruleHttpsWanMatchers.add(ruleHttpsWanMatcher1);
-        ruleHttpsWanMatchers.add(ruleHttpsWanMatcher2);
-        ruleHttpsWanMatchers.add(ruleHttpsWanMatcher3);
-        filterRuleHttpsWan.setMatchers( ruleHttpsWanMatchers );
-        
         FilterRule filterRuleBlock = new FilterRule();
         filterRuleBlock.setEnabled( true );
         filterRuleBlock.setDescription( "Block All" );
@@ -1113,6 +1124,7 @@ public class NetworkManagerImpl implements NetworkManager
         rules.add( filterRuleHttpsWan );
         rules.add( filterRuleHttpsNonWan );
         rules.add( filterRulePing );
+        rules.add( filterRuleIPsec );
         rules.add( filterRuleDns );
         rules.add( filterRuleDhcp );
         rules.add( filterRuleHttp );
