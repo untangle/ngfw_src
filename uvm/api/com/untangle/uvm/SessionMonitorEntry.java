@@ -2,6 +2,7 @@
 package com.untangle.uvm;
 
 import java.net.InetAddress;
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -92,7 +93,24 @@ public class SessionMonitorEntry
     public void    setPriority( Integer priority ) {this.priority = priority;}
 
     public Map<String,Object> getAttachments() {return attachments;}
-    public void               setAttachments( Map<String,Object> attachments ) {this.attachments = attachments;}
+
+    /**
+     * Set the attachments for this session
+     * This only includes the Serializable attachments
+     * Because these entries are sent to the UI all these attachments will be serialized.
+     * This avoids any cases where non-serializable attachments since the UI can't use them anyway
+     * and they may not serialize correctly
+     */
+    public void               setAttachments( Map<String,Object> attachments )
+    {
+        this.attachments = new HashMap<String,Object>();
+        for ( String key : attachments.keySet() ) {
+            Object obj = attachments.get( key );
+            if ( obj instanceof java.io.Serializable ) {
+                this.attachments.put( key, obj );
+            }
+        }
+    }
     
     /**
      * The following properties come from jnettop
