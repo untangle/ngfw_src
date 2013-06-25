@@ -848,7 +848,7 @@ if (!Ung.hasResource["Ung.Network"]) {
                     xtype: 'fieldset',
                     flex: 0,
                     cls: 'description',
-                    title: this.i18n._("<b>Interface</b> configuration"),
+                    title: this.i18n._("Interface configuration"),
                     html: this.i18n._("Use this page to configure each interface's configuration and its mapping to a physical network card.")
                 }, this.gridInterfaces]
             });
@@ -1032,7 +1032,7 @@ if (!Ung.hasResource["Ung.Network"]) {
                 }, {
                     xtype:'checkbox',
                     dataIndex: "isVlanInterface",
-                    fieldLabel: this.i18n._("Is VLAN (802.1q) Alias Interface"),
+                    fieldLabel: this.i18n._("Is VLAN (802.1q) Interface"),
                     disabled: true,
                     width: 300
                 }, {
@@ -1479,7 +1479,7 @@ if (!Ung.hasResource["Ung.Network"]) {
                             width: 350
                         }, {
                             xtype: 'fieldset',
-                            title: this.i18n._("Dhcp Options"),
+                            title: this.i18n._("DHCP Options"),
                             name: "dhcpOptionsContainer",
                             items: [this.gridInterfacesDhcpOptionsEditor]
                         }]
@@ -2807,7 +2807,7 @@ if (!Ung.hasResource["Ung.Network"]) {
                     xtype: 'fieldset',
                     cls: 'description',
                     title: this.i18n._('Current Routes'),
-                    html: this.i18n._(" <b>Current Routes</b> shows the current routing system's configuration and how all traffic will be routed.")
+                    html: this.i18n._("Current Routes shows the current routing system's configuration and how all traffic will be routed.")
                 }, this.routeArea, this.routeButton]
             });
         },
