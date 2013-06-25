@@ -60,7 +60,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
 
     Ext.define("Ung.Administration", {
         extend: "Ung.ConfigWin",
-        panelAdministration: null,
+        panelAdmin: null,
         panelPublicAddress: null,
         panelCertificates: null,
         panelSnmp: null,
@@ -77,16 +77,16 @@ if (!Ung.hasResource["Ung.Administration"]) {
             }];
             this.skinManager = Ext.create('Ung.Config.Administration.SkinManager',{ 'i18n':  i18n });
             this.initialSkin = this.getSkinSettings().skinName;
-            this.buildAdministration();
+            this.buildAdmin();
             this.buildPublicAddress();
             this.buildCertificates();
             this.buildSnmp();
             this.buildSkins();
 
             // builds the tab panel with the tabs
-            var adminTabs = [this.panelAdministration, this.panelPublicAddress, this.panelCertificates, this.panelSnmp, this.panelSkins];
+            var adminTabs = [this.panelAdmin, this.panelPublicAddress, this.panelCertificates, this.panelSnmp, this.panelSkins];
             this.buildTabPanel(adminTabs);
-            this.tabs.setActiveTab(this.panelAdministration);
+            this.tabs.setActiveTab(this.panelAdmin);
             this.callParent(arguments);
         },
         // get base settings object
@@ -152,7 +152,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
                 return this.rpc.hostname;
         },
 
-        buildAdministration: function() {
+        buildAdmin: function() {
             // keep initial system and address settings
             this.initialSystemSettings = Ung.Util.clone(this.getSystemSettings());
 
@@ -305,12 +305,12 @@ if (!Ung.hasResource["Ung.Administration"]) {
 
             this.gridAdminAccounts.subCmps.push(this.gridAdminAccounts.rowEditorChangePass);
 
-            this.panelAdministration = Ext.create('Ext.panel.Panel',{
-                name: 'panelAdministration',
-                helpSource: 'administration',
+            this.panelAdmini = Ext.create('Ext.panel.Panel',{
+                name: 'panelAdmin',
+                helpSource: 'admin',
                 // private fields
                 parentId: this.getId(),
-                title: this.i18n._('Administration'),
+                title: this.i18n._('Admin'),
                 layout: "anchor",
                 cls: 'ung-panel',
                 items: [
