@@ -305,7 +305,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
 
             this.gridAdminAccounts.subCmps.push(this.gridAdminAccounts.rowEditorChangePass);
 
-            this.panelAdmini = Ext.create('Ext.panel.Panel',{
+            this.panelAdmin = Ext.create('Ext.panel.Panel',{
                 name: 'panelAdmin',
                 helpSource: 'admin',
                 // private fields
@@ -1228,7 +1228,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
                     if (listAdminAccounts[i].username == listAdminAccounts[j].username) {
                         Ext.MessageBox.alert(this.i18n._('Warning'), Ext.String.format(this.i18n._("The username name: \"{0}\" in row: {1}  already exists."), listAdminAccounts[j].username, j+1),
                             Ext.bind(function () {
-                                this.tabs.setActiveTab(this.panelAdministration);
+                                this.tabs.setActiveTab(this.panelAdmin);
                             }, this)
                         );
                         return false;
@@ -1245,7 +1245,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
             if(listAdminAccounts.length <= 0 ) {
                 Ext.MessageBox.alert(this.i18n._('Warning'), this.i18n._("There must always be at least one valid account."),
                     Ext.bind(function () {
-                        this.tabs.setActiveTab(this.panelAdministration);
+                        this.tabs.setActiveTab(this.panelAdmin);
                     }, this)
                 );
                 return false;
@@ -1255,7 +1255,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
             if(!oneWritableAccount) {
                 Ext.MessageBox.alert(this.i18n._('Warning'), this.i18n._("There must always be at least one non-read-only (writable) account."),
                     Ext.bind(function () {
-                        this.tabs.setActiveTab(this.panelAdministration);
+                        this.tabs.setActiveTab(this.panelAdmin);
                     }, this)
                 );
                 return false;
