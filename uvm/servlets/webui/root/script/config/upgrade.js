@@ -3,7 +3,7 @@ if (!Ung.hasResource["Ung.Upgrade"]) {
 
      Ext.define('Ung.Upgrade', {
         extend: 'Ung.ConfigWin',
-        gridUpgrade: null,
+        gridUpgrades: null,
         panelSettings: null,
         initComponent: function() {
             this.breadcrumbs = [{
@@ -17,7 +17,7 @@ if (!Ung.hasResource["Ung.Upgrade"]) {
             this.buildUpgrade();
             this.buildSettings();
             // builds the tab panel with the tabs
-            this.buildTabPanel([this.gridUpgrade, this.panelSettings]);
+            this.buildTabPanel([this.gridUpgrades, this.panelSettings]);
             this.callParent(arguments);
         },
         afterRender: function() {
@@ -87,13 +87,13 @@ if (!Ung.hasResource["Ung.Upgrade"]) {
                                         size: Math.round(totalSize / 1000)
                                     });
                                 }
-                                this.gridUpgrade.getDockedItems('toolbar[dock="top"]')[0].items.get(0).getEl().dom.innerHTML=Ext.String.format(i18n._("Upgrades are available. There are {0} packages. Total size is {1} MBs."),upgradeList.length,Ung.Util.bytesToMBs(totalSize));
+                                this.gridUpgrades.getDockedItems('toolbar[dock="top"]')[0].items.get(0).getEl().dom.innerHTML=Ext.String.format(i18n._("Upgrades are available. There are {0} packages. Total size is {1} MBs."),upgradeList.length,Ung.Util.bytesToMBs(totalSize));
                             } else {
                                 Ext.getCmp("config_start_upgrade_button").disable();
-                                this.gridUpgrade.getDockedItems('toolbar[dock="top"]')[0].items.get(0).getEl().dom.innerHTML=i18n._("No upgrades available.");
+                                this.gridUpgrades.getDockedItems('toolbar[dock="top"]')[0].items.get(0).getEl().dom.innerHTML=i18n._("No upgrades available.");
                             }
-                            this.gridUpgrade.getStore().proxy.data = upgradeData;
-                            this.gridUpgrade.getStore().load();
+                            this.gridUpgrades.getStore().proxy.data = upgradeData;
+                            this.gridUpgrades.getStore().load();
                         }, this));
                     }, this),true);
                 }
@@ -101,12 +101,12 @@ if (!Ung.hasResource["Ung.Upgrade"]) {
 
         },
         buildUpgrade: function() {
-            this.gridUpgrade = Ext.create('Ext.grid.Panel',{
+            this.gridUpgrades = Ext.create('Ext.grid.Panel',{
                 // private fields
-                name: 'Upgrade',
+                name: 'Upgrades',
                 helpSource: 'upgrade',
                 parentId: this.getId(),
-                title: this.i18n._('Upgrade'),
+                title: this.i18n._('Upgrades'),
                 enableColumnHide: false,
                 enableColumnMove: false,
                 disableSelection: true, //TODO: find extjs4 solution
