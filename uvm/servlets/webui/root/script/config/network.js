@@ -2662,7 +2662,7 @@ if (!Ung.hasResource["Ung.Network"]) {
                         dataIndex: "bypass",
                         fieldLabel: this.i18n._("Bypass"),
                         editable: false,
-                        store: [[true,i18n._('Bypass')], [false,i18n._('Capture')]],
+                        store: [[true,i18n._('Bypass')], [false,i18n._('Process')]],
                         queryMode: 'local'
                     }]
                 }]
