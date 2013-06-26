@@ -23,6 +23,7 @@ import com.untangle.uvm.network.InterfaceStatus;
 import com.untangle.uvm.network.DeviceStatus;
 import com.untangle.uvm.network.DeviceSettings;
 import com.untangle.uvm.network.BypassRule;
+import com.untangle.uvm.network.BypassRuleMatcher;
 import com.untangle.uvm.network.StaticRoute;
 import com.untangle.uvm.network.NatRule;
 import com.untangle.uvm.network.PortForwardRule;
@@ -103,32 +104,6 @@ public class NetworkManagerImpl implements NetworkManager
             this.setNetworkSettings( defaultSettings() );
         }
         else {
-            //FIXME can remove me later - for dev box
-            if ( readSettings.getQosSettings() == null )
-                readSettings.setQosSettings( defaultQosSettings() );
-            //FIXME can remove me later - for dev box
-            if ( readSettings.getForwardFilterRules() == null )
-                readSettings.setForwardFilterRules( defaultForwardFilterRules() );
-            //FIXME can remove me later - for dev box
-            if ( readSettings.getInputFilterRules() == null )
-                readSettings.setInputFilterRules( defaultInputFilterRules() );
-            //FIXME can remove me later - for dev box
-            if ( readSettings.getStaticDhcpEntries() == null )
-                readSettings.setStaticDhcpEntries( new LinkedList<DhcpStaticEntry>() );
-            //FIXME can remove me later - for dev box
-            if ( readSettings.getDnsSettings() == null ) {
-                DnsSettings dnsSettings = new DnsSettings();
-                LinkedList<DnsStaticEntry> staticEntries = new LinkedList<DnsStaticEntry>();
-                LinkedList<DnsLocalServer> localServers = new LinkedList<DnsLocalServer>();
-                try {
-                    staticEntries.add( new DnsStaticEntry( "chef" , InetAddress.getByName("10.0.0.10")) ); // XXX for testing
-                    staticEntries.add( new DnsStaticEntry( "chef.metaloft.com" , InetAddress.getByName("10.0.0.10")) ); // XXX for testing
-                    localServers.add( new DnsLocalServer( "metaloft.com", InetAddress.getByName("10.0.0.1")) ); // XXX for testing
-                } catch (Exception e) {}
-                dnsSettings.setStaticEntries( staticEntries );
-                dnsSettings.setLocalServers( localServers );
-                readSettings.setDnsSettings( dnsSettings );
-            }
 
             checkForNewDevices( readSettings );
             
@@ -623,23 +598,13 @@ public class NetworkManagerImpl implements NetworkManager
 
             newSettings.setInterfaces(interfaces);
 
-            LinkedList<PortForwardRule> portForwardRules = new LinkedList<PortForwardRule>();
-            newSettings.setPortForwardRules( portForwardRules );
-
-            LinkedList<NatRule> natRules = new LinkedList<NatRule>();
-            newSettings.setNatRules( natRules );
-
-            LinkedList<BypassRule> bypassRules = new LinkedList<BypassRule>();
-            newSettings.setBypassRules( bypassRules );
-
-            LinkedList<StaticRoute> staticRoutes = new LinkedList<StaticRoute>();
-            newSettings.setStaticRoutes( staticRoutes );
-
+            newSettings.setPortForwardRules( new LinkedList<PortForwardRule>() );
+            newSettings.setNatRules( new LinkedList<NatRule>() );
+            newSettings.setBypassRules( defaultBypassRules() );
+            newSettings.setStaticRoutes( new LinkedList<StaticRoute>() );
             newSettings.setQosSettings( defaultQosSettings() );
-
             newSettings.setDnsSettings( new DnsSettings() );
-
-            newSettings.setForwardFilterRules( defaultForwardFilterRules() );
+            newSettings.setForwardFilterRules( new LinkedList<FilterRule>() );
             newSettings.setInputFilterRules( defaultInputFilterRules() );
             newSettings.setStaticDhcpEntries( new LinkedList<DhcpStaticEntry>() );
         }
@@ -1133,12 +1098,39 @@ public class NetworkManagerImpl implements NetworkManager
         return rules;
     }
 
-    private List<FilterRule> defaultForwardFilterRules()
+    private List<BypassRule> defaultBypassRules()
     {
-        List<FilterRule> rules = new LinkedList<FilterRule>();
+        List<BypassRule> rules = new LinkedList<BypassRule>();
+
+        BypassRule filterRuleSip = new BypassRule();
+        filterRuleSip.setEnabled( true );
+        filterRuleSip.setDescription( "Bypass VoIP (SIP) Sessions" );
+        filterRuleSip.setBypass( true );
+        List<BypassRuleMatcher> ruleSipMatchers = new LinkedList<BypassRuleMatcher>();
+        BypassRuleMatcher ruleSipMatcher1 = new BypassRuleMatcher();
+        ruleSipMatcher1.setMatcherType(BypassRuleMatcher.MatcherType.DST_PORT);
+        ruleSipMatcher1.setValue("5060");
+        ruleSipMatchers.add(ruleSipMatcher1);
+        filterRuleSip.setMatchers( ruleSipMatchers );
+
+        BypassRule filterRuleIax = new BypassRule();
+        filterRuleIax.setEnabled( true );
+        filterRuleIax.setDescription( "Bypass VoIP (IAX2) Sessions" );
+        filterRuleIax.setBypass( true );
+        List<BypassRuleMatcher> ruleIaxMatchers = new LinkedList<BypassRuleMatcher>();
+        BypassRuleMatcher ruleIaxMatcher1 = new BypassRuleMatcher();
+        ruleIaxMatcher1.setMatcherType(BypassRuleMatcher.MatcherType.DST_PORT);
+        ruleIaxMatcher1.setValue("4569");
+        ruleIaxMatchers.add(ruleIaxMatcher1);
+        filterRuleIax.setMatchers( ruleIaxMatchers );
+
+        rules.add( filterRuleSip );
+        rules.add( filterRuleIax );
+
         return rules;
     }
 
+    
     private int nextFreeInterfaceId( NetworkSettings netSettings, int min)
     {
         if (netSettings == null)
