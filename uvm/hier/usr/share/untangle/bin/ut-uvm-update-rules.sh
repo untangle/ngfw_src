@@ -138,7 +138,7 @@ remove_iptables_rules()
     ${IPTABLES} -t nat -F uvm-tcp-redirect >/dev/null 2>&1
     ${IPTABLES} -t tune -F queue-to-uvm >/dev/null 2>&1
 
-    ${IPTABLES} -D OUTPUT -t raw -m mark --mark ${MASK_BYPASS}/${MASK_BYPASS} -j NOTRACK -m comment --comment 'NOTRACK packets with bypass mark set' >/dev/null 2>&1
+    ${IPTABLES} -D OUTPUT -t raw -m mark --mark ${MASK_BYPASS}/${MASK_BYPASS} -j NOTRACK -m comment --comment 'NOTRACK packets with bypass bit mark set' >/dev/null 2>&1
     ${IPTABLES} -D PREROUTING -t nat -i ${TUN_DEV} -p tcp -g uvm-tcp-redirect -m comment --comment 'Redirect utun traffic to untangle-vm' >/dev/null 2>&1
     ${IPTABLES} -D POSTROUTING -t tune -j queue-to-uvm -m comment --comment 'Queue packets to the Untangle-VM' >/dev/null 2>&1
 }
