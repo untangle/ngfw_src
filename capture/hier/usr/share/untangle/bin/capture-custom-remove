@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/dash
 
 if [ -z $1 ];
 then
@@ -8,7 +8,7 @@ fi
 
 # as a safety precaution make sure the argumented directory
 # looks like a custom directory created by our app
-if [[ ! "$1" == *custom_* ]]
+if [[ ! "$1" = *custom_* ]]
 then
   printf "The target does not appear to be a custom page directory\n"
   exit 2
