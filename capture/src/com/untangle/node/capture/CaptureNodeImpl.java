@@ -262,10 +262,10 @@ public class CaptureNodeImpl extends NodeBase implements CaptureNode
         LinkedList<CaptureRuleMatcher> matcherList = null;
 
         // example interface rule
-        CaptureRuleMatcher interfaceMatch = new CaptureRuleMatcher(CaptureRuleMatcher.MatcherType.SRC_INTF, "2");
+        CaptureRuleMatcher interfaceMatch = new CaptureRuleMatcher(CaptureRuleMatcher.MatcherType.SRC_INTF, "non_wan");
         matcherList = new LinkedList<CaptureRuleMatcher>();
         matcherList.add(interfaceMatch);
-        ruleList.add(new CaptureRule(false, matcherList, true, "Capture all traffic on the internal interface"));
+        ruleList.add(new CaptureRule(false, matcherList, true, "Capture all traffic on all non-WAN interfaces"));
 
         localSettings.setCaptureRules(ruleList);
 
