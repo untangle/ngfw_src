@@ -80,9 +80,9 @@ case "$1" in
     cd ../webfilter-base/po/
     echo 'get new keys'
     xgettext --copyright-holder='Untangle, Inc.' -L Python -ki18n._ -o tmp_keys.pot ../hier/usr/share/untangle/web/webui/script/${1}/settings.js
-    xgettext -j --copyright-holder='Untangle, Inc.' -L Java -ktr -o tmp_keys.pot ../api/com/untangle/node/webfilter/BlockPageServlet.java
-    xgettext -j --copyright-holder='Untangle, Inc.' -L Java -ktr -o tmp_keys.pot ../../http-casing/api/com/untangle/node/http/BlockPageUtil.java
-    xgettext -j --copyright-holder='Untangle, Inc.' -L Java -kmarktr -o tmp_keys.pot ../impl/com/untangle/node/webfilter/*.java
+    xgettext -j --copyright-holder='Untangle, Inc.' -L Java -ktr -o tmp_keys.pot ../src/com/untangle/node/webfilter/BlockPageServlet.java
+    xgettext -j --copyright-holder='Untangle, Inc.' -L Java -ktr -o tmp_keys.pot ../../http-casing/src/com/untangle/node/http/BlockPageUtil.java
+    xgettext -j --copyright-holder='Untangle, Inc.' -L Java -kmarktr -o tmp_keys.pot ../src/com/untangle/node/webfilter/*.java
     find ../hier -name '*.py' | xargs xgettext -j --copyright-holder='Untangle, Inc.' -L Python -k_ -o tmp_keys.pot
     ruby ../../i18ntools/xi18ntags.rb ../../uvm/servlets/blockpage/root/blockpage_template.jspx >> ./tmp_keys.pot
     msgmerge -U -N $1.pot tmp_keys.pot
@@ -131,13 +131,26 @@ case "$1" in
     rm tmp_keys.pot
     update_po $1
     ;;
-"untangle-node-adconnector"|"untangle-node-bandwidth"|"untangle-node-boxbackup"|"untangle-node-branding"|"untangle-node-faild"|"untangle-node-policy"|"untangle-node-sitefilter"|"untangle-node-faild"|"untangle-node-splitd"|"untangle-node-webcache"|"untangle-node-ipsec"|"untangle-node-commtouchas"|"untangle-node-support"|"untangle-node-classd")
+"untangle-node-adconnector"|"untangle-node-bandwidth"|"untangle-node-boxbackup"|"untangle-node-branding"|"untangle-node-faild"|"untangle-node-policy"|"untangle-node-faild"|"untangle-node-splitd"|"untangle-node-webcache"|"untangle-node-ipsec"|"untangle-node-commtouchas"|"untangle-node-support"|"untangle-node-classd")
     moduleName=`echo "$1"|cut -d"-" -f3`
     cd ../../../hades/src/${moduleName}/po/
     echo 'get new keys'
     xgettext --copyright-holder='Untangle, Inc.' -L Python -ki18n._ -o tmp_keys.pot ../hier/usr/share/untangle/web/webui/script/${1}/settings.js
     echo 'get new keys2'
-    xgettext -j --copyright-holder='Untangle, Inc.' -L Java -kmarktr -o tmp_keys.pot ../impl/com/untangle/node/${moduleName}/*.java
+    xgettext -j --copyright-holder='Untangle, Inc.' -L Java -kmarktr -o tmp_keys.pot ../src/com/untangle/node/${moduleName}/*.java
+    find ../hier -name '*.py' | xargs xgettext -j --copyright-holder='Untangle, Inc.' -L Python -k_ -o tmp_keys.pot
+    msgmerge -U -N $1.pot tmp_keys.pot
+    rm tmp_keys.pot
+    update_po $1
+    ;;
+"untangle-node-sitefilter")
+moduleName=`echo "$1"|cut -d"-" -f3`
+    cd ../../../hades/src/${moduleName}/po/
+    echo 'get new keys'
+    xgettext --copyright-holder='Untangle, Inc.' -L Python -ki18n._ -o tmp_keys.pot ../hier/usr/share/untangle/web/webui/script/${1}/settings.js
+    xgettext -j --copyright-holder='Untangle, Inc.' -L Java -ktr -o tmp_keys.pot ../servlets/sitefilter/src/com/untangle/node/sitefilter/BlockPageServlet.java
+    echo 'get new keys2'
+    xgettext -j --copyright-holder='Untangle, Inc.' -L Java -kmarktr -o tmp_keys.pot ../src/com/untangle/node/${moduleName}/*.java
     find ../hier -name '*.py' | xargs xgettext -j --copyright-holder='Untangle, Inc.' -L Python -k_ -o tmp_keys.pot
     msgmerge -U -N $1.pot tmp_keys.pot
     rm tmp_keys.pot
