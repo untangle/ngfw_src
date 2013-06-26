@@ -91,11 +91,6 @@ insert_iptables_rules()
     # Redirect TCP traffic to the local ports (where the untangle-vm is listening)
     ${IPTABLES} -A uvm-tcp-redirect -t nat -i ${TUN_DEV} -t nat -p tcp -j REDIRECT --to-ports ${TCP_REDIRECT_PORTS} -m comment --comment 'Redirect reinjected packets to the untangle-vm'
 
-    ## Guard the ports (this part uses : not -)
-    ## FIXME move this to packet filter
-    # t_tcp_port_range=`echo ${TCP_REDIRECT_PORTS} | sed 's|-|:|'`
-    # ${IPTABLES} -t filter -I INPUT 1 ! -i utun -p tcp --destination-port ${t_tcp_port_range} -m conntrack --ctstate NEW,INVALID -j DROP -m comment --comment 'Drop traffic for untangle-vm listen ports except for redirected traffic"'
-
     # Ignore loopback traffic
     ${IPTABLES} -A queue-to-uvm -t tune -i lo -j RETURN -m comment --comment 'Do not queue loopback traffic'
     ${IPTABLES} -A queue-to-uvm -t tune -o lo -j RETURN -m comment --comment 'Do not queue loopback traffic'
@@ -126,10 +121,6 @@ insert_iptables_rules()
     else
         echo "[`date`] ${TUN_DEV} device not exist."
     fi
-
-    ## Ignore any traffic that is on the utun interface
-    ## FIXME move to packet filter
-    # ${IPTABLES} -t mangle -I packet-filter-rules 1 -i ${TUN_DEV} -j RETURN -m comment --comment "Allow all traffic on utun interface"
 
 }
 
