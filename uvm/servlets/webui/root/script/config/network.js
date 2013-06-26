@@ -1979,7 +1979,7 @@ if (!Ung.hasResource["Ung.Network"]) {
                 },
                 initComponent : function() {
                     this.tbar= [{
-                        text: i18n._('Add simple rule'),
+                        text: i18n._('Add Simple Rule'),
                         iconCls: 'icon-add-row',
                         parentId: this.getId(),
                         handler: this.addSimpleRuleHandler,
