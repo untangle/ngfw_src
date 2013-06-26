@@ -183,7 +183,6 @@ int  netcap_set_verdict_mark( u_int32_t packet_id, int verdict, u_char* buf, int
         nf_verdict = NF_DROP;
         break;
     case NF_ACCEPT:
-        debug(10, "FLAG: NF_ACCEPTing packet %d with mark %d\n", packet_id, mark);
         nf_verdict = NF_ACCEPT;
         break;
     case NF_STOLEN:
@@ -311,7 +310,6 @@ static int _nf_callback( struct nfq_q_handle *qh, struct nfgenmsg *nfmsg, struct
 
     if ( data_len < ntohs( ip_header->tot_len )) return errlogcons();
 
-    debug(10, "FLAG: Try to get the conntrack information\n");
     if ( _nfq_get_conntrack( nfa, pkt ) < 0 ) {
         netcap_set_verdict(pkt->packet_id, NF_DROP, NULL, 0);
         pkt->packet_id = 0;
@@ -398,7 +396,7 @@ static int _nf_callback( struct nfq_q_handle *qh, struct nfgenmsg *nfmsg, struct
         if ( tcp_header->psh ) pkt->th_flags |= TH_PUSH;
 
         int tcp_len = ntohs(ip_header->tot_len) - (ip_header->ihl * 4);
-        debug( 12, "FLAG unet_tcp_sum_calc\n    len_tcp = %d\n    src_addr = %s\n    dst_addr = %s\n",
+        debug( 12, "unet_tcp_sum_calc\n    len_tcp = %d\n    src_addr = %s\n    dst_addr = %s\n",
                tcp_len, unet_next_inet_ntoa(ip_header->saddr),
                unet_next_inet_ntoa(ip_header->daddr));
         tcp_header->check = 0;
@@ -426,7 +424,7 @@ static int _nf_callback( struct nfq_q_handle *qh, struct nfgenmsg *nfmsg, struct
         pkt->dst.port = ntohs( udp_header->dest );
 
         int udp_len = ntohs(ip_header->tot_len) - (ip_header->ihl * 4);
-        debug( 12, "FLAG unet_udp_sum_calc\n    len_tcp = %d\n    src_addr = %s\n    dst_addr = %s\n",
+        debug( 12, "unet_udp_sum_calc\n    len_tcp = %d\n    src_addr = %s\n    dst_addr = %s\n",
                udp_len, unet_next_inet_ntoa( ip_header->saddr ),
                unet_next_inet_ntoa( ip_header->daddr ));
         udp_header->check = 0;

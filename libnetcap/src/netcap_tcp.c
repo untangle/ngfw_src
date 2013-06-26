@@ -461,7 +461,6 @@ static int  _netcap_tcp_syn_hook ( netcap_pkt_t* syn )
         
     in_addr_t cli_addr,srv_addr;
     u_short   cli_port,srv_port;
-    void* arg = NULL;
     int   new_sess_flag = 0;
     netcap_session_t* sess = NULL;
     
@@ -471,8 +470,6 @@ static int  _netcap_tcp_syn_hook ( netcap_pkt_t* syn )
     srv_port = syn->dst.port;
     cli_intf = syn->src_intf;
     srv_intf = syn->dst_intf;
-
-    arg   = NULL; /* XXX */
 
     debug( 8, "SYN: Intercepted packet ::  (%s:%-5i -> %s:%i) (intf:%d,%d) (syn:%i ack:%i)\n",
            unet_next_inet_ntoa( cli_addr ), cli_port, unet_next_inet_ntoa( srv_addr ), srv_port, 
@@ -498,7 +495,7 @@ static int  _netcap_tcp_syn_hook ( netcap_pkt_t* syn )
 
     if ( new_sess_flag ) {
         debug( 8, "TCP: (%10u) Calling TCP hook\n", sess->session_id );
-        global_tcp_hook( sess, arg );
+        global_tcp_hook( sess, NULL );
     }
 
     return 0;

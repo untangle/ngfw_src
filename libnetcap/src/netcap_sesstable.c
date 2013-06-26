@@ -147,11 +147,9 @@ netcap_session_t* netcap_nc_sesstable_get_tuple ( int if_lock, int proto, in_add
     _verify_initialized_null();
 
 #if 1
-    // debug(4,"SESSTAB: %s :: %i %s (seq: %u)\n","Getting   tuple", proto, netcap_session_tuple_print(netcap_sess),seq);
-    debug(4,"SESSTAB: %s :: (%i,%s:%i -> ","Getting tuple", proto, inet_ntoa(*(struct in_addr*)&src),sport);
-    
-    debug_nodate(4,"%s:%i)(%d)\n",inet_ntoa(*(struct in_addr*)&dst), dport,seq);
-
+    //debug(4,"SESSTAB: %s :: %i %s (seq: %u)\n","Getting   tuple", proto, netcap_session_tuple_print(netcap_sess),seq);
+    debug(4,"SESSTAB: %s :: (%i,%s:%i -> ","Getting tuple", proto, inet_ntoa(*(struct in_addr*)&src), sport);
+    debug_nodate(4,"%s:%i)(%d)\n",  inet_ntoa(*(struct in_addr*)&dst), dport, seq );
 #endif
     
     if ( if_lock ) SESSTABLE_RDLOCK();
@@ -214,7 +212,7 @@ int        netcap_nc_sesstable_add ( int if_lock, netcap_session_t* netcap_sess 
 
     _verify_initialized();
     
-    debug(5, "SESSTAB: Inserting session id: %d\n", netcap_sess->session_id);
+    debug(5, "SESSTAB: Inserting session id: %10u\n", netcap_sess->session_id);
 
     if ( if_lock) SESSTABLE_WRLOCK();
 

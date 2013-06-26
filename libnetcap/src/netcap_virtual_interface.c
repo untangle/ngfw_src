@@ -53,7 +53,6 @@ int netcap_virtual_interface_init( char *name )
     struct ifreq ifr;
     int fd;
 
-    debug(10, "FLAG  netcap_virtual_interface_init\n");
     int _critical_section( void ) {
       /* sets the tun device to be an IP TUN device
        * and uses fd to send an ioctl to bring the interface up by name */
@@ -121,7 +120,6 @@ int netcap_virtual_interface_init( char *name )
 int netcap_virtual_interface_send_pkt( netcap_pkt_t* pkt )
 {
     void *packet = NULL;
-    debug(10, "FLAG  netcap_virtual_interface_send_pkt\n");
     int packet_len = 0;
     struct iphdr* ip_header = (struct iphdr*) pkt->data;
     
@@ -149,7 +147,6 @@ int netcap_virtual_interface_send_pkt( netcap_pkt_t* pkt )
 
     packet_len = pkt->data_len + sizeof( struct tun_pi );
 
-    /* XXX this should be some minimum */
     if ( packet_len < sizeof( struct iphdr )) {
         return errlog( ERR_CRITICAL, "Invalid packet length %d", packet_len );
     }

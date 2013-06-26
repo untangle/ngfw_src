@@ -57,7 +57,6 @@ int  _netcap_tcp_callback_cli_complete( netcap_session_t* netcap_sess, netcap_ca
 {
     int fd;
     tcp_msg_t* msg;
-    debug( 10, "FLAG _netcap_tcp_callback_cli_complete\n");
     if ( netcap_sess == NULL ) return errlogargs();
 
     if ( !netcap_sess->syn_mode ) {
@@ -72,14 +71,10 @@ int  _netcap_tcp_callback_cli_complete( netcap_session_t* netcap_sess, netcap_ca
     if ( netcap_sess->cli_state == CONN_STATE_COMPLETE )
         return errlog(ERR_CRITICAL,"Invalid state (%i), Can't perform action (%i).\n",netcap_sess->cli_state, action);
 
-    /* Grab the first SYN out, (older SYNs are now disregarded) */
-    /* XXXXXX It "might" be possible to get an ACCEPT message if the session started out in normal mode
-     * and then went into opaque mode */
-    /* As of release-1.2.2, a TIMEOUT is very serious since at least one SYN should
-     * always be available */
+    /* Grab the first SYN out, (older SYNs are disregarded) */
     if (( msg = mailbox_timed_get( &netcap_sess->tcp_mb, 1 )) == NULL ) {
         if ( errno == ETIMEDOUT )
-            return errlog( ERR_CRITICAL,"TCP: Missed SYN :: %s\n",netcap_session_tuple_print(netcap_sess));
+            return errlog( ERR_CRITICAL,"TCP: Missing SYN :: %s\n",netcap_session_tuple_print(netcap_sess));
         else
             return perrlog("mailbox_timed_get");
     }
@@ -96,7 +91,6 @@ int  _netcap_tcp_callback_cli_complete( netcap_session_t* netcap_sess, netcap_ca
     /**
      * Delete the conntrack entry
      */
-    debug( 10, "FLAG attemping to delete the conntrack entry\n");
     netcap_nfconntrack_ipv4_tuple_t tuple;
     netcap_ip_tuple nat_info = msg->pkt->nat_info.original;
     tuple.protocol = ip_header->protocol;
@@ -122,14 +116,13 @@ int  _netcap_tcp_callback_cli_complete( netcap_session_t* netcap_sess, netcap_ca
 
     
     int tcp_len = ntohs(ip_header->tot_len) - (ip_header->ihl * 4);
-    debug( 10, "FLAG unet_tcp_sum_calc\n    len_tcp = %d\n    src_addr = %s\n    dst_addr = %s\n    buff = %p\n",
+    debug( 10, "unet_tcp_sum_calc\n    len_tcp = %d\n    src_addr = %s\n    dst_addr = %s\n    buff = %p\n",
 	   tcp_len,
 	   unet_next_inet_ntoa(ip_header->saddr),
 	   unet_next_inet_ntoa(ip_header->daddr),
 	   tcp_header );
     tcp_header->th_sum = 0;
-    tcp_header->th_sum = unet_tcp_sum_calc( tcp_len, (u_int8_t*)&ip_header->saddr, 
-                                            (u_int8_t*)&ip_header->daddr, (u_int8_t*)tcp_header );
+    tcp_header->th_sum = unet_tcp_sum_calc( tcp_len, (u_int8_t*)&ip_header->saddr, (u_int8_t*)&ip_header->daddr, (u_int8_t*)tcp_header );
                                             
     ip_header->check = 0;
     ip_header->check = unet_in_cksum((u_int16_t *) ip_header, sizeof(struct iphdr));
@@ -145,8 +138,7 @@ int  _netcap_tcp_callback_cli_complete( netcap_session_t* netcap_sess, netcap_ca
     netcap_tcp_msg_raze( msg );
     msg = NULL;
 
-    debug( 6, "TCP: (%10u) Released SYN :: %s\n", netcap_sess->session_id,
-           netcap_session_cli_tuple_print(netcap_sess));
+    debug( 6, "TCP: (%10u) Released SYN :: %s\n", netcap_sess->session_id, netcap_session_cli_tuple_print(netcap_sess));
     
     /* 
      * To test the ACCEPT_MSG replacement, do the following:

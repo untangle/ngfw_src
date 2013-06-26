@@ -189,7 +189,6 @@ struct nf_conntrack* netcap_nfconntrack_get_entry_tuple( netcap_nfconntrack_ipv4
 
     int _critical_section() {
         if ( direction == NFCONNTRACK_DIRECTION_ORIG ) {
-            debug( 4, "Checking for original direction\n" );
             /* assuming IPV4 */
             nfct_set_attr_u8( ct, ATTR_REPL_L3PROTO, AF_INET );
             nfct_set_attr_u8( ct, ATTR_REPL_L4PROTO, tuple->protocol );
@@ -205,10 +204,6 @@ struct nf_conntrack* netcap_nfconntrack_get_entry_tuple( netcap_nfconntrack_ipv4
             nfct_set_attr_u32( ct, ATTR_ORIG_IPV4_DST, tuple->dst_address );
             nfct_set_attr_u16( ct, ATTR_ORIG_PORT_DST, tuple->dst_port );
         } else {
-            /* There is a bug that prevents this from always working */
-            // return errlog( ERR_CRITICAL, "not working\n" );
-            debug( 4, "Checking for reply direction\n" );
-
             /* assuming IPV4 */
             nfct_set_attr_u8( ct, ATTR_REPL_L3PROTO, AF_INET );
             nfct_set_attr_u8( ct, ATTR_REPL_L4PROTO, tuple->protocol );
@@ -222,8 +217,7 @@ struct nf_conntrack* netcap_nfconntrack_get_entry_tuple( netcap_nfconntrack_ipv4
             nfct_set_attr_u16( ct, ATTR_REPL_PORT_DST, tuple->dst_port );
         }
 
-        netcap_nfconntrack_print_entry( 10, ct );
-
+        // netcap_nfconntrack_print_entry( 10, ct );
 	
         /* Actually make the query */
         errno = 0;
@@ -341,7 +335,7 @@ int netcap_nfconntrack_create_entry( netcap_nfconntrack_ipv4_tuple_t* original, 
         nfct_set_attr_u32( ct, ATTR_TIMEOUT, timeout );
 
         debug( 10, "Creating a new conntrack entry\n" );
-        netcap_nfconntrack_print_entry( 10, ct );
+        // netcap_nfconntrack_print_entry( 10, ct );
         
         /* Actually make the query */
         errno = 0;
@@ -386,7 +380,6 @@ int netcap_nfconntrack_del_entry_tuple( netcap_nfconntrack_ipv4_tuple_t* tuple, 
 
     int _critical_section() {
         if ( direction == NFCONNTRACK_DIRECTION_ORIG ) {
-            debug( 4, "Checking for original direction\n" );
             /* assuming IPV4 */
             nfct_set_attr_u8( ct, ATTR_ORIG_L3PROTO, AF_INET );
             nfct_set_attr_u8( ct, ATTR_ORIG_L4PROTO, tuple->protocol );
@@ -406,7 +399,6 @@ int netcap_nfconntrack_del_entry_tuple( netcap_nfconntrack_ipv4_tuple_t* tuple, 
             return errlog( ERR_CRITICAL, "not working\n" );
 #else
 #error "THE REPLY DIRECTORY IS BROKEN IN CONNTRACK"
-            debug( 4, "Checking for reply direction\n" );
 
             /* assuming IPV4 */
             nfct_set_attr_u8( ct, ATTR_ORIG_L3PROTO, AF_INET );
@@ -424,7 +416,7 @@ int netcap_nfconntrack_del_entry_tuple( netcap_nfconntrack_ipv4_tuple_t* tuple, 
 #endif
         }
 
-        netcap_nfconntrack_print_entry( 10, ct );
+        // netcap_nfconntrack_print_entry( 10, ct );
 
         /* Actually make the query */
         errno = 0;
@@ -433,7 +425,7 @@ int netcap_nfconntrack_del_entry_tuple( netcap_nfconntrack_ipv4_tuple_t* tuple, 
             if (( errno != ENOENT ) || ( ignore_noent == 0 )) return perrlog( "nfct_query" );
 
             debug( 4, "Unable to delete conntrack entry.  Conntrack entry does not exist.\n" );
-        }
+        } 
         
         return 0;
     }
@@ -658,7 +650,7 @@ static int _nfconntrack_update_mark( struct nf_conntrack* ct )
 
     int _critical_section() {
 
-        netcap_nfconntrack_print_entry( 8, ct );
+        // netcap_nfconntrack_print_entry( 10, ct );
 
         /* Actually make the query */
         errno = 0;
