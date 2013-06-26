@@ -2660,7 +2660,7 @@ if (!Ung.hasResource["Ung.Network"]) {
                         name: "bypass",
                         allowBlank: false,
                         dataIndex: "bypass",
-                        fieldLabel: this.i18n._("Bypass"),
+                        fieldLabel: this.i18n._("Action"),
                         editable: false,
                         store: [[true,i18n._('Bypass')], [false,i18n._('Process')]],
                         queryMode: 'local'
@@ -3536,10 +3536,14 @@ if (!Ung.hasResource["Ung.Network"]) {
                     title: i18n._('Perform the following action(s):'),
                     border: false,
                     items: [{
-                        xtype: "checkbox",
-                        name: "Block",
+                        xtype: "combo",
+                        name: "blocked",
+                        allowBlank: false,
                         dataIndex: "blocked",
-                        fieldLabel: this.i18n._("Block")
+                        fieldLabel: this.i18n._("Action"),
+                        editable: false,
+                        store: [[true,i18n._('Block')], [false,i18n._('Pass')]],
+                        queryMode: 'local'
                     }]
                 }]
             }));
@@ -3572,10 +3576,14 @@ if (!Ung.hasResource["Ung.Network"]) {
                     title: i18n._('Perform the following action(s):'),
                     border: false,
                     items: [{
-                        xtype: "checkbox",
-                        name: "Block",
+                        xtype: "combo",
+                        name: "blocked",
+                        allowBlank: false,
                         dataIndex: "blocked",
-                        fieldLabel: this.i18n._("Block")
+                        fieldLabel: this.i18n._("Action"),
+                        editable: false,
+                        store: [[true,i18n._('Block')], [false,i18n._('Pass')]],
+                        queryMode: 'local'
                     }]
                 }]
             }));
