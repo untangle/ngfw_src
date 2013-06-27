@@ -229,6 +229,9 @@ public class OpenVpnManager
         sb.append( "port" + " " + settings.getPort() + "\n");
         sb.append( "cipher" + " " + settings.getCipher() + "\n");
 
+        if ( settings.getClientToClient() )
+            sb.append( "client-to-client" + "\n");
+        
         sb.append( "server" + " " +  settings.getAddressSpace().getMaskedAddress().getHostAddress() + " " + settings.getAddressSpace().getNetmask().getHostAddress() + "\n");
 
         writeExports( sb, settings );

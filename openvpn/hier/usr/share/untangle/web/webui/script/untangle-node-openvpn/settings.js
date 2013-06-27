@@ -1026,6 +1026,7 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                                     Ext.getCmp('panel_remote_clients').disable();
                                     Ext.getCmp('panel_groups').disable();
                                     Ext.getCmp('panel_exports').disable();
+                                    Ext.getCmp('openvpn_options_client_to_client').disable();
                                     Ext.getCmp('openvpn_options_port').disable();
                                     Ext.getCmp('openvpn_options_protocol').disable();
                                     Ext.getCmp('openvpn_options_cipher').disable();
@@ -1034,11 +1035,27 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                                         Ext.getCmp('panel_remote_clients').enable();
                                         Ext.getCmp('panel_groups').enable();
                                         Ext.getCmp('panel_exports').enable();
+                                        Ext.getCmp('openvpn_options_client_to_client').enable();
                                         Ext.getCmp('openvpn_options_port').enable();
                                         Ext.getCmp('openvpn_options_protocol').enable();
                                         Ext.getCmp('openvpn_options_cipher').enable();
                                         Ext.getCmp('openvpn_options_addressSpace').enable();
                                     }
+                                }, this)
+                            }
+                        }
+                    }, {
+                        xtype: 'checkbox',
+                        hidden: true, /* HIDDEN */
+                        labelWidth: 160,
+                        name: 'Client To Client',
+                        fieldLabel: this.i18n._('Client To Client Allowed'),
+                        checked: this.getSettings().clientToClient,
+                        id: 'openvpn_options_client_to_client',
+                        listeners: {
+                            "change": {
+                                fn: Ext.bind(function(elem, newValue) {
+                                    this.getSettings().clientToClient = newValue;
                                 }, this)
                             }
                         }
