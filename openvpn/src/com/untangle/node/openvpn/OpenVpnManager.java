@@ -44,7 +44,8 @@ public class OpenVpnManager
     private static final String OPENVPN_SERVER_FILE   = OPENVPN_CONF_DIR + "/server.conf";
     private static final String OPENVPN_CCD_DIR       = OPENVPN_CONF_DIR + "/ccd";
 
-    private static final String CLIENT_CONF_FILE_BASE = "/tmp/openvpn/client-packages/" + "/client-";
+    private static final String CLIENT_CONF_FILE_DIR  = "/tmp/openvpn/client-packages/"; 
+    private static final String CLIENT_CONF_FILE_BASE = CLIENT_CONF_FILE_DIR + "/client-";
 
 
     /**
@@ -293,6 +294,11 @@ public class OpenVpnManager
         publicAddress = publicAddress.trim();
 
         sb.append( "remote" + " " + publicAddress + " " + settings.getPort() + "\n");
+
+        File dir = new File( CLIENT_CONF_FILE_DIR );
+        if ( ! dir.exists() )
+            dir.mkdirs();
+
         writeFile( CLIENT_CONF_FILE_BASE + name + "." + extension, sb );
     }
 
@@ -516,6 +522,7 @@ public class OpenVpnManager
 
     private void writeFile( String fileName, StringBuilder sb )
     {
+        logger.info( "Writing File: " + fileName );
         BufferedWriter out = null;
 
         try {

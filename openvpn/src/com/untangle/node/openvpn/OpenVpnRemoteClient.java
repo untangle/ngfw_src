@@ -28,7 +28,7 @@ public class OpenVpnRemoteClient implements java.io.Serializable
     /**
      * Should this client be exported to other remote clients
      */
-    private boolean export;
+    private boolean export = false;
 
     /**
      * The network that should be exported to other clients
