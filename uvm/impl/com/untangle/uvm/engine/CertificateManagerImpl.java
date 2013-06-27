@@ -29,12 +29,12 @@ import com.untangle.uvm.servlet.DownloadHandler;
 @SuppressWarnings("deprecation")
 public class CertificateManagerImpl implements CertificateManager
 {
-    private static final String CERTIFICATE_GENERATOR_SCRIPT = "/usr/share/untangle/bin/ut-certgen";
-    private static final String ROOT_CA_CREATOR_SCRIPT = "/usr/share/untangle/bin/ut-rootgen";
-    private static final String SERVER_CSR_FILE = "/usr/share/untangle/settings/untangle-certificates/untangle.csr";
-    private static final String ROOT_CERT_FILE = "/usr/share/untangle/settings/untangle-certificates/untangle.crt";
-    private static final String ROOT_KEY_FILE = "/usr/share/untangle/settings/untangle-certificates/untangle.key";
-    private static final String LOCAL_PEM_FILE = "/usr/share/untangle/settings/untangle-certificates/apache.pem";
+    private static final String CERTIFICATE_GENERATOR_SCRIPT = System.getProperty("uvm.bin.dir") + "/ut-certgen";
+    private static final String ROOT_CA_CREATOR_SCRIPT = System.getProperty("uvm.bin.dir") + "/ut-rootgen";
+    private static final String SERVER_CSR_FILE = System.getProperty("uvm.settings.dir") + "/untangle-certificates/untangle.csr";
+    private static final String ROOT_CERT_FILE = System.getProperty("uvm.settings.dir") + "/untangle-certificates/untangle.crt";
+    private static final String ROOT_KEY_FILE = System.getProperty("uvm.settings.dir") + "/untangle-certificates/untangle.key";
+    private static final String LOCAL_PEM_FILE = System.getProperty("uvm.settings.dir") + "/untangle-certificates/apache.pem";
     private static final String APACHE_PEM_FILE = "/etc/apache2/ssl/apache.pem";
 
     private final Logger logger = Logger.getLogger(getClass());
@@ -47,14 +47,38 @@ public class CertificateManagerImpl implements CertificateManager
 
         File certCheck = new File(ROOT_CERT_FILE);
         File keyCheck = new File(ROOT_KEY_FILE);
+        File localPem = new File(LOCAL_PEM_FILE);
 
+        // If in the development environment check to load files from the backup area
+        // This is so we avoid recreating CA/cert/pem after every rake clean
+        if ( UvmContextFactory.context().isDevel() ) {
+            logger.info("Restoring dev enviroment CA, cert, and pem...");
+            UvmContextFactory.context().execManager().exec("mkdir -p " + System.getProperty("uvm.settings.dir") + "/untangle-certificates/" );
+            if ( ! certCheck.exists() )
+                UvmContextFactory.context().execManager().exec("cp -fa /etc/untangle/untangle.crt " + ROOT_CERT_FILE);
+            if ( ! keyCheck.exists() )
+                UvmContextFactory.context().execManager().exec("cp -fa /etc/untangle/untangle.key " + ROOT_KEY_FILE);
+            if ( ! localPem.exists() )
+                UvmContextFactory.context().execManager().exec("cp -fa /etc/untangle/apache.pem " + LOCAL_PEM_FILE);
+
+            certCheck = new File(ROOT_CERT_FILE);
+            keyCheck = new File(ROOT_KEY_FILE);
+            localPem = new File(LOCAL_PEM_FILE);
+        }
+        
         // if either of the root CA files are missing create the thing now
         if ((certCheck.exists() == false) || (keyCheck.exists() == false)) {
             logger.info("Creating default root certificate authority");
             UvmContextFactory.context().execManager().exec(ROOT_CA_CREATOR_SCRIPT + " DEFAULT");
-        }
 
-        File localPem = new File(LOCAL_PEM_FILE);
+            // If in the development enviroment save these to a global location so they will
+            // survive a rake clean
+            if ( UvmContextFactory.context().isDevel() ) {
+                UvmContextFactory.context().execManager().exec("cp -fa " + ROOT_CERT_FILE + " /etc/untangle/untangle.crt");
+                UvmContextFactory.context().execManager().exec("cp -fa " + ROOT_KEY_FILE + " /etc/untangle/untangle.key");
+            }
+                
+        }
 
         // now that we know we have a root CA we check for the local
         // apache.pem and create it here if it doesn't yet exist
@@ -62,6 +86,12 @@ public class CertificateManagerImpl implements CertificateManager
             String hostName = UvmContextFactory.context().networkManager().getNetworkSettings().getHostName();
             logger.info("Creating default locally signed apache certificate for " + hostName);
             UvmContextFactory.context().execManager().exec(CERTIFICATE_GENERATOR_SCRIPT + " APACHE /CN=" + hostName);
+
+            // If in the development enviroment save these to a global location so they will
+            // survive a rake clean
+            if ( UvmContextFactory.context().isDevel() ) {
+                UvmContextFactory.context().execManager().exec("cp -fa " + LOCAL_PEM_FILE + " /etc/untangle/apache.pem");
+            }
         }
 
         File apachePem = new File(APACHE_PEM_FILE);

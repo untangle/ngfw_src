@@ -65,7 +65,6 @@ def flushConntrack():
 # If the UVM is not running this removes the iptables rules to capture traffic
 #
 def resetIptables():
-    ## Remove UVM iptables rules
     # debug("Resetting iptables rules..."
     os.system('@PREFIX@/usr/share/untangle/bin/ut-uvm-update-rules.sh'); 
 
