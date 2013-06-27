@@ -480,7 +480,7 @@ public class OpenVpnManager
         if ( netmask != null ) {
             IPMaskedAddress maddr = new IPMaskedAddress( address, netmask );
             value += maddr.getMaskedAddress().getHostAddress();
-            value += " " + netmask;
+            value += " " + netmask.getHostAddress();
         } else {
             value += address;
         }
