@@ -561,7 +561,6 @@ Ung.Util = {
     todo: function() {
         Ext.MessageBox.alert(i18n._("TODO"),"TODO: implement this.");
     },
-    possibleInterfaces: null,
     getDayOfWeekList: function() {
         var data = [];
         var datacount = 0;
@@ -3484,6 +3483,7 @@ Ext.define("Ung.SettingsWin", {
     // tabs (if the window has tabs layout)
     tabs: null,
     dirtyFlag: false,
+    hasApply: true,
     layout: 'fit',
     // build Tab panel from an array of tab items
     constructor: function(config) {
@@ -3579,7 +3579,6 @@ Ext.define("Ung.SettingsWin", {
 Ext.define("Ung.NodeWin", {
     extend: "Ung.SettingsWin",
     node: null,
-    hasApply: true,
     constructor: function(config) {
         var nodeName=config.node.name;
         this.id = "nodeWin_" + nodeName + "_" + rpc.currentPolicy.policyId;
@@ -3784,15 +3783,18 @@ Ext.define("Ung.ConfigWin", {
                 handler: Ext.bind(function() {
                     this.cancelAction();
                 }, this)
-            },"-",{
-                name: "Apply",
-                id: this.getId() + "_applyBtn",
-                iconCls: 'apply-icon',
-                text: i18n._("Apply"),
-                handler: Ext.bind(function() {
-                    Ext.Function.defer(this.applyAction,1, this,[true]);
-                }, this)
             },"-"];
+            if(this.hasApply) {
+                this.bbar.push({
+                    name: "Apply",
+                    id: this.getId() + "_applyBtn",
+                    iconCls: 'apply-icon',
+                    text: i18n._("Apply"),
+                    handler: Ext.bind(function() {
+                        Ext.Function.defer(this.applyAction,1, this,[true]);
+                    }, this)
+                },"-");
+            }
         }
         this.callParent(arguments);
     }

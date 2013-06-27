@@ -254,7 +254,6 @@ if (!Ung.hasResource["Ung.Network"]) {
             }, {
                 title: i18n._('Network')
             }];
-
             this.refreshSettings();
             // builds the tabs
             this.buildInterfaces();
@@ -827,11 +826,13 @@ if (!Ung.hasResource["Ung.Network"]) {
                 qosBandwidthStore.clearFilter();
                 qosBandwidthStore.each( function( currentRow ) {
                     var interfaceData = interfacesMap[currentRow.get("interfaceId")];
-                    currentRow.set({
-                        "isWan": interfaceData.isWan,
-                        "name": interfaceData.name,
-                        "configType": interfaceData.configType
-                    });
+                    if(interfaceData) {
+                        currentRow.set({
+                            "isWan": interfaceData.isWan,
+                            "name": interfaceData.name,
+                            "configType": interfaceData.configType
+                        });
+                    }
                 });
                 qosBandwidthStore.filter([{property: "configType", value: "ADDRESSED"}, {property:"isWan", value: true},{property: "isVlanInterface", value: false}]);
                 this.gridQosWanBandwidth.updateTotalBandwidth();
@@ -4509,10 +4510,17 @@ if (!Ung.hasResource["Ung.Network"]) {
             
             this.saveSemaphore--;
             if (this.saveSemaphore === 0) {
-                this.refreshSettings();
                 if(isApply) {
-                    this.clearDirty();
-                    Ext.MessageBox.hide();
+                    //On apply we have to reload all and keep selected tabs
+                    var activeTabIndex = this.tabs.items.findIndex('id', this.tabs.getActiveTab().id);
+                    var advancedTabIndex =this.advancedTabPanel.items.findIndex('id', this.advancedTabPanel.getActiveTab().id);
+                    Ung.Network.superclass.closeWindow.call(this);
+                    main.openConfig(main.config[0]);  
+                    Ext.defer(function() {
+                        Ung.NetworkSettingsCmp.needRackReload=true;
+                        Ung.NetworkSettingsCmp.tabs.setActiveTab(activeTabIndex);
+                        Ung.NetworkSettingsCmp.advancedTabPanel.setActiveTab(advancedTabIndex);
+                    },10);
                 } else {
                     Ext.MessageBox.hide();
                     this.closeWindow();
