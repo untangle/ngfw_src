@@ -443,7 +443,10 @@ Ext.define("Ung.Main", {
     },
 
     upgrade: function () {
-        Ext.MessageBox.show(i18n._("Downloading packages..."), i18n._("Please wait"));
+        Ext.MessageBox.show({
+            title: i18n._("Downloading packages"),
+            msg: i18n._("Please wait...")
+        });
 
         var doneFn = Ext.bind( function() {
             Ung.MessageManager.stop();
@@ -451,7 +454,6 @@ Ext.define("Ung.Main", {
 
             console.log("Applying Upgrades...");
             var applyingUpgradesWindow=Ext.create('Ext.window.MessageBox', {
-                title: i18n._("Please wait"),
                 minProgressWidth: 360
             });
             applyingUpgradesWindow.wait(i18n._("Applying Upgrades..."), i18n._("Please wait"), {
