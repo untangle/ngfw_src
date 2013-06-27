@@ -1,262 +1,224 @@
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:94
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:96
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:86
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:88
 msgid "Mark"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:94
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:96
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:86
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:88
 msgid "Pass"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:95
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:87
 msgid "Drop"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:95
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:87
 msgid "Quarantine"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:97
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:89
 msgid "Low (Threshold: 5.0)"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:97
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:89
 msgid "Medium (Threshold: 4.3)"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:97
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:89
 msgid "High (Threshold: 3.5)"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:98
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:90
 msgid "Very High (Threshold: 3.3)"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:98
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:90
 msgid "Extreme (Threshold: 3.0)"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:98
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:90
 msgid "Custom"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:101
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:93
 msgid "Email"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:113
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:105
 msgid "SMTP"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:117
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:109
 msgid "Scan SMTP"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:166
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:486
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:651
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:158
 msgid "Strength"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:191
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:511
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:676
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:181
 msgid "Strength Value"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:199
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:519
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:684
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:189
 msgid "Strength Value must be a number. Smaller value is higher strength."
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:220
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:539
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:705
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:859
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:919
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:210
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:516
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:576
 msgid "Action"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:248
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:236
 msgid "Drop Super Spam"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:277
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:265
 msgid "Super Spam Threshold"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:316
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:303
 msgid "Advanced SMTP Configuration"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:326
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:313
 msgid "Enable tarpitting"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:339
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:567
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:732
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:326
 msgid "Add email headers"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:352
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:339
 msgid "Close connection on scan failure"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:365
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:352
 msgid "Scan outbound (WAN) SMTP"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:377
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:364
 msgid "CPU Load Limit"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:383
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:370
 msgid "Value must be a float."
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:396
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:383
 msgid "Concurrent Scan Limit"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:402
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:421
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:585
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:750
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:389
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:408
 msgid "Value must be a integer."
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:415
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:579
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:744
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:402
 msgid "Message Size Limit"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:436
-msgid "POP3"
-msgstr ""
-
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:440
-msgid "Scan POP3"
-msgstr ""
-
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:557
-msgid "Advanced POP Configuration"
-msgstr ""
-
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:600
-msgid "IMAP"
-msgstr ""
-
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:604
-msgid "Scan IMAP"
-msgstr ""
-
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:722
-msgid "Advanced IMAP Configuration"
-msgstr ""
-
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:765
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:423
 msgid "Note"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:767
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:425
 msgid "Spam Blocker Lite last checked for updates"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:768
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:771
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:426
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:428
 msgid "unknown"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:770
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:427
 msgid "Spam Blocker Lite was last updated"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:793
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:450
 msgid "pass message"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:795
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:452
 msgid "mark message"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:797
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:454
 msgid "drop message"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:799
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:456
 msgid "quarantine message"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:801
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:458
 msgid "pass safelist message"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:803
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:460
 msgid "pass oversize message"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:805
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:462
 msgid "pass outbound message"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:807
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:464
 msgid "unknown action"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:835
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:911
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:492
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:568
 msgid "Timestamp"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:843
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:500
 msgid "Receiver"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:848
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:924
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:505
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:581
 msgid "Sender"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:853
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:510
 msgid "Subject"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:864
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:521
 msgid "Spam score"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:869
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:526
 msgid "Client"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:874
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:531
 msgid "Server"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:888
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:545
 msgid "Tarpit Event Log"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:898
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:555
 msgid "skipped"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:898
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:555
 msgid "blocked"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:929
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:586
 msgid "DNSBL Server"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:943
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:597
 msgid "Failed"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:943
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:597
 msgid "The value of Strength Value field is invalid."
 msgstr ""
 

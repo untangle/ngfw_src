@@ -8,10 +8,11 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-08-09 15:36-0700\n"
+"POT-Creation-Date: 2013-06-27 11:12+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -34,216 +35,200 @@ msgstr ""
 msgid "inactive"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-shield/settings.js:43
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-shield/settings.js:41
 msgid "Note"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-shield/settings.js:46
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-shield/settings.js:44
 msgid ""
-"Attack Blocker is a heuristic based intrusion prevention and requires no "
+"Shield is a heuristic based intrusion prevention and requires no "
 "configuration. Users can modify the treatment of certain IP and/or networks "
 "on the exception tab."
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-shield/settings.js:52
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-shield/settings.js:53
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-shield/settings.js:50
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-shield/settings.js:51
 msgid "users"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-shield/settings.js:53
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-shield/settings.js:51
 msgid "unlimited"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-shield/settings.js:63
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-shield/settings.js:61
 msgid "[no description]"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-shield/settings.js:65
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-shield/settings.js:63
 msgid "Exceptions"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-shield/settings.js:86
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-shield/settings.js:142
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-shield/settings.js:84
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-shield/settings.js:138
 msgid "Enable"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-shield/settings.js:91
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-shield/settings.js:147
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-shield/settings.js:89
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-shield/settings.js:143
 msgid "Address"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-shield/settings.js:101
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-shield/settings.js:155
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-shield/settings.js:99
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-shield/settings.js:151
 msgid "User Count"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-shield/settings.js:126
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-shield/settings.js:122
 msgid "description"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-shield/settings.js:171
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-shield/settings.js:165
 msgid "Description"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-shield/settings.js:180
-msgid "Event Log"
-msgstr ""
-
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-shield/settings.js:207
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-shield/settings.js:194
 msgid "Timestamp"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-shield/settings.js:215
-msgid "Client Address"
-msgstr ""
-
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-shield/settings.js:220
-msgid "Client Interface"
-msgstr ""
-
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-shield/settings.js:225
-msgid "reputation"
-msgstr ""
-
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-shield/settings.js:233
-#: ../hier/usr/lib/python2.6/reports/node/untangle_node_shield.py:216
-#: ../hier/usr/lib/python2.6/reports/node/untangle_node_shield.py:306
-#: ../hier/usr/lib/python2.6/reports/node/untangle_node_shield.py:330
-msgid "Limited"
-msgstr ""
-
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-shield/settings.js:241
-#: ../hier/usr/lib/python2.6/reports/node/untangle_node_shield.py:331
-msgid "Dropped"
-msgstr ""
-
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-shield/settings.js:249
-msgid "Reject"
-msgstr ""
-
-#: ../impl/com/untangle/node/shield/LogIteration.java:167
-msgid "type"
-msgstr ""
-
-#: ../impl/com/untangle/node/shield/ShieldNodeImpl.java:63
-msgid "Events"
-msgstr ""
-
-#: ../impl/com/untangle/node/shield/ShieldNodeImpl.java:65
-msgid "Sessions accepted"
-msgstr ""
-
-#: ../impl/com/untangle/node/shield/ShieldNodeImpl.java:66
-msgid "Sessions limited"
-msgstr ""
-
-#: ../impl/com/untangle/node/shield/ShieldNodeImpl.java:67
-msgid "Sessions dropped"
-msgstr ""
-
-#: ../impl/com/untangle/node/shield/ShieldNodeImpl.java:68
-msgid "Sessions rejected"
-msgstr ""
-
-#: ../hier/usr/lib/python2.6/reports/node/untangle_node_shield.py:92
-msgid "Summary Report"
-msgstr ""
-
-#: ../hier/usr/lib/python2.6/reports/node/untangle_node_shield.py:107
-msgid "scanned"
-msgstr ""
-
-#: ../hier/usr/lib/python2.6/reports/node/untangle_node_shield.py:108
-msgid "sessions, of which it limited"
-msgstr ""
-
-#: ../hier/usr/lib/python2.6/reports/node/untangle_node_shield.py:109
-msgid "and dropped"
-msgstr ""
-
-#: ../hier/usr/lib/python2.6/reports/node/untangle_node_shield.py:140
-msgid "Requests"
-msgstr ""
-
-#: ../hier/usr/lib/python2.6/reports/node/untangle_node_shield.py:190
-msgid "Avg Requests"
-msgstr ""
-
-#: ../hier/usr/lib/python2.6/reports/node/untangle_node_shield.py:191
-#: ../hier/usr/lib/python2.6/reports/node/untangle_node_shield.py:194
-#: ../hier/usr/lib/python2.6/reports/node/untangle_node_shield.py:197
-#: ../hier/usr/lib/python2.6/reports/node/untangle_node_shield.py:200
-#: ../hier/usr/lib/python2.6/reports/node/untangle_node_shield.py:203
-#: ../hier/usr/lib/python2.6/reports/node/untangle_node_shield.py:206
-msgid "Sessions/minute"
-msgstr ""
-
-#: ../hier/usr/lib/python2.6/reports/node/untangle_node_shield.py:193
-msgid "Max Requests"
-msgstr ""
-
-#: ../hier/usr/lib/python2.6/reports/node/untangle_node_shield.py:196
-msgid "Avg Limited"
-msgstr ""
-
-#: ../hier/usr/lib/python2.6/reports/node/untangle_node_shield.py:199
-msgid "Max Limited"
-msgstr ""
-
-#: ../hier/usr/lib/python2.6/reports/node/untangle_node_shield.py:202
-msgid "Avg Blocked"
-msgstr ""
-
-#: ../hier/usr/lib/python2.6/reports/node/untangle_node_shield.py:205
-msgid "Max Blocked"
-msgstr ""
-
-#: ../hier/usr/lib/python2.6/reports/node/untangle_node_shield.py:210
-msgid "Request"
-msgstr ""
-
-#: ../hier/usr/lib/python2.6/reports/node/untangle_node_shield.py:211
-msgid "Date"
-msgstr ""
-
-#: ../hier/usr/lib/python2.6/reports/node/untangle_node_shield.py:212
-msgid "Requests Per Minute"
-msgstr ""
-
-#: ../hier/usr/lib/python2.6/reports/node/untangle_node_shield.py:215
-msgid "Accepted"
-msgstr ""
-
-#: ../hier/usr/lib/python2.6/reports/node/untangle_node_shield.py:217
-msgid "Blocked"
-msgstr ""
-
-#: ../hier/usr/lib/python2.6/reports/node/untangle_node_shield.py:226
-#: ../hier/usr/lib/python2.6/reports/node/untangle_node_shield.py:265
-msgid "Top Blocked Hosts"
-msgstr ""
-
-#: ../hier/usr/lib/python2.6/reports/node/untangle_node_shield.py:258
-msgid "Blocks"
-msgstr ""
-
-#: ../hier/usr/lib/python2.6/reports/node/untangle_node_shield.py:274
-#: ../hier/usr/lib/python2.6/reports/node/untangle_node_shield.py:312
-msgid "Top Limited Hosts"
-msgstr ""
-
-#: ../hier/usr/lib/python2.6/reports/node/untangle_node_shield.py:321
-msgid "Attack Events"
-msgstr ""
-
-#: ../hier/usr/lib/python2.6/reports/node/untangle_node_shield.py:327
-msgid "Time"
-msgstr ""
-
-#: ../hier/usr/lib/python2.6/reports/node/untangle_node_shield.py:329
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-shield/settings.js:202
+#: ../hier/usr/lib/python2.6/reports/node/untangle_node_shield.py:323
 msgid "Client"
 msgstr ""
 
-#: ../hier/usr/lib/python2.6/reports/node/untangle_node_shield.py:332
-msgid "Rejected"
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-shield/settings.js:207
+msgid "Client Port"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-shield/settings.js:212
+msgid "Username"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-shield/settings.js:217
+#: ../hier/usr/lib/python2.6/reports/node/untangle_node_shield.py:192
+#: ../hier/usr/lib/python2.6/reports/node/untangle_node_shield.py:327
+msgid "Blocked"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-shield/settings.js:228
+msgid "Server"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-shield/settings.js:233
+msgid "Server Port"
+msgstr ""
+
+#: ../src/com/untangle/node/shield/ShieldNodeImpl.java:51
+msgid "Scanned Sessions"
+msgstr ""
+
+#: ../src/com/untangle/node/shield/ShieldNodeImpl.java:54
+msgid "Blocked Sessions"
+msgstr ""
+
+#: ../hier/usr/lib/python2.6/reports/node/untangle_node_shield.py:53
+msgid "Summary Report"
+msgstr ""
+
+#: ../hier/usr/lib/python2.6/reports/node/untangle_node_shield.py:71
+msgid "scanned"
+msgstr ""
+
+#: ../hier/usr/lib/python2.6/reports/node/untangle_node_shield.py:72
+msgid "sessions and blocked"
+msgstr ""
+
+#: ../hier/usr/lib/python2.6/reports/node/untangle_node_shield.py:73
+msgid "sessions"
+msgstr ""
+
+#: ../hier/usr/lib/python2.6/reports/node/untangle_node_shield.py:116
+#: ../hier/usr/lib/python2.6/reports/node/untangle_node_shield.py:186
+#: ../hier/usr/lib/python2.6/reports/node/untangle_node_shield.py:188
+msgid "Sessions"
+msgstr ""
+
+#: ../hier/usr/lib/python2.6/reports/node/untangle_node_shield.py:176
+msgid "Avg Scanned"
+msgstr ""
+
+#: ../hier/usr/lib/python2.6/reports/node/untangle_node_shield.py:176
+#: ../hier/usr/lib/python2.6/reports/node/untangle_node_shield.py:178
+#: ../hier/usr/lib/python2.6/reports/node/untangle_node_shield.py:193
+msgid "Scanned"
+msgstr ""
+
+#: ../hier/usr/lib/python2.6/reports/node/untangle_node_shield.py:178
+msgid "Max Scanned"
+msgstr ""
+
+#: ../hier/usr/lib/python2.6/reports/node/untangle_node_shield.py:180
+msgid "Avg Blocked"
+msgstr ""
+
+#: ../hier/usr/lib/python2.6/reports/node/untangle_node_shield.py:180
+#: ../hier/usr/lib/python2.6/reports/node/untangle_node_shield.py:182
+msgid "Blocks"
+msgstr ""
+
+#: ../hier/usr/lib/python2.6/reports/node/untangle_node_shield.py:182
+msgid "Max Blocked"
+msgstr ""
+
+#: ../hier/usr/lib/python2.6/reports/node/untangle_node_shield.py:202
+msgid "Top Shield Blocked Hosts By Hits"
+msgstr ""
+
+#: ../hier/usr/lib/python2.6/reports/node/untangle_node_shield.py:241
+#: ../hier/usr/lib/python2.6/reports/node/untangle_node_shield.py:297
+msgid "Hits"
+msgstr ""
+
+#: ../hier/usr/lib/python2.6/reports/node/untangle_node_shield.py:248
+msgid "Top Ten Shield Blocked Hosts (by Hits)"
+msgstr ""
+
+#: ../hier/usr/lib/python2.6/reports/node/untangle_node_shield.py:249
+msgid "Host"
+msgstr ""
+
+#: ../hier/usr/lib/python2.6/reports/node/untangle_node_shield.py:250
+#: ../hier/usr/lib/python2.6/reports/node/untangle_node_shield.py:306
+msgid "Blocks Per Day"
+msgstr ""
+
+#: ../hier/usr/lib/python2.6/reports/node/untangle_node_shield.py:257
+msgid "Top Shield Blocked Users By Hits"
+msgstr ""
+
+#: ../hier/usr/lib/python2.6/reports/node/untangle_node_shield.py:304
+msgid "Top Ten Shield Blocked Users (by Hits)"
+msgstr ""
+
+#: ../hier/usr/lib/python2.6/reports/node/untangle_node_shield.py:305
+#: ../hier/usr/lib/python2.6/reports/node/untangle_node_shield.py:325
+msgid "User"
+msgstr ""
+
+#: ../hier/usr/lib/python2.6/reports/node/untangle_node_shield.py:314
+msgid "Shield Events"
+msgstr ""
+
+#: ../hier/usr/lib/python2.6/reports/node/untangle_node_shield.py:320
+msgid "Time"
+msgstr ""
+
+#: ../hier/usr/lib/python2.6/reports/node/untangle_node_shield.py:328
+msgid "Destination Ip"
+msgstr ""
+
+#: ../hier/usr/lib/python2.6/reports/node/untangle_node_shield.py:329
+msgid "Destination Port"
+msgstr ""
+
+#: ../hier/usr/lib/python2.6/reports/node/untangle_node_shield.py:330
+msgid "Source Ip"
+msgstr ""
+
+#: ../hier/usr/lib/python2.6/reports/node/untangle_node_shield.py:331
+msgid "Source Port"
 msgstr ""

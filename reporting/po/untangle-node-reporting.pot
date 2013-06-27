@@ -8,10 +8,11 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-08-09 15:36-0700\n"
+"POT-Creation-Date: 2013-06-27 11:12+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -128,122 +129,123 @@ msgstr ""
 msgid "Data Retention days"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:233
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:232
 msgid "change password"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:250
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:259
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:249
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:258
 msgid "Email"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:264
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:263
 msgid "Reporting Users"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:294
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:321
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:293
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:320
 msgid "Email Address (username)"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:301
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:300
 msgid "The email address cannot be blank."
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:306
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:329
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:305
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:328
 msgid "Email Summaries"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:312
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:336
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:311
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:335
 msgid "Online Access"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:323
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:322
 msgid "The email address name cannot be blank."
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:346
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:411
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:620
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:348
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:415
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:616
 msgid "Password"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:347
-msgid "(required for 'Online Access')"
-msgstr ""
-
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:350
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:414
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:351
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:418
 msgid "The password is shorter than the minimum {0} characters."
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:358
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:422
-msgid "Confirm Password"
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:354
+msgid "(required for 'Online Access')"
 msgstr ""
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:363
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:426
+msgid "Confirm Password"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:368
 msgid "Email Attachment Settings"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:366
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:371
 msgid "Attach Detailed Report Logs to Email (CSV Zip File)"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:379
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:384
 msgid "Attachment size limit (MB)"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:431
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:435
 msgid "Passwords do not match"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:436
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:440
 msgid "A password must be set to enable Online Access!"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:450
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:459
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:455
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:464
 msgid "Syslog"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:462
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:467
 msgid ""
 "If enabled logged events will be sent in real-time to a remote syslog for "
 "custom processing."
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:467
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:472
 msgid "{0}Disable{1} Syslog Events. (This is the default setting.)"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:485
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:490
 msgid "{0}Enable{1} Syslog Events."
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:506
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:575
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:511
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:571
 msgid "Host"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:513
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:581
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:518
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:577
 msgid "A \"Host\" must be specified."
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:517
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:589
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:522
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:585
+#: ../hier/usr/lib/python2.6/reports/node/untangle_vm.py:490
 msgid "Port"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:526
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:597
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:531
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:593
 msgid "You must provide a valid port."
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:535
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:540
 msgid "Protocol"
 msgstr ""
 
@@ -255,50 +257,368 @@ msgstr ""
 msgid "TCP"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:562
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:571
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:558
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:567
 msgid "Database"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:606
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:602
 msgid "User"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:612
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:608
 msgid "A \"User\" must be specified."
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:626
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:622
 msgid "A \"Password\" must be specified."
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:634
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:683
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:707
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:630
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:679
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:703
 msgid "Name"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:640
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:636
 msgid "A \"Name\" must be specified."
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:656
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:652
 msgid "Name Map"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:661
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:657
 msgid "[no name]"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:675
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:698
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:671
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:694
 msgid "IP Address"
 msgstr ""
 
-#: ../impl/com/untangle/node/reporting/ReportingNodeImpl.java:358
+#: ../src/com/untangle/node/reporting/ReportingNodeImpl.java:373
 msgid "Invalid Settings"
 msgstr ""
 
-#: ../impl/com/untangle/node/reporting/ReportingNodeImpl.java:358
+#: ../src/com/untangle/node/reporting/ReportingNodeImpl.java:373
 msgid "has online access, but no password is set."
+msgstr ""
+
+#: ../hier/usr/lib/python2.6/reports/mailer.py:129
+#, python-format
+msgid "%s %s Report [%s]"
+msgstr ""
+
+#: ../hier/usr/lib/python2.6/reports/mailer.py:241
+msgid "This report has no detail data."
+msgstr ""
+
+#: ../hier/usr/lib/python2.6/reports/node/untangle_server.py:61
+#: ../hier/usr/lib/python2.6/reports/node/untangle_vm.py:105
+msgid "Summary Report"
+msgstr ""
+
+#: ../hier/usr/lib/python2.6/reports/node/untangle_server.py:91
+#: ../hier/usr/lib/python2.6/reports/node/untangle_server.py:143
+msgid "Free Memory"
+msgstr ""
+
+#: ../hier/usr/lib/python2.6/reports/node/untangle_server.py:130
+msgid "Avg Free Memory"
+msgstr ""
+
+#: ../hier/usr/lib/python2.6/reports/node/untangle_server.py:133
+msgid "Avg Cached Memory"
+msgstr ""
+
+#: ../hier/usr/lib/python2.6/reports/node/untangle_server.py:140
+#: ../hier/usr/lib/python2.6/reports/node/untangle_server.py:216
+#: ../hier/usr/lib/python2.6/reports/node/untangle_server.py:275
+#: ../hier/usr/lib/python2.6/reports/node/untangle_server.py:337
+#: ../hier/usr/lib/python2.6/reports/node/untangle_server.py:397
+#: ../hier/usr/lib/python2.6/reports/node/untangle_vm.py:591
+msgid "Time"
+msgstr ""
+
+#: ../hier/usr/lib/python2.6/reports/node/untangle_server.py:140
+msgid "Memory (MB)"
+msgstr ""
+
+#: ../hier/usr/lib/python2.6/reports/node/untangle_server.py:144
+msgid "Cached Memory"
+msgstr ""
+
+#: ../hier/usr/lib/python2.6/reports/node/untangle_server.py:150
+msgid "Cpu Load"
+msgstr ""
+
+#: ../hier/usr/lib/python2.6/reports/node/untangle_server.py:194
+msgid "Avg 1-min Load"
+msgstr ""
+
+#: ../hier/usr/lib/python2.6/reports/node/untangle_server.py:197
+msgid "Max 1-min Load"
+msgstr ""
+
+#: ../hier/usr/lib/python2.6/reports/node/untangle_server.py:200
+msgid "Avg 5-min Load"
+msgstr ""
+
+#: ../hier/usr/lib/python2.6/reports/node/untangle_server.py:203
+msgid "Max 5-min Load"
+msgstr ""
+
+#: ../hier/usr/lib/python2.6/reports/node/untangle_server.py:206
+msgid "Avg 15-min Load"
+msgstr ""
+
+#: ../hier/usr/lib/python2.6/reports/node/untangle_server.py:209
+msgid "Max 15-min Load"
+msgstr ""
+
+#: ../hier/usr/lib/python2.6/reports/node/untangle_server.py:216
+msgid "Load"
+msgstr ""
+
+#: ../hier/usr/lib/python2.6/reports/node/untangle_server.py:219
+msgid "1-min Load"
+msgstr ""
+
+#: ../hier/usr/lib/python2.6/reports/node/untangle_server.py:220
+msgid "5-min Load"
+msgstr ""
+
+#: ../hier/usr/lib/python2.6/reports/node/untangle_server.py:221
+msgid "15-min Load"
+msgstr ""
+
+#: ../hier/usr/lib/python2.6/reports/node/untangle_server.py:227
+msgid "Cpu Usage"
+msgstr ""
+
+#: ../hier/usr/lib/python2.6/reports/node/untangle_server.py:265
+msgid "Avg Cpu User"
+msgstr ""
+
+#: ../hier/usr/lib/python2.6/reports/node/untangle_server.py:268
+msgid "Avg Cpu System"
+msgstr ""
+
+#: ../hier/usr/lib/python2.6/reports/node/untangle_server.py:275
+msgid "CPU (%)"
+msgstr ""
+
+#: ../hier/usr/lib/python2.6/reports/node/untangle_server.py:278
+msgid "Cpu User"
+msgstr ""
+
+#: ../hier/usr/lib/python2.6/reports/node/untangle_server.py:279
+msgid "Cpu System"
+msgstr ""
+
+#: ../hier/usr/lib/python2.6/reports/node/untangle_server.py:285
+msgid "Disk Usage"
+msgstr ""
+
+#: ../hier/usr/lib/python2.6/reports/node/untangle_server.py:325
+#: ../hier/usr/lib/python2.6/reports/node/untangle_server.py:328
+msgid "Avg Disk Free"
+msgstr ""
+
+#: ../hier/usr/lib/python2.6/reports/node/untangle_server.py:337
+msgid "Disk (GB)"
+msgstr ""
+
+#: ../hier/usr/lib/python2.6/reports/node/untangle_server.py:341
+msgid "Free Disk"
+msgstr ""
+
+#: ../hier/usr/lib/python2.6/reports/node/untangle_server.py:347
+msgid "Swap Usage"
+msgstr ""
+
+#: ../hier/usr/lib/python2.6/reports/node/untangle_server.py:386
+msgid "Avg Swap Free"
+msgstr ""
+
+#: ../hier/usr/lib/python2.6/reports/node/untangle_server.py:389
+msgid "Avg Swap Used"
+msgstr ""
+
+#: ../hier/usr/lib/python2.6/reports/node/untangle_server.py:397
+msgid "Swap (MB)"
+msgstr ""
+
+#: ../hier/usr/lib/python2.6/reports/node/untangle_server.py:401
+msgid "Swap Used"
+msgstr ""
+
+#: ../hier/usr/lib/python2.6/reports/node/untangle_vm.py:272
+msgid "scanned"
+msgstr ""
+
+#: ../hier/usr/lib/python2.6/reports/node/untangle_vm.py:274
+#: ../hier/usr/lib/python2.6/reports/__init__.py:941
+msgid "GB"
+msgstr ""
+
+#: ../hier/usr/lib/python2.6/reports/node/untangle_vm.py:275
+msgid "and"
+msgstr ""
+
+#: ../hier/usr/lib/python2.6/reports/node/untangle_vm.py:276
+#: ../hier/usr/lib/python2.6/reports/node/untangle_vm.py:426
+msgid "sessions"
+msgstr ""
+
+#: ../hier/usr/lib/python2.6/reports/node/untangle_vm.py:311
+msgid "Bandwidth Usage"
+msgstr ""
+
+#: ../hier/usr/lib/python2.6/reports/node/untangle_vm.py:354
+msgid "Avg Data Rate"
+msgstr ""
+
+#: ../hier/usr/lib/python2.6/reports/node/untangle_vm.py:358
+msgid "Max Data Rate"
+msgstr ""
+
+#: ../hier/usr/lib/python2.6/reports/node/untangle_vm.py:360
+msgid "Data Transferred"
+msgstr ""
+
+#: ../hier/usr/lib/python2.6/reports/node/untangle_vm.py:368
+#: ../hier/usr/lib/python2.6/reports/node/untangle_vm.py:432
+msgid "Date"
+msgstr ""
+
+#: ../hier/usr/lib/python2.6/reports/node/untangle_vm.py:368
+msgid "Throughput (kB/s)"
+msgstr ""
+
+#: ../hier/usr/lib/python2.6/reports/node/untangle_vm.py:371
+#: ../hier/usr/lib/python2.6/reports/node/untangle_vm.py:435
+msgid "Usage"
+msgstr ""
+
+#: ../hier/usr/lib/python2.6/reports/node/untangle_vm.py:377
+msgid "Sessions per Minute"
+msgstr ""
+
+#: ../hier/usr/lib/python2.6/reports/node/untangle_vm.py:419
+msgid "Avg Sessions/Min"
+msgstr ""
+
+#: ../hier/usr/lib/python2.6/reports/node/untangle_vm.py:421
+#: ../hier/usr/lib/python2.6/reports/node/untangle_vm.py:424
+#: ../hier/usr/lib/python2.6/reports/node/untangle_vm.py:432
+#: ../hier/usr/lib/python2.6/reports/node/untangle_vm.py:484
+#: ../hier/usr/lib/python2.6/reports/node/untangle_vm.py:491
+msgid "Sessions"
+msgstr ""
+
+#: ../hier/usr/lib/python2.6/reports/node/untangle_vm.py:423
+msgid "Max Sessions/Min"
+msgstr ""
+
+#: ../hier/usr/lib/python2.6/reports/node/untangle_vm.py:426
+msgid "Total Sessions"
+msgstr ""
+
+#: ../hier/usr/lib/python2.6/reports/node/untangle_vm.py:441
+msgid "Top Destination Ports"
+msgstr ""
+
+#: ../hier/usr/lib/python2.6/reports/node/untangle_vm.py:499
+msgid "Top Penalty Box Hosts"
+msgstr ""
+
+#: ../hier/usr/lib/python2.6/reports/node/untangle_vm.py:532
+#: ../hier/usr/lib/python2.6/reports/node/untangle_vm.py:539
+msgid "seconds"
+msgstr ""
+
+#: ../hier/usr/lib/python2.6/reports/node/untangle_vm.py:538
+msgid "Address"
+msgstr ""
+
+#: ../hier/usr/lib/python2.6/reports/node/untangle_vm.py:585
+msgid "Administrative Login Events"
+msgstr ""
+
+#: ../hier/usr/lib/python2.6/reports/node/untangle_vm.py:593
+msgid "Client Ip"
+msgstr ""
+
+#: ../hier/usr/lib/python2.6/reports/node/untangle_vm.py:594
+msgid "Login"
+msgstr ""
+
+#: ../hier/usr/lib/python2.6/reports/node/untangle_vm.py:595
+msgid "Success"
+msgstr ""
+
+#: ../hier/usr/lib/python2.6/reports/__init__.py:471
+#: ../hier/usr/lib/python2.6/reports/pdf.py:318
+msgid "Highlights"
+msgstr ""
+
+#: ../hier/usr/lib/python2.6/reports/__init__.py:651
+#: ../hier/usr/lib/python2.6/reports/__init__.py:655
+msgid "Key Statistics"
+msgstr ""
+
+#: ../hier/usr/lib/python2.6/reports/__init__.py:898
+msgid "slice"
+msgstr ""
+
+#: ../hier/usr/lib/python2.6/reports/__init__.py:898
+msgid "value"
+msgstr ""
+
+#: ../hier/usr/lib/python2.6/reports/__init__.py:916
+msgid "Unknown"
+msgstr ""
+
+#: ../hier/usr/lib/python2.6/reports/__init__.py:933
+msgid "KB"
+msgstr ""
+
+#: ../hier/usr/lib/python2.6/reports/__init__.py:937
+msgid "MB"
+msgstr ""
+
+#: ../hier/usr/lib/python2.6/reports/pdf.py:193
+msgid "Title Page"
+msgstr ""
+
+#: ../hier/usr/lib/python2.6/reports/pdf.py:197
+#: ../hier/usr/lib/python2.6/reports/pdf.py:218
+msgid "Table of Contents"
+msgstr ""
+
+#: ../hier/usr/lib/python2.6/reports/pdf.py:256
+#, python-format
+msgid "Page %d"
+msgstr ""
+
+#: ../hier/usr/lib/python2.6/reports/pdf.py:268
+msgid "day"
+msgstr ""
+
+#: ../hier/usr/lib/python2.6/reports/pdf.py:270
+msgid "days"
+msgstr ""
+
+#: ../hier/usr/lib/python2.6/reports/pdf.py:272
+msgid "Report for"
+msgstr ""
+
+#: ../hier/usr/lib/python2.6/reports/pdf.py:292
+msgid "Report"
+msgstr ""
+
+#: ../hier/usr/lib/python2.6/reports/pdf.py:317
+msgid "Highlights Summary"
 msgstr ""
