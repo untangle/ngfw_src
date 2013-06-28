@@ -33,10 +33,11 @@ echo "Starting the openvpn server"
 for (( t = 0 ; t < ${RETRY_ATTEMPTS} ; t++ )); do
 
     /etc/init.d/openvpn start
+    RET=$?
 
-    if [ $? -eq 0 ] ; then 
+    if [ $RET -eq 0 ] ; then 
         echo "Successfully started openvpn daemon"
-        exit 0
+        break
     fi
 
     echo "Unable to start openvpn daemon, waiting ${RESTART_DELAY} seconds..."
@@ -49,7 +50,10 @@ done
 
 # Write the status file for tun0
 # always use tun0 because that is the server (or the first client if the server isn't running)
+echo "Writing status file: /var/lib/untangle-netd/interface-250-status.js"
 /usr/share/untangle-netd/bin/write-interface-status.py -I tun0 -i 250 -w /var/lib/untangle-netd/interface-250-status.js
+echo "Writing status file: /var/lib/untangle-netd/interface-tun0-status.js"
 /usr/share/untangle-netd/bin/write-interface-status.py -I tun0 -i 250 -w /var/lib/untangle-netd/interface-tun0-status.js
 
+exit $RET
 
