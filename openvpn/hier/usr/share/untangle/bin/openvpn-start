@@ -47,4 +47,9 @@ for (( t = 0 ; t < ${RETRY_ATTEMPTS} ; t++ )); do
     sleep ${RESTART_DELAY}
 done
 
+# Write the status file for tun0
+# always use tun0 because that is the server (or the first client if the server isn't running)
+/usr/share/untangle-netd/bin/write-interface-status.py -I tun0 -i 250 -w /var/lib/untangle-netd/interface-250-status.js
+/usr/share/untangle-netd/bin/write-interface-status.py -I tun0 -i 250 -w /var/lib/untangle-netd/interface-tun0-status.js
+
 

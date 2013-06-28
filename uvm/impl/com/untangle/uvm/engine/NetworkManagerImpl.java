@@ -305,15 +305,12 @@ public class NetworkManagerImpl implements NetworkManager
         }
 
         /**
-         * FIXME: OpenVPN
+         * Special handling for OpenVPN
          */
-        // if ( intfId == 250) {
-            // FIXME how to handle OpenVPN?
-            //             OpenVpn openvpn = (OpenVpn) UvmContextFactory.context().nodeManager().node("untangle-node-openvpn");
-            //             InetAddress addr = openvpn.getVpnServerAddress().getIp();
-            //             return addr;
-        // }
-
+        if ( intfId == 250) {
+            InetAddress address = getInterfaceStatus( intfId ).getV4Address();
+            return address;
+        }
         
         InterfaceSettings intfSettings = findInterfaceId( intfId );
         if ( intfSettings == null ) {
