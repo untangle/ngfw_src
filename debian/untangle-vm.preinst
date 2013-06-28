@@ -6,9 +6,8 @@
 if [ -f /var/run/uvm.pid ] ; then
     if ps p $(cat /var/run/uvm.pid) >/dev/null 2>&1; then
 
-        /usr/share/untangle/bin/ut-show-upgrade-splash start
-
         if [ -x /etc/init.d/untangle-vm ] ; then
+            /usr/share/untangle/bin/ut-show-upgrade-splash start
             /etc/init.d/untangle-vm stop || true
         fi
 
