@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-06-27 11:12+0300\n"
+"POT-Creation-Date: 2013-06-28 13:15+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -131,26 +131,6 @@ msgstr ""
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:268
 #: ../hier/usr/lib/python2.6/reports/node/untangle_node_protofilter.py:567
 msgid "Server"
-msgstr ""
-
-#: ../src/com/untangle/node/protofilter/ProtoFilterImpl.java:50
-msgid "All Events"
-msgstr ""
-
-#: ../src/com/untangle/node/protofilter/ProtoFilterImpl.java:56
-msgid "Blocked Events"
-msgstr ""
-
-#: ../src/com/untangle/node/protofilter/ProtoFilterImpl.java:62
-msgid "Chunks scanned"
-msgstr ""
-
-#: ../src/com/untangle/node/protofilter/ProtoFilterImpl.java:63
-msgid "Sessions logged"
-msgstr ""
-
-#: ../src/com/untangle/node/protofilter/ProtoFilterImpl.java:64
-msgid "Sessions blocked"
 msgstr ""
 
 #: ../hier/usr/lib/python2.6/reports/node/untangle_node_protofilter.py:54
@@ -282,4 +262,24 @@ msgstr ""
 
 #: ../hier/usr/lib/python2.6/reports/node/untangle_node_protofilter.py:568
 msgid "Port"
+msgstr ""
+
+#: ../src/com/untangle/node/protofilter/ProtoFilterImpl.java:50
+msgid "All Events"
+msgstr ""
+
+#: ../src/com/untangle/node/protofilter/ProtoFilterImpl.java:56
+msgid "Blocked Events"
+msgstr ""
+
+#: ../src/com/untangle/node/protofilter/ProtoFilterImpl.java:62
+msgid "Chunks scanned"
+msgstr ""
+
+#: ../src/com/untangle/node/protofilter/ProtoFilterImpl.java:63
+msgid "Sessions logged"
+msgstr ""
+
+#: ../src/com/untangle/node/protofilter/ProtoFilterImpl.java:64
+msgid "Sessions blocked"
 msgstr ""

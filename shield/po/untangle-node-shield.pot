@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-06-27 11:12+0300\n"
+"POT-Creation-Date: 2013-06-28 13:15+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -117,14 +117,6 @@ msgstr ""
 msgid "Server Port"
 msgstr ""
 
-#: ../src/com/untangle/node/shield/ShieldNodeImpl.java:51
-msgid "Scanned Sessions"
-msgstr ""
-
-#: ../src/com/untangle/node/shield/ShieldNodeImpl.java:54
-msgid "Blocked Sessions"
-msgstr ""
-
 #: ../hier/usr/lib/python2.6/reports/node/untangle_node_shield.py:53
 msgid "Summary Report"
 msgstr ""
@@ -231,4 +223,12 @@ msgstr ""
 
 #: ../hier/usr/lib/python2.6/reports/node/untangle_node_shield.py:331
 msgid "Source Port"
+msgstr ""
+
+#: ../src/com/untangle/node/shield/ShieldNodeImpl.java:51
+msgid "Scanned Sessions"
+msgstr ""
+
+#: ../src/com/untangle/node/shield/ShieldNodeImpl.java:54
+msgid "Blocked Sessions"
 msgstr ""

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-06-27 11:12+0300\n"
+"POT-Creation-Date: 2013-06-28 13:15+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -215,90 +215,6 @@ msgstr ""
 msgid "File Name"
 msgstr ""
 
-#: ../servlets/virus/src/com/untangle/node/virus/BlockPageServlet.java:41
-msgid "Feature is not installed."
-msgstr ""
-
-#: ../servlets/virus/src/com/untangle/node/virus/BlockPageServlet.java:49
-msgid "This request has expired."
-msgstr ""
-
-#: ../servlets/virus/src/com/untangle/node/virus/BlockPageServlet.java:78
-#, java-format
-msgid "{0} | {1} Warning"
-msgstr ""
-
-#: ../servlets/virus/src/com/untangle/node/virus/BlockPageServlet.java:90
-#, java-format
-msgid "{0} Virus Blocker"
-msgstr ""
-
-#: ../servlets/virus/src/com/untangle/node/virus/BlockPageServlet.java:107
-#, java-format
-msgid "{0}This file was blocked{1} because it contains a virus."
-msgstr ""
-
-#: ../../http-casing/src/com/untangle/node/http/BlockPageUtil.java:73
-#, java-format
-msgid "If you have any questions, Please contact {0}."
-msgstr ""
-
-#: ../src/com/untangle/node/virus/VirusNodeImpl.java:143
-msgid "Scanned Web Events"
-msgstr ""
-
-#: ../src/com/untangle/node/virus/VirusNodeImpl.java:148
-msgid "Infected Web Events"
-msgstr ""
-
-#: ../src/com/untangle/node/virus/VirusNodeImpl.java:153
-msgid "Clean Web Events"
-msgstr ""
-
-#: ../src/com/untangle/node/virus/VirusNodeImpl.java:158
-msgid "Scanned Email Events"
-msgstr ""
-
-#: ../src/com/untangle/node/virus/VirusNodeImpl.java:164
-msgid "Infected Email Events"
-msgstr ""
-
-#: ../src/com/untangle/node/virus/VirusNodeImpl.java:170
-msgid "Clean Email Events"
-msgstr ""
-
-#: ../src/com/untangle/node/virus/VirusNodeImpl.java:176
-msgid "Scanned Ftp Events"
-msgstr ""
-
-#: ../src/com/untangle/node/virus/VirusNodeImpl.java:181
-msgid "Infected Ftp Events"
-msgstr ""
-
-#: ../src/com/untangle/node/virus/VirusNodeImpl.java:186
-msgid "Clean Ftp Events"
-msgstr ""
-
-#: ../src/com/untangle/node/virus/VirusNodeImpl.java:192
-msgid "Documents scanned"
-msgstr ""
-
-#: ../src/com/untangle/node/virus/VirusNodeImpl.java:193
-msgid "Documents blocked"
-msgstr ""
-
-#: ../src/com/untangle/node/virus/VirusNodeImpl.java:194
-msgid "Documents passed"
-msgstr ""
-
-#: ../src/com/untangle/node/virus/VirusNodeImpl.java:195
-msgid "Infections removed"
-msgstr ""
-
-#: ../src/com/untangle/node/virus/VirusNodeImpl.java:196
-msgid "Passed by policy"
-msgstr ""
-
 #: ../hier/usr/lib/python2.6/reports/node/untangle_base_virus.py:128
 msgid "Summary Report"
 msgstr ""
@@ -421,6 +337,90 @@ msgstr ""
 
 #: ../hier/usr/lib/python2.6/reports/node/untangle_base_virus.py:736
 msgid "Client Port"
+msgstr ""
+
+#: ../servlets/virus/src/com/untangle/node/virus/BlockPageServlet.java:41
+msgid "Feature is not installed."
+msgstr ""
+
+#: ../servlets/virus/src/com/untangle/node/virus/BlockPageServlet.java:49
+msgid "This request has expired."
+msgstr ""
+
+#: ../servlets/virus/src/com/untangle/node/virus/BlockPageServlet.java:78
+#, java-format
+msgid "{0} | {1} Warning"
+msgstr ""
+
+#: ../servlets/virus/src/com/untangle/node/virus/BlockPageServlet.java:90
+#, java-format
+msgid "{0} Virus Blocker"
+msgstr ""
+
+#: ../servlets/virus/src/com/untangle/node/virus/BlockPageServlet.java:107
+#, java-format
+msgid "{0}This file was blocked{1} because it contains a virus."
+msgstr ""
+
+#: ../../http-casing/src/com/untangle/node/http/BlockPageUtil.java:73
+#, java-format
+msgid "If you have any questions, Please contact {0}."
+msgstr ""
+
+#: ../src/com/untangle/node/virus/VirusNodeImpl.java:143
+msgid "Scanned Web Events"
+msgstr ""
+
+#: ../src/com/untangle/node/virus/VirusNodeImpl.java:148
+msgid "Infected Web Events"
+msgstr ""
+
+#: ../src/com/untangle/node/virus/VirusNodeImpl.java:153
+msgid "Clean Web Events"
+msgstr ""
+
+#: ../src/com/untangle/node/virus/VirusNodeImpl.java:158
+msgid "Scanned Email Events"
+msgstr ""
+
+#: ../src/com/untangle/node/virus/VirusNodeImpl.java:164
+msgid "Infected Email Events"
+msgstr ""
+
+#: ../src/com/untangle/node/virus/VirusNodeImpl.java:170
+msgid "Clean Email Events"
+msgstr ""
+
+#: ../src/com/untangle/node/virus/VirusNodeImpl.java:176
+msgid "Scanned Ftp Events"
+msgstr ""
+
+#: ../src/com/untangle/node/virus/VirusNodeImpl.java:181
+msgid "Infected Ftp Events"
+msgstr ""
+
+#: ../src/com/untangle/node/virus/VirusNodeImpl.java:186
+msgid "Clean Ftp Events"
+msgstr ""
+
+#: ../src/com/untangle/node/virus/VirusNodeImpl.java:192
+msgid "Documents scanned"
+msgstr ""
+
+#: ../src/com/untangle/node/virus/VirusNodeImpl.java:193
+msgid "Documents blocked"
+msgstr ""
+
+#: ../src/com/untangle/node/virus/VirusNodeImpl.java:194
+msgid "Documents passed"
+msgstr ""
+
+#: ../src/com/untangle/node/virus/VirusNodeImpl.java:195
+msgid "Infections removed"
+msgstr ""
+
+#: ../src/com/untangle/node/virus/VirusNodeImpl.java:196
+msgid "Passed by policy"
 msgstr ""
 
 #: ../../uvm/servlets/blockpage/root/blockpage_template.jspx:70

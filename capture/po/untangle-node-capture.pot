@@ -452,40 +452,40 @@ msgid "Action"
 msgstr ""
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-capture/settings.js:990
+#: ../hier/usr/lib/python2.6/reports/node/untangle_node_capture.py:36
 #: ../src/com/untangle/node/capture/CaptureNodeImpl.java:109
 #: ../src/com/untangle/node/capture/CaptureNodeImpl.java:166
-#: ../hier/usr/lib/python2.6/reports/node/untangle_node_capture.py:36
 msgid "Login Success"
 msgstr ""
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-capture/settings.js:992
+#: ../hier/usr/lib/python2.6/reports/node/untangle_node_capture.py:37
 #: ../src/com/untangle/node/capture/CaptureNodeImpl.java:115
 #: ../src/com/untangle/node/capture/CaptureNodeImpl.java:167
-#: ../hier/usr/lib/python2.6/reports/node/untangle_node_capture.py:37
 msgid "Login Failure"
 msgstr ""
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-capture/settings.js:994
-#: ../src/com/untangle/node/capture/CaptureNodeImpl.java:121
 #: ../hier/usr/lib/python2.6/reports/node/untangle_node_capture.py:38
+#: ../src/com/untangle/node/capture/CaptureNodeImpl.java:121
 msgid "Session Timeout"
 msgstr ""
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-capture/settings.js:996
-#: ../src/com/untangle/node/capture/CaptureNodeImpl.java:127
 #: ../hier/usr/lib/python2.6/reports/node/untangle_node_capture.py:39
+#: ../src/com/untangle/node/capture/CaptureNodeImpl.java:127
 msgid "Idle Timeout"
 msgstr ""
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-capture/settings.js:998
-#: ../src/com/untangle/node/capture/CaptureNodeImpl.java:133
 #: ../hier/usr/lib/python2.6/reports/node/untangle_node_capture.py:40
+#: ../src/com/untangle/node/capture/CaptureNodeImpl.java:133
 msgid "User Logout"
 msgstr ""
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-capture/settings.js:1000
-#: ../src/com/untangle/node/capture/CaptureNodeImpl.java:139
 #: ../hier/usr/lib/python2.6/reports/node/untangle_node_capture.py:41
+#: ../src/com/untangle/node/capture/CaptureNodeImpl.java:139
 msgid "Admin Logout"
 msgstr ""
 
@@ -562,31 +562,6 @@ msgstr ""
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-capture/settings.js:1151
 msgid "Please wait"
-msgstr ""
-
-#: ../src/com/untangle/node/capture/CaptureNodeImpl.java:104
-#: ../src/com/untangle/node/capture/CaptureNodeImpl.java:157
-msgid "All Events"
-msgstr ""
-
-#: ../src/com/untangle/node/capture/CaptureNodeImpl.java:145
-msgid "Capture Events"
-msgstr ""
-
-#: ../src/com/untangle/node/capture/CaptureNodeImpl.java:151
-msgid "Pass Events"
-msgstr ""
-
-#: ../src/com/untangle/node/capture/CaptureNodeImpl.java:163
-msgid "Sessions Allowed"
-msgstr ""
-
-#: ../src/com/untangle/node/capture/CaptureNodeImpl.java:164
-msgid "Sessions Blocked"
-msgstr ""
-
-#: ../src/com/untangle/node/capture/CaptureNodeImpl.java:165
-msgid "DNS Lookups"
 msgstr ""
 
 #: ../hier/usr/lib/python2.6/reports/node/untangle_node_capture.py:96
@@ -697,4 +672,29 @@ msgstr ""
 
 #: ../hier/usr/lib/python2.6/reports/node/untangle_node_capture.py:456
 msgid "Rule Applied"
+msgstr ""
+
+#: ../src/com/untangle/node/capture/CaptureNodeImpl.java:104
+#: ../src/com/untangle/node/capture/CaptureNodeImpl.java:157
+msgid "All Events"
+msgstr ""
+
+#: ../src/com/untangle/node/capture/CaptureNodeImpl.java:145
+msgid "Capture Events"
+msgstr ""
+
+#: ../src/com/untangle/node/capture/CaptureNodeImpl.java:151
+msgid "Pass Events"
+msgstr ""
+
+#: ../src/com/untangle/node/capture/CaptureNodeImpl.java:163
+msgid "Sessions Allowed"
+msgstr ""
+
+#: ../src/com/untangle/node/capture/CaptureNodeImpl.java:164
+msgid "Sessions Blocked"
+msgstr ""
+
+#: ../src/com/untangle/node/capture/CaptureNodeImpl.java:165
+msgid "DNS Lookups"
 msgstr ""

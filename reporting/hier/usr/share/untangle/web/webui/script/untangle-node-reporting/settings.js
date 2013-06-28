@@ -74,7 +74,7 @@ if (!Ung.hasResource["Ung.Reporting"]) {
                             name: 'Generate Reports',
                             iconCls: 'action-icon',
                             handler: Ext.bind(function(callback) {
-                                Ext.MessageBox.wait(i18n._("Generating today's reports... This may take a few minutes."), i18n._("Please wait"));
+                                Ext.MessageBox.wait(this.i18n._("Generating today's reports... This may take a few minutes."), i18n._("Please wait"));
                                 this.getRpcNode().runDailyReport(Ext.bind(function(result, exception) {
                                     Ext.MessageBox.hide();
                                     if(Ung.Util.handleException(exception)) return;

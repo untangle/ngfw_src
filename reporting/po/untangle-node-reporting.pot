@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-06-27 11:12+0300\n"
+"POT-Creation-Date: 2013-06-28 13:15+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -297,23 +297,6 @@ msgstr ""
 msgid "IP Address"
 msgstr ""
 
-#: ../src/com/untangle/node/reporting/ReportingNodeImpl.java:373
-msgid "Invalid Settings"
-msgstr ""
-
-#: ../src/com/untangle/node/reporting/ReportingNodeImpl.java:373
-msgid "has online access, but no password is set."
-msgstr ""
-
-#: ../hier/usr/lib/python2.6/reports/mailer.py:129
-#, python-format
-msgid "%s %s Report [%s]"
-msgstr ""
-
-#: ../hier/usr/lib/python2.6/reports/mailer.py:241
-msgid "This report has no detail data."
-msgstr ""
-
 #: ../hier/usr/lib/python2.6/reports/node/untangle_server.py:61
 #: ../hier/usr/lib/python2.6/reports/node/untangle_vm.py:105
 msgid "Summary Report"
@@ -557,6 +540,23 @@ msgstr ""
 
 #: ../hier/usr/lib/python2.6/reports/node/untangle_vm.py:595
 msgid "Success"
+msgstr ""
+
+#: ../src/com/untangle/node/reporting/ReportingNodeImpl.java:373
+msgid "Invalid Settings"
+msgstr ""
+
+#: ../src/com/untangle/node/reporting/ReportingNodeImpl.java:373
+msgid "has online access, but no password is set."
+msgstr ""
+
+#: ../hier/usr/lib/python2.6/reports/mailer.py:129
+#, python-format
+msgid "%s %s Report [%s]"
+msgstr ""
+
+#: ../hier/usr/lib/python2.6/reports/mailer.py:241
+msgid "This report has no detail data."
 msgstr ""
 
 #: ../hier/usr/lib/python2.6/reports/__init__.py:471

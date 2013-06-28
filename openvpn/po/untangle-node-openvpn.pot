@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-06-27 11:12+0300\n"
+"POT-Creation-Date: 2013-06-28 13:15+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -129,6 +129,7 @@ msgstr ""
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:342
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:601
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:629
 msgid "Client Name"
 msgstr ""
 
@@ -171,8 +172,8 @@ msgstr ""
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:457
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:596
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:620
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:708
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:737
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:749
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:778
 msgid "Enabled"
 msgstr ""
 
@@ -232,182 +233,175 @@ msgid "newClient"
 msgstr ""
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:577
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:659
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:665
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:700
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:706
 msgid "Remote Clients"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:629
-msgid "Client name"
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:654
+msgid "Type"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:667
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:657
+msgid "Remote Client"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:657
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:686
+msgid "Remote Network"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:708
 msgid ""
 "This is a list of remote OpenVPN clients allowed to connect to this server."
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:690
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:811
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:731
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:854
 msgid "[no name]"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:693
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:734
 msgid "Exported Networks"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:713
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:742
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:754
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:783
 msgid "Export Name"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:721
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:749
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:762
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:790
 msgid "Network"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:763
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:769
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:805
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:811
 msgid "Exports"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:771
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:813
 msgid "The exported networks will be reachable by connected clients."
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:784
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:790
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:816
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:827
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:833
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:859
 msgid "Groups"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:792
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:835
 msgid ""
 "This is the groups available for grouping clients by similar configuration."
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:837
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:871
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:880
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:914
 msgid "Group Name"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:847
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:878
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:890
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:921
 msgid "Full Tunnel"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:853
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:883
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:896
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:926
 msgid "Push DNS"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:859
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:888
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:902
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:931
 msgid "DNS Override"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:919
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:962
 msgid "DNS Override 1"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:928
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:971
 msgid "DNS Override 2"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:941
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:1007
 msgid "Options"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:959
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:1025
 msgid "Site Name"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:964
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:1102
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:1030
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:1176
 msgid "You must enter a site name."
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:976
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:1042
 msgid "Server Enabled"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:1004
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:1062
+msgid "Client To Client Allowed"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:1078
 #: ../hier/usr/lib/python2.6/reports/node/untangle_node_openvpn.py:265
 msgid "Port"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:1023
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:1097
 msgid "Protocol"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:1042
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:1116
 msgid "Cipher"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:1060
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:1134
 msgid "Address Space"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:1078
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:1152
 msgid "NAT All OpenVPN Traffic"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:1102
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:1119
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:1134
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:1154
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:1177
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:1186
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:1176
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:1193
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:1208
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:1228
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:1251
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:1260
 msgid "Failed"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:1119
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:1193
 msgid "You must create at least one group."
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:1135
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:1209
 msgid ""
 "The group: \"{0}\" cannot be deleted because it is being used by the client: "
 "{1} in the Client To Site List."
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:1154
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:1228
 msgid "The group name: \"{0}\" in row: {1} already exists."
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:1177
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:1251
 msgid "Changing name is not allowed. Create a new user."
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:1187
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:1261
 msgid "The client name: \"{0}\" in row: {1} already exists."
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:1220
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:1294
 msgid "Reloading..."
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:1220
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:1294
 msgid "Please wait"
-msgstr ""
-
-#: ../src/com/untangle/node/openvpn/OpenVpnNodeImpl.java:64
-msgid "Sessions passed"
-msgstr ""
-
-#: ../src/com/untangle/node/openvpn/OpenVpnNodeImpl.java:65
-msgid "Clients Connected"
-msgstr ""
-
-#: ../src/com/untangle/node/openvpn/OpenVpnNodeImpl.java:67
-msgid "Connections"
-msgstr ""
-
-#: ../src/com/untangle/node/openvpn/OpenVpnNodeImpl.java:335
-msgid "primary network"
-msgstr ""
-
-#: ../src/com/untangle/node/openvpn/OpenVpnNodeImpl.java:347
-msgid "Default Group"
 msgstr ""
 
 #: ../hier/usr/lib/python2.6/reports/node/untangle_node_openvpn.py:60
@@ -471,4 +465,24 @@ msgstr ""
 
 #: ../hier/usr/lib/python2.6/reports/node/untangle_node_openvpn.py:261
 msgid "Time"
+msgstr ""
+
+#: ../src/com/untangle/node/openvpn/OpenVpnNodeImpl.java:64
+msgid "Sessions passed"
+msgstr ""
+
+#: ../src/com/untangle/node/openvpn/OpenVpnNodeImpl.java:65
+msgid "Clients Connected"
+msgstr ""
+
+#: ../src/com/untangle/node/openvpn/OpenVpnNodeImpl.java:67
+msgid "Connections"
+msgstr ""
+
+#: ../src/com/untangle/node/openvpn/OpenVpnNodeImpl.java:335
+msgid "primary network"
+msgstr ""
+
+#: ../src/com/untangle/node/openvpn/OpenVpnNodeImpl.java:347
+msgid "Default Group"
 msgstr ""

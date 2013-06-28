@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-06-26 13:04+0300\n"
+"POT-Creation-Date: 2013-06-28 13:15+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -341,61 +341,6 @@ msgstr ""
 msgid "Server Port"
 msgstr ""
 
-#: ../src/com/untangle/node/webfilter/BlockPageServlet.java:38
-msgid "Feature is not installed."
-msgstr ""
-
-#: ../src/com/untangle/node/webfilter/BlockPageServlet.java:47
-msgid "This request has expired."
-msgstr ""
-
-#: ../src/com/untangle/node/webfilter/BlockPageServlet.java:84
-#, java-format
-msgid "{0} | {1} Warning"
-msgstr ""
-
-#: ../src/com/untangle/node/webfilter/BlockPageServlet.java:112
-#, java-format
-msgid "{0}This web page is blocked{1} because it violates network policy."
-msgstr ""
-
-#: ../../http-casing/src/com/untangle/node/http/BlockPageUtil.java:73
-#, java-format
-msgid "If you have any questions, Please contact {0}."
-msgstr ""
-
-#: ../src/com/untangle/node/webfilter/WebFilterBase.java:72
-msgid "All Web Events"
-msgstr ""
-
-#: ../src/com/untangle/node/webfilter/WebFilterBase.java:77
-msgid "Flagged Web Events"
-msgstr ""
-
-#: ../src/com/untangle/node/webfilter/WebFilterBase.java:82
-msgid "Blocked Web Events"
-msgstr ""
-
-#: ../src/com/untangle/node/webfilter/WebFilterBase.java:87
-msgid "Unblocked Web Events"
-msgstr ""
-
-#: ../src/com/untangle/node/webfilter/WebFilterBase.java:93
-msgid "Pages scanned"
-msgstr ""
-
-#: ../src/com/untangle/node/webfilter/WebFilterBase.java:94
-msgid "Pages blocked"
-msgstr ""
-
-#: ../src/com/untangle/node/webfilter/WebFilterBase.java:95
-msgid "Pages passed"
-msgstr ""
-
-#: ../src/com/untangle/node/webfilter/WebFilterBase.java:96
-msgid "Passed by policy"
-msgstr ""
-
 #: ../hier/usr/lib/python2.6/reports/node/untangle_base_webfilter.py:70
 msgid "Summary Report"
 msgstr ""
@@ -663,6 +608,61 @@ msgstr ""
 
 #: ../hier/usr/lib/python2.6/reports/node/untangle_base_webfilter.py:1226
 msgid "Violations By Category"
+msgstr ""
+
+#: ../src/com/untangle/node/webfilter/BlockPageServlet.java:38
+msgid "Feature is not installed."
+msgstr ""
+
+#: ../src/com/untangle/node/webfilter/BlockPageServlet.java:47
+msgid "This request has expired."
+msgstr ""
+
+#: ../src/com/untangle/node/webfilter/BlockPageServlet.java:84
+#, java-format
+msgid "{0} | {1} Warning"
+msgstr ""
+
+#: ../src/com/untangle/node/webfilter/BlockPageServlet.java:112
+#, java-format
+msgid "{0}This web page is blocked{1} because it violates network policy."
+msgstr ""
+
+#: ../../http-casing/src/com/untangle/node/http/BlockPageUtil.java:73
+#, java-format
+msgid "If you have any questions, Please contact {0}."
+msgstr ""
+
+#: ../src/com/untangle/node/webfilter/WebFilterBase.java:72
+msgid "All Web Events"
+msgstr ""
+
+#: ../src/com/untangle/node/webfilter/WebFilterBase.java:77
+msgid "Flagged Web Events"
+msgstr ""
+
+#: ../src/com/untangle/node/webfilter/WebFilterBase.java:82
+msgid "Blocked Web Events"
+msgstr ""
+
+#: ../src/com/untangle/node/webfilter/WebFilterBase.java:87
+msgid "Unblocked Web Events"
+msgstr ""
+
+#: ../src/com/untangle/node/webfilter/WebFilterBase.java:93
+msgid "Pages scanned"
+msgstr ""
+
+#: ../src/com/untangle/node/webfilter/WebFilterBase.java:94
+msgid "Pages blocked"
+msgstr ""
+
+#: ../src/com/untangle/node/webfilter/WebFilterBase.java:95
+msgid "Pages passed"
+msgstr ""
+
+#: ../src/com/untangle/node/webfilter/WebFilterBase.java:96
+msgid "Passed by policy"
 msgstr ""
 
 #: ../../uvm/servlets/blockpage/root/blockpage_template.jspx:70

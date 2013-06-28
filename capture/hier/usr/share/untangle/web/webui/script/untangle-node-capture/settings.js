@@ -429,7 +429,7 @@ if (!Ung.hasResource["Ung.Capture"]) {
                     },{
                         xtype: "button",
                         name: "configureLocalDirectory",
-                        text: i18n._("Configure Local Directory"),
+                        text: this.i18n._("Configure Local Directory"),
                         handler: Ext.bind(this.configureLocalDirectory, this )
                     },{
                         xtype: "radio",
@@ -447,7 +447,7 @@ if (!Ung.hasResource["Ung.Capture"]) {
                         xtype: "button",
                         disabled: !main.getLicenseManager().getLicense("untangle-node-adconnector"),
                         name: "configureRadiusServer",
-                        text: i18n._("Configure RADIUS"),
+                        text: this.i18n._("Configure RADIUS"),
                         handler: Ext.bind(this.configureRadius, this )
                     },{
                         xtype: "radio",
@@ -464,7 +464,7 @@ if (!Ung.hasResource["Ung.Capture"]) {
                         xtype: "button",
                         disabled: !main.getLicenseManager().getLicense("untangle-node-adconnector"),
                         name: "configureActiveDirectory",
-                        text: i18n._("Configure Active Directory"),
+                        text: this.i18n._("Configure Active Directory"),
                         handler: Ext.bind(this.configureActiveDirectory, this )
                     }]
                 },{

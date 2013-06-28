@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-06-27 11:12+0300\n"
+"POT-Creation-Date: 2013-06-28 13:15+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -125,6 +125,26 @@ msgstr ""
 msgid "Server"
 msgstr ""
 
+#: ../hier/usr/lib/python2.6/reports/node/untangle_node_phish.py:7
+msgid "Phish"
+msgstr ""
+
+#: ../hier/usr/lib/python2.6/reports/node/untangle_node_phish.py:7
+msgid "Clean"
+msgstr ""
+
+#: ../hier/usr/lib/python2.6/reports/node/untangle_node_phish.py:7
+msgid "Hourly Phish Rate"
+msgstr ""
+
+#: ../hier/usr/lib/python2.6/reports/node/untangle_node_phish.py:7
+msgid "Daily Phish Rate"
+msgstr ""
+
+#: ../hier/usr/lib/python2.6/reports/node/untangle_node_phish.py:7
+msgid "Top Ten Phishing Victims"
+msgstr ""
+
 #: ../../http-casing/src/com/untangle/node/http/BlockPageUtil.java:73
 #, java-format
 msgid "If you have any questions, Please contact {0}."
@@ -172,26 +192,6 @@ msgstr ""
 
 #: ../../spam-base/src/com/untangle/node/spam/SpamNodeImpl.java:109
 msgid "Spam detected"
-msgstr ""
-
-#: ../hier/usr/lib/python2.6/reports/node/untangle_node_phish.py:7
-msgid "Phish"
-msgstr ""
-
-#: ../hier/usr/lib/python2.6/reports/node/untangle_node_phish.py:7
-msgid "Clean"
-msgstr ""
-
-#: ../hier/usr/lib/python2.6/reports/node/untangle_node_phish.py:7
-msgid "Hourly Phish Rate"
-msgstr ""
-
-#: ../hier/usr/lib/python2.6/reports/node/untangle_node_phish.py:7
-msgid "Daily Phish Rate"
-msgstr ""
-
-#: ../hier/usr/lib/python2.6/reports/node/untangle_node_phish.py:7
-msgid "Top Ten Phishing Victims"
 msgstr ""
 
 #: ../../uvm/servlets/blockpage/root/blockpage_template.jspx:70

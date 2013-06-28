@@ -300,7 +300,7 @@ if (!Ung.hasResource["Ung.SpamAssassin"]) {
                              },{
                                  name:'advanced',
                                  xtype:'fieldset',
-                                 title:i18n._("Advanced SMTP Configuration"),
+                                 title:this.i18n._("Advanced SMTP Configuration"),
                                  collapsible: true,
                                  collapsed: !this.isAdvanced,
                                  listeners: {

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-06-27 11:12+0300\n"
+"POT-Creation-Date: 2013-06-28 13:15+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -178,26 +178,6 @@ msgstr ""
 msgid "Server"
 msgstr ""
 
-#: ../src/com/untangle/node/ips/IpsNodeImpl.java:55
-msgid "All Events"
-msgstr ""
-
-#: ../src/com/untangle/node/ips/IpsNodeImpl.java:61
-msgid "Blocked Events"
-msgstr ""
-
-#: ../src/com/untangle/node/ips/IpsNodeImpl.java:70
-msgid "Sessions scanned"
-msgstr ""
-
-#: ../src/com/untangle/node/ips/IpsNodeImpl.java:71
-msgid "Sessions logged"
-msgstr ""
-
-#: ../src/com/untangle/node/ips/IpsNodeImpl.java:72
-msgid "Sessions blocked"
-msgstr ""
-
 #: ../hier/usr/lib/python2.6/reports/node/untangle_node_ips.py:54
 msgid "Summary Report"
 msgstr ""
@@ -268,4 +248,24 @@ msgstr ""
 
 #: ../hier/usr/lib/python2.6/reports/node/untangle_node_ips.py:268
 msgid "Port"
+msgstr ""
+
+#: ../src/com/untangle/node/ips/IpsNodeImpl.java:55
+msgid "All Events"
+msgstr ""
+
+#: ../src/com/untangle/node/ips/IpsNodeImpl.java:61
+msgid "Blocked Events"
+msgstr ""
+
+#: ../src/com/untangle/node/ips/IpsNodeImpl.java:70
+msgid "Sessions scanned"
+msgstr ""
+
+#: ../src/com/untangle/node/ips/IpsNodeImpl.java:71
+msgid "Sessions logged"
+msgstr ""
+
+#: ../src/com/untangle/node/ips/IpsNodeImpl.java:72
+msgid "Sessions blocked"
 msgstr ""
