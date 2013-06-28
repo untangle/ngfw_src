@@ -26,7 +26,7 @@ public class OpenVpnSettings implements java.io.Serializable, JSONString
     private String siteName = "untangle";
     private IPMaskedAddress addressSpace;
 
-    private boolean serverEnabled = true;
+    private boolean serverEnabled = false;
     private boolean natOpenVpnTraffic = true;
     
     /**

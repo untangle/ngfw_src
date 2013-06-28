@@ -354,6 +354,10 @@ public class OpenVpnNodeImpl extends NodeBase implements OpenVpnNode
          * Find an address pool that doesn't intersect anything
          */
         List<IPMaskedAddress> possibleAddressPools = new LinkedList<IPMaskedAddress>();
+        Random rand = new Random();
+        possibleAddressPools.add( new IPMaskedAddress( "172.16." + rand.nextInt( 250 ) + ".0/24") );
+        possibleAddressPools.add( new IPMaskedAddress( "172.16." + rand.nextInt( 250 ) + ".0/24") );
+        possibleAddressPools.add( new IPMaskedAddress( "172.16." + rand.nextInt( 250 ) + ".0/24") );
         possibleAddressPools.add( new IPMaskedAddress( "172.16.0.0/16" ) );
         possibleAddressPools.add( new IPMaskedAddress( "10.10.0.0/16" ) );
         possibleAddressPools.add( new IPMaskedAddress( "192.168.0.0/16" ) );

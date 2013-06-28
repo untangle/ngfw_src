@@ -978,6 +978,29 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
         },
 
         buildGeneralOptions: function() {
+            this.reRenderFn = Ext.bind( function (newValue) {
+                this.getSettings().serverEnabled = newValue;
+
+                Ext.getCmp('panel_remote_clients').disable();
+                Ext.getCmp('panel_groups').disable();
+                Ext.getCmp('panel_exports').disable();
+                Ext.getCmp('openvpn_options_client_to_client').disable();
+                Ext.getCmp('openvpn_options_port').disable();
+                Ext.getCmp('openvpn_options_protocol').disable();
+                Ext.getCmp('openvpn_options_cipher').disable();
+                Ext.getCmp('openvpn_options_addressSpace').disable();
+                if (newValue) {
+                    Ext.getCmp('panel_remote_clients').enable();
+                    Ext.getCmp('panel_groups').enable();
+                    Ext.getCmp('panel_exports').enable();
+                    Ext.getCmp('openvpn_options_client_to_client').enable();
+                    Ext.getCmp('openvpn_options_port').enable();
+                    Ext.getCmp('openvpn_options_protocol').enable();
+                    Ext.getCmp('openvpn_options_cipher').enable();
+                    Ext.getCmp('openvpn_options_addressSpace').enable();
+                }
+            }, this);
+
             this.panelGeneralOptions = Ext.create('Ext.panel.Panel', {
                 name: 'GeneralOptions',
                 helpSource: 'general',
@@ -1021,27 +1044,14 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                         listeners: {
                             "change": {
                                 fn: Ext.bind(function(elem, newValue) {
-                                    this.getSettings().serverEnabled = newValue;
-
-                                    Ext.getCmp('panel_remote_clients').disable();
-                                    Ext.getCmp('panel_groups').disable();
-                                    Ext.getCmp('panel_exports').disable();
-                                    Ext.getCmp('openvpn_options_client_to_client').disable();
-                                    Ext.getCmp('openvpn_options_port').disable();
-                                    Ext.getCmp('openvpn_options_protocol').disable();
-                                    Ext.getCmp('openvpn_options_cipher').disable();
-                                    Ext.getCmp('openvpn_options_addressSpace').disable();
-                                    if (newValue) {
-                                        Ext.getCmp('panel_remote_clients').enable();
-                                        Ext.getCmp('panel_groups').enable();
-                                        Ext.getCmp('panel_exports').enable();
-                                        Ext.getCmp('openvpn_options_client_to_client').enable();
-                                        Ext.getCmp('openvpn_options_port').enable();
-                                        Ext.getCmp('openvpn_options_protocol').enable();
-                                        Ext.getCmp('openvpn_options_cipher').enable();
-                                        Ext.getCmp('openvpn_options_addressSpace').enable();
-                                    }
+                                    this.reRenderFn( newValue );
                                 }, this)
+                            },
+                            "render": {
+                                fn: Ext.bind(function(field) {
+                                    this.reRenderFn( field.value );
+                                }, this),
+                                scope: this
                             }
                         }
                     }, {
