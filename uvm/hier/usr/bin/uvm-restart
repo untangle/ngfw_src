@@ -1,31 +1,38 @@
 #! /bin/bash
 
+# This script is launched by the untangle-vm.preinst
+# It will restart the untangle-vm after everything is complete (apt-get is no longer running)
+# If the untangle-vm was not running, it will not restart it
+
 echo "$0 $@: $$"
 
-if [ "xreboot" = "x$1" ]; then
-    mode=reboot
-elif [ "xrestart" = "x$1" ]; then
-    mode=restart
-else
-    echo "usage: $0 [ reboot | restart ]"
-    exit 1
-fi
-
-pidfile=/var/run/uvm-$mode.pid
-
+# If there is another uvm-restart running, just exit
+pidfile=/var/run/uvm-restart.pid
 if [ -e $pidfile ]; then
     if ps p $(cat $pidfile) >/dev/null 2>&1; then
-        echo "restart already scheduled"
-        exit;
+        echo "$0: uvm-restart already running"
+        exit 0
     else
-        rm $pidfile
+        # remove stale pidfile
+        /bin/rm -f $pidfile
     fi
 fi
 
-if [ -x /etc/init.d/untangle-vm ]; then
-    /usr/share/untangle/bin/ut-show-upgrade-splash start
-    /etc/init.d/untangle-vm stop || true
-fi
-nohup uvm-restart-wait $mode >>/var/log/restart-uvm.log 2>&1 &
+echo $$ >$pidfile
 
-while [ ! -e $pidfile ]; do true; done
+# Wait for apt-get to complete
+while true; do
+    if ps -C apt-get,aptitude,synaptic >/dev/null 2>&1; then
+        echo "$0: waiting for apt-get to complete..."
+        sleep 1
+    else
+        /bin/rm -f $pidfile
+        echo "$0: starting untangle-vm"
+        /etc/init.d/untangle-vm start
+        exit
+    fi
+done
+
+exit
+
+

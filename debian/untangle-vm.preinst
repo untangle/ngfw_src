@@ -1,10 +1,14 @@
 #! /bin/bash
 
-# (empty for new installs)
-oldVersion=$2
-
-if [ -x /usr/bin/uvm-restart ]; then
-    uvm-restart restart
+# If untangle-vm PID file exist and the process exists
+# stop the untangle-vm, launch the splash screen, and
+# launch uvm-restart to restart it after apt-get is done
+if [ -f /var/run/uvm.pid ] ; then
+    if ps p $(cat /var/run/uvm.pid) >/dev/null 2>&1; then
+        /usr/share/untangle/bin/ut-show-upgrade-splash start
+        /etc/init.d/untangle-vm stop
+        nohup /usr/bin/uvm-restart >>/var/log/restart-uvm.log 2>&1 &
+    fi
 fi
 
 exit 0
