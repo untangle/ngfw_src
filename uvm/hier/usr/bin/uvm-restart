@@ -4,7 +4,7 @@
 # It will restart the untangle-vm after everything is complete (apt-get is no longer running)
 # If the untangle-vm was not running, it will not restart it
 
-echo "$0 $@: $$"
+echo "$0: $0 $@ $$ `date`"
 
 # If there is another uvm-restart running, just exit
 pidfile=/var/run/uvm-restart.pid
