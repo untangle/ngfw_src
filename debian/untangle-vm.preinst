@@ -5,10 +5,18 @@
 # launch uvm-restart to restart it after apt-get is done
 if [ -f /var/run/uvm.pid ] ; then
     if ps p $(cat /var/run/uvm.pid) >/dev/null 2>&1; then
+
         /usr/share/untangle/bin/ut-show-upgrade-splash start
-        /etc/init.d/untangle-vm stop
+
+        if [ -x /etc/init.d/untangle-vm ] ; then
+            /etc/init.d/untangle-vm stop || true
+        fi
+
+        echo "Restarting untangle-vm after apt-get completes..."
         nohup /usr/bin/uvm-restart >>/var/log/restart-uvm.log 2>&1 &
+        exit 0
     fi
 fi
 
+echo "untangle-vm not running."
 exit 0
