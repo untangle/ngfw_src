@@ -257,13 +257,13 @@ public class FirewallImpl extends NodeBase implements Firewall
         FirewallRuleMatcher portMatch1 = new FirewallRuleMatcher(FirewallRuleMatcher.MatcherType.DST_PORT, "21");
         matcherList = new LinkedList<FirewallRuleMatcher>();
         matcherList.add(portMatch1);
-        ruleList.add(new FirewallRule(false, matcherList, true, true, "Block and log all traffic destined to port 21"));
+        ruleList.add(new FirewallRule(false, matcherList, true, true, "Block and flag all traffic destined to port 21"));
                              
         /* example rule 2 */
         FirewallRuleMatcher addrMatch2 = new FirewallRuleMatcher(FirewallRuleMatcher.MatcherType.SRC_ADDR, "1.2.3.4/255.255.255.0");
         matcherList = new LinkedList<FirewallRuleMatcher>();
         matcherList.add(addrMatch2);
-        ruleList.add(new FirewallRule(false, matcherList, true, true, "Block all TCP traffic from 1.2.3.0 netmask 255.255.255.0"));
+        ruleList.add(new FirewallRule(false, matcherList, true, true, "Block and flag all TCP traffic from 1.2.3.0 netmask 255.255.255.0"));
 
         /* example rule 3 */
         FirewallRuleMatcher addrMatch3 = new FirewallRuleMatcher(FirewallRuleMatcher.MatcherType.DST_ADDR, "1.2.3.4/255.255.255.0");
@@ -271,7 +271,7 @@ public class FirewallImpl extends NodeBase implements Firewall
         matcherList = new LinkedList<FirewallRuleMatcher>();
         matcherList.add(addrMatch3);
         matcherList.add(portMatch3);
-        ruleList.add(new FirewallRule(false, matcherList, true, true, "Accept and log all traffic to the range 1.2.3.1 - 1.2.3.10 to ports 1000-5000"));
+        ruleList.add(new FirewallRule(false, matcherList, true, true, "Accept and flag all traffic to the range 1.2.3.1 - 1.2.3.10 to ports 1000-5000"));
 
         FirewallSettings settings = new FirewallSettings(ruleList);
         settings.setVersion(1);
