@@ -277,6 +277,7 @@ class NetworkTests(unittest2.TestCase):
     def setUp(self):
         global node, nodeFW, orig_netsettings, utBridged
         orig_netsettings = uvmContext.networkManager().getNetworkSettings()
+        # print "orig_netsettings <%s>" % orig_netsettings
         utBridged = isBridgeMode(ClientControl.hostIP)
         clientControl.runCommand("kill $(ps aux | grep SimpleHTTPServer | grep -v grep | awk '{print $2}') 2>/dev/null")
         
@@ -423,7 +424,7 @@ class NetworkTests(unittest2.TestCase):
         # print "result <%s>" % result
         match = re.search(r'address \d{1,3}.\d{1,3}.\d{1,3}.\d{1,3}', result)
         ip_address_playboy = (match.group()).replace('address ','')
-        appendRouteRule(createRouteRule(ip_address_playboy,32,"169.254.1.1"))
+        appendRouteRule(createRouteRule(ip_address_playboy,32,"127.0.0.1"))
         # verify other sites are still available.
         result = clientControl.runCommand("wget -o /dev/null -t 1 --timeout=3 http://test.untangle.com")
         assert (result == 0)
@@ -475,6 +476,7 @@ class NetworkTests(unittest2.TestCase):
         nukeDNSRules()
         nukeBypassRules()
         nukeRouteRules()
+        # print "orig_netsettings <%s>" % orig_netsettings
         uvmContext.networkManager().setNetworkSettings(orig_netsettings)
         # In case firewall is still installed.
         if (uvmContext.nodeManager().isInstantiated(self.nodeNameFW())):
