@@ -40,6 +40,7 @@ class Firewall(Node):
     def setup(self):
         ft = reports.engine.get_fact_table('reports.session_totals')
         ft.measures.append(Column('firewall_blocks', 'integer', "count(CASE WHEN firewall_blocked THEN 1 ELSE null END)"))
+        ft.measures.append(Column('firewall_flags', 'integer', "count(CASE WHEN firewall_flagged THEN 1 ELSE null END)"))
         ft.dimensions.append(Column('firewall_rule_index', 'integer'))
 
     def get_toc_membership(self):
@@ -53,6 +54,9 @@ class Firewall(Node):
         s = reports.SummarySection('summary', _('Summary Report'),
                                    [FirewallHighlight(self.name),
                                     DailyRules(),
+                                    TopTenFlaggingRulesByHits(),
+                                    TopTenFlaggedHostsByHits(),
+                                    TopTenFlaggedUsersByHits(),
                                     TopTenBlockingRulesByHits(),
                                     TopTenBlockedHostsByHits(),
                                     TopTenBlockedUsersByHits()])
@@ -208,9 +212,67 @@ class DailyRules(reports.Graph):
 
         return (lks, plot)
 
-class TopTenBlockedHostsByHits(Graph):
+class TopTenFlaggingRulesByHits(Graph):
     def __init__(self):
-        Graph.__init__(self, 'top-firewall-blocked-hosts-by-hits', _('Top Firewall Blocked Hosts By Hits'))
+        Graph.__init__(self, 'top-firewall-flagging-rules-by-hits', _('Top Firewall Flagging Rules By Hits'))
+
+    @print_timing
+    def get_graph(self, end_date, report_days, host=None, user=None,
+                  email=None):
+        if email:
+            return None
+
+        ed = DateFromMx(end_date)
+        one_week = DateFromMx(end_date - mx.DateTime.DateTimeDelta(report_days))
+
+        query = """\
+SELECT firewall_rule_index,
+       count(*) as hits_sum
+FROM reports.session_totals
+WHERE time_stamp >= %s::timestamp without time zone AND time_stamp < %s::timestamp without time zone
+AND firewall_flags > 0
+AND firewall_rule_index IS NOT NULL"""
+
+        if host:
+            query += " AND hostname = %s"
+        elif user:
+            query += " AND username = %s"
+
+        query = query + " GROUP BY firewall_rule_index ORDER BY hits_sum DESC"
+
+        conn = sql_helper.get_connection()
+        try:
+            lks = []
+            dataset = {}
+
+            curs = conn.cursor()
+
+            if host:
+                curs.execute(query, (one_week, ed, host))
+            elif user:
+                curs.execute(query, (one_week, ed, user))
+            else:
+                curs.execute(query, (one_week, ed))
+
+            for r in curs.fetchall():
+                ks = KeyStatistic(r[0], r[1], _('Hits'))
+                lks.append(ks)
+                dataset[r[0]] = r[1]
+        finally:
+            conn.commit()
+
+        plot = Chart(type=PIE_CHART,
+                     title=_('Top Ten Firewall Flagging Rules (by Hits)'),
+                     xlabel=_('Rule #'),
+                     ylabel=_('Flags Per Day'))
+
+        plot.add_pie_dataset(dataset, display_limit=10)
+
+        return (lks, plot, 10)
+
+class TopTenFlaggedHostsByHits(Graph):
+    def __init__(self):
+        Graph.__init__(self, 'top-firewall-flagged-hosts-by-hits', _('Top Firewall Flagged Hosts By Hits'))
 
     @print_timing
     def get_graph(self, end_date, report_days, host=None, user=None,
@@ -225,7 +287,7 @@ class TopTenBlockedHostsByHits(Graph):
 SELECT hostname, count(*) as hits_sum
 FROM reports.session_totals
 WHERE time_stamp >= %s::timestamp without time zone AND time_stamp < %s::timestamp without time zone
-AND firewall_blocks > 0
+AND firewall_flags > 0
 AND firewall_rule_index IS NOT NULL"""
 
         if host:
@@ -257,9 +319,67 @@ AND firewall_rule_index IS NOT NULL"""
             conn.commit()
 
         plot = Chart(type=PIE_CHART,
-                     title=_('Top Ten Firewall Blocked Hosts (by Hits)'),
+                     title=_('Top Ten Firewall Flagged Hosts (by Hits)'),
                      xlabel=_('Host'),
-                     ylabel=_('Blocks Per Day'))
+                     ylabel=_('Flags Per Day'))
+        plot.add_pie_dataset(dataset, display_limit=10)
+
+        return (lks, plot, 10)
+
+class TopTenFlaggedUsersByHits(Graph):
+    def __init__(self):
+        Graph.__init__(self, 'top-firewall-flagged-users-by-hits', _('Top Firewall Flagged Users By Hits'))
+
+    @print_timing
+    def get_graph(self, end_date, report_days, host=None, user=None,
+                  email=None):
+        if email:
+            return None
+
+        ed = DateFromMx(end_date)
+        one_week = DateFromMx(end_date - mx.DateTime.DateTimeDelta(report_days))
+
+        query = """\
+SELECT username, count(*) as hits_sum
+FROM reports.session_totals
+WHERE time_stamp >= %s::timestamp without time zone AND time_stamp < %s::timestamp without time zone
+AND username != ''
+AND firewall_flags > 0
+AND firewall_rule_index IS NOT NULL"""
+
+        if host:
+            query += " AND hostname = %s"
+        elif user:
+            query += " AND username = %s"
+
+        query += " GROUP BY username ORDER BY hits_sum DESC"
+
+        conn = sql_helper.get_connection()
+        try:
+            lks = []
+            dataset = {}
+
+            curs = conn.cursor()
+
+            if host:
+                curs.execute(query, (one_week, ed, host))
+            elif user:
+                curs.execute(query, (one_week, ed, user))
+            else:
+                curs.execute(query, (one_week, ed))
+
+            for r in curs.fetchall():
+                ks = KeyStatistic(r[0], r[1], _('Hits'), link_type=reports.USER_LINK)
+                lks.append(ks)
+                dataset[r[0]] = r[1]
+        finally:
+            conn.commit()
+
+        plot = Chart(type=PIE_CHART,
+                     title=_('Top Ten Firewall Flagged Users (by Hits)'),
+                     xlabel=_('User'),
+                     ylabel=_('Flags Per Day'))
+
         plot.add_pie_dataset(dataset, display_limit=10)
 
         return (lks, plot, 10)
@@ -322,6 +442,62 @@ AND firewall_rule_index IS NOT NULL"""
 
         return (lks, plot, 10)
 
+class TopTenBlockedHostsByHits(Graph):
+    def __init__(self):
+        Graph.__init__(self, 'top-firewall-blocked-hosts-by-hits', _('Top Firewall Blocked Hosts By Hits'))
+
+    @print_timing
+    def get_graph(self, end_date, report_days, host=None, user=None,
+                  email=None):
+        if email:
+            return None
+
+        ed = DateFromMx(end_date)
+        one_week = DateFromMx(end_date - mx.DateTime.DateTimeDelta(report_days))
+
+        query = """\
+SELECT hostname, count(*) as hits_sum
+FROM reports.session_totals
+WHERE time_stamp >= %s::timestamp without time zone AND time_stamp < %s::timestamp without time zone
+AND firewall_blocks > 0
+AND firewall_rule_index IS NOT NULL"""
+
+        if host:
+            query += " AND hostname = %s"
+        elif user:
+            query += " AND username = %s"
+
+        query = query + " GROUP BY hostname ORDER BY hits_sum DESC"
+
+        conn = sql_helper.get_connection()
+        try:
+            lks = []
+            dataset = {}
+
+            curs = conn.cursor()
+
+            if host:
+                curs.execute(query, (one_week, ed, host))
+            elif user:
+                curs.execute(query, (one_week, ed, user))
+            else:
+                curs.execute(query, (one_week, ed))
+
+                for r in curs.fetchall():
+                    ks = KeyStatistic(r[0], r[1], _('Hits'), link_type=reports.HNAME_LINK)
+                    lks.append(ks)
+                    dataset[r[0]] = r[1]
+        finally:
+            conn.commit()
+
+        plot = Chart(type=PIE_CHART,
+                     title=_('Top Ten Firewall Blocked Hosts (by Hits)'),
+                     xlabel=_('Host'),
+                     ylabel=_('Blocks Per Day'))
+        plot.add_pie_dataset(dataset, display_limit=10)
+
+        return (lks, plot, 10)
+
 class TopTenBlockedUsersByHits(Graph):
     def __init__(self):
         Graph.__init__(self, 'top-firewall-blocked-users-by-hits', _('Top Firewall Blocked Users By Hits'))
@@ -380,6 +556,62 @@ AND firewall_rule_index IS NOT NULL"""
 
         return (lks, plot, 10)
 
+
+    def __init__(self):
+        Graph.__init__(self, 'top-firewall-blocked-hosts-by-hits', _('Top Firewall Blocked Hosts By Hits'))
+
+    @print_timing
+    def get_graph(self, end_date, report_days, host=None, user=None,
+                  email=None):
+        if email:
+            return None
+
+        ed = DateFromMx(end_date)
+        one_week = DateFromMx(end_date - mx.DateTime.DateTimeDelta(report_days))
+
+        query = """\
+SELECT hostname, count(*) as hits_sum
+FROM reports.session_totals
+WHERE time_stamp >= %s::timestamp without time zone AND time_stamp < %s::timestamp without time zone
+AND firewall_blocks > 0
+AND firewall_rule_index IS NOT NULL"""
+
+        if host:
+            query += " AND hostname = %s"
+        elif user:
+            query += " AND username = %s"
+
+        query = query + " GROUP BY hostname ORDER BY hits_sum DESC"
+
+        conn = sql_helper.get_connection()
+        try:
+            lks = []
+            dataset = {}
+
+            curs = conn.cursor()
+
+            if host:
+                curs.execute(query, (one_week, ed, host))
+            elif user:
+                curs.execute(query, (one_week, ed, user))
+            else:
+                curs.execute(query, (one_week, ed))
+
+                for r in curs.fetchall():
+                    ks = KeyStatistic(r[0], r[1], _('Hits'), link_type=reports.HNAME_LINK)
+                    lks.append(ks)
+                    dataset[r[0]] = r[1]
+        finally:
+            conn.commit()
+
+        plot = Chart(type=PIE_CHART,
+                     title=_('Top Ten Firewall Blocked Hosts (by Hits)'),
+                     xlabel=_('Host'),
+                     ylabel=_('Blocks Per Day'))
+        plot.add_pie_dataset(dataset, display_limit=10)
+
+        return (lks, plot, 10)
+
 class FirewallDetail(DetailSection):
     def __init__(self):
         DetailSection.__init__(self, 'firewall-events', _('Firewall Events'))
@@ -397,6 +629,7 @@ class FirewallDetail(DetailSection):
 
         rv = rv + [ColumnDesc('firewall_rule_index', _('Rule Applied')),
                    ColumnDesc('firewall_blocked', _('Blocked')),
+                   ColumnDesc('firewall_flagged', _('Flagged')),
                    ColumnDesc('c_server_addr', _('Destination Ip')),
                    ColumnDesc('c_server_port', _('Destination Port')),
                    ColumnDesc('c_client_addr', _('Source Ip')),
@@ -415,7 +648,7 @@ class FirewallDetail(DetailSection):
         if not user:
             sql = sql + "username, "
 
-        sql = sql + ("""firewall_rule_index, firewall_blocked::text, host(c_server_addr), c_server_port, host(c_client_addr), c_client_port
+        sql = sql + ("""firewall_rule_index, firewall_blocked::text, firewall_flagged::text, host(c_server_addr), c_server_port, host(c_client_addr), c_client_port
 FROM reports.sessions
 WHERE time_stamp >= %s::timestamp without time zone AND time_stamp < %s::timestamp without time zone
 AND NOT firewall_rule_index IS NULL""" % (DateFromMx(start_date),
