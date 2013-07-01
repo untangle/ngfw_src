@@ -79,8 +79,8 @@ public class CertificateManagerImpl implements CertificateManager
             if ( UvmContextFactory.context().isDevel() ) {
                 UvmContextFactory.context().execManager().exec("cp -fa " + ROOT_CERT_FILE + " /etc/untangle/untangle.crt");
                 UvmContextFactory.context().execManager().exec("cp -fa " + ROOT_KEY_FILE + " /etc/untangle/untangle.key");
-                UvmContextFactory.context().execManager().exec("cp -fa " + System.getProperty("uvm.settings.dir") + "/untangle-certificates/index.txt* /etc/untangle");
-                UvmContextFactory.context().execManager().exec("cp -fa " + System.getProperty("uvm.settings.dir") + "/untangle-certificates/serial.txt* /etc/untangle");
+                UvmContextFactory.context().execManager().exec("cp -fa " + System.getProperty("uvm.settings.dir") + "/untangle-certificates/index.txt* /etc/untangle/");
+                UvmContextFactory.context().execManager().exec("cp -fa " + System.getProperty("uvm.settings.dir") + "/untangle-certificates/serial.txt* /etc/untangle/");
             }
                 
         }
