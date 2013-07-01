@@ -2671,12 +2671,12 @@ if (!Ung.hasResource["Ung.Network"]) {
         },
         // Routes Panel
         buildRoutes: function() {
-            var devList = [];
+            this.devList = [];
             for ( var c = 0 ; c < this.settings.interfaces.list.length ; c++ ) {
                 var intf = this.settings.interfaces.list[c];
-                var name = "Local on " + intf.name + "(" + intf.systemDev + ")";
+                var name = this.i18n._("Local on") + " " + intf.name + "(" + intf.systemDev + ")";
                 var key = intf.interfaceId;
-                devList.push( [ key, name ] );
+                this.devList.push( [ key, name ] );
             }
             this.gridStaticRoutes = Ext.create('Ung.EditorGrid', {
                 height: 300,
@@ -2717,7 +2717,25 @@ if (!Ung.hasResource["Ung.Network"]) {
                 }, {
                     header: this.i18n._("Next Hop"),
                     width: 300,
-                    dataIndex: 'nextHop'
+                    dataIndex: 'nextHop',
+                    renderer: Ext.bind(function(value, metadata, record, rowIndex, colIndex, store, view) {
+                        var intRegex = /^\d+$/;
+                        if ( intRegex.test( value ) ) {
+                            var intValue = parseInt( value, 10 );
+                            var devName = null;
+                            for ( var i = 0 ; i < this.devList.length ; i++ ) {
+                                var dev = this.devList[i];
+                                if ( dev[0] == intValue )
+                                    devName = dev[1];
+                            }
+                            if ( devName !== null )
+                                return devName;
+                            else
+                                return this.i18n._("Local interface");
+                        } else {
+                            return value;
+                        }
+                    }, this)
                 }, {
                     header: this.i18n._("Description"),
                     width: 300,
@@ -2756,12 +2774,13 @@ if (!Ung.hasResource["Ung.Network"]) {
                     editable: false
                 }, {
                     xtype: "combo",
-                    editable : true,
-                    allowBlank: false,
                     dataIndex: "nextHop",
                     fieldLabel: i18n._("Next Hop"),
-                    store: devList,
-                    queryMode: 'local'
+                    store: this.devList,
+                    width: 300,
+                    queryMode: 'local',
+                    editable : true,
+                    allowBlank: false
                 }, {
                     xtype: 'fieldset',
                     cls: 'description',
