@@ -65,7 +65,7 @@ public class CaptureNodeImpl extends NodeBase implements CaptureNode
     private final CaptureReplacementGenerator replacementGenerator;
 
     private final SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
-    private final String settingsFile = (System.getProperty("uvm.settings.dir") + "/untangle-node-capture/settings_" + getNodeSettings().getId().toString());
+    private final String settingsFile = (System.getProperty("uvm.settings.dir") + "/untangle-node-capture/settings_" + getNodeSettings().getId().toString()) + ".js";
     private final String customPath = (System.getProperty("uvm.web.dir") + "/capture/custom_" + getNodeSettings().getId().toString());
 
     protected CaptureUserTable captureUserTable = new CaptureUserTable();
@@ -280,13 +280,9 @@ public class CaptureNodeImpl extends NodeBase implements CaptureNode
     {
         CaptureSettings readSettings = null;
 
-        try
-        {
+        try {
             readSettings = settingsManager.load(CaptureSettings.class, settingsFile);
-        }
-
-        catch (Exception e)
-        {
+        } catch (Exception e) {
             logger.warn("Error loading node settings",e);
             return(null);
         }
@@ -297,13 +293,9 @@ public class CaptureNodeImpl extends NodeBase implements CaptureNode
 
     private void saveNodeSettings(CaptureSettings argSettings)
     {
-        try
-        {
+        try {
             settingsManager.save(CaptureSettings.class, settingsFile, argSettings);
-        }
-
-        catch (Exception e)
-        {
+        } catch (Exception e) {
             logger.warn("Error in saveNodeSettings",e);
             return;
         }

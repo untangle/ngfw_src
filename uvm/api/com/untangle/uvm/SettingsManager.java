@@ -12,7 +12,7 @@ public interface SettingsManager
      * @param clz
      *            Type of class to load.
      * @param fileName
-     *            The fileName of the file (EXCLUDING the .js which will be appended)
+     *            The fileName of the file
      * @return The object that was loaded or null if an object was not loaded.
      * @throws SettingsException
      */
@@ -26,7 +26,7 @@ public interface SettingsManager
      * @param clz
      *            Type of class to save.
      * @param fileName
-     *            .
+     *            The filename to save the class to
      * @param value
      *            The value to be saved.
      * @return The object that was saved.

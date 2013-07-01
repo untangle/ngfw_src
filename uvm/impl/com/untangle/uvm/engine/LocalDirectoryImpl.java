@@ -23,7 +23,7 @@ public class LocalDirectoryImpl implements LocalDirectory
 {
     private final Logger logger = Logger.getLogger(getClass());
 
-    private final static String LOCAL_DIRECTORY_SETTINGS_FILE = System.getProperty( "uvm.settings.dir" ) + "/untangle-vm/local_directory";
+    private final static String LOCAL_DIRECTORY_SETTINGS_FILE = System.getProperty( "uvm.settings.dir" ) + "/untangle-vm/local_directory.js";
 
     private final static String UNCHANGED_PASSWORD = "***UNCHANGED***";
     

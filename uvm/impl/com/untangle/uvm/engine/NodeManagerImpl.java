@@ -50,7 +50,7 @@ import com.untangle.uvm.util.Pulse;
  */
 public class NodeManagerImpl implements NodeManager
 {
-    private final static String NODE_MANAGER_SETTINGS_FILE = System.getProperty( "uvm.settings.dir" ) + "/untangle-vm/nodes";
+    private final static String NODE_MANAGER_SETTINGS_FILE = System.getProperty( "uvm.settings.dir" ) + "/untangle-vm/nodes.js";
 
     private final Logger logger = Logger.getLogger(getClass());
 
@@ -637,7 +637,7 @@ public class NodeManagerImpl implements NodeManager
     {
         SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
         NodeManagerSettings readSettings = null;
-        String settingsFileName = System.getProperty("uvm.settings.dir") + "/untangle-vm/" + "nodes";
+        String settingsFileName = System.getProperty("uvm.settings.dir") + "/untangle-vm/" + "nodes.js";
 
         try {
             readSettings = settingsManager.load( NodeManagerSettings.class, settingsFileName );
@@ -702,7 +702,7 @@ public class NodeManagerImpl implements NodeManager
         SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
         NodeProperties nodeProperties = null;
         try {
-            String fileName = System.getProperty("uvm.lib.dir") + "/" + packageDesc.getName() + "/" + "nodeProperties";
+            String fileName = System.getProperty("uvm.lib.dir") + "/" + packageDesc.getName() + "/" + "nodeProperties.js";
             nodeProperties = settingsManager.load( NodeProperties.class, fileName );
         } catch (SettingsManager.SettingsException e) {
             logger.warn("Failed to load settings:",e);
@@ -831,7 +831,7 @@ public class NodeManagerImpl implements NodeManager
          */
         SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
         try {
-            settingsManager.save(NodeManagerSettings.class, System.getProperty("uvm.settings.dir") + "/" + "untangle-vm/" + "nodes", newSettings);
+            settingsManager.save(NodeManagerSettings.class, System.getProperty("uvm.settings.dir") + "/" + "untangle-vm/" + "nodes.js", newSettings);
         } catch (SettingsManager.SettingsException e) {
             logger.warn("Failed to save settings.",e);
             throw new RuntimeException(e);

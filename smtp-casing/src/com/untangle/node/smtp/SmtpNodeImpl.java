@@ -153,11 +153,10 @@ public class SmtpNodeImpl extends NodeBase implements SmtpNode, MailExport
     public void setSmtpNodeSettings(final SmtpNodeSettings newSettings)
     {
         String nodeID = this.getNodeSettings().getId().toString();
-        String settingsName = System.getProperty("uvm.settings.dir") + "/untangle-casing-smtp/settings_" + nodeID;
-        String settingsFile = settingsName + ".js";
+        String settingsFile = System.getProperty("uvm.settings.dir") + "/untangle-casing-smtp/settings_" + nodeID + ".js";
 
         try {
-            settingsManager.save(SmtpNodeSettings.class, settingsName, newSettings);
+            settingsManager.save( SmtpNodeSettings.class, settingsFile, newSettings );
         } catch(Exception exn) {
             logger.error("setSmtpNodeSettings()",exn);
             return;
@@ -260,15 +259,14 @@ public class SmtpNodeImpl extends NodeBase implements SmtpNode, MailExport
     protected void postInit()
     {
         String nodeID = this.getNodeSettings().getId().toString();
-        String settingsName = System.getProperty("uvm.settings.dir") + "/untangle-casing-smtp/settings_" + nodeID;
-        String settingsFile = settingsName + ".js";
+        String settingsFile = System.getProperty("uvm.settings.dir") + "/untangle-casing-smtp/settings_" + nodeID + ".js";
 
         SmtpNodeSettings readSettings = null;
         logger.info("Loading settings from " + settingsFile );
 
         try {
             // first we try to read our json settings
-            readSettings = settingsManager.load( SmtpNodeSettings.class, settingsName );
+            readSettings = settingsManager.load( SmtpNodeSettings.class, settingsFile );
         } catch (Exception exn) {
             logger.error("postInit()",exn);
         }

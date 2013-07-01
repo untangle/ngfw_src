@@ -20,6 +20,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.zip.GZIPInputStream;
 import org.apache.log4j.Logger;
@@ -39,9 +40,14 @@ public class SettingsManagerImpl implements SettingsManager
 
     /**
      * Valid characters for settings file names
-     */
+     */ 
     public static final Pattern VALID_CHARACTERS = Pattern.compile("^[a-zA-Z0-9_\\-\\.]+$");
 
+    /**
+     * The extension on the filename (usually .js)
+     */ 
+    public static final Pattern FILE_EXTENSION = Pattern.compile("\\.\\w+$");
+    
     /**
      * Formatting for the version string (yyyy-mm-dd-hhmm)
      */
@@ -60,7 +66,7 @@ public class SettingsManagerImpl implements SettingsManager
     /**
      * Documented in SettingsManager.java
      */
-    public <T> T load(Class<T> clz, String fileName) throws SettingsException
+    public <T> T load( Class<T> clz, String fileName ) throws SettingsException
     {
         if (!_checkLegalName(fileName)) {
             throw new IllegalArgumentException("Invalid file name: '" + fileName + "'");
@@ -72,7 +78,7 @@ public class SettingsManagerImpl implements SettingsManager
     /**
      * Documented in SettingsManager.java
      */
-    public <T> T loadUrl(Class<T> clz, String urlStr) throws SettingsException
+    public <T> T loadUrl( Class<T> clz, String urlStr ) throws SettingsException
     {
         InputStream is = null;
 
@@ -148,12 +154,12 @@ public class SettingsManagerImpl implements SettingsManager
     
     /**
      * Implementation of the load
-     * This appends ".js" to the filename, opens the file, and then calls loadInputStream
+     * This opens the file, and then calls loadInputStream
      */
     @SuppressWarnings("unchecked") //JSON
-    private <T> T _loadImpl(Class<T> clz, String fileName) throws SettingsException
+    private <T> T _loadImpl( Class<T> clz, String fileName ) throws SettingsException
     {
-        File f = new File(fileName + ".js");
+        File f = new File( fileName );
         if (!f.exists()) {
             return null;
         }
@@ -174,7 +180,6 @@ public class SettingsManagerImpl implements SettingsManager
 
     /**
      * Implementation of the load using a stream
-     * 
      */
     @SuppressWarnings("unchecked") //JSON
     private <T> T _loadInputStream(Class<T> clz, InputStream is) throws SettingsException
@@ -217,9 +222,9 @@ public class SettingsManagerImpl implements SettingsManager
      */
     private <T> T _saveImpl(Class<T> clz, String fileName, T value) throws SettingsException
     {
-        File link = new File(fileName + ".js");
+        File link = new File( fileName );
         String versionString = String.valueOf(DATE_FORMATTER.format(new Date()));
-        String outputFileName = fileName + ".js" + "-version-" + versionString + ".js";
+        String outputFileName = fileName + "-version-" + versionString + _findFileExtension( fileName );
         File   outputFile = new File(outputFileName);
 
         Object lock = this.getLock(outputFile.getParentFile().getAbsolutePath());
@@ -311,13 +316,37 @@ public class SettingsManagerImpl implements SettingsManager
         return lock;
     }
 
+    /**
+     * Check if a filename is "legal"
+     * Must have valid characterns and an extension
+     */
     private boolean _checkLegalName(String name) throws IllegalArgumentException
     {
-        if (!VALID_CHARACTERS.matcher(name.replace("/","")).matches()) {
-            logger.error("Illegal name: " + name);
+        if (!VALID_CHARACTERS.matcher( name.replace("/","") ).matches()) {
+            logger.error("Illegal name (Invalid characters): " + name);
             return false;
         }
-        
+
+        Matcher m = FILE_EXTENSION.matcher( name );
+        if ( ! m.find()) {
+            logger.error("Illegal name (Missing file extension): " + name);
+            return false;
+        }
+            
         return true;
+    }
+
+    /**
+     * Finds the file extension and returns it as a string
+     * Example fileName = foo.js returns ".js"
+     */
+    private String _findFileExtension( String fileName )
+    {
+        Matcher m = FILE_EXTENSION.matcher( fileName );
+        if ( m.find() ) {
+            return m.group();
+        }
+
+        return null;
     }
 }

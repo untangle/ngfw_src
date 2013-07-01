@@ -57,7 +57,7 @@ public class AdminManagerImpl implements AdminManager
     {
         SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
         AdminSettings readSettings = null;
-        String settingsFileName = System.getProperty("uvm.settings.dir") + "/untangle-vm/" + "admin";
+        String settingsFileName = System.getProperty("uvm.settings.dir") + "/untangle-vm/" + "admin.js";
 
         try {
             readSettings = settingsManager.load( AdminSettings.class, settingsFileName );
@@ -260,7 +260,7 @@ public class AdminManagerImpl implements AdminManager
          */
         SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
         try {
-            settingsManager.save(AdminSettings.class, System.getProperty("uvm.settings.dir") + "/" + "untangle-vm/" + "admin", newSettings);
+            settingsManager.save(AdminSettings.class, System.getProperty("uvm.settings.dir") + "/" + "untangle-vm/" + "admin.js", newSettings);
         } catch (SettingsManager.SettingsException e) {
             logger.warn("Failed to save settings.",e);
             return;

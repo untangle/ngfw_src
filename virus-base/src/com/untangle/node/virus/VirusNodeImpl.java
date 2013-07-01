@@ -39,9 +39,6 @@ import com.untangle.uvm.vnet.NodeSession;
 
 /**
  * Virus Node.
- *
- * @author <a href="mailto:amread@untangle.com">Aaron Read</a>
- * @version 1.0
  */
 public abstract class VirusNodeImpl extends NodeBase implements VirusNode
 {
@@ -377,7 +374,7 @@ public abstract class VirusNodeImpl extends NodeBase implements VirusNode
         SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
         String nodeID = this.getNodeSettings().getId().toString();
         VirusSettings readSettings = null;
-        String settingsFileName = System.getProperty("uvm.settings.dir") + "/untangle-node-" + this.getName() + "/" + "settings_" + nodeID;
+        String settingsFileName = System.getProperty("uvm.settings.dir") + "/untangle-node-" + this.getName() + "/" + "settings_" + nodeID + ".js";
         
         try {
             readSettings = settingsManager.load( VirusSettings.class, settingsFileName );
@@ -515,8 +512,9 @@ public abstract class VirusNodeImpl extends NodeBase implements VirusNode
          */
         SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
         String nodeID = this.getNodeSettings().getId().toString();
+        String settingsFileName = System.getProperty("uvm.settings.dir") + "/untangle-node-" + this.getName() + "/" + "settings_" + nodeID + ".js";
         try {
-            settingsManager.save(VirusSettings.class, System.getProperty("uvm.settings.dir") + "/" + "untangle-node-" + this.getName() + "/" + "settings_" + nodeID, newSettings);
+            settingsManager.save( VirusSettings.class, settingsFileName, newSettings );
         } catch (SettingsManager.SettingsException e) {
             logger.warn("Failed to save settings.",e);
             return;

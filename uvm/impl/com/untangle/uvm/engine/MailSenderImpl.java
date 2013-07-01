@@ -107,7 +107,7 @@ public class MailSenderImpl implements MailSender
     {
         SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
         MailSettings readSettings = null;
-        String settingsFileName = System.getProperty("uvm.settings.dir") + "/untangle-vm/" + "mail";
+        String settingsFileName = System.getProperty("uvm.settings.dir") + "/untangle-vm/" + "mail.js";
 
         try {
             readSettings = settingsManager.load( MailSettings.class, settingsFileName );
@@ -136,7 +136,7 @@ public class MailSenderImpl implements MailSender
         /**
          * If the settings file date is newer than the system files, re-sync them
          */
-        File settingsFile = new File(settingsFileName + ".js");
+        File settingsFile = new File( settingsFileName );
         File file1 = new File(EXIM_CONF_FILE);
         File file2 = new File(EXIM_AUTH_FILE);
         File file3 = new File(EXIM_TEMPLATE_FILE);

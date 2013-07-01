@@ -49,8 +49,8 @@ public class NetworkManagerImpl implements NetworkManager
     private final String updateRulesScript = System.getProperty("uvm.bin.dir") + "/ut-uvm-update-rules.sh";
     private final String deviceStatusScript = System.getProperty("uvm.bin.dir") + "/ut-uvm-device-status.sh";
 
-    private final String settingsFilename = System.getProperty("uvm.settings.dir") + "/untangle-vm/" + "network";
-    private final String settingsFilenameBackup = "/etc/untangle-netd/network";
+    private final String settingsFilename = System.getProperty("uvm.settings.dir") + "/untangle-vm/" + "network.js";
+    private final String settingsFilenameBackup = "/etc/untangle-netd/network.js";
     
     private NetworkSettings networkSettings;
 
@@ -115,7 +115,7 @@ public class NetworkManagerImpl implements NetworkManager
          * If the settings file date is newer than the system files, re-sync them
          */
         if ( ! UvmContextFactory.context().isDevel() ) {
-            File settingsFile = new File(this.settingsFilename + ".js");
+            File settingsFile = new File( this.settingsFilename );
             File interfacesFile = new File("/etc/network/interfaces");
             if (settingsFile.lastModified() > interfacesFile.lastModified() ) {
                 logger.warn("Settings file newer than interfaces files, Syncing...");
@@ -153,7 +153,7 @@ public class NetworkManagerImpl implements NetworkManager
         } catch (Exception e) {}
     
         // Now sync those settings to the OS
-        String cmd = "/usr/share/untangle-netd/bin/sync-settings.py -v -f " + settingsFilename + ".js";
+        String cmd = "/usr/share/untangle-netd/bin/sync-settings.py -v -f " + settingsFilename;
         result = UvmContextFactory.context().execManager().exec( cmd );
         try {
             String lines[] = result.getOutput().split("\\r?\\n");
@@ -353,7 +353,7 @@ public class NetworkManagerImpl implements NetworkManager
     public InterfaceStatus getInterfaceStatus( int interfaceId )
     {
         InterfaceStatus status = null;
-        String filename = "/var/lib/untangle-netd/interface-" + interfaceId + "-status";
+        String filename = "/var/lib/untangle-netd/interface-" + interfaceId + "-status.js";
 
         try {
             status = UvmContextFactory.context().settingsManager().load( InterfaceStatus.class,  filename);

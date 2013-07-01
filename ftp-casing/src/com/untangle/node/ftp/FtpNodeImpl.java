@@ -42,11 +42,10 @@ public class FtpNodeImpl extends NodeBase
     public void setFtpSettings(final FtpSettings newSettings)
     {
         String nodeID = this.getNodeSettings().getId().toString();
-        String settingsName = System.getProperty("uvm.settings.dir") + "/untangle-casing-ftp/settings_" + nodeID;
-        String settingsFile = settingsName + ".js";
+        String settingsFile = System.getProperty("uvm.settings.dir") + "/untangle-casing-ftp/settings_" + nodeID + ".js";
 
         try {
-            settingsManager.save(FtpSettings.class, settingsName, newSettings);
+            settingsManager.save(FtpSettings.class, settingsFile, newSettings);
         } catch(Exception exn) {
             logger.error("setFtpSettings()",exn);
             return;
@@ -72,15 +71,14 @@ public class FtpNodeImpl extends NodeBase
     protected void postInit()
     {
         String nodeID = this.getNodeSettings().getId().toString();
-        String settingsName = System.getProperty("uvm.settings.dir") + "/untangle-casing-ftp/settings_" + nodeID;
-        String settingsFile = settingsName + ".js";
+        String settingsFile = System.getProperty("uvm.settings.dir") + "/untangle-casing-ftp/settings_" + nodeID + ".js";
 
         FtpSettings readSettings = null;
         logger.info("Loading settings from " + settingsFile );
 
         try {
             // first we try to read our json settings
-            readSettings = settingsManager.load( FtpSettings.class, settingsName );
+            readSettings = settingsManager.load( FtpSettings.class, settingsFile );
         } catch (Exception exn) {
             logger.error("postInit()",exn);
         }

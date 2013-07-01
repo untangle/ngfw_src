@@ -43,7 +43,7 @@ public class SystemManagerImpl implements SystemManager
     {
         SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
         SystemSettings readSettings = null;
-        String settingsFileName = System.getProperty("uvm.settings.dir") + "/untangle-vm/" + "system";
+        String settingsFileName = System.getProperty("uvm.settings.dir") + "/untangle-vm/" + "system.js";
 
         try {
             readSettings = settingsManager.load( SystemSettings.class, settingsFileName );
@@ -66,7 +66,7 @@ public class SystemManagerImpl implements SystemManager
         /**
          * If the settings file date is newer than the system files, re-sync them
          */
-        File settingsFile = new File(settingsFileName + ".js");
+        File settingsFile = new File( settingsFileName );
         File snmpConfFile = new File(SNMP_CONF_FILE_NAME);
         File snmpDefaultFile = new File(SNMP_DEFAULT_FILE_NAME);
         if (settingsFile.lastModified() > snmpConfFile.lastModified() ||
@@ -135,7 +135,7 @@ public class SystemManagerImpl implements SystemManager
          */
         SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
         try {
-            settingsManager.save(SystemSettings.class, System.getProperty("uvm.settings.dir") + "/" + "untangle-vm/" + "system", newSettings);
+            settingsManager.save(SystemSettings.class, System.getProperty("uvm.settings.dir") + "/" + "untangle-vm/" + "system.js", newSettings);
         } catch (SettingsManager.SettingsException e) {
             logger.warn("Failed to save settings.",e);
             return;

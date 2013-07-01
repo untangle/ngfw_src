@@ -95,7 +95,7 @@ public class LanguageManagerImpl implements LanguageManager
     public void setLanguageSettings(LanguageSettings newSettings)
     {
         SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
-        String settingsName = System.getProperty("uvm.settings.dir") + "/untangle-vm/language_settings";
+        String settingsName = System.getProperty("uvm.settings.dir") + "/untangle-vm/language.js";
 
         try {
             settingsManager.save( LanguageSettings.class, settingsName, newSettings);
@@ -509,14 +509,13 @@ public class LanguageManagerImpl implements LanguageManager
     private void readLanguageSettings()
     {
         SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
-        String settingsName = System.getProperty("uvm.settings.dir") + "/untangle-vm/language_settings";
-        String settingsFile = settingsName + ".js";
+        String settingsFile = System.getProperty("uvm.settings.dir") + "/untangle-vm/language.js";
         LanguageSettings readSettings = null;
 
         logger.debug("Loading language settings from " + settingsFile);
 
         try {
-            readSettings =  settingsManager.load( LanguageSettings.class, settingsName);
+            readSettings =  settingsManager.load( LanguageSettings.class, settingsFile );
         } catch (Exception exn) {
             logger.error("Could not read language settings", exn);
         }

@@ -50,7 +50,7 @@ public class SkinManagerImpl implements SkinManager
     {
         SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
         SkinSettings readSettings = null;
-        String settingsFileName = System.getProperty("uvm.settings.dir") + "/untangle-vm/" + "skin";
+        String settingsFileName = System.getProperty("uvm.settings.dir") + "/untangle-vm/" + "skin.js";
         
         try {
             readSettings = settingsManager.load( SkinSettings.class, settingsFileName );
@@ -227,7 +227,7 @@ public class SkinManagerImpl implements SkinManager
          */
         SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
         try {
-            settingsManager.save(SkinSettings.class, System.getProperty("uvm.settings.dir") + "/" + "untangle-vm/" + "skin", newSettings);
+            settingsManager.save(SkinSettings.class, System.getProperty("uvm.settings.dir") + "/" + "untangle-vm/" + "skin.js", newSettings);
         } catch (SettingsManager.SettingsException e) {
             logger.warn("Failed to save settings.",e);
             return;

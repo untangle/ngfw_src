@@ -38,11 +38,10 @@ public class HttpNodeImpl extends NodeBase implements HttpNode
     public void setHttpSettings(final HttpSettings newSettings)
     {
         String nodeID = this.getNodeSettings().getId().toString();
-        String settingsName = System.getProperty("uvm.settings.dir") + "/untangle-casing-http/settings_" + nodeID;
-        String settingsFile = settingsName + ".js";
+        String settingsFile = System.getProperty("uvm.settings.dir") + "/untangle-casing-http/settings_" + nodeID + ".js";
 
         try {
-            settingsManager.save(HttpSettings.class, settingsName, newSettings);
+            settingsManager.save(HttpSettings.class, settingsFile, newSettings);
         } catch(Exception exn) {
             logger.error("setHttpSettings()",exn);
             return;
@@ -64,15 +63,14 @@ public class HttpNodeImpl extends NodeBase implements HttpNode
     protected void postInit()
     {
         String nodeID = this.getNodeSettings().getId().toString();
-        String settingsName = System.getProperty("uvm.settings.dir") + "/untangle-casing-http/settings_" + nodeID;
-        String settingsFile = settingsName + ".js";
+        String settingsFile = System.getProperty("uvm.settings.dir") + "/untangle-casing-http/settings_" + nodeID + ".js";
 
         HttpSettings readSettings = null;
         logger.info("Loading settings from " + settingsFile );
 
         try {
             // first we try to read our json settings
-            readSettings = settingsManager.load( HttpSettings.class, settingsName );
+            readSettings = settingsManager.load( HttpSettings.class, settingsFile );
         } catch (Exception exn) {
             logger.error("postInit()",exn);
         }

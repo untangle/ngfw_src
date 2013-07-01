@@ -77,10 +77,10 @@ public class ProtoFilterImpl extends NodeBase implements ProtoFilter
     {
         SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
         String nodeID = this.getNodeSettings().getId().toString();
-        String settingsBase = System.getProperty("uvm.settings.dir") + "/untangle-node-protofilter/settings_" + nodeID;
+        String settingsFile = System.getProperty("uvm.settings.dir") + "/untangle-node-protofilter/settings_" + nodeID + ".js";
 
         try {
-            settingsManager.save( ProtoFilterSettings.class, settingsBase, newSettings);
+            settingsManager.save( ProtoFilterSettings.class, settingsFile, newSettings);
         } catch (Exception exn) {
             logger.error("Could not save ProtoFilter settings", exn);
             return;
@@ -164,14 +164,13 @@ public class ProtoFilterImpl extends NodeBase implements ProtoFilter
 
         String nodeID = this.getNodeSettings().getId().toString();
 
-        String settingsBase = System.getProperty("uvm.settings.dir") + "/untangle-node-protofilter/settings_" + nodeID;
-        String settingsFile = settingsBase + ".js";
+        String settingsFile = System.getProperty("uvm.settings.dir") + "/untangle-node-protofilter/settings_" + nodeID + ".js";
         ProtoFilterSettings readSettings = null;
         
         logger.info("Loading settings from " + settingsFile);
         
         try {
-            readSettings =  settingsManager.load( ProtoFilterSettings.class, settingsBase);
+            readSettings =  settingsManager.load( ProtoFilterSettings.class, settingsFile);
         } catch (Exception exn) {
             logger.error("Could not read node settings", exn);
         }

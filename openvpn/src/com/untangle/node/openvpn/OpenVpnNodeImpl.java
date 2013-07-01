@@ -79,7 +79,7 @@ public class OpenVpnNodeImpl extends NodeBase implements OpenVpnNode
         SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
         String nodeID = this.getNodeSettings().getId().toString();
         OpenVpnSettings readSettings = null;
-        String settingsFileName = System.getProperty("uvm.settings.dir") + "/untangle-node-openvpn/" + "settings_" + nodeID;
+        String settingsFileName = System.getProperty("uvm.settings.dir") + "/untangle-node-openvpn/" + "settings_" + nodeID + ".js";
 
         try {
             readSettings = settingsManager.load( OpenVpnSettings.class, settingsFileName );
@@ -402,7 +402,7 @@ public class OpenVpnNodeImpl extends NodeBase implements OpenVpnNode
         SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
         String nodeID = this.getNodeSettings().getId().toString();
         try {
-            settingsManager.save(OpenVpnSettings.class, System.getProperty("uvm.settings.dir") + "/" + "untangle-node-openvpn/" + "settings_"  + nodeID, newSettings);
+            settingsManager.save(OpenVpnSettings.class, System.getProperty("uvm.settings.dir") + "/" + "untangle-node-openvpn/" + "settings_"  + nodeID + ".js", newSettings);
         } catch (SettingsManager.SettingsException e) {
             logger.warn("Failed to save settings.",e);
             return;

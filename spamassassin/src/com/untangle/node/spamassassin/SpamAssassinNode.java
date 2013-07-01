@@ -23,14 +23,13 @@ public class SpamAssassinNode extends SpamNodeImpl
     {
         SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
         String nodeID = this.getNodeSettings().getId().toString();
-        String settingsBase = System.getProperty("uvm.settings.dir") + "/untangle-node-spamassassin/settings_" + nodeID;
-        String settingsFile = settingsBase + ".js";
+        String settingsFile = System.getProperty("uvm.settings.dir") + "/untangle-node-spamassassin/settings_" + nodeID + ".js";
         SpamSettings readSettings = null;
         
         logger.info("Loading settings from " + settingsFile);
         
         try {
-            readSettings =  settingsManager.load( SpamSettings.class, settingsBase);
+            readSettings =  settingsManager.load( SpamSettings.class, settingsFile);
         } catch (Exception exn) {
             logger.error("Could not read node settings", exn);
         }
@@ -57,10 +56,10 @@ public class SpamAssassinNode extends SpamNodeImpl
     {
         SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
         String nodeID = this.getNodeSettings().getId().toString();
-        String settingsBase = System.getProperty("uvm.settings.dir") + "/untangle-node-spamassassin/settings_" + nodeID;
+        String settingsFile = System.getProperty("uvm.settings.dir") + "/untangle-node-spamassassin/settings_" + nodeID + ".js";
 
         try {
-            settingsManager.save( SpamSettings.class, settingsBase, newSettings);
+            settingsManager.save( SpamSettings.class, settingsFile, newSettings);
         } catch (Exception exn) {
             logger.error("Could not save node settings", exn);
             return;

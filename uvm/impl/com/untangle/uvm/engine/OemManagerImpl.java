@@ -23,7 +23,7 @@ public class OemManagerImpl implements OemManager
     {
         SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
         OemSettings readSettings = null;
-        String settingsFileName = System.getProperty("uvm.conf.dir") + "/" + "oem";
+        String settingsFileName = System.getProperty("uvm.conf.dir") + "/" + "oem.js";
 
         try {
             readSettings = settingsManager.load( OemSettings.class, settingsFileName );

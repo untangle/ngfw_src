@@ -93,10 +93,10 @@ public class IpsNodeImpl extends NodeBase implements IpsNode
     {
         SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
         String nodeID = this.getNodeSettings().getId().toString();
-        String settingsName = System.getProperty("uvm.settings.dir") + "/untangle-node-ips/settings_" + nodeID;
+        String settingsName = System.getProperty("uvm.settings.dir") + "/untangle-node-ips/settings_" + nodeID + ".js";
 
         try {
-            settingsManager.save( IpsSettings.class, settingsName, newSettings);
+            settingsManager.save( IpsSettings.class, settingsName, newSettings );
         } catch (Exception exn) {
             logger.error("Could not save node settings", exn);
             return;
@@ -162,14 +162,13 @@ public class IpsNodeImpl extends NodeBase implements IpsNode
     {
         SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
         String nodeID = this.getNodeSettings().getId().toString();
-        String settingsName = System.getProperty("uvm.settings.dir") + "/untangle-node-ips/settings_" + nodeID;
-        String settingsFile = settingsName + ".js";
+        String settingsFile = System.getProperty("uvm.settings.dir") + "/untangle-node-ips/settings_" + nodeID + ".js";
         IpsSettings readSettings = null;
 
         logger.info("Loading settings from " + settingsFile);
 
         try {
-            readSettings =  settingsManager.load( IpsSettings.class, settingsName);
+            readSettings =  settingsManager.load( IpsSettings.class, settingsFile);
         } catch (Exception exn) {
             logger.error("Could not read node settings", exn);
         }
