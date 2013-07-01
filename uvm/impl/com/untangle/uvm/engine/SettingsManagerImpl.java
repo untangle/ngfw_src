@@ -126,7 +126,7 @@ public class SettingsManagerImpl implements SettingsManager
     /**
      * Documented in SettingsManager.java
      */
-    public <T> T save(Class<T> clz, String fileName, T value) throws SettingsException
+    public <T> T save( Class<T> clz, String fileName, T value ) throws SettingsException
     {
         if (!_checkLegalName(fileName)) {
             throw new IllegalArgumentException("Invalid file name: '" + fileName + "'");
@@ -139,7 +139,7 @@ public class SettingsManagerImpl implements SettingsManager
      * @param serializer
      *            the serializer to set
      */
-    protected void setSerializer(JSONSerializer serializer)
+    protected void setSerializer( JSONSerializer serializer )
     {
         this.serializer = serializer;
     }
@@ -182,7 +182,7 @@ public class SettingsManagerImpl implements SettingsManager
      * Implementation of the load using a stream
      */
     @SuppressWarnings("unchecked") //JSON
-    private <T> T _loadInputStream(Class<T> clz, InputStream is) throws SettingsException
+    private <T> T _loadInputStream( Class<T> clz, InputStream is ) throws SettingsException
     {
         BufferedReader reader = null;
         try {
@@ -220,7 +220,7 @@ public class SettingsManagerImpl implements SettingsManager
      * Then formats that tmp file and copies it to another file
      * Then it repoints the symlink
      */
-    private <T> T _saveImpl(Class<T> clz, String fileName, T value) throws SettingsException
+    private <T> T _saveImpl( Class<T> clz, String fileName, T value ) throws SettingsException
     {
         File link = new File( fileName );
         String versionString = String.valueOf(DATE_FORMATTER.format(new Date()));
@@ -234,17 +234,8 @@ public class SettingsManagerImpl implements SettingsManager
          * modify the same file at the same time
          */
         synchronized (lock) {
-            /**
-             * If the file exists just overwrite it.
-             * The old settings won't be saved but they were around for less than 60 seconds anyway
-             */
-            /**
-             *  if (output.exists()) {
-             *  throw new SettingsException("Output file '" + output.toString() + "'already exists!");
-             * }
-             */
-
             FileWriter fileWriter = null;
+
             try {
                 File parentFile = outputFile.getParentFile();
 
@@ -269,15 +260,6 @@ public class SettingsManagerImpl implements SettingsManager
                 String linkCmd = "ln -sf ./"+filename + " " + link.toString();
                 UvmContextImpl.context().execManager().exec(linkCmd);
 
-                /* Append the history to the end of the history file. */
-                /**
-                 * File history = buildHistoryPath(clz, dirName);
-                 *  fileWriter = new FileWriter(history, true);
-                 *  fileWriter.append(String.valueOf(System.currentTimeMillis()));
-                 *  fileWriter.append(": ").append(link.getName()).append(" ").append(output.getName()).append("\n");
-                 *  fileWriter.close();
-                 *  fileWriter = null;
-                 */
             } catch (IOException e) {
                 logger.warn("Failed to save settings: ", e);
                 throw new SettingsException("Unable to save the file: '" + fileName + "'", e);
