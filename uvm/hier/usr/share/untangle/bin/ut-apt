@@ -37,6 +37,35 @@ signal.signal( signal.SIGHUP, signal.SIG_IGN )
 # This should shield us and children from SIGHUPs
 os.setpgrp()
 
+def daemonize():
+    # do the UNIX double-fork magic, see Stevens' "Advanced 
+    # Programming in the UNIX Environment" for details (ISBN 0201563177)
+    try: 
+        pid = os.fork() 
+        if pid > 0:
+            # exit first parent
+            os.wait()
+            sys.exit(0) 
+    except OSError, e: 
+        print >>sys.stderr, "fork #1 failed: %d (%s)" % (e.errno, e.strerror) 
+        sys.exit(1)
+
+    # decouple from parent environment
+    os.chdir("/") 
+    os.setsid() 
+    os.umask(0) 
+
+    # do second fork
+    try: 
+        pid = os.fork() 
+        if pid > 0:
+            # exit from second parent, print eventual PID before
+            os.wait()
+            sys.exit(0) 
+    except OSError, e: 
+        print >>sys.stderr, "fork #2 failed: %d (%s)" % (e.errno, e.strerror) 
+        sys.exit(1) 
+
 
 # append stdout to apt.log also
 # sys.stdout = os.fdopen(sys.stdout.fileno(), 'w', 0)
@@ -47,9 +76,15 @@ os.setpgrp()
 apt_log = open("/var/log/uvm/apt.log", "a")
 
 def log(str):
-    apt_log.write(str + "\n")
-    apt_log.flush()
-    print str
+    try: 
+        apt_log.write(str + "\n")
+        apt_log.flush()
+    except:
+        pass
+    try:
+        print str
+    except: 
+        pass
 
 def log_date( cmd ):
     p = subprocess.Popen(["date","+%Y-%m-%d:%H:%m"], stdout=subprocess.PIPE )
@@ -294,7 +329,7 @@ class RealApt:
         for pkg in pkg_list:
             log("downloading: %s" % pkg)
 
-            print "wget --progress=dot -P %s %s" % (tmpdir, pkg)
+            log( "wget --progress=dot -P %s %s" % (tmpdir, pkg) )
             exitcode = RealApt.cmd_to_stderr("wget --progress=dot -P %s %s" % (tmpdir, pkg))
             if exitcode == 0:
                 log("DOWNLOAD SUCCEEDED: %s" % pkg)
@@ -308,6 +343,8 @@ class RealApt:
         p = subprocess.Popen(["rm","-rf","%s" % tmpdir])
         p.wait()
         return retcode
+
+daemonize()
 
 if PREFIX != "":
     apt = DevApt()
