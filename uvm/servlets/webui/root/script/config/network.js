@@ -3650,7 +3650,7 @@ if (!Ung.hasResource["Ung.Network"]) {
             });
             this.gridDnsLocalServers = Ext.create( 'Ung.EditorGrid', {
                 anchor: '100% 48%',
-                name: 'Other Local DNS Servers',
+                name: 'Local DNS Servers',
                 settingsCmp: this,
                 paginated: false,
                 hasEdit: false,
@@ -3659,7 +3659,7 @@ if (!Ung.hasResource["Ung.Network"]) {
                     "localServer": "1.2.3.4",
                     "javaClass": "com.untangle.uvm.network.DnsLocalServer"
                 },
-                title: this.i18n._("Other Local DNS Servers"),
+                title: this.i18n._("Local DNS Servers"),
                 recordJavaClass: "com.untangle.uvm.network.DnsLocalServer",
                 dataExpression:'settings.dnsSettings.localServers.list',
                 fields: [{
