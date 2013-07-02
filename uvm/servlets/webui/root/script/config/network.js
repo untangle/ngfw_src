@@ -151,7 +151,6 @@ if (!Ung.hasResource["Ung.Network"]) {
                     })]
                 }]
             }];
-            
             this.callParent(arguments);
         },
         helpAction: function() {
@@ -288,7 +287,7 @@ if (!Ung.hasResource["Ung.Network"]) {
             var deleteVlanColumn = Ext.create('Ext.grid.column.Action', {
                 menuDisabled: true,
                 dataIndex: 'isVlanInterface',
-                header:i18n._("Delete VLAN"),
+                header: this.i18n._("Delete VLAN"),
                 width: 80,
                 init:function(grid) {
                     this.grid=grid;
@@ -565,7 +564,7 @@ if (!Ung.hasResource["Ung.Network"]) {
                     scope : this
                 }],
                 onMapDevices: Ext.bind(function() {
-                    Ext.MessageBox.wait(i18n._("Loading device mapper..."), i18n._("Please wait"));
+                    Ext.MessageBox.wait(this.i18n._("Loading device mapper..."), this.i18n._("Please wait"));
                     if (!this.winMapDevices) {
                         this.mapDevicesStore = Ext.create('Ext.data.ArrayStore', {
                             fields:[{name: "interfaceId"}, { name: "name" }, {name: "deviceName"}, { name: "physicalDev" }, { name: "systemDev" },{ name: "symbolicDev" }, { name: "macAddress" }, { name: "connected" }, { name: "duplex" }, { name: "vendor" }, { name: "mbit" }],
@@ -604,7 +603,7 @@ if (!Ung.hasResource["Ung.Network"]) {
                                 disableSelection: false,
                                 plugins:{
                                     ptype: 'gridviewdragdrop',
-                                    dragText: i18n._('Drag and drop to reorganize')
+                                    dragText: this.i18n._('Drag and drop to reorganize')
                                 },
                                 listeners: {
                                     "drop": {
@@ -624,7 +623,7 @@ if (!Ung.hasResource["Ung.Network"]) {
                                 }
                             },
                             columns: [{
-                                header: i18n._( "Name" ),
+                                header: this.i18n._("Name"),
                                 dataIndex: 'name',
                                 sortable: false,
                                 width: 80,
@@ -638,8 +637,8 @@ if (!Ung.hasResource["Ung.Network"]) {
                                 width: 40,
                                 tpl: '<img src="'+Ext.BLANK_IMAGE_URL+'" class="icon-drag"/>' 
                             }, {
-                                header: i18n._( "Device" ),
-                                tooltip: i18n._( "Click on a Device to open a combo and choose the desired Device from a list. When anoter Device is selected the 2 Devices are swithced." ),
+                                header: this.i18n._( "Device" ),
+                                tooltip: this.i18n._( "Click on a Device to open a combo and choose the desired Device from a list. When anoter Device is selected the 2 Devices are swithced." ),
                                 dataIndex: 'deviceName',
                                 sortable: false,
                                 width: 200,
@@ -1122,7 +1121,7 @@ if (!Ung.hasResource["Ung.Network"]) {
                         }, {
                             xtype: "combo",
                             dataIndex: "v4StaticPrefix",
-                            fieldLabel: i18n._( "Netmask" ),
+                            fieldLabel: this.i18n._( "Netmask" ),
                             store: Ung.Util.getV4NetmaskList( false ),
                             queryMode: 'local',
                             allowBlank: false, 
@@ -1980,7 +1979,7 @@ if (!Ung.hasResource["Ung.Network"]) {
                 },
                 initComponent : function() {
                     this.tbar= [{
-                        text: i18n._('Add Simple Rule'),
+                        text: this.settingsCmp.i18n._('Add Simple Rule'),
                         iconCls: 'icon-add-row',
                         parentId: this.getId(),
                         handler: this.addSimpleRuleHandler,
@@ -2654,7 +2653,7 @@ if (!Ung.hasResource["Ung.Network"]) {
                 }, {
                     xtype: 'fieldset',
                     cls:'description',
-                    title: i18n._('Perform the following action(s):'),
+                    title: this.i18n._('Perform the following action(s):'),
                     border: false,
                     items: [{
                         xtype: "combo",
@@ -2663,7 +2662,7 @@ if (!Ung.hasResource["Ung.Network"]) {
                         dataIndex: "bypass",
                         fieldLabel: this.i18n._("Action"),
                         editable: false,
-                        store: [[true,i18n._('Bypass')], [false,i18n._('Process')]],
+                        store: [[true, this.i18n._('Bypass')], [false, this.i18n._('Process')]],
                         queryMode: 'local'
                     }]
                 }]
@@ -2671,12 +2670,14 @@ if (!Ung.hasResource["Ung.Network"]) {
         },
         // Routes Panel
         buildRoutes: function() {
-            this.devList = [];
+            var devList = [];
+            var devMap = {};
             for ( var c = 0 ; c < this.settings.interfaces.list.length ; c++ ) {
                 var intf = this.settings.interfaces.list[c];
-                var name = this.i18n._("Local on") + " " + intf.name + "(" + intf.systemDev + ")";
-                var key = intf.interfaceId;
-                this.devList.push( [ key, name ] );
+                var name = Ext.String.format(this.i18n._("Local on {0} ({1})"),intf.name, intf.systemDev);
+                var key = ""+intf.interfaceId;
+                devList.push( [ key, name ] );
+                devMap[key]=name;
             }
             this.gridStaticRoutes = Ext.create('Ung.EditorGrid', {
                 height: 300,
@@ -2721,17 +2722,7 @@ if (!Ung.hasResource["Ung.Network"]) {
                     renderer: Ext.bind(function(value, metadata, record, rowIndex, colIndex, store, view) {
                         var intRegex = /^\d+$/;
                         if ( intRegex.test( value ) ) {
-                            var intValue = parseInt( value, 10 );
-                            var devName = null;
-                            for ( var i = 0 ; i < this.devList.length ; i++ ) {
-                                var dev = this.devList[i];
-                                if ( dev[0] == intValue )
-                                    devName = dev[1];
-                            }
-                            if ( devName !== null )
-                                return devName;
-                            else
-                                return this.i18n._("Local interface");
+                            return devMap[value]?devMap[value]:this.i18n._("Local interface");
                         } else {
                             return value;
                         }
@@ -2766,7 +2757,7 @@ if (!Ung.hasResource["Ung.Network"]) {
                 }, {
                     xtype: "combo",
                     dataIndex: "prefix",
-                    fieldLabel: i18n._( "Netmask/Prefix" ),
+                    fieldLabel: this.i18n._( "Netmask/Prefix" ),
                     store: Ung.Util.getV4NetmaskList( false ),
                     width: 300,
                     listWidth: 70,
@@ -2775,8 +2766,8 @@ if (!Ung.hasResource["Ung.Network"]) {
                 }, {
                     xtype: "combo",
                     dataIndex: "nextHop",
-                    fieldLabel: i18n._("Next Hop"),
-                    store: this.devList,
+                    fieldLabel: this.i18n._("Next Hop"),
+                    store: devList,
                     width: 300,
                     queryMode: 'local',
                     editable : true,
@@ -3030,9 +3021,9 @@ if (!Ung.hasResource["Ung.Network"]) {
                     var d_Mbit = d/1000;
                     var u_Mbit = u/1000;
 
-                    var message = Ext.String.format( this.i18n._( "<i>Total: {0} kbps ({1} Mbit) download, {2} kbps ({3} Mbit) upload</i>" ), d, d_Mbit, u, u_Mbit );
+                    var message = Ext.String.format( this.i18n._( "Total: {0} kbps ({1} Mbit) download, {2} kbps ({3} Mbit) upload" ), d, d_Mbit, u, u_Mbit );
                     var bandwidthLabel = this.panelQoS.query('label[name="bandwidthLabel"]')[0];
-                    bandwidthLabel.setText(this.i18n._("<font color=\"red\">Note</font>: When enabling QoS valid Download Bandwidth and Upload Bandwidth limits must be set for all WAN interfaces.")+"</br>"+message, false);
+                    bandwidthLabel.setText(Ext.String.format(this.i18n._("{0}Note{1}: When enabling QoS valid Download Bandwidth and Upload Bandwidth limits must be set for all WAN interfaces."),'<font color="red">','</font>')+"</br><i>"+message+'</i>', false);
                 }, this)
             });
             this.gridQosWanBandwidth.getStore().on("update", Ext.bind(function() {
@@ -3329,7 +3320,7 @@ if (!Ung.hasResource["Ung.Network"]) {
                     title: this.i18n._('QoS Custom Rules'),
                     items: [{
                         xtype: 'label',
-                        html: this.i18n._("<font color=\"red\">Note</font>: Custom Rules only match <b>Bypassed</b> traffic.")
+                        html: Ext.String.format(this.i18n._("{0}Note{1}: Custom Rules only match <b>Bypassed</b> traffic."),'<font color="red">','</font>')
                     }, this.gridQosRules]
                 }, {
                     xtype: 'fieldset',
@@ -3370,7 +3361,7 @@ if (!Ung.hasResource["Ung.Network"]) {
                 }, {
                     xtype: 'fieldset',
                     cls:'description',
-                    title: i18n._('Perform the following action(s):'),
+                    title: this.i18n._('Perform the following action(s):'),
                     border: false,
                     items: [{
                         xtype: "combo",
@@ -3421,13 +3412,13 @@ if (!Ung.hasResource["Ung.Network"]) {
                     header: this.i18n._("Rule Id"),
                     width: 50,
                     dataIndex: 'ruleId',
-                    renderer: function(value) {
+                    renderer: Ext.bind(function(value) {
                         if (value < 0) {
-                            return i18n._("new");
+                            return this.i18n._("new");
                         } else {
                             return value;
                         }
-                    }
+                    }, this)
                 }, {
                     xtype:'checkcolumn',
                     header: this.i18n._("Enable"),
@@ -3486,13 +3477,13 @@ if (!Ung.hasResource["Ung.Network"]) {
                     header: this.i18n._("Rule Id"),
                     width: 50,
                     dataIndex: 'ruleId',
-                    renderer: function(value) {
+                    renderer: Ext.bind(function(value) {
                         if (value < 0) {
-                            return i18n._("new");
+                            return this.i18n._("new");
                         } else {
                             return value;
                         }
-                    }
+                    }, this)
                 }, {
                     xtype:'checkcolumn',
                     header: this.i18n._("Enable"),
@@ -3553,7 +3544,7 @@ if (!Ung.hasResource["Ung.Network"]) {
                 }, {
                     xtype: 'fieldset',
                     cls:'description',
-                    title: i18n._('Perform the following action(s):'),
+                    title: this.i18n._('Perform the following action(s):'),
                     border: false,
                     items: [{
                         xtype: "combo",
@@ -3593,7 +3584,7 @@ if (!Ung.hasResource["Ung.Network"]) {
                 }, {
                     xtype: 'fieldset',
                     cls:'description',
-                    title: i18n._('Perform the following action(s):'),
+                    title: this.i18n._('Perform the following action(s):'),
                     border: false,
                     items: [{
                         xtype: "combo",
@@ -3765,9 +3756,9 @@ if (!Ung.hasResource["Ung.Network"]) {
                         {
                             xtype: 'button',
                             id: "refresh_"+this.getId(),
-                            text: i18n._('Refresh'),
+                            text: this.i18n._('Refresh'),
                             name: "Refresh",
-                            tooltip: i18n._('Refresh'),
+                            tooltip: this.i18n._('Refresh'),
                             iconCls: 'icon-refresh',
                             handler: function() {
                                 this.gridCurrentDhcpLeases.reload();
@@ -4017,7 +4008,7 @@ if (!Ung.hasResource["Ung.Network"]) {
             this.connectivityTest.show();
         },
         testConnectivity: function () {
-            Ext.MessageBox.wait( i18n._( "Testing Internet Connectivity" ), i18n._( "Please wait" ));
+            Ext.MessageBox.wait( this.i18n._( "Testing Internet Connectivity" ), this.i18n._( "Please wait" ));
             var script = [
                 'dig updates.untangle.com > /dev/null 2>&1;',
                 'if [ "$?" != "0" ]; then echo "'+this.i18n._('Failed to connect to the Internet, DNS failed.')+'"; exit 1; fi;',
@@ -4414,7 +4405,7 @@ if (!Ung.hasResource["Ung.Network"]) {
         beforeSave: function(isApply, handler) {
             this.beforeSaveCount = 13;
 
-            Ext.MessageBox.wait(i18n._("Applying Network Settings..."), i18n._("Please wait"));
+            Ext.MessageBox.wait(this.i18n._("Applying Network Settings..."), this.i18n._("Please wait"));
 
             this.gridInterfaces.getList(Ext.bind(function(saveList) {
                 var i;
