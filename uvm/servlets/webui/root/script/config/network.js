@@ -2184,12 +2184,12 @@ if (!Ung.hasResource["Ung.Network"]) {
                 layout: { type: 'vbox', align: 'stretch' },
                 cls: 'ung-panel',
                 items: [{
-                    xtype: "label",
-                    flex: 0,
+                    xtype: 'fieldset',
+                    cls: 'description',
+                    title: this.i18n._('Port Forward Rules'),
                     html: this.i18n._("Port Forward rules forward sessions matching the configured criteria from a public IP to an IP on an internal (NAT'd) network. The rules are evaluated in order."),
                     style: "margin-bottom: 10px;"
-                }, this.gridPortForwardRules, 
-                {
+                }, this.gridPortForwardRules, {
                     xtype: 'label',
                     flex: 0,
                     html: portForwardWarningsHtml.join(""),
