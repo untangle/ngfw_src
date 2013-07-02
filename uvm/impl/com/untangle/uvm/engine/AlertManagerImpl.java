@@ -39,7 +39,6 @@ import com.untangle.uvm.network.InterfaceSettings;
  * semi-frequent power loss?
  * disk almost full?
  * modified sources.list?
- * ping 8.8.8.8 for wan failover test?
  * change ifconfig to check percentage of errors
  */
 public class AlertManagerImpl implements AlertManager

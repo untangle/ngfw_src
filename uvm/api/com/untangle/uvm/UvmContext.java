@@ -301,13 +301,6 @@ public interface UvmContext
     void waitForStartup();
 
     /**
-     * Loads a shared library (.so) into the UVM classloader.  This
-     * is so a node dosen't load it into its own, which doesn't
-     * work right.
-     */
-    void loadLibrary(String libname);
-
-    /**
      * Query events in the reports database
      */
     ArrayList getEvents( final String query, final Long policyId, final int limit );

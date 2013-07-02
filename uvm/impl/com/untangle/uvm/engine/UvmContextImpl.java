@@ -476,22 +476,12 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
         return true;
     }
     
-    public CronJob makeCronJob(DayOfWeekMatcher days, int hour, int minute, Runnable r)
+    public CronJob makeCronJob( DayOfWeekMatcher days, int hour, int minute, Runnable r )
     {
         return cronManager.makeCronJob( days, hour, minute, r );
     }
 
-    public void loadLibrary(String libname)
-    {
-        System.loadLibrary(libname);
-    }
-
-    public String setProperty(String key, String value)
-    {
-        return System.setProperty(key, value);
-    }
-
-    public Map<String, String> getTranslations(String module)
+    public Map<String, String> getTranslations( String module )
     {
         return languageManager.getTranslations(module);
     }
