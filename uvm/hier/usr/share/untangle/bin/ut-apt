@@ -33,7 +33,7 @@ ERROR = None
 # Ignore SIGHUP from parent (this is in case we get launched by the UVM, and then it exits)
 # This isn't enough because this doesn't modify sigprocmask so children of this process still get it
 signal.signal( signal.SIGHUP, signal.SIG_IGN )
-# Detach from parent (so it won't send us signals like SIGHUG)
+# Detach from parent (so it won't send us signals like SIGHUP)
 # This should shield us and children from SIGHUPs
 os.setpgrp()
 
