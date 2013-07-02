@@ -868,7 +868,7 @@ public class AptManagerImpl implements AptManager
      */
     private synchronized void execApt(String command, long key) throws Exception
     {
-        String cmdStr = System.getProperty("uvm.bin.dir") + "/ut-apt " + (0 > key ? "" : "-k " + key + " ") + command;
+        String cmdStr = "nohup " + System.getProperty("uvm.bin.dir") + "/ut-apt " + (0 > key ? "" : "-k " + key + " ") + command;
 
         synchronized(this) {
             ExecManagerResult result = this.execManager.exec(cmdStr);
