@@ -37,6 +37,11 @@ signal.signal( signal.SIGHUP, signal.SIG_IGN )
 # This should shield us and children from SIGHUPs
 os.setpgrp()
 
+# This is necessary because we don't actually know that the parent (usually the untangle-vm)
+# will survive during our process. Whet upgrade is called it is typically killed by the upgrade 
+# process. To avoid being killed we daemonize ourselves.
+# The parents process still wait on the children in case this is not the case, its still a
+# blocking process.
 def daemonize():
     # do the UNIX double-fork magic, see Stevens' "Advanced 
     # Programming in the UNIX Environment" for details (ISBN 0201563177)
@@ -66,16 +71,12 @@ def daemonize():
         print >>sys.stderr, "fork #2 failed: %d (%s)" % (e.errno, e.strerror) 
         sys.exit(1) 
 
-
-# append stdout to apt.log also
-# sys.stdout = os.fdopen(sys.stdout.fileno(), 'w', 0)
-# tee = subprocess.Popen(["tee", "-a", "/var/log/uvm/apt.log"], stdin=subprocess.PIPE)
-# tos.dup2(tee.stdin.fileno(), sys.stdout.fileno())
-# os.dup2(tee.stdin.fileno(), sys.stderr.fileno())
-
 apt_log = open("/var/log/uvm/apt.log", "a")
 
 def log(str):
+    # wrap all attempts in try/except
+    # if the parent dies, stdout might product a sigpipe
+    # see we need to be careful with "print"
     try: 
         apt_log.write(str + "\n")
         apt_log.flush()
