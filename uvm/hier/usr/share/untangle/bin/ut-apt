@@ -187,9 +187,8 @@ class RealApt:
         log("installing: \"%s\"" % pkg)
         
         p = subprocess.Popen(["sh","-c","apt-get install %s %s %s 2>&1" % (INSTALL_OPTS, pkg, recs)], stdout=subprocess.PIPE)
-        stdout = p.communicate()[0]
-        for line in stdout.splitlines():
-            log(line.strip())
+        for line in iter(p.stdout.readline, ''):
+            log( line.strip() )
         p.wait()
         log("done %s" % STAMP)
 
@@ -204,10 +203,9 @@ class RealApt:
         log("apt-get update %s" % UPDATE_OPTS)
 
         p = subprocess.Popen(["sh","-c","apt-get update %s 2>&1" % UPDATE_OPTS], stdout=subprocess.PIPE)
-        stdout = p.communicate()[0]
-        for line in stdout.splitlines():
+        for line in iter(p.stdout.readline, ''):
             if not re.search('^W: (Conflicting distribution|You may want to run apt-get update to correct these problems)', line):
-                log(line.strip())
+                log( line.strip() )
         p.wait()
         log("done %s" % STAMP)
         return 0
@@ -234,11 +232,10 @@ class RealApt:
         ret = 0
 
         p = subprocess.Popen(["sh","-c","apt-get install -s %s 2>&1" % pkg], stdout=subprocess.PIPE)
-        stdout = p.communicate()[0]
-        for line in stdout.splitlines():
+        for line in iter(p.stdout.readline, ''):
             matcher = re.search('^Inst ([^ ]+)', line)
             if matcher:
-                log(matcher.group(1))
+                log( matcher.group(1) )
         
         p.wait
         if p.returncode == 0:
