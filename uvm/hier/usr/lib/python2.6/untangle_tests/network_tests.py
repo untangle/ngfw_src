@@ -457,11 +457,8 @@ class NetworkTests(unittest2.TestCase):
                         j += 1
                 i += 1
             uvmContext.networkManager().setNetworkSettings(netsettings)
-            result = clientControl.runCommand("host www.google.com " + wan_IP, True)
-            # print "Results of www.google.com <%s>" % result
-        else:
-            result = clientControl.runCommand("host www.google.com", True)
-        # print "result <%s>" % result
+        result = clientControl.runCommand("host www.google.com " + wan_IP, True)
+        # print "Results of www.google.com <%s>" % result
         match = re.search(r'address \d{1,3}.\d{1,3}.\d{1,3}.\d{1,3}', result)
         ip_address_google = (match.group()).replace('address ','')
         # print "IP address of www.google.com <%s>" % ip_address_google
