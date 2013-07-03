@@ -63,7 +63,7 @@ Ext.define('Ung.SetupWizard.SettingsSaver', {
             Ext.MessageBox.alert(i18n._("Unable to save Time zone settings"), exception.message);
             return;
         }
-
+        
         // console.log("Authenticating...");
         Ext.Ajax.request({
             params: {
@@ -79,7 +79,8 @@ Ext.define('Ung.SetupWizard.SettingsSaver', {
             callback: Ext.bind(this.getManagers,this )
         });
     },
-
+    
+  
     getManagers: function( options, success, response ) {
         if ( success ) {
             // It is very wrong to do this all synchronously
@@ -90,6 +91,8 @@ Ext.define('Ung.SetupWizard.SettingsSaver', {
             rpc.aptManager = rpc.jsonrpc.UvmContext.aptManager();
             rpc.systemManager = rpc.jsonrpc.UvmContext.systemManager();
             rpc.mailSender = rpc.jsonrpc.UvmContext.mailSender();
+            rpc.keepAlive = function() { rpc.jsonrpc.UvmContext.getFullVersion(); Ext.defer(rpc.keepAlive,300000);}
+            rpc.keepAlive();
 
             if (Ext.MessageBox.rendered) {
                 Ext.MessageBox.hide();
