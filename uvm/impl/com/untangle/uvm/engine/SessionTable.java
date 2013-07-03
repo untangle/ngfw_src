@@ -97,7 +97,7 @@ public class SessionTable
     {
         boolean isDebugEnabled = logger.isDebugEnabled();
 
-        logger.info( "shutdownMatches() called" );
+        logger.debug( "shutdownMatches() called" );
 
         if ( activeSessions.isEmpty()) return;
 
@@ -118,7 +118,7 @@ public class SessionTable
                                        netcapHook.clientSide.getClientPort(), netcapHook.serverSide.getServerPort(),
                                        session.getAttachments() );
 
-            logger.info( "shutdownMatches(): Tested    session: " + session + " id: " + session.id() + " matched: " + isMatch );
+            logger.debug( "shutdownMatches(): Tested    session: " + session + " id: " + session.id() + " matched: " + isMatch );
             if ( isMatch ) {
                 logger.info( "shutdownMatches(): Shutdown  session: " + session + " id: " + session.id() + " matched: " + isMatch );
                 vector.shutdown();
