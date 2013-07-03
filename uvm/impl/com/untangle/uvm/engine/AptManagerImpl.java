@@ -932,7 +932,7 @@ public class AptManagerImpl implements AptManager
         MessageManager mm = UvmContextFactory.context().messageManager();
         
         // find `start key'
-        logger.info("parseAptOutput()" + " finding start \"start\"");
+        logger.debug("parseAptOutput()" + " finding start \"start\"");
         for ( line = reader.readLineStdout(); !line.contains("start"); line = reader.readLineStdout() );
 
         // 'uri' package size hash
@@ -943,7 +943,7 @@ public class AptManagerImpl implements AptManager
 
             Matcher match = FETCH_PATTERN.matcher(line);
             if (line.contains("END PACKAGE LIST")) {
-                logger.info("parseAptOutput()" + " found: END PACKAGE LIST");
+                logger.debug("parseAptOutput()" + " found: END PACKAGE LIST");
                 break;
             } else if (match.matches()) {
                 String url = match.group(1);
@@ -952,11 +952,11 @@ public class AptManagerImpl implements AptManager
                 String hash = match.group(5);
 
                 PackageInfo pi = new PackageInfo(url, file, size, hash);
-                logger.info("parseAptOutput()" + " adding package: " + pi);
+                logger.debug("parseAptOutput()" + " adding package: " + pi);
                 downloadQueue.add(pi);
                 totalSize += size;
             } else {
-                logger.info("parseAptOutput()" + " does not match FETCH_PATTERN: " + line);
+                logger.debug("parseAptOutput()" + " does not match FETCH_PATTERN: " + line);
             }
         }
 
@@ -966,21 +966,21 @@ public class AptManagerImpl implements AptManager
             return;
         }
 
-        logger.info("parseAptOutput()" + " Sending DownloadSummary(downloadQueue.size()=" + downloadQueue.size() + ", totalSize=" + totalSize + ")");
+        logger.debug("parseAptOutput()" + " Sending DownloadSummary(downloadQueue.size()=" + downloadQueue.size() + ", totalSize=" + totalSize + ")");
         mm.submitMessage(new DownloadSummary(downloadQueue.size(), totalSize, requestingPackage));
 
         for (PackageInfo pi : downloadQueue) {
-            logger.info("parseAptOutput()" + " downloading: " + pi);
+            logger.debug("parseAptOutput()" + " downloading: " + pi);
             while ( (line = reader.readLineStdout()) != null ) {
                 Matcher match = DOWNLOAD_PATTERN.matcher(line);
-                //logger.info("parseAptOutput() Processing line:" + line);
+                //logger.debug("parseAptOutput() Processing line:" + line);
 
                 if (line.contains("DOWNLOAD SUCCEEDED: ")) {
-                    logger.info("parseAptOutput()" + " Sending DownloadComplete");
+                    logger.debug("parseAptOutput()" + " Sending DownloadComplete");
                     mm.submitMessage(new DownloadComplete(true, requestingPackage));
                     break;
                 } else if (line.contains("DOWNLOAD FAILED: " )) {
-                    logger.info("parseAptOutput()" + " Sending DownloadComplete (failed)");
+                    logger.debug("parseAptOutput()" + " Sending DownloadComplete (failed)");
                     mm.submitMessage(new DownloadComplete(false, requestingPackage));
                     break;
                 } else if (match.matches()) {
@@ -1002,15 +1002,15 @@ public class AptManagerImpl implements AptManager
                         dpe = new DownloadProgress(pi.file, soFar, totalSize, speed, requestingPackage);
                     }
 
-                    logger.info("parseAptOutput()" + " Sending DownloadProgress:" + dpe);
+                    logger.debug("parseAptOutput()" + " Sending DownloadProgress:" + dpe);
                     mm.submitMessage(dpe);
                 } else {
-                    logger.info("parseAptOutput()" + " ignoring line: " + line.substring(0,(line.length()<10 ? line.length() : 9)) + "...");
+                    logger.debug("parseAptOutput()" + " ignoring line: " + line.substring(0,(line.length()<10 ? line.length() : 9)) + "...");
                 }
             }
         }
 
-        logger.info("parseAptOutput()" + " Sending DownloadAllComplete");
+        logger.debug("parseAptOutput()" + " Sending DownloadAllComplete");
         mm.submitMessage(new DownloadAllComplete(true, requestingPackage));
 
         /**
@@ -1018,13 +1018,13 @@ public class AptManagerImpl implements AptManager
          */
         int packageCount = 0;
         while ( (line = reader.readLineStdout()) != null ) {
-            logger.info("parseAptOutput() Waiting for \"" + APT_INSTALL_PATTERN + "\" + \"" + line + "\"");
+            logger.debug("parseAptOutput() Waiting for \"" + APT_INSTALL_PATTERN + "\" + \"" + line + "\"");
             Matcher match = APT_INSTALL_PATTERN.matcher(line);
             if (match.matches()) {
                 packageCount = Integer.parseInt(match.group(1));
                 break;
             }  else {
-                logger.info("parseAptOutput()" + " ignoring line: " + line.substring(0,(line.length()<10 ? line.length() : 9)) + "...");
+                logger.debug("parseAptOutput()" + " ignoring line: " + line.substring(0,(line.length()<10 ? line.length() : 9)) + "...");
             }
         }
 
@@ -1032,7 +1032,7 @@ public class AptManagerImpl implements AptManager
          * Unpack and install phase
          */
         while ( (line = reader.readLineStdout()) != null ) {
-            logger.info("Processing apt line: \"" + line + "\"");
+            logger.debug("Processing apt line: \"" + line + "\"");
             Matcher unpackMatch = DPKG_UNPACK_PATTERN.matcher(line);
             Matcher installMatch = DPKG_INSTALL_PATTERN.matcher(line);
             if (unpackMatch.matches()) {
@@ -1044,10 +1044,10 @@ public class AptManagerImpl implements AptManager
                 mm.submitMessage(new AptMessage("unpack", requestingPackage, installedCount, packageCount*2));
                 installedCount++;
             } else if (DONE_PATTERN.matcher(line).matches()) {
-                logger.info("parseAptOutput() APT DONE matched");
+                logger.debug("parseAptOutput() APT DONE matched");
                 break; //its done
             }  else {
-                logger.info("parseAptOutput()" + " ignoring line: " + line.substring(0,(line.length()<10 ? line.length() : 9)) + "...");
+                logger.debug("parseAptOutput()" + " ignoring line: " + line.substring(0,(line.length()<10 ? line.length() : 9)) + "...");
             }
         }
 
