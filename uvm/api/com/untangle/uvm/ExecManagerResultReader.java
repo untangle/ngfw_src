@@ -3,17 +3,25 @@
  */
 package com.untangle.uvm;
 
+import org.apache.log4j.Logger;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 
 public class ExecManagerResultReader
 {
-    private Process process;
+    private static final Logger logger = Logger.getLogger( ExecManagerResultReader.class );
 
+    private Process process;
+    private BufferedReader stdoutBufferedReader;
+    private BufferedReader stderrBufferedReader;
+        
     public ExecManagerResultReader(Process process)
     {
         this.process = process;
+        this.stdoutBufferedReader = new BufferedReader(new InputStreamReader(process.getInputStream()));
+        this.stderrBufferedReader = new BufferedReader(new InputStreamReader(process.getErrorStream()));
     }
     
     public Integer getResult()
@@ -27,13 +35,43 @@ public class ExecManagerResultReader
         return retVal;
     }
     
+    /**
+     * Reads a single line from stdout and returns it.
+     * Blocks if not output is available
+     */
+    public String readlineStdout()
+    {
+        try {
+            return this.stdoutBufferedReader.readLine();
+        } catch (IOException ex) {
+            logger.warn("Failed to read stdout", ex);
+            return null;
+        }
+    }
+
+    /**
+     * Reads a single line from stderr and returns it.
+     * Blocks if not output is available
+     */
+    public String readlineStderr()
+    {
+        try {
+            return this.stderrBufferedReader.readLine();
+        } catch (IOException ex) {
+            logger.warn("Failed to read stderr", ex);
+            return null;
+        }
+    }
+    
+    /**
+     * Reads both all available stdout and stderr and returns output
+     */
     public String readFromOutput()
     {
         StringBuffer result = new StringBuffer();
-        BufferedReader br = new BufferedReader(new InputStreamReader(process.getInputStream()));
         try {
-            while (br.ready()) {
-                String s = br.readLine();
+            while (this.stdoutBufferedReader.ready()) {
+                String s = this.stdoutBufferedReader.readLine();
                 if (s != null) {
                     result.append(s).append(System.getProperty("line.separator"));
                 } else {
@@ -41,12 +79,11 @@ public class ExecManagerResultReader
                 }
             }
         } catch (IOException ex) {
-            ex.printStackTrace();
+            logger.warn("Failed to read stdout", ex);
         }
-        br = new BufferedReader(new InputStreamReader(process.getErrorStream()));
         try {
-            while (br.ready()) {
-                String s = br.readLine();
+            while (this.stderrBufferedReader.ready()) {
+                String s = this.stderrBufferedReader.readLine();
                 if (s != null) {
                     result.append(s).append(System.getProperty("line.separator"));
                 } else {
@@ -54,7 +91,7 @@ public class ExecManagerResultReader
                 }
             }
         } catch (IOException ex) {
-            ex.printStackTrace();
+            logger.warn("Failed to read stderr", ex);
         }
 
         if(result.length()==0 && isFinished()) {
