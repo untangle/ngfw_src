@@ -507,11 +507,8 @@ public class AptManagerImpl implements AptManager
                 // if no node properties exists for this package, it isnt a node
                 File nodeProperties = new File(System.getProperty("uvm.lib.dir") + "/" + node + "/nodeProperties.js");
                 if (! nodeProperties.exists()) {
-                    logger.warn("XXX: nodeproperties fiel missing: " + nodeProperties);
                     continue;
-                } else {
-                    logger.warn("XXX: nodeproperties fiel found: " + nodeProperties);
-                }
+                } 
                 
                 try {
                     logger.info("instantiate( " + node + ")");
