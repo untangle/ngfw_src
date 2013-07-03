@@ -38,8 +38,9 @@ public class ExecManagerResultReader
     /**
      * Reads a single line from stdout and returns it.
      * Blocks if not output is available
+     * Returns null if end of stream
      */
-    public String readlineStdout()
+    public String readLineStdout()
     {
         try {
             return this.stdoutBufferedReader.readLine();
@@ -52,8 +53,9 @@ public class ExecManagerResultReader
     /**
      * Reads a single line from stderr and returns it.
      * Blocks if not output is available
+     * Returns null if end of stream
      */
-    public String readlineStderr()
+    public String readLineStderr()
     {
         try {
             return this.stderrBufferedReader.readLine();

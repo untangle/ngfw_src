@@ -91,7 +91,7 @@ Ext.define('Ung.SetupWizard.SettingsSaver', {
             rpc.aptManager = rpc.jsonrpc.UvmContext.aptManager();
             rpc.systemManager = rpc.jsonrpc.UvmContext.systemManager();
             rpc.mailSender = rpc.jsonrpc.UvmContext.mailSender();
-            rpc.keepAlive = function() { rpc.jsonrpc.UvmContext.getFullVersion(); Ext.defer(rpc.keepAlive,300000);}
+            rpc.keepAlive = function() { rpc.jsonrpc.UvmContext.getFullVersion(); Ext.defer(rpc.keepAlive,300000); };
             rpc.keepAlive();
 
             if (Ext.MessageBox.rendered) {

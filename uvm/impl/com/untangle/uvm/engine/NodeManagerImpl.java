@@ -224,14 +224,26 @@ public class NodeManagerImpl implements NodeManager
 
             nodeProperties = initNodeProperties( packageDesc );
 
+            if ( nodeProperties == null ) {
+                logger.error("Missing node properties for " + nodeName);
+                throw new Exception("Missing node properties for " + nodeName);
+            }
+
             if (nodeProperties.getType() == NodeProperties.Type.SERVICE )
                 policyId = null;
 
             if ( nodeInstances( nodeName, policyId, false ).size() >= 1 ) 
-                throw new Exception("too many instances of " + nodeName + " + in policy " + policyId + ".");
+                throw new Exception("Too many instances of " + nodeName + " in policy " + policyId + ".");
             for ( NodeSettings n2 : getSettings().getNodes() ) {
-                if ( n2.getPolicyId() == policyId && n2.getNodeName().equals(nodeName) )
-                     throw new Exception("too many instances of " + nodeName + " + in policy " + policyId + ".");
+                String nodeName1 = nodeName;
+                String nodeName2 = n2.getNodeName();
+                Long policyId1 = policyId;
+                Long policyId2 = n2.getPolicyId();
+                /**
+                 * If the node name and policies are equal, they are dupes
+                 */
+                if ( nodeName1.equals(nodeName2) && ( (policyId1 == policyId2) || ( policyId1 != null && policyId1.equals(policyId2) ) ) )
+                     throw new Exception("Too many instances of " + nodeName + " + in policy " + policyId + ".");
             }
                 
             nodeSettings = createNewNodeSettings( policyId, nodeName );
@@ -856,5 +868,10 @@ public class NodeManagerImpl implements NodeManager
         }
 
         return idList;
+    }
+
+    private boolean policyEquals( Long policyId1, Long policyId2 )
+    {
+        return ( (policyId1 == policyId2) || ( policyId1 != null && policyId1.equals(policyId2) ) );
     }
 }

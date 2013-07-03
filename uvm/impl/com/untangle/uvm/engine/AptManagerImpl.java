@@ -7,6 +7,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.Socket;
@@ -30,12 +31,15 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.FutureTask;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.apache.log4j.Logger;
 
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.ExecManager;
 import com.untangle.uvm.ExecManagerResult;
+import com.untangle.uvm.ExecManagerResultReader;
 import com.untangle.uvm.message.MessageManager;
 import com.untangle.uvm.message.Message;
 import com.untangle.uvm.node.License;
@@ -46,6 +50,12 @@ import com.untangle.uvm.node.NodeManager;
 import com.untangle.uvm.node.NodeSettings;
 import com.untangle.uvm.node.NodeMetric;
 import com.untangle.uvm.node.Reporting;
+import com.untangle.uvm.message.MessageManager;
+import com.untangle.uvm.message.AptMessage;
+import com.untangle.uvm.apt.DownloadComplete;
+import com.untangle.uvm.apt.DownloadProgress;
+import com.untangle.uvm.apt.DownloadSummary;
+import com.untangle.uvm.apt.DownloadAllComplete;
 import com.untangle.uvm.apt.Application;
 import com.untangle.uvm.apt.InstallAndInstantiateComplete;
 import com.untangle.uvm.apt.PackageDesc;
@@ -109,16 +119,6 @@ public class AptManagerImpl implements AptManager
      */
     protected static ExecManager execManager = null;
 
-    /**
-     * The key to use for apt-get tracking
-     */
-    private long lastTailKey = System.currentTimeMillis();
-
-    /**
-     * A Map from key to the Apt Tail thread for each thread running
-     */
-    private final Map<Long, AptLogTail> tails = new HashMap<Long, AptLogTail>();
-    
     /**
      * Private constructor to ensure singleton. use aptManager() to get singleton reference
      */
@@ -452,20 +452,9 @@ public class AptManagerImpl implements AptManager
             }
         } while ( false );
 
-
-        final AptLogTail alt;
-
-        synchronized (tails) {
-            long i = ++lastTailKey;
-            alt = new AptLogTail(i, req);
-            tails.put(i, alt);
-        }
-
-        UvmContextFactory.context().newThread(alt).start();
-
         try {
             installing = true;
-            execApt("install " + name, alt.getKey());
+            execApt( "install " + name, true, req );
         } catch (Exception exn) {
             logger.warn("install failed", exn);
             throw exn;
@@ -515,7 +504,15 @@ public class AptManagerImpl implements AptManager
                 PackageDesc packageDesc = packageDesc(node);
                 if ( packageDesc.isInvisible() )
                     continue;
-
+                // if no node properties exists for this package, it isnt a node
+                File nodeProperties = new File(System.getProperty("uvm.lib.dir") + "/" + node + "/nodeProperties.js");
+                if (! nodeProperties.exists()) {
+                    logger.warn("XXX: nodeproperties fiel missing: " + nodeProperties);
+                    continue;
+                } else {
+                    logger.warn("XXX: nodeproperties fiel found: " + nodeProperties);
+                }
+                
                 try {
                     logger.info("instantiate( " + node + ")");
                     register(node);
@@ -525,7 +522,7 @@ public class AptManagerImpl implements AptManager
                         thisNode.start();
                     }
                 } catch (Exception exn) {
-                    logger.warn("could not instantiate", exn);
+                    logger.warn("could not instantiate " + node, exn);
                 } 
             }
 
@@ -556,38 +553,18 @@ public class AptManagerImpl implements AptManager
 
     public void upgrade() throws Exception
     {
-        final AptLogTail alt;
-
-        synchronized (tails) {
-            long i = ++lastTailKey;
-            alt = new AptLogTail(i, null);
-            tails.put(i, alt);
+        try {
+            upgrading = true;
+            execApt( "upgrade", true, null );
+        } catch (Exception exn) {
+            logger.warn("could not upgrade", exn);
+            throw exn;
+        } finally {
+            upgrading = false;
         }
-
-        UvmContextFactory.context().newThread(alt).start();
-
-        FutureTask<Object> f = new FutureTask<Object>(new Callable<Object>() {
-                public Object call() throws Exception
-                {
-                    try {
-                        upgrading = true;
-                        execApt("upgrade", alt.getKey());
-                    } catch (Exception exn) {
-                        logger.warn("could not upgrade", exn);
-                        throw exn;
-                    } finally {
-                        upgrading = false;
-                    }
-                    return this;
-                }
-            });
-
-        UvmContextFactory.context().newThread(f).start();
-        
-        return;
     }
 
-    public void requestInstall(String packageName)
+    public void requestInstall( String packageName )
     {
         PackageDesc md = packageMap.get(packageName);
         if (null == md) {
@@ -866,14 +843,21 @@ public class AptManagerImpl implements AptManager
      * Exec the apt wrapper with the specified command and key.
      * The key is used to log to apt.log so progress can be tracked
      */
-    private synchronized void execApt(String command, long key) throws Exception
+    private synchronized void execApt( String command, boolean tailOutput, PackageDesc requestingPackage ) throws Exception
     {
-        String cmdStr = "nohup " + System.getProperty("uvm.bin.dir") + "/ut-apt " + (0 > key ? "" : "-k " + key + " ") + command;
+        String cmdStr = "nohup " + System.getProperty("uvm.bin.dir") + "/ut-apt " + command;
 
         synchronized(this) {
-            ExecManagerResult result = this.execManager.exec(cmdStr);
-            if (result.getResult() != 0) {
-                throw new Exception("ut-apt " + command + " error (" + result.getResult() + ") :" + result.getOutput());
+
+            if (! tailOutput ) {
+                ExecManagerResult result = this.execManager.exec( cmdStr );
+                if (result.getResult() != 0) {
+                    throw new Exception("ut-apt " + command + " error (" + result.getResult() + ") :" + result.getOutput());
+                }
+            } else {
+                ExecManagerResultReader result = this.execManager.execEvil( cmdStr );
+
+                parseAptOutput( result, requestingPackage );
             }
         }
 
@@ -883,9 +867,9 @@ public class AptManagerImpl implements AptManager
     /**
      * exec Apt with the specified command (with no key)
      */
-    private void execApt(String command) throws Exception
+    private void execApt( String command ) throws Exception
     {
-        execApt(command, -1);
+        execApt( command, false, null );
     }
 
     /**
@@ -921,5 +905,181 @@ public class AptManagerImpl implements AptManager
         }
 
         return l;
+    }
+
+    private static final Pattern FETCH_PATTERN;
+    private static final Pattern DOWNLOAD_PATTERN;
+    private static final Pattern APT_INSTALL_PATTERN;
+    private static final Pattern DPKG_UNPACK_PATTERN;
+    private static final Pattern DPKG_INSTALL_PATTERN;
+    private static final Pattern DONE_PATTERN;
+
+    static {
+        FETCH_PATTERN = Pattern.compile(".*'(http://.*)' (.*\\.deb) ([0-9]+) (MD5Sum:|SHA1:|SHA256:)?([0-9a-z]+)");
+        //6850K .......... .......... .......... .......... .......... 96% 46.6K 6s
+        DOWNLOAD_PATTERN = Pattern.compile("([0-9]+)K[ .]+([0-9%]+) *([0-9]+\\.*[0-9]+)K.*");
+        APT_INSTALL_PATTERN = Pattern.compile(".*\\s([0-9]+) newly installed,.*");
+        DPKG_UNPACK_PATTERN = Pattern.compile(".*Unpacking\\s*(\\S+) .*");
+        DPKG_INSTALL_PATTERN = Pattern.compile(".*Setting up\\s*(\\S+) .*");
+        DONE_PATTERN = Pattern.compile(".*done.*");
+    }
+    
+    
+    private void parseAptOutput( ExecManagerResultReader reader, PackageDesc requestingPackage )
+    {
+        String line;
+        int installedCount = 0;
+        MessageManager mm = UvmContextFactory.context().messageManager();
+        
+        // find `start key'
+        logger.info("parseAptOutput()" + " finding start \"start\"");
+        for ( line = reader.readLineStdout(); !line.contains("start"); line = reader.readLineStdout() );
+
+        // 'uri' package size hash
+        List<PackageInfo> downloadQueue = new LinkedList<PackageInfo>();
+
+        int totalSize = 0;
+        while ( (line = reader.readLineStdout()) != null) {
+
+            Matcher match = FETCH_PATTERN.matcher(line);
+            if (line.contains("END PACKAGE LIST")) {
+                logger.info("parseAptOutput()" + " found: END PACKAGE LIST");
+                break;
+            } else if (match.matches()) {
+                String url = match.group(1);
+                String file = match.group(2);
+                int size = new Integer(match.group(3));
+                String hash = match.group(5);
+
+                PackageInfo pi = new PackageInfo(url, file, size, hash);
+                logger.info("parseAptOutput()" + " adding package: " + pi);
+                downloadQueue.add(pi);
+                totalSize += size;
+            } else {
+                logger.info("parseAptOutput()" + " does not match FETCH_PATTERN: " + line);
+            }
+        }
+
+        if ( requestingPackage == null  && downloadQueue.size() == 0 ) {
+            // if requestPackage == null, this is an upgrade and theres nothing to upgrade
+            // just return
+            return;
+        }
+
+        logger.info("parseAptOutput()" + " Sending DownloadSummary(downloadQueue.size()=" + downloadQueue.size() + ", totalSize=" + totalSize + ")");
+        mm.submitMessage(new DownloadSummary(downloadQueue.size(), totalSize, requestingPackage));
+
+        for (PackageInfo pi : downloadQueue) {
+            logger.info("parseAptOutput()" + " downloading: " + pi);
+            while ( (line = reader.readLineStdout()) != null ) {
+                Matcher match = DOWNLOAD_PATTERN.matcher(line);
+                //logger.info("parseAptOutput() Processing line:" + line);
+
+                if (line.contains("DOWNLOAD SUCCEEDED: ")) {
+                    logger.info("parseAptOutput()" + " Sending DownloadComplete");
+                    mm.submitMessage(new DownloadComplete(true, requestingPackage));
+                    break;
+                } else if (line.contains("DOWNLOAD FAILED: " )) {
+                    logger.info("parseAptOutput()" + " Sending DownloadComplete (failed)");
+                    mm.submitMessage(new DownloadComplete(false, requestingPackage));
+                    break;
+                } else if (match.matches()) {
+                    int bytesDownloaded = Integer.parseInt(match.group(1)) * 1000;
+                    String speed = match.group(3);
+
+                    // enqueue event
+                    DownloadProgress dpe;
+                    if (null == requestingPackage) {
+                        dpe = new DownloadProgress(pi.file, bytesDownloaded, pi.size, speed, null);
+                    } else {
+                        pi.bytesDownloaded = bytesDownloaded;
+
+                        int soFar = 0;
+                        for (PackageInfo ppi : downloadQueue) {
+                            soFar += ppi.bytesDownloaded;
+                        }
+
+                        dpe = new DownloadProgress(pi.file, soFar, totalSize, speed, requestingPackage);
+                    }
+
+                    logger.info("parseAptOutput()" + " Sending DownloadProgress:" + dpe);
+                    mm.submitMessage(dpe);
+                } else {
+                    logger.info("parseAptOutput()" + " ignoring line: " + line.substring(0,(line.length()<10 ? line.length() : 9)) + "...");
+                }
+            }
+        }
+
+        logger.info("parseAptOutput()" + " Sending DownloadAllComplete");
+        mm.submitMessage(new DownloadAllComplete(true, requestingPackage));
+
+        /**
+         * Wait for installing packages line
+         */
+        int packageCount = 0;
+        while ( (line = reader.readLineStdout()) != null ) {
+            logger.info("parseAptOutput() Waiting for \"" + APT_INSTALL_PATTERN + "\" + \"" + line + "\"");
+            Matcher match = APT_INSTALL_PATTERN.matcher(line);
+            if (match.matches()) {
+                packageCount = Integer.parseInt(match.group(1));
+                break;
+            }  else {
+                logger.info("parseAptOutput()" + " ignoring line: " + line.substring(0,(line.length()<10 ? line.length() : 9)) + "...");
+            }
+        }
+
+        /**
+         * Unpack and install phase
+         */
+        while ( (line = reader.readLineStdout()) != null ) {
+            logger.info("Processing apt line: \"" + line + "\"");
+            Matcher unpackMatch = DPKG_UNPACK_PATTERN.matcher(line);
+            Matcher installMatch = DPKG_INSTALL_PATTERN.matcher(line);
+            if (unpackMatch.matches()) {
+                String packageName = unpackMatch.group(1);
+                mm.submitMessage(new AptMessage("unpack", requestingPackage, installedCount, packageCount*2));
+                installedCount++;
+            } else if (installMatch.matches()) {
+                String packageName = installMatch.group(1);
+                mm.submitMessage(new AptMessage("unpack", requestingPackage, installedCount, packageCount*2));
+                installedCount++;
+            } else if (DONE_PATTERN.matcher(line).matches()) {
+                logger.info("parseAptOutput() APT DONE matched");
+                break; //its done
+            }  else {
+                logger.info("parseAptOutput()" + " ignoring line: " + line.substring(0,(line.length()<10 ? line.length() : 9)) + "...");
+            }
+        }
+
+        mm.submitMessage(new AptMessage("alldone", requestingPackage, 0, 0));
+
+        return;
+    }
+
+    private static class PackageInfo
+    {
+        final String url;
+        final String file;
+        final int size;
+        final String hash;
+
+        int bytesDownloaded = 0;
+
+        // constructors -------------------------------------------------------
+
+        PackageInfo(String url, String file, int size, String hash)
+        {
+            this.url = url;
+            this.file = file;
+            this.size = size;
+            this.hash = hash;
+        }
+
+        // Object methods -----------------------------------------------------
+
+        public String toString()
+        {
+            return "PackageInfo url: " + url + " file: " + file + " size: " + size + " hash: " + hash;
+        }
     }
 }

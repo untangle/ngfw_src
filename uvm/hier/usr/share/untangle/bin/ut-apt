@@ -26,8 +26,6 @@ PREFIX = "@PREFIX@"
 # The command specified
 COMMAND = None
 COMMAND_ARG = None
-# The stamp, if specified
-STAMP = "---"
 ERROR = None
 
 # Ignore SIGHUP from parent (this is in case we get launched by the UVM, and then it exits)
@@ -69,27 +67,21 @@ Commands:
     predictInstall
     update
     upgrade
-Options:
-    -k stamp  : specify stamp written to log file
 """ % sys.argv[0] )
     sys.exit(0)
 
 def parse_args():
     try:
-        opts, args = getopt.getopt(sys.argv[1:], 'k:', ['key'])
+        opts, args = getopt.getopt(sys.argv[1:], '', [])
     except getopt.GetoptError, err:
         log( str(err) )
         usage()
         sys.exit(2)
 
     for opt in opts:
-        k, v = opt
-        if k == '-k' or k == '--key':
-            global STAMP
-            STAMP = str(v)
-        else:
-            usage()
-
+        # currently no options
+        usage()
+    
     if len(args) > 2 or len(args) < 1:
         usage()
     if args[0] not in ['installed', 'available', 'install', 'predictInstall', 'update', 'upgrade']:
@@ -138,23 +130,23 @@ class DevApt:
    
     @staticmethod
     def install(name):
-        log("start %s" % STAMP )
+        log("start")
         log("END PACKAGE LIST")
-        log("done %s" % STAMP )
+        log("done")
         return 0
         
     @staticmethod
     def update():
-        log("start %s" % STAMP)
+        log("start")
         log("apt-get update %s" % UPDATE_OPTS)
-        log("done %s" % STAMP)
+        log("done")
         return 0
 
     @staticmethod
     def upgrade():
-        log("start %s" % STAMP )
+        log("start")
         log("END PACKAGE LIST")
-        log("done %s" % STAMP )
+        log("done")
         return 0
 
     @staticmethod
@@ -176,7 +168,7 @@ class RealApt:
    
     @staticmethod
     def install(pkg):
-        log("start %s" % STAMP)
+        log("start")
         log("downloading: \"%s\"" % pkg)
 
         recs = RealApt.get_recommends(pkg)
@@ -192,7 +184,7 @@ class RealApt:
         for line in iter(p.stdout.readline, ''):
             log( line.strip() )
         p.wait()
-        log("done %s" % STAMP)
+        log("done")
 
         if p.returncode == 0:
             return 0
@@ -201,7 +193,7 @@ class RealApt:
         
     @staticmethod
     def update():
-        log("start %s" % STAMP)
+        log("start")
         log("apt-get update %s" % UPDATE_OPTS)
 
         p = subprocess.Popen(["sh","-c","apt-get update %s 2>&1" % UPDATE_OPTS], stdout=subprocess.PIPE)
@@ -209,12 +201,12 @@ class RealApt:
             if not re.search('^W: (Conflicting distribution|You may want to run apt-get update to correct these problems)', line):
                 log( line.strip() )
         p.wait()
-        log("done %s" % STAMP)
+        log("done")
         return 0
 
     @staticmethod
     def upgrade():
-        log("start %s" % STAMP)
+        log("start")
         log("apt-get dist-upgrade %s" % UPGRADE_OPTS)
 
         pkg_list = RealApt.get_pkg_list("apt-get dist-upgrade %s --print-uris" % UPGRADE_OPTS)
@@ -226,7 +218,7 @@ class RealApt:
         r = RealApt.cmd_to_stderr("apt-get dist-upgrade %s" % UPGRADE_OPTS)
         RealApt.cmd_to_stderr("monit -c /etc/untangle/monit.conf monitor all")
 
-        log("done %s" % STAMP)
+        log("done")
         return 0
 
     @staticmethod
@@ -239,7 +231,7 @@ class RealApt:
             if matcher:
                 log( matcher.group(1) )
         
-        p.wait
+        p.wait()
         if p.returncode == 0:
             return 0
         else:
