@@ -451,7 +451,8 @@ Ext.define("Ung.Main", {
         var doneFn = Ext.bind( function() {
             Ung.MessageManager.stop();
             Ext.MessageBox.hide();
-
+            this.upgradesBeingApplied = true; //set this so we ignore exceptions from here on
+            
             console.log("Applying Upgrades...");
             var applyingUpgradesWindow=Ext.create('Ext.window.MessageBox', {
                 minProgressWidth: 360
@@ -459,7 +460,7 @@ Ext.define("Ung.Main", {
             applyingUpgradesWindow.wait(i18n._("Applying Upgrades..."), i18n._("Please wait"), {
                 interval: 500,
                 increment: 120,
-                duration: 30000,
+                duration: 45000,
                 scope: this,
                 fn: function() {
                     console.log("Upgrade in Progress. Press ok to go to the Start Page...");
@@ -482,7 +483,12 @@ Ext.define("Ung.Main", {
         Ung.MessageManager.setModalDownloadMode( doneFn, doneFn, doneFn );
 
         rpc.aptManager.upgrade(Ext.bind(function(result, exception) {
-            if(Ung.Util.handleException(exception)) return;
+            // if the upgrades are being applied exceptions are expected.
+            // ignore them
+            if ( this.upgradesBeingApplied )
+                return;
+            if( Ung.Util.handleException( exception ) )
+                return;
         }, this));
     },
 
