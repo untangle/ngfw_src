@@ -32,12 +32,12 @@ final class MasterTable
 
     private final Logger m_logger = Logger.getLogger(getClass());
 
-    private File m_rootDir;
+    private String m_rootDir;
     private StoreSummary m_summary;
     private volatile boolean m_closing = false;
 
 
-    private MasterTable(File dir,
+    private MasterTable(String dir,
                         StoreSummary initialSummary) {
         m_rootDir = dir;
         m_summary = initialSummary;
@@ -50,38 +50,40 @@ final class MasterTable
      * needed in case the system closed abnormally
      * and the StoreSummary needs to be rebuilt.
      */
-    static MasterTable open(File rootDir,
+    static MasterTable open(String rootDir,
                             InboxDirectoryTree dirTracker) {
         Logger logger = Logger.getLogger(MasterTable.class);
 
-        Pair<StoreSummaryDriver.FileReadOutcome, StoreSummary> read =
-            StoreSummaryDriver.readSummary(rootDir);
+//        Pair<StoreSummaryDriver.FileReadOutcome, StoreSummary> read =
+//            StoreSummaryDriver.readSummary(rootDir);
 
-        boolean needRebuild = false;
+//        switch(read.a) {
+//        case OK:
+//            logger.debug("Read existing StoreSummary file from disk");
+//            StoreSummaryDriver.openSummary(rootDir);
+//            needRebuild = false;//redundant
+//            break;
+//        case NO_SUCH_FILE:
+//            logger.warn("No store summary on disk.  Either this is a " +
+//                        "fresh startup, or the system experienced an improper shutdown " +
+//                        "on last run");
+//            needRebuild = true;
+//            break;
+//        case EXCEPTION:
+//            logger.warn("Store summary cannot be read (system halt while writing to disk?). " +
+//                        "Rebuild summary from Inbox scans");
+//            needRebuild = true;
+//            break;
+//        case FILE_CORRUPT:
+//            logger.warn("Store summary corrupt (system halt while writing to disk?). " +
+//                        "Rebuild summary from Inbox scans");
+//            needRebuild = true;
+//        }
 
-        switch(read.a) {
-        case OK:
-            logger.debug("Read existing StoreSummary file from disk");
-            StoreSummaryDriver.openSummary(rootDir);
-            needRebuild = false;//redundant
-            break;
-        case NO_SUCH_FILE:
-            logger.warn("No store summary on disk.  Either this is a " +
-                        "fresh startup, or the system experienced an improper shutdown " +
-                        "on last run");
-            needRebuild = true;
-            break;
-        case EXCEPTION:
-            logger.warn("Store summary cannot be read (system halt while writing to disk?). " +
-                        "Rebuild summary from Inbox scans");
-            needRebuild = true;
-            break;
-        case FILE_CORRUPT:
-            logger.warn("Store summary corrupt (system halt while writing to disk?). " +
-                        "Rebuild summary from Inbox scans");
-            needRebuild = true;
-        }
-
+        StoreSummary summary = QuarantineStorageManager.readSummary(rootDir);
+        
+        boolean needRebuild = (summary == null);
+        
         if(needRebuild) {
             RebuildingVisitor visitor = new RebuildingVisitor();
             logger.debug("About to scan Inbox directories to rebuild summary");
@@ -90,7 +92,8 @@ final class MasterTable
             return new MasterTable(rootDir, visitor.getSummary());
         }
         else {
-            return new MasterTable(rootDir, read.b);
+            QuarantineStorageManager.openSummary(rootDir);
+            return new MasterTable(rootDir, summary);
         }
     }
 
@@ -103,10 +106,10 @@ final class MasterTable
      * inbox, while holding the master lock for this
      * account
      */
-    synchronized void addInbox(String address, RelativeFileName inboxDir) {
+    synchronized void addInbox(String address) {
 
         StoreSummary newSummary = new StoreSummary(m_summary);
-        newSummary.addInbox(address, new InboxSummary(inboxDir));
+        newSummary.addInbox(address, new InboxSummary(address));
         m_summary = newSummary;
         save();
     }
@@ -205,7 +208,7 @@ final class MasterTable
 
     private void save() {
         if(m_closing) {
-            if(!StoreSummaryDriver.writeSummary(m_rootDir, m_summary)) {
+            if(!QuarantineStorageManager.writeSummary(m_summary, m_rootDir)) {
                 m_logger.warn("Unable to save StoreSummary.  Next startup " +
                               "will have to rebuild index");
             }
@@ -215,17 +218,17 @@ final class MasterTable
 
 
     /**
-     * Returns null if not found.  Note that since this is not
-     * synchronized, one should call this while holding the
-     * master account lock to ensure that concurrent
-     * creation doesn't take place.
-     */
-    RelativeFileName getInboxDir(String address) {
-        InboxSummary meta = m_summary.getInbox(address);
-        return meta==null?
-            null:
-        meta.getDir();
-    }
+//     * Returns null if not found.  Note that since this is not
+//     * synchronized, one should call this while holding the
+//     * master account lock to ensure that concurrent
+//     * creation doesn't take place.
+//     */
+//    RelativeFileName getInboxDir(String address) {
+//        InboxSummary meta = m_summary.getInbox(address);
+//        return meta==null?
+//            null:
+//        meta.getDir();
+//    }
 
     /**
      * Do not modify any of the returned entries, as it is a shared
@@ -241,34 +244,27 @@ final class MasterTable
     // Class used when we have to visit
     // all directories in the Inbox tree and
     // rebuild our index.
-    private static class RebuildingVisitor
-        implements InboxDirectoryTreeVisitor {
+    private static class RebuildingVisitor implements InboxDirectoryTreeVisitor
+    {
 
         private StoreSummary m_storeMeta = new StoreSummary();
 
-        public void visit(RelativeFile f) {
-            if(!f.file.isDirectory()) {
-                //Defensive programming against myself!
-                return;
-            }
-            Pair<InboxIndexDriver.FileReadOutcome, InboxIndexImpl>
-                result = InboxIndexDriver.readIndex(f.file);
-
-            if(result.a == InboxIndexDriver.FileReadOutcome.OK) {
+        public void visit(File f)
+        {
+            InboxIndexImpl inboxIndex = QuarantineStorageManager.readQuarantineFromFile(f.getName());
+            if (inboxIndex != null) {
                 long totalSz = 0;
                 int totalMails = 0;
-                for(InboxRecord record : result.b) {
-                    totalSz+=record.getSize();
+                for (InboxRecord record : inboxIndex) {
+                    totalSz += record.getSize();
                     totalMails++;
                 }
-                m_storeMeta.addInbox(result.b.getOwnerAddress(),
-                                     new InboxSummary(f,
-                                                      totalSz,
-                                                      totalMails));
+                m_storeMeta.addInbox(inboxIndex.getOwnerAddress(), new InboxSummary(f.getName(), totalSz, totalMails));
             }
         }
 
-        StoreSummary getSummary() {
+        StoreSummary getSummary()
+        {
             return m_storeMeta;
         }
 

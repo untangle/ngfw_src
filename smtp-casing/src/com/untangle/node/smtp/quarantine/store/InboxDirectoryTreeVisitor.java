@@ -3,6 +3,8 @@
  */
 package com.untangle.node.smtp.quarantine.store;
 
+import java.io.File;
+
 /**
  * Callback interface for Objects
  * which wish to visit the contents of
@@ -20,5 +22,5 @@ interface InboxDirectoryTreeVisitor
      *        may not be a terminal (inbox)
      *        directory.
      */
-    void visit(RelativeFile f);
+    void visit(File f);
 }

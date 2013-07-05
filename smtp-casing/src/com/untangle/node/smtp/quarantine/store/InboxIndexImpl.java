@@ -16,11 +16,13 @@ import com.untangle.node.smtp.quarantine.InboxRecordComparator;
  * Private implementation of InboxIndex
  */
 @SuppressWarnings("serial")
-public final class InboxIndexImpl extends HashMap<String, InboxRecord> implements InboxIndex, Serializable
+public final class InboxIndexImpl implements InboxIndex, Serializable
 {
 
     private String m_address;
     private long m_timestamp;
+    
+    private HashMap<String, InboxRecord> inboxMap = new HashMap<String, InboxRecord>();
 
     public void setOwnerAddress(String address) {
         m_address = address;
@@ -42,41 +44,51 @@ public final class InboxIndexImpl extends HashMap<String, InboxRecord> implement
      * added mail, or 0 if the inbox is empty.
      */
     public long getNewestMailTimestamp() {
-        if(size() == 0) {
+        if(inboxMap.size() == 0) {
             return 0;
         }
-        InboxRecord rec = Collections.max(this.values(), InboxRecordComparator.getComparator(
+        InboxRecord rec = Collections.max(inboxMap.values(), InboxRecordComparator.getComparator(
                                                                                              InboxRecordComparator.SortBy.INTERN_DATE, true));
         return rec==null?0:rec.getInternDate();
     }
 
     public Iterator<InboxRecord> iterator() {
-        return values().iterator();
+        return inboxMap.values().iterator();
     }
 
     public int inboxCount() {
-        return size();
+        return inboxMap.size();
     }
 
     public long inboxSize() {
         long inboxSize = 0;
-        for(InboxRecord iRecord : this) {
+        for(InboxRecord iRecord : this.inboxMap.values()) {
             inboxSize += iRecord.getSize();
         }
         return inboxSize;
     }
 
     public InboxRecord getRecord(String mailID) {
-        return get(mailID);
+        return inboxMap.get(mailID);
     }
     public InboxRecord[] getAllRecords() {
-        return values().toArray(new InboxRecord[size()]);
+        return inboxMap.values().toArray(new InboxRecord[inboxMap.size()]);
+    }
+    
+    public HashMap<String, InboxRecord> getInboxMap()
+    {
+        return inboxMap;
+    }
+    
+    public void setInboxMap(HashMap<String, InboxRecord> inboxMap)
+    {
+        this.inboxMap = inboxMap;
     }
 
     protected void debugPrint() {
         System.out.println("Access: " + getLastAccessTimestamp());
         System.out.println("Owner: " + getOwnerAddress());
-        for(InboxRecord record : this) {
+        for(InboxRecord record : this.inboxMap.values()) {
             System.out.println("----- RECORD -----");
             System.out.println("\tID: " + record.getMailID());
             System.out.println("\tDate: " + record.getInternDate());
@@ -88,4 +100,12 @@ public final class InboxIndexImpl extends HashMap<String, InboxRecord> implement
             System.out.println("\tDetail: " + record.getMailSummary().getQuarantineDetail());
         }
     }
+
+    @Override
+    public int size()
+    {
+        return inboxMap.size();
+    }
+    
+    
 }

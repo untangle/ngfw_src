@@ -17,25 +17,24 @@ public interface QuarantinePruningObserver
 {
     public static final QuarantinePruningObserver NOOP = new QuarantinePruningObserver()
         {
-            public void preVisitInboxForOldMessages(String address, RelativeFileName inboxDir) {}
+            public void preVisitInboxForOldMessages(String address) {}
 
             public void pruningOldMessage(String recipient,
                                           File data,
                                           InboxRecord record) {}
 
-            public void postVisitInboxForOldMessages(String address, RelativeFileName inboxDir) {}
+            public void postVisitInboxForOldMessages(String address) {}
 
             public void pruningOldMailbox(String account,
-                                          RelativeFileName dirName,
                                           long lastTouched) {}
 
         };
 
-    public void preVisitInboxForOldMessages(String address, RelativeFileName inboxDir);
+    public void preVisitInboxForOldMessages(String address);
 
     public void pruningOldMessage(String recipient, File data, InboxRecord record);
 
-    public void postVisitInboxForOldMessages(String address, RelativeFileName inboxDir);
+    public void postVisitInboxForOldMessages(String address);
 
-    public void pruningOldMailbox(String account, RelativeFileName dirName, long lastTouched);
+    public void pruningOldMailbox(String account, long lastTouched);
 }

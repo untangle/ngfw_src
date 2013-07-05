@@ -3,6 +3,7 @@
  */
 package com.untangle.node.smtp.quarantine.store;
 
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -20,17 +21,17 @@ import java.util.concurrent.atomic.AtomicLong;
  * <br><br>
  * Assumes all addresses have been lower-cased
  */
-class StoreSummary
+public class StoreSummary implements Serializable
 {
-    private final HashMap<String, InboxSummary> m_map;
-    private final AtomicLong m_totalSz;
-    private final AtomicInteger m_totalMails;
+    private final HashMap<String, InboxSummary> map;
+    private transient final AtomicLong totalSz;
+    private transient final AtomicInteger totalMails;
 
-    StoreSummary()
+    public StoreSummary()
     {
-        m_map = new HashMap<String, InboxSummary>();
-        m_totalSz = new AtomicLong(0);
-        m_totalMails = new AtomicInteger(0);
+        map = new HashMap<String, InboxSummary>();
+        totalSz = new AtomicLong(0);
+        totalMails = new AtomicInteger(0);
     }
 
     /**
@@ -41,11 +42,11 @@ class StoreSummary
      * be seen by each other.
      *
      */
-    StoreSummary(StoreSummary copyFrom)
+    public StoreSummary(StoreSummary copyFrom)
     {
-        m_map = new HashMap<String, InboxSummary>(copyFrom.m_map);
-        m_totalSz = copyFrom.m_totalSz;
-        m_totalMails = copyFrom.m_totalMails;
+        map = new HashMap<String, InboxSummary>(copyFrom.map);
+        totalSz = copyFrom.totalSz;
+        totalMails = copyFrom.totalMails;
     }
 
     /**
@@ -54,7 +55,7 @@ class StoreSummary
      */
     long getTotalSz()
     {
-        return m_totalSz.get();
+        return totalSz.get();
     }
 
     /**
@@ -62,53 +63,53 @@ class StoreSummary
      */
     int getTotalMails()
     {
-        return m_totalMails.get();
+        return totalMails.get();
     }
 
     /**
      * Get the total number of inboxes in the system.
      */
-    int size()
+    public int size()
     {
-        return m_map.size();
+        return map.size();
     }
 
-    boolean containsInbox(String lcAddress)
+    public boolean containsInbox(String lcAddress)
     {
-        return m_map.containsKey(lcAddress);
+        return map.containsKey(lcAddress);
     }
 
-    void addInbox(String lcAddress, InboxSummary meta)
+    public void addInbox(String lcAddress, InboxSummary meta)
     {
-        m_map.put(lcAddress, meta);
-        m_totalSz.getAndAdd(meta.getTotalSz());
-        m_totalMails.getAndAdd(meta.getTotalMails());
+        map.put(lcAddress, meta);
+        totalSz.getAndAdd(meta.getTotalSz());
+        totalMails.getAndAdd(meta.getTotalMails());
     }
 
     /**
      *
      */
-    void removeInbox(String address)
+    public void removeInbox(String address)
     {
-        InboxSummary doomed = m_map.remove(address);
+        InboxSummary doomed = map.remove(address);
         if(doomed != null) {
-            m_totalSz.getAndAdd(-1*doomed.getTotalSz());
-            m_totalMails.getAndAdd(-1*doomed.getTotalMails());
+            totalSz.getAndAdd(-1*doomed.getTotalSz());
+            totalMails.getAndAdd(-1*doomed.getTotalMails());
         }
     }
 
-    void mailAdded(InboxSummary inbox, long sz)
+    public void mailAdded(InboxSummary inbox, long sz)
     {
-        m_totalSz.getAndAdd(sz);
-        m_totalMails.getAndAdd(1);
+        totalSz.getAndAdd(sz);
+        totalMails.getAndAdd(1);
         inbox.incrementTotalSz(sz);
         inbox.incrementTotalMails(1);
     }
 
     void mailRemoved(InboxSummary inbox, long sz)
     {
-        m_totalSz.getAndAdd(-1*sz);
-        m_totalMails.getAndAdd(-1);
+        totalSz.getAndAdd(-1*sz);
+        totalMails.getAndAdd(-1);
         inbox.decrementTotalSz(sz);
         inbox.decrementTotalMails(1);
     }
@@ -119,21 +120,21 @@ class StoreSummary
      * size/count of the inbox.  This is the
      * call to perform the update.
      */
-    void updateMailbox(InboxSummary inbox, long totalSz, int totalMails)
+    public void updateMailbox(InboxSummary inbox, long totalSz, int totalMails)
     {
-        m_totalSz.getAndAdd(-1*inbox.updateTotalSz(totalSz));
-        m_totalSz.getAndAdd(inbox.getTotalSz());
+        this.totalSz.getAndAdd(-1*inbox.updateTotalSz(totalSz));
+        this.totalSz.getAndAdd(inbox.getTotalSz());
 
-        m_totalMails.getAndAdd(-1*inbox.updateTotalMails(totalMails));
-        m_totalMails.getAndAdd(inbox.getTotalMails());
+        this.totalMails.getAndAdd(-1*inbox.updateTotalMails(totalMails));
+        this.totalMails.getAndAdd(inbox.getTotalMails());
     }
 
     /**
      * Returns null if not found.
      */
-    InboxSummary getInbox(String address)
+    public InboxSummary getInbox(String address)
     {
-        return m_map.get(address);
+        return map.get(address);
     }
 
     /**
@@ -141,8 +142,19 @@ class StoreSummary
      * reference.  The returned set itself is guaranteed never
      * to be modified.
      */
-    Set<Map.Entry<String,InboxSummary>> entries()
+    public Set<Map.Entry<String,InboxSummary>> entries()
     {
-        return m_map.entrySet();
+        return map.entrySet();
     }
+    
+    public HashMap<String, InboxSummary> getMap()
+    {
+        return map;
+    }
+    
+    public void setMap(HashMap<String, InboxSummary> map)
+    {
+        this.map.putAll(map);
+    }
+    
 }

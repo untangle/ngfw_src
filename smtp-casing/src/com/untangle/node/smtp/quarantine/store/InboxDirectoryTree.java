@@ -58,7 +58,7 @@ class InboxDirectoryTree
                                  relativePathAsString + File.separator + kid.getName());
             }
         }
-        visitor.visit(new RelativeFile(relativePathAsString, dir));
+        visitor.visit(dir);
     }
 
     /**
@@ -69,10 +69,10 @@ class InboxDirectoryTree
      *         is some terrible problem with the
      *         underlying store.
      */
-    RelativeFile createInboxDir()
-    {
-        return createInboxDirImpl();
-    }
+//    File createInboxDir()
+//    {
+//        return createInboxDirImpl();
+//    }
 
     /**
      * Delete the inbox directory.  Note that this
@@ -82,32 +82,32 @@ class InboxDirectoryTree
      *
      * @param dir the doomed directory.
      */
-    void deleteInboxDir(RelativeFileName dir)
+    void deleteInboxDir(String dir)
     {
-        IOUtil.rmDir(new File(m_quarantineRootDir, dir.relativePath));
+        IOUtil.rmDir(new File(m_quarantineRootDir, dir));
     }
 
-    private RelativeFile createInboxDirImpl()
-    {
-        long num = System.currentTimeMillis();
-        File f = null;
-        for(int i = 0; i<MAX_TRIES; i++) {
-            f = new File(m_inboxRootDir, Long.toString(num + i));
-            synchronized(m_lock) {
-                if(!f.exists()) {
-                    f.mkdirs();
-                }
-                else {
-                    f = null;
-                }
-            }
-            if(f != null) {
-                break;
-            }
-        }
-        return f==null?
-            null:new RelativeFile(
-                                  (DATA_DIR_NAME + File.separator + f.getName()),
-                                  f);
-    }
+//    private File createInboxDirImpl()
+//    {
+//        long num = System.currentTimeMillis();
+//        File f = null;
+//        for(int i = 0; i<MAX_TRIES; i++) {
+//            f = new File(m_inboxRootDir, Long.toString(num + i));
+//            synchronized(m_lock) {
+//                if(!f.exists()) {
+//                    f.mkdirs();
+//                }
+//                else {
+//                    f = null;
+//                }
+//            }
+//            if(f != null) {
+//                break;
+//            }
+//        }
+//        return f==null?
+//            null:new RelativeFile(
+//                                  (DATA_DIR_NAME + File.separator + f.getName()),
+//                                  f);
+//    }
 }

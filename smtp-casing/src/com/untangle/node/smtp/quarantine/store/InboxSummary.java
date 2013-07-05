@@ -2,6 +2,7 @@
  * $Id$
  */
 package com.untangle.node.smtp.quarantine.store;
+import java.io.Serializable;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 
@@ -18,48 +19,38 @@ import java.util.concurrent.atomic.AtomicLong;
  *
  * Assumes all addresses have been lower-cased
  */
-final class InboxSummary
+public final class InboxSummary implements Serializable
 {
-    private RelativeFileName m_inboxDir;
-    private final AtomicLong m_totalSz;
-    private final AtomicInteger m_totalMails;
+    private String address;
+    private final AtomicLong totalSz;
+    private final AtomicInteger totalMails;
 
-    InboxSummary()
+    public InboxSummary()
     {
         this(null, 0, 0);
     }
 
-    InboxSummary(RelativeFileName inbox)
+    public InboxSummary(String inbox)
     {
         this(inbox, 0, 0);
     }
 
-    InboxSummary(RelativeFileName inbox, long totalSz, int totalMails)
+    public InboxSummary(String inbox, long totalSz, int totalMails)
     {
 
-        m_totalSz = new AtomicLong(totalSz);
-        m_totalMails = new AtomicInteger(totalMails);
-        setDir(inbox);
+        this.totalSz = new AtomicLong(totalSz);
+        this.totalMails = new AtomicInteger(totalMails);
+        setAddress(inbox);
     }
 
-    /**
-     * Get the relative file for this user's inbox data
-     */
-    RelativeFileName getDir()
+    public String getAddress()
     {
-        return m_inboxDir;
+        return address;
     }
-
-    void setDir(RelativeFileName dir)
+    
+    public void setAddress(String address)
     {
-        if(dir == null) {
-            m_inboxDir = null;
-        }
-        if(dir instanceof RelativeFile) {
-            //Don't cache File objects
-            dir = new RelativeFileName(dir.relativePath);
-        }
-        m_inboxDir = dir;
+        this.address = address;
     }
 
     /**
@@ -69,36 +60,46 @@ final class InboxSummary
      * @param newValue the new value
      * @return the <b>old</b> value.
      */
-    long updateTotalSz(long newValue)
+    public long updateTotalSz(long newValue)
     {
-        return m_totalSz.getAndSet(newValue);
+        return totalSz.getAndSet(newValue);
     }
 
-    void incrementTotalSz(long toAdd)
+    public void incrementTotalSz(long toAdd)
     {
-        m_totalSz.addAndGet(toAdd);
+        totalSz.addAndGet(toAdd);
     }
 
-    void decrementTotalSz(long toSubtract)
+    public void decrementTotalSz(long toSubtract)
     {
-        m_totalSz.addAndGet(-1*toSubtract);
+        totalSz.addAndGet(-1*toSubtract);
     }
 
     /**
      * Get the total size (sum of lengths of all files)
      * for this inbox
      */
-    long getTotalSz()
+    public long getTotalSz()
     {
-        return m_totalSz.get();
+        return totalSz.get();
     }
 
     /**
      * Get the total number of mails in this inbox.
      */
-    int getTotalMails()
+    public int getTotalMails()
     {
-        return m_totalMails.get();
+        return totalMails.get();
+    }
+    
+    public void setTotalSz(long newVal)
+    {
+        totalSz.set(newVal);
+    }
+
+    public void setTotalMails(int newVal)
+    {
+        totalMails.set(newVal);
     }
 
     /**
@@ -108,19 +109,19 @@ final class InboxSummary
      * @param newValue the new value
      * @return the <b>old</b> value.
      */
-    int updateTotalMails(int newValue)
+    public int updateTotalMails(int newValue)
     {
-        return m_totalMails.getAndSet(newValue);
+        return totalMails.getAndSet(newValue);
     }
 
-    void incrementTotalMails(int toAdd)
+    public void incrementTotalMails(int toAdd)
     {
-        m_totalMails.addAndGet(toAdd);
+        totalMails.addAndGet(toAdd);
     }
 
-    void decrementTotalMails(int toSubtract)
+    public void decrementTotalMails(int toSubtract)
     {
-        m_totalMails.addAndGet(-1*toSubtract);
+        totalMails.addAndGet(-1*toSubtract);
     }
 
 }
