@@ -21,6 +21,7 @@ import java.util.concurrent.atomic.AtomicLong;
  * <br><br>
  * Assumes all addresses have been lower-cased
  */
+@SuppressWarnings("serial")
 public class StoreSummary implements Serializable
 {
     private final HashMap<String, InboxSummary> map;

@@ -19,6 +19,7 @@ import java.util.concurrent.atomic.AtomicLong;
  *
  * Assumes all addresses have been lower-cased
  */
+@SuppressWarnings("serial")
 public final class InboxSummary implements Serializable
 {
     private String address;

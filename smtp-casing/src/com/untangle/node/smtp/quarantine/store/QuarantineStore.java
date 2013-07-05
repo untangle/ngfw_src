@@ -6,12 +6,9 @@ package com.untangle.node.smtp.quarantine.store;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
-import org.apache.log4j.Logger;
 
 import com.untangle.node.smtp.quarantine.Inbox;
 import com.untangle.node.smtp.quarantine.InboxRecord;
@@ -20,8 +17,6 @@ import com.untangle.node.smtp.quarantine.QuarantineEjectionHandler;
 import com.untangle.node.util.IOUtil;
 import com.untangle.node.util.Pair;
 import com.untangle.node.util.UtLogger;
-import com.untangle.uvm.SettingsManager;
-import com.untangle.uvm.UvmContextFactory;
 
 /**
  * Always add a file *then* update the index Always update the index *then*
@@ -29,8 +24,6 @@ import com.untangle.uvm.UvmContextFactory;
  */
 public class QuarantineStore
 {
-    private final Logger logger = Logger.getLogger(getClass());
-
     private static final String DATA_FILE_PREFIX = "meta";
     private static final String DATA_FILE_SUFFIX = ".mime";
 

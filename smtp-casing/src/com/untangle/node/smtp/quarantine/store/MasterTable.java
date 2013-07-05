@@ -9,7 +9,6 @@ import java.util.Set;
 import org.apache.log4j.Logger;
 
 import com.untangle.node.smtp.quarantine.InboxRecord;
-import com.untangle.node.util.Pair;
 
 //========================================================
 // For add/remove operations, we make a copy
