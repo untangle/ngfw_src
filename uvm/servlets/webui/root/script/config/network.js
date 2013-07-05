@@ -3205,6 +3205,134 @@ if (!Ung.hasResource["Ung.Network"]) {
                 columnsDefaultSortable: false
             });
             
+            this.interfaceList = Ung.Util.getInterfaceList(true, true)
+           
+            this.gridQosStatistics = Ext.create( 'Ung.EditorGrid', {
+                name: 'QoS Statistics',
+                margin: '5 0 0 0',
+                height: 190,
+                settingsCmp: this,
+                paginated: false,
+                hasAdd: false,
+                hasDelete: false,
+                hasEdit: false,
+                dataRoot:'',
+                dataFn: function(){ return eval(main.getExecManager().execOutput("/usr/share/untangle-netd/bin/get_statistics.py")); },
+                fields: [{
+                    name: 'interface_name'
+                },{
+                    name: 'priority'
+                },{
+                    name: 'sent'
+                }],   
+                tbar:[{
+                    xtype: "button",
+                    iconCls: 'icon-refresh',
+                    text: this.i18n._("Refresh"),
+                    handler: function() {
+                        this.gridQosStatistics.reload();
+                    },
+                    scope : this
+                }],
+                columns: [{
+                    header: this.i18n._("Interface"),
+                    width: 150,
+                    dataIndex: 'interface_name',
+                    renderer: Ext.bind(function( value, metadata, record ) {
+                        console.log("Interface list",this.interfaceList);
+                        return this.i18n._(value);
+                    }, this )
+                }, {
+                    header: this.i18n._("Priority"),
+                    dataIndex: 'priority',
+                    width: 150,
+                    editor : {
+                        xtype: 'numberfield',
+                        allowBlank : false,
+                        minValue : 0.1,
+                        maxValue : 100
+                    },
+                    renderer: Ext.bind(function( value, metadata, record ) { 
+                        return this.qosPriorityMap[value];
+                    }, this )
+                }, {
+                    header: this.i18n._("Data"),
+                    dataIndex: 'sent',
+                    width: 150,
+                    flex:1
+                }],
+                columnsDefaultSortable: false,
+                groupField:'interface_name'
+            });
+            
+            this.gridQosSessions = Ext.create( 'Ung.EditorGrid', {
+                name: 'QoS Sessions',
+                margin: '5 0 0 0',
+                height: 190,
+                settingsCmp: this,
+                paginated: false,
+                hasAdd: false,
+                hasDelete: false,
+                hasEdit: false,
+                dataRoot:'',
+                dataFn: function(){ return eval(main.getExecManager().execOutput("/usr/share/untangle-netd/bin/get_sessions.py")); },
+                fields: [{
+                    name: 'proto'
+                },{
+                    name: 'src'
+                },{
+                    name: 'dest'
+                },{
+                    name: 'src_port'
+                },
+                {
+                    name: 'dst_port'
+                },{
+                    name:'priority'
+                }],   
+                tbar:[{
+                    xtype: "button",
+                    iconCls: 'icon-refresh',
+                    text: this.i18n._("Refresh"),
+                    handler: function() {
+                        this.gridQosSessions.reload();
+                    },
+                    scope : this
+                }],
+                columns: [{
+                    header: this.i18n._("Protocol"),
+                    width: 150,
+                    dataIndex: 'proto',
+                }, {
+                    header: this.i18n._("Source IP"),
+                    dataIndex: 'src',
+                    width: 150,
+                }, {
+                    header: this.i18n._("Destination IP"),
+                    dataIndex: 'dest',
+                    width: 150
+                }, {
+                    header: this.i18n._("Source port"),
+                    dataIndex: 'src_port',
+                    width: 150
+                }, {
+                    header: this.i18n._("Destination port"),
+                    dataIndex: 'dst_port',
+                    width: 150
+                }, {
+                    header: this.i18n._("Priority"),
+                    dataIndex: 'priority',
+                    width: 150,
+                    flex:1,
+                    renderer: Ext.bind(function( value, metadata, record ) { 
+                        return this.qosPriorityMap[value];
+                    }, this )
+                }],
+                columnsDefaultSortable: false,
+            });
+
+
+            
             this.panelQoS = Ext.create('Ext.panel.Panel',{
                 name: 'panelQoS',
                 helpSource: 'network_qos',
@@ -3331,10 +3459,12 @@ if (!Ung.hasResource["Ung.Network"]) {
                     xtype: 'fieldset',
                     cls: 'description',
                     title: this.i18n._('QoS Statistics'),
-                    items: [{
-                        border: false,
-                        html: "TODO: implement this"
-                    }]
+                    items: [this.gridQosStatistics]
+                },{
+                    xtype: 'fieldset',
+                    cls: 'description',
+                    title: this.i18n._('QoS Sessions'),
+                    items: [this.gridQosSessions]
                 }]
             });
             this.gridQosRules.setRowEditor(Ext.create('Ung.RowEditorWindow',{
