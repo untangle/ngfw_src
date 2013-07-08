@@ -3253,7 +3253,10 @@ if (!Ung.hasResource["Ung.Network"]) {
                         maxValue : 100
                     },
                     renderer: Ext.bind(function( value, metadata, record ) { 
-                        return this.qosPriorityMap[value];
+                        if (value in this.qosPriorityMap) {
+                            return value + '-' + this.qosPriorityMap[value];
+                        }
+                        return value;
                     }, this )
                 }, {
                     header: this.i18n._("Data"),
