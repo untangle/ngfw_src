@@ -35,6 +35,25 @@ public interface SettingsManager
     public <T> T save(Class<T> clz, String fileName, T value) throws SettingsException;
 
     /**
+     * Save the settings from the store using a unique identifier.
+     * 
+     * @param <T>
+     *            Type of class to save
+     * @param clz
+     *            Type of class to save.
+     * @param fileName
+     *            The filename to save the class to
+     * @param value
+     *            The value to be saved.
+     * @param saveVersion
+     *            True if older versions should be saved.
+     * @return The object that was saved.
+     * @throws SettingsException
+     */
+    public <T> T save(Class<T> clz, String fileName, T value, boolean saveVersion) throws SettingsException;
+
+    
+    /**
      * Load the settings from the store using a unique identifier.
      * 
      * @param <T>

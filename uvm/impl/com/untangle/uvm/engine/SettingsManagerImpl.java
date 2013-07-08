@@ -4,7 +4,6 @@
 package com.untangle.uvm.engine;
 
 import java.io.BufferedReader;
-import java.io.Reader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileWriter;
@@ -13,21 +12,18 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URL;
 import java.text.SimpleDateFormat;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.zip.GZIPInputStream;
-import org.apache.log4j.Logger;
+
+import org.apache.commons.httpclient.Header;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpMethod;
-import org.apache.commons.httpclient.Header;
 import org.apache.commons.httpclient.methods.GetMethod;
+import org.apache.log4j.Logger;
 import org.jabsorb.JSONSerializer;
 import org.jabsorb.serializer.MarshallException;
 import org.jabsorb.serializer.UnmarshallException;
@@ -128,11 +124,16 @@ public class SettingsManagerImpl implements SettingsManager
      */
     public <T> T save( Class<T> clz, String fileName, T value ) throws SettingsException
     {
+        return save(clz, fileName, value, true);
+    }
+    
+    public <T> T save(Class<T> clz, String fileName, T value, boolean saveVersion) throws SettingsException
+    {
         if (!_checkLegalName(fileName)) {
             throw new IllegalArgumentException("Invalid file name: '" + fileName + "'");
         }
 
-        return _saveImpl(clz, fileName, value);
+        return _saveImpl(clz, fileName, value, saveVersion);
     }
 
     /**
@@ -156,7 +157,6 @@ public class SettingsManagerImpl implements SettingsManager
      * Implementation of the load
      * This opens the file, and then calls loadInputStream
      */
-    @SuppressWarnings("unchecked") //JSON
     private <T> T _loadImpl( Class<T> clz, String fileName ) throws SettingsException
     {
         File f = new File( fileName );
@@ -220,12 +220,17 @@ public class SettingsManagerImpl implements SettingsManager
      * Then formats that tmp file and copies it to another file
      * Then it repoints the symlink
      */
-    private <T> T _saveImpl( Class<T> clz, String fileName, T value ) throws SettingsException
+    private <T> T _saveImpl( Class<T> clz, String fileName, T value, boolean saveVersion) throws SettingsException
     {
         File link = new File( fileName );
-        String versionString = String.valueOf(DATE_FORMATTER.format(new Date()));
-        String outputFileName = fileName + "-version-" + versionString + _findFileExtension( fileName );
-        File   outputFile = new File(outputFileName);
+        String outputFileName;
+        if (saveVersion){
+            String versionString = String.valueOf(DATE_FORMATTER.format(new Date()));
+            outputFileName = fileName + "-version-" + versionString + _findFileExtension( fileName );
+        } else {
+            outputFileName = fileName;
+        }
+        File outputFile = new File(outputFileName);
 
         Object lock = this.getLock(outputFile.getParentFile().getAbsolutePath());
 
@@ -252,13 +257,15 @@ public class SettingsManagerImpl implements SettingsManager
                 String formatCmd = new String(System.getProperty("uvm.bin.dir") + "/" + "ut-format-json" + " " + outputFileName);
                 UvmContextImpl.context().execManager().execResult(formatCmd);
                 
-                /*
-                 * The API for creating symbolic links is in Java 7
-                 */
-                String[] chops = outputFileName.split(File.separator);
-                String filename = chops[chops.length - 1];
-                String linkCmd = "ln -sf ./"+filename + " " + link.toString();
-                UvmContextImpl.context().execManager().exec(linkCmd);
+                if (saveVersion){
+                    /*
+                     * The API for creating symbolic links is in Java 7
+                     */
+                    String[] chops = outputFileName.split(File.separator);
+                    String filename = chops[chops.length - 1];
+                    String linkCmd = "ln -sf ./"+filename + " " + link.toString();
+                    UvmContextImpl.context().execManager().exec(linkCmd);
+                }
 
             } catch (IOException e) {
                 logger.warn("Failed to save settings: ", e);
