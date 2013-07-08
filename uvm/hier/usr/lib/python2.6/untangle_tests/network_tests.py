@@ -469,12 +469,12 @@ class NetworkTests(unittest2.TestCase):
     def test_999_finalTearDown(self):
         global node,nodeFW
         # Restore original settings to return to initial settings
+        # print "orig_netsettings <%s>" % orig_netsettings
+        uvmContext.networkManager().setNetworkSettings(orig_netsettings)
         nukeFWRules()
         nukeDNSRules()
         nukeBypassRules()
         nukeRouteRules()
-        # print "orig_netsettings <%s>" % orig_netsettings
-        uvmContext.networkManager().setNetworkSettings(orig_netsettings)
         # In case firewall is still installed.
         if (uvmContext.nodeManager().isInstantiated(self.nodeNameFW())):
             uvmContext.nodeManager().destroy( nodeFW.getNodeSettings()["id"] )
