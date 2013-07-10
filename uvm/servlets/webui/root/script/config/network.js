@@ -3217,7 +3217,15 @@ if (!Ung.hasResource["Ung.Network"]) {
                 hasDelete: false,
                 hasEdit: false,
                 dataRoot:'',
-                dataFn: function(){ return eval(main.getExecManager().execOutput("/usr/share/untangle-netd/bin/get_statistics.py")); },
+                dataFn: function() {
+                    var output=main.getExecManager().execOutput("/usr/share/untangle-netd/bin/get_statistics.py");
+                    try {
+                        return eval(output);
+                    } catch (e) {
+                        console.error("Could not execute /usr/share/untangle-netd/bin/get_statistics.py output: ", output, e);
+                        return [];
+                    }
+                },
                 fields: [{
                     name: 'interface_name'
                 },{
@@ -3278,7 +3286,16 @@ if (!Ung.hasResource["Ung.Network"]) {
                 hasDelete: false,
                 hasEdit: false,
                 dataRoot:'',
-                dataFn: function(){ return eval(main.getExecManager().execOutput("/usr/share/untangle-netd/bin/get_sessions.py")); },
+                dataFn: function() {
+                    var output=main.getExecManager().execOutput("/usr/share/untangle-netd/bin/get_sessions.py");
+                    try {
+                        return eval(output);
+                    } catch (e) {
+                        console.error("Could not execute /usr/share/untangle-netd/bin/get_sessions.py output: ", output, e);
+                        return [];
+                    }
+                },
+                
                 fields: [{
                     name: 'proto'
                 },{
