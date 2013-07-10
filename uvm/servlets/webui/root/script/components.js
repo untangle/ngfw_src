@@ -377,7 +377,17 @@ Ung.Util = {
                 throw i18n._("Error making rpc request to server");
             }
         } else {
-            Ext.MessageBox.alert(i18n._("Warning"), exception.message);
+            var message = exception.message;
+            if(!exception.message) {
+                message=i18n._("An error has occured!");
+                if(exception.name) {
+                    message +="<br/><b>" + exception.name+"</b>";
+                }
+                if(exception.javaStack) {
+                    message +="<br/>" + exception.javaStack;
+                }
+            }
+            Ext.MessageBox.alert(i18n._("Warning"), message);
         }
     },
     handleException: function(exception, handler, type, continueExecution) { //type: alertCallback, alert, noAlert
@@ -415,7 +425,7 @@ Ung.Util = {
                 message  = i18n._("The connection to the server has been lost.") + "<br/>";
                 message += i18n._("Press OK to return to the login page.") + "<br/>";
                 message += i18n._("<br/>");
-                message += i18n._("An error has occured") + ": " + exception.name + ": " + exception.message + "<br/>";
+                message += i18n._("An error has occured: ") + exception.name + ": " + exception.message + "<br/>";
                 if (type !== "noAlert")
                     handler = Ung.Util.goToStartPage; //override handler
             }
@@ -424,7 +434,7 @@ Ung.Util = {
                 message  = i18n._("The connection to the server has been lost.") + "<br/>";
                 message += i18n._("Press OK to return to the login page.") + "<br/>";
                 message += i18n._("<br/>");
-                message += i18n._("An error has occured") + ": " + exception.name + ": " + exception.message + "<br/>";
+                message += i18n._("An error has occured: ") + exception.name + ": " + exception.message + "<br/>";
                 if (type !== "noAlert")
                     handler = Ung.Util.goToStartPage; //override handler
             }
@@ -433,7 +443,7 @@ Ung.Util = {
                 message  = i18n._("The connection to the server has been lost.") + "<br/>";
                 message += i18n._("Press OK to return to the login page.") + "<br/>";
                 message += i18n._("<br/>");
-                message += i18n._("An error has occured") + ": " + exception.name + ": " + exception.message + "<br/>";
+                message += i18n._("An error has occured: ") + exception.name + ": " + exception.message + "<br/>";
                 if (type !== "noAlert")
                     handler = Ung.Util.goToStartPage; //override handler
             }
@@ -4456,13 +4466,14 @@ Ext.define('Ung.EditorGrid', {
     },
     initialLoad: function() {
         // load first page initialy
-        this.getView().setLoading(false);  
+        this.getView().setLoading(false);  //set to false to prevent showing load mask on inital load.
         Ext.defer(function(){
             this.buildData(Ext.bind(function() {
                 this.getStore().loadPage(1, {
                     limit:this.isPaginated() ? this.recordsPerPage: Ung.Util.maxRowCount,
                     callback: function() {
                         this.dataLoaded=true;
+                        //must call this even when setLoading was not set to true, or prevent reload error
                         this.getView().setLoading(false);
                     },
                     scope: this
