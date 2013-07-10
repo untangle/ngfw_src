@@ -4456,14 +4456,14 @@ Ext.define('Ung.EditorGrid', {
     },
     initialLoad: function() {
         // load first page initialy
-        //this.getView().setLoading(true);  
+        this.getView().setLoading(false);  
         Ext.defer(function(){
             this.buildData(Ext.bind(function() {
                 this.getStore().loadPage(1, {
                     limit:this.isPaginated() ? this.recordsPerPage: Ung.Util.maxRowCount,
                     callback: function() {
                         this.dataLoaded=true;
-                        //this.getView().setLoading(false);
+                        this.getView().setLoading(false);
                     },
                     scope: this
                 });
