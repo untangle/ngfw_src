@@ -91,7 +91,7 @@ final class MasterTable
             return new MasterTable(rootDir, visitor.getSummary());
         }
         else {
-            QuarantineStorageManager.openSummary(rootDir);
+            //QuarantineStorageManager.openSummary(rootDir);
             return new MasterTable(rootDir, summary);
         }
     }
@@ -206,11 +206,8 @@ final class MasterTable
     }
 
     private void save() {
-        if(m_closing) {
-            if(!QuarantineStorageManager.writeSummary(m_summary, m_rootDir)) {
-                m_logger.warn("Unable to save StoreSummary.  Next startup " +
-                              "will have to rebuild index");
-            }
+        if (!QuarantineStorageManager.writeSummary(m_summary, m_rootDir)) {
+            m_logger.warn("Unable to save StoreSummary.  Next startup " + "will have to rebuild index");
         }
     }
 

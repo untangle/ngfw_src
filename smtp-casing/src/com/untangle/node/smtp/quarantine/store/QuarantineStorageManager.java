@@ -1,7 +1,5 @@
 package com.untangle.node.smtp.quarantine.store;
 
-import java.io.File;
-
 import org.apache.log4j.Logger;
 
 import com.untangle.node.smtp.quarantine.InboxRecord;
@@ -16,8 +14,7 @@ import com.untangle.uvm.UvmContextFactory;
 public class QuarantineStorageManager
 {
     private static final Logger logger = Logger.getLogger(QuarantineStorageManager.class);
-    private static final String SUMMARY_OPENED_FILE_NAME = "summary_opened.js";
-    private static final String SUMMARY_CLOSED_FILE_NAME = "summary_closed.js";
+    private static final String SUMMARY_FILE_NAME = "summary.js";
 
     /**
      * reads InboxIndex from a given file
@@ -103,25 +100,12 @@ public class QuarantineStorageManager
         return true;
     }
 
-    /**
-     * Marks the file as "open", meaning if there is a crash the file will be
-     * assumed to be out-of-date upon the next startup.
-     */
-    static boolean openSummary(String baseDir)
-    {
-        File f = new File(baseDir + "/", SUMMARY_CLOSED_FILE_NAME);
-        if (f.exists()) {
-            return f.renameTo(new File(baseDir, SUMMARY_OPENED_FILE_NAME));
-        }
-        return false;
-    }
-
     public static StoreSummary readSummary(String baseDir)
     {
 
         SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
         StoreSummary storeSummary = null;
-        String quarantineFile = baseDir + "/" + SUMMARY_CLOSED_FILE_NAME;
+        String quarantineFile = baseDir + "/" + SUMMARY_FILE_NAME;
 
         logger.info("Loading quarantine summary from " + quarantineFile);
 
@@ -141,7 +125,7 @@ public class QuarantineStorageManager
     public static boolean writeSummary(StoreSummary summary, String baseDir)
     {
         SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
-        String quarantineFile = baseDir + "/" + SUMMARY_CLOSED_FILE_NAME;
+        String quarantineFile = baseDir + "/" + SUMMARY_FILE_NAME;
 
         try {
             settingsManager.save(StoreSummary.class, quarantineFile, summary, false);
