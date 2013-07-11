@@ -2807,7 +2807,9 @@ if (!Ung.hasResource["Ung.Network"]) {
                 helpSource: 'network_route_rules',
                 parentId: this.getId(),
                 title: this.i18n._('Routes'),
-                layout: 'anchor',
+                autoScroll: true,
+                //layout: { type: 'vbox', pack: 'start', align: 'stretch' },
+                layout: "anchor",
                 cls: 'ung-panel',
                 items: [{
                     xtype: 'fieldset',
@@ -3242,26 +3244,20 @@ if (!Ung.hasResource["Ung.Network"]) {
                     },
                     scope : this
                 }],
+                columnsDefaultSortable: true,
                 columns: [{
                     header: this.i18n._("Interface"),
                     width: 150,
                     dataIndex: 'interface_name',
                     renderer: Ext.bind(function( value, metadata, record ) {
-                        console.log("Interface list",this.interfaceList);
                         return this.i18n._(value);
                     }, this )
                 }, {
                     header: this.i18n._("Priority"),
                     dataIndex: 'priority',
                     width: 150,
-                    editor : {
-                        xtype: 'numberfield',
-                        allowBlank : false,
-                        minValue : 0.1,
-                        maxValue : 100
-                    },
                     renderer: Ext.bind(function( value, metadata, record ) { 
-                        if (value in this.qosPriorityMap) {
+                        if (this.qosPriorityMap[value]!=null) {
                             return value + '-' + this.qosPriorityMap[value];
                         }
                         return value;
@@ -3272,7 +3268,6 @@ if (!Ung.hasResource["Ung.Network"]) {
                     width: 150,
                     flex:1
                 }],
-                columnsDefaultSortable: false,
                 groupField:'interface_name'
             });
             
@@ -3319,6 +3314,7 @@ if (!Ung.hasResource["Ung.Network"]) {
                     },
                     scope : this
                 }],
+                columnsDefaultSortable: true,
                 columns: [{
                     header: this.i18n._("Protocol"),
                     width: 150,
@@ -3347,12 +3343,9 @@ if (!Ung.hasResource["Ung.Network"]) {
                     renderer: Ext.bind(function( value, metadata, record ) { 
                         return this.qosPriorityMap[value];
                     }, this )
-                }],
-                columnsDefaultSortable: false,
+                }]
             });
 
-
-            
             this.panelQoS = Ext.create('Ext.panel.Panel',{
                 name: 'panelQoS',
                 helpSource: 'network_qos',
@@ -3861,6 +3854,7 @@ if (!Ung.hasResource["Ung.Network"]) {
                 }, {
                     name: 'description'
                 }],
+                columnsDefaultSortable: true,
                 columns: [{
                     header: this.i18n._("MAC Address"),
                     width: 200,
@@ -3970,7 +3964,8 @@ if (!Ung.hasResource["Ung.Network"]) {
                 helpSource: 'network_dhcp_server',
                 parentId: this.getId(),
                 title: this.i18n._('DHCP Server'),
-                layout: 'anchor',
+                autoScroll: true,
+                layout: { type: 'vbox', pack: 'start', align: 'stretch' },
                 cls: 'ung-panel',
                 items: [ this.gridDhcpStaticEntries, {
                              border: false,
