@@ -303,6 +303,7 @@ Ext.define('Ung.SetupWizard.Interfaces', {
                                     if(sourceRecord!=null && targetRecord!=null) {
                                         return false;
                                     }
+                                    return true;
                                 });
                                 if(sourceRecord==null || targetRecord==null || sourceRecord==targetRecord) {
                                     console.log(oldValue, newValue, sourceRecord, targetRecord);
@@ -331,6 +332,7 @@ Ext.define('Ung.SetupWizard.Interfaces', {
                                     "mbit": soruceData.mbit,
                                     "connected": soruceData.connected
                                 });
+                                return true;
                             }, this)
                         }
                     }
@@ -346,6 +348,7 @@ Ext.define('Ung.SetupWizard.Interfaces', {
                     return "<div class='" + divClass + "'><div>";
                 }, this)
             },{
+                header: i18n._( "Status" ),
                 dataIndex: 'connected',
                 sortable: false,
                 width: 220,
