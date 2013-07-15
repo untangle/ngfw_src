@@ -25,6 +25,7 @@ import com.untangle.uvm.node.PolicyManager;
 import com.untangle.uvm.node.Reporting;
 import com.untangle.uvm.network.NetworkSettings;
 import com.untangle.uvm.network.InterfaceSettings;
+import com.untangle.uvm.network.StaticRoute;
 
 /**
  * Implements AlertManager. This class runs a series of test and creates alerts
@@ -70,6 +71,9 @@ public class AlertManagerImpl implements AlertManager
         try { testSpamDNSServers(alertList); } catch (Exception e) { logger.warn("Alert test exception",e); }
         try { testEventWriteTime(alertList); } catch (Exception e) { logger.warn("Alert test exception",e); }
         try { testEventWriteDelay(alertList); } catch (Exception e) { logger.warn("Alert test exception",e); }
+        try { testQueueFullMessages(alertList); } catch (Exception e) { logger.warn("Alert test exception",e); }
+        try { testShieldEnabled(alertList); } catch (Exception e) { logger.warn("Alert test exception",e); }
+        try { testRoutesToReachableAddresses(alertList); } catch (Exception e) { logger.warn("Alert test exception",e); }
 
         return alertList;
     }
@@ -311,9 +315,16 @@ public class AlertManagerImpl implements AlertManager
                 bridgeIdToSystemNameMap.put(key, systemName);
             }
 
+            /**
+             * This test is only valid for interfaces bridged to WANs.
+             * Non-WANs don't have a gateway so there is no "backwards"
+             */
+            if ( ! master.getIsWan() )
+                return;
+
             InetAddress gateway   = UvmContextFactory.context().networkManager().getInterfaceStatus( master.getInterfaceId() ).getV4Gateway();
             if (gateway == null) {
-                logger.warn("Missing gateway on bridge master");
+                logger.warn("Missing gateway on bridge master: " + master.getInterfaceId());
                 return;
             }
 
@@ -559,5 +570,81 @@ public class AlertManagerImpl implements AlertManager
             alertList.add(alertText);
         }
     }
-    
+
+    /**
+     * This test tests for "nf_queue full" messages in kern.log
+     */
+    private void testQueueFullMessages(List<String> alertList)
+    {
+        int result = UvmContextFactory.context().execManager().execResult("tail -n 100 /var/log/kern.log | grep -q 'nf_queue:.*dropping packets'");
+        if ( result == 0 ) {
+            String alertText = "";
+            alertText += i18nUtil.tr("Packet processing recently overloaded.");
+
+            alertList.add(alertText);
+        }
+    }
+
+    /**
+     * This test that the shield is enabled 
+     */
+    private void testShieldEnabled( List<String> alertList )
+    {
+        Node shield = UvmContextFactory.context().nodeManager().node("untangle-node-shield");
+        String alertText = "";
+        alertText += i18nUtil.tr("The shield is disabled. This can cause performance and stability problems.");
+
+        if ( shield.getRunState() != NodeSettings.NodeState.RUNNING ) {
+            alertList.add(alertText);
+            return;
+        }
+        
+        try {
+            java.lang.reflect.Method method;
+            method = shield.getClass().getMethod( "getSettings" );
+            Object settings = method.invoke( shield );
+            method = settings.getClass().getMethod( "isShieldEnabled" );
+            Boolean result = (Boolean) method.invoke( settings );
+            if (! result ) {
+                alertList.add(alertText);
+                return;
+            }
+        } catch (Exception e) {
+            logger.warn("Exception reading shield settings: ",e);
+        }
+    }
+
+    private void testRoutesToReachableAddresses( List<String> alertList )
+    {
+        int result;
+        List<StaticRoute> routes = UvmContextFactory.context().networkManager().getNetworkSettings().getStaticRoutes();
+
+        for ( StaticRoute route : routes ) {
+            if ( ! route.getToAddr() )
+                continue;
+            
+            /**
+             * If already in the ARP table, continue
+             */
+            result = UvmContextFactory.context().execManager().execResult("arp -n " + route.getNextHop() + " | grep -q HWaddress");
+            if ( result == 0 )
+                continue;
+
+            /**
+             * If not, double check with arping
+             */
+            result = UvmContextFactory.context().execManager().execResult("arping -c1 " + route.getNextHop());
+            if ( result == 0 )
+                continue;
+
+            
+            String alertText = "";
+            alertText += i18nUtil.tr("Route to unreachable address:");
+            alertText += " ";
+            alertText += route.getNextHop();
+            
+            alertList.add(alertText);
+        }
+        
+    }
 }
