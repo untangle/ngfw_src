@@ -9,6 +9,12 @@ import fcntl
 import struct
 import commands
 
+from uvm import Manager
+from uvm import Uvm
+from untangle_tests import ClientControl
+
+uvmContext = Uvm().getUvmContext()
+
 class SystemProperties():
 
     global network_settings_file
@@ -21,19 +27,17 @@ class SystemProperties():
                 return intf
         return None
 
-    def internalInterfaceIP(self):
-        # FIXME
-        return "UnknownIP"
-        
-        # intf = self.getInterface("Internal")
+    def getHttpAdminUrl(self):
+        internalAdmin = self.findInterfaceIPbyIP(ClientControl.hostIP)
+        httpPort = str(uvmContext.networkManager().getNetworkSettings().get('httpPort'))
+        httpAdminUrl = "http://" + internalAdmin + ":" + httpPort + "/"
+        return httpAdminUrl
 
-        # while intf['configType'] == 'bridge':
-        #     intf = self.getInterface(intf['bridgedTo'])
-
-        # if intf['primaryAddressStr'] != None:
-        #     return intf['primaryAddressStr'].split("/")[0]
-        # else:
-        #     return "UnknownIP"
+    def getHttpsAdminUrl(self):
+        internalAdmin = self.findInterfaceIPbyIP(ClientControl.hostIP)
+        httpsPort = str(uvmContext.networkManager().getNetworkSettings().get('httpsPort'))
+        httpsAdminUrl = "https://" + internalAdmin + ":" + httpsPort + "/"
+        return httpsAdminUrl
 
     def findInterfaceIPbyIP(self, remoteIP):
         # finds the first IP address of any interface which is on the same network as the IP passed in
