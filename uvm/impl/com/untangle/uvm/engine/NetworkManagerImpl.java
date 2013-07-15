@@ -460,9 +460,8 @@ public class NetworkManagerImpl implements NetworkManager
          * If not found, create some reasonable defaults
          */
         for ( String deviceName : deviceNames ) {
-
             // ignore vlan interfaces, don't create new settings for them
-            if ( deviceName.matches(".*\\.[0-9]+$") )
+            if ( deviceName.matches(".*\\.[0-9]+$") )  
                 continue;
             
             boolean foundMatchingInterface = false;
@@ -474,7 +473,7 @@ public class NetworkManagerImpl implements NetworkManager
             }
             if ( ! foundMatchingInterface ) {
                 logger.warn("Found unmapped new physical device: " + deviceName);
-                logger.warn("Creating new InterfaceSettings for " + deviceName + ".");
+                logger.warn("Creating new InterfaceSettings for " + deviceName);
 
                 InterfaceSettings interfaceSettings = new InterfaceSettings();
                 interfaceSettings.setInterfaceId( nextFreeInterfaceId( netSettings, 1 ));
@@ -496,6 +495,10 @@ public class NetworkManagerImpl implements NetworkManager
          * If not found, create some reasonable defaults
          */
         for ( String deviceName : deviceNames ) {
+            // ignore vlan interfaces, don't create new settings for them
+            if ( deviceName.matches(".*\\.[0-9]+$") )  
+                continue;
+
             boolean foundMatchingDevice = false;
             if ( netSettings.getDevices() != null ) {
                 for ( DeviceSettings deviceSettings : netSettings.getDevices() ) {
