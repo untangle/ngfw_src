@@ -193,7 +193,6 @@ public class IntMatcher implements java.io.Serializable
 
             int charIdx = matcher.indexOf('>');
             String intStr = matcher.substring( charIdx + 1 );
-            logger.warn("XXX: " + intStr);
             
             try {
                 this.singleInt = Integer.parseInt( intStr );

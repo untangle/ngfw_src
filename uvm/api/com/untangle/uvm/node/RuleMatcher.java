@@ -229,7 +229,6 @@ public class RuleMatcher implements JSONString, Serializable
             } catch (Exception e) {
                 logger.warn("Invalid IP Matcher: " + value, e);
             }
-
             break;
 
         case DST_PORT:
@@ -239,7 +238,6 @@ public class RuleMatcher implements JSONString, Serializable
             } catch (Exception e) {
                 logger.warn("Invalid Port Matcher: " + value, e);
             }
-
             break;
 
         case DST_INTF:
@@ -249,7 +247,6 @@ public class RuleMatcher implements JSONString, Serializable
             } catch (Exception e) {
                 logger.warn("Invalid Intf Matcher: " + value, e);
             }
-
             break;
 
         case PROTOCOL:
@@ -258,7 +255,6 @@ public class RuleMatcher implements JSONString, Serializable
             } catch (Exception e) {
                 logger.warn("Invalid Intf Matcher: " + value, e);
             }
-
             break;
             
         case DIRECTORY_CONNECTOR_USERNAME:
@@ -284,7 +280,6 @@ public class RuleMatcher implements JSONString, Serializable
             } catch (Exception e) {
                 logger.warn("Invalid Time Of Day Matcher: " + value, e);
             }
-
             break;
 
         case DAY_OF_WEEK:
@@ -293,7 +288,6 @@ public class RuleMatcher implements JSONString, Serializable
             } catch (Exception e) {
                 logger.warn("Invalid Day Of Week Matcher: " + value, e);
             }
-
             break;
 
         case SITEFILTER_FLAGGED:
@@ -312,7 +306,6 @@ public class RuleMatcher implements JSONString, Serializable
             } catch (Exception e) {
                 logger.warn("Invalid Url Matcher: " + value, e);
             }
-
             break;
             
         case CLIENT_HOSTNAME:
@@ -344,7 +337,6 @@ public class RuleMatcher implements JSONString, Serializable
             } catch (Exception e) {
                 logger.warn("Invalid Port Matcher: " + value, e);
             }
-
             break;
             
         case SITEFILTER_CATEGORY_FLAGGED:
@@ -376,7 +368,6 @@ public class RuleMatcher implements JSONString, Serializable
                 logger.warn("Invalid IP Src Matcher: " + this.ipMatcher);
                 return false;
             }
-
             return this.ipMatcher.isMatch(sess.getClientAddr());
 
         case DST_ADDR:
@@ -384,7 +375,6 @@ public class RuleMatcher implements JSONString, Serializable
                 logger.warn("Invalid IP Dst Matcher: " + this.ipMatcher);
                 return false;
             }
-
             return this.ipMatcher.isMatch(sess.getServerAddr());
 
         case SRC_PORT:
@@ -392,7 +382,6 @@ public class RuleMatcher implements JSONString, Serializable
                 logger.warn("Invalid Src Port Matcher: " + this.intMatcher);
                 return false;
             }
-
             return this.intMatcher.isMatch(sess.getClientPort());
 
         case DST_PORT:
@@ -400,7 +389,6 @@ public class RuleMatcher implements JSONString, Serializable
                 logger.warn("Invalid Dst Port Matcher: " + this.intMatcher);
                 return false;
             }
-
             return this.intMatcher.isMatch(sess.getServerPort());
 
         case SRC_INTF:
@@ -408,7 +396,6 @@ public class RuleMatcher implements JSONString, Serializable
                 logger.warn("Invalid Src Intf Matcher: " + this.intfMatcher);
                 return false;
             }
-
             return this.intfMatcher.isMatch(sess.getClientIntf());
 
         case DST_INTF:
@@ -416,7 +403,6 @@ public class RuleMatcher implements JSONString, Serializable
                 logger.warn("Invalid Dst Intf Matcher: " + this.intfMatcher);
                 return false;
             }
-
             return this.intfMatcher.isMatch(sess.getServerIntf());
             
         case PROTOCOL:
@@ -424,7 +410,6 @@ public class RuleMatcher implements JSONString, Serializable
                 logger.warn("Invalid Protocol Matcher: " + this.protocolMatcher);
                 return false;
             }
-
             return protocolMatcher.isMatch(sess.getProtocol());
 
         case CLIENT_HAS_NO_QUOTA:
@@ -450,7 +435,6 @@ public class RuleMatcher implements JSONString, Serializable
                 logger.warn("Invalid Time Of Day Matcher: " + this.timeOfDayMatcher);
                 return false;
             }
-
             return timeOfDayMatcher.isMatch();
 
         case DAY_OF_WEEK:
@@ -458,17 +442,14 @@ public class RuleMatcher implements JSONString, Serializable
                 logger.warn("Invalid Day Of Week Matcher: " + this.dayOfWeekMatcher);
                 return false;
             }
-
             return dayOfWeekMatcher.isMatch();
 
         case HTTP_URL:
             attachment = (String) sess.globalAttachment(NodeSession.KEY_HTTP_URL);
-
             if ( urlMatcher == null ) {
                 logger.warn("Invalid Url Matcher: " + this.urlMatcher);
                 return false;
             }
-
             return urlMatcher.isMatch( attachment );
 
         case HTTP_HOST:
@@ -509,11 +490,12 @@ public class RuleMatcher implements JSONString, Serializable
 
         case HTTP_CONTENT_LENGTH:
             attachmentLong = (Long) sess.globalAttachment(NodeSession.KEY_HTTP_CONTENT_LENGTH);
-            if (this.intMatcher == null) {
-                logger.warn("Invalid Dst Port Matcher: " + this.intMatcher);
+            if ( attachmentLong == null )
+                return false;
+            if ( this.intMatcher == null ) {
+                logger.warn("Invalid Int Matcher: " + this.intMatcher);
                 return false;
             }
-
             return this.intMatcher.isMatch( attachmentLong );
             
         case PROTOCOL_CONTROL_SIGNATURE:
