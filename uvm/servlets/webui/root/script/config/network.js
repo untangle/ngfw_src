@@ -268,7 +268,7 @@ if (!Ung.hasResource["Ung.Network"]) {
             // builds the tab panel with the tabs
             this.buildTabPanel([ this.panelInterfaces, this.panelHostName, this.panelServices, this.panelPortForwardRules, this.panelNatRules, this.panelBypassRules, this.panelRoutes, this.panelAdvanced, this.panelTroubleshooting ]);
 
-            //Check if QoS is enabled and there are some initial WANs without downloadBandwidthKbps or uploadBandwidthKbps limits set and mark dirty if true,
+            // Check if QoS is enabled and there are some initial WANs without downloadBandwidthKbps or uploadBandwidthKbps limits set and mark dirty if true,
             // in order to make the user save the valid settings when new WANs are added
             if(this.settings.qosSettings.qosEnabled) {
                 for(var i=0; i<this.settings.interfaces.list.length; i++) {
@@ -2788,7 +2788,8 @@ if (!Ung.hasResource["Ung.Network"]) {
                 readOnly: true,
                 autoCreate: { tag: 'textarea', autocomplete: 'off', spellcheck: 'false' },
                 height: 200,
-                width: "100%"
+                width: "100%",
+                isDirty: function() { return false; }
             });
 
             this.routeButton = Ext.create('Ext.button.Button',{
