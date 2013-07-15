@@ -3207,7 +3207,7 @@ if (!Ung.hasResource["Ung.Network"]) {
                 columnsDefaultSortable: false
             });
             
-            this.interfaceList = Ung.Util.getInterfaceList(true, true)
+            this.interfaceList = Ung.Util.getInterfaceList(true, true);
            
             this.gridQosStatistics = Ext.create( 'Ung.EditorGrid', {
                 name: 'QoS Statistics',
