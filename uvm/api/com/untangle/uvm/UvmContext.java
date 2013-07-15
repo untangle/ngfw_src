@@ -245,12 +245,6 @@ public interface UvmContext
     boolean isNetBoot();
     
     /**
-     * create a UID (if one doesn't exist)
-     * Called by the setup wizard
-     */
-    boolean createUID();
-
-    /**
      * Returns the UID of the server
      * Example: aaaa-bbbb-cccc-dddd
      */

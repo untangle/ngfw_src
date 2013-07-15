@@ -441,41 +441,6 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
             
     }
 
-    public boolean createUID()
-    {
-        String extraOptions = "";
-
-        // if its devel change sources.list to point to internal package server
-        if (isDevel())
-            return true;
-
-        // if its an untangle netboot, point to internal package server
-        if (isNetBoot()) {
-            extraOptions += " -u \"package-server.\" ";
-            extraOptions += " -d \"nightly\" ";
-        } else {
-            extraOptions += " -d \"stable-" + com.untangle.uvm.Version.getMajorVersion() + "\" ";
-        }
-
-        extraOptions += " -f \"" + System.getProperty("uvm.conf.dir") + "/uid" + "\" ";
-        
-        if ( com.untangle.uvm.Version.getVersionName() != null )
-            extraOptions += " -n \"" + com.untangle.uvm.Version.getVersionName() + "\" ";
-
-        Integer exitValue = this.execManager().execResult(CREATE_UID_SCRIPT + extraOptions);
-        if (0 != exitValue) {
-            logger.error("Unable to create UID (" + exitValue + ")");
-            return false;
-        } else {
-            logger.info("UID Created.");
-        }
-
-        // restart pyconnector now that the UID has been generated
-        this.execManager().execResult("/etc/init.d/untangle-pyconnector restart");
-
-        return true;
-    }
-    
     public CronJob makeCronJob( DayOfWeekMatcher days, int hour, int minute, Runnable r )
     {
         return cronManager.makeCronJob( days, hour, minute, r );
@@ -601,6 +566,8 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
 
         this.execManager = new ExecManagerImpl();
 
+        createUID();
+        
         this.settingsManager = new SettingsManagerImpl();
         
         this.sessionMonitor = new SessionMonitorImpl();
@@ -752,6 +719,49 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
     }
 
     // private methods --------------------------------------------------------
+
+    /**
+     * Create a UID file if one does not already exist
+     */
+    private void createUID()
+    {
+        File uidFile = new File(System.getProperty("uvm.conf.dir") + "/uid");
+
+        if ( uidFile.exists() )
+            return;
+
+        String extraOptions = "";
+
+        // if its devel env just return
+        if (isDevel())
+            return;
+
+        // if its an untangle netboot, point to internal package server
+        if (isNetBoot()) {
+            extraOptions += " -u \"package-server.\" ";
+            extraOptions += " -d \"nightly\" ";
+        } else {
+            extraOptions += " -d \"stable-" + com.untangle.uvm.Version.getMajorVersion() + "\" ";
+        }
+
+        extraOptions += " -f \"" + System.getProperty("uvm.conf.dir") + "/uid" + "\" ";
+        
+        if ( com.untangle.uvm.Version.getVersionName() != null )
+            extraOptions += " -n \"" + com.untangle.uvm.Version.getVersionName() + "\" ";
+
+        Integer exitValue = this.execManager().execResult(CREATE_UID_SCRIPT + extraOptions);
+        if (0 != exitValue) {
+            logger.error("Unable to create UID (" + exitValue + ")");
+            return;
+        } else {
+            logger.info("UID Created.");
+        }
+
+        // restart pyconnector now that the UID has been generated
+        this.execManager().execResult("/etc/init.d/untangle-pyconnector restart");
+
+        return;
+    }
 
     private void hideUpgradeSplash()
     {

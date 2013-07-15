@@ -158,22 +158,11 @@ public class AlertManagerImpl implements AlertManager
                 return;
 
             File pidFile = new File("/var/run/ut-pyconnector.pid");
-
             if ( !pidFile.exists() ) {
                 alertList.add( i18nUtil.tr("Failed to connect to Untangle." +  " [cmd.untangle.com]") );
                 return;
             }
                 
-            long launchTime = new Date(pidFile.lastModified()).getTime();
-            long now = new Date().getTime();
-
-            /**
-             * if pyconnector was just launched (<300 secs), dont test yet
-             * it needs time to connect to cmd.untangle.com
-             */
-            if (now - launchTime < 300000) 
-                return;
-
             int result = UvmContextFactory.context().execManager().execResult(System.getProperty("uvm.bin.dir") + "/ut-pyconnector-status");
             if (result != 0)
                 alertList.add( i18nUtil.tr("Failed to connect to Untangle." +  " [cmd.untangle.com]") );

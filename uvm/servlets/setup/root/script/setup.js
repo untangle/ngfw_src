@@ -1477,9 +1477,6 @@ Ext.define('Ung.SetupWizard.Complete', {
     openUserInterface: function( handler ) {
         Ext.MessageBox.wait( i18n._( "Loading User Interface..." ), i18n._( "Please Wait" ));
 
-        //now that we are done, create the UID
-        rpc.jsonrpc.UvmContext.createUID();
-
         //and set a flag so the wizard wont run again
         rpc.jsonrpc.UvmContext.wizardComplete();
 
