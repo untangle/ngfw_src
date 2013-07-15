@@ -28,12 +28,12 @@ if (!Ung.hasResource["Ung.System"]) {
     };
     Ext.define("Ung.System", {
         extend: "Ung.ConfigWin",
+        panelRegional: null,
         panelSupport: null,
         panelBackup: null,
         panelRestore: null,
-        panelProtocolSettings: null,
-        panelRegionalSettings: null,
-        panelShieldSettings: null,
+        panelProtocols: null,
+        panelShield: null,
         initComponent: function() {
             this.breadcrumbs = [{
                 title: i18n._("Configuration"),
@@ -50,16 +50,16 @@ if (!Ung.hasResource["Ung.System"]) {
             } else {
                 this.downloadLanguageHTML='';
             }
+            this.buildRegional();
             this.buildSupport();
             this.buildBackup();
             this.buildRestore();
-            this.buildProtocolSettings();
-            this.buildRegionalSettings();
-            this.buildShieldSettings();
+            this.buildProtocols();
+            this.buildShield();
             // builds the tab panel with the tabs
-            this.buildTabPanel([this.panelSupport, this.panelBackup, this.panelRestore, this.panelProtocolSettings, this.panelRegionalSettings, this.panelShieldSettings]);
+            this.buildTabPanel([this.panelRegional, this.panelSupport, this.panelBackup, this.panelRestore, this.panelProtocols, this.panelShield]);
             if (!this.isHttpLoaded() && !this.isFtpLoaded() && !this.isMailLoaded() ) {
-                this.panelProtocolSettings.disable();
+                this.panelProtocols.disable();
             }
             this.callParent(arguments);
         },
@@ -463,7 +463,7 @@ if (!Ung.hasResource["Ung.System"]) {
                 }]
             });
         },
-        buildProtocolSettings: function() {
+        buildProtocols: function() {
             var protocolSettingsItems = [];
 
             protocolSettingsItems.push({
@@ -572,13 +572,13 @@ if (!Ung.hasResource["Ung.System"]) {
                 });
             }
 
-            this.panelProtocolSettings = Ext.create('Ext.panel.Panel',{
-                name: "Protocol Settings",
-                helpSource: "protocol_settings",
+            this.panelProtocols = Ext.create('Ext.panel.Panel',{
+                name: "Protocols",
+                helpSource: "protocols",
                 // private fields
                 parentId: this.getId(),
 
-                title: this.i18n._("Protocol Settings"),
+                title: this.i18n._("Protocols"),
                 cls: "ung-panel",
                 autoScroll: true,
                 defaults: {
@@ -587,7 +587,7 @@ if (!Ung.hasResource["Ung.System"]) {
                 items: protocolSettingsItems.length !== 0 ? protocolSettingsItems: null
             });
         },
-        buildRegionalSettings: function() {
+        buildRegional: function() {
             // keep initial language settings
             this.initialLanguage = this.getLanguageSettings().language;
             var languagesStore =Ext.create("Ext.data.Store", {
@@ -600,12 +600,12 @@ if (!Ung.hasResource["Ung.System"]) {
             for (var i = 0; i < timeZoneData.length; i++) {
                 timeZones.push([timeZoneData[i][0], "(" + timeZoneData[i][1] + ") " + timeZoneData[i][0]]);
             }
-            this.panelRegionalSettings = Ext.create('Ext.panel.Panel',{
+            this.panelRegional = Ext.create('Ext.panel.Panel',{
                 // private fields
-                name: "Regional Settings",
-                helpSource: "regional_settings",
+                name: "Regional",
+                helpSource: "regional",
                 parentId: this.getId(),
-                title: this.i18n._("Regional Settings"),
+                title: this.i18n._("Regional"),
                 cls: "ung-panel",
                 autoScroll: true,
                 defaults: {
@@ -712,7 +712,7 @@ if (!Ung.hasResource["Ung.System"]) {
                             text: this.i18n._("Upload"),
                             name: "Upload",
                             handler: Ext.bind(function() {
-                                this.panelRegionalSettings.onUpload();
+                                this.panelRegional.onUpload();
                             }, this)
                         }]
                     }
@@ -819,7 +819,7 @@ if (!Ung.hasResource["Ung.System"]) {
                 }, this));
             }
         },
-        buildShieldSettings: function() {
+        buildShield: function() {
             var multiplierData = [
                 [5, 5 + ' ' + this.i18n._("users")], 
                 [25, 25 + ' ' + this.i18n._("users")],
@@ -982,16 +982,16 @@ if (!Ung.hasResource["Ung.System"]) {
                 }]
             });
 
-            this.panelShieldSettings = Ext.create('Ext.panel.Panel',{
+            this.panelShield = Ext.create('Ext.panel.Panel',{
                 parentId: this.getId(),
-                title: this.i18n._('Shield Settings'),
+                title: this.i18n._('Shield'),
                 cls: 'ung-panel',
                 layout: { type: 'vbox', pack: 'start', align: 'stretch' },
                 items: [{
                     xtype: 'fieldset',
                     cls: 'description',
                     flex: 0,
-                    title: this.i18n._("Shield settings"),
+                    title: this.i18n._("Shield Settings"),
                     items:[{
                         xtype: 'checkbox',
                         boxLabel: this.i18n._("Enable Shield"),
