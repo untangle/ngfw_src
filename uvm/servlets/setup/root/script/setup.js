@@ -720,13 +720,6 @@ Ext.define('Ung.SetupWizard.Internet', {
             border: false,
             cls: 'network-card-form-margin',
             items: [{
-                xtype: 'container',
-                cls: 'noborder',
-                border: false,
-                html: Ext.String.format( i18n._( 'Using PPPoE on {0} is <b>NOT</b> recommended.' ), oemName) + "<br/>" +
-                    i18n._("It is recommended to use the ISP-supplied modem in bridge mode to handle PPPoE.") + "<br/>" +
-                    "&nbsp;<br/>"
-            }, {
                 xtype: 'fieldset',
                 border: false,
                 title: i18n._( "PPPoE Settings" ),
