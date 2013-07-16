@@ -3881,8 +3881,35 @@ if (!Ung.hasResource["Ung.Network"]) {
                         xtype:'textfield',
                         allowBlank:false
                     }
-                }]
+                }],
+                onAddStatic: function(rec) {
+                    var record = Ext.create(Ext.ClassManager.getName(this.getStore().getProxy().getModel()), {
+                        "macAddress": rec.get("macAddress"),
+                        "address": rec.get("address"),
+                        "description": rec.get("hostname"),
+                        "javaClass": "com.untangle.uvm.network.DhcpStaticEntry"
+                    });
+                    record.set("internalId", this.genAddedId());
+                    this.stopEditing();
+                    this.getStore().insert(0, [record]);
+                    this.updateChangedData(record, "added");
+                }
             });
+            
+            var addStaticColumn = Ext.create('Ext.grid.column.Action',{
+                header: this.i18n._("Add Static"),
+                width: 100,
+                iconCls: 'icon-add-inline-row',
+                init: function(grid) {
+                    this.grid = grid;
+                },
+                handler: function(view, rowIndex) {
+                    var record = view.getStore().getAt(rowIndex);
+                    // add static
+                    this.grid.settingsCmp.gridDhcpStaticEntries.onAddStatic(record);
+                }
+            });
+
             
             this.gridCurrentDhcpLeases = Ext.create('Ung.EditorGrid',{
                 name: "gridCurrentDhcpLeases",
@@ -3957,7 +3984,8 @@ if (!Ung.hasResource["Ung.Network"]) {
                     dataIndex:'date',
                     width: 180,
                     renderer: function(value) { return i18n.timestampFormat(value*1000); }
-                }]
+                }, addStaticColumn],
+                plugins: [addStaticColumn]
             });
 
             this.panelDhcpServer = Ext.create('Ext.panel.Panel',{
