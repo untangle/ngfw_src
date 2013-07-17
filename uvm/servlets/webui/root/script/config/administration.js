@@ -307,7 +307,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
 
             this.panelAdmin = Ext.create('Ext.panel.Panel',{
                 name: 'panelAdmin',
-                helpSource: 'administration_admin',
+                helpSource: 'admin',
                 // private fields
                 parentId: this.getId(),
                 title: this.i18n._('Admin'),
@@ -342,7 +342,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
         buildPublicAddress: function() {
             this.panelPublicAddress = Ext.create('Ext.panel.Panel',{
                 name: 'panelPublicAddress',
-                helpSource: 'administration_public_address',
+                helpSource: 'public_address',
                 // private fields
                 parentId: this.getId(),
                 title: this.i18n._('Public Address'),
@@ -473,7 +473,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
         buildCertificates: function() {
             this.panelCertificates = Ext.create('Ext.panel.Panel',{
                 name: 'panelCertificates',
-                helpSource: 'administration_certificates',
+                helpSource: 'certificates',
                 // private fields
                 parentId: this.getId(),
 
@@ -922,7 +922,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
         buildSnmp: function() {
             this.panelSnmp = Ext.create('Ext.panel.Panel',{
                 name: 'panelSnmp',
-                helpSource: 'administration_snmp',
+                helpSource: 'snmp',
                 // private fields
                 parentId: this.getId(),
                 title: this.i18n._('SNMP'),
@@ -1120,7 +1120,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
 
             this.panelSkins = Ext.create('Ext.panel.Panel',{
                 name: "panelSkins",
-                helpSource: 'administration_skins',
+                helpSource: 'skins',
                 // private fields
                 parentId: this.getId(),
                 title: this.i18n._('Skins'),

@@ -839,7 +839,7 @@ if (!Ung.hasResource["Ung.Network"]) {
             
             this.panelInterfaces = Ext.create('Ext.panel.Panel',{
                 name: 'panelInterfaces',
-                helpSource: 'network_interfaces',
+                helpSource: 'interfaces',
                 parentId: this.getId(),
                 title: this.i18n._('Interfaces'),
                 layout: { type: 'vbox', pack: 'start', align: 'stretch' },
@@ -1733,7 +1733,7 @@ if (!Ung.hasResource["Ung.Network"]) {
         buildHostName: function() {
             this.panelHostName = Ext.create('Ext.panel.Panel',{
                 name: 'panelHostName',
-                helpSource: 'network_hostname',
+                helpSource: 'hostname',
                 parentId: this.getId(),
                 title: this.i18n._('Hostname'),
                 layout: 'anchor',
@@ -1856,7 +1856,7 @@ if (!Ung.hasResource["Ung.Network"]) {
         buildServices: function() {
             this.panelServices = Ext.create('Ext.panel.Panel',{
                 name: 'panelServices',
-                helpSource: 'network_services',
+                helpSource: 'services',
                 parentId: this.getId(),
                 title: this.i18n._('Services'),
                 layout: 'anchor',
@@ -2176,7 +2176,7 @@ if (!Ung.hasResource["Ung.Network"]) {
             var portStore =[[ "21", "FTP (21)" ],[ "25", "SMTP (25)" ],[ "53", "DNS (53)" ],[ "80", "HTTP (80)" ],[ "110", "POP3 (110)" ],[ "143", "IMAP (143)" ],[ "443", "HTTPS (443)" ],[ "1723", "PPTP (1723)" ],[ "-1", this.i18n._("Other") ]];
             this.panelPortForwardRules = Ext.create('Ext.panel.Panel',{
                 name: 'panelPortForwardRules',
-                helpSource: 'network_port_forward_rules',
+                helpSource: 'port_forward_rules',
                 parentId: this.getId(),
                 title: this.i18n._('Port Forward Rules'),
                 layout: { type: 'vbox', align: 'stretch' },
@@ -2467,7 +2467,7 @@ if (!Ung.hasResource["Ung.Network"]) {
             
             this.panelNatRules = Ext.create('Ext.panel.Panel',{
                 name: 'panelNatRules',
-                helpSource: 'network_nat_rules',
+                helpSource: 'nat_rules',
                 parentId: this.getId(),
                 title: this.i18n._('NAT Rules'),
                 layout: 'anchor',
@@ -2613,7 +2613,7 @@ if (!Ung.hasResource["Ung.Network"]) {
             
             this.panelBypassRules = Ext.create('Ext.panel.Panel',{
                 name: 'panelBypassRules',
-                helpSource: 'network_bypass_rules',
+                helpSource: 'bypass_rules',
                 parentId: this.getId(),
                 title: this.i18n._('Bypass Rules'),
                 layout: 'anchor',
@@ -2803,7 +2803,7 @@ if (!Ung.hasResource["Ung.Network"]) {
             
             this.panelRoutes = Ext.create('Ext.panel.Panel',{
                 name: 'panelRoutes',
-                helpSource: 'network_routes',
+                helpSource: 'routes',
                 parentId: this.getId(),
                 title: this.i18n._('Routes'),
                 autoScroll: true,
@@ -2862,7 +2862,7 @@ if (!Ung.hasResource["Ung.Network"]) {
         buildOptions: function() {
             this.panelOptions = Ext.create('Ext.panel.Panel',{
                 name: 'panelOptions',
-                helpSource: 'network_options',
+                helpSource: 'options',
                 parentId: this.getId(),
                 title: this.i18n._('Options'),
                 layout: 'anchor',
@@ -3347,7 +3347,7 @@ if (!Ung.hasResource["Ung.Network"]) {
 
             this.panelQoS = Ext.create('Ext.panel.Panel',{
                 name: 'panelQoS',
-                helpSource: 'network_qos',
+                helpSource: 'qos',
                 parentId: this.getId(),
                 title: this.i18n._('QoS'),
                 autoScroll: true,
@@ -3653,7 +3653,7 @@ if (!Ung.hasResource["Ung.Network"]) {
             
             this.panelFilter = Ext.create('Ext.panel.Panel',{
                 name: 'panelFilter',
-                helpSource: 'network_filter_rules',
+                helpSource: 'filter_rules',
                 parentId: this.getId(),
                 title: this.i18n._('Filter Rules'),
                 layout: 'anchor',
@@ -3821,7 +3821,7 @@ if (!Ung.hasResource["Ung.Network"]) {
             });
             this.panelDnsServer = Ext.create('Ext.panel.Panel',{
                 name: 'panelDnsServer',
-                helpSource: 'network_dns_server',
+                helpSource: 'dns_server',
                 parentId: this.getId(),
                 title: this.i18n._('DNS Server'),
                 layout: 'anchor',
@@ -3988,7 +3988,7 @@ if (!Ung.hasResource["Ung.Network"]) {
 
             this.panelDhcpServer = Ext.create('Ext.panel.Panel',{
                 name: 'panelDhcpServer',
-                helpSource: 'network_dhcp_server',
+                helpSource: 'dhcp_server',
                 parentId: this.getId(),
                 title: this.i18n._('DHCP Server'),
                 autoScroll: true,
@@ -4035,7 +4035,7 @@ if (!Ung.hasResource["Ung.Network"]) {
 
             this.gridNetworkCards = Ext.create( 'Ung.EditorGrid', {
                 name: 'Network Cards',
-                helpSource: 'network_network_cards',
+                helpSource: 'network_cards',
                 parentId: this.getId(),
                 title: this.i18n._('Network Cards'),
                 settingsCmp: this,
@@ -4139,7 +4139,7 @@ if (!Ung.hasResource["Ung.Network"]) {
                 }]
             });
             this.panelTroubleshooting = Ext.create('Ext.panel.Panel',{
-                helpSource: 'network_troubleshooting',
+                helpSource: 'troubleshooting',
                 parentId: this.getId(),
                 title: this.i18n._('Troubleshooting'),
                 layout: 'anchor',
@@ -4154,7 +4154,7 @@ if (!Ung.hasResource["Ung.Network"]) {
         openConnectivityTest: function() {
             if(!this.connectivityTest) {
                 this.connectivityTest = Ext.create('Ung.NetworkTest',{
-                    helpSource: 'network_troubleshooting',
+                    helpSource: 'troubleshooting',
                     settingsCmp: this,
                     title: this.i18n._('Connectivity Test'),
                     testDescription: this.i18n._("The <b>Connectivity Test</b> verifies a working connection to the Internet."),
@@ -4198,7 +4198,7 @@ if (!Ung.hasResource["Ung.Network"]) {
         openPingTest: function(destination) {
             if(!this.pingTest) {
                 this.pingTest = Ext.create('Ung.NetworkTest',{
-                    helpSource: 'network_troubleshooting',
+                    helpSource: 'troubleshooting',
                     settingsCmp: this,
                     title: this.i18n._('Ping Test'),
                     testDescription: this.i18n._("The <b>Ping Test</b> can be used to test that a particular host or client can be pinged"),
@@ -4251,7 +4251,7 @@ if (!Ung.hasResource["Ung.Network"]) {
         openDnsTest: function() {
             if(!this.dnsTest) {
                 this.dnsTest = Ext.create('Ung.NetworkTest',{
-                    helpSource: 'network_troubleshooting',
+                    helpSource: 'troubleshooting',
                     settingsCmp: this,
                     title: this.i18n._('DNS Test'),
                     testDescription: this.i18n._("The <b>DNS Test</b> can be used to test DNS lookups"),
@@ -4303,7 +4303,7 @@ if (!Ung.hasResource["Ung.Network"]) {
         openTcpTest: function(destination, port) {
             if(!this.tcpTest) {
                 this.tcpTest = Ext.create('Ung.NetworkTest',{
-                    helpSource: 'network_troubleshooting',
+                    helpSource: 'troubleshooting',
                     settingsCmp: this,
                     title: this.i18n._('Connection Test'),
                     testDescription: this.i18n._("The <b>Connection Test</b> verifies that Untangle can open a TCP connection to a port on the given host or client."),
@@ -4370,7 +4370,7 @@ if (!Ung.hasResource["Ung.Network"]) {
         openTracerouteTest: function() {
             if(!this.tracerouteTest) {
                 this.tracerouteTest = Ext.create('Ung.NetworkTest',{
-                    helpSource: 'network_troubleshooting',
+                    helpSource: 'troubleshooting',
                     settingsCmp: this,
                     title: this.i18n._('Traceroute Test'),
                     testDescription: this.i18n._("The <b>Traceroute Test</b> traces the route to a given host or client."),
@@ -4421,7 +4421,7 @@ if (!Ung.hasResource["Ung.Network"]) {
         openPacketTest: function() {
             if(!this.packetTest) {
                 this.packetTest = Ext.create('Ung.NetworkTest',{
-                    helpSource: 'network_troubleshooting',
+                    helpSource: 'troubleshooting',
                     settingsCmp: this,
                     title: this.i18n._('Packet Test'),
                     testDescription: this.i18n._("The <b>Packet Test</b> can be used to view packets on the network wire for troubleshooting."),

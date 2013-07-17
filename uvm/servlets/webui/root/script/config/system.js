@@ -202,7 +202,7 @@ if (!Ung.hasResource["Ung.System"]) {
             this.panelSupport = Ext.create('Ext.panel.Panel',{
                 // private fields
                 name: "Support",
-                helpSource: "system_support",
+                helpSource: "support",
                 parentId: this.getId(),
                 title: this.i18n._("Support"),
                 cls: "ung-panel",
@@ -310,7 +310,7 @@ if (!Ung.hasResource["Ung.System"]) {
             this.panelBackup = Ext.create('Ext.panel.Panel',{
                 // private fields
                 name: "Backup",
-                helpSource: "system_backup",
+                helpSource: "backup",
                 parentId: this.getId(),
                 title: this.i18n._("Backup"),
                 cls: "ung-panel",
@@ -347,7 +347,7 @@ if (!Ung.hasResource["Ung.System"]) {
             this.panelRestore = Ext.create('Ext.panel.Panel',{
                 // private fields
                 name: "Restore",
-                helpSource: "system_restore",
+                helpSource: "restore",
                 parentId: this.getId(),
                 title: this.i18n._("Restore"),
                 cls: "ung-panel",
@@ -574,7 +574,7 @@ if (!Ung.hasResource["Ung.System"]) {
 
             this.panelProtocols = Ext.create('Ext.panel.Panel',{
                 name: "Protocols",
-                helpSource: "system_protocols",
+                helpSource: "protocols",
                 // private fields
                 parentId: this.getId(),
 
@@ -603,7 +603,7 @@ if (!Ung.hasResource["Ung.System"]) {
             this.panelRegional = Ext.create('Ext.panel.Panel',{
                 // private fields
                 name: "Regional",
-                helpSource: "system_regional",
+                helpSource: "regional",
                 parentId: this.getId(),
                 title: this.i18n._("Regional"),
                 cls: "ung-panel",

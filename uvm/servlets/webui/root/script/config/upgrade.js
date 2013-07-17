@@ -104,7 +104,7 @@ if (!Ung.hasResource["Ung.Upgrade"]) {
             this.gridUpgrades = Ext.create('Ext.grid.Panel',{
                 // private fields
                 name: 'Upgrades',
-                helpSource: 'upgrade',
+                helpSource: 'upgrades',
                 parentId: this.getId(),
                 title: this.i18n._('Upgrades'),
                 enableColumnHide: false,
@@ -187,7 +187,7 @@ if (!Ung.hasResource["Ung.Upgrade"]) {
             this.panelSettings = Ext.create('Ext.panel.Panel',{
                 // private fields
                 name: 'Upgrade Settings',
-                helpSource: 'upgrade_setup',
+                helpSource: 'upgrade_settings',
                 parentId: this.getId(),
                 title: this.i18n._('Upgrade Settings'),
                 cls: 'ung-panel',

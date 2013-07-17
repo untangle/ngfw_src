@@ -436,7 +436,7 @@ if (!Ung.hasResource["Ung.Virus"]) {
         buildWebEventLog: function() {
             this.gridWebEventLog = Ext.create('Ung.GridEventLog',{
                 name: 'Web Event Log',
-                helpSource: 'Web_Event_Log',
+                helpSource: 'web_event_log',
                 settingsCmp: this,
                 title: this.i18n._("Web Event Log"),
                 eventQueriesFn: this.getRpcNode().getWebEventQueries,
@@ -510,7 +510,7 @@ if (!Ung.hasResource["Ung.Virus"]) {
         buildMailEventLog: function() {
             this.gridMailEventLog = Ext.create('Ung.GridEventLog',{
                 name: 'Email Event Log',
-                helpSource: 'Email_Event_Log',
+                helpSource: 'email_event_log',
                 settingsCmp: this,
                 title: this.i18n._("Email Event Log"),
                 eventQueriesFn: this.getRpcNode().getMailEventQueries,
@@ -586,7 +586,7 @@ if (!Ung.hasResource["Ung.Virus"]) {
         buildFtpEventLog: function() {
             this.gridFtpEventLog = Ext.create('Ung.GridEventLog',{
                 name: 'Ftp Event Log',
-                helpSource: 'Ftp_Event_Log',
+                helpSource: 'ftp_event_log',
                 settingsCmp: this,
                 title: this.i18n._("Ftp Event Log"),
                 eventQueriesFn: this.getRpcNode().getFtpEventQueries,

@@ -153,7 +153,7 @@ if (!Ung.hasResource["Ung.Email"]) {
         buildOutgoingServer: function() {
             this.panelOutgoingServer = Ext.create('Ext.panel.Panel', {
                 name: 'Outgoing Server',
-                helpSource: 'email_outgoing_server',
+                helpSource: 'outgoing_server',
                 parentId: this.getId(),
                 title: this.i18n._('Outgoing Server'),
                 cls: 'ung-panel',
@@ -597,7 +597,7 @@ if (!Ung.hasResource["Ung.Email"]) {
                 
             this.panelFromSafeList = Ext.create('Ext.panel.Panel', {
                 name: 'From-Safe List',
-                helpSource: 'email_from_safe_list',
+                helpSource: 'from_safe_list',
                 parentId: this.getId(),
                 title: this.i18n._('From-Safe List'),
                 layout: 'anchor',
@@ -676,7 +676,7 @@ if (!Ung.hasResource["Ung.Email"]) {
             
             this.panelQuarantine = Ext.create('Ext.panel.Panel',{
                 name: 'panelQuarantine',
-                helpSource: 'email_quarantine',
+                helpSource: 'quarantine',
                 parentId: this.getId(),
                 title: this.i18n._('Quarantine'),
                 cls: 'ung-panel',

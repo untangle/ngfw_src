@@ -977,6 +977,7 @@ Ext.define("Ung.Main", {
                     iconCls: 'icon-help',
                     text: i18n._('Help with Administration Alerts'),
                     handler: function() {
+                        //helpSource: 'admin_alerts'
                         main.openHelp('admin_alerts');
                     }
                 }]
