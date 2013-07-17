@@ -479,7 +479,7 @@ if (!Ung.hasResource["Ung.Network"]) {
                 }, {
                     header: this.i18n._("Device"),
                     dataIndex: 'physicalDev',
-                    width:90,
+                    width:60,
                     renderer: Ext.bind(function(value, metadata, record, rowIndex, colIndex, store, view) {
                         if (record.get("isVlanInterface")) {
                             return record.get("systemDev");
@@ -508,7 +508,7 @@ if (!Ung.hasResource["Ung.Network"]) {
                 }, {
                     header: this.i18n._("Current Address"),
                     dataIndex: 'v4Address',
-                    width:150,
+                    width:130,
                     renderer: Ext.bind(function(value, metadata, record, rowIndex, colIndex, store, view) {
                         if (Ext.isEmpty(value))
                             return "";
