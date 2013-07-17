@@ -214,7 +214,7 @@ public class AdminManagerImpl implements AdminManager
     {
         long offset = tz.getOffset(d) / 1000;
         long hours = Math.abs(offset) / 3600;
-        long minutes = Math.abs(offset) % 60;
+        long minutes = (Math.abs(offset) / 60) % 60;
         if ( offset < 0) {
             return "~UTC-" + (hours < 10 ? "0" + hours:hours) + ":" + (minutes < 10 ? "0" + minutes:minutes);
         } else {

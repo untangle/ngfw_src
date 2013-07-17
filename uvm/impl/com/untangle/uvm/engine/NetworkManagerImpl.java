@@ -82,7 +82,7 @@ public class NetworkManagerImpl implements NetworkManager
                 
                 if (readSettings == null) {
                     // check for "backup" settings in /usr/share/untangle/settings.backup/
-                    String rootLocation = "/usr/share/untangle/settings.backup/untangle-vm/network";
+                    String rootLocation = "/usr/share/untangle/settings.backup/untangle-vm/network.js";
                     logger.info("Reading Network Settings from " + rootLocation);
                     readSettings = settingsManager.load( NetworkSettings.class, rootLocation );
                     logger.info("Reading Network Settings from " + rootLocation + " = " + readSettings);
