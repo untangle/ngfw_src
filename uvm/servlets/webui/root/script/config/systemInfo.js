@@ -27,7 +27,7 @@ if (!Ung.hasResource["Ung.SystemInfo"]) {
         buildVersion: function() {
             this.panelVersion = Ext.create('Ext.panel.Panel',{
                 name: 'Version',
-                helpSource: 'version',
+                helpSource: 'system_info_version',
                 parentId: this.getId(),
                 title: this.i18n._('Version'),
                 cls: 'ung-panel',
@@ -66,7 +66,7 @@ if (!Ung.hasResource["Ung.SystemInfo"]) {
         buildLicenseAgreement: function() {
             this.panelLicenseAgreement = Ext.create('Ext.panel.Panel',{
                 name: 'License Agreement',
-                helpSource: 'license_agreement',
+                helpSource: 'system_info_license_agreement',
                 parentId: this.getId(),
                 title: this.i18n._('License Agreement'),
                 cls: 'ung-panel',
@@ -88,7 +88,7 @@ if (!Ung.hasResource["Ung.SystemInfo"]) {
 
             this.panelLicenses = Ext.create('Ext.panel.Panel',{
                 name: 'Licenses',
-                helpSource: 'licenses',
+                helpSource: 'system_info_licenses',
                 parentId: this.getId(),
                 title: this.i18n._('Licenses'),
                 cls: 'ung-panel',
