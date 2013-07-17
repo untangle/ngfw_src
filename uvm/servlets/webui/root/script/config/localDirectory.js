@@ -213,6 +213,14 @@ if (!Ung.hasResource["Ung.LocalDirectory"]) {
                             "change": Ext.bind(function (elem,checked) { 
                                 var expirationCtl = this.gridUsers.rowEditor.query("[name='expirationTime']")[0];
                                 expirationCtl.setVisible(!checked);
+                                if ( checked) {
+                                    expirationCtl.setValue(new Date(0));
+                                } else {
+                                    var v = expirationCtl.getValue();
+                                    if ( v == 0) {
+                                        expirationCtl.setValue(new Date());
+                                    }
+                                }
                             },this)
                         },
                         width:180
