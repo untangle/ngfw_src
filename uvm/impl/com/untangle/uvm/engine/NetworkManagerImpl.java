@@ -751,9 +751,18 @@ public class NetworkManagerImpl implements NetworkManager
                 if ( InterfaceSettings.ConfigType.BRIDGED.equals( intf2.getConfigType() ) &&
                      intf2.getBridgedTo() != null &&
                      intf2.getBridgedTo().equals( intf.getInterfaceId() ) ) {
-                        /* found an interface bridged to intf */
-                        intf.setSymbolicDev("br." + intf.getPhysicalDev());
-                        intf2.setSymbolicDev("br." + intf.getPhysicalDev());
+                    /* found an interface bridged to intf */
+
+                    /**
+                     * pick a decent bridge name
+                     * We use br.systemDev - however we substitute periods for dashes
+                     * so if you bridge a vlan it doesn't become br.eth0.3 because the O/S
+                     * thinks that is a special vlan bridge.
+                     */
+                    String bridgeName = "br." + intf.getSystemDev().replace(".","-");
+                    
+                    intf.setSymbolicDev( bridgeName );
+                    intf2.setSymbolicDev( bridgeName );
                 }
             }
         }

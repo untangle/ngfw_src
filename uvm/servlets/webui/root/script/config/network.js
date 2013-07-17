@@ -1040,7 +1040,7 @@ if (!Ung.hasResource["Ung.Network"]) {
                     allowBlank: false,
                     dataIndex: "vlanParent",
                     fieldLabel: this.i18n._("Parent Interface"),
-                    store: Ung.Util.getInterfaceAddressedList(),
+                    store: Ung.Util.getInterfaceList(false, false),
                     width: 300,
                     queryMode: 'local',
                     editable: false
@@ -1620,9 +1620,7 @@ if (!Ung.hasResource["Ung.Network"]) {
 
                     // if config addressed show necessary options
                     if ( configTypeValue == "ADDRESSED") {
-                        if(!isVlanInterfaceValue) { // VLAN cannot be a WAN 
-                            isWan.show();
-                        }
+                        isWan.show();
                         v4Config.show();
                         v6Config.show();
 
@@ -1717,10 +1715,10 @@ if (!Ung.hasResource["Ung.Network"]) {
                         var intf=allInterfaces[i];
                         if(intf.configType == 'ADDRESSED' && intf.interfaceId!=interfaceId) {
                             bridgedToInterfaces.push([ intf.interfaceId, intf.name]);
-                            if(!intf.isVlanInterface) {
-                                vlanParentInterfaces.push([intf.interfaceId, intf.name]);    
-                            } 
                         }
+                        if(!intf.isVlanInterface) {
+                            vlanParentInterfaces.push([intf.interfaceId, intf.name]);    
+                        } 
                     }
                     // refresh interface selector stores
                     var bridgedTo = this.query('combo[dataIndex="bridgedTo"]')[0];
@@ -4433,7 +4431,7 @@ if (!Ung.hasResource["Ung.Network"]) {
                         var timeouts = [[ 5, this.settingsCmp.i18n._( "5 seconds" )],
                                         [ 30, this.settingsCmp.i18n._( "30 seconds" )],
                                         [ 120, this.settingsCmp.i18n._( "120 seconds" )]];
-                        var interfaceStore =Ung.Util.getInterfaceList(false, false); 
+                        var interfaceStore = Ung.Util.getInterfaceList(false, false); 
                         this.testTopToolbar = [this.destination = new Ext.form.TextField({
                             xtype : "textfield",
                             value : "any",
