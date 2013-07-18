@@ -287,7 +287,7 @@ public class AlertManagerImpl implements AlertManager
                 logger.warn("Unable to locate bridge master systemName: " + master.getName());
                 continue;
             }
-            String bridgeName = "br." + master.getSystemDev();
+            String bridgeName = master.getSymbolicDev();
             
             String result = UvmContextFactory.context().execManager().execOutput( "brctl showstp " + bridgeName + " | grep '^eth.*' | sed -e 's/(//g' -e 's/)//g'");
             if (result == null || "".equals(result)) {
@@ -347,12 +347,12 @@ public class AlertManagerImpl implements AlertManager
              */
             String portNo = UvmContextFactory.context().execManager().execOutput( "brctl showmacs " + bridgeName + " | grep \"" + gatewayMac + "\" | awk '{print $1}'");
             if ( portNo == null) {
-                logger.warn("Unable to port number for MAC" + gatewayMac);
+                logger.warn("Unable to find port number for MAC: " + gatewayMac);
                 return;
             }
             portNo = portNo.replaceAll("\\s+","");
             if ( "".equals(portNo) ) {
-                logger.warn("Unable to port number for MAC" + gatewayMac);
+                logger.warn("Unable to find port number for MAC: " + gatewayMac);
                 return;
             }
             logger.debug("testBridgeBackwards: brctl showmacs Output: " + portNo);
@@ -634,7 +634,7 @@ public class AlertManagerImpl implements AlertManager
              * If not, force arp resolution with ping
              * Then recheck ARP table
              */
-            result = UvmContextFactory.context().execManager().execResult("ping -c1 -W1 " + route.getNextHop());
+            result = UvmContextFactory.context().execManager().execResult("ping -c1 -W1 n" + route.getNextHop());
             result = UvmContextFactory.context().execManager().execResult("arp -n " + route.getNextHop() + " | grep -q HWaddress");
             if ( result == 0 )
                 continue;
