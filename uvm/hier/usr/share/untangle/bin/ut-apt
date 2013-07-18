@@ -112,20 +112,20 @@ class DevApt:
             if re.search("^Package: ", line):
                 package = line.split()[1]
                 packages.append( package )
-                log( "%s 20.0" % package )
+                print( "%s 20.0" % package ) # print don't log
         p = subprocess.Popen(["sh","-c","dpkg --get-selections 'untangle*' | awk '{print $1}' | xargs dpkg-query -W"],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
         for line in iter(p.stdout.readline, ''):
             if line.split()[0] not in packages:
-                log( line.strip() )
+                print( line.strip() ) # print don't log
         return 0
     
     @staticmethod
     def available():
         for line in DevApt.each_pkg_list_line():
             line = re.sub( '^XB-', '', line)
-            log( line.rstrip() )
+            print( line.rstrip() ) # print don't log
             if re.search("^Package: ", line):
-                log( "Version: 20.0" )
+                print( "Version: 20.0" ) # print don't log
         return 0
    
     @staticmethod
@@ -158,13 +158,13 @@ class RealApt:
     def installed():
         p = subprocess.Popen(["sh","-c","dpkg --get-selections 'untangle*' | awk '{ if ($2 == \"install\") print $1}' | xargs dpkg-query -W"], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         for line in iter(p.stdout.readline, ''):
-            log( line.strip() )
+            print( line.strip() ) # print don't log
     
     @staticmethod
     def available():
         p = subprocess.Popen(["sh","-c","apt-cache search '^untangle-' | awk '{ print $1 }' | xargs apt-cache show --no-all-versions"], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         for line in iter(p.stdout.readline, ''):
-            log( line.rstrip() )
+            print( line.rstrip() ) # print don't log
    
     @staticmethod
     def install(pkg):
@@ -308,7 +308,7 @@ if PREFIX != "":
 else:
     apt = RealApt()
 
-log_date( COMMAND )
+log_date( os.path.basename(sys.argv[0]) + " " + COMMAND )
 
 if COMMAND == "installed":
     rc = apt.installed()
@@ -325,7 +325,7 @@ elif COMMAND == "upgrade":
 else:
     usage()
 
-log_date( COMMAND )
+log_date( os.path.basename(sys.argv[0]) + " " + COMMAND + " done." )
 
 sys.exit(rc)
     
