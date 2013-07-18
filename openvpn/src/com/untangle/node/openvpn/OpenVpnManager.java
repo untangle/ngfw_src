@@ -243,13 +243,24 @@ public class OpenVpnManager
     {
         sb.append( "# Exports\n" );
 
+        /**
+         * Write the address pool
+         * This is necessary because the block page is displayed on these addresses (ie 172.16.0.1)
+         */
+        writePushRoute( sb, settings.getAddressSpace().getMaskedAddress(), settings.getAddressSpace().getNetmask() );
+        
+        /**
+         * Write the exports
+         */
         for ( OpenVpnExport export : settings.getExports() ) {
             if ( export.getEnabled() ) {
                 writePushRoute( sb, export.getNetwork().getMaskedAddress(), export.getNetwork().getNetmask() );
             }
         }
 
-        /* The client configuration file is written in writeRemoteClientFiles */
+        /**
+         * Write the remote client networks
+         */
         for ( OpenVpnRemoteClient client : settings.getRemoteClients() ) {
             if ( !client.getEnabled() || !client.getExport() || client.getExportNetwork() == null )
                 continue;
@@ -555,6 +566,9 @@ public class OpenVpnManager
         }
         
         try {
+            int httpsPort = UvmContextFactory.context().networkManager().getNetworkSettings().getHttpsPort();
+            int httpPort = UvmContextFactory.context().networkManager().getNetworkSettings().getHttpPort();
+
             FileWriter iptablesScript = new FileWriter( IPTABLES_SCRIPT, false );
 
             iptablesScript.write("#!/bin/dash" + "\n");
@@ -583,6 +597,13 @@ public class OpenVpnManager
                 }
             }
 
+            iptablesScript.write("# delete old Handle admin from tun0 (openvpn server)" + "\n");
+            iptablesScript.write("${IPTABLES} -t nat -D port-forward-rules -p tcp -i tun0 -m addrtype --dst-type local --destination-port " + httpsPort + " -j REDIRECT --to-ports 443 -m comment --comment \"Send to apache\" >/dev/null 2>&1 \n");
+            iptablesScript.write("${IPTABLES} -t nat -D port-forward-rules -p tcp -i tun0 -m addrtype --dst-type local  --destination-port 443 -j REDIRECT --to-ports 0 -m comment --comment \"Drop local HTTPS traffic that hasn't been handled earlier in chain\" >/dev/null 2>&1 \n");
+            iptablesScript.write("${IPTABLES} -t nat -D port-forward-rules -p tcp -i tun0 -m addrtype --dst-type local --destination-port " + httpPort + " -j REDIRECT --to-ports 80 -m comment --comment \"Send to apache\" >/dev/null 2>&1 \n");
+            iptablesScript.write("${IPTABLES} -t nat -D port-forward-rules -p tcp -i tun0 -m addrtype --dst-type local  --destination-port 80 -j REDIRECT --to-ports 0 -m comment --comment \"Drop local HTTPS traffic that hasn't been handled earlier in chain\" >/dev/null 2>&1 \n");
+            iptablesScript.write("\n");
+            
             iptablesScript.write("# allow traffic to openvpn daemon" + "\n");
             iptablesScript.write("if [ ! -z \"`pidof openvpn`\" ] ; then" + "\n");
             iptablesScript.write("    ${IPTABLES} -t filter -I filter-rules-input -p tcp --dport 1194 -j RETURN -m comment --comment \"Allow OpenVPN traffic\"" + "\n");
@@ -595,6 +616,14 @@ public class OpenVpnManager
             iptablesScript.write("    ${IPTABLES} -t mangle -I mark-src-intf 3 -i tun$i -j MARK --set-mark 0xfa/0xff -m comment --comment \"Set src interface mark for openvpn\"" + "\n");
             iptablesScript.write("    ${IPTABLES} -t mangle -I mark-dst-intf 3 -o tun$i -j MARK --set-mark 0xfa00/0xff00 -m comment --comment \"Set dst interface mark for openvpn\"" + "\n");
             iptablesScript.write("done" + "\n");
+            iptablesScript.write("\n");
+
+            iptablesScript.write("# Handle admin from tun0 (openvpn server)" + "\n");
+            iptablesScript.write("${IPTABLES} -t nat -I port-forward-rules -p tcp -i tun0 -m addrtype --dst-type local --destination-port " + httpsPort + " -j REDIRECT --to-ports 443 -m comment --comment \"Send to apache\" \n");
+            iptablesScript.write("${IPTABLES} -t nat -A port-forward-rules -p tcp -i tun0 -m addrtype --dst-type local  --destination-port 443 -j REDIRECT --to-ports 0 -m comment --comment \"Drop local HTTPS traffic that hasn't been handled earlier in chain\" \n");
+            iptablesScript.write("${IPTABLES} -t nat -I port-forward-rules -p tcp -i tun0 -m addrtype --dst-type local --destination-port " + httpPort + " -j REDIRECT --to-ports 80 -m comment --comment \"Send to apache\" \n");
+            iptablesScript.write("${IPTABLES} -t nat -A port-forward-rules -p tcp -i tun0 -m addrtype --dst-type local  --destination-port 80 -j REDIRECT --to-ports 0 -m comment --comment \"Drop local HTTPS traffic that hasn't been handled earlier in chain\" \n");
+            iptablesScript.write("\n");
 
             if ( settings.getNatOpenVpnTraffic() ) {
                 iptablesScript.write("# NAT traffic from openvpn interfaces" + "\n");
