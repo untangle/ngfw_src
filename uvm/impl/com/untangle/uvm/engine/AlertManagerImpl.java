@@ -634,7 +634,7 @@ public class AlertManagerImpl implements AlertManager
              * If not, force arp resolution with ping
              * Then recheck ARP table
              */
-            result = UvmContextFactory.context().execManager().execResult("ping -c1 " + route.getNextHop());
+            result = UvmContextFactory.context().execManager().execResult("ping -c1 -W1 " + route.getNextHop());
             result = UvmContextFactory.context().execManager().execResult("arp -n " + route.getNextHop() + " | grep -q HWaddress");
             if ( result == 0 )
                 continue;
