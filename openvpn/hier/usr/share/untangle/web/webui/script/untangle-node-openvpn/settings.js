@@ -524,7 +524,7 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                     cls: 'description',
                     title: this.i18n._('Client'),
                     items: [{
-                        html: "<i>" + this.i18n._("These settings configure how this OpenVPN should act as a client.") + "</i>",
+                        html: "<i>" + this.i18n._("These settings configure how OpenVPN will connect to remote servers as a client.") + "</i>",
                         cls: 'description',
                         border: false
                     }, {
@@ -677,26 +677,6 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
             });
         },
         buildRemoteClients: function() {
-            this.buildGridClients();
-            this.panelRemoteClients = Ext.create('Ext.panel.Panel', {
-                id: 'panel_remote_clients',
-                name: 'Clients',
-                helpSource: 'clients',
-                parentId: this.getId(),
-                title: this.i18n._('Remote Clients'),
-                layout: 'anchor',
-                cls: 'ung-panel',
-                items: [{
-                    xtype: 'fieldset',
-                    cls: 'description',
-                    title: this.i18n._('Remote Clients'),
-                    items: [{
-                        html: "<i>" + this.i18n._("This is a list of remote OpenVPN clients allowed to connect to this server.") + "</i>",
-                        cls: 'description',
-                        border: false
-                    }]
-                }, this.gridRemoteClients]
-            });
         },
         generateGridExports: function() {
             // live is a check column
@@ -780,50 +760,6 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                 }]
             });
             return gridExports;
-        },
-        buildExports: function() {
-            this.gridExports = this.generateGridExports();
-            this.panelExports = Ext.create('Ext.panel.Panel', {
-                id: 'panel_exports',
-                name: 'Exports',
-                helpSource: 'exports',
-                parentId: this.getId(),
-                title: this.i18n._('Exports'),
-                layout: 'anchor',
-                cls: 'ung-panel',
-                items: [{
-                    xtype: 'fieldset',
-                    cls: 'description',
-                    title: this.i18n._('Exports'),
-                    items: [{
-                        html: "<i>" + this.i18n._("The exported networks will be reachable by connected clients.") + "</i>",
-                        cls: 'description',
-                        border: false
-                    }]
-                }, this.gridExports]
-            });
-        },
-        buildGroups: function() {
-            this.gridGroups = this.generateGridGroups();
-            this.panelGroups = Ext.create('Ext.panel.Panel', {
-                id: 'panel_groups',
-                name: 'Groups',
-                helpSource: 'groups',
-                parentId: this.getId(),
-                title: this.i18n._('Groups'),
-                layout: 'anchor',
-                cls: 'ung-panel',
-                items: [{
-                    xtype: 'fieldset',
-                    cls: 'description',
-                    title: this.i18n._('Groups'),
-                    items: [{
-                        html: "<i>" + this.i18n._("This is the groups available for grouping clients by similar configuration.") + "</i>",
-                        cls: 'description',
-                        border: false
-                    }]
-                }, this.gridGroups]
-            });
         },
         generateGridGroups: function() {
             var gridGroups = Ext.create('Ung.EditorGrid', {
@@ -966,34 +902,31 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
             this.panelGroups = null;
             this.gridGroups = null;
 
-            this.buildRemoteClients();
-            this.buildExports();
-            this.buildGroups();
+            this.buildGridClients();
+            this.gridExports = this.generateGridExports();
+            this.gridGroups = this.generateGridGroups();
             
             this.tabPanel = Ext.create('Ext.tab.Panel',{
+                id: "server_tab_panel",
                 activeTab: 0,
                 deferredRender: false,
                 parentId: this.getId(),
                 height: 500,
                 flex: 1,
-                items: [ this.panelRemoteClients, this.panelGroups, this.panelExports ]
+                items: [ this.gridRemoteClients, this.gridGroups, this.gridExports ]
             });
 
             this.reRenderFn = Ext.bind( function (newValue) {
                 this.getSettings().serverEnabled = newValue;
 
-                Ext.getCmp('panel_remote_clients').disable();
-                Ext.getCmp('panel_groups').disable();
-                Ext.getCmp('panel_exports').disable();
+                Ext.getCmp('server_tab_panel').disable();
                 Ext.getCmp('openvpn_options_client_to_client').disable();
                 Ext.getCmp('openvpn_options_port').disable();
                 Ext.getCmp('openvpn_options_protocol').disable();
                 Ext.getCmp('openvpn_options_cipher').disable();
                 Ext.getCmp('openvpn_options_addressSpace').disable();
                 if (newValue) {
-                    Ext.getCmp('panel_remote_clients').enable();
-                    Ext.getCmp('panel_groups').enable();
-                    Ext.getCmp('panel_exports').enable();
+                    Ext.getCmp('server_tab_panel').enable();
                     Ext.getCmp('openvpn_options_client_to_client').enable();
                     Ext.getCmp('openvpn_options_port').enable();
                     Ext.getCmp('openvpn_options_protocol').enable();
@@ -1021,7 +954,7 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                     cls: 'description',
                     title: this.i18n._('Server'),
                     items: [{
-                        html: "<i>" + this.i18n._("These settings configure how this OpenVPN should act as a server for remote clients.") + "</i>",
+                        html: "<i>" + this.i18n._("These settings configure how OpenVPN will be a server for remote clients.") + "</i>",
                         cls: 'description',
                         border: false
                     }]
@@ -1045,6 +978,15 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                                 }, this)
                             }
                         }
+                    }, {
+                        xtype: 'displayfield',
+                        labelWidth: 160,
+                        labelAlign:'left',
+                        width:300,
+                        fieldLabel: this.i18n._('Site URL'),
+                        name: 'Site URL',
+                        value: rpc.systemManager.getPublicUrl().split(":")[0]+":"+this.getSettings().port,
+                        id: 'openvpn_options_siteUrl'
                     }, {
                         xtype: 'checkbox',
                         labelWidth: 160,
