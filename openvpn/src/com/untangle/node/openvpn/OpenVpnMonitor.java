@@ -183,13 +183,11 @@ class OpenVpnMonitor implements Runnable
 
     public synchronized void enable()
     {
-        start();
         isEnabled = true;
     }
 
     public synchronized void disable()
     {
-        start();
         isEnabled = false;
     }
 
