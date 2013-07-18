@@ -856,7 +856,7 @@ Ext.define("Ung.Main", {
                 "name":"network",
                 "displayName":i18n._("Network"),
                 "iconClass":"icon-config-network",
-                "helpSource":"network_config",
+                "helpSource":"network",
                 "className":"Ung.Network",
                 "scriptFile":"network.js",
                 "handler": main.openConfig
@@ -864,7 +864,7 @@ Ext.define("Ung.Main", {
                 "name":"administration",
                 "displayName":i18n._("Administration"),
                 "iconClass":"icon-config-admin",
-                "helpSource":"administration_config",
+                "helpSource":"administration",
                 "className":"Ung.Administration",
                 "scriptFile":"administration.js",
                 "handler": main.openConfig
@@ -872,7 +872,7 @@ Ext.define("Ung.Main", {
                 "name":"email",
                 "displayName":i18n._("Email"),
                 "iconClass":"icon-config-email",
-                "helpSource":"email_config",
+                "helpSource":"email",
                 "className":"Ung.Email",
                 "scriptFile":"email.js",
                 "handler": main.openConfig
@@ -880,7 +880,7 @@ Ext.define("Ung.Main", {
                 "name":"localDirectory",
                 "displayName":i18n._("Local Directory"),
                 "iconClass":"icon-config-directory",
-                "helpSource":"local_directory_config",
+                "helpSource":"local_directory",
                 "className":"Ung.LocalDirectory",
                 "scriptFile":"localDirectory.js",
                 "handler": main.openConfig
@@ -888,7 +888,7 @@ Ext.define("Ung.Main", {
                 "name":"upgrade",
                 "displayName":i18n._("Upgrade"),
                 "iconClass":"icon-config-upgrade",
-                "helpSource":"upgrade_config",
+                "helpSource":"upgrade",
                 "className":"Ung.Upgrade",
                 "scriptFile":"upgrade.js",
                 "handler": main.openConfig
@@ -896,7 +896,7 @@ Ext.define("Ung.Main", {
                 "name":"system",
                 "displayName":i18n._("System"),
                 "iconClass":"icon-config-setup",
-                "helpSource":"system_config",
+                "helpSource":"system",
                 "className":"Ung.System",
                 "scriptFile":"system.js",
                 "handler": main.openConfig
@@ -904,7 +904,7 @@ Ext.define("Ung.Main", {
                 "name":"systemInfo",
                 "displayName":i18n._("System Info"),
                 "iconClass":"icon-config-support",
-                "helpSource":"system_info_config",
+                "helpSource":"system_info",
                 "className":"Ung.SystemInfo",
                 "scriptFile":"systemInfo.js",
                 "handler": main.openConfig
