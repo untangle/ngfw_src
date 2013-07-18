@@ -20,9 +20,9 @@ public class OpenVpnGroup implements java.io.Serializable
     private boolean fullTunnel = false;
 
     private boolean pushDns = false;
-    private boolean isDnsOverrideEnabled = false;
-    private InetAddress dnsOverride1;
-    private InetAddress dnsOverride2;
+    private InetAddress pushDns1;
+    private InetAddress pushDns2;
+    private String pushDnsDomain;
     
     public OpenVpnGroup() { }
 
@@ -50,12 +50,14 @@ public class OpenVpnGroup implements java.io.Serializable
     public boolean getPushDns() { return pushDns; }
     public void setPushDns( boolean newValue ) { this.pushDns = newValue; }
 
-    public boolean getIsDnsOverrideEnabled() { return this.isDnsOverrideEnabled; }
-    public void setIsDnsOverrideEnabled( boolean newValue ) { this.isDnsOverrideEnabled = newValue; }
+    public InetAddress getPushDns1() { return this.pushDns1; }
+    public void setPushDns1( InetAddress newValue ) { this.pushDns1 = newValue; }
 
-    public InetAddress getDnsOverride1() { return this.dnsOverride1; }
-    public void setDnsOverride1( InetAddress newValue ) { this.dnsOverride1 = newValue; }
+    public InetAddress getPushDns2() { return this.pushDns2; }
+    public void setPushDns2( InetAddress newValue ) { this.pushDns2 = newValue; }
 
-    public InetAddress getDnsOverride2() { return this.dnsOverride2; }
-    public void setDnsOverride2( InetAddress newValue ) { this.dnsOverride2 = newValue; }
+    public String getPushDnsDomain() { return this.pushDnsDomain; }
+    public void setPushDnsDomain( String newValue ) { this.pushDnsDomain = newValue; }
+    
+
 }

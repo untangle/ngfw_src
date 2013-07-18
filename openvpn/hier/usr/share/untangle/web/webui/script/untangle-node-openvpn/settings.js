@@ -110,20 +110,11 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
         extend:'Ung.NodeWin',
         groupsStore: null,
         panelStatus: null,
-        panelRemoteServers: null,
+        panelClient: null,
         gridRemoteServers: null,
-        panelRemoteClients: null,
-        gridRemoteClients: null,
-        panelExports: null,
-        gridExports: null,
-        panelGroups: null,
-        gridGroups: null,
-        panelGeneralOptions: null,
+        panelServer: null,
         gridConnectionEventLog: null,
         initComponent: function(container, position) {
-            this.buildStatus();
-            var tabs = [this.panelStatus];
-
             // Register the VTypes, need i18n to be initialized for the text
             if(Ext.form.VTypes["openvpnClientNameVal"]==null) {
                 Ext.form.VTypes["openvpnClientNameVal"] = /^[A-Za-z0-9]([-_.0-9A-Za-z]*[0-9A-Za-z])?$/;
@@ -134,21 +125,12 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                 Ext.form.VTypes["openvpnClientNameText"] = this.i18n._( "A client name should only contains numbers, letters, dashes and periods.  Spaces are not allowed." );
             }
 
-            this.buildGeneralOptions();
+            this.buildStatus();
+            this.buildServer();
             this.buildRemoteServers();
-            this.buildRemoteClients();
-            this.buildExports();
-            this.buildGroups();
             this.buildConnectionEventLog();
 
-            tabs.push(this.panelGeneralOptions);
-            tabs.push(this.panelRemoteClients);
-            tabs.push(this.panelGroups);
-            tabs.push(this.panelExports);
-            tabs.push(this.panelRemoteServers);
-            tabs.push(this.gridConnectionEventLog);
-
-            this.buildTabPanel(tabs);
+            this.buildTabPanel( [ this.panelStatus, this.panelServer, this.panelClient, this.gridConnectionEventLog ] );
             this.callParent(arguments);
         },
         getGroupsStore: function(force) {
@@ -530,19 +512,23 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                     }]
                 });
 
-            this.panelRemoteServers = Ext.create('Ext.panel.Panel', {
+            this.panelClient = Ext.create('Ext.panel.Panel', {
                 name: 'Servers',
                 helpSource: 'servers',
                 parentId: this.getId(),
-                title: this.i18n._('Remote Servers'),
+                title: this.i18n._('Client'),
                 layout: 'anchor',
                 cls: 'ung-panel',
                 items: [{
                     xtype: 'fieldset',
                     cls: 'description',
-                    title: this.i18n._('Remote Servers'),
+                    title: this.i18n._('Client'),
                     items: [{
-                        html: "<i>" + this.i18n._("This is a list remote OpenVPN servers that OpenVPN should connect to as a client.") + "</i>",
+                        html: "<i>" + this.i18n._("These settings configure how this OpenVPN should act as a client.") + "</i>",
+                        cls: 'description',
+                        border: false
+                    }, {
+                        html: "<i>" + this.i18n._("Remote Servers is a list remote OpenVPN servers that OpenVPN should connect to as a client.") + "</i>",
                         cls: 'description',
                         border: false
                     }]
@@ -853,8 +839,7 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                     "groupId": -1,
                     "name": this.i18n._("[no name]"),
                     "pushDns": false,
-                    "fullTunnel": false,
-                    "isDnsOverrideEnabled": false
+                    "fullTunnel": false
                 },
                 title: this.i18n._("Groups"),
                 recordJavaClass: "com.untangle.node.openvpn.OpenVpnGroup",
@@ -865,15 +850,15 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                 }, {
                     name: 'name'
                 }, {
-                    name: 'pushDns'
-                }, {
                     name: 'fullTunnel'
                 }, {
-                    name: 'isDnsOverrideEnabled'
+                    name: 'pushDns'
                 }, {
-                    name: 'dnsOverride1'
+                    name: 'pushDns1'
                 }, {
-                    name: 'dnsOverride2'
+                    name: 'pushDns2'
+                }, {
+                    name: 'pushDnsDomain'
                 }],
                 // the list of columns for the column model
                 columns: [{
@@ -897,12 +882,6 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                     dataIndex: 'pushDns',
                     width: 90,
                     resizable: false
-                },{
-                    id: "isDnsOverrideEnabled",
-                    header: this.i18n._("DNS Override"),
-                    dataIndex: 'isDnsOverrideEnabled',
-                    width: 90,
-                    resizable: false
                 }],
                 // sortField: 'name',
                 columnsDefaultSortable: true,
@@ -923,61 +902,83 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                     xtype: 'checkbox',
                     name: "Push DNS",
                     dataIndex: "pushDns",
-                    fieldLabel: this.i18n._("Push DNS")
-                }, {
-                    xtype: 'checkbox',
-                    name: "DNS Override",
-                    dataIndex: "isDnsOverrideEnabled",
-                    fieldLabel: this.i18n._("DNS Override"),
+                    fieldLabel: this.i18n._("Push DNS"),
                     listeners: {
                         "change": {
                             fn: Ext.bind(function(elem, newValue) {
-                                if (newValue) {
-                                    Ext.getCmp('dnsOverride1').enable();
-                                    Ext.getCmp('dnsOverride2').enable();
+                                if ( newValue ) {
+                                    Ext.getCmp('pushDnsSettings').show();
                                 } else {
-                                    Ext.getCmp('dnsOverride1').disable();
-                                    Ext.getCmp('dnsOverride2').disable();
+                                    Ext.getCmp('pushDnsSettings').hide();
+
                                 }
                             }, this)
                         },
                         "render": {
                             fn: Ext.bind(function(field) {
-                                if (field.value) {
-                                    Ext.getCmp('dnsOverride1').enable();
-                                    Ext.getCmp('dnsOverride2').enable();
+                                if ( field.value ) {
+                                    Ext.getCmp('pushDnsSettings').show();
                                 } else {
-                                    Ext.getCmp('dnsOverride1').disable();
-                                    Ext.getCmp('dnsOverride2').disable();
+                                    Ext.getCmp('pushDnsSettings').hide();
                                 }
                             }, this),
                             scope: this
                         }
                     }
                 }, {
-                    xtype: "textfield",
-                    id: "dnsOverride1",
-                    name: "DNS Override 1",
-                    dataIndex: "dnsOverride1",
-                    fieldLabel: this.i18n._("DNS Override 1"),
-                    allowBlank: false,
-                    vtype: 'ipAddress',
-                    width: 300
-                }, {
-                    xtype: "textfield",
-                    id: "dnsOverride2",
-                    name: "DNS Override 2",
-                    dataIndex: "dnsOverride2",
-                    fieldLabel: this.i18n._("DNS Override 2"),
-                    allowBlank: false,
-                    vtype: 'ipAddress',
-                    width: 300
+                    xtype: 'fieldset',
+                    id: "pushDnsSettings",
+                    title: this.i18n._('Push DNS Configuration'),
+                    items: [{
+                        xtype: "textfield",
+                        id: "pushDns1",
+                        dataIndex: "pushDns1",
+                        fieldLabel: this.i18n._("DNS 1"),
+                        allowBlank: true,
+                        vtype: 'ipAddress',
+                        width: 300
+                    }, {
+                        xtype: "textfield",
+                        id: "pushDns2",
+                        dataIndex: "pushDns2",
+                        fieldLabel: this.i18n._("DNS 2"),
+                        allowBlank: true,
+                        vtype: 'ipAddress',
+                        width: 300
+                    }, {
+                        xtype: "textfield",
+                        id: "pushDnsDomain",
+                        dataIndex: "pushDnsDomain",
+                        fieldLabel: this.i18n._("DNS Domain"),
+                        allowBlank: true,
+                        width: 300
+                    }]
                 }]
             });
             return gridGroups;
         },
 
-        buildGeneralOptions: function() {
+        buildServer: function() {
+            this.panelRemoteClients = null;
+            this.gridRemoteClients = null;
+            this.panelExports = null;
+            this.gridExports = null;
+            this.panelGroups = null;
+            this.gridGroups = null;
+
+            this.buildRemoteClients();
+            this.buildExports();
+            this.buildGroups();
+            
+            this.tabPanel = Ext.create('Ext.tab.Panel',{
+                activeTab: 0,
+                deferredRender: false,
+                parentId: this.getId(),
+                height: 500,
+                flex: 1,
+                items: [ this.panelRemoteClients, this.panelGroups, this.panelExports ]
+            });
+
             this.reRenderFn = Ext.bind( function (newValue) {
                 this.getSettings().serverEnabled = newValue;
 
@@ -1001,10 +1002,10 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                 }
             }, this);
 
-            this.panelGeneralOptions = Ext.create('Ext.panel.Panel', {
-                name: 'GeneralOptions',
+            this.panelServer = Ext.create('Ext.panel.Panel', {
+                name: 'Server',
                 helpSource: 'general',
-                title: this.i18n._("Options"),
+                title: this.i18n._("Server"),
                 parentId: this.getId(),
 
                 layout: "anchor",
@@ -1016,6 +1017,15 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                     buttonAlign: 'left'
                 },
                 items: [{
+                    xtype: 'fieldset',
+                    cls: 'description',
+                    title: this.i18n._('Server'),
+                    items: [{
+                        html: "<i>" + this.i18n._("These settings configure how this OpenVPN should act as a server for remote clients.") + "</i>",
+                        cls: 'description',
+                        border: false
+                    }]
+                }, {
                     xtype: 'fieldset',
                     items: [{
                         xtype: 'textfield',
@@ -1158,24 +1168,24 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                                 }, this)
                             }
                         }
-                    }]
+                    }, this.tabPanel]
                 }]
             });
         },
 
         // validation function
         validate: function() {
-            return  this.validateGeneralOptions() && this.validateGroups() && this.validateVpnClients();
+            return  this.validateServer() && this.validateGroups() && this.validateVpnClients();
         },
 
-        //validate OpenVPN GeneralOptions settings
-        validateGeneralOptions: function() {
+        //validate OpenVPN Server settings
+        validateServer: function() {
             //validate site name
             var siteCmp = Ext.getCmp("openvpn_options_siteName");
             if(!siteCmp.validate()) {
                 Ext.MessageBox.alert(this.i18n._("Failed"), this.i18n._("You must enter a site name."),
                     Ext.bind(function () {
-                        this.tabs.setActiveTab(this.panelGeneralOptions);
+                        this.tabs.setActiveTab(this.panelServer);
                         siteCmp.focus(true);
                     }, this)
                 );

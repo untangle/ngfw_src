@@ -296,7 +296,7 @@ public class OpenVpnManager
         publicAddress = publicAddress.split( ":" )[0];
         publicAddress = publicAddress.trim();
 
-        sb.append( "remote" + " " + publicAddress + " " + settings.getPort() + "\n");
+        sb.append( "remote" + " " + publicAddress + " " + settings.getPort() + " # public address \n");
 
         /**
          * Also write the static IP of any static WANs
@@ -307,7 +307,7 @@ public class OpenVpnManager
         NetworkSettings networkSettings = UvmContextFactory.context().networkManager().getNetworkSettings();
         for ( InterfaceSettings interfaceSettings : networkSettings.getInterfaces() ) {
             if ( interfaceSettings.getIsWan() && interfaceSettings.getV4ConfigType() == InterfaceSettings.V4ConfigType.STATIC )
-                sb.append( "remote" + " " + interfaceSettings.getV4StaticAddress() + " " + settings.getPort() + "\n");
+                sb.append( "remote" + " " + interfaceSettings.getV4StaticAddress().getHostAddress() + " " + settings.getPort() + " # static WAN " + interfaceSettings.getInterfaceId());
         }
         
         File dir = new File( CLIENT_CONF_FILE_DIR );
@@ -334,43 +334,20 @@ public class OpenVpnManager
                 sb.append( "push" + " " + "\"redirect-gateway def1\"" + "\n");
             }
 
+            /**
+             * If PushDNS is enabled, we need to push the DNS settings
+             */
             if( group.getPushDns() ) {
-                List<InetAddress> dnsServers = null;
-                dnsServers = new LinkedList<InetAddress>();
 
-                if ( group.getIsDnsOverrideEnabled()) {
-                    InetAddress dns1 = group.getDnsOverride1();
-                    InetAddress dns2 = group.getDnsOverride2();
-                    if ( dns1 != null ) dnsServers.add( dns1 );
-                    if ( dns2 != null ) dnsServers.add( dns2 );
-                } else {
-                    for ( InterfaceSettings intf : UvmContextFactory.context().networkManager().getEnabledInterfaces() ) {
-                        /**
-                         * Only use statically configured IPv4 DNS servers from WANs
-                         * We could use the interface status to export DHCP-acquired DNS settings,
-                         * however you would need to rewrite and restart the server each time a new lease was acquired
-                         */
-                        if ( !intf.getIsWan() || intf.getV4ConfigType() != InterfaceSettings.V4ConfigType.STATIC )
-                            continue;
-
-                        //InetAddress dns1 = UvmContextFactory.context().networkManager().getInterfaceStatus( intf.getInterfaceId() ).getV4Dns1();
-                        //InetAddress dns2 = UvmContextFactory.context().networkManager().getInterfaceStatus( intf.getInterfaceId() ).getV4Dns2();
-                        InetAddress dns1 = intf.getV4StaticDns1();
-                        InetAddress dns2 = intf.getV4StaticDns2();
-                        if ( dns1 != null) dnsServers.add( dns1 );
-                        if ( dns2 != null) dnsServers.add( dns2 );
-                    }
-                }
-
-                for(InetAddress addr : dnsServers) {
-                    sb.append( "push" + " " + "\"dhcp-option DNS " + addr.toString() + "\"" + "\n");
-                }
-
-                //If the domain is set - push it
-                NetworkSettings networkSettings = UvmContextFactory.context().networkManager().getNetworkSettings();
-                if( networkSettings.getDomainName() != null ) {
-                    sb.append( "push" + " " + "\"dhcp-option DOMAIN " + networkSettings.getDomainName() + "\"" + "\n");
-                }
+                InetAddress dns1 = group.getPushDns1();
+                if ( dns1 != null )
+                    sb.append( "push" + " " + "\"dhcp-option DNS " + dns1.getHostAddress() + "\"" + "\n");
+                InetAddress dns2 = group.getPushDns2();
+                if ( dns2 != null )
+                    sb.append( "push" + " " + "\"dhcp-option DNS " + dns2.getHostAddress() + "\"" + "\n");
+                String dnsDomain = group.getPushDnsDomain();
+                if ( dnsDomain != null ) 
+                    sb.append( "push" + " " + "\"dhcp-option DOMAIN " + dnsDomain + "\"" + "\n");
             }
 
             if ( client.getExport() && client.getExportNetwork() != null ) {
