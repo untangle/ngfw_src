@@ -4080,7 +4080,7 @@ Ext.define('Ung.RowEditorWindow', {
             return;
         }
         if (component.dataIndex != null) {
-            this.record.set(component.dataIndex, component.getValue());
+            record.set(component.dataIndex, component.getValue());
             return;
         }
         if (component.items) {
