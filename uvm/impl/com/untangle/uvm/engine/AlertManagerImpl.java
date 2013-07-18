@@ -635,9 +635,6 @@ public class AlertManagerImpl implements AlertManager
              * Then recheck ARP table
              */
             result = UvmContextFactory.context().execManager().execResult("ping -c1 " + route.getNextHop());
-            if ( result == 0 )
-                continue;
-
             result = UvmContextFactory.context().execManager().execResult("arp -n " + route.getNextHop() + " | grep -q HWaddress");
             if ( result == 0 )
                 continue;
