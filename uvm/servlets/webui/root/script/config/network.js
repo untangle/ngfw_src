@@ -3255,12 +3255,6 @@ if (!Ung.hasResource["Ung.Network"]) {
                     header: this.i18n._("Priority"),
                     dataIndex: 'priority',
                     width: 150,
-                    renderer: Ext.bind(function( value, metadata, record ) { 
-                        if (this.qosPriorityMap[value]!=null) {
-                            return value + '-' + this.qosPriorityMap[value];
-                        }
-                        return value;
-                    }, this )
                 }, {
                     header: this.i18n._("Data"),
                     dataIndex: 'sent',
