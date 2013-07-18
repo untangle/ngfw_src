@@ -637,6 +637,9 @@ public class AlertManagerImpl implements AlertManager
             if ( result == 0 )
                 continue;
 
+            result = UvmContextFactory.context().execManager().execResult("arp -n " + route.getNextHop() + " | grep -q HWaddress");
+            if ( result == 0 )
+                continue;
             
             String alertText = "";
             alertText += i18nUtil.tr("Route to unreachable address:");
