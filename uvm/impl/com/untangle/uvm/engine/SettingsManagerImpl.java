@@ -321,6 +321,11 @@ public class SettingsManagerImpl implements SettingsManager
             logger.error("Illegal name (Missing file extension): " + name);
             return false;
         }
+
+        if ( name.contains("../") ) {
+            logger.error("Illegal name (contains ../): " + name);
+            return false;
+        }
             
         return true;
     }
