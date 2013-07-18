@@ -156,10 +156,11 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
             return this.defaultGroupId;
         },
         // active connections/sessions grip
-        buildActiveClientsGrid: function() {
-            this.gridActiveClients = Ext.create('Ung.EditorGrid', {
-                anchor: '100% -110',
-                name: "gridActiveClients",
+        buildClientStatusGrid: function() {
+            this.gridClientStatus = Ext.create('Ung.EditorGrid', {
+                height: 300,
+                style: "padding-bottom: 10px;",
+                name: "gridClientStatus",
                 settingsCmp: this,
                 emptyRow: {
                     "address": "",
@@ -176,20 +177,16 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                 qtip: this.i18n._("The Connected Remote Clients list shows connected clients."),
                 paginated: false,
                 bbar: Ext.create('Ext.toolbar.Toolbar', {
-                    items: [
-                        '-',
-                        {
-                            xtype: 'button',
-                            id: "refresh_"+this.getId(),
-                            text: i18n._('Refresh'),
-                            name: "Refresh",
-                            tooltip: i18n._('Refresh'),
-                            iconCls: 'icon-refresh',
-                            handler: Ext.bind(function() {
-                                this.gridActiveClients.reload();
-                            }, this)
-                        }
-                    ]
+                    items: [{
+                        xtype: 'button',
+                        text: i18n._('Refresh'),
+                        name: "Refresh",
+                        tooltip: i18n._('Refresh'),
+                        iconCls: 'icon-refresh',
+                        handler: Ext.bind(function() {
+                            this.gridClientStatus.reload();
+                        }, this)
+                    }]
                 }),
                 recordJavaClass: "com.untangle.node.openvpn.OpenVpnStatusEvent",
                 dataFn: this.getRpcNode().getActiveClients,
@@ -213,8 +210,7 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                 }, {
                     header: this.i18n._("Client"),
                     dataIndex:'clientName',
-                    width: 200,
-                    flex: 1
+                    width: 200
                 }, {
                     header: this.i18n._("Start Time"),
                     dataIndex:'start',
@@ -234,10 +230,76 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
             });
         },
 
+        // active connections/sessions grip
+        buildServerStatusGrid: function() {
+            this.gridServerStatus = Ext.create('Ung.EditorGrid', {
+                height: 300,
+                name: "gridServerStatus",
+                settingsCmp: this,
+                emptyRow: {
+                    "name": "",
+                    "connected": "",
+                    "bytesRead": "",
+                    "bytesWritten": ""
+                },
+                hasAdd: false,
+                hasEdit: false,
+                hasDelete: false,
+                columnsDefaultSortable: true,
+                title: this.i18n._("Remote Server Status"),
+                qtip: this.i18n._("The Remote Server Status list shows the current status of the configured remote servers."),
+                paginated: false,
+                bbar: Ext.create('Ext.toolbar.Toolbar', {
+                    items: [{
+                        xtype: 'button',
+                        text: i18n._('Refresh'),
+                        name: "Refresh",
+                        tooltip: i18n._('Refresh'),
+                        iconCls: 'icon-refresh',
+                        handler: Ext.bind(function() {
+                            this.gridServerStatus.reload();
+                        }, this)
+                    }]
+                }),
+                dataFn: this.getRpcNode().getRemoteServersStatus,
+                fields: [{
+                    name: "name"
+                }, {
+                    name: "connected"
+                }, {
+                    name: "bytesRead"
+                }, {
+                    name: "bytesWritten"
+                }, {
+                    name: "id"
+                }],
+                columns: [{
+                    header: this.i18n._("Name"),
+                    dataIndex:'name',
+                    width: 150
+                }, {
+                    header: this.i18n._("Connected"),
+                    dataIndex:'connected',
+                    width: 75
+                }, {
+                    header: this.i18n._("Rx Data"),
+                    dataIndex:'bytesRead',
+                    width: 180,
+                    renderer: function(value) { return (Math.round(value/100000)/10) + " Mb"; }
+                }, {
+                    header: this.i18n._("Tx Data"),
+                    dataIndex:'bytesWritten',
+                    width: 180,
+                    renderer: function(value) { return (Math.round(value/100000)/10) + " Mb"; }
+                }]
+            });
+        },
+        
         // Status panel
         buildStatus: function() {
             var statusLabel = "";
-            this.buildActiveClientsGrid();
+            this.buildClientStatusGrid();
+            this.buildServerStatusGrid();
 
             var runState = this.getRpcNode().getRunState();
             var statusDescription = "";
@@ -266,7 +328,7 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                         cls: 'description',
                         border: false
                     }]
-                }, this.gridActiveClients]
+                }, this.gridClientStatus, this.gridServerStatus]
             });
         },
 

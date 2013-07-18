@@ -7,7 +7,11 @@ import java.net.URLEncoder;
 import java.util.Random;
 import java.util.List;
 import java.util.LinkedList;
+import java.io.File;
+import java.io.FileReader;
+import java.io.BufferedReader;
 
+import org.json.JSONObject;
 import org.apache.log4j.Logger;
 
 import com.untangle.uvm.UvmContextFactory;
@@ -208,6 +212,11 @@ public class OpenVpnNodeImpl extends NodeBase implements OpenVpnNode
         return this.openVpnMonitor.getOpenConnectionsAsEvents();
     }
 
+    public List<JSONObject> getRemoteServersStatus()
+    {
+        return _getRemoteServersStatus();
+    }
+    
     public String getClientDistributionDownloadLink( String clientName, String format /* "zip", "exe" */ )
     {
         /**
@@ -506,6 +515,85 @@ public class OpenVpnNodeImpl extends NodeBase implements OpenVpnNode
             } else logger.warn( "Unable to unload openvpn web app" );
         }
         isWebAppDeployed = false;
+    }
+
+    private List<JSONObject> _getRemoteServersStatus()
+    {
+        List<JSONObject> results = new LinkedList<JSONObject>();
+
+        for ( OpenVpnRemoteServer server : settings.getRemoteServers() ) {
+            try {
+                JSONObject result = new JSONObject();
+                File statusFile = new File( "/var/run/openvpn." + server.getName() + ".status" );
+
+                result.put( "name", server.getName() );
+                result.put( "connected", false );
+                result.put( "bytesRead", 0 );
+                result.put( "bytesWritten", 0 );
+            
+                if ( ! statusFile.exists() ) {
+                    results.add( result );
+                    continue;
+                } 
+
+                BufferedReader reader = new BufferedReader(new FileReader(statusFile));
+                String currentLine;
+            
+                while((currentLine = reader.readLine()) != null) {
+
+                    // Look for TCP/UDP read bytes line
+                    if ( currentLine.matches("^TCP/UDP read bytes,.*") ) {
+                        String[] parts = currentLine.split(",");
+                        if ( parts.length < 2 ) {
+                            logger.warn("Malformed line in openvpn status: " + currentLine );
+                            continue;
+                        }
+                    
+                        int i;
+                        try {
+                            i = Integer.parseInt( parts[1] );
+                        } catch ( Exception e) {
+                            logger.warn("Malformed int in openvpn status: " + currentLine );
+                            continue;
+                        }
+
+                        if ( i == 0 ) {
+                            // not connected
+                            continue;
+                        } else {
+                            result.put( "connected", true );
+                            result.put( "bytesRead", i );
+                        }
+                    }
+
+                    // Look for TCP/UDP read bytes line
+                    if ( currentLine.matches("^TCP/UDP write bytes,.*") ) {
+                        String[] parts = currentLine.split(",");
+                        if ( parts.length < 2 ) {
+                            logger.warn("Malformed line in openvpn status: " + currentLine );
+                            continue;
+                        }
+                    
+                        int i;
+                        try {
+                            i = Integer.parseInt( parts[1] );
+                        } catch ( Exception e) {
+                            logger.warn("Malformed int in openvpn status: " + currentLine );
+                            continue;
+                        }
+
+                        result.put( "bytesWritten", i );
+                    }
+                }
+
+                results.add( result );
+            }
+            catch ( Exception e ) {
+                logger.warn("Malformed openvpn status file: " + "/var/run/openvpn." + server.getName() + ".status", e );
+            }
+        }
+
+        return results;
     }
     
 }

@@ -6,6 +6,8 @@ package com.untangle.node.openvpn;
 import java.util.List;
 import java.net.InetAddress;
 
+import org.json.JSONObject;
+
 import com.untangle.uvm.node.Node;
 import com.untangle.uvm.node.EventLogQuery;
 
@@ -21,4 +23,6 @@ public interface OpenVpnNode extends Node
     public String getClientDistributionUploadLink( );
      
     public List<OpenVpnStatusEvent> getActiveClients();
+
+    public List<JSONObject> getRemoteServersStatus();
 }

@@ -122,7 +122,7 @@ class OpenVpnMonitor implements Runnable
                 try {
                     /* Cleanup UNDEF sessions every time you are going to update the stats */
                     boolean killUndef = now.after( nextUpdate );
-                    updateStatus( killUndef );
+                    updateServerStatus( killUndef );
                 } catch (java.net.ConnectException e) {
                     logger.info( "Unable to connect to OpenVPN - trying again in " + SLEEP_TIME_MSEC + " ms.");
                 } catch ( Exception e ) {
@@ -209,7 +209,7 @@ class OpenVpnMonitor implements Runnable
         }
     }
 
-    private void updateStatus( boolean killUndef )
+    private void updateServerStatus( boolean killUndef )
         throws UnknownHostException, SocketException, IOException
     {
         Socket socket = null;
