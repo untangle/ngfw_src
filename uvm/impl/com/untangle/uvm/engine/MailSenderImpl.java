@@ -123,7 +123,7 @@ public class MailSenderImpl implements MailSender
 
             settings = new MailSettings();
             String fromSender = UvmContextFactory.context().oemManager().getOemName().toLowerCase();
-            String fromHostname = UvmContextFactory.context().execManager().execOutput("hostname").replaceAll("(\\r|\\n)","");
+            String fromHostname = UvmContextFactory.context().networkManager().getNetworkSettings().getDomainName();
             settings.setFromAddress(fromSender + "@" + fromHostname);
 
             this.setSettings(settings);
