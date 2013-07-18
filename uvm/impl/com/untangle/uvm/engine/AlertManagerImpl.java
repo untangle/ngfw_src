@@ -631,9 +631,10 @@ public class AlertManagerImpl implements AlertManager
                 continue;
 
             /**
-             * If not, double check with arping
+             * If not, force arp resolution with ping
+             * Then recheck ARP table
              */
-            result = UvmContextFactory.context().execManager().execResult("arping -c1 " + route.getNextHop());
+            result = UvmContextFactory.context().execManager().execResult("ping -c1 " + route.getNextHop());
             if ( result == 0 )
                 continue;
 
