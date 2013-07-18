@@ -298,6 +298,18 @@ public class OpenVpnManager
 
         sb.append( "remote" + " " + publicAddress + " " + settings.getPort() + "\n");
 
+        /**
+         * Also write the static IP of any static WANs
+         * This will be used as a backup if publicAddress fails or is wrong.
+         * This will help for multi-WAN failover
+         * Bug #10828
+         */
+        NetworkSettings networkSettings = UvmContextFactory.context().networkManager().getNetworkSettings();
+        for ( InterfaceSettings interfaceSettings : networkSettings.getInterfaces() ) {
+            if ( interfaceSettings.getIsWan() && interfaceSettings.getV4ConfigType() == InterfaceSettings.V4ConfigType.STATIC )
+                sb.append( "remote" + " " + interfaceSettings.getV4StaticAddress() + " " + settings.getPort() + "\n");
+        }
+        
         File dir = new File( CLIENT_CONF_FILE_DIR );
         if ( ! dir.exists() )
             dir.mkdirs();
