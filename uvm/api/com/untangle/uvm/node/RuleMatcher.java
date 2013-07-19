@@ -613,6 +613,8 @@ public class RuleMatcher implements JSONString, Serializable
 
         case CLASSD_PRODUCTIVITY:
             attachmentInt = (Integer) sess.globalAttachment(NodeSession.KEY_CLASSD_PRODUCTIVITY);
+            if ( attachmentInt == null )
+                return false;
             if (this.intMatcher == null) {
                 logger.warn("Invalid Dst Port Matcher: " + this.intMatcher);
                 return false;
@@ -622,6 +624,8 @@ public class RuleMatcher implements JSONString, Serializable
 
         case CLASSD_RISK:
             attachmentInt = (Integer) sess.globalAttachment(NodeSession.KEY_CLASSD_RISK);
+            if ( attachmentInt == null )
+                return false;
             if (this.intMatcher == null) {
                 logger.warn("Invalid Dst Port Matcher: " + this.intMatcher);
                 return false;
