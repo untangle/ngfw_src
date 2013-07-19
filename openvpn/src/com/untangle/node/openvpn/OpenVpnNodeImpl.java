@@ -127,11 +127,7 @@ public class OpenVpnNodeImpl extends NodeBase implements OpenVpnNode
         }
 
         this.openVpnMonitor.start();
-
-        if ( settings.getServerEnabled() ) 
-            this.openVpnMonitor.enable();
-        else
-            this.openVpnMonitor.disable();
+        this.openVpnMonitor.enable();
     }
     
     @Override
@@ -441,11 +437,6 @@ public class OpenVpnNodeImpl extends NodeBase implements OpenVpnNode
         } catch ( Exception exn ) {
             logger.error( "Could not save VPN settings", exn );
         }
-        if ( this.settings.getServerEnabled() ) 
-            this.openVpnMonitor.enable();
-        else
-            this.openVpnMonitor.disable();
-        
     }
 
     private void sanitizeSettings( OpenVpnSettings newSettings )

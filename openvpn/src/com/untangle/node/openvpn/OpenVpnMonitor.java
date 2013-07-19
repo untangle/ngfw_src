@@ -8,6 +8,8 @@ import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
+import java.io.File;
+import java.io.FileReader;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.net.SocketException;
@@ -105,7 +107,8 @@ class OpenVpnMonitor implements Runnable
             }
 
             /* Check if the node is still running */
-            if ( !isAlive ) break;
+            if ( !isAlive )
+                break;
 
             /* Only log when enabled */
             if ( !isEnabled ) {
@@ -124,7 +127,7 @@ class OpenVpnMonitor implements Runnable
                     boolean killUndef = now.after( nextUpdate );
                     updateServerStatus( killUndef );
                 } catch (java.net.ConnectException e) {
-                    logger.info( "Unable to connect to OpenVPN - trying again in " + SLEEP_TIME_MSEC + " ms.");
+                    logger.debug( "Unable to connect to OpenVPN - trying again in " + SLEEP_TIME_MSEC + " ms.");
                 } catch ( Exception e ) {
                     logger.info( "Error updating status", e );
                 }
@@ -134,8 +137,14 @@ class OpenVpnMonitor implements Runnable
                 }
             }
 
+            /**
+             * Check that all necessary clients are running
+             */
+            checkRemoteServerProcesses();
+                
             /* Check if the node is still running */
-            if ( !isAlive ) break;
+            if ( !isAlive )
+                break;
         }
 
         /* Flush out all of the log events that are remaining */
@@ -425,6 +434,48 @@ class OpenVpnMonitor implements Runnable
 
         /* Read out the response, ignore it */
         in.readLine();
+    }
+
+    /**
+     * Checks that all enabled remote servers have a running OpenVpn process
+     * If one is missing it restarts it
+     */
+    private void checkRemoteServerProcesses()
+    {
+        for ( OpenVpnRemoteServer server : node.getSettings().getRemoteServers() ) {
+            if ( ! server.getEnabled() )
+                continue;
+
+            try {
+                File pidFile = new File("/var/run/openvpn." + server.getName() + ".pid");
+                if (! pidFile.exists() )
+                    continue;
+
+                BufferedReader reader = new BufferedReader(new FileReader(pidFile));
+                String currentLine;
+                String contents = "";
+                while((currentLine = reader.readLine()) != null) {
+                    contents += currentLine;
+                }
+
+                int pid;
+                try {
+                    pid = Integer.parseInt(contents);
+                } catch ( Exception e ) {
+                    logger.warn("Unable to parse pid file: " + contents);
+                    continue;
+                }
+
+                File procFile = new File("/proc/" + pid);
+                if ( ! procFile.exists() ) {
+                    logger.warn("OpenVpn process for " + server.getName() + " (" + pid + ") missing. Restarting...");
+                    UvmContextFactory.context().execManager().exec( "/etc/init.d/openvpn restart " + server.getName() );
+                }
+
+            } catch ( Exception e ) {
+                logger.warn("Failed to check openvpn pid file.", e);
+            }
+        }
     }
 }
 
