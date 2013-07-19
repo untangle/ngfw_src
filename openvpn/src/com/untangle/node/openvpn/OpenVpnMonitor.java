@@ -141,6 +141,7 @@ class OpenVpnMonitor implements Runnable
              * Check that all necessary clients are running
              */
             checkRemoteServerProcesses();
+            checkServerProcess();
                 
             /* Check if the node is still running */
             if ( !isAlive )
@@ -477,6 +478,46 @@ class OpenVpnMonitor implements Runnable
             }
         }
     }
+
+    /**
+     * Checks that all enabled remote servers have a running OpenVpn process
+     * If one is missing it restarts it
+     */
+    private void checkServerProcess()
+    {
+        if ( ! this.node.getSettings().getServerEnabled() )
+            return;
+
+        try {
+            File pidFile = new File("/var/run/openvpn.server.pid");
+            if (! pidFile.exists() )
+                return;
+
+            BufferedReader reader = new BufferedReader(new FileReader(pidFile));
+            String currentLine;
+            String contents = "";
+            while((currentLine = reader.readLine()) != null) {
+                contents += currentLine;
+            }
+
+            int pid;
+            try {
+                pid = Integer.parseInt(contents);
+            } catch ( Exception e ) {
+                logger.warn("Unable to parse pid file: " + contents);
+                return;
+            }
+
+            File procFile = new File("/proc/" + pid);
+            if ( ! procFile.exists() ) {
+                logger.warn("OpenVpn server process (" + pid + ") missing. Restarting...");
+                UvmContextFactory.context().execManager().exec( "/etc/init.d/openvpn restart server" );
+            }
+        } catch ( Exception e ) {
+            logger.warn("Failed to check openvpn pid file.", e);
+        }
+    }
+
 }
 
 class Key
