@@ -112,6 +112,9 @@ public class SystemManagerImpl implements SystemManager
                 logger.warn("No hostname is configured");
             } else {
                 primaryAddressStr = UvmContextFactory.context().networkManager().getNetworkSettings().getHostName();
+                String domainName = UvmContextFactory.context().networkManager().getNetworkSettings().getDomainName();
+                if ( domainName != null )
+                    primaryAddressStr = primaryAddressStr + "." + domainName;
             }
         } else if ( SystemSettings.PUBLIC_URL_ADDRESS_AND_PORT.equals( this.settings.getPublicUrlMethod() ) ) {
             if ( this.settings.getPublicUrlAddress() == null ) {
