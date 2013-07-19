@@ -318,7 +318,7 @@ public class OpenVpnManager
         NetworkSettings networkSettings = UvmContextFactory.context().networkManager().getNetworkSettings();
         for ( InterfaceSettings interfaceSettings : networkSettings.getInterfaces() ) {
             if ( interfaceSettings.getIsWan() && interfaceSettings.getV4ConfigType() == InterfaceSettings.V4ConfigType.STATIC )
-                sb.append( "remote" + " " + interfaceSettings.getV4StaticAddress().getHostAddress() + " " + settings.getPort() + " # static WAN " + interfaceSettings.getInterfaceId());
+                sb.append( "remote" + " " + interfaceSettings.getV4StaticAddress().getHostAddress() + " " + settings.getPort() + " # static WAN " + interfaceSettings.getInterfaceId() + "\n");
         }
         
         File dir = new File( CLIENT_CONF_FILE_DIR );
