@@ -1,3 +1,0 @@
-#!/bin/dash
-
-killall -HUP openvpn 2>/dev/null

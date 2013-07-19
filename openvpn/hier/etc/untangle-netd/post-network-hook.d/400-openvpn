@@ -1,0 +1,9 @@
+#!/bin/dash
+
+# If openvpn is running - restart it
+if [ ! -z "`pidof openvpn`" ] ; then
+    /etc/init.d/openvpn restart
+fi
+
+# HUP doesnt seem to work - openvpn dies on startup
+# killall -HUP openvpn 2>/dev/null
