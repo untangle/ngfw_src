@@ -275,11 +275,12 @@ class NetworkTests(unittest2.TestCase):
         return "Untangle"
 
     def setUp(self):
-        global node, nodeFW, orig_netsettings, utBridged
+        global node, nodeFW, orig_netsettings, utBridged, externalClientResult
         orig_netsettings = uvmContext.networkManager().getNetworkSettings()
         # print "orig_netsettings <%s>" % orig_netsettings
         utBridged = isBridgeMode(ClientControl.hostIP)
         clientControl.runCommand("kill $(ps aux | grep SimpleHTTPServer | grep -v grep | awk '{print $2}') 2>/dev/null")
+        externalClientResult = subprocess.call(["ping","-c","1",adHost],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
         
     def test_010_clientIsOnline(self):
         result = clientControl.runCommand("wget -4 -t 2 --timeout=5 -o /dev/null http://test.untangle.com/")
@@ -314,6 +315,8 @@ class NetworkTests(unittest2.TestCase):
         # print "netstatResult <%s>" % netstatResult
         if (netstatResult == 0):
             raise unittest2.SkipTest("No web server running on client, skipping port 80 forwarding test")
+        if (externalClientResult == 0):
+            raise unittest2.SkipTest("External test client unreachable, skipping port 80 forwarding test")
         clientControl.runCommand("rm -f /tmp/network_test_030*")
         netsettings = uvmContext.networkManager().getNetworkSettings()
         wan_IP = uvmContext.networkManager().getFirstWanAddress()
@@ -339,6 +342,8 @@ class NetworkTests(unittest2.TestCase):
         # print "netstatResult <%s>" % netstatResult
         if (netstatResult == 0):
             raise unittest2.SkipTest("No ssl web server running on client, skipping port 443 forwarding test")
+        if (externalClientResult == 0):
+            raise unittest2.SkipTest("External test client unreachable, skipping port 443 forwarding test")
         nukeFWRules()            
         clientControl.runCommand("rm -f /tmp/network_test_040*")
         netsettings = uvmContext.networkManager().getNetworkSettings()
@@ -367,6 +372,8 @@ class NetworkTests(unittest2.TestCase):
         assert (search == 0)
 
     def test_050_portForwardAlt(self):
+        if (externalClientResult == 0):
+            raise unittest2.SkipTest("External test client unreachable, skipping alternate port forwarding test")
         clientControl.runCommand("rm -f /tmp/network_test_050*")
         # port forward to a different port that the incoming port.
         netsettings = uvmContext.networkManager().getNetworkSettings()
