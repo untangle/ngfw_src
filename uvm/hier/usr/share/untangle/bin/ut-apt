@@ -98,9 +98,9 @@ class DevApt:
     @staticmethod
     def each_pkg_list_line():
         lines = []
-        for filename in os.listdir('/tmp/'):
+        for filename in os.listdir(PREFIX + '/var/run/'):
             if "pkg-list" in filename:
-                f = open('/tmp/' + filename)
+                f = open(PREFIX + '/var/run/' + filename)
                 for line in f:
                     lines.append(line)
         return lines
