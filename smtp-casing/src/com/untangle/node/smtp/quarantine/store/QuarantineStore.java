@@ -242,7 +242,10 @@ public class QuarantineStore
             return new Pair<AdditionStatus, String>(AdditionStatus.FAILURE);
         }
 
-        m_masterTable.mailAdded(inboxAddr, size);
+        if (!m_masterTable.mailAdded(inboxAddr, size)){
+            m_masterTable = MasterTable.rebuild(m_rootDir.getAbsolutePath(), m_dirTracker);
+            m_masterTable.mailAdded(inboxAddr, size);
+        }
         m_addressLock.unlock(inboxAddr);
         return new Pair<AdditionStatus, String>(renamedFile ? AdditionStatus.SUCCESS_FILE_RENAMED
                 : AdditionStatus.SUCCESS_FILE_COPIED, newFileName);
@@ -495,7 +498,11 @@ public class QuarantineStore
                         + "\" did not delete file (?!?).  Force delete.");
                 file.delete();
             }
-            m_masterTable.mailRemoved(address, record.getSize());
+            
+            if (!m_masterTable.mailRemoved(address, record.getSize())){
+                m_masterTable = MasterTable.rebuild(m_rootDir.getAbsolutePath(), m_dirTracker);
+                m_masterTable.mailRemoved(address, record.getSize());
+            }
         }
 
         return new Pair<GenericStatus, InboxIndexImpl>(GenericStatus.SUCCESS, inboxIndex);
