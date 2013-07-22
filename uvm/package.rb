@@ -82,7 +82,7 @@ BuildEnv::SRC.installTarget.install_dirs("#{uvm_lib.distDirectory}/usr/share/unt
 
 if BuildEnv::SRC.isDevel
   # create the package list for fake ut-apt
-  BuildEnv::SRC.installTarget.install_files("./debian/control", "/tmp/", 'pkg-list-main')
+  BuildEnv::SRC.installTarget.install_files("./debian/control", "#{uvm_lib.distDirectory}/var/run/", 'pkg-list-main')
 
   uidFile = "#{uvm_lib.distDirectory}/usr/share/untangle/conf/uid"
   ## Create all-zeros UID file to signal non-production install.
