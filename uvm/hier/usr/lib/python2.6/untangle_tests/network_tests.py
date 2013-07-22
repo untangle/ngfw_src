@@ -325,8 +325,8 @@ class NetworkTests(unittest2.TestCase):
         clientControl.hostIP = external_client
         result = clientControl.runCommand("wget -a /tmp/network_test_030a.log -O /tmp/network_test_030a.out -t 1 \'http://" + wan_IP + "\'" ,True)
         search = clientControl.runCommand("grep -q 'It works' /tmp/network_test_030a.out")  # check for default apache web page
-        assert (search == 0)
         clientControl.hostIP = tmp_hostIP
+        assert (search == 0)
         # check if hairpin works only on non bridge setups
         if not utBridged:
             result = clientControl.runCommand("wget -a /tmp/network_test_030b.log -O /tmp/network_test_030b.out -t 1 \'http://" + wan_IP + "\'" ,True)
@@ -353,8 +353,8 @@ class NetworkTests(unittest2.TestCase):
         ClientControl.hostIP = external_client
         result = clientControl.runCommand("wget --no-check-certificate  -a /tmp/network_test_040a.log -O /tmp/network_test_040a.out -t 1 \'https://" + wan_IP + "\'" ,True)
         search = clientControl.runCommand("grep -q 'It works' /tmp/network_test_040a.out")  # check for default apache web page
-        assert (search == 0)
         ClientControl.hostIP = tmp_hostIP
+        assert (search == 0)
         clientControl.runCommand("rm -f /tmp/network_test_040*")
         # check if hairpin works
         result = clientControl.runCommand("wget --no-check-certificate  -a /tmp/network_test_040b.log -O /tmp/network_test_040b.out -t 1 \'https://" + wan_IP + "\'" ,True)
@@ -383,8 +383,8 @@ class NetworkTests(unittest2.TestCase):
         clientControl.runCommand("rm -f /tmp/network_test_050*")
         result = clientControl.runCommand("wget -a /tmp/network_test_050a.log -O /tmp/network_test_050a.out -t 4 -T 20 \'http://" + wan_IP + "\'" ,True)
         search = clientControl.runCommand("grep -q 'Directory listing' /tmp/network_test_050a.out")  
-        assert (search == 0)
         ClientControl.hostIP = tmp_hostIP
+        assert (search == 0)
 
         # check if hairpin works
         # hairpin is not a valid test if on port 80 and in bridge mode
