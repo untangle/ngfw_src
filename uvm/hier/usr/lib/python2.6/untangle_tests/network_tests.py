@@ -223,8 +223,8 @@ def isBridgeMode(clientIPAdress):
                 wanRange = wanIP + '/' + wanNetSize
                 wanNet = ipaddr.IPNetwork(wanRange)
                 wanAddr = ipaddr.IPAddress(clientIPAdress)
-            elif (interface['v4ConfigType'] == 'AUTO'):
-                # is this a dynamic IP
+            elif (interface['v4ConfigType'] in ['AUTO','PPPOE']):
+                # is this a dynamic IP w/o PPPOE
                 nicDevice = str(interface['symbolicDev'])
                 systemProperties = system_props.SystemProperties()
                 wanIP = systemProperties.get_ip_address(nicDevice)
@@ -326,13 +326,13 @@ class NetworkTests(unittest2.TestCase):
         tmp_hostIP = clientControl.hostIP
         # switch client to external box
         clientControl.hostIP = external_client
-        result = clientControl.runCommand("wget -a /tmp/network_test_030a.log -O /tmp/network_test_030a.out -t 1 \'http://" + wan_IP + "\'" ,True)
+        result = clientControl.runCommand("wget -a /tmp/network_test_030a.log -O /tmp/network_test_030a.out -t 1 --timeout=3 \'http://" + wan_IP + "\'" ,True)
         search = clientControl.runCommand("grep -q 'It works' /tmp/network_test_030a.out")  # check for default apache web page
         clientControl.hostIP = tmp_hostIP
         assert (search == 0)
         # check if hairpin works only on non bridge setups
         if not utBridged:
-            result = clientControl.runCommand("wget -a /tmp/network_test_030b.log -O /tmp/network_test_030b.out -t 1 \'http://" + wan_IP + "\'" ,True)
+            result = clientControl.runCommand("wget -a /tmp/network_test_030b.log -O /tmp/network_test_030b.out -t 1 --timeout=3 \'http://" + wan_IP + "\'" ,True)
             search = clientControl.runCommand("grep -q 'It works' /tmp/network_test_030b.out")  # check for default apache web page
             assert (search == 0)
         uvmContext.networkManager().setNetworkSettings(orig_netsettings)

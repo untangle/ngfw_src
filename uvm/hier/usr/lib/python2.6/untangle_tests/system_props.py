@@ -56,7 +56,7 @@ class SystemProperties():
                         return testIP
                     else:
                         pass
-                elif (intf['v4ConfigType'] == 'AUTO'):
+                elif (intf['v4ConfigType'] in ['AUTO','PPPOE']):
                     # is this a dynamic IP
                     nicDevice = str(intf['symbolicDev'])
                     testIP = self.get_ip_address(nicDevice)
