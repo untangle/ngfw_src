@@ -620,8 +620,13 @@ public class NetworkManagerImpl implements NetworkManager
         logger.info("reconfigure()");
     }
 
-    private void sanityCheckNetworkSettings( NetworkSettings networkSettings)
+    private void sanityCheckNetworkSettings( NetworkSettings networkSettings )
     {
+        for ( InterfaceSettings intf : networkSettings.getInterfaces() ) {
+            if (intf.getV4ConfigType() == null)
+                throw new RuntimeException("Missing V4 Config Type");
+        }
+
         /**
          * Check that no two statically configured interfaces have the same masked address.
          * For example, don't let people put 192.168.1.100/24 on external and 192.168.1.101/24 on internal
@@ -662,7 +667,7 @@ public class NetworkManagerImpl implements NetworkManager
 
     }
 
-    private void sanitizeNetworkSettings( NetworkSettings networkSettings)
+    private void sanitizeNetworkSettings( NetworkSettings networkSettings )
     {
         /**
          * Fix rule IDs
@@ -784,7 +789,7 @@ public class NetworkManagerImpl implements NetworkManager
         
     }
 
-    private void sanitizeInterfaceSettings( InterfaceSettings interfaceSettings)
+    private void sanitizeInterfaceSettings( InterfaceSettings interfaceSettings )
     {
         /**
          * If DHCP settings are enabled, but settings arent picked, fill in reasonable defaults

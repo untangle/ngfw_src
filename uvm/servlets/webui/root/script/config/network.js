@@ -872,10 +872,6 @@ if (!Ung.hasResource["Ung.Network"]) {
                         allowBlank: false
                     }
                 }],
-                valueWhenHidden: {
-                    javaClass: "java.util.LinkedList",
-                    list: []
-                },
                 setValue: function (value) {
                     var data = [];
                     if(value !== null && value.list !== null) {
@@ -930,10 +926,6 @@ if (!Ung.hasResource["Ung.Network"]) {
                         allowBlank: false
                     }
                 }],
-                valueWhenHidden: {
-                    javaClass: "java.util.LinkedList",
-                    list: []
-                },
                 setValue: function (value) {
                     var data = [];
                     if(value!==null && value.list!==null) {
@@ -997,10 +989,6 @@ if (!Ung.hasResource["Ung.Network"]) {
                         allowBlank: false
                     }
                 }],
-                valueWhenHidden: {
-                    javaClass: "java.util.LinkedList",
-                    list: []
-                },
                 setValue: function (value) {
                     var data = [];
                     if( value && value.list ) {
@@ -1098,7 +1086,6 @@ if (!Ung.hasResource["Ung.Network"]) {
                             dataIndex: "v4ConfigType",
                             fieldLabel: this.i18n._("Config Type"),
                             allowBlank: false,
-                            valueWhenHidden: null,
                             editable: false,
                             store: [ ["AUTO", this.i18n._('Auto (DHCP)')], ["STATIC", this.i18n._('Static')],  ["PPPOE", this.i18n._('PPPoE')]],
                             queryMode: 'local',
@@ -1114,7 +1101,6 @@ if (!Ung.hasResource["Ung.Network"]) {
                             dataIndex: "v4StaticAddress",
                             fieldLabel: this.i18n._("Address"),
                             allowBlank: false,
-                            valueWhenHidden: "",
                             vtype: "ip4Address"
                         }, {
                             xtype: "combo",
@@ -1123,27 +1109,23 @@ if (!Ung.hasResource["Ung.Network"]) {
                             store: Ung.Util.getV4NetmaskList( false ),
                             queryMode: 'local',
                             allowBlank: false,
-                            valueWhenHidden: null,
                             editable: false
                         }, {
                             xtype:'textfield',
                             dataIndex: "v4StaticGateway",
                             fieldLabel: this.i18n._("Gateway"),
                             allowBlank: false,
-                            valueWhenHidden: "",
                             vtype: "ip4Address"
                         }, {
                             xtype:'textfield',
                             dataIndex: "v4StaticDns1",
                             fieldLabel: this.i18n._("Primary DNS"),
                             allowBlank: false,
-                            valueWhenHidden: "",
                             vtype: "ip4Address"
                         }, {
                             xtype:'textfield',
                             dataIndex: "v4StaticDns2",
                             fieldLabel: this.i18n._("Secondary DNS"),
-                            valueWhenHidden: "",
                             vtype: "ip4Address"
                         }, {
                             xtype: 'container',
@@ -1155,7 +1137,6 @@ if (!Ung.hasResource["Ung.Network"]) {
                                 xtype:'textfield',
                                 dataIndex: "v4AutoAddressOverride",
                                 fieldLabel: this.i18n._("Address Override"),
-                                valueWhenHidden: "",
                                 vtype: "ip4Address",
                                 labelWidth: 150,
                                 width: 350
@@ -1182,7 +1163,6 @@ if (!Ung.hasResource["Ung.Network"]) {
                                 xtype: "combo",
                                 dataIndex: "v4AutoPrefixOverride",
                                 fieldLabel: this.i18n._("Netmask Override"),
-                                valueWhenHidden: null,
                                 store: Ung.Util.getV4NetmaskList( true ),
                                 queryMode: 'local',
                                 editable: false,
@@ -1212,7 +1192,6 @@ if (!Ung.hasResource["Ung.Network"]) {
                                 xtype:'textfield',
                                 dataIndex: "v4AutoGatewayOverride",
                                 fieldLabel: this.i18n._("Gateway Override"),
-                                valueWhenHidden: "",
                                 vtype: "ip4Address",
                                 labelWidth: 150,
                                 width: 350
@@ -1239,7 +1218,6 @@ if (!Ung.hasResource["Ung.Network"]) {
                                 xtype:'textfield',
                                 dataIndex: "v4AutoDns1Override",
                                 fieldLabel: this.i18n._("Primary DNS Override"),
-                                valueWhenHidden: "",
                                 vtype: "ip4Address",
                                 labelWidth: 150,
                                 width: 350
@@ -1266,7 +1244,6 @@ if (!Ung.hasResource["Ung.Network"]) {
                                 xtype:'textfield',
                                 dataIndex: "v4AutoDns2Override",
                                 fieldLabel: this.i18n._("Secondary DNS Override"),
-                                valueWhenHidden: "",
                                 vtype: "ip4Address",
                                 labelWidth: 150,
                                 width: 350
@@ -1286,20 +1263,17 @@ if (!Ung.hasResource["Ung.Network"]) {
                         }, {
                             xtype:'textfield',
                             dataIndex: "v4PPPoEUsername",
-                            valueWhenHidden: "",
                             fieldLabel: this.i18n._("Username"),
                             width: 350
                         }, {
                             xtype:'textfield',
                             inputType:'password',
                             dataIndex: "v4PPPoEPassword",
-                            valueWhenHidden: "",
                             fieldLabel: this.i18n._("Password"),
                             width: 350
                         }, {
                             xtype:'checkbox',
                             dataIndex: "v4PPPoEUsePeerDns",
-                            valueWhenHidden: false,
                             fieldLabel: this.i18n._("Use Peer DNS"),
                             listeners: {
                                 "change": {
@@ -1312,14 +1286,12 @@ if (!Ung.hasResource["Ung.Network"]) {
                             xtype:'textfield',
                             dataIndex: "v4PPPoEDns1",
                             fieldLabel: this.i18n._("Primary DNS"),
-                            valueWhenHidden: "",
                             vtype: "ip4Address",
                             width: 350
                         }, {
                             xtype:'textfield',
                             dataIndex: "v4PPPoEDns2",
                             fieldLabel: this.i18n._("Secondary DNS"),
-                            valueWhenHidden: "",
                             vtype: "ip4Address",
                             width: 350
                         }]
@@ -1355,7 +1327,6 @@ if (!Ung.hasResource["Ung.Network"]) {
                         xtype: "combo",
                         dataIndex: "v6ConfigType",
                         allowBlank: false,
-                        valueWhenHidden: null,
                         fieldLabel: this.i18n._("Config Type"),
                         editable: false,
                         store: [ ["DISABLED", this.i18n._('Disabled')], ["AUTO", this.i18n._('Auto (SLAAC/RA)')], ["STATIC", this.i18n._('Static')] ],
@@ -1372,35 +1343,30 @@ if (!Ung.hasResource["Ung.Network"]) {
                         xtype:'textfield',
                         dataIndex: "v6StaticAddress",
                         fieldLabel: this.i18n._("Address"),
-                        valueWhenHidden: "",
                         vtype: "ip6Address",
                         width: 450
                     }, {
                         xtype:'textfield',
                         dataIndex: "v6StaticPrefixLength",
                         fieldLabel: this.i18n._("Prefix Length"),
-                        valueWhenHidden: "",
                         width: 200
                     }, {
                         xtype:'textfield',
                         dataIndex: "v6StaticGateway",
                         fieldLabel: this.i18n._("Gateway"),
                         vtype: "ip6Address",
-                        valueWhenHidden: "",
                         width: 350
                     }, {
                         xtype:'textfield',
                         dataIndex: "v6StaticDns1",
                         fieldLabel: this.i18n._("Primary DNS"),
                         vtype: "ip6Address",
-                        valueWhenHidden: "",
                         width: 350
                     }, {
                         xtype:'textfield',
                         dataIndex: "v6StaticDns2",
                         fieldLabel: this.i18n._("Secondary DNS"),
                         vtype: "ip6Address",
-                        valueWhenHidden: "",
                         width: 350
                     }, {
                         xtype: 'fieldset',
@@ -1414,7 +1380,6 @@ if (!Ung.hasResource["Ung.Network"]) {
                         items: [{
                             xtype:'checkbox',
                             dataIndex: "raEnabled",
-                            valueWhenHidden: false,
                             boxLabel: this.i18n._("Send Router Advertisements"),
                             labelWidth: 150,
                             width: 350
@@ -1439,13 +1404,11 @@ if (!Ung.hasResource["Ung.Network"]) {
                         xtype:'checkbox',
                         dataIndex: "dhcpEnabled",
                         boxLabel: this.i18n._("Enable DHCP Serving"),
-                        valueWhenHidden: false,
                         noHide: true
                     }, {
                         xtype: 'textfield',
                         dataIndex: "dhcpRangeStart",
                         fieldLabel: this.i18n._("Range Start"),
-                        valueWhenHidden: "",
                         noHide: true,
                         vtype: "ip4Address",
                         width: 350
@@ -1453,7 +1416,6 @@ if (!Ung.hasResource["Ung.Network"]) {
                         xtype:'textfield',
                         dataIndex: "dhcpRangeEnd",
                         fieldLabel: this.i18n._("Range End"),
-                        valueWhenHidden: "",
                         noHide: true,
                         vtype: "ip4Address",
                         width: 350
@@ -1465,7 +1427,6 @@ if (!Ung.hasResource["Ung.Network"]) {
                             xtype: 'textfield',
                             dataIndex: "dhcpLeaseDuration",
                             fieldLabel: this.i18n._("Lease Duration"),
-                            valueWhenHidden: "",
                             noHide: true,
                             labelWidth: 150,
                             width: 350
@@ -1487,7 +1448,6 @@ if (!Ung.hasResource["Ung.Network"]) {
                             xtype:'textfield',
                             dataIndex: "dhcpGatewayOverride",
                             fieldLabel: this.i18n._("Gateway Override"),
-                            valueWhenHidden: "",
                             noHide: true,
                             vtype: "ip4Address",
                             width: 350
@@ -1495,7 +1455,6 @@ if (!Ung.hasResource["Ung.Network"]) {
                             xtype: "combo",
                             dataIndex: "dhcpPrefixOverride",
                             fieldLabel: this.i18n._("Netmask Override"),
-                            valueWhenHidden: null,
                             noHide: true,
                             store: Ung.Util.getV4NetmaskList( true ),
                             queryMode: 'local',
@@ -1505,7 +1464,6 @@ if (!Ung.hasResource["Ung.Network"]) {
                             xtype:'textfield',
                             dataIndex: "dhcpDnsOverride",
                             fieldLabel: this.i18n._("DNS Override"),
-                            valueWhenHidden: "",
                             noHide: true,
                             vtype: "ip4Address",
                             width: 350
@@ -1519,7 +1477,6 @@ if (!Ung.hasResource["Ung.Network"]) {
                     xtype: "combo",
                     allowBlank: false,
                     dataIndex: "bridgedTo",
-                    valueWhenHidden: null,
                     fieldLabel: this.i18n._("Bridged To"),
                     store: Ung.Util.getInterfaceAddressedList(),
                     width: 300,
@@ -1527,6 +1484,9 @@ if (!Ung.hasResource["Ung.Network"]) {
                     editable: false
                 }],
                 syncComponents: function() {
+                    var property;
+                    var cmp;
+                    
                     startTime=(new Date()).getTime();
                     if(!this.cmps) {
                         this.cmps = {
@@ -1583,18 +1543,17 @@ if (!Ung.hasResource["Ung.Network"]) {
                             dhcpOptions: this.query('grid[dataIndex="dhcpOptions"]')[0],
                             
                             bridgedTo: this.query('combo[dataIndex="bridgedTo"]')[0]
-    
                             
                         };
                         this.configType=this.query('combo[dataIndex="configType"]')[0];
-                        for(var property in this.cmps) {
-                            var cmp = this.cmps[property];
+                        for( property in this.cmps ) {
+                            cmp = this.cmps[property];
                             if(!cmp.noHide) {
                                 this.cmps[property].setVisible(false);    
                             }
                         }
                     }
-                    for(var property in this.cmps) {
+                    for( property in this.cmps ) {
                         this.cmps[property].status=false;
                     }
                     /*
@@ -1702,8 +1661,7 @@ if (!Ung.hasResource["Ung.Network"]) {
                             this.cmps.v6Config.collapse();
                         }
                     }
-                    var cmp;
-                    for(var property in this.cmps) {
+                    for( property in this.cmps ) {
                         cmp = this.cmps[property];
                         if(!cmp.noHide && cmp.isHidden() === cmp.status) {
                             cmp.setVisible(cmp.status);
@@ -1712,8 +1670,7 @@ if (!Ung.hasResource["Ung.Network"]) {
                         if(cmp.status && cmp.isDisabled()) {
                             cmp.enable();
                             console.log("syncComponents enable: ",cmp.name, cmp.dataIndex, (new Date()).getTime()-startTime);
-
-                        };
+                        }
                     }
                     console.log("syncComponents end", (new Date()).getTime()-startTime);
                 },
@@ -1743,7 +1700,7 @@ if (!Ung.hasResource["Ung.Network"]) {
                     //many fields must be set empty when not displayed
                     for(var property in this.cmps) {
                         var cmp=this.cmps[property];
-                        if(!cmp.status){
+                        if(!cmp.status) {
                             if(cmp.allowBlank === false) {
                                 cmp.disable();
                                 console.log("updateAction disable", cmp.dataIndex, (new Date()).getTime()-startTime);
@@ -1751,9 +1708,8 @@ if (!Ung.hasResource["Ung.Network"]) {
                             if(cmp.valueWhenHidden !== undefined) {
                                 cmp.setValue(cmp.valueWhenHidden);
                                 console.log("updateAction valueWhenHidden", cmp.dataIndex, cmp.valueWhenHidden, (new Date()).getTime()-startTime);
-
                             }
-                        };
+                        }
                     }
                     console.log("updateAction start", (new Date()).getTime()-startTime);
                     if(Ung.RowEditorWindow.prototype.updateAction.apply(this, arguments)) {
