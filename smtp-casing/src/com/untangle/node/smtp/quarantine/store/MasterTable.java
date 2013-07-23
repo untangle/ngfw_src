@@ -50,7 +50,7 @@ final class MasterTable
 
         StoreSummary summary = QuarantineStorageManager.readSummary(rootDir);
 
-        boolean needRebuild = (summary == null);
+        boolean needRebuild = (summary == null || summary.getTotalSz() == 0);
 
         if (needRebuild) {
             RebuildingVisitor visitor = new RebuildingVisitor();
