@@ -108,25 +108,7 @@ static int  _netcap_tcp_setsockopt_srv ( int sock )
         .mark = MARK_BYPASS
     };
     
-    if ( IP_TRANSPARENT_VALUE() != 0 ) {
-        if (setsockopt(sock, SOL_IP, IP_TRANSPARENT_VALUE(), &one, sizeof(one) )<0) 
-            perrlog("setsockopt");
-    }
-    /**
-     * We set the TOS only because of IPsec/IP_NONLOCAL issues
-     * IP_NONLOCAL needs a complete rewrite.
-     * It seems that IPsec-bound TCP sessions have a hard time nonlocally binding sometimes
-     * I suspect this is is related to a bug in the IP_NONLOCAL hack (probably the use of sk_reuse)
-     * This is a hack that seems to fix nonlocal binding
-     * tos value must be certain values (0x04 <= x < 0x20)
-     *
-     * More discussion in bug #11095
-     */
-    //int tos    = 0x04;
-    //if (setsockopt(sock,SOL_IP,IP_TOS,&tos,sizeof(tos))<0) 
-    //    perrlog("setsockopt");
-
-    if (setsockopt(sock,SOL_IP,IP_NONLOCAL_VALUE(),&one,sizeof(one))<0) 
+    if (setsockopt(sock, SOL_IP, IP_TRANSPARENT_VALUE(), &one, sizeof(one) )<0) 
         perrlog("setsockopt");
     if (setsockopt(sock,SOL_TCP,TCP_NODELAY,&one,sizeof(one))<0) 
         perrlog("setsockopt");

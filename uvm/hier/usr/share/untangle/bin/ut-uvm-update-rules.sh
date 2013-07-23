@@ -111,6 +111,14 @@ insert_iptables_rules()
     # Queue all of the UDP packets.
     ${IPTABLES} -A queue-to-uvm -t tune -m addrtype --dst-type unicast -p udp -j NFQUEUE -m comment --comment 'Queue Unicast UDP packets to the untange-vm'
 
+    # Redirect packets destined to non-local sockets to local
+    ${IPTABLES} -A PREROUTING -t mangle -p tcp -m socket -j MARK --set-mark 0xFB00/0xFF00 -m comment --comment "route traffic to non-locally bound sockets to local"
+
+    # Route traffic tagged by previous rule to local
+    ip rule del priority 100 >/dev/null 2>&1
+    ip rule add priority 100 fwmark 0xFB00/0xFF00 lookup 100
+    ip route add local 0.0.0.0/0 dev lo table 100 >/dev/null 2>&1 # ignore error if exists
+
     # Unfortunately we have to give utun an address or the reinjection does not work
     # Use a bogus address
     ifconfig ${TUN_DEV} ${TUN_ADDR} netmask 255.255.255.0 
@@ -132,6 +140,9 @@ remove_iptables_rules()
     ${IPTABLES} -D OUTPUT -t raw -m mark --mark ${MASK_BYPASS}/${MASK_BYPASS} -j NOTRACK -m comment --comment 'NOTRACK packets with bypass bit mark set' >/dev/null 2>&1
     ${IPTABLES} -D PREROUTING -t nat -i ${TUN_DEV} -p tcp -g uvm-tcp-redirect -m comment --comment 'Redirect utun traffic to untangle-vm' >/dev/null 2>&1
     ${IPTABLES} -D POSTROUTING -t tune -j queue-to-uvm -m comment --comment 'Queue packets to the Untangle-VM' >/dev/null 2>&1
+    ${IPTABLES} -D PREROUTING -t mangle -p tcp -m socket -j MARK --set-mark 0xFB00/0xFF00 -m comment --comment "route traffic to non-locally bound sockets to local" >/dev/null 2>&1
+
+    ip rule del priority 100 >/dev/null 2>&1
 }
 
 rules_already_present()

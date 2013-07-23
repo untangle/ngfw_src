@@ -33,11 +33,6 @@
 int IP_TRANSPARENT_VALUE ( );
 
 /**
- * Returns IP_NONLOCAL constant (varies by kernel version)
- */
-int IP_NONLOCAL_VALUE ( );
-
-/**
  * Returns IP_SADDR constant (varies by kernel version)
  */
 int IP_SADDR_VALUE ( );

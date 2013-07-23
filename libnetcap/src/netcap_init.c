@@ -1,19 +1,5 @@
-/*
- * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License, version 2,
- * as published by the Free Software Foundation.
- *
- * This program is distributed in the hope that it will be useful, but
- * AS-IS and WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE, TITLE, or
- * NONINFRINGEMENT.  See the GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
+/**
+ * $Id$
  */
 #include "netcap_init.h"
 
@@ -66,8 +52,7 @@ static struct {
 static int _netcap_init();
 static int _tls_init   ( void* buf, size_t size );
 
-static int ip_transparent = 0;
-static int ip_nonlocal = 21; 
+static int ip_transparent = 19;
 static int ip_saddr = 22; 
 static int ip_recvnfmark = 23;
 static int ip_sendnfmark = 24;
@@ -114,7 +99,6 @@ static int _netcap_init()
     }
     else if ( strstr(utsn.release,"2.6.32") != NULL) {
         ip_transparent = 19;
-        ip_nonlocal = 21;
         ip_saddr = 22;
         ip_recvnfmark = 23;
         ip_sendnfmark = 24;
@@ -123,7 +107,6 @@ static int _netcap_init()
     else {
         /* unknown kernel */ 
         ip_transparent = 19;
-        ip_nonlocal = 21;
         ip_saddr = 22;
         ip_recvnfmark = 23;
         ip_sendnfmark = 24;
@@ -240,11 +223,6 @@ netcap_tls_t* netcap_tls_get( void )
 int IP_TRANSPARENT_VALUE ( )
 {
     return ip_transparent;
-}
-
-int IP_NONLOCAL_VALUE ( )
-{
-    return ip_nonlocal;
 }
 
 int IP_SADDR_VALUE ( )
