@@ -179,18 +179,21 @@ Ext.define('Ung.Reports', {
     },
     startApplicationPrintView: function() {
         Ext.get("base").setStyle("width", "740px");
+        Ext.get("base").setStyle("overflow", "visible");
         var panel = Ext.create('Ext.panel.Panel',{
             renderTo: 'base',
             cls: "base-container",
             id: 'report-details-container',
             width:740,
-            autoScroll: true,
+            style:{overflow:'visible'},
+            bodyStyle:'overflow:visible',
             items: [{
                     xtype:'panel',
+                    style:{overflow:'visible'},
+                    bodyStyle:'overflow:visible',
                     title: 'Report Details&nbsp;<span id="breadcrumbs" class="breadcrumbs"></span>',
                     id: 'report-details',
                     region:'center',
-                    autoScroll: true,
                     collapsible: false,
                     split: false,
                     margin: '2 2 0 2',
@@ -896,7 +899,7 @@ Ext.define('Ung.ReportDetails', {
             stripeRows: true,
             hideHeaders: true,
             enableColumnHide: false,
-            enableColumnMove: false
+            enableColumnMove: false,
         });
     },
 
@@ -1003,19 +1006,22 @@ Ext.define('Ung.ReportDetails', {
         }
         document.getElementById("breadcrumbs").innerHTML='<span class="icon-breadcrumbs-separator">&nbsp;&nbsp;&nbsp;&nbsp;</span>'+breadcrumbArr.join('<span class="icon-breadcrumbs-separator">&nbsp;&nbsp;&nbsp;&nbsp;</span>');
         if (itemsArray && itemsArray.length > 0) {
-            this.tabPanel= Ext.create('Ext.tab.Panel',{
-                anchor: '100% 100%',
-                autoWidth: true,
-                border: false,
-                defaults: {
-                    anchor: '100% 100%',
-                    border:false,
+            var cfg={anchor: '100% 100%',
                     autoWidth: true,
-                    autoScroll: true
-                },
-                activeTab: 0,
-                items: itemsArray
-            });
+                    border: false,
+                    defaults:{anchor: '100% 100%',
+                        border:false,
+                        autoWidth: true},
+                    activeTab: 0,
+                    items: itemsArray};
+            if (reports.printView == false) {
+                cfg.defaults.autoScroll = true;
+            } else {
+                cfg.style={};
+                cfg.style.overflow='visible';
+                cfg.bodyStyle='overflow:visible';
+            }
+            this.tabPanel= Ext.create('Ext.tab.Panel',cfg);
             reportDetails.add(this.tabPanel);
         } else if(this.reportType != null) {
             var selectedType = 'toc';
@@ -1257,21 +1263,27 @@ Ext.define('Ung.ReportDetails', {
                 stripeRows: true,
                 hideHeaders: true,
                 enableColumnMove: false
-            }));
+                }));
+            }
         }
-        }        
-        return Ext.create('Ext.panel.Panel',{
-            title: section.title,
-            layout:{ type:'table',columns:2},
-            autoWidth: true,
-            border: 0,
-            defaults: {
+        var cfg={title: section.title,
+                layout:{ type:'table',columns:2},
+                autoWidth: true,
                 border: 0,
-                cls: 'top-align'
-            },
-            items:items
-
-        });
+                defaults: {
+                    border: 0,
+                    cls: 'top-align'
+                },
+                items:items
+        };
+        if (reports.printView == true) {
+            cfg.style={};
+            cfg.style.overflow='visible';
+            cfg.bodyStyle='overflow:visible';
+        } else {
+            cfg.autoScroll = true;
+        }
+        return Ext.create('Ext.panel.Panel',cfg);
     },
 
     buildDetailSection: function (appName, section) {
@@ -1375,6 +1387,8 @@ Ext.define('Ung.ReportDetails', {
             items:['-']
         });
         var detailSection=Ext.create('Ext.grid.Panel',{
+            style:{overflow:'visible'},
+            bodyStyle:'overflow:visible',
             title: section.title,
             enableColumnMove: false,
             store: store,
