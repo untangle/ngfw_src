@@ -275,12 +275,12 @@ class NetworkTests(unittest2.TestCase):
         return "Untangle"
 
     def setUp(self):
-        global node, nodeFW, orig_netsettings, utBridged, externalClientResult
+        global orig_netsettings, utBridged, externalClientResult
         orig_netsettings = uvmContext.networkManager().getNetworkSettings()
         # print "orig_netsettings <%s>" % orig_netsettings
         utBridged = isBridgeMode(ClientControl.hostIP)
         clientControl.runCommand("kill $(ps aux | grep SimpleHTTPServer | grep -v grep | awk '{print $2}') 2>/dev/null")
-        externalClientResult = subprocess.call(["ping","-c","1",adHost],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
+        externalClientResult = subprocess.call(["ping","-c","1",external_client],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
         
     def test_010_clientIsOnline(self):
         result = clientControl.runCommand("wget -4 -t 2 --timeout=5 -o /dev/null http://test.untangle.com/")
@@ -326,12 +326,14 @@ class NetworkTests(unittest2.TestCase):
         tmp_hostIP = clientControl.hostIP
         # switch client to external box
         clientControl.hostIP = external_client
+        # FIXME can not assume default apache page
         result = clientControl.runCommand("wget -a /tmp/network_test_030a.log -O /tmp/network_test_030a.out -t 1 --timeout=3 \'http://" + wan_IP + "\'" ,True)
         search = clientControl.runCommand("grep -q 'It works' /tmp/network_test_030a.out")  # check for default apache web page
         clientControl.hostIP = tmp_hostIP
         assert (search == 0)
         # check if hairpin works only on non bridge setups
         if not utBridged:
+            # FIXME can not assume default apache page
             result = clientControl.runCommand("wget -a /tmp/network_test_030b.log -O /tmp/network_test_030b.out -t 1 --timeout=3 \'http://" + wan_IP + "\'" ,True)
             search = clientControl.runCommand("grep -q 'It works' /tmp/network_test_030b.out")  # check for default apache web page
             assert (search == 0)
@@ -356,12 +358,14 @@ class NetworkTests(unittest2.TestCase):
         tmp_hostIP = ClientControl.hostIP
         # switch client to external box
         ClientControl.hostIP = external_client
+        # FIXME can not assume default apache page
         result = clientControl.runCommand("wget --no-check-certificate  -a /tmp/network_test_040a.log -O /tmp/network_test_040a.out -t 1 \'https://" + wan_IP + "\'" ,True)
         search = clientControl.runCommand("grep -q 'It works' /tmp/network_test_040a.out")  # check for default apache web page
         ClientControl.hostIP = tmp_hostIP
         assert (search == 0)
         clientControl.runCommand("rm -f /tmp/network_test_040*")
         # check if hairpin works
+        # FIXME can not assume default apache page
         result = clientControl.runCommand("wget --no-check-certificate  -a /tmp/network_test_040b.log -O /tmp/network_test_040b.out -t 1 \'https://" + wan_IP + "\'" ,True)
         search = clientControl.runCommand("grep -q 'It works' /tmp/network_test_040b.out")  # check for default apache web page
         uvmContext.networkManager().setNetworkSettings(orig_netsettings)
@@ -396,6 +400,7 @@ class NetworkTests(unittest2.TestCase):
         # check if hairpin works
         # hairpin is not a valid test if on port 80 and in bridge mode
         if not utBridged:
+            # FIXME can not assume default apache page
             result = clientControl.runCommand("wget -a /tmp/network_test_050b.log -O /tmp/network_test_050b.out -t 4 -T 20 \'http://" + wan_IP + "\'" ,True)
             search = clientControl.runCommand("grep -q 'Directory listing' /tmp/network_test_050b.out")  # check for default apache web page
             assert (search == 0)
@@ -478,10 +483,6 @@ class NetworkTests(unittest2.TestCase):
         # Restore original settings to return to initial settings
         # print "orig_netsettings <%s>" % orig_netsettings
         uvmContext.networkManager().setNetworkSettings(orig_netsettings)
-        nukeFWRules()
-        nukeDNSRules()
-        nukeBypassRules()
-        nukeRouteRules()
         # In case firewall is still installed.
         if (uvmContext.nodeManager().isInstantiated(self.nodeNameFW())):
             uvmContext.nodeManager().destroy( nodeFW.getNodeSettings()["id"] )
