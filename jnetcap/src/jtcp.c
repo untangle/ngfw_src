@@ -224,7 +224,6 @@ JNIEXPORT int JNICALL JF_TCPSession( read )
     return ret;
 }
 
-
 /*
  * Class:     com_untangle_jnetcap_NetcapTCPSession
  * Method:    write
@@ -260,7 +259,6 @@ JNIEXPORT int JNICALL JF_TCPSession( write )
     
     return ret;
 }
-
 
 /*
  * Class:     com_untangle_jnetcap_NetcapTCPSession
