@@ -3983,11 +3983,14 @@ Ext.define('Ung.RowEditorWindow', {
     sizeToGrid: false,
     //size to a given component
     sizeToComponent: null,
-    addMode: null,       
+    sizeToParent: false,
+    addMode: null,
+    layout: "fit",
     initComponent: function() {
         if (!this.height && !this.width && !this.sizeToComponent) {
             this.sizeToGrid = true;
         }
+        
         if (this.title == null) {
             this.title = i18n._('Edit');
         }
@@ -3995,11 +3998,11 @@ Ext.define('Ung.RowEditorWindow', {
             this.rowEditorLabelWidth = 100;
         }
         this.items = Ext.create('Ext.panel.Panel',{
-            anchor: "100% 100%",
             buttonAlign: 'right',
             border: false,
             bodyStyle: 'padding:10px 10px 0px 10px;',
             autoScroll: true,
+            layout: "auto",
             defaults: {
                 selectOnFocus: true,
                 labelWidth: this.rowEditorLabelWidth
@@ -4010,8 +4013,13 @@ Ext.define('Ung.RowEditorWindow', {
     },
     show: function() {
         Ung.UpdateWindow.superclass.show.call(this);
-        if(this.sizeToComponent==null) {
-            this.sizeToComponent=this.grid;
+        if(!this.sizeToComponent) {
+            if(this.sizeToParent) {
+                this.sizeToComponent=this.grid.findParentByType("panel");
+            }
+            if(!this.sizeToComponent) {
+                this.sizeToComponent=this.grid;    
+            }
         }
         var objPosition = this.sizeToComponent.getPosition();
         if (this.sizeToComponent || this.height==null || this.width==null) {
@@ -4055,11 +4063,14 @@ Ext.define('Ung.RowEditorWindow', {
         }
     },
     updateAction: function() {
+        startTime=(new Date()).getTime();
         if (this.isFormValid()!==true) {
-            return;
+            return false;
         }
         if (this.record !== null) {
-            this.updateActionRecursive(this.items, this.record, 0);
+            var data = {}
+            this.updateActionRecursive(this.items, data, 0);
+            this.record.set(data);
             if(this.addMode) {
                 if (this.grid.addAtTop) {
                     this.grid.getStore().insert(0, [this.record]);
@@ -4069,9 +4080,13 @@ Ext.define('Ung.RowEditorWindow', {
                 this.grid.updateChangedData(this.record, "added");
             }
         }
-        this.hide();        
+        this.hide();
+        console.log("updateAction", this.record.data, (new Date()).getTime()-startTime);
+        return true;
+        
+        
     },
-    updateActionRecursive: function(component, record, depth) {
+    updateActionRecursive: function(component, data, depth) {
         if (component == null) {
             return;
         }
@@ -4080,13 +4095,13 @@ Ext.define('Ung.RowEditorWindow', {
             return;
         }
         if (component.dataIndex != null) {
-            record.set(component.dataIndex, component.getValue());
+            data[component.dataIndex]= component.getValue();
             return;
         }
         if (component.items) {
             for (var i = 0; i < component.items.length; i++) {
                 var item = Ext.isFunction(component.items.get)?component.items.get(i):component.items[i];
-                this.updateActionRecursive( item, record, depth+1);
+                this.updateActionRecursive( item, data, depth+1);
             }
         }
     },
