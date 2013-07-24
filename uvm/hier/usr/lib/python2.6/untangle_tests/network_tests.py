@@ -281,6 +281,7 @@ class NetworkTests(unittest2.TestCase):
         utBridged = isBridgeMode(ClientControl.hostIP)
         clientControl.runCommand("kill $(ps aux | grep SimpleHTTPServer | grep -v grep | awk '{print $2}') 2>/dev/null")
         externalClientResult = subprocess.call(["ping","-c","1",external_client],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
+        print "externalClientResult <%s>" % externalClientResult
         
     def test_010_clientIsOnline(self):
         result = clientControl.runCommand("wget -4 -t 2 --timeout=5 -o /dev/null http://test.untangle.com/")
@@ -312,10 +313,10 @@ class NetworkTests(unittest2.TestCase):
     def test_030_port80Forward(self):
         nukeFWRules()
         netstatResult = int(clientControl.runCommand("netstat -an | grep '0.0.0.0:80 ' | wc -l",True))
-        # print "netstatResult <%s>" % netstatResult
+        print "netstatResult <%s>" % netstatResult
         if (netstatResult == 0):
             raise unittest2.SkipTest("No web server running on client, skipping port 80 forwarding test")
-        if (externalClientResult == 0):
+        if (externalClientResult != 0):
             raise unittest2.SkipTest("External test client unreachable, skipping port 80 forwarding test")
         clientControl.runCommand("rm -f /tmp/network_test_030*")
         netsettings = uvmContext.networkManager().getNetworkSettings()
@@ -326,17 +327,23 @@ class NetworkTests(unittest2.TestCase):
         tmp_hostIP = clientControl.hostIP
         # switch client to external box
         clientControl.hostIP = external_client
-        # FIXME can not assume default apache page
-        result = clientControl.runCommand("wget -a /tmp/network_test_030a.log -O /tmp/network_test_030a.out -t 1 --timeout=3 \'http://" + wan_IP + "\'" ,True)
-        search = clientControl.runCommand("grep -q 'It works' /tmp/network_test_030a.out")  # check for default apache web page
+        resultUntangle = clientControl.runCommand("wget -SO- -T 1 -t 1 http://" + wan_IP + " 2>&1 | egrep -i welcome.do >/dev/null")
+        resultWeb = clientControl.runCommand("wget -SO- -T 1 -t 1 http://" + wan_IP + " 2>&1 | egrep -i '200 OK' >/dev/null")
+        # print resultUntangle
+        # print resultWeb
         clientControl.hostIP = tmp_hostIP
-        assert (search == 0)
+        # Check that the Untangle page is not shown
+        assert (resultUntangle != 0)
+        # Check for HTTP code is 200 not the 302 (Untangle)
+        assert (resultWeb == 0)
         # check if hairpin works only on non bridge setups
         if not utBridged:
-            # FIXME can not assume default apache page
-            result = clientControl.runCommand("wget -a /tmp/network_test_030b.log -O /tmp/network_test_030b.out -t 1 --timeout=3 \'http://" + wan_IP + "\'" ,True)
-            search = clientControl.runCommand("grep -q 'It works' /tmp/network_test_030b.out")  # check for default apache web page
-            assert (search == 0)
+            resultUntangle = clientControl.runCommand("wget -SO- -T 1 -t 1 http://" + wan_IP + " 2>&1 | egrep -i welcome.do >/dev/null")
+            resultWeb = clientControl.runCommand("wget -SO- -T 1 -t 1 http://" + wan_IP + " 2>&1 | egrep -i '200 OK' >/dev/null")
+            # Check that the Untangle page is not shown
+            assert (resultUntangle != 0)
+            # Check for HTTP code is 200 not the 302 (Untangle)
+            assert (resultWeb == 0)
         uvmContext.networkManager().setNetworkSettings(orig_netsettings)
 
     def test_040_port443Forward(self):
@@ -344,7 +351,7 @@ class NetworkTests(unittest2.TestCase):
         # print "netstatResult <%s>" % netstatResult
         if (netstatResult == 0):
             raise unittest2.SkipTest("No ssl web server running on client, skipping port 443 forwarding test")
-        if (externalClientResult == 0):
+        if (externalClientResult != 0):
             raise unittest2.SkipTest("External test client unreachable, skipping port 443 forwarding test")
         nukeFWRules()            
         clientControl.runCommand("rm -f /tmp/network_test_040*")
@@ -358,25 +365,30 @@ class NetworkTests(unittest2.TestCase):
         tmp_hostIP = ClientControl.hostIP
         # switch client to external box
         ClientControl.hostIP = external_client
-        # FIXME can not assume default apache page
-        result = clientControl.runCommand("wget --no-check-certificate  -a /tmp/network_test_040a.log -O /tmp/network_test_040a.out -t 1 \'https://" + wan_IP + "\'" ,True)
-        search = clientControl.runCommand("grep -q 'It works' /tmp/network_test_040a.out")  # check for default apache web page
+        resultUntangle = clientControl.runCommand("wget -SO- --no-check-certificate -T 1 -t 1 https://" + wan_IP + " 2>&1 | egrep -i welcome.do >/dev/null")
+        resultWeb = clientControl.runCommand("wget -SO- --no-check-certificate -T 1 -t 1 https://" + wan_IP + " 2>&1 | egrep -i '200 OK' >/dev/null")
         ClientControl.hostIP = tmp_hostIP
-        assert (search == 0)
+        # Check that the Untangle page is not shown
+        assert (resultUntangle != 0)
+        # Check for HTTP code is 200 not the 302 (Untangle)
+        assert (resultWeb == 0)
         clientControl.runCommand("rm -f /tmp/network_test_040*")
         # check if hairpin works
-        # FIXME can not assume default apache page
-        result = clientControl.runCommand("wget --no-check-certificate  -a /tmp/network_test_040b.log -O /tmp/network_test_040b.out -t 1 \'https://" + wan_IP + "\'" ,True)
-        search = clientControl.runCommand("grep -q 'It works' /tmp/network_test_040b.out")  # check for default apache web page
+        if not utBridged:
+            resultUntangle = clientControl.runCommand("wget -SO- --no-check-certificate -T 1 -t 1 https://" + wan_IP + " 2>&1 | egrep -i welcome.do >/dev/null")
+            resultWeb = clientControl.runCommand("wget -SO- --no-check-certificate -T 1 -t 1 https://" + wan_IP + " 2>&1 | egrep -i '200 OK' >/dev/null")
         uvmContext.networkManager().setNetworkSettings(orig_netsettings)
         # Move Admin port back to 443
         netsettings['httpsPort'] = 443
         uvmContext.networkManager().setNetworkSettings(netsettings)
         nukeFWRules()
-        assert (search == 0)
+        # Check that the Untangle page is not shown
+        assert (resultUntangle != 0)
+        # Check for HTTP code is 200 not the 302 (Untangle)
+        assert (resultWeb == 0)
 
     def test_050_portForwardAlt(self):
-        if (externalClientResult == 0):
+        if (externalClientResult != 0):
             raise unittest2.SkipTest("External test client unreachable, skipping alternate port forwarding test")
         clientControl.runCommand("rm -f /tmp/network_test_050*")
         # port forward to a different port that the incoming port.
@@ -393,6 +405,7 @@ class NetworkTests(unittest2.TestCase):
         ClientControl.hostIP = external_client
         clientControl.runCommand("rm -f /tmp/network_test_050*")
         result = clientControl.runCommand("wget -a /tmp/network_test_050a.log -O /tmp/network_test_050a.out -t 4 -T 20 \'http://" + wan_IP + "\'" ,True)
+        # Check listing from python HTTP server
         search = clientControl.runCommand("grep -q 'Directory listing' /tmp/network_test_050a.out")  
         ClientControl.hostIP = tmp_hostIP
         assert (search == 0)
@@ -400,8 +413,8 @@ class NetworkTests(unittest2.TestCase):
         # check if hairpin works
         # hairpin is not a valid test if on port 80 and in bridge mode
         if not utBridged:
-            # FIXME can not assume default apache page
             result = clientControl.runCommand("wget -a /tmp/network_test_050b.log -O /tmp/network_test_050b.out -t 4 -T 20 \'http://" + wan_IP + "\'" ,True)
+            # Check listing from python HTTP server
             search = clientControl.runCommand("grep -q 'Directory listing' /tmp/network_test_050b.out")  # check for default apache web page
             assert (search == 0)
         # kill the 8080 web server
