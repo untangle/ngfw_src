@@ -466,7 +466,7 @@ class NetworkTests(unittest2.TestCase):
         match = re.search(r'address \d{1,3}.\d{1,3}.\d{1,3}.\d{1,3}', result)
         ip_address_testuntangle = (match.group()).replace('address ','')
         # print "IP address of test.untangle.com <%s>" % ip_address_testuntangle
-        appendDNSRule(createDNSRule(ip_address_testuntangle,"www.google.com"))
+        appendDNSRule(createDNSRule(ip_address_testuntangle,"www.foobar.com"))
         wan_IP = uvmContext.networkManager().getFirstWanAddress()
         print "wan_IP <%s>" % wan_IP
         if utBridged:
@@ -482,13 +482,14 @@ class NetworkTests(unittest2.TestCase):
                         j += 1
                 i += 1
             uvmContext.networkManager().setNetworkSettings(netsettings)
-        result = clientControl.runCommand("host www.google.com " + wan_IP, True)
-        # print "Results of www.google.com <%s>" % result
+        result = clientControl.runCommand("host -4 www.foobar.com " + wan_IP, True)
+        # print "Results of www.foobar.com <%s>" % result
         match = re.search(r'address \d{1,3}.\d{1,3}.\d{1,3}.\d{1,3}', result)
-        ip_address_google = (match.group()).replace('address ','')
-        # print "IP address of www.google.com <%s>" % ip_address_google
+        ip_address_foobar = (match.group()).replace('address ','')
+        # print "IP address of www.foobar.com <%s>" % ip_address_foobar
         # print "IP address of test.untangle.com <%s>" % ip_address_testuntangle
-        assert(ip_address_testuntangle == ip_address_google)
+        print "Result DNS lookup 1:\"%s\" 2:\"%s\"" % (str(ip_address_testuntangle),str(ip_address_foobar))
+        assert(ip_address_testuntangle == ip_address_foobar)
         uvmContext.networkManager().setNetworkSettings(orig_netsettings)
         
     def test_999_finalTearDown(self):
