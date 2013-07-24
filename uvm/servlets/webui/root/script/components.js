@@ -4068,7 +4068,7 @@ Ext.define('Ung.RowEditorWindow', {
             return false;
         }
         if (this.record !== null) {
-            var data = {}
+            var data = {};
             this.updateActionRecursive(this.items, data, 0);
             this.record.set(data);
             if(this.addMode) {
