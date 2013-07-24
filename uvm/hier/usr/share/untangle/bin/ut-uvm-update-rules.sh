@@ -112,7 +112,7 @@ insert_iptables_rules()
     ${IPTABLES} -A queue-to-uvm -t tune -m addrtype --dst-type unicast -p udp -j NFQUEUE -m comment --comment 'Queue Unicast UDP packets to the untange-vm'
 
     # Redirect packets destined to non-local sockets to local
-    ${IPTABLES} -A PREROUTING -t mangle -p tcp -m socket -j MARK --set-mark 0xFB00/0xFF00 -m comment --comment "route traffic to non-locally bound sockets to local"
+    ${IPTABLES} -I PREROUTING 2 -t mangle -p tcp -m socket -j MARK --set-mark 0xFB00/0xFF00 -m comment --comment "route traffic to non-locally bound sockets to local"
 
     # Route traffic tagged by previous rule to local
     ip rule del priority 100 >/dev/null 2>&1
