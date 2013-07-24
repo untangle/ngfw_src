@@ -82,8 +82,8 @@ public abstract class NetcapSession
     
     public int  clientQosMark()
     {
-        //QoSMask = 0x00080000 (16 bits to the left)
-        return ((clientMark() & 0x00080000) >> 16);
+        //QoSMask = 0x000F0000 (16 bits to the left)
+        return ((clientMark() & 0x000F0000) >> 16);
     }
 
     public void clientMark(int newmark)
@@ -109,7 +109,7 @@ public abstract class NetcapSession
             return;
         }
 
-        //QoSMask   = 0x00080000 (16 bits to the left)
+        //QoSMask   = 0x000f0000 (16 bits to the left)
         //UnQoSMask = 0xfff0ffff 
             
         int orig_client_mark = this.clientMark() & 0xfff0ffff;
@@ -132,8 +132,8 @@ public abstract class NetcapSession
 
     public int  serverQosMark()
     {
-        //QoSMask = 0x00080000 (16 bits to the left)
-        return ((serverMark() & 0x00080000) >> 16);
+        //QoSMask = 0x000F0000 (16 bits to the left)
+        return ((serverMark() & 0x000F0000) >> 16);
     }
     
     public void serverMark(int newmark)
@@ -159,7 +159,7 @@ public abstract class NetcapSession
             return;
         }
 
-        //QoSMask   = 0x00080000 (16 bits to the left)
+        //QoSMask   = 0x000F0000 (16 bits to the left)
         //UnQoSMask = 0xfff0ffff 
             
         int orig_server_mark = this.serverMark() & 0xfff0ffff;
